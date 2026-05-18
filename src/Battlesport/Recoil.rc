@@ -1,0 +1,403 @@
+#include "Resource.h"
+
+// Generated from support/Recoil.exe by tools/recoil_resource_extract.py.
+// Reconstructed from the original PE resource table into normal VC6 .rc source.
+
+LANGUAGE 9, 1
+
+GAMEBMP BITMAP "img/GAMEBMP.bmp"
+
+MYMENU MENU
+BEGIN
+    POPUP "&Game"
+    BEGIN
+        MENUITEM "&Start", 104
+        MENUITEM "Multi Player Start", 40019
+        MENUITEM "Westwood Online...", 40062
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit", 103
+    END
+    POPUP "Campaigns"
+    BEGIN
+        MENUITEM "C1: Island Storm", 40021
+        MENUITEM "C2: Dust and Metal", 40022
+        MENUITEM "C3: Thermal Meltdown", 40023
+        MENUITEM "C4: Poison Valley", 40024
+        MENUITEM "C5: Cold Kill Chaos", 40025
+        MENUITEM "C6: Network Showdown", 40026
+        MENUITEM "Use ZBD Files", 40043, CHECKED
+        MENUITEM "Use ZBD Textures", 40059, CHECKED
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "Software - GameZ", 40067, CHECKED
+        MENUITEM "Card 1", 40050, GRAYED
+        MENUITEM "Card 2", 40053, GRAYED
+        MENUITEM "Card 3", 40054, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "320 x 200", 518
+        MENUITEM "320 x 240", 519, CHECKED
+        MENUITEM "640 x 400", 520
+        MENUITEM "640 x 480", 521
+        MENUITEM "800 x 600", 40049, GRAYED
+        MENUITEM "1024 x 768", 528, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "DirectSound", 40064
+        MENUITEM "A3D", 40066
+        MENUITEM SEPARATOR
+        MENUITEM "&Fullscreen", 40014, CHECKED
+        MENUITEM "Full HUD", 40015, CHECKED
+        MENUITEM "CD Audio", 40060, CHECKED
+        MENUITEM "Joystick", 40061
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "Online Manual", 106
+        MENUITEM "About Recoil", 107
+    END
+END
+
+103 DIALOG 20, 40, 155, 126
+STYLE 0x90c800c0
+CAPTION "About RECOIL"
+FONT 8, "Verdana"
+BEGIN
+    CONTROL "OK", 1, "Button", 0x50010001, 55, 90, 40, 14
+    CONTROL 151, 122, "Static", 0x50000a03, 65, 5, 20, 20
+    CONTROL "RECOIL", 120, "Static", 0x50020201, 60, 30, 30, 8
+    CONTROL "Copyright (C) 1999 Zipper Interactive", 121, "Static", 0x50020201, 0, 60, 155, 11
+END
+
+106 DIALOG 1, 1, 213, 90
+STYLE 0x4c000c8
+CAPTION "Camera Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "Elevation", -1, "Static", 0x50020000, 15, 21, 35, 11
+    CONTROL "", 1009, "Edit", 0x50810080, 49, 18, 70, 13
+    CONTROL "Pitch", -1, "Static", 0x50020000, 15, 42, 35, 11
+    CONTROL "", 1010, "Edit", 0x50810080, 49, 39, 70, 13
+    CONTROL "Lag", -1, "Static", 0x50020000, 15, 63, 35, 11
+    CONTROL "", 1011, "Edit", 0x50810080, 49, 60, 70, 13
+    CONTROL "Spin1", 1069, "msctls_updown32", 0x50000024, 120, 19, 7, 11
+    CONTROL "Spin1", 1070, "msctls_updown32", 0x50000024, 120, 40, 9, 11
+    CONTROL "Spin1", 1071, "msctls_updown32", 0x50000024, 120, 61, 9, 11
+    CONTROL "OK", 1, "Button", 0x50010000, 155, 16, 40, 14
+    CONTROL "Cancel", 2, "Button", 0x50010000, 155, 36, 40, 14
+END
+
+132 DIALOG 0, 0, 230, 130
+STYLE 0x80c800c0
+CAPTION "Teleport"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "", 1009, "Edit", 0x50810080, 37, 14, 67, 15
+    CONTROL "", 1010, "Edit", 0x50810080, 37, 35, 67, 15
+    CONTROL "", 1011, "Edit", 0x50810080, 37, 56, 67, 15
+    CONTROL "", 1012, "Edit", 0x50810080, 38, 77, 67, 15
+    CONTROL "OK", 1, "Button", 0x50010001, 129, 7, 50, 14
+    CONTROL "Cancel", 2, "Button", 0x50010000, 129, 24, 50, 14
+    CONTROL "x", -1, "Static", 0x50020000, 16, 17, 8, 8
+    CONTROL "y", -1, "Static", 0x50020000, 16, 38, 8, 8
+    CONTROL "z", -1, "Static", 0x50020000, 16, 59, 8, 8
+    CONTROL "yaw", -1, "Static", 0x50020000, 16, 80, 18, 8
+    CONTROL "Deg.", -1, "Static", 0x50020000, 111, 80, 24, 11
+    CONTROL "", 1073, "ComboBox", 0x50210102, 18, 102, 144, 79
+    CONTROL "Delete", 3, "Button", 0x50010000, 171, 101, 50, 14
+END
+
+133 DIALOG 0, 0, 186, 95
+STYLE 0x80c800c0
+CAPTION "Credits Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "OK", 1, "Button", 0x50010001, 129, 7, 50, 14
+    CONTROL "Cancel", 2, "Button", 0x50010000, 129, 24, 50, 14
+    CONTROL "Add Credits Here", -1, "Static", 0x50020000, 62, 46, 54, 8
+END
+
+136 DIALOG 0, 0, 267, 194
+STYLE 0x80c800c0
+CAPTION "Multi Player Sessions"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "Play", 1, "Button", 0x58010000, 105, 145, 50, 15
+    CONTROL "Cancel", 2, "Button", 0x50010000, 7, 170, 50, 15
+    CONTROL "Help", 1029, "Button", 0x50010000, 105, 170, 50, 15
+    CONTROL "Player Name", -1, "Button", 0x50000007, 5, 5, 255, 30
+    CONTROL "", 1048, "Edit", 0x50810080, 10, 15, 245, 12
+    CONTROL "Connections", -1, "Button", 0x50000007, 5, 40, 255, 30
+    CONTROL "Game Sessions", 1113, "Button", 0x50000007, 5, 78, 255, 87
+    CONTROL "", 1114, "ComboBox", 0x50210103, 10, 51, 245, 105
+    CONTROL "New Game...", 1030, "Button", 0x58010000, 210, 170, 50, 15
+    CONTROL "", 1040, "ListBox", 0x50b10103, 10, 90, 245, 50
+END
+
+139 DIALOG 0, 0, 186, 63
+STYLE 0x80c800c0
+CAPTION "AI Network Editor"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "OK", 1, "Button", 0x50010001, 129, 7, 50, 14
+    CONTROL "Cancel", 2, "Button", 0x50010000, 129, 24, 50, 14
+    CONTROL "", 1072, "ComboBox", 0x50210103, 15, 30, 103, 80
+    CONTROL "Select a network to edit:", -1, "Static", 0x50020000, 17, 15, 91, 12
+END
+
+140 DIALOG 0, 0, 281, 189
+STYLE 0x80c800c0
+CAPTION "Net Edit"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "OK", 1, "Button", 0x50010001, 63, 155, 50, 14
+    CONTROL "Net Name", -1, "Static", 0x50020000, 10, 14, 39, 10
+    CONTROL "", 1087, "Edit", 0x50810080, 62, 13, 77, 13
+    CONTROL "Net Type", -1, "Static", 0x50020000, 151, 14, 35, 10
+    CONTROL "", 1088, "ComboBox", 0x50210103, 189, 13, 82, 44
+    CONTROL "Path Width", -1, "Static", 0x50020000, 10, 55, 55, 10
+    CONTROL "", 1090, "Edit", 0x50812000, 75, 54, 38, 13
+    CONTROL "Activation Radius", -1, "Static", 0x50020000, 143, 57, 55, 10
+    CONTROL "", 1013, "Edit", 0x50812000, 209, 56, 38, 13
+    CONTROL "Attack Radius", -1, "Static", 0x50020000, 10, 75, 55, 10
+    CONTROL "", 1015, "Edit", 0x50812000, 75, 74, 38, 13
+    CONTROL "Return Radius*", -1, "Static", 0x50020000, 143, 75, 55, 10
+    CONTROL "", 1017, "Edit", 0x50812000, 209, 74, 38, 13
+    CONTROL "Attack Dwell", -1, "Static", 0x50020000, 10, 93, 55, 10
+    CONTROL "", 1014, "Edit", 0x50812000, 75, 92, 38, 13
+    CONTROL "Post Attack Dwell*", -1, "Static", 0x50020000, 143, 93, 62, 17
+    CONTROL "", 1016, "Edit", 0x50812000, 209, 92, 38, 13
+    CONTROL "Pursuit Rad Min", 1107, "Static", 0x50020000, 10, 111, 63, 10
+    CONTROL "", 1018, "Edit", 0x50812000, 75, 110, 38, 13
+    CONTROL "Pursuit Rad Max", 1108, "Static", 0x50020000, 143, 111, 65, 10
+    CONTROL "", 1019, "Edit", 0x50812000, 209, 110, 38, 13
+    CONTROL "Cancel", 2, "Button", 0x50010000, 167, 155, 50, 14
+    CONTROL "* These parameters override vehicle.zrd defaults", -1, "Static", 0x50020000, 62, 169, 154, 10
+    CONTROL "AttackStrategy", -1, "Static", 0x50020000, 10, 33, 51, 10
+    CONTROL "", 1089, "ComboBox", 0x50210103, 62, 32, 77, 44
+    CONTROL "Buddies Activate", 1110, "Button", 0x50010003, 10, 134, 68, 8
+    CONTROL "Buddies Attack", 1111, "Button", 0x50010003, 143, 134, 68, 8
+END
+
+141 DIALOG 0, 0, 173, 183
+STYLE 0x80c800c0
+CAPTION "Node Edit - Vehicle"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "OK", 1, "Button", 0x50010001, 26, 150, 50, 14
+    CONTROL "Cancel", 2, "Button", 0x50010000, 97, 150, 50, 14
+    CONTROL "Vehicle Position", -1, "Button", 0x50000007, 16, 53, 141, 83
+    CONTROL "", 1077, "Edit", 0x50810080, 54, 66, 68, 14
+    CONTROL "x", -1, "Static", 0x50020000, 26, 68, 12, 11
+    CONTROL "", 1078, "Edit", 0x50810080, 54, 85, 68, 14
+    CONTROL "y", -1, "Static", 0x50020000, 26, 87, 12, 11
+    CONTROL "", 1079, "Edit", 0x50810080, 54, 101, 68, 14
+    CONTROL "z", -1, "Static", 0x50020000, 26, 103, 12, 11
+    CONTROL "", 1080, "Edit", 0x50810080, 54, 120, 68, 14
+    CONTROL "yaw", -1, "Static", 0x50020000, 26, 122, 17, 11
+    CONTROL "", 1086, "ComboBox", 0x50210103, 23, 24, 110, 65
+    CONTROL "Vehicle Type", -1, "Static", 0x50020000, 55, 7, 45, 9
+END
+
+142 DIALOG 0, 0, 228, 76
+STYLE 0x80c800c0
+CAPTION "Map Area Editor"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "OK", 1, "Button", 0x50010001, 171, 7, 50, 14
+    CONTROL "Cancel", 2, "Button", 0x50010000, 171, 24, 50, 14
+    CONTROL "Enter Objective ID:", -1, "Static", 0x50020000, 15, 17, 61, 8
+    CONTROL "", 1094, "Edit", 0x50810080, 78, 15, 69, 13
+    CONTROL "Change Color", 1051, "Button", 0x50010000, 15, 33, 50, 14
+END
+
+143 DIALOG 0, 0, 186, 62
+STYLE 0x80c800c0
+CAPTION "Vehicle Select"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "OK", 1, "Button", 0x50010001, 129, 7, 50, 14
+    CONTROL "Cancel", 2, "Button", 0x50010000, 129, 24, 50, 14
+    CONTROL "", 1095, "ComboBox", 0x50210102, 7, 28, 110, 118
+    CONTROL "Select a vehicle.", -1, "Static", 0x50020000, 21, 14, 84, 10
+END
+
+145 DIALOG 0, 0, 204, 185
+STYLE 0x80c800c0
+CAPTION "Pickup Parameters"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "OK", 1, "Button", 0x50010001, 37, 154, 50, 14
+    CONTROL "Cancel", 2, "Button", 0x50010000, 106, 154, 50, 14
+    CONTROL "", 1104, "ComboBox", 0x50210102, 23, 25, 103, 110
+    CONTROL "Spin1", 1069, "msctls_updown32", 0x50000022, 167, 25, 16, 12
+    CONTROL "", 1097, "Edit", 0x50812080, 145, 25, 21, 12
+    CONTROL "Pickup Type", -1, "Static", 0x50020000, 23, 14, 69, 8
+    CONTROL "Pickup Value", -1, "Static", 0x50020000, 145, 14, 45, 8
+    CONTROL "Check1", 1100, "Button", 0x50010003, 15, 48, 9, 8
+    CONTROL "Change/Set Position", -1, "Static", 0x50020000, 33, 48, 71, 9
+    CONTROL "", 1101, "Edit", 0x58812080, 28, 79, 46, 12
+    CONTROL "", 1102, "Edit", 0x58812080, 81, 79, 46, 12
+    CONTROL "", 1103, "Edit", 0x58812080, 135, 79, 46, 12
+    CONTROL "", 1013, "Edit", 0x58812080, 27, 122, 46, 12
+    CONTROL "", 1014, "Edit", 0x58812080, 81, 123, 46, 12
+    CONTROL "", 1015, "Edit", 0x58812080, 133, 123, 46, 12
+    CONTROL "Position", -1, "Static", 0x50020000, 27, 68, 28, 8
+    CONTROL "Rotation", -1, "Static", 0x50020000, 28, 112, 29, 8
+    CONTROL "X", -1, "Static", 0x50020000, 66, 68, 8, 8
+    CONTROL "Y", -1, "Static", 0x50020000, 119, 68, 8, 8
+    CONTROL "Z", -1, "Static", 0x50020000, 173, 68, 8, 8
+    CONTROL "X", -1, "Static", 0x50020000, 65, 112, 8, 8
+    CONTROL "Y", -1, "Static", 0x50020000, 119, 112, 8, 8
+    CONTROL "Z", -1, "Static", 0x50020000, 171, 112, 8, 8
+    CONTROL "", 1124, "Edit", 0x50810080, 166, 50, 25, 12
+    CONTROL "Regen Time", -1, "Static", 0x50020000, 118, 51, 44, 11
+END
+
+146 DIALOG 0, 0, 260, 214
+STYLE 0x80c800c0
+CAPTION "New Game"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "PLAY!", 1, "Button", 0x50010001, 203, 193, 50, 14
+    CONTROL "Cancel", 2, "Button", 0x50010000, 7, 193, 50, 14
+    CONTROL "Name of the Game", -1, "Button", 0x50000007, 7, 6, 246, 31
+    CONTROL "", 1115, "Edit", 0x50810000, 22, 17, 213, 14
+    CONTROL "Mission", -1, "Button", 0x50000007, 7, 40, 246, 31
+    CONTROL "Game Limits", -1, "Button", 0x50000007, 7, 105, 246, 80
+    CONTROL "", 1116, "ComboBox", 0x50210002, 22, 52, 213, 91
+    CONTROL "", 1117, "Edit", 0x50810080, 111, 115, 22, 16
+    CONTROL "Spin2", 1120, "msctls_updown32", 0x50000033, 134, 114, 11, 19
+    CONTROL "", 1118, "Edit", 0x50810080, 111, 139, 22, 16
+    CONTROL "Spin2", 1121, "msctls_updown32", 0x50000032, 134, 137, 11, 19
+    CONTROL "", 1119, "Edit", 0x50810080, 111, 163, 22, 16
+    CONTROL "Spin2", 1072, "msctls_updown32", 0x50000033, 134, 161, 11, 19
+    CONTROL "Time Limit (minutes)", -1, "Static", 0x50020000, 13, 117, 63, 13
+    CONTROL "Kills Needed to Win", 1125, "Static", 0x50020000, 13, 140, 84, 13
+    CONTROL "Max Number of Players", -1, "Static", 0x50020000, 13, 165, 76, 13
+    CONTROL "Allow Maps", 1122, "Button", 0x50010003, 171, 123, 51, 9
+    CONTROL "Display Name Tags", 1123, "Button", 0x50010003, 171, 147, 77, 9
+    CONTROL "Password", -1, "Button", 0x50000007, 7, 71, 246, 31
+    CONTROL "", 1124, "Edit", 0x50810000, 22, 82, 213, 14
+END
+
+154 DIALOG 0, 0, 426, 316
+STYLE 0xc004c0
+CAPTION "Westwood Online"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "", 1138, "Edit", 0x50810080, 40, 265, 320, 13
+    CONTROL "SEND", 1, "Button", 0x50010001, 365, 265, 45, 15
+    CONTROL "", 1139, "Edit", 0x50811080, 39, 285, 72, 13
+    CONTROL "PAGE", 1161, "Button", 0x50010000, 120, 285, 45, 15
+    CONTROL "", 1136, "ListBox", 0x50a00103, 10, 10, 290, 35
+    CONTROL "REFRESH", 1144, "Button", 0x50012000, 315, 10, 85, 15
+    CONTROL "", 1148, "Edit", 0x50810080, 10, 58, 125, 12
+    CONTROL "", 1176, "Edit", 0x50810080, 160, 58, 75, 12
+    CONTROL "", 1170, "Edit", 0x50812080, 260, 58, 40, 12
+    CONTROL "NEW", 1145, "Button", 0x50010000, 315, 56, 85, 15
+    CONTROL "", 1137, "ListBox", 0x50a00108, 10, 85, 291, 35
+    CONTROL "KICK", 1160, "Button", 0x58010000, 315, 85, 85, 15
+    CONTROL "BAN and KICK", 1051, "Button", 0x58010000, 315, 105, 85, 15
+    CONTROL "", 1171, "ComboBox", 0x50210003, 33, 138, 92, 90
+    CONTROL "Allow Maps", 1122, "Button", 0x50010223, 163, 140, 55, 10
+    CONTROL "Display Player Names", 1123, "Button", 0x50010223, 241, 140, 80, 10
+    CONTROL "", 1168, "Edit", 0x50812080, 178, 155, 39, 12
+    CONTROL "", 1169, "Edit", 0x50812080, 281, 155, 39, 12
+    CONTROL "START", 1151, "Button", 0x50010000, 33, 154, 92, 15
+    CONTROL "LEAVE", 1150, "Button", 0x58010000, 315, 30, 85, 15
+    CONTROL "Game", 1174, "Button", 0x50000107, 5, 125, 415, 47
+    CONTROL "LOG OFF", 1166, "Button", 0x50010000, 365, 285, 45, 15
+    CONTROL "Arena", -1, "Static", 0x50020000, 10, 140, 20, 8
+    CONTROL "Time Limit", -1, "Static", 0x50020002, 143, 157, 32, 8
+    CONTROL "Kills to Win", 1167, "Static", 0x50020002, 242, 157, 36, 8
+    CONTROL "Max Players", -1, "Static", 0x50020000, 260, 48, 41, 8
+    CONTROL "Message", -1, "Static", 0x50020000, 10, 267, 30, 8
+    CONTROL "Name", -1, "Static", 0x50020002, 15, 287, 20, 8
+    CONTROL "Password (optional)", -1, "Static", 0x50020000, 160, 48, 65, 8
+    CONTROL "New Channel Name", -1, "Static", 0x50020000, 10, 48, 66, 8
+    CONTROL "", 1141, "ListBox", 0x50b05100, 10, 185, 405, 75
+    CONTROL "G A M E   C H A N N E L S", -1, "Button", 0x50000107, 5, 0, 415, 125
+    CONTROL "C H A T", -1, "Button", 0x50000107, 5, 173, 415, 132
+    CONTROL "P L A Y E R S    I N    C H A N N E L", -1, "Static", 0x50020000, 10, 75, 122, 8
+    CONTROL "In order to chat you must create or join a game channel", -1, "Static", 0x50820201, 172, 283, 189, 17
+END
+
+156 DIALOG 0, 0, 132, 146
+STYLE 0x80c800c0
+CAPTION "WOL Name and Password"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "OK", 1, "Button", 0x50010001, 20, 90, 90, 14
+    CONTROL "Cancel", 2, "Button", 0x50010000, 20, 115, 90, 14
+    CONTROL "", 1173, "Edit", 0x508100a0, 20, 50, 90, 13
+    CONTROL "Name", -1, "Static", 0x50020200, 20, 10, 35, 8
+    CONTROL "Password", -1, "Static", 0x50020200, 20, 40, 35, 8
+    CONTROL "Remember Password", 1182, "Button", 0x50010023, 20, 70, 90, 10
+    CONTROL "", 1192, "ComboBox", 0x50210002, 20, 20, 90, 50
+END
+
+157 DIALOG 0, 0, 142, 48
+STYLE 0x90c008c0
+CAPTION "Connection"
+FONT 12, "MS Sans Serif"
+BEGIN
+    CONTROL "Connecting to Westwood Online...", 1179, "Static", 0x50020201, 5, 6, 130, 35
+END
+
+159 DIALOG 0, 0, 186, 95
+STYLE 0x80c800c0
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL "OK", 1, "Button", 0x50010001, 129, 7, 50, 14
+    CONTROL "Cancel", 2, "Button", 0x50010000, 129, 24, 50, 14
+END
+
+162 DIALOG 0, 0, 310, 58
+STYLE 0x90c008c0
+CAPTION "Westwood Online Upgrade"
+FONT 10, "MS Sans Serif"
+BEGIN
+    CONTROL "Cancel", 1195, "Button", 0x50010000, 229, 28, 67, 14
+    CONTROL "Progress1", 1021, "msctls_progress32", 0x50000000, 13, 15, 283, 6
+    CONTROL "", 1023, "Static", 0x50021001, 13, 30, 212, 11
+    CONTROL "Downloading patch...", 1024, "Button", 0x50000007, 7, 3, 296, 46
+END
+
+STRINGTABLE
+BEGIN
+    200 "Game File (*.gs)|*.gs|Text File (*.txt)|*.txt|All Files (*.*)|*.*|"
+    206 "Arial Black"
+END
+
+151 ICON "img/RECOIL.ico"
+
+1 VERSIONINFO
+FILEVERSION 1,0,6,8
+PRODUCTVERSION 1,0,6,8
+FILEFLAGSMASK 0x3fL
+FILEFLAGS 0x0L
+FILEOS 0x40004L
+FILETYPE 0x1L
+FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "Zipper Interactive Inc.\0"
+            VALUE "FileDescription", "RECOIL\0"
+            VALUE "FileVersion", "1, 0, 6, 8\0"
+            VALUE "InternalName", "RECOIL\0"
+            VALUE "LegalCopyright", "Copyright \251 1999\0"
+            VALUE "OriginalFilename", "Recoil.exe\0"
+            VALUE "ProductName", "Zipper Interactive Inc. RECOIL\0"
+            VALUE "ProductVersion", "1, 0, 6, 8\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+

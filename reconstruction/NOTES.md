@@ -1,0 +1,7902 @@
+# Zipper Interactive - Recoil engine reconstruction
+
+## Notes on confidence
+
+This document is a reconstruction of the retail `Recoil.exe` codebase and data layout.
+
+- **evidenced**: directly surfaced by source paths, symbols, strings, imports, or clear control flow in the decomp
+- **likely**: strongly supported by structure and behavior, but the exact original source split or naming is still uncertain
+- **inferred**: a conservative placeholder used to connect surrounding evidence without overstating certainty
+
+## CZRecoilFrame help-docs notes
+
+- The adjacent non-WOL shell help-docs command strip is now bounded more cleanly.
+- The real menu handler is `CZRecoilFrame_OnMenuOpenHelpDocs()`.
+- The same help-docs flow is also reused by `NetSessionBrowserDialog_OnHelpDocs()`.
+- Both reachable help-docs entry points are now explicitly side-effect-only shell handlers:
+  - `CZRecoilFrame_OnMenuOpenHelpDocs()`
+  - `NetSessionBrowserDialog_OnHelpDocs()`
+- That handler calls `FindExecutableA("Docs\\Index.html", nullptr, buffer)` first:
+  - if the result is `> 0x1f`, it immediately runs `ShellExecuteA(g_RecoilApp_hWndMain, "open", "Docs\\Index.html", ..., SW_HIDE)`
+  - if the result is `<= 0x1f`, it uses an embedded classifier plus a small jump table to decide between localized error dialogs and a fallback `ShellExecuteA`
+- The shared string leaves on this strip are now explicit:
+  - `g_HelpDocs_IndexHtmlPath`
+  - `g_HelpDocs_ShellOpenVerb`
+- The old `CZRecoilFrame_OnMenuOpenUnknownDialog` symbol at `0x430c04` was an analysis artifact, not a real second handler:
+  - it is now explicitly marked as `CZRecoilFrame_HelpDocsFindExecutableDispatchArtifact`
+  - bytes `0x430c04..0x430c23` are the embedded `FindExecutableA` result-code classifier
+  - `0x430c24..0x430c2f` are NOP padding
+  - the real adjacent About-dialog code starts at `CZRecoilFrame_OnMenuOpenAboutDialog()` at `0x430c30`
+- The `NetSessionBrowserDialog` duplicate had the same problem:
+  - the fake `CButton_ScalarDeletingDtor` symbol at `0x41b8ac` is now `NetSessionBrowserDialog_HelpDocsFindExecutableDispatchArtifact`
+  - `g_NetSessionBrowserDialog_HelpDocsFindExecutableDispatchJumpTable` is the matching duplicate jump table at `0x41b898`
+- The dispatch jump table is now pinned as `g_CZRecoilFrame_HelpDocsFindExecutableDispatchJumpTable` at `0x430bf0`.
+- The message/command-map owners are now pinned too:
+  - `0x4d0d14` is the `CZRecoilFrame` message-map entry for menu command `0x6A`
+  - `0x4cfc4c` is the `NetSessionBrowserDialog` command-map entry for the local help/docs action
+- The currently proved special cases are:
+  - code `0` -> localized message id `0x20`
+  - codes `2/3` -> localized message id `0x22`
+  - code `11` -> localized message id `0x24`
+  - code `31` -> localized message id `0x21`
+  - every other `<= 0x1f` result falls back to `ShellExecuteA`
+- The classifier remains comment-backed in BN instead of force-typed as a byte array because it is a byte-indexed blob embedded inside `.text`, and the reconstruction workspace still avoids casual 1-byte data models.
+
+## zModel frame-stamp notes
+
+- The adjacent non-WOL video/model frame-stamp consumer strip is now bounded more cleanly.
+- `g_zVideo_FrameTick` is now pinned more explicitly as a shared once-per-rendered-frame stamp/tag.
+- A narrow direct-function status enum is now explicit on the same strip:
+  - `enum zModelTextureScrollUpdateResult`
+    - `ZMODEL_TEXSCROLL_UPDATE_INVALID_INSTANCE = -1`
+    - `ZMODEL_TEXSCROLL_UPDATE_OK = 0`
+- Two local partial runtime view families now carry the nearby model-animation paths without reopening the broader shared `zModel_*` types:
+  - `zModel_InstanceTextureScrollView`
+  - `zModel_InstanceTextureScrollEntry`
+  - `zModel_TextureScrollImageRef`
+  - `zModel_MaterialCycleOwnerView`
+  - `zModel_MaterialCycleRuntimeView`
+- The current proving split is:
+  - `zModel_Instance_UpdateScrollingTextures(struct zModel_InstanceTextureScrollView* self)` now decompiles through:
+    - `scrollEntryCount_0c`
+    - `lastScrollFrameTick_2c`
+    - `scrollEntries_30`
+    - `imageRef_14`
+    - `imageSlot_10`
+    - `scrollRates_10`
+  - that helper now explicitly returns `enum zModelTextureScrollUpdateResult`
+  - the current result split is:
+    - `ZMODEL_TEXSCROLL_UPDATE_INVALID_INSTANCE` only when `self == 0`
+    - `ZMODEL_TEXSCROLL_UPDATE_OK` on the duplicate-frame fast path and the normal once-per-frame update path
+  - `zInterp_Object3DScroll_NodeAction()` now forwards the same enum result directly after fetching node user data
+  - gameplay/runtime callers still ignore that result and use the helper only for side effects
+  - `zModel_Matl_UpdateCycleIfNeeded(struct zModel_MaterialCycleOwnerView* self)` is now side-effect-only as `void __thiscall`
+  - its only current callers are:
+    - `zModel_RenderSW()`
+    - `zModel_Render()`
+  - both callers use it only for side effects on the SW/HW render paths
+  - the material-cycle path now renders cleanly through:
+    - `cycle_24`
+    - `currentFrameTex_10`
+    - `loopEnabled`
+    - `lastUpdateFrameTick_04`
+    - `currentFrame_08`
+    - `framesPerSec_0c`
+    - `frameCount_10`
+    - `frameTable_18`
+- The shared frame-stamp gate/store split is now pinned in BN comments on both helper families.
+- Two bounded holdbacks remain on this strip:
+  - `zModel_Instance_UpdateScrollingTextures()` still keeps the local UV-pair base as `&self->__offset(0x24).d`
+  - the neighboring `g_zVideo_AdjustSurfacesDisableGate` is still too thin for a stronger rename because it only has one current code xref
+
+## zVid update-mask notes
+
+- The adjacent non-WOL startup/shell update-mask strip is now bounded more cleanly.
+- A new video-side enable enum is now explicit there:
+  - `enum zVidUpdateMaskState`
+    - `ZVID_UPDATE_MASK_DISABLED = 0`
+    - `ZVID_UPDATE_MASK_ENABLED = 1`
+- The backing global is now materialized in BN as `g_zVid_UpdateMaskEnabled` at `0x56b564`.
+- The current proving split is:
+  - `zVid_SetUpdateMaskEnabled(enum zVidUpdateMaskState enabled)` is the ECX-only writer for `g_zVid_UpdateMaskEnabled`
+  - the current reachable non-WOL writers are:
+    - `RecoilApp_EngineInit()`
+    - `RecoilApp_IntroFmvState_OnTryBecomeCurrent()`
+  - `zVid_IsUpdateMaskEnabledForCurrentRenderer()` returns `ZVID_UPDATE_MASK_DISABLED` when `g_zVideo_ActiveRendererPath == ZVID_ACTIVE_RENDERER_3DFX`
+  - otherwise that getter returns `g_zVid_UpdateMaskEnabled`
+  - `CZGameFrame_OnPaint()` now cleanly checks `zVid_IsUpdateMaskEnabledForCurrentRenderer() == ZVID_UPDATE_MASK_DISABLED`
+  - `zVid_UpdateCachedClientRectIfUpdateMaskEnabled()` now uses the same enum-backed gate before refreshing `g_zVideo_ClientRectScreenCoords`
+- One bounded holdback remains on this strip:
+  - there is still no reachable non-WOL direct writer for `ZVID_UPDATE_MASK_DISABLED`
+  - the disabled state is currently only proved by zero-initialized storage plus the getter-side forced-off `3Dfx` path
+
+## zVid palette-remap notes
+
+- The adjacent palette-remap helper pair is now bounded enough to pin the shared runtime float order.
+- The current proving split is:
+  - `zVid_PaletteRemap_ApplyRecipeToPaletteVariant()` is a `void __fastcall` helper with `recipe` in `ECX` and `sourceColors` in `EDX`
+  - `zVid_PaletteRemap_FindRecipeIndex()` is an `int32_t __fastcall` helper with `recipe` in `ECX`
+  - both helpers agree that one recipe record is eight contiguous `float` values in this storage order:
+    - `color0R`
+    - `color0G`
+    - `color0B`
+    - `color1R`
+    - `color1G`
+    - `color1B`
+    - `color0Strength`
+    - `color1Strength`
+- One bounded holdback remains on this strip:
+  - `zVid_PaletteRemap_FindRecipeIndex()` still materializes the candidate cursor as `lea edx, [candidate + 8]`, so BN may render that compare walk as `&g_zVid_PaletteRemapRecipes->color0B` plus `edx[-2..5]`; the contiguous float order above is the authoritative mapping for that compiler-anchored cursor
+
+## RecoilApp FMV skip-latch notes
+
+- The adjacent non-WOL intro/mission-FMV skip-latch strip is now bounded more cleanly.
+- Two new app/state enums are now explicit there:
+  - `enum RecoilAppIntroFmvSkipMode`
+    - `RECOILAPP_INTRO_FMV_SKIP_DISABLED = 0`
+    - `RECOILAPP_INTRO_FMV_SKIP_ENABLED = 1`
+  - `enum RecoilAppMissionFmvSkipMode`
+    - `RECOILAPP_MISSION_FMV_SKIP_DISABLED = 0`
+    - `RECOILAPP_MISSION_FMV_SKIP_ENABLED = 1`
+- The backing field types now agree with that model:
+  - `RecoilApp.m_skipIntroFmv`
+  - `RecoilApp_MissionFmvState.m_skipMissionFmv`
+  - `RecoilApp_LoadZbdAndSetupSensorTracker(..., skipIntroFmv, ...)`
+- The current proving split is:
+  - single-player startup clears both latches in `CZRecoilFrame_OnMenuStartSinglePlayerGame()`
+  - campaign/open-file startup sets only the intro skip latch in `CZRecoilFrame_OnMenuOpenCampaignDialog()`
+  - multiplayer browser/setup startup sets both latches in `CZRecoilFrame_OnMenuOpenMultiplayerDialogsAndMaybeStartGame()`
+  - the join/session-start call into `RecoilApp_LoadZbdAndSetupSensorTracker(...)` now carries `RECOILAPP_INTRO_FMV_SKIP_ENABLED`
+  - load-game startup sets `g_RecoilApp.m_missionFmvState.m_skipMissionFmv = RECOILAPP_MISSION_FMV_SKIP_ENABLED` in `HudUiLoadGameDialog_ApplySelectedSaveAndTransition()`
+  - `RecoilApp_SetMissionIdAndQueueMissionFmvState()` explicitly clears mission FMV skip before queueing mission FMV
+  - `RecoilApp_IntroFmvState_OnUpdateShouldQuit()` now cleanly renders `if (g_RecoilApp.m_skipIntroFmv != RECOILAPP_INTRO_FMV_SKIP_DISABLED)`
+  - `RecoilApp_MissionFmvState_Ctor()` now clears `self->m_skipMissionFmv = RECOILAPP_MISSION_FMV_SKIP_DISABLED`
+  - `RecoilApp_MissionFmvState_OnTryBecomeCurrent()` now gates playback on `self->m_skipMissionFmv == RECOILAPP_MISSION_FMV_SKIP_DISABLED`
+  - `RecoilApp_MissionFmvState_OnUpdateShouldQuit()` now gates the fast-path on `self->m_skipMissionFmv != RECOILAPP_MISSION_FMV_SKIP_DISABLED || eax == 0`
+- Bounded holdbacks on this strip:
+  - BN 5.2 still leaves a few direct intro-skip stores/compares as raw `0/1` literals instead of always lowering the enum symbols
+  - the shared fields also incidentally propagate into a parked WestwoodOnline writer, but that lane remains intentionally deferred
+
+## RecoilState singleton dtor notes
+
+- The adjacent concrete state-vtable type strip is tighter too.
+- The two surviving user-defined concrete vtable structs on this lane are now:
+  - `RecoilStateMainMenuTransition_Vtbl`
+  - `RecoilStateDialogHost_Vtbl`
+- The accepted slot-shape replay is:
+  - `ScalarDeletingDtor` is `void (*)(..., uint32_t flags)`
+  - `OnWndActivate` uses `enum RecoilWndActivateState`
+- The current proving split is:
+  - `RecoilStateMainMenuTransition_ScalarDeletingDtor()` already decompiles as the real VC6 `void` delete wrapper
+  - dialog-host-derived owner tables such as the cheat-code, credits, and overlay-owner rows now stay on the corrected shared `RecoilStateDialogHost_Vtbl` layout
+  - `CZRecoilFrame_OnActivate()` still forwards raw `WM_ACTIVATE` `nState` through the shared enum-backed `OnWndActivate` slot
+- One bounded holdback remains on this strip:
+  - `OnTryBecomeCurrent` and `OnUpdateShouldQuit` still intentionally stay `int32_t` on these vtable structs because the stronger direct result enums are still unsafe to push through shared slots while BN remains mid-reanalysis
+
+- The adjacent non-WOL singleton-state dtor strip is now bounded more cleanly.
+- The direct inner `void` teardown bodies on this lane are:
+  - `RecoilStateMainMenuTransition_Dtor()`
+  - `RecoilStateSaveLoadTransition_Dtor()`
+  - `RecoilStateCheatCode_Dtor()`
+  - `RecoilStateControls_Dtor()`
+  - `RecoilStateConfirmQuit_Dtor()`
+  - `RecoilStateCredits_Dtor()`
+- The paired VC6 delete wrappers on the same lane are:
+  - `RecoilStateMainMenuTransition_ScalarDeletingDtor()`
+  - `RecoilStateSaveLoadTransition_ScalarDeletingDtor()`
+  - `RecoilStateCheatCode_ScalarDeletingDtor()`
+  - `RecoilStateControls_ScalarDeletingDtor()`
+  - `RecoilStateConfirmQuit_ScalarDeletingDtor()`
+  - `RecoilStateCredits_ScalarDeletingDtor()`
+- The current proving split is:
+  - each scalar-deleting wrapper is data-owned only by its state-vtable first slot
+  - each inner dtor destroys any owned dialog/panel if present, clears the owner pointer, and restores `g_RecoilStateBaseDefault_Vtbl`
+  - each scalar-deleting wrapper now cleanly follows the standard VC6 pattern of calling the inner dtor and freeing `self` only when `(flags & 1) != 0`
+- One bounded holdback remains on this strip:
+  - BN 5.2 may still print a bare terminal `return` in these dtors even after the accepted `void` replay; on this lane that is only EH/tail residue, not a live return-value contract
+
+## RecoilApp FMV/state dtor notes
+
+- The adjacent embedded `RecoilApp` FMV/state inner-dtor strip is bounded too.
+- The direct inner teardown bodies on this lane are:
+  - `RecoilApp_AttractFmvState_Dtor()`
+  - `RecoilApp_IntroFmvState_Dtor()`
+  - `RecoilApp_MissionFmvState_Dtor()`
+  - `RecoilApp_IState_Dtor()`
+- The current proving split is:
+  - the three FMV-state dtors are inner bodies that destroy the embedded `zFMV_Script` and restore `g_RecoilStateBaseDefault_Vtbl`
+  - `RecoilApp_IState_Dtor()` is the simpler shared inner body that only restores `g_RecoilStateBaseDefault_Vtbl`
+  - these bodies are reached from their scalar-deleting wrappers plus local unwind thunks, not through separate public lifecycle dispatch
+  - `RecoilApp_Dtor()` uses the same inner-body model when tearing down the embedded attract / intro / mission FMV states inside `g_RecoilApp`
+- The adjacent VC6 EH metadata row is now named too:
+  - `g_RecoilApp_Dtor_EhFuncInfo`
+  - `g_RecoilApp_Dtor_EhUnwindMap`
+  - `g_RecoilApp_Ctor_EhFuncInfo`
+  - `g_RecoilApp_Ctor_EhUnwindMap`
+- The two owner-side EH frame-handler wrappers are now:
+  - `RecoilApp_Dtor_EhFrameHandlerThunk()`
+  - `RecoilApp_Ctor_EhFrameHandlerThunk()`
+- The embedded FMV state constructors/destructors have their own EH wrappers:
+  - `RecoilApp_AttractFmvState_Ctor_EhFrameHandlerThunk()`
+  - `RecoilApp_IntroFmvState_Dtor_EhFrameHandlerThunk()`
+  - `RecoilApp_MissionFmvState_Ctor_EhFrameHandlerThunk()`
+  - `RecoilApp_MissionFmvState_Dtor_EhFrameHandlerThunk()`
+- The clear compiler-generated EH cleanup funclets on that row are now:
+  - `RecoilApp_Dtor_EhCleanup_MfcOleModule()`
+  - `RecoilApp_Dtor_EhCleanup_AttractFmvState()`
+  - `RecoilApp_Dtor_EhCleanup_IntroFmvState()`
+  - `RecoilApp_Dtor_EhCleanup_MainMenuPrepState()`
+  - `RecoilApp_Dtor_EhCleanup_LeaveNetworkState()`
+  - `RecoilApp_Ctor_EhCleanup_MfcOleModule()`
+  - `RecoilApp_Ctor_EhCleanup_AttractFmvState()`
+  - `RecoilApp_Ctor_EhCleanup_IntroFmvState()`
+  - `RecoilApp_Ctor_EhCleanup_MainMenuPrepState()`
+  - `RecoilApp_Ctor_EhCleanup_LeaveNetworkState()`
+  - `RecoilApp_MissionFmvState_Dtor_EhCleanup_IStateBase()`
+  - `RecoilApp_AttractFmvState_Ctor_EhCleanup_IStateBase()`
+  - `RecoilApp_MissionFmvState_Ctor_EhCleanup_IStateBase()`
+  - `RecoilApp_Ctor_EhCleanup_MissionFmvState()`
+  - `RecoilApp_CreateMainWnd_EhCleanup_MissionFmvStateAllocation()`
+- One bounded holdback remains on this strip:
+  - the generic `RecoilApp_Dtor_EhCleanup_IStateLocal0/1/2()` cleanup thunks at `0x4c9d60`, `0x4c9d68`, and `0x4c9d70` tail-call `RecoilApp_IState::Destructor` on parent-frame EBP slots and are intentionally comment-backed rather than over-renamed
+  - the generic `RecoilApp_Ctor_EhCleanup_IStateLocal0()` cleanup thunk at `0x4c9de6` tail-calls `RecoilApp_IState::Destructor` on a parent-frame EBP slot and is intentionally comment-backed rather than over-renamed
+
+## RecoilApp init-instance notes
+
+- The adjacent non-WOL `RecoilApp` init-instance result lane is now bounded more cleanly.
+- A new direct-function enum is now explicit there:
+  - `enum RecoilAppInitInstanceResult`
+    - `RECOILAPP_INITINSTANCE_EXIT = 0`
+    - `RECOILAPP_INITINSTANCE_CONTINUE = 1`
+- `RecoilApp::InitInstance(struct RecoilApp* self)` now explicitly returns that enum.
+- The current proving split is:
+  - `RecoilApp_ActivateExistingInstanceIfFound() == RECOILAPP_SINGLEINSTANCE_OLDER_ACTIVATED` maps to `RECOILAPP_INITINSTANCE_EXIT`
+  - `AfxRegisterClass(&mainWindow) == 0` also maps to `RECOILAPP_INITINSTANCE_EXIT`
+  - after window-class registration, main-window creation, messages/options/archive bootstrap, and the initial video bootstrap the helper returns `RECOILAPP_INITINSTANCE_CONTINUE`
+- One bounded holdback remains on this strip:
+  - the direct override and `RecoilApp_Vtbl.InitInstance` slot now use `RecoilAppInitInstanceResult`
+  - BN 5.2 may still print raw `return eax` / `return 1` in HLIL, so the authoritative contract lives in the direct function prototype plus the declaration/address comments
+
+## RecoilApp main-window creation notes
+
+- The adjacent non-WOL `RecoilApp` main-window creation strip is now bounded more cleanly.
+- The direct factory/helper split on that lane is now explicit:
+  - `struct CZRecoilFrame* __thiscall RecoilApp_CreateMainWnd(struct RecoilApp* self)`
+  - `void __thiscall RecoilApp_InitMainWindow(struct RecoilApp* self)`
+- The current proving split is:
+  - `RecoilApp_CreateMainWnd()` is the concrete frame factory behind `RecoilApp_Vtbl +0xb8 = CreateMainWnd(self)`
+  - it performs `operator new(0x230)` for `struct CZRecoilFrame`
+  - it returns `0` on allocation failure
+  - otherwise it returns the constructed `CZRecoilFrame*` from `CZRecoilFrame_Ctor()`
+  - its local VC6 EH row is now explicit too:
+    - `RecoilApp_CreateMainWnd_EhFrameHandlerThunk()`
+    - `g_RecoilApp_CreateMainWnd_EhFuncInfo`
+    - `g_RecoilApp_CreateMainWnd_EhUnwindMap`
+    - `RecoilApp_CreateMainWnd_EhCleanup_DeleteFrameAlloc()`
+    - the cleanup path deletes the pending frame allocation through `MsvcEh_DeleteHeapObject()`
+  - `RecoilApp_InitMainWindow()` is side-effect-only on the reachable startup path:
+    - `CWinApp::Enable3dControls(self)`
+    - `self->m_pMainWnd = self->vftable->CreateMainWnd(self)`
+    - `RecoilApp_GetMainWnd(self)->m_app = self`
+    - `CWnd::ShowWindow(self->m_pMainWnd, 5)`
+    - `UpdateWindow(self->m_pMainWnd->m_hWnd)`
+- One bounded holdback remains on this strip:
+  - the old `mov eax, 1` tail in `RecoilApp_InitMainWindow()` is dead startup residue and the direct helper is now `void`
+  - the shared app-vtable `+0xb8` callsite still stays comment-backed because BN 5.2 may keep printing a bogus receiver temp there after the imported MFC-tail replay
+
+## CZRecoilFrame destructor notes
+
+- The adjacent non-WOL `CZRecoilFrame` destructor strip is now bounded more cleanly.
+- The direct shell-frame destructor pair is now explicit:
+  - `void __thiscall CZRecoilFrame_Dtor(struct CZRecoilFrame* self)`
+  - `void __thiscall CZRecoilFrame_ScalarDeletingDtor(struct CZRecoilFrame* self, int32_t deleteFlag)`
+- The current proving split is:
+  - `CZRecoilFrame_Dtor()` is the direct main shell-frame teardown body
+  - it restores `self->vftable = &g_CZRecoilFrame_VTable`
+  - it replays the embedded `CMenu` owner at `+0x1d0`
+  - it calls `CMenu::DestroyMenu(&self->m_mainMenu_1D0)`
+  - it restores the menu object to its `CObject` base vtable
+  - it then chains into `CZGameFrame_Dtor(self)`
+  - `CZRecoilFrame_ScalarDeletingDtor()` now matches the standard VC6 delete-wrapper ABI:
+    - call `CZRecoilFrame_Dtor(self)`
+    - if `(deleteFlag & 1) != 0`, `operator delete(self)`
+    - the stale terminal `mov eax, self` is bounded as ABI residue only and is not a meaningful return
+  - the owning shell-frame vtable slot is now pinned as `g_CZRecoilFrame_VTable +0x04 = CZRecoilFrame_ScalarDeletingDtor`
+- Bounded holdbacks on this strip:
+  - the generic `CFrameWndVTable` slot typing still stays broad to avoid imported-MFC propagation churn
+  - the nearby `RecoilApp_SetWindowMenuBarVisibility()` helper is intentionally parked because its current code xrefs are WestwoodOnline-only
+
+## RecoilApp destructor-wrapper notes
+
+- The adjacent non-WOL `RecoilApp` destructor-wrapper strip is now bounded more cleanly.
+- The direct VC6 delete-wrapper pair is now explicitly side-effect-only on the reachable path:
+  - `void __thiscall RecoilApp_ScalarDeletingDtor(struct RecoilApp* self, int32_t flags)`
+  - `void __thiscall RecoilApp_MfcOleModule_ScalarDeletingDtor(struct RecoilApp* self, int32_t flags)`
+- The two app-vtable families now agree with that same direct wrapper ABI:
+  - `RecoilApp_Vtbl.ScalarDeletingDtor = void (*)(struct RecoilApp* self, int32_t flags)`
+  - `RecoilApp_MfcOleModule_Vtbl.ScalarDeletingDtor = void (*)(struct RecoilApp* self, int32_t flags)`
+- The current proving split is:
+  - both wrappers only have data xrefs from their owning vtable slots
+  - the owning slot entries are now explicitly pinned as:
+    - `g_RecoilApp_Vtbl +0x04`
+    - `g_RecoilApp_MfcOleModule_Vtbl +0x04`
+  - assembly on both stubs follows the standard VC6 scalar-deleting-dtor shape:
+    - call the inner destructor body
+    - free `self` when `(flags & 1) != 0`
+    - fall through a stale `mov eax, self`
+  - no reachable caller consumes that terminal `self` return, so the direct wrappers are now correctly treated as `void`
+  - replaying the slot types to the same `void` ABI stayed stable in:
+    - `RecoilApp_Dtor()`
+    - `RecoilApp_MfcOleModule_Dtor()`
+    - `RecoilApp_RunMainLoop()`
+  - `RecoilApp_Dtor()` is now comment-pinned as the direct app-side teardown body that destroys the embedded FMV/state objects, restores their base `RecoilState` vtables, then falls through `RecoilApp_MfcOleModule_Dtor(self)`
+- One bounded holdback remains on this strip:
+  - `RecoilApp_StateQueueBlock_InitFromCursorAndChunkBaseSlot()` no longer stays in the "likely void" bucket
+  - the accepted model is now the pointer-returning helper `struct RecoilApp_StateQueueBlock* RecoilApp_StateQueueBlock_InitFromCursorAndChunkBaseSlot(...)`, because BN 5.2 kept contradictory caller-side pseudo-returns when the `void` replay was attempted
+  - that pointer-returning form is therefore intentional for now, not just a deferred cleanup
+
+## RecoilState delete-wrapper notes
+
+- The adjacent non-WOL shared state destructor-vtable strip is now bounded more cleanly.
+- The two shared state-vtable header types now agree with the real VC6 delete-wrapper ABI:
+  - `RecoilApp_IState_Vtbl.ScalarDeletingDtor = struct RecoilApp_IState* (*)(struct RecoilApp_IState* self, int32_t flags)`
+  - `RecoilStateBase_Vtbl.ScalarDeletingDtor = struct RecoilApp_IState* (*)(struct RecoilApp_IState* self, int32_t flags)`
+- The current direct non-WOL delete-wrapper set on this lane returns `self` in `eax` after optional delete:
+  - `struct RecoilApp_IState* __thiscall RecoilStateBase_ScalarDeletingDtor(struct RecoilApp_IState* self, int32_t flags)`
+  - `struct RecoilApp_IState* __thiscall RecoilApp_IState_ScalarDeletingDtor(struct RecoilApp_IState* self, int32_t flags)`
+  - `struct RecoilApp_IntroFmvState* __thiscall RecoilApp_IntroFmvState_ScalarDeletingDtor(struct RecoilApp_IntroFmvState* self, int32_t flags)`
+  - `struct RecoilApp_AttractFmvState* __thiscall RecoilApp_AttractFmvState_ScalarDeletingDtor(struct RecoilApp_AttractFmvState* self, int32_t flags)`
+  - `struct RecoilApp_MissionFmvState* __thiscall RecoilApp_MissionFmvState_ScalarDeletingDtor(struct RecoilApp_MissionFmvState* self, int32_t flags)`
+- The current proving split is:
+  - all five wrappers are data-owned only through their first-slot vtable entries
+  - the shared/default ownership is pinned at `g_RecoilStateBaseDefault_Vtbl +0x00`
+  - the shared app-state ownership is pinned at:
+    - `g_RecoilApp_MpExitDialogState_Vtbl +0x00`
+    - `g_RecoilApp_LeaveNetworkState_Vtbl +0x00`
+    - `g_RecoilApp_MainMenuPrepState_Vtbl +0x00`
+    - `g_RecoilApp_PlayState_Vtbl +0x00`
+  - the concrete FMV-state ownership is pinned at:
+    - `g_RecoilApp_IntroFmvState_Vtbl +0x00`
+    - `g_RecoilApp_AttractFmvState_Vtbl +0x00`
+    - `g_RecoilApp_MissionFmvState_Vtbl +0x00`
+- One bounded holdback remains on this strip:
+  - I only tightened the shared/default and concrete non-WOL app-state/FMV-state wrappers on this pass
+  - the broader UI/dialog scalar-deleting-dtor population is still parked unless another adjacent reachable lane actually needs the same cleanup
+
+## RecoilApp wait-message notes
+
+- The adjacent non-WOL `RecoilApp` app-activation / `WaitMessage` lane is now bounded more cleanly.
+- A new shared runtime enum is now explicit there:
+  - `enum RecoilAppWaitMessageMode`
+    - `RECOILAPP_WAITMESSAGE_ALLOWED = 0`
+    - `RECOILAPP_WAITMESSAGE_SKIPPED = 1`
+- `RecoilApp.m_skipWaitMessage` is now typed as that enum.
+- The current proving split is:
+  - `RecoilApp_BaseCtorAndInitRuntime()` initializes `m_skipWaitMessage = RECOILAPP_WAITMESSAGE_ALLOWED`
+  - `RecoilApp_StartEngineAndQueueStartupState()` forces `m_skipWaitMessage = RECOILAPP_WAITMESSAGE_SKIPPED` before queueing the first active state
+  - the direct non-WOL app hooks are now explicitly side-effect-only:
+    - `void __thiscall RecoilApp_OnAppActivate(struct RecoilApp* self)`
+    - `void __thiscall RecoilApp_OnAppDeactivate(struct RecoilApp* self)`
+  - `RecoilApp_OnAppActivate()` stores `RECOILAPP_WAITMESSAGE_SKIPPED`
+  - `RecoilApp_OnAppDeactivate()` stores `RECOILAPP_WAITMESSAGE_ALLOWED`
+  - `CZRecoilFrame_OnActivate()` is the shell owner of that policy:
+    - `WA_INACTIVE` routes to `RecoilApp_OnAppDeactivate()`
+    - any active state routes to `RecoilApp_OnAppActivate()`
+  - `RecoilApp_RunMainLoop()` also uses `self->vftable->OnAppDeactivate()` only for side effects on the quit path before `PostQuitMessage(0)`
+  - `RecoilApp_RunMainLoop()` now explicitly blocks on `WaitMessage()` only while `m_skipWaitMessage == RECOILAPP_WAITMESSAGE_ALLOWED`
+- The field name intentionally stays `m_skipWaitMessage`.
+  - The xrefs cleanly prove the `WaitMessage` policy
+  - they do not yet justify a broader rename to app-activity or pump-state semantics
+- One bounded holdback remains on this strip:
+  - assembly still loads the previous wait-policy enum into `EAX` in both helpers before the store
+  - no reachable non-WOL caller consumes that return
+  - the shared `RecoilApp_Vtbl` / `RecoilApp_MfcOleModule_Vtbl` slots intentionally stay `int32_t` because harder slot typing still destabilizes nearby app-vtable decomp in BN 5.2
+
+## RecoilApp pretranslate notes
+
+- The adjacent non-WOL startup message-filter lane is now bounded more cleanly.
+- A new direct-function enum is now explicit there:
+  - `enum RecoilAppPreTranslateResult`
+    - `RECOILAPP_PRETRANSLATE_NOT_HANDLED = 0`
+    - `RECOILAPP_PRETRANSLATE_HANDLED = 1`
+- `RecoilApp_PreTranslateMessage(struct RecoilApp* self, struct tagMSG* pMsg)` now explicitly returns that enum.
+- The current proving split is:
+  - the body only swallows `WM_KEYDOWN` / `WM_KEYUP`
+  - it does that only while `zVid_GetAccelerationOption() != ZVID_HW_MODE_SOFTWARE`
+  - those swallowed keyboard messages return `RECOILAPP_PRETRANSLATE_HANDLED`
+  - all other messages and software-mode startup return `RECOILAPP_PRETRANSLATE_NOT_HANDLED`
+  - this lane belongs to the acceleration/software-vs-hardware option-bank model, not the separate `ZOPT_HW_API` renderer-backend option model
+- One bounded holdback remains on this strip:
+  - the direct override now uses `RecoilAppPreTranslateResult`
+  - the shared app-vtable slot intentionally stays `int32_t`
+  - this function only has vtable data refs and BN 5.2 still risks imported-MFC propagation churn if the shared slot is forced harder
+
+## RecoilApp dispatch-status notes
+
+- The adjacent non-WOL `RecoilApp` handled-status / MM_MCINOTIFY dispatch lane is now bounded more cleanly.
+- A new shared runtime enum is now explicit there:
+  - `enum RecoilAppDispatchStatus`
+    - `RECOILAPP_DISPATCH_NOT_HANDLED = 0`
+    - `RECOILAPP_DISPATCH_HANDLED = 1`
+- The direct bridge/stub functions on this strip now use that enum cleanly:
+  - `RecoilApp_State_ReturnHandled()` is the shared default `RecoilApp_IState::OnIdleOrDispatch` / overlay-owner stub and returns `RECOILAPP_DISPATCH_HANDLED`
+  - `RecoilApp_FmvState_OnIdleOrDispatch()` is the shared Intro/Attract FMV dispatch stub and also returns `RECOILAPP_DISPATCH_HANDLED`
+  - `zSndCd_OnMciNotify(WPARAM wParam, LPARAM lParam)` is the side-effect-only fastcall CD replay helper on this lane
+    - it only restarts the current CD track when the last mode was `ZSND_CD_PLAYMODE_CURRENT_TRACK_LOOP`, the active MCI device id matches `lParam`, and `wParam == MCI_NOTIFY_SUCCESSFUL`
+  - `RecoilApp_OnIdleOrDispatch()` now explicitly returns `RecoilAppDispatchStatus`
+    - forwards the same `WPARAM/LPARAM` pair into `zSndCd_OnMciNotify()`
+    - returns `RECOILAPP_DISPATCH_NOT_HANDLED` when no current state is active
+    - otherwise returns the handled-status from `currentState->OnIdleOrDispatch(currentState, wParam, lParam)`
+  - `CZGameFrame_OnMciNotify(WPARAM wParam, LPARAM lParam)` returns the same handled-status as `RecoilApp_OnIdleOrDispatch()`
+- One bounded holdback remains on this strip:
+  - the shared state/app vtable slots intentionally stay `int32_t`
+  - BN 5.2 still loses receiver ordering if `RecoilAppDispatchStatus` is forced through those slot types
+  - the authoritative call forms are therefore preserved in comments on the bad bridge/state-vtable sites instead of another unstable vtable replay
+
+## RecoilApp startup-result notes
+
+- The adjacent non-WOL `RecoilApp` startup-result lane is now bounded more cleanly.
+- A new direct-function result enum is now explicit there:
+  - `enum RecoilAppStartEngineResult`
+    - `RECOILAPP_STARTENGINE_FAILED = 0`
+    - `RECOILAPP_STARTENGINE_OK = 1`
+- `RecoilApp_StartEngine(struct RecoilApp* self, HWND hWnd)` now explicitly returns that enum.
+- The current proving split is:
+  - `RecoilApp_StartEngine()` returns `RECOILAPP_STARTENGINE_FAILED` only when `RecoilApp_InitializeDisplay(hWnd)` fails and the localized error box is shown
+  - on the reachable retail success path it finishes input bootstrap plus HUD layout initialization and returns `RECOILAPP_STARTENGINE_OK`
+  - `RecoilApp_StartEngineAndQueueStartupState()` now has the direct caller-side result model pinned:
+    - `RECOILAPP_STARTENGINE_FAILED` -> `ShutdownEngine(self)` then `ExitInstance(self)`
+    - `RECOILAPP_STARTENGINE_OK` -> force `m_skipWaitMessage = RECOILAPP_WAITMESSAGE_SKIPPED`, reset `m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_ON_EXIT`, then queue `m_startupState`
+- One bounded holdback remains on this strip:
+  - the direct `RecoilApp_StartEngine()` function now uses `RecoilAppStartEngineResult`
+  - the shared app-vtable slot at `+0xAC` intentionally stays `int32_t`
+  - BN 5.2 still loses receiver ordering on the startup bridge and may invent a bogus extra `HWND` temp if that slot is forced harder
+
+## RecoilApp mission-shutdown notes
+
+- The adjacent non-WOL play-state mission-teardown strip is now bounded more cleanly.
+- A new app-side policy enum is now explicit there:
+  - `enum RecoilAppMissionShutdownMode`
+    - `RECOILAPP_MISSION_SHUTDOWN_ON_EXIT = 0`
+    - `RECOILAPP_MISSION_SHUTDOWN_SKIP_ON_EXIT = 1`
+- `struct RecoilApp` now uses `m_missionShutdownMode` at `+0xd4`.
+- The current proving split is:
+  - `RecoilApp_StartEngineAndQueueStartupState()` resets `m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_ON_EXIT`
+  - `HudUiZrdWidget_OnActivateQueueExitCurrentAndSwitchToLeaveNetwork()` sets `RECOILAPP_MISSION_SHUTDOWN_SKIP_ON_EXIT` before switching to `g_RecoilApp.m_leaveNetworkState`
+  - `HudUiCreditsPanel_UpdateFadeAndExit()` sets the same skip mode on the quit-after-credits leave-network path
+  - `HudUiZrdWidget_OnActivateQueueDualExitAndSwitchToLeaveNetwork()` also sets the same skip mode on the dual-exit leave-network path
+  - `RecoilApp_PlayState_OnDeactivate()` only runs `HudSensorTracker_ShutdownMissionGameplaySystems(&g_Hud_SensorTracker)` while the mode is `RECOILAPP_MISSION_SHUTDOWN_ON_EXIT`
+- One bounded holdback remains on this strip:
+  - BN 5.2 still leaves a few stale `m_skipMissionShutdownOnExit` field renderings in HLIL on the credits/dual-exit writers and the play-state read site
+  - the authoritative record is the accepted `RecoilApp` type, the `RecoilAppMissionShutdownMode` enum, and the address comments at the write/read anchors
+
+## RecoilApp final-credits latch notes
+
+- The adjacent non-WOL final-mission credits latch strip is now bounded more cleanly.
+- A new app-side global enum is now explicit there:
+  - `enum RecoilAppQuitAfterCreditsMode`
+    - `RECOILAPP_QUIT_AFTER_CREDITS_DISABLED = 0`
+    - `RECOILAPP_QUIT_AFTER_CREDITS_ENABLED = 1`
+- `g_RecoilApp_QuitAfterCredits` at `0x4e5dec` is now typed as that enum.
+- The current proving split is:
+  - the sole current non-WOL writer is `HudSensorTracker_SaveAndQueueMissionState()`, which sets `RECOILAPP_QUIT_AFTER_CREDITS_ENABLED` only when `finalMissionFlag_247c != 0`
+  - `HudUiCreditsPanel_Ctor()` uses the latch to bind `BACK` vs `QUIT`
+  - `HudUiCreditsPanel_UpdateFadeAndExit()` uses the same latch to choose exit-current-state-only vs leave-network/quit
+  - `RecoilApp_PlayState_OnUpdateShouldQuit()` uses the same latch to choose frontend credits flow vs the in-game main-menu route
+  - `RecoilApp_PlayState_TickAndRenderFrame()` uses the same latch to early-out the gameplay frame path while the final-credits flow is armed
+- One bounded holdback remains on this strip:
+  - there is still no explicit non-WOL reset xref
+  - the disabled state is currently only proved by zero-initialized storage plus the read-side `== DISABLED` checks
+  - because of that, the existing global name is kept and only the 0/1 mode itself was lifted into an enum
+
+## RecoilApp play-state render-present notes
+
+- The adjacent non-WOL play-state render-present strip is now bounded more cleanly.
+- A new render-tick argument enum is now explicit there:
+  - `enum zVideoSwToPrimaryBltMode`
+    - `ZVIDEO_SW_TO_PRIMARY_BLT_DISABLED = 0`
+    - `ZVIDEO_SW_TO_PRIMARY_BLT_ENABLED = 1`
+- `RecoilApp_PlayState_TickAndRenderFrame(struct RecoilApp_PlayState* self, enum zVideoSwToPrimaryBltMode doBltSwToPrimary)` now uses that enum directly.
+- The current proving split is:
+  - `RecoilApp_PlayState_OnTryBecomeCurrent()` calls `RecoilApp_PlayState_TickAndRenderFrame(self, ZVIDEO_SW_TO_PRIMARY_BLT_DISABLED)`
+  - `RecoilApp_PlayState_OnUpdateShouldQuit()` calls `RecoilApp_PlayState_TickAndRenderFrame(self, ZVIDEO_SW_TO_PRIMARY_BLT_DISABLED)` on the timed-transition branch
+  - `RecoilApp_PlayState_OnUpdateShouldQuit()` calls `RecoilApp_PlayState_TickAndRenderFrame(self, ZVIDEO_SW_TO_PRIMARY_BLT_ENABLED)` on the credits/front-end branch
+  - inside `RecoilApp_PlayState_TickAndRenderFrame()`, that same enum now gates both the SW-to-primary blit path and the final `zVideo_AdjustSurfacesIfEnabled(...)` restore path on the reachable non-WOL lane
+- One bounded holdback remains on this strip:
+  - BN 5.2 still lowers some internal checks in `RecoilApp_PlayState_TickAndRenderFrame()` to raw compare residue instead of consistently printing the enum symbol on every leg
+  - the authoritative record is therefore the accepted enum-backed prototype plus the address comments on the three live callers and the two internal present gates
+
+## RecoilApp play-state render-result notes
+
+- The adjacent non-WOL play-state render-tick result lane is now bounded more cleanly.
+- A new direct-function result enum is now explicit there:
+  - `enum RecoilPlayStateRenderTickResult`
+    - `RECOIL_PLAYSTATE_RENDER_CONTINUE = 0`
+    - `RECOIL_PLAYSTATE_RENDER_REQUEST_EXIT = 1`
+- `RecoilApp_PlayState_TickAndRenderFrame(struct RecoilApp_PlayState* self, enum zVideoSwToPrimaryBltMode doBltSwToPrimary)` now returns that enum.
+- The current proving split is:
+  - final-credits latch armed returns `RECOIL_PLAYSTATE_RENDER_REQUEST_EXIT`
+  - the software-render keyboard exit gate returns `RECOIL_PLAYSTATE_RENDER_REQUEST_EXIT`
+  - the primary/replicate keyboard exit gate returns `RECOIL_PLAYSTATE_RENDER_REQUEST_EXIT`
+  - the fallthrough path returns `RECOIL_PLAYSTATE_RENDER_CONTINUE`
+  - `RecoilApp_PlayState_OnUpdateShouldQuit()` now cleanly treats `!= RECOIL_PLAYSTATE_RENDER_CONTINUE` as the play-state exit-request branch
+  - on that branch, networked games show the net-exit panel and offline games queue `RECOIL_MAINMENU_ROUTE_INGAME`
+  - `RecoilApp_PlayState_OnTryBecomeCurrent()` still ignores the result on the one-shot warmup frame
+- One bounded holdback remains on this strip:
+  - BN 5.2 still prints raw `return 1/0` inside `RecoilApp_PlayState_TickAndRenderFrame()` instead of always lowering the enum symbols at the direct return sites
+  - the authoritative record is therefore the accepted enum-backed prototype plus the function/address comments on the three return sites and the caller-side exit-request branch
+
+## RecoilApp display-bootstrap notes
+
+- The adjacent non-WOL startup display-bootstrap helper is now bounded more cleanly.
+- A new direct-function result enum is now explicit there:
+  - `enum RecoilAppInitDisplayResult`
+    - `RECOILAPP_INITDISPLAY_FAILED = 0`
+    - `RECOILAPP_INITDISPLAY_OK = 1`
+- The key correction on this strip is that `RecoilApp_InitializeDisplay()` is not a `RecoilApp*` method on the reachable startup path.
+  - caller assembly passes the main window handle in `ECX`
+  - the accepted prototype is now `enum RecoilAppInitDisplayResult __fastcall RecoilApp_InitializeDisplay(HWND hWnd)`
+- The current proving split is:
+  - `RecoilApp_InitializeDisplay()` returns `RECOILAPP_INITDISPLAY_FAILED` when `zVideo_init_InitVideoSystem(hWnd, ...)` fails and the startup abort banner is printed
+  - otherwise it completes the primary-surface cache / frame-scratch / clear-adjust warmup and returns `RECOILAPP_INITDISPLAY_OK`
+  - the helper body only uses the window-handle value for app-side display bootstrap work
+  - its sole current caller is still `RecoilApp_StartEngine()`, which gates startup progress on that result
+- One bounded holdback remains on this strip:
+  - BN 5.2 still prints the enum exits as raw `0/1` in HLIL
+  - the authoritative result names therefore live in the accepted prototype plus the exit comments
+
+## RecoilApp single-instance gate notes
+
+- The adjacent non-WOL startup single-instance gate is now bounded more cleanly.
+- A new direct-function result enum is now explicit there:
+  - `enum RecoilAppSingleInstanceGateResult`
+    - `RECOILAPP_SINGLEINSTANCE_OLDER_ACTIVATED = 0`
+    - `RECOILAPP_SINGLEINSTANCE_CONTINUE_STARTUP = 1`
+- `RecoilApp_ActivateExistingInstanceIfFound()` now explicitly returns that enum.
+- The current proving split is:
+  - the helper looks up the current top-level Recoil window by `g_RecoilApp_WndClassNamePtr`
+  - when an older window is found it restores it if iconic, activates the last popup, and returns `RECOILAPP_SINGLEINSTANCE_OLDER_ACTIVATED`
+  - when no older Recoil window exists it returns `RECOILAPP_SINGLEINSTANCE_CONTINUE_STARTUP`
+  - its sole current caller is `RecoilApp::InitInstance()`, which now uses the gate directly before window-class registration and startup bootstrap
+- One bounded holdback remains on this strip:
+  - `RecoilApp::InitInstance()` now carries `RecoilAppInitInstanceResult`, but BN 5.2 may still print the propagated `AfxRegisterClass(...)` failure and final startup success as raw return values
+  - only the local single-instance helper takes the narrower single-instance startup enum
+
+## RecoilApp queue-helper notes
+
+- The adjacent non-WOL `RecoilApp` queue-helper strip is now bounded more cleanly.
+- The direct current-state helper on that lane is now explicit:
+  - `struct RecoilApp_IState* __thiscall RecoilApp_GetCurrentState(struct RecoilApp* self)`
+- The three enqueue helpers are now explicitly side-effect-only on the reachable path:
+  - `RecoilApp_QueueSwitchCurrentState(struct RecoilApp* self, struct RecoilApp_IState* state, int32_t stateParam)`
+  - `RecoilApp_QueuePushState(struct RecoilApp* self, struct RecoilApp_IState* state, int32_t suspendParam)`
+  - `RecoilApp_QueueExitCurrentState(struct RecoilApp* self, int32_t resumeParam)`
+- The current proving split is:
+  - all current callers ignore the old previous-state return from the three queue helpers
+  - `RecoilApp_QueueSwitchCurrentState()` still performs immediate queue-time `oldState->OnExit()` plus `newState->OnEnter()`
+  - `RecoilApp_RunMainLoop()` later performs the actual switch via `OnDeactivate(old)` plus `OnTryBecomeCurrent(new)`
+  - `RecoilApp_QueuePushState()` still performs immediate queue-time `newState->OnEnter()`
+  - `RecoilApp_RunMainLoop()` later delivers `suspendParam` to the previous top state via `OnSuspend(suspendParam)` before pushing
+  - `RecoilApp_QueueExitCurrentState()` still performs immediate queue-time `oldState->OnExit()`
+  - `RecoilApp_RunMainLoop()` later performs the actual pop via `OnDeactivate(old)` plus `OnResume(resumeParam)` on the newly exposed top state
+- Representative callers now remain clean with that side-effect model:
+  - `RecoilApp_StartEngineAndQueueStartupState()`
+  - `RecoilStateMainMenuTransition_QueueEnter()`
+  - `HudUiLoadGameDialog_ApplySelectedSaveAndTransition()`
+  - `RecoilApp_MissionFmvState_OnUpdateShouldQuit()`
+  - `HudUiCallback_ExitState()`
+- One bounded holdback remains on this strip:
+  - BN 5.2 still leaves some tail-jump wrappers such as `HudUiCallback_ExitState()` rendered as `return RecoilApp_QueueExitCurrentState(...)`
+  - the authoritative contract is now the queue-helper prototype set plus the callsite comments, not that residual HLIL text
+
+## RecoilApp direct state-result notes
+
+- The adjacent non-WOL direct state-result lane is now bounded more cleanly.
+- Two new direct-function enums are now explicit there:
+  - `enum RecoilAppStateBecomeCurrentResult`
+    - `RECOILAPP_STATE_BECOMECURRENT_REJECTED = 0`
+    - `RECOILAPP_STATE_BECOMECURRENT_OK = 1`
+  - `enum RecoilAppStateUpdateResult`
+    - `RECOILAPP_STATE_UPDATE_CONTINUE = 0`
+    - `RECOILAPP_STATE_UPDATE_REQUEST_QUIT = 1`
+- The current proving split is:
+  - the reachable non-WOL `OnTryBecomeCurrent` bodies now use `RecoilAppStateBecomeCurrentResult` directly
+  - the reachable non-WOL `OnUpdateShouldQuit` bodies now use `RecoilAppStateUpdateResult` directly
+  - `RecoilApp_RunMainLoop()` still consumes those lanes through the shared `RecoilApp_IState_Vtbl` slots
+  - the push/switch paths only install the queued state when `OnTryBecomeCurrent() != 0`, now pinned as `RECOILAPP_STATE_BECOMECURRENT_OK`
+  - the steady-state quit gate only exits the app loop when `OnUpdateShouldQuit() != 0`, now pinned as `RECOILAPP_STATE_UPDATE_REQUEST_QUIT`
+- Representative direct users now covered on the non-WOL path include:
+  - `RecoilApp_IntroFmvState_OnTryBecomeCurrent()`
+  - `RecoilApp_PlayState_OnTryBecomeCurrent()`
+  - `RecoilApp_LeaveNetworkState_OnTryBecomeCurrent()`
+  - `RecoilStateMainMenuTransition_OnTryBecomeCurrent()`
+  - `RecoilApp_AttractFmvState_OnUpdateShouldQuit()`
+  - `RecoilApp_PlayState_OnUpdateShouldQuit()`
+  - `RecoilStateDialogHost_OnUpdateShouldQuit()`
+- One bounded holdback remains on this strip:
+  - the shared `RecoilApp_IState_Vtbl` slots intentionally stay `int32_t`
+  - BN 5.2 still loses receiver ordering if these enums are forced through the shared slot types
+  - the authoritative contract therefore lives in the direct function prototypes plus the `RecoilApp_RunMainLoop()` gate comments
+
+## Half-res presentation / HUD invalidate notes
+
+- The adjacent non-WOL half-res presentation / HUD invalidate lane is now bounded more cleanly.
+- A new shared runtime enum is now explicit there:
+  - `enum zVideoHalfResAdjustMode`
+    - `ZVIDEO_HALFRES_ADJUST_DISABLED = 0`
+    - `ZVIDEO_HALFRES_ADJUST_ENABLED = 1`
+- `g_zVideo_HalfResAdjustMode` is now materialized as the live half-res presentation-mode global.
+- `zVideo_dd_SetHalfResAdjustMode(enum zVideoHalfResAdjustMode mode)` is now the stable shared setter on that strip:
+  - returns the previous half-res mode
+  - returns `ZVIDEO_HALFRES_ADJUST_DISABLED` when `g_zVideo_UseHalfResBackbuffer` blocks the change
+  - when switching to `ZVIDEO_HALFRES_ADJUST_DISABLED` on the software renderer path, forces `g_zVideo_pfnBltPrimaryToSwRect(nullptr, nullptr)`
+- `HudUi_SetInvalidateMode(enum zVideoHalfResAdjustMode mode)` now explicitly mirrors that same 0/1 mode into `g_HudUi_InvalidateMask`:
+  - disabled -> `4`
+  - enabled -> `12`
+- The shared save/restore callers on this strip now render through enum-backed owner fields and locals:
+  - `RecoilStateMainMenuTransition.m_savedHalfResAdjustMode`
+  - `RecoilStateSaveLoadTransition.m_savedHalfResAdjustMode`
+  - `RecoilStateCheatCode.prevHalfResAdjustMode_08`
+  - the local save/restore in `HudUiMessageBoxDialog_RunModal()`
+  - the local save/restore in `Briefing_ThreadMain()`
+- The read-side policy is now explicit too:
+  - `RecoilApp_PlayState_OnTryBecomeCurrent()` forces `ZVIDEO_HALFRES_ADJUST_ENABLED` after mission/HUD bring-up
+  - `RecoilApp_PlayState_OnUpdateShouldQuit()` forces `ZVIDEO_HALFRES_ADJUST_DISABLED` on the credits/front-end blur path
+  - `HudLayoutHW_OnActivated()` now clearly maps the replicate split into disabled vs enabled before recomputing the HUD invalidate mask
+  - `zVideo_HandleSoftwareModeHotkey()` now clearly restores `ZVIDEO_HALFRES_ADJUST_ENABLED` on the 640x400 / 640x480 software-mode path and `ZVIDEO_HALFRES_ADJUST_DISABLED` on the 320x* half-res modes
+- One bounded holdback remains on this strip:
+  - `g_HudUi_InvalidateMask` still stays a raw `uint32_t`
+  - only the derived `4` / `12` mask mapping is proved on the current reachable lane
+
+## Startup subsystem-init banner notes
+
+- The adjacent non-WOL startup subsystem-init row under `RecoilApp_EngineInit()` is now bounded more cleanly.
+- The reachable retail startup helpers on that strip are now bounded:
+  - `gModInit()`
+  - `zEffect::Init()` (legacy banner text: `zEffInit`)
+  - `zEffect_Anim_Init()`
+  - `zRndr::InitGlobals()` (legacy banner text: `zRndrInit`)
+  - `zWepInit()` returns constant `0`, which is the `PASSED` path for that banner slot
+  - `zImgInit()`
+- `RecoilApp_EngineInit()` still preserves the legacy `PASSED` / `FAILED` banner prints around `gModInit`, `zEffInit`, `zRndrInit`, `zWepInit`, and `zImgInit`, but those zero/nonzero checks are now bounded as dead residue on the reachable retail path and always flow to `PASSED`.
+- The only still-live status-bearing startup checks on that same banner strip are:
+  - `zSnd_PreInitializeRuntimeState(hwnd)` (legacy banner text: `zSndInit`)
+  - `zInput::Init(hwnd, hinst)` (legacy banner text: `zInInit`)
+- `zWepInit()` registers the `Weapons` ZBD section once through `zWeapon::OnWeaponsSectionPreLoad` / `zWeapon::OnWeaponsSectionDataReady`; `g_OptCatalog_FallbackImpactProbeEnabled` gates the fallback impact-probe path used after direct impact handling.
+- The current reset/bootstrap split is now explicit:
+  - `zEffect::Init()` is the effect-runtime reset wrapper over `zEffect_Anim_Init()`
+  - `zEffect_Reset()` also ignores the old `zEffect::Init()` zero return and uses it only for side-effect-only runtime/anim reinit
+- The declaration-comment source split now used for this lane is:
+  - `GameZRecoil/zModel/gmod_init.c`
+  - `GameZRecoil/zEffect/zeff_init.c`
+  - `D:/Proj/GameZRecoil/zEffect/zeff_anim_init.c`
+  - `GameZRecoil/zRender/zrndr_draw.c`
+  - `GameZRecoil/zWeapon/zwep_init.c`
+  - `GameZRecoil/zImage/zimg_texture.cpp`
+
+## HudSensorTracker mission bring-up notes
+
+- The adjacent mission gameplay-init tail strip is now bounded more cleanly on the non-WOL path.
+- The broader global `struct HudSensorTracker` is now reconciled with the already-proved overlay, mission-runtime, mission-gameplay, pending-player-save, and MissionData partial views.
+- The current global tracker anchors now include:
+  - `missionId_dc`
+  - `completedObjectiveCount_138`
+  - `worldNode_f0`
+  - `cameraNode_f4`
+  - `windowNode_f8`
+  - `displayNode_fc`
+  - `missionStat0_2454..missionStat3_2460`
+  - `weaponsFoundMask_2464`
+  - `pendingPlayerSave_2488`
+- `RecoilApp_PlayState_OnTryBecomeCurrent()` now cleanly opens with `g_Hud_SensorTracker.completedObjectiveCount_138`, and that global load feeds `Briefing_BuildObjectiveActionsGlobal(...)`.
+- `HudSensorTracker_Update()` and `HudSensorTracker_UpdateMapScaleLerp()` now render directly through the full tracker type instead of relying on the older map-overlay holdback.
+- `HudSensorTracker_InitMissionGameplaySystems()` is side-effect-only:
+  - the old return was a dead constant `1`
+  - both current callers `RecoilApp_PlayState_OnTryBecomeCurrent()` and `HudSensorTracker_ApplyMissionDataAndReload()` ignore it
+- A new local partial type, `HudSensorTrackerMissionGameplayView`, now carries the proved fields needed by the mission gameplay bring-up / reload band:
+  - `mapSndOn`
+  - `mapSndOff`
+  - `mapSndClick`
+  - `missionStat0_2454`
+  - `missionStat1_2458`
+  - `missionStat2_245c`
+  - `missionStat3_2460`
+  - `weaponsFoundMask_2464`
+  - `menuTransitionDelaySec_2480`
+  - `hasPendingPlayerSave_2484`
+  - `pendingPlayerSave_2488`
+- The embedded player-save slot is now bounded as a nested wrapper, `HudSensorTrackerPendingPlayerSave`:
+  - `saveData_000 = PlayerMissionSaveData`
+  - `savedNanitePanelLevel_140`
+  - `unknown_144`
+- The transient `HudSensorTracker_MissionData` section blob is now tighter on both save and restore:
+  - `missionId_00`
+  - `missionFlags_04`
+  - `completedObjectiveCount_08`
+  - `currentObjectiveIndex_0c`
+  - `firstIncompleteObjectiveIndex_10`
+  - `objectiveFlowState_14`
+  - `objectiveFlowDeadlineSec_18`
+  - `missionStat_1c..missionStat_28`
+  - `weaponsFound_2c`
+  - `objectiveImageRefs_30[10]`
+  - `difficultyMode_58`
+- A new local partial type, `HudSensorTrackerMissionDataWriteView`, now keeps the save-side exporter readable without widening the broader tracker type.
+- The current split on that strip is:
+  - `HudSensorTracker_LoadObjectivesFromPath(path)` is the tracker-owned objective-root loader for `objectives.zrd`:
+    - stores the loaded tree in `objectivesRootNode_120`
+    - seeds default `READ_TIME` / `REVIEW_DELAY` values
+    - populates per-slot objective images plus title/desc/summary text
+    - applies `FINAL_MISSION` when present
+    - the current callers `RecoilApp_PlayState_OnTryBecomeCurrent()` and `HudSensorTracker_ApplyMissionDataAndReload()` both ignore its 1/0 status return
+  - `HudSensorTracker_LoadObjectivesFromZrd(path)` is now explicitly the side-effect parser over `objectivesRootNode_120`:
+    - resolves `REVIEW_SOUND`
+    - resolves `OBJECTIVE_SOUND`
+    - resolves per-objective `READ_SOUND`
+    - resolves per-objective `ACTIVE` / `INACTIVE` world-node refs
+    - the sole current caller `HudSensorTracker_InitMissionGameplaySystems()` ignores the old constant `0` return
+  - `HudSensorTracker_UnloadObjectives()` is now the paired side-effect teardown for the loaded objective tree and per-slot briefing/image data
+  - `HudSensorTracker_ShutdownMissionGameplaySystems()` is now explicitly side-effect-only on the reachable path:
+    - `RecoilApp_PlayState_OnDeactivate()` and `HudSensorTracker_ApplyMissionDataAndReload()` both ignore the old constant `1` return
+    - the helper still owns the full mission teardown row, including `HudSensorTracker_UnloadObjectives()`
+  - `HudSensorTracker_LoadMissionCoreResources()` is now bounded as side-effect-only startup/reload work on the reachable retail path
+  - `HudSensorTracker_ApplyMissionDataAndReload()` already ignores its result
+  - `RecoilApp_PlayState_OnTryBecomeCurrent()` still carries a stale `TEST EAX,EAX` after the call at `0x42f006`, but assembly for the callee now proves the old unconditional `mov eax, 1` tail is dead retail residue rather than a meaningful success/failure contract
+  - `HudSensorTracker_SaveAndQueueMissionState()` calls `Player_BuildMissionSaveData(&self->pendingPlayerSave_2488)`, copies `playerState_004->nanitePanelLevel_0f38` into `pendingPlayerSave_2488.savedNanitePanelLevel_140`, sets `hasPendingPlayerSave_2484 = 1`, and queues the next mission
+  - `HudSensorTracker_InitMissionGameplaySystems()` seeds `menuTransitionDelaySec_2480 = -1.0f`, zeroes the five mission-stat dwords, restores `playerState_004->nanitePanelLevel_0f38` from `pendingPlayerSave_2488.savedNanitePanelLevel_140`, optionally applies `pendingPlayerSave_2488.saveData_000`, then finishes mission gameplay bring-up
+  - `HudSensorTracker_WriteMissionDataSection()` writes the transient MissionData blob from the active tracker state, exporting `objectiveSlot->objectiveImage_10` into `missionData.objectiveImageRefs_30[i]`
+  - `HudSensorTracker_ApplyMissionDataAndReload()` writes the same `missionStat0_2454..missionStat3_2460` / `weaponsFoundMask_2464` strip from saved MissionData, restores `objectiveFlowDeadlineSec_18` into `self->objectiveFlowDeadlineSec_134`, restores each `objectiveImageRefs_30[i]` back into `objectiveSlot->objectiveImage_10`, and sets `pendingPlayerSave_2488.unknown_144 = 1`
+  - `HudSensorTracker_LoadMissionMapAndSfx()` formats `.\\maps\\m%d.zmap`, calls `HudSensorTracker_LoadMapFromPath()`, then caches `mapSndOn`, `mapSndOff`, and `mapSndClick`
+- Two bounded holdbacks remain on this strip:
+  - the store at `self+0x4c` in `HudSensorTracker_InitMissionGameplaySystems()` still lacks a read-side semantic user
+  - `pendingPlayerSave_2488.unknown_144` in `HudSensorTracker_ApplyMissionDataAndReload()` is still only a write-side flag without a safe name
+
+## RecoilApp startup/vtable notes
+
+- The shared `RecoilApp` state-queue infrastructure is now bounded more tightly.
+- `RecoilApp_StateQueue_GrowAndCenterChunkBaseList(struct RecoilApp_StateQueue* self, int32_t newChunkSlotCapacity)` reallocates `m_chunkBaseList`, copies the active chunk-slot window from `m_readBlock.m_chunkBaseSlot` through `m_writeBlock.m_chunkBaseSlot + 1` into the middle of the new slot list, and returns the remapped read-slot base.
+- All three reachable queue writers:
+  - `RecoilApp_QueueSwitchCurrentState()`
+  - `RecoilApp_QueuePushState()`
+  - `RecoilApp_QueueExitCurrentState()`
+  first compute `activeChunkCount = (m_writeBlock.m_chunkBaseSlot - m_readBlock.m_chunkBaseSlot) + 1`, then share the same growth path and append the fresh chunk at `&returnedReadSlot[activeChunkCount]`, so the old `newCapacity >> 2` math on this strip is the real centering policy, not a decompiler bug.
+- `RecoilApp_StateQueueBlock_InitFromCursorAndChunkBaseSlot(struct RecoilApp_StateQueueBlock* self, struct RecoilApp_StateQueueItem** chunkCursor, struct RecoilApp_StateQueueItem*** chunkBaseSlot)` initializes a queue block from both the fresh chunk cursor and the owning chunk-base-list slot, computes `m_chunkEnd = m_chunkBegin + 0x400` queue-item pointers, and returns the initialized block pointer for immediate caller-side copy-out into `m_writeBlock`.
+- The pointer return on `RecoilApp_StateQueueBlock_InitFromCursorAndChunkBaseSlot()` is intentionally kept: BN 5.2 still produced contradictory caller-side pseudo-returns when that helper was replayed as `void`.
+- The temporary base-app table is now bounded more tightly:
+  - `g_RecoilApp_MfcOleModule_Vtbl +0x58 = InitMainWindow(self)`
+  - `g_RecoilApp_MfcOleModule_Vtbl +0xAC = EngineInit(self, hWnd)`
+- Both of those base-table slots are side-effect-only on the current reachable startup path.
+- The direct caller proof is now explicit:
+  - `RecoilApp::InitInstance()` is the only current direct caller of `RecoilApp_InitMainWindow()` and ignores the old constant return tail.
+  - `RecoilApp_StartEngine()` already proves `RecoilApp_EngineInit(self, hWnd)` is side-effect-only on the reachable startup path.
+- The base/full app-table tail split is also now explicit:
+  - `g_RecoilApp_MfcOleModule_Vtbl +0xB8 = _purecall`
+  - `g_RecoilApp_Vtbl +0xB8 = RecoilApp_CreateMainWnd(self)`
+- The inherited MFC app/thread tail is now explicit on both tables too:
+  - `+0x74 = ProcessWndProcException`
+  - `+0x78 = ProcessMessageFilter`
+  - `+0x7C = GetMainWnd`
+  - `+0x80 = Delete`
+  - `+0x84 = OpenDocumentFile`
+  - `+0x88 = AddToRecentFileList`
+  - `+0x8C = InitApplication`
+  - `+0x90 = SaveAllModified`
+  - `+0x94 = DoMessageBox`
+  - `+0x98 = DoWaitCursor`
+  - `+0x9C = OnDDECommand`
+  - the proving `.rdata` anchors are `0x4d0a54` and `0x4d2094`
+- The adjacent single-instance startup gate is now explicit too:
+  - `RecoilApp_ActivateExistingInstanceIfFound()`
+  - returns `0` after restoring/activating an older Recoil window
+  - returns `1` when no older instance exists and startup should continue in the current process
+- The shared window-class lane on that strip is now explicit:
+  - `g_RecoilApp_WndClassName = "RecoilClass"`
+  - `g_RecoilApp_WndClassNamePtr` points at that string
+  - the same pointer is reused by:
+    - `RecoilApp::InitInstance()` for `AfxRegisterClass(...)`
+    - `RecoilApp_ExitInstance()` for `UnregisterClassA(...)`
+    - `RecoilApp_ActivateExistingInstanceIfFound()` for `FindWindowA(...)`
+    - `CZRecoilFrame_Ctor()` for `CWnd::CreateEx(...)`
+- The shared app/state virtual-call semantics are now comment-backed even where BN 5.2 still degrades the rendered call:
+  - `RecoilApp_StartEngineAndQueueStartupState()` is the startup gate `StartEngine(self, hWnd)` -> `ShutdownEngine(self)` / `ExitInstance(self)` on failure
+  - `RecoilApp_InitMainWindow()` is the base-app helper that calls `CreateMainWnd(self)`, stores `m_pMainWnd`, back-links `frame->m_app`, then shows and updates the window
+  - `RecoilApp_RunMainLoop()` uses the same receiver-aware app/state slot model for `PumpMessage(self)`, `ExitInstance(self)`, `OnAppDeactivate(self)`, and the reachable state hooks
+- The outer startup bridge chain is now bounded too:
+  - `RecoilApp_StartEngineAndQueueStartupState(self)` is side-effect-only on the reachable path:
+    - its sole current caller is `RecoilApp_LoadZbdAndStartEngine()`
+    - that caller ignores the old success return
+    - the failure leg still falls through `ShutdownEngine(self)` then `ExitInstance(self)`, so the old return lane was startup-wrapper residue rather than a stable status contract
+- `RecoilApp_LoadZbdAndStartEngine(self)` is also side-effect-only on the reachable path:
+  - mounts the shared root `zrdr.zbd` archive when `g_Hud_SensorTracker.missionFlags_e0 != 0`
+  - calls `RecoilApp_StartEngineAndQueueStartupState(self)`
+  - then calls `HudSensorTracker_RegisterMissionSectionHandlers(&g_Hud_SensorTracker)`
+    - all current callers ignore its old constant `1` return:
+      - `RecoilApp_LoadZbdAndSetupSensorTracker()`
+      - `CZRecoilFrame_OnMenuStartSinglePlayerGame()` via direct `jmp`
+      - `CZRecoilFrame_OnMenuOpenMultiplayerDialogsAndMaybeStartGame()` on the non-modem host-create path
+  - BN 5.2 may still render the single-player shell handler as `return RecoilApp_LoadZbdAndStartEngine(&g_RecoilApp) __tailcall` because that handler ends in a direct jump; the authoritative record is the `void` prototype plus the startup callsite comments
+- Two adjacent owner-side `RecoilApp` fields are now bounded too:
+  - `RecoilApp.m_startupState`
+    - cleared by `RecoilApp_BaseCtorAndInitRuntime()`
+    - seeded by `RecoilApp::InitInstance()` as `&self->m_introFmvState.base`
+    - overridden by `CZRecoilFrame_OnMenuOpenMultiplayerDialogsAndMaybeStartGame()` to `&g_RecoilApp.m_mpExitDialogState` on the joined-session multiplayer path
+    - consumed by `RecoilApp_StartEngineAndQueueStartupState()` as the first queued state after engine bring-up succeeds
+  - `RecoilApp.m_skipMissionShutdownOnExit`
+    - cleared by `RecoilApp_StartEngineAndQueueStartupState()` before the first startup state switch
+    - set by `HudUiZrdWidget_OnActivateQueueExitCurrentAndSwitchToLeaveNetwork()`, `HudUiZrdWidget_OnActivateQueueDualExitAndSwitchToLeaveNetwork()`, and `HudUiCreditsPanel_UpdateFadeAndExit()` before switching to `g_RecoilApp.m_leaveNetworkState`
+    - read by `RecoilApp_PlayState_OnDeactivate()` to gate `HudSensorTracker_ShutdownMissionGameplaySystems(&g_Hud_SensorTracker)` on the leave-network / quit-after-credits path
+  - the current meaning of `m_skipMissionShutdownOnExit` is therefore: skip mission gameplay shutdown during play-state exit because the leave-network or quit-after-credits path already requested the direct teardown handoff
+- One nearby `RecoilApp` field remains intentionally parked:
+  - `RecoilApp.m_reserved148` still has only two current xrefs, the zero in `RecoilApp::InitInstance()` and the set-to-1 write in `RecoilApp_PlayState_OnTryBecomeCurrent()`
+  - there is still no read-side proof for a semantic rename
+- The adjacent deferred video-mode strip is now bounded too:
+  - `enum zVidModeIndex`
+    - `ZVID_MODE_320X200_TO_640X400 = 2`
+    - `ZVID_MODE_320X240_TO_640X480 = 3`
+    - `ZVID_MODE_640X400 = 4`
+    - `ZVID_MODE_640X480 = 5`
+    - `ZVID_MODE_800X600 = 6`
+    - `ZVID_MODE_1024X768 = 7`
+  - `zVid_GetVideoModeIndexFromOptions()` now returns `ZOPT_VIDEO_MODE` through `zVidModeIndex`
+  - `zVid_SetVideoModeIndex(enum zVidModeIndex modeIndex)` now renders the bounded option/display-geometry table with named mode constants instead of raw `2..7`
+  - `zVideo_init_SetSurfaceGeometryFromModeIndex(enum zVidModeIndex modeIndex)` uses the same named cases to mirror the runtime surface geometry before the backend mode-set call
+  - `zVideo_init_ApplyModeIndex()` and `zVideo_init_ApplyModeIndexIfInitialized()` both semantically forward the same enum into the backend mode-set path
+  - `RecoilStateMainMenuTransition.m_deferredVideoModeIndex` is now typed as `enum zVidModeIndex`
+  - `RecoilStateMainMenuTransition_SetDeferredVideoModeIndex()` and `RecoilStateMainMenuTransition_OnDeactivate()` now render the deferred main-menu apply path through named mode constants
+  - representative shell handlers `CZRecoilFrame_OnMenuSetVideoModeIndex2()` and `CZRecoilFrame_OnMenuSetVideoModeIndex7()` now pass `ZVID_MODE_320X200_TO_640X400` and `ZVID_MODE_1024X768` directly
+  - BN 5.2 still lowers the internal switch in `RecoilStateMainMenuTransition_OnDeactivate()` as `m_deferredVideoModeIndex - 2`; that normalized `0..5` switch variable is accepted residue, and the authoritative record is the named mode comparisons plus the surrounding function/address comments
+  - BN 5.2 may also still drop `modeIndex` on the final indirect tailcall in `zVideo_init_ApplyModeIndex()`; assembly and `zVideo_init_ApplyModeIndexIfInitialized()` still prove the same `g_zVideo_pfnSetVideoMode(modeIndex)` flow
+- The adjacent intro-FMV skip-latch strip is now bounded too:
+  - `RecoilApp.m_skipIntroFmv` at `RecoilApp+0x14c` is the app-wide latch that bypasses INTRO FMV playback
+  - current proving writers are:
+    - `RecoilApp_LoadZbdAndSetupSensorTracker()` stores its `skipIntroFmv` argument there
+    - `CZRecoilFrame_OnMenuStartSinglePlayerGame()` clears it before mission FMV/gameplay bring-up
+    - `CZRecoilFrame_OnMenuOpenCampaignDialog()` forces it on for the campaign/open-file path
+    - `HudUiNetGameSetupPanel_CommitSettingsAndLaunch_OnActivate()` forces it on for the host-create direct-gameplay path
+  - current proving readers are:
+    - `RecoilApp_IntroFmvState_OnTryBecomeCurrent()`, which only loads `INTRO` from `fmv.zrd` when the latch is clear
+    - `RecoilApp_IntroFmvState_OnUpdateShouldQuit()`, which skips directly to `g_RecoilApp.m_missionFmvState` when the latch is set
+  - BN 5.2 may still print the stale field text `m_introSkipFlag` in some intro-FMV or net-setup HLIL after the accepted type rename; the authoritative record is the `RecoilApp` type plus the function/address comments at `0x42e4dc`, `0x42ea83`, `0x42eac7`, `0x430747`, `0x430760`, and `0x41a6b1`
+- The adjacent attract-FMV reload-policy strip is now bounded too:
+  - `g_RecoilApp_AttractFmvReloadMode` uses:
+    - `RECOILAPP_ATTRACT_FMV_REUSE_LOADED_ACTIONS = 0`
+    - `RECOILAPP_ATTRACT_FMV_RELOAD_FROM_ZRD = 1`
+  - `.data` initializes the latch to `RECOILAPP_ATTRACT_FMV_RELOAD_FROM_ZRD`, so the first `ATTRACT` entry performs a fresh `fmv.zrd/ATTRACT` load
+  - `RecoilApp_AttractFmvState::OnDeactivate()` resets the script with `freeNodes = 0`, preserving the loaded attract action list for reuse
+  - `RecoilApp_AttractFmvState::OnTryBecomeCurrent()` now cleanly renders the paired reader/writer flow:
+    - reloads `ATTRACT` when `g_RecoilApp_AttractFmvReloadMode != RECOILAPP_ATTRACT_FMV_REUSE_LOADED_ACTIONS`
+    - then clears the latch back to `RECOILAPP_ATTRACT_FMV_REUSE_LOADED_ACTIONS` so later attract entries can reuse the preserved action list
+  - `get_data_decl(0x4dcac4)` may still fall back to a raw-address enum decl after the replay; the propagated decompilation/xrefs plus the BN comments are the authoritative record
+- The adjacent FMV/frontend state chain is now bounded too:
+  - `RecoilApp_AttractFmvState::OnUpdateShouldQuit()` queue-switches to `g_RecoilApp.m_mainMenuPrepState` when `zFMV_Script::UpdateAtTime(&self->m_fmv)` returns a nonzero `stateParam`
+  - `RecoilApp_MainMenuPrepState_OnUpdateShouldQuit()` is the immediate bridge into `RecoilStateMainMenuTransition_QueueEnter(RECOIL_MAINMENU_ROUTE_FRONTEND)`
+  - `RecoilApp_MainMenuPrepState.m_stateData04` still has only the zero write in `RecoilApp_MainMenuPrepState_OnTryBecomeCurrent()`, so it remains intentionally conservative
+  - `RecoilApp_MissionFmvState.m_skipMissionFmv` is the owner-side mission-movie skip latch:
+    - `RecoilApp_SetMissionIdAndQueueMissionFmvState()` clears it before queue-switching into `g_RecoilApp.m_missionFmvState`
+    - `CZRecoilFrame_OnMenuStartSinglePlayerGame()` also clears it so the normal single-player path still plays the mission intro movie
+    - `CZRecoilFrame_OnMenuOpenMultiplayerDialogsAndMaybeStartGame()` and `HudUiLoadGameDialog_ApplySelectedSaveAndTransition()` set it to `1` so those flows resume gameplay directly
+    - `RecoilApp_MissionFmvState_OnTryBecomeCurrent()` only loads/begins the mission FMV when the latch is clear
+    - `RecoilApp_MissionFmvState_OnUpdateShouldQuit()` queue-switches to `g_RecoilApp.m_playState` either when the skip latch is set or when normal playback finishes
+    - `RecoilApp_MissionFmvState_OnDeactivate()` only resets the loaded FMV actions when the latch was clear
+- The adjacent main-menu transition exit-delay latch is now bounded too:
+  - `enum RecoilMainMenuExitDelayMode`
+    - `RECOIL_MAINMENU_EXIT_DELAY_NORMAL = 0`
+    - `RECOIL_MAINMENU_EXIT_DELAY_SKIP = 1`
+  - `g_RecoilState_MainMenuSkipExitDelay` is now typed as that enum
+  - `RecoilStateMainMenuTransition_OnTryBecomeCurrent()` resets it to `RECOIL_MAINMENU_EXIT_DELAY_NORMAL` when the main-menu transition starts
+  - `HudUiZrdWidget_OnActivateQueueDualExitAndSwitchToLeaveNetwork()` sets it to `RECOIL_MAINMENU_EXIT_DELAY_SKIP` on the dual-exit leave-network path
+  - `RecoilStateMainMenuTransition_OnDeactivate()` only pays the final `Sleep(1000)` when the global is still `RECOIL_MAINMENU_EXIT_DELAY_NORMAL`
+- BN 5.2 may still normalize the shared app/state vtable member pointers back to plain function-pointer displays and re-drop receivers in HLIL on later passes, so the authoritative record for this strip is the function comments plus the receiver-aware callsite comments at:
+  - `0x4429e4`
+  - `0x442c29`
+  - `0x442c2f`
+  - `0x442c3e`
+  - `0x442d58`
+  - `0x442e58`
+  - `0x442ed9`
+  - `0x442fd7`
+- One bounded holdback is now explicit on this lane:
+  - replaying the imported MFC tail as hidden-`this` vtable members destabilized BN 5.2 HLIL on `RecoilApp_StartEngineAndQueueStartupState()`, `RecoilApp_InitMainWindow()`, `RecoilApp_RunMainLoop()`, and `CZGameFrame_OnMciNotify()`
+  - the imported slot names are kept, but those receiver-aware semantics remain comment-backed until there is a safer re-propagation path
+- The adjacent app teardown split is now bounded too:
+  - `RecoilApp_ShutdownSubsystems(self)` is the side-effect-only base-vtable `+0xB0` teardown wrapper used by `RecoilApp_ShutdownEngine()`
+  - `zUtil_ZRDR_ShutdownFileIndex()` is now explicitly a side-effect-only file-index teardown helper inside that shutdown row
+  - that wrapper ends in `zUtil_ZRDR_FreeNodePool()`
+  - `RecoilApp_ExitInstance()` also calls `zUtil_ZRDR_FreeNodePool()` directly after `zUtil_ZRDR_Shutdown()`, so the shared pool-free helper is a separate process/runtime cleanup primitive rather than a wrapper return contract
+- One bounded BN residue remains on that teardown strip:
+  - even after the `void` replay, BN 5.2 may still render the terminal jump in `RecoilApp_ShutdownSubsystems()` as `return zUtil_ZRDR_FreeNodePool() __tailcall`
+  - `zLoc_UnloadMessagesDll()` was rechecked on the same lane and left unchanged because its assembly still preserves the plausible `FreeLibrary(...)` result even though the only current caller ignores it
+  - the authoritative record there is the prototype set plus the function/address comments at `0x442bf2`, `0x42e473`, and `0x42e965`
+- The adjacent app/main-loop/video global strip is now explicit too:
+  - `g_RecoilApp_QuitAfterCredits` is the final-mission / credits branch latch:
+    - `HudSensorTracker_SaveAndQueueMissionState()` sets it on the final-mission path
+    - `HudUiCreditsPanel_Ctor()` chooses `QUIT` vs `BACK` from it
+    - `RecoilApp_PlayState_OnUpdateShouldQuit()` follows the credits / leave-network branch from it
+  - `g_zVideo_SoftwareModeHotkeyEnabled` is now `enum zVideoSoftwareModeHotkeyState` and gates `zVideo_HandleSoftwareModeHotkey()`:
+    - retail `.data` initialization seeds `ZVIDEO_SOFTWARE_MODE_HOTKEY_ENABLED`
+    - `RecoilApp_PlayState_OnUpdateShouldQuit()` writes `ZVIDEO_SOFTWARE_MODE_HOTKEY_DISABLED` during the timed transition branch before the countdown render/update loop
+    - the mission-over / credits branch writes `ZVIDEO_SOFTWARE_MODE_HOTKEY_ENABLED` before the alternate `RecoilApp_PlayState_TickAndRenderFrame(self, 1)` path
+    - `zVideo_HandleSoftwareModeHotkey()` is the sole current read-side gate and early-outs only while the state is `ZVIDEO_SOFTWARE_MODE_HOTKEY_DISABLED`
+  - `g_zVideo_FrameTick` is the shared video/frame counter:
+    - reset during `zVideo_init_ResetGlobalsAndEnumerateDevices()`
+    - reset again during `zVideo_init_InitVideoSystem()`
+    - reset during play-state entry before the first gameplay frame
+    - consumed by net replication plus model/material/effect update lanes
+- BN 5.2 may still show raw address-backed data decls for those three leaves even after the replay, so the authoritative record is the applied symbols plus the callsite comments at `0x418ffb`, `0x42f61b`, `0x42f81f`, `0x4a7547`, and `0x4a7614`
+
+## DirectInput startup notes
+
+- The adjacent DirectInput startup property/caps strip is now bounded more cleanly.
+- The shared buffered-input property block on the keyboard and mouse init paths is now explicit:
+  - `struct DIPROPHEADER`
+  - `struct DIPROPDWORD`
+- The current proving split is:
+  - `zInput_KBD_InitDevice()` builds `DIPROPDWORD bufferSizeProp` with:
+    - `dwSize = 0x14`
+    - `dwHeaderSize = 0x10`
+    - `dwObj = 0`
+    - `dwHow = 0`
+    - `dwData = 0x80`
+  - the same keyboard path then calls `SetProperty(1, &bufferSizeProp)` before `SetDataFormat(&g_zInputDiFormat_KeyboardState)`, `Acquire()`, and `calloc(1, 0x800)` for buffered key events
+  - `zInput_Mouse_InitDevice()` builds the same `DIPROPDWORD` shape with `dwData = 0x10` before `SetProperty(1, &bufferSizeProp)` and `SetDataFormat(&g_zInputDiFormat_MouseState)`
+- The adjacent joystick capability scratch is now explicit too:
+  - `struct DIDEVCAPS`
+  - `enum zInput_DIDeviceCapsFlags`
+    - `ZINPUT_DIDEVCAPS_FORCEFEEDBACK = 0x100`
+    - `ZINPUT_DIDEVCAPS_FFATTACK = 0x200`
+    - `ZINPUT_DIDEVCAPS_FFFADE = 0x400`
+  - `zInput_DI_InitJoystickDevice()` now renders `caps.dwAxes` into `g_zInputJoyAxisCount`
+  - the same helper now renders the three force-feedback globals directly from `caps.dwFlags`
+- The DirectInput data-format globals on the same lane are now materialized as `struct DIDATAFORMAT`:
+  - `g_zInputDiFormat_KeyboardState`
+  - `g_zInputDiFormat_MouseState`
+  - `g_zInputDiFormat_JoystickState`
+- The adjacent mouse cooperative-level backing global is now explicit too:
+  - `g_zInputMouseCoopFlags`
+  - current reachable users are `zInput_Mouse_InitDevice()` and `zInput_Mouse_SetCooperativeLevelFlags()`
+  - `zInput_Mouse_SetCooperativeLevelFlags(int32_t newLevelFlags)` is now bounded as the side-effect-only startup setter; its old previous-value return was unused on the reachable retail path
+  - the retail default/current data value on this path is still `5`
+- The adjacent joystick option/runtime strip is now bounded too:
+  - `enum zInputJoystickEnabledState`
+    - `ZINPUT_JOYSTICK_DISABLED = 0`
+    - `ZINPUT_JOYSTICK_ENABLED = 1`
+  - `zInp_GetJoystickOption()` returns persisted `ZOPT_INPUT_JOYSTICK` through that 0/1 enum lane
+  - `zInp_SetJoystickOption(enum zInputJoystickEnabledState value)` writes the same persisted option as a side-effect-only helper
+  - `zInput_DI_SetJoystickEnabled(enum zInputJoystickEnabledState enableJoystick)` applies the requested state to the DI runtime and returns the actual enabled state depending on device readiness and joystick-refcount state
+  - `RecoilApp_StartEngine()` applies the requested startup option to the DI runtime but ignores the returned actual enabled state
+  - `RecoilStateControls_OnDeactivate()`, `RecoilApp_PlayState_OnTryBecomeCurrent()`, and `HudUiLoadGameDialog_ApplySelectedSaveAndTransition()` all resync `ZOPT_INPUT_JOYSTICK` to the actual DI enabled state returned by `zInput_DI_SetJoystickEnabled(...)`
+  - `CZRecoilFrame_OnMenuToggleJoystick()` and `CZRecoilFrame_OnUpdateJoystickCmdUi()` now explicitly sit on the same persisted 0/1 option lane, even though BN still renders the shell toggle as the old VC6 `neg/sbb` idiom
+- The adjacent gameplay force-feedback strip is now bounded too:
+  - `Player_RegisterGameplayCommandCallbacksAndCreateFfEffects(void* callbackContext)` is the mission-runtime helper that registers the reachable gameplay command callbacks on the active bind map, allocates `operator new(0x1c)` for `struct zInput_DiEffectSet`, and stores the initialized result in `g_zInputFfEffectSet`
+  - `Player_InitMissionRuntimeFromWorldAndCamera()` is the sole current caller and ignores the old returned effect-set pointer, so that return lane is now treated as wrapper residue
+  - `g_zInputJoyCaps_ForceFeedback` is now the explicit runtime capability latch for gameplay force feedback
+  - `zInput_DI_IsForceFeedbackEnabled()` is now bounded as the reachable gameplay gate:
+    - persisted joystick option enabled
+    - plus `g_zInputJoyCaps_ForceFeedback != 0`
+    - no separate force-feedback option is currently proven on the non-WOL path
+  - the reachable effect-slot mapping is now:
+    - `g_zInputFfEffectSet->primaryFireEffect_00` via `zInput_DI_RestartPrimaryFireEffect()` from `Player_TryFireFromOriginToStoredTarget()`
+    - `g_zInputFfEffectSet->altFireEffect_04` via `zInput_DI_PlayAltFireEffect()` from `Player_UpdateAltGunFireController()`
+    - `g_zInputFfEffectSet->collisionImpactEffect_0c` via `zInput_DI_PlayCollisionImpactEffect()` from `Player_ResolvePendingCollisionContact()`
+    - `g_zInputFfEffectSet->damageHitEffect_10` via `zInput_DI_PlayDamageHitEffect()` from `Player_ApplyDamageLocal()`
+    - `g_zInputFfEffectSet->steerForceEffect_14` and `pitchForceEffect_18` via `zInput_DI_UpdateSteerAndPitchForceEffects()` from `Player_UpdateForMasterType()`
+- One bounded holdback remains on this input strip:
+  - the raw cooperative-level flags (`g_zInputMouseCoopFlags` and the joystick `5/9` split) are still intentionally left as raw flags until a safer local enum model appears
+
+## Startup video backend option notes
+
+- The adjacent startup video backend-option strip is now bounded more cleanly.
+- A new shared enum is now explicit on the reachable DD/DD3D startup path:
+  - `enum zVidRendererBackendOption`
+    - `ZVID_RENDERER_BACKEND_SOFTWARE = 0`
+    - `ZVID_RENDERER_BACKEND_HARDWARE = 1`
+- The persisted option side is now explicit:
+  - `zVid_GetRendererBackendOption()` returns `*ZOPT_HW_API` as `zVidRendererBackendOption`
+  - `zVid_SetRendererBackendOption(enum zVidRendererBackendOption backendOption)` writes that same persisted option
+- The runtime/startup chooser split is now bounded directly:
+  - `zVideo_SelectHwApiDeviceOrFallback(int32_t hwApiIndexOrMinus1)` returns `ZVID_RENDERER_BACKEND_HARDWARE` after selecting an accepted DirectDraw device by index
+  - the same helper returns `ZVID_RENDERER_BACKEND_SOFTWARE` on `-1` fallback after rebinding software dispatch and clearing the selected DD/D3D device state
+  - `zVid_InitStartupHwApiFromOptions()` now clearly proves that persisted `ZOPT_HW_API` is only software-vs-hardware, not a stored accelerator/device index
+  - when that option is nonzero, startup chooses the last accepted hardware selector slot and calls `zVid_SetHwApiAndInitMode(frame, acceptedDdCount - 1)`
+  - otherwise startup keeps slot 0 as the software fallback path, seeds `frame->m_videoModeIndex = ZVID_MODE_640X480`, and continues through `zVid_InitFallbackMode(frame)`
+  - the cached `CZRecoilFrame` startup/menu row is now explicit too:
+    - `enum RecoilCmdUiState`
+      - `RECOIL_CMDUI_ENABLED_UNCHECKED = 0`
+      - `RECOIL_CMDUI_DISABLED = 1`
+      - `RECOIL_CMDUI_CHECKED = 8`
+    - `CZRecoilFrame.m_videoModeCmdUiState[6]` and `CZRecoilFrame.m_hwApiCmdUiState[4]` now use that enum
+    - `CZRecoilFrame.m_videoModeIndex` now also carries `enum zVidModeIndex`
+- The reachable dispatch/runtime mirror is now explicit too:
+  - `zVideo_init_BindRendererDispatch(enum zVidRendererBackendOption rendererBackend, int32_t fullscreenOption)` binds the reachable DD/DD3D dispatch table with only software(0) vs hardware(1), not a specific device id
+  - `zVid_SetRendererType(enum zVidRendererBackendOption rendererBackend)` returns the previous backend and mirrors the new reachable backend into both `g_zVideo_RendererType` and the broader live runtime path global `g_zVideo_ActiveRendererPath`
+  - `g_zVideo_RendererType` is therefore still safely modeled as the reachable 0/1 backend enum
+- The live runtime path is now explicit as a separate enum/global:
+  - `enum zVidActiveRendererPath`
+    - `ZVID_ACTIVE_RENDERER_SOFTWARE = 0`
+    - `ZVID_ACTIVE_RENDERER_HARDWARE = 1`
+    - `ZVID_ACTIVE_RENDERER_3DFX = 2`
+  - `g_zVideo_ActiveRendererPath` is the active runtime renderer-path global, distinct from persisted `ZOPT_HW_API`
+  - the reachable startup DD/DD3D path still only writes `0/1` into it through `zVid_SetRendererType()`
+  - `RecoilApp_BuildWindowTitleCString()` proves `ZVID_ACTIVE_RENDERER_3DFX` by selecting `\"RECOIL (3Dfx)\"`
+  - `RecoilApp_EngineInit()` uses that same `ZVID_ACTIVE_RENDERER_3DFX` path for the retained mouse cooperative-flags `5` special-case
+  - `RecoilStateMainMenuTransition_OnTryBecomeCurrent()`, `HudUiMessageBoxDialog_RunModal()`, and `zImage_InitTextureDirectory()` now render the broader `!= SOFTWARE` / `== SOFTWARE` split directly against the live path global
+  - `zFMV_ActionPlayAvi_Update()` now also renders the `!= ZVID_ACTIVE_RENDERER_3DFX` split explicitly on the primary-buffer postprocess/page-lock path
+- The important separation on this strip is now:
+  - persisted `ZOPT_HW_API` and `g_zVideo_RendererType` stay on the reachable 0/1 backend-option lane
+  - `g_zVideo_ActiveRendererPath` is the broader live runtime path lane that still carries the legacy 3Dfx value `2`
+  - that live `2` value must not be folded back into the persisted backend-option model
+- The authoritative record for this strip is the enum/prototype replay plus the BN comments at:
+  - `0x408290`
+  - `0x408320`
+  - `0x43173a`
+  - `0x4a7490`
+  - `0x4a74a7`
+  - `0x4a77a0`
+  - `0x4a6b40`
+  - `0x4a6b4b`
+  - `0x632120`
+  - `0x56bbe8`
+  - `0x4306f1`
+  - `0x442b69`
+  - `0x415248`
+  - `0x4bf63f`
+  - `0x463716`
+
+## Startup acceleration option notes
+
+- The adjacent startup acceleration-option strip is now bounded more cleanly.
+- A new shared enum is now explicit on this lane:
+  - `enum zVidHardwareMode`
+    - `ZVID_HW_MODE_SOFTWARE = 0`
+    - `ZVID_HW_MODE_HARDWARE = 1`
+- The persisted option and live mirror side are now explicit:
+  - `zVid_GetAccelerationOption()` returns `ZOPT_VIDEO_ACCELERATION` as `zVidHardwareMode`
+  - `zVid_SetAccelerationOption(enum zVidHardwareMode hwMode)` writes that persisted option and mirrors the same value into `g_zOpt_HwMode`
+  - `g_zOpt_HwMode` is now typed as `enum zVidHardwareMode`
+- The proving split is now bounded directly:
+  - `g_zOpt_HwMode` is the live software-vs-hardware option-bank selector used by the `*ForCurrentHwMode` helper family
+  - `ZVID_HW_MODE_SOFTWARE` selects the SW banks for effects / HUD / texture-memory / object-LOD / graphics-flag options
+  - `ZVID_HW_MODE_HARDWARE` selects the parallel HW banks
+  - `zVid_ConfigureModeFeatureFlags()` now clearly branches on that selector:
+    - software mode exposes the low software resolution slots directly
+    - hardware mode forces/gates higher hardware resolutions by free-video-memory thresholds `0x2BF200` and `0x480000`
+  - `RecoilApp_PreTranslateMessage()` now explicitly uses the same lane and only swallows `WM_KEYDOWN` / `WM_KEYUP` while the mode is not `ZVID_HW_MODE_SOFTWARE`
+- This lane stays separate from the newer renderer-backend option model:
+  - `ZOPT_VIDEO_ACCELERATION` and `g_zOpt_HwMode` drive the software-vs-hardware option banks
+  - `ZOPT_HW_API`, `g_zVideo_RendererType`, and the reachable `zVidRendererBackendOption` lane drive the DD/DD3D renderer-backend selection
+  - both lanes currently use reachable 0/1 software-vs-hardware semantics, but they should not be collapsed into one model
+- The authoritative BN comments for this strip are anchored at:
+  - `0x408280`
+  - `0x408310`
+  - `0x4e5dcc`
+  - `0x4308d2`
+  - `0x42e9fa`
+  - `0x407f3a`
+
+## Clear-screen-buffer flag notes
+
+- The adjacent main-loop clear-screen-buffer strip is now bounded as a real 0/1 enum lane instead of a generic `int32_t`.
+- A new shared enum is now explicit:
+  - `enum zVideoClearScreenBufferState`
+    - `ZVIDEO_CLEAR_SCREEN_BUFFER_DISABLED = 0`
+    - `ZVIDEO_CLEAR_SCREEN_BUFFER_ENABLED = 1`
+- The persistent helper/global side is now explicit:
+  - `g_zVideo_ClearScreenBufferEnabled` is typed as `enum zVideoClearScreenBufferState`
+  - `zVideo_ExchangeClearScreenBufferEnabled(enum zVideoClearScreenBufferState newValue)` returns the previous enum value, then stores the new one
+  - `zVideo_IsClearScreenBufferEnabled()` returns the current enum value
+- The proving writer split on the reachable non-WOL path is:
+  - `zInterp_Context_DispatchCommand()` handles `ClearScreenBuffer` by calling `zInterp_Context_ParseBoolToken(self)`, so the interp writer domain is explicitly 0/1
+  - `RecoilApp_InitializeDisplay()` forces `ZVIDEO_CLEAR_SCREEN_BUFFER_ENABLED` during startup surface warmup, then restores the previous value
+  - `HudLayoutHW_SetActive()` uses the same save/force/restore pattern around the forced primary clear
+  - `Player::ApplyCameraState()` now renders the direct transition writes as explicit disabled/enabled enum values
+  - `RecoilApp_PlayState_TickAndRenderFrame()` now reads the persistent enum flag, ORs it with the one-shot `HudUiMgr_ConsumeLayoutClearDelay()` 0/1 request for the current clear pass, then restores the previous flag after the temporary clear
+- This lane should stay separate from unrelated renderer/backend or acceleration option enums. The current evidence only proves a shared persistent 0/1 clear flag.
+
+## RecoilApp startup banner notes
+
+- The same startup banner leaf row is now re-synced in BN again after the recent analysis drift.
+- The adjacent startup banner strip is now explicit instead of surviving only as inline literals and comments.
+- The shared status leaves are now bounded as:
+  - `g_RecoilApp_StartupStatusFailed = "FAILED"`
+  - `g_RecoilApp_StartupStatusPassed = "PASSED"`
+- The adjacent startup strings on the same band are now pinned too:
+  - `g_RecoilApp_TurretStatusPrintfFmt = "turret:    %s\n"`
+  - `g_RecoilApp_SoundsZrdName = "sounds.zrd"`
+  - `g_RecoilApp_GModInitStatusFmt = "gModInit:  %s\n"`
+  - `g_RecoilApp_GClsInitStatusFmt = "gClsInit:  %s\n"`
+  - `g_RecoilApp_ZEffInitStatusFmt = "zEffInit:  %s\n"`
+  - `g_RecoilApp_ZRndrInitStatusFmt = "zRndrInit: %s\n"`
+  - `g_RecoilApp_ZSndInitStatusFmt = "zSndInit:  %s\n"`
+  - `g_RecoilApp_ZUtlInitStatusFmt = "zUtlInit:  %s\n"`
+  - `g_RecoilApp_ZWepInitStatusFmt = "zWepInit:  %s\n"`
+  - `g_RecoilApp_ZImgInitStatusFmt = "zImgInit:  %s\n"`
+  - `g_RecoilApp_ZInInitStatusFmt = "zInInit:  %s\n"`
+- The corrected literal mapping on this strip is important:
+  - `0x4dcaf0` is the `"FAILED"` leaf
+  - `0x4dcaf8` is the `"PASSED"` leaf
+  - that mapping matches the retained branch sense in `RecoilApp_StartEngine()` and `RecoilApp_EngineInit()`
+- The current holdback on the same band is still conservative:
+  - the `gClsInit` and `zUtlInit` banner slots still only probe `zStub_Return0`, so there is still no safe helper identity to rename there
+- BN 5.2 may still prefer inline literals or raw-address decls for these leaves in some views, but the hexdump labels plus the function/address comments now re-anchor the row again after the latest replay.
+
+## Startup render/audio scalar notes
+
+- The adjacent startup render/audio scalar strip is now tighter.
+- Three mistyped startup defaults are now explicitly bounded as floats instead of stale `int32_t` leaves:
+  - `gModel_SmallPolyRejectArea2x`
+  - `gModel_SmallPolyRejectArea20x`
+  - `g_zSnd_VolumeScaleDefault`
+- The proving split on that strip is now explicit:
+  - `gModInit()` seeds `gModel_SmallPolyRejectArea2x = 4.0f` and `gModel_SmallPolyRejectArea20x = 40.0f`
+  - `zModel_SetSmallPolygonRejectArea(area)` writes the same globals as the doubled threshold plus the derived 10x copy
+  - `zSnd_PreInitializeRuntimeState(hwnd)` seeds `g_zSnd_VolumeScaleDefault = 1.0f` before falling back to it when the `SoundVolume` option is absent
+- The adjacent helper ABI is now bounded too:
+  - `zSnd_SetVolumeScale(float scale)` is side-effect-only
+  - current reachable callers `zOpt_SetSoundVolumeOption()`, `HudSensorTracker_SetObjectiveReviewVisible()`, and `HudSensorTracker_OnObjectiveReadSoundEvent()` all ignore the old x87 return lane
+- The reachable sound-volume option handler now renders without the old stale local around `zOpt_SetSoundVolumeOption(...)`.
+
+## Startup sound backend bring-up notes
+
+- The adjacent startup sound backend bring-up strip is now tighter.
+- A new shared result enum is now explicit where it stays semantically clean:
+  - `enum zSndInitResult`
+    - `ZSND_INIT_FAILED = 0`
+    - `ZSND_INIT_OK = 1`
+- The top-level startup/helper split on this strip is now bounded as:
+  - `zSndInit(HWND hwnd)` returns `zSndInitResult`
+  - `zSndSystem_Init(HWND hwnd, char* zrdPath)` returns `zSndInitResult`
+  - `zSnd_ReportA3DError(HRESULT hr, char* file, int32_t line)` returns `zSndInitResult`
+  - `zSnd_ReportDirectSoundError(HRESULT hr, char* file, int32_t line)` returns `zSndInitResult`
+- The proving split is now explicit:
+  - `zSndInit()` returns `ZSND_INIT_OK` on first bootstrap and `ZSND_INIT_FAILED` once `g_zSndInitDone != 0`
+  - `RecoilApp_EngineInit()` now renders the banner gate directly as `zSndInit(hWnd) == ZSND_INIT_FAILED`
+  - `zSndSystem_Init()` returns `ZSND_INIT_OK` only after backend bring-up, sound-root load, and top-level config parse succeed
+  - `zSndSystem_Init()` returns `ZSND_INIT_FAILED` on ready/init gate failure, backend bring-up failure, missing sound root, or unsupported `SYNTAX`
+  - `zSnd_ReportA3DError()` and `zSnd_ReportDirectSoundError()` both return `ZSND_INIT_OK` when `hr == 0`, otherwise they log a symbolic backend error name and return `ZSND_INIT_FAILED`
+  - `zSndBackend_InitA3D()` and `zSndBackend_InitDirectSound()` intentionally stay raw `1/0` backend-init helpers, but their failure exits now cleanly forward the propagated `zSndInitResult` from the paired report helper
+  - the A3D fallback leg at `0x4a1465` stores `zSndBackend_DirectSound` into `g_zSndBackend` before recursing into `zSndSystem_Init(...)`
+  - on the DirectSound path, `g_zSndGeomOrCaps` is reused as DirectSound caps scratch before `GetCaps(...)`
+- The DirectSound local create descriptor is now typed:
+  - `struct zSndDirectSoundBufferDesc`
+    - `dwSize`
+    - `dwFlags`
+    - `dwBufferBytes`
+    - `dwReserved`
+    - `lpwfxFormat`
+  - applied to the local `desc` block in `zSndBackend_InitDirectSound()`
+- One bounded holdback remains important on this strip:
+  - `zSndBackend_InitA3D()` and `zSndBackend_InitDirectSound()` intentionally stay raw `int32_t` helpers
+  - typing them with `zSndInitResult` caused contradictory propagation in `zSndSystem_Init()`, because the fallback leg reuses the A3D failure `0` as the backend id `zSndBackend_DirectSound`
+  - BN still lowers both report-helper bodies to raw `return 0/1` in HLIL even after the direct prototype replay; the prototype set plus the address comments at `0x4a4203`, `0x4a4242`, `0x4a4471`, and `0x4a44bc` are the authority there
+
+## Sound backend option notes
+
+- The startup-side sound backend selection split is now bounded more cleanly.
+- `zSnd_SetAudioApiOption()` is the persisted option writer:
+  - prototype: `void __fastcall zSnd_SetAudioApiOption(enum zSndBackend backend)`
+  - stores `*ZOPT_AUDIO_API = backend`
+  - then forwards the same enum into `zSnd_SetActiveBackendPreInit(backend)`
+- `zSnd_SetActiveBackendPreInit()` stays intentionally status-bearing:
+  - returns `1` when it can still store the live backend into `g_zSndBackend`
+  - returns `0` once `g_zSndInitDone != 0`
+- The current reachable caller split is:
+  - `zGame::Options_LoadGameOptions()` seeds default `SoundAPI` to `zSndBackend_DirectSound`
+  - `zGame::Options_LoadGameOptions()` later replays the persisted option through `zSnd_SetAudioApiOption(zSnd_GetAudioApiOption())`
+  - `RecoilApp_StartEngine()` persists the actual runtime backend after `zSndSystem_Init(hwnd, "sounds.zrd")` through `zSnd_SetAudioApiOption(zSnd_GetActiveBackend())`
+  - `CZRecoilFrame_OnMenuSelectDirectSound()` and `CZRecoilFrame_OnMenuSelectA3D()` are shell `WM_COMMAND` handlers that only tailcall the wrapper
+- BN 5.2 may still print `zSnd_SetAudioApiOption()` and those two shell handlers as `return ... __tailcall` because each body is just a direct jump. The prototype set plus the comments at `0x4080a0`, `0x4a1290`, `0x407a89`, `0x407de0`, `0x42e26b`, `0x431a92`, and `0x431ad5` are the authoritative record.
+
+## Sound root syntax notes
+
+- The startup-side sound root parser split is now explicit instead of hiding behind raw `SYNTAX` values.
+- `enum zSndConfigSyntaxVersion` is now bounded as:
+  - `ZSND_CONFIG_SYNTAX_LEGACY_SETS = 1`
+  - `ZSND_CONFIG_SYNTAX_NAMED_SETS = 2`
+- `zSndSystem_Init(hwnd, zrdPath)` now explicitly defaults missing `SYNTAX` to `ZSND_CONFIG_SYNTAX_LEGACY_SETS`.
+- The parser helpers are now explicitly bounded as single-caller side-effect-only bodies:
+  - `void __fastcall zSndConfig_ParseLegacySetsSyntax(struct zReader_Node* rootNode)`
+  - `void __fastcall zSndConfig_ParseNamedSetsSyntax(struct zReader_Node* rootNode)`
+- The next inner config row is now bounded too:
+  - `void __fastcall zSndCd_InitFromConfigNode(struct zReader_Node* cdRootNode)`
+  - `void __fastcall zSndGroup_LoadConfigBlock(struct zReader_Node* configNode)`
+- The shared top-level string/key row is now explicit in BN:
+  - `g_zSndConfig_SyntaxKey`
+  - `g_zSndConfig_CdTracksKey`
+  - `g_zSndConfig_SoundPathKey`
+  - `g_zSndConfig_SpeedOfSoundKey`
+  - `g_zSndConfig_SetsKey`
+  - `g_zSndConfig_SoundGroupsKey`
+  - `g_zSndInitFailedToFindMenuSoundsFmt`
+  - `g_zSnd_SourceFile_zsnd_init_cpp`
+- BN still tends to show raw-address decls or inline literals for those three `zsnd_init.cpp` leaves; the hexdump labels plus the `zSndSystem_Init()` address comments are the authority.
+- The parser helpers are now named by the proved inner `SETS` layout:
+  - `zSndConfig_ParseLegacySetsSyntax()` for the older positional `SETS` layout
+  - `zSndConfig_ParseNamedSetsSyntax()` for the newer named-node `SETS` layout
+- Both parser paths still share the same top-level sound keys:
+  - `CD_TRACKS`
+  - `SOUND_PATH`
+  - `SPEED_OF_SOUND`
+  - `SETS`
+  - optional `SOUND_GROUPS`
+- The current caller split on those two inner helpers is now explicit:
+  - both parser paths call `zSndCd_InitFromConfigNode(...)` only for side effects on the `CD_TRACKS` node
+  - both parser paths call `zSndGroup_LoadConfigBlock(...)` only for side effects on the optional `SOUND_GROUPS` node
+- The helper responsibilities are now bounded too:
+  - `zSndCd_InitFromConfigNode()` owns the MCI CD open/media-present/track-count/disc-length/AUX-capability import pass and optional archive-to-track mapping import into `g_zSndCdTrackListHead`
+  - `zSndGroup_LoadConfigBlock()` owns the optional `SOUND_GROUPS` array parse, lazy `g_zSndGroupList` allocation, per-entry `zSndGroup_ParseConfigEntry(...)` calls, and insertion of each successful payload into the shared list
+- The important distinction is the inner `SETS` format:
+  - legacy syntax uses alternating `setName/sampleArray` pairs and per-sample positional fields, including three legacy `TRUE` string booleans
+  - named syntax uses per-sample child nodes and flags such as `3D`, `LOOPED`, `FREQUENCY`, `HARDWARE`, `PURGEABLE`, `VOICE`, `VOLUME`, `A3DDIST`, `RANGE`, `HIGH`, `MED`, and `LOW`
+- `zSndSystem_Init()` now also explicitly takes `char* zrdPath` on the reachable startup path.
+
+## FMV runner notes
+
+- The reachable retail FMV action-vtable band now has a stable run-blocking split.
+- `zFMV_Action_RunBlockingTimed()` is the shared runner for:
+  - `g_zFMV_ActionBase_Vtable`
+  - `g_zFMV_ActionPlaySound_Vtable`
+  - `g_zFMV_ActionWait_Vtable`
+  - `g_zFMV_ActionImage_Vtable`
+  - `g_zFMV_ActionFade_Vtable`
+  - `g_zFMV_ActionPlayAvi_Vtable`
+  - `g_zFMV_ActionPlayMci_Vtable`
+- `zFMV_Action_RunBlockingZeroTime()` is the shared runner for:
+  - `g_zFMV_ActionBlur_Vtable`
+  - `g_zFMV_ActionBlurH_Vtable`
+  - `g_zFMV_ActionBlurV_Vtable`
+- `zFMV_Script_LoadActionsFromZrd()` still cross-proves the reachable action family on this band:
+  - `SHOWIMAGE` / `BLITIMAGE` / `LOADIMAGE` use `zFMV_ActionImage`
+  - `WAIT` uses `zFMV_ActionWait`
+  - `FADEIN` / `FADEOUT` use `zFMV_ActionFade`
+  - `PLAYAVI` uses `zFMV_ActionPlayAvi`
+  - `PLAYMCI` uses `zFMV_ActionPlayMci`
+  - `BLUR` / `BLURH` / `BLURV` use the blur family
+  - `PLAYSOUND` uses `zFMV_ActionPlaySound`
+- The old `zUtil_NoOpDestroyRange` identity on the shared `retn 8` helper was wrong; `0x40bdf0` is now bounded as the generic callee-clean stub `zStub_NoOpRet8`, reused across many subsystems and vtable families, including FMV action hooks.
+- Two bounded BN 5.2 artifacts remain on this strip:
+  - `zFMV_Action_RunBlockingTimed()` still drops the receiver in HLIL even though assembly proves `Begin(self, 0.0)`, `Update(self, elapsedSec)`, and `End(self)`
+  - `zFMV_ActionPlayAvi_Update()` still prints `return esp[4]` even though assembly proves the local continue-playback flag
+
+## Frame-clock notes
+
+- The adjacent non-WOL frame-clock global band is now explicit instead of anonymous.
+- The current shared time globals on this strip are:
+  - `g_Time_TimeScaleFactor`
+  - `g_Time_DeltaTimeClampEnabled`
+  - `g_Time_MaximumDeltaTimeSec`
+  - `g_Time_NewTimeSec`
+  - `g_Time_CurrentTimeSec`
+  - `g_Time_UnscaledAccumulatedTimeSec`
+  - `g_Time_UnscaledDeltaTimeSec`
+  - `g_Time_AccumulatedTimeSec`
+  - `g_FrameDeltaTimeSec`
+  - `g_Time_MillisecondsToSecondsScale`
+- `Time::Reset()` now closes as the shared reset helper for that band:
+  - zeroes `g_Time_NewTimeSec`
+  - zeroes `g_Time_UnscaledAccumulatedTimeSec`
+  - zeroes `g_Time_UnscaledDeltaTimeSec`
+  - zeroes `g_Time_AccumulatedTimeSec`
+  - zeroes `g_FrameDeltaTimeSec`
+  - seeds `g_Time_CurrentTimeSec` from `GetTickCount() * g_Time_MillisecondsToSecondsScale`
+- `Time::Tick()` is the paired tick helper:
+  - refreshes the clock from `GetTickCount()`
+  - computes unscaled delta and accumulated time
+  - computes frame delta and scaled accumulated time
+  - consumes `g_Time_TimeScaleFactor` for one tick, then resets it to `1.0f`
+  - when `g_Time_DeltaTimeClampEnabled != 0`, clamps `g_FrameDeltaTimeSec` to `g_Time_MaximumDeltaTimeSec`
+- The read-side proof is already broad on the reachable non-WOL path:
+  - `g_Time_UnscaledDeltaTimeSec` tracks raw elapsed time between ticks
+  - `g_FrameDeltaTimeSec` feeds HUD/UI/objective, modal, player, render, effects, and timed-task update bands
+  - `g_Time_AccumulatedTimeSec` feeds gameplay, turret, HUD, and network timing lanes
+- Important BN quirk on this strip:
+  - BN 5.2 still keeps the `GetTickCount()` qword conversion as split dword stores and aliases the `fnstsw ax` clamp comparison at `0x4a574f` onto the clamp flag temp in `Time::Tick()`
+  - the data-var names and the comments at `0x4a56fc`, `0x4a5701`, and `0x4a575b` are the authoritative record
+
+## Game-frame move/resize notes
+
+- The `CZGameFrame` move/resize update-mask strip is now bounded more cleanly.
+- The old narrow helper names are now:
+  - `zVid_IsUpdateMaskEnabledForCurrentRenderer()`
+  - `zVid_UpdateCachedClientRectIfUpdateMaskEnabled()`
+- The current split is:
+  - `zVid_IsUpdateMaskEnabledForCurrentRenderer()` returns `g_zVid_UpdateMaskEnabled` only on the active renderer path that uses cached client-rect/update-mask WM_SIZE/WM_MOVE/WM_PAINT handling
+  - `zVid_UpdateCachedClientRectIfUpdateMaskEnabled()` is side-effect-only and only forwards into `zVideo_UpdateCachedClientRectScreenCoords()` when that gate is nonzero
+- The current reachable callers are:
+  - `CZGameFrame_OnSize()` after `CFrameWnd::OnSize(...)`
+  - `CZGameFrame_OnMove()` after `CWnd::Default(self)`
+  - `CZGameFrame_OnPaint()` as the gate for the cached-bitmap/update-mask paint path
+- BN 5.2 may still render the taken leg in `zVid_UpdateCachedClientRectIfUpdateMaskEnabled()` as `return zVideo_UpdateCachedClientRectScreenCoords() __tailcall`, but that helper is now treated as a pure side-effect resize/move helper.
+
+## Main-menu transition notes
+
+- The adjacent helper strip on `RecoilStateMainMenuTransition` is now bounded more tightly.
+- The CRT/global singleton wrapper row for that state is now explicit too:
+  - `RecoilStateMainMenuTransition_StaticInitAndRegisterAtExit()`
+  - `RecoilStateMainMenuTransition_StaticInit()`
+  - `RecoilStateMainMenuTransition_RegisterAtExit()`
+  - `RecoilStateMainMenuTransition_AtExitDtor()`
+- The current wrapper split is:
+  - `StaticInit()` tailcalls `RecoilStateMainMenuTransition_Ctor(&g_RecoilState_MainMenuTransition)`
+  - `RegisterAtExit()` registers `RecoilStateMainMenuTransition_AtExitDtor()` with `crt_register_onexit()`
+  - `AtExitDtor()` tailcalls `RecoilStateMainMenuTransition_Dtor(&g_RecoilState_MainMenuTransition)`
+- The live CRT/root proof is the init-array entry at `0x4da034`, which now points at `RecoilStateMainMenuTransition_StaticInitAndRegisterAtExit()`.
+- `RecoilStateMainMenuTransition_ClearPausedAudioSnapshot()` is side-effect-only:
+  - destroys `g_RecoilState_MainMenuTransition.m_pausedAudioSnapshot` if present
+  - clears the field afterward
+- That helper is reused by paths that bypass the normal main-menu transition teardown:
+  - `HudSensorTracker_ApplyMissionDataAndReload()`
+  - `HudUiLoadGameDialog_ApplySelectedSaveAndTransition()`
+- The deferred display-mode helper on the same strip is now explicit too:
+  - `RecoilStateMainMenuTransition_SetDeferredVideoModeIndex(modeIndex)`
+  - ECX-only setter for `g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex`
+- `HudUiOptionsPanel_Resolution_OnActivate()` is the sole current caller of that helper:
+  - it maps the resolution dropdown entries to deferred retail mode indices
+  - the actual mode apply still happens later in `RecoilStateMainMenuTransition_OnDeactivate()`
+
+## Confirm-quit state notes
+
+- The global confirm-quit state now has the same explicit CRT wrapper row:
+  - `RecoilStateConfirmQuit_StaticInitAndRegisterAtExit()`
+  - `RecoilStateConfirmQuit_StaticInit()`
+  - `RecoilStateConfirmQuit_RegisterAtExit()`
+  - `RecoilStateConfirmQuit_AtExitDtor()`
+- The current split is:
+  - `StaticInit()` tailcalls `RecoilStateConfirmQuit_Ctor(&g_RecoilState_ConfirmQuit)`
+  - `RegisterAtExit()` registers `RecoilStateConfirmQuit_AtExitDtor()` with `crt_register_onexit()`
+  - `AtExitDtor()` tailcalls `RecoilStateConfirmQuit_Dtor(&g_RecoilState_ConfirmQuit)`
+- The live CRT/root proof is the init-array entry at `0x4da038`, which now points at `RecoilStateConfirmQuit_StaticInitAndRegisterAtExit()`.
+- The reachable confirm-quit dialog ownership path is now explicit too:
+  - `RecoilStateConfirmQuit_OnTryBecomeCurrent()` allocates `operator new(0xABE4)` as `HudUiBackgroundConfirmQuit`, stores it in `self->m_dialog`, and activates it
+  - `RecoilStateConfirmQuit_OnDeactivate()` disables/blits/destroys that dialog through the dialog-controller lane, clears `self->m_dialog`, and sleeps for 1000 ms
+- The state-side inner destructor is now bounded too:
+  - `RecoilStateConfirmQuit_Dtor()` is side-effect-only
+  - it disables/destroys any owned confirm-quit dialog, clears `self->m_dialog`, and restores `g_RecoilStateBaseDefault_Vtbl`
+- The inner dialog destructor is now bounded cleanly:
+  - `HudUiBackgroundConfirmQuit_Dtor()` is side-effect-only
+  - it destroys `cancelButton_AA98`, destroys `okButton_A94C`, then tears down `HudUiBackground`
+- The dialog-controller table on that strip is now explicit:
+  - `g_HudUiBackgroundConfirmQuit_DialogVtbl = { OnPresent=HudUiBackground_Update, SetActive=HudUiBackground_SetEnabled, Destroy=HudUiBackgroundConfirmQuit_ScalarDeletingDtor }`
+  - the trailing dword at `+0x0C` is zero padding, not another slot
+- The two confirm-quit button tables are now typed as `HudUiZrdButton_FTable`:
+  - `g_HudUiConfirmQuitOkButton_Vtbl` at `0x4cef00`
+  - `g_HudUiConfirmQuitCancelButton_Vtbl` at `0x4cee78`
+- The current button actions are:
+  - OK button `+0x30 OnActivate = HudUiZrdWidget_OnActivateQueueDualExitAndSwitchToLeaveNetwork()`
+  - CANCEL button `+0x30 OnActivate = HudUiZrdWidget_OnActivateQueueExitCurrentState()`
+- The OK button path now explicitly:
+  - sets `g_RecoilState_MainMenuSkipExitDelay = 1`
+  - queues `ExitCurrentState(1)` and `ExitCurrentState(0)`
+  - sets `g_RecoilApp.m_skipMissionShutdownOnExit = 1`
+  - queues `g_RecoilApp.m_leaveNetworkState`
+  - then forwards the base `HudUiZrdWidget_OnActivate(self)` behavior
+
+## Startup display notes
+
+- The adjacent DirectDraw startup palette strip is now bounded more cleanly.
+- `zVideo_dd_PrepareWindowForMode()` is a side-effect-only DirectDraw window-prep helper:
+  - removes the shell menu from `g_zVideo_hWnd`
+  - applies the fullscreen window styles
+  - calls `UpdateWindow(g_zVideo_hWnd)` and `SetFocus(g_zVideo_hWnd)`
+  - on palette-capable desktop devices, caches 256 `PALETTEENTRY` values into `g_zVideo_SystemPaletteEntries`
+- The cached system-palette global is now explicit:
+  - `g_zVideo_SystemPaletteEntries`
+  - type: `struct tagPALETTEENTRY[0x100]`
+- The reader/writer split on that strip is:
+  - `zVideo_dd_PrepareWindowForMode()` fills `g_zVideo_SystemPaletteEntries` through `GetSystemPaletteEntries(...)`
+  - `zVideo_ApplyPaletteWithBrightness(paletteEntries != 0)` can overwrite the cache from a caller-supplied palette
+  - `zVideo_ApplyPaletteWithBrightness()` then copies `g_zVideo_SystemPaletteEntries` into a local working buffer before brightness adjustment and the final palette upload through `g_zVideo_pfnSetPaletteEntries(0, 0x100, &entries)`
+- `zVideo_dd_OpenVideoMode()` is the sole current direct caller of `zVideo_dd_PrepareWindowForMode()` and ignores the helper's old constant return.
+- The adjacent DirectDraw error-report helper is now bounded too:
+  - `zVideo_ReportDxError(HRESULT hr, char* srcFile, int32_t srcLine)` is `__fastcall`
+  - returns `0` when `hr == 0`
+  - returns `-1` after formatting/reporting a DDERR_*/D3DERR_* message
+- `zVideo_dd_CreateDirectDraw2ForSelectedDevice()` now explicitly inherits that `0 / -1` logger contract:
+  - DirectDrawCreate failure -> `return zVideo_ReportDxError(...)`
+  - QueryInterface(IID_IDirectDraw2) failure -> `return zVideo_ReportDxError(...)`
+  - success -> release the temporary `IDirectDraw` shell and return `0`
+- `zVideo_dd_OpenVideoMode()` still converts that `0 / -1` DirectDraw-create result into the simpler backend-facing `zVideoStatus` result used by the startup display init path.
+- The adjacent startup initializer band is now bounded more tightly.
+- `RecoilApp_EngineInit(self, hWnd)` is a side-effect-only startup subsystem initializer on the reachable retail path.
+- Its single current caller is `RecoilApp_StartEngine()`, and that caller ignores the stale final `return 1` tail from `EngineInit()`.
+- That direct `void` replay is now re-verified after the recent BN crash/reanalysis churn; keep the temporary base-table `g_RecoilApp_MfcOleModule_Vtbl +0xAC = RecoilApp_EngineInit(self, hWnd)` comment authoritative and leave the full-table `+0xAC StartEngine` slot conservative.
+- The PASSED/FAILED banner immediately after `RecoilApp_EngineInit()` in `RecoilApp_StartEngine()` is driven by `zTurret_System_ResetIterationState()`, not by `EngineInit()`.
+- `zTurret_System_ResetIterationState()` is now bounded as a zero-success startup turret reset helper:
+  - clears `g_zTurret_RuntimeCount`
+  - clears `g_zTurret_CallbackStartIndex`
+  - returns `0` on the reachable retail path
+  - has one current code caller: `RecoilApp_StartEngine()`
+- The retained startup turret branch is now explicit:
+  - `RecoilApp_StartEngine()` still tests the helper result at `0x42e23b`
+  - current retail `zTurret_System_ResetIterationState()` returns `0`
+  - the startup turret banner therefore selects `g_RecoilApp_StartupStatusPassed`
+- The teardown-side sibling helper is now split cleanly from that startup gate:
+  - `zTurret_System_Shutdown()` is side-effect-only on the reachable retail path
+  - it only calls `zTurret_System_DestroyAll()`
+  - its sole current code caller is `RecoilApp_ShutdownEngine()`, which ignores the old zero tail
+- The adjacent DE-client teardown helper is now bounded too:
+  - `zDEClient_ShutdownGlobals()` is side-effect-only on the reachable retail path
+  - it removes the active feature entry when enabled, frees the quicksand texture-path table and crater animation array, and clears `g_zDEClient_QuickSandEnabled`
+  - its current callers `RecoilApp_ShutdownEngine()` and `HudSensorTracker_ShutdownMissionGameplaySystems()` both ignore the old zero tail
+- The adjacent HSE/span-occlusion gate is now bounded the same way:
+  - `zRndr_SpanOcclusion_Init(columnCount)` returns `0` on the reachable retail path after allocating the padded column-head table and span-node pool, resetting frame state, clearing `gRndr_SpanOccluderPolyCount`, and binding the two span-list builder callbacks
+  - `gRndr_pfnPointOpActive` / `gRndr_pfnPointOpCandidate` use the fastcall point-op ABI `RndrPointOpFn(dstPixels, y, x, color16)`: `ecx` carries the 16-bit framebuffer pointer, `edx` carries y, and the stack carries x plus the packed 16-bit color.
+  - `RecoilApp_InitializeDisplay()` is its sole current caller
+  - the retained nonzero-failure `g_RecoilApp_OpenHseAbortMsg` path is therefore dead on the reachable retail startup path
+- The adjacent software-renderer init global band is now explicit too:
+  - startup defaults:
+    - `gRndr_InvDepthBias`
+    - `gRndr_InvDepthScale`
+    - `gRndr_ScanConvertMode`
+    - `gRndr_PerspectiveTextureEnabled`
+    - `gRndr_BytesPerPixel`
+  - perspective-texture config globals:
+    - `g_zRndr_PerspTextureDeltaXInput`
+    - `g_zRndr_PerspTextureDeltaXPow2`
+    - `g_zRndr_PerspTextureDeltaXShift`
+    - `g_zRndr_PerspTextureDeltaXPow2F`
+    - `g_zRndr_PerspTextureFarZInv`
+    - `g_zRndr_PerspTextureDeltaXBytes`
+    - `g_zRndr_PerspAdaptiveMinSpan`
+    - `g_zRndr_PerspAdaptiveMaxSpan`
+    - `g_zRndr_PerspAdaptiveSlope`
+- The helper split on that renderer strip is now bounded directly:
+  - `zRndrInit()` seeds the retail software-render defaults:
+    - `gRndr_InvDepthBias = 0.0f`
+    - `gRndr_InvDepthScale = 1.0f`
+    - `gRndr_ScanConvertMode = 1`
+    - `gRndr_PerspectiveTextureEnabled = 1`
+    - `gRndr_BytesPerPixel = 1`
+    - plus the default perspective-texture delta/far-Z/adaptive values
+  - `zRndr_SetPerspectiveTextureDeltaX(deltaX)` clamps the requested span to at least 8 pixels, quantizes it to a power-of-two width, and refreshes the derived globals:
+    - `g_zRndr_PerspTextureDeltaXPow2`
+    - `g_zRndr_PerspTextureDeltaXShift`
+    - `g_zRndr_PerspTextureDeltaXPow2F`
+    - `g_zRndr_PerspTextureDeltaXBytes`
+  - `zRndr_SetPerspectiveTextureFarZ(farZ)` stores `1.0f / farZ` into `g_zRndr_PerspTextureFarZInv` when `farZ > 0`
+  - `zRndr::SetPerspectiveAdaptiveCorrection(correction)` updates:
+    - `gRndr_SpanDepthBias`
+    - `gRndr_SpanDepthBiasPlusOne`
+    - `gRndr_SpanDepthBiasPlusOneInv`
+- The read-side proof is clean:
+  - `gRndr_InvDepthBias` / `gRndr_InvDepthScale` feed the software model and flat/textured renderer band
+  - `gRndr_ScanConvertMode` and `gRndr_PerspectiveTextureEnabled` are consumed by the software render path and the interp/render-command side
+  - `gRndr_BytesPerPixel` feeds region-state setup and the textured-raster delta-byte derivation
+  - the perspective/adaptive globals are consumed by:
+    - `zRndr_DrawTexturedFanTri()`
+    - `zRndr_DrawTexturedImmediate()`
+    - `zRndr_DrawClippedImmediateLineStrip()`
+- Important BN quirk on this strip:
+  - even after replaying `gRndr_InvDepthScale` as a named `float`, BN 5.2 may still render the startup store in `zRndrInit()` as `gRndr_InvDepthScale = &data_3f800000`
+  - the renamed data vars and the address comments on the init/setter sites are the authoritative record for this band
+- The adjacent startup/shell audio option wrapper is now explicit too:
+  - `zSnd_SetAudioApiOption(apiIndex)` writes `*ZOPT_AUDIO_API = apiIndex`
+  - it then tailcalls `zSnd_SetBackendPreInit(apiIndex)`
+  - the meaningful `1/0` result remains owned by `zSnd_SetBackendPreInit()`
+  - the current reachable callers `zGame::Options_LoadGameOptions()`, `RecoilApp_StartEngine()`, `CZRecoilFrame_OnMenuSelectDirectSound()`, and `CZRecoilFrame_OnMenuSelectA3D()` all treat the outer setter as fire-and-forget
+- The adjacent startup sound-bootstrap strip is now bounded more tightly too:
+  - the raw startup sound globals on this lane are now explicit:
+    - `g_zSndInitDone`
+    - `g_zSndSystemReady`
+    - `g_zSndWindowHandle`
+    - `g_zSndBackend`
+    - `g_zSndDevice`
+    - `g_zSndListener`
+    - `g_zSndGeomOrCaps`
+    - `g_zSndEnabled`
+    - `g_zSndLastSample`
+    - `g_zSndLastVoice`
+    - `g_zSndSearchPathList`
+    - `g_zSndRootNode`
+  - the shared `zsnd_init.cpp` parser/failure strings are now pinned:
+    - `g_zSndConfig_SyntaxKey`
+    - `g_zSndConfig_CdTracksKey`
+    - `g_zSndConfig_SoundPathKey`
+    - `g_zSndConfig_SpeedOfSoundKey`
+    - `g_zSndConfig_SetsKey`
+    - `g_zSndConfig_SoundGroupsKey`
+    - `g_zSndInitFailedToFindMenuSoundsFmt`
+    - `g_zSnd_SourceFile_zsnd_init_cpp`
+  - the adjacent CD-track-list singleton row is now explicit too:
+    - `zSndCdTrackList_StaticInitAndRegisterAtExit()`
+    - `zSndCdTrackList_StaticInit()`
+    - `zSndCdTrackList_RegisterAtExit()`
+    - `zSndCdTrackList_AtExitDtor()`
+  - the proving CRT root is init-array entry `0x4da0a8`, which now points at `zSndCdTrackList_StaticInitAndRegisterAtExit()`
+  - the current helper split on that strip is:
+    - `StaticInit()` allocates the global `zSndCdTrackNode` sentinel/head, stores it in `g_zSndCdTrackListHead`, zeros `g_zSndCdTrackListCount`, and preserves the odd `g_zSndCdTrackListInitTag` byte write as likely CRT/compiler residue
+    - `RegisterAtExit()` only registers `zSndCdTrackList_AtExitDtor()` with `crt_register_onexit()`
+    - `AtExitDtor()` only unlinks/frees `zSndCdTrackNode` nodes and the sentinel head
+    - `zSndCdTrackEntry` payloads are still freed earlier by `zSndCd_Shutdown()`, not by `zSndCdTrackList_AtExitDtor()`
+  - `zSndCd_ResetPlaybackState()` is now bounded as the shared side-effect-only CD playback-position reset helper:
+    - resets the play-from/current/play-to track-minute-second triplets to `1:0:0`
+    - current callers `zSndCd_InitFromConfigNode()`, `zSndCd_Stop()`, and `zSndCd_SeekTrack()` ignore the old constant return lane
+  - the adjacent CD play-mode / MCI notify lane is now explicit too:
+    - `enum zSndCdPlayMode`
+      - `ZSND_CD_PLAYMODE_STOPPED = 0`
+      - `ZSND_CD_PLAYMODE_CURRENT_TRACK_ONCE = 2`
+      - `ZSND_CD_PLAYMODE_CURRENT_TRACK_LOOP = 5`
+    - `enum zSndCdFlags`
+      - `ZSND_CD_FLAG_STEREO_AUX = 1`
+      - `ZSND_CD_FLAG_READY = 2`
+    - the active CD playback-state globals on this strip are now explicit too:
+      - `g_zSndCdFlags`
+      - `g_zSndCdDeviceId`
+      - `g_zSndCdAuxDeviceId`
+      - `g_zSndCdCachedAuxVolumePacked`
+      - `g_zSndCdTrackCountMci`
+      - `g_zSndCdDiscLengthMinutes`
+      - `g_zSndCdDiscLengthSeconds`
+      - `g_zSndCdCurrentTrack`
+      - `g_zSndCdPlayFromTrack`
+      - `g_zSndCdPlayToTrack`
+      - `g_zSndCdLastPlayMode`
+    - `zSndCd::GetTrackCount()` returns `g_zSndCd_TrackCountCached` only when bit 1 is set in `g_zSndCdFlags`
+    - `zSndInit()` clears both CD runtime bits during sound bootstrap reset
+    - `zSndCd_InitFromConfigNode()` sets `ZSND_CD_FLAG_STEREO_AUX` when the chosen AUX device supports independent left/right volume
+    - the same CD init helper stores the queried disc length into `g_zSndCdDiscLengthMinutes` / `g_zSndCdDiscLengthSeconds`
+    - `zSndCd_InitFromConfigNode()` sets `ZSND_CD_FLAG_READY` only after the MCI/AUX/disc-length bring-up succeeds
+    - `zSndCd_InitFromConfigNode()` is now explicitly side-effect-only at the caller boundary; the old `0/1` tail is dead on the reachable parser path
+    - `zSndCd_Shutdown()` clears only `ZSND_CD_FLAG_READY` on teardown while leaving the stereo AUX capability bit intact
+    - only the low 16 bits of `g_zSndCdDeviceId` are passed to MCI command / notify helpers on the reachable path
+    - `zSndCd_HasStereoAuxVolume()` treats bit 0 of `g_zSndCdFlags` as the stereo AUX left/right control flag when `g_zSndCdAuxDeviceId != -1`
+    - `zSndCd_GetVolume(leftOut, rightOut)` reads AUX volume and mirrors mono devices into equal left/right outputs
+    - `zSndCd_SetVolume(left, right)` keeps independent channels only on stereo-capable AUX devices, and otherwise averages the inputs before `auxSetVolume()`
+    - `g_zSndCdCachedAuxVolumePacked` is the 4-byte authoritative AUX-volume cache on this strip:
+      - low 16 bits = cached left level
+      - high 16 bits = cached right level on stereo devices, or mirrored mono level otherwise
+    - `g_zSndCdLastPlayMode` tracks the last successful CD play mode
+    - `g_zSndCdCurrentTrack`, `g_zSndCdPlayFromTrack`, and `g_zSndCdPlayToTrack` track the current seek/play window
+    - `zSndCd_PlayFromCurrentTrack(playMode)` now cleanly shows that `CURRENT_TRACK_ONCE` and `CURRENT_TRACK_LOOP` both clamp the MCI play range to the current track only
+    - `zSndCd_OnMciNotify(wParam, lParam)` only replays the current track when `g_zSndCdLastPlayMode == ZSND_CD_PLAYMODE_CURRENT_TRACK_LOOP` and `MCI_NOTIFY_SUCCESSFUL` arrives for the active CD device
+    - `zSndCd_Stop()` clears `g_zSndCdLastPlayMode = ZSND_CD_PLAYMODE_STOPPED`
+    - `zSndInit()` seeds `g_zSndCdLastPlayMode = ZSND_CD_PLAYMODE_CURRENT_TRACK_ONCE` as the non-loop default
+  - the current archive-to-track import model is now explicit:
+    - `zSndCd_InitFromConfigNode()` still allocates `operator new(0x8)` as `zSndCdTrackEntry`
+    - `operator new(0xc)` allocates one appended `zSndCdTrackNode`
+    - imported archive->track mappings append onto `g_zSndCdTrackListHead` while incrementing `g_zSndCdTrackListCount`
+    - `zSndSystem_Init()` still keeps the live status-bearing contract on the reachable startup path:
+    - early-fails unless `g_zSndInitDone != 0` and `g_zSndSystemReady == 0`
+    - stores `g_zSndWindowHandle` when a non-null window is provided
+    - uses `g_zSndBackend` to choose DirectSound vs A3D
+    - falls back from A3D to DirectSound when `zSndBackend_InitA3D()` returns `0`
+    - loads `g_zSndRootNode` from the provided ZRD path and dispatches `SYNTAX` to `zSndConfig_ParseLegacySetsSyntax()` / `zSndConfig_ParseNamedSetsSyntax()`
+    - those parser bodies now in turn dispatch `CD_TRACKS` to side-effect-only `zSndCd_InitFromConfigNode()` and optional `SOUND_GROUPS` to side-effect-only `zSndGroup_LoadConfigBlock()`
+  - the backend/device split on that same strip is now explicit too:
+    - `zSndBackend_InitA3D()` creates `IA3d3` into `g_zSndDevice`, queries `IA3dGeom` into `g_zSndGeomOrCaps`, queries `IA3dListener` into `g_zSndListener`, and returns `1` on success vs `0` or `zSnd_ReportA3DError(...)` on failure
+    - `zSndBackend_InitDirectSound()` creates the DirectSound device into `g_zSndDevice`, fills `g_zSndGeomOrCaps` as DirectSound caps storage, creates the primary/listener object into `g_zSndListener`, and returns `1` on success vs `zSnd_ReportDirectSoundError(...)` on failure
+    - the A3D retry leg in `zSndSystem_Init()` rewrites `g_zSndBackend` to `zSndBackend_DirectSound (0)` before retrying startup
+  - the adjacent runtime/cue globals on that same strip are now explicit too:
+    - `zSndInit()` initializes `g_zSndEnabled = 1`, `g_zSndLastSample = nullptr`, and `g_zSndLastVoice = nullptr`
+    - `zSnd_SetEnabled(enabled)` is the direct side-effect setter for `g_zSndEnabled`
+    - `zSndSample_PlayA3D()` and `zSndSample_PlayDirectSound()` both publish the currently cued sample into `g_zSndLastSample` and the acquired voice handle into `g_zSndLastVoice`
+    - `zSndCue_Tick()` consumes `g_zSndLastSample` for marker playback timing and stops `g_zSndLastVoice` when `g_zSndCueStopIndexLimit` is reached
+    - `zSndPlayHandle_Stop()` clears `g_zSndLastSample` when the stopped handle belongs to that tracked cue sample
+  - the backend runtime-vs-option split on the same strip is now explicit:
+    - `zSnd_GetActiveBackend()` returns the live runtime backend from `g_zSndBackend`
+    - `zSnd_SetActiveBackendPreInit(enum zSndBackend backend)` only writes that runtime backend while sound is still uninitialized
+    - `zSnd_GetAudioApiOption()` returns the persisted `SoundAPI` option from `*ZOPT_AUDIO_API`
+    - `zSnd_SetAudioApiOption(enum zSndBackend backend)` writes the persisted option and then forwards the same enum value into `zSnd_SetActiveBackendPreInit(...)`
+  - the key fallback proof on that strip is now explicit too:
+    - `zSndSystem_Init()` may rewrite `g_zSndBackend` from `zSndBackend_A3D` to `zSndBackend_DirectSound` after A3D startup failure
+    - `RecoilApp_StartEngine()` then calls `zSnd_SetAudioApiOption(zSnd_GetActiveBackend())`, so the persisted option is collapsed back to the actual runtime backend after fallback
+  - the current caller split on that backend lane is:
+    - `CZRecoilFrame_OnUpdateA3DCmdUi()` checks `zSnd_GetActiveBackend()` because the A3D checkmark reflects the live backend
+    - `CZRecoilFrame_OnUpdateDirectSoundCmdUi()` checks `zSnd_GetAudioApiOption()` because the DirectSound checkmark reflects the persisted option
+    - `PlayerMgr_TickAllPlayers()` and `Player_ApplyDamageNonLocal()` keep using the persisted option getter for A3D-specific mix behavior on the reachable path
+  - the reachable teardown side is now explicit and side-effect-only:
+    - `zSndSystem_Shutdown()` tears down the stream manager, backend/device state, CD state, sample-set registry, loaded sound root tree, and search paths
+      - the old `mov eax, 1; ret` tail is now explicitly treated as dead teardown residue; the live callers in the MP-exit, fatal-disconnect, net-init-failure, and subsystem-shutdown lanes all ignore it
+    - `zSndBackend_Shutdown()` tears down DirectSound/A3D backend state, including `g_zSndListener`, `g_zSndDevice`, and the backend-specific `g_zSndGeomOrCaps` storage
+    - `zSndCd_Shutdown()` stops CD playback, closes the MCI device if open, frees per-track entries, and clears the CD track list
+- The adjacent startup/options sound-toggle family is now bounded too:
+  - `zOpt::SetMuteSoundOption(muted)` writes `ZOPT_MUTE_SOUND` and forwards the same flag into `zSnd::ApplyMuteStateToActiveVoices(muted)`
+  - `zOpt::GetMuteSoundOption()` returns the stored `ZOPT_MUTE_SOUND` value
+  - the meaningful enable-state result remains owned by `zSnd_AdjustEnableRefCount()`, not by the outer option wrapper
+  - `zSnd_SetCDAudioOption(value)` is a pure side-effect writer for `ZOPT_SOUND_CDAUDIO`
+  - the current reachable caller proof spans:
+    - `zGame::Options_LoadGameOptions()`
+    - `HudUiOptionsPanel_SoundActive_OnActivate()`
+    - `HudUiOptionsPanel_MusicEnable_OnActivate()`
+    - `RecoilApp_PlayState_OnTryBecomeCurrent()`
+    - `RecoilApp_PlayState_OnUpdateShouldQuit()`
+    - `HudUiLoadGameDialog_ApplySelectedSaveAndTransition()`
+    - `CZRecoilFrame_OnMenuToggleCDAudio()`
+  - the options/UI split is now explicit:
+    - `HudUiOptionsPanel_SoundActive_OnActivate()` only flips the mute option
+    - `HudUiOptionsPanel_MusicEnable_OnActivate()` writes the CD-audio option and then starts or stops the preview track
+    - `CZRecoilFrame_OnMenuToggleCDAudio()` is the shell `WM_COMMAND` toggle and still keeps the already-proved inverted checkmark model
+  - BN 5.2 may still show the mute setter and the shell toggle as `return ... __tailcall` because both end in direct jumps; the function/address comments are the authoritative record for that residue
+- The adjacent startup/options writer trio is now bounded too:
+  - `zOpt_SetSoundLODOption(level)` is the pure side-effect writer for `ZOPT_SOUND_LOD`
+  - `zOpt_SetFullscreenOption(fullscreen)` is the pure side-effect writer for `ZOPT_VIDEO_FULLSCREEN`
+  - `zOpt_SetGameDifficultyMode(value)` is the pure side-effect writer for the `GameIntensity` option
+  - the current caller proof spans:
+    - `zGame::Options_LoadGameOptions()`
+    - `HudUiOptionsPanel_SoundQuality_OnActivate()`
+    - `HudUiNewGamePanel_StartGameFromFields()`
+    - `HudSensorTracker_ApplyMissionDataAndReload()`
+    - `zVid_SetHwApiAndInitMode()`
+    - `zVid_InitFallbackMode()`
+  - the split on that strip is now explicit:
+    - `SoundLOD` is the options-dialog quality selector writer
+    - `GameDifficultyMode` is the new-game and mission-restore intensity writer
+    - `FullscreenOption` is the stored fullscreen preference writer reused by the shell toggle plus the hardware-init / fallback-restore path
+  - `CZRecoilFrame_OnMenuToggleFullscreenOption()` is now bounded as the shell toggle for that stored fullscreen preference
+  - BN 5.2 may still show the fullscreen shell handler as `return ... __tailcall` because it ends in direct jumps to `zOpt_SetFullscreenOption(0/1)`; the function/address comments are the authoritative record for that residue
+- The adjacent startup option-writer strip is now tighter too:
+  - `zOpt_SetSoundVolumeOption(volume)` stores `ZOPT_SOUND_VOLUME` and forwards the same scalar into `zSnd_SetVolumeScale(volume)`
+  - `zOpt_SetGameControlOptions(flags)` writes the full `ZOPT_GAME_CONTROL_OPTIONS` word
+  - the packed low-bit layout in `*ZOPT_GAME_CONTROL_OPTIONS` is now bounded directly:
+    - bit 0 = `RECOIL_CTRL_THROTTLE_MODE`
+    - bit 1 = `RECOIL_CTRL_STEERING_MODE`
+    - bit 2 = `RECOIL_CTRL_CURSOR_MODE`
+    - bit 3 = `RECOIL_CTRL_CAMERA_MODE`
+  - the three pure bit writers are now explicitly side-effect-only:
+    - `zOpt::SetThrottleMode()`
+    - `zOpt::SetSteeringMode()`
+    - `zOpt::SetCursorMode()`
+  - `Player_ToggleSteeringModeAndRecenterCursor()` is the current hotkey-side wrapper for the steering toggle path and still has one current caller in `HudUi_HandleHotkeyCommand()`
+  - the camera pair is intentionally not flattened into the same boolean model:
+    - `zOpt::SetCameraMode()` is the bit-3 bridge into `Player::ApplyCameraState()`
+    - `zOpt_GetCameraModePlayerState()` is not the plain camera-bit getter; it maps bit 3 into `PLAYER_CAMERA_STATE_THIRD_PERSON (1)` vs `PLAYER_CAMERA_STATE_FIRST_PERSON (3)`
+  - the stale `EAX` assignments still shown around the steering-mode calls inside `Player::ApplyCameraState()` are now documented as BN residue rather than a live return contract
+  - the adjacent bind-map command-callback lane is now typed too:
+    - `HudUi_HandleHotkeyCommand()` and `zVideo_HandleSoftwareModeHotkey()` both use the callback ABI `void __fastcall(commandId)`
+    - `zInput_BindMap_Current_SetCommandCallback()` and `zInput_BindMapContext_SetCommandCallback()` now carry that same callback function-pointer type
+    - `zInput_BindMapContext_DispatchFromKeyboardEvent()` is the keyboard-side tail-jump wrapper into `m_commandCallbacks[commandId]`
+    - `zInput_BindMap_InitAndCreateFfEffects()` is the main startup registration band for those callbacks
+    - `HudCheat_ProcessInputString()` reuses the same registration helper for the cheat-gated commands
+  - the callback handlers themselves are treated as side-effect-only because keyboard/input pollers do not branch on the callback return, while `zInput_BindMapContext_SetCommandCallback()` still returns `1/0` to report whether any DIK binding existed before registration
+  - BN may still display `zInput_BindMapContext.m_commandCallbacks` as `void (**)(int32_t commandId)` in some type views even though the fastcall callback ABI is now the authoritative model on the reachable path
+  - the current reachable callers are:
+    - `zGame::Options_LoadGameOptions()` for both helpers
+    - `HudUiOptionsPanel_SoundVolume_OnActivate()` for `zOpt_SetSoundVolumeOption(volume)`
+  - both helpers are now treated as side-effect-only on the reachable path
+- The two shell audio-menu handlers on that strip are now explicit side-effect-only command handlers:
+  - `CZRecoilFrame_OnMenuSelectDirectSound()`
+  - `CZRecoilFrame_OnMenuSelectA3D()`
+- Related holdbacks remain intentional:
+  - `zSndSystem_Init()` still has a live status contract on the reachable startup path
+  - `zInput::Init()` still has a live `enum zInputInitResult` startup contract:
+    - `ZINPUT_INIT_OK = 0`
+    - `ZINPUT_INIT_ALREADY_INITIALIZED = 1`
+    - `ZINPUT_INIT_DI_CREATE_FAILED = -1`
+- The primary-surface size getter family is now aligned too:
+  - `zVideo_GetPrimarySurfaceWidth()`
+  - `zVideo_GetPrimarySurfaceHeight()`
+- Those are paired with the already-bounded `zVideo_GetPrimarySurfacePixels()` and `zVideo_GetPrimarySurfacePitch()` helpers.
+- They return `g_zVideo_PrimarySurfaceState.width` / `.height`, not a generic desktop or monitor size.
+- Current reachable callers include:
+  - `RecoilApp_IntroFmvState_OnTryBecomeCurrent()`
+  - `RecoilApp_MainMenuPrepState_OnTryBecomeCurrent()`
+  - `RecoilApp_AttractFmvState_OnTryBecomeCurrent()`
+  - `HudUiMgr_SetRects()`
+  - `HudLayoutSW_SetActive()`
+  - `HudLayoutHW_SetActive()`
+  - `HudUiMpExitDialog_LoadLayout()`
+  - `zFMV_Script_BeginAtTime()`
+  - `zFMV_ActionBlur_{Begin,End}()`
+  - `zVideo_UpdateProjectionStateFromViewContext()`
+  - `zVid_Noise_InitBuffers()`
+- `HudUiMgr_InitHudLayouts(displayRect, windowRect)` is also side-effect-only on the reachable startup path.
+- Its single current caller is `RecoilApp_StartEngine()`, and that caller ignores the helper's old constant `return 1` tail while using it purely as the HUD/global-widget bootstrap step.
+- `HudUiMgr::UpdateFrame()` is the per-frame HUD tick reached from all three live render paths in `RecoilApp_PlayState::TickAndRenderFrame()`:
+  - it updates the active layout, global HUD container, top/chat text stacks, sensor string menu, floating timer panel, reticle widget, and then clears the per-frame sensor target-marker and weapon-state counters
+  - when the HUD is disabled, it still draws the objective summary/description panels while chat composition is active and updates the fixed timer panel
+  - the weapon-slot clear loop starts at `weaponSlots[0].slotWidget`, hides each slot's track-marker widget and slot widget, then advances by the full `HudUiSlot` stride
+  - BN 5.2 still reorders the floating-timer sample reset in HLIL; assembly divides the sampled frame count by the pre-reset elapsed time before clearing the sample fields
+- The reachable retail startup display bootstrap in `RecoilApp_InitializeDisplay()` is now bounded more tightly.
+- `zRndr_SpanOcclusion_Init(zOpt_WindowSection_GetHeight())` is a side-effect-only retail setup helper, not a live status gate on the current reachable path.
+- `g_RecoilApp_OpenHseAbortMsg` remains as dead startup text from the older failure model that tested `EAX` after the span-occlusion helper.
+- `zVid_InitFrameScratchBuffers()` is the next side-effect-only helper on that same strip.
+- Its current body is only:
+  - `zVid_Noise_InitBuffers()`
+  - `zRndr_SelectSpanRoutines()`
+- Its current reachable caller set is only `RecoilApp_InitializeDisplay()`.
+- The adjacent region-state cache pair on that same startup/video strip is now bounded too:
+  - `zVideo_fx_SetupRegionState(pixels, rectOrNull, bitsPerPixel, pitchBytes)` is side-effect-only on the reachable path
+  - it caches the active framebuffer pointer, active region dimensions/edges, bytes-per-pixel, pitch, and the derived `g_zRndr_PerspTextureDeltaXBytes`
+  - `zVideo_fx_GetRegionState(outWidth, outHeight, outBitsPerPixel, outPitchBytes)` returns the saved framebuffer pointer while writing the cached width/height/bpp/pitch
+  - the current save/restore proof is strongest in `HudUiMessageBoxDialog_RunModal()`, which snapshots the old region cache before switching to the modal dialog rect and restores it on teardown
+- The adjacent surface-cache helper on that strip is now bounded too:
+  - `zVideo_fx_SetSurfaceState(pixels, width, height, pitchBytes)` is side-effect-only on the reachable path
+  - it caches the active 16-bit FX surface pointer, width, height, pitch in bytes, and derived pitch in packed-16 pixels
+  - the strongest mixed caller proof is `zFMV_Script_BeginAtTime()` plus `zVideo_FxPass3Element_Draw()`, but the same helper is also reused by `HudUiMpExitDialog_LoadLayout()`, the FMV blur actions, and the SW/primary postprocess paths
+- The adjacent FxPass3 input-config helpers on that same strip are now bounded too:
+  - `zVideo_FxPass3Config_SetInputSurface(self, pixels, width, height, pitchBytes)` is a side-effect-only config writer for the shared `g_zVideo_FxPass3Config` source surface fields
+  - `zVideo_FxPass3_SetInputSurface(...)` is the thin global wrapper used by the SW and primary postprocess paths
+  - `zVideo_FxPass3Config_SetInputRectByIndex(self, index, value)` is the side-effect-only config writer for the two `inputRectsOrNull[]` slots and ignores `index >= 2`
+  - `zVideo_FxPass3_SetInputRectByIndex(index, value)` is the thin global wrapper used by `RecoilApp_PlayState_TickAndRenderFrame()` to publish rect slots 0 and 1 before `zVideo_FxPass3_Update(...)`
+
+## Input bootstrap notes
+
+- The adjacent startup input mouse-client geometry strip is now bounded.
+- `zInput_Mouse_SetClientSizeAndCenter(clientWidth, clientHeight)` is now pinned as a side-effect-only `__fastcall` helper.
+- Its current reachable body only:
+  - updates `g_MouseClientWidth` / `g_MouseClientHeight`
+  - derives `g_MouseClientCenterX` / `g_MouseClientCenterY`
+  - derives `g_MouseInvClientCenterX` / `g_MouseInvClientCenterY`
+- `RecoilApp_StartEngine()` now has the startup caller split pinned directly:
+  - width from `zOpt_DisplaySection_GetWidth()` in `ECX`
+  - height from `zOpt_DisplaySection_GetHeight()` in `EDX`
+  - direct call to `zInput_Mouse_SetClientSizeAndCenter(...)`
+- The local `GetClientRect(...)` refresh helper on the same strip is now bounded too:
+  - `zInput_Mouse_UpdateClientRectAndCenter()` is side-effect-only
+  - it reads `GetClientRect(g_InputWindowHwnd, &rect)` and forwards `rect.right` / `rect.bottom` into `zInput_Mouse_SetClientSizeAndCenter(...)`
+  - `zInput_Mouse_InitDevice()` only uses that refresh helper lazily when `g_MouseClientWidth <= 0`
+- The adjacent mouse-normalization scalar strip is now bounded too:
+  - `g_MouseClientCenterY` is signed `int32_t`, not `uint32_t`
+  - `g_zInput_MouseUnitScalar = 1.0f` is the shared mouse-lane unit scalar used as the normalized clamp upper bound and the reciprocal numerator for inverse-center derivation
+  - `g_zInput_MouseDeltaScaleX = 1.3f` and `g_zInput_MouseDeltaScaleY = 1.3f` are the private float scalars used by `zInput_Mouse_ApplyAccumulatedDelta()` before `_ftol()` converts accumulated deltas into integer cursor movement
+  - the cached cursor/delta row is now explicit too:
+    - `g_MouseCursorClientX` / `g_MouseCursorClientY`
+    - `g_MouseCursorNormX` / `g_MouseCursorNormY`
+    - `g_MouseDeltaX` / `g_MouseDeltaY`
+    - `g_MouseDeltaNormX` / `g_MouseDeltaNormY`
+  - `zInput_Mouse_GetStateSnapshot(outState)` still exports that contiguous `0x2c` row rooted at `&g_MouseCursorClientX`
+  - `0x561cac` is still only a one-xref clamp/accumulation gate on `zInput_Mouse_ApplyAccumulatedDelta()` and stays conservative until a write-side owner is found
+- The adjacent mouse-snapshot accessor strip is tighter now:
+  - `zInput_Mouse_GetStateSnapshot(outState)` now really uses `struct zInput_MouseStateSnapshot*` in BN
+  - `Player_TickLocalPlayerControls()` now renders that local scratch as `struct zInput_MouseStateSnapshot outState`, which exposes `cursorNormX_08`, `cursorNormY_0c`, and `deltaX_10` directly on the gameplay mouse-look path
+  - `zInput_Mouse_GetClientCursorPosPtr()` stays intentionally conservative even though it returns the same root address, because current callers still mix whole-band memcpy use with first-field-only use
+  - `HudUiBackground.inputSnapshot_14` also stays intentionally conservative as a `0x30`-byte owner cache:
+    - only the `0x2c` retail snapshot prefix is copied from `g_MouseCursorClientX`
+    - the trailing dword at `+0x2c` is owner-specific and still unresolved
+- The adjacent input button-transition strip is tighter too:
+  - `enum zInputButtonTransitionState` is now the shared `0/1/2/4` model:
+    - `ZINPUT_BUTTON_IDLE = 0`
+    - `ZINPUT_BUTTON_PRESSED = 1`
+    - `ZINPUT_BUTTON_HELD = 2`
+    - `ZINPUT_BUTTON_RELEASED = 4`
+  - that enum now backs:
+    - `zInput_Mouse_GetButtonTransitionState(buttonIndex)`
+    - `zInput_KBD_GetKeyTransitionState(dikCode)`
+    - `zInput::DI_GetButtonTransitionState(buttonIndex)`
+    - `g_zInputMouseBtn1State` / `g_zInputMouseBtn2State` / `g_zInputMouseBtn3State`
+    - `zInput_MouseStateSnapshot.button1Transition_20` / `_24` / `_28`
+  - `zInput_BindMapContext_DispatchMouseButtonCallbacks()` now clearly dispatches only on `ZINPUT_BUTTON_PRESSED`
+  - `zInput_BindMapContext_ReadCommandInputState()` now ORs keyboard, joystick, and mouse sources through that same shared flag model
+- `g_InputWindowHwnd` is the shared HWND root for the input bootstrap path:
+  - used by the mouse-device `SetCooperativeLevel(...)` path
+  - reused by the `GetClientRect(...)` refresh helper above
+  - BN data-decl output may still print the raw address `0x561cb4`, so the BN address comment is the authoritative record for that leaf
+- The adjacent joystick-enable helper is now rehomed to the input subsystem:
+  - `zInput_DI_SetJoystickEnabled(enableFlag)`
+  - it remains intentionally int-returning because the current reachable caller band still feeds its actual enabled-state result into `zInp_SetJoystickOption(...)`
+  - when enabling and the DI joystick device is ready, it seeds `g_zInputJoyAxisConfig_Default` and applies it through `zInput_DI_ApplyAxisConfig()`
+  - the current proving callers are:
+    - `RecoilApp_StartEngine()`
+    - `RecoilApp_PlayState_OnTryBecomeCurrent()`
+    - `RecoilStateControls_OnDeactivate()`
+    - `HudUiLoadGameDialog_ApplySelectedSaveAndTransition()`
+- The adjacent joystick option-writer family is now bounded too:
+  - `zInp_SetJoystickOption(value)` is the side-effect-only writer for `ZOPT_INPUT_JOYSTICK` on the reachable startup / controls / shell / load-game path
+  - `zInp::SetJoystickAxesCountOption(axisCount)` is the side-effect-only writer for `ZOPT_JOYSTICK_NUM_AXES`
+  - `zInp::SetJoystickButtonCountOption(buttonCount)` is the side-effect-only writer for `ZOPT_JOYSTICK_NUM_BUTTONS`
+  - the two count writers currently have one caller each in `zGame::Options_LoadGameOptions()`, where the retail defaults are seeded from `detail.zrd`
+- The shell joystick command now matches that option-writer model too:
+  - `CZRecoilFrame_OnMenuToggleJoystick()` is a `void` menu handler
+  - it reads `zInp_GetJoystickOption()`, flips the persisted option through `zInp_SetJoystickOption(...)`, and keeps the already-proved inverted checkmark model
+  - the menu is checked when the stored joystick option is `0`
+- The adjacent mouse acquire/app-activation strip is now bounded too:
+  - `zInput_Mouse_UpdateAcquireState()` is side-effect-only on the reachable path
+  - it chooses `Acquire_1c` vs `Unacquire_20` on `g_zInputMouseDevice` from `g_MouseDeviceAcquired`
+  - it only flips the cached acquire flag when the DI result is something other than `0` or `1`
+- The two shell-facing wrappers on that same strip are also side-effect-only:
+  - `zInput_OnAppActivate()` resumes joystick / keyboard / mouse suspend gates, sets `g_MouseDeviceAcquired = 1`, then tail-jumps into `zInput_Mouse_UpdateAcquireState()`
+  - `zInput_OnAppDeactivate()` suspends joystick / mouse / keyboard gates, sets `g_MouseDeviceAcquired = 0`, then tail-jumps into `zInput_Mouse_UpdateAcquireState()`
+- `CZRecoilFrame_OnActivate()` is the current shell proof for both wrappers:
+  - foreground loss: `RecoilApp_OnAppDeactivate()` then `zInput_OnAppDeactivate()`
+  - foreground gain: `RecoilApp_OnAppActivate()` then `zInput_OnAppActivate()` before `zVideo_TryRestoreFullscreenWindow()`
+- BN 5.2 may still print `return ... __tailcall` inside `zInput_OnAppActivate()` / `zInput_OnAppDeactivate()` because both bodies end in a direct `jmp`, but the shell callsite and function comments now treat both as side-effect-only helpers.
+- The adjacent cursor OS-sync strip is now bounded too:
+  - `zInput_Mouse_ApplyClientCursorPosToOS()` is the side-effect-only Win32 sync helper for the cached client cursor point
+  - it copies the cached client cursor point through `ClientToScreen(g_InputWindowHwnd, &point)` and then calls `SetCursorPos(point.x, point.y)`
+  - `zInput_Mouse_RecenterCursor()` copies `g_MouseClientCenterX/Y` into the cached client cursor point, zeros the normalized mouse coordinates, and syncs through the OS helper
+  - `zInput_Mouse_RecenterCursorX()` recenters only the cached client X coordinate and syncs through the same helper
+  - `zInput_Mouse_SetNormalizedCursorPos(normX, normY)` clamps to `[-1, 1]`, rewrites the cached normalized/client cursor coordinates from the center and inverse-center scales, and then syncs through the same helper
+- The current proving caller split on that strip is:
+  - `Player_ResetMouseControlStateAndRecenterCursor()` for the full recenter helper
+  - `Player_UpdateAutoTurnAndSteerFromTarget()` for the X-only recenter helper
+- BN 5.2 may still print tail-jump residue inside `zInput_Mouse_RecenterCursor()`, `zInput_Mouse_RecenterCursorX()`, and `Player_ResetMouseControlStateAndRecenterCursor()`, but the function comments and player callsite comments now treat them as side-effect-only cursor-sync helpers.
+- The adjacent packed input status/refcount block is intentionally left comment-backed for now:
+  - `0x561cb8` is currently bounded as keyboard / joystick / mouse status bytes plus one unclear byte
+  - `0x561cbc` is currently bounded as packed keyboard / joystick low/high 16-bit refcounts
+  - `0x561cc0` is currently bounded as packed mouse refcount low 16 bits with an unclear upper half
+  - BN currently decompiles cleaner through the split per-device names (`g_zInputKbdStatusFlags`, `g_zInputJoyStatusFlags`, `g_zInputMouseStatusFlags`, `g_zInputKbdRefCount`, `g_zInputJoyRefCount`, `g_zInputMouseRefCount`), so this band is parked until a safe 4-byte rewrite exists
+- The packed status-byte lane on that strip is now bounded more tightly:
+  - `enum zInputDeviceStatusFlags`
+    - `ZINPUT_DEVICE_STATUS_READY = 1`
+    - `ZINPUT_DEVICE_STATUS_SUSPENDED = 2`
+  - `zInput_Keyboard_Suspend()`, `zInput_Mouse_Suspend()`, and `zInput_Joystick_Suspend()` set the `SUSPENDED` bit
+  - the paired `*_ResumeFromSuspend()` helpers clear that bit and reset transition state if it was previously set
+  - `zInput_Keyboard_IsUnsuspended()`, `zInput_Mouse_IsUnsuspended()`, and `zInput_Joystick_IsUnsuspended()` now use `enum zInputDeviceSuspendState { ZINPUT_DEVICE_SUSPENDED = 0, ZINPUT_DEVICE_UNSUSPENDED = 1 }`
+  - `zInput_UpdateDevices()` only polls while each per-device status byte is exactly `READY (1)` and its paired packed refcount is nonzero
+- The packed refcount semantics are now bounded too:
+  - keyboard uses the low 16 bits at `0x561cbc`
+  - joystick uses the high 16 bits at `0x561cbc`
+  - mouse uses the low 16 bits at `0x561cc0`
+  - the AddRef/refcount helpers use those lanes directly and reset transition state on the first ready-device reference
+- The adjacent startup input-init gate is now bounded explicitly:
+  - `enum zInputInitResult __fastcall zInput::Init(HWND hwnd, HINSTANCE hinst)`
+  - `ZINPUT_INIT_OK = 0` after resetting the packed status/refcount cache, creating DirectInput, initializing keyboard/mouse/joystick, and AddRef'ing keyboard plus mouse
+  - `ZINPUT_INIT_ALREADY_INITIALIZED = 1` when `g_InputWindowHwnd` is already set
+  - `ZINPUT_INIT_DI_CREATE_FAILED = -1` when `DirectInputCreateA(...)` fails after logging the DI error string
+- The shared startup globals on that strip are now explicit too:
+  - `g_zInput_GlobalState` is the cached `IDirectInput` interface pointer filled by `DirectInputCreateA(...)`
+  - `g_zInput_hWnd` is the startup input window-handle latch; non-null means the DirectInput bootstrap already ran
+- The per-device success polarity on that strip is now explicit:
+  - `zInput::Keyboard_InitDevice()` returns `0` on success and `zInput::Init()` converts that into packed status byte `+0 = 1`
+  - `zInput::Mouse_InitDevice()` returns `1` on success and `zInput::Init()` mirrors that nonzero success into packed status byte `+2 = 1`
+  - `zInput::DI_InitJoystickDevice()` returns `1` on success and `zInput::Init()` mirrors that nonzero success into packed status byte `+1 = 1`
+- The reachable caller split is also now pinned:
+  - `RecoilApp_EngineInit()` treats any nonzero `zInputInitResult` as `FAILED` in the startup banner path
+  - `RecoilApp_StartEngine()` ignores the result and continues with mouse geometry, joystick enable, and HUD layout init
+- The adjacent mouse snapshot export band is now bounded enough to keep:
+  - `zInput_Mouse_GetStateSnapshot(outState)` copies the contiguous `0x2c` mouse snapshot rooted at `g_MouseCursorClientX`
+  - the helper now has the accepted BN prototype `int32_t __fastcall zInput_Mouse_GetStateSnapshot(struct zInput_MouseStateSnapshot* outState)`
+  - the current proven export layout is:
+    - client cursor XY
+    - normalized cursor XY
+    - delta XY
+    - normalized deltas
+    - button 1/2/3 transition states via `enum zInputButtonTransitionState`
+  - that band is now documented with `struct zInput_MouseStateSnapshot`
+  - BN 5.2 still renders the helper's out-parameter as `void*` in HLIL because the body is a raw `memcpy(...)`, so the struct definition and the BN comment at `0x561c80` are the authoritative record for this export path
+
+## Credits dialog notes
+
+- The credits-panel background header is now explicit:
+  - `g_HudUiCreditsPanel_Vtbl` at `0x4cd1a0`
+  - modeled as `struct HudUiBackgroundPanel_FTableHeader`
+- The header proof is direct from `HudUiCreditsPanel_Ctor()`, which installs that object at `self->base.vftable`.
+- `g_HudUiCreditsPanel_Vtbl.container_00.UpdateAll` is now explicitly:
+  - `void __thiscall HudUiCreditsPanel_UpdateFadeAndExit(struct HudUiCreditsPanel* self, float dt)`
+- The old queue-helper returns on the fade-complete path were not a real update contract.
+- The current reachable behavior is:
+  - advance `fadeProgress_AD58` by `fadeStep_A94C * dt`
+  - run `HudUiBackground_Update(self, dt)`
+  - once the fade reaches `1.0`, queue either plain exit or leave-network exit depending on `g_RecoilApp_QuitAfterCredits`
+
+## MP-exit dialog notes
+
+- The MP-exit dialog header is now explicit:
+  - `g_HudUiMpExitDialog_Vtbl` at `0x4cf018`
+  - modeled as `struct HudUiMpExitDialog_Vtbl`
+- The recovered slot split is:
+  - `Update = HudUiMpExitDialog_Update(self, dt)`
+  - `SetEnabled = HudUiBackground_SetEnabled(self, enabled)`
+  - `ScalarDeletingDtor = HudUiMpExitDialog_ScalarDeletingDtor(self, flags)`
+- `Update` is now explicitly:
+  - `void __thiscall HudUiMpExitDialog_Update(struct HudUiMpExitDialog* self, float dt)`
+- `SetEnabled` is also side-effect-only on this strip and uses the already-bounded `HudUiBackground_SetEnabled()` helper contract.
+- `HudUiMpExitDialog_LoadLayout(self)` is now side-effect-only on the reachable path.
+- Its proving callers are:
+  - `RecoilApp_MpExitDialogState_OnEnter()`
+  - `RecoilApp_MpExitDialogState_OnTryBecomeCurrent()`
+- The current reachable loader behavior is:
+  - capture the gameplay frame
+  - load `MPEXIT`
+  - always bind `MPEXITBTN`
+  - bind `MPNEWGAME` only when `m_mpNewGameButtonMode >= 0`
+- The teardown side is now bounded too:
+  - `HudUiMpExitDialog_UnloadLayout(self)` is side-effect-only
+  - `HudUiMpExitDialog_Dtor(self)` is the inner destructor body
+  - `HudUiMpExitDialog_ScalarDeletingDtor(self, flags)` remains the separate self-returning delete wrapper
+  - `RecoilApp_MpExitDialogState_OnDeactivate(self)` is also side-effect-only
+- The current reachable unload/teardown behavior is:
+  - disable the dialog
+  - run one final `UpdateAll(0)`
+  - clear shared top-message/fade state
+  - release the captured background image
+  - scalar-delete the dialog object
+  - pop the temporary bind-map context
+  - unload the shared `DIALOG` sample set
+  - reset list-menu fade
+- The two owned dialog buttons are now bounded too:
+  - `g_HudUiZrdWidget_MpExitDialog_ExitButton_Vtbl` at `0x4cf028`
+  - `g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl` at `0x4cf0b0`
+  - both are plain `struct HudUiZrdButton_FTable` tables, not generic `HudUiUnknown_1_FTable` blobs
+- Their current reachable callbacks are:
+  - `HudUiMpExitDialog_MpExitButton_OnActivate(self)`:
+    - forward base widget activation
+    - queue `g_RecoilApp.m_leaveNetworkState`
+  - `HudUiMpExitDialog_MpNewGameButton_OnActivate(self)`:
+    - queue `g_RecoilApp.m_introFmvState`
+    - queue `HudUiNetGameSetupOverlayOwner_QueueEnterWithReconfigureFlag(1)`
+    - forward base widget activation
+
+## Shell command notes
+
+- `CZRecoilFrame_OnMenuStartSinglePlayerGame()` is the void `WM_COMMAND / 0x68` single-player start handler.
+- Its reachable body only:
+  - clears `g_RecoilApp.m_skipIntroFmv`
+  - clears `g_RecoilApp.m_missionFmvState.m_skipMissionFmv`
+  - jumps directly into `RecoilApp_LoadZbdAndStartEngine()`
+- BN may still render that tail as `return ... __tailcall`, but the assembly/message-map proof shows it is a command-handler jump, not a live return contract.
+
+## FMV action notes
+
+- The reachable FMV action `.rdata` band is now materially tighter. The current recovered action-table family is:
+  - `g_zFMV_ActionBase_Vtable`
+  - `g_zFMV_ActionWait_Vtable`
+  - `g_zFMV_ActionPlaySound_Vtable`
+  - `g_zFMV_ActionBlurH_Vtable`
+  - `g_zFMV_ActionBlurV_Vtable`
+  - plus the already-bounded `g_zFMV_ActionImage_Vtable`, `g_zFMV_ActionFade_Vtable`, `g_zFMV_ActionPlayAvi_Vtable`, `g_zFMV_ActionBlur_Vtable`, and `g_zFMV_ActionPlayMci_Vtable`
+- `zFMV_Script_LoadActionsFromZrd()` is now the direct loader proof for the missing vtable band:
+  - `WAIT -> g_zFMV_ActionWait_Vtable`
+  - `PLAYSOUND -> g_zFMV_ActionPlaySound_Vtable`
+  - `BLURH -> g_zFMV_ActionBlurH_Vtable`
+  - `BLURV -> g_zFMV_ActionBlurV_Vtable`
+- The currently reachable loader-tag family on that same strip is now explicit too:
+  - `g_zFMV_ActionShowImageTag = "SHOWIMAGE"`
+  - `g_zFMV_ActionBlitImageTag = "BLITIMAGE"`
+  - `g_zFMV_ActionLoadImageTag = "LOADIMAGE"`
+  - `g_zFMV_ActionWaitTag = "WAIT"`
+  - `g_zFMV_ActionFadeInTag = "FADEIN"`
+  - `g_zFMV_ActionFadeOutTag = "FADEOUT"`
+  - `g_zFMV_ActionPlayAviTag = "PLAYAVI"`
+  - `g_zFMV_ActionPlayMciTag = "PLAYMCI"`
+  - `g_zFMV_ActionBlurTag = "BLUR"`
+  - `g_zFMV_ActionBlurHTag = "BLURH"`
+  - `g_zFMV_ActionBlurVTag = "BLURV"`
+  - `g_zFMV_ActionPlaySoundTag = "PLAYSOUND"`
+- Every tag above currently has a single code xref, and every xref lands in `zFMV_Script_LoadActionsFromZrd()`, so the FMV parser band is now fully named on the reachable path rather than split between symbols and raw inline literals.
+- The shared timed runner scale is now explicit too:
+  - `g_zFMV_TimeGetTimeToSecondsScale = 0.00100000005f`
+  - used by `zFMV_Action_RunBlockingTimed()` to convert `GetTickCount()` deltas into seconds
+- The recovered blur-table split is now:
+  - `g_zFMV_ActionBlur_Vtable` for the common blur action body
+  - `g_zFMV_ActionBlurH_Vtable` for the horizontal variant
+  - `g_zFMV_ActionBlurV_Vtable` for the vertical variant
+- The adjacent FMV script teardown family is now bounded too:
+  - `zFMV_Script_ResetActions(self, freeNodes)` is side-effect-only on the reachable path
+  - `freeNodes == 0` rewinds `m_cur` back to `m_head`
+  - `freeNodes != 0` deletes every action through `pfnDelete(1)` and clears `m_head`, `m_tail`, and `m_cur`
+  - `zFMV_Script_ResetActionsThunk(self, freeNodes)` is the thin thiscall wrapper used by the FMV-state teardown hooks and `zFMV_Script_RunBlocking()`
+  - `zFMV_Script_Dtor(self)` frees `m_fmvPath` and then resets the action list with `freeNodes = 1`
+- The state-side FMV teardown split is now explicit too:
+  - `RecoilApp_IntroFmvState_OnDeactivate()` resets with `freeNodes = 1`
+  - `RecoilApp_AttractFmvState_OnDeactivate()` resets with `freeNodes = 0` so the loaded attract action list is preserved for reuse
+  - `RecoilApp_RunMainLoop()` already uses the shared `OnDeactivate()` state slot as side-effect-only teardown, so the old return lanes on this strip were just reset-helper residue
+- Remaining nearby FMV residue is bounded to BN 5.2 presentation issues:
+  - `zFMV_ActionPlayAvi_Update()` still renders its local continue flag as `return esp[4]`
+  - `RecoilApp_PlayState_OnUpdateShouldQuit()` and `RecoilStateSaveLoadTransition_OnTryBecomeCurrent()` still show local blur-action alias noise even though the stack local and base-vtable reset are now pinned by comments
+
+## Save/Load callback notes
+
+- `zUtil_ZAR::RegisterSectionHandler()` and `zZbdSectionHandler::InvokeDataReady()` now close as one generic data-ready bridge:
+  - `ECX = ctx`
+  - `EDX = token`
+  - stack `buffer`, `size`, `userData`
+- The sampled reachable read callbacks on that bridge are side-effect-only:
+  - `HudUiTimerPanel_ZarReadTimerData()` and `Player_ZAR_ReadMissionSaveDataSection()` consume only the trailing stack tail
+  - `Player_ZAR_ReadVehicleListSection()` also consumes `EDX` as the vehicle-root node token
+- `Player_ZAR_WriteVehicleListSection()` now builds a local `PlayerVehicleListSaveEntry_80` blob per saved vehicle root, so the VehicleList writer and reader share the same `0x80` payload model.
+- The Mines save/load payload is now explicit as `PlayerMineSaveEntry { resetMarker_00, optCatalogName_04, spawnPos, scale, ownerNodeName_03c }`.
+- `Player_Mines_ZAR_WriteSection()` writes `DummyMineData` as that same struct with `resetMarker_00 = 1`, and `Player_Mines_ZAR_ReadEntryOrReset()` uses that marker to clear the reachable runtime mine-instance lanes before replaying `MineData%03d`.
+
+## HUD timer packet notes
+
+- The reachable HUD timer network strip now has both static packet buffers named in BN:
+  - `g_NetPkt0C_HudTimerStatusBitsBuf`
+  - `g_NetPkt0D_HudTimerPanelStateBuf`
+- The sender wrappers on this lane are side-effect-only helpers, not meaningful status-return APIs:
+  - `void __fastcall GameNet_SendPkt0C_HudTimerStatusBits(struct HudTimerPanelNetState* hudTimerState)`
+  - `void __fastcall GameNet_SendPkt0D_HudTimerPanelState(struct HudTimerPanelNetState* hudTimerState)`
+- The current proof is from assembly plus caller propagation:
+  - both take their sole argument in `ECX`
+  - both end in plain `retn`
+  - the host-false early exit only leaves stale `zNetwork_IsHost()` residue in `EAX`
+  - all current callers ignore any old `EAX` value
+- pkt0x0C is the reliable HUD-timer status resend packet:
+  - writes `senderPlayerKey_04`
+  - writes `timerSeconds_08`
+  - packs `timerDirectionNeg_10`, `timeWarningShown_18`, and `oneMinuteWarningShown_20` into `statusBitsPackedHiWord_10`
+  - refreshes `g_HudTimerPanelNetState.statusBitsResendDeadline_08`
+- pkt0x0D is the reliable HUD-timer panel-state packet:
+  - writes `senderPlayerKey_04`
+  - writes `seconds_08`
+  - packs `timerDirectionNeg_10`, `startGateTriggered_14`, `timeWarningShown_18`, `raceFinishCountdownTriggered_1C`, and `startCountdownTriggered_24` into `hudTimerFlagsPacked_0c`
+- The corresponding handlers intentionally remain int-returning dispatch callbacks:
+  - `GameNet_HandlePkt0C_HudTimerStatusBits()`
+  - `GameNet_HandlePkt0D_HudTimerPanelState()`
+- The reason that return split stays asymmetric is visible in the gameplay packet registration table:
+  - both handlers are still registered through `zNetwork_RegisterDispatchHandler(packetId, handler, 2)`
+  - both bodies still end in explicit `return 1`
+- The two local debounce globals on the same strip are now explicit too:
+  - `g_GameNetHudTimerTenSecondWarningArmed`
+  - `g_GameNetHudTimerPendingSaveReminderArmed`
+- Their current xref/behavior model is bounded:
+  - both are single-function globals used only by `GameNet_TickLocalPlayerPkt06ReplicationAndHudTimer()`
+  - both are set to `1` while the timer is off the exact 10-second boundary
+  - both are cleared after their local top-message pair is shown
+- The currently proved split is:
+  - `g_GameNetHudTimerTenSecondWarningArmed` gates the host-side local zLoc `(0x32, 0x31)` warning pair on the ten-second-warning path
+  - `g_GameNetHudTimerPendingSaveReminderArmed` gates the client-side local zLoc `(0x34, 0x33)` reminder pair on the pending-save path
+
+## HudSensorTracker mission-section notes
+
+- The startup-side mission registration helper is now explicit:
+  - `HudSensorTracker_RegisterMissionSectionHandlers()`
+- Its single current proving caller is:
+  - `RecoilApp_LoadZbdAndStartEngine()`
+- That helper registers two reachable ZAR section-handler pairs for the active tracker:
+  - `g_HudSensorTracker_MissionDataSectionName = "MissionData"`
+  - `g_HudSensorTracker_MissionSectionName = "Mission"`
+  - `g_HudSensorTracker_MissionLateSectionName = "MissionLate"`
+- The late-save marker section is also now explicit:
+  - `g_HudSensorTracker_LateMissionDataSectionName = "LateMissionData"`
+- The callback ABI on that strip now matches the generic section-handler bridge:
+  - `HudSensorTracker_ZarMission_SaveCallback()` and `HudSensorTracker_ZarMissionLate_SaveCallback()` are pre-load callbacks over `struct zZbdPreLoadCtx* ctx` plus `self`
+  - `HudSensorTracker_ZarMission_RestoreCallback()` and `HudSensorTracker_ZarMissionLate_RestoreCallback()` are side-effect `onDataReady` callbacks over `struct zZbdDataReadyCtx* ctx`, `token`, `buffer/missionData`, `size`, and `self`
+- The current mission-data restore/write helpers now line up with that frame too:
+  - `HudSensorTracker_WriteMissionDataSection(self, ctx)`
+  - `HudSensorTracker_ApplyMissionDataAndReload(self, ctx, token, missionData, size)`
+- The readable restore path is now:
+  - `HudSensorTracker_ZarMission_RestoreCallback()` forwards the full callback frame into `HudSensorTracker_ApplyMissionDataAndReload(...)`
+  - `HudSensorTracker_ZarMissionLate_RestoreCallback()` replays `StartAnims.zrd` with `LOAD_GAME_START`
+- The adjacent startup tracker-source helper family is now explicitly side-effect-only on the reachable non-WOL path:
+  - `RecoilApp_LoadZbdAndStartEngine()`
+  - `RecoilApp_LoadZbdAndSetupSensorTracker()`
+  - `HudSensorTracker_InitMissionIdAndFlags()`
+  - `HudSensorTracker_SetZbdPath()`
+  - `HudSensorTracker_ApplyMissionDataAndReload()`
+- The current startup-source split is now:
+  - `RecoilApp_LoadZbdAndSetupSensorTracker()` bootstraps engine/session first, writes `RecoilApp.m_skipIntroFmv`, then either:
+    - seeds builtin `missionId` plus `missionFlags` through `HudSensorTracker_InitMissionIdAndFlags()`
+    - or stores an explicit mission path through `HudSensorTracker_SetZbdPath()`
+- The two small tracker source setters on the same lane are now explicitly side-effect-only too:
+  - `HudSensorTracker_SetMissionId()` has one current caller, `RecoilApp_MissionFmvState_OnTryBecomeCurrent()`, and its old success tail was dead residue
+  - `HudSensorTracker_SetZbdPath()` has one current caller, `RecoilApp_LoadZbdAndSetupSensorTracker()`, and its old success tail was dead residue
+- The single-player menu entry still ends in a direct jump into `RecoilApp_LoadZbdAndStartEngine()`, so BN may continue to print `return ... __tailcall` there even though the helper is now treated as `void`.
+- The local tracker field at `+0xe0` still stays conservative:
+  - on the reachable path it affects both startup script-path selection in `HudSensorTracker_LoadMissionCoreResources()` and objective-panel / pickup-info UI states
+  - so it should not be globally renamed from the current conservative `missionFlags_e0` placeholder until the wider tracker band is split safely
+- The tracker receiver on the restore/write helpers remains intentionally local to the objective-flow partial view rather than the broad global `HudSensorTracker` type; that keeps the mission/objective-flow field names readable without reopening the unsafe full tracker rewrite.
+- The adjacent mission-core resource loader is now tighter too:
+  - `HudSensorTracker_LoadMissionCoreResources()` is now bounded as side-effect-only startup/reload work on the reachable retail path
+  - `RecoilApp_PlayState_OnTryBecomeCurrent()` still carries a retained `TEST EAX,EAX` after the call at `0x42f006`, but the loader-side unconditional `mov eax, 1` tail now proves that branch is dead retail residue rather than a meaningful success/failure contract
+- The startup/race string band on that strip is now explicit:
+  - `g_HudSensorTracker_MissionInitGwPathFmt = "support\\initm%d.gw"`
+  - `g_HudSensorTracker_MissionZbdGsPathFmt = "m%d_zbd.gs"`
+  - `g_HudSensorTracker_MissionGsPathFmt = "m%d.gs"`
+  - `g_HudSensorTracker_MissionSoundSetNameFmt = "M%d"`
+  - `g_HudSensorTracker_WorldNodeName = "world1"`
+  - `g_HudSensorTracker_CameraNodeName = "camera1"`
+  - `g_HudSensorTracker_WindowNodeName = "window1"`
+  - `g_HudSensorTracker_DisplayNodeName = "display"`
+  - `g_HudSensorTracker_RaceZrdrSearchPathFmt = "..\\data\\m%d\\zrdr"`
+  - `g_HudSensorTracker_RaceCheckpointArchiveName = "race.zrd"`
+  - `g_HudSensorTracker_RaceCheckpointCountNodeName = "cp_count"`
+- `missionFlags_e0` remains intentionally conservative on this startup strip:
+  - when `zbdPath_e8` is still empty, `missionFlags_e0 == 0` selects `g_HudSensorTracker_MissionGsPathFmt`
+  - otherwise it selects `g_HudSensorTracker_MissionZbdGsPathFmt`
+  - the same dword still overlaps objective/pickup UI state elsewhere, so it should not be globally renamed yet
+
+## Options registry notes
+
+- `zGame_Options_InitRegistryContext(regKeySegmentA, regKeySegmentB, regKeyVersionSegment)` is now explicitly side-effect-only on the reachable startup path.
+- The helper duplicates the three registry-key path segments into the reachable globals, clears `g_zOpt_OptionListHead`, marks the registry context initialized, and seeds `g_zGame_Options_RuntimeConfigDefaults`.
+- The third registry-key segment is now explicitly the version leaf:
+  - `RecoilApp_GetVersionString()` returns `g_RecoilApp_VersionString = "1.0"`
+  - startup passes that value into `zGame_Options_InitRegistryContext(...)`
+  - the duplicated runtime global is `g_zGame_Options_RegKeyVersionSegment`
+- The shared registry-prefix literal on that strip is now explicit too:
+  - `g_zGame_Options_RegSoftwarePrefix = "SOFTWARE\\"`
+- The reachable registry-path model is now:
+  - `SOFTWARE\\<segmentA>\\<segmentB>\\<version>`
+  - where `<version>` is `g_zGame_Options_RegKeyVersionSegment`
+- The adjacent startup leaves on the same bootstrap path are now materialized in BN as named data vars rather than only callsite comments:
+  - `g_RecoilApp_MessagesDllName = "MESSAGES.DLL"`
+  - `g_RecoilApp_IntroVideoProbePath = "video\\intro_01.avi"`
+  - `g_zUtil_CommonZrdrSearchPath = "..\\data\\common\\zrdr"`
+  - `g_RecoilApp_RootZrdrArchivePath = "zbd\\zrdr.zbd"`
+  - `g_RecoilApp_ExitAtFileLineFmt = "Exit at %s:%d\n"`
+  - `g_RecoilApp_SourceFile_RecoilAppCpp = "D:\\Proj\\Battlesport\\RecoilApp.cpp"`
+  - `g_zUtil_MissionZrdrArchivePathFmt = "zbd\\m%d\\zrdr.zbd"`
+- The adjacent startup shell log helper is now bounded too:
+  - `CZGameFrame_Ctor()` proves `zApp_RedirectStdStreamsToLogBaseName(logBaseName)` is a startup fastcall wrapper over a basename, not a full path
+  - the current shell path passes `"recoil"` from `CZRecoilFrame_Ctor()`
+  - the helper clears `g_RecoilApp_hWndMain`, reopens stderr as `<basename>.err`, reopens stdout as `<basename>.out`, falls back to `%TEMP%\\gamez.err` / `%TEMP%\\gamez.out` on reopen failure, and writes the same banner after each successful reopen
+  - the literal band on that strip is now explicit too:
+    - `g_zApp_StderrLogSuffix = ".err"`
+    - `g_zApp_DefaultStderrLogName = "gamez.err"`
+    - `g_zApp_StdoutLogSuffix = ".out"`
+    - `g_zApp_DefaultStdoutLogName = "gamez.out"`
+    - `g_zApp_LogFileOpenMode = "w"`
+    - `g_zApp_LogFileStartBanner = "File started\n---\n"`
+- The adjacent startup zVideo bootstrap helper is now bounded too:
+  - `zVideo_init_ResetGlobalsAndEnumerateDevices()` is a side-effect-only startup initializer, not a status-returning API
+  - `CZGameFrame_Ctor()` is the sole current caller on the reachable shell path
+  - the helper zeroes the large `g_zVideo_*` runtime block, seeds the default pixel-pack and texture-pixel-pack state, binds the renderer dispatch table, enumerates DirectDraw devices, and registers the release-all video-interfaces thunk with `crt_register_onexit()`
+- The adjacent base-shell frame strip is now bounded too:
+  - `CZGameFrame_Ctor(struct CZGameFrame* self, char const* logBaseName)` is the side-effect-only base frame constructor body
+  - `CZGameFrame_Dtor(struct CZGameFrame* self)` is the direct base-shell destructor body
+  - `CZGameFrame_ScalarDeletingDtor(struct CZGameFrame* self, int32_t deleteFlag)` is the VC6 delete wrapper
+  - `CZGameFrame_CreateObject()` is the MFC runtime-class create thunk and returns a new `CZGameFrame*` or null
+  - `operator new(0xCC)` in `CZGameFrame_CreateObject()` confirms the base shell-frame size
+  - `CZGameFrame_Dtor_EhCleanup_CFrameWndBase()` and `CZGameFrame_Dtor_EhCleanup_CObjectBase()` are the VC6 destructor unwind funclets behind `g_CZGameFrame_Dtor_EhUnwindMap`
+  - the current caller/owner split is:
+    - `CZRecoilFrame_Ctor()` builds the derived shell frame on top of `CZGameFrame_Ctor(self, "recoil")`
+    - `CZRecoilFrame_Dtor()` tears the derived shell frame down through `CZGameFrame_Dtor(self)`
+    - `g_CZGameFrame_VTable +0x04 = CZGameFrame_ScalarDeletingDtor`
+  - BN 5.2 still leaves one bounded residue on this strip:
+    - `CZGameFrame_CreateObject()` may still render `result = CZGameFrame_Ctor(...)` in HLIL even though the accepted contract is “return the newly allocated `CZGameFrame*`”
+- The adjacent startup video option/query strip is now explicit too:
+  - `zVid_SetAccelerationOption(int32_t accelerationEnabled)` is the concrete fastcall setter for `*ZOPT_VIDEO_ACCELERATION`, and it mirrors the same value into `g_zOpt_HwMode`
+  - `zVid_SetHwApiOption(int32_t hwApiId)` is the concrete fastcall setter for `*ZOPT_HW_API`
+  - the adjacent lower-case startup/options setter family is now normalized too:
+    - `zOpt_SetEffectsLevelForCurrentHwMode(level)`
+    - `zOpt::SetObjectLODForCurrentHwMode(level)`
+    - `zOpt::SetTextureMemoryForCurrentHwMode(level)`
+    - `zOpt_SetSoundLODOption(level)`
+    - `zOpt::SetMuteSoundOption(muted)`
+  - the currently bounded behavior on that setter family is:
+    - `zOpt_SetEffectsLevelForCurrentHwMode(level)` writes `ZOPT_EFFECTS_LEVEL_{SW,HW}` selected by `g_zOpt_HwMode`, then maps UI levels `0/1/2` into runtime conditional effect levels `2/1/0`
+    - `zOpt::SetObjectLODForCurrentHwMode(level)` writes `ZOPT_OBJECT_LOD_{SW,HW}` and, when an active camera exists, reapplies clip-distance scale `1.0 / 0.75 / 0.5`
+    - `zOpt::SetTextureMemoryForCurrentHwMode(level)` and `zOpt_SetSoundLODOption(level)` are pure option writes on the current reachable path
+    - `zOpt::SetMuteSoundOption(muted)` writes `ZOPT_MUTE_SOUND` and forwards the same muted flag into `zSnd::ApplyMuteStateToActiveVoices(...)`
+  - the cleanest caller proof for that family is:
+    - `zGame::Options_LoadGameOptions()`
+    - `HudUiOptionsPanel_{Effects,ObjectDetail,TextureMemory,SoundQuality,SoundActive}_OnActivate()`
+    - `RecoilApp_PlayState_OnTryBecomeCurrent()`
+    - `zOpt_CameraSection_SetActiveCamera()`
+  - the adjacent runtime leaf is explicit too:
+    - `zEffect_SetConditionalEffectLevel(level)` is the pure side-effect leaf that writes `g_zEffect_CurrentEffectsLevel`
+  - `zSnd_AdjustEnableRefCount()` still stays intentionally conservative:
+    - the current reachable caller band ignores its return value
+    - but the function body itself still preserves and returns the previous positive enabled-state, so that contract should not be erased without stronger proof
+  - the adjacent HUD-type option wrapper family is now explicit too:
+    - `zVid_GetHudTypeOption()` reads the persisted HUD layout type from `ZOPT_HUD_TYPE_{SW,HW}` depending on `g_zOpt_HwMode`
+    - `zVid_SetHudTypeOption(newType)` forwards into `HudUiMgr_SetHudLayoutType(newType)`, persists `newType` into the active SW/HW HUD-type option slot, and returns the previous HUD type
+    - `zVid_ToggleHudTypeOption()` toggles between `HudLayoutType_SW` and `HudLayoutType_HW` by tailcalling `zVid_SetHudTypeOption()`
+  - propagation is now cleaner on the reachable callers:
+    - `zVideo_HandleSoftwareModeHotkey()` and `RecoilStateMainMenuTransition_OnDeactivate()` now clearly save and restore the previous HUD type through `zVid_SetHudTypeOption(...)`
+    - `HudSensorTracker_ResetHudForMissionStart()` and `Player_AsyncCommandCallback()` now reapply the persisted HUD type through `HudUiMgr_SetHudLayoutType(zVid_GetHudTypeOption())`
+    - `HudUiOptionsPanel_BackButton_OnActivateApplyHudTypeAndExit()` now clearly persists the checked full-HUD choice through `zVid_SetHudTypeOption(...)`
+    - `HudUi_HandleHotkeyCommand()` hotkey case 4 now clearly routes to `zVid_ToggleHudTypeOption()`
+    - `CZRecoilFrame_OnMenuToggleHudVisibility()` is the shell-side `WM_COMMAND / 0x9C4F` handler that toggles `zOpt_GetHudFlagForCurrentHwMode()` / `zOpt_SetHudFlagForCurrentHwMode()`; BN may still print the setter as a tailcall, but the message-map entry keeps it in the same void-command-handler bucket as the other shell menu routes
+  - `zGame::Options_LoadGameOptions()` now clearly seeds default startup values through `zVid_SetAccelerationOption(1)` and `zVid_SetHwApiOption(1)`
+  - the adjacent selector helpers are now bounded too:
+    - `zVideo_SelectHwApiDeviceByIndex(hwApiIndex)` is the side-effect-only accepted DirectDraw-device selector
+    - `zVideo_SelectHwApiDeviceOrFallback(hwApiIndexOrMinus1)` now explicitly returns `enum zVidRendererBackendOption` for the persisted `ZOPT_HW_API` lane:
+      - non-`-1` returns `ZVID_RENDERER_BACKEND_HARDWARE`
+      - `-1` returns `ZVID_RENDERER_BACKEND_SOFTWARE`
+      - the return is backend-option state, not a selected device index
+    - `enum zVidHwApiMenuSelector` is now the accepted shell selector model for the hardware-API menu row:
+      - `ZVID_HWAPI_SELECTOR_SOFTWARE = 0`
+      - `ZVID_HWAPI_SELECTOR_ACCELERATOR_1 = 1`
+      - `ZVID_HWAPI_SELECTOR_ACCELERATOR_2 = 2`
+      - `ZVID_HWAPI_SELECTOR_ACCELERATOR_3 = 3`
+    - `zVid_EnsureHwApiInitialized(frame, hwApiSelector)` is the side-effect-only selector activator behind the four shell menu handlers:
+      - selector `0` takes the software fallback path
+      - selectors `1..3` map to `zVid_SetHwApiAndInitMode(frame, selector - 1)`
+    - `zVid_InitStartupHwApiFromOptions(frame)` is the startup chooser that reads `zVid_GetHwApiOption()`, checks whether any accepted DirectDraw device exists, then reuses the accepted DirectDraw-device count as the checked shell selector index before selecting the startup hardware path or software fallback path for `CZRecoilFrame`
+  - `zVid_SetHwApiAndInitMode()` now persists the selected renderer/device path through `zVid_SetHwApiOption(zVideo_SelectHwApiDeviceOrFallback(hwApiIndex))` and `zVid_SetAccelerationOption(1)`
+  - `zVid_SetHwApiAndInitMode()` now also caches `frame->m_fullscreenOption` as `enum zOptFullscreenOptionState` before forcing fullscreen for the hardware-init path
+  - `zVid_InitFallbackMode()` now persists the software fallback path through `zVid_SetHwApiOption(zVideo_SelectHwApiDeviceOrFallback(-1))` and `zVid_SetAccelerationOption(0)`, then restores that cached `frame->m_fullscreenOption`
+  - `zVideo_SelectHwApiDeviceByIndex()` rebinds renderer dispatch for the hardware path, points `g_zVideo_pSelectedHwApiDeviceRecord` at the chosen accepted DirectDraw-device record in `g_zVideo_HwApiDeviceTable`, and points `g_zVideo_pSelectedD3DDeviceInfo` at that record's `m_d3dDrivers` subarray
+  - the `-1` fallback branch rebinds software renderer dispatch, resets `g_zVideo_pSelectedHwApiDeviceRecord` to `&g_zVideo_HwApiDeviceTable[0]`, and clears `g_zVideo_pSelectedD3DDeviceInfo`
+  - `g_zVideo_NumAcceptedDirectDrawDevices` is the real accepted-device count and only increments after `zVideo_dd_EnumerateD3DDrivers(record) != 0` succeeds for the current DirectDraw device
+  - `RecoilApp::InitInstance()` now clearly finishes the startup video path as `zVid_SetVideoModeIndex(...)`, `zVid_ConfigureModeFeatureFlags(...)`, then `zVid_InitStartupHwApiFromOptions(RecoilApp_GetMainWnd(self))`
+  - the adjacent startup display-init result lane is now explicit too:
+    - `enum zVideoStatus`
+    - `ZVIDEO_STATUS_DX_ERROR = -1`
+    - `ZVIDEO_STATUS_OK = 0`
+    - `ZVIDEO_STATUS_ERROR = 1`
+    - `ZVIDEO_STATUS_NOT_INITIALIZED = 0x5a560000`
+    - `ZVIDEO_STATUS_ALREADY_INITIALIZED = 0x5a560001`
+    - `ZVIDEO_STATUS_UNRECOGNIZED_PIXEL_FORMAT = 0x5a56ffff`
+    - `zVideo_ReportDxError(HRESULT hr, srcFile, srcLine)` now explicitly returns `ZVIDEO_STATUS_OK` only when `hr == 0`, otherwise it logs the DD/D3D failure and returns `ZVIDEO_STATUS_DX_ERROR`
+    - `zVideo_dd_InitPixelPackFromSurfaceFormat(surface)` now explicitly returns `ZVIDEO_STATUS_UNRECOGNIZED_PIXEL_FORMAT` after shutting down DD/DD3D on unsupported surface masks; the recognized 565/555/8:8:8 formats still return `ZVIDEO_STATUS_OK`
+  - the adjacent startup video-init latch is now explicit too:
+    - `enum zVideoInitializationState`
+    - `ZVIDEO_INIT_STATE_NOT_INITIALIZED = 0`
+    - `ZVIDEO_INIT_STATE_INITIALIZED = 1`
+    - `g_zVideo_IsInitialized` now uses that enum
+    - `zVideo_init_InitVideoSystem(...)` rejects re-entry while the latch is not `ZVIDEO_INIT_STATE_NOT_INITIALIZED`
+    - `zVideo_init_ShutdownVideoSystem()` clears the latch back to `ZVIDEO_INIT_STATE_NOT_INITIALIZED`
+    - `zVideo_init_ApplyModeIndexIfInitialized(...)` now clearly shares the same init gate before forwarding to `g_zVideo_pfnSetVideoMode(...)`
+    - the same latch also gates `zVideo_TryRestoreFullscreenWindow()`, `zVideo_dd_Image_ReleaseSurface()`, and `zVideo_ApplyPaletteWithBrightness()`
+    - `zVideo_TryRestoreFullscreenWindow()` still keeps one mixed 0/1 temp in HLIL because BN reuses the same register across the init/fullscreen/iconic checks; the enum-backed global plus comments are the authority there
+  - the adjacent startup video-mode dispatch slot is tighter too:
+    - `g_zVideo_pfnSetVideoMode` now uses `enum zVideoStatus (__fastcall*)(enum zVidModeIndex modeIndex)`
+    - `zVideo_init_SetVideoMode(enum zVidModeIndex modeIndex)` is the concrete DirectDraw render-op bound into that slot
+    - `zVideo_init_ApplyModeIndex(...)` and `zVideo_init_ApplyModeIndexIfInitialized(...)` now both clearly forward the current `enum zVidModeIndex` through that slot
+    - the DirectDraw implementation still ignores the concrete `modeIndex` value after `zVideo_init_SetSurfaceGeometryFromModeIndex(modeIndex)` has already staged the runtime geometry globals, so the arg is ABI-real but body-unused
+  - the adjacent startup open-video dispatch slot is tighter too:
+    - `g_zVideo_pfnOpenVideoMode` now uses `enum zVideoStatus (__fastcall*)(enum zVidModeIndex modeIndex)`
+    - `zVideo_dd_OpenVideoMode(enum zVidModeIndex modeIndex)` is the concrete DirectDraw render-op bound into that slot
+    - `zVideo_init_InitVideoSystem(...)` now clearly forwards the startup `modeIndex` through `g_zVideo_pfnOpenVideoMode(modeIndex)` before the initialized-only `SetVideoMode(modeIndex)` retry leg
+    - the DirectDraw implementation still ignores the concrete `modeIndex` value on this backend path, so the arg is ABI-real but body-unused here too
+  - that shared result family now covers the reachable startup video/open/set helpers:
+    - `zVideo_ReportDxError()`
+    - `zVideo_dd_InitPixelPackFromSurfaceFormat()`
+    - `zVideo_dd_CreateDirectDraw2ForSelectedDevice()`
+    - `zVideo_dd_RestoreSurfaces()`
+    - `zVideo_dd_CreateHalfResFullscreenSurfaces()`
+    - `zVideo_dd_CreateFullscreenSoftwareSurfaces()`
+    - `zVideo_dd_CreateFullscreenD3DSurfaces()`
+    - `zVideo_dd_CreateFullscreenModeSurfaces()`
+    - `zVideo_dd_OpenVideoMode()`
+    - `zVideo_init_SetVideoMode()`
+    - `zVideo_init_ApplyModeIndex()`
+    - `zVideo_init_ApplyModeIndexIfInitialized()`
+    - `zVideo_init_InitVideoSystem()`
+    - `zVideo_init_ShutdownVideoSystem()`
+  - the standalone startup dispatch globals now match the same enum return type too:
+    - `g_zVideo_pfnOpenVideoMode`
+    - `g_zVideo_pfnSetVideoMode`
+  - caller-side propagation is now cleaner on the reachable shell path:
+    - `RecoilApp_InitializeDisplay()` now renders `zVideo_init_InitVideoSystem(...) != ZVIDEO_STATUS_OK`
+    - `RecoilStateMainMenuTransition_OnDeactivate()` now renders each deferred mode-apply probe as `zVideo_init_ApplyModeIndex(mode) == ZVIDEO_STATUS_OK`
+    - `zVideo_HandleSoftwareModeHotkey()` now uses the same success gate instead of raw `== 0`
+  - the adjacent startup display-init strings are now explicit too:
+    - `g_RecoilApp_OpenVideoAbortMsg = "Error opening video... ABORTING RUN\n"`
+    - `g_RecoilApp_OpenHseAbortMsg = "Error opening HSE... ABORTING RUN\n"`
+    - `g_zVideo_InitFailOpenModeMsg = "Failed to open video mode"`
+    - `g_zVideo_InitFailSetModeMsg = "Failed to set video mode"`
+    - `g_zVideo_SourceFile_zvid_init_c = "D:\\Proj\\GameZRecoil\\zVideo\\zvid_init.c"`
+  - the adjacent HSE/span-occlusion startup helper is now bounded too:
+    - `zRndr_SpanOcclusion_Init(columnCount)` is a side-effect-only retail setup helper, not a live status-returning init gate
+    - it stores the column counts, allocates `gRndr_SpanColumnHeadTable` and `gRndr_SpanPoolBase`, resets the per-frame span state, clears `gRndr_SpanOccluderPolyCount`, and binds the two span-list builder callbacks
+    - current reachable xrefs show only one caller: `RecoilApp_InitializeDisplay()`
+    - the older `g_RecoilApp_OpenHseAbortMsg` startup abort lane is retained retail dead-path residue from an earlier status-returning model
+  - the adjacent startup capability probe is now typed too:
+    - `zSys_ProbePlatformAndVideoCaps(enum zSysVideoCapsLevel* outVideoCaps, enum zSysPlatformCapsLevel* outPlatformCaps)`
+    - `RecoilApp::InitInstance()` now renders `enum zSysVideoCapsLevel outVideoCaps`, `enum zSysPlatformCapsLevel outPlatformCaps`, and gates startup on `outVideoCaps >= ZSYS_VIDEO_CAPS_SURFACE4`
+    - platform ladder: `ZSYS_PLATFORM_CAPS_UNSUPPORTED`, `ZSYS_PLATFORM_CAPS_NON_NT`, `ZSYS_PLATFORM_CAPS_NT4_PLUS`
+    - video ladder: `ZSYS_VIDEO_CAPS_NONE`, `ZSYS_VIDEO_CAPS_DDRAW`, `ZSYS_VIDEO_CAPS_DDRAW2`, `ZSYS_VIDEO_CAPS_DDRAW2_DINPUT`, `ZSYS_VIDEO_CAPS_SURFACE3`, `ZSYS_VIDEO_CAPS_SURFACE4`
+    - the local startup probe literal row is now named too:
+      - `g_zSys_ProbeDinputDllName = "DINPUT.DLL"`
+      - `g_zSys_ProbeDirectInputCreateExportName = "DirectInputCreateA"`
+      - `g_zSys_ProbeDdrawDllName = "DDRAW.DLL"`
+      - `g_zSys_ProbeDirectDrawCreateExportName = "DirectDrawCreate"`
+      - `g_zSys_ProbeLoadDinputFailedMsg`
+      - `g_zSys_ProbeMissingDirectInputCreateMsg`
+      - `g_zSys_ProbeLoadDdrawFailedMsg`
+      - `g_zSys_ProbeCreateDdrawFailedMsg`
+      - `g_zSys_ProbeQiDdraw2FailedMsg`
+      - `g_zSys_ProbeSetCoopLevelFailedMsg`
+      - `g_zSys_ProbeCreatePrimarySurfaceFailedMsg`
+    - current proof splits that row into:
+      - an NT4 fast probe that only checks `DINPUT.DLL` / `DirectInputCreateA` and upgrades the ladder from `ZSYS_VIDEO_CAPS_DDRAW2` to `ZSYS_VIDEO_CAPS_DDRAW2_DINPUT`
+      - a heavier non-NT DirectDraw probe that walks the `DDRAW` / `CreateSurface` / `QueryInterface` capability ladder up to `ZSYS_VIDEO_CAPS_SURFACE4`
+    - BN still tends to render inline literals in this helper even after the leaf names are replayed, so the named data leaves plus xrefs/comments are the authoritative record for the probe strings
+  - the adjacent memory-query callbacks are now bounded too:
+    - `zVid_QueryVideoMemoryBytes(deviceIndex, outVideoMemTotalBytes, outVideoMemFreeBytes)`
+    - `zVid_QueryTextureMemoryBytes(deviceIndex, outTextureMemTotalBytes, outTextureMemFreeBytes)`
+  - both query helpers use `__fastcall` on the reachable DD path:
+    - `ECX = deviceIndex`
+    - `EDX = outTotalBytes`
+    - stack arg = `outFreeBytes`
+  - `deviceIndex == -1` takes the live `IDirectDraw2::GetAvailableVidMem(...)` path, while nonnegative `deviceIndex` reads cached totals/free bytes from `g_zVideo_HwApiDeviceTable[deviceIndex]`
+  - BN 5.2 still does not preserve that `__fastcall` member-calling convention cleanly on `g_zVideo_Dd3dOps.pfnQueryVideoMemoryBytes`, so the callsite comments in `zVid_SetHwApiAndInitMode()` remain the authoritative record for the exact hook ABI
+  - the standalone startup render-dispatch block is now explicit too:
+    - `g_zVideo_pfnOpenVideoMode`
+    - `g_zVideo_pfnShutdownVideoSystem`
+    - `g_zVideo_pfnAdjustSurfaces`
+    - `g_zVideo_pfnSetPaletteEntries`
+    - `g_zVideo_pfnSetVideoMode`
+    - `g_zVideo_pfnUnlockSurfaceState`
+    - `g_zVideo_pfnLockSurfaceState`
+    - `g_zVideo_pfnClearStateSurfaceAndZBuffer`
+    - `g_zVideo_pfnClearSwSurfaceAndZBuffer`
+    - `g_zVideo_pfnClearZBufferRect`
+    - `g_zVideo_pfnUpdateFogColor`
+  - `zVideo_init_BindRendererDispatch()` now binds that startup block directly on the reachable path:
+    - `g_zVideo_pfnOpenVideoMode = zVideo_dd_OpenVideoMode`
+    - `g_zVideo_pfnSetVideoMode = zVideo_init_SetVideoMode`
+    - `g_zVideo_pfnUpdateFogColor = zVideo_dd3d_UpdateFogColorFromGlobals`
+  - the adjacent fog-update strip is now side-effect-only too:
+    - `zVideo_CommitFogColorIfChanged()`
+    - `zVideo_CommitFogTargetColorIfChanged()`
+    - `zVideo_dd3d_UpdateFogColorFromGlobals()`
+  - the current fog model is:
+    - compare pending or target RGB255 fog-color strips against the applied strip
+    - on any channel difference copy the source strip into the applied globals
+    - then tailcall `g_zVideo_pfnUpdateFogColor()`
+  - the reachable callers in `zModel_BuildVertexLightAttribs()` and `zModel_Light_BuildAttr2Fog()` ignore the old compare residue, so the commit helpers are now treated as pure side-effect hooks
+  - the adjacent clear-screen-buffer gate is now explicit too:
+    - `g_zVideo_ClearScreenBufferEnabled`
+    - `zVideo_ExchangeClearScreenBufferEnabled(int32_t newValue)`
+    - `zVideo_IsClearScreenBufferEnabled()`
+  - this flag is not a pure D3D-init latch:
+    - `zVideo_dd3d_InitD3DContext()` seeds it to `1` as the default clear policy after D3D/Z-buffer setup
+    - `zVideo_dd_ClearStateSurfaceAndZBufferRect()` and `zVideo_dd_ClearSwSurfaceAndZBufferRect()` use it to decide whether to color-fill the target surface before the Z-buffer clear
+    - `RecoilApp_InitializeDisplay()` temporarily forces it on around the startup full-surface clear and then restores the previous value
+    - `RecoilApp_PlayState_TickAndRenderFrame()` ORs the persistent flag with `HudUiMgr_ConsumeLayoutClearDelay()` for one frame and then restores the previous value
+    - `RecoilApp_PlayState_OnUpdateShouldQuit()` also temporarily forces it on for the mission-exit clear path
+    - `Player::ApplyCameraState()` toggles the same flag on the reachable camera-state path
+    - `zInterp_Context_DispatchCommand()` command `ClearScreenBuffer <bool>` writes the same flag directly, which is the strongest proof that it is clear-policy state rather than D3D-initialized state
+  - the adjacent HUD manager strip that feeds this clear path is now tighter too:
+    - `HudUiMgr_ConsumeLayoutClearDelay()` returns `1` while the pending layout-clear countdown is nonzero, decrements it, and otherwise returns `0`
+    - `HudUiMgr_DisableHud()` and `HudUiMgr_ApplyLayout()` are side-effect-only helpers, not meaningful status-return APIs
+    - `HudUiMgr_DisableHud()` seeds `g_HudUiMgr.layoutDelayFrames_2EC = HudLayoutType_HW (2)` on the HW HUD path
+    - `HudUiMgr_ApplyLayout()` seeds `g_HudUiMgr.layoutDelayFrames_2EC = 2` on the cold layout-apply path
+    - `RecoilApp_PlayState_TickAndRenderFrame()` ORs that one-shot countdown into `g_zVideo_ClearScreenBufferEnabled` so the next render ticks take the extra full-window clear path
+    - `HudUiMgr_EnableHud()`, `HudUiMgr_DisableHud()`, `HudUiMgr_ToggleHudEnabled()`, and `HudUiMgr_ApplyLayout()` now all decompile as pure side-effect helpers on the reachable HUD manager path
+  - the adjacent render clear-thunk split is now explicit too:
+    - `zVideo::CallClearPrimarySurfaceAndZBuffer(rect)` is a `void __fastcall` tailcall thunk that loads `EDX = &g_zVideo_PrimarySurfaceState` and jumps to `g_zVideo_pfnClearStateSurfaceAndZBuffer(rect, stateBlock)`
+    - `zVideo::CallClearSwSurfaceAndZBuffer(surfaceRect, zRect)` is a `void __fastcall` tailcall thunk into `g_zVideo_pfnClearSwSurfaceAndZBuffer(surfaceRect, zRect)`
+  - the current reachable caller split on that strip is:
+    - `RecoilApp_InitializeDisplay()` uses both wrappers for the startup warmup clear path after forcing `g_zVideo_ClearScreenBufferEnabled = 1`
+    - `RecoilApp_PlayState_TickAndRenderFrame()` uses them after resolving the frame clear policy from `g_zVideo_ClearScreenBufferEnabled | HudUiMgr_ConsumeLayoutClearDelay()`
+    - `RecoilApp_PlayState_OnUpdateShouldQuit()` uses them on the mission-exit clear path
+    - `HudLayoutHW_SetActive()` uses the primary-surface wrapper on the inactive-leg forced clear path
+  - the adjacent present helper is now bounded too:
+    - `zVideo_AdjustSurfacesIfEnabled(srcRect, dstRect, waitFlag, pageLock)` is now a side-effect-only `void __fastcall` helper
+    - it still tests `g_zVideo_AdjustSurfacesDisableGate`, forwards to `g_zVideo_pfnAdjustSurfaces(...)` only when that gate is `<= 0`, and always increments `g_zVideo_FrameTick`
+    - the old int return was only gate/dispatch residue on the reachable path
+  - the current reachable caller split on that present helper is now:
+    - `HudUiMpExitDialog_Update()` uses it as the tail present helper for the MP-exit dialog update slot
+    - `RecoilStateDialogHost_OnUpdateShouldQuit()`, `RecoilStateDialogHost_OnSuspendDialogPostprocess()`, `RecoilStateControls_OnResume()`, and `RecoilStateMainMenuTransition_OnResume()` use it as fire-and-forget dialog present work
+    - `HudUiMessageBoxDialog_RunModal()` uses it inside the modal loop but still returns the dialog result field
+    - `Briefing_ThreadMain()` uses it in the briefing loop and still returns `zVideo_dd_SetHalfResAdjustMode(esi)`
+    - `zFMV_ActionWait_End()` and `zFMV_ActionPlayMci_End()` now cleanly show side-effect-only end hooks through `zFMV_ActionVtable.pfnEnd`
+    - `zFMV_ActionFade_Update()`, `zFMV_ActionImage_Update()`, `zFMV_ActionBlur_Update()`, `RecoilApp_PlayState_TickAndRenderFrame()`, and `RecoilApp_PlayState_OnUpdateShouldQuit()` all keep their own independent update/status returns after the helper
+  - the only adjacent FMV-present residue still parked on this strip is:
+    - `zFMV_ActionPlayAvi_Update()` still returns a local continue flag (`1` unless `zFMV_Stream_DecodeFrame(...) == 0` on the current frame-decode leg)
+    - BN 5.2 still renders that tail as `return esp[4]`, so that helper needs one more local cleanup pass before the whole present lane is fully quiet
+- The adjacent startup media-path probe helper is now bounded too:
+  - `zSys_FindFileOnDriveType(enum zSysDriveType driveType, relPath, reservedZero)` scans `GetLogicalDriveStringsA()`, joins each root with `relPath`, filters by `GetDriveTypeA()`, and returns `g_zSys_FullPathBuffer` on success
+  - assembly proves the current ABI as `char* __fastcall`, with `ECX = driveType`, `EDX = relPath`, and plain `retn 4`
+  - `enum zSysDriveType` is currently bounded as:
+    - `ZSYS_DRIVE_FIXED = 3`
+    - `ZSYS_DRIVE_CDROM = 5`
+  - the reachable strip currently uses only `ZSYS_DRIVE_CDROM` and `reservedZero = 0`
+  - current reachable callers are `RecoilApp::InitInstance()` for the intro-video retry gate, `zFMV_ActionPlayAvi_Ctor()` for missing PLAYAVI media, and `HudUiBackgroundVideoWidget_LoadStream()` for background-video FMV fallback
+  - the helper body also explicitly supports `ZSYS_DRIVE_FIXED` on the current retail path
+  - the adjacent path globals are now explicit too:
+    - `g_zSys_FullPathBuffer`
+    - `g_zUtil_PathJoinFmt = "%s%s"` shared with `zReader_BuildResolvedParentDir()` and `zUtil_ZRDR_ResolvePathInSearchPathList()`
+- The adjacent startup/main-loop frame-clock strip is now explicit too:
+  - `Time::Reset()` zeroes `g_Time_NewTimeSec`, `g_Time_UnscaledAccumulatedTimeSec`, `g_Time_UnscaledDeltaTimeSec`, `g_Time_AccumulatedTimeSec`, and `g_FrameDeltaTimeSec`, then seeds `g_Time_CurrentTimeSec` from `GetTickCount()`
+  - `Time::Tick()` recomputes the shared current/new/delta/accumulated timing globals from `GetTickCount()`
+  - `Time::Tick()` consumes `g_Time_TimeScaleFactor` for one tick, then restores it to `1.0f`
+  - `Time::Tick()` clamps `g_FrameDeltaTimeSec` to `g_Time_MaximumDeltaTimeSec` when `g_Time_DeltaTimeClampEnabled != 0`
+  - the adjacent timing globals/constants on this strip are now pinned:
+    - `g_Time_MillisecondsToSecondsScale = 0.00100000005f`
+    - `g_Time_MaximumDeltaTimeSec = 0.125f`
+    - `g_Time_DeltaTimeClampEnabled`
+    - `g_Time_TimeScaleFactor`
+  - the current reachable caller split is:
+    - `RecoilApp_EngineInit()` and `RecoilApp_PlayState_OnTryBecomeCurrent()` reset the shared frame clock before startup/mission bootstrap
+    - `RecoilApp_PlayState_TickAndRenderFrame()` and `RecoilStateDialogHost_OnUpdateShouldQuit()` advance it before input/render/modal presentation work
+- The adjacent mission search-path strip in `zUtil_SetMissionZrdrPathsAndMountZbd()` is now explicit too:
+  - `g_zUtil_ZbdSearchPathLeaf = "zbd"`
+  - `g_zUtil_MissionZrdrSearchPathsFmt = "..\\data\\common\\zrdr;..\\data\\m%d\\zrdr;..\\data\\m%d\\zrdr\\aipath"`
+  - `g_zImage_CommonTextureSearchPaths = "..\\data\\common\\textures;..\\data\\common\\effects\\textures"`
+- `zGame_Options_ShutdownRegistryContext()` is the side-effect-only teardown for that lane: it frees the linked option list, frees the duplicated registry-key strings, and clears the init flag.
+- `zOptionEntry` is now the stable `0x20` node behind `g_zOpt_OptionListHead`:
+  - `payloadOrBuffer`
+  - `inlinePayloadHigh_04`
+  - `storageType`
+  - `dataSize`
+  - `name`
+  - `registryScope`
+  - `next`
+  - `unknown_1c`
+- The reachable storage model is now explicit:
+  - `storageType 0/1` use the inline low dword at `payloadOrBuffer`
+  - `storageType 2` uses an inline 8-byte payload across `payloadOrBuffer` and `inlinePayloadHigh_04`
+  - `storageType 3..7` allocate an owned payload buffer in `payloadOrBuffer`
+- The reachable registry scope model is also explicit:
+  - `registryScope 1 = HKCU`
+  - `registryScope 0 = HKLM`
+  - `registryScope 2` is used on the reachable path for runtime-only/non-persisted network and section blobs
+- The adjacent registry replay/save wrappers are now bounded as side-effect helpers:
+  - `zGame::Options_LoadFromRegistry()` is only used from `zGame::Options_LoadGameOptions()`
+  - `zGame_Options_SaveToRegistry()` is only used from `zGame_Options_SaveGameOptions()` and remains the real registry-write consumer
+  - `zGame_Options_SaveGameOptions()` is the sole current exit-time wrapper used by `RecoilApp_ExitInstance()` after clearing bind-group runtime state and forcing the reachable network flags off; the accepted direct prototype is `void`, even though BN may still print a tailcall-style `return zGame_Options_SaveToRegistry()`
+- `unknown_1c` remains intentionally conservative; current BN field-xref probes for that last dword only produced false positives from unrelated structs.
+
+## HudSensorTracker runtime-tail notes
+
+- A full global `HudSensorTracker` tail retype was attempted on the reachable race/net/save lane and then reverted. Binary Ninja 5.2 mis-propagated the `+0x246c..+0x2488` region into `playerSaveData_2488` byte accesses across several callers, so the global struct stays conservative for now.
+- The authoritative reachable tail map is now preserved in BN comments instead of the global type:
+  - `+0x2468 raceCheckpointMode_2468` (`HudSensorTracker_LoadRaceCheckpointMeta()` returns this 0/1 flag after finding `cp_count` in `race.zrd`; downstream callers use it to gate race/checkpoint-mode behavior)
+  - `+0x246c checkpointCount`
+  - `+0x2470 runtimeGoalValue`
+  - `+0x2474 runtimeTimerSec`
+  - `+0x2478 weatherFxEmitter`
+  - `+0x247c quitAfterCredits`
+  - `+0x2480 destroyed/menu-transition scalar`
+  - `+0x2484 hasPendingPlayerSave`
+  - `+0x2488 PlayerMissionSaveData`
+  - `+0x25c8 savedNanitePanelLevel`
+- The proving reachable sites on that strip are:
+  - `HudSensorTracker_LoadMissionCoreResources()` at `0x41785b`
+  - `HudSensorTracker_LoadRaceCheckpointMeta()` at `0x419433` and `0x41943d`
+  - `HudSensorTracker::SetRuntimeTimerSecAndGoalValue()` at `0x419470`
+  - `HudSensorTracker_LoadMissionWeatherFx()` at `0x4191e5`
+  - `HudSensorTracker_SaveAndPushMissionState()` at `0x418fc5` and `0x418fe9`
+  - `HudSensorTracker_InitMissionGameplaySystems()` at `0x417a38`, `0x417bd8`, and `0x417bf5`
+  - `Net_InitFromZrd()` at `0x43202c`
+  - `HudUiListMenu_Refresh()` at `0x40e4f8`
+- This is still enough to explain the live race/net/HUD behavior without forcing a bad global tail layout in BN.
+
+## Checkpoint and lap-progress notes
+
+- The reachable checkpoint naming model is now explicitly 1-based:
+  - `Checkpoint_InstantiateNamedObjects()` builds `checkpoint1..checkpointN`
+  - the retail lane is not zero-based
+- The parser/global/contact chain is now bounded:
+  - `HudSensorTracker_ParseCheckpointNumberFromNode()` parses the decimal suffix from a `checkpointN` node/callback string
+  - it returns the 1-based checkpoint number on success and `0` for rejected/non-checkpoint inputs
+  - `g_PlayerPendingCheckpointNumber` is the matching global scratch slot on the contact-processing path
+  - `Player_ClassifyPendingContactsForSegment()` stores the parsed number there
+  - `Player_ProcessPendingContactQueues()` forwards it into `Checkpoint_UpdatePlayerLapProgressAndNotifyNet(...)`
+  - `Player_ClearIgnoredThirdPersonCameraProbeHits()` uses the same parser to ignore checkpoint nodes on the third-person camera probe strip
+- The local player lap-progress slice is now anchored through `PlayerLapProgressRuntimeView` rather than another risky global rewrite. The currently proved members are:
+  - `checkpointSlot0_1018`
+  - `checkpointVisitedFlags_101c`
+  - `lastLapDurationSec_121c`
+  - `raceElapsedTimeSec_122c`
+  - `lastLapTimestamp_123c`
+  - `raceStartTimestamp_124c`
+  - `lapCount_125c`
+- `Checkpoint_UpdatePlayerLapProgressAndNotifyNet()` now renders through that local view, so the reachable checkpoint-visited lane is explicit instead of padding-backed.
+- `GameNet_SendPkt0E_PlayerLapProgress()` now also renders through that same local view plus a typed local `NetPkt0E_PlayerLapProgress` packet:
+  - `lapCountPacked_08` mirrors local `lapCount_125c`
+  - `lapTimeSec_0c` mirrors local `raceElapsedTimeSec_122c`
+  - on the host-local path those same values are mirrored into `GameNetPlayerRow.lapCount_010` and `GameNetPlayerRow.lapTimeSec_014`
+- The adjacent `HudSensorTracker` tail on this race/net lane remains intentionally comment-backed instead of globally retyped:
+  - `g_Hud_SensorTracker.playerSaveData_2488[0].d == checkpointCount_246c`
+  - `(*g_Hud_SensorTracker.playerSaveData_2488)[4].d == runtimeGoalValue_2470`
+- Current proving consumers of those tracker-tail aliases include:
+  - `Checkpoint_InstantiateNamedObjects()`
+  - `Checkpoint_UpdatePlayerLapProgressAndNotifyNet()`
+  - `GameNet_HandlePkt0E_PlayerLapProgress()`
+  - `GameNet_AreAllPlayersAtLapTarget()`
+  - `GameNet_HandlePkt09_PlayerScoreboardSnapshot()`
+
+## Scoreboard snapshot packet notes
+
+- `NetPkt09_PlayerScoreboardSnapshot` is now bounded as a standard 4-byte packet-header message, not the older shifted shared-header model:
+  - `packetIdAndLen_00`
+  - `senderPlayerKey_04`
+  - `entryCount_08`
+  - `entries_0c[1]`
+- `GameNet_SendPkt09_PlayerScoreboardSnapshot()` now has direct assembly-backed packet layout proof:
+  - it allocates `count*8 + 0xc`
+  - writes `word[0] = 9`
+  - writes `word[2] = packetSize`
+  - writes `dword[4] = senderPlayerKey`
+  - writes `dword[8] = entryCount`
+  - then serializes one 8-byte `NetPkt09_PlayerScoreboardEntry` per `GameNetPlayerRow`
+- `GameNet_HandlePkt09_PlayerScoreboardSnapshot()` now reads `msg->entryCount_08` correctly instead of the old bad decomp that treated the sender key as the loop bound.
+- The per-entry packed row format is now explicit:
+  - `playerKey_00` selects the destination `GameNetPlayerRow`
+  - `packedScoreAndLapCount_04` stores:
+    - low 9 bits = `GameNetPlayerRow.score_00c`
+    - next 7 bits = `GameNetPlayerRow.lapCount_010`
+- This packet lane intentionally stays local:
+  - the sender still builds the variable-tail packet through a raw `malloc(...)` buffer
+  - the handler’s direct `playerSaveData_2488[4].d` reads still stay comment-backed as the known `runtimeGoalValue_2470` alias
+  - there was no need to widen the global `HudSensorTracker` type to fix pkt09
+  - `GameNet_HandlePkt09_PlayerScoreboardSnapshot()` is the concrete read-side proof that the checkpoint/lap-progress and scoreboard lanes share the same `runtimeGoalValue_2470` stop condition
+
+## Mission FMV transition notes
+
+- The reachable mission-transition wrapper is now explicitly queue-based:
+  - `RecoilApp_SetMissionIdAndQueueMissionFmvState(missionId)`
+- That helper:
+  - is now accepted as `void __stdcall RecoilApp_SetMissionIdAndQueueMissionFmvState(int32_t missionId)`
+  - clears `g_RecoilApp.m_missionFmvState.m_skipMissionFmv`
+  - writes the mission id through the generic folded helper `zStub_SetDwordField04(...)`
+  - queue-switches to `g_RecoilApp.m_missionFmvState`
+  - has one current reachable caller, `HudSensorTracker_SaveAndQueueMissionState()`, which ignores the stale trailing `mov eax,1 ; retn 4`
+- The reachable `+0x04` write on that lane is now intentionally documented as a compiler-folded helper, not a state-specific API:
+  - `zStub_SetDwordField04()` is only `mov eax,[esp+4] ; mov [ecx+4],eax ; retn 4`
+  - current reachable users span both mission/state parameter writes and HUD background enabled-state writes
+  - `HudUiBackgroundContainer_FTable+0x04 = SetEnabled` also points at the same body
+- The adjacent mission-save queue wrappers on this startup/state lane are now also bounded as side-effect helpers:
+  - `RecoilApp_SetMissionIdAndQueueMissionFmvState(int32_t missionId)` clears `m_skipMissionFmv`, writes the next mission id through `zStub_SetDwordField04(...)`, and queue-switches `g_RecoilApp.m_missionFmvState`
+  - `HudSensorTracker_SaveAndQueueMissionState()` builds `PlayerMissionSaveData`, stores `savedNanitePanelLevel`, arms `hasPendingPlayerSave`, and then queues the next mission through `RecoilApp_SetMissionIdAndQueueMissionFmvState()`
+  - both old return values were only reachable-path residue:
+    - the FMV queue wrapper ended in `mov eax,1 ; retn 4`
+    - the tracker wrapper had a `0/1` split, but its sole current caller `Player_AsyncCommandCallback()` event `0x63` ignores that result
+  - the final-mission branch in `HudSensorTracker_SaveAndQueueMissionState()` only sets `g_RecoilApp_QuitAfterCredits = 1` and returns without queueing a next mission
+- The surrounding `HudSensorTracker` save path is now named consistently too:
+  - `HudSensorTracker_SaveAndQueueMissionState()`
+- That reachable save/queue path:
+  - builds `PlayerMissionSaveData`
+  - stores `savedNanitePanelLevel`
+  - sets `hasPendingPlayerSave = 1`
+  - then forwards the next mission id from `missionGsPath_ec` into `RecoilApp_SetMissionIdAndQueueMissionFmvState(...)`
+- `Player_AsyncCommandCallback()` now proves the external trigger on event `0x63`, where the renamed `HudSensorTracker_SaveAndQueueMissionState()` helper is the only current caller-facing entry.
+- `RecoilApp_MissionFmvState_OnDeactivate()` is now explicitly side-effect-only on the reachable lane:
+  - it clears `m_missionId`
+  - if `m_skipMissionFmv == 0`, it resets the loaded FMV actions
+- `RecoilApp_MissionFmvState_OnUpdateShouldQuit()` now has the corrected exit-path model preserved in BN comments:
+  - when `m_skipMissionFmv != 0` or `zFMV_Script::UpdateAtTime(&self->m_fmv) == 0`, it queue-switches to `g_RecoilApp.m_playState`
+- The shared FMV archive/tag leaf cluster on this shell path is now explicit in BN:
+  - `g_RecoilApp_FmvArchiveName = "fmv.zrd"`
+  - `g_RecoilApp_IntroFmvTag = "INTRO"`
+  - `g_RecoilApp_AttractFmvTag = "ATTRACT"`
+  - `g_RecoilApp_MissionFmvTagTemplate = "M0\0\0"`
+  - `g_RecoilApp_CreditsFmvTag = "GRANDPRIZE"`
+  - `g_RecoilApp_MissionOverFmvTag = "MISSIONOVER"`
+- The adjacent FMV action-vtable lane is now bounded more cleanly too:
+  - `zFMV_ActionVtable` now decompiles as receiver-aware action callbacks on the reachable strip
+  - `pfnUpdate(self, timeSec)` is the handled-status gate used by `zFMV_Script::UpdateAtTime()`
+  - `pfnBegin(self, timeSec)` and `pfnEnd(self)` are side-effect-only action hooks
+  - `zFMV_Script::UpdateAtTime()` now clearly renders:
+    - `m_cur->vftable->pfnEnd(m_cur)` on the abort-on-key path
+    - `m_cur->vftable->pfnUpdate(m_cur, timeSec)` as the action-advance gate
+    - `next->vftable->pfnBegin(next, timeSec)` on action advance
+  - `RecoilApp_PlayState_OnUpdateShouldQuit()` now clearly renders the credits blur locals through the same slot model:
+    - `blurAction.vftable->pfnBegin(&blurAction, 0f)`
+    - `blurAction.vftable->pfnUpdate(&blurAction, 0f)`
+  - `zFMV_Script_RunBlocking()` remains the blocking wrapper over `BeginNow()` plus repeated `UpdateNow()`
+  - the remaining nearby FMV residue is now narrow:
+    - `zFMV_ActionPlayAvi_Update()` still returns the right local continue flag in assembly
+    - BN 5.2 still renders that tail as `return esp[4]`, so that helper still needs one more local cleanup pass
+- `RecoilApp_MissionFmvState_OnTryBecomeCurrent()` builds the live mission movie tag by patching byte `1` of `g_RecoilApp_MissionFmvTagTemplate` with `missionId + '0'` before `zFMV_Script_LoadActionsFromZrd(...)`.
+- Binary Ninja still tends to render raw address-backed decls and inline literals on this strip even after the data vars are re-materialized, so the authoritative record is the applied symbols plus the function/address comments on the live FMV callsites.
+
+## RecoilApp state lifecycle notes
+
+- The reachable queue/main-loop split is now explicit:
+  - `RecoilApp_QueueSwitchCurrentState()` and `RecoilApp_QueueExitCurrentState()` call `oldState->OnExit(oldState)` immediately when a leave/switch request is enqueued
+  - `RecoilApp_QueuePushState()` calls `newState->OnEnter(newState)` immediately when the push request is enqueued
+  - `RecoilApp_RunMainLoop()` later calls `OnDeactivate(oldState)` only when that old top state is actually popped or replaced on the live stack
+  - `RecoilApp_RunMainLoop()` is also the place where queued `OnSuspend(param)` / `OnResume(param)` are delivered during live stack transitions
+- This keeps the reachable semantics separate:
+  - `OnExit` is the immediate queue-time leave hook
+  - `OnDeactivate` is the later live-stack teardown hook
+- The direct lifecycle slot bodies on the reachable non-WOL path now match that shared `void` model too:
+  - `RecoilApp_MpExitDialogState_OnEnter()` is the lazy MP-exit dialog bring-up hook
+  - `RecoilApp_PlayState_OnResume()` only resumes mission CD audio
+  - `RecoilStateControls_OnResume()` and `RecoilStateMainMenuTransition_OnResume()` only re-present their owned dialogs
+  - `RecoilStateDialogHost_OnSuspendDialogPostprocess()` is the shared `OnSuspend(param)` postprocess hook on the dialog-host lane
+- The adjacent main-menu route handoff is now explicit too:
+  - `RecoilStateMainMenuTransition_QueueEnter(enum RecoilMainMenuEntryRoute entryRoute)`
+  - `RECOIL_MAINMENU_ROUTE_FRONTEND` is the front-end / credits entry path
+  - `RECOIL_MAINMENU_ROUTE_INGAME` is the in-game return path
+- The current reachable callers now propagate that enum directly:
+  - `RecoilApp_MainMenuPrepState_OnUpdateShouldQuit()` queues `RECOIL_MAINMENU_ROUTE_FRONTEND`
+  - the GRANDPRIZE/credits branch in `RecoilApp_PlayState_OnUpdateShouldQuit()` queues `RECOIL_MAINMENU_ROUTE_FRONTEND`
+  - the gameplay-exit branch in `RecoilApp_PlayState_OnUpdateShouldQuit()` queues `RECOIL_MAINMENU_ROUTE_INGAME`
+  - `HudSensorTracker_UpdateObjectiveFlow()` queues `RECOIL_MAINMENU_ROUTE_INGAME` on the final objective-flow return path
+- The dialog side now matches that same route type:
+  - `HudUiMainMenuDialog_Ctor(self, entryRoute)` takes `enum RecoilMainMenuEntryRoute`
+  - network-enabled startup forces `MAINMENU2`
+  - `RECOIL_MAINMENU_ROUTE_FRONTEND` selects `MAINMENU0`
+  - `RECOIL_MAINMENU_ROUTE_INGAME` selects `MAINMENU1` or `MAINMENU3` depending on `playerState->aiMode_060`
+- The adjacent dialog `.rdata` strip is now explicit too:
+  - shared dialog archive root:
+    - `g_HudUiDialogArchiveName = "dialog.zrd"`
+  - main-menu layout sections:
+    - `g_HudUiMainMenuLayoutFrontendSectionName = "MAINMENU0"`
+    - `g_HudUiMainMenuLayoutInGameSectionName = "MAINMENU1"`
+    - `g_HudUiMainMenuLayoutInGameCompactSectionName = "MAINMENU3"`
+    - `g_HudUiMainMenuLayoutNetworkSectionName = "MAINMENU2"`
+  - reachable main-menu button-node leaves:
+    - `g_HudUiNewGameButtonNodeName = "NEWGAME"`
+    - `g_HudUiLoadGameButtonNodeName = "LOADGAME"`
+    - `g_HudUiSaveGameButtonNodeName = "SAVEGAME"`
+    - `g_HudUiCreditsButtonNodeName = "CREDITS"`
+    - `g_HudUiControlsButtonNodeName = "CONTROLS"`
+    - `g_HudUiOptionsButtonNodeName = "OPTIONS"`
+    - `g_HudUiQuitButtonNodeName = "QUIT"`
+  - adjacent credits-dialog leaves:
+    - `g_HudUiCreditsPanelSectionName = "CREDITSPANEL"`
+    - `g_HudUiCreditsScreenNodeName = "CREDITS_SCREEN"`
+- The current ownership/xref model on that strip is bounded:
+  - `HudUiMainMenuDialog_Ctor()` is the sole reachable owner of the four `MAINMENU*` section names and the main-menu button-node leaves above
+  - `HudUiCreditsPanel_Ctor()` is the sole reachable owner of `CREDITSPANEL` and `CREDITS_SCREEN`
+  - `"QUIT"` is shared between the main-menu and credits dialogs
+  - `"BACK"` intentionally stays generic and comment-backed because the same leaf is also used by `zInput_BindMap_InitDikKeyNameTable()`, so it is not safe to rename as a UI-only global
+- BN 5.2 still prefers raw decl names and inline literals on this strip after `define_string(..., symbol_applied=true)`, so the authoritative reconstruction is the applied symbols plus the function/address comments.
+- `RecoilStateMainMenuTransition_OnTryBecomeCurrent()` already uses `m_entryRoute != RECOIL_MAINMENU_ROUTE_FRONTEND` to gate the blur-only in-game return path.
+- The adjacent shared dialog-host helper family is now named consistently with that lifecycle:
+  - `RecoilStateDialogHost_OnWndActivateRefreshOwnedDialog()`
+  - `RecoilStateDialogHost_OnDeactivateDestroyOwnedDialog()`
+  - `RecoilStateDialogHost_OnSuspendDialogPostprocess()`
+- The same lane now has a dedicated vtable type in BN:
+  - `struct RecoilStateDialogHost_Vtbl`
+  - applied to `g_RecoilStateCheatCode_Vtbl`, `g_RecoilStateControls_Vtbl`, `g_RecoilStateCredits_Vtbl`, `g_HudCmdDialogState_Vtbl`, `g_HudUiOptionsPanelOverlayOwner_Vtbl`, `g_RecoilStateConfirmQuit_Vtbl`, `g_HudUiNetGameSetupOverlayOwner_Vtbl`, `g_HudUiNewGamePanelOverlayOwner_Vtbl`, and `g_RecoilStateSaveLoadTransition_Vtbl`
+  - `struct RecoilStateDialogHost` now also points at that narrower vtable type directly
+- The current dialog-host xref model is bounded:
+  - `RecoilStateDialogHost_OnWndActivateRefreshOwnedDialog()` is the shared `+0x04 = OnWndActivate` helper across the cheat-code, controls, credits, commands, options, main-menu-transition, confirm-quit, net-game-setup, new-game, and save/load-transition families
+  - `RecoilStateDialogHost_OnDeactivateDestroyOwnedDialog()` is the simple owned-dialog `+0x18 = OnDeactivate` helper on the credits/options/new-game overlay lane
+  - `RecoilStateDialogHost_OnSuspendDialogPostprocess()` is the `+0x1c = OnSuspend` helper on the controls/main-menu-transition lane
+- The shared shell/state activation lane is now enum-backed too:
+  - `enum RecoilWndActivateState`
+    - `RECOIL_WNDACTIVATE_INACTIVE = 0`
+    - `RECOIL_WNDACTIVATE_ACTIVE = 1`
+    - `RECOIL_WNDACTIVATE_CLICKACTIVE = 2`
+  - `RecoilStateDialogHost_OnWndActivateRefreshOwnedDialog()` now explicitly treats `RECOIL_WNDACTIVATE_INACTIVE` as the no-redraw leg
+  - `RecoilApp_PlayState_OnWndActivate()` now explicitly treats any non-inactive state as the HUD-refresh leg
+  - no current non-WOL consumer distinguishes `ACTIVE` from `CLICKACTIVE`; that split is preserved because the shell bridge forwards the real `WM_ACTIVATE` contract
+- The remaining state/dialog-owner `OnDeactivate` overrides on that lane are now also aligned to `void`:
+  - `RecoilStateCheatCode_OnDeactivate()`
+  - `RecoilStateControls_OnDeactivate()`
+  - `RecoilStateConfirmQuit_OnDeactivate()`
+  - `HudCmdDialogState_OnDeactivate()`
+  - `RecoilStateSaveLoadTransition_OnDeactivate()`
+- The adjacent direct non-WOL `OnDeactivate` bodies are now bounded as side-effect-only too:
+  - `RecoilApp_MpExitDialogState_OnDeactivate()` tears down `g_HudUiMpExitDialog`, pops the temporary input map, unloads the shared `DIALOG` sample set, and resets list-menu fade
+  - `HudUiNetGameSetupOverlayOwner_OnDeactivate()` tears down the `MP_NEW_GAME` panel after unloading `DIALOG`, unlocking primary, and sleeping for the transition
+  - `RecoilStateDialogHost_OnDeactivateDestroyOwnedDialog()` remains the shared simple owned-dialog teardown helper reused by the overlay/menu dialog-host vtables at `+0x18`
+  - the remaining heavier custom `OnDeactivate` bodies on the same lane are now pinned explicitly too:
+    - `RecoilStateCheatCode_OnDeactivate()` captures the final cheat string, tears down the dialog, restores captured presentation state, and dispatches `HudCheat_ProcessInputString(...)`
+    - `RecoilStateMainMenuTransition_OnDeactivate()` tears down the main-menu dialog, applies any deferred mode change, restores HUD/audio state, and handles the optional exit delay
+    - `RecoilApp_PlayState_OnDeactivate()` runs the gameplay leave path through checkpoint text, optional network/sound teardown, blocking `MISSIONOVER` FMV, mission-shutdown gating, and final `zUtil_ZAR_Cleanup(0)`
+- Their earlier integer returns were only residue from the last cleanup helper in each function:
+  - `CString::~CString(...)`
+  - `HudUiDialogController_BlitOwnedSurfaceToPrimary(...)`
+  - `Sleep(0x3e8)`
+  - `zInput::BindMap_Current_RebuildLookupIndices()`
+  - `HudUiMgr_RefreshCurrentLayout()`
+- This keeps the whole dialog-host `+0x18 = OnDeactivate` strip consistent with the vtable slot semantics instead of mixing `void` slots with stale int-returning implementations.
+
+## RecoilApp virtual-dispatch notes
+
+- The reachable non-WOL app/state vtable methods are now explicitly modeled as `__thiscall` in BN:
+  - `RecoilApp_IState_Vtbl`
+  - `RecoilStateBase_Vtbl`
+  - `RecoilStateMainMenuTransition_Vtbl`
+  - `RecoilApp_Vtbl`
+  - `RecoilApp_MfcOleModule_Vtbl`
+- This fixed the MM_MCINOTIFY bridge on the shell path:
+  - the direct contracts on the lane are still authoritative:
+    - `RecoilApp_OnIdleOrDispatch()` uses `RecoilAppDispatchStatus`
+    - `CZGameFrame_OnMciNotify()` returns that same handled-state result on the shell path
+  - the shared `RecoilApp_Vtbl +0xB4` / `RecoilApp_MfcOleModule_Vtbl +0xB4` slots stay intentionally `int32_t`
+  - forcing `enum RecoilAppDispatchStatus` through those shared slots still reintroduces BN 5.2 receiver-order / fake-third-arg residue at `0x44367b` and `0x443b68`, so the direct prototypes plus the address comments remain the authority
+- The adjacent app-vtable callers now stay aligned on the same model:
+  - `RecoilApp_InitMainWindow()` renders the frame creation tail as member-style `self->vftable->CreateMainWnd()`
+  - `RecoilApp_StartEngineAndQueueStartupState()` keeps the explicit `StartEngine(self, ...)`, `ShutdownEngine(self)`, and `ExitInstance(self)` dispatch
+  - `CZRecoilFrame_OnActivate()` keeps the explicit `OnAppDeactivate(m_app)` / `OnAppActivate(m_app)` split
+- `RecoilApp_RunMainLoop()` still renders `current->OnSuspend(param)` / `newTop->OnResume(param)` in member-style form on the state-stack branch; this is now treated as acceptable BN presentation rather than a remaining receiver bug.
+
+## CRT singleton wrapper notes
+
+- The live `g_RecoilApp` singleton now follows the same explicit CRT wrapper naming scheme already used by nearby static singleton families:
+  - `RecoilApp_StaticInitAndRegisterAtExit()` at `0x42de20`
+  - `RecoilApp_StaticInit()` at `0x42de30`
+  - `RecoilApp_RegisterAtExit()` at `0x42de40`
+  - `RecoilApp_AtExitDtor()` at `0x42de50`
+- The reachable control flow on that strip is now bounded as:
+  - `RecoilApp_StaticInitAndRegisterAtExit()` calls `RecoilApp_StaticInit()` then `RecoilApp_RegisterAtExit()`
+  - `RecoilApp_StaticInit()` tailcalls `RecoilApp_Ctor(&g_RecoilApp)`
+  - `RecoilApp_RegisterAtExit()` registers `RecoilApp_AtExitDtor` with `crt_register_onexit(...)`
+  - `RecoilApp_AtExitDtor()` tailcalls `RecoilApp_Dtor(&g_RecoilApp)`
+- The direct constructor row is now bounded too:
+  - `RecoilApp_BaseCtorAndInitRuntime()` and `RecoilApp_Ctor()` are side-effect-only constructor bodies on the reachable path
+  - the terminal `mov eax,self` in both helpers is constructor ABI residue, not a semantic return
+  - BN 5.2 may still print `return ... __tailcall` on `RecoilApp_StaticInit()`, `RecoilApp_StaticInitAndRegisterAtExit()`, and `RecoilApp_AtExitDtor()`, so the accepted `void` contracts on that wrapper row are comment-backed as the authority
+- The xref model on that wrapper strip is tight:
+  - `RecoilApp_StaticInitAndRegisterAtExit()` is only reached from the CRT init-array entry at `0x4da080`
+  - `RecoilApp_StaticInit()` is only called from `RecoilApp_StaticInitAndRegisterAtExit()`
+  - `RecoilApp_RegisterAtExit()` is only called from `RecoilApp_StaticInitAndRegisterAtExit()`
+  - `RecoilApp_AtExitDtor()` is only referenced from `RecoilApp_RegisterAtExit()`
+- The adjacent static `g_RecoilState_SaveLoadTransition` singleton now follows the same wrapper model too:
+  - `RecoilStateSaveLoadTransition_StaticInitAndRegisterAtExit()` at `0x435a30`
+  - `RecoilStateSaveLoadTransition_StaticInit()` at `0x435a40`
+  - `RecoilStateSaveLoadTransition_RegisterAtExit()` at `0x435a50`
+  - `RecoilStateSaveLoadTransition_AtExitDtor()` at `0x435a60`
+- Its bounded control flow is the same:
+  - `RecoilStateSaveLoadTransition_StaticInitAndRegisterAtExit()` calls `RecoilStateSaveLoadTransition_StaticInit()` then `RecoilStateSaveLoadTransition_RegisterAtExit()`
+  - `RecoilStateSaveLoadTransition_StaticInit()` tailcalls `RecoilStateSaveLoadTransition_Ctor(&g_RecoilState_SaveLoadTransition)`
+  - `RecoilStateSaveLoadTransition_RegisterAtExit()` registers `RecoilStateSaveLoadTransition_AtExitDtor` with `crt_register_onexit(...)`
+  - `RecoilStateSaveLoadTransition_AtExitDtor()` tailcalls `RecoilStateSaveLoadTransition_Dtor(&g_RecoilState_SaveLoadTransition)`
+- Its xref model is tight too:
+  - `RecoilStateSaveLoadTransition_StaticInitAndRegisterAtExit()` is only reached from the CRT init-array entry at `0x4da08c`
+  - `RecoilStateSaveLoadTransition_RegisterAtExit()` is only called from `RecoilStateSaveLoadTransition_StaticInitAndRegisterAtExit()`
+  - `RecoilStateSaveLoadTransition_AtExitDtor()` is only referenced from `RecoilStateSaveLoadTransition_RegisterAtExit()`
+- The next neighbor on the same CRT row is not another wrapper:
+  - `GameNetSpawnPointList_InitGlobals()` at `0x431bf0`
+  - it is the pure zero-init helper for `g_GameNetSpawnPointList`, `g_GameNetSpawnPointHead`, `g_GameNetSpawnPointTail`, and `g_GameNetSpawnPointCount`
+  - its only current xref is the CRT init-array entry at `0x4da084`
+- All four wrappers are now explicitly `void()` in BN.
+- All eight wrappers above are now explicitly `void()` in BN.
+- Binary Ninja 5.2 still prints some of the direct jumps on these strips as `return ... __tailcall`; the authoritative reconstruction there is the function names, comments, and xrefs rather than the remaining tailcall text.
+
+## RecoilApp startup singleton gate notes
+
+- `RecoilApp_CheckForExistingInstanceAndActivate()` is now the bounded single-instance startup gate on the reachable `RecoilApp::InitInstance()` path.
+- Its contract is explicit:
+  - `return 1` when no existing Recoil main window is found, so startup may continue
+  - `return 0` when another instance is already running and its window has been restored/foregrounded
+- The helper now cleanly proves the classic startup flow:
+  - `FindWindowA(g_RecoilApp_WndClassNamePtr, nullptr)`
+  - if found, get the last active popup
+  - restore it with `ShowWindow(..., 9)` when iconic
+  - foreground it with `SetForegroundWindow(...)`
+- The shared class-name globals on that strip are now explicit:
+  - `g_RecoilApp_WndClassNamePtr` at `0x4dcac0`
+  - `g_RecoilApp_WndClassName` at `0x4dcac8`
+- The adjacent registration latch is now explicit too:
+  - `g_RecoilApp_WindowClassRegistered` at `0x4f3ed0`
+  - it now uses `enum RecoilAppWindowClassRegistrationState`:
+    - `RECOILAPP_WNDCLASS_UNREGISTERED = 0`
+    - `RECOILAPP_WNDCLASS_REGISTERED = 1`
+  - it is set only after `AfxRegisterClass(&mainWindow)` succeeds in `RecoilApp::InitInstance()`
+  - it is read only in `RecoilApp_ExitInstance()` to guard `UnregisterClassA(g_RecoilApp_WndClassNamePtr, hInstance)`
+- The same class-name pointer is shared by the full reachable shell lifecycle:
+  - startup class registration in `RecoilApp::InitInstance()`
+  - the first-instance gate in `RecoilApp_CheckForExistingInstanceAndActivate()`
+  - main-frame creation in `CZRecoilFrame_Ctor()`
+  - exit-time unregister in `RecoilApp_ExitInstance()`
+- The concrete `RecoilApp_ExitInstance()` override on that strip is now explicitly pinned as the process-terminating shell-exit body:
+  - it performs the guarded `UnregisterClassA(...)` leg only while `g_RecoilApp_WindowClassRegistered != RECOILAPP_WNDCLASS_UNREGISTERED`
+  - it then saves options, tears down registry/ZRDR/ZBD/messages/bind-map state, delegates to `CWinApp::ExitInstance(self)`, and terminates through `zSys_ExitProcessWithCleanup(0)`
+  - the shared app-vtable `+0x70 ExitInstance` slot still stays imported-MFC / `int32_t` for BN stability, so the direct override semantics are preserved by the typed global plus the declaration/address comments
+- Binary Ninja still tends to render the data leaves at `0x4dcac0` / `0x4dcac8` as raw address-backed arrays in some views; the authoritative record is the BN symbols plus the caller/xref comments on the four paths above.
+
+## CZRecoilFrame shell resource notes
+
+- The adjacent shell/startup literal strip in `CZRecoilFrame_Ctor()` is now explicitly named instead of depending on inline HLIL strings:
+  - `g_CZRecoilFrame_RuntimeClassName = "CZRecoilFrame"`
+  - `g_CZRecoilFrame_MainMenuResourceName = "MYMENU"`
+  - `g_RecoilError_LogFileName = "recoil.err"`
+  - `g_CZRecoilFrame_LogBaseName = "recoil"`
+- The xref model on that strip is tight:
+  - `g_CZRecoilFrame_RuntimeClassName` is the class-name leaf inside `g_CZRecoilFrame_RuntimeClass`
+  - `g_CZRecoilFrame_MainMenuResourceName` is only used by `CZRecoilFrame_Ctor()` on the `AfxFindResourceHandle(...)` / `LoadMenuA(...)` main-menu load path
+  - `g_RecoilError_LogFileName` is only used by `CZRecoilFrame_Ctor()` on the `RecoilError_InitOutputContext(...)` path
+  - `g_CZRecoilFrame_LogBaseName` is only used by `CZRecoilFrame_Ctor()` as the argument passed into `CZGameFrame_Ctor(self, logBaseName)`
+- `CZGameFrame_Ctor()` is now explicitly the base frame ctor that redirects stdio to Recoil log files via the caller-supplied `logBaseName`, then resets video-device globals.
+- Binary Ninja still prefers inline literal rendering for these leaves in some decompilations and may still print raw address-backed names in `get_data_decl(...)`; the authoritative record is the BN symbols plus the ctor/runtime-class comments.
+
+## HudSensorTracker mission-runtime shell notes
+
+- The mission-runtime reset band is now kept readable through a local partial type, `HudSensorTrackerMissionCoreView`, instead of another risky full-tail rewrite of `HudSensorTracker`.
+- The currently proved fields on that local view are:
+  - `missionLoaded_d8`
+  - `missionId_dc`
+  - `missionFlags_e0`
+  - `missionDataPath_e4`
+  - `zbdPath_e8`
+  - `missionGsPath_ec`
+  - `worldNode_f0`
+  - `objectiveCount_12c`
+  - `fxPass3Obj_2478`
+- `HudSensorTracker_ResetMissionState()` is now explicitly side-effect-only on that view:
+  - clears `missionLoaded_d8`, `missionId_dc`, `missionDataPath_e4`, `zbdPath_e8`, `worldNode_f0`, and `objectiveCount_12c`
+  - restores `missionFlags_e0 = 1`
+  - hides/removes/deletes the optional `fxPass3Obj_2478` weather FX widget and nulls the pointer
+- `HudSensorTracker_MapShutdownAndReset()` is also now side-effect-only:
+  - ends the map overlay
+  - removes all map nodes
+  - frees `loadedMapPath`
+  - reinitializes the tracker map state
+- The `+0xdc` field on this mission-runtime band is now directly proved as the mission id:
+  - `HudSensorTracker_SetMissionId()` is now explicitly side-effect-only and stores `missionId_dc` while clearing the shared `zbdPath_e8` string when the id changes
+  - `HudSensorTracker_GetMissionId()` returns `missionId_dc`
+  - the setter’s only current caller is `RecoilApp_MissionFmvState_OnTryBecomeCurrent()`
+- The broader global `HudSensorTracker` type still stays conservative for now; the mission-runtime proof above is intentionally kept local until a safe full-struct rewrite is practical.
+
+## HudSensorTracker map-overlay notes
+
+- The tracker map-overlay band is now kept readable through a second local partial type, `HudSensorTrackerMapOverlayView`, instead of forcing the large global `HudSensorTracker` type across another unstable region.
+- The currently proved fields on that local overlay view are:
+  - `outerRect`
+  - `mapBoundsMinX`
+  - `mapBoundsMinZ`
+  - `mapBoundsMaxX`
+  - `mapBoundsMaxZ`
+  - `mapNodeListHead`
+  - `mapLoadedFlag`
+  - `loadedMapPath`
+  - `mapSndOn`
+  - `mapSndOff`
+  - `mapScaleLerpActive`
+  - `trackedWorldPosPtr`
+  - `trackedForwardVecPtr`
+  - `trackedWorldFallbackPtr`
+  - `trackedForwardFallbackPtr`
+  - `trackedForwardFallback`
+  - `trackedWorldFallback`
+  - `mapScaleCurrent`
+  - `mapScaleLerpT`
+  - `mapZoom`
+  - `mapScaleStart`
+  - `mapScaleGoal`
+  - `mapScaleLerpStep`
+- `HudSensorTracker_UpdateMapScaleLerp()` is now explicitly side-effect-only on that view:
+  - advances `mapScaleLerpT` by `mapScaleLerpStep`
+  - clamps the overlay lerp to `1.0f`
+  - clears `trackedForwardVecPtr` when the transition completes
+  - lerps `mapScaleCurrent` from `mapScaleStart` to `mapScaleGoal`
+- `HudSensorTracker_Update()` now seeds `mapScaleLerpStep = 0.15f` each update on the same local view, advances the overlay lerp when active, builds fallback world / forward vectors, and then draws map nodes plus save-state markers.
+- `HudSensorTracker_MapOverlayBeginShow()`, `HudSensorTracker_MapOverlayEndShow()`, and `HudSensorTracker_MapOverlayRefToggle()` now share the same local view, so the overlay expansion/collapse math and `mapSndOn` / `mapSndOff` triggers stay readable without widening the global tracker type.
+- This also explains why the broader global field rename stays deferred: direct field-xref output on the full `HudSensorTracker` type still aliases the overlay band incorrectly, so the mission-runtime `+0xdc` proof remains anchored through `HudSensorTrackerMissionCoreView` instead of being pushed into the large global type prematurely.
+
+## Ex17C selector vtable notes
+
+- `g_HudUiFillBitmap_Vtbl` now correctly ends at `+0x84 = SetNormalizedValue`.
+- The old `+0x88` interpretation was wrong; the next two real tables are:
+  - `g_HudUiZrdWidgetEx17C_Item_Vtbl` at `0x4d3850`
+  - `g_HudUiZrdWidgetEx17C_Vtbl` at `0x4d38d8`
+- That boundary is now directly proved by the ctor/dtor stores:
+  - `HudUiFillBitmap_Ctor()` installs `g_HudUiFillBitmap_Vtbl`
+  - `HudUiZrdWidgetEx17C_Item_Ctor()` / `HudUiZrdWidgetEx17C_Item_Dtor()` install `g_HudUiZrdWidgetEx17C_Item_Vtbl`
+  - `HudUiZrdWidgetEx17C_Ctor()` installs `g_HudUiZrdWidgetEx17C_Vtbl`
+- The selector-item preview hooks are not fill-bitmap methods:
+  - `HudUiZrdWidgetEx17C_Item_ShowPreviewIfNotSelected()` is the item `ShowPreview` override at `+0x3c`
+  - `HudUiZrdWidgetEx17C_Item_HidePreviewIfNotSelected()` is the item `HidePreview` override at `+0x40`
+- The selector-item visual-state tail is now explicit:
+  - `selectedDefaultImage_16C`
+  - `deselectedDefaultImage_170`
+  - `selectedRolloverImage_174`
+  - `deselectedRolloverImage_178`
+- `HudUiZrdWidgetEx17C_Item_LoadFromZrd()` now shows the visual snapshot split directly:
+  - selected visuals come from `activateImage_0F4`
+  - deselected visuals come from `base.image_3C` and `rolloverImage_0E4`
+- `HudUiZrdWidgetEx17C_Item_SetSelected()` is now the clean side-effect helper that swaps those selected/deselected pairs back into `defaultImage_0DC` and `rolloverImage_0E4`.
+- The adjacent selector-state helpers are side-effect-only on the reachable path:
+  - `HudUiZrdWidgetEx17C_EnableChildAtIndex()`
+  - `HudUiZrdWidgetEx17C_SetSelectedIndex()`
+  - `HudUiZrdWidgetEx17C_Item_SetSelected()`
+- `HudUiZrdWidgetEx17C_FTable+0x60` is now explicitly `EnableChildAtIndex`, so the parent selector table matches the corrected helper identity.
+- `HudUiZrdWidgetEx17C_EnableChildAtIndex()` is now bounded as the child-enable helper:
+  - it marks `options_150[index]->base.modeOrEnabled_0C4 = 1`
+  - then it calls the child `RefreshState` path
+- A narrow local runtime view is now used at that helper so BN keeps the real indirect call as `child->ftable->RefreshState(child)` instead of dropping the receiver.
+- The current callers that prove those helpers do not need a status return are:
+  - `HudUiControlsDialog_Ctor()`
+  - `RecoilStateControls_OnTryBecomeCurrent()`
+  - `HudUiNewGamePanel_SyncIntensityWidgetFromGameDifficulty()`
+  - `HudUiZrdWidgetEx17C_LoadFromZrd()`
+
+## HudUiBackground hover-event notes
+
+- `HudUiBackground_Update()` now uses a narrow local child runtime view so BN keeps the hover-event strip readable without widening `HudUiCommon_FTable`.
+- The stable local child fields on that path are:
+  - `ftable`
+  - `next_04`
+  - `state_30`
+- `state_30` bit `0` is now bounded as the hover flag on this path:
+  - if the hovered child did not previously have the bit set, the loop sets it and dispatches `+0x3c = OnHoverEnter`
+  - if the hovered child already had the bit set, the loop dispatches `+0x38 = OnHoverRepeat`
+  - if the child is no longer hovered and the bit was set, the loop clears it and dispatches `+0x40 = OnHoverExit`
+- Cross-proof for that lane comes from the reachable ZRD-widget family:
+  - `g_HudUiZrdWidget_FTable + 0x3c = HudUiZrdWidget_ShowPreview()`
+  - `g_HudUiZrdWidget_FTable + 0x40 = HudUiZrdWidget_HidePreview()`
+  - `g_HudUiZrdWidgetEx17C_Item_Vtbl + 0x3c = HudUiZrdWidgetEx17C_Item_ShowPreviewIfNotSelected()`
+  - `g_HudUiZrdWidgetEx17C_Item_Vtbl + 0x40 = HudUiZrdWidgetEx17C_Item_HidePreviewIfNotSelected()`
+- Sampled derived tables still leave `+0x38` stubbed, so `OnHoverRepeat` is currently a local/runtime-view identity rather than a committed broad family rename.
+- The rest of the child-event strip on this branch stays intentionally conservative for now:
+  - `+0x44`
+  - `+0x48`
+  - `+0x4c`
+  - `+0x50`
+  - `+0x54`
+  - `+0x58`
+
+## HUD container update notes
+
+- `HudUiCommon_FTable.Update` is now the stable child slot `+0x24 = Update(dt)` behind the generic HUD container walker.
+- `HudUiContainer_UpdateAll()` now explicitly iterates `childHead_08` and calls each child as `child->ftable->Update(child, dt)` rather than the older dropped-receiver `entry_dt` artifact.
+- `HudUiBackground_Update()` uses that same lane twice on the reachable path:
+  - the generic child pass through `HudUiContainer_UpdateAll(self, dt)`
+  - the focused-element tail through `inputFocusElement_10->ftable->Update(inputFocusElement_10, dt)`
+- The surrounding modal/UI wrappers now keep the same container/update contract cleanly:
+  - `HudUiMessageBoxDialog_RunModal()` drives `self->base.base.vptr->UpdateAll(self, g_FrameDeltaTimeSec)`
+  - `RecoilApp_MpExitDialogState_OnUpdateShouldQuit()` drives `g_HudUiMpExitDialog->base.vptr->UpdateAll(g_HudUiMpExitDialog, g_FrameDeltaTimeSec)`
+- The remaining limitation on this strip is narrower now:
+  - BN 5.2 still leaves low-byte `CL` residue before `zInput_UpdateDevices()` on surrounding modal/dialog-host loops even after the new `enum zInputDispatchCallbacksMode` replay
+  - `HudUiBackground_Update()` still carries several anonymous pointer-event slots (`function_54`, `function_48`, `function_4c`, etc.), so further cleanup there should wait for a real slot identity instead of another broad HUD base rewrite
+
+## dialog.zrd notes
+
+- The reachable non-WOL dialog shell now has one shared archive root:
+  - `g_HudUiDialogArchiveName = "dialog.zrd"`
+- The same branch also has one shared dialog-host sample-set root:
+  - `g_HudUiDialogSampleSetName = "DIALOG"`
+- Current proving users of `g_HudUiDialogArchiveName` include the reachable cheat, controls, commands, options, main-menu, confirm-quit, MP-exit, net-game, net-exit, new-game, save/load, and message-box dialog loaders.
+- Current proving users of `g_HudUiDialogSampleSetName` are the dialog-host states and overlay owners that load/unload the shared UI sample set on `OnTryBecomeCurrent()` / `OnDeactivate()`:
+  - `RecoilStateCheatCode`
+  - `RecoilStateMainMenuTransition`
+  - `RecoilApp_MpExitDialogState`
+  - `HudUiNetGameSetupOverlayOwner`
+  - `RecoilStateSaveLoadTransition`
+- Recovered top-level non-WOL dialog section-name leaves on this branch are:
+  - `g_HudUiCheatCodeDialogSectionName = "CHEAT_CODE_DIALOG"`
+  - `g_HudUiControlsDialogSectionName = "CONTROLS_DIALOG"`
+  - `g_HudCmdDialogSectionName = "COMMANDS_DIALOG"`
+  - `g_HudUiSaveGameDialogSectionName = "SAVE_GAME_DIALOG"`
+  - `g_HudUiLoadGameDialogSectionName = "LOAD_GAME_DIALOG"`
+- Recovered MP-exit dialog tags on the same archive are:
+  - `g_HudUiMpExitDialogSectionName = "MPEXIT"`
+  - `g_HudUiMpExitDialogNewGameButtonName = "MPNEWGAME"`
+  - `g_HudUiMpExitDialogExitButtonName = "MPEXITBTN"`
+- BN 5.2 still prefers inline string literals in decompilation on this strip even after the strings are named and typed. The authoritative reconstruction is therefore the named data vars plus the owner/callsite comments, not the raw HLIL text.
+
+## DirectPlay browser notes
+
+- `g_zNetworkServiceProviderList` is the global `zNetworkServiceProviderListVec*` rebuilt by the DirectPlay provider-enum path and consumed by `NetSessionBrowserDialog_OnInitDialog()`.
+- `zNetwork_DPlay_GetServiceProviderListAfterRefresh()` is the small browser helper that refreshes providers and returns `g_zNetworkServiceProviderList`.
+- `zNetwork_ClearServiceProviderList()` is the stable `void` owner-clear helper for that vector:
+  - it frees each `zNetworkDPlayServiceProviderInfo`
+  - it frees the entry `displayName_10` string
+  - it frees the entry `connectionBlob_14` payload
+  - it rewinds `end_08` back to `begin_04`
+- The adjacent provider-selection helpers are now bounded as side-effect-only routines:
+  - `zNetwork_DPlay_SetConnectionFromServiceProvider()` is `void __fastcall(provider)` and only drives `InitializeConnection_98(...)` plus error reporting
+  - `zNetwork_DPlay_SelectServiceProviderAndInitConnection()` is `void __fastcall(provider)` and only rebuilds `g_zNetworkDPlay`, derives the modem/TCP-IP provider-mode globals from `displayName_10`, then forwards to the connection helper
+- `NetSessionBrowserDialog_ConnectSelectedProvider()` is now the stable void provider-combo handler. Message-map data at `0x4cfbd8` shows `WM_COMMAND / code 8 / id 0x45a` with the same `sig=0xc` void-command bucket used by `NetSessionBrowserDialog_OnCreateSession()`.
+- The adjacent network dialogs now have typed MFC message maps:
+  - browser dialog:
+    - `g_NetSessionBrowserDialog_MessageMap` is `struct MfcMsgMap`
+    - `g_NetSessionBrowserDialog_MessageEntries` is `struct MfcMsgMapEntry[6]`
+    - the typed entry array records `ConnectSelectedProvider`, `OnCreateSession`, `OnTimer`, `OnDestroy`, `OnHelpDocs`, then the zero sentinel
+  - config dialog:
+    - `g_NetSessionConfigDialog_MessageMap` is `struct MfcMsgMap`
+    - `g_NetSessionConfigDialog_MessageEntries` is `struct MfcMsgMapEntry[3]`
+    - the typed entry array records `OnDestroy`, `OnMapChanged`, then the zero sentinel
+  - Westwood Online config dialog:
+    - `g_WestwoodOnlineUpgradeConfigDialog_MessageMap` is `struct MfcMsgMap`
+    - `g_WestwoodOnlineUpgradeConfigDialog_MessageEntries` is `struct MfcMsgMapEntry[8]`
+    - the typed entry array records:
+      - `EN_SETFOCUS id 0x495 -> WestwoodOnlineUpgradeConfigDialog_OnProfileNameEditSetFocusClear()`
+      - `CBN_KILLFOCUS/SELCHANGE/EDITCHANGE/DROPDOWN id 0x4a8 -> WestwoodOnlineUpgradeConfigDialog_OnProfileComboKillFocus()/OnProfileComboSelChange()/OnProfileComboEditChange()/OnProfileComboDropdownSyncThunk()`
+      - `BN_CLICKED id 0x49e -> WestwoodOnlineUpgradeConfigDialog_OnWolPasswordFlagClicked()`
+      - `EN_KILLFOCUS id 0x495 -> WestwoodOnlineUpgradeConfigDialog_OnProfileNameEditKillFocus()`
+      - then the zero sentinel
+    - the message-map evidence also corrected two stale helper names on that branch:
+      - `WestwoodOnlineUpgradeConfigDialog_OnClearProfileNameClicked()` was actually the profile-name edit `EN_SETFOCUS` helper that clears the edit control
+      - `WestwoodOnlineUpgradeConfigDialog_OnProfileComboKillFocusThunk()` was actually the combo `CBN_DROPDOWN` thunk that tail-calls the kill-focus sync before opening the list
+- `zNetwork_DPlay_EnumServiceProviderCallback()` remains the allocation/clone site for `zNetworkDPlayServiceProviderInfo { providerGuidDword0_00..providerGuidDword3_0c, displayName_10, connectionBlob_14, providerFlags_18 }`.
+- The reachable session browser and active-session cache now separate cleanly:
+  - provider browsing uses `g_zNetworkServiceProviderList`
+  - session browsing uses `g_zNetworkEnumeratedSessionList` entries of type `zNetworkDPlaySessionDescCache`
+- Binary Ninja 5.2 still misrenders the final vector-compaction tail inside `zNetwork_ClearServiceProviderList()` as an impossible `end_08 != end_08` branch, so that last tiny strip stays comment-bounded for now.
+
+## MFC shell notes
+
+- Westwood Online functionality is intentionally parked for last-pass handling; current shell/UI work should stay on non-WOL paths first.
+- The non-WOL `RecoilApp` app-vtable tail is now structurally corrected in BN rather than only comment-bounded.
+  - both `RecoilApp_Vtbl` and `RecoilApp_MfcOleModule_Vtbl` needed a second anonymous dword at `+0x54`
+  - the corrected reachable tail is now:
+    - full table: `+0x58 InitInstance`, `+0x5c RunMainLoop`, `+0x60 PreTranslateMessage`, `+0x64 PumpMessage`, `+0x68 OnIdle`, `+0x6c IsIdleMessage`, `+0x70 ExitInstance`, `+0xa0 WinHelpA`, `+0xa4 OnAppDeactivate`, `+0xa8 OnAppActivate`, `+0xac StartEngine`, `+0xb0 ShutdownEngine`, `+0xb4 OnIdleOrDispatch`, `+0xb8 CreateMainWnd`
+    - base table: `+0x58 InitMainWindow`, `+0x5c RunMainLoop`, `+0x60 PreTranslateMessage`, `+0x64 PumpMessage`, `+0x68 OnIdle`, `+0x6c IsIdleMessage`, `+0x70 ExitInstance`, `+0xa0 WinHelpA`, `+0xa4 OnAppDeactivate`, `+0xa8 OnAppActivate`, `+0xac EngineInit`, `+0xb0 ShutdownSubsystems`, `+0xb4 OnIdleOrDispatch`, `+0xb8 CreateMainWnd/_purecall`
+  - this is the first stable type pass where the structs reach the real last callable slot at `+0xb8`
+- The direct decomp wins on that corrected tail are now explicit:
+  - `RecoilApp_RunMainLoop()` renders `self->vftable->PumpMessage(self)` and `self->vftable->ExitInstance(self)` correctly on the Windows message-present path
+  - `RecoilApp_StartEngineAndQueueStartupState()` renders `+0xac StartEngine`, `+0xb0 ShutdownEngine`, and `+0x70 ExitInstance` correctly again
+  - `RecoilApp_InitMainWindow()` now renders `self->vftable->CreateMainWnd(self)` through `+0xb8`
+  - the main-loop quit path currently renders `RecoilApp_Vtbl+0xa8 = OnAppDeactivate(self)` before `PostQuitMessage(0)`; that mapping is now comment-backed and should be rechecked only if another quit-policy caller proves a stronger semantic
+  - `CZRecoilFrame_OnActivate()` now gives the direct shell-side cross-proof for that same hook:
+    - `WA_INACTIVE` calls `m_app->vftable->OnAppDeactivate(m_app)`
+    - the active leg calls `m_app->vftable->OnAppActivate(m_app)`
+    - so the quit path is now bounded as simply another caller of the same app-deactivation hook, not a different semantic slot
+- `CZGameFrame` now has a typed MFC message map:
+  - `g_CZGameFrame_MessageMap` is `struct MfcMsgMap`
+  - `g_CZGameFrame_MessageEntries` is `struct MfcMsgMapEntry[9]`
+  - the typed entry array records:
+    - `WM_CLOSE -> CZGameFrame_OnClose()`
+    - `WM_PAINT -> CZGameFrame_OnPaint()`
+    - `WM_SIZE -> CZGameFrame_OnSize()`
+    - `WM_MOVE -> CZGameFrame_OnMove()`
+    - `WM_CREATE -> CZGameFrame_OnCreate()`
+    - `WM_DESTROY -> CZGameFrame_OnDestroy()`
+    - `MM_MCINOTIFY -> CZGameFrame_OnMciNotify()`
+    - `WM_ACTIVATE -> CZRecoilFrame_OnActivate()`
+    - then the zero sentinel
+- The `WM_ACTIVATE` route is inherited from the recoil frame rather than implemented directly on `CZGameFrame`, so the map preserves one cross-class shell-frame callback on this branch.
+- The immediate non-WOL `CZGameFrame` handler contracts are now explicit too:
+  - `CZGameFrame_OnClose()` / `OnPaint()` / `OnDestroy()` are `void`
+  - `CZGameFrame_OnSize(self, nType, cx, cy)` is `void`
+  - `CZGameFrame_OnMove(self, x, y)` is `void`, but the implementation still just runs `CWnd::Default(self)` and then refreshes the cached zVid client rect
+  - `CZGameFrame_OnCreate(self, createStruct)` keeps the ordinary `int32_t` WM_CREATE contract
+  - `CZGameFrame_OnMciNotify()` stays comment-bounded for now because it just forwards its two stacked notify params into `RecoilApp::OnIdleOrDispatch(...)`
+- The adjacent non-WOL `CZRecoilFrame` shell command/UI lane is tighter now:
+  - `CZRecoilFrame_OnActivate(self, nState, pOtherWnd, bMinimized)` is now explicit as a `void` `WM_ACTIVATE` handler
+  - `nState` now uses `enum RecoilWndActivateState`, so `WA_INACTIVE` renders as `RECOIL_WNDACTIVATE_INACTIVE` on the shell/state bridge
+  - it forwards to `CFrameWnd::OnActivate(...)`, notifies the current `RecoilApp_IState` via `OnWndActivate(nState)`, then routes foreground/background transitions into `RecoilApp`, `zInput`, and `zVideo`
+  - `MfcCmdUI_Vtbl.SetChecked` is now treated as a `void` side-effect slot on this reachable MFC lane
+- The adjacent `CZRecoilFrame` shell menu/open-file branch is now explicit too:
+  - `CZRecoilFrame_OnMenuExitGame()` is `void` and only posts `WM_CLOSE` to `self->m_hWnd`
+  - `CZRecoilFrame_OnMenuOpenCampaignDialog()` is `void`; it sets `g_RecoilApp.m_skipIntroFmv = 1` and then tail-jumps into `CZRecoilFrame_OnOpenFileDialog(self)`
+  - `CZRecoilFrame_OnOpenFileDialog()` is `void`; it builds an `OPENFILENAMEA`, uses `self->m_openZbdFilePath_CC` as the file buffer, then on success calls `RecoilApp_LoadZbdAndSetupSensorTracker(&g_RecoilApp, 0, &self->m_openZbdFilePath_CC, 1, 1)` and invalidates the frame
+  - `CZRecoilFrame_OnMenuOpenHelpDocs()` is the menu-id `0x6A` help-docs handler; it tries `ShellExecuteA(..., "Docs\\Index.html", ...)` when `FindExecutableA("Docs\\Index.html", ...)` succeeds and otherwise shows a localized `MessageBoxA` failure string
+  - the former generic modal helper is now `CZRecoilFrame_OnMenuOpenAboutDialog()`: it constructs a stack `CAboutDlg`, runs `CDialog::DoModal()`, then destroys the temporary dialog before returning
+  - `RecoilApp_BuildWindowTitleCString(outTitle)` is the adjacent title-provider helper; it is a stacked one-arg `CString*` out-parameter builder used twice in `CZRecoilFrame_Ctor()`, first before `CWnd::CreateEx(...)` and later before `CWnd::SetWindowTextA(...)`
+  - it chooses the title from the live runtime renderer path, not persisted `ZOPT_HW_API`:
+    - `g_RecoilApp_WindowTitle` = `RECOIL`
+    - `g_RecoilApp_WindowTitle3Dfx` = `RECOIL (3Dfx)`
+- The adjacent startup bridge family is now explicit too:
+  - `CZRecoilFrame_OnMenuStartSinglePlayerGame()` is the single-player menu command handler on id `0x68`; it clears `g_RecoilApp.m_skipIntroFmv` and `g_RecoilApp.m_missionFmvState.m_skipMissionFmv`, then tail-jumps into `RecoilApp_LoadZbdAndStartEngine(&g_RecoilApp)`
+  - `RecoilApp_LoadZbdAndStartEngine()` is now treated as a side-effect helper, not a status-return API: it conditionally remounts the shared `zrdr.zbd` archive when archive banks are enabled, runs `RecoilApp_StartEngineAndQueueStartupState(self)`, then notifies `HudSensorTracker_OnStartEngine(&g_Hud_SensorTracker)`
+  - `RecoilApp_LoadZbdAndSetupSensorTracker()` is now also treated as a side-effect helper: it bootstraps the engine first, stores `skipIntroFmv` into `RecoilApp.m_skipIntroFmv`, then selects either `HudSensorTracker_SetZbdPath()` or `HudSensorTracker_InitMissionIdAndFlags(missionId, missionFlags)`
+  - `CZRecoilFrame_OnMenuOpenMultiplayerDialogsAndMaybeStartGame()` is a `CZRecoilFrame` message-map handler too, so its destructor-backed decompiled returns were not semantic status values
+  - Binary Ninja 5.2 still shows a tailcall-style `return RecoilApp_LoadZbdAndStartEngine(...)` in `CZRecoilFrame_OnMenuStartSinglePlayerGame()`, but that is only HLIL residue after the direct jump
+  - The adjacent shell-options menu lane is explicit too:
+    - `CZRecoilFrame_OnMenuToggleHudVisibility()` and `CZRecoilFrame_OnUpdateHudVisibilityCmdUi()` prove command id `0x9C4F` is the HUD-visibility toggle
+    - `CZRecoilFrame_OnMenuToggleFullscreenOption()` and `CZRecoilFrame_OnUpdateRemoveFullscreenOptionMenuItem()` prove command id `0x9C4E` is the fullscreen-option toggle
+    - the option-helper naming on this strip now matches the wider `zOpt_*` layer: `zOpt_GetFullscreenOption()`, `zOpt_SetFullscreenOption()`, and `zOpt_SetHudFlagForCurrentHwMode()`
+- The deeper startup gate under that wrapper is now explicit too:
+  - `RecoilApp_StartEngineAndQueueStartupState()` is the real startup success gate, not another void wrapper
+  - on success it calls `RecoilApp_Vtbl.StartEngine(self, RecoilApp_GetMainWnd(self)->m_hWnd)`, sets `m_skipWaitMessage = 1`, clears `m_skipMissionShutdownOnExit`, queue-switches `m_startupState`, and returns `1`
+  - on failure it calls `RecoilApp_Vtbl.ShutdownEngine(self)` and then `RecoilApp_Vtbl.ExitInstance(self)`; BN still renders that leg as `return self->vftable->ExitInstance(self)` because the inherited CWinApp slot ABI is int-returning, but the retail `RecoilApp_ExitInstance()` path continues into `zSys_ExitProcessWithCleanup(0)`
+  - `g_RecoilApp_Vtbl` at `0x4d09e0` is now the pinned app-vtable checkpoint on this strip, with `+0x70 = ExitInstance`, `+0xAC = StartEngine`, and `+0xB0 = ShutdownEngine`
+  - `g_RecoilApp_MfcOleModule_Vtbl` at `0x4d2020` is now the pinned temporary pre-full-ctor RecoilApp/CWinApp base vtable installed by `RecoilApp_BaseCtorAndInitRuntime()` and restored by `RecoilApp_MfcOleModule_Dtor()`
+  - the early MFC message-map lane is now explicit too:
+    - `RecoilApp_Vtbl+0x30 = RecoilApp_GetMessageMap()`
+    - `RecoilApp_MfcOleModule_Vtbl+0x30 = RecoilApp_MfcOleModule_GetMessageMap()`
+    - `g_RecoilApp_MessageMap = { RecoilApp_MfcOleModule_GetMessageMap, g_RecoilApp_MessageEntries }`
+    - `g_RecoilApp_MfcOleModule_MessageMap = { COleControlModule_GetBaseMessageMap, g_RecoilApp_MfcOleModule_MessageEntries }`
+    - both local entry arrays are single all-zero sentinels, so the fully constructed RecoilApp object adds no reachable routed MFC handlers of its own and only chains into the inherited base map
+    - `COleControlModule_GetBaseMessageMap()` is the now-named MFC42 import thunk at `0x442890` that supplies that inherited base map
+  - its reachable tail now stays explicit too:
+    - `+0x58 = RecoilApp_InitMainWindow()`
+    - `+0x5C = RecoilApp_RunMainLoop()`
+    - `+0x60 = CWinThread::PreTranslateMessage()`
+    - `+0x64 = CWinThread::PumpMessage()`
+    - `+0x68 = CWinApp::OnIdle()`
+    - `+0x6C = CWinThread::IsIdleMessage()`
+    - `+0x70 = CWinApp::ExitInstance()`
+    - `+0xA4 = RecoilApp_OnAppDeactivate()`
+    - `+0xA8 = RecoilApp_OnAppActivate()`
+    - `+0xAC = RecoilApp_EngineInit()`
+    - `+0xB0 = RecoilApp_ShutdownSubsystems()`
+    - `+0xB4 = RecoilApp_OnIdleOrDispatch()`
+    - `+0xB8 = _purecall` until `RecoilApp_Ctor` later installs `g_RecoilApp_Vtbl+0xB8 = RecoilApp_CreateMainWnd()`
+  - the adjacent safe-slot type replay on the same app tables is now explicit too:
+    - full table:
+      - `g_RecoilApp_Vtbl +0x58 = InitInstance(self)` returns `enum RecoilAppInitInstanceResult`
+      - `g_RecoilApp_Vtbl +0x60 = PreTranslateMessage(self, pMsg)` returns `enum RecoilAppPreTranslateResult`
+      - `g_RecoilApp_Vtbl +0x7C = GetMainWnd(self)` now safely returns `struct CZRecoilFrame*`
+      - raw table read also closes the app-hook order as `g_RecoilApp_Vtbl +0xA4 = RecoilApp_OnAppDeactivate(self)` and `g_RecoilApp_Vtbl +0xA8 = RecoilApp_OnAppActivate(self)`
+    - temporary base table:
+      - `g_RecoilApp_MfcOleModule_Vtbl +0x58 = RecoilApp_InitMainWindow(self)` is `void`
+      - `g_RecoilApp_MfcOleModule_Vtbl +0x60` still targets the inherited MFC `PreTranslateMessage`, but now safely returns `enum RecoilAppPreTranslateResult`
+      - `g_RecoilApp_MfcOleModule_Vtbl +0x7C` still targets the inherited MFC `GetMainWnd`, but now safely returns `struct CZRecoilFrame*`
+      - `g_RecoilApp_MfcOleModule_Vtbl +0xA4 = RecoilApp_OnAppDeactivate(self)`
+      - `g_RecoilApp_MfcOleModule_Vtbl +0xA8 = RecoilApp_OnAppActivate(self)`
+      - `g_RecoilApp_MfcOleModule_Vtbl +0xAC = RecoilApp_EngineInit(self, hWnd)` is `void`
+      - `g_RecoilApp_MfcOleModule_Vtbl +0xB0 = RecoilApp_ShutdownSubsystems(self)` is `void`
+      - `g_RecoilApp_MfcOleModule_Vtbl +0xB8` remains `_purecall`
+    - the risky shared slots still stay intentionally conservative:
+      - `g_RecoilApp_Vtbl +0xAC = StartEngine`
+      - `g_RecoilApp_Vtbl +0xB4 = OnIdleOrDispatch`
+      - `g_RecoilApp_MfcOleModule_Vtbl +0xB4 = OnIdleOrDispatch`
+      - a fresh BN 5.2 retest confirmed that forcing typed enum returns on those shared slots is still not safe:
+        - `StartEngine` typed in-table reintroduces receiver-order loss at `0x442c29`
+        - `OnIdleOrDispatch` typed in-table reintroduces fake third-arg / receiver-order residue at `0x44367b` and `0x443b68`
+      - the slots therefore stay `int32_t` in the shared vtable types, while the direct function prototypes and callsite comments remain the authority
+  - both app vtables now type the proved leading MFC/CCmdTarget slots explicitly:
+    - `+0x00 = GetBaseRuntimeClass`
+    - `+0x04 = ScalarDeletingDtor`
+    - `+0x14 = OnCmdMsg`
+    - `+0x18 = OnFinalRelease`
+    - `+0x2C = GetMessageMap`
+    - `+0x30 = GetCommandMap`
+    - `+0x34/+0x38/+0x3C/+0x40 = GetBaseDispatchMap / GetBaseConnectionMap / GetBaseInterfaceMap / GetBaseEventSinkMap`
+    - unresolved imported ordinals at `+0x08/+0x0c/+0x10`, `+0x1c..+0x28`, and `+0x44..+0x4c` still stay padded
+  - `RecoilApp_InitMainWindow()` is still bounded by comments on the late frame-creation call: `g_RecoilApp_Vtbl+0xB8` is `RecoilApp_CreateMainWnd()`, but BN 5.2 may still render that indirect call as raw `self->vftable->__offset(0xb8).d()` after the explicit early-slot vtable rewrite
+  - `RecoilApp_CreateMainWnd()` is the full-vtable tail hook behind that slot; it allocates `CZRecoilFrame` through `operator new(0x230)` and returns the constructed frame later stored in `RecoilApp::m_pMainWnd`
+  - `g_RecoilApp_Vtbl` now keeps the same MFC slot ordering at `+0x60..+0x6c`:
+    - `+0x60 = RecoilApp_PreTranslateMessage()`
+    - `+0x64 = CWinThread::PumpMessage()`
+    - `+0x68 = CWinApp::OnIdle()`
+    - `+0x6C = CWinThread::IsIdleMessage()`
+  - `RecoilApp_PreTranslateMessage()` was previously mislabeled as `IsIdleMessage`; the function body is now bounded as a key-message swallow filter:
+    - when hardware acceleration is enabled it returns `1` only for `WM_KEYDOWN` / `WM_KEYUP`
+    - all other messages return `0` and continue through the ordinary MFC pump/dispatch path
+  - the direct `RecoilApp_OnAppActivate()` / `RecoilApp_OnAppDeactivate()` bodies are side-effect-only on the reachable path, and the shared app-table slot order is now pinned by raw table read:
+    - `+0xA4 = RecoilApp_OnAppDeactivate()`
+    - `+0xA8 = RecoilApp_OnAppActivate()`
+    - `CZRecoilFrame_OnActivate()` and the quit path in `RecoilApp_RunMainLoop()` are the current reachable caller proof for that order
+  - `RecoilApp_ShutdownSubsystems()` is now treated as the base-vtable `void` teardown slot; `RecoilApp_ShutdownEngine()` just sequences the wider shell/gameplay shutdown around that side-effect helper
+  - the adjacent ZRDR teardown tail is now explicit too:
+    - `zUtil_ZRDR_Shutdown()` is a `void` search-path/archive teardown helper shared by `RecoilApp_ShutdownSubsystems()` and `RecoilApp_ExitInstance()`
+    - `zUtil_ZRDR_FreeNodePool()` is a `void` node-pool teardown helper
+    - `RecoilApp_ShutdownSubsystems()` sequences them as the core reader/archive teardown tail
+    - `RecoilApp_ExitInstance()` reuses the same pair before destroying the global ZBD manager, unloading `MESSAGES.DLL`, shutting down the input bind-map system, and finally exiting through `CWinApp::ExitInstance(self)` plus `zSys_ExitProcessWithCleanup(0)`
+    - the remaining `return zUtil_ZRDR_FreeNodePool() __tailcall` text in `RecoilApp_ShutdownSubsystems()` is only Binary Ninja HLIL residue, not a real status-return edge
+  - `RecoilApp::InitInstance()` seeds `m_startupState = &self->m_introFmvState.base` before the later queue-switch path
+- The adjacent main-loop/state-stack lane is now explicit too:
+  - `RecoilApp_RunMainLoop()` is the main message pump and queued state-transition dispatcher
+  - when no Windows message is pending it pumps DirectPlay, checks the current state quit hook, drains queued state transitions, and only falls back to `WaitMessage()` when `m_skipWaitMessage == 0`
+  - the shared input-pump helper on this lane is now explicit too:
+    - `zInput_UpdateDevices()` is now typed as `void __fastcall(enum zInputDispatchCallbacksMode dispatchCallbacks)`
+    - the reachable callers use it as a side-effect input pump, not a consumed status-return API
+    - `dispatchCallbacks = ZINPUT_DISPATCH_CALLBACKS_POLL_ONLY` on the dialog-host / MP-exit / modal message-box loops
+    - `dispatchCallbacks = ZINPUT_DISPATCH_CALLBACKS_ENABLED` on the main render tick and FMV update lanes
+    - BN 5.2 still does not fully lift the low-byte `CL` idiom at those callsites, so the authoritative comments are pinned at `0x435e85`, `0x419998`, `0x42f2ba`, `0x46304b`, and `0x4bf735`
+    - the exact bounded residues are now explicit too:
+      - `self.b = 0` before the call on the dialog-host / MP-exit modal lanes
+      - `dispatchCallbacks.b = 0/1` before the call on the message-box / frame-tick / FMV lanes
+  - the per-device poller layer under that helper is now aligned as side-effect code too:
+    - `zInput_Mouse_PollAndStoreState(enum zInputDispatchCallbacksMode dispatchCallbacks)` is the thin mouse wrapper that caches the poll result in `g_zInputMouseLastPollResult`
+    - `zInput::DI_PollJoystickState(enum zInputDispatchCallbacksMode dispatchCallbacks)` refreshes `g_zInputJoyState_Current/g_zInputJoyState_Previous` and only dispatches joystick callbacks when `dispatchCallbacks == ZINPUT_DISPATCH_CALLBACKS_ENABLED`
+    - `zInput_KBD_PollState(enum zInputDispatchCallbacksMode dispatchCallbacks)` updates modifier/key-transition state and only dispatches per-DIK callbacks when `dispatchCallbacks == ZINPUT_DISPATCH_CALLBACKS_ENABLED`
+    - `zInput_Mouse_PollState(enum zInputDispatchCallbacksMode dispatchCallbacks)` updates mouse deltas/button transitions and only dispatches bind-map mouse-button callbacks when `dispatchCallbacks == ZINPUT_DISPATCH_CALLBACKS_ENABLED`
+    - `zInput_DI_WaitForButtonPress(maxPollPasses)` is the sibling loop that repeatedly drives `zInput::DI_PollJoystickState(1)`, scans button transitions `1..10`, and then clears the joystick transition table
+- the core queue writers are now explicitly side-effect-only on the reachable non-WOL path:
+    - `RecoilApp_QueuePushState()`
+    - `RecoilApp_QueueSwitchCurrentState()`
+    - `RecoilApp_QueueExitCurrentState()`
+  - queue-time behavior is still split from live-stack execution:
+    - `RecoilApp_QueuePushState()` does immediate `newState->OnEnter()`
+    - `RecoilApp_QueueSwitchCurrentState()` and `RecoilApp_QueueExitCurrentState()` do immediate `oldState->OnExit()`
+    - `RecoilApp_RunMainLoop()` later performs the actual `OnSuspend` / `OnResume` / `OnDeactivate` / `OnTryBecomeCurrent` live-stack work
+  - the one queue-storage holdback on this strip is separate:
+    - `RecoilApp_StateQueueBlock_InitFromCursorAndChunkBaseSlot()` still stays pointer-returning because BN 5.2 contradicted caller propagation when the helper was replayed as `void`
+  - the adjacent wrapper family on top of those writers is now treated as side-effect-only where caller proof is clean:
+    - `HudCmdDialogState_QueueEnter()`
+    - `HudUiNetGameSetupOverlayOwner_QueueEnterWithReconfigureFlag(int32_t reconfigureExistingSession)`
+    - `HudUiNewGamePanelOverlayOwner_QueueEnter()`
+    - `HudUiOptionsPanelOverlayOwner_QueueEnter()`
+    - `RecoilStateControls_QueueEnter()`
+    - `RecoilStateConfirmQuit_QueueEnter()`
+    - `RecoilStateCredits_QueueEnter()`
+    - `RecoilStateMainMenuTransition_QueueEnter(int32_t entryRoute)`
+    - `HudUiZrdWidget_OnActivateQueueExitCurrentState(struct HudUiZrdWidget* self)`
+    - `HudUiZrdWidget_OnActivateQueueExitCurrentAndSwitchToLeaveNetwork(struct HudUiZrdWidget* self)`
+    - `RecoilStateCheatCode_QueueEnter()`
+  - immediate caller cleanup from that pass now includes:
+    - main-menu button hooks for `NewGame`, `Options`, `Credits`, `Quit`, and `Controls`
+    - the MPEXIT `MP_NEW_GAME` relaunch path
+    - the non-modem host/session-create path in `CZRecoilFrame_OnMenuOpenMultiplayerDialogsAndMaybeStartGame()`
+    - the state/update-side transition triggers in `RecoilApp_PlayState_OnUpdateShouldQuit()`, `RecoilApp_MainMenuPrepState_OnUpdateShouldQuit()`, and `HudSensorTracker_UpdateObjectiveFlow()`
+  - the old `RecoilStateCheatCode_QueueEnter() -> return 1` story is now retired; that forced-`eax` behavior was only command-callback residue and no reachable caller consumes it
+  - the adjacent bind-map/hotkey callback ABI is now explicit too:
+    - `zInput_BindMapContext_SetCommandCallback()` stores `void __fastcall(commandId)` callbacks
+    - the keyboard, mouse, and joystick bind-map dispatch helpers all invoke the stored callback with `ecx = commandId`
+    - `zInput_KBD_PollState()`, `zInput_Mouse_PollState()`, and `zInput::DI_PollJoystickState()` ignore callback returns on the reachable branch
+    - that lets `HudUi_HandleHotkeyCommand()` and `zVideo_HandleSoftwareModeHotkey()` stay side-effect-only
+    - the same cleanup propagates into `RecoilStateSaveLoadTransition_QueueOpenSaveDialog()` and `RecoilStateSaveLoadTransition_QueueOpenLoadDialog()`, so quicksave/quicksave-load plus the main-menu SAVEGAME/LOADGAME hooks now render as pure queue helpers
+  - the adjacent DirectInput force-feedback playback lane is tighter too:
+    - `zInput_DI_PlayAltFireEffect()` is the slot-1 alt-fire wrapper and is now a `void` side-effect helper
+    - `zInput_DI_PlayCollisionImpactEffect()` and `zInput_DI_PlayDamageHitEffect()` are the two directional playback wrappers and now render with the real `struct zVec3* directionVec, float intensity01` signature instead of the old duplicate-pointer / fake-return residue
+    - `zInput_DI_UpdateSteerAndPitchForceEffects()` is now also a `void` side-effect helper on the local-player update path
+    - `g_zInput_DiNominalMaxMagnitude` at `0x4d0bc0` is the shared `10000.0f` DirectInput nominal-magnitude scale for those wrappers, even though BN may still hide that symbol in some decl views
+    - the adjacent directional angle-conversion cluster is now bounded too:
+      - `g_zInput_DiPi` at `0x4d0bc4`
+      - `g_zInput_DiNegativeTwoPi` at `0x4d0bc8`
+      - `g_zInput_DiTwoPi` at `0x4d0bcc`
+      - `g_zInput_DiRadiansToDegrees` at `0x4d0bd0`
+      - `g_zInput_DiCollisionImpactMinIntensity` at `0x4d0bd8`
+    - the directional collision/damage wrappers now explicitly document the DirectInput heading path as `wrap radians -> convert with 57.295779513... -> _ftol() -> *100`, which matches DirectInput polar hundredths-of-degree
+    - the strongest caller-side proofs on the reachable branch are `Player_UpdateAltGunFireController()`, `Player_ResolvePendingCollisionContact()`, `Player_ApplyDamageLocal()`, and `Player_UpdateForMasterType()`
+  - `RecoilApp_IState_Vtbl+0x0C` is now treated as `OnTryBecomeCurrent`, not a pure `OnCanBecomeCurrent` predicate
+  - PushState uses `current->OnSuspend(param)` and then `newState->OnTryBecomeCurrent()`
+  - SwitchCurrent uses `old->OnDeactivate()` and then `newState->OnTryBecomeCurrent()`
+  - if the replacement rejects, the old current state is re-run through `old->OnTryBecomeCurrent()`
+  - the sibling state-vtable families now match that same shared slot model too:
+    - `RecoilStateBase_Vtbl` and `RecoilStateMainMenuTransition_Vtbl` now use `OnTryBecomeCurrent`, `OnDeactivate`, `OnSuspend`, `OnResume`, and `OnIdleOrDispatch` at the same offsets as `RecoilApp_IState_Vtbl`
+    - `g_RecoilStateMainMenuTransition_Vtbl` is now fixed at its real base `0x4cee28`; the older `0x4cee30` view was only a stale midslice application and contradicted the ctor store in `RecoilStateMainMenuTransition_Ctor()`
+  - the central non-WOL `RecoilApp` state-vtable block is now materialized as BN data vars too:
+    - `g_RecoilApp_MpExitDialogState_Vtbl`
+    - `g_RecoilApp_LeaveNetworkState_Vtbl`
+    - `g_RecoilApp_MainMenuPrepState_Vtbl`
+    - `g_RecoilApp_IntroFmvState_Vtbl`
+    - `g_RecoilApp_AttractFmvState_Vtbl`
+    - `g_RecoilApp_MissionFmvState_Vtbl`
+    - `g_RecoilApp_PlayState_Vtbl`
+    - the proving stores are `RecoilApp_Ctor()`, `RecoilApp_AttractFmvState_Ctor()`, `RecoilApp_MissionFmvState_Ctor()`, and `RecoilApp_PlayState_Ctor()`, with `OnTryBecomeCurrent` / `OnUpdateShouldQuit` slot xrefs pinning the remaining table identities
+    - BN may still show raw-address decls on this `.rdata` strip in some views, so the applied symbols plus the table-base comments remain the authoritative record
+  - the adjacent non-WOL FMV/startup literal strip is now explicit too:
+    - `g_RecoilApp_FmvArchiveName = "fmv.zrd"`
+    - `g_RecoilApp_IntroFmvTag = "INTRO"`
+    - `g_RecoilApp_AttractFmvTag = "ATTRACT"`
+    - `g_RecoilApp_CreditsFmvTag = "GRANDPRIZE"`
+    - `g_RecoilApp_RootZrdrArchivePath = "zbd\\zrdr.zbd"`
+    - `g_zUtil_MissionZrdrArchivePathFmt = "zbd\\m%d\\zrdr.zbd"`
+    - the proving reachable users are `RecoilApp_IntroFmvState_OnTryBecomeCurrent()`, `RecoilApp_AttractFmvState_OnTryBecomeCurrent()`, `RecoilApp_PlayState_OnUpdateShouldQuit()`, `RecoilApp_LoadZbdAndStartEngine()`, `RecoilApp::InitInstance()`, and `zUtil_SetMissionZrdrPathsAndMountZbd()`
+    - BN still tends to render these as inline string literals in HLIL, so the named data vars plus callsite comments are the authoritative record on this strip
+  - the shared dialog-host quit-check lane is now explicit too:
+    - `RecoilStateDialogHost_OnUpdateShouldQuit()` is the common `+0x10` slot used by the dialog-backed states and overlay owners
+    - it appears on:
+      - `g_RecoilStateCheatCode_Vtbl`
+      - `g_RecoilStateControls_Vtbl`
+      - `g_RecoilStateCredits_Vtbl`
+      - `g_HudCmdDialogState_Vtbl`
+      - `g_HudUiOptionsPanelOverlayOwner_Vtbl`
+      - `g_RecoilStateMainMenuTransition_Vtbl`
+      - `g_RecoilStateConfirmQuit_Vtbl`
+      - `g_HudUiNetGameSetupOverlayOwner_Vtbl`
+      - `g_HudUiNewGamePanelOverlayOwner_Vtbl`
+      - `g_RecoilStateSaveLoadTransition_Vtbl`
+    - the full non-WOL dialog-host / overlay-owner table band is now explicit as BN data vars too:
+      - `g_RecoilStateCheatCode_Vtbl`
+      - `g_RecoilStateControls_Vtbl`
+      - `g_RecoilStateCredits_Vtbl`
+      - `g_HudCmdDialogState_Vtbl`
+      - `g_HudUiOptionsPanelOverlayOwner_Vtbl`
+      - `g_RecoilStateConfirmQuit_Vtbl`
+      - `g_HudUiNetGameSetupOverlayOwner_Vtbl`
+      - `g_HudUiNewGamePanelOverlayOwner_Vtbl`
+      - `g_RecoilStateSaveLoadTransition_Vtbl`
+    - `g_RecoilStateControls_Vtbl` specifically is now pinned at the real base `0x4cd178`, not the stale outer decl-view cover at `0x4cd170`
+    - the key controls-state slot anchors on that row are now explicit:
+      - `+0x1c = RecoilStateDialogHost_OnSuspendDialogPostprocess`
+      - `+0x20 = RecoilStateControls_OnResume`
+    - the proving installs are `RecoilStateCheatCode_Ctor()`, `RecoilStateControls_Ctor()`, `RecoilStateCredits_Ctor()`, `HudCmdDialogState_Ctor()`, `HudUiOptionsPanelOverlayOwner_Ctor()`, `RecoilStateConfirmQuit_Ctor()`, `HudUiNetGameSetupOverlayOwner_Ctor()`, `HudUiNewGamePanelOverlayOwner_StaticInit()`, and `RecoilStateSaveLoadTransition_Ctor()`
+    - BN decl-view can still prefer the stale outer `0x4cd170` cover on this one row; the direct ctor/dtor xrefs plus the address comments at `0x4cd178`, `0x408d62`, and `0x408dad` are the authoritative record
+    - the authoritative behavior is now bounded as:
+      - update input/timing
+      - present `self->dialog_04` through its controller vtable
+      - unlock and adjust surfaces
+      - return `0` (`do not quit`)
+  - the shared default handled-state stub on that lane is now explicit:
+    - `RecoilApp_State_ReturnHandled()` is the default `+0x24 = OnIdleOrDispatch` implementation used by multiple state-family and overlay-owner vtables
+    - representative pinned users are `g_RecoilApp_PlayState_Vtbl + 0x24`, `g_RecoilStateMainMenuTransition_Vtbl + 0x24`, `g_HudUiNetGameSetupOverlayOwner_Vtbl + 0x24`, and `g_HudUiNewGamePanelOverlayOwner_Vtbl + 0x24`
+    - it simply returns `1`, i.e. “handled”
+  - the paired generic bare return-true / return-false stubs on the early state-vtable lanes are now explicit too:
+    - `zStub_ReturnTrue()` is the bare `retn` / no-stack-arg `return 1` stub
+    - keep it distinct from both `RecoilApp_State_ReturnHandled()` and `HudUi_ReturnTrue()`, which callee-clean arguments
+    - the key state/overlay table bases on this lane are now explicit BN data vars too: `g_RecoilStateBaseDefault_Vtbl`, `g_RecoilApp_LeaveNetworkState_Vtbl`, `g_RecoilApp_PlayState_Vtbl`, `g_RecoilStateMainMenuTransition_Vtbl` at `0x4cee28`, `g_HudUiNetGameSetupOverlayOwner_Vtbl`, and `g_HudUiNewGamePanelOverlayOwner_Vtbl`
+    - the currently proved state-side uses are:
+      - `g_RecoilStateBaseDefault_Vtbl + 0x0c = zStub_ReturnTrue()` on the default `OnTryBecomeCurrent` lane
+      - `g_RecoilApp_LeaveNetworkState_Vtbl + 0x10 = zStub_ReturnTrue()` on the leave-network `OnUpdateShouldQuit` lane
+    - `zStub_ReturnFalse()` is the matching bare-`retn` false/default stub used more broadly across state, HUD, and widget table regions
+  - the paired generic one-arg no-op stub is now explicit too:
+    - `zStub_NoOpRet4()` is the `retn 4` default used across both RecoilApp-state and HUD/widget/common table regions
+    - keep it distinct from `Stub_NoOp()`, which is the separate bare-`retn` universal no-op stub
+    - representative pinned state-side use: `g_RecoilApp_PlayState_Vtbl + 0x1c = zStub_NoOpRet4()` on the default `OnSuspend(self, param)` lane
+  - `OnSuspend` and `OnResume` are now treated as side-effect hooks rather than status-return APIs on this queue path
+  - the proving side-effect implementations on this strip are:
+    - `RecoilStateDialogHost_OnSuspendDialogPostprocess()`
+    - `RecoilStateControls_OnResume()`
+    - `RecoilStateMainMenuTransition_OnResume()`
+    - `RecoilApp_PlayState_OnResume()`
+    - `RecoilApp_MpExitDialogState_OnEnter()` is the matching side-effect `OnEnter` hook on the app-state lane
+  - proving setup-heavy implementations on that slot include:
+    - `RecoilApp_IntroFmvState_OnTryBecomeCurrent()`, which sets up primary-surface FX state and optionally begins `INTRO` from `fmv.zrd`
+    - `RecoilApp_MainMenuPrepState_OnTryBecomeCurrent()`, which rebuilds the primary-surface FX state and clears its prep flag
+    - `RecoilApp_PlayState_OnTryBecomeCurrent()`, which performs full mission/HUD/sound/input/camera startup before returning success
+  - the adjacent queue-storage lane is now explicit too:
+    - `RecoilApp_StateQueueItem.m_reserved_00` is only a reserved dword on the reachable branch; the live queue consumer uses `m_kind`, `m_stateObj`, and `m_param`
+    - `RecoilApp_StateQueue.m_chunkBaseList` is the owner array of chunk-base slots, with `m_chunkBaseCapacity` as its slot count
+    - `RecoilApp_StateQueueBlock.m_chunkBaseSlot` is the current slot into that array for the active read/write chunk window
+    - `RecoilApp_StateQueue_GrowAndCenterChunkBaseList()` reallocates that array, copies the active window from `m_readBlock.m_chunkBaseSlot` through `m_writeBlock.m_chunkBaseSlot + 1`, recenters the copied window, and returns the remapped read-slot base
+    - `RecoilApp_StateQueueBlock_InitFromCursorAndChunkBaseSlot()` rebuilds one read/write block from a chunk cursor plus the owning chunk-base-list slot, computes `m_chunkEnd = m_chunkBegin + 0x400`, and intentionally stays pointer-returning for immediate caller-side copy-out
+    - `operator new(0x1000)` on this strip allocates one queue chunk containing `0x400` `RecoilApp_StateQueueItem*` slots
+    - the initial `operator new(8)` allocates a two-slot `m_chunkBaseList`, and the first live chunk starts at slot 1 so later growth can rebuild the active window around the current read/write slot
+  - the owner-side queue layout is now treated as complete across `RecoilApp_BaseCtorAndInitRuntime()`, `RecoilApp_RunMainLoop()`, and `RecoilApp_MfcOleModule_Dtor()`; the only intentionally conservative fields left are `RecoilApp_StateQueue.m_ctorTag_00` and `RecoilApp_StateQueueItem.m_reserved_00`
+  - the adjacent app/state receiver-cleanup lane is tighter now too:
+    - after the latest EH handler rename/redecompile, `RecoilApp_RunMainLoop()` is currently rendering the reachable `OnDeactivate`, `OnTryBecomeCurrent`, `OnUpdateShouldQuit`, and `PumpMessage` shared-vtable calls cleanly again
+    - while `analysis_complete = false`, BN 5.2 may still transiently reintroduce the older bogus `entry_edi` temp on that same strip; treat that as presentation noise rather than a slot-signature regression
+    - the authoritative callsite comments now pin:
+      - `currentState->OnDeactivate(currentState)` at `0x442e9f`
+      - `currentState->OnUpdateShouldQuit(currentState)` at `0x442fc8`
+      - `currentState->OnIdleOrDispatch(currentState, wParam, lParam)` at `0x44367b`
+      - `m_app->OnIdleOrDispatch(m_app, wParam, lParam)` at `0x443b68`
+      - `RecoilApp_Vtbl+0xB4 = OnIdleOrDispatch(self, wParam, lParam)` at `0x4d0a94`
+  - the adjacent `RunMainLoop` VC6 EH metadata row is now named too:
+    - `g_RecoilApp_RunMainLoop_EhFuncInfo`
+    - `g_RecoilApp_RunMainLoop_EhUnwindMap`
+    - `g_RecoilApp_RunMainLoop_EhTryBlockMap`
+    - `g_RecoilApp_RunMainLoop_EhHandlerTypes`
+    - `RecoilApp_RunMainLoop_EhFrameHandlerThunk()`
+    - `g_RecoilApp_RunMainLoop_CMemoryException_TypeDescriptor`
+    - `g_RecoilApp_RunMainLoop_CFileException_TypeDescriptor`
+    - `g_RecoilApp_RunMainLoop_CException_TypeDescriptor`
+    - `RecoilApp_RunMainLoop_CatchCMemoryException()`
+    - `RecoilApp_RunMainLoop_CatchCFileException()`
+    - `RecoilApp_RunMainLoop_CatchCException()`
+    - `g_RecoilApp_RunMainLoop_OutOfMemoryMessage`
+    - `g_RecoilApp_RunMainLoop_OutOfMemoryTitle`
+    - `g_RecoilApp_RunMainLoop_FileErrorTitle`
+    - `g_RecoilApp_RunMainLoop_GeneralErrorMessage`
+    - `g_RecoilApp_RunMainLoop_GeneralErrorTitle`
+    - `g_RecoilApp_RunMainLoop_CFileExceptionCauseJumpTable`
+  - the current proving split there is:
+    - `g_RecoilApp_RunMainLoop_EhUnwindMap` is a trivial two-entry no-action unwind row
+    - `g_RecoilApp_RunMainLoop_EhTryBlockMap` points at a three-entry handler-type array rather than a cleanup-funclet family
+    - the three handler-type entries now map cleanly to `CMemoryException`, `CFileException`, and base `CException`
+    - the catch-type descriptors are kept as named/comment-backed leaves rather than a broader VC6 RTTI struct family
+    - the fatal dialog leaves behind those handlers are also single-use and now named, but BN still prefers inline string literals in HLIL for the catch helpers
+  - `CZGameFrame_OnMciNotify()` and `RecoilApp_OnIdleOrDispatch()` now keep the mixed handled-state model explicit:
+    - the shell-side `MM_MCINOTIFY` handler still just forwards its two stacked params into the app dispatch hook
+    - many state/overlay-owner tables use the default `RecoilApp_State_ReturnHandled()` implementation for that slot
+    - `RecoilApp_FmvState_OnIdleOrDispatch()` is still a real `return 1` handled-state path, so the shared `OnIdleOrDispatch` slot remains intentionally `int32_t`
+- The adjacent startup literal/path lane inside `RecoilApp::InitInstance()` is now explicit too:
+  - `g_RecoilApp_MessagesDllName` drives `zLoc_LoadMessagesDll(...)`
+  - `g_zUtil_CommonZrdrSearchPath` drives `zUtil::ZRDR_Init(...)`
+  - `g_RecoilApp_RootZrdrArchivePath` drives the fallback startup `zArchive::MountIndexArchive(..., 1)` path
+  - `g_RecoilApp_IntroVideoProbePath` drives the intro-disc retry gate through `FindFileOnDrives(5, ..., 0)`
+  - `g_RecoilApp_ExitAtFileLineFmt` plus `g_RecoilApp_SourceFile_RecoilAppCpp` drive the debug `Exit at %s:%d` formatting on the MESSAGES.DLL failure leg
+  - Binary Ninja still prefers to render these as raw string literals in HLIL, so the named data vars plus the address comments on the startup call sites are the authoritative record for now
+- The adjacent startup self-test/banner lane is now explicit too:
+  - `RecoilApp_EngineInit()` now uses named stage-banner formats:
+    - `g_RecoilApp_GModInitStatusFmt`
+    - `g_RecoilApp_GClsInitStatusFmt`
+    - `g_RecoilApp_ZEffInitStatusFmt`
+    - `g_RecoilApp_ZRndrInitStatusFmt`
+    - `g_RecoilApp_ZSndInitStatusFmt`
+    - `g_RecoilApp_ZUtlInitStatusFmt`
+    - `g_RecoilApp_ZWepInitStatusFmt`
+    - `g_RecoilApp_ZImgInitStatusFmt`
+    - `g_RecoilApp_ZInInitStatusFmt`
+  - Those banners share `g_RecoilApp_StartupStatusPassed` / `g_RecoilApp_StartupStatusFailed` on the reachable startup path.
+  - `RecoilApp_StartEngine()` adds `g_RecoilApp_TurretStatusPrintfFmt` for the turret self-test print and `g_RecoilApp_SoundsZrdName` for `zSndSystem_Init(hWnd, ...)`.
+  - The `gClsInit` and `zUtlInit` status slots still call `zStub_Return0`, so only the banner names are stable there for now; the real helper identities remain open.
+- The adjacent non-WOL campaign shell lane is now explicit too:
+  - `CZRecoilFrame_OnMenuStartCampaignMode1..6()` are `void` wrappers over `RecoilApp_LoadZbdAndSetupSensorTracker(&g_RecoilApp, mode, nullptr, 1, self->m_useArchiveBanks)`
+  - `CZRecoilFrame_OnMenuToggleArchiveBanks()` is `void`; it toggles `self->m_useArchiveBanks`, updates the menu check for command `0x9C6B`, mirrors the same value into the reachable `HudSensorTracker` archive-banks lane at `+0xF0`, and forwards it to `zSnd_SetUseArchiveBanks()`
+  - `CZRecoilFrame_OnMenuToggleTexturePackLoading()` is `void`; it flips the hidden texture-pack load gate behind command `0x9C7B` through `zVid_GetTexturePackLoadState()` / `zVid_SetTexturePackLoadState()` and updates the checkmark
+  - `CZRecoilFrame_Ctor()` seeds that same check state from `g_zVid_TexturePackLoadState`; the item is only exposed when the shell starts in `/campaigns` mode, so the command-label text itself is still treated conservatively
+- The neighboring non-WOL video-mode shell branch is now explicit:
+  - `CZRecoilFrame_OnMenuSetVideoModeIndex2..7()` are `void` handlers that set the global video-mode index and then call `zVid_ConfigureModeFeatureFlags(self)`
+  - `CZRecoilFrame_OnUpdateVideoModeIndex2..7CmdUi()` are `void __thiscall(self, struct MfcCmdUI* cmdUi)` update handlers
+  - `m_videoModeCmdUiState[i]` now uses `enum RecoilCmdUiState`
+  - `RECOIL_CMDUI_DISABLED` disables and unchecks the menu item
+  - `RECOIL_CMDUI_CHECKED` leaves it enabled and checks it
+  - `RECOIL_CMDUI_ENABLED_UNCHECKED` leaves the menu item enabled and unchecked
+- `CZRecoilFrame_GetMessageMap()` is now pinned too:
+  - it returns `g_CZRecoilFrame_MessageMap` at `0x4d0c08`
+  - `g_CZRecoilFrame_MessageEntries` at `0x4d0c10` is now typed as `struct MfcMessageMapEntry[55]`
+  - that covers 54 live routes plus the zero sentinel at `0x4d1120`
+  - the early non-WOL routes pinned there include:
+    - `StartGameMain` via id `0x68`
+    - campaign/open-file via `0x9c51` and `0x65`
+    - exit via `0x67`
+    - video modes via `0x206..0x209`
+    - help docs via `0x6a`
+    - About via `0x6b`
+  - later routed families in the same typed array cover campaign-mode commands, hardware-API command/update handlers, audio-backend command/update handlers, and one still-parked WestwoodOnline command route
+- The non-WOL shell menu/settings cluster now has explicit member-handler contracts:
+  - `CZRecoilFrame_OnMenuSelectHwApi0..3()` are `void` menu handlers over `zVid_EnsureHwApiInitialized(self, hwApiSelector)`
+  - `CZRecoilFrame_OnUpdateHwApi0..3CmdUi()` are `void __thiscall(self, struct MfcCmdUI* cmdUi)` update handlers
+  - `CZRecoilFrame_UpdateHwApiMenuItem(self, cmdUi, selector)` is the shared 1-based accelerator helper over the accelerator subset of `enum zVidHwApiMenuSelector`
+  - that helper removes unavailable accelerator items from the owning menu and rebuilds available labels from `zVid_GetHwApiDescription/DriverName(selector-1)`
+  - `m_hwApiCmdUiState[selector]` now uses the same `enum RecoilCmdUiState` cache row; reachable startup/menu consumers only need the checked-vs-not-checked split there
+  - `CZRecoilFrame` now also carries the startup accelerator-menu support row explicitly:
+    - `m_acceptedD3DDeviceCount = zVid_GetAcceptedD3DDeviceCountThunk()`
+    - `m_hwApiMenuCommandIds[0..3] = { 0x9C83, 0x9C72, 0x9C75, 0x9C76 }`
+    - `m_fullscreenOption` is now the cached `enum zOptFullscreenOptionState` used by the startup hardware/fallback lane
+  - `CZRecoilFrame_UpdateHwApiMenuItem()` uses those fields together to remove unavailable accelerator entries once `selector > m_acceptedD3DDeviceCount`
+  - keep the split explicit on this shell lane:
+    - ctor/update-menu pruning uses cached total accepted D3D-device count
+    - startup auto-select uses accepted DirectDraw-device count as the checked selector index
+- The non-WOL audio-backend menu state on this shell path is now explicit too:
+  - `CZRecoilFrame_OnMenuToggleCDAudio()` / `CZRecoilFrame_OnUpdateCDAudioCmdUi()` use an inverted visible check: checked when `zSnd_GetCDAudioOption() == 0`
+  - `CZRecoilFrame_OnMenuToggleJoystick()` / `CZRecoilFrame_OnUpdateJoystickCmdUi()` use the same inverted visible check against `zInp_GetJoystickOption() == 0`
+  - `CZRecoilFrame_OnMenuSelectDirectSound()` writes the saved `SoundAPI` option to DirectSound, and `CZRecoilFrame_OnUpdateDirectSoundCmdUi()` checks against that saved option
+  - `CZRecoilFrame_OnMenuSelectA3D()` writes the saved `SoundAPI` option to A3D, but `CZRecoilFrame_OnUpdateA3DCmdUi()` checks the active backend instead, so fallback to DirectSound clears the A3D check
+- One shell update callback on that branch now closes cleanly:
+  - `CZRecoilFrame_OnUpdateRemoveFullscreenOptionMenuItem()` removes the proved fullscreen-toggle command `0x9C4E` from the owning menu with `RemoveMenu(..., 0x9C4E, MF_BYCOMMAND)`
+
+## Input bind-map notes
+
+- `zInput_BindMapSystem_Init(0x2f)` is now the stable startup bind-map bootstrap on the reachable non-WOL path:
+  - `RecoilApp::InitInstance()` calls it and ignores any return value
+  - the helper is now explicitly `void __fastcall zInput_BindMapSystem_Init(int32_t commandCount)`
+  - it allocates the main `zInput_BindMapContext` with `operator new(0x3f54)`
+  - it stores that context in `g_zInput_BindMap_Current`
+  - it initializes the command map and then the DIK / joystick / mouse name tables
+- The main reachable bind-map globals are now explicit:
+  - `g_zInput_BindMap_Current`
+  - `g_zInput_BindMap_NodeFreeList`
+  - `g_zInput_BindMap_NodeStackHead`
+  - `g_zInput_BindMap_StackDepth`
+- The core bind-map maintenance helpers are now side-effect-only:
+  - `zInput_BindMapContext_InitCommandMap()`
+  - `zInput_BindMapContext_ResetAllBindings()`
+  - `zInput_BindMapContext_RebuildLookupIndices()`
+  - `zInput_BindMapContext_FreeAllBuffers()`
+  - `zInput_BindMapContext_FreeNonOwnedBuffers()`
+  - `zInput_BindMapContext_Push()`
+  - `zInput_BindMapContext_Pop()`
+  - `zInput_BindMap_Current_ResetAllBindings()`
+  - `zInput::BindMap_Current_RebuildLookupIndices()`
+- The overlay ownership model is now bounded cleanly:
+  - `zInput_BindMapContext_Push(nullptr)` clones the current bind map through `operator new(0x3f54)` when a caller does not provide an explicit next context
+  - it then allocates a `zInput_BindMapContextNode` through `operator new(0xc)` to remember the previous context on the overlay stack
+  - `zInput_BindMapContext_Pop()` restores the previous context, recycles the node into `g_zInput_BindMap_NodeFreeList`, decrements `g_zInput_BindMap_StackDepth`, and always rebuilds lookup indices
+- The localized command-label/hint lane is now bounded too:
+  - `g_zInput_CommandLocIdTable.locIdByCommand_00[0x30]` stores the base localization id per command
+  - `zInput_BindMap_GetCommandLabel(commandId)` reads `zLoc_GetMessageString(locIdByCommand[commandId])`
+  - `zInput_BindMap_GetCommandHint(commandId)` reads `zLoc_GetMessageString(locIdByCommand[commandId] + 1)`
+- The reachable localized bind-group accessor family is now explicit too:
+  - `zInput_BindGroupList_GetCount()` returns the current number of localized bind groups in `g_zInput_BindGroupInfoList`
+  - `zInput_BindGroupList_GetGroupTitle(groupIndex)` returns `g_zInput_BindGroupInfoList[groupIndex]->title_00.m_pchData`
+  - `zInput_BindGroupList_GetGroupCommandCount(groupIndex)` returns the per-group command count from `commandIds_04.begin/end`
+  - `zInput_BindGroupList_GetGroupCommandId(groupIndex, commandIndex)` returns one grouped command id
+- The bind-group owner helpers are now bounded too:
+  - `zInput::BindGroupList_AddGroup(groupTitle)` allocates one `zInput_BindGroupInfo` with `operator new(0x14)`, appends it to `g_zInput_BindGroupInfoList`, and returns the inserted group index
+  - `zInput_BindGroupList_AddCommandToGroup(groupIndex, commandId)` appends one plain int32_t command id into `commandIds_04` and does not return a status value
+- The bind-group lifecycle split is now explicit too:
+  - `zInput_BindGroupList_Clear()` is the deep runtime cleanup path: it destroys each live `zInput_BindGroupInfo`, deletes the object, nulls the slot, and rewinds `g_zInput_BindGroupInfoList.end_08` back to `begin_04`
+  - `zInput_BindGroupInfo_Destroy()` is the destructor body for one group entry: it empties the title `CString`, frees `commandIds_04`, zeros the command-id vector, and then runs `CString::~CString()`
+  - `zInput_FreeBindGroupInfoListBuffer()` is the separate exit-time storage cleanup: it only deletes `g_zInput_BindGroupInfoList.begin_04` and zeros `begin/end/cap`
+  - `zInput_RegisterBindGroupInfoListOnExit()` wraps `crt_register_onexit(zInput_FreeBindGroupInfoListBuffer)`
+  - `zInput_InitBindGroupInfoListAndRegisterOnExit()` is the startup/on-exit helper that zeroes the list and then registers that exit-time storage cleanup
+  - the raw init-array slot at `0x4da07c` points at `zInput_InitBindGroupInfoListAndRegisterOnExit()`, although BN currently does not surface xrefs for that slot
+  - `zInput_InitBindGroupInfoList()` still performs a real byte write into `g_zInput_BindGroupInfoList.flags_00`, but that field remains intentionally conservative
+- The current-label copy wrapper is now explicit:
+  - `zInput_BindMap_Current_CopyCommandLabel(commandId, outBuf, outLen)` is `char* __fastcall`
+  - it simply forwards to `zInput_BindMapContext_CopyCommandLabel(g_zInput_BindMap_Current, ...)`
+- The reachable HUD command-dialog path now renders through that family cleanly:
+  - `HudCmdDialog_Ctor()` builds its set selector with `zInput_BindGroupList_GetCount()` and `zInput_BindGroupList_GetGroupTitle(groupIndex)`
+  - `HudCmdDialog_RefreshSelectedGroupBindings()` now uses the group-count/id accessors and `zInput_BindMap_Current_CopyCommandLabel(commandId, outBuf, 0x28)` on the selected bind group
+- `zInput::BindMap_InitDefaultBindings()` seeds five localized bind groups from loc ids `0x750..0x754`; the exact visible titles still depend on `MESSAGES.DLL`.
+
+## Options registry notes
+
+- The non-WOL options registry bootstrap is now bounded around three duplicated key-segment globals:
+  - `g_zGame_Options_RegKeySegmentA`
+  - `g_zGame_Options_RegKeySegmentB`
+  - `g_zGame_Options_RegKeyVersionSegment`
+- `zGame_Options_InitRegistryContext(regKeySegmentA, regKeySegmentB, regKeyVersionSegment)` is now the stable fastcall setup helper:
+  - it duplicates those three incoming segments with `_strdup`
+  - it clears `g_zOpt_OptionListHead`
+  - it sets `g_zGame_Options_RegContextInitialized = 1`
+  - it seeds runtime defaults through `zGame_OptionsRuntimeConfig_InitFromSystem(&g_zGame_Options_RuntimeConfigDefaults)`
+- `RecoilApp::InitInstance()` is the proving startup caller on the reachable shell path:
+  - it seeds the registry context with localized `regSegA`, `regSegB`, and `g_RecoilApp_VersionString`
+- `zGame_Options_ShutdownRegistryContext()` is the matching side-effect-only teardown:
+  - it early-outs when `g_zGame_Options_RegContextInitialized == 0`
+  - it walks the option-record list rooted at `g_zOpt_OptionListHead`
+  - it frees the per-entry owned buffers plus the duplicated key-segment strings
+  - it clears the init flag
+- `RecoilApp_ExitInstance()` is the proving teardown caller on the reachable shell path.
+- `zGame_Options_SaveGameOptions()` is now the side-effect-only exit wrapper above the registry saver:
+  - it clears bind-group runtime state
+  - it forces the reachable network flags off
+  - it then tail-jumps into `zGame_Options_SaveToRegistry()`
+- `zGame_Options_SaveToRegistry()` is now bounded as the save-side consumer of that context:
+  - it builds the full registry key from the duplicated A/B/C segments
+  - it opens reachable HKLM/HKCU branches
+  - it walks the option-record list and writes each reachable option record
+- The reachable option-record node is now explicit as `zOptionEntry`:
+  - `value`
+  - `unknown_04`
+  - `storageType`
+  - `dataSize`
+  - `name`
+  - `registryScope`
+  - `next`
+  - `unknown_1c`
+- The stable node semantics on this strip are now:
+  - `zGame_Options_FindOption()` is a linear name search over `g_zOpt_OptionListHead`
+  - `zGame_Options_GetOrCreateOption()` confirms `calloc(1, 0x20)` for one node and prepends it to the list
+  - `storageType 0/1` stay inline 4-byte payloads
+  - `storageType 2` stays an inline 8-byte payload
+  - `storageType 3..7` allocate an owned payload buffer of `dataSize`
+  - `registryScope 1` selects HKCU
+  - `registryScope 0` selects HKLM
+  - other `registryScope` values skip the reachable registry load/save paths
+- `zGame::Options_LoadGameOptions()` now gives the strongest current caller proof for that last field:
+  - `registryScope 1` is used for persisted options
+  - `registryScope 2` is used for runtime-only/non-persisted network and section blobs on the reachable path
+- The remaining conservative points on this strip are `unknown_04` and `unknown_1c`; BN field-xref probes on those names only surfaced false positives from unrelated structs, so they stay intentionally untyped.
+
+## Net-game setup panel notes
+
+- `HudUiBackground` already ends at `0xA94C`, so `HudUiNetGameSetupPanel` has no extra gap before `currentFocusWidget_A94C`.
+- The reachable `MP_NEW_GAME` dialog now renders through one stable embedded control sequence:
+  - `playButton_A950`
+  - `cancelButton_AA9C`
+  - `gameNameInput_ABE8`
+  - `worldSelector_AF5C`
+  - `nextWorldButton_B164`
+  - `prevWorldButton_B2B0`
+  - `timeLimitInput_B3FC`
+  - `incTimeLimitButton_B778`
+  - `decTimeLimitButton_B8CC`
+  - `killsInput_BA20`
+  - `incKillsButton_BD9C`
+  - `decKillsButton_BEF0`
+  - `maxPlayersInput_C044`
+  - `incMaxPlayersButton_C3C0`
+  - `decMaxPlayersButton_C514`
+  - `allowMapsToggle_C668`
+  - `nameTagsToggle_C7CC`
+  - `killsSwitch_C930`
+  - `lapsSwitch_C9EC`
+  - `reconfigureExistingSession_CAA8`
+- The PLAY/CANCEL/NEXT_WORLD/PREV_WORLD controls are now anchored as plain `HudUiZrdButton_FTable` installs on the reachable dialog path.
+- The six +/- widgets are now the concrete `HudUiClampedIntStepButton` family:
+  - `targetInput_14C` points at the paired clamped numeric input
+  - `stepDelta_150` is the signed increment/decrement amount
+  - `HudUiClampedIntStepButton_OnActivate()` clamps, rewrites text, invalidates the target input, then forwards to the base ZRD-widget activate path
+- `TIME_LIMIT`, `KILLS`, and `MAX_PLAYERS` now share the same clamped-int text-input table family on the reachable dialog path:
+  - `g_HudUiClampedIntTextInput_MpTimeLimit_Vtbl`
+  - `g_HudUiClampedIntTextInput_MpKills_Vtbl`
+  - `g_HudUiClampedIntTextInput_MpMaxPlayers_Vtbl`
+  - `HudUiClampedIntTextInput_Ctor()` first installs `g_HudUiClampedIntTextInput_CtorTable_Vtbl`, then each widget patches in its per-control table
+  - their stable tail slots are `+0x84 = HudUiClampedIntTextInput_OnRawKeyboardDigitOnly`, `+0x88 = HudUiNumericTextInput_OnAcceptForwardToCommit`, and `+0x8C = HudUiClampedIntTextInput_CommitAndGetValue`
+- the shared numeric base constructor table is now explicit too:
+  - `g_HudUiNumericTextInput_CtorTable_Vtbl` lives at `0x4cfa70`
+  - `HudUiNumericTextInput_Ctor()` installs it for the base numeric text-input phase
+  - `HudUiClampedIntTextInput_Ctor()` now clearly shows the same numeric-base install before it swaps to `g_HudUiClampedIntTextInput_CtorTable_Vtbl`
+- the MP text-focus release lane is now bounded without over-typing the broader numeric/clamped tables:
+  - `HudUiNetGameSetupTextInput_OnActivateFocusAndCursor()` is now the explicit `void` `OnActivate` helper for the MP text-input family and uses a narrowed `HudUiTextInputFocusIface`
+  - its only proved slot is `+0x8C = OnFocusLost`
+  - MP game-name tables point that slot at `zStub_ReturnFalse`
+  - clamped-int tables override the same slot with `HudUiClampedIntTextInput_CommitAndGetValue`
+- `HudUiClampedIntTextInputRuntimeView` is now the stable narrowed view for the reachable MP_NEW_GAME branch:
+  - it exposes `ftable`, `modeOrEnabled_0C4`, `minValue_374`, and `maxValue_378`
+  - `HudUiNetGameSetupCommitView`, `HudUiNetGameSetupWorldButtonOwner`, and `HudUiClampedIntStepButton.targetInput_14C` now use that view instead of forcing the full embedded class chain through the generic widget base
+  - `HudUiClampedIntStepButton_OnActivate()` plus the NEXT_WORLD/PREV_WORLD kills-side clamp path now render `CommitAndGetValue()`, clamp edits, and invalidate calls directly through the named +0x8C slot
+- The six step-button vtable bases are now explicit full `HudUiClampedIntStepButton_FTable` globals rather than overlapping 4-byte anchors:
+  - `g_HudUiClampedIntStepButton_MpIncTimeLimitButton_Vtbl`
+  - `g_HudUiClampedIntStepButton_MpDecTimeLimitButton_Vtbl`
+  - `g_HudUiClampedIntStepButton_MpIncKillsButton_Vtbl`
+  - `g_HudUiClampedIntStepButton_MpDecKillsButton_Vtbl`
+  - `g_HudUiClampedIntStepButton_MpIncMaxPlayersButton_Vtbl`
+  - `g_HudUiClampedIntStepButton_MpDecMaxPlayersButton_Vtbl`
+- `HudUiWidget_FTable+0x78` is now the shared `RefreshState` slot on the reachable ZRD/widget lane, so the enable/disable refresh path on `GAME_NAME`, `TIME_LIMIT`, `MAX_PLAYERS`, and the +/- step buttons now renders explicitly in BN.
+- `HudUiWidget_FTable+0x7C` is now the shared `LoadFromZrd` slot on that same lane.
+- Binary Ninja 5.2 still keeps one bounded artifact on this branch:
+  - `HudUiNetGameSetupPanel_CommitSettingsAndLaunch_OnActivate()` now renders the owner-side and local `killsInput` `CommitAndGetValue()` calls correctly
+  - the remaining residue is only the dummy stack-space push on the timer-seconds path, which BN still misreads as an extra ECX artifact before the float convert into `HudSensorTracker::SetRuntimeTimerSecAndGoalValue()`
+- `HudUiNetGameSetupPanel_CommitSettingsAndLaunch_OnActivate()` now reads `allowMapsToggle_C668.checked_14C`, `nameTagsToggle_C7CC.checked_14C`, WORLD, TIME_LIMIT, KILLS, MAX_PLAYERS, and `reconfigureExistingSession_CAA8` through the narrowed owner view before creating/publishing or resyncing the session.
+- The MP_NEW_GAME PLAY hook and pkt0x14/session-desc publish lane now share one stable field model:
+  - `GameNet_SendPkt14_HudTimerAndFlagsSync()` is the single reachable reliable sender from `HudUiNetGameSetupPanel_CommitSettingsAndLaunch_OnActivate()`
+  - `NetPkt14_HudTimerAndFlagsSync.packedEventCodeAndAuxParam_08` now names the compact on-wire dword at `+0x08`
+  - on the reachable path, low16 is the start `eventCode` / mode value (`worldSelector.selectedIndex_14C + 1`) and high16 is the `auxParam` / goal value
+  - `valueOrTime_0c` and `statusFlags_10` match the same logical fields used by `zNetworkSessionDescStatusFields`
+  - `GameNet_HandlePkt14_HudTimerAndFlagsSync()` unpacks that dword to seed `HudSensorTracker`, then republishes the same four logical values through `GameNet_HostPublishSessionDescCustomEvent()` on the host
+- The adjacent DirectPlay open/update lane is now explicit too:
+  - `zDPlayIfaceVTable+0x60` is now `OpenSession_60`, not `CreateSession_60`
+  - `zNetwork_DPlay_CreateSessionFromConfig()` uses `OpenSession_60(desc, 2)` on the host-create path
+  - `zNetwork_DPlay_JoinSelectedSessionAndReadConfig()` uses `OpenSession_60(desc, 1)` on the join-existing-session path
+  - `zNetwork_WriteSessionDescCustomConfig()` stays on the separate `SetSessionDesc_7c(desc, 0)` update path once the session is already open
+  - the session-runtime wrappers on that same branch are now explicit side-effect helpers:
+    - `zNetwork_InitSessionRuntime()` is `void __fastcall(GUID* appGuid)` and seeds `g_zNetworkAppGuid`, rebuilds the player-record/service-provider lists, and registers the built-in msgId=1 handler
+    - `zNetwork_ShutdownSessionRuntime()` is `void` and tears down the active interface, enumerated-session list, service-provider list, player-record list, and recv buffer
+    - the same teardown helper is now pinned as the shared non-WOL cleanup path for `RecoilApp_ShutdownEngine()`, multiplayer browser cleanup, and the fatal network-exit paths
+  - the enumerated-session browser lane now uses the same `zNetworkDPlaySessionDescCache` objects as the active session cache:
+    - `zNetwork_DPlay_EnumSessionCallback_AddToArchiveList()` is the clone path behind that browser cache: it allocates a `0x58` `zNetworkDPlaySessionDescCache`, copies the `0x50` DirectPlay session descriptor into `desc_008`, deep-copies `sessionName_030` with `_strdup`, and appends the cache object to `g_zNetworkEnumeratedSessionList`
+    - `zNetwork_DPlay_GetEnumeratedSessionNameByIndex()` returns `entry->desc_008.sessionName_030`
+    - `zNetwork_DPlay_GetEnumeratedSessionPlayerCountsByIndex()` is now the stable `void __fastcall(entryIndex, outCurrentPlayers, outMaxPlayers)` helper; it reads `desc_008.currentPlayers_02c` and `desc_008.maxPlayers_028`
+    - `NetSessionBrowserDialog_RefreshSessionList()` now renders that out-param order correctly on the session-browser UI path
+    - `zNetwork_ClearEnumeratedSessionList()` frees `entry->desc_008.sessionName_030` before freeing each `0x58` cache object
+    - `g_zNetworkDPlaySessionDescCache` still points at the active cache object, but `flag_000` stays conservative until a read-side user proves a stronger name
+- `HudUiNetGameSetupPanel_NextWorldButton_OnActivate()` / `HudUiNetGameSetupPanel_PrevWorldButton_OnActivate()` now show the mode switch directly:
+  - `WORLD == 2` flips the visible switch widget from `killsSwitch_C930` to `lapsSwitch_C9EC`
+  - the kills-input clamp is retuned for the lap lane
+  - the time-limit input and its +/- step buttons are enabled or disabled together on the same transition
+
+## Frame timing notes
+
+- The executable shell keeps one shared frame-timing cluster on the reachable main-loop path:
+  - `g_Time_CurrentTimeSec`
+  - `g_Time_NewTimeSec`
+  - `g_Time_UnscaledDeltaTimeSec`
+  - `g_FrameDeltaTimeSec`
+  - `g_Time_UnscaledAccumulatedTimeSec`
+  - `g_Time_AccumulatedTimeSec`
+  - `g_Time_TimeScaleFactor`
+  - `g_Time_MaximumDeltaTimeSec`
+  - `g_Time_DeltaTimeClampEnabled`
+- `Time::Reset()` resets those accumulators and seeds `g_Time_CurrentTimeSec` from `GetTickCount()`.
+- `Time::Tick()` advances the same cluster once per frame and clamps `g_FrameDeltaTimeSec` when the clamp flag is enabled.
+- `g_RecoilApp_QuitAfterCredits` is the shared play-state early-exit gate checked by `RecoilApp_PlayState_TickAndRenderFrame()` and `RecoilApp_PlayState_OnUpdateShouldQuit()`.
+- `g_zVideo_SoftwareModeHotkeyEnabled` is the software-mode hotkey gate toggled around the same play-state render/update path.
+- `g_zVideo_FrameTick` is the shared video/frame counter:
+  - reset in `zVideo_init_InitVideoSystem()`
+  - incremented in `zVideo_AdjustSurfacesIfEnabled()`
+  - reused by effect/model/net snapshot readers as a lightweight per-frame tag
+- The adjacent DD/DD3D warmup clear helper split is now explicit on the reachable startup/main-loop path:
+  - `zVideo::CallClearPrimarySurfaceAndZBuffer()` targets `g_zVideo_PrimarySurfaceState` at `0x632220`
+  - the older `zVideo_CallClearDisplayModeSurfaceAndZBuffer()` label was wrong; the separate `g_zVideo_DisplayModeSurfaceState` lives at `0x632240` and stays on the display-mode lock/unlock path instead
+  - `RecoilApp_InitializeDisplay()`, `HudLayoutHW_SetActive()`, `RecoilApp_PlayState_TickAndRenderFrame()`, and `RecoilApp_PlayState_OnUpdateShouldQuit()` are the proving callers on this corrected primary-surface clear path
+- The adjacent standalone renderer-dispatch strip is now explicit too:
+  - `zVideo::BindRendererDispatch()` fills the standalone `.data` slot table at `0x6333ac..0x6333d4`
+  - the reachable DD/DD3D path now names those slots as `g_zVideo_pfnOpenVideoMode`, `g_zVideo_pfnShutdownVideoSystem`, `g_zVideo_pfnAdjustSurfaces`, `g_zVideo_pfnSetPaletteEntries`, `g_zVideo_pfnSetVideoMode`, `g_zVideo_pfnLockSurfaceState`, `g_zVideo_pfnUnlockSurfaceState`, `g_zVideo_pfnClearZBufferRect`, `g_zVideo_pfnClearSwSurfaceAndZBuffer`, `g_zVideo_pfnClearStateSurfaceAndZBuffer`, and `g_zVideo_pfnUpdateFogColor`
+  - `zVideo_init_ApplyModeIndex()` / `zVideo_init_ApplyModeIndexIfInitialized()` are the proving mode-change callers for `g_zVideo_pfnSetVideoMode`
+  - `zVideo::RunPostprocessOnPrimaryBuffer()` / `zVideo::RunPostprocessOnSwBuffer()` are the proving indirect lock/unlock users for `g_zVideo_pfnLockSurfaceState` / `g_zVideo_pfnUnlockSurfaceState`
+  - the DD3D dispatch-table base is now explicit too:
+    - `g_zVideo_Dd3dOps` is the named global at `0x56bc68`
+    - `zVideo::BindRendererDispatch()` also binds `g_zVideo_pfnDrawPointColor16 = zVideo_dd3d::DrawPointColor16`
+- The adjacent HUD/layout clear countdown is now explicit too:
+  - `HudUiMgr_ConsumeLayoutClearDelay()` is the main-loop consumer for the short post-layout clear countdown stored in `g_HudUiMgr.layoutDelayFrames_2EC`
+  - while that helper returns nonzero, `RecoilApp_PlayState_TickAndRenderFrame()` temporarily forces the DD3D-initialized flag and clears against the full window rect instead of the ordinary render rect
+  - the proving producer sites are:
+    - `HudUiMgr_ApplyLayout()`, which seeds the countdown to `2`
+    - `HudUiMgr_DisableHud()`, which seeds the countdown to `HudLayoutType_HW (1)` on the hardware-layout path
+- The adjacent HUD loading-progress lane is now explicit too:
+  - `HudUiMgr.loadingCheckpointTable` is the scripted `HudLoadingCheckpointTable` block with the 19 used `checkpointProgressRaw[]` and `checkpointProgressNormalized[]` entries, `maxCheckpointIndex`, `currentCheckpointIndex`, and `currentProgress`
+  - `HudUiLoadingCheckpoint::InitTable()` writes 19 scripted raw checkpoint stops, zeros the active checkpoint index, and precomputes `checkpointProgressNormalized[i] = checkpointProgressRaw[i] * k_HudUiLoadingCheckpoint_ProgressScale` for the reachable mission-load path
+  - `HudLoading_AdvanceCheckpointAndSleep(logText)` advances the active checkpoint, clamps it to the last valid stop, optionally prints the caller text, and forwards `currentProgress_D8` into `Briefing_SetProgressAndSleep()`
+  - `Briefing_SetProgressAndSleep()` updates the briefing transport-progress widget through its `SetNormalizedValue` slot and then sleeps for 100 ms
+- The adjacent fill-bitmap/slider table lane is now explicit too:
+  - `HudUiFillBitmap_Ctor()` installs the real shared fill-bitmap table `g_HudUiFillBitmap_Vtbl` at `0x4d37c8`
+  - `HudUiBriefingRuntime::Constructor()` installs the real briefing transport-progress table `g_HudUiBriefingTransportProgress_Vtbl` at `0x4cc910` for the `TRANSPORT_PROGRESS` widget in `briefing.zrd`
+  - `HudUiFillBitmap_SetNormalizedValue()` is the base invalidating setter; `HudUiFillBitmap_SetNormalizedValueAndRebuildRects()` is the derived transport/slider setter that also rebuilds fill and preview rects from the current images
+  - `HudUiFillBitmap_UpdateNormalizedFromCursor()` reads `HudUiZrdDialog.cursorX_14`, subtracts the widget center X, divides by image width, and dispatches through the shared `SetNormalizedValue` slot before `HudUiZrdWidget::OnActivate()`
+  - `HudUiOptionsPanel_Ctor()` installs `g_HudUiOptionsPanel_SoundVolumeWidget_Vtbl` at `0x4cdcd8` and `g_HudUiOptionsPanel_MusicVolumeWidget_Vtbl` at `0x4cdbc8`; both keep `+0x30 = OnActivate`, `+0x80 = SyncFromOptions`, and `+0x84 = SetNormalizedValue`
+  - the reachable options-panel helpers on that lane are `HudUiOptionsPanel_SoundVolume_OnActivate()`, `HudUiOptionsPanel_SoundVolume_SyncFromOptions()`, `HudUiOptionsPanel_MusicVolume_OnActivate()`, and `HudUiOptionsPanel_MusicVolume_SyncFromOptions()`
+  - the adjacent non-slider options controls now close as two separate families too:
+    - check-toggle tables `g_HudUiOptionsPanel_LightingToggle_Vtbl`, `g_HudUiOptionsPanel_PerspectiveToggle_Vtbl`, `g_HudUiOptionsPanel_FullHudToggle_Vtbl`, `g_HudUiOptionsPanel_SoundActiveToggle_Vtbl`, and `g_HudUiOptionsPanel_MusicEnableToggle_Vtbl`
+    - cycle-selector tables `g_HudUiOptionsPanel_ObjectDetailSelector_Vtbl`, `g_HudUiOptionsPanel_TextureMemorySelector_Vtbl`, `g_HudUiOptionsPanel_EffectsSelector_Vtbl`, `g_HudUiOptionsPanel_SoundQualitySelector_Vtbl`, and `g_HudUiOptionsPanel_ResolutionSelector_Vtbl`
+  - those table families now use explicit `HudUiOptionsPanelCheckToggleWidget_FTable` / `HudUiOptionsPanelCycleSelectorWidget_FTable` typing instead of the older generic `HudUiWidget_FTable` view
+  - on both families, the proved custom slots are `+0x30 = OnActivate` and `+0x84 = SyncFromOptions`
+  - the 10 custom options hooks behind those tables now render as side-effect-only `void` handlers on the reachable options path
+  - `HudUiOptionsPanelOverlayOwner_OnCanBecomeCurrent()` allocates the panel with `operator new(0xbec4)`, which is the current size proof for `HudUiOptionsPanel`
+  - the adjacent entry/exit button lane is now explicit too:
+    - `HudUiZrdButton_FTable` is the plain button-table shape for the reachable ZRD menu/options buttons; it matches the ZRD-widget family through `+0x80` and intentionally has no `+0x84` tail slot
+    - `g_HudUiOptionsPanel_BackButton_Vtbl` at `0x4ce1a0` and `g_HudUiMainMenuDialog_OptionsButton_Vtbl` at `0x4ceaf8` now use that truncated button table instead of the older over-wide generic widget view
+    - `HudUiZrdWidget_FTable` now also matches the already-proved shared `void` slots on this branch: `SetPos`, `SetX`, `SetY`, `Update`, and `SetVisible`; base `+0x84` is kept generic as `function_84`
+    - `HudUiOptionsPanel_BackButton_OnActivateApplyHudTypeAndExit()` is now `void`; it reads the narrowed owner field `owner_0C8->fullHudChecked`, which matches `HudUiOptionsPanel.fullHud_AD60.checked_14C`, then calls `setHudType(1/2)` and `RecoilApp_QueueExitCurrentState()`
+    - `HudUiMainMenuDialog_OptionsButton_OnActivate()` is now the matching `void` entry hook and stays bounded as `HudUiOptionsPanelOverlayOwner_QueueEnter(); HudUiZrdWidget_OnActivate(self);`
+    - `HudUiMainMenuDialog_Ctor()` now proves the neighboring CREDITS/BACK/SAVEGAME/LOADGAME/NEWGAME/QUIT/CONTROLS controls also install plain `HudUiZrdButton_FTable` tables:
+      - `g_HudUiMainMenuDialog_CreditsButton_Vtbl`
+      - `g_HudUiMenuBackButton_Vtbl`
+      - `g_HudUiMainMenuDialog_SaveGameButton_Vtbl`
+      - `g_HudUiMainMenuDialog_LoadGameButton_Vtbl`
+      - `g_HudUiMainMenuDialog_NewGameButton_Vtbl`
+      - `g_HudUiMainMenuDialog_QuitButton_Vtbl`
+      - `g_HudUiMainMenuDialog_ControlsButton_Vtbl`
+    - the paired `OnActivate` hooks on that main-menu family are now all `void` side-effect handlers:
+      - credits/controls/quit queue a state and then forward to `HudUiZrdWidget_OnActivate(self)`
+      - new game queues `HudUiNewGamePanelOverlayOwner_QueueEnter()`
+      - save/load queue the save-load transition before the same base activate callback
+      - `HudUiMenuBackButton_OnActivate()` queues exit, forwards to the base activate callback, then refreshes the current layout
+    - `g_HudUiMenuBackButton_Vtbl` is now explicitly the shared BACK table reused by the reachable main-menu, new-game, save-game, and load-game dialog ctors
+    - the same plain-button family now extends through the adjacent dialog ctors too:
+      - `HudUiNewGamePanel_Ctor()` installs `g_HudUiNewGamePanel_StartButton_Vtbl`
+      - `HudUiSaveGameDialog_Ctor()` installs `g_HudUiSaveLoad_DeleteButton_Vtbl`, `g_HudUiSaveLoad_NextButton_Vtbl`, `g_HudUiSaveLoad_PrevButton_Vtbl`, and `g_HudUiSaveGame_PrimaryActionButton_Vtbl`
+      - `HudUiLoadGameDialog_Ctor()` installs `g_HudUiSaveLoad_DeleteButton_Vtbl`, `g_HudUiSaveLoad_NextButton_Vtbl`, `g_HudUiSaveLoad_PrevButton_Vtbl`, and `g_HudUiLoadGame_PrimaryActionButton_Vtbl`
+    - the paired NewGame/SaveLoad hooks are now all `void` side-effect handlers:
+      - `HudUiNewGamePanel_StartButton_OnActivate()` calls `HudUiNewGamePanel_StartGameFromFields(owner_0C8)` when the owner exists, then forwards to `HudUiZrdWidget_OnActivate(self)`
+      - `HudUiSaveLoadDialog_DeleteButton_OnActivate()` forwards to the base activate hook, then calls `HudUiSaveLoadDialog_MaybeDeleteSelectedSaveAndRefresh(owner_0C8, 1)`
+      - `HudUiSaveLoadDialog_NextButton_OnActivate()` and `HudUiSaveLoadDialog_PrevButton_OnActivate()` adjust `selectedEntryIndex_CA0C` within the reachable save-entry count, then call `HudUiSaveLoadDialog_SetSelection(owner_0C8, ...)`
+      - `HudUiSaveGame_PrimaryActionButton_OnActivate()` and `HudUiLoadGame_PrimaryActionButton_OnActivate()` call the owner save/load transition helper first, then forward to the base activate hook
+    - the deeper dialog action helpers now close as side-effect-only too:
+      - `HudUiNewGamePanel_StartGameFromFields()` commits player name/difficulty, queues exit of the overlay and main menu, then switches to mission FMV state; the older tail `QueueSwitchCurrentState()` return was incidental
+      - `HudUiSaveGameDialog_SaveSelectedGameAndExit()` is now `void`; it handles overwrite confirmation plus retry-after-delete on `SavedGames\\<name>`, then queues exit
+      - `HudUiLoadGameDialog_ApplySelectedSaveAndTransition()` is now `void`; it loads the selected save, restores runtime input/options, and routes through `g_RecoilState_SaveLoadTransition`
+      - `HudUiSaveGameDialog_SaveSelectedGameAndExitThunk()` and `HudUiLoadGameDialog_ApplySelectedSaveAndTransitionThunk()` now stay bounded as tailcall thunks with no semantic return value
+    - the adjacent dialog GAMENAME numeric-text-input lane is now explicit too:
+      - `HudUiNewGamePanel_Ctor()` installs the real `g_HudUiNewGamePanel_NameInput_Vtbl` base at `0x4d0290`; the older `0x4d02c0` xref is only the `+0x30 OnActivate` slot inside that table
+      - `HudUiSaveGameDialog_Ctor()` and `HudUiLoadGameDialog_Ctor()` share the real `g_HudUiSaveLoad_GameNameInput_Vtbl` base at `0x4d1370`; the older `0x4d13a0` xref is only the `+0x30 OnActivate` slot
+      - `HudUiNewGamePanel_NameInput_OnActivate()` and `HudUiSaveLoad_GameNameInput_OnActivate()` are now both explicit `void` side-effect handlers on the reachable dialog path
+    - the adjacent overlay-owner split is now explicit too:
+      - `HudUiNewGamePanelOverlayOwner_Dtor()`, `HudUiOptionsPanelOverlayOwner_Dtor()`, and `HudUiNetGameSetupOverlayOwner_Dtor()` are the inner `void` destructor bodies
+      - `HudUiNewGamePanelOverlayOwner_ScalarDeletingDtor()` at `0x41c610`, `HudUiOptionsPanelOverlayOwner_ScalarDeletingDtor()` at `0x40d0c0`, and `HudUiNetGameSetupOverlayOwner_ScalarDeletingDtor()` at `0x41abc0` keep the MSVC deleting-destructor ABI
+      - the paired owner vtable bases now differ cleanly on the reachable state lane: `g_HudUiNewGamePanelOverlayOwner_Vtbl` at `0x4d03a8` uses the default RecoilState `OnDeactivate` slot, while `g_HudUiNetGameSetupOverlayOwner_Vtbl` at `0x4cfba8` carries the custom `HudUiNetGameSetupOverlayOwner_OnDeactivate()` override at slot `+0x18`
+      - the owner-entry bridges are all side-effect-only queue helpers:
+        - `HudUiNewGamePanelOverlayOwner_QueueEnter()`
+        - `HudUiOptionsPanelOverlayOwner_QueueEnter()`
+        - `HudUiNetGameSetupOverlayOwner_QueueEnterWithReconfigureFlag(int32_t reconfigureExistingSession)`
+      - the global-owner wrapper names now match the settled overlay-owner startup pattern used by NewGame, NetGameSetup, and Options:
+        - `HudUiNewGamePanelOverlayOwner_StaticInitAndRegisterAtExit()`, `HudUiNewGamePanelOverlayOwner_StaticInit()`, `HudUiNewGamePanelOverlayOwner_RegisterAtExit()`, and `HudUiNewGamePanelOverlayOwner_AtExitDtor()`
+        - `HudUiNewGamePanelOverlayOwner_StaticInit()` is the accepted inline-ctor wrapper on the reachable retail path; BN still keeps the ctor body in-place at `0x41c600`, where it installs `g_HudUiNewGamePanelOverlayOwner_Vtbl` and clears `m_panel`
+        - `HudUiOptionsPanelOverlayOwner_StaticInitAndRegisterAtExit()`, `HudUiOptionsPanelOverlayOwner_StaticInit()`, `HudUiOptionsPanelOverlayOwner_RegisterAtExit()`, and `HudUiOptionsPanelOverlayOwner_AtExitDtor()` are now the accepted side-effect-only wrapper row around `HudUiOptionsPanelOverlayOwner_Ctor()` / `HudUiOptionsPanelOverlayOwner_Dtor()`
+        - `HudUiNetGameSetupOverlayOwner_StaticInitAndRegisterAtExit()`, `HudUiNetGameSetupOverlayOwner_StaticInit()`, `HudUiNetGameSetupOverlayOwner_RegisterAtExit()`, and `HudUiNetGameSetupOverlayOwner_AtExitDtor()`
+        - both the Options and NetGameSetup rows now keep the same bounded wrapper model: init-array `StaticInitAndRegisterAtExit()`, direct `StaticInit()` tailcall into the ctor, `RegisterAtExit()` -> `crt_register_onexit()`, and `AtExitDtor()` tailcall into the inner `void` dtor
+    - the adjacent options overlay-owner lifetime split is now explicit too:
+      - `g_HudUiOptionsPanelOverlayOwner_Vtbl` still uses the ordinary `RecoilStateBase_Vtbl` shape
+      - slot `+0x0` is `HudUiOptionsPanelOverlayOwner_ScalarDeletingDtor()`
+      - the inner `HudUiOptionsPanelOverlayOwner_Dtor()` body is the separate `void` helper that deactivates and destroys `m_panel` before restoring the base Recoil-state vtable
+- The adjacent HUD STATS counter owner split is now explicit too:
+  - `HudUiPanel_CreateCounterTextPanel()` is the single-use factory for the HUD counter panel and now names its private vtable as `g_HudUiCounterTextPanel_FTable`
+  - `HudUiMgr_InitHudLayouts()` stores that panel into `g_HudUiMgr.objective_690.chatComposeTextInput_428.ownerWidget_110`
+  - on the live HUD STATS path, `HudUiMgr::EnsureHudLoaded()` and `HudUi_SetCounterValue()` therefore use panel `SetTextFmt()` plus panel `RebuildTextRect()`, not the ZRD-family `RefreshState()` slot
+  - the shared `HudUiTextInput.ownerWidget_110` field is now modeled as the small `HudUiTextInputOwner*` shim instead of a misleading concrete numeric-widget pointer
+  - that owner shim now keeps the proved cross-lane subset `SetPos`, `SetClip`, `SetVisible`, `SetTextFmt`, `RebuildTextRect`, and `OnAccept` as explicit `void` side-effect slots
+  - the proving concrete panel-text helpers now match that model too:
+    - `HudUiPanel_SetTextFmt()` is `void`; the older char return was only `_vsnprintf` / `strncpy` residue
+    - `HudUiPanel_RebuildTextRect()` is `void`; the older integer return was only `DeleteDC` / cached-rect residue
+    - `HudUiTextInput_ForwardAcceptToOwner()` and `HudUiNumericTextInput_OnAcceptForwardToCommit()` are now also explicit `void` accept thunks on the reachable text-input path
+  - on the same live STATS loader leg, `HudUiMgr::EnsureHudLoaded()` also writes `ownerWidget_110->alignMode_144 = 1` before the paired `SetTextFmt()` / `RebuildTextRect()` calls
+  - numeric text-input widgets still self-store `self` on their separate lane and now dispatch acceptance through `HudUiTextInputOwner_FTable.OnAccept(ownerWidget_110)`
+  - the adjacent raw-key dispatcher is now explicit too:
+    - `HudUiTextInput_DispatchRawKeyAction()` is now `void`; assembly is just key-map lookup -> indirect action call -> `retn 4`
+    - the proving callers `HudUiNumericTextInput_OnRawKeyboardEvent()`, `HudUiClampedIntTextInput_OnRawKeyboardDigitOnly()`, `HudUiSaveLoad_GameNameInput_OnRawKeyboardEvent()`, and `HudUiChatCompose_OnKey()` all ignore the dispatcher result on the reachable path
+    - `HudUiTextInput_FTable` action slots now render as `void __thiscall` hooks on the embedded text buffer, so the dispatcher now shows clean `self->ftable->...` calls
+    - the concrete edit handlers `HudUiTextBuffer_InsertChar()`, `HudUiTextBuffer_Backspace()`, `HudUiTextBuffer_DeleteAtCursor()`, `HudUiTextBuffer_CursorLeft()`, and `HudUiTextBuffer_CursorRight()` are now all explicit `void` side-effect helpers; `InsertChar()` also shows the overflow hook `self->ftable->OnBufferFull(self)` cleanly
+    - the raw action-table split is now bounded too: `g_HudUiChatComposeTextInput_FTable` matches the base `g_HudUiTextInput_FTable` except for `OnAccept -> HudUi_SubmitChatInputAndSendThunk()`
+    - the remaining conservative spot on this lane is `HudUiChatCompose_OnKey()`, whose own return still overlaps the translated-key fast-exit and trailing panel `SetTextFmt()` call
+  - the adjacent clip/blit-source lane is now explicit too:
+    - `HudUiMgr_ShutdownResources()` is definitely `void`; the older return-value flow was only decompiler residue from deleting-destructor calls
+    - the old HUD field name `clipEnabled_1C` was wrong on the reachable path; `HudUiElement` and `HudUiWidget` now carry `bltSource_1C` as `zVideo_BltSourceHead*`
+    - `HudUiElement_SetClip()` / `HudUiElement_SetClip2()` now read as source-plus-rect helpers, not boolean clip toggles
+    - `HudUiElement_SetClipRect()` and `HudUiElement_Invalidate()` are now also explicit `void` helpers on that same lane
+    - panel slot `+0x20` is now bounded too: `HudUiPanel_InvalidateText()` sets `textDirty_270 = 1`, then tail-jumps to the base invalidate helper
+    - `HudUiPanel_InvalidateAll()` invalidates the panel, then walks the child pointer range at `+0x110/+0x114` and calls each child's slot `+0x20` invalidate override
+    - `HudUiElement_DrawBase()` and `HudUiBriefingLocatorPanel_BlitDirtyRect()` prove that `bltSource_1C` is passed straight into `zVideo_buff_BltSourceToPrimary(...)`
+    - `HudLayoutHW_SetActive()` active/inactive legs now prove the surrounding `SetClip` virtual lane receives `widget1.image_3C` or `nullptr` as that same blit-source pointer on the owner/timer/message-panel strip
+    - the outer message lane is now explicit too: `g_HudUiMessage_Vtbl` at `0x4ce410` is a 0x78-byte widget-family table whose shared prefix matches `HudUiWidget_FTable` through `RebuildBltRectFromImage`, and `+0x18` is the outer `SetClip` hook used by both `HudUiMessage::RebuildWeaponLayout()` and the `HudLayoutHW_SetActive()` message loop
+    - `HudUiMessage_DrawDirty()` is now also explicit `void`; it just draws the outer message widget dirty region and then draws the embedded `panel_0E0`
+    - the embedded message-panel side is now explicit too: `HudUiMessageTextPanel` keeps the shared panel prefix but now owns two weapon-message tail fields directly:
+      - `activeSideIndex_2A4`, the live side selector used by the image/text refresh lane
+      - `layoutX_2A8`, the message-row X offset loaded from ZAR
+    - the stable message-panel calls now render through `panel_0E0.vtbl`, while the outer message/widget clip loop in `HudLayoutHW_SetActive()` remains bounded by BN 5.2 hidden-receiver loss
+    - `HudUiMessage.base_000` is now also explicit as a message-specific widget wrapper carrying `g_HudUiMessage_Vtbl`
+    - the adjacent message-state helpers are now explicit too:
+      - `HudUiMessage_ReleaseImages()` is `void`; it only releases `variantImages_0BC[0..4]` and `sideImageSwaps_0D8[0..1]`, then clears those pointers
+      - `HudUiMessage_SetVariantTextValue()` is now locked as `void __fastcall(messageIndex, variant, value)` on the reachable pickup/player HUD path
+      - `HudUiMessage_UpdateActiveSelection()` is now locked as `void __fastcall(messageIndex, sideIndex, cooldownValue)` and remains the active-selection image/text refresh helper behind the live weapon rows
+      - the sampled callers `HudUiMgr_ShutdownResources()`, `Player_RefreshHudFromState()`, `Player_UpdateHudReadouts()`, `Pickup_ApplyEffect()`, `Player_HandleAltWeaponSelectInput()`, and `Player_TryTogglePrimaryWeaponVariant()` all use that family only for side effects
+      - the remaining body-level boundary is narrower now: `HudUiMessageTextPanel.activeSideIndex_2A4` is stable, and the only notable residue left on that lane is odd `SetTextFmt()` receiver rendering in some HLIL views
+    - the adjacent message loader payload is now explicit too:
+      - `HudUiMessage::LoadWeaponLayoutFromNode()` now uses a local `HudUiWeaponMessageLayoutPayload` record for the stable `WEAPON`-row payload behind `zarNode->value_04`
+      - the proved named fields are `variantImageName0_0C..variantImageName4_2C`, `sideImageName0_34`, `sideImageName1_3C`, `layoutX_44`, and `layoutY_4C`
+      - that now removes the old raw `*(payload + 0xNN)` image/layout fetches from the message loader body
+      - `HudUiMgr::EnsureHudLoaded()` is the proving caller, walking the `WEAPON` child array and feeding each row into `HudUiMessage::LoadWeaponLayoutFromNode()`
+      - the broader HUD `FONTS` lane is now explicit too: `HudUiMgr::EnsureHudLoaded()` carries five proved `HudUiPanelFontArgs { faceName, width, height, weight }` consumers:
+        `objectiveSummaryFontArgs`, `objectiveDescFontArgs`, `g_HudUiMgr.sensor_0BCC.stringMenu_314->fontArgs`, `messageFontArgs`, and `ammoFontArgs`
+      - the objective summary and description panel `SetFont(...)` calls now render directly through `objectiveSummaryFontArgs.faceName/height/weight/width` and `objectiveDescFontArgs.faceName/height/weight/width`
+      - the shared panel word-wrap lane on OBJECTIVE is now explicit too:
+        - `HudUiPanel_FTable+0x6c = EnableWordWrapWithRect`
+        - `HudUiPanel_EnableWordWrapWithRect()` is now a `void` helper that enables `wordWrapEnabled_278` and copies the caller-provided rect into `wrapRect_27C`
+        - `HudUiMgr::EnsureHudLoaded()` uses that same slot for `objectiveDescTextPanel_2E4` before the objective meter/layout setup continues
+      - the same panel family now lines up with the shared HUD base mutators too:
+        - `HudUiPanel_FTable.SetPos`, `SetX`, `SetY`, and `SetVisible` reuse the shared base `HudUiElement_*` side-effect helpers
+        - those slots are now modeled as `void` on the panel family as well, which matches the already-proved common/widget tables and removes the stale fake-return model on the reachable HUD loader path
+      - the adjacent panel update-table split is now explicit too:
+        - `HudUiPanel_Ctor()` installs the real base panel table `g_HudUiPanel_FTable` at `0x4d3a88`
+        - `g_HudUiPanel_FTable+0x24 = HudUiElement_Update(self, dt)` and is now modeled as the shared `void` panel/base update slot
+        - `HudUiTransitionTextPanel_Ctor()` then overrides that with `g_HudUiTransitionTextPanel_FTable` at `0x4cd388` for cycle-selector rows, composite-panel entries, command-dialog prompt panels, and other transition/text panel owners
+        - `g_HudUiTransitionTextPanel_FTable+0x24 = HudUiTransitionTextPanel_Update(self, dt)` and is now modeled as a separate `void` derived override
+        - `HudUiContainer_UpdateAll()` is the proving caller-side view after propagation: it now renders the child update walk again as the simple side-effect call `i->ftable->Update(deltaTime)`
+      - the adjacent simple/counter/timer/save-load panel globals are now explicit too:
+        - `g_HudUiPanelSimple_FTable` at `0x4ce610` is the shared simple-panel table for plain Arial/shadow HUD text panels
+        - `g_HudUiCounterTextPanel_FTable` at `0x4ce578` is the single-use counter-panel override installed by `HudUiPanel_CreateCounterTextPanel()`
+        - `g_HudUiTimerPanel_FTable` at `0x4ce6b0` is the H:M:S timer-panel table installed by `HudUiTimerPanel_Ctor()`
+        - `g_HudUiTimerPanelFloat_FTable` at `0x4ce7d8` is the timer-float row-panel table installed by `HudUiTimerPanelFloat_Ctor()`
+        - `HudUiTimerPanelFloat` also uses the `HudUiPanelWithoutLayout` prefix; offsets `0x2a4/0x2a8/0x2ac` are `sampleElapsedSec`, `displayValue`, and `sampleFrameCount`
+        - `g_HudUiSaveLoadListItem_Vtbl` at `0x4d15e0` is the save/load dialog row-panel table installed by `HudUiSaveLoadListItem_Ctor()`
+        - `HudUiTimerPanel_UpdateHms()`, `HudUiTimerPanel_SetTimeSeconds()`, and `HudUiTimerPanel_SetHmsText()` are now explicit `void` side-effect helpers on that same H:M:S timer lane
+        - `g_HudUiListMenu_FTable` at `0x4ce6a8` is only the short 8-byte list-menu container table `{ UpdateAll, SetEnabled }`; the older overlap into the timer panel was a stale type, not a shared third slot
+        - the adjacent shared list-menu fade lane is now explicit too:
+          - `HudUiListMenu_SetFadeProgress()` linearly interpolates the live list-menu metrics `{ fadeBaseX, fadeBaseY, fadeRowPitchY, fadeCol1OffsetX, fadeCol2OffsetX, fadeFontSize, fadeFontWeight }` from stored start/end endpoint pairs on the `HudUiListMenu` owner
+          - `HudUiMgr::EnsureHudLoaded()` seeds those endpoint pairs from the `STATS` node and initializes the lane with `fadeProgress = 0.0f` before the first `HudUiListMenu_Refresh()`
+          - `HudUiMpExitDialog_Update()` reuses the same `HudUiListMenu_SetFadeProgressAndRefresh()` wrapper with `fadeAlpha` moving from `0.0f` to `1.0f`
+        - the adjacent scoreboard-row lane is now explicit too:
+          - `HudUiScoreboardEntry` is the stable `0x50` STATS row `{ playerKey_00, displayName_04, score_44, lapCount_48, playerColorPackedRgb_4c }`
+          - `HudUiListMenu` now stores that vector directly at `scoreEntriesBegin_080/scoreEntriesEnd_084/scoreEntriesCap_088`
+          - `HudUiListMenu_InsertEntry()`, `HudUiListMenu_UpdateEntry()`, and `HudUiListMenu_RemoveEntry()` now translate from `GameNetPlayerRow { playerKey_00, displayName_024, score_00c, lapCount_010, playerColorPackedRgb_00RRGGBB_08 }`
+          - `HudUiListMenu_Refresh()` sorts rows by descending `score_44 + lapCount_48*1000`, then repaints the 8x3 scoreboard grid
+          - `ScoreEntryArray_InsertIntoSortedPrefix()` is now the explicit `void __fastcall(sortedEnd, entry)` kernel used by the post-quicksort pass to insert one copied `HudUiScoreboardEntry` into the already-sorted prefix
+          - `ScoreEntryVector_GetCount()` deliberately stays narrower than the full owner type: it reads `{ initFlag_00, begin_04, end_08, cap_0C }` from a helper view, and the sole `HudUiListMenu_InsertEntry()` caller intentionally passes `&rowInitFlag_07C` so `+4/+8` land on `scoreEntriesBegin_080/scoreEntriesEnd_084`
+          - `score_44` is always shown; `lapCount_48` only drives the second numeric column while `g_Hud_SensorTracker.hasPendingPlayerSave_2484 != 0`
+          - the live GameNet-facing wrappers are `HudUi_AddScoreboardEntryRow()`, `HudUi_RefreshScoreboardEntryRow()`, and `HudUi_RemoveScoreboardEntryRow()`
+      - `HudUiStringMenu+0x10..0x1c` is now explicitly the embedded `fontArgs` bundle rather than stale `listX/listY/itemWidth/itemHeight` fields
+      - `HudUiTextStack4_SetFontAll()` is now the stable `MESSAGES` helper identity; both HUD text stacks call it with `messageFontArgs.faceName/height/weight/width`
+      - the shared `FONTS/AMMO` record is now explicit as `HudUiPanelFontArgs { faceName, width, height, weight }`
+      - `HudUi_ReadFontArgsFromZarNode()` is now the stable fastcall helper for that loader lane:
+        - all five proved callers come from `HudUiMgr::EnsureHudLoaded()` `FONTS` records
+        - it fills `HudUiPanelFontArgs` from node payload `+0x0C/+0x14/+0x1C/+0x24`
+      - `HudUiMgr::EnsureHudLoaded()` now reads that helper into `ammoFontArgs` and reuses the same bundle for all nine ZAR-configured `WEAPON` rows
+      - `HudUiMessage::LoadWeaponLayoutFromNode()` now reorders that bundle cleanly into `SetFont(fontArgs->faceName, fontArgs->height, fontArgs->weight, fontArgs->width, 0, 0, 2)`
+      - `HudUiMessage::LoadWeaponLayoutFromNode()` now also stores `messageCfg->layoutX_44` into `panel_0E0.layoutX_2A8`, and `HudUiMessage::RebuildWeaponLayout()` uses that with `layoutY_38C`
+      - the currently proved `HudUiPanelFontArgs` mapping covers `OBJ_SUMMARY`, `OBJ_DESCRIPTION`, `STRINGS`, `MESSAGES`, and `AMMO`
+    - the remaining message-strip boundary is now narrower and explicit: Binary Ninja 5.2 may still show synthetic args or the `0xe0` backstep on the outer clip/invalidate path because the hidden receiver is still lost on some indirect message-loop calls
+    - Binary Ninja 5.2 may still over-render some indirect `SetClip` / slot-`+0x20` invalidate call lists here, so the function/address comments remain the authoritative record for the precise slot contracts
+    - the adjacent background-dialog focus lane is now explicit too:
+      - `HudUiBackground` keeps `inputFocusElement_10` as the focused `HudUiElement*` processed after the child-update pass
+      - the background owner also keeps a still-conservative `inputSnapshot_14[0x30]` copied from `zInput_Mouse_GetClientCursorPosPtr()`, which restores the downstream owner offsets `cursorWidget_44`, `clipHandle_114`, `clipHandle_118`, `backgroundImageWidgets_11C`, `backgroundVideoWidgets_FCC`, `cfgRoot_A940`, `uiOriginX_A944`, and `uiOriginY_A948`
+      - `HudUiBackground_SetInputFocus()` / `HudUiBackground_GetInputFocus()` now use that same `HudUiElement*` focus type directly
+      - `g_HudUiNetExitPanel_SavedInputFocus` is the matching saved-focus pointer used by the NETEXIT ctor/show/hide path to save, restore, and temporarily clear the background focus owner
+      - `HudUiNetExitPanel::Tick()` is side-effect-only: when the render loop is in network mode, it updates `g_HudUiNetExitPanel` through the shared `UpdateAll(dt)` slot and ignores the stale `xor eax` tail
+    - the adjacent update-wrapper strip is now explicit too:
+      - `HudUiContainer_UpdateAll()` is now the shared `void` child-update walker on the reachable HUD path
+      - `HudUiBackground_Update()` is now a `void` background/input wrapper over the child-event pass plus `HudUiContainer_UpdateAll()`
+      - `HudLayout_UpdateAll()` and `HudLayoutHW_UpdateAll()` are now both `void` wrappers over that same container update helper
+      - the matching table entries `HudUiContainer_FTable.UpdateAll`, `HudUiBackground_FTable.Update`, `HudLayout_FTable.UpdateAll`, and `HudLayoutHW_FTable.UpdateAll` now agree with those `void` helpers
+      - the older integer returns on that strip were only child slot `+0x24 = Update(dt)` residue, not deliberate status values
+    - the adjacent enabled-state setter strip is now explicit too:
+      - `HudUiContainer_SetEnabled()`, `HudUiBackground_SetEnabled()`, and `RecoilApp_AppState_SetParam()` are all side-effect-only `void` setters despite the shared `mov eax, [esp+4]`, `mov [ecx+4], eax`, `retn 4` byte pattern
+      - the matching table entries `HudUiContainer_FTable.SetEnabled`, `HudUiBackground_FTable.SetEnabled`, `HudLayout_FTable.SetEnabled`, `HudLayoutHW_FTable.SetEnabled`, `HudUiMgr_FTable.SetEnabled`, and `HudUiBackgroundContainer_FTable.SetEnabled` now agree with that `void` setter family
+      - the small 2-slot wrapper tables `HudUiMgr_FTable` and `HudUiBackgroundContainer_FTable` are now also synchronized with the already-proved `void` update family on their slot `+0x0`
+      - `HudUiMgr_EnableHud()`, `HudUiMgr_DisableHud()`, `RecoilApp_SetMissionIdAndQueueMissionFmvState()`, and `HudUiNewGamePanel_StartGameFromFields()` are the proving callers that ignore any setter return on the reachable path
+    - the adjacent layout-control wrapper strip is now explicit too:
+      - `HudLayout_Enable()` / `HudLayout_Disable()` are now the plain `void` wrappers over layout slot `+0x4 = SetEnabled(self, 1/0)`
+      - `HudLayoutHW_Enable()` / `HudLayoutHW_Disable()` are also `void`; they keep their ordinary HW-side cleanup, then forward into that same `SetEnabled` lane
+      - `HudUiMgr_RefreshCurrentLayout()` is now the `void` null-check wrapper around `currentLayout_18->ftable->OnActivated()`
+      - `HudLayoutHW_OnActivated()` and `HudLayoutHW_UpdateObjectiveDirtyRect()` are now explicit side-effect-only HW hooks
+      - `HudLayout_SetActiveNoOp()` and `HudLayoutHW_SetActive()` remain separate from that cleanup because both reachable implementations still return literal `1`, so `HudLayout_FTable.SetActive` / `HudLayoutHW_FTable.SetActive` stay conservative as success-style returns for now
+- The adjacent software point-queue bridge is now explicit too:
+  - `zModel_RenderPointQueueEntry()` is the producer-side bridge that transforms/clips one point, then either:
+    - calls `g_zVideo_pfnDrawPointColor16(...)` on the hardware path, or
+    - calls `zVideo_pointQueue_AddProjected(&projectedPoint, packedColor16, &pointEntry->lensFlareSource)` on the software path
+  - `zRndr_SpanSample` is now stable on the reachable software queue path as `{ x, y, z, packedColor16, lensFlareSource }`
+  - `zModel_PointEntry.lensFlareSource` is the proving producer-side payload, and `zVideo_pointQueue_DrawSampleSw()`, `zRndr_SpanOcclusion_FilterSampleList()`, `zRndr_LensFlare_BuildVisibleSampleList()`, and `zRndr_LensFlare_DrawSample()` are the matching consumers
+  - `zModel_PointEntry.pointCamList` is `zVec3*`, not `zClipVert*`: hardware/software point render callers pass elements directly to `zModel_RenderPointQueueEntry(zVec3* pointPos, ...)`, and the clone path allocates/copies `pointCamCount * 0xc`
+  - `zMath::ProjectPointBatch()` is `void __fastcall(zVec3* viewPoints, zProjectedPoint* projectedPoints, int count)`: ECX reads view-space `x/y/z`, EDX writes screen `x/y/reciprocalZ`, and the lone stack arg is `count` (`ret 0x4`)
+    - in-place callers intentionally pass the same 12-byte buffer with layout-compatible `zVec3`/`zProjectedPoint` storage; BN may still show previous-element `__offset` accesses because the loop pre-increments ECX/EDX before each store
+  - `zDi::AddPolygonEx()` has 10 stack arguments (`ret 0x28`): `entryNormals` is the inserted wrapper slot, the former `polyIndex` slot is `uvPairsB`, and `zDiEntry.drawFlags` is written from the `drawFlags` argument then consumed by hardware/software polygon submitters as the render/depth-bias parameter
+    - the split helpers preserve that contract: `zModel_Const::SplitPolygonChunkedByVertexLimit()` has the same 10 stack arguments, while `zDi::AddPolygonSplitByVertexLimit()` adds only `maxChunkVertexCount` as the final stack argument (`ret 0x2c`)
+    - `zDiEntry.packedFlags` stays a raw 32-bit value in BN because bitfield rendering is misleading here: low byte is vertex count, bit 8 is show-back-face, and bit 9 means entry normal indices are present
+  - `VariantTag::TagsOverlap()` and `VariantTag::CurrentAllowsId()` are the shared packed-`zTag4` variant filters:
+    - `zTag4.count_00` is the number of byte-sized candidate IDs in `tags_01`
+    - `0xff` is the wildcard/sentinel ID, and disabled filtering or an empty current tag allows the tested ID
+  - the clipped lens-flare framebuffer path is now explicit:
+    - `zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer(sample, yOffsetPixels, screenScale)` projects one queued `zRndr_SpanSample`, clips it to the active region, applies optional depth fading, and writes/blends one 16-bit framebuffer pixel
+    - `zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(yOffsetPixels, screenScale)` iterates `g_zRndr_LensFlareSampleQueue`, then clears both `g_zRndr_LensFlareSampleQueueCount` and `gRndr_OverlayBlendEnabled`
+    - `gRndr_OverlayBlendAlpha` is a single stored `double` at `0x62e9f8`, not two adjacent `float` globals
+  - the adjacent DD3D point helper contract is now explicit too:
+    - `zVideo_dd3d::DrawPointColor16()` is the immediate one-point `DrawPrimitive()` helper using `g_zVideo_D3DSubmitTempVertices[0]`
+    - the reachable call contract is `__fastcall(pointXYZ, packedColor16, pointCount)` and every proved caller currently passes `pointCount = 1`
+    - Binary Ninja 5.2 may still drop the hidden `ECX` / `EDX` args when rendering indirect calls through `g_zVideo_Dd3dOps`, especially once the wider submit family is typed
+    - the function/address comments on `zVideo_dd3d::DrawPointColor16()`, `zVideo::BindRendererDispatch()`, `0x4a7945`, `0x476ed6`, `0x477d17`, and `0x479189` are the authoritative record for that point-submit fastcall contract
+  - the adjacent DD3D polygon-submit family is now bounded too:
+    - `zVideo_init_BindRendererDispatch()` binds slots `+0x24..+0x38` in `g_zVideo_Dd3dOps` to `zVideo_dd3d_SubmitPolyFlatColor16()`, `zVideo_dd3d_SubmitPolyGouraudColor16()`, `zVideo_dd3d_SubmitPolyColorAttr()`, `zVideo_dd3d_SubmitPolyRenderClass()`, `zVideo_dd3d_SubmitPolygon()`, and `zVideo_dd3d_SubmitPolygonLit()`
+    - the assembly-backed logical contracts are now explicit:
+      - flat/gouraud color submitters are `__fastcall(..., alpha255, vertexCount, renderParam, queueMode)` with `retn 0x10`
+      - the color-attribute submitter is `__fastcall(vtxXYZ, packedColor16, vtxRgb, lightScaleBase, vertexLightScale, vertexAlphaScale, alpha255, vertexCount, renderParam, queueMode)` with `retn 0x20`
+    - the render-class submitter is `__fastcall(vtxXYZ, vtxUV, vertexCount, renderClass, renderParam, alpha, queueMode)` with `retn 0x14`
+    - the textured submitters are `__fastcall(vtxXYZ, vtxUV, light-scale pointers..., vertexCount, renderClass, renderParam, alpha, queueMode)` with `retn 0x20`
+    - `zVideo_RenderClass` is a render-state view over the texture record passed by `zImage_TexDirEntry.texture`: offsets `0x0c..0x18` are `textureHandle`, `textureMapBlend`, `textureAddressU`, and `textureAddressV`
+    - `0x576224` is `gClipRect_Primary.zMin`; Binary Ninja may still expose an overlapping inner label there (`gClipRect_Primary_zMin`), but it is not a separate clip-rect object
+    - `zVideo_dd3d_SubmitPolyRenderClass()`, `zVideo_dd3d_SubmitPolygon()`, and `zVideo_dd3d_SubmitPolygonLit()` are now treated as stable `void` helpers; prior `int32_t` returns were incidental register leftovers
+    - Binary Ninja 5.2 still drops `ECX` / `EDX` on these indirect `__fastcall` table-member calls too, so the helper comments plus the bind/caller address comments are the authoritative record for the polygon-submit family
+  - the adjacent DD3D solid-quad batch path is now explicit too:
+    - `zVideo_dd3d_QueueSolidQuad()` is the `void __fastcall(packedColor16, Rect32* clip, double alpha)` producer for one `g_zVideo_QuadBatchItemsBase` record
+    - `zRndr_OverlayRect_Submit()` forwards the same helper after converting inclusive overlay edges into the right/bottom-exclusive `Rect32` clip used by the DD3D quad queue
+    - `zVideo_QuadBatchItem` now reuses the shared `zVideo_TLVertex` type for all four corners of the 4-vertex strip
+    - D3D init seeds the batch in three phases:
+      - `zVideo_init_InitVideoSystem()` clears `g_zVideo_QuadBatchCount` and seeds all `spec` fields to `0xFF000000`
+      - `zVideo_dd3d_SetQuadBatchDepthAndRhw()` seeds z/rhw for the 16-entry batch
+      - `zVideo_dd3d_QueueSolidQuad()` fills x/y/color per queued quad before `zVideo_dd3d_FlushQuadBatch()` submits each record as `D3DPT_TRIANGLESTRIP`
+    - the hardware FX-surface blue/green-mask fallbacks both queue those quads with double alpha `0.3`; Binary Ninja 5.2 still misrenders that stack-built literal in HLIL
+  - the adjacent HUD draw/pass-3 strip is tighter too:
+    - `HudUiCommon_FTable.Draw` and `HudUiCommon_FTable.DrawBase` are now treated as `void` slots on the reachable HUD path
+    - `HudUiElement_Draw()`, `HudUiElement_DrawBase()`, `HudUiBackgroundCursorWidget_DrawBase()`, `HudUiBackgroundVideoWidget_Draw()`, `HudUiBackgroundVideoWidget_DrawBase()`, `HudUiBar_Draw()`, and `HudUiPanel_Draw()` now decompile without the older fake integer returns from leftover blit/TLV-submit state
+    - `zVideo_FxPass3Element_Draw()` sits on that same slot family and is now kept as a `void` draw override
+    - the pass-3 callback slot at vtable `+0x74` is now preserved as a `void` callback family for:
+      - `zVideoFxPass3Element_FTable.ApplyCurrentInput`
+      - `zVideoFxPass3RootElement_FTable.ApplyOverlayRect`
+      - `zVideoFxPass3Slot_FTable.ApplyToCurrentSurface`
+    - `zVideo_FxPass3RootElement_ApplyOverlayRect()` is assembly-stable as `packedColor16 + clipRectOrNull + double alpha -> zRndr_OverlayRect_Submit()`, but Binary Ninja 5.2 still misrenders the `ECX = packedColor16` reload as a bogus `self.w` assignment
+    - `zVideo_FxPass3Slot_ApplyToCurrentSurface()` now cleanly forwards `(x, y, mode, lane0, lane1, lane2, lane3, clipRectOrNull)` into the software worker `zVideo_FxPass3_ApplyToCurrentSurface()`
+  - the next narrower HUD draw-family strip is tighter too:
+    - `HudUiWidget_FTable.Draw` / `DrawBase`, `HudUiPanel_FTable.Draw` / `DrawBase`, and `HudUiTripletPanel_FTable.Draw` / `DrawBase` are now all treated as `void` slots on the reachable path
+    - `HudUiWidget_DrawDirty()`, `HudUiSlot_Draw()`, `HudUiTimerPanelFloat_Draw()`, `HudUiTripletPanel_Draw()`, and `HudUiSaveLoadListItem_Draw()` now decompile without the older fake integer returns from leftover blit/panel-tail state
+    - `HudUiSlot_Draw()` is now bounded as two embedded widget draws on `slotWidget` and `trackMarkerWidget`
+    - `HudUiTripletPanel_Draw()` is now bounded as three embedded widget draws on `items[2]`, `items[1]`, and `items[0]`
+    - `HudUiPolyline` is now typed as `{ base, points[0x15], pointCount, color565, clipRectOrNull }`
+    - `HudUiPolyline_Ctor()` proves the owner carries 21 point records at `+0x34`, not 42 point pairs
+    - `HudUiPolyline_Draw()`, `HudUiPolyline_SetPoint()`, and `HudUiPolyline_SetOriginAndFirstPoint()` now render through that typed owner instead of raw indexed dwords
+    - Binary Ninja 5.2 still drops `ECX = &embeddedWidget` on the indirect widget draws and may still drop `ECX = self` on the polyline `SetPos` / `Invalidate` virtuals, so the refreshed BN comments remain the authoritative record for those hidden receivers
+  - the adjacent widget/panel activation plus bounds/text-buffer strip is now explicit too:
+    - `HudUiWidget_FTable+0x2c` / `+0x30` are now `GetBoundsRectOrNull` / `OnActivate`
+    - the base widget defaults are now recorded too: `g_HudUiWidget_Vtbl+0x2c = zStub_ReturnFalse` and `+0x30 = Stub_NoOp`
+    - `HudUiPanel_FTable+0x2c` / `+0x30` are now `GetTextBufferPtrOrNull` / `OnActivate`
+    - `g_HudUiSaveLoadListItem_Vtbl` is the proving panel override on that strip: `+0x2c = HudUiZrdWidget_GetTextBufferPtr`, `+0x30 = HudUiSaveLoadDialog_ListItem_OnActivate`
+    - raw `0x4d3630` is now named and typed as `g_HudUiZrdWidget_FTable`, with `+0x2c = HudUiZrdWidget_GetBoundsRectOrNull` and `+0x30 = HudUiZrdWidget_OnActivate`
+    - `HudUiZrdWidget` now carries `boundsRect_0CC`, so `HudUiZrdWidget_GetBoundsRectOrNull()` returns a real owner-side `HudUiRect*`
+    - `HudUiWidget_HitTest()` and `HudUiZrdWidget_LoadFromZrd()` are the proving bounds-rect consumers, while `HudUiZrdWidgetEx17C_Item_OnActivateSelectSelf()` is the proving indirect activation caller
+    - Binary Ninja 5.2 still may render the returned `HudUiRect*` as `int32_t*` in `HudUiWidget_HitTest()` and still drops the hidden receiver on the indirect `OnActivate` call in `HudUiZrdWidgetEx17C_Item_OnActivateSelectSelf()`
+  - the adjacent ZRD-widget preview/control strip is now explicit too:
+    - `HudUiZrdWidget_FTable+0x3c` / `+0x40` are now the shared `ShowPreview` / `HidePreview` hooks
+    - `HudUiZrdWidget_ShowPreview()` / `HudUiZrdWidget_HidePreview()` are the stable base implementations for the preview-image/audio toggle path
+    - the shared invalidate hook on this same family is now explicit too:
+      - old `HudUiPanel_InvalidateAll()` was wrong on this lane
+      - `HudUiZrdWidget_Invalidate()` is the real `void` invalidate override and walks `labelPanels_10C.begin/end` after `HudUiElement_Invalidate(self)`
+      - the real `g_HudUiZrdWidget_FTable` base is `0x4d3630`; the older `0x4d3650` view was only the misleading `+0x20` slice that begins at that invalidate override
+    - `HudUiZrdWidget` now also carries the stable four-group label/media owner split proved by `HudUiZrdWidget_LoadFromZrd()`:
+      - root `LABEL` -> `labelPanels_10C`
+      - `ROLLOVER/LABEL` -> `rolloverLabelPanels_11C`
+      - `DISABLE/LABEL` -> `disabledLabelPanels_13C`
+      - `ACTIVATE/LABEL` -> `activateLabelPanels_12C`
+      - the paired `BITMAP` / `SOUND` children now close the matching `defaultImage_0DC`, `rolloverImage_0E4`, `disabledImage_0E0`, `activateImage_0F4`, `rolloverSound_0E8`, `activateSound_0F8`, and `disabledSound_104` lanes
+    - the proving runtime consumers now line up with that loader split:
+      - `HudUiZrdWidget_ShowPreview()` hides the default `labelPanels_10C`, shows `rolloverLabelPanels_11C`, and uses `rolloverImage_0E4` / `rolloverSound_0E8`
+      - `HudUiZrdWidget_HidePreview()` restores `labelPanels_10C` and `defaultImage_0DC`
+      - `HudUiZrdWidget_RefreshState()` selects between the normal and disabled label/image families with `modeOrEnabled_0C4`
+      - `HudUiZrdWidget_OnActivate()` uses `activateLabelPanels_12C`, `activateImage_0F4`, and `activateSound_0F8`
+    - the shared ZRD-family vtable `+0x78` slot is now bounded too:
+      - `HudUiZrdWidget_FTable`, `HudUiNumericTextInput_FTable`, `HudUiCheckToggleWidget_FTable`, and `HudUiCycleSelectorWidget_FTable` now name that slot as `RefreshState`
+      - `HudUiZrdWidget_RefreshState()` is the proving implementation: it hides rollover/activate labels, then picks the normal or disabled label/image family from `modeOrEnabled_0C4`
+      - reachable callers still render through generic `function_78()` in some HLIL views, but the function/address comments at `0x41094c`, `0x41096a`, `0x41206b`, `0x414e69`, `0x414e7c`, `0x414f21`, and `0x4195d7` are now the authoritative record for that shared hook
+      - the shared widget-family `+0x74` slot is now explicit too:
+        - `HudUiWidget_FTable`, `HudUiZrdWidget_FTable`, `HudUiNumericTextInput_FTable`, `HudUiCheckToggleWidget_FTable`, and `HudUiCycleSelectorWidget_FTable` now name that slot `RebuildBltRectFromImage`
+        - `HudUiWidget_RebuildBltRectFromImage()` is the proving implementation: it rebuilds `clipRect_20` from `x_14/y_18 + image_3C->sizePackedWH`, then calls `SetClipRect(&clipRect)`
+        - the same pass also retired stale derived-table residue on the reachable ZRD family: `SetClip`, `SetClipRect`, `Invalidate`, and `RefreshState` now keep their already-proved `void` signatures in the numeric/check/cycle tables
+        - Binary Ninja 5.2 may still drop the hidden receiver on that indirect `SetClipRect` call, so the function/address comments at `0x404e10`, `0x4d349c`, `0x4d35ec`, `0x4d36a4`, `0x4d372c`, and `0x4d37b4` are the authoritative record for the shared `+0x74` hook
+      - the shared widget-family anchor/GetRect lane is now explicit too:
+        - `HudUiWidget_FTable`, `HudUiZrdWidget_FTable`, `HudUiNumericTextInput_FTable`, `HudUiCheckToggleWidget_FTable`, and `HudUiCycleSelectorWidget_FTable` now name `+0x64/+0x68` as `GetCenterX` / `GetCenterY`
+        - `HudUiWidget_GetCenterX()` / `HudUiWidget_GetCenterY()` are the proving implementations: they return plain `x_14/y_18` when `alignFlags_48` is clear, otherwise they add half image width/height when `image_3C` is present
+        - the same family now names `+0x70` as `GetRect`, and `HudUiWidget_GetRect()` is the proving default implementation: it writes a degenerate rect at that effective anchor position via `GetCenterX()` / `GetCenterY()`
+        - `HudUiPanel_GetRect()` is the proving direct caller on the neighboring panel lane: it starts from `HudUiWidget_GetRect(self, outRect)`, then expands right/bottom from panel text width and height using its own panel-family coordinate hooks
+        - Binary Ninja 5.2 may still drop the hidden `self` on the indirect `GetCenterX()` / `GetCenterY()` calls, so the function/address comments at `0x404d90`, `0x404dd0`, `0x4b42c0`, `0x4d348c`, `0x4d3490`, `0x4d3498`, `0x4d35dc`, `0x4d35e0`, `0x4d35e8`, `0x4d3694`, `0x4d3698`, `0x4d36a0`, `0x4d371c`, `0x4d3720`, `0x4d3728`, `0x4d37a4`, `0x4d37a8`, and `0x4d37b0` are the authoritative record for that widget-family anchor/GetRect strip
+      - the adjacent background cursor-widget tail is now explicitly separate from that ZRD branch:
+        - `g_HudUiBackgroundCursorWidget_MemberVtbl` and `g_HudUiBackgroundCursorWidget_Vtbl` keep the corrected shared widget prefix (`Draw`, `DrawBase`, `SetClip`, `SetClipRect`, `Invalidate`, `GetCenterX`, `GetCenterY`, `GetRect`, `RebuildBltRectFromImage`)
+        - their cursor-only tail now uses `+0x78 = SetImageBorrowedAndRefreshCapture` and `+0x7C = SetImageByNameOwnedAndRefreshCapture`
+        - `HudUiBackgroundCursorWidget_SetImageBorrowedAndRefreshCapture()`, `HudUiBackgroundCursorWidget_SetImageByNameOwnedAndRefreshCapture()`, `HudUiBackgroundCursorWidget_RebuildCapturedImage()`, `HudUiBackgroundCursorWidget_RefreshCaptureAtPos()`, and `HudUiBackgroundCursorWidget_SetPosAlignedAndRefreshCapture()` are all now treated as `void` side-effect helpers; earlier returns were only `SetClip()` residue on the capture-refresh path
+        - `HudUiBackground_LoadFromZrd()` still renders the `CURSOR.BITMAP` leg through generic `function_7C()` because `cursorWidget_44.ftable` intentionally stays `HudUiWidget_FTable*` on the object side for decompilation stability; the specialized cursor vtables and their address comments are the authoritative record for that split
+      - the adjacent background-video widget vtable is now explicitly separate from that widget-center/ZRD branch too:
+        - `g_HudUiBackgroundVideoWidget_Vtbl` at `0x4d4248` is now typed as the full `HudUiBackgroundVideoWidget_FTable` instead of a stale `void*`
+        - this family keeps raw `GetX` / `GetY` at `+0x64/+0x68`, not the widget/ZRD `GetCenterX` / `GetCenterY` lane
+        - `+0x70` stays `GetRect` and `+0x74` is now bounded as `HudUiBackgroundVideoWidget_RebuildBltRect()`
+        - `HudUiBackgroundVideoWidget_RebuildBltRect()` rebuilds the clip/blit rect against the optional captured `bltSource_1C` extent, then forwards the result through `SetClipRect()`
+        - the remaining tail hooks at `+0x78/+0x7C/+0x80` currently resolve to shared default-dispatch/return-zero callbacks and are intentionally left generic until a stronger direct caller proves a class-specific meaning
+      - the adjacent shared HUD base side-effect lane is now explicit on the same background/UI strip:
+        - `HudUiElement_SetPos()`, `HudUiElement_SetX()`, `HudUiElement_SetY()`, `HudUiElement_SetVisible()`, and `HudUiElement_Update()` are all now treated as `void`; the earlier integer returns were only `Invalidate()` / draw / visibility residue
+        - the same cleanup now propagates into the background-video runtime helpers: `HudUiBackgroundVideoWidget_LoadStream()` and `HudUiBackgroundVideoWidget_Update()` are both now `void`
+        - `HudUiBackground_LoadFromZrd()` is the main proving caller-side cleanup: the image/video/text child `SetPos()` calls and the image/video child `SetVisible(1)` calls now render without the old fake-return clutter
+        - Binary Ninja 5.2 still drops a hidden receiver on some indirect calls here, especially `HudUiElement_Update() -> SetVisible(0)` and `HudUiBackgroundVideoWidget_LoadStream() -> RebuildBltRect()`, so the function/address comments remain the authoritative record for those edges
+    - the proving loader/tag comments now sit at `0x4b5b2c`, `0x4b5f43`, `0x4b5ff5`, `0x4b640d`, `0x4b64bf`, `0x4b68d7`, `0x4b6989`, and `0x4b6b6b`
+    - `HudUiNumericTextInput_Base_Vtbl` now renders through that same strip with `+0x30 = HudUiNumericTextInput_OnActivate` and `+0x3c/+0x40 = HudUiZrdWidget_ShowPreview/HudUiZrdWidget_HidePreview`
+    - `HudUiCheckToggleWidget_Vtbl` closes the same strip with `+0x2c = HudUiCheckToggleWidget_GetBoundsRectOrNull`, `+0x30 = HudUiCheckToggleWidget_OnActivate`, `+0x3c = HudUiCheckToggleWidget_OnFocusMaybePlayPreview`, and `+0x40 = HudUiCheckToggleWidget_StopPreviewAndHide`
+    - `HudUiCheckToggleWidget_GetBoundsRectOrNull()` returns `&self->base.boundsRect_0CC`, so the older `GetTextAnchor` label is no longer used
+    - `HudUiCycleSelectorWidget_Vtbl` is now bounded as the same 0x88-byte ZRD-widget-derived table, with `+0x30 = HudUiCycleSelectorWidget_OnActivate`; bytes beyond `+0x84` are separate globals, not extra virtual slots
+    - `HudUiNumericTextInput_OnActivate()`, `HudUiCheckToggleWidget_OnActivate()`, and `HudUiCycleSelectorWidget_OnActivate()` are all treated as `void` overrides on this strip even where Binary Ninja still prefers tailcall syntax in HLIL
+  - the adjacent numeric text-input / slider-border strip is now explicit too:
+    - `HudUiTextInput` now closes as `{ ftable, buffer_04, capacity_08, cursor_0C, keyActionMap_10[0x100], ownerWidget_110 }`; the older `auxPanel_108` / `auxFlag_10C` interpretation was wrong on this lane because that whole `0x100`-byte span is the raw key-action map
+    - `g_HudUiTextInput_FTable` is the base text-input action table and `g_HudUiNumericTextInput_TextInputFTable` is the numeric-input override; only `OnAccept` differs, and that derived slot now points at `HudUiTextInput_ForwardAcceptToOwner()`
+    - `HudUiTextInput_DispatchRawKeyAction()` now names the live byte-code family directly as `InsertChar`, `IgnoreKey`, `OnCancel`, `OnAccept`, `Backspace`, `DeleteAtCursor`, `CursorLeft`, and `CursorRight`
+    - `HudUiNumericTextInput_FTable+0x88/+0x8c` now render as `OnAccept` / `CommitAndGetValue`, and `HudUiNumericTextInput_OnAcceptForwardToCommit()` is the shared accept thunk used by the clamped-int variant
+    - `HudUiNumericTextInput` / `HudUiNumericTextInputWidget` now embed a full `HudUiZrdWidget base` plus the adjacent `sliderBorder_260`, while `HudUiClampedIntTextInput` now extends that corrected base directly with `minValue_374` / `maxValue_378`
+    - `HudUiNumericTextInput_Update()`, `HudUiNumericTextInput_SetInputActive()`, and `HudUiNumericTextInput_SetTextAndNotify()` now prove that the old raw owner strip at `0x110/0x114` is really `base.labelPanels_10C.begin/end`; on the reachable path the numeric widget only uses `base.labelPanels_10C[0]`, which is the live default child text panel created by `HudUiZrdWidget_LoadFromZrd()`
+    - `g_HudUiSliderBorder_Vtable` is the corrected name for the older `gHudUi_CommonFTable` on this strip; its `Update` slot is `HudUiSliderBorder_Update()`, which blinks and draws the 13-point caret border through `blinkPeriodSec_0FC`, `blinkTimeRemainingSec_100`, `blinkDirSign_104`, `caretHalfWidth_108`, `inputActive_10C`, and `inputFlags_110`
+    - `HudUiNumericTextInput_RawKeyboardCallback()` is assembly-backed as `ECX=key, EDX=self`; Binary Ninja 5.2 may still show `__return_addr` on the indirect `OnRawKeyboardEvent` call, so the function/address comments are the authoritative record for that fastcall callback contract
+  - Binary Ninja still misrenders some immediate float arguments on this strip:
+    - `RecoilApp_PlayState_TickAndRenderFrame()` call sites still show `&data_3f800000` / `&data_40000000`
+    - those are confirmed immediate-float artifacts for `1.0f` / `2.0f`, not real globals
+- `RecoilApp.m_transitionTimerSec` is the shared play-state/load-game transition countdown field:
+  - seeded/extended to `5.0f` on the load-game and non-host bring-up paths
+  - seeded/extended to `1.0f` on the immediate gameplay warm-up render path
+  - decremented during `RecoilApp_PlayState_OnUpdateShouldQuit()` by `g_FrameDeltaTimeSec`
+  - `PlayerState.transitionDamageSuppressed_5a0` is the paired startup fade damage gate on that same path:
+    - `Player_InitMissionRuntimeFromWorldAndCamera()` clears it during bootstrap
+    - `RecoilApp_PlayState_OnUpdateShouldQuit()` uses it while `g_RecoilApp.m_transitionTimerSec >= 1.0f` and the one-shot DD/DD3D clear path runs
+    - `RecoilApp_PlayState_OnUpdateShouldQuit()` clears it again after `setMuteSound(0)` and `HudUiMgr_RefreshCurrentLayout()`
+    - `Player_ApplyDamageLocal()` returns immediately while the flag is nonzero
+  - this is intentionally treated as an overlapping float alias in the broader `g_RecoilApp` region, not as proof that the whole `RecoilApp` layout should be rebuilt around that offset
+- `RecoilApp.m_skipIntroFmv` is the shared startup/gameplay handoff field that bypasses INTRO FMV playback:
+  - clear on normal single-player startup in `CZRecoilFrame_OnMenuStartSinglePlayerGame()`
+  - set on host net-game setup, joined multiplayer bring-up, and Westwood-upgrade launch
+  - `RecoilApp_IntroFmvState_OnCanBecomeCurrent()` gates the `INTRO` script load on this flag
+  - `RecoilApp_IntroFmvState_OnUpdateShouldQuit()` uses it to hand off directly to `g_RecoilApp_MissionFmvState`
+  - `RecoilApp_LoadZbdAndSetupSensorTracker()` stores its `skipIntroFmv` argument into the matching owner-side field `RecoilApp.m_skipIntroFmv`
+  - like `RecoilApp.m_transitionTimerSec`, this is treated as an owner-side field in the broader `g_RecoilApp` region rather than as permission to rebuild the full singleton head from that offset
+- `g_RecoilApp_StartupState` is the overlapping shell alias for `RecoilApp.m_startupState`:
+  - `CZRecoilFrame_OnMenuOpenMultiplayerDialogsAndMaybeStartGame()` seeds it with `&g_RecoilApp_MpExitDialogState` on the joined-session path
+  - `RecoilApp_LoadZbdAndStartEngine()` then reaches `RecoilApp_StartEngineAndPushStartState()`, which consumes the same slot through `self->m_startupState`
+  - this is intentionally treated as a narrow startup-state alias, not as proof that the whole `RecoilApp` head should be rebuilt around that offset
+- The shell FMV path now has one shared archive/tag literal strip:
+  - `g_RecoilApp_FmvArchiveName` = `fmv.zrd`
+  - `g_RecoilApp_IntroFmvTag` = `INTRO`
+  - `g_RecoilApp_AttractFmvTag` = `ATTRACT`
+  - `g_RecoilApp_MissionFmvTagTemplate` = `M0\0\0`
+  - `g_RecoilApp_CreditsFmvTag` = `GRANDPRIZE`
+  - `g_RecoilApp_MissionOverFmvTag` = `MISSIONOVER`
+  - `g_zFMV_MissingDefinitionsZrdErrorMsg` is the missing-archive error reported by `zFMV_Script_LoadActionsFromZrd()`
+  - intro, attract, mission-FMV, gameplay-credits, and mission-shutdown playback all pull from the same `fmv.zrd` action archive
+- The adjacent mission-core/player startup strip now has explicit named file/path literals too:
+  - `g_HudSensorTracker_MissionInitGwPathFmt` = `support\\initm%d.gw`
+  - `g_HudSensorTracker_MissionGsPathFmt` = `m%d.gs`
+  - `g_HudSensorTracker_MissionZbdGsPathFmt` = `m%d_zbd.gs`
+  - `g_HudSensorTracker_MissionSoundSetNameFmt` = `M%d`
+  - `g_HudSensorTracker_WorldNodeName` = `world1`
+  - `g_HudSensorTracker_CameraNodeName` = `camera1`
+  - `g_HudSensorTracker_WindowNodeName` = `window1`
+  - `g_HudSensorTracker_DisplayNodeName` = `display`
+  - `g_Player_ConfigArchiveName` = `player.zrd`
+  - `g_Player_AivZrdPath` = `aiv.zrd`
+  - `g_HudSensorTracker_FindMissionObjectivesMsg` = `Find mission objectives`
+  - `HudSensorTracker_LoadMissionCoreResources()`, `HudSensorTracker_ShutdownMissionGameplaySystems()`, `Player_InitMissionRuntimeFromWorldAndCamera()`, `Player_GetAivZrdPath()`, and `HudSensorTracker_InitMissionGameplaySystems()` are the proving callers on this strip.
+  - Binary Ninja still prefers inline string literals in HLIL and may still print raw addresses in `get_data_decl(...)`; the named data vars and address comments are the authoritative reconstruction here.
+- The adjacent `anim.zrd` mixed-header helper strip is tighter now too:
+  - `zEffect_SetReferenceWorldPos(const float* worldPosXYZ)` writes `g_zEffect_ReferenceWorldPosX/Y/Z` and sets `g_zEffect_HasReferenceWorldPos`.
+  - `zEffect_SetVariantTagOverrideFromTag(const zTag4* variantTag)` only arms `g_zEffect_VariantTagOverrideEnabled` / `g_zEffect_VariantTagOverrideValue` when every declared tag byte is concrete; any empty or `0xff`-wildcard tag returns without clearing the previously armed override.
+  - `zEffect_Anim_Init()` is the proving clear site for that shared anim-side reference/variant gate state.
+  - `Player_ApplyCameraVariantTagFromPickCandidate()` is the sole proved reachable caller of the variant-tag helper; it falls back to `g_Player_LastValidCameraVariantTag` when the candidate is invalid or the merged camera tag still contains `0xff` wildcard bytes, then updates both camera render passes and the shared zEffect-side override.
+  - `AnimSetZBDFile` is the interpreter-side archive override command, and its write path is now tighter too:
+    - `zEffect_Anim_SetZbdFilename()` accepts at most `0x80` characters before the terminator
+    - it copies the terminating NUL into `g_zEffectAnim_ZbdFilename`, so an empty token explicitly clears the buffer rather than restoring a default archive
+    - `zEffect_Anim_LoadZbd()` has no internal fallback-to-default step; if that buffer is empty, it returns `-1` before `fopen()`
+  - `AnimSetDebugFrame` is the only other proved interpreter-side anim control on this strip:
+    - it is a zero-arg command in `zInterp_Context_DispatchCommand()`
+    - `zEffect_Anim_SetDebugFrameFromVideoTick()` implements it by writing `g_zEffect_Anim_DebugFrameTag = g_zVideo_FrameTick + 1`, so the request targets the next video frame rather than the current one
+    - the default retail value is `-1`
+    - no proved read-side consumer has surfaced on the reachable retail path, so this currently stands as a setter-only debug hook
+  - the load-strip sample table wording is now fully aligned too: `sampleRefList_120` is the `zEffectAnimSampleRef[count]` side table allocated at `0x45f394` and later resolved through `zSnd_FindSampleByName()`.
+  - direct BN type/field xrefs now close `zEffectAnimRuntimeRef` more tightly too:
+    - whole-type xrefs stop at load, clone, cleanup, and destroy
+    - entry-field xrefs now close the surrounding lifecycle more tightly too:
+      - `zEffectAnimEntry.runtimeRefList_12c` only appears in `zEffect_HandleEmitterEvent()`, `zEffect_HandleParticleEvent()`, `zEffectAnim_StopAndCleanup()`, `zEffectAnim_CloneEntryForNode()`, `zEffect_Anim_LoadZbd()`, and `zEffectAnim_DestroyEntryRecursive()`
+      - `countsPacked_10c:1.b` is only the runtime-ref row-count lane for the load/clone/cleanup loops
+      - `countsPacked_10c.b` remains the separate activation-prereq threshold lane used by `zEffectAnim_CheckActivationPrereqs()`
+      - the emitter/particle payload field is now named `packedEntryIndexAndRuntimeSlot_30` in both `zEffectEmitterEvent` and `zEffectParticleEvent`
+      - its low16 child-entry lane resolves by name when `<= 0`, but only strictly positive child-entry indices are actionable on the reachable path, so a resolved entry index `0` stays inert in those handlers
+      - its high16 runtime-ref lane uses a signed negative sentinel only, so `runtimeRefList_12c` slot `0` is valid for emitter cache store and particle clear/store/poll
+      - that also means `runtimeRefList_12c` does not reserve a blank slot `0`, unlike the light/sound ref families whose live creator paths intentionally keep slot `0` as the empty sentinel
+    - `opaqueSerializedHead_00` has one field-xref, and it is only the cleanup-loop array-base walk
+    - `stopCachedChildOnCleanup_40` has one field-xref, and it is only the cleanup gate
+    - `cachedChildEntry_44` remains the only live emitter/particle cache field, plus the load/clone zeroing and cleanup read/clear sites
+    - best current interpretation on the reachable retail path is that `opaqueSerializedHead_00[0x40]` is archival serialized metadata preserved from disk and copied forward verbatim for unreached/debug behavior, not live runtime state
+    - the side-table contrast is now the stronger impossibility proof behind that interpretation:
+      - `trackedNodeList_110` and `nodeRefList_114` get reachable load/clone node-pointer re-resolution
+      - `lightRefList_118` and `soundRefList_11c` get reachable runtime-node creation/recreation plus running-record save/load support
+      - `activationPrereqList_128` gets reachable load/rebind target-node refresh
+      - `runtimeRefList_12c` gets none of those fixup/rebuild phases, so there is still no evidence that `opaqueSerializedHead_00[0x40]` contains live per-instance node or runtime-object pointers
+    - the save/load replay side now matches that conclusion too:
+      - `zEffect_Anim_ApplyActivationRecord()` rebuilds child/runtime state only from serialized command type, node tokens, and float payload through the `zEffectAnim_Set*` thunks
+      - those four `_Thunk` helpers are only thin replay adapters; the underlying `zEffectAnim_Set*` family is reused directly by non-replay gameplay callers such as Pickup, Player, HUD sensor, turret, network, crater, and `OptCatalog` paths
+      - assembly confirms the `_Thunk` suffix is literal: each wrapper only re-pushes its stack arguments, calls the underlying helper, and returns with its own `retn N`
+      - that shared-helper reuse means replay is rebuilding state through the same generic runtime-entry setup layer, not through any hidden `runtimeRefList_12c` decode path
+      - `zEffect_Anim_LoadActivationRecords()` replays those queued commands and never needs `runtimeRefList_12c`
+      - `zEffect_Anim_LoadRunningAnimRecords()` restores running surfaces plus light/sound tails and then only reattaches the node action callback
+      - so save/load as a whole still does not decode `opaqueSerializedHead_00[0x40]`
+  - the parked mixed-header lanes are now xref-closed too:
+    - direct xrefs to `g_zEffectAnim_MixedHeaderHeapPtr` stop at init/shutdown
+    - direct whole-dword xrefs to `g_zEffectAnim_CountsPacked` stop at init/shutdown, while live runtime consumers only use the `0x575daa` high-word entry-count lane
+    - direct xrefs to `0x575dbc` stop at the init-time `-9.8f` seed, before the later `0x3c` header copy overwrites that lane
+
+## Player weapon-bank and projectile spawn notes
+
+- The reachable alt-weapon fire/attach strip still uses two narrow local owner views for the densest helper logic:
+  - `PlayerAltWeaponFireStateView` for `Player_UpdateAltGunFireController()`
+  - `PlayerAltWeaponSelectRuntimeView` for `Player_AltGunTryFireDirect()`, `Player_AltGunTryStartAttachSequence()`, and `Player_TryFireFromOriginToStoredTarget()`
+- The canonical `PlayerState` owner is now corrected far enough to carry the shared camera/HUD/weapon-bank lanes directly:
+  - front-side unlock/input block at `0x024..0x040`: `amphibUnlocked_024`, `hoverUnlocked_028`, `subUnlocked_02c`, `aiMode_030`, `nextModeSwitchAllowedTime_034`, `motionInput_038`, `autoTurnSign_03c`, and `bankInput_040`
+  - controller/bank lanes: `activeAltGunController_5e4`, `activePrimaryGunController_5e8`, and `altWeaponBanks_5ec[0xa]`
+  - camera/timed-hit lanes: `cameraState_58c`, `previousCameraState_590`, `pendingAltCameraToggle_05ac`, `timedHitStatus_5c4`, and `rootNode_0ed0`
+- The shared fire/attach helper strip is now stable enough to name directly:
+  - `projectileSpawnVel_0a4` is the `OptCatalog_SpawnRuntimeInstanceEx(..., spawnVelocityXYZ, ...)` vector
+  - `spawnTypeFlags_0444` is the `OptCatalog_SpawnRuntimeInstanceEx(..., spawnTypeFlagsOrNull, ...)` pointer lane
+  - `activeAltGunController_5e4` is the live alt-gun controller on this path
+  - `gunFireDir_0d64` is the preset fire vector
+  - `usePresetGunFireDir_0d7c` gates preset-vector versus stored-target aiming
+  - `altFireOrigin_0db0` is the muzzle/origin vector
+  - `storedTargetPos_0ec0` is the fallback aim point used when the preset vector is disabled
+  - `rootNode_0ed0` is the runtime spawn parent
+  - `altGunTransitionController_0f20` caches the active alt-gun `PlayerGunFireController*` during attach transitions
+- `Player::BuildAltGunInterceptPoint()` scales target-relative position and relative projectile velocity by the active alt-gun projectile speed, falls back to the target world position when the quadratic has no positive lead solution, and otherwise writes `target.fxOffsetWorld + scaledRelativeVelocity * interceptTime` with a small random vertical jitter.
+- `Player_AltGunTryStartAttachSequence()` now also shows the non-local transition cleanup more clearly:
+  - when the current transition state is already `0x180` or `0x100`, it flushes `altWeaponBanks_5ec[8].ctrlB_58.optCatalogEntry_00` and `altWeaponBanks_5ec[9].ctrlB_58.optCatalogEntry_00` through `OptCatalog_ProcessRuntimeInstances(...)` before allocating the new attach runtime instance
+- One nearby false merge is now ruled out, and the camera side is tighter too:
+  - `altGunTriggerProcessFlag_5b8` is a real separate producer/consumer lane on the reachable path
+  - `pendingAltCameraToggle_05ac` is the local-player deferred camera/HUD latch for the `flags_54 & 0x100000` attach path in `Player_AltGunTryStartAttachSequence()`
+  - `Player_UpdateWeaponsAndAltGunState()` is the consumer: it disables the HUD and requests `PLAYER_CAMERA_STATE_PROJECTILE_ATTACHED` (`7`) on the attach leg, then re-enables the HUD and requests `PLAYER_CAMERA_STATE_RESTORE_PREVIOUS` (`8`) on the detach leg
+  - `PLAYER_CAMERA_STATE_RESTORE_PREVIOUS` is a request value, not a persistent camera mode; `Player::ApplyCameraState()` resolves it through `previousCameraState_590`
+- The adjacent camera-state strip is now typed more cleanly too:
+  - `enum PlayerCameraState` currently proves `PLAYER_CAMERA_STATE_THIRD_PERSON = 1`, `PLAYER_CAMERA_STATE_FIRST_PERSON = 3`, `PLAYER_CAMERA_STATE_TARGETING = 4`, `PLAYER_CAMERA_STATE_PROJECTILE_ATTACHED = 7`, plus request values `PLAYER_CAMERA_STATE_TOGGLE_REQUEST = 0` and `PLAYER_CAMERA_STATE_RESTORE_PREVIOUS = 8`
+  - `Player_UpdateCameraByState()` is the proving persistent-state dispatcher; the current reachable map is `1 -> third-person`, `2 -> Player_UpdateCameraForState2()`, `3 -> first-person`, `4 -> targeting`, `5 -> no-op`, `6 -> Player_UpdateCameraForState6()`, and `7 -> Player_UpdateProjectileAttachedCamera()`
+  - `PLAYER_CAMERA_STATE_UNKNOWN_2` is still intentionally conservative, but its mechanics are now explicit: `Player_UpdateCameraForState2()` targets `worldPos_3ec + cameraState2TargetOffset_538`, hard-sets camera position to `(-1.55f, 0, 0)`, and uses a fixed `{ 0, -1, 0 }` camera basis while `Player::ApplyCameraState()` pairs it with the temporary DD3D init exchange
+- The broader weapon-bank/HUD lane remains consistent with the current local-owner approach:
+  - `Player_LoadMasterCommonDataFromNode()` now proves the per-vehicle weapon source comes from `vehicle.zrd` `weapons`, threaded as `PlayerMasterWeaponSpec` records through `PlayerMasterCommonData.weaponSpecHead_3ac` / `weaponSpecTail_3b0`
+  - `weaponSpecCount_3b4` counts allocated linked-list records, while `weaponNodeCount_3b8` keeps the declared `weapons` child count after the wrapper node is stripped
+  - the rebuild loop now proves the `vehicle.zrd` weapon-spec name grammar too:
+    - `PlayerMasterWeaponSpec.optCatalogName_04` is the same string passed to `OptCatalog_FindEntryByName()`
+    - `optCatalogName_04[4] - '0'` selects `weaponBankIndex_04` through the `0xac` bank stride
+    - `optCatalogName_04[6] - '0'` selects `weaponSideIndex_08` through the `0x54` side stride
+    - there is no hardcoded bank-0 rejection in that grammar, so bank `0` is not excluded by the `vehicle.zrd` source format itself
+  - the proved `vehicle.zrd` `weapons` per-entry field map is now tighter:
+    - `missionRequirementOrGateId_54` feeds `Player_CheckMissionWeaponAvailability()`
+    - `mountLayoutFlags_58` bit 0 becomes controller `flags_2c` bit 1 and is now bounded as a mount-node layout selector:
+      clear takes the split `%s_L` / `%s_R` path with `%sSCROLL` children, while set takes the single base-node path
+    - that split `%sSCROLL` path is now typed more concretely too:
+      it captures `zModel_Instance*` userdata into controller `scrollTextureModelA_14` / `scrollTextureModelB_18`, and the only currently proved live consumer is `Player_UpdatePrimaryGunFireController()` via `zModel_Instance_UpdateScrollingTextures()`
+    - `startAmmoOrCharge_5c` seeds controller `ammoOrCharge_34`
+    - `dispatchRepeatDelay_60` seeds controller `dispatchRepeatDelay_44`
+    - `aiAttackRangeMin_64` and `aiAttackRangeMax_68` seed controller `aiAttackRangeMin_48` / `aiAttackRangeMax_4c`
+    - `fireSlotRecoilFlags_6c` bit 0 becomes controller `flags_2c` bit 0
+      its only currently proved live effect is gating the `selectedFireSlot->recoilStrength_00 = 1.5f` kick in the primary/alt fire ticks
+    - `initialHardpointSelectState_70` now has a narrower consumer too:
+      - it lands in controller `initialHardpointSelectState_30`
+      - the current proved rebuild-side consumer only checks whether the value is `2`, seeding `playerState->altHardpointSelectState_0d44` to `2` instead of `0`
+  - `Player_RebuildWeaponBanksAndRegisterMinesZar()` now directly proves the reset sweep seeds all 10 banks `0..9` before master-data repopulation
+  - the ordinary fallback floor still starts above bank `0`: non-network alt fallback defaults to bank `1` ctrlA, primary fallback stays on the bank-1 pair, and the network alt scan starts at bank `2`
+  - bank `1` is still the primary-weapon pair
+  - bank `0` is still structurally real but outside the ordinary startup keybind / nearest-usable auto-switch floor
+  - `Player_UpdateAiMode2AltGunAttack()` now proves the controller range pair semantics used by those source fields:
+    - `aiAttackRangeMax_4c` is the upper AI target-range gate (`targetRange < max`)
+    - `aiAttackRangeMin_48` is the lower AI target-range gate (`targetRange > min`)
+  - `Player_SelectAltGunFirePointAndSlot()` now bounds the alt hardpoint cycle that consumes that seed:
+    - `altHardpointSelectState_0d44` is a `0/1/2` selector over the shared gun-fire slots
+    - `Player_ApplyAltWeaponSwitch()` resets it to `0` on every live alt switch
+    - the rebuild path is the only currently proved place where the starting state can be seeded to `2` from `vehicle.zrd`
+  - local overlays are still useful for dense fire/attach helpers, but the canonical `PlayerState` no longer falls back to raw `0x5e4/0x5e8` HUD-controller accesses on the proved path
+- The adjacent mission-save bank loop is now bounded as intentional packed layout, not as a failed owner-type recovery:
+  - `Player_BuildMissionSaveData()` and `Player_ApplyMissionSaveData()` both serialize/restore `PlayerSaveWeaponBankSlot { selectedSide_00; sides[2] { enabled_00, ammoOrCharge_04 } }`
+  - runtime bank stride is `0xac`, and side/controller stride is `0x54`
+  - the per-side enable bit still comes from runtime `flags_2c` bit 2 at `bankBase + side*0x54 + 0x30`
+  - the per-side ammo/value lane still comes from runtime `ammoOrCharge_34` at `bankBase + side*0x54 + 0x38`
+  - the HUD restore path uses the same packed selected-side reads after rebasing through `playerState_004`, landing on `+0x61c` for `flags_2c` and `+0x624` for `ammoOrCharge_34`
+  - `Player_ShutdownMissionRuntime()` now explicitly frees each `PlayerMasterWeaponSpec` chain from `PlayerMasterCommonData.weaponSpecHead_3ac`, so the master-common weapon source is bounded as live mission-owned state rather than passive parse scratch
+
+## Multiplayer setup UI notes
+
+- The `dialog.zrd` `MP_NEW_GAME` startup path now has a stable launch-only field view in `HudUiNetGameSetupPanel_CommitSettingsAndLaunch_OnActivate()`:
+  - `gameNameInput_ABE8`
+  - `worldSelector_AF5C`
+  - `timeLimitInput_B3FC`
+  - `killsInput_BA20`
+  - `maxPlayersInput_C044`
+  - `allowMapsChecked_C7B4`
+  - `nameTagsChecked_C918`
+  - `reconfigureExistingSession_CAA8`
+- The two status bits sent onto the network/session-config path are now anchored to the actual check-widget storage:
+  - `allowMapsChecked_C7B4` is the `ALLOW_MAPS` `HudUiCheckToggleWidget.checked_14C` field
+  - `nameTagsChecked_C918` is the `NAME_TAGS` `HudUiCheckToggleWidget.checked_14C` field
+- The embedded numeric-input family is also clearer on this branch:
+  - `HudUiNumericTextInput` wraps `HudUiTextInput textInput_14C`
+  - `HudUiClampedIntTextInput` adds `minValue_374` / `maxValue_378`
+  - `HudUiClampedIntStepButton` adds `targetInput_14C` / `stepDelta_150`
+  - the `MP_NEW_GAME` launch path uses those canonical starts at `+0xb3fc`, `+0xba20`, and `+0xc044`
+- `HudUiNumericTextInput_FTable` now uses `__thiscall` on its live methods, so the launch callback’s virtual `CommitAndGetValue` calls render through the correct widget self object instead of the earlier fake extra-register argument.
+- The +/- button strip is now clearer too:
+  - `HudUiClampedIntStepButton_OnActivate()` reads `targetInput_14C`, applies signed `stepDelta_150`, clamps to the target `HudUiClampedIntTextInput.minValue_374` / `maxValue_378`, writes text, invalidates the target, and then forwards to the base widget `OnActivate`.
+  - `g_HudUiClampedIntTextInput_MpKills_Vtbl` and `g_HudUiClampedIntTextInput_MpMaxPlayers_Vtbl` are now real typed clamped-input ftables on this branch.
+  - the six `MP_NEW_GAME` step-button vtables overlap by `0x30` in `.rdata`, so the durable BN model is named anchor globals plus install-site comments:
+    - `g_HudUiClampedIntStepButton_MpIncTimeLimitButton_Vtbl`
+    - `g_HudUiClampedIntStepButton_MpDecTimeLimitButton_Vtbl`
+    - `g_HudUiClampedIntStepButton_MpIncKillsButton_Vtbl`
+    - `g_HudUiClampedIntStepButton_MpDecKillsButton_Vtbl`
+    - `g_HudUiClampedIntStepButton_MpIncMaxPlayersButton_Vtbl`
+    - `g_HudUiClampedIntStepButton_MpDecMaxPlayersButton_Vtbl`
+- This remains a scoped startup/UI milestone only:
+  - the older `HudUiNumericTextInputWidget` / `HudUiClampedIntTextInputWidget` names still have live xrefs on other HUD branches
+  - do not treat this as proof that the whole older family is dead yet
+- The adjacent `MPEXIT` dialog lifecycle is also clearer now:
+  - `HudUiMpExitDialog_LoadLayout()` is the enter-side loader for the blurred background plus `dialog.zrd` `MPEXIT` section.
+  - `HudUiMpExitDialog_UnloadLayout()` is the matched teardown helper used by `RecoilApp_MpExitDialogState_OnDeactivate()`.
+  - the global `MP_NEW_GAME` overlay-owner singleton strip now mirrors the shell singleton pattern too:
+    - `HudUiNetGameSetupOverlayOwner_StaticInitAndRegisterAtExit()` is the outer singleton wrapper
+    - `HudUiNetGameSetupOverlayOwner_StaticInit()` tailcalls `HudUiNetGameSetupOverlayOwner_Ctor(&g_HudUiNetGameSetupOverlayOwner)`
+    - `HudUiNetGameSetupOverlayOwner_RegisterAtExit()` registers `HudUiNetGameSetupOverlayOwner_AtExitDtor()`
+    - `HudUiNetGameSetupOverlayOwner_AtExitDtor()` tailcalls `HudUiNetGameSetupOverlayOwner_Dtor(&g_HudUiNetGameSetupOverlayOwner)`
+  - the `MP_NEW_GAME` text-input focus handoff is now bounded by a narrow local owner view:
+    - `HudUiNetGameSetupTextFocusOwnerView`
+    - `HudUiNetGameSetupTextInput_OnActivateFocusAndCursor()` now uses `setupPanel->focusedTextInput_A94C` for the previously focused input instead of repeated raw owner offsets
+    - the helper releases the previous focused input, disables its raw keyboard capture, stores `self`, enables raw keyboard capture on `self`, and moves the cursor to the end of the current text
+    - `HudUiNetGameSetupPanel_Ctor()` clears the same focus slot before seeding the default widget state
+    - this is intentionally kept local to the helper path; it is not evidence for a broader `HudUiNetGameSetupPanel` rewrite
+  - `HudUiNetGameSetupOverlayOwner_OnCanBecomeCurrent()` now keeps the `MP_NEW_GAME` constructor result as a narrow local first-field view too:
+    - `operator new(0xcaac)` confirms `HudUiNetGameSetupPanel`
+    - `panelView->vptr->SetEnabled(panelView, 1)`
+  - the `MP_NEW_GAME` panel destructor split now matches the rest of this VC6 multiplayer branch:
+    - `HudUiNetGameSetupPanel_Dtor()` is a plain `void` VC6 destructor
+    - `HudUiNetGameSetupPanel_ScalarDeletingDtor()` stays as the self-returning delete helper
+    - the old fake `HudUiBackground_Dtor(self)` return artifact is gone from the plain panel dtor
+  - the plain multiplayer dtors are now explicit too:
+    - `HudUiNetGameSetupOverlayOwner_Dtor()` is a plain `void` VC6 destructor
+    - `HudUiMpExitDialog_Dtor()` is a plain `void` VC6 destructor
+    - only the scalar-deleting wrappers stay self-returning on this branch
+  - `HudUiMpExitDialog_Update()` keeps its blur/list fade as a narrow local float path:
+    - `m_fadeElapsedSeconds` accumulates toward a `1.0f` cap
+    - the cap still renders as `&data_3f800000` in some BN views, so the authoritative reconstruction is the code comment, not the raw decl render
+  - The final teardown vtable cleanup on this multiplayer branch is intentionally local:
+    - `HudUiMpExitDialogDtorView` is only a first-field overlay used to show `HudUiMpExitDialog_Vtbl::ScalarDeletingDtor()` cleanly in `RecoilApp_MpExitDialogState_OnDeactivate()`
+    - `HudUiNetGameSetupPanelDtorView` does the same for `HudUiNetGameSetupPanel_FTable::SetEnabled()` / `ScalarDeletingDtor()` in both `HudUiNetGameSetupOverlayOwner_OnDeactivate()` and `HudUiNetGameSetupOverlayOwner_Dtor()`
+    - the real remaining raw teardown residue on this branch was in the actual overlay-owner dtor, and that helper now reads through:
+      - `panelView->vptr->SetEnabled(panelView, 0)`
+      - `panelView_1->vptr->ScalarDeletingDtor(panelView_1, 1)`
+    - the two deactivate callbacks are also now explicit plain side-effect callbacks:
+      - `HudUiNetGameSetupOverlayOwner_OnDeactivate()` no longer returns the temporary `m_panel`
+      - `RecoilApp_MpExitDialogState_OnDeactivate()` no longer returns `HudUiListMenu_SetFadeAndRefresh(0f)`
+    - the shared shell-state interface now matches that proof too:
+      - `RecoilApp_IState_Vtbl::OnDeactivate` is now a `void` callback slot
+      - `RecoilApp_IState_Vtbl::OnEnter` is now a `void` callback slot too
+      - caller-side proof is now explicit in both transition helpers:
+        - `RecoilApp_QueueSwitchCurrentState()` calls slot `+0x8` for immediate queue-time `newState->OnEnter()` and does not carry a meaningful return
+        - `RecoilApp_QueuePushState()` calls slot `+0x8` for immediate queue-time `newState->OnEnter()` and does not carry a meaningful return
+      - the same correction cleaned the two highest-traffic non-multiplayer teardown callbacks on the reachable shell path:
+        - `RecoilApp_PlayState_OnDeactivate()` no longer returns the tail `zFMV_Script_Dtor(&missionOverScript)` artifact
+        - `RecoilStateMainMenuTransition_OnDeactivate()` no longer returns the tail `zSnd_GetCDAudioOption()` / `zSndCd_Stop()` artifact
+      - the `MPEXIT` enter/load pair now matches that side-effect-only contract too:
+        - `RecoilApp_MpExitDialogState_OnEnter()` is now a plain side-effect callback
+        - `HudUiMpExitDialog_LoadLayout()` is now treated as a semantic `void` helper; both known callers ignore the final `SetEnabled(1)` tail
+  - This is intentionally a local cleanup only; it is not evidence for a broader `HudUiMpExitDialog` type rewrite.
+
+## Effect animation archive: `anim.zrd` / `anim.zbd`
+
+- The gameplay/effect bring-up path now cleanly splits static effect definitions from effect-animation state:
+  - `HudSensorTracker_InitMissionGameplaySystems()` loads `effects.zrd` through `zEffect_InitFromPath()`.
+  - The same function then calls `zEffect_Anim_LoadAndInstantiate("anim.zrd")`.
+  - The code still uses `ZBD` terminology internally, so the retail archive string is `anim.zrd` while the loader globals and helpers still speak in `anim.zbd` / `ZBD` terms.
+- The proved runtime chain on the reachable retail path is:
+  - `RecoilApp_EngineInit() -> zEffect::Init() -> zEffect_Anim_Init()`
+  - `RecoilApp_PlayState_OnCanBecomeCurrent()` / `HudSensorTracker_ApplyMissionDataAndReload() -> HudSensorTracker_InitMissionGameplaySystems()`
+  - `zEffect_InitFromPath("effects.zrd") -> zEffect_SetWorldNode() -> zEffect_SetResourceNode() -> zEffect_Anim_LoadAndInstantiate("anim.zrd") -> zEffect_Anim_LoadZbd()`
+  - `zEffectAnim_ResolveRuntimeEntryForNode() -> zEffectAnim_ActivateRuntime() -> zEffect_Anim_RunActiveEntry() -> zEffect_Anim_RunSequence()`
+  - save/load and teardown continue through `zEffect_Anim_SaveAnimRecords()`, `zEffect_Anim_LoadAnimRecords()`, `zEffect_Anim_LoadRunningAnimRecords()`, `zEffect_Anim_Shutdown()`, and `zEffect_Anim_ShutdownIfLoaded()`
+- The retail file format is stable enough to describe from the loader:
+  - 12-byte file header:
+    - magic `0x08170616`
+    - schema/version `0x1c`
+    - source-stamp count
+  - `zEffectAnimSourceFileStamp[sourceStampCount]`
+  - loader-side source-stamp preflight scratch:
+    - `g_zEffectAnim_SourceFileStampCount`
+    - `g_zEffectAnim_SourceFileStampTable`
+    - `zEffectAnimSourceFileStamp = { sourcePath_00[0x50], fileMtime_50 }`
+    - `zEffect_Anim_LoadZbd()` allocates `sourceStampCount * 0x54` bytes of `zEffectAnimSourceFileStamp`, validates archived source-file mtimes through `_stat()`, then frees and clears that scratch before the later copied `0x3c` mixed-header block is read
+    - missing local source paths are tolerated; the preflight only fails when `_stat()` succeeds and the local `st_mtime` disagrees with the archived `fileMtime_50`
+  - copied `0x3c`-byte global header block
+    - this block does not stay a standalone in-memory header struct on the reachable retail path
+    - `zEffect_Anim_LoadZbd()` copies those `0x3c` bytes straight into the live global band at `0x575da0..0x575ddb`
+    - the loader immediately restores `g_zEffect_WorldNode` after that `fread()`, then repopulates pointer-backed lanes such as `g_zEffectAnim_EntryTable` and `g_zEffectAnim_TextIdTable`
+    - because the source-stamp scratch is already torn down at that point, `g_zEffectAnim_MixedHeaderHeapPtr` and `LOWORD(g_zEffectAnim_CountsPacked)` are not hidden source-stamp bookkeeping on the reachable retail path
+    - direct xrefs now tighten that parked pair further:
+      - `0x575da4` only appears in `zEffect_Anim_Init()` and `zEffect_Anim_Shutdown()`
+      - `zEffect_Anim_Shutdown()` frees that lane as a plain heap pointer with no proved count/length argument
+      - `0x575da8` only appears in `zEffect_Anim_Init()` and `zEffect_Anim_Shutdown()`
+      - `zEffect_Anim_Shutdown()` clears that halfword separately rather than feeding it into the free
+      - so the relationship between `g_zEffectAnim_MixedHeaderHeapPtr` and `LOWORD(g_zEffectAnim_CountsPacked)` remains unproved on the reachable retail path
+    - the load/shutdown interaction now makes the safest current interpretation narrower too:
+      - `zEffect_Anim_LoadZbd()` overwrites both lanes through the bulk `fread(..., 0x3c, 1, ...)`
+      - no later reachable load-time repair write to those exact lanes has surfaced
+      - because `zEffect_Anim_Shutdown()` still frees `0x575da4` and clears `0x575da8`, the least-assertive self-consistent reading is that the archive-copied values there are benign reserved/copied-header data on the reachable retail path rather than live runtime state
+    - `0x575dbc` is parked on the same side of that boundary:
+      - `zEffect_Anim_Init()` seeds it to `-9.8f`
+      - `zEffect_Anim_LoadZbd()` later overwrites it through the same bulk `fread(..., 0x3c, 1, ...)`
+      - exact xrefs still stop at the init write
+      - so the current conservative reading is copied-header/archival float data on the reachable retail path, not live runtime state
+    - the currently proved live lane map inside that copied band is:
+      - `0x575da0` = `g_zEffectAnim_IsLoaded`
+      - `0x575da4` = `g_zEffectAnim_MixedHeaderHeapPtr` (still parked as init/shutdown-only)
+      - `0x575da8` = `g_zEffectAnim_CountsPacked`
+      - `0x575dac` = `g_zEffectAnim_EntryTable`
+      - `0x575db0` = `g_zEffectAnim_TextIdCount`
+      - `0x575db4` = `g_zEffectAnim_TextIdTable`
+      - `0x575db8` = `g_zEffect_WorldNode`
+      - `0x575dbc` = still-unresolved archived/init-only lane
+    - `0x575da0` is the one neighboring lane with a proved post-load repair:
+      - `zEffect_Anim_LoadAndInstantiate()` rewrites `g_zEffectAnim_IsLoaded = 1` after successful runtime-node bring-up
+      - `zEffect_Anim_ShutdownIfLoaded()` uses that same lane as the current runtime-loaded gate
+      - this is why `0x575da4`, `0x575da8`, and `0x575dbc` remain parked as copied-header residue instead of being grouped with the live load flag
+      - one exact xref to `0x575da0` inside `zEffect_Anim_Init()` is non-semantic:
+        - `0x45e198` uses the address of `g_zEffectAnim_IsLoaded` only as the exclusive upper bound of the `g_zEffect_RandTable` fill loop
+        - it should not be counted as another runtime-loaded flag test
+      - `0x575dc0` = `g_zEffect_HasReferenceWorldPos`
+      - `0x575dc4` = `g_zEffect_VariantTagOverrideEnabled`
+      - `0x575dc8` / `0x575dcc` / `0x575dd0` = `g_zEffect_ReferenceWorldPosX` / `Y` / `Z`
+      - `0x575dd4` = `g_zEffect_VariantTagOverrideValue`
+      - `0x575dd8` = `g_zEffect_DeltaTimeSec`
+  - `zEffectAnimEntry[entryCount]`, with each entry using the canonical `0x134`-byte runtime/template record
+  - counted side tables for node refs, light refs, sound refs, sample refs, effect-template refs, activation prereqs, runtime refs, and per-surface runtime records
+  - per-surface `0x40` running headers plus variable payload blobs
+  - trailing `zEffectAnimTextIdEntry[textIdCount]`
+- `zEffectAnimEntry` currently reads best as a compiled event-program plus side tables:
+  - `countsPacked_104` byte lanes:
+    - `0` = runtime-surface count
+    - `1` = tracked-node count
+    - `2` = node-ref count
+    - `3` = light-ref count
+  - `countsPacked_108` byte lanes:
+    - `0` = sound-ref count
+    - `1` = sample-ref count
+    - `2` = effect-template-ref count
+    - `3` = activation-prereq count
+  - `countsPacked_10c` partial decode:
+    - low byte = minimum satisfied activation-prereq threshold
+    - second byte = `runtimeRefList_12c` count
+  - stable `flags_94` split on the reachable retail path:
+    - low-byte `0x02` = reference-distance gate in `zEffect_Anim_RunActiveEntry()`; it requires `g_zEffect_HasReferenceWorldPos` and only proceeds when `zEffect_GetNodeDistanceSqToReference(attachNode_64)` stays inside the entry's `distRefMinSq_9c` / `distRefMaxSq_a0` window
+    - low-byte `0x04` = hit-latch gate in `zEffect_Anim_RunActiveEntry()`; it waits for the sign-bit latch on `attachNode_64->flags_24`, clears that latch on success, and otherwise returns early after seeding the per-entry cooldown byte
+    - low-byte `0x08` = variant-tag gate in `zEffect_Anim_RunActiveEntry()`; it requires the variant-tag override path to be armed and `VariantTag::CurrentAllowsId(attachNode_64->variantTagId_30)` to pass
+    - low-byte `0x10` = async-callback entry flag; `zEffectAnim_FindNextAsyncEntry()` scans this bit and `Player_InitMissionRuntimeFromWorldAndCamera()` uses that scan to bind `Player_AsyncCommandCallback()`
+    - low-byte `0x20` = reset/replay-before-activation flag; both `zEffect_Anim_LoadAndInstantiate()` and `zEffectAnim_ResolveRuntimeEntryForNode()` call `zEffectAnim_ResetForNode()` when it is set
+    - low-byte `0x80` = initial-velocity latch used by the child-spawn helpers and by opcode-`0x0a` transform-over-time handling
+    - overall `0x0100` = world-attached bit set by `zEffectAnim_ActivateRuntime()` and cleared by `zEffectAnim_StopAndCleanup()`
+    - overall `0x0200` = renderable-root flag set by `zEffect_Anim_LoadAndInstantiate()` when the root tree contains a renderable node; the child-spawn helpers use it to preserve the secondary transform lane while still resetting position/target
+    - overall `0x4000` = tracked-node restore preserve/replay bit propagated by `zEffectAnim_ResetForNode()` and set by activation/running-record load paths before replay
+    - overall `0x8000` = one-shot copy-root-tree request consumed by `zEffectAnim_EnsureCopiedRootTree()`
+    - when any of low-byte `0x02` / `0x04` / `0x08` are present, `modePacked_98:3.b` acts as the per-entry cooldown/debounce byte that postpones the next gate evaluation
+  - `sampleRefList_120` is the sample-name table resolved by `zSnd_FindSampleByName()`
+  - `effectTemplateRefList_124` is the separate effect-template index table
+  - `runtimeRefList_12c` remains the main opaque stop-point:
+    - each record is `0x48` bytes
+    - the current conservative row model is `zEffectAnimRuntimeRef = { opaqueSerializedHead_00[0x40], stopCachedChildOnCleanup_40, cachedChildEntry_44 }`
+    - `cachedChildEntry_44` is the only proved live emitter/particle child-cache field:
+      - opcode `0x13` stores the spawned child there for later parent cleanup
+      - opcode `0x18` clears, stores, and polls the same cache slot when its wait-bit is set
+    - `stopCachedChildOnCleanup_40` is only a nonzero cleanup gate in `zEffectAnim_StopAndCleanup()`
+    - load/clone only bulk-read or bulk-copy the `0x48`-byte rows and then clear `cachedChildEntry_44`
+    - destroy only raw-frees the array
+    - the side-table contrast is now the strongest evidence on the reachable retail path:
+      - `trackedNodeList_110` and `nodeRefList_114` get explicit load-time and clone-time node-pointer re-resolution, and tracked nodes also participate in rebind/save flows
+      - `lightRefList_118` and `soundRefList_11c` get runtime-node creation on load, recreation on clone, and running-record save/load support
+      - `activationPrereqList_128` gets load/rebind refresh for mode-`2` / mode-`3` cached target nodes
+      - `runtimeRefList_12c` never gets a comparable load-time resolve/create pass, clone-time recreate/re-resolve pass, rebind pass, or save/load rebuild path
+    - because every other side table carrying live node/runtime state does get reachable fixup/rebuild work while `runtimeRefList_12c` does not, there is still no evidence that `opaqueSerializedHead_00[0x40]` contains live node pointers, runtime-object pointers, or other per-instance state that would need fixup
+    - best current interpretation on the reachable retail path is still archival serialized metadata preserved for unreached/debug behavior rather than a live runtime object body
+- the child-spawn helper quartet still does not decode `opaqueSerializedHead_00`:
+      - `zEffectAnim_SetTransformRotAndVelocity()`
+      - `zEffectAnim_SetVelocity()`
+      - `zEffectAnim_SetTimerAndMotion()`
+      - `zEffectAnim_SetTimerAndTwoVectors()`
+    - those helpers only seed root transform state, `resetScratch_74`, and low-byte `flags_94 0x80` as the initial-velocity latch when any velocity component magnitude is at least `0.01f`
+- Running surfaces use one mutable event-stream state record:
+  - `zEffectAnimSurfaceRuntime = { eventState_00, payloadBlob_38, payloadSize_3c }`
+  - `eventState_00 = { sequenceName_00[0x20], stateAndResetMode_20, eventTimeA_24, eventTimeB_28, frameTimeAccum_2c, frameIndex_30, eventCursor_34 }`
+  - every payload record begins with `zEffectSeqEventHeader = { typeAndStartMode_00, recordSize_04, startThreshold_08, ... }`
+  - byte `1` of `typeAndStartMode_00` is the start-gate selector:
+    - `1` = `accelCurrent_a8`
+    - `2` = `eventTimeA_24`
+    - `3` = `eventTimeB_28`
+  - `accelCurrent_a8` is the live per-entry elapsed timer:
+    - zeroed by `zEffectAnim_ActivateRuntime()`
+    - advanced by `zEffect_Anim_RunActiveEntry()` / `zEffect_Anim_NodeActionCallback()`
+    - preserved through `Running%03d` save/load
+- The save/load wrappers are also stable:
+  - `Activation%04d` and `Anim%04d` serialize a `0x58`-byte header plus `trackedNodeRestoreCount * 0x44` bytes of tail restore data
+  - `Running%03d` serializes:
+    - fixed `0x68`-byte header
+    - `surfaceCount * 0x40` bytes of running-surface headers plus their payload blobs
+    - `lightCount * 0x38` bytes of light tails
+    - `soundCount * 0x3c` bytes of sound tails
+  - the trailing text-id table is live too:
+    - `zEffectAnimTextIdEntry = { messageKey_00[0x20], messageId_20 }`
+    - load-time fixup resolves `messageKey_00` through `zLoc_GetMessageId()`
+    - event `0x26` uses `intParam_0c` as the text-id table index and pushes the localized string, or the raw key when `messageId_20 == 0`, to the HUD top-message line for `3.0f`
+- Small shared anim-side setter helpers around that mixed band are now explicit too:
+  - `zEffect_SetReferenceWorldPos(const float* worldPosXYZ)` writes `g_zEffect_ReferenceWorldPosX/Y/Z` and sets `g_zEffect_HasReferenceWorldPos`
+  - `zEffect_SetVariantTagOverrideFromTag(const zTag4* variantTag)` arms `g_zEffect_VariantTagOverrideEnabled` plus `g_zEffect_VariantTagOverrideValue` only when every tag byte up to the declared count is concrete rather than `0xff`
+  - on the reachable retail path, the sole caller of the variant-tag helper is `Player_ApplyCameraVariantTagFromPickCandidate()`
+- Stable event-record families on the reachable path now include:
+  - `zEffectRefOffsetEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, refAndNodePacked_0c, offsetX_10, offsetY_14, offsetZ_18 }`
+    - opcode `0x01` uses low16(`refAndNodePacked_0c`) as a `sampleRefList_120` index
+    - high16(`refAndNodePacked_0c`) is the optional anchor node-ref for positioned playback; when that lane is not positive the handler falls back to `zSndSample_PlaySimple()`
+    - opcode `0x03` reuses the same packed layout with low16(`refAndNodePacked_0c`) selecting `effectTemplateRefList_124`; high16 selects the anchor node-ref and signed high16 `-200` means `resetScratch_74.nodeRefA_00 + vecA`
+  - `zEffectSoundEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, soundName_0c[0x20], soundRefIndex_2c, fieldMask_30, activeState_34, parentNodeRefIndex_38, offsetX_3c, offsetY_40, offsetZ_44 }`
+    - opcode `0x02` resolves/creates the `soundRefList_11c` entry, uses `activeState_34` for world add/remove and node active state, and treats `fieldMask_30 bit0` as direct sound position while `bit1` anchors `offsetX/Y/Z` to `parentNodeRefIndex_38`
+  - `zEffectLightEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, lightName_0c[0x20], lightRefIndex_2c, fieldMask_30, activeState_34, mode_38, coneAngle_3c, param_40, basisNodeRefIndex_44, basisOrColorX_48, basisOrColorY_4c, basisOrColorZ_50, positionX_54, positionY_58, positionZ_5c, rangeInner_60, rangeOuter_64, specularR_68, specularG_6c, specularB_70, intensity_74, falloff_78 }`
+    - opcode `0x04` resolves/creates the `lightRefList_118` entry, uses `mode_38` for point-vs-directional mode, and gates the remaining writes through `fieldMask_30`: bit0 direct color, bit1 basis-transformed color via `basisNodeRefIndex_44`, bit2 position, bit3 range, bit4 specular RGB, bit5 intensity, bit6 falloff, bit7 cone angle, bit8 param
+  - `zEffectLightAnimEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, lightName_0c[0x20], lightRefIndex_2c, rangeInnerVelBase_30, rangeOuterVelBase_34, rangeInnerVelStep_38, rangeOuterVelStep_3c, rangeInnerVelCurrent_40, rangeOuterVelCurrent_44, specularRVelBase_48, specularGVelBase_4c, specularBVelBase_50, specularRVelStep_54, specularGVelStep_58, specularBVelStep_5c, specularRVelCurrent_60, specularGVelCurrent_64, specularBVelCurrent_68, endTime_6c }`
+    - opcode `0x05` animates only light range and specular color; it seeds the `*_Current` velocity lanes on the first tick and clips the consumed slice of `g_zEffect_DeltaTimeSec` against `endTime_6c` on the finishing frame
+  - `zEffectActivateEvent = { ..., activeValue_0c, nodeIndexPacked_10 }`
+    - low16(`nodeIndexPacked_10`) selects a node-ref entry
+    - signed `-100` targets `rootNode_40`
+  - `zEffectAttachDetachEvent = { ..., nodePairPacked_0c }`
+    - low16 = parent/switch node-ref
+    - high16 = child node-ref
+  - `zEffectTargetBasisVec3Event`
+    - shared by immediate position (`0x07`) and rotation (`0x09`)
+    - low16 target node, high16 basis node, with signed high16 `-200` meaning `resetScratch_74.nodeRefA_00 + vecA`
+  - `zEffectScaleEvent`
+    - immediate scale write (`0x08`)
+  - `zEffectDisplayEvent`
+    - immediate display/variant write (`0x11`)
+  - `zEffectCameraEvent`
+    - immediate camera write (`0x14`)
+  - `zEffectCameraAnimEvent`
+    - timed camera write (`0x15`)
+  - `zEffectTransformAnimEvent`
+    - the wider motion-program view used by opcode `0x0a`
+    - this remains the best current type for the randomized drift / damping / basis-conversion / named-surface-coupling path, with `targetName_d0` and `endTime_0f8` still active on the reachable retail handler
+  - `zEffectNodeAnimEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, flags_0c, targetNodeRefIndex_10, nodeAlphaStart_14, nodeAlphaEnd_18, nodeAlphaRate_1c, posOrTargetStart_X_20..posOrTargetStart_Z_28, posOrTargetEnd_X_2c..posOrTargetEnd_Z_34, posOrTargetRate_X_38..posOrTargetRate_Z_40, rotOrCameraPosStart_X_44..rotOrCameraPosStart_Z_4c, rotOrCameraPosEnd_X_50..rotOrCameraPosEnd_Z_58, rotOrCameraPosRate_X_5c..rotOrCameraPosRate_Z_64, scaleStart_X_68..scaleStart_Z_70, scaleEnd_X_74..scaleEnd_Z_7c, scaleRate_X_80..scaleRate_Z_88, endTime_8c }`
+    - opcode `0x0b` is the deterministic node/camera lerp record
+    - `flags_0c bit0` drives position for `Object3D` nodes or camera target for camera nodes
+    - `flags_0c bit1` drives object rotation or camera position
+    - `flags_0c bit2` drives scale
+    - `flags_0c bit3` drives DI alpha
+    - the first tick applies the `*_Start` lanes, the timed phase integrates the `*_Rate` lanes until `endTime_8c`, and completion snaps to the `*_End` lanes
+  - `zEffectWorldEvent`
+    - fog/ambient/haze write (`0x1c`)
+  - `zEffectKeyframeEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, targetNodeRefIndex_0c, reserved_10, keyframeLocalTime_14, currentKeyframeOffset_18, lookaheadAdvanceCount_1c }`
+    - opcode `0x0c` seeds `currentKeyframeOffset_18 = 0x20` on the first pass, so the variable keyframe records begin immediately after the fixed `0x20`-byte event header
+    - each variable keyframe record begins with `zEffectAnimKeyframeHeader = { flags_00, startTime_04, endTime_08 }`
+    - `flags_00 bit0` appends a `0x1c` vec3 track used as object position for `classType_34 == 5` or camera target for `classType_34 == 1`
+    - `flags_00 bit1` appends a `0x1c` quaternion+rotation-vector track used as object rotation for `classType_34 == 5` or camera position for `classType_34 == 1`
+    - `flags_00 bit2` appends a `0x1c` vec3 scale track used only when `classType_34 == 5`
+    - `zEffect_Anim_AdvanceKeyframe()` skips the `0x0c` keyframe header plus one `0x1c` track block for each enabled bit, while `zEffect_Anim_EvaluateKeyframe()` uses `keyframeLocalTime_14` as the per-record interpolation time
+  - `zEffectModelEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, litAndApplyPacked_0c, modelRef_10, targetNodePacked_14 }`
+    - opcode `0x0d` resolves low16(`targetNodePacked_14`) through `nodeRefList_114`; signed `-100` falls back to `rootNode_40`
+    - low16(`litAndApplyPacked_0c`) is the immediate lit-state selector, while high16(`litAndApplyPacked_0c`) gates whether `modelRef_10` is applied
+  - `zEffectModelAnimEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, targetNodeRefIndex_0c, litStatePacked_10, modelRefStart_14, modelRefEnd_18, modelRefRate_1c, endTime_20 }`
+    - opcode `0x0e` seeds low16(`litStatePacked_10`) plus `modelRefStart_14`, integrates `modelRefRate_1c` until `endTime_20`, then applies high16(`litStatePacked_10`) plus `modelRefEnd_18`
+    - if `endTime_20` lands inside the current frame, it clips the consumed slice of `g_zEffect_DeltaTimeSec` before the final writeback
+  - `zEffectBeamAnimEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, flags_0c, beamNodeAndPointABasisPacked_10, pointBBasisPacked_14, pointADataX_18..pointADataZ_20, pointBDataX_24..pointBDataZ_2c, segmentStartInitial_30, segmentStartFinal_34, segmentStartRate_38, segmentStartCurrent_3c, segmentEndInitial_40, segmentEndFinal_44, segmentEndRate_48, segmentEndCurrent_4c, endTime_50, lengthThreshold_54 }`
+    - opcode `0x12` uses low16(`beamNodeAndPointABasisPacked_10`) as the beam object node-ref
+    - high16(`beamNodeAndPointABasisPacked_10`) and low16(`pointBBasisPacked_14`) are optional basis-node selectors for points A/B, with `resetScratch_74` node/vector fallbacks
+    - `pointAData*` and `pointBData*` are mutable runtime caches: the first pass may rewrite them from selected seed vectors, and later passes re-transform those cached points before calling `zEffect_PositionBeam()` or `zEffect_PositionBeamSegment()`
+    - `flags_0c` bits `0x0400/0x0800` drive `segmentStartCurrent_3c`, bits `0x1000/0x2000` drive `segmentEndCurrent_4c`, and bit `0x8000` enables the extra `lengthThreshold_54` return-state gate
+  - `zEffectFrameAdvanceEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, modeFlags_0c, frameOrTimeLimit_10 }`
+    - opcode `0x1e` increments `frameIndex_30` and `frameTimeAccum_2c`
+    - `modeFlags_0c bit0` compares low16(`frameOrTimeLimit_10`) against the incremented frame index, with `0xffff` disabling that lane
+    - `modeFlags_0c bit1` treats `frameOrTimeLimit_10` as a float time limit against `frameTimeAccum_2c`
+    - when neither stop lane fires, the helper clamps `accelCurrent_a8` to `86400.0f`, resets the surface, and returns `0`
+  - `zEffectScreenColorFxEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, redBase_0c, redEnd_10, redSlope_14, greenBase_18, greenEnd_1c, greenSlope_20, alphaBase_24, alphaEnd_28, alphaSlope_2c, blueBase_30, blueEnd_34, blueSlope_38, endTime_3c }`
+    - opcode `0x24` interpolates four normalized pass-3 lanes over `eventTimeB_28`
+    - the handler clamps all four lanes to `[0, 1]`, packs three lanes into RGB through `zVid_PackColorRGB()`, and passes the remaining scalar lane to `zVideo_FxPass3_SetColorParams()`
+    - when `eventTimeB_28` reaches `endTime_3c`, it snaps to the `*_End` lanes and returns completion state `2`
+  - `zEffectScreenOverlayFxEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, flagsAndAnchorNodePacked_0c, worldAnchorX_10, worldAnchorY_14, worldAnchorZ_18, screenXBase_1c, screenXEnd_20, screenXSlope_24, screenYBase_28, screenYEnd_2c, screenYSlope_30, sizeNearWorld_34, sizeFarWorld_38, sizeNearPixels_3c, sizeFarPixels_40, sizeStepPixels_44, lane1Base_48, lane1End_4c, lane1Slope_50, lane2Base_54, lane2End_58, lane2Slope_5c, lane3Base_60, lane3End_64, lane3Slope_68, endTime_6c }`
+    - opcode `0x25` is the pass-3 overlay primitive writer
+    - low byte of `flagsAndAnchorNodePacked_0c`:
+      - bit0 = direct screen-XY curves
+      - bit1 = project `worldAnchor*` through the optional packed anchor node-ref
+      - bit3 = first-tick `sizeNearWorld` / `sizeFarWorld` to pixel conversion
+    - high16(`flagsAndAnchorNodePacked_0c`) is the optional anchor node-ref index used by the world-anchor projection path
+    - `lane0` is derived from `sizeNearPixels_3c`, `sizeFarPixels_40`, and `sizeStepPixels_44`
+    - `lane1..3` come from the `[48/50]`, `[54/5c]`, and `[60/68]` lerp pairs
+    - the handler submits `zVideo_FxPass3_QueuePrimitive(screenX, screenY, 0, lane0, lane1, lane2, lane3)` and snaps to the `*_End` lanes when `eventTimeB_28` reaches `endTime_6c`
+- Stable dispatch families in `zEffect_Anim_RunSequence()` now read as:
+  - `0x01..0x05` = sample play, runtime sound control, effect-template spawn, runtime light control, and timed light interpolation
+  - `0x06..0x15` = activation, world/camera, transform, node, model, display, and beam control
+  - `0x16..0x1e` = surface/emitter/particle/frame control
+  - `0x1f..0x22` = conditional control-flow block
+  - `0x23` = callback-param
+  - `0x24/0x25` = screen color / screen overlay FX
+  - `0x26` = text message
+  - `0x27/0x28` = trailing no-op markers
+- The adjacent briefing/dialog primitive-bind path is explicit too:
+  - `HudUiBackground_BindPrimitiveNodeToElement()` is the shared `PRIMITIVES/<name>` binder used by briefing panels, briefing objective-picture widgets, briefing locator primitives, command-dialog panels, and save/load list rows.
+  - The first stack arg is legacy/unused in the retail build; the helper always resolves `PRIMITIVES` from `self->cfgRoot_A940`.
+  - The live branch is mixed by target family:
+    - `BITMAP` binds widget-owned images.
+    - `WORDWRAP` and `FONT` bind panel text state.
+    - `ENDP_REL`, `ENDP_ABS`, and the packed RGB write at `+0x3C` serve primitive/polyline-style targets.
+  - This mixed branch is intentionally kept conservative in BN for now; a forced shared HUD target struct still regresses some caller renders.
+- The shared `dialog.zrd` HUD dialog archive is explicit too:
+  - The shell/UI dialog sample set is also shared across the same retail front-end branch:
+    - `g_HudUiDialogSampleSetName` = `DIALOG`
+    - proving load/unload owners include the cheat-code state, main-menu transition, MP exit, `MP_NEW_GAME`, and save/load transition shells
+  - The `MPEXIT` dialog now has explicit per-button widget ftables too:
+    - `g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl`
+    - `g_HudUiZrdWidget_MpExitDialog_ExitButton_Vtbl`
+    - both are currently proved only by `RecoilApp_MpExitDialogState_OnEnter()` on the reachable shell/UI path
+  - The `MP_NEW_GAME` setup panel now has an explicit install-only widget-ftable strip too:
+    - `g_HudUiZrdWidget_MpPlayButton_Vtbl`
+    - `g_HudUiZrdWidget_MpCancelButton_Vtbl`
+    - `g_HudUiNumericTextInput_MpGameName_Vtbl`
+    - `g_HudUiCycleSelectorWidget_MpWorldSelector_Vtbl`
+    - `g_HudUiZrdWidget_MpNextWorldButton_Vtbl`
+    - `g_HudUiZrdWidget_MpPrevWorldButton_Vtbl`
+    - `g_HudUiNumericTextInput_MpTimeLimit_Vtbl`
+    - `g_HudUiClampedIntStepButton_MpIncTimeLimitButton_Vtbl`
+    - `g_HudUiClampedIntStepButton_MpDecTimeLimitButton_Vtbl`
+    - `g_HudUiClampedIntTextInput_MpKills_Vtbl`
+    - `g_HudUiClampedIntStepButton_MpIncKillsButton_Vtbl`
+    - `g_HudUiClampedIntStepButton_MpDecKillsButton_Vtbl`
+    - `g_HudUiClampedIntTextInput_MpMaxPlayers_Vtbl`
+    - `g_HudUiClampedIntStepButton_MpIncMaxPlayersButton_Vtbl`
+    - `g_HudUiClampedIntStepButton_MpDecMaxPlayersButton_Vtbl`
+    - `g_HudUiCheckToggleWidget_AllowMaps_Vtbl`
+    - `g_HudUiCheckToggleWidget_NameTags_Vtbl`
+    - those seventeen globals are currently proved only by `HudUiNetGameSetupPanel_Ctor()` on the reachable shell/UI path
+    - BN still shows a decl-view quirk on part of this strip: the two clamped-input ftables are real typed data-vars, but the six step-button ftables overlap by `0x30` and therefore stay as named anchors; `get_data_decl(...)` and some HLIL renders still print raw addresses / `&data_*`
+  - `COMMANDS_DIALOG` uses the dedicated `g_HudCmdDialog_*` node strip for `CMD_*`, `PRESS_A_KEY`, and `CMD_DESCRIPTION`.
+    - the command-binding selector lane now also has a stable bind-button vtable family behind those nodes:
+      - `g_HudCmdBindButtonBase_FTable`
+      - `g_HudCmdCommandList_FTable`
+      - `g_HudCmdKeyAButton_FTable`
+      - `g_HudCmdKeyBButton_FTable`
+      - `g_HudCmdJoyButton_FTable`
+      - `g_HudCmdMouseButton_FTable`
+    - slot semantics on the recovered family are now bounded from ctor installs plus `HudUiListSelectorItem_NotifyParentSelection()`:
+      - capture-capable tables use `+0x30 = OnBeginCapture`
+      - capture-capable tables use `+0x34 = OnClearBinding`
+      - the whole family uses `+0x84 = OnSelectedIndexChanged`
+    - clear-binding behavior is now explicit on the live path:
+      - `HudCmdKeyA/B/Joy/MouseButton_OnClearBinding()` all flow through `Apply*Rebind(..., 0, selectedCommandId_430)`
+      - `0` is the clear-binding sentinel on this command-dialog path
+    - the capture/rebind strip is now bounded too:
+      - `HudCmdDialog_UpdateCaptureState(self, dt)` is a pure side-effect state machine
+      - state `0 = idle`, `1 = primary key capture`, `2 = secondary key capture`, `3 = joystick capture`, `4 = mouse capture`
+      - `HudCmdDialog_ApplyPrimary/SecondaryKeyRebind()` and `HudCmdDialog_ApplyJoystick/MouseButtonRebind()` are pure side-effect helpers keyed by `commandRowIndex`
+      - each rebind helper maps `commandRowIndex` through `zInput_BindGroupList_GetGroupCommandId(selectedGroup_14C, commandRowIndex)`, refreshes the visible columns plus `CMD_DESCRIPTION`, then clears `captureState_CDFC`
+    - dialog refresh behavior is now explicit too:
+      - `HudCmdDialog_RefreshSelectedCommandDescription(self, commandRowIndex)` scrolls the command/keyA/keyB/joy/mouse selectors in lockstep and updates `CMD_DESCRIPTION` from `zInput_BindMap_GetCommandHint()`
+      - `HudCmdDialog_RefreshSelectedGroupBindings(self, selectedGroupIndex)` destroys and rebuilds the command/keyA/keyB/joy/mouse columns, filters rows through `zInput_BindMap_Current_CopyCommandLabel(commandId, outBuf, 0x28)`, and then resets the description lane to row `0`
+      - `HudCmdDialogCallback_Next/PrevCommand()` and `HudCmdDialogCallback_Next/PrevGroup()` are pure side-effect wrappers around the dialog helpers plus `HudUiZrdWidget_OnActivate(self)`
+    - `HudCmdBindingEntry` is now the stable command-dialog row payload:
+      - `displayText_00`
+      - `commandId_04`
+      - `HudCmdBindButton_AddBindingEntry()` proves `operator new(0x8)` for one row and owns `displayText_00` via `_strdup(displayText)`
+      - `HudCmdBindButton_ClearBindingEntries()` is the matching destroy-and-rewind helper for the bind-button vector tail
+    - the row-destruction side is now split cleanly too:
+      - `HudCmdBindingEntry_Delete(entry)` is the single-row stdcall delete helper used by the mouse-column rebuild clear
+      - `HudCmdBindingEntry_DeletingDtor(self, shouldFree)` is the per-row deleting-dtor thunk used by the command/keyA/keyB/joy rebuild clears
+      - `HudCmdBindingEntry_DestroyRange(first, last, result)` is the real iterator-returning range helper used by `HudCmdDialog_Dtor()` on the command/keyA/keyB/joy columns
+    - the bind-button destructor family is now bounded too:
+      - `HudCmdBindButton_dtor()`, `HudCmdCommandList_dtor()`, `HudCmdKeyAButton_dtor()`, `HudCmdKeyBButton_dtor()`, `HudCmdJoyButton_dtor()`, and `HudCmdMouseButton_dtor()` are all plain `void` destructor bodies
+      - `HudCmdBindButton_DeletingDtor()` and the command/keyA/keyB/joy/mouse deleting-dtor thunks are the VC6 `(flag & 1)` wrappers that call the body dtor and then `operator delete(self)`
+      - the surviving concrete self type on this branch is still the shared `HudCmdBindButton*`; no stronger derived layout is committed yet
+  - `SAVE_GAME_DIALOG` and `LOAD_GAME_DIALOG` split only at the section name and primary-action leaf:
+    - `g_HudUiSaveGameDialog_SectionName` + `g_HudUiSaveGameDialog_SaveButtonNodeName`
+    - `g_HudUiLoadGameDialog_SectionName` + `g_HudUiLoadGameDialog_LoadButtonNodeName`
+    - both share `g_HudUiSaveLoad_NextGameButtonNodeName`, `g_HudUiSaveLoad_PrevGameButtonNodeName`, `g_HudUiSaveLoad_DeleteButtonNodeName`, `g_HudUiSaveLoad_GameNameNodeName`, and `g_HudUiSaveLoad_ListEntryNodeFmt`
+  - `MESSAGEBOX` uses the `g_HudUiMessageBoxDialog_*` node strip for `MB_OK`, `MB_CANCEL`, `TITLE`, and `MESSAGE`.
+  - `CONFIRM_QUIT` uses the `g_HudUiBackgroundConfirmQuit_*` node strip for `OK_TO_QUIT` and `CANCEL_QUIT`.
+  - `MAINMENU0..3` are now split as the frontend, offline-full, network-enabled, and offline-compact main-menu sections, with dedicated named leaves for `NEWGAME`, `LOADGAME`, `SAVEGAME`, `OPTIONS`, `CONTROLS`, and `CREDITS`.
+  - `QUIT` is now a proved shared generic dialog leaf across the main-menu and credits paths, so it stays `g_HudUiQuitButtonNodeName` instead of being overfit to one owner.
+  - The neighboring `dialog.zrd` sections are now explicit too:
+    - `g_HudUiControlsDialog_SectionName` = `CONTROLS_DIALOG`
+    - `g_HudUiCreditsPanel_SectionName` = `CREDITSPANEL`
+    - `g_HudUiCreditsPanel_CreditsScreenNodeName` = `CREDITS_SCREEN`
+    - `g_HudUiOptionsPanel_SectionName` = `OPTIONSPANEL`
+  - The detailed controls/options/net-exit leaves are explicit too:
+    - shared generic HUD leaf:
+      - `g_HudUiResumeButtonNodeName` = `RESUME`
+    - controls dialog:
+      - `g_HudUiControlsDialog_CommandsButtonNodeName` = `COMMANDS_BTN`
+      - `g_HudUiControlsDialog_MouseOrJoystickSelectorNodeName` = `MOUSE_OR_JOYSTICK`
+      - `g_HudUiControlsDialog_ThrottleModeSelectorNodeName` = `THROTTLE_MODE`
+      - `g_HudUiControlsDialog_SteeringModeSelectorNodeName` = `STEERING_MODE`
+      - `g_HudUiControlsDialog_CursorModeSelectorNodeName` = `CURSOR_MODE`
+      - `g_HudUiControlsDialog_CameraModeSelectorNodeName` = `CAMERA_MODE`
+    - options panel:
+      - `g_HudUiOptionsPanel_LightingToggleNodeName` = `LIGHTING`
+      - `g_HudUiOptionsPanel_PerspectiveToggleNodeName` = `PERSPECTIVE`
+      - `g_HudUiOptionsPanel_FullHudToggleNodeName` = `FULLHUD`
+      - `g_HudUiOptionsPanel_ObjectDetailSelectorNodeName` = `OBJECT_DETAIL`
+      - `g_HudUiOptionsPanel_TextureMemorySelectorNodeName` = `TEXTURE_MEMORY`
+      - `g_HudUiOptionsPanel_SoundActiveToggleNodeName` = `SOUND_ACTIVE`
+      - `g_HudUiOptionsPanel_SoundQualitySelectorNodeName` = `SOUND_QUALITY`
+      - `g_HudUiOptionsPanel_SoundVolumeWidgetNodeName` = `SOUND_VOLUME`
+      - `g_HudUiOptionsPanel_MusicEnableToggleNodeName` = `MUSIC_ENABLE`
+      - `g_HudUiOptionsPanel_MusicVolumeWidgetNodeName` = `MUSIC_VOLUME`
+      - `g_HudUiOptionsPanel_ResolutionCycleNodeName` = `RESOLUTION_CYCLE`
+    - net-exit dialog:
+      - `g_HudUiNetExitPanel_SectionName` = `NETEXIT`
+      - `g_HudUiNetExitPanel_ExitButtonNodeName` = `EXIT`
+  - The adjacent multiplayer/new-game dialog strip is explicit too:
+    - multiplayer session setup:
+      - `g_HudUiNetGameSetupPanel_SectionName` = `MP_NEW_GAME`
+      - `g_HudUiNetGameSetupPanel_KillsSwitchPrimitiveName` = `KILLS_SWITCH`
+      - `g_HudUiNetGameSetupPanel_LapsSwitchPrimitiveName` = `LAPS_SWITCH`
+      - `g_HudUiNetGameSetupPanel_PlayButtonNodeName` = `PLAY`
+      - `g_HudUiNetGameSetupPanel_CancelButtonNodeName` = `CANCEL`
+      - `g_HudUiNetGameSetupPanel_GameNameInputNodeName` = `GAME_NAME`
+      - `g_HudUiNetGameSetupPanel_WorldSelectorNodeName` = `WORLD`
+      - `g_HudUiNetGameSetupPanel_IncWorldButtonNodeName` = `INC_WORLD`
+      - `g_HudUiNetGameSetupPanel_DecWorldButtonNodeName` = `DEC_WORLD`
+      - `g_HudUiNetGameSetupPanel_TimeLimitInputNodeName` = `TIME_LIMIT`
+      - `g_HudUiNetGameSetupPanel_IncTimeLimitButtonNodeName` = `INC_TIME_LIMIT`
+      - `g_HudUiNetGameSetupPanel_DecTimeLimitButtonNodeName` = `DEC_TIME_LIMIT`
+      - `g_HudUiNetGameSetupPanel_KillsInputNodeName` = `KILLS`
+      - `g_HudUiNetGameSetupPanel_IncKillsButtonNodeName` = `INC_KILLS`
+      - `g_HudUiNetGameSetupPanel_DecKillsButtonNodeName` = `DEC_KILLS`
+      - `g_HudUiNetGameSetupPanel_MaxPlayersInputNodeName` = `MAX_PLAYERS`
+      - `g_HudUiNetGameSetupPanel_IncMaxPlayersButtonNodeName` = `INC_MAX_PLAYERS`
+      - `g_HudUiNetGameSetupPanel_DecMaxPlayersButtonNodeName` = `DEC_MAX_PLAYERS`
+      - `g_HudUiNetGameSetupPanel_AllowMapsToggleNodeName` = `ALLOW_MAPS`
+      - `g_HudUiNetGameSetupPanel_NameTagsToggleNodeName` = `NAME_TAGS`
+    - new-game dialog:
+      - `g_HudUiNewGamePanel_SectionName` = `NEWGAMEPANEL`
+      - `g_HudUiNewGamePanel_IntensitySelectorNodeName` = `INTENSITY`
+    - multiplayer-exit dialog:
+      - `g_HudUiMpExitDialog_SectionName` = `MPEXIT`
+      - `g_HudUiMpExitDialog_MpNewGameButtonNodeName` = `MPNEWGAME`
+      - `g_HudUiMpExitDialog_MpExitButtonNodeName` = `MPEXITBTN`
+  - `START` and `NAME` stay intentionally generic/shared on the proved path because non-HUD readers also reuse those literals.
+  - `HudUiMpExitDialog_LoadLayout()` only binds `MPNEWGAME` when `m_mpNewGameButtonMode >= 0`; the negative-mode branch uses two timed top-message lines with immediate `300.0f` lifetimes instead of that button.
+  - `EFFECTS` stays intentionally generic/shared for now because the same literal is reused by `HudUiOptionsPanel_Ctor()` and `zEffect_InitFromPath()`.
+  - `BACK` intentionally remains a generic shared dialog leaf because the same token is reused across several dialog/main-menu branches.
+- The shared startup/mission ZRDR and image-search strip is explicit too:
+  - `zUtil_ZBD_Init()` is now bounded as a side-effect-only startup helper:
+    - `RecoilApp::InitInstance()` calls it and ignores any return value
+    - it allocates `g_zUtil_ZbdManager`, installs the empty section-handler sentinel, and initializes the embedded `zIndexArchive`
+  - `zUtil::ZRDR_PreallocNodePool(count)` is now bounded as a side-effect-only loose-reader pool bootstrap helper:
+    - `RecoilApp::InitInstance()` calls `zUtil::ZRDR_PreallocNodePool(0x200)` before startup search-path bootstrap
+    - `RecoilApp_EngineInit()` calls `zUtil::ZRDR_PreallocNodePool(0)` before the runtime archive/search bootstrap
+    - it lazily allocates `g_zRdr_NodePool` and preallocates `count` free nodes through `zUtil_ZRDR_AllocateNewPoolNode()`
+  - `zGame_Options_InitRegistryContext(regKeySegmentA, regKeySegmentB, regKeyVersionSegment)` is now bounded as a side-effect-only startup registry bootstrap helper:
+    - `RecoilApp::InitInstance()` is its sole current caller
+    - it duplicates the localized registry path segments plus `g_RecoilApp_VersionString`, clears `g_zOpt_OptionListHead`, marks the registry context initialized, and seeds the runtime defaults
+  - `zUtil::ZRDR_Init(searchPath)` is now bounded as a side-effect-only archive/search bootstrap helper:
+    - `RecoilApp::InitInstance()` calls `zUtil::ZRDR_Init("..\\data\\common\\zrdr")`
+    - `RecoilApp_EngineInit()` calls `zUtil::ZRDR_Init(nullptr)`
+    - it lazily allocates `g_zArchive_MountedList`, forwards `searchPath` into `zUtil_ZRDR_SetSearchPath(...)`, and clears `g_zArchive_Current`
+  - `zUtil_ZRDR_SetSearchPath(semicolonSeparatedPaths)` is now bounded as a side-effect-only search-root rebuilder:
+    - first call creates `g_zRdr_SearchPathList` through `zUtil_ZRDR_CreateSearchPathList(...)`
+    - later calls free the existing nodes through `zUtil_ZRDR_FreePathList(...)`
+    - then repopulate the list through `zUtil::ZRDR_AddSearchPaths(...)`
+    - the accepted direct helper row now stays on `struct zArchiveList*`, with `zUtil_ZRDR_CreateSearchPathList(pathString)` returning a typed list and `zUtil::ZRDR_AddSearchPaths(listOrNull, pathString)` consuming the same list type instead of the older `void*` fallback
+    - `zArchiveList_FindPayloadByPredicate(list, predicate, key)` is now the shared payload-search helper on this lane, and `zUtil_ZRDR_FindSearchPathPayloadByPredicate(...)` is the thin search-path wrapper over it
+    - both helpers return the matching search-path payload string, not a list node wrapper
+    - `zUtil_ZRDR_ResolvePathInSearchPathList()` also uses the same shared payload-search helper directly to recover the mounted base-path string before rebuilding `g_zRdr_ResolvedPathBuf`
+    - current reachable callers are `zUtil::ZRDR_Init()`, `zUtil_SetMissionZrdrPathsAndMountZbd()`, and the `RdrSetPath` command in `zInterp_Context_DispatchCommand()`
+  - `zUtil_ZRDR_AppendSearchPath(paths)` is now bounded as the side-effect-only `g_zRdr_SearchPathList` append wrapper:
+    - it creates the list through `zUtil_ZRDR_CreateSearchPathList(paths)` on first use
+    - otherwise it extends the existing list through `zUtil::ZRDR_AddSearchPaths(g_zRdr_SearchPathList, paths)`
+    - its sole current reachable code caller is the `RdrAddPath` command branch in `zInterp_Context_DispatchCommand()`
+  - `zImage_AddSearchPath(pathString)` is now bounded as the side-effect-only `g_zImage_SearchPathList` wrapper:
+    - it creates the list through `zUtil_ZRDR_CreateSearchPathList(pathString)` on first use
+    - otherwise it extends the existing list through `zUtil::ZRDR_AddSearchPaths(g_zImage_SearchPathList, pathString)`
+    - current reachable callers are HUD, mission-objective, FMV-script, font, and image-load paths plus the `IMAGE_PATH` command lane
+  - `enum zArchiveMountResult { ZARCHIVE_MOUNT_FAILED = 0, ZARCHIVE_MOUNT_OK = 1 }` is now the direct result model for `zArchive::MountIndexArchive(filePath, setAsCurrent)`:
+    - it allocates a `zIndexArchive`, opens the tail index, optionally stores it as `g_zArchive_Current`, appends it to `g_zArchive_MountedList`, and returns the real mount success/failure result
+    - `RecoilApp::InitInstance()` and `RecoilApp_LoadZbdAndStartEngine()` both ignore that result on the common `zrdr.zbd` mount path
+    - `zUtil_SetMissionZrdrPathsAndMountZbd(missionName)` still keeps a mixed return contract:
+      - raw `0` when the world-node guard skips the mission mount
+      - otherwise the real `zArchiveMountResult` from the mission `zrdr.zbd` mount leg
+  - `zVid_SetVideoModeIndex(modeIndex)` is now bounded as a side-effect-only startup/video-mode setter:
+    - accepted contract is `void __fastcall zVid_SetVideoModeIndex(enum zVidModeIndex modeIndex)`
+    - it updates `ZOPT_VIDEO_MODE`, rewrites the Render/Window/Display section geometry, sets display bpp to `16`, and the old apparent returns are only tailcall residue from `zOpt_SetReplicate(...)`
+    - `zVid_GetVideoModeIndexFromOptions()` now returns `enum zVidModeIndex`, and `ZVID_MODE_INVALID = 0` is the persisted out-of-range sentinel written by the setter
+    - the adjacent startup display bootstrap is now bounded too:
+      - `zVid_InitFrameScratchBuffers()` is side-effect-only `void`
+      - its retail body is only `zVid_Noise_InitBuffers()` then `zRndr_SelectSpanRoutines()`
+      - `RecoilApp_InitializeDisplay()` uses it only as fire-and-forget setup between `zRndr_SetVideoStrideMirrors(...)` and the warmup clear/present strip
+    - the remaining `modeIndex + &data_fffffffe` switch text in options/hotkey/main-menu consumers is bounded BN lowering for `modeIndex - 2`, not another missing enum/type fix
+    - the adjacent replicate lane is now explicit too:
+      - `enum zVideoReplicateMode { ZVIDEO_REPLICATE_DISABLED = 0, ZVIDEO_REPLICATE_ENABLED = 1 }`
+      - `zOpt_SetReplicate()` writes `ZOPT_REPLICATE`
+      - `zOpt_GetReplicate()` is the shared low-res stretch / coordinate-halving gate
+      - `zVid_SetSensorClipViewport(clipRect, replicateMode, clipZ)` now clearly halves the rect only when replicate is enabled
+    - current callers treat it as fire-and-forget:
+      - `zGame::Options_LoadGameOptions()`
+      - `RecoilApp::InitInstance()`
+      - `RecoilStateMainMenuTransition_OnDeactivate()`
+      - `CZRecoilFrame_OnMenuSetVideoModeIndex2..7()`
+      - `zVid_InitFallbackMode()`
+      - `zVideo_HandleSoftwareModeHotkey()`
+    - the current reachable mode map is:
+      - `2` = `320x200` render -> `640x400` display, replicate on
+      - `3` = `320x240` render -> `640x480` display, replicate on
+      - `4` = `640x400`, replicate off
+      - `5` = `640x480`, replicate off
+      - `6` = `800x600`, replicate off
+      - `7` = `1024x768`, replicate off
+  - `zVid_EnsureHwApiInitialized(frame, hwApiSelector)` is now bounded as the side-effect-only HW-API selector activator behind the four menu handlers:
+    - selector `0` takes the fallback path through `zVid_InitFallbackMode(frame)`
+    - selectors `1..3` take the hardware path through `zVid_SetHwApiAndInitMode(frame, selector - 1)`
+    - after activation it clears the other selector-state entries in `frame->m_hwApiCmdUiState`
+    - the current selector-state encoding on the reachable path is:
+      - `0` = inactive
+      - `8` = checked/active
+  - `g_RecoilApp_RootZrdrArchivePath` = `zbd\\zrdr.zbd`
+  - `g_zUtil_CommonZrdrSearchPath` = `..\\data\\common\\zrdr`
+  - `g_zUtil_MissionZrdrArchivePathFmt` = `zbd\\m%d\\zrdr.zbd`
+  - `g_zUtil_MissionZrdrSearchPathsFmt` = `..\\data\\common\\zrdr;..\\data\\m%d\\zrdr;..\\data\\m%d\\zrdr\\aipath`
+  - `g_zImage_CommonTextureSearchPaths` = `..\\data\\common\\textures;..\\data\\common\\effects\\textures`
+  - `g_Mission_ImageSearchPathFmt` = `..\\data\\m%d\\images\\`
+  - `g_HudSensorTracker_RaceZrdrSearchPathFmt` = `..\\data\\m%d\\zrdr`
+  - `RecoilApp::InitInstance()`, `RecoilApp_LoadZbdAndStartEngine()`, and `zUtil_SetMissionZrdrPathsAndMountZbd()` anchor the common/mission archive and search-path half of this strip.
+  - `Mission_LoadFromPath()` anchors the mission image search-path format before objective image loads.
+  - `HudSensorTracker_LoadRaceCheckpointMeta()` anchors the mission-local ZRDR search root before loading `race.zrd`.
+  - The live mount/load chain is explicit too:
+    - `RecoilApp::InitInstance()` mounts the common archive through `zArchive::MountIndexArchive("zbd\\zrdr.zbd", 1)` as a fire-and-forget bootstrap step; the helper still returns `1/0`, but startup ignores that status here and continues into the second options-load gate.
+    - `RecoilApp_LoadZbdAndStartEngine()` can remount that same common archive on the start-engine path before HUD bring-up; that re-entry path also ignores the real `1/0` return.
+    - `zUtil_SetMissionZrdrPathsAndMountZbd()` rebuilds the loose search roots, refreshes common texture search roots, and only attempts the mission `zbd\\m%d\\zrdr.zbd` mount when `g_Hud_SensorTracker.worldNode_f0` is already non-null; otherwise it returns `0`, and on the mount path it returns the real `1/0` status from `zArchive::MountIndexArchive(...)`.
+    - `zReader::LoadNodeFromPath()` strips callers down to `basename + ext`, then probes mounted archives through `zReader_OpenFileFromMountedArchives()` and `zIndexArchive_OpenFile()`.
+    - `zReader_TryResolvePath()` is a separate loose-file utility over the same common/mission `..\\data\\...\\zrdr` roots; it is used by helpers like difficulty-based file pickers and parent-dir builders, not by the mounted member-load path above.
+    - The shared generic list layer on this row is now explicit:
+      - `zArchiveList_Create()` allocates the common `0x14` list header.
+      - `zArchiveList_PushPayload()` makes the inserted node the new `head`; search-path, sound-group, and stream active/free lists use that head-push behavior.
+      - `zArchiveList_AppendPayload()` inserts before the current `head` without moving it; mounted archives use that append behavior so mount order stays stable.
+      - `zArchiveList_PopPayload()` removes the current `head`, recycles the pooled node, and returns the stored payload pointer.
+    - `g_zArchive_MountedList` preserves insertion order:
+      - `zArchiveList_AppendPayload()` appends new mounts.
+      - `zArchiveList_GetAt(0)` returns the earliest-mounted archive still present.
+      - `zReader_OpenFileFromMountedArchives()` probes that list from index `0` upward.
+    - On the proved retail startup path, mounted lookup precedence is therefore:
+      - common archive `zbd\\zrdr.zbd`
+      - mission archive `zbd\\m%d\\zrdr.zbd`
+    - If the same `.zrd` basename existed in both mounted archives, the common archive would win because it is mounted first and searched first.
+    - The loose-file search roots are also common-first:
+      - `..\\data\\common\\zrdr`
+      - `..\\data\\m%d\\zrdr`
+      - `..\\data\\m%d\\zrdr\\aipath`
+  - Binary Ninja still prefers inline literals in HLIL and may still print raw addresses in `get_data_decl(...)`; the named data vars and address comments are the authoritative reconstruction here too.
+- The mounted `zrdr.zbd` container itself now has a stable on-disk model:
+  - The runtime owner object for a mounted archive is `zIndexArchive` (`0x18` bytes):
+    - `reservedFree_00`
+    - `hFile_04`
+    - `dirty_08`
+    - `recordCount_0C`
+    - `recordCapacity_10`
+    - `records_14`
+  - `reservedFree_00` stays intentionally conservative:
+    - on the reachable retail path it is only zeroed in `zIndexArchive_Init()`, re-zeroed in `zIndexArchive_FreeRecordsAndReset()`, and conditionally freed in `zIndexArchive_Destroy()` with no proven producer.
+  - `zArchive::MountIndexArchive()` allocates a `zIndexArchive`, opens the file read-only through `zIndexArchive_OpenLoadIndex()`, then seeds `g_zArchive_Current` and `g_zArchive_MountedList`.
+  - `zIndexArchive_ReadIndexFromTail()` treats the last 8 bytes as `int32 version` + `int32 recordCount`, requires `version == 1`, then reads `recordCount * 0x94` bytes of `zZarFileRecord` entries immediately before that footer.
+  - `zZarFileRecord` is now stable as:
+    - `fileOffset_00`
+    - `fileSize_04`
+    - `name_08[0x40]`
+    - `recordFlags_48`
+    - `sourceTempPath_4C[0x40]`
+    - `sourceFileTimeLow_8C`
+    - `sourceFileTimeHigh_90`
+  - Common retail `zbd\\zrdr.zbd` has `127` records. Mission retail counts are:
+    - `m1=149`
+    - `m2=151`
+    - `m3=131`
+    - `m4=112`
+    - `m5=96`
+    - `m6=127`
+    - `m7=14`
+    - `m8=13`
+    - `m9=16`
+    - `m10=20`
+    - `m11=13`
+    - `m12=13`
+    - `m13=15`
+  - The live runtime only consumes `fileOffset_00`, `fileSize_04`, and `name_08` on the read side:
+    - `zIndexArchive_FindByNameCI()` compares `name_08`
+    - `zIndexArchive_OpenFile()` uses `fileSize_04` and `fileOffset_00`
+    - `zIndexArchive_ReadFile()` uses the same two fields
+  - Current read-side/xref sweep found no consumer for `recordFlags_48`, `sourceTempPath_4C`, or `sourceFileTime*`.
+  - `zZbdManager_WriteSectionRecord()` is the only in-exe caller of `zIndexArchive_WriteRecord()`, and it passes `optAuxName = nullptr` and `optExtraPair = nullptr`.
+  - Inference:
+    - the temp-path + FILETIME metadata present in sampled retail `zrdr.zbd` files most likely comes from an offline/archive-build tool, not from the retail runtime's in-exe writer.
+  - Sampled common and mission archives preserve real source-temp metadata such as `E:\\RecoilFull\\data\\common\\zrdr\\ani8151.TMP` and `D:\\battlesportdev\\data\\m1\\zrdr\\ai.E3A5.TMP`.
+  - The split `sourceFileTimeLow_8C/sourceFileTimeHigh_90` values decode cleanly as Win32 `FILETIME` timestamps on the sampled archives.
+- The `.zrd` members inside `zrdr.zbd` are serialized `zReader` trees rather than raw blobs:
+  - `zReader_ReadNode()` proves the on-disk node tags:
+    - `1` = int32
+    - `2` = float32
+    - `3` = length-prefixed string
+    - `4` = array
+  - Type-4 arrays synthesize an in-memory header slot as `{ type = 1, value = count }`, then store real children starting at `zReader_NodeArray.nodes_08[0]`.
+  - Most sampled `.zrd` files start with an outer wrapper array whose single real child is the actual name/value map for that file.
+  - `zReader_FindChildRecursive()` proves the dominant content convention is `[string key][value node]` pairs inside those arrays.
+  - The generic in-memory reader overlays are now stable too:
+    - `zReader_NodeArray = { headerType_00, count_04, nodes_08[] }`
+    - `zReader_NameValuePairList = { headerType_00, count_04, pairs_08[] }`
+    - small fixed-width helpers such as `zReader_Array_3_F32` are just specialized views over that same synthetic-header array layout
+  - Representative sampled payloads from the local retail archives:
+    - `briefing.zrd`:
+      - top-level sections `CAMPAIGN1` .. `CAMPAIGN13`
+      - `CAMPAIGN1` contains `IMAGE_PATH`, `FONTS`, `BACKGROUND_IMAGES`, `BACKGROUND_TEXT`, `BUTTONS`, and `PRIMITIVES`
+      - `HudUiBriefingRuntime::Constructor()` is the proved briefing-layout loader:
+        - it formats `CAMPAIGN%d`
+        - loads that section from `briefing.zrd` through `HudUiBackground_LoadZrdAndSection()`
+        - binds `TRANSPORT_PROGRESS`, `MISSION_NAME`, `OBJECTIVE_SUMMARY`, `OBJECTIVE_DESC`, `OBJECTIVE_PICT`, `MESSAGES`, `TRANSMISSION_HALTED`, and `LOCATOR1..6`
+    - `hud.zrd`:
+      - top-level sections `VERSION`, `FONTS`, `TYPEI`, `TYPEII`, `RETICULE`, `SENSOR`, `SHIELD`, `NANITE`, `OBJECTIVE`, `STATS`, `TARGET`, `WEAPON`, `MODES`, and `BRIEFING`
+      - `HudUiMgr::EnsureHudLoaded(char const* entryPath)` is the proved gameplay-HUD root loader for the common archive copy
+      - the only proved reachable `hud.zrd` caller is `RecoilApp_PlayState::OnTryBecomeCurrent()`, which calls `HudUiMgr::EnsureHudLoaded("hud.zrd")`
+      - on the startup path that loader consumes:
+        - `FONTS`
+        - `TYPEI`
+        - `TYPEII`
+        - `NANITE`
+        - `SENSOR`
+        - `OBJECTIVE`
+        - `RETICULE`
+        - `STATS`
+        - `SHIELD`
+        - `TARGET`
+        - `WEAPON`
+        - `MODES`
+      - stable positional-array sections on that path are:
+        - `TYPEI = HudLayoutTypeIZarSpec { layoutRect }`
+        - `TYPEII = HudLayoutTypeIIZarSpec { layoutRect, widget0, widget1, widget2, imageNames }`
+        - `SENSOR = HudUiSensorZarSpec { sensorPanel, sensorParam, sensorRectOffset, sensorRectSize, sensorRange, sensorOverlay, sensorMeter }`
+        - `OBJECTIVE = HudUiObjectiveZarSpec { phaseDuration, objectiveWidget, objectiveBarRect, objectiveBarColor, objectiveSummaryPos, objectiveDescPos, objectiveMeter, objectiveLabelPos }`
+        - `STATS = HudUiStatsZarSpec { counterPos, timerPos, statsCol0, statsCol1, rowOffset0, rowOffset1, rowOffset2, rowOffset3 }`
+        - `RETICULE = HudUiReticleZarSpec { defaultImage, altImage, alt2Image }`
+        - `TARGET = HudUiTargetMarkersZarSpec { marker0, marker1, marker2, marker3, marker4 }`
+        - `WEAPON = HudUiWeaponMessagesZarSpec { messages[9] }`
+        - `MODES = HudUiModeCountersZarSpec { counters[4] }`
+      - proved HUD leaf-node overlays: `zReader_IntNode` for `SENSOR.sensorParam`, `SENSOR.sensorRange`, and `OBJECTIVE.phaseDuration`, and `zReader_StringNode` for `RETICULE` / `TARGET` image paths
+      - `SENSOR.sensorRange` is loaded as an integer, squared and halved, then converted through the raw float-bit approximation `((bits >> 1) + 0x1fc00000) * 2` before storing the HUD sensor range field
+      - `FONTS` is a name/value map whose proved startup subkeys are `OBJ_SUMMARY`, `OBJ_DESCRIPTION`, `STRINGS`, `MESSAGES`, and `AMMO`
+      - `RETICULE` caches three HUD reticle images and seeds the initially hidden `reticleWidget_364`
+      - `TARGET` loads five marker images into `sensor.targetMarkerImages[0..4]`, then fans those markers across every weapon-slot track/slot widget pair
+      - `WEAPON` is a fixed 9-message section consumed by repeated `HudUiMessage::LoadWeaponLayoutFromNode()` calls into `g_HudUiMgr.messages_4B18[1..9]`
+      - weapon-row split on the proved path:
+        - `HudUiMessage::LoadWeaponLayoutFromNode()` has no other caller, so only rows `1..9` are actually configured from `hud.zrd.WEAPON`
+        - `Player_RefreshHudFromState()` still mirrors runtime bank state across `messageIndex 0..9` and seeds `HudUiMessage_UpdateActiveSelection(0, 0, 0f)` before reapplying the active alt/primary controllers
+        - `HudLayoutHW_SetActive()` clips only rows `1..9` on the active HW path, while the inactive/clear path touches all 10 message objects
+        - `HudUiMgr_ShutdownResources()` and the `Pickup_ApplyEffect()` `0x385` mass-reset path also skip row `0` and operate on `1..9`
+        - rebuild/save/input paths prove bank `0` itself is structurally real:
+          - `Player_RebuildWeaponBanksAndRegisterMinesZar()` resets and repopulates all 10 banks `0..9`
+          - `Player_ApplyMissionSaveData()` serializes/restores all 10 banks and mirrors them back into HUD rows `0..9`
+          - `Player_HandleAltWeaponSelectInput()` accepts direct selector codes `0x0e..0x17` for banks `0..9`
+        - current conservative interpretation: `messages_4B18[0]` is a special non-ZAR-configured mirror of real bank `0`, not a normal `hud.zrd.WEAPON` row
+        - bank `0` is still special on the proved path:
+          - `Player_AutoSwitchToNearestUsableAltWeapon()` returns immediately when the current bank is `0`
+          - rebuild fallback selection starts from bank `1`, and network fallback alt scanning starts from bank `2`
+          - `Player_InitMissionRuntimeFromWorldAndCamera()` only binds gameplay commands `0x10..0x17` into `Player_HandleAltWeaponSelectInput()`, while command `0x0f` is bound to `Player_TryTogglePrimaryWeaponVariant()`
+          - `Pickup_GrantAmmoOrWeapon()` is now the strongest proved live bank-`0` route:
+            - bank `1` pickups route through `Player_TryTogglePrimaryWeaponVariant()`
+            - every other weapon bank, including bank `0`, can still re-enter `Player_HandleAltWeaponSelectInput(bank + 0x0e)` when the current active alt controller is the paired controller for that bank
+            - the final pickup-side reselect compare is now assembly-backed as `activeAltGunController_5e4 == weaponSideIndex`
+            - the older bank-`8` compare render on that tail was another Binary Ninja type artifact
+            - this makes bank `0` data-driven live even though it has no proved startup keybind and is skipped by ordinary nearest-usable auto-switch
+          - `Player_Mines_ZAR_ReadEntryOrReset()` rules out the old mine-bank false lead:
+            - its clear loop only touches bank `4` ctrlA/ctrlB and bank `5` ctrlA/ctrlB
+            - no reachable mine-serialization path singles out bank `0`
+          - `Player_CheckMissionWeaponAvailability()` is now bounded more tightly too:
+            - its only proved reachable caller is `Player_RebuildWeaponBanksAndRegisterMinesZar()`
+            - on the non-network path it reports available only when `missionRequirementOrGateId != 0` and `missionRequirementOrGateId <= HudSensorTracker_GetMissionId()`
+            - on the network path it checks a baked 4-entry row of packed selectors `(bank << 4) | side`
+            - observed selectors on that path are `0x10`, `0x11`, `0x20`, `0x31`, `0x61`, and `0x80`
+            - no bank-`0` selector has surfaced there, which is extra negative evidence that bank `0` also sits outside the ordinary mission-availability floor
+          - exact original semantic/original name of bank `0` is still unproven
+        - bank `1` is now the proved primary-weapon pair:
+          - `Player_TryTogglePrimaryWeaponVariant()` is the primary-weapon toggle callback for bank `1`
+          - `Player_UpdatePrimaryGunFireController()` auto-toggles through that same helper when the current primary side empties
+          - the mission-start direct alt-bank selector strip therefore starts at command `0x10`, covering banks `2..9`
+          - the primary strip now has a base-correct local owner view too:
+            - `PlayerPrimaryWeaponRuntimeView { primaryGunDispatchRequested_5a8, activePrimaryGunController_5e8, altWeaponBanks_5ec[0xa], primaryHardpointSelectState_0d48, cachedPrimarySelectionCode_0d50, gunFireDir_0d64, primaryFireOrigin_0dc8 }`
+            - `Player_UpdatePrimaryGunFireController()`, `Player_ApplyPrimaryWeaponSwitch()`, and `Player_TryTogglePrimaryWeaponVariant()` now render through that strip instead of the older mis-rooted `PlayerWeaponFireRuntimeView`
+            - the older bank-`8` / bank-`9` and `altWeaponBanks_5ec[8].ctrlA_04.unk_3c` renders on this path were Binary Ninja type artifacts, not real runtime bank selection
+          - `Player_SelectPrimaryGunFirePointAndSlot()` is now fixed as `void __fastcall(self, PlayerGunFireSlot** outSlot)` and cycles `primaryHardpointSelectState_0d48` while filling `primaryFireOrigin_0dc8`
+          - the canonical `PlayerState` owner is now broad enough to absorb the shared HUD/controller branch directly:
+            - the front-side unlock/input block now lives at `0x024..0x040`: `amphibUnlocked_024`, `hoverUnlocked_028`, `subUnlocked_02c`, `aiMode_030`, `nextModeSwitchAllowedTime_034`, `motionInput_038`, `autoTurnSign_03c`, and `bankInput_040`
+            - the same owner now also carries `cameraState_58c`, `previousCameraState_590`, `pendingAltCameraToggle_05ac`, `activeAltGunController_5e4`, `activePrimaryGunController_5e8`, and `altWeaponBanks_5ec[0xa]`
+            - the trailing `g_GameStateOrMapTable->playerState_004` HUD refreshes in `Player_HandleAltWeaponSelectInput()` / `Player_TryTogglePrimaryWeaponVariant()` now decompile through `activeAltGunController_5e4` / `activePrimaryGunController_5e8` instead of raw offsets
+          - `Player_ApplyMissionSaveData()` also now proves the adjacent timed-hit save/load split:
+            - after copying the saved `timedHitStatus_124` block into `timedHitStatus_5c4`, mission load rewrites `timedHitStatus_5c4.lightParentNode_18 = rootNode_0ed0`
+            - mission load then adds `TOTAL_TIME_SEC_SCALED` to `timedHitStatus_5c4.nextUpdateTime_14` so the restored timed-hit cadence resumes against live world time
+            - that post-copy fixup now lifts as typed `PlayerTimedHitStatus` fields and does not repurpose the live controller slots at `0x5e4/0x5e8`
+            - `HitSource::UpdateTimedStatus()` sets `PLAYER_TIMED_HIT_ACTIVE | PLAYER_TIMED_HIT_INTERPOLATING`, applies the hit-source contribution to `targetLevel` with `OPT_ENTRY_TIMED_STATUS_SUBTRACTIVE` (`0x200`) choosing subtraction, clamps to `[-1.0, 1.0]`, ensures the status light exists, and returns band codes `2/1/0` for `currentLevel < -0.5`, `currentLevel <= 0.0`, and `currentLevel > 0.0`
+          - the adjacent alt-fire lane now has a stable local owner view too:
+            - `PlayerAltWeaponFireStateView { altGunDispatchRequested_5a4, altGunFireHeldFlag_5bc, altGunTransitionState_5e0, activeAltGunController_5e4, activePrimaryGunController_5e8, activeAltBankIndex_0d60, gunFireDir_0d64, usePresetGunFireDir_0d7c, altFireOrigin_0db0, storedTargetPos_0ec0, rootNode_0ed0 }`
+            - `Player_UpdateAltGunFireController()` now renders through `activeAltGunController_5e4`, `altGunFireHeldFlag_5bc`, `altGunDispatchRequested_5a4`, `activeAltBankIndex_0d60`, and `altFireOrigin_0db0`
+            - `activeAltBankIndex_0d60 == 1` is the stored-target branch that calls `Player_TryFireFromOriginToStoredTarget()`
+            - `Player_TryFireFromOriginToStoredTarget()` now cleanly uses `gunFireDir_0d64`, `usePresetGunFireDir_0d7c`, `storedTargetPos_0ec0`, and `rootNode_0ed0`
+            - the shared spawn helper roles are now tighter too:
+              - `OptCatalog_SpawnRuntimeInstanceEx(..., spawnTypeFlagsOrNull, originPosXYZ, dirVecXYZ, spawnVelocityXYZ, ownerCtx, runtimeInstanceOrNull)` is now validated from assembly and retyped accordingly
+              - the raw player-state lane at `0x444` is now bounded by callee behavior as the `spawnTypeFlagsOrNull` pointer
+              - the raw player-state lane at `0x0a4` is now bounded by callee behavior as the `spawnVelocityXYZ` vector
+              - the callee copies `*spawnTypeFlagsOrNull` into `userCtx->spawnTypeFlags_08`, defaulting to `4` when null
+              - the callee seeds `userCtx->velX_50 / velY_54 / velZ_58` from `spawnVelocityXYZ`, and the pending-target path also reuses that vector for `auxX_2c / auxY_30 / auxZ_34`
+            - remaining local stop-point: those player-state lanes are now owner-backed; the unresolved residue on this strip is the bank-slot/index arithmetic inside `altWeaponBanks_5ec` loops plus several still-opaque `0x0ed4..0x0f24` transition subfields
+        - `HudUiMessage_UpdateActiveSelection()` keeps `g_HudUiMgr.activeMessageSelection_4B10` only for `messageIndex == 1`, making row `1` the special live primary/selected-weapon row on the proved path
+      - `MODES` is a fixed 4-counter section consumed by repeated `HudUiCounter_LoadFromZarNode()` calls into `g_HudUiMgr.modeCounters_4790[0..3]`
+      - sampled common `hud.zrd` still contains `VERSION` and `BRIEFING`, but the only proved reachable HUD loader path does not consume those tags directly
+      - `hud.zrd.VERSION` is currently sampled-only metadata on the proved HUD path:
+        - `HudUiMgr::EnsureHudLoaded()` does not query that tag
+        - the only uppercase `VERSION` reader xref in the binary resolves on `zWeapon_OptCatalog_LoadFromPath()`, not on a HUD loader
+      - reachable briefing runtime uses a different split:
+        - layout/background widgets come from `briefing.zrd`
+        - per-objective title/description/image payload comes from mission `objectives.zrd` through `HudSensorTracker_LoadObjectivesFromZrd()` -> `HudSensorTracker_GetObjectiveBriefingStringsAndImageRef()` -> `Briefing_BuildObjectiveActionsFromIndex()`
+      - `BRIEFING` contains `NUMBER`, `PICT`, `DESC`, `NAME`, `LOADING_TEXT`, `READY_TEXT`, and `MISSION_NUM`
+    - `objectives.zrd`:
+      - top-level sections include `REVIEW_SOUND`, `OBJECTIVE_SOUND`, and `OBJECTIVE1` ..
+      - `HudSensorTracker_LoadObjectivesFromZrd()` is the proved mission-local loader on the gameplay bring-up path
+      - beyond objective state/sound metadata, that load also seeds the per-slot briefing text/image payload later consumed by `Briefing_BuildObjectiveActionsFromIndex()`
+    - `anim.zrd`:
+      - top-level section `ANIMATION_DEFINITIONS`
+      - `ANIMATION_DEFINITIONS` contains `GRAVITY` and `ANIMATION_LIST`
+    - `fmv.zrd`:
+      - top-level sections `FMV_PATH`, `IMAGE_PATH`, and sequence tags such as `INTRO`, `ATTRACT`, `MISSIONOVER`, and `GRANDPRIZE`
+      - each sequence tag is an array of action arrays; slot `0` is the opcode string and later slots are opcode-specific arguments
+      - proved action payloads are:
+        - `SHOWIMAGE(imageName)`
+        - `BLITIMAGE(imageName, posX, posY)`
+        - `LOADIMAGE(imageName)`
+        - `WAIT(durationSec)`
+        - `FADEIN(rgb[3], durationSec, maxAlpha)`
+        - `FADEOUT(rgb[3], durationSec, maxAlpha)`
+        - `PLAYAVI(mediaName[, modeFlags])`
+        - `PLAYMCI(mediaName)`
+        - `BLUR(blurPassCount)`
+        - `BLURH(blurPassCount)`
+        - `BLURV(blurPassCount)`
+        - `PLAYSOUND(sampleName)`
+      - runtime notes:
+        - `FMV_PATH` is duplicated into `zFMV_Script::m_fmvPath`
+        - `IMAGE_PATH` is pushed into the image search-path list through `zImage_AddSearchPath()`
+        - `FADEIN` and `FADEOUT` share one fade ctor and differ only by the `fadeDirectionSign` argument (`-1` vs `1`)
+        - `PLAYAVI` defaults `modeFlags` to `0` when the optional second argument is absent
+        - `BLUR`, `BLURH`, and `BLURV` all feed the common blur ctor as `(framesRemaining = 1, blurPassCount = scriptArg)`; `BLURH` and `BLURV` then swap the action vtable to horizontal/vertical variants
+    - `sounds.zrd`:
+      - top-level sections consumed on both parser paths are `SYNTAX`, `CD_TRACKS`, `SOUND_PATH`, `SPEED_OF_SOUND`, `SETS`, and optional `SOUND_GROUPS`
+      - `SYNTAX` defaults to `1` when absent
+      - `SOUND_PATH` is a semicolon-separated search-root list that feeds `zUtil_ZRDR_CreateSearchPathList()` / `zUtil::ZRDR_AddSearchPaths()`
+      - `CD_TRACKS` is handed to `zSndCd_InitFromConfigNode()`
+      - `SYNTAX = 1` uses a legacy `SETS` table laid out as alternating `setName` / `sampleArray` pairs
+      - both syntax paths populate the same runtime split:
+        - `sampleId_08` = play-facing lookup key used by `zSnd_FindSampleByName()`
+        - `resourceName_04` = loose-file / archive basename used by the load path
+      - legacy sample entries are flat positional tuples: `sampleId`, `resourceName`, optional gain float, three boolean `TRUE` strings, and optional range values
+      - `SYNTAX = 2` keeps the same top-level keys but each sample entry is a named node map with keys `3D`, `LOOPED`, `FREQUENCY`, `HARDWARE`, `PURGEABLE`, `VOICE`, `VOLUME`, `RANGE`, `HIGH`, `MED`, and `LOW`
+      - `HIGH`, `MED`, and `LOW` each populate one `zSndQualityVariant` block:
+        - either `sampleName`
+        - or `{ samplesPerSec, bitsPerSample, channelCount }`
+      - built-in defaults for missing quality blocks are:
+        - `HIGH = 44100 / 16 / 2`
+        - `MED = 22050 / 16 / 1`
+        - `LOW = 11025 / 8 / 1`
+      - when archive banks are enabled, `zSndSampleSet_LoadResources()` probes `soundsH.zbd`, `soundsM.zbd`, and `soundsL.zbd` according to the active sound-bank quality setting, then falls back across the remaining banks before resorting to loose files from `SOUND_PATH`
+      - optional `SOUND_GROUPS` is a separate stream/group layer from `zsnd_grp.cpp`, not just extra metadata on ordinary samples:
+        - each group entry allocates a `0xB8` `zSndGroup`-shaped overlay and stamps `createGuard_00 = 1`
+        - stable group-head fields are `groupName_04`, `dynamicWeightsEnabled_08`, `playSolo_0c`, `dynamicWeightScale_10`, `repeatCount_14`, `delayRepeatSec_18`, `delayTerminationSec_1c`, `streamEntryCount_20`, and `streamEntries_24`
+        - top-level group keys are `DELAY_REPEAT`, `DELAY_TERMINATION`, `DYNAMIC_WEIGHTS`, `PLAY_SOLO`, and `REPEAT`
+        - nested stream entries are recursive `zSndStreamEntry` records with `sampleName_0c` plus optional `DELAY_PLAY`, `PLAY_COUNT`, and `WEIGHT`
+      - playback split:
+        - ordinary loaded samples keep `createGuard_00 = 0` and use the direct backend path
+        - `SOUND_GROUPS` overlays use `createGuard_00 = 1`, so `zSndSample_PlayDispatch()` / `zSndSample_PlaySimple()` queue the `zSndStreamRequest_State*()` state machine instead of immediate sample playback
+        - the queued group-owned call chain is now explicit:
+          - `zSndSample_PlayDispatch()` / `zSndSample_PlaySimple()`
+          - `zSndGroup_QueueStreamRequest()` / `zSndGroup_QueueStreamRequestSimple()`
+          - `zSndStreamRequest_QueueFromGroup()`
+          - `zSndStreamRequest_StateDispatch()`
+          - `zSndStreamRequest_StateInit()` -> `zSndGroup_SelectStreamEntry()`
+          - `zSndStreamRequest_StatePlay()` -> `zSndStreamRequest_StateDelayRepeat()` / `zSndStreamRequest_StateDelayTermination()` / finished
+        - `zSndStreamRequest` is now stable enough to describe as `{ handleKind_04, gain_24, elapsedSec_28, playIndex_2c, currentEntry_30, streamState_34, group_38 }` over the existing world-position fields
+        - `streamState_34` uses `zSndStreamRequestState`:
+          - `ZSND_STREAMREQ_INIT = 0`
+          - `ZSND_STREAMREQ_PLAY = 1`
+          - `ZSND_STREAMREQ_DELAY_REPEAT = 2`
+          - `ZSND_STREAMREQ_DELAY_TERMINATION = 3`
+          - `ZSND_STREAMREQ_FINISHED = 4`
+        - `handleKind_04` now shares the public `zSndPlayHandleKind` discriminator with ordinary play handles:
+          - `ZSND_PLAYHANDLE_BACKEND = 0` for real backend-backed voices
+          - `ZSND_PLAYHANDLE_STREAM_REQUEST = 1` for queued `SOUND_GROUPS` requests
+        - `playSolo_0c` is the active-request duplication gate: `zSndStreamRequest_QueueFromGroup()` reuses `zSndStreamRequest_FindByGroupPredicate()` to suppress a second live request for the same `group_38`
+        - `zSndGroup_SelectStreamEntry()` consumes `streamEntryCount_20`, `streamEntries_24`, `dynamicWeightsEnabled_08`, and `dynamicWeightScale_10`; the low 16 bits of `zSndStreamEntry::playCount_00` remain the per-entry remaining-trigger counter on the legacy path
+        - `zSndStreamRequest_StatePlay()` lazily resolves `sampleName_0c` into `cachedSample_10`, then dispatches ordinary `zSndSample_PlayDispatch()` / `zSndSample_PlaySimple()` on that cached sample and advances through the recursive `next_14` chain
+        - public play-handle behavior is now explicit too:
+          - `zSndPlayHandle_Stop()` special-cases `ZSND_PLAYHANDLE_STREAM_REQUEST` and diverts to `zSndPlayHandle_RequestStreamStop()`, which finds the active request by pointer identity and forces `streamState_34 = ZSND_STREAMREQ_FINISHED`
+          - generic handle mutators such as `zSndPlayHandle_SetGainScaled()`, `zSndPlayHandle_SetFreqScaled()`, and `zSndPlayHandleSnapshotPayload_InitFromPlayHandle()` reject non-backend handles early
+          - practical result: queued `SOUND_GROUPS` requests are public stop-only handles, not ordinary backend voice handles
+        - manager ownership is now explicit:
+          - `zSndStreamMgr_EnsureInit()` lazily creates hidden `g_zSndStreamNode` plus `g_zSndGroupList`, `g_zSndStreamActiveList`, and `g_zSndStreamFreeList`
+          - `g_zSndStreamNode` runs `zSndStreamMgr_Tick()` as a child-action callback
+          - `zArchiveList_FindPayloadByPredicate()` only stops when its predicate returns `0`; `zSndStreamRequest_StateDispatch()` always returns nonzero, so `zSndStreamMgr_Tick()` sweeps the whole active ring every callback
+          - `zSndStreamRequest_StateDispatch()` caches the first finished request in `g_zSndStreamFinishedHead` and increments `g_zSndStreamFinishedCount`
+          - `zSndStreamMgr_Tick()` runs the dispatch sweep, then removes the cached finished request from the active list and recycles it onto the free list
+          - `zSndStreamMgr_Shutdown()` destroys the manager node, frees active/free requests, and frees each `createGuard_00 == 1` group's nested `zSndStreamEntry` chains
+          - because only the first finished request is cached explicitly, keep the exact backlog semantics of `g_zSndStreamFinishedCount` conservative until another consumer appears
+        - when the current chain ends:
+          - `repeatCount_14 == 0xffff` is the infinite-repeat sentinel
+          - other repeat counts increment `playIndex_2c` until they hit the group limit
+          - a positive `delayTerminationSec_1c` enters `ZSND_STREAMREQ_DELAY_TERMINATION`; otherwise the request finishes immediately
+    - mission `objectives.zrd`:
+      - top-level sections `READ_TIME`, `REVIEW_DELAY`, `REVIEW_SOUND`, `OBJECTIVE_SOUND`, and `OBJECTIVE1` ..
+      - `OBJECTIVE1` contains payload leaves such as `obj1fgate`, `MSG_M1_O1_OBJ`, `ACTIVE`, `READ_SOUND`, `HINT_SOUND`, and `HINT_TIME`
+    - sampled `m1` `ai.zrd`:
+      - top-level sections `DESTROY_ANIM` and `TURRET`
+  - In practice this means `zrdr.zbd` is the packaged tree of UI, HUD, briefing, animation, weather, AI, objective, and mission-start reader graphs that the runtime otherwise knows only by `.zrd` basename.
+  - The proved `zReader::LoadNodeFromPath()` caller set shows which subsystems actually consume those packaged trees:
+    - common/bootstrap readers:
+      - `zGame::Options_LoadGameOptions()`
+      - `HudUiMgr::EnsureHudLoaded()`
+      - `zImage_Fonts_LoadFromPath()`
+      - `zSndSystem_Init()`
+      - `zFMV_Script_LoadActionsFromZrd()`
+      - `zWeapon_OptCatalog_LoadFromPath()`
+      - `HudUiBackground_LoadZrdAndSection()`
+    - mission/gameplay readers:
+      - `Mission_LoadFromPath()`
+      - `HudSensorTracker_LoadMissionWeatherFx()`
+      - `HudSensorTracker_RunStartAnimsFromZrd()`
+      - `HudSensorTracker_LoadRaceCheckpointMeta()`
+      - `Pickup_Init()`
+      - `Pickup_InitAndLoadPuppySpawns()`
+      - `Player_InitMissionRuntimeFromWorldAndCamera()`
+      - `zReader_LoadMoversFromZrd()`
+      - `Net_InitFromZrd()`
+      - `zTurret_System_InitFromNodePath()`
+      - `zEffect_InitFromPath()`
+      - `zDEClient_Init()`
+    - This call graph matches the sampled content split:
+      - common `zrdr.zbd` carries shared UI/options/FM V/sound/weapon data
+      - mission `zrdr.zbd` carries objectives, weather, AI, movers, pickups, race data, start anims, turret/net fragments, and other mission-local gameplay trees
+    - The `dialog.zrd` multiplayer branch is now explicit on the reachable shell path too:
+      - `MP_NEW_GAME` is the dedicated multiplayer session-setup section.
+      - `g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession_08` is the launch-mode latch:
+        - `CZRecoilFrame_OnMenuOpenMultiplayerDialogsAndMaybeStartGame()` uses `0` on the non-modem host create-session path.
+        - `HudUiMpExitDialog_MpNewGameButton_OnActivate()` uses nonzero (`1` on the proved retail path) to reopen the current host session for settings republish/relaunch.
+      - `HudUiMpExitDialog_MpNewGameButton_OnActivate()` returns to `g_RecoilApp.m_introFmvState` and reopens `MP_NEW_GAME` in that reconfigure-existing-session mode.
+      - `HudUiNetGameSetupPanel_NextWorldButton_OnActivate()` / `HudUiNetGameSetupPanel_PrevWorldButton_OnActivate()` are the real WORLD-selector callbacks, not event-type selectors.
+      - `HudUiNetGameSetupPanel_CancelButton_OnActivate()` is the real `CANCEL` callback for `MP_NEW_GAME`; it exits the current overlay and switches to `g_RecoilApp.m_leaveNetworkState`.
+      - The branch-local dialog vtable globals are now explicit too: `g_HudUiNetGameSetupPanel_Vtbl` for the session-setup panel and `g_HudUiMpExitDialog_Vtbl` for the multiplayer-exit dialog.
+      - On the proved retail path, selected world index `2` is the lap-based session mode, so those callbacks flip the overlay between kills and laps UI and raise the dependent goal floor from `1` to `2`.
+  - Mission-local archive sweep notes from the sampled retail set:
+    - every mission-local `zrdr.zbd` still carries the same core loader-facing records: `ai.zrd`, `anim.zrd`, `declient.zrd`, `location.zrd`, `movers.zrd`, and `net.zrd`
+    - the larger mission archives usually add `objectives.zrd`, `puppies*.zrd`, `aiv*.zrd`, `startanims.zrd`, and many numbered `net_XX.zrd` fragments
+
+    | Archive | Count | Representative highlights beyond the shared core |
+    | --- | ---: | --- |
+    | `m1` | 149 | `objectives.zrd`, `puppies*.zrd`, `start_single_m1.zrd`, `startanims.zrd`, `aiv*.zrd`, `heligate.zrd`, `helisnds.zrd` |
+    | `m2` | 151 | `objectives.zrd`, `puppies*.zrd`, `startanims.zrd`, `aiv*.zrd`, `bftm2.zrd`, `deathm2.zrd`, `m2_chop.zrd`, `boxes.zrd` |
+    | `m3` | 131 | `objectives.zrd`, `puppies*.zrd`, `startanims.zrd`, `aiv*.zrd`, `bftm3.zrd`, `deathm3.zrd`, `boilelev.zrd`, `bvalve.zrd` |
+    | `m4` | 112 | `objectives.zrd`, `puppies*.zrd`, `startanims.zrd`, `aiv*.zrd`, `bftm4.zrd`, `deathm4.zrd`, `cathscop.zrd`, `chmsnd.zrd` |
+    | `m5` | 96 | `objectives.zrd`, `puppies*.zrd`, `watexp.zrd`, `startanims.zrd`, `aiv*.zrd`, `bftm5.zrd`, `deathm5.zrd`, `m5_chop.zrd` |
+    | `m6` | 127 | `objectives.zrd`, `puppies*.zrd`, `shakers.zrd`, `startanims.zrd`, `aiv*.zrd`, `bftm6.zrd`, `deathm6.zrd`, `bcamera1.zrd` |
+    | `m7` | 14 | `objectives.zrd`, `puppies.zrd`, `aiv.zrd`, `bridge.zrd`, `bunker.zrd`, `m7flufvtol.zrd`, `m7vtols.zrd` |
+    | `m8` | 13 | `objectives.zrd`, `puppies.zrd`, `aiv.zrd`, `bridges.zrd`, `deckramps.zrd`, `m8flufvtol.zrd`, `m8vtols.zrd` |
+    | `m9` | 16 | `objectives.zrd`, `puppies.zrd`, `race.zrd`, `aiv.zrd`, `barriers.zrd`, `startgate.zrd`, `countdown.zrd` |
+    | `m10` | 20 | `objectives.zrd`, `puppies.zrd`, `objects.zrd`, `jumps.zrd`, `burncity.zrd`, `teeth.zrd`, `towers.zrd` |
+    | `m11` | 13 | `objectives.zrd`, `puppies.zrd`, `aiv.zrd`, `icecolumn.zrd`, `scontainer.zrd`, `m11flufvtol.zrd`, `m11vtols.zrd` |
+    | `m12` | 13 | `objectives.zrd`, `puppies.zrd`, `aiv.zrd`, `warehouse.zrd`, `vensec.zrd`, `m12vtols.zrd`, `m12flufvtol.zrd` |
+    | `m13` | 15 | `puppies.zrd`, `objectives.zrd`, `aiv.zrd`, `bft_trans.zrd`, `cltree.zrd`, `citywall.zrd`, `teleprtr.zrd` |
+- `anim.zrd` / `anim.zbd` is now stable enough to describe as a dedicated compiled effect-animation archive:
+  - The retail mission-start path proves the runtime archive name is `anim.zrd`, even though the loader APIs and mutable filename buffer still use `ZBD` terminology:
+    - `HudSensorTracker_InitMissionGameplaySystems()`
+    - `zEffect_InitFromPath("effects.zrd")`
+    - `zEffect_SetWorldNode()`
+    - `zEffect_SetResourceNode()`
+    - `zEffect_Anim_LoadAndInstantiate("anim.zrd")`
+    - `zEffect_Anim_LoadZbd()`
+  - `effects.zrd` supplies effect/resource definitions; `anim.zrd` supplies the compiled animation state machine layered on top of those effects.
+  - Stable on-disk order:
+    - 12-byte file header: `magic = 0x08170616`, `schema/version = 0x1c`, `sourceStampCount`
+    - `zEffectAnimSourceFileStamp[sourceStampCount]`
+    - copied `0x3c`-byte global animation header
+    - `zEffectAnimEntry[entryCount]`, each exactly `0x134` bytes
+    - counted side tables for each entry
+    - per-surface `0x40` runtime headers plus variable-size event payload blobs
+    - trailing `zEffectAnimTextIdEntry[textIdCount]`
+      - each trailing entry is `messageKey_00[0x20] + messageId_20`
+      - load-time fixup resolves `messageKey_00` through `zLoc_GetMessageId()`
+      - sequence event type `0x26` (`zEffect_HandleTextMessageEvent`) uses `intParam_0c` as the table index and pushes the localized string, or the raw key when `messageId_20 == 0`, to `HudUi_PushTopMessageLine()` for `3.0f` seconds
+  - Each per-surface payload blob is a compiled variable-size event stream run by `zEffect_Anim_RunSequence()`:
+    - stable running-surface runtime view:
+      - `zEffectAnimSurfaceRuntime = { eventState_00, payloadBlob_38, payloadSize_3c }`
+      - `eventState_00 = { sequenceName_00[0x20], stateAndResetMode_20, eventTimeA_24, eventTimeB_28, frameTimeAccum_2c, frameIndex_30, eventCursor_34 }`
+    - each record begins with `zEffectSeqEventHeader = { typeAndStartMode_00, recordSize_04, startThreshold_08, auxFlagsOrParam_0c, auxValueOrLimit_10 }`
+    - byte `1` of `typeAndStartMode_00` is the start-gate selector:
+      - `1` = compare the entry-side elapsed accumulator `accelCurrent_a8` against `startThreshold_08`
+      - `2` = compare `eventTimeA_24`
+      - `3` = compare `eventTimeB_28`
+    - a start-gate miss keeps `eventCursor_34` parked on the current record, seeds `eventTimeB_28` from `g_zEffect_DeltaTimeSec`, and also seeds `eventTimeA_24` if this is the first record in the payload
+    - `g_zEffect_DeltaTimeSec` is not passive copied-header residue; on the reachable retail path it is the shared per-dispatch delta budget for `zeff_anim_run.c`:
+      - `zEffect_Anim_RunActiveEntry()` and `zEffect_Anim_NodeActionCallback()` seed it from `g_FrameDeltaTimeSec` before dispatching surface streams
+      - start-gate misses copy that budget into `eventTimeB_28` and, on the first record, `eventTimeA_24`
+      - timed handlers spend from the same budget and subtract the slice they actually used before later records run
+      - proved slice-consuming handlers are:
+        - `zEffect_AnimateLightOverTime()`
+        - `zEffect_AnimateCameraOverTime()`
+        - `zEffect_AnimateTransformOverTime()`
+        - `zEffect_AnimateNodeOverTime()`
+        - `zEffect_Anim_RunKeyframes()`
+        - `zEffect_AnimateModelOverTime()`
+        - `zEffect_AnimateBeamOverTime()`
+        - `zEffect_HandleScreenColorFxEvent()`
+        - `zEffect_HandleScreenOverlayFxEvent()`
+    - `accelCurrent_a8` is the live entry-side elapsed timer:
+      - zeroed by `zEffectAnim_ActivateRuntime()`
+      - advanced once per frame by `zEffect_Anim_RunActiveEntry()`
+      - preserved through `Running%03d` save/load
+    - proved event-specific payload views now include:
+      - `zEffectSurfaceRefEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, surfaceName_0c[0x20], surfaceIndexCache_2c }`
+        - opcodes `0x16` and `0x17` resolve `surfaceName_0c` once against `runtimeList_0c0[*].eventState_00.sequenceName_00`, cache the matching index in `surfaceIndexCache_2c`, then stop/play that target surface without repeating the string scan
+        - `surfaceIndexCache_2c` uses a signed negative sentinel on the reachable path, so cached surface slot `0` remains valid/actionable
+      - `zEffectActivateEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, activeValue_0c, nodeIndexPacked_10 }`
+        - `activeValue_0c` is passed directly to `zClass_Class_gwNodeSetActive()`
+        - the low 16 bits of `nodeIndexPacked_10` select a `nodeRefList_114` entry
+        - the special signed value `-100` targets `rootNode_40` instead of a node-ref slot
+      - `zEffectAttachDetachEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, nodePairPacked_0c }`
+        - low16(`nodePairPacked_0c`) selects the parent/switch node-ref entry
+        - high16(`nodePairPacked_0c`) selects the child node-ref entry
+        - opcode `0x0f` attaches the child if both indices are positive and the parent does not already contain it
+        - opcode `0x10` removes the same child from the same parent
+      - direct position/rotation/scale/display handlers use smaller packed records than the larger `zEffectTransformAnimEvent` used by the over-time interpolation strip:
+        - `zEffectTargetBasisVec3Event = { typeAndStartMode_00, recordSize_04, startThreshold_08, flags_0c, vecX_10, vecY_14, vecZ_18, targetAndBasisNodePacked_1c }`
+          - opcode `0x07` uses it for immediate position/target writes
+          - opcode `0x09` uses the same packed layout for immediate rotation writes
+          - low16(`targetAndBasisNodePacked_1c`) selects the target `nodeRefList_114` entry
+          - high16(`targetAndBasisNodePacked_1c`) selects an optional basis/reference node-ref entry
+          - the special signed high16 value `-200` bypasses `nodeRefList_114` and instead uses `resetScratch_74.nodeRefA_00 + vecA`
+          - position mode uses `flags_0c bit0` as translate-vs-set
+          - rotation mode uses `flags_0c bit0` as translate-vs-set, `bit1` to reuse the current object rotation as the basis, and `bit2` to build the ancestor matrix and extract Euler angles as the basis
+        - `zEffectScaleEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, scaleX_0c, scaleY_10, scaleZ_14, targetNodePacked_18 }`
+          - opcode `0x08` writes the scale triplet directly to the low16(`targetNodePacked_18`) node-ref entry
+      - `zEffectDisplayEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, flags_0c, targetNodeAndVariantPacked_10 }`
+        - opcode `0x11` uses low16(`targetNodeAndVariantPacked_10`) as the display-bearing node-ref entry and high16 as the explicit `zDi` variant index
+        - `flags_0c bit0` resets the current `zDi` variant before the explicit set
+      - `zEffectEmitterEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, packedEmitterFlags_0c, animName_10[0x20], packedEntryAndRuntimeSlot_30, packedNodeIndexPair_34, vecA_x_38..vecA_z_40, vecB_x_44..vecB_z_4c }`
+        - opcode `0x13` resolves `animName_10` once against `g_zEffectAnim_EntryTable` and caches the child entry index in low16(`packedEntryAndRuntimeSlot_30`)
+        - low16(`packedEntryAndRuntimeSlot_30`) is a positive-only child-entry cache lane on the reachable path: `<= 0` re-enters the name scan and only `> 0` reaches the spawn, so cached child entry `0` remains inert here
+        - high16(`packedEntryAndRuntimeSlot_30`) is the `runtimeRefList_12c` slot index used only for the live `runtimeEntry_44` child cache
+        - low16(`packedNodeIndexPair_34`) is the optional node-index source for `nodeRefA`, high16(`packedNodeIndexPair_34`) is the optional node-index source for `nodeRefB`
+        - `packedEmitterFlags_0c` low byte:
+          - bit `0` = `nodeRefA` from low16(`packedNodeIndexPair_34`)
+          - bit `1` = transform `vecA` by that same node
+          - bit `2` = `nodeRefA` from `resetScratch_74.nodeRefA_00`
+          - bit `3` = transform `vecA` by `resetScratch_74.nodeRefA_00`
+          - bit `4` = `vecA` from the event payload
+          - bit `5` = `vecA` from `resetScratch_74.vecA`
+          - bit `6` = `nodeRefB` from high16(`packedNodeIndexPair_34`)
+          - bit `7` = transform `vecB` by that same node
+        - `packedEmitterFlags_0c` upper byte:
+          - bit `0` = `nodeRefB` from `resetScratch_74.nodeRefB_10`
+          - bit `1` = transform `vecB` by `resetScratch_74.nodeRefB_10`
+          - bit `2` = `vecB` from the event payload
+          - bit `3` = `vecB` from `resetScratch_74.vecB`
+        - if no `vecA` or `vecB` source bit is set for a side, that vector is zeroed before the spawn helper runs
+        - the handler finishes by calling `zEffectAnim_SetTimerAndTwoVectors()` and storing the returned child only in `runtimeRefList_12c[slot].runtimeEntry_44`
+      - camera opcodes now have dedicated payloads too:
+        - `zEffectCameraEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, flags_0c, targetNodeRefIndex_10, nearClip_14, farClip_18, clipDistance_1c, fovPrimary_20, fovSecondary_24, viewportPrimary_28, viewportSecondary_2c }`
+          - opcode `0x14` is the immediate camera writer
+          - `flags_0c bit0/bit1` write near/far clip, `bit2` writes clip distance, `bit3/bit4` write the two FOV components, and `bit5/bit6` write the two viewport components for `nodeRefList_114[targetNodeRefIndex_10]`
+        - `zEffectCameraAnimEvent = { ..., targetNodeRefIndex_10, nearClipStart_14, nearClipEnd_18, nearClipRate_1c, farClipStart_20, farClipEnd_24, farClipRate_28, clipDistanceStart_2c, clipDistanceEnd_30, clipDistanceRate_34, fovPrimaryStart_38, fovPrimaryEnd_3c, fovPrimaryRate_40, fovSecondaryStart_44, fovSecondaryEnd_48, fovSecondaryRate_4c, viewportPrimaryStart_50, viewportPrimaryEnd_54, viewportPrimaryRate_58, viewportSecondaryStart_5c, viewportSecondaryEnd_60, viewportSecondaryRate_64, endTime_68 }`
+          - opcode `0x15` seeds the `*Start_*` values on the first pass when `surfaceRuntime->eventState_00.stateAndResetMode_20.b == 0`
+          - later passes integrate the enabled `*Rate_*` fields until `endTime_68`
+          - if `endTime_68` falls inside the current frame, the handler consumes only the needed slice of `g_zEffect_DeltaTimeSec`, applies the final `*End_*` writeback, and returns the finished state
+      - `zEffectWorldEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, ..., flags_2c, fogState_30, ambientRed_34, ambientGreen_38, ambientBlue_3c, fogHeightMin_40, fogHeightMax_44, hazeStart_48, hazeEnd_4c }`
+        - opcode `0x1c` targets `g_zEffect_WorldNode`
+        - `flags_2c bit0` toggles fog state, `bit1` writes ambient RGB, `bit2` writes fog-height min/max, and `bit3` writes haze parameters
+      - `zEffectParticleEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, animName_0c[0x20], packedBaseNodeAndBehaviorFlags_2c, packedEntryAndRuntimeSlot_30, nodeRefSelector_34, vecPos_x_38..vecPos_z_40, vecRot_x_44..vecRot_z_4c }`
+        - opcode `0x18` resolves `animName_0c` once against `g_zEffectAnim_EntryTable` and caches the child entry index in low16(`packedEntryAndRuntimeSlot_30`)
+        - low16(`packedEntryAndRuntimeSlot_30`) follows the same positive-only rule as the named child-entry controls: `<= 0` re-enters the name scan and only `> 0` reaches the spawn, so cached child entry `0` remains inert here too
+        - high16(`packedEntryAndRuntimeSlot_30`) is the `runtimeRefList_12c` slot index used only for the live `runtimeEntry_44` child cache/poll slot
+        - low16(`packedBaseNodeAndBehaviorFlags_2c`) is the optional attach/base node index used as the spawned child root
+        - high16(`packedBaseNodeAndBehaviorFlags_2c`) is the behavior flag byte:
+          - bit `0` = use the transform+rotation helper branch
+          - bit `2` = on that branch, use `gwNode_GetWorldPosAndOrientation()` and add `vecRot_*`
+          - bit `3` = when bit `0` is clear, use the timer-and-motion helper branch
+          - otherwise the handler falls back to the velocity-only helper
+          - bit `4` = after spawning, wait on `runtimeEntry_44` and accept child low-byte states `2` or `6` before advancing
+        - low16(`nodeRefSelector_34`) selects the optional basis node-ref for the transform/timer-and-motion branches; special value `0xff38` means `resetScratch_74.nodeRefA_00`
+        - the handler clears `runtimeEntry_44` on state `0`, stores the spawned child there, and later only polls or clears that same slot
+      - `zEffectNamedAnimEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, animName_0c[0x20], entryIndexCache_2c }`
+        - opcodes `0x19`, `0x1a`, and `0x1b` share this compact named-entry payload
+        - `animName_0c` identifies a child animation entry in `g_zEffectAnim_EntryTable`, and `entryIndexCache_2c` memoizes the resolved index after the first name scan
+        - `entryIndexCache_2c` is also positive-only on the reachable path: `<= 0` stays unresolved/inert, so cached child entry `0` never reaches the stop/reset/loop actions
+        - this differs from `surfaceIndexCache_2c`, which uses a negative sentinel only and still accepts surface slot `0`
+        - the broader entry-0 lifecycle is now bounded more tightly:
+          - `zEffect_Anim_LoadZbd()` loads the serialized table starting at entry `0`
+          - `zEffectAnim_FindEntryByName()` searches from entry `0` and can return `&g_zEffectAnim_EntryTable[0]`
+          - `zEffect_Anim_Shutdown()` destroys the table starting at entry `0`
+          - `zEffect_Anim_LoadAndInstantiate()`, `zEffect_Anim_SaveAnimRecords()`, and `zEffect_Anim_SaveRunningAnimRecords()` all start their ordinary bring-up/save loops at entry `1`
+          - `zEffect_Anim_LoadActivationRecords()` clears restore-preserve bits only for entries `1..count-1`, but replay still resolves the target entry by name through `zEffectAnim_FindEntryByName()`
+          - mode-`1` activation-prereq resolution is mixed too: `zEffect_Anim_LoadZbd()` prebinds `targetEntry_28` from entry `1`, but `zEffectAnim_CheckActivationPrereqs()` falls back to a slot-`0` name search if that cache is still null
+        - safest current model: entry slot `0` is a special serialized/searchable table slot that ordinary runtime-owner and save loops often skip; its exact original semantic is still unresolved
+        - opcode `0x19` (`zEffect_HandleEmitterStopEvent`) calls `zEffect_Emitter_Update()` on that resolved child entry
+          - despite the name, that helper is a shared emitter/runtime-state transition routine, not a stop-only leaf; it is also called from the normal active-entry tick, activation-record restore, reset/cleanup helpers, and gameplay trail/status-effect paths
+        - opcode `0x1a` (`zEffect_HandleEmitterResetEvent`) calls `zEffectAnim_ResetForNode_PreserveFlag(entry, nullptr)` on that resolved child entry
+        - opcode `0x1b` (`zEffect_HandleEmitterLoopEvent`) rewrites the target `modePacked_98.b` state: `2 -> 6`, any other non-`5` state `-> 4`, and sentinel state `5` is left unchanged
+    - handler return state `2` is the advance state:
+      - clear `eventTimeB_28`
+      - advance `eventCursor_34 += recordSize_04`
+      - if the new cursor is still inside `payloadBlob_38 + payloadSize_3c`, resume from the next record
+      - if the cursor reached the end, only `stateAndResetMode_20:1.b == 3` rewinds the surface through `zEffect_Surface_Reset()`
+    - stable dispatch families on the reachable retail path are:
+      - `0x01..0x05` = sample play, runtime sound, effect-template spawn, runtime light, and timed light
+      - `0x06..0x15` = activation, world/camera, transform, node, model, display, beam, and emitter-spawn control
+      - `0x16/0x17` = surface stop/play
+      - `0x18` = particle spawn
+      - `0x19..0x1b` = named emitter stop/reset/loop control
+      - `0x1c` = world event
+      - `0x1e` = surface frame advance
+      - `0x1f..0x22` = conditional control-flow block:
+        - `0x1f` is the `zEffectConditionalEvent` gate with proved `conditionMask_0c` bits:
+          - bit `0` = random-table compare against `threshold_14`
+          - bit `1` = distance-to-reference compare from `attachNode_64`
+          - bit `2` = current effects-level compare
+          - bit `3` = ground-collision test at `g_zEffect_ReferenceWorldPos`
+          - bit `4` = ground-collision test for `nodeRefList_114[nodeIndex_10].node_24`
+        - failed `0x1f` branches scan forward by `recordSize_04` until the next `0x20`, `0x21`, or `0x22`
+        - `0x21` reuses the same `conditionMask_0c` / `threshold_14` layout and behaves like an `else-if` continuation when reached from a failed `0x1f`
+        - when `0x20` or `0x21` execute on the taken-branch path, both use the same skip handler to walk forward until the terminating `0x22`
+        - `0x22` is the no-op terminator consumed after the branch body
+      - `0x20` / `0x21` use a header-only skip-to-`0x22` control record; they just walk by each intervening record's `recordSize_04`
+      - `0x22`, `0x27`, and `0x28` are header-only no-op records with no payload beyond the common event header
+      - `zEffectIntParamEvent = { typeAndStartMode_00, recordSize_04, startThreshold_08, intParam_0c }`
+        - opcode `0x23` forwards `intParam_0c` to `zEffectAnimEntry::onStateDoneCallback_6c(self, onStateDoneUser_70, intParam_0c)`
+        - opcode `0x26` treats `intParam_0c` as an index into the trailing `g_zEffectAnim_TextIdTable`
+          - if `messageId_20 != 0`, it localizes through `zLoc_GetMessageString(messageId_20)`
+          - otherwise it falls back to the raw `messageKey_00`
+          - the final text is pushed directly to `HudUi_PushTopMessageLine(..., 3.0f)`, bypassing the public enabled-check helper
+      - `0x24` / `0x25` = screen color / screen overlay FX
+  - Stable `zEffectAnimEntry` side tables on the reachable path:
+    - `countsPacked_104` stays packed, but its byte lanes are now stable: `0=runtimeList_0c0 surface records`, `1=tracked nodes`, `2=node refs`, `3=light refs`
+    - `sampleRefList_120` is a sample-name table resolved by `zSnd_FindSampleByName()`
+    - `effectTemplateRefList_124` is the separate effect-template index table
+    - `runtimeRefList_12c` is a `0x48`-stride runtime-child table whose first `0x40` bytes are still opaque serialized data; only `stopChildOnCleanup_40` and `runtimeEntry_44` are proven live
+      - a whole-type xref sweep currently stops at load, clone, cleanup, and destroy
+      - load and clone both treat the records as raw `0x48` blobs and only clear `runtimeEntry_44` afterward
+      - `trackedNodeList_110` and `nodeRefList_114` both get explicit node-pointer resolve/rebind passes, and `activationPrereqList_128` still gets its proved node-cache refresh on the load/rebind path
+      - `runtimeRefList_12c` is the outlier: `zEffectAnim_RebindEntryToNode()` never touches it, and no reachable load/clone follow-up pass decodes its serialized `0x40`-byte head
+      - emitter and particle event handlers only reach `runtimeEntry_44` through field refs
+      - on the reachable event path, `runtimeEntry_44` is a spawned-child cache/latch:
+        - emitter events store the spawned child there after `zEffectAnim_SetTimerAndTwoVectors()`
+        - particle events clear it on state `0`, store the spawned child, then later poll that cached child's low-byte state (`2`/`6` accepted) before clearing the slot again
+- no proved reachable consumer currently decodes `opaqueSerializedHead_00[0x40]`
+    - `countsPacked_108` stays packed, but its byte lanes are now stable: `0=sound refs`, `1=sample refs`, `2=effect-template refs`, `3=activation-prereq records`
+    - `countsPacked_10c` is only partially decoded so far: low byte = minimum satisfied activation-prereq threshold, second byte = `runtimeRefList_12c` count
+  - Activation-prerequisite records are now stable enough to document without forcing a premature struct split:
+    - each `activationPrereqList_128` record is `0x30` bytes and is cached as `zEffectAnimActivationPrereq`
+    - `requireMatch_00` is the expected true/false sense for the predicate
+    - `mode_04 = 1` means "other animation state" prerequisite:
+      - `targetName_08` holds another animation entry name
+      - `targetEntry_28` is lazily resolved from that name
+      - the resolution path is mixed: load-time prebind in `zEffect_Anim_LoadZbd()` starts at entry `1`, but runtime fallback in `zEffectAnim_CheckActivationPrereqs()` starts at entry `0` if `targetEntry_28` is still null
+      - runtime compares the target entry low-byte state `targetEntry_28->modePacked_98.b`
+    - `mode_04 = 2` means "node active flag" prerequisite:
+      - the dword at record offset `+0x08` is the expected active/inactive value
+      - the node name starts at record offset `+0x0c`
+      - `targetNode_2c` caches the resolved node
+      - runtime compares `targetNode_2c->flags_24 >> 2 & 1`
+    - `mode_04 = 3` shares the same load/rebind node-name path as mode `2` and also stores its node name at record offset `+0x0c`
+      - current negative evidence: `activationPrereqList_128` only xrefs from load, clone, rebind, destroy, and `zEffectAnim_CheckActivationPrereqs()`, and that runtime checker only branches on modes `1` and `2`
+      - on the proved retail path, mode `3` therefore behaves as inert prereq metadata rather than an active runtime gate
+    - `countsPacked_10c.b` is the minimum number of satisfied prerequisite records required before the entry may activate
+    - loader-side failure to resolve a mode `2`/`3` node clears the prereq-count lane, so the entry carries no live activation-prereq table after load
+  - Runtime chain on the proved path:
+    - `zEffectAnim_ResolveRuntimeEntryForNode()`
+    - `zEffectAnim_CheckActivationPrereqs()`
+    - `zEffectAnim_ActivateRuntime()`
+    - `zEffect_Anim_RunActiveEntry()`
+    - `zEffect_Anim_RunSequence()`
+  - Save/load companion behavior on the same archive path:
+    - section-name formats on the retail save/load path are:
+      - `g_zEffectAnim_ActivationSectionNameFmt` = `Activation%04d`
+      - `g_zEffectAnim_AnimSectionNameFmt` = `Anim%04d`
+      - `g_zEffectAnim_RunningSectionNameFmt` = `Running%03d`
+    - `Anim%04d` / `Running%03d` / `Activation%04d` sections preserve entry state, runtime surfaces, light/sound/sample refs, and queued activation commands
+    - `stateAndRestoreCount_54.b` mirrors the same low-byte animation state stored in `modePacked_98.b`
+    - `Activation%04d` and `Anim%04d` use the same `zEffectAnimActivationRecordSerialized` wrapper size formula:
+      - fixed `0x58`-byte header
+      - plus `trackedNodeRestoreCount * 0x44` bytes of `zEffectAnimNodeRestoreState` tail data
+      - only byte `0` and byte `1` of `stateAndRestoreCount_54` are proved on the reachable path:
+        - byte `0` = saved animation state
+        - byte `1` = tracked-node restore count
+      - the odd HLIL byte-3 contribution at the save-side `fwrite()` site is a BN/codegen artifact, not evidence for another proved packed lane
+    - `Running%03d` uses the complementary running-record size model:
+      - fixed `0x68`-byte header
+      - plus `surfaceCount * 0x40` bytes of `zEffectAnimRunningSurfaceSerialized` headers
+      - plus each surface header's variable `payloadSize_3c` blob
+      - plus `lightCount * 0x38` bytes of `zEffectAnimLightRefSerialized` tails
+      - plus `soundCount * 0x3c` bytes of `zEffectAnimSoundRefSerialized` tails
+      - `countsPacked_64` byte lanes are stable here too:
+        - byte `0` = runtime-surface count
+        - byte `1` = light-tail count
+        - byte `2` = sound-tail count
+    - running-surface restore reuses the compiled event-stream cursor rather than rebuilding the stream from source data
+- The adjacent mission objective/race node-name strip is explicit too:
+  - `g_HudSensorTracker_RaceCheckpointArchiveName` = `race.zrd`
+  - `g_HudSensorTracker_RaceCheckpointCountNodeName` = `cp_count`
+  - `g_Mission_ObjectiveReadTimeNodeName` = `READ_TIME`
+  - `g_Mission_ObjectiveReviewDelayNodeName` = `REVIEW_DELAY`
+  - `g_Mission_FinalMissionNodeName` = `FINAL_MISSION`
+  - `g_Mission_ObjectiveNodeNameFmt` = `OBJECTIVE%d`
+  - `g_Mission_ObjectiveAutoplayNodeName` = `AUTOPLAY`
+  - `HudSensorTracker_LoadRaceCheckpointMeta()` uses the race archive/count pair on the mission-local ZRDR path.
+  - `Mission_LoadFromPath()` uses the mission-level timing/final-mission nodes plus the per-objective `OBJECTIVE%d` / `AUTOPLAY` nodes on the retail mission script tree.
+  - `HudSensorTracker_LoadObjectivesFromZrd()` also reuses `g_Mission_ObjectiveNodeNameFmt` on the objective-archive read-side loops.
+  - Binary Ninja still prefers inline literals in HLIL and may still print raw addresses in `get_data_decl(...)`; the named data vars and address comments remain the authoritative reconstruction here too.
+- The adjacent mission-map helper strip is explicit too:
+  - `g_HudSensorTracker_MissionMapPathFmt` = `.\\maps\\m%d.zmap`
+  - `g_HudSensorTracker_MapSndOnName` = `snd_mapOn`
+  - `g_HudSensorTracker_MapSndOffName` = `snd_mapOff`
+  - `g_HudSensorTracker_MapSndClickName` = `snd_mapClick`
+  - `HudSensorTracker_LoadMissionMapAndSfx()` is the proving helper on this strip.
+  - Binary Ninja still prefers inline map-path and `snd_map*` literals in HLIL here; the named data vars and address comments are the authoritative reconstruction.
+- The adjacent mission objective sound/node strip is explicit too:
+  - `g_Mission_ObjectiveReviewSoundNodeName` = `REVIEW_SOUND`
+  - `g_Mission_ObjectiveActiveNodeName` = `ACTIVE`
+  - `g_Mission_ObjectiveInactiveNodeName` = `INACTIVE`
+  - `g_Mission_ObjectiveReadSoundNodeName` = `READ_SOUND`
+  - `g_Mission_ObjectiveSoundNodeName` = `OBJECTIVE_SOUND`
+  - `g_HudSensorTracker_ObjectiveIncomingSampleName` = `snd_incoming`
+  - `HudSensorTracker_LoadObjectivesFromZrd()` uses those leaves to seed the review sound, optional activation/inactivation nodes, per-objective read sound and delay override, objective-complete sound, and default incoming sample.
+  - Binary Ninja still prefers inline literals in HLIL and may still print raw addresses in `get_data_decl(...)`; the named data vars and address comments remain the authoritative reconstruction here too.
+- The adjacent mission/objective report-format strip is explicit too:
+  - `g_Mission_ObjectiveImageMissingFmt` = `Cannot find objective %d's image file - %s`
+  - `g_Mission_ObjectiveArrayOverflowFmt` = `Mission objectives array overflow; MAX allowable = %d`
+  - `g_HudSensorTracker_ObjectiveActivationNodeMissingFmt` = `Cannot find Objective %d's activation node: %s`
+  - `g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt` = `Cannot find Objective %d's inactivation node: %s`
+  - `Mission_LoadFromPath()` uses the first two formats for missing image and objective-count overflow reports.
+  - `HudSensorTracker_LoadObjectivesFromZrd()` uses the latter two formats when the optional activation/inactivation node chain cannot be resolved.
+  - Binary Ninja still prefers inline literals in HLIL on those helpers; the named data vars and address comments remain the authoritative reconstruction here too.
+- The adjacent objective-node payload reads are now locally stabilized too:
+  - `Mission_LoadFromPath()` uses `zReader_NodeType4_MissionObjective` / `MissionObjectiveZrdEntry`, so the per-objective image/title/desc/summary payload no longer renders as repeated raw `value_04.u32 + 0xc/+0x14/+0x1c/+0x24` accesses.
+  - The same helper now also uses existing `zReader_NodeType4_FirstFloat` / `zReader_NodeType4_FirstInt` overlays for `READ_TIME`, `REVIEW_DELAY`, and `FINAL_MISSION`.
+  - `HudSensorTracker_LoadObjectivesFromZrd()` uses `zReader_NodeType4_StringList` for `ACTIVE` / `INACTIVE` and `zReader_NodeType4_ObjectiveReadSound` for `READ_SOUND`, so the sample-name and optional extra-delay reads render directly.
+  - The remaining `ACTIVE` / `INACTIVE` extra-path loop still shows count-relative HLIL indexing; BN comments pin that residue as `arr_04->slots_08[i - 1].str_04` instead of treating it as another global type problem.
+- The adjacent HUD briefing panel bind strip is explicit too:
+  - `g_HudUiBriefingCampaignSectionFmt` = `CAMPAIGN%1d`
+  - `g_HudUiBriefingArchiveName` = `briefing.zrd`
+  - `g_HudUiBriefingTransportProgressNodeName` = `TRANSPORT_PROGRESS`
+  - `g_HudUiBriefingMissionNameNodeName` = `MISSION_NAME`
+  - `g_HudUiBriefingObjectiveSummaryNodeName` = `OBJECTIVE_SUMMARY`
+  - `g_HudUiBriefingObjectiveDescNodeName` = `OBJECTIVE_DESC`
+  - `g_HudUiBriefingObjectivePictureNodeName` = `OBJECTIVE_PICT`
+  - `g_HudUiBriefingMessagesNodeName` = `MESSAGES`
+  - `g_HudUiBriefingTransmissionHaltedNodeName` = `TRANSMISSION_HALTED`
+  - `g_HudUiBriefingLocator1NodeName` .. `g_HudUiBriefingLocator6NodeName` = `LOCATOR1` .. `LOCATOR6`
+  - `HudUiBriefingRuntime::Constructor()` formats the campaign section, loads `briefing.zrd`, and binds the transport, mission name, objective text/picture, messages, transmission-halted, and locator panels/widgets through that named node strip.
+  - Binary Ninja still prefers inline literals in HLIL on this ctor path; the named data vars and address comments are the authoritative reconstruction.
+- The adjacent briefing runtime audio strip is explicit too:
+  - `g_Briefing_SampleSetNameFmt` = `BRIEFING%d`
+  - `g_Briefing_CampaignCueSampleNameFmt` = `snd_briefing_c%d`
+  - `g_Briefing_ThreadCreateFailedFmt` = `Failed to create Briefing thread (%s)`
+  - `Briefing_StartForMission()` formats and loads the per-mission briefing sample set through `g_Briefing_SampleSetNameFmt`.
+  - `Briefing_BuildObjectiveActionsFromIndex()` formats the campaign cue sample name through `g_Briefing_CampaignCueSampleNameFmt` before queueing the opening sample-play action.
+  - `_beginthread()` failure on the same startup path reports through `g_Briefing_ThreadCreateFailedFmt`.
+  - Binary Ninja still prefers inline literals in HLIL on these helpers; the named data vars and address comments are the authoritative reconstruction.
+- `g_RecoilState_SaveLoadTransition` is the shared save/load transition state object on the reachable dialog path:
+  - `RecoilStateSaveLoadTransition_QueueOpenSaveDialog()` stores the caller-selected `m_capturePresentationMode`, sets `m_dialogKind = RECOIL_SAVELOAD_DIALOG_SAVE`, and queue-pushes the shared state
+  - `RecoilStateSaveLoadTransition_QueueOpenLoadDialog()` stores `m_transitionMode`, forces `m_capturePresentationMode = RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED` only for `RECOIL_SAVELOAD_MODE_QUICKLOAD`, sets `m_dialogKind = RECOIL_SAVELOAD_DIALOG_LOAD`, and queue-pushes the same shared state
+  - `RecoilStateSaveLoadTransition_CanOpenSaveDialog()` / `RecoilStateSaveLoadTransition_CanOpenLoadDialog()` return `RECOIL_SAVELOAD_DIALOG_OPEN_BLOCKED` while the current player-state gate `PlayerState_SaveLoadDialogGateView.saveLoadDialogsBlocked_25c` is nonzero; otherwise they return `RECOIL_SAVELOAD_DIALOG_OPEN_ALLOWED`
+  - `RecoilStateSaveLoadTransition_OnTryBecomeCurrent()` / `OnDeactivate()` only capture and restore the blurred presentation/audio state while `m_capturePresentationMode != RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED`
+  - `HudUiLoadGameDialog_ApplySelectedSaveAndTransition()` reads `m_transitionMode` and `m_pausedAudioSnapshot`
+  - this is now treated as a real typed global object, not as anonymous shell data around `0x4f3fb0`
+- The adjacent mission/load-game handoff now also uses real typed globals instead of anonymous shell data:
+  - `g_RecoilApp_AttractFmvState`
+    - stable fields on the reachable branch:
+      - `base`
+      - `m_fmv`
+      - `m_windowClientRect`
+    - this is the embedded attract-loop FMV state used by the main-menu/startup handoff
+  - `g_RecoilApp_AttractFmvReloadMode`
+    - one-shot global reload latch for the preserved attract action list
+    - `.data` initializes it to `RECOILAPP_ATTRACT_FMV_RELOAD_FROM_ZRD`
+    - `RecoilApp_AttractFmvState_OnTryBecomeCurrent()` clears it back to `RECOILAPP_ATTRACT_FMV_REUSE_LOADED_ACTIONS` after the forced reload branch
+  - `g_RecoilApp_IntroFmvState`
+    - stable fields on the reachable branch:
+      - `base`
+      - `m_stateData04`
+      - `m_fmv`
+    - multiplayer-new-game bring-up and pkt14 session sync both queue this state before handing off to the mission/gameplay path
+  - `g_RecoilApp_MainMenuPrepState`
+    - stable fields on the reachable branch:
+      - `base`
+      - `m_stateData04`
+    - both intro and attract FMV completion now hand off through this embedded state before the main menu transition route is queued
+  - `g_RecoilApp_LeaveNetworkState`
+    - stable fields on the reachable branch:
+      - `base`
+      - `m_stateData04`
+    - network/menu exit widgets queue this state before local DirectPlay teardown, engine shutdown, and sound-backend shutdown
+  - `g_RecoilApp_MpExitDialogState`
+    - stable fields on the reachable branch:
+      - `base`
+      - `m_stateData04`
+    - joined-session failure/timeout flow and the HUD timer packet timeout handlers now hand off through this embedded state before the modal multiplayer-exit dialog is shown
+    - the joined-session browser path now seeds `g_RecoilApp_StartupState = &g_RecoilApp_MpExitDialogState` before engine bring-up, so the first queued app state after startup becomes the multiplayer-exit dialog state
+  - `g_RecoilApp_MissionFmvState`
+    - stable fields on the reachable branch:
+      - `m_missionId`
+      - `m_fmv`
+      - `m_skipMissionFmv`
+    - normal single-player startup clears `m_skipMissionFmv`
+    - multiplayer join/setup, Westwood upgrade, and load-game handoff set `m_skipMissionFmv = 1` to bypass mission FMV and continue directly into gameplay setup
+  - `zFMV_Script_Ctor()` now has the correct optional playback-window handle contract on the shell/FM V branch:
+    - `hWndOrNull : HWND`
+    - if null, it falls back to `g_RecoilApp_hWndMain`
+    - that contract now propagates cleanly in the embedded intro/attract/mission FMV state ctors and the gameplay-side blocking `MISSIONOVER` / `GRANDPRIZE` script bring-up paths
+  - the neighboring shell/FM V literal strip is explicit too:
+    - `g_RecoilApp_FmvArchiveName` = `fmv.zrd`
+    - `g_RecoilApp_IntroFmvTag` = `INTRO`
+    - `g_RecoilApp_AttractFmvTag` = `ATTRACT`
+    - `g_RecoilApp_MissionFmvTagTemplate` = `M0\0\0`
+    - `g_RecoilApp_CreditsFmvTag` = `GRANDPRIZE`
+    - `g_RecoilApp_MissionOverFmvTag` = `MISSIONOVER`
+    - the intro, attract, mission, gameplay-credits, and mission-shutdown FMV bring-up paths now all anchor through that same shared archive/tag strip
+    - Binary Ninja still prefers inline string literals in HLIL for these callers even after the `.rdata` leaves are named; the data-var names and address comments are the authoritative reconstruction on this branch
+  - `g_zVideo_SoftwareModeHotkeyEnabled` is the adjacent gameplay/video gate on the same shell path:
+    - `zVideo_HandleSoftwareModeHotkey()` is the live read-side owner
+    - `RecoilApp_PlayState_OnUpdateShouldQuit()` clears or restores it around the gameplay transition and local quit-after-credits rendering paths so the software-mode toggle cannot fire mid-transition
+  - the neighboring teardown/loading checkpoint strip is explicit too:
+    - `g_RecoilApp_LeavingPlayStateMsg`
+    - `g_RecoilApp_LeavingNetworkingMsg`
+    - `g_HudLoading_StopAllSoundsMsg`
+    - `g_HudSensorTracker_UnloadingMissionMsg`
+    - `g_HudSensorTracker_UnloadObjectivesMsg`
+    - `g_HudSensorTracker_ClosingPlayerMsg`
+    - `g_HudSensorTracker_ClosingWeaponsMsg`
+    - `g_HudSensorTracker_ClosingEffectsMsg`
+    - `g_HudSensorTracker_ClosingAnimationsMsg`
+    - `g_HudSensorTracker_ClosingClassMsg`
+    - `g_HudSensorTracker_ClosingModelsMsg`
+    - `g_HudSensorTracker_LargeModelsCheckpointFmt`
+    - `g_HudSensorTracker_MissionUnloadedMsg`
+    - `RecoilApp_PlayState_OnDeactivate()` now owns the local play-state/network checkpoint text before the `MISSIONOVER` FMV and optional network teardown.
+    - `HudSensorTracker_ShutdownMissionGameplaySystems()` now owns the mission unload/class/model/effect/weapon/objective checkpoint text, with `g_HudLoading_StopAllSoundsMsg` intentionally shared between both teardown paths.
+    - Binary Ninja still prefers inline string literals in these helpers; the named `.rdata` leaves plus address comments are the authoritative reconstruction on this strip.
+    - The same BN decl-render quirk applies to the recovered teardown row itself: even after symbol recovery, `get_data_decl(...)` may still fall back to raw-address arrays for `g_HudLoading_StopAllSoundsMsg`, the `HudSensorTracker_*` checkpoint leaves, and `g_HudSensorTracker_LargeModelsCheckpointFmt`, so keep the address comments authoritative.
+  - the adjacent briefing/fill-bitmap widget tail is explicit too:
+    - `HudUiWidget_FTable + 0x84` is now the shared `SetNormalizedValue(float)` slot on the live fill-bitmap family.
+    - `g_HudUiFillBitmap_Vtbl` is the base fill-bitmap vtable:
+      - `HudUiFillBitmap_SetValueAndInvalidate()` is the base `SetNormalizedValue(float)` implementation.
+      - `HudUiFillBitmap_HidePreviewIfIdle()` is the fill-bitmap-specific `+0x88` tail helper.
+    - `g_HudUiBriefingTransportProgress_Vtbl` is the derived briefing transport-progress vtable:
+      - it shares the fill-bitmap tail and overrides `+0x84` with `HudUiFillBitmap_SetValueAndRebuildRects()`.
+    - `HudUiFillBitmap_UpdateNormalizedFromCursorAndActivate()`, `HudUiOptionsPanel_SoundVolume_SyncFromOptions()`, and `HudUiOptionsPanel_MusicVolume_SyncFromOptions()` now all dispatch through that shared normalized-value slot instead of raw `__offset(0x84)` calls.
+    - `HudUiBriefingRuntime` now matches the live `0xBA70` briefing allocation exactly:
+      - `base`
+      - `actionQueue`
+      - `transportProgress`
+      - `missionName`
+      - `objectiveSummary`
+      - `objectiveDesc`
+      - `objectivePicture`
+      - `transmissionHalted`
+      - `messagesPanel`
+      - `locatorPanels[6]`
+    - `Briefing_StartForMission()`, `Briefing_ThreadMain()`, `Briefing_BuildObjectiveActionsFromIndex()`, and `Briefing_SetProgressAndSleep()` now propagate through that full runtime type instead of the older `A9xx/B8xx` offset-suffixed drift.
+    - `g_HudUiBriefingRuntime_Vtbl` is now pinned as `{ HudUiBriefingRuntime::Update, HudUiBackground::SetEnabled, HudUiBriefingRuntime::ScalarDeletingDestructor }`.
+    - A small local `HudUiBriefingRuntimeLifecycleView` is still kept in the ctor/dtor/update path because it renders the EH-sensitive queue-state stores more cleanly than forcing the full type everywhere.
+  - `g_RecoilApp_PlayState`
+    - the load-game handoff stores `_strdup("SavedGames\\...")` into `m_pendingLoadGameZarPath`
+    - `RecoilApp_PlayState::OnTryBecomeCurrent()` consumes that path, loads the SavedGames archive through `zUtil::ZAR_LoadFileGlobal(...)`, runs `LOAD_GAME_START`, then frees and clears the field
+    - BN 5.2 still leaves one stale nested-field render at `0x435c37` with the older `m_pendingLoadGameStartZarPath` text; the type/comment set is the authority
+  - the shell-state vtable strip is explicit too:
+    - `g_RecoilStateBaseDefault_Vtbl`
+    - `g_RecoilApp_MpExitDialogState_Vtbl`
+    - `g_RecoilApp_LeaveNetworkState_Vtbl`
+    - `g_RecoilApp_MainMenuPrepState_Vtbl`
+    - `g_RecoilApp_IntroFmvState_Vtbl`
+    - `g_RecoilApp_AttractFmvState_Vtbl`
+    - `g_RecoilApp_MissionFmvState_Vtbl`
+    - `g_RecoilApp_PlayState_Vtbl`
+    - `g_RecoilStateBaseDefault_Vtbl` is the shared ctor-installed and dtor-restored base/default state table
+    - the key default slots on that row are now pinned directly:
+      - `+0x0c = zStub_ReturnTrue` for the default no-arg `OnTryBecomeCurrent()` accept stub
+      - `+0x10 = zStub_ReturnFalse` for the default no-arg `OnUpdateShouldQuit()` continue stub
+      - `+0x24 = RecoilApp_State_ReturnHandled(self, wParam, lParam)` for the default handled-state `OnIdleOrDispatch()` hook
+    - the packed `0x4d0aa0..0x4d0b90` block is now fully materialized as those seven adjacent `RecoilApp_IState_Vtbl` globals rather than anonymous `.rdata`
+    - `RecoilApp_Ctor()` and the individual state ctors now assign those named `RecoilApp_IState_Vtbl` globals directly.
+    - the slot commentary on that strip is normalized to `OnTryBecomeCurrent` at `+0x0c`; the older `OnCanBecomeCurrent` wording is superseded
+    - after the latest BN raw-address drift, `rename_data(...)` plus `get_xrefs_to(name_or_address=...)` re-confirmed that those seven concrete vtable names still resolve correctly even when `get_data_decl(...)` lags behind
+- the current proving comments on that block cover `OnTryBecomeCurrent`, `OnUpdateShouldQuit`, `OnDeactivate`, and `OnIdleOrDispatch` where applicable
+  - the two handled-state dispatch stubs now also keep their explicit message-hook ABI in BN:
+    - `RecoilApp_State_ReturnHandled(self, wParam, lParam)` is `mov eax, 1 ; retn 8` and stays the shared default `+0x24 = OnIdleOrDispatch` stub
+    - `RecoilApp_FmvState_OnIdleOrDispatch(self, wParam, lParam)` is the matching `mov eax, 1 ; retn 8` FMV-specific stub
+    - `g_RecoilApp_IntroFmvState_Vtbl + 0x24` and `g_RecoilApp_AttractFmvState_Vtbl + 0x24` now explicitly point at that FMV-specific helper
+    - the simple embedded states also share `RecoilApp_IState_Dtor()` / `RecoilApp_IState_ScalarDeletingDtor()`, which reset back to `g_RecoilStateBaseDefault_Vtbl` before optional delete.
+    - Binary Ninja's raw data-declaration view may still show `0x4d0aa0..0x4d0b90` instead of the symbol names; the decompiler/xref/comment view is the authoritative result on this strip.
+  - the older placeholder shell types `RecoilApp_Subobj160`, `RecoilApp_Subobj1A0`, and `RecoilApp_Subobj1D8` are now retired in favor of the real attract/intro/mission FMV state objects
+- The gameplay bring-up / mission-reload path now has committed shared archive, sample-set, checkpoint, and trigger literals instead of anonymous string leaves:
+  - `g_HudUiMgr_HudArchiveName`
+  - `g_RecoilApp_LoadingCommonSoundsMsg`
+  - `g_RecoilApp_CommonSoundsSampleSetName`
+  - `g_HudSensorTracker_ObjectivesArchiveName`
+  - `g_HudSensorTracker_StartAnimsArchiveName`
+  - `g_HudSensorTracker_NewGameStartTriggerGroup`
+  - `g_HudSensorTracker_LoadGameStartTriggerGroup`
+  - `g_HudSensorTracker_FindMissionObjectivesMsg`
+  - `g_HudSensorTracker_PickupArchiveName`
+  - `g_HudSensorTracker_EffectsArchiveName`
+  - `g_HudSensorTracker_WeaponsArchiveName`
+  - `g_HudSensorTracker_AiArchiveName`
+  - `g_HudSensorTracker_WeatherArchiveName`
+  - `g_PickupAirdropSpawnRef_Vtol2Name`
+  - these names are anchored by:
+    - `RecoilApp_PlayState_OnTryBecomeCurrent()`
+    - `HudSensorTracker_InitMissionGameplaySystems()`
+    - `HudSensorTracker_ApplyMissionDataAndReload()`
+    - `HudSensorTracker_ZarMissionLate_RestoreCallback()`
+  - the `NEW_GAME_START` / `LOAD_GAME_START` trigger-group pair is now committed as real `.rdata` leaves in the BN database too; earlier repo notes were ahead of the actual symbol state there
+  - the startup-side subset is now committed there too:
+    - `g_HudUiMgr_HudArchiveName` = `hud.zrd`
+    - `g_RecoilApp_LoadingCommonSoundsMsg` = `Loading common sounds`
+    - `g_RecoilApp_CommonSoundsSampleSetName` = `COMMON`
+    - `g_HudSensorTracker_StartAnimsArchiveName` = `StartAnims.zrd`
+  - the direct gameplay bring-up callsites in `RecoilApp_PlayState_OnTryBecomeCurrent()` are now anchored too:
+    - `g_RecoilApp_LoadingCommonSoundsMsg`
+    - `g_RecoilApp_CommonSoundsSampleSetName`
+    - `g_RecoilApp_VersionString`
+    - `g_HudSensorTracker_ObjectivesArchiveName`
+    - `g_HudSensorTracker_LoadGameStartTriggerGroup`
+    - `g_HudSensorTracker_NewGameStartTriggerGroup`
+    - `g_HudSensorTracker_StartAnimsArchiveName`
+  - the adjacent common/mission archive bring-up callsites are now anchored too:
+    - `g_HudUiMgr_HudArchiveName`
+    - `g_HudSensorTracker_PickupArchiveName`
+    - `g_HudSensorTracker_EffectsArchiveName`
+    - `g_HudSensorTracker_WeaponsArchiveName`
+    - `g_HudSensorTracker_AiArchiveName`
+    - `g_HudSensorTracker_WeatherArchiveName`
+    - `g_HudSensorTracker_FindMissionObjectivesMsg`
+  - the adjacent mission-start resource callsites are now anchored too:
+    - `g_Player_ConfigArchiveName`
+    - `g_zDEClient_ConfigArchiveName`
+    - `g_zEffectAnim_DefaultArchiveName`
+    - `g_PickupAirdropSpawnRef_Vtol2Name`
+    - `g_Player_CopterSndName`
+    - `g_Player_BftSplashAnimName`
+  - Binary Ninja may still render these as inline string literals in HLIL even after the `.rdata` symbols are named; the data-var names and address comments are the authoritative reconstruction on this strip.
+- The adjacent tracker mission-runtime shell band is now locally stabilized without forcing a full `HudSensorTracker` rewrite:
+  - `HudSensorTracker_LoadMissionCoreResources()` now cleanly resolves `worldNode_f0`, `cameraNode_f4`, `windowNode_f8`, and `displayNode_fc`, while the same local view proves `missionId_dc`, `missionRuntimeLoaded_d8`, and the shared `missionPathBuffer_e8`.
+  - `HudSensorTracker_SetMissionId()`, `HudSensorTracker_GetMissionId()`, `HudSensorTracker_SetZbdPath()`, `HudSensorTracker_InitMissionIdAndFlags()`, and `HudSensorTracker_ResetMissionState()` all reuse that same function-local mission-core view.
+  - `HudSensorTracker_ShutdownMissionGameplaySystems()` also reuses that view on the teardown side so `missionRuntimeLoaded_d8`, `missionId_dc`, and the world/camera/window/display clears render cleanly.
+  - `missionPathBuffer_e8` is intentionally named conservatively because the same CString is reused both by the ZBD-path setter and by the mission script loader before `zInterp_Context_RunScriptFile()`.
+  - `effectResourceNode_e0` is also intentionally conservative; the live path only proves that it is seeded by `HudSensorTracker_InitMissionIdAndFlags()` and forwarded into `zEffect_SetResourceNode()`.
+  - The neighboring mission-core startup literal strip is explicit too:
+    - `g_HudSensorTracker_MissionInitGwPathFmt` = `support\\initm%d.gw`
+    - `g_HudSensorTracker_MissionGsPathFmt` = `m%d.gs`
+    - `g_HudSensorTracker_MissionZbdGsPathFmt` = `m%d_zbd.gs`
+    - `g_HudSensorTracker_MissionSoundSetNameFmt` = `M%d`
+    - `g_HudSensorTracker_WorldNodeName` = `world1`
+    - `g_HudSensorTracker_CameraNodeName` = `camera1`
+    - `g_HudSensorTracker_WindowNodeName` = `window1`
+    - `g_HudSensorTracker_DisplayNodeName` = `display`
+  - `HudSensorTracker_LoadMissionCoreResources()` now formats the init script, selects the normal or zbd gameplay-script path, formats the mission sound-set name, and resolves the world/camera/window/display nodes through those named `.rdata` leaves.
+  - `HudSensorTracker_ShutdownMissionGameplaySystems()` shares `g_HudSensorTracker_MissionSoundSetNameFmt` on the unload side.
+  - The next mission-start resource strip is explicit too:
+    - `g_Player_ConfigArchiveName` = `player.zrd`
+    - `g_zDEClient_ConfigArchiveName` = `declient.zrd`
+    - `g_Player_CopterSndName` = `snd_chopper`
+    - `g_Player_BftSplashAnimName` = `bftsplash`
+    - `g_zEffectAnim_DefaultArchiveName` = `anim.zrd`
+  - `Player_InitMissionRuntimeFromWorldAndCamera()` now clearly loads the player startup config through `g_Player_ConfigArchiveName`, reuses `g_Player_AivZrdPath` for AI vehicle startup data, caches the `bftsplash` effect anim entry through `g_Player_BftSplashAnimName`, and resolves the shared copter sound/sample name through `g_Player_CopterSndName`.
+  - `Player_CacheDisableCopterSndNodesAndStopSample()` reuses that same `g_Player_CopterSndName` on the node-cache/disable path.
+  - `zDEClient_Init()` now clearly loads and reports `g_zDEClient_ConfigArchiveName`.
+  - The player/airdrop literal trio is explicit too:
+    - `g_Player_CopterSndName` = `snd_chopper`
+    - `g_Player_BftSplashAnimName` = `bftsplash`
+    - `g_PickupAirdropSpawnRef_Vtol2Name` = `vtol2`
+  - `HudSensorTracker_InitMissionGameplaySystems()` now visibly passes `g_zEffectAnim_DefaultArchiveName` into `zEffect_Anim_LoadAndInstantiate()`, while the callee-side file open still goes through the mutable `g_zEffectAnim_ZbdFilename` buffer.
+  - The neighboring mission gameplay-system archive literals are explicit too:
+    - `g_HudSensorTracker_PickupArchiveName` = `pickup.zrd`
+    - `g_HudSensorTracker_EffectsArchiveName` = `effects.zrd`
+    - `g_HudSensorTracker_WeaponsArchiveName` = `weapons.zrd`
+    - `g_HudSensorTracker_AiArchiveName` = `ai.zrd`
+    - `g_HudSensorTracker_ObjectivesArchiveName` = `objectives.zrd`
+    - `g_HudSensorTracker_WeatherArchiveName` = `Weather.zrd`
+  - Binary Ninja still prefers inline archive literals in `HudSensorTracker_InitMissionGameplaySystems()` and `RecoilApp_PlayState_OnCanBecomeCurrent()` even after those `.rdata` leaves are named; the data-var names and address comments are the authoritative reconstruction on that strip.
+  - The same local view was explicitly rejected for `HudSensorTracker_InitMissionGameplaySystems()` because it cleaned the mission-core node slots but regressed the tracker `+0x4c` path into raw padding math; that function stays on the broader tracker type for now.
+- The adjacent mission-map overlay slice in `HudSensorTracker` is now stable on the reachable path:
+  - `mapOverlayCenterX` and `mapOverlayCenterY` are midpoint coordinates derived from the current outer overlay rect in `HudSensorTracker_SetBounds()`.
+  - `loadedMapPath` is the owned `_strdup(mapPath)` copy set by `HudSensorTracker_LoadMapFromPath()` and freed by `HudSensorTracker_MapShutdownAndReset()`.
+  - `mapSndOn`, `mapSndOff`, and `mapSndClick` are `zSndSample*` slots loaded by `HudSensorTracker_LoadMissionMapAndSfx()` from `snd_mapOn`, `snd_mapOff`, and `snd_mapClick`.
+  - `mapNodeListHead` is the tracker-owned intrusive `HudSensorMapNode*` list head used by map load, remove, update, and objective-marker state helpers.
+  - `HudSensorTracker_MapInsertNodeAndGrowBounds()` inserts those `HudSensorMapNode` records at the head and widens the cached map bounds from each node's cached bounds.
+  - `HudSensorMapNode.blinkTimerSec` is the float timer at node `+0x1c`; `HudSensorMapNode::DrawOnTracker()` decrements it by `0.075f`, resets it to `0.25f`, and swaps the low/high 16-bit halves of `packedColor565Pair` when the timer expires.
+  - `HudLinePoint2I` is the integer two-coordinate point used for immediate clipped line-strip submission, distinct from the float `HudLinePoint2` used by the HUD line-clipping math. `HudSensorTracker::DrawMarkerCross()` builds two `HudLinePoint2I[2]` strips for the horizontal and vertical cross arms.
+  - `g_HudSensor_ProjectScratch @ 0x4edc78` is the shared `zVec3[0x400]` map-projection scratch array used by `HudSensorMapNode::DrawProjectedPath()`; it occupies `0x4edc78..0x4f0c78`, immediately before `g_HudSensor_ClipSegmentStart`.
+  - `mapLoadedFlag` is a 4-byte loaded/active map gate set by `HudSensorTracker_LoadMapFromStream()` and then reused by the overlay-begin, overlay-end, and update helpers as a simple boolean.
+  - The loaded map-header extents now split cleanly into:
+    - `mapBoundsMinX_028`
+    - `mapBoundsMinZ_030`
+    - `mapBoundsMaxX_034`
+    - `mapBoundsMaxZ_03c`
+  - `HudSensorTracker_LoadMapFromStream()` still reads a contiguous `0x18`-byte block for that area; two dwords in that block remain unread on the reachable path and stay conservative as `unknown_02c` and `unknown_038`.
+  - `HudSensorTracker_MapOverlayBeginShow()` plays `mapSndOn`.
+  - `HudSensorTracker_MapOverlayEndShow()` plays `mapSndOff`.
+  - `HudSensorTracker_MapZoomIn()` and `HudSensorTracker_MapZoomOut()` both play `mapSndClick`.
+  - `trackedSaveStateSelection` is the currently selected `zUtil_SaveGameState*` on the same tracker head branch.
+  - The tracker world-position/origin/forward pointers and fallback/scale triples in the `+0x6c..+0xc0` slice are `zVec3`-shaped, not raw float arrays. `HudSensorTracker::UpdateMapScaleLerp()` lerps `mapScaleCurrent_094` from `mapScaleStart_0a8` to `mapScaleGoal_0b4` with `mapScaleLerpT_0a0` clamped to `g_HudSensorTracker_MapScaleLerpMaxT` (`1.0f`).
+  - `HudSensorTracker_SetTrackedSaveState()` seeds or clears that selected marker pointer.
+  - `HudSensorTracker_DrawSaveStateMarker()` skips the selected save-state marker during the general marker pass.
+  - `HudSensorTracker_DrawTrackedSaveStateMarker()` renders that selected marker separately through `trackedSaveStateSelection->playerState_004->worldPos_3ec`; it uses the local player's packed network color when networking is enabled and a green `RGB(0,255,0)` marker otherwise.
+  - `HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag()` scans the HUD sensor track list for player/turret nodes matching the current variant gate and a 650-unit X/Z distance window, round-robins one candidate for a camera-target scene-path test, places track-counter widgets for visible candidates, and then updates the active weapon reticle/progress target.
+  - `HudSensorTracker_SetSaveStateMarkerMaxDistance()` stores the squared maximum save-state marker range at tracker `+0xc8`, and `HudSensorTracker_DrawSaveStateMarker()` reuses that same threshold for range culling and network-marker scaling.
+  - `HudSensorTracker_DrawSaveStateMarker()` draws unselected save-state markers in place when the max-distance gate is zero or the squared horizontal distance is within range. When networking is enabled and the save state is out of range, it scales the relative vector by the raw float-bit approximation `(bits(maxDistSq / distSq) >> 1) + 0x1fc00000`, projects the edge marker, colors it from the save state's network player row, and emits an occlusion sample through `zRndr_SpanOcclusion_TestSample(x, y, color16)`.
+  - On the non-network direct-marker path, `HudSensorTracker_DrawSaveStateMarker()` uses a red `RGB(255,0,0)` marker.
+  - `HudSensorTracker_GetSaveStateRelativeVectorLen()` subtracts `trackedWorldOriginPtr_074` from `trackedSaveState->playerState->worldPos_3ec`, writes the delta to the caller buffer, clears delta Y, and returns either horizontal distance squared or its square root depending on the `takeSqrt` flag.
+  - `g_HudSensorTracker_ObjectiveBlinkColorRedRgb24` is the shared objective-marker blink color constant on the reachable mission-update/reload path:
+    - both `HudSensorTracker_UpdateObjectiveFlow()` and `HudSensorTracker_ApplyMissionDataAndReload()` pass `&g_HudSensorTracker_ObjectiveBlinkColorRedRgb24` into `HudSensorTracker_SetObjectiveMarkerColorBlink()`
+    - the committed dword is `0x000000ff`
+    - `HudSensorMapNode_SetColorRgb()` consumes that pointer as RGB24 bytes, so the effective blink color is red `RGB(255,0,0)`
+  - `g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24` is the neighboring non-blink objective-marker color constant:
+    - `HudSensorTracker_FindAndHighlightFirstIncompleteObjective()` passes `&g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24` into `HudSensorTracker_SetObjectiveMarkerEnabledAndColor()`
+    - the committed dword is `0x00ff0000`
+    - `HudSensorMapNode_SetColorRgb()` consumes that pointer as RGB24 bytes, so the effective color is blue `RGB(0,0,255)` for the first incomplete objective marker
+  - The objective-marker helper split is now explicit too:
+    - `HudSensorTracker_SetObjectiveMarkerEnabledAndColor()` sets RGB24 color and enabled state without the blink-only packed-color swap.
+    - Its `colorRgb24` argument is intentionally nullable because `HudSensorMapNode_SetColorRgb()` preserves the current RGB bytes when the pointer is null.
+    - `HudSensorTracker_FindAndHighlightFirstIncompleteObjective()` scans for the first incomplete objective, applies the blue marker color, and returns that objective index.
+    - `HudSensorTracker_UpdateObjectiveFlow()` and `HudSensorTracker_LoadObjectivesFromZrd()` now read cleanly through that side-effect-aware naming instead of the older generic helper names.
+  - The objective-slot payload is now explicit on the same mission-objective branch:
+    - `completedFlag_00`
+    - `autoplayFlag_04`
+    - `activationNode_08`
+    - `inactivationNode_0c`
+    - `objectiveImage_10`
+    - `readSoundSample_318`
+  - `HudSensorTracker_ObjectiveSlot_Reset()` now clearly releases the transient `objectiveImage_10` image ref, while `HudSensorTracker_LoadObjectivesFromZrd()` proves the ACTIVE/INACTIVE node refs and the per-objective `READ_SOUND` sample slot.
+  - `Mission_LoadFromPath()` proves `autoplayFlag_04` from the optional `AUTOPLAY` child node, and `HudSensorTracker_UpdateObjectiveFlow()` consumes that flag on the objective-panel auto-advance branch.
+  - The transient mission save/reload blob preserves those objective briefing image refs through `HudSensorTracker_MissionData.objectiveImageRefs_30`, so `HudSensorTracker_ApplyMissionDataAndReload()` restores each slot's image handle instead of rebuilding it from text alone.
+  - `HudSensorTracker_GetObjectiveBriefingStringsAndImageRef()` now uses a narrow local lookup view from tracker base + objective-slot stride, so the briefing path renders `objectiveTitle_14`, `objectiveDesc_114`, and `objectiveImage_10` directly without forcing a wider `HudSensorTracker` rewrite in the still-drifting surrounding region.
+  - `HudSensorTracker_ApplyMissionDataAndReload()` now uses a stride-correct local objective image cursor plus a plain `zVid_Image**` mission-data cursor, so the restore loop reads as direct `objectiveSlot->objectiveImage_10 = *objectiveImageRefCursor` instead of `&objectiveImage_10`-anchored pointer math.
+  - The adjacent objective-flow state-machine band is now also stabilized through a function-local `HudSensorTrackerObjectiveFlowView` rather than another global tracker rewrite:
+    - `Mission_LoadFromPath()` seeds default `READ_TIME = 4.0f`, `REVIEW_DELAY = 4.0f`, and default `READ_SOUND` extra delay `2.0f` before mission-node overrides.
+    - `HudSensorTracker_LoadObjectivesFromZrd()` seeds `objectiveReviewSfx_118`, `objectiveIncomingSfx_110`, `objectiveCompleteSfx_128`, per-slot `readSoundSample_318`, and the optional `objectiveReadSoundDelaySec_130` override.
+    - `HudSensorTracker_ResetHudForMissionStart()`, `HudSensorTracker_AdvanceObjectiveState()`, `HudSensorTracker_SetObjectiveReviewVisible()`, `HudSensorTracker_SetObjectivePanelVisible()`, `HudSensorTracker_UpdateObjectiveFlow()`, and `HudSensorTracker_ApplyMissionDataAndReload()` now all share named local fields for mission id, flow state, deadlines, current read sound, current/first objective indices, objective count, completed count, final-mission flag, and the delayed main-menu transition timer.
+    - Binary Ninja still leaves two raw stride renders for `slot->readSoundSample_318` in `HudSensorTracker_AdvanceObjectiveState()` and still shows the default `2.0f` delay as `&data_40000000` in `Mission_LoadFromPath()`; the address comments in the BN DB are the authority for those stop-points.
+  - The neighboring tracker `+0xcc` field is assembly-confirmed as the per-update map-overlay lerp-T increment, but the broader tracker type still drifts in that region, so that one remains comment-backed rather than forced into another global struct rewrite.
+  - The broader `HudSensorTracker` head still has neighboring drift on this branch, so the current reconstruction only treats the `0x58..0x6c` slice as fully settled.
+- The reachable startup / mission ZRDR path strip is now explicit too:
+  - `g_RecoilApp_RootZrdrArchivePath` = `zbd\\zrdr.zbd`
+  - `g_zUtil_MissionZrdrArchivePathFmt` = `zbd\\m%d\\zrdr.zbd`
+  - `g_zUtil_CommonZrdrSearchPath` = `..\\data\\common\\zrdr`
+  - `g_zUtil_MissionZrdrSearchPathsFmt` = `..\\data\\common\\zrdr;..\\data\\m%d\\zrdr;..\\data\\m%d\\zrdr\\aipath`
+  - `g_zImage_CommonTextureSearchPaths` = `..\\data\\common\\textures;..\\data\\common\\effects\\textures`
+  - `RecoilApp::InitInstance()` seeds the common ZRDR search root and mounts the shared `zrdr.zbd` archive during bootstrap.
+  - `zUtil_SetMissionZrdrPathsAndMountZbd()` refreshes the common texture search paths, rebuilds the mission ZRDR search-path list, and mounts the mission-local `zrdr.zbd` archive once world state exists.
+  - The bare `\"zbd\"` token is intentionally still left as a raw literal because the same string is reused both as a search-root token and as a file-extension token on the reachable path.
+- The startup bootstrap now also has explicit shell literals for the early localization/media gate:
+  - `g_RecoilApp_MessagesDllName` = `MESSAGES.DLL`
+  - `g_RecoilApp_IntroVideoProbePath` = `video\\intro_01.avi`
+  - `zLoc_LoadMessagesDll()` now uses `enum zLocMessagesDllLoadResult`, and `RecoilApp::InitInstance()` treats `ZLOC_MESSAGES_DLL_LOAD_FAILED` as the fatal startup localization branch before localized UI/message formatting is available.
+  - the adjacent runtime row is now explicit too:
+    - `g_zLoc_MessagesDllHandle`
+    - `g_zLoc_GetIdExportName` = `ZLocGetID`
+    - `g_zLoc_GetIdProc`
+    - `g_zLoc_TempMessageBuffer`
+  - `zLoc_GetMessageId(messageKey)` is now the accepted fastcall wrapper over the loaded `ZLocGetID` export: it returns `0` when the proc is missing and otherwise forwards the message key into the loaded DLL export.
+  - `zLoc_GetMessageString(messageId)` formats into `g_zLoc_TempMessageBuffer` and returns that buffer on success.
+  - `zLoc_FormatMessage(outBuffer, maxChars, messageId, ...)` is now the accepted `cdecl` variadic wrapper over `FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_HMODULE, g_zLoc_MessagesDllHandle, ...)`: it trims trailing `\r\n`, copies into the caller buffer, and returns the copied character count.
+  - The play-state startup loading checkpoints now prove the inserted-format arguments on the non-WOL path:
+    - message `3` with `g_RecoilApp_VersionString`
+    - message `5` with `zVid_GetSelectedHwApiDescriptionOrDefault()`
+    - message `6` with `zVideo_GetSelectedD3DDeviceNameOrFallback()`
+  - `zLoc_UnloadMessagesDll()` still behaves like teardown-only shutdown on the reachable path because it clears the DLL handle but does not clear `g_zLoc_GetIdProc`.
+  - The same startup function then loops on `FindFileOnDrives(5, g_RecoilApp_IntroVideoProbePath, 0)` before continuing past the intro-video disc gate.
+  - Binary Ninja 5.2 may still show these strings as raw-address arrays or inline literals after recovery, and may still inline `"ZLocGetID"` or leave raw-address decls for the runtime localization globals after successful replay; the named data vars plus the address comments at the live startup/play-state callsites are the authoritative record.
+- The startup audio bootstrap has an explicit shell literal too:
+  - `g_RecoilApp_SoundsZrdName` = `sounds.zrd`
+  - `RecoilApp_StartEngine()` passes `g_RecoilApp_SoundsZrdName` into `zSndSystem_Init(hWnd, ...)`.
+  - Binary Ninja 5.2 may still keep this callsite as the inline literal `\"sounds.zrd\"`; the symbol/xref resolution and the address comment at `0x42e258` are the authoritative record.
+- The startup localization-failure path is explicit too:
+  - `g_RecoilApp_SourceFile_RecoilAppCpp` = `D:\\Proj\\Battlesport\\RecoilApp.cpp`
+  - `g_RecoilApp_ExitAtFileLineFmt` = `Exit at %s:%d\\n`
+  - `g_RecoilApp_DoubleNewline` = `\\n\\n`
+  - If `MESSAGES.DLL` fails to load, `RecoilApp::InitInstance()` emits a debug `Exit at <file>:<line>` string, appends the Win32 system error text, appends a blank separator, appends the DLL name, shows the fallback dialog, and exits.
+- The shell/app version string is explicit too:
+  - `g_RecoilApp_VersionString` = `1.0`
+  - `RecoilApp_GetVersionString()` returns that retail version string.
+  - The same value is reused by `RecoilApp::InitInstance()` for options-registry context init and by `RecoilApp_PlayState_OnTryBecomeCurrent()` for the localized gameplay loading-status message.
+- The startup/options registry-context row is explicit too:
+  - `g_zGame_Options_RegRootPrefixPtr` points at `g_zGame_Options_RegRootPrefix = "SOFTWARE\\"`.
+  - `g_zGame_Options_RegPathSeparator = "\\"` is the shared subkey separator used by the load/save registry builders.
+  - `g_zGame_Options_RegContextInitialized` is the runtime init latch for the duplicated registry path segments and option list.
+  - `zGame_Options_InitRegistryContext(regKeySegmentA, regKeySegmentB, regKeyVersionSegment)` duplicates the localized path segments plus version leaf, clears `g_zOpt_OptionListHead`, marks the registry context initialized, and seeds runtime defaults.
+  - `zGame_Options_GetOrCreateOption(name, storageType, dataSize, registryScope)` is now pinned as `__fastcall`: `ECX=name`, `EDX=storageType`, and the two stack args are `dataSize` and `registryScope` (`retn 8`).
+  - `zGameOptionRegistryScope` now includes `MACHINE`, `USER`, and `TRANSIENT`, where `TRANSIENT` is the reachable runtime-only/non-persisted row used by the joystick/network/section options in `zGame::Options_LoadGameOptions()`.
+  - `zGameOptionStorageType` is now explicit too:
+    - `INLINE_DWORD` is the normal 4-byte dword option family
+    - `INLINE_BINARY4` is the proven inline-float family used by `SoundVolume`
+    - `INLINE_BINARY8` is the inline 8-byte binary family
+    - `STRING_BUFFER` is the proven owned char-buffer family used by `PlayerName`
+    - `HEAP_BUFFER` is the proven owned buffer family used by `Camera`, `Render`, `Display`, `Window`, and `CmdMap`
+    - values `4..6` stay as explicit heap-buffer variants because the reachable retail path still does not prove their stronger original semantics
+  - `zGame::Options_LoadFromRegistry()` and `zGame_Options_SaveToRegistry()` both build the shared `SOFTWARE\\<segmentA>\\<segmentB>\\<version>` subkey from that row.
+  - `zOptionEntry.registryScope` now resolves to `USER -> HKCU`, `MACHINE -> HKLM`, and `TRANSIENT -> skip the reachable registry load/save paths`.
+  - `zOptionEntry.storageType` now drives the full inline-vs-owned payload split too: `INLINE_DWORD` stores a 4-byte dword inline, `INLINE_BINARY4/8` store 4/8 bytes inline in the node head, and `STRING_BUFFER` plus the heap-buffer variants allocate an owned `payloadOrBuffer`.
+  - The `PlayerName` access row is explicit too: `zOpt_GetPlayerName()` returns the owned `STRING_BUFFER` payload directly, and `zOpt::SetPlayerName(newName)` is the ECX-only writer that copies/clamps into that same buffer.
+  - The WOL password flag row is explicit too: `zOpt::SetWolPasswordFlag(value)` is the side-effect-only writer for `g_zOpt_WolPasswordFlagOption->value`, used by startup default seeding and the WOL config dialog commit path.
+  - `Network`, `NetworkModem`, and `NetListen` now share `zOptNetworkOptionState` (`DISABLED` / `ENABLED`): the tiny helpers are just option-bank payload accessors, `zGame::Options_LoadGameOptions()` seeds all three to disabled on the retail startup path, `zGame_Options_SaveGameOptions()` clears `Network` and `NetworkModem` again before registry persist, and the reachable multiplayer setup/browser/session-create callers enable them only through those same setters.
+  - The `Fullscreen` row is explicit too: `zOpt_GetFullscreenOption()` / `zOpt_SetFullscreenOption()` now share `zOptFullscreenOptionState` (`DISABLED` / `ENABLED`), `RecoilApp_InitializeDisplay()` forwards that enum into `zVideo_init_InitVideoSystem(...)`, `zVideo_init_BindRendererDispatch(rendererBackend, fullscreenOption)` caches it in `g_zVideo_FullscreenOption`, `zVid_SetHwApiAndInitMode()` forces fullscreen enabled on the hardware-startup path before selecting 640x480, `zVid_InitFallbackMode()` restores the saved frame copy, and `CZRecoilFrame_OnMenuToggleFullscreenOption()` is the void shell toggle for menu command `0x9C4E`.
+  - `zGame_Options_ShutdownRegistryContext()` is the exit-time side-effect-only teardown that frees the runtime option list plus the duplicated registry path segments and resets the init latch.
+  - Binary Ninja 5.2 may still keep some compiler-lowered copies of `SOFTWARE\\` and `"\\"` inline in HLIL and may still drop some trailing `GetOrCreateOption(...)` stack args inside `zGame::Options_LoadGameOptions()` because of stack-slot reuse, so the named data vars, enum-backed decomp, and address comments are the authoritative record on this row.
+- The startup shell head is a partial `CWinApp`-style layout:
+  - The live application singleton is `g_RecoilApp` in `.bss` at `0x4f3ca8`.
+  - `RecoilApp_StaticInit()` passes `&g_RecoilApp` into `RecoilApp_Ctor()` during shell/bootstrap bring-up.
+  - The surrounding CRT/bootstrap helpers are now explicit too:
+    - `RecoilApp_StaticInitAndRegisterAtExit()` runs the singleton bring-up micro-strip.
+    - `RecoilApp_RegisterAtExit()` registers the shutdown callback through `crt_register_onexit()`.
+    - `RecoilApp_AtExitDtor()` tailcalls `RecoilApp_Dtor(&g_RecoilApp)` during process teardown.
+  - The adjacent embedded state-constructor row is now bounded too:
+    - `RecoilApp_AttractFmvState_Ctor()`, `RecoilApp_MissionFmvState_Ctor()`, and `RecoilApp_PlayState_Ctor()` are all side-effect-only ctors on the reachable path
+    - the stale `self` return on each helper is constructor ABI residue, not a semantic return contract
+  - The adjacent standalone singleton state/overlay-owner ctor row is bounded too:
+    - `RecoilStateMainMenuTransition_Ctor()`, `RecoilStateConfirmQuit_Ctor()`, `RecoilStateSaveLoadTransition_Ctor()`, `RecoilStateCheatCode_Ctor()`, `RecoilStateControls_Ctor()`, `RecoilStateCredits_Ctor()`, `HudCmdDialogState_Ctor()`, `HudUiOptionsPanelOverlayOwner_Ctor()`, and `HudUiNetGameSetupOverlayOwner_Ctor()` are all side-effect-only ctor bodies on the reachable path
+    - each has exactly one current bring-up caller, the matching singleton wrapper (`StaticInit()` or `HudCmdDialogState_InitInstance()`)
+    - the noteworthy field seeds on that row are now explicit too:
+      - `RecoilStateMainMenuTransition_Ctor()` seeds `m_entryRoute = RECOIL_MAINMENU_ROUTE_FRONTEND`, `m_deferredVideoModeIndex = -1`, and clears `m_mainMenuDialog` / `m_pausedAudioSnapshot`
+      - `RecoilStateSaveLoadTransition_Ctor()` seeds `m_dialogKind = RECOIL_SAVELOAD_DIALOG_SAVE` and clears `m_dialog`
+      - `HudUiNetGameSetupOverlayOwner_Ctor()` clears `m_panel` and `m_reconfigureExistingSession_08`
+    - the stale `self` return on each helper is VC6 constructor ABI residue, not a semantic return contract
+  - The adjacent `HudUiNewGamePanelOverlayOwner` singleton wrapper row is bounded too:
+    - `HudUiNewGamePanelOverlayOwner_StaticInitAndRegisterAtExit()`, `HudUiNewGamePanelOverlayOwner_StaticInit()`, `HudUiNewGamePanelOverlayOwner_RegisterAtExit()`, and `HudUiNewGamePanelOverlayOwner_AtExitDtor()` are all side-effect-only wrappers on the reachable path
+    - the current proving split is explicit:
+      - CRT init-array entry `0x4da044` points at `HudUiNewGamePanelOverlayOwner_StaticInitAndRegisterAtExit()`
+      - `StaticInitAndRegisterAtExit()` only executes `StaticInit(); RegisterAtExit()`
+      - `StaticInit()` still contains the inline ctor body at `0x41c600`, which installs `g_HudUiNewGamePanelOverlayOwner_Vtbl` and clears `m_panel`
+      - `RegisterAtExit()` only registers `HudUiNewGamePanelOverlayOwner_AtExitDtor()` with `crt_register_onexit()`
+      - `AtExitDtor()` only tail-jumps into `HudUiNewGamePanelOverlayOwner_Dtor(&g_HudUiNewGamePanelOverlayOwner)`
+    - the old `return &g_HudUiNewGamePanelOverlayOwner`, `return crt_register_onexit(...)`, and wrapper tailcall returns on that row are wrapper / ctor ABI residue, not semantic return contracts
+  - The sibling Options / NetGameSetup overlay-owner singleton wrapper rows are bounded too:
+    - `HudUiOptionsPanelOverlayOwner_StaticInitAndRegisterAtExit()`, `HudUiOptionsPanelOverlayOwner_StaticInit()`, `HudUiOptionsPanelOverlayOwner_RegisterAtExit()`, and `HudUiOptionsPanelOverlayOwner_AtExitDtor()` are all side-effect-only wrappers on the reachable path
+    - `HudUiNetGameSetupOverlayOwner_StaticInitAndRegisterAtExit()`, `HudUiNetGameSetupOverlayOwner_StaticInit()`, `HudUiNetGameSetupOverlayOwner_RegisterAtExit()`, and `HudUiNetGameSetupOverlayOwner_AtExitDtor()` are now bounded the same way
+    - the current proving split is explicit for both families:
+      - init-array entry `0x4da018` points at `HudUiOptionsPanelOverlayOwner_StaticInitAndRegisterAtExit()`
+      - init-array entry `0x4da040` points at `HudUiNetGameSetupOverlayOwner_StaticInitAndRegisterAtExit()`
+      - both `StaticInitAndRegisterAtExit()` helpers only execute `StaticInit(); RegisterAtExit()`
+      - both `StaticInit()` helpers only tail-jump into the matching ctor on the global owner object
+      - both `RegisterAtExit()` helpers only register the matching `AtExitDtor()` through `crt_register_onexit()`
+      - both `AtExitDtor()` helpers only tail-jump into the matching inner `void` dtor
+    - the remaining `return ... __tailcall` text on those wrapper rows is wrapper / ctor ABI residue, not a semantic return contract
+  - The nearby `0x4d2000` region is not a second app object. It is `g_RecoilApp_MfcOleModule_MessageMap`, the temporary pre-full-ctor/base-dtor MFC message map returned by `RecoilApp_MfcOleModule_GetMessageMap()`.
+  - Splitting `g_RecoilApp` from `g_RecoilApp_MfcOleModule_MessageMap` is what restored the base ctor/dtor path: `RecoilApp_BaseCtorAndInitRuntime()` and `RecoilApp_MfcOleModule_Dtor()` now both render the temporary inherited RecoilApp/CWinApp vtable and its empty local message-map sentinel correctly again.
+  - The direct `RecoilApp` message-map chain is now bounded too:
+    - `RecoilApp_GetMessageMap()` returns `g_RecoilApp_MessageMap`
+    - `g_RecoilApp_MessageMap` chains into `RecoilApp_MfcOleModule_GetMessageMap()` and uses `g_RecoilApp_MessageEntries`
+    - `RecoilApp_MfcOleModule_GetMessageMap()` returns `g_RecoilApp_MfcOleModule_MessageMap`
+    - `g_RecoilApp_MfcOleModule_MessageMap` chains into `COleControlModule_GetBaseMessageMap()` and uses `g_RecoilApp_MfcOleModule_MessageEntries`
+  - Both local entry arrays are only single zero sentinels:
+    - `g_RecoilApp_MessageEntries`
+    - `g_RecoilApp_MfcOleModule_MessageEntries`
+  - On the reachable retail path that means neither the direct `RecoilApp` message-map layer nor the temporary inherited base layer contributes local routed messages of its own; routing continues into inherited MFC state.
+  - The owner-side shell fields now render without offset suffixes on the active path, including `m_hInstance`, `m_transitionTimerSec`, `m_attractFmvState`, `m_introFmvState`, `m_mainMenuPrepState`, `m_leaveNetworkState`, `m_missionFmvState`, `m_playState`, and `m_mpExitDialogState`.
+  - `RecoilApp.m_pMainWnd` lives at `+0x20`.
+  - `RecoilApp_InitMainWindow()` stores the `CreateMainWnd()` result there, then shows and updates that frame.
+  - `RecoilApp_GetMainWnd()` returns the same field, but the direct accessor is now bounded as `struct CZRecoilFrame* __thiscall RecoilApp_GetMainWnd(struct RecoilApp* self)` on the reachable non-WOL path.
+  - The current proving callers use that narrowed shell-frame contract through concrete `CZRecoilFrame` fields:
+    - `RecoilApp_InitMainWindow()` writes `RecoilApp_GetMainWnd(self)->m_app = self`
+    - `RecoilApp_StartEngineAndQueueStartupState()` reads `RecoilApp_GetMainWnd(self)->m_hWnd`
+    - `RecoilApp::InitInstance()` passes `RecoilApp_GetMainWnd(self)` into `zVid_ConfigureModeFeatureFlags(...)` and `zVid_InitStartupHwApiFromOptions(...)`
+    - `GameNet_HandlePkt14_HudTimerAndFlagsSync()` and `HudUiNetGameSetupPanel_CommitSettingsAndLaunch_OnActivate()` both read `RecoilApp_GetMainWnd(&g_RecoilApp)->m_useArchiveBanks`
+  - The broader stored `m_pMainWnd` head still stays separate from the imported-MFC base-head model; the narrowed `CZRecoilFrame*` contract belongs to the accessor, not to a wider global rewrite of the whole `RecoilApp` shell head.
+  - `Recoil_FirstInstanceCheck()` uses `FindWindowA(g_RecoilApp_WndClassNamePtr, nullptr)` as the singleton gate before startup continues.
+  - The shell also mirrors two Win32 handles into direct globals for helper-heavy call paths:
+    - `g_RecoilApp_hWndMain : HWND`
+    - `g_RecoilApp_hInstance : HINSTANCE`
+  - `CZRecoilFrame_Ctor()` is the write-side authority for both:
+    - `g_RecoilApp_hWndMain = self->m_hWnd`
+    - `g_RecoilApp_hInstance = g_RecoilApp.m_hInstance`
+  - Those globals are then reused by mixed shell/UI/network helpers such as the multiplayer-exit error dialog path, docs launching, startup input init, and Westwood upgrade UI.
+- The startup shell also has an explicit main-window class-name literal:
+  - `g_RecoilApp_WndClassName` = `RecoilClass`
+  - `g_RecoilApp_WndClassNamePtr` points at that shared leaf.
+  - `RecoilApp::InitInstance()` registers that class, `RecoilApp_ActivateExistingInstanceIfFound()` probes it through `FindWindowA()`, and `RecoilApp_ExitInstance()` unregisters it during shutdown.
+
+## Pickup runtime notes
+
+- The live pickup object callback context now resolves to `PickupSpawnDef*`, not a separate damage-proxy side type.
+- The old `OptCatalogDamageProxy_0x80` alias is dead residue with zero live xrefs after the pickup-path relink.
+- `PickupType.optEntry` is the `OptCatalogEntryDef*` cached from `OptCatalog_FindEntryByName()`.
+- `Pickup::FindOptMetaImageByOptEntry()` scans pickup types `0x11..0x21` for that `optEntry` and returns the matching `optMetaImage` used by `HudSensorTracker::ShowObjectivePickupInfo()`.
+- The pickup spawn lists are now structured globals instead of loose head/tail/count ints:
+  - `g_PickupSpawnList_Primary`
+  - `g_PickupSpawnList_NetworkCopy`
+- `PickupSpawnList` currently stays conservative as:
+  - `unknown_00`
+  - `head`
+  - `tail`
+  - `count`
+- `unknown_00` is only proven as a clear-on-empty field on the current path.
+- The live pickup helper strip now reads through that structured model:
+  - `Pickup_SpawnList_FindByPickupId()`
+  - `Pickup_CreateSpawnDefAndLink()`
+  - `Pickup_RemoveObject()`
+  - `Pickup_NetHandleSpawnDelta()`
+  - `Pickup_ReconcilePrimaryAndNetworkCopySpawnLists()`
+  - `Pickup_SendPkt11_CreateDelta()`
+  - `Pickup_SendPkt11_Flag2Delta()`
+  - `Pickup_SendPkt11_Flag8Delta()`
+
+## Westwood Online notes
+
+- The reachable Westwood Online API init path now uses canonical `WestwoodOnlineUpgradeApiInitState` instead of the older `WestwoodOnlineUpgradeApiInitState_0x64` alias.
+- `g_WestwoodOnlineUpgradeApiInitState` is currently a write-mostly `0x64` init blob, not a fully recovered runtime layout.
+- The stable proved members are:
+  - `structSize`
+  - `moduleHandlePrimary`
+  - `moduleHandleSecondary`
+  - `moduleHandleTertiary`
+  - `initArg`
+  - `reserved14`
+  - `reserved18`
+  - `criticalSection0`
+  - `criticalSection1`
+  - `criticalSection2`
+- `WestwoodOnlineUpgradeApi_Init()` seeds that global and forwards the caller module handle into `WestwoodOnlineUpgradeApiInitState_Init()` before COM object creation.
+- The three inline `RTL_CRITICAL_SECTION` instances at `+0x1c/+0x34/+0x4c` currently provide the strongest size/layout evidence on this branch.
+
+## Network notes
+
+- The live send/synthetic-packet path now uses a fixed `8`-byte `zNetworkPacketHeader`.
+- The stable header fields are:
+  - `packedTypeAndSize_00`
+  - `payloadDword0_04`
+- `GameNet_BuildPkt13_SerializedGameplayBlob()` now clearly builds:
+  - `malloc(payload + 8)`
+  - packet type in the low half of `packedTypeAndSize_00`
+  - total packet byte size in the high half of `packedTypeAndSize_00`
+  - `payloadDword0_04 = zNetwork_GetLocalPlayerKey()`
+  - variable payload copy beginning at `&packetBuf[1]`
+- The synthetic control packets emitted from `zNetwork_DPlay_HandleSystemMessage()` use that same fixed `8`-byte header and currently zero `payloadDword0_04`.
+- The global dispatch-handler list is now explicit on the live path:
+  - `g_zNetwork_DispatchHandlerListInitialized`
+  - `g_zNetworkDispatchHandlerListSentinel`
+  - `g_zNetworkDispatchHandlerCount`
+- The stable support types are:
+  - `zNetworkDispatchHandlerRecord`
+  - `zNetworkDispatchHandlerListNode`
+- `zNetworkDispatchHandlerRecord.handler_04` uses the live callback ABI:
+  - `__fastcall(senderPlayerId, packet)`
+- The current helper strip is:
+  - `zNetwork_InitDispatchHandlerList()`
+  - `zNetwork_RegisterDispatchHandler()`
+  - `zNetwork_UnregisterDispatchHandler()`
+  - `zNetwork_DispatchPacketToHandlers()`
+  - `zNetwork_ClearDispatchHandlerList()`
+  - `zNetwork_DestroyDispatchHandlerList()`
+- `zNetwork_DispatchPacketToHandlers()` is now explicitly side-effect-only on the reachable retail path:
+  - all current callers ignore the old pseudo-return
+  - the helper just walks `g_zNetworkDispatchHandlerListSentinel` and invokes every matching `handler_04(senderPlayerId, packet)`
+- `zNetwork_DPlay_HandleSystemMessage()` now uses an explicit loop-control result:
+  - `ZNETWORK_PUMP_CONTINUE = 0`
+  - `ZNETWORK_PUMP_STOP = -1`
+  - `zNetwork_DPlay_PumpIncomingMessages()` now clearly breaks only when the system-message helper returns `ZNETWORK_PUMP_STOP` on the fatal-disconnect path
+- `zNetworkDPlaySystemMessage` is intentionally only a partial retail overlay:
+  - named live fields:
+    - `msgType_00`
+    - `playerId_008`
+    - `createFlagsOrPlayerType_018`
+    - `nameShortOrAsyncHandle_01c`
+    - `nameLong_020`
+    - `nameDisplay_024`
+  - shared overlapped `payload_004[0x50]` is still used by the session-desc copy path into `g_zNetworkDPlaySessionDescCache->desc_008`
+- `zNetwork_InitDispatchHandlerList()` is intentionally treated as no-arg at the caller boundary; the internal write to `g_zNetwork_DispatchHandlerListInitialized` still looks like a caller-opaque ECX byte and remains comment-backed.
+- `zNetwork_InitSessionRuntime()` now also cleanly rebuilds the player-record list through canonical support types:
+  - `zNetworkPlayerRecordList`
+  - `zNetworkPlayerRecordListNode`
+  - `zNetworkPlayerRecord`
+- The DirectPlay application GUID path is now explicit:
+  - `g_zNetwork_RecoilAppGuid` is the fixed Recoil app/session GUID constant passed by `CZRecoilFrame_OnMenuOpenMultiplayerDialogsAndMaybeStartGame()`
+  - `zNetwork_InitSessionRuntime()` now takes that value as:
+    - `int32_t __fastcall zNetwork_InitSessionRuntime(GUID* appGuid)`
+  - `g_zNetworkAppGuid` is the stored runtime `GUID*` reused by:
+    - `zNetwork_DPlay_EnumServiceProviders()`
+    - `zNetwork_DPlay_EnumSessions()`
+    - `zNetwork_DPlay_CreateSessionFromConfig()`
+- The current stable list fields there are:
+  - `unknown_00`
+  - `sentinelNode`
+  - `count`
+- `zNetworkPlayerRecordListNode` now uses the settled intrusive-list fields:
+  - `next`
+  - `prev`
+  - `playerRecord`
+- The active player-record branch now uses clean field names:
+  - `playerKey`
+  - `playerMeta`
+  - `dplayCreateFlags`
+  - `shortNameSrc`
+  - `longNameSrc`
+  - `displayNameSrc`
+  - `createPlayerContext`
+  - `playerName`
+  - `altName`
+  - `colorIndex`
+- `unknown_00` remains intentionally conservative; on the current path it is only seeded by a ctor-style byte write before the sentinel node is allocated.
+- The host color-assignment packet path now uses explicit support types:
+  - `NetPkt01_PlayerColorAssignments`
+  - `zNetworkPlayerColorPair`
+- The stable packet fields are:
+  - `header`
+  - `pairCount`
+  - `pairs`
+- The stable pair fields are:
+  - `playerKey`
+  - `colorIndex`
+- `zNetwork_HostSendPkt01_PlayerColorAssignments()` has direct assembly proof that the packet size is `0xc + pairCount*8`, which matches:
+  - fixed `0xc` bytes for `zNetworkPacketHeader + pairCount`
+  - `8` bytes per `zNetworkPlayerColorPair`
+- `zNetwork_HandlePkt01_PlayerColorAssignments()` now reads the same `pairCount` / `pairs[]` model on the receive path.
+- The cleaned player-record/list vocabulary now propagates through the main runtime helpers:
+  - `zNetwork_DPlay_CreateLocalPlayerAndRegister()`
+  - `zNetwork_DPlay_EnumPlayerCallback_AddRecord()`
+  - `zNetwork_DPlay_HandleSystemMessage()`
+  - `zNetwork_FindPlayerRecordByKey()`
+  - `zNetwork_RemovePlayerRecordByKey()`
+  - `zNetwork_ClearPlayerRecordList()`
+- The remote/local scoreboard row cluster is now explicit too:
+  - `g_GameNetPlayerRowList`
+  - stable list fields:
+    - `unknown_00`
+    - `head_04`
+    - `tail_08`
+    - `count_0c`
+  - `unknown_00` is still only proven as a write-side zero when the list is reset or becomes empty.
+- `GameNetPlayerRow` now has the stable reachable field model:
+  - `playerKey_00`
+  - `playerColorIndex_04`
+  - `playerColorPackedRgb_00RRGGBB_08`
+  - `score_00c`
+  - `lapCount_010`
+  - `lapTimeSec_014`
+  - `playerNode_018`
+  - `turretNode_01c`
+  - `gunNode_020`
+  - `displayName_024`
+  - `saveState_308`
+  - `next_30c`
+- The old `g_RecoilApp.m_stateQueue_118` rendering on this branch was a bad owner/type spillover. The live player-row helpers now consistently use:
+  - `GameNetPlayerRowList_Reset()`
+  - `GameNetPlayerRowList_AllocAppend()`
+  - `GameNet_FindPlayerRowByKey()`
+  - `GameNet_ReassignPlayerColorsAndRefreshRows()`
+  - `GameNet_HandlePkt03_RemoveRemotePlayer()`
+- The live pkt09 scoreboard snapshot path now uses canonical packet types:
+  - `NetPkt09_PlayerScoreboardSnapshot`
+  - `NetPkt09_PlayerScoreboardEntry`
+- Stable pkt09 fields are:
+  - `header`
+  - `senderPlayerKey_04`
+  - `entryCount_08`
+  - `entries_0c`
+- Stable pkt09 entry fields are:
+  - `playerKey_00`
+  - `packedScoreAndLapCount_04`
+- Direct assembly now pins pkt09 packing as:
+  - packet size = `0xc + count*8`
+  - one `8`-byte entry per `GameNetPlayerRow`
+  - low `9` bits of `packedScoreAndLapCount_04` = `score_00c`
+  - next `7` bits = `lapCount_010`
+- `GameNet_HandlePkt0E_PlayerLapProgress()` now cleanly updates `lapCount_010` and `lapTimeSec_014` on the matching row before republishing pkt09/pkt0D state.
+- The shared HUD timer network-state blob is now explicit too:
+  - `g_HudTimerPanelNetState`
+  - size = `0x4c`
+  - stable fields:
+    - `timerSeconds_00`
+    - `unknown_04`
+    - `statusBitsResendDeadline_08`
+    - `timerDirectionNeg_10`
+    - `startGateTriggered_14`
+    - `timeWarningShown_18`
+    - `raceFinishCountdownTriggered_1C`
+    - `oneMinuteWarningShown_20`
+    - `startCountdownTriggered_24`
+    - `tenSecondWarningsEnabled_28`
+- `GameNet_ResetHudTimerPanelNetStateLongCountdown()` now clearly seeds:
+  - `timerSeconds_00 = 36000.0f`
+  - `unknown_04 = 120.0f`
+  - `timerDirectionNeg_10 = 1`
+- `statusBitsResendDeadline_08` is the live resend timer refreshed by `GameNet_SendPkt0C_HudTimerStatusBits()` as `g_Time_AccumulatedTimeSec + 30.0f`.
+- The active HUD timer packet buffers are now explicit:
+  - `g_NetPkt0C_HudTimerStatusBitsBuf`
+  - `g_NetPkt0D_HudTimerPanelStateBuf`
+  - `g_NetPkt14_HudTimerAndFlagsSyncBuf`
+- Stable packet shapes on that branch are now:
+  - `NetPkt0C_HudTimerStatusBits`
+    - `packetIdAndLen_00`
+    - `senderPlayerKey_04`
+    - `timerSeconds_08`
+    - `reserved_0c`
+    - `statusBitsPackedHiWord_10`
+  - `NetPkt0D_HudTimerPanelState`
+    - `packetIdAndLen_00`
+    - `senderPlayerKey_04`
+    - `seconds_08`
+    - `hudTimerFlagsPacked_0c`
+  - `NetPkt14_HudTimerAndFlagsSync`
+    - `packetIdAndLen_00`
+    - `senderPlayerKey_04`
+    - `packedHudIndexAndShortParam_08`
+    - `valueOrTime_0c`
+    - `statusFlags_10`
+- The pkt14 HUD sync path also has one intentional tracker-side stop-point:
+  - `HudSensorTracker::SetRuntimeTimerSecAndGoalValue()` is the proved helper for the runtime timer/goal writes
+  - the live offsets are:
+    - `+0x246c = checkpointCount`
+    - `+0x2470 = runtimeGoalValue`
+    - `+0x2474 = runtimeTimerStartSec`
+  - those offsets are currently kept comment-backed instead of being forced into the global `HudSensorTracker` type, because the broader tracker struct still drifts relative to its suffix-named fields on the current BN branch
+- `zNetwork_ReadSessionDescCustomConfig()` now uses a local `zNetworkDPlaySessionDesc sessionDesc` overlay for the copied cached DirectPlay session description, so the reader shows direct `customEventCode/customStatusFlags/customValueOrTime/customAuxParam/maxPlayers/sessionName` field reads instead of anonymous stack temps.
+- On the current path, pkt0C only writes the high word of dword `+0x10`; the low word and the `reserved_0c` dword remain intentionally conservative.
+- `HudTimerPanelNetState_ClearTailFlags()` still only proves that `g_HudTimerPanelNetState + 0x2c..+0x4b` is a bulk-cleared tail block; no stronger read-side semantics are committed yet.
+- `payloadDword0_04` remains intentionally conservative until a packet-specific handler proves a stronger semantic name.
+
+## Effect animation archive notes (`anim.zrd` / `anim.zbd`)
+
+- The retail executable visibly passes `anim.zrd` into `zEffect_Anim_LoadAndInstantiate()`, but the animation subsystem still uses older `ZBD` terminology internally.
+- In practice, `anim.zrd` is the same effect-animation archive family the original tools and script commands still describe as `anim.zbd`.
+- The reachable bring-up chain is now explicit:
+  - `RecoilApp_EngineInit()` -> `zEffect::Init()` -> `zEffect_Anim_Init()`
+  - `RecoilApp_PlayState_OnCanBecomeCurrent()` / `HudSensorTracker_ApplyMissionDataAndReload()`
+  - `HudSensorTracker_InitMissionGameplaySystems()`
+  - `zEffect_InitFromPath("effects.zrd")`
+  - `zEffect_SetWorldNode()`
+  - `zEffect_SetResourceNode()`
+  - `zEffect_Anim_LoadAndInstantiate("anim.zrd")`
+- `effects.zrd` and `anim.zrd` are separate archives on that path:
+  - `effects.zrd` provides the effect-class/resource graph.
+  - `anim.zrd` provides compiled animation entries, runtime activation tables, per-surface event streams, and save/load restore data for those effects.
+- The filename split is important and now documented in the BN database:
+  - `zEffect_Anim_LoadAndInstantiate(const char* archivePath)` preserves the caller-visible `anim.zrd` argument.
+  - The current retail callee body still immediately calls zero-arg `zEffect_Anim_LoadZbd()`.
+  - `zEffect_Anim_LoadZbd()` actually opens `g_zEffectAnim_ZbdFilename`.
+  - `zEffect_Anim_SetZbdFilename()` and the `AnimSetZBDFile` script command can overwrite that buffer before the load.
+  - `g_zEffectAnim_DefaultArchiveName` is the default retail archive literal at the mission caller site.
+- The on-disk archive layout is now stable enough to describe:
+  - 12-byte file header:
+    - magic `0x08170616`
+    - schema/version `0x1c`
+    - source-stamp count
+  - `zEffectAnimSourceFileStamp[sourceStampCount]`:
+    - `sourcePath_00[0x50]`
+    - `fileMtime_50`
+    - `zEffect_Anim_LoadZbd()` treats these stamps as advisory unless the source file still exists locally:
+      - `_stat(sourcePath_00)` failure is tolerated
+      - existing files with a mismatched `fileMtime_50` abort the archive load
+  - copied `0x3c`-byte global animation header block
+    - this copied block overlaps live zEffect / zEffectAnim globals in memory rather than living in a dedicated header struct
+    - the currently proved live lanes inside `0x575da0..0x575ddb` are:
+      - `g_zEffectAnim_IsLoaded`
+      - `g_zEffectAnim_CountsPacked`, with `HIWORD` used as the entry count on the reachable path
+      - `g_zEffectAnim_EntryTable`
+      - `g_zEffectAnim_TextIdCount`
+      - `g_zEffectAnim_TextIdTable`
+      - `g_zEffect_WorldNode`
+      - `g_zEffect_HasReferenceWorldPos` plus `g_zEffect_ReferenceWorldPosX/Y/Z`
+      - `g_zEffect_VariantTagOverrideEnabled` plus `g_zEffect_VariantTagOverrideValue`
+      - `g_zEffect_DeltaTimeSec`
+    - `g_zEffectAnim_IsLoaded` is the proving live repair lane in that copied band:
+      - `zEffect_Anim_LoadAndInstantiate()` explicitly rewrites it to `1` after successful bring-up
+      - `zEffect_Anim_ShutdownIfLoaded()` and `zEffect_Anim_Shutdown()` test/clear the same lane as the current runtime-loaded flag
+      - one exact xref inside `zEffect_Anim_Init()` is still non-semantic:
+        - `0x45e198` uses the address of `g_zEffectAnim_IsLoaded` only as the `g_zEffect_RandTable` loop end sentinel
+    - the remaining unresolved lanes in that copied band are now bounded more tightly:
+      - `g_zEffectAnim_MixedHeaderHeapPtr` at `0x575da4` is an init/shutdown-only heap lane on the reachable path:
+        - `zEffect_Anim_Init()` clears it
+        - `zEffect_Anim_Shutdown()` frees and clears it
+        - no proved reachable producer or consumer has surfaced beyond that lifecycle
+      - `LOWORD(g_zEffectAnim_CountsPacked)` is now explicitly parked as unconsumed on the reachable path:
+        - direct xrefs stop at init and shutdown
+        - the retail anim loader/runtime/save path only consumes `HIWORD(g_zEffectAnim_CountsPacked)` as the entry count
+      - `0x575dbc` is seeded to `-9.8f` during `zEffect_Anim_Init()`, then overwritten by the later `0x3c` header copy
+        - a follow-up sweep of representative `g_zEffect_WorldNode` consumers (`zEffect_HandleWorldEvent()`, `zEffect_HandleLightEvent()`, `zEffect_TestGroundCollision()`, `zEffectAnim_ActivateRuntime()`) found only exact `0x575db8` loads and no hidden `+4` adjacency use
+        - no proved reachable consumer survives on the current path
+  - `zEffectAnimEntry[entryCount]`, with `zEffectAnimEntry` now kept as the canonical `0x134` record
+  - each entry's counted side tables, with counts still read from packed control dwords
+  - per-surface fixed `0x40` runtime/event headers followed by variable payload blobs
+  - trailing `zEffectAnimTextIdEntry[textIdCount]`
+    - `messageKey_00[0x20]`
+    - `messageId_20`
+    - `zEffect_Anim_LoadZbd()` post-resolves `messageId_20` from `messageKey_00` through `zLoc_GetMessageId()`
+- Index `0` of the entry table still behaves like a reserved or sentinel slot on the reachable runtime path; the main activation and runtime loops consistently start at `1`.
+- The high-confidence `zEffectAnimEntry` side tables are now separated correctly:
+  - `sampleRefList_120` is a `zEffectAnimSampleRef*`, not an effect-template table.
+  - `zEffectAnimSampleRef` is currently:
+    - `name_00[0x20]`
+    - `sample_20 : zSndSample*`
+  - the live loader resolves that table through `zSnd_FindSampleByName()`
+  - `effectTemplateRefList_124` remains the separate `zEffectAnimTemplateIndexRef*` table
+  - light refs, sound refs, runtime refs, and running-surface records remain distinct serialized tails on the save/load path
+  - runtime light and sound ref lists also reserve slot `0` as a blank sentinel:
+    - `zEffectAnim_FindOrCreateLightRef()` and `zEffectAnim_FindOrCreateSoundRef()` zero-fill slot `0` on first allocation, then append the first real ref at index `1`
+    - `zEffectAnim_FindLightRefIndexByName()` and `zEffectAnim_FindSoundRefIndexByName()` therefore treat only `> 0` as a successful live ref match
+- `runtimeRefList_12c` is now treated as a partly opaque `0x48` runtime-ref table instead of as a live node-reference array:
+- `opaqueSerializedHead_00[0x40]` is still untranslated on-disk runtime-ref data.
+  - `stopChildOnCleanup_40` is loaded from disk and copied into clones verbatim.
+  - `runtimeEntry_44` is the live spawned child `zEffectAnimEntry*` slot used at runtime.
+- In contrast to the other name-backed side tables:
+  - `trackedNodeList_110` and `nodeRefList_114` both get explicit node-pointer rebuilds on load, clone, and rebind.
+  - `activationPrereqList_128` is block-copied in clones, but its node-cache refresh is still clearly proved on the load/rebind path.
+  - `runtimeRefList_12c` never enters an analogous reachable resolve/rebind phase.
+- `zEffect_Anim_LoadZbd()` and `zEffectAnim_CloneEntryForNode()` both transfer whole `0x48` runtime-ref records verbatim and only zero `runtimeEntry_44` afterward.
+- `zEffectAnim_RebindEntryToNode()` refreshes tracked-node, node-ref, and activation-prereq node caches, but does not touch `runtimeRefList_12c`.
+- The clone path now has a stable side-table split:
+  - `lightRefList_118` and `soundRefList_11c` are block-copied, then recreate fresh runtime light/sound nodes when the source slot is live.
+  - `trackedNodeList_110` and `nodeRefList_114` are block-copied, then re-resolve cached node pointers by name.
+  - `activationPrereqList_128` is block-copied and still only has proved node-cache refresh on the load/rebind path.
+  - `runtimeRefList_12c` is block-copied and only clears `runtimeEntry_44`.
+- The save/load split is now tighter too:
+  - `Running%03d` persists running surfaces plus light/sound tails only.
+  - no save or load helper on the reachable path touches `runtimeRefList_12c`.
+  - `runtimeEntry_44` child-cache links are therefore ephemeral and do not survive save/load directly.
+  - on the reachable path, only opcode-`0x13` emitter events and opcode-`0x18` particle events ever repopulate those `runtimeEntry_44` slots.
+  - the two event families use those slots differently:
+    - opcode `0x13` uses `runtimeEntry_44` only as a cleanup-time child cache and still returns state `2` immediately.
+    - opcode `0x18` uses `runtimeEntry_44` as a live wait/poll latch when its behavior bit `4` is set.
+  - the particle wait path is bounded too: if opcode `0x18` is restored in state `1` and its cached `runtimeEntry_44` child link is gone, `zEffect_HandleParticleEvent()` advances straight to state `2` on the next tick instead of stalling.
+- A direct field-xref sweep on the reachable anim path now strengthens that model:
+- `opaqueSerializedHead_00` only appears as the base of the `0x48`-stride loop in `zEffectAnim_StopAndCleanup()`
+  - no reachable caller currently interprets any subfield inside the first `0x40` bytes as typed runtime data
+- A direct offset sweep now closes the live runtime-ref accesses more tightly:
+  - `zEffect_HandleEmitterEvent()` only writes `runtimeEntry_44`
+  - `zEffect_HandleParticleEvent()` only clears, stores, and polls `runtimeEntry_44`
+  - `zEffectAnim_StopAndCleanup()` only reads `stopChildOnCleanup_40` and `runtimeEntry_44`
+  - `zEffect_Anim_LoadZbd()` and `zEffectAnim_CloneEntryForNode()` only `fread()` or `memcpy()` whole `0x48` records, then zero `runtimeEntry_44`
+  - `zEffectAnim_DestroyEntryRecursive()` only raw-`free()`s the array
+  - no reachable scalar access currently decodes any byte inside `opaqueSerializedHead_00[0x40]`
+- The whole-type xref sweep now matches that result too:
+  - `zEffectAnimRuntimeRef` itself only appears on the reachable path in load, clone, cleanup, and destroy
+  - emitter and particle handlers only touch the table through `runtimeEntry_44` field refs
+  - no reachable whole-type consumer currently decodes `opaqueSerializedHead_00[0x40]`
+- `zEffect_HandleEmitterEvent()` and `zEffect_HandleParticleEvent()` use high16(`packedEntryAndRuntimeSlot_30`) as the runtime-ref slot index, then store the spawned child anim entry into `runtimeEntry_44`.
+- Their producer-side payloads are now bounded more tightly too:
+  - `zEffectEmitterEvent.packedNodeIndexPair_34` splits into low16 `nodeRefA` node index and high16 `nodeRefB` node index.
+  - `zEffectEmitterEvent.packedEmitterFlags_0c` splits across the low and upper bytes for `nodeRefA`, `nodeRefB`, `vecA`, and `vecB` source/transform policy.
+  - `zEffectParticleEvent.packedBaseNodeAndBehaviorFlags_2c` splits into low16 attach/base node index plus high16 behavior flags.
+  - Those particle behavior bits are now bounded as: bit `0` transform+rotation helper, bit `2` world-pos+orientation plus `vecRot_*` on that branch, bit `3` timer-and-motion when bit `0` is clear, fallthrough velocity-only, and bit `4` state-`1` wait/poll on `runtimeEntry_44`.
+  - `zEffectParticleEvent.nodeRefSelector_34` keeps the optional transform/timer-and-motion basis selector, with `0xff38` meaning `resetScratch_74.nodeRefA_00`.
+- The live runtime-slot behavior is narrower than the raw table shape might suggest:
+  - `zEffect_HandleEmitterEvent()` only caches the spawned child in `runtimeEntry_44` so later cleanup can find it.
+  - `zEffect_HandleParticleEvent()` clears that same slot before spawn, stores the new child in `runtimeEntry_44`, and later states only poll or clear that slot.
+- neither handler interprets any byte inside `opaqueSerializedHead_00[0x40]` on the reachable retail path.
+- `zEffectAnim_DestroyEntryRecursive()` now closes that lifecycle more tightly too:
+  - it does not walk `runtimeRefList_12c` per slot
+  - it simply `free()`s the raw `0x48`-stride array after earlier cleanup is expected to clear `runtimeEntry_44`
+- Binary Ninja may still misrender the particle-event writes at `+0x44` through a stale synthetic field label; the authoritative interpretation is that those writes are to `runtimeEntry_44`, not to a decoded serialized payload field.
+- On the particle path, `packedBaseNodeAndBehaviorFlags_2c` stays packed too:
+  - low 16 bits select the optional source node from `nodeRefList_114`
+  - high 16 bits are the behavior flags consumed by `zEffectAnim_SetVelocity()`, `zEffectAnim_SetTimerAndMotion()`, or `zEffectAnim_SetTransformRotAndVelocity()`: bit `0` transform+rotation, bit `2` world-pos+orientation plus `vecRot_*` on that branch, bit `3` timer-and-motion when bit `0` is clear, and bit `4` state-`1` wait/poll on `runtimeEntry_44`
+- `zEffectAnim_StopAndCleanup()` only stops that child entry when `stopChildOnCleanup_40` is nonzero, so `+0x40` is currently documented as a serialized stop-on-parent-cleanup flag rather than as a resolved live node pointer.
+- Some archive control fields intentionally stay packed for now:
+  - `zEffectAnimNodeRef28`
+  - activation-mode/prereq dwords
+  - per-entry count dwords
+  - the copied `0x3c` global header block
+- Those areas are only partially decoded, and the current reconstruction keeps them 4-byte-safe instead of inventing 1-byte or 2-byte members.
+- The runtime activation chain is now explicit too:
+  - `zEffectAnim_ResolveRuntimeEntryForNode()` locates the entry for a live class/node pair and walks `runtimeSibling_130` clones when multiple runtime instances share the same template.
+  - `zEffectAnim_CheckActivationPrereqs()` consumes the packed activation-prereq table before a runtime can be started.
+  - `zEffectAnim_ActivateRuntime()` links the runtime into `runtimeList_0c0`, binds `runtimeNode_68->callbackContext_40`, and seeds `surfacePrimary_0c4`.
+  - `zEffect_Anim_RunActiveEntry()` is the per-frame callback owner for active runtime entries.
+  - `zEffect_Anim_RunSequence()` executes the per-surface compiled event stream.
+- `onStateDoneCallback_6c` is now typed as the shared fastcall callback hook for that runtime family:
+  - contract: `callback(self, user, reasonOrEventCode)`
+  - `zEffectAnim_SetOnStateDoneCallback()` stores that callback and `onStateDoneUser_70`
+  - `zEffect_Anim_RunActiveEntry()` invokes it with `reasonOrEventCode = 0` once every active surface has completed
+  - `zEffect_HandleCallbackParamEvent()` invokes the same hook with `reasonOrEventCode = eventData->intParam_0c`
+  - the player mission bring-up path proves one real consumer: `Player_InitMissionRuntimeFromWorldAndCamera()` installs `Player_AsyncCommandCallback()` through `zEffectAnim_SetOnStateDoneCallback()`
+- The surface/runtime payload model is now documented with stable member names:
+  - the live `0x40` runtime surface record is now modeled as `eventState_00 + payloadBlob_38 + payloadSize_3c`.
+  - `sequenceName_00` identifies the compiled sequence block.
+  - the timing fields immediately after it drive delay, duration, and current playback progress.
+  - `eventCursor_34` is the current cursor into the compiled event stream.
+  - `payloadBlob_38` points at the variable event payload block read from disk.
+  - `payloadSize_3c` is the byte size of that payload block.
+- The current high-confidence interpretation is that each surface stores a compact bytecode-like event stream.
+- `zEffect_Anim_RunSequence()` advances `eventCursor_34` through that payload in bytes, not fixed-size slots:
+  - each event begins with `zEffectSeqEventHeader`
+  - `recordSize_04` is the byte size of the current event record
+  - once an event completes, the cursor advances by `recordSize_04`
+- The currently pinned param-style events on that stream are:
+  - event type `0x23` = callback-param event, using `zEffectIntParamEvent.intParam_0c`
+  - event type `0x26` = text-message event, also using `zEffectIntParamEvent.intParam_0c`
+- `zEffect_HandleCallbackParamEvent()` is therefore not a separate completion callback path; it is the opcode-side bridge into the same `onStateDoneCallback_6c` hook.
+- `zEffect_HandleTextMessageEvent()` treats `intParam_0c` as an index into the trailing `zEffectAnimTextIdEntry[textIdCount]` table:
+  - if `messageId_20 != 0`, it resolves the localized string through `zLoc_GetMessageString(messageId_20)`
+  - otherwise it falls back to the raw `messageKey_00` text
+  - the resulting string is then pushed to the HUD top-message line
+- Save/load coverage is now also stable:
+  - `zEffectAnimActivationRecordSerialized` is the shared wrapper used by the activation and anim section families.
+  - the repo shorthand `AnimActivation` maps to that shared wrapper family rather than to a separate third on-disk record type.
+  - stable wrapper fields are:
+    - `base_00`
+    - `entryTableIndex_50`
+    - `stateAndRestoreCount_54`
+    - `nodeRestore_58[1]`
+  - the child-spawn helpers now make the activation `commandType_00` payloads explicit too:
+    - command type `1` = transform + rotation + velocity:
+      - `nodeToken_28`
+      - `params_2c[0..2] = pos xyz`
+      - `params_2c[3..5] = rot xyz`
+      - `params_2c[6..8] = vel xyz`
+    - command type `2` = velocity only:
+      - `nodeToken_28`
+      - `params_2c[0..2] = vel xyz`
+    - command type `3` = timer + one node/vector + velocity:
+      - `nodeToken_28`
+      - `params_2c[0] = nodeRefA token`
+      - `params_2c[1..3] = vecA xyz`
+      - `params_2c[4..6] = vel xyz`
+    - command type `4` = timer + two node/vector pairs:
+      - `nodeToken_28`
+      - `params_2c[0] = nodeRefA token`
+      - `params_2c[1..3] = vecA xyz`
+      - `params_2c[4] = nodeRefB token`
+      - `params_2c[5..7] = vecB xyz`
+  - the runtime child-spawn helpers that produce those command records are now explicit:
+    - `zEffectAnim_SetTransformRotAndVelocity()` resolves the child, writes direct root transform/rotation, updates velocity state, clears `resetScratch_74`, then queues command type `1`
+    - `zEffectAnim_SetVelocity()` resolves the child, normalizes the child root transform to origin when the entry flags request it, updates velocity state, clears `resetScratch_74`, then queues command type `2`
+    - `zEffectAnim_SetTimerAndMotion()` resolves the child, fills `resetScratch_74.nodeRefA_00 + vecA`, updates velocity state, then queues command type `3`
+    - `zEffectAnim_SetTimerAndTwoVectors()` resolves the child, fills `resetScratch_74` for both node/vector pairs, then queues command type `4`
+  - the live activation-record queue model is now explicit too:
+    - `zEffect_Anim_AllocActivationRecord()` lazily allocates `0x3e8` `zEffectAnimActivationRecord` slots, doubles capacity on overflow, and returns the next `0x50`-byte live record
+    - `zEffect_Anim_GetActivationRecordPackedSize()` trims serialized size by command type: `type1=0x50`, `type2=0x38`, `type3=0x48`, `type4=0x4c`
+    - overall `flags_94` bits `12/13` are the keep-record override pair (`bit12 = override present`, `bit13 = override value`)
+    - overall `flags_94` bits `10/11` are the dispatch override pair (`bit10 = override present`, `bit11 = override value`)
+    - command types `1`, `2`, and `4` fall back to `g_zEffectAnim_RecordQueueEnabled` / `g_zEffectAnim_DispatchEnabled` plus `bit0 clear`, non-empty anim name, and valid serialized node tokens
+    - command type `3` is the exception: on the reachable retail path it does not read either global gate and instead falls back directly to the same `bit0/name/token` validity checks when no override bits are present
+    - if a helper dispatches a record through `g_zEffectAnim_ActivationDispatchCallback` but the keep-record decision is false, it immediately calls `zEffect_Anim_DiscardLastActivationRecord()`
+    - `zEffect_Anim_SaveAnimRecords()` and `zEffect_Anim_SaveRunningAnimRecords()` only honor the keep-record side of that model; they never consult the dispatch gate
+    - `zEffect_Anim_SetActivationDispatchContext()` writes `tagHighByte << 24` into `g_zEffectAnim_ActivationDispatchTagHigh`, but `zEffect_Anim_AllocActivationRecord()` currently stores `(g_zEffectAnim_ActivationDispatchTagHigh & count) & 0x00ffffff` into `recordId_04`, so the final tag semantics are still documented as a retail oddity
+    - field-xref sweep result: no reachable caller reads `recordId_04` as a field today; save/load only preserve it via whole-record `memcpy`
+  - `modePacked_98` is now bounded a bit further as a packed control dword:
+    - low byte `modePacked_98.b` is the serialized/live anim-state byte
+    - observed low-byte states on the reachable path are:
+      - `1` = reset branch
+      - `2` = active/running branch
+      - `3` = executed cleanup result
+      - `4` = invalid cleanup result
+      - `5` = corrupt/dead sentinel
+      - `6` = alternate running state that collapses to `4` through `zEffect_Emitter_Update()` / `zEffectAnim_StopAndCleanup()`
+    - second byte `modePacked_98:1.b` drives startup trigger install in `zEffect_Anim_LoadAndInstantiate()`:
+      - `0` = hit-trigger callback
+      - `1` = timer-trigger callback
+      - `2` = both trigger callbacks
+      - `4` = zero-velocity bootstrap
+    - third byte `modePacked_98:2.b` seeds runtime-node priority and also participates in the runtime variant-cycle bound
+    - fourth byte `modePacked_98:3.b` is the runtime variant/countdown byte consumed by `zEffect_Anim_RunActiveEntry()`
+    - `stateAndRestoreCount_54.b` in `Activation%04d` / `Anim%04d` wrappers carries the same low-byte state used by `modePacked_98.b`
+    - `modeCarry_ac` / `modeCarry_b0` now read as base/current timer delay: the tick helpers decrement `modeCarry_b0`, and `zEffectAnim_StopAndCleanup()` restores it from `modeCarry_ac`
+  - `zEffect_Anim_SaveActivationRecords()` and `zEffect_Anim_LoadActivationRecords()` use that wrapper for `Activation%04d` sections.
+  - `zEffect_Anim_SaveAnimRecords()` and `zEffect_Anim_LoadAnimRecords()` reuse it for `Anim%04d` sections.
+  - `stateAndRestoreCount_54` remains the packed control dword:
+    - byte `0` = serialized activation/anim state
+    - byte `1` = tracked-node restore count
+  - `entryTableIndex_50` is used by the `Anim%04d` path to recover the owning `zEffectAnimEntry`.
+  - `nodeRestore_58` is a variable tail of `zEffectAnimNodeRestoreState` records with a `0x44` stride.
+  - `zEffectAnimNodeRestoreState.unk3c` and `unk40` still stay conservative.
+- The running-record path now distinguishes the restored light and sound tails more clearly:
+  - `zEffectAnimRunningRecordHeaderSerialized` now has stable header fields for:
+    - `runningIndex_00`
+    - `matchSavedRootNode_04`
+    - `entryName_08`
+    - `rootNodeIndex_28`
+    - `nodeRefAIndex_2c`
+    - `nodeRefBIndex_3c`
+    - `modePacked_4c`
+    - `accelCurrent_50`
+    - `modeCarry_54`
+    - `velX_58`
+    - `velY_5c`
+    - `velZ_60`
+    - `countsPacked_64`
+  - primary `Running%03d` records saved from the base entry use `matchSavedRootNode_04 = 1`.
+  - `runtimeSibling_130` clone records use `matchSavedRootNode_04 = 0`, so load-side restore can reuse or clone another active sibling instead of requiring an exact saved root-node match first.
+  - `entryName_08` is just a copy of `zEffectAnimEntry.name_00`.
+  - `countsPacked_64` currently packs the runtime-surface count, light-tail count, and sound-tail count into bytes `0`, `1`, and `2`.
+  - the save/load wrapper families now split cleanly by how they target entries:
+    - `Activation%04d` replay resolves `animName_08` through `zEffectAnim_FindEntryByName()`, so it can still target entry slot `0` by name
+    - `Anim%04d` restore uses serialized `entryTableIndex_50` as a direct `g_zEffectAnim_EntryTable[index]` lookup, and `zEffect_Anim_SaveAnimRecords()` only writes ordinary entries starting at index `1`
+    - `Running%03d` restore uses serialized `runningIndex_00` as a direct `g_zEffectAnim_EntryTable[index]` lookup, and `zEffect_Anim_SaveRunningAnimRecords()` also only writes ordinary runtime owners starting at index `1`
+  - `zEffectAnimLightRefSerialized` is the `0x38` light-tail record with:
+    - `name_00`
+    - `isAttached_24`
+    - `payloadX_28`
+    - `payloadY_2c`
+    - `payloadZ_30`
+    - `parentNodeIndex_34`
+  - those `payload*` dwords stay intentionally neutral:
+    - load-side restore feeds them to `zClass_Light_gwLightSetColor()`
+    - save-side serialization still fills the same triple through `zClass_Sound_gwSoundGetPosition()`
+    - treat the retail save/load mismatch as real behavior until stronger producer-side semantics appear
+  - `zEffectAnimSoundRefSerialized` is the `0x3c` sound-tail record with:
+    - `name_00`
+    - `isAttached_24`
+    - `hasPosition_28`
+    - `posX_2c`
+    - `posY_30`
+    - `posZ_34`
+    - `parentNodeIndex_38`
+  - `zEffect_Anim_LoadRunningAnimRecords()` restores sound position only when `hasPosition_28` is set.
+  - the same load path also restores light color and reattaches light/sound refs back to the saved parent node index when one was recorded.
+  - the light-tail triple at `+0x28/+0x2c/+0x30` is now documented as a real retail save/load mismatch, not just a decompiler naming uncertainty:
+    - `zEffect_Anim_SaveRunningAnimRecord()` definitely walks `entry->lightRefList_118` for the `0x38` light-tail loop
+    - `zEffect_HandleLightEvent()` proves `lightRefList_118[i].runtimeNode_24` is a real light node, because that same node is driven through `gwLightSetColor`, `gwLightSetPosition`, `gwLightSetRange`, `gwLightSetSpecularColor`, `gwLightSetIntensity`, `gwLightSetFalloff`, `gwLightSetConeAngle`, and `gwLightSetParam`
+    - save-side serialization still fills those three dwords through `zClass_Sound_gwSoundGetPosition()`, which reads `classData+0x30/+0x34/+0x38`
+    - load-side restore still feeds those same three dwords directly into `zClass_Light_gwLightSetColor()`, which writes diffuse RGB at `classData+0x14/+0x18/+0x1c`
+    - `zClass_Light_gwLightSetPosition()` separately writes local position at `classData+0x08/+0x0c/+0x10`
+    - `zClass_Light_gwLightGetSpecularColor()` / `zClass_Light_gwLightSetSpecularColor()` use `classData+0xAC/+0xB0/+0xB4`, so the older "maybe this is really specular color" escape hatch is ruled out
+    - the README still keeps the `color*` field names because load-side restore consumes the triple as diffuse RGB, even though the producer-side intent now looks like a retail mismatch rather than a missing getter rename
+- `Running%03d` records also restore per-surface execution state:
+  - the runtime node binding is re-established
+  - the saved event-cursor offset is rebased against the newly loaded `payloadBlob_38`
+  - partially played animation surfaces can therefore continue from the correct point in the compiled event stream after a save/load cycle
+- `zEffect_Anim_SaveRunningAnimRecord()` and `zEffect_Anim_LoadRunningAnimRecords()` still reuse one stack scratch across runtime-surface, light-tail, and sound-tail records in Binary Ninja, so one local HLIL render remains ambiguous even though the serialized on-disk tails are now separated by comments and type names.
+- On the load side, that means HLIL may still print the `0x38` light-tail loop through the later sound-tail scratch type/name; the authoritative split is the `fread()` size plus the surrounding `FindOrCreateLightRef()` / `FindOrCreateSoundRef()` callsites.
+- Shutdown coverage for the same archive is now explicit too:
+  - `zEffect_Anim_ShutdownIfLoaded()` gates teardown on the archive-loaded flag.
+  - `zEffect_Anim_Shutdown()` frees the loaded archive data, runtime lists, and side-table allocations before the next mission unload/reload cycle.
+
+## ZBD Serialization Notes
+
+- The live ZBD node-table read/write path now treats the staging node buffer as canonical `zClass_Node[nodeCount]`; the older `zClass_Node_0xC4_Fixed` name is retired residue.
+- The world-grid portion of the same path now consistently uses canonical `zWorldArea` for:
+  - `worldData->areaGridRows_80` row-pointer storage
+  - each `worldData->areaGridRows_80[i]` row allocation
+  - each raw `0x40` cell read/write in `GameZ_ZBD_ReadNodeClassData()` / `GameZ_ZBD_WriteNodeClassData()`
+  - each per-cell `childList_3c` rebuild/readback
+  - each per-cell `bbox_10` / `bboxCenter_28` / `bboxRadius_34` cache refresh in `zClass_World_ComputeChildBounds()`
+- The world post-load reinit calls on that path currently map to:
+  - `worldData->fogState_10` -> `zClass_World_gwWorldSetFogState()`
+  - `worldData->ambientColor_14` -> `zClass_World_gwWorldSetAmbientColor()`
+  - `worldData->fogHeightHigh_28` / `fogHeightLow_2c` -> `zClass_World_gwWorldSetFogHeights()`
+  - `worldData->fogDistanceStart_20` / `fogDistanceEnd_24` -> `zClass_World_gwWorldSetHazeParams()`
+  - `worldData->fogDensity_30` -> `zClass_World_gwWorldSetFogDensity()`
+
+## Briefing notes
+
+- The mission briefing runtime uses an intrusive action queue in `HudUiBriefingRuntime.actionQueue_A94C`.
+- The queue state is now stable as:
+  - `missionId_00`
+  - `headSentinel_04`
+  - `nodeCount_08`
+  - `currentNode_0C`
+  - `sequenceActive_10`
+- The live queue model is now explicit:
+  - `HudUiBriefingAction`
+  - `HudUiBriefingActionNode`
+  - `HudUiBriefingActionVtable`
+  - concrete actions for element show/hide, fade-in, panel text, timed image reveal, sample playback, and progress gating
+- `HudUiBriefingRuntime::Constructor()` is the canonical constructor on the live path from `Briefing_StartForMission()`.
+- `HudUiBriefingRuntime::Constructor()` now also explicitly allocates the self-linked queue sentinel as `HudUiBriefingActionNode` through `operator new(0xc)`, matching `HudUiBriefingRuntime::Destructor()`, `HudUiBriefingRuntime::Update()`, and the `Briefing_ActionQueue_Add*()` builders.
+- `Briefing_StartForMission()` now explicitly allocates the outer `HudUiBriefingRuntime` through `operator new(0xBA70)`, matching the settled runtime type and the existing `g_Briefing_Runtime` users.
+- `HudUiCompositePanel` is now the canonical `MESSAGES` subobject type on the live briefing path, with `entryBegin`, `entryEnd`, and `entryCapacityEnd` at `+0x2AC/+0x2B0/+0x2B4`.
+- `HudUiCompositePanelEntry` is the `0x2C0` panel-derived row type used by that `MESSAGES` vector.
+- That row type now reuses a shared `HudUiTransitionTextPanel` base over `HudUiPanelCore`, with:
+  - `transitionValue_2A4`
+  - `transitionResetValue_2A8`
+  - `altTextColor0_2AC`
+  - `altTextColor1_2B0`
+  - `transitionEnabled_2B4`
+  - `transitionMode_2B8`
+  - `transitionDirectionSign_2BC`
+- The same shared row class is now used by composite-panel rows, cycle-selector text entries, background row arrays, and `HudCmdDialog.promptPanel_C898`.
+- `HudUiBackground` now has two stable adjacent slices behind the same branch:
+  - `backgroundTextStyles[0x14]` at `0x1CEC..0x1FBB`
+  - `backgroundTextPanels[0x32]` at `0x1FBC..0xA93B`
+- `g_HudUiTextLabel_Vtbl` is now committed as a full `HudUiCommon_FTable`.
+- `HudUiTextLabel` is now the shared simple text-widget support type over `HudUiElement`.
+- The stable text-label fields on the reachable HUD path are:
+  - `textBuffer`
+  - `fontHandle`
+  - `centerText_138`
+  - `centerBoundsLeft_13C`
+  - `centerBoundsRight_140`
+  - `alignMode`
+- `HudUiTextLabel_Ctor()` is the shared text-widget base constructor on this branch: it installs `g_HudUiTextLabel_Vtbl`, initializes text position/font-selection state, zeroes `centerText_138`, and invalidates after those field changes before derived panel/widget ctors override the vtable.
+- `HudUiTextWidget_InitFromSourceElement()` is the shared copy-head helper on this branch: it clears `next_04` / `parent_08`, reinstalls `g_HudUiCommon_FTable`, and copies the common `HudUiElement` fields from the source widget.
+- `HudUiTextLabel_CopyCtor()` now explicitly copies the text-label tail from a source widget head: `textBuffer`, `fontHandle`, `centerText_138`, `centerBoundsLeft_13C`, `centerBoundsRight_140`, and `alignMode` are proven, while the broader source side still stays intentionally conservative beyond the shared `HudUiElement` head.
+- `HudUiPanel_CenterTextInBoundsX()` is the proving read-side helper for the shared centering bounds at `centerBoundsLeft_13C` / `centerBoundsRight_140`.
+- `HudUiPanel_CopyElementHeadFrom()` is now explicitly typed on the shared base head: it takes and returns `HudUiElement*`, copies only the common element fields, and keeps the current panel vtable.
+- `HudUiPanel_CopyTextLabelHeadFrom()` is now explicitly typed on the shared text head: it takes and returns `HudUiTextLabel*`, copies the text buffer/font/centering/alignment head, and leaves the panel-only tail to `HudUiPanel_CopyFrom()`.
+- After that signature split, the panel-copy chain now renders clean `timer_10` / `x_14` / `y_18` field copies instead of the older raw-offset noise; only the low-word `state_30` copy still reflects compiler/codegen residue in Binary Ninja, and its only current xrefs are the ctor plus the two shared copy helpers.
+- `HudUiTextLabel_OnDraw()` and `HudUiTextLabel_HitTest()` now read directly through the shared type instead of raw `arg1 + 0x34/0x134/0x144` math.
+- The live HUD polyline/bar widget now has an exact derived ftable head too:
+  - `g_HudUiBar_FTable` starts at `0x4D3CE8`
+  - `HudUiBar_Ctor()` installs that exact head
+  - `HudUiBar_Draw()` first dispatches `DrawBase(self)` through that ftable, then submits the current TLV polyline when `drawVertexCount_130` is nonzero
+  - the older drift toward `0x4D3CF0` was just a misaligned `.rdata` view, not a second bar-class boundary
+  - the preceding `.rdata` overlap at `0x4D3CA0..0x4D3CC4` currently has no live code or data xrefs on the reachable HUD path
+- The adjacent container/background HUD ftable split is now explicit:
+  - `g_HudUiContainer_FTable` is the reusable two-slot tail (`UpdateAll`, `SetEnabled`)
+  - `g_HudUiBackgroundContainer_Vtbl` is the derived two-slot head for the background wrapper (`Update`, `SetEnabled`)
+  - `g_HudUiBackground_Vtbl` uses its own three-slot background-specific table (`Update`, `SetEnabled`, `ScalarDeletingDtor`) instead of the old oversized container-tail typing
+- `HudUiBackgroundTextStyle_Ctor()` / `HudUiBackgroundTextStyle_Dtor()` are the lifecycle helpers for the `FONTS` table, and `HudUiBackground_LoadFromZrd()` now applies those styles when it builds the `BACKGROUND_TEXT` rows.
+- `HudUiPanel_SetFont()` is now pinned as `faceName, height, weight, width, italic, charSet, pitchAndFamily`.
+- The live `BACKGROUND_TEXT` path now reads a local `HudUiBackgroundTextStyle* textStyle` overlay and proves the reachable style tuple:
+  - `fontFaceName`
+  - `fontHeight`
+  - `textColor`
+  - `backgroundColor`
+  - `backgroundMode`
+  - `shadowEnabled`
+  - `fontWeight`
+  - `alignMode`
+- The `FONTS` builder loop is still intentionally left raw and comment-backed.
+- The adjacent `BACKGROUND_SOUNDS` strip is now stable on the live path:
+  - `HudUiBackground_LoadFromZrd()` resolves `HudUiBackgroundSoundEntry.sample_00` and `volume_04`
+  - `HudUiBackground_SetEnabled()` starts those samples, caches the returned `zSndPlayHandle*` in `playHandle_08`, and stops/clears those handles on disable
+  - `playHandle_08` stays conservative until another caller proves a stronger original field name
+- The embedded background cursor widget now has a confirmed member-vtable split:
+  - `g_HudUiBackgroundCursorWidget_MemberVtbl` is the table installed at `HudUiBackground.cursorWidget_44`
+  - `HudUiBackgroundCursorWidget_MemberScalarDeletingDtor()` is distinct from the standalone widget’s `HudUiBackgroundCursorWidget_ScalarDeletingDtor()`
+  - `HudUiBackgroundCursorWidget_DtorThunk()` is the tailcall bridge from the member deleter into the shared destructor body
+  - `HudUiWidget_DrawDirtyThunk()` is the shared draw-slot tailcall used by both cursor-widget tables
+- The next shared HUD thunk strip is fully normalized now:
+  - `HudUiCheckToggleWidget_DtorThunk()`
+  - `HudUiCycleSelectorWidget_DtorThunk()`
+  - `HudUiFillBitmap_DtorReleaseOwnedImagesThunk()`
+  - `HudUiZrdWidgetEx17C_DtorThunk()`
+  - `HudUiZrdWidget_DtorBodyThunk()`
+  - `HudUiLoadGameDialog_ApplySelectedSaveAndTransitionThunk()`
+  - `HudUiSaveGameDialog_SaveSelectedGameAndExitThunk()`
+  - `HudUi_SubmitChatInputAndSendThunk()`
+  - these are pure tailcall thunks into already-recovered bodies, not separate semantic helpers
+  - `HudUiTextInput_DtorUnwindThunk()` is the only unwind-only variant from the same strip
+  - there are no remaining live `j_HudUi*` aliases on this branch
+- The last broader HUD wrappers are normalized too:
+  - `HudSensorTracker_MapShutdownAndResetThunk()`
+  - `HudWeatherFx_DtorThunk()`
+  - there are no remaining live `j_Hud*` aliases on this branch
+- The old anonymous `sub_4c8xxx` HUD-adjacent destructor strip is not another gameplay/UI owner family.
+  - it belongs to VC6 exception-unwind metadata blocks in `.rdata`
+  - the `0x19930520` funcinfo-style records at `0x4D4610`, `0x4D4708`, and `0x4D4C90` reference those tiny tailcall destructors
+- The reachable DD/DD3D bootstrap path also has its last `j_` wrappers normalized now:
+  - `zVid_GetAcceptedD3DDeviceCountThunk()`
+  - `zVid_GetAcceptedDirectDrawDeviceCountThunk()`
+  - `zVideo_dd_ReleaseAllVideoInterfacesThunk()`
+  - there are no remaining live `j_zVid*` or `j_zVideo*` aliases on that branch
+- The remaining global `j_` inventory is now down to parked residue only:
+  - one MFC/import ordinal wrapper
+  - one dead Player AI tailcall wrapper
+  - one dead zSound cue tailcall wrapper
+- `g_HudUiTransitionTextPanel_FTable` is the shared `0x2C0` row ftable, while `g_HudUiCompositePanel_FTable` remains the outer `MESSAGES` composite-panel ftable with `ScrollHistory()` as its extra tail slot at `+0x94`.
+- `g_HudUiPanel_FTable` is the real base-panel head at `0x4D3A88`; the earlier overlap with `g_HudUiBackgroundCursorWidget_MemberVtbl` at `0x4D3A08` was a Binary Ninja data-var split issue, not a real shared class boundary.
+- The older `HudUiCompositePanel_SetFadeAlphaOnce()` helper name was wrong. The only live caller is the command-dialog prompt panel, so the helper now stays local to that branch as `HudCmdPromptPanel_SetFadeAlphaOnce()`.
+- On that prompt-panel helper path, `+0x2B8` acts as a one-shot latch only for that helper; it should not be generalized over the shared `HudUiTransitionTextPanel` update/copy logic, where the same offset is still treated conservatively as transition state.
+- `HudUiCompositePanel` also has a derived runtime tail that should stay local to that class instead of widening `HudUiPanel` globally:
+  - `scrollHistoryIndex_2A4`
+  - `fadeAlpha_2A8`
+- That local runtime view now drives `HudUiCompositePanel_ClearAllEntries()`, `ClearEntryRange()`, `ScrollHistory()`, and the scalar deleting destructor on the live briefing/messages path.
+- The helper-side vector tail anchored at `&fadeAlpha_2A8` is also explicit now:
+  - `HudUiCompositePanelVectorTail`
+  - `HudUiCompositePanelVector_DestroyAll()`
+  - `HudUiCompositePanelVector_Insert()`
+- The stack-built row templates in `HudUiCompositePanel_Init()` and `HudUiCompositePanel_ResizeEntryCount()` are intentionally left comment-backed in BN; retyping those locals as full `HudUiTransitionTextPanel` objects pollutes the SEH/cleanup view even though the underlying row class is now known.
+- The remaining entry-dispatch helpers now read through the same runtime view instead of raw `arg1[0xA9/0xAB]` indexing:
+  - `HudUiCompositePanel_Update()`
+  - `HudUiCompositePanel_SetFont()`
+  - `HudUiCompositePanel_SetTextFmtV()`
+- The composite-panel overrides now follow the real panel-tail semantics:
+  - `HudUiCompositePanel_Update()` is the inherited `Update(dt)` override and walks the visible entry vector when the conservative owner-state gate at `+0x0C` allows it
+  - `HudUiCompositePanel_SetTextFmt()` is the variadic wrapper that forwards into `SetTextFmtV()`
+  - `HudUiCompositePanel_SetTextFmtV()` formats the selected entry, marks it visible, then calls the derived `ScrollHistory()` slot
+  - `HudUiCompositePanel_SetFont()` is the `SetFont` override that propagates the font to every entry before updating the owning panel
+- `HudUiBriefingRuntime::Constructor()` and `HudUiBriefingRuntime::Destructor()` now use the full runtime/core-panel layout, so the queue-state, transport-progress, text panels, objective picture, and `messagesPanel` setup/teardown render directly instead of through inherited `HudUiBackground` offsets.
+- `HudUiBriefingLocatorPanel_Ctor()` is the canonical derived `HudUiCircle` constructor for the six briefing locator markers.
+- `HudUiCircle` is now the shared support type behind those locator markers, with `radius_34`, `radiusSquared_38`, and `color565_3C`.
+- The circle/locator branch now uses committed HUD `FTable` globals instead of propagated-only names: `g_HudUiCircle_FTable` and `g_HudUiBriefingLocatorPanel_FTable`.
+- `HudUiBriefingLocatorPanel_OnDrawThunk()` is the locator draw-slot thunk in that derived `FTable`; it reuses the shared `HudUiCircle_OnDraw()` implementation.
+- Locator pulse timing is driven by `g_HudUiBriefingLocatorPulseRate`, `g_HudUiBriefingLocatorMinPulseStepThreshold`, and `g_HudUiBriefingLocatorMinPulseStep`.
+- `Briefing_ActionQueue_AddDelayUntilProgress()` waits on `g_Briefing_ProgressEventCode`; the older “delay ms” interpretation was wrong.
+- `BriefingAction_PlaySample_Tick()` is the action-vtable leaf that stops the prior sample, starts simple or variant playback, and seeds the progress counter for event-driven variant playback.
+- The compact `HudUiPanelCore_FTable` text-panel ABI is mixed on the live HUD path:
+  - `SetTextFmt()` is the variadic stack-call slot
+  - `RebuildTextRect()`, `SetVisible()`, and `InvalidateText()` are regular `__thiscall` panel methods
+- `HudUiBriefingRuntime::Update()` dispatches the current queue node through `action->vtable->Tick(action, deltaTimeSec)` while the briefing sequence flag is set.
+- That update helper now uses a local `HudUiBriefingRuntimeUpdateView`, so the live queue owner fields (`sequenceActive`, `currentNode`, `headSentinel`) and `transportProgress` render directly instead of inherited `HudUiBackground` offset noise.
+- `HudSensorTracker_GetObjectiveBriefingStringsAndImageRef()` returns borrowed title/desc string pointers plus the `zVid_Image*` used by the briefing objective picture path.
+- `HudUiBriefingTransportProgress` is a derived `HudUiFillBitmap` widget, not a cycle selector.
+- The shared `HudUiFillBitmap` class is also reused by the options sound/music volume widgets.
+- `HudUiFillBitmap_UpdateNormalizedFromCursorAndActivate()` is the shared cursor-to-normalized-value helper for those options widgets.
+- The briefing transport widget overrides the shared fill-bitmap `+0x84` slot with scroll behavior (`HudUiFillBitmap_BeginScroll()`), while the options volume widgets use the base apply-value behavior.
+
+## FMV notes
+
+- The reachable menu/save-load/credits blur-transition path uses a full stack-local `zFMV_ActionBlur` object, not a truncated head-only helper.
+- The older `zFMV_ActionBlurHead` name is now treated as dead Binary Ninja local-lift residue after the stack-frame recheck.
+- `RecoilApp_PlayState_OnUpdateShouldQuit()` now carries the same full-object note in its function comment; the earlier `zFMV_ActionBlurHead` wording there was stale.
+- The active FMV/display left/top/right/bottom rectangle family now shares the generic `Rect32` model:
+  - `zFMV_Playback.sourceRect` / `destinationRect`
+  - `zFMV_Playback_SetDestinationRect()`
+  - the FX-surface tint/blur helpers
+  - `zVideo_dd3d_QueueSolidQuad()`
+- The older `zFMV_RectLTRB` helper type is now treated as dead duplicate residue with zero live xrefs.
+- The live FMV action vtable now propagates the expected virtual `self + timeSec` ABI on the script path:
+  - `zFMV_Script::BeginAtTime()` now calls `m_cur->vftable->pfnBegin(m_cur, 0f)`
+  - `zFMV_Script::UpdateAtTime()` now calls `pfnUpdate`, `pfnEnd`, and next-action `pfnBegin` with the real action `self`
+  - `zFMV_Action_RunBlockingZeroTime()` now decompiles through that same virtual ABI instead of the older missing-self HLIL noise
+- The remaining `GRANDPRIZE -> blur -> credits` oddities in `RecoilApp_PlayState_OnUpdateShouldQuit()` are now narrowed to stack-slot aliasing after the blur loop, not a bad `zFMV_Script` layout or a bad FMV vtable contract.
+- The live DD/HUD/FM V blit helpers now share an image-compatible head type `zVideo_BltSourceHead`.
+  - stable fields on that head are:
+    - `pixelCount`
+    - `sizePackedWH`
+    - `formatFlagsPacked`
+    - `paletteMetaPacked`
+    - `pixels`
+    - `alphaMap`
+    - `palette`
+    - `widthScale`
+    - `unknown_20`
+    - `uShiftFrom20`
+    - `uMask`
+    - `vMaskFixed20`
+    - `surface`
+    - `pitchWords`
+  - the aligned field vocabulary now propagates through `zVideo_buff_BltSourceToPrimary*()`, timed draw-task blits, and the background cursor/video widget draw path.
+  - that head stays separate from `zVid_Image` for now; the common head is proven, but the owning widget/object layouts still have unresolved overlap on the current branch.
+
+## Interpreter notes
+
+- The live script/interpreter path now has an explicit base/global context vtable split:
+  - `g_zInterp_Context_VTable`
+  - `g_zInterp_GlobalContext_VTable`
+- `zInterp_Context_Init()` / `zInterp_Context_Destroy()` reinstall the base vtable, while `zInterp_GlobalContext_Init()` installs the global-context variant.
+- The active interpreter support types now use canonical unsuffixed names:
+  - `zInterp_Context_VTable`
+  - `zInterp_LinkNode`
+  - `zInterp_FileFrame`
+  - `zInterp_VarEntry`
+  - `zInterp_MacroEntry`
+  - `zInterp_PreparedScriptEntry`
+  - `zInterp_RuntimeBlob`
+- The prepared-script and symbol helpers now propagate those types directly:
+  - `zInterp_Context_PopFileFrame()`
+  - `zInterp_Context_FindVarEntry()`
+  - `zInterp_Context_DumpVarEntry()`
+  - `zInterp_Context_FindMacroValue()`
+  - `zInterp_Context_SetMacro()`
+  - `zInterp_Context_LoadPreparedScriptIndex()`
+  - `zInterp_Context_OpenPreparedScriptStream()`
+- `Common_ReturnZeroCallback()` is the shared return-zero member callback reused by the interpreter/global-context vtables and unrelated callback tables. The older `zInterp_GlobalContext_OnDeferredHook()` identity was too specific.
+- `zInterp_Context_0xCC.currentNode_c8` now uses canonical `zClass_Node*` on the live interpreter dispatch path.
+- `zInterp_Context_DispatchCommand()` and `zInterp_Context_ValidateArgsAndNodeType()` now both follow that same canonical node model instead of the older `zClass_Node_0xC4_Fixed*` view.
+- Canonical unsuffixed `zInterp_Context` is now the live interpreter-context type used by the core entry points:
+  - `zInterp_Context_Init()`
+  - `zInterp_Context_Destroy()`
+  - `zInterp_Context_DispatchCommand()`
+  - `zInterp_Context_ExpandMacroRefs()`
+  - `zInterp_Context_EvalConditionExpr()`
+  - `zInterp_Context_ValidateArgsAndNodeType()`
+  - `zInterp_GlobalContext_PreDispatchHook()`
+- The parser/runtime helper strip now also uses canonical `zInterp_Context*` end to end:
+  - token/query helpers: `GetCurrentCommand()`, `NextToken()`, `CommandEquals()`, `CommandEqualsPrefix()`, `ParseIntToken()`, `ParseFloatToken()`, `ParseBoolToken()`, `IsMacroTrue()`
+  - symbol/runtime helpers: `FindMacroValue()`, `FindVarEntry()`, `SetMacro()`, `ClearFileFrameStack()`, `ClearMacroTable()`, `ClearVarTable()`, `ResetRuntimeState()`
+  - file/prepared-script helpers: `PushFileFrame()`, `PopFileFrame()`, `ReadLineOrPreparedTokens()`, `RunStream()`, `RunScriptFile()`, `LoadPreparedScriptIndex()`, `OpenPreparedScriptStream()`
+  - dispatch/debug helpers: `TokenizeLine()`, `ExecuteLine()`, `HandleBuiltinCommand()`, `DumpVarEntry()`, `EchoTokens()`, `DefaultDispatchHook()`, `IncErrorCount()`, `PrintNodeTree()`
+- `zInterp_Context_Logf()` and `zInterp_Context_ReportErrorf()` are now explicit stack/vararg wrappers that forward `fmt + &args` through `self->logFn_70`.
+- `zInterp_Context_Object3DSetScrollInternal()` now cleanly uses canonical `zInterp_Context*` on the `ScrollAlways` path.
+- The older `zInterp_Context_0xCC` name now has zero live xrefs and is retired.
+- The `ScrollAlways` list is now explicitly an intrusive `zInterp_LinkNode` list:
+  - `zInterp_Context_Init()` allocates the sentinel/head with `operator new(0xc)`
+  - `zInterp_Context_Object3DSetScrollInternal()` allocates appended payload entries with the same `0xc` node size
+- `zClass_Node_0xC4_Fixed` now has zero live xrefs and is retired residue; the reachable interpreter and serialization helpers are on canonical `zClass_Node*`.
+- The remaining oddity in `zInterp_Context_ExecuteLine()` is now just Binary Ninja member-call presentation noise on `preDispatch/postDispatch/onDeferred`, not a remaining vtable or support-type authority gap.
+
+## Effect runtime notes
+
+- The active effect template/runtime branch now uses canonical unsuffixed types:
+  - `zEffect_RuntimeEntry`
+  - `zClass_Node_EffectRuntime`
+- `g_zEffect_TemplateEntries` is the shared template-entry table built by `zEffect_InitFromPath()`.
+- The live runtime helper strip now centers on:
+  - `zEffect_AcquireRuntimeEntryByIndex()`
+  - `zEffect_CloneRuntimeEntryFromTemplate()`
+  - `zEffect_ActivateRuntimeEntryAtPosition()`
+  - `zEffect_RuntimeNodeActionCallback()`
+- The adjacent tracked-transform helpers now also use a canonical unsuffixed state type:
+  - `zEffectAnimTrackedNode.state_28` is `zEffectAnimTrackedNodeState`
+  - `zEffectAnim_CaptureTrackedNodeTransforms()` snapshots active state plus either a full matrix or position/rotation/scale tuple into that state
+  - `zEffectAnim_RestoreTrackedNodeStates()` restores the same state back onto tracked nodes
+- `zEffect_RuntimeEntry_0x48` and `zClass_Node_EffectRuntime_0x58` are now treated as retired duplicate residue with zero live xrefs on the current branch.
+- `zEffect_SpawnRuntimeInstanceAt()` now has an explicit `int32_t __fastcall(effectIndex, worldPos)` contract; the remaining initial `runtimeEntry = g_zEffect_IsInitialized` render is current Binary Ninja local-lift noise, not a surviving runtime-entry type split.
+
+## zClass payload notes
+
+- The basic `zClass` node-class payload family is now mostly on canonical unsuffixed types along the live create/load/update/render path.
+- `zClass_Object3DData` is the active `Object3d.c` payload, with currently-proven fields `flags_00`, `localMatrix_30`, and `cachedWorldMatrix_60`.
+- `zClass_LodData` is the active `Lod.c` payload type on the reachable create/read/write path.
+- `zClass_SequenceEntry`, `zClass_SequenceData`, `zClass_AnimateRuntime`, and `zClass_AnimateData` are the active `Seq.c` / `Animate.c` payload types on the reachable update path.
+- `zClass_AnimateKeyframe` is now the active unsuffixed keyframe type on the live interpolation path. `zClass_AnimateRuntime.keyframes_04` points at that canonical `float[9]` basis record, and the older `zClass_AnimateKeyframe_0x24` alias is retired.
+- `zClass_LightData` is the active `Light.c` payload type on the reachable create/delete/ZBD/model-lighting path.
+- `zModel_ActiveLightEntry` is the canonical model-lighting record, and `gModel_ActiveLights` now uses `struct zModel_ActiveLightEntry[0x40]`.
+- The currently-stable `zModel_ActiveLightEntry` fields are:
+  - `light`
+  - `lightState`
+  - `useFullWeight`
+  - `contributesToLighting`
+  - `contributesToLighting` is the broad participation gate on the reachable lighting paths.
+  - `useFullWeight` is the narrower branch that bypasses `zModel_Light_EvalDepthFade()` and starts from `1.0f` before later intensity scaling.
+- `zModel_LightState` is now the canonical live light-state sidecar on the same path.
+  - it is still intentionally partial
+  - only `flags_24` is proven today
+  - bit `2` is the participation gate checked in `zModel_Light_SetActiveLights()` and `zModel_Light_BuildLightWeights()`
+- `g_zModel_CurrentPolyNormals` is the live pointer/flag for per-entry transformed normal scratch; when non-null it points at `g_zModel_CurrentPolyNormalsStorage`, a `struct zVec3[0x40]` buffer immediately before `g_Clip_PolyAttr0`.
+- `zModel_DrawBatch` is now the canonical full render/light-prep batch on the reachable model-render path.
+  - the currently-stable high-value fields are `pointEntries_3c`, `center_44`, and `lightBuckets_50`
+  - `zModel_DrawBatchBase` remains a narrower geometry/pick/clip view and is intentionally kept separate
+- `zModel_Instance` is now the canonical live cycle-texture helper view on the reachable effect/player/interpreter strip.
+  - the currently-stable instance slice is intentionally narrow: `constData_30`
+  - `zModel_InstanceConst` is the matching narrow const-data view with stable `material_14`
+  - `zModel_Instance_SetCycleTextureCount()`, `SetCycleTextureLoop()`, `SetCycleTextureSpeed()`, and `AddCycleTexture()` all forward through that `constData_30 -> material_14` chain
+  - the broader instance layout is still intentionally conservative; the cycle-texture path is the only part currently strong enough to carry canonical unsuffixed types
+- The live material/cycle core now also uses canonical unsuffixed types:
+  - `zModel_Material`
+  - `zModel_MaterialCycle`
+  - `zModel_MaterialSlot`
+- The committed globals on that branch are:
+  - `g_zModel_DefaultMaterial`
+  - `g_zModel_MatlSlotTable`
+  - `g_zModel_MatlLookupCache`
+- `zModel_Material_ResetDefaults()`, `zModel_Material_CompareForReuse()`, `zModel_Material_FindOrClone()`, `zModel_Material_FindByTexDirEntry()`, `zModel_Material_SetUserTag()`, and the cycle helpers `SetCycleTextureCount()`, `AddCycleTexture()`, `SetCycleTextureLoop()`, and `SetCycleTextureSpeed()` now all propagate those canonical material types.
+- `zModel_Material.colorScalar` is the float at `+0x18`; material defaults set it to `0.5f`, while Object3DSetColor forces it to `1.0f` for eligible materials.
+- `zModel_Polygon_1C.material_14` is now the shared canonical `zModel_Material*` on the polygon/DI/model-buffer path.
+- `zDEClient_LookupDisplayModel()` is a fastcall helper with `(outMaterial, texturePath)` on the live display-model setup path.
+- `zModel_Model3dBuffer_WriteGameZ()` now uses a local model-buffer DI overlay so its `entries` slice is treated as `zModel_Polygon_1C[]` during serialization instead of generic display-instance entries.
+- The older `zModel_Material_28`, `zModel_MaterialCycle_1C`, and `zModel_MaterialSlot_2C` helper types now have zero live xrefs on the active branch.
+- The remaining `_0x` class-data aliases on this branch are now treated as Binary Ninja cache residue, not live payload splits:
+  - `zClass_LodData_0x50` may still appear at the LOD allocation local in `GameZ_ZBD_ReadNodeClassData()`; a fresh forced local-type retry still leaves that stale xref in place
+  - `zClass_LightData_0xE4` may still appear at the light allocation locals in `zClass_Light_gwLightNew()` and `GameZ_ZBD_ReadNodeClassData()`; a fresh forced local-type retry still leaves those stale xrefs in place
+  - `zClass_Object3DData_0x90` is no longer live; the two remaining render-side owners now explicitly use `zClass_Node*`, with a local `zClass_Object3DData* raw = node->classData_38.raw` overlay inside `zClass_Object3D_RenderTraverse()` and `zClass_Sound_RenderTraverse()`
+- A fresh `_0x` support-type sweep now leaves only those two documented BN alias residues above; all other current `_0x` support/user types on the reachable branch have zero live xrefs and are treated as dead duplicate leftovers.
+- The core ZBD node-index helper strip now uses canonical `zClass_Node*` too:
+  - `GameZ_ZBD_NodeIndexToPtr()`
+  - `GameZ_ZBD_NodePtrToIndex()`
+  - `GameZ_ZBD_NodePtrToSerializableIndex()`
+- The older `zClass_Node_0xC4_Fixed` alias now has zero live xrefs and is retired from the active serialization/copy path.
+- `GameZ_ZBD_ReadNodeTable()`, `GameZ_ZBD_WriteNodeTable()`, `GameZ_ZBD_WriteNodeClassData()`, and `zClass_cls_util_CopyNodeGraphicsData()` all now use canonical `zClass_Node*`.
+- `GameZ_ZBD_NodePtrToSerializableIndex()` is now explicitly the serialize-safe index filter: it only accepts nodes whose `g_zClass_NodeTableBase[index].freeTag_c0` includes `0x01000000`.
+- `zClass_WorldData` now exists as the canonical `World.c` payload base type.
+- The current canonical world-helper foothold is:
+  - `zClass_World_gwWorldNew()`
+  - `zClass_World_DeleteNode()`
+  - `zClass_World_gwWorldSetFogState()`
+  - `zClass_World_gwWorldUpdate()`
+- The world helper arrays now split into serialized/runtime node refs plus parallel class-data caches:
+  - `list1_94` and `list2_a0` are `union zClass_NodeRef*`
+  - `list1Aux_98` and `list2Aux_a4` are `union zClass_NodeClassDataPtr*`
+- `GameZ_ZBD_ReadNodeRefList()` converts serialized 32-bit node indices into in-memory `zClass_NodeRef.ptr`.
+- `GameZ_ZBD_ReadNodeTable()` rebuilds `list1Aux_98` and `list2Aux_a4` by caching `nodeRef.ptr->classData_38` after the node-ref lists are resolved.
+- The older `zClass_WorldData_0xAC` alias now has zero live xrefs and is treated as retired DB residue on the active branch.
+- The adjacent ZBD/world support types are now stable too:
+  - `zClass_ZbdHeader` on the live ZBD header/open-reload path
+  - `zClass_SwitchData` on `zClass_SwitchNode.switchData_38` and `zClass_Switch_RenderTraverse()`
+  - `zWorldArea` on the live world grid/ZBD read-write/update path
+- `zClass_NodeClassDataPtr.switchData` now points at canonical `zClass_SwitchData*`, so the older `zClass_SwitchData_0x0C` alias is dead residue.
+- The older helper aliases `zClass_ZbdHeader_0x24`, `zClass_SwitchData_0x0C`, and `zWorldArea_0x40` now have zero live xrefs and are treated as retired residue.
+- `zWorldArea.areaFlags_00` is the stable live flag dword:
+  - bit `0` queues a touched grid cell for recompute
+  - bit `8` marks that at least one child contributed bounds in the current recompute pass
+- `zWorldArea.unknown_04` is still unresolved; `zClass_World_gwWorldInitAreaGrid()` seeds it to `-1`, but no stronger semantic consumer has closed yet.
+- `zWorldArea.bbox_10`, `bboxCenter_28`, and `bboxRadius_34` are now stable cached bounds fields on the live load/update path:
+  - `zClass_World_gwWorldInitAreaGrid()` seeds the empty-cell cache
+  - `zClass_World_gwWorldUpdate()` refreshes it through `zClass_World_ComputeChildBounds()`
+  - `GameZ_ZBD_ReadNodeClassData()` / `GameZ_ZBD_WriteNodeClassData()` serialize the same raw `0x40` cell body unchanged
+- `zWorldArea.childCountPacked_38` remains intentionally 4-byte; the active child count is read from its upper halfword at `+0x3a`.
+- `CameraSetObjectHSETest` now drives the shared render gate `g_zClass_CameraObjectHseTestEnabled` through `zClass_Camera_SetObjectHseTestEnabled()`.
+- The live render-side readers of that gate are `zClass_Object3D_RenderTraverse()` and `zClass_Camera_RenderWorld()`, where it only controls whether span-occlusion visibility testing runs.
+
+## DirectDraw shell notes
+
+- The reachable DirectDraw bootstrap path now consistently uses the standard COM shells:
+  - `IDirectDraw2`
+  - `IDirectDraw2_Vtbl`
+  - `IDirectDrawSurface`
+  - `IDirectDrawSurface3`
+  - `IDirectDrawSurface3_Vtbl`
+  - `IDirectDrawClipper`
+  - `IDirectDrawPalette`
+  - `IDirect3DTexture2`
+- The older project-local DirectDraw wrappers are no longer live on the reachable path:
+  - `zVideo_IDirectDraw2`
+  - `zVideo_IDirectDraw2Vtbl`
+  - `zIDirectDrawSurface`
+  - `zIDirectDrawSurfaceVTable`
+  - `zVideo_DDrawSurface3`
+  - `zVideo_DDrawSurface3Vtbl`
+  - `zVideo_DDrawSurface3_PageUnlock`
+  - `zVideo_DDrawSurface3_PageUnlock_v2`
+  - `zVideo_DDrawSurface3_PageUnlockVtbl`
+  - `zVideo_DDrawSurface3_PageUnlockVtbl_v2`
+  - `zVideo_DDrawSurface3_LockUnlock`
+  - `zVideo_DDrawSurface3_LockUnlockVtbl`
+  - `zVideo_DDrawClipper`
+  - `zVideo_DDrawClipperVtbl`
+  - `zVideo_DDrawPalette`
+  - `zVideo_DDrawPaletteVtable`
+  - `zVideo_D3DDevice2`
+  - `zVideo_D3DDevice2Vtbl`
+- The active owner/surface shell authority is now visible in:
+  - `zVideo_dd_CreateDirectDraw2ForSelectedDevice()`
+  - `zVideo_dd_EnumerateD3DDrivers()`
+  - `zVideo_dd_AdjustSurfacesForHalfRes()`
+  - `zVideo_dd_BltImageSurfaceToPrimaryClipped()`
+  - `zVideo_dd_ReleaseAllVideoInterfaces()`
+  - `zVideo_dd_ShutdownDirectDrawAndD3DInterfaces()`
+- The remaining reachable clipper/palette shell authority is now visible in:
+  - `zVideo_dd_CreateHalfResFullscreenSurfaces()`
+  - `zVideo_dd_CreateFullscreenSoftwareSurfaces()`
+  - `zVideo_dd_CreateFullscreenD3DSurfaces()`
+  - `zVideo_dd_ReleaseAllVideoInterfaces()`
+  - `zVideo_dd_SetPaletteEntries()`
+- The decisive standard vtable hooks on that path are now explicit too:
+  - `IDirectDrawClipperVTable.SetHWnd()` is the live fullscreen clipper call in the three surface-create helpers above
+  - `IDirectDrawPaletteVtable.SetEntries()` is the live palette-upload call in `zVideo_dd_SetPaletteEntries()`
+  - the older `zVideo_DDrawClipper*` and `zVideo_DDrawPalette*` wrapper families are no longer live
+- The live BLT dispatch globals on the same path are now explicit too:
+  - `g_zVideo_HwApiActive`
+  - `g_zVideo_pfnBltSwToPrimaryRect`
+  - `g_zVideo_pfnBltPrimaryToSwRect`
+  - `g_zVideo_pfnBltImageSurfaceToPrimaryClipped`
+  - these are the shared startup/FMV/half-res/image-present hooks used by `zVideo_init_BindRendererDispatch()`, the blur helpers, and the gameplay credits path
+- The DirectDraw caps probe on the same bootstrap path is now on an unsuffixed live helper type:
+  - `g_zVideo_DDrawCapsHal` and `g_zVideo_DDrawCapsHel` now use `zVideo_DDrawCaps`
+  - `IDirectDraw2_Vtbl.GetCaps()` writes those buffers in `zVideo_dd_EnumDirectDrawDevicesCallback()`
+  - the older size-suffixed `zVideo_DDrawCaps_17C` helper type is no longer live
+  - the older `zDDraw_DDSCAPS` helper type is also no longer live
+  - `zVideo_dd_EnumDirectDrawDevicesCallback()` reuses one stack-local `DDSCAPS` mask slot for both `GetAvailableVidMem()` calls, so HLIL may still show fake `&data_4000` / `&data_1000` values where the real masks are `0x4000` and `0x1000`
+  - only `dwSize` and the offset-`0x08` caps word are currently proven, so that caps type remains intentionally partial
+- The reachable DD3D texture shell authority is now visible in:
+  - `zVideo_dd3d_CreateTextureFromZImage()`
+  - `zVideo_dd3d_TextureRecord_UploadImage()`
+  - `zVideo_dd3d_TextureRecord_Destroy()`
+- The decisive standard DD3D texture-vtable hooks on that path are now explicit too:
+  - `IDirect3DTexture2Vtbl.GetHandle()` is the live handle-acquire call in `zVideo_dd3d_InitD3DContext()` and `zVideo_dd3d_CreateTextureFromZImage()`
+  - `IDirect3DTexture2Vtbl.Load()` is the live upload-to-final texture copy in `zVideo_dd3d_CreateTextureFromZImage()` and `zVideo_dd3d_TextureRecord_UploadImage()`
+- The remaining DD3D device-shell authority is now visible in:
+  - `zVideo_dd3d_ResetZBufferRenderState()`
+  - `zVideo_dd_ShutdownDirectDrawAndD3DInterfaces()`
+  - the main live device pointer is `g_zVideo_pD3DDevice`
+  - the live `IDirect3DDevice2VTable` hooks are now pinned too:
+    - `BeginScene()` in `zVideo_dd3d_BeginScene_RestoreCachedStates()`
+    - `AddViewport()`, `SetCurrentViewport()`, and `GetCaps()` in `zVideo_dd3d_InitD3DContext()`
+  - the older `zVideo_D3DDevice2`, `zVideo_D3DDevice2Vtbl`, and `zVideo_*IDirect3DDevice2*` wrappers are no longer live on the reachable path
+  - the surrounding live owner shells are now explicit too:
+    - `g_zVideo_pD3D2`
+    - `g_zVideo_pD3DViewport2`
+    - `g_zVideo_pD3DMaterial2`
+  - the live hooks on that path are now pinned too:
+    - `IDirect3D2Vtable.CreateDevice()`
+    - `IDirect3D2Vtable.CreateViewport()`
+    - `IDirect3D2Vtable.CreateMaterial()`
+    - `IDirect3DViewport2Vtbl.SetBackground()`
+    - `IDirect3DMaterial2Vtbl.SetMaterial()`
+    - `IDirect3DMaterial2Vtbl.GetHandle()`
+  - the older `zVideo_IDirect3D2*`, `zVideo_IDirect3DViewport2*`, and `zVideo_IDirect3DMaterial2*` wrappers are no longer live on the reachable path
+  - the old `g_zVideo_pD3DDevice2` interpretation at `0x6333e8` was too strong and has been retired
+  - `0x6333e8` is now treated as `g_zVideo_pDd3dLegacyResetObject`, a separate legacy COM object used only by the reset/shutdown helper
+  - that helper builds a `0x28` desc and passes the shutdown-side `data_635d0c` preload through `desc.unknown_1c`; the exact COM interface and field meaning are still unresolved
+- The Direct3D driver enum callback has one remaining split worth preserving:
+  - MLIL now has stable locals `acceptedDriver : zVidD3DDeviceInfo*` and `acceptedDriverGuidStorage : zGuid*`
+  - HLIL still renders scaled-array writes through `ctx->m_d3dDrivers`, so the accepted-slot model is authoritative even though the decompiler text is not fully clean yet
+- The temporary/helper `IDirectDrawSurface` shell authority is now visible in:
+  - `zVideo_dd_Image_EnsureSurface()`
+  - `zVideo_dd_CreateSurface3FromDesc()`
+  - `zVideo_dd3d_InitD3DContext()`
+  - `zVideo_dd3d_TextureRecord_ReleaseUploadSurface()`
+  - `zVideo_dd3d_TextureRecord_Destroy()`
+- The DD3D z-buffer attach step is now explicit too:
+  - `g_zVideo_pZBufferAttachSurface` is the temporary standard `IDirectDrawSurface*` shell returned by `QueryInterface()` just before `AddAttachedSurface()` in `zVideo_dd3d_InitD3DContext()`
+- The DD3D queued-polygon scratch path also has one important decompiler caveat:
+  - `0x635d08`, `0x635d0c`, and `0x635d14` are not standalone globals
+  - they are codegen bias addresses into `g_zVideo_TLVertexScratch`
+  - the old `g_zVideo_pDd3dContext` interpretation at `0x635d0c` was false
+  - `zVideo_dd_ShutdownDirectDrawAndD3DInterfaces()` still passes `data_635d0c` into `zVideo_dd3d_ResetZBufferRenderState()`, but that value is now explicitly tracked only as `desc.unknown_1c` on the helper's conservative legacy-COM path
+- `IDirectDrawSurface4` is only a capability-probe shell on the reachable path:
+  - `zSys_ProbePlatformAndVideoCaps()` uses it to upgrade the probe ladder from `ZSYS_VIDEO_CAPS_SURFACE3` to `ZSYS_VIDEO_CAPS_SURFACE4`
+  - it is not part of the live runtime DD bootstrap ownership chain
+- The clipper/palette vtable side is still intentionally conservative. The shell objects are live and authoritative on the reachable path, but `IDirectDrawClipperVTable` and `IDirectDrawPaletteVtable` still have no direct type xrefs in this database.
+- The temporary `IDirectDrawSurface` vtable side is also still intentionally conservative. The shell object is live and authoritative on the reachable path, but `IDirectDrawSurface_Vtbl` still has no direct type xrefs in this database.
+- The DD3D texture vtable side is also still intentionally conservative. `IDirect3DTexture2` is the live shell on the upload path, but `IDirect3DTexture2Vtbl` still has no direct type xrefs in this database.
+- The `IDirectDrawSurface4` vtable side is also still intentionally conservative. `zSys_ProbePlatformAndVideoCaps()` proves the shell object, but `IDirectDrawSurface4_Vtbl` still has no direct type xrefs in this database.
+- The remaining project-local helper wrappers are kept only where they improve decompilation, such as `zVideo_DDSurfaceDesc`, `zVideo_DDPixelFormat`, `zVideo_D3DViewport2`, `zVideo_D3DMaterial`, `zVideo_D3DDeviceDesc`, and the narrower `zVideo_dd_D3DDeviceDescFC` view used by the Direct3D `EnumDevices` callback.
+- The accepted Direct3D driver record now keeps that full `EnumDevices` descriptor too:
+  - `zVidD3DDeviceInfo.m_hwDesc` stores the full `zVideo_dd_D3DDeviceDescFC` copy
+  - the enum callback's accepted-driver entry is therefore the full assembly-proven `0x190`-byte slot
+  - if HLIL still expands that path into scaled-array math, that is current BN presentation residue rather than a remaining record-layout bug
+- The selected-driver name helper now has an explicit fallback resource too:
+  - `g_zVideo_DefaultD3DDeviceName` is the fallback `"GameZ"` string used when no D3D device record is selected
+  - the selected path still returns the base of `zVidD3DDeviceInfo`, which is valid because `m_deviceName` is the first field in that record
+- The active DD/DD3D device records now use canonical `zGuid` for copied inline GUID storage:
+  - `zVidHwApiDeviceRecord.m_directDrawGuidStorage`
+  - `zVidD3DDeviceInfo.m_d3dDeviceGuidStorage`
+  - the API-facing pointer fields remain `GUID*` because they feed `DirectDrawCreate()` and `IDirect3D2::CreateDevice()`
+- The matching hardware-API description helper now has its fallback resource committed too:
+  - `g_zVideo_DefaultHwApiDescription` is the fallback `"Default"` string used when no DirectDraw device record is selected
+- The DD3D viewport/material vtable side now matches those helper wrappers on the reachable path:
+  - `IDirect3DViewport2Vtbl.SetViewport2()` uses `zVideo_D3DViewport2*`
+  - `IDirect3DMaterial2Vtbl.SetMaterial()` uses `zVideo_D3DMaterial*`
+  - older size-suffixed `zVideo_D3DVIEWPORT2_2C` and `zVideo_D3DMATERIAL_50` are no longer live
+  - if `zVideo_dd3d_InitD3DContext()` still renders `&vp2.dwWidth` or `&mat.diffuse.b` at those calls, that is current BN local-anchor noise rather than a remaining contract mismatch
+- The active DirectDraw surface shell is also now tighter on the live helper path:
+  - `IDirectDrawSurface3_Vtbl.GetDC()` uses `struct HDC__**`
+  - `IDirectDrawSurface3_Vtbl.ReleaseDC()` uses `struct HDC__*`
+  - `IDirectDraw2_Vtbl.CreatePalette()` uses `struct tagPALETTEENTRY* colorTable`
+  - `zVideo_dd3d_CreateTextureFromZImage()` now carries `zImage->palette` as `tagPALETTEENTRY*` on the palette-upload path
+  - `zVideo_dd_Image_GetSurfaceDC()` may still hide the explicit `GetDC(surface, outHdc)` arguments in HLIL; that is current BN presentation noise rather than a remaining interface mismatch
+- The generic `IDirectDrawSurface` helper shell is now aligned with the same live helper vocabulary:
+  - `IDirectDrawSurface_Vtbl` now uses typed `zVid_Rect32`, `DDSCAPS`, `zVideo_DDSurfaceDesc`, `zVideo_DDPixelFormat`, `zVideo_DDCOLORKEY`, `IDirectDrawPalette`, `IDirectDrawClipper`, and `HDC__` members on the reachable texture/z-buffer helper path
+  - `IDirectDrawSurface_Vtbl.Lock()` now uses the narrower `zVideo_DDSurfaceDescLockView*` on the live lock/upload path
+  - `zVideo_dd_LockSurfaceDescRetry()` now reads the generic lock contract through `IDirectDrawSurface::Lock(surface, nullptr, outDesc, 1, nullptr)`
+  - `IDirectDrawSurface_Vtbl` now also explicitly includes `Unlock()` at `+0x80`
+  - `zVideo_dd_UnlockSurfaceRetry()` now reads the generic upload-surface unlock contract through `IDirectDrawSurface::Unlock(surface, nullptr)` instead of `__offset(0x80)`
+  - the DD3D upload-unlock path in `zVideo_dd3d_CopyImageToSurface()` and `zVideo_dd3d_TextureRecord_UnlockUploadSurface()` now propagates that generic `Unlock()` hook cleanly
+  - `zVideo_dd3d_CreateTextureFromZImage()` now reads both generic-surface `SetPalette()` calls through `IDirectDrawPalette*`
+  - older `zIDirectDrawSurface` and `zIDirectDrawSurfaceVTable` wrappers are no longer live
+- The `IDirectDrawSurface3` lock-state/upload path now matches that split too:
+  - `IDirectDrawSurface3_Vtbl.Lock()` now uses `zVideo_DDSurfaceDescLockView*` on the reachable path
+  - `zVideo_dd_LockSurface_WaitRestore()` uses that narrow lock-view helper on the surface-state path
+  - `zVideo_dd_LockSurfaceState()` and `zVideo_dd_Image_UploadPixelsToSurface()` now read `dwWidth`, `dwHeight`, `lPitchBytes`, and `lpSurface` through local `lockDesc : zVideo_DDSurfaceDescLockView`
+  - the broader `zVideo_DDSurfaceDesc` is still kept for create/init helpers and `GetSurfaceDesc()` results
+- The active per-view backend occluder path is now explicit on both software and DD3D render-frame paths:
+  - `zVideo_ViewBackend` carries 4 compact occluder entries plus `occluderEntryCountFlags`
+  - each `zVideo_ViewBackendEntry` is 4 xyz verts plus `vertCountFlags`
+  - the remaining inner-loop pointer/FPU noise in `zVideo_sw_RenderFrame()` and `zVideo_dd3d_RenderFrame()` is current BN HLIL residue, not an unresolved outer layout issue
+- The live camera/render bridge currently uses `zVideo_ViewContext` as a sparse shared head over the camera raw object:
+  - it now explicitly includes `horizonNode_08` and `horizonXZNode_0c`
+  - `zClass_Camera_SyncViewContextPositions()` uses those hooks directly on the render path
+  - `zVideo_sw_RenderFrame()` and `zVideo_dd3d_RenderFrame()` now take camera nodes directly and peel the shared head from `camera->classData_38.raw`
+  - the broader camera raw layout is still intentionally conservative where `zClass_CameraData` and `zClass_CameraUpdateView` disagree
+- The camera gateway API is now stable on the reachable path:
+  - `zClass_NodeClassDataPtr.camera` is the canonical `zClass_CameraData*` view
+  - `zClass_Camera_gwCameraGetPosition()`, `GetTarget()`, `GetNearFarClip()`, `GetViewport()`, `GetFOV()`, and `GetClipDistance()` are mixed `__fastcall` getters with `EDX` as the first out-pointer
+  - `zClass_Camera_gwCameraSetPosition()`, `SetTarget()`, `SetNearFarClip()`, `SetHorizon()`, and `SetHorizonXZ()` are `__thiscall` setters over the same camera-data view
+  - the FOV/viewport gateway quartet uses a narrow local `zClass_CameraFovViewportView` overlay for the `+0xD8..+0x1D8` region because the broader `zClass_CameraData` layout is still intentionally conservative on that slice
+  - `zClass_Camera_gwCameraGetFOV()` currently reads `frustumWidth_0e0` / `frustumHeight_0e4`, but `zClass_cls_util_CopyCameraNode()` still feeds `zClass_Camera_gwCameraSetFOV()` from `fovX_0e8` / `fovY_0ec`
+  - the `GetFOV()` / `SetFOV()` names and the `+0xE0..+0xEC` field split therefore stay intentionally conservative for now
+  - the alternate target vector selected by `cameraFlags_10 bit 1` still stops conservatively at `zClass_CameraData + 0xA4`
+- The reachable object3d/render path now uses canonical `Object3d.c` payload typing too:
+  - `zClass_Object3DData` is the unsuffixed live payload
+  - the currently-proven fields are `flags_00`, `localMatrix_30`, and `cachedWorldMatrix_60`
+  - `zClass_NodeClassDataPtr.object3d` now points to that canonical payload
+  - `zClass_Object3D_RenderTraverse()` and `zClass_Sound_RenderTraverse()` now take `zClass_Node*` directly on the live dispatch path, while reading the compact render payload through `node->classData_38.raw`
+  - the same model propagates through `gwNode_BuildNodeToAncestorMatrix()`, `gwNode_GetWorldPosition()`, `zClass_Object3D_gwObject3DInit()`, `GameZ_ZBD_ReadNodeClassData()`, `zClass_Animate_RenderTraverse()`, `zClass_Camera_RenderTraverse()`, `zClass_Light_RenderTraverse()`, `zModel_Render()`, and `zModel_RenderSW()`
+  - the older `zClass_Object3DData_0x90` helper type is no longer live
+- The reachable sequence/animate update path now uses canonical payload typing too:
+  - `zClass_SequenceEntry` and `zClass_SequenceData` are the unsuffixed `Seq.c` payload types
+  - `zClass_AnimateRuntime` and `zClass_AnimateData` are the unsuffixed `Animate.c` payload types
+  - `zClass_NodeClassDataPtr.sequence` and `.animate` now point to those canonical payloads
+  - `zClass_SequenceNode.sequenceData_38` and `zClass_AnimateNode.animateData_38` now use the same canonical payloads
+  - the live update path now propagates through `zClass_Sequence_gwSequenceNew()`, `zClass_Sequence_UpdateNode()`, `zClass_Animate_UpdateNode()`, `zClass_AnimateRuntime_AdvanceTime()`, and `zClass_AnimateRuntime_SampleTransform()`
+  - the older `zClass_SequenceData_0x28`, `zClass_SequenceEntry_0x08`, `zClass_AnimateData_0xD4`, and `zClass_AnimateRuntime_0x6C` helper types are no longer live
+
+## Project Tree
+
+This is the highest-confidence project layout implied by the retail executable.
+
+```txt
+Proj/
+├─ Battlesport/                        # Game executable layer
+│  ├─ RecoilApp.cpp                    # [evidenced] app/state host, engine bootstrap, mission/play flow
+│  ├─ RecoilApp.h                      # [likely] app-global declarations and state types
+│  ├─ Briefing.cpp                     # [evidenced] threaded mission briefing runtime and action queue
+│  ├─ Briefing.h                       # [likely]
+│  ├─ hud.cpp                          # [evidenced] HUD, dialogs, menus, save/load UI, cheats, MP setup
+│  ├─ hud.h                            # [likely]
+│  ├─ map.cpp                          # [evidenced] map runtime and objective/map overlay helpers
+│  ├─ map.h                            # [likely]
+│  ├─ mission.cpp                      # [evidenced] mission bootstrap, objectives, weather, race, save/load
+│  ├─ mission.h                        # [likely]
+│  ├─ pickup.cpp                       # [evidenced] pickup defs, apply/remove logic, pickup save section
+│  ├─ pickup.h                         # [likely]
+│  ├─ player.cpp                       # [evidenced] player runtime, camera states, AI, movers, checkpoints
+│  ├─ player.h                         # [likely]
+│  ├─ turret.cpp                       # [evidenced] turret runtime from `ai.zrd`, destruction/effect logic
+│  ├─ turret.h                         # [likely]
+│  ├─ ai_net.cpp                       # [evidenced] AI-net ZRD loader, path graph build, behavior profiles
+│  ├─ ai_net.h                         # [likely]
+│  ├─ Game.h                           # [likely] shared game-state declarations
+│  ├─ Globals.h                        # [likely] process-wide globals typical of the era
+│  ├─ Resource.h                       # [likely] VC resource header
+│  └─ Battlesport.rc                   # [likely] icons, dialogs, version resources
+│
+├─ GameZRecoil/                        # Engine/runtime layer
+│  ├─ include/                         # [likely] shared public headers
+│  │  ├─ zTypes.h                      # [likely] core typedefs / 32-bit assumptions
+│  │  ├─ zAssert.h                     # [likely] assert/log/reporting macros
+│  │  ├─ zMemory.h                     # [likely] allocators / pools
+│  │  ├─ zPlatform.h                   # [likely] Win32/compiler platform switches
+│  │  ├─ zClass.h                      # [likely] object/class system API
+│  │  ├─ zVideo.h                      # [likely] video/render bootstrap API
+│  │  ├─ zRender.h                     # [likely] software renderer API
+│  │  ├─ zImage.h                      # [likely] image/texture/font API
+│  │  ├─ zSound.h                      # [likely] sound API
+│  │  ├─ zNet.h                        # [likely] networking API
+│  │  ├─ zGeometry.h                   # [likely] geometry API
+│  │  ├─ zUtil.h                       # [likely] archive / utility API
+│  │  └─ zEngine.h                     # [likely] top-level engine include
+│  │
+│  ├─ zClass/
+│  │  ├─ Class.c                       # [evidenced] node lifecycle, hierarchy, type lists
+│  │  ├─ Object3d.c                    # [evidenced] core 3D node/model node behavior
+│  │  ├─ Camera.c                      # [evidenced] engine camera node API
+│  │  ├─ Light.c                       # [evidenced] light node class
+│  │  ├─ Sound.c                       # [evidenced] sound node class
+│  │  ├─ Animate.c                     # [evidenced] animation node/controller class
+│  │  ├─ Seq.c                         # [evidenced] sequence/timeline class
+│  │  ├─ Switch.c                      # [evidenced] stateful switch-style nodes
+│  │  ├─ Window.c                      # [evidenced] render target/window node
+│  │  ├─ Display.c                     # [evidenced] display target/display-instance ownership
+│  │  ├─ List.c                        # [evidenced] intrusive list support
+│  │  ├─ cls_di.c                      # [evidenced] scene queries, LOS, picks, camera obstruction, variants
+│  │  ├─ cls_world.c                   # [evidenced] world partitioning / area-grid runtime
+│  │  ├─ cls_util.c                    # [evidenced] shared class-runtime helpers
+│  │  ├─ cls_zbd.c                     # [evidenced] GameZ/ZBD read/write/reload path
+│  │  └─ zClassPriv.h                  # [likely] internal structures
+│  │
+│  ├─ zDEClient/
+│  │  ├─ zdec_init.cpp                 # [evidenced] crater/quicksand bootstrap from `declient.zrd`
+│  │  ├─ zdec_qsand.cpp                # [evidenced] quicksand runtime / relay path
+│  │  ├─ zdec_crater.cpp               # [evidenced] crater runtime / relay path
+│  │  └─ zdec.h                        # [likely]
+│  │
+│  ├─ zEffect/
+│  │  ├─ zeff_init.c                   # [evidenced] effect template/runtime bootstrap
+│  │  ├─ zeff_anim_init.c              # [evidenced] effect-animation bootstrap
+│  │  ├─ zeff_anim_run.c               # [evidenced] effect-animation runtime stepping
+│  │  ├─ zeff_anim_save.c              # [evidenced] running-animation save/restore path
+│  │  └─ zEffect.h                     # [likely]
+│  │
+│  ├─ zError/
+│  │  ├─ zerr_old.c                    # [evidenced] error/reporting layer
+│  │  └─ zError.h                      # [likely]
+│  │
+│  ├─ zFMV/
+│  │  ├─ fmv_main.cpp                  # [evidenced] FMV runtime / controller
+│  │  ├─ fmv_script.cpp                # [evidenced] ZRD-driven FMV action scripts
+│  │  ├─ fmv_stream.cpp                # [evidenced] AVI stream decode/cache and audio streaming
+│  │  └─ fmv.h                         # [likely]
+│  │
+│  ├─ zGeometry/
+│  │  ├─ zgeo_weiler.cpp               # [evidenced] Weiler-Atherton clipping
+│  │  ├─ zgeo_model.cpp                # [evidenced] model-geometry clipping/build helpers
+│  │  ├─ zgeo_convexify.cpp            # [evidenced] convexification helpers
+│  │  └─ zGeometry.h                   # [likely]
+│  │
+│  ├─ zImage/
+│  │  ├─ zimg_texture.cpp              # [evidenced] texture dir, image packs, texture creation/upload
+│  │  ├─ zimg_fonts.cpp                # [evidenced] font-sheet loader and glyph rect builder
+│  │  └─ zImage.h                      # [likely]
+│  │
+│  ├─ zInterp/
+│  │  ├─ zinterp_parse.cpp             # [evidenced] command/script interpreter
+│  │  └─ zInterp.h                     # [likely]
+│  │
+│  ├─ zMath/
+│  │  ├─ zmth_main.c                   # [evidenced] vector/matrix helper library
+│  │  └─ zMath.h                       # [likely]
+│  │
+│  ├─ zModel/
+│  │  ├─ gmod_init.c                   # [evidenced] model bootstrap
+│  │  ├─ gmod_matl.c                   # [evidenced] material buffer/runtime
+│  │  ├─ gmod_const.c                  # [evidenced] polygon builder / const helpers
+│  │  ├─ gmod_light.c                  # [evidenced] model lighting path
+│  │  └─ zModel.h                      # [likely]
+│  │
+│  ├─ zNetwork/
+│  │  ├─ znet_dplay.cpp                # [evidenced] DirectPlay backend
+│  │  └─ zNetwork.h                    # [likely]
+│  │
+│  ├─ zReader/
+│  │  ├─ zreader.cpp                   # [evidenced] typed recursive node-tree reader over mounted archives
+│  │  └─ zReader.h                     # [likely]
+│  │
+│  ├─ zRender/
+│  │  ├─ zrndr_draw.c                  # [evidenced] software rasterizer, spans, textured draws
+│  │  └─ zRender.h                     # [likely]
+│  │
+│  ├─ zSound/
+│  │  ├─ zsnd_init.cpp                 # [evidenced] backend init and `sounds.zrd` bootstrap
+│  │  ├─ zsnd_create.cpp               # [evidenced] sample/buffer creation and lock/unlock helpers
+│  │  ├─ zsnd_play.cpp                 # [evidenced] voice acquisition, play/stop, cue/variant playback
+│  │  ├─ zsnd_parm.cpp                 # [evidenced] runtime sound-parameter helpers
+│  │  ├─ zsnd_3d.cpp                   # [evidenced] 3D audio updates
+│  │  ├─ zsnd_grp.cpp                  # [evidenced] sound groups/categories
+│  │  ├─ zsnd_cd.cpp                   # [evidenced] CD-audio runtime
+│  │  └─ zSound.h                      # [likely]
+│  │
+│  ├─ zUtil/
+│  │  ├─ zutl_zar.cpp                  # [evidenced] ZAR save sections and ZRDR-mounted file support
+│  │  └─ zUtilPriv.h                   # [likely]
+│  │
+│  ├─ zVideo/
+│  │  ├─ zvid_init.c                   # [evidenced] video-system bring-up, mode selection, bootstrap
+│  │  ├─ zvid_dd.c                     # [evidenced] DirectDraw backend
+│  │  ├─ zvid_ddd3d.c                  # [evidenced] Direct3D 2 bootstrap/device path
+│  │  ├─ zvid_buff.c                   # [evidenced] surfaces, blits, postprocess helpers
+│  │  └─ zVideoPriv.h                  # [likely]
+│  │
+│  └─ zWeapon/
+│     ├─ zwep_init.c                   # [evidenced] weapon/OptCatalog bootstrap
+│     └─ zWeapon.h                     # [likely]
+│
+└─ common/                             # [likely] shared headers/utilities used by game and engine
+   ├─ StdAfx.h                         # [possible] PCH header
+   ├─ StdAfx.cpp                       # [possible] PCH source
+   ├─ Win32Util.h                      # [likely]
+   └─ DxUtil.h                         # [likely] DirectX helper patterns
+```
+
+## Overview
+
+`Recoil` looks like a Win32/MFC game executable (`Battlesport`) built on top of a reusable C/C++ engine (`GameZRecoil`). The game layer owns mission flow, player logic, HUD, shell states, pickups, turrets, and AI policy. The engine layer owns object/class runtime, archives, data-driven loading, rendering, audio, FMV, networking, geometry, and weapon/effect support.
+
+At a high level:
+
+- **Shell/front end**: MFC frame app, menus, dialogs, attract/intro/mission FMV states, credits, help/docs launch
+- **Briefing runtime**: `Briefing.cpp` drives a dedicated mission-briefing worker gated by `g_Briefing_SystemActive`
+- **Briefing worker state**: the outer runtime/worker cluster is `g_Briefing_Runtime`, `g_Briefing_ThreadRunFlag`, `g_Briefing_ThreadExitedFlag`, `g_Briefing_SequenceActiveFlag`, and `g_Briefing_AllowAdvanceFlag`
+- **Briefing sound state**: briefing audio uses `g_Briefing_SndSetName`, `g_Briefing_CurrentSndHandle`, and `g_Briefing_ProgressEventCode` for sample-set ownership and sound-progress synchronization
+- **Gameplay**: mission bootstrap, player and vehicle runtime, AI nets, pickups, turrets, objectives, race/weather systems
+- **Engine**: `zClass` scene graph, `zReader` data trees, `zUtil` archives, `zVideo`/`zRender` graphics, `zSound`, `zNetwork`, `zEffect`, `zGeometry`, `zModel`, `zInterp`
+- **Data-driven flow**: most runtime config comes from ZRD trees and mounted archive content rather than hardcoded tables
+
+## Runtime stack
+
+- **Platform/UI**: Win32 + MFC shell
+- **Graphics**: DirectDraw + Direct3D 2, with a substantial software renderer still active on non-accelerated paths
+- **Audio**: DirectSound or A3D, plus MCI-driven CD audio
+- **Networking**: DirectPlay
+- **FMV**: AVI streaming via Video for Windows / MCI helpers
+- **Persistence and content**: ZRD, ZBD, ZAR, ZRDR
+
+## Data formats and mounted assets
+
+### ZRD
+
+ZRD is the engine's typed tree/config format, loaded through `zReader`. It is used for:
+
+- HUD and dialog layouts: `hud.zrd`, `dialog.zrd`, `briefing.zrd`
+- mission data: `objectives.zrd`, `Weather.zrd`, `race.zrd`, `net.zrd`, `movers.zrd`
+- gameplay systems: `pickup.zrd`, `effects.zrd`, `weapons.zrd`, `declient.zrd`, `sounds.zrd`
+- AI and vehicle data: `net_%02d.zrd`, `aiv.zrd`, difficulty-selected vehicle/pickup companion data
+- runtime configuration: `detail.zrd`
+- FMV scripts and media paths
+
+`zReader::LoadNodeFromPath()` goes through the mounted archive layer rather than plain filesystem opens; the separate search-path helpers live alongside it, which makes ZRD the main data language for both the game and the engine.
+
+### ZBD
+
+ZBD is the GameZ scene/resource archive format handled by `GameZRecoil/zClass/cls_zbd.c`.
+
+Observed loader flow:
+
+1. read and validate a `0x24`-byte header
+2. read texture-directory data
+3. read material data
+4. read model data
+5. read the node table and rebuild node references
+
+Observed header contents:
+
+- magic
+- version
+- texture-directory offsets/args
+- material offset
+- model offset
+- node count
+- node free-head index
+- node-table offset
+
+The current retail version check is `0x0f`.
+
+### ZAR / ZRDR
+
+ZRDR is the mounted file/archive search-path layer. ZAR is the named-section save/load system layered on top of it.
+
+The current save/load model is centered on a global archive manager, `g_zUtil_ZbdManager`, which owns a ring of section handlers. Each handler is keyed by section name and carries preload and data-ready callbacks.
+
+Each section handler also carries a stable ordering key, `zZbdSectionHandler.sortOrder_0C`. `zUtil_ZBD_LoadEntries()` bottom-up merge-sorts the ring by that field before invoking preload callbacks. On the sampled reachable path this key behaves like load/preload order, not payload size:
+
+- `Mission = 0`
+- `AnimActivation/RunningAnim/Anim = 0x32/0x33/0x34`
+- `HUDTimer` / `VehicleList = 0x64`
+- `Player = 0xc8`
+- `Pickup = 0x12c`
+- `GWWorld` / `zDEClient` / `Weapons` / `Mines = 0x3e8`
+- `MissionLate = 0x7d0`
+
+Observed behavior:
+
+- duplicate section names are rejected
+- `zZbdManager::LoadZarFile()` splits each record name into `managerKey` and optional `dataToken`, then dispatches through the generic bridge `zZbdSectionHandler::InvokeDataReady(ctx, token, buffer, size, userData)`
+- reachable readers consume mixed subsets of that dispatch frame: some use only `buffer/size/userData`, while `Player_ZAR_ReadVehicleListSection()` also consumes the `EDX` token
+- save code writes named section records through `zUtil_ZAR_WriteSectionBlob(...)`
+- legacy `fread`/`fwrite` serializers are supported through temp `FILE*` bridges
+- mission setup rebuilds ZRDR search paths and mounts per-mission archives
+
+Observed gameplay save sections include:
+
+- `Mission`
+- `MissionLate`
+- `Pickup`
+- `VehicleList`
+- `Player`
+- `HUDTimer`
+  - `HudUiMgr_InitHudLayouts()` registers it as `zUtil_ZAR_RegisterSectionHandler("HUDTimer", HudUiTimerPanel_ZarWriteTimerData, HudUiTimerPanel_ZarReadTimerData, 0x64, g_HudUiMgr.timerPanel_4784)`
+  - the payload is now bounded as `HudUiTimerData { float seconds; }`
+  - the writer emits that same 4-byte `TimerData` blob from `g_HudUiMgr.timerPanel_4784->elapsedSeconds`
+  - `HudUiTimerPanel` uses the `HudUiPanelWithoutLayout` 0x2a4-byte prefix; offsets `0x2a4/0x2a8/0x2ac` are `elapsedSeconds`, `stopped`, and `secondsStep`, not inherited layout/fade fields
+
+### Core archive and media files
+
+Mounted/archive content currently evidenced on the retail path:
+
+- `gamez.zbd` - scene graph / texture-directory / material / model / node-table snapshot
+- `anim.zbd` - compiled effect-animation archive
+- `interp.zbd` - prepared interpreter script index
+- `zbd\zrdr.zbd` - base mounted archive
+- `zbd\m%d\zrdr.zbd` - mission-specific mounted archive
+- `image.zbd` - image/texture archive pack
+- `texture*.zbd`, `texturemax.zbd`, `rtexture*.zbd` - texture packs selected by config and/or available video memory; the sampled retail tree ships `texture2.zbd`, `texture4.zbd`, mission-local `texture6.zbd`, one `m6\\texture8.zbd`, and `rtexture2.zbd` / `rtexture4.zbd`, but no sampled `texturemax.zbd`
+- `soundsH.zbd`, `soundsM.zbd`, `soundsL.zbd` - sound archive banks; the sampled retail files are lowercase `soundsh.zbd`, `soundsm.zbd`, and `soundsl.zbd`
+- `Docs\Index.html` - HTML help/docs entry point
+
+### `zrdr.zbd` archive format
+
+The mounted `zrdr.zbd` files are `zIndexArchive` containers, not bespoke script blobs.
+
+- Outer container layout:
+  - payload area is a flat concatenation of `.zrd` member blobs
+  - directory lives at EOF as `recordCount` x `0x94`-byte `zZarFileRecord` entries followed by a trailer `{ int32 version = 1, int32 recordCount }`
+  - each record keeps `fileOffset_00`, `fileSize_04`, `name_08[0x40]`, `recordFlags_48`, `sourceTempPath_4C[0x40]`, `sourceFileTimeLow_8C`, and `sourceFileTimeHigh_90`
+  - the live runtime lookup path only consumes offset/size/name, but retail/common and mission samples also preserve build-time temp-path metadata in `sourceTempPath_4C` plus a 64-bit Win32 `FILETIME` split across `sourceFileTimeLow_8C` / `sourceFileTimeHigh_90`
+  - sampled timestamps decode cleanly: common archive entries land around `1998-12-09`, while sampled `m1` entries land around `1998-11-10`
+- Inner member format:
+  - each member is a serialized `zReader` tree
+  - node type `1` = int32, `2` = float32, `3` = length-prefixed string, `4` = array of child nodes
+  - for type `4`, the file stores `count` and then only the real children; the reader synthesizes in-memory slot `0` as `{ type = 1, value = count }`
+  - named lookups walk array nodes recursively, match a string child against the requested key, and return the following node as that key's value
+- Runtime call chain:
+  - common bootstrap: `RecoilApp::InitInstance()` -> `zArchive::MountIndexArchive()` -> `zIndexArchive_OpenLoadIndex()` -> `zIndexArchive_ReadIndexFromTail()`
+  - mission refresh: `zUtil_SetMissionZrdrPathsAndMountZbd()` -> `zArchive::MountIndexArchive("zbd\\m%d\\zrdr.zbd", 0)`
+  - member load: `zReader::LoadNodeFromPath()` -> `zReader_OpenFileFromMountedArchives()` -> `zIndexArchive_OpenFile()`
+  - separate loose-file helper path: `zReader_TryResolvePath()` -> `zUtil_ZRDR_ResolvePathInSearchPathList()`
+- Sample contents from the local retail tree:
+  - common `zbd\\zrdr.zbd` has `127` records and acts as the shared ZRDR bank: `anim.zrd`, `briefing.zrd`, `dialog.zrd`, `hud.zrd`, `detail.zrd`, `fmv.zrd`, `sounds.zrd`, `weather.zrd`, `player.zrd`, `pickup.zrd`, `weapons.zrd`, plus shared enemy/effect/weapon trees such as `drone.zrd`, `helicop.zrd`, `rfpg_mzl.zrd`, `smoke1.zrd`, and `turret.zrd`
+  - mission `zbd\\m1\\zrdr.zbd` has `149` records and carries mission-local AI/start/objective/net content: `ai.zrd`, `aiv*.zrd`, `objectives.zrd`, `movers.zrd`, `net.zrd`, `net_01.zrd` through `net_91.zrd`, `start_single_m1.zrd`, `startanims.zrd`, `m1objects.zrd`, and `m1pickup.zrd`
+  - the sampled mission archive counts range from `13` records (`m8`, `m11`, `m12`) to `151` (`m2`), which matches the expected split between light mission overlays and heavier mission-specific content packs
+
+### Startup and `*.zbd` call chain
+
+The reachable retail startup and mission-reload path now has a stable high-level `*.zbd` chain:
+
+- common archive bootstrap:
+  - `RecoilApp::InitInstance()` mounts `zbd\\zrdr.zbd` through `zArchive::MountIndexArchive()`
+  - `RecoilApp_LoadZbdAndStartEngine()` remounts the same archive when mission world state is already live
+- mission archive/bootstrap refresh:
+  - `RecoilApp_MissionFmvState_OnTryBecomeCurrent()` and `HudSensorTracker_ApplyMissionDataAndReload()` call `zUtil_SetMissionZrdrPathsAndMountZbd(missionId)`
+  - that helper rebuilds `..\\data\\common\\zrdr;..\\data\\m%d\\zrdr;..\\data\\m%d\\zrdr\\aipath`, refreshes common texture roots, and mounts `zbd\\m%d\\zrdr.zbd`
+- script-driven world load:
+  - `zInterp_Context_RunScriptFile()` optionally accelerates script opens through `interp.zbd`
+  - `HudSensorTracker_LoadMissionCoreResources()` always runs `support\\initm%d.gw`, then chooses `m%d_zbd.gs` when `effectResourceNode_e0 == 0`; otherwise it falls back to `m%d.gs`
+  - the `GameZReadZBDFile` interpreter command is the practical `gamez.zbd` entry gate on the reachable mission path
+  - retail prepared-script payloads prove the split:
+    - `m%d_zbd.gs` is the runtime fast path: `source support\\commonm%d.gw` -> `GameZReadZBDFile %MissionZBDFile%` -> `source support\\tex_fxm%d.gw` -> `Quit`
+    - `m%d.gs` is the source/load-and-write path: `source support\\commonm%d.gw` -> `source support\\loadm%d.gw` -> `GameZWriteZBDFile %MissionZBDFile%` -> `source support\\tex_fxm%d.gw` -> `Quit`
+- effect-animation load:
+  - `AnimSetZBDFile` writes the archive name through `zEffect_Anim_SetZbdFilename()`
+  - `zEffect_Anim_LoadAndInstantiate()` then calls `zEffect_Anim_LoadZbd()` for the actual `anim.zbd` parse/fixup pass
+- image/sound archive load:
+  - `zVid_TexturePack_LoadBuiltinImageByName()` lazily seeds `image.zbd`
+  - `zVid_TexturePack_LoadEntry()` handles `texture*.zbd`, `texturemax.zbd`, and `rtexture*.zbd`; the sampled retail tree only ships `texture2.zbd`, `texture4.zbd`, mission-local `texture6.zbd`, one `m6\\texture8.zbd`, and `rtexture2.zbd` / `rtexture4.zbd`
+  - `zSndSampleSet_LoadResources()` chooses one of `soundsH.zbd`, `soundsM.zbd`, or `soundsL.zbd` and falls back across the other banks if the preferred one is missing; the sampled retail tree stores those three banks as lowercase `soundsh.zbd`, `soundsm.zbd`, and `soundsl.zbd`
+
+### `gamez.zbd` format
+
+`gamez.zbd` is not a tail-index archive. It starts with a fixed `0x24`-byte `zClass_ZbdHeader` and then stores four large serialized sections at explicit offsets.
+
+- header layout:
+  - `magic_00 = 0x02971222`
+  - `version_04 = 0x0f`
+  - `texDirArg_08`
+  - `texDirOffset_0c`
+  - `matlOffset_10`
+  - `model3dOffset_14`
+  - `nodeCount_18`
+  - `nodeFreeHead_1c`
+  - `nodeTableOffset_20`
+- loader path:
+  - `GameZ_OpenAndReadZBDHeader()` validates the magic/version pair
+  - `GameZ_ReadZBDFile()` then seeks and dispatches:
+    - `texDirOffset_0c -> zImage_ReadTextureDirectory(texDirArg_08, FILE*)`
+    - `matlOffset_10 -> zModel_MatlBuffer_ReadGameZ(FILE*)`
+    - `model3dOffset_14 -> zModel_Model3dBuffer_ReadGameZ(FILE*)`
+    - `nodeTableOffset_20 -> GameZ_ZBD_ReadNodeTable(nodeCount_18, FILE*)`
+  - on success it restores `g_zClass_NodeFreeHeadIndex = nodeFreeHead_1c`
+- sample `m1\\gamez.zbd` header:
+  - `texDirArg = 0x1d7`
+  - `texDirOffset = 0x24`
+  - `matlOffset = 0x4260`
+  - `model3dOffset = 0x39dd0`
+  - `nodeCount = 16000`
+  - `nodeFreeHead = 0x1067`
+  - `nodeTableOffset = 0x1b3d54`
+- node-table body:
+  - the node-table section starts with `nodeCount * 0xc4` serialized `zClass_Node` records
+  - stable fixed fields on each disk record are:
+    - `name_00[0x24]`
+    - `flags_24`
+    - `boundsFlags_2c`
+    - `nodeType_30`
+    - `classType_34`
+    - `classData_38`
+    - `diRef_3c`
+    - `callbackContext_40`
+    - `callbackPriority_44`
+    - `actionCallback_48`
+    - `listCountA_54` / `listA_58`
+    - `listCountB_5c` / `listB_60`
+    - `viewSphereCenter_64`
+    - `viewSphereRadius_70`
+    - `damageHandler_0bc`
+    - `freeTag_c0`
+  - `diRef_3c` is stored on disk as an index and fixed to a live pointer with `zDi_IndexToPtr()`
+  - `actionCallback_48` is cleared after load; the node is then fed into `GameZ_ZBD_ReadNodeClassData()` for its class payload and generic `listA` / `listB` fixups
+- per-node class payload stream:
+  - payloads follow immediately after the raw node table, in node order
+  - currently proved fixed payload sizes are:
+    - none: `0x00`
+    - sound: `0x94`
+    - object3d: `0x90`
+    - LOD: `0x50`
+    - light: `0xe4`
+    - camera: `0x1e8`
+    - world: `0xac`
+    - window: `0xf8`
+    - display: `0x1c`
+  - variable tails are class-specific:
+    - sound/light append attached node-ref lists
+    - world appends `list1_94`, `list2_a0`, an `areaRows_7c * areaCols_78` grid of raw `0x40`-byte `zWorldArea` cells, then per-cell child ref lists
+    - camera fixes four node refs at `0x00..0x0c` and re-derives clip/viewport state after the raw read
+  - world payload fields now proved on the retail load/update path include:
+    - `originX_34`, `originY_38`, `sizeX_3c`, `sizeY_40`, cached `worldMaxX_44`, `worldMaxY_48`
+    - low byte of `partitionMaxDecFeatureCount_4c`
+    - `virtualAreaPartitionEnabled_50`
+    - `areaCellWidth_54`, `areaCellHeight_58`, `areaHalfWidth_5c`, `areaHalfHeight_60`, `areaInvWidth_64`, `areaInvHeight_68`, `areaCellRadiusBias_6c`
+    - `partitionInclusionTolX_70`, `partitionInclusionTolY_74`
+    - `areaGridColCount_78`, `areaGridRowCount_7c`, and `areaGridRows_80`
+    - `unknown_84`, `unknown_88`, and `unknown_8c` still only seed to `1.0f` in `zClass_World_gwWorldNew()`; no stronger live consumer has surfaced on the reachable retail path
+  - grid mapping on the same payload is now explicit too:
+    - `zClass_World_gwWorldSetOrigin()` maintains `originX_34`, `originY_38`, `worldMaxX_44`, and `worldMaxY_48`
+    - `zClass_World_gwWorldSetSize()` maintains `sizeX_3c`, `sizeY_40`, `worldMaxX_44`, and `worldMaxY_48`
+    - `zClass_World_WorldToGridIndex()` / `zClass_World_WorldToGridClamped()` consume only `{ originX_34, originY_38, worldMaxX_44, worldMaxY_48, areaInvWidth_64, areaInvHeight_68 }` plus the retail `0.1f` edge bias
+    - no live grid-index consumer has surfaced for `unknown_84`, `unknown_88`, or `unknown_8c`
+  - each `zWorldArea` cell now has stable outer fields too:
+    - `areaFlags_00` is a live flag dword; runtime uses bit `0` as the dirty/recompute queue flag and bit `8` as the settled bounds-valid/contributor flag, while ordinary serialized rows observed in retail plus Recoil `mech3ax` settle to `0x100`
+    - `unknown_04` is now bounded as a fixed `-1` sentinel on the Recoil file/init path: `zClass_World_gwWorldInitAreaGrid()` seeds it, the `gamez.zbd` read/write path preserves it unchanged, and Recoil `mech3ax` writes the same constant
+    - `cellMinX_08`
+    - `cellMinY_0c`
+    - `bbox_10 = { min.x, min.y, min.z, max.x, max.y, max.z }`
+    - `bboxCenter_28`
+    - `bboxRadius_34`
+    - `childCountPacked_38`, with the live child count carried in the high word and the low word staying zero on the observed retail + Recoil `mech3ax` write path
+    - `childList_3c`
+  - the same `0x40` cell body is serialized unchanged on both read and write paths:
+    - `GameZ_ZBD_ReadNodeClassData()` reads each cell with one `fread(..., 0x40, 1, file)` and then fixes only `childList_3c`
+    - `GameZ_ZBD_WriteNodeClassData()` writes each cell with one `fwrite(..., 0x40, 1, file)` before serializing the per-cell child refs
+  - runtime cache flow inside the world helper strip is now explicit too:
+    - `zClass_World_gwWorldInitAreaGrid()` seeds the empty-cell bbox/center/radius cache
+    - `zClass_World_gwWorldUpdate()` is the only current caller of `zClass_World_ComputeChildBounds()`
+    - `zClass_World_ComputeChildBounds()` rebuilds `bbox_10`, `bboxCenter_28`, and `bboxRadius_34` from `zClass_Class_gwNodeGetWorldBBoxCorners()`
+  - the virtual-area-partition pass groups border-cell children into `VAP_statics` Object3D nodes, which is why the packed per-cell child count matters on the reachable mission path
+- practical contents:
+  - texture directory entries used by image/material lookups
+  - material buffer data
+  - model buffer data
+  - serialized `zClass` node table plus per-class payloads consumed by `GameZ_ZBD_ReadNodeClassData()`
+
+### `anim.zbd` format
+
+`anim.zbd` is a dedicated compiled effect-animation archive with a small fixed header, a source-stamp table, one mixed global band, then a large per-entry table with variable side tables.
+
+- file preamble:
+  - `magic = 0x08170616`
+  - `version = 0x1c`
+  - `sourceFileStampCount`
+- immediately after the 12-byte header:
+  - `sourceFileStampCount * 0x54` `zEffectAnimSourceFileStamp` records
+  - each stamp is `{ sourcePath_00[0x50], fileMtime_50 }`
+  - sampled `m1\\anim.zbd` has `166` source stamps; the first recorded source path is `..\\data\\m1\\zrdr\\anim.zrd`
+- next block:
+  - one `0x3c` mixed serialized-global band copied directly over `0x575da0..0x575ddb`
+  - `g_zEffect_WorldNode` is preserved/restored around that copy because the on-disk band overlaps live globals
+  - the sampled `m1` file encodes entry count `0x01bc` (`444`) in the high word of the packed count dword inside that band
+  - Recoil `mech3ax` `AnimInfoC` matches the front of that band structurally:
+    - `+0x08`: packed count lane; retail entry count lives in the high word
+    - `+0x0c`: entry-table pointer slot
+    - `+0x10/+0x14`: text/message count + pointer slots; on the reachable retail path these behave as the trailing text-id count/table
+    - `+0x18`: world pointer slot
+    - `+0x1c`: gravity slot candidate
+  - that does not survive as a clean portable runtime struct in retail Recoil:
+    - `+0x04` and the low16 of `+0x08` are still unresolved on the reachable retail path
+    - `+0x18` overlaps live `g_zEffect_WorldNode` and is preserved/restored around `fread(..., 0x3c, ...)`
+    - `+0x1c` is still only a gravity candidate; `zEffect_Anim_Init()` seeds `-9.8f` there before the archive copy overwrites it
+    - `+0x20..+0x34` overlap live reference-world-pos / variant-tag globals rather than a clean trailing-zero tail
+- entry table:
+  - `entryCount * 0x134` `zEffectAnimEntry` records
+  - each entry is followed by side tables whose counts come from `sideTableCountsA_104`, `sideTableCountsB_108`, and `sideTableCountsC_10c`
+  - currently proved side-table widths are:
+    - tracked nodes: `0x60`
+    - node refs: `0x28`
+    - light refs: `0x2c`
+    - sound refs: `0x2c`
+    - sample refs: `0x24`
+    - template refs: `0x24`
+    - activation prerequisites: `0x30`
+    - runtime refs: `0x48`
+  - the primary surface block is re-read after the main `0x134` entry body, which is why the on-disk `0x0c4..0x103` region behaves like a serialized overlap rather than a stable in-memory layout
+- runtime fixups after raw I/O:
+  - root/attach node binding
+  - runtime light-node and sound-node creation
+  - sample-name resolution through `zSnd_FindSampleByName()`
+  - effect-template name resolution through `zEffect_FindTemplateIndexByName()`
+  - activation-prerequisite rebinding against entries or scene nodes
+
+### Texture-pack `*.zbd` format
+
+`image.zbd`, `texture*.zbd`, `texturemax.zbd`, and `rtexture*.zbd` all use the same texture-pack container format.
+
+- sampled local retail filenames are `image.zbd`, mission `texture2.zbd`, `texture4.zbd`, optional `texture6.zbd`, one `m6\\texture8.zbd`, and `rtexture2.zbd` / `rtexture4.zbd`
+- `texturemax.zbd` is supported by the loader path but is not present in the sampled retail tree
+
+- fixed header (`0x18` bytes):
+  - dword `0x00`: reserved, observed `0`
+  - dword `0x04`: format, observed `1`
+  - dword `0x08`: palettePageCount
+  - dword `0x0c`: recordCount
+  - dword `0x10`: reserved, observed `0`
+  - dword `0x14`: reserved, observed `0`
+- directory:
+  - `recordCount * 0x28` `zVid_TexturePackRecord` entries
+  - each record is `{ name[0x20], fileOffset, paletteIndex }`
+- payload:
+  - optional palette-page block when `palettePageCount > 0`
+  - each palette page is `0x100` 16-bit entries (`0x200` bytes)
+  - each record `fileOffset` points to one `zVid_Image_ReadFromFile()` member:
+    - `0x10`-byte image header
+    - primary pixel blob
+    - optional alpha plane
+    - optional inline palette
+- per-image member header (`0x10` bytes):
+  - byte `0x00`: format code, copied into `zVid_Image.formatFlagsPacked:1.b`
+  - bytes `0x01..0x03`: reserved/unused on the reachable retail load path
+  - word `0x04`: width
+  - word `0x06`: height
+  - byte `0x08`: header flags, copied into `zVid_Image.formatFlagsPacked.b`
+  - bytes `0x09..0x0b`: reserved/unused on the reachable retail load path
+  - word `0x0c`: palette entry count, copied into `zVid_Image.paletteMetaPacked:2.w`
+  - word `0x0e`: wrap/meta flags, copied into `zVid_Image.paletteMetaPacked.w`
+    - bit `0`: `clampU`
+    - bit `1`: `clampV`
+    - remaining bits: still cold on the reachable retail path; `zImage_LoadAndUploadTexDirEntries()` only forwards bit0/bit1 and `zVideo_dd3d_CreateTextureFromZImage()` only consumes the high word as palette-entry count
+    - Recoil `mech3ax` currently names this word `TextureStretch`, but no additional in-exe consumer beyond `clampU` / `clampV` has surfaced yet
+  - Recoil `mech3ax` flattens the first dword into a parser-side flag word, but the in-exe Recoil loader/runtime is still better described as a split-byte contract:
+    - byte `0x00` carries format / bytes-per-pixel / `useAlpha` bits
+    - byte `0x08` carries archive header flags such as `0x08` alpha-plane and `0x10` no-inline-palette / shared-palette
+- primary pixel blob sizing:
+  - `bytesPerPixel = 1` when format code bit `0` is clear, `2` when it is set
+  - when palette entry count is non-zero, the blob is `pixelCount` bytes of indices
+  - otherwise the blob is `bytesPerPixel * pixelCount`
+- optional trailers:
+  - alpha plane is present when header flag bit `0x08` is set and is exactly `pixelCount` bytes
+  - inline palette is present when header flag bit `0x10` is clear and `paletteEntryCount != 0`; size is `bytesPerPixel * paletteEntryCount`
+  - header flag bit `0x10` is therefore the no-inline-palette path on the reachable retail loader
+- runtime palette rebinding:
+  - `zVid_TexturePack_LoadImageByName()` discards any inline palette when `paletteIndex != -1`, forces `paletteEntryCount = 0x100`, and rebinds `image->palette` to the shared pack page at `palettePageBase + paletteIndex`
+  - `zVid_TexturePack_LoadBuiltinImageByName()` uses the same member payload format and can also attach a shared palette page through the record `paletteIndex`
+  - shared-palette texture-pack entries line up with the header-flag-`0x10` path above, so the member payload carries indices only and the runtime supplies the palette page later through the pack record
+- runtime texture creation:
+  - `zImage_LoadAndUploadTexDirEntries()` passes `useAlpha = (formatFlagsPacked & 2)`, `clampU = (wrapFlags & 1)`, and `clampV = ((wrapFlags >> 1) & 1)` into `g_zVideo_pfnTexture_CreateFromImage()`
+- observed retail split:
+  - `image.zbd`: `pageCount = 0`, `recordCount = 433`, mostly shared UI/backdrop/font images such as `lucida_console_8`, `back_m10`, `back_m11`, and `back_m12`
+  - `m1\\texture2.zbd`: `pageCount = 16`, `recordCount = 576`; records like `bardest`, `blst0001`, and `boxexp01` carry non-negative `paletteIndex` values
+  - `m1\\rtexture2.zbd`: `pageCount = 0`, `recordCount = 576`; same logical image names, but no external palette pages and `paletteIndex = -1`
+- runtime call chain:
+  - `zVid_TexturePack_InitBuiltinImagePacks()` seeds the built-in image bank from `image.zbd` and falls back to `rimage.zbd`; no sampled `rimage.zbd` is present in the local retail tree, so this is currently a code-supported fallback name rather than an observed shipped file
+  - `zVid_TexturePack_LoadEntry()` now explicitly early-outs when `g_zVid_TexturePackLoadState == ZVID_TEXTURE_PACK_LOAD_DISABLED`; that same hidden shell/menu state is toggled by `CZRecoilFrame_OnMenuToggleTexturePackLoading()` on command `0x9C7B`
+  - `zVid_TexturePack_LoadEntry()` appends palette pages to `g_zVid_TexturePagePtrs` and records the per-pack base at `palettePageBase_A0`
+
+### Sound-bank `*.zbd` format
+
+`soundsH.zbd`, `soundsM.zbd`, and `soundsL.zbd` reuse the generic `zIndexArchive` tail format, but their payload region is audio data rather than `zReader` trees.
+
+- in the sampled retail tree, the three files are stored on disk as lowercase `soundsh.zbd`, `soundsm.zbd`, and `soundsl.zbd`; the loader-side names above are equivalent on Win32
+
+- outer archive layout:
+  - flat payload region
+  - trailing `{ int32 version = 1, int32 recordCount }`
+  - preceding `recordCount * 0x94` `zZarFileRecord` directory
+- payload contents:
+  - concatenated RIFF/WAV blobs
+  - index entries are named `*.wav` and point directly into that shared payload area
+- sampled retail bank:
+  - `soundsl.zbd` has `280` indexed members
+  - early entries are `campaign1.wav` through `campaign6.wav`
+- runtime call chain:
+  - `zSndSampleSet_LoadResourcesByName()` -> `zSndSampleSet_LoadResources()`
+  - the loader picks the preferred bank from `*g_zSndArchiveBankQualityPtr`, opens it with `zIndexArchive_OpenLoadIndex()`, then streams named members through `zSndWaveData_LoadFromArchive()`
+  - if no archive bank opens, it falls back to loose-file resolution through `g_zSndSearchPathList`
+
+### `interp.zbd` format
+
+`interp.zbd` is a prepared-script index used by the interpreter when `g_zInterp_EnablePreparedScripts` is enabled.
+
+- fixed header:
+  - `magic = 0x08971119`
+  - `version = 7`
+  - `entryCount`
+- table:
+  - `entryCount * 0x80` `zInterp_PreparedScriptEntry` records
+  - each record is `{ path_00[0x78], fileTime_78, fileOffset_7c }`
+- payload:
+  - prepared script data starts at the per-entry `fileOffset_7c` inside the same file
+  - each prepared script body is a linear packet stream:
+    - `uint32 tokenBytes`
+    - `uint32 tokenCount`
+    - `char tokenBlob[tokenBytes]` as `tokenCount` consecutive NUL-terminated strings
+  - `zInterp_Context_ReadLineOrPreparedTokens()` reads exactly that layout, rebuilds `tokenList_20[]` over the blob, and treats token `0` as the command with the remaining tokens as arguments
+  - sampled early entries are `support\\bft1.gw`, `support\\bft2.gw`, `support\\bft3.gw`, `support\\common.gw`, and `support\\commonm1.gw`
+  - sampled mission packets prove the runtime/authoring split:
+    - `m1_zbd.gs`: `source support\\commonm1.gw`, `GameZReadZBDFile %MissionZBDFile%`, `source support\\tex_fxm1.gw`, `Quit`
+    - `m1.gs`: `source support\\commonm1.gw`, `source support\\loadm1.gw`, `GameZWriteZBDFile %MissionZBDFile%`, `source support\\tex_fxm1.gw`, `Quit`
+- runtime behavior:
+  - `zInterp_Context_LoadPreparedScriptIndex()` opens and validates the index
+  - `zInterp_Context_OpenPreparedScriptStream()` resolves the requested script path, rejects prepared mode when a local source file exists with mismatched `_stat().st_mtime`, then seeks the shared `FILE*` to `fileOffset_7c`
+  - `zInterp_Context_RunScriptFile()` falls back to plain text `fopen()` when prepared-mode open fails
+
+## Platform and frontend shell
+
+The executable shell is clearly Win32/MFC-based and owns the state machine around menus, FMV, gameplay, save/load dialogs, network setup, cheat input, and confirm-quit flows.
+
+Notable shell behavior:
+
+- the app has explicit state objects for attract FMV, intro FMV, mission FMV, play state, and UI dialogs
+- help/docs are launched by probing `Docs\Index.html` and then calling `ShellExecuteA(..., "open", ...)`
+- video mode selection is separate from hardware API selection
+- audio backend selection is explicit in the shell menu
+
+### Video modes and hardware API selection
+
+The shell keeps explicit command-UI state for video modes and hardware APIs.
+
+Observed behavior:
+
+- software and accelerated modes are both supported
+- high resolutions are gated by free video memory
+- selected hardware API is tracked independently from fallback/software mode
+- video presets drive render/display/window rectangles and the replicate flag
+
+Observed mode families:
+
+- replicated low-res modes: `320x200`, `320x240`
+- non-replicated modes: `640x400`, `640x480`, `800x600`, `1024x768`
+- `enum zVideoReplicateMode` is now the shared persisted low-res stretch gate used by startup mode selection, HUD coordinate transforms, and the software-render play-state path
+
+### Audio backend selection
+
+The shell audio menu maps cleanly to two backends:
+
+- `zSndBackend_DirectSound`
+- `zSndBackend_A3D`
+
+Runtime behavior is defensive: when A3D init fails, the game falls back to DirectSound and normalizes the saved option to the active backend after startup.
+
+### Runtime options
+
+Options are loaded from `detail.zrd` and then overlaid with registry state.
+
+`zGame::Options_LoadGameOptions()` now also has an explicit startup result contract via `enum zGameOptionsLoadResult`: it returns `ZGAME_OPTIONS_LOAD_FAILED` only when `detail.zrd` cannot be loaded through `zReader::LoadNodeFromPath(...)`. `RecoilApp::InitInstance()` performs two passes on startup: first against loose `detail.zrd`, then once more after mounting `zbd\\zrdr.zbd`; a second `ZGAME_OPTIONS_LOAD_FAILED` takes the localized fatal startup dialog path.
+
+Observed option categories include:
+
+- hardware acceleration / hardware API
+- effects level, graphics flags, object LOD, texture-memory budget
+- sound API, volume, sound LOD, CD audio
+- fullscreen and video mode
+- HUD enabled/layout type
+- joystick and input bindings
+- player name and multiplayer/network values
+- camera / render / display / window sections
+- replicate / video stride
+
+## Software rasterizer notes
+
+- The active software occlusion/list path now uses canonical `zRndr_SpanNode` end to end.
+- `gRndr_pfnBuildSpanList` and `gRndr_pfnBuildSpanListSecondary` now both use the canonical callback ABI:
+  - `void __fastcall(zRndr_SpanNode** outList, int32_t sampleX, int32_t* outCount)`
+- The older `zRndr_SpanNode_0x18` helper type is now dead residue with zero live xrefs.
+- `zRndr_SpanOcclusion_RasterizePoly()` still has one local-lift artifact (`var_d0c` / `(&var_d0c)[ebx * 3]`) after that cleanup; that is treated as Binary Ninja scratch/local typing noise rather than a remaining alternate span-node layout.
+
+`detail.zrd` also supports profile-conditioned values, with matching on metrics such as `CPU_CLASS`, `CPU_MHZ`, `VIDEO_KB`, `RAM_KB`, and `HW_ACCEL`.
+
+`GameCtlOptions` is the main gameplay-control bitfield and covers at least throttle mode, steering mode, cursor mode, and camera mode.
+
+## Gameplay layer (`Battlesport`)
+
+### `RecoilApp.cpp`
+
+Top-level application and state-machine host.
+
+- boots the engine and display/input stack
+- owns app states for attract, intro, mission FMV, gameplay, credits, and UI transitions
+- handles clean shutdown across video, sound, network, turret, DE-client, HUD, and pickup systems
+
+### `Briefing.cpp`
+
+Mission briefing runtime.
+
+- starts a dedicated briefing thread via `_beginthread`
+- builds a `HudUiBriefingRuntime` from `briefing.zrd`, selecting section `CAMPAIGN%1d`
+- binds named widgets such as `MISSION_NAME`, `OBJECTIVE_SUMMARY`, `OBJECTIVE_DESC`, `OBJECTIVE_PICT`, `TRANSPORT_PROGRESS`, `TRANSMISSION_HALTED`, and `LOCATOR1..6`
+- uses a typed action queue with play-sample, delay-on-progress, set-text, set-image, show, hide, and fade actions
+- allows keyboard skip in single-player, which halts briefing audio and forces a `TRANSMISSION_HALTED` overlay
+
+### `hud.cpp`
+
+Primary HUD, dialog, and in-game UI framework.
+
+- owns the main widget hierarchy and much of the executable's dialog/controller code
+- builds SW/HW HUD layouts from `hud.zrd`
+- owns top-message and chat-message stacks, sensor/objective UI, stats lists, timer panel, and FMV overlay support
+- registers the `HUDTimer` ZAR section and owns the 4-byte `TimerData` save/load callbacks for the live HUD timer seconds value
+- contains cheat-code dialog handling, save/load UI, credits flows, MP exit/setup, and chat compose logic
+- owns timed HUD draw tasks (blits, lines, TLV polys, text, pixels, clipped segments/polylines)
+
+### `map.cpp`
+
+Map/runtime representation and map-facing helpers.
+
+- objective/map overlay commands are concrete (`map toggle`, `zoom in`, `zoom out`)
+- exact ownership split between `map.cpp`, mission code, and HUD overlay code is still slightly fuzzy
+
+### `mission.cpp`
+
+Mission bootstrap and mission-runtime ownership.
+
+- loads `objectives.zrd` and mission image paths
+- initializes mission map/SFX, pickups, effects, DE-client, weapons, turrets, player mission runtime, weather, and network spawn data
+- loads `race.zrd` checkpoint metadata
+- practical mission owner is `HudSensorTracker`, which carries objective flow state, focus/current objective, deadlines, mission stats, progress count, weather FX, map overlay state, and mission save/load blobs
+- mission save/load uses `Mission` and `MissionLate` sections
+- late restore replays `StartAnims.zrd` group `LOAD_GAME_START`
+- final-mission flow can push the mission-FMV transition and then quit after credits
+
+### `pickup.cpp`
+
+Pickup metadata and pickup runtime.
+
+- loads `PICKUP_DATA` from ZRD
+- resolves per-pickup sounds and image refs
+- registers a `Pickup` save section
+- chooses difficulty-sensitive puppy spawn files (`puppies_easy.zrd`, `puppies.zrd`, `puppies_hard.zrd`) with fallback to the normal file
+- applies gameplay effects, pickup sounds, objective-pickup UI, async cleanup, and respawn/reactivation flow
+- bridges pickup ids into the shared player weapon-bank runtime
+
+### `player.cpp`
+
+Player, vehicle, and much of the moment-to-moment gameplay runtime.
+
+- initializes mission runtime from world + camera
+- owns camera states, modal vehicle transitions, AI/local tick, movers/checkpoints, and save sections
+- wires up the shared mission scene pointer (`g_Player_RuntimeDiScene`, `zClass_Node*`) and main camera
+- rebuilds weapon banks and registers weapon/OptCatalog content during mission bring-up
+- owns pass-3 UI effects such as underwater tinting and special-state overlays
+- manages env-probe-driven state changes such as underwater, quicksand, and hot-damage zones
+- reuses the effect-animation system for destroyed/recent-hit response sequences
+
+### `ai_net.cpp`
+
+AI network loader and behavior-profile layer.
+
+- loads files named `net_%02d.zrd`
+- validates version `0x69`
+- reads fields such as `name`, `type`, `path_width`, `activate_rad`, `attack_rad`, `attack_dwell`, `pursuit_params`, `return_range`, `hide_times`, `attack_buddy`, `activate_buddy`, and `attack_strategy`
+- builds path graphs from `node_%02d` entries, resolves neighbor links, and derives per-edge probe/steering data from path width
+- path edge probe payloads are `AINetPathProbeFan` objects allocated/cleared as `0x3c` bytes; the initialized fields run through `pathWidth` at `+0x34`, with the final dword currently only proven as cleared padding
+- supports `AINetType` values `ST`, `HI`, `FI`, `DE`
+- supports attack strategies `HEA`, `CIR`, `BAC`, `FOL`, `ZIG`, `SIT`
+- player AI mode 2 uses these nets for path following, steering substates, LOS checks, buddy propagation, pursuit/return, and alt-gun intercepts
+- `AiNode` is the shared 0x30-byte path-node/free contract used by loaded AINet nodes and player-created synthetic path nodes
+- mode-2 dynamic `PlayerAiPathNode` records mirror the shared `AiNode` edge contract: `position`, three `nextNodes_0c`, three `AINetPathProbeFan* edgePayloads_18`, a cleared/preserved `+0x24` gap, `branchGroupId_28`, and `listNext_2c`
+
+### `turret.cpp`
+
+Turret runtime and destruction/effect integration.
+
+- initializes turret config from `ai.zrd`
+- reads root-level blocks such as `DESTROY_ANIM` and `TURRET`
+- uses wildcard node expansion to instantiate per-node `zTurret_Runtime` objects
+- destruction is tied into the effect-animation system and weapon trail/effect helpers
+
+## Engine subsystems (`GameZRecoil`)
+
+### `zClass`
+
+Core object/class runtime and scene graph.
+
+- `Class.c` owns node lifecycle, hierarchy, names, active flags, type lists, and callbacks
+- `Object3d.c` is the base 3D node/model-node layer used throughout gameplay and rendering
+- `Camera.c`, `Light.c`, `Sound.c`, `Animate.c`, `Seq.c`, `Switch.c`, `Window.c`, and `Display.c` implement concrete node classes
+- `cls_world.c` owns world partitioning / area-grid behavior
+- `cls_di.c` bridges gameplay and world queries: LOS, segment tests, pick-candidate lists, best-hit selection, display-instance variants, camera obstruction, and material/camera variant tagging
+- `cls_zbd.c` is the authoritative GameZ/ZBD read/write/reload path
+- the basic live node-class payloads for `Window.c`, `Display.c`, `Lod.c`, and `Sound.c` now have canonical unsuffixed types on the create/load/copy path:
+  - `zClass_WindowData`
+  - `zClass_DisplayData`
+  - `zClass_LodData`
+  - `zClass_SoundData`
+- `zClass_NodeClassDataPtr` now uses canonical payload pointers for:
+  - `window`
+  - `display`
+  - `lod`
+  - `sound`
+- the safe copy-path helpers now return canonical `zClass_Node*`:
+  - `zClass_cls_util_CopyNode()`
+  - `zClass_cls_util_CopyCameraNode()`
+  - `zClass_cls_util_CopyObject3DNode()`
+  - `zClass_cls_util_CopyLodNode()`
+
+### `zReader`
+
+Typed recursive tree reader used across the entire executable.
+
+- loads named nodes from mounted archives
+- builds typed recursive trees rather than raw token streams
+- mounted `.zrd` members use the serialized node kinds `1 = int32`, `2 = float32`, `3 = string`, and `4 = array`
+- for serialized type-4 arrays, the stored child stream starts at logical child `1`; the synthetic `{ type = 1, value = count }` header node only exists in memory
+- `zReader::LoadNodeFromPath()` strips incoming paths down to `basename + ext` before probing mounted archives, so the `zrdr.zbd` indices are keyed by member filename rather than full source path
+- provides named int/float/string reads plus recursive child search
+- is used by HUD/dialogs, missions, FMV scripts, AI nets, pickups, player/vehicle data, weapons/effects/weather/race metadata, network spawn points, and DE-client config
+
+### `zUtil`
+
+Archive/search-path and save/load utility layer.
+
+- implements ZAR save sections and the mounted ZRDR file layer
+- mounts per-mission ZBD content and rebuilds search paths during mission setup
+- the mounted ZRDR path is split cleanly between `zArchive::MountIndexArchive()` / `zIndexArchive_*` for archive I/O and `zUtil_ZRDR_*` for loose search-root management
+- exposes section registration, archive load, stop request, cleanup, and named-blob write helpers
+- uses temp stream bridges to keep legacy serializers compatible with the new section-callback model
+
+### `zVideo`
+
+Video-system bootstrap and platform-facing graphics layer.
+
+- owns mode selection, fullscreen/fallback bootstraps, DirectDraw init, Direct3D 2 init, and shutdown
+- keeps both software and accelerated paths active in the same runtime
+- owns primary-surface helpers, surface/buffer utilities, postprocess helpers, texture upload hooks, and DD/DD3D device enumeration
+- owns shared FX-surface state used by HUD/FMV/postprocess code
+- uses two DDSURFACEDESC helper views on the reachable path:
+  - `zVideo_DDSurfaceDesc` for broader create/init helpers
+  - `zVideo_DDSurfaceDescLockView` for narrow lock/copy helpers that only need `lpSurface` and `lPitchBytes`
+
+### `zRender`
+
+Software renderer.
+
+- textured polygon rasterizers
+- span builders and span-occlusion runtime
+- canonical software occlusion node is now `zRndr_SpanNode`
+- the split/clone cases in `zRndr_SpanOcclusion_BuildSpanList()` and related helpers still show `allocCursor + 0x18..0x2c` HLIL residue, but that range is now documented as the adjacent pool node `(&gRndr_SpanAllocCursor[1])`
+- the overwrite queue now uses the widened canonical `zRndr_OverwriteDrawCmd` record:
+  - real stride is `0x48c`
+  - `materialRef` is `struct zImage_TexDirEntry*`
+  - the textured-fan path stores `triColorOrAlphaByVertex[]` in the queue tail, which explains the widened record size
+- fog blend paths
+- software point queue and lens-flare sample filtering
+- software blit helpers used when the source does not already live on a DD surface
+- software overlay blend path uses `gRndr_SwOverlayRect : zRndr_RectEdges` as the shared inclusive-edge rect between `zRndr_OverlayRect_Submit()` and `zRndr_OverlayRect_FlushSw()`
+
+### `zImage`
+
+Images, texture directory, texture packs, and fonts.
+
+- opens `image.zbd` and texture packs such as `texture*.zbd`, `texturemax.zbd`, and `rtexture*.zbd`
+- chooses packs based on runtime config and/or available video memory
+- builds the texture directory used by model/material/render code
+- adds `..\data\common\fonts` as a search path and builds glyph rectangles from font-sheet images
+
+### `zSound`
+
+Audio runtime.
+
+- backend init for DirectSound and A3D
+- sample/buffer creation plus lock/unlock helpers
+- play-handle and voice acquisition logic
+- 3D audio parameter updates
+- sound groups/categories
+- CD audio runtime via MCI/AUX capabilities
+- bootstraps from `sounds.zrd`
+
+### `zNetwork`
+
+DirectPlay backend.
+
+- enumerates service providers and stores provider display name plus connection blob
+- owns session/runtime setup and teardown
+- gameplay layer registers concrete packet handlers for remote player state and multiplayer events
+
+### `zEffect`
+
+Effect template and animation runtime.
+
+- loads effect config from ZRD
+- allocates template entries and runtime listeners/root nodes
+- runs effect-animation state machines for sound, light, camera, and node events
+- persists/restores running animation records through ZAR/ZBD temp-stream callbacks
+- effect entries are also the practical async-handle type used by gameplay code
+- `zEffect_FindNodeUserDataRecursive()` walks child nodes until `zClass_Class_gwNodeGetUserData()` returns non-null user data for the effect node
+
+### `zDEClient`
+
+Destruction/environment effects.
+
+- loads crater/quicksand configuration from `declient.zrd`
+- owns crater and quicksand runtime state
+- supports network relay callbacks for those environment effects
+
+### `zModel`
+
+Model/material/instance helpers.
+
+- model bootstrap and material buffers
+- polygon-builder and constant-geometry helpers
+- lighting submission and active-light filtering
+- cycle textures and scrolling textures
+- texture-world helpers and morph updates on object instances
+- several gameplay systems route through model helpers for clipped geometry, damage masks, weapon trails, and effect visuals
+
+### `zGeometry`
+
+Geometry-processing layer.
+
+- Weiler-Atherton polygon clipping
+- convexification helpers
+- clipped-model / patch-output helpers
+- geometry used by display-instance construction and world/query-side clipped output
+
+### `zInterp`
+
+General runtime command/script interpreter.
+
+This is broader than a mission-only script layer. Commands currently evidenced include world/object/camera/material/texture/video helpers such as:
+
+- `GameZReadZBDFile`
+- `GameZWriteZBDFile`
+- `WorldSetFogState`
+- `Object3DTranslate`
+- `Object3DRotate`
+- `Object3DRegisterTexturesToWorld`
+- cycle-texture and texture-world parameter commands
+- camera target/position getters and setters
+
+### `zMath`
+
+Core vector/matrix helper library used everywhere.
+
+Directly evidenced in gameplay and render paths:
+
+- normalize / normalize XZ
+- perpendicular XZ
+- rotate around Y
+- distances, lerps, direction angles, cross products
+
+### `zWeapon`
+
+Weapon/OptCatalog bootstrap and projectile support.
+
+- loads weapon/OptCatalog content from `weapons.zrd`
+- owns concrete weapon/projectile definitions with timing, ammo, range, sounds, trail effects, and damage feedback data
+- integrates tightly with player weapon banks, pickup grants, and turret/projectile effects
+- runtime impact/state records use a list link at offset `+0x00`, `damageScale_80`, `saveState_84`, an update callback at `+0x88`, and a zeroed tail word at `+0x8c`
+- `OptCatalog::RemoveRuntimeInstance()` uses a link-slot cursor for `activeRuntimeList_58` removal, then processes and recycles each removed runtime instance before invoking the network relay callback
+
+### Input and options (source split unresolved)
+
+The input system is concrete even though its original source-file split is not cleanly surfaced.
+
+Observed behavior includes:
+
+- keyboard polling and transition reset
+- DIK-to-ASCII translation and modifier tracking
+- mouse snapshots and recentering
+- DirectInput joystick enable/disable and axis deadzone config
+- bind-map command callbacks
+- force-feedback effect-set creation and playback
+- wait-for-any-key helper with timeout
+
+The same is true for some engine-loop glue: no separate `GameZRecoil/zEngine/*.cpp` is directly evidenced, but its responsibilities are visible in `RecoilApp.cpp`, options/view-rect code, and subsystem init/shutdown entry points.
+
+## Selected recovered runtime details
+
+### Scene and object model
+
+- `zClass_Camera_SetActiveCamera(...)` and `zClass_Camera_SetCurrentWorld(...)` drive the active world-view traversal
+- camera traversal uses frustum-sphere culling plus a ring-table/grid-footprint optimization during world rendering
+- display instances (`zDi`) are pooled objects shared by visibility, rendering, clipping, and reload paths
+- sound nodes store both local and cached world position; playback is refreshed from the owning node transform
+
+### Player, AI, and mission runtime
+
+- mission gameplay startup loads player runtime, pickups, effects, DE-client, weapons, turrets, weather, and network spawn points as one coordinated stack
+- player mission startup also loads `AINet` graphs and seeds two persistent top-message panels from localized strings used for environmental state changes
+- env-probe logic visibly drives underwater, quicksand, and heat/hazard states, including HUD messages and loop sounds
+- destroyed-player flow reuses the effect-animation runtime and can attach a completion callback per sequence
+
+### HUD, briefing, and FMV
+
+- `HudUiMgr` owns persistent SW/HW layouts, top/chat stacks, sensor/objective widgets, stats list, timer panel, and FMV overlay support
+- briefing is a fully asynchronous presentation system with its own worker thread and queue of declarative UI/audio actions
+- FMV scripts are ZRD-driven and support `WAIT`, `FADEIN`, `FADEOUT`, `IMAGE`, `PLAYAVI`, `PLAYSOUND`, `PLAYMCI`, `BLUR`, `BLURH`, and `BLURV`
+- background-video widgets and `PLAYAVI` actions share the same image-compatible AVI stream object model
+
+### Rendering and resources
+
+- the renderer is genuinely hybrid: the hardware path is DirectDraw/Direct3D 2, but large amounts of the software rasterizer remain first-class
+- texture packs are chosen dynamically from `image.zbd` plus `texture*.zbd` / `rtexture*.zbd` families
+- software-side fog, flat-span blending, point queue, lens flare visibility filtering, and span occlusion are all live systems
+- DD/DD3D runtime keeps selected-device records, cached feature flags, video-memory/texture-memory queries, and image/texture dispatch hooks
+
+### Audio, networking, and effects
+
+- audio backend selection is user-visible and runtime-fallback-safe
+- DirectPlay service providers are stored as a concrete descriptor with GUID, display name, connection blob, and flags
+- running effect animations are serialized through ZAR section callbacks using temp read/write streams
+- DE-client crater/quicksand systems are mission-data-driven and can be relayed in multiplayer
+
+### Weather and pass-3 effects
+
+- mission weather is data-driven from `Weather.zrd`
+- rain and snow emitters are concrete pass-3 objects with both DD3D and software render paths
+- player postprocess UI includes at least an underwater blue tint pass and a separate green-mask pass for one special player state
+- damage-mask overlay support is globally gated rather than purely material-driven
+
+## Stable data files and archives
+
+### Frontend and UI
+
+- `hud.zrd` - HUD layouts, fonts, widget metadata, active layout selection
+- `dialog.zrd` - controls, menus, save/load, network setup, cheat dialog, and related UI layouts
+- `briefing.zrd` - briefing UI layout and transport-progress widget binding
+
+### Mission and gameplay
+
+- `gamez.zbd` - mission world snapshot: texture directory, materials, models, node table
+- `anim.zbd` - compiled effect-animation archive with source-stamp table and side tables
+- `objectives.zrd` - objective text and image metadata
+- `Weather.zrd` - weather emitter setup
+- `race.zrd` - race/checkpoint metadata
+- `net.zrd` - multiplayer spawn points
+- `movers.zrd` - named mover metadata
+- `pickup.zrd` - pickup defs/runtime metadata
+- `effects.zrd` - effect templates/runtime metadata
+- `weapons.zrd` - weapon and OptCatalog content
+- `declient.zrd` - crater/quicksand data
+- `net_%02d.zrd` - AI-net definitions
+- `aiv.zrd` - vehicle/AI-related data path still referenced by gameplay
+
+### Images, audio, and media
+
+- `zbd\\zrdr.zbd`, `zbd\\m%d\\zrdr.zbd` - mounted `zIndexArchive` banks of serialized `.zrd` trees
+- `interp.zbd` - prepared interpreter script index
+- `image.zbd` - base image/texture archive pack
+- `texture*.zbd`, `texturemax.zbd`, `rtexture*.zbd` - texture packs chosen by config or memory budget; the sampled retail tree ships `texture2.zbd`, `texture4.zbd`, some mission-local `texture6.zbd`, one `m6\\texture8.zbd`, and `rtexture2.zbd` / `rtexture4.zbd`, but no sampled `texturemax.zbd`
+- `sounds.zrd` - sound runtime config
+- `soundsH.zbd`, `soundsM.zbd`, `soundsL.zbd` - sound banks; the sampled retail files are lowercase `soundsh.zbd`, `soundsm.zbd`, and `soundsl.zbd`
+- `Docs\Index.html` - HTML docs/help entry point
+
+## Recovered concrete types and enums
+
+Only the most stable and high-value recovered types are listed here.
+
+### Enums and mode families
+
+- `AINetType`: `ST`, `HI`, `FI`, `DE`
+- `AINetAttackStrategy`: `HEA`, `CIR`, `BAC`, `FOL`, `ZIG`, `SIT`
+- `HudLayoutType`: `HudLayoutType_SW`, `HudLayoutType_HW`
+- `RecoilMainMenuEntryRoute`: `RECOIL_MAINMENU_ROUTE_FRONTEND`, `RECOIL_MAINMENU_ROUTE_INGAME`
+- `zSndBackend`: DirectSound / A3D
+- world fog state: `0 = off`, `1 = linear`, `2 = exponential`
+
+### Runtime structures worth trusting
+
+- `zUtil_SaveGameState`
+  - active/listed player runtime state; `g_GameStateOrMapTable` is now typed as the active `zUtil_SaveGameState*`, not a separate `GameStateOrMap` object
+
+- `zClass_CameraData` (`0x1e8`)
+  - world/window/horizon node refs
+  - target/position
+  - world/view matrices
+  - near/far clip, viewport size, FOV
+  - frustum corners and normals
+
+- `zVideo_ViewContext` (sparse shared head on the live render path)
+  - scene/view pointers
+  - horizon-node hooks
+  - DI query point at `+0x2c/+0x30/+0x34`
+  - clip/projection, screen size, viewport scale, and variant fields
+
+- `zClass_SoundData` (`0x94`)
+  - sample/play handle
+  - sample name
+  - local/world position
+  - falloff/radius block
+  - attached-node tracking
+
+- `zClass_ZbdHeader` (`0x24`)
+  - `gamez.zbd` magic/version
+  - section offsets for texture directory, materials, models, and node table
+  - node-count and free-head fields used by the `zClass` loader
+
+- `zZarFileRecord` (`0x94`)
+  - member `fileOffset_00`
+  - member `fileSize_04`
+  - member `name_08[0x40]`
+  - build-metadata tail used by mounted archives and sound banks
+
+- `zInterp_PreparedScriptEntry` (`0x80`)
+  - source path
+  - cached source mtime
+  - prepared-payload offset inside `interp.zbd`
+
+- `zEffectAnimSourceFileStamp` (`0x54`)
+  - original source path
+  - recorded source mtime used by `anim.zbd` compatibility checks
+
+- `zFMV_Script` (`0x20`)
+  - FMV path, action list, current action, start time, abort-on-key flag
+
+- `zFMV_Stream` (`0x1e4`)
+  - image-compatible head at the start of the object
+  - AVI video decode state
+  - critical section for decode
+  - streamed audio/cache state
+
+- `zFMV_Action*`
+  - stable concrete families now include `Blur`, `Wait`, `Fade`, `PlayAvi`, `PlaySound`, and `PlayMci`
+
+- `zVid_TexturePackEntry`
+  - archive path
+  - file handle
+  - header/format info
+  - palette-page count and base index
+  - record count and record table
+
+- `zVid_TexturePackRecord`
+  - image name
+  - file offset
+  - palette-page index
+
+- `zRndr_FogParams`
+  - RGB01 fog color
+  - packed 16-bit fog color
+  - 32-entry packed fog ramp used by the software path
+
+- `zVideo_BltSourceHead`
+  - packed size/flags plus pixel, alpha, palette, surface, and pitch ownership used by shared blit helpers
+
+- `zNetworkDPlayServiceProviderInfo`
+  - provider GUID
+  - duplicated display name
+  - DirectPlay connection blob
+  - provider flags
+
+## Current unresolved areas
+
+These are open reconstruction questions, not old-project facts.
+
+- exact ownership split between `map.cpp`, mission-side map helpers, and HUD-side objective/map overlay logic
+- exact original source-file split of the MFC shell/frame code
+- exact original source-file split of the input subsystem
+- no direct evidence yet for a standalone `GameZRecoil/zEngine/*.cpp` or `GameZRecoil/zUI/*.cpp` tree, even though those responsibilities clearly exist in the runtime
+- parts of `zClass/Switch.c` and `zClass/cls_util.c` are concrete but not yet documented as cleanly as the major systems above

@@ -1,0 +1,52 @@
+{
+  "name": "recoil_app_get_main_wnd",
+  "description": "RecoilApp main-window field accessor.",
+  "source_filename": "RecoilApp_GetMainWnd.cpp",
+  "source": [
+    "#include \"Battlesport/RecoilApp.h\"",
+    "",
+    "// Reimplements 0x442c00: RecoilApp::GetMainWnd",
+    "RecoilPtr32 RECOIL_THISCALL RecoilApp::GetMainWnd() const {",
+    "    return m_pMainWnd;",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x442c00",
+      "symbol": "?GetMainWnd@RecoilApp@@QBEIXZ",
+      "name": "RecoilApp::GetMainWnd"
+    }
+  ],
+  "generated_files": {
+    "Battlesport/RecoilApp.h": [
+      "#pragma once",
+      "",
+      "#define RECOIL_THISCALL",
+      "",
+      "typedef unsigned int RecoilPtr32;",
+      "",
+      "struct RecoilApp {",
+      "    unsigned char m_padding_00[0x20];",
+      "    RecoilPtr32 m_pMainWnd;",
+      "",
+      "    RecoilPtr32 RECOIL_THISCALL GetMainWnd() const;",
+      "};"
+    ]
+  }
+}

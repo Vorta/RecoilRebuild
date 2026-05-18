@@ -1,0 +1,61 @@
+{
+  "name": "hud_ui_mgr_activate_hud",
+  "description": "HudUiMgr HUD activation state reset.",
+  "source_filename": "HudUiMgr_ActivateHud.cpp",
+  "source": [
+    "struct HudUiRect {",
+    "    int left;",
+    "    int top;",
+    "    int right;",
+    "    int bottom;",
+    "};",
+    "",
+    "struct HudUiMgrSensorBlock {",
+    "    int state;",
+    "    unsigned char m_padding_004[0x50];",
+    "};",
+    "",
+    "struct HudUiShieldMessageWidget {",
+    "    int state;",
+    "    int viewportResetFrame;",
+    "};",
+    "",
+    "extern HudUiMgrSensorBlock g_HudUiMgrSensorBlock;",
+    "extern HudUiShieldMessageWidget *g_HudUiMgrShieldMessageWidget;",
+    "",
+    "namespace HudUiMgr {",
+    "void __fastcall OnViewportChanged(const HudUiRect *hudRectOrNull, const HudUiRect *viewRectOrNull);",
+    "",
+    "// Reimplements 0x40ff50: HudUiMgr::ActivateHud",
+    "void __fastcall ActivateHud(const HudUiRect *hudRectOrNull, const HudUiRect *viewRectOrNull) {",
+    "    OnViewportChanged(hudRectOrNull, viewRectOrNull);",
+    "    g_HudUiMgrShieldMessageWidget->viewportResetFrame = -1;",
+    "    g_HudUiMgrShieldMessageWidget->state = 0;",
+    "    g_HudUiMgrSensorBlock.state = 1;",
+    "}",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x40ff50",
+      "symbol": "?ActivateHud@HudUiMgr@@YIXPBUHudUiRect@@0@Z",
+      "name": "HudUiMgr::ActivateHud"
+    }
+  ]
+}

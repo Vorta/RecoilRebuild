@@ -1,0 +1,76 @@
+{
+  "name": "hud_ui_element_position_setters",
+  "description": "HudUiElement position setters with invalidate callback.",
+  "source_filename": "HudUiElement_PositionSetters.cpp",
+  "source": [
+    "struct HudUiElement;",
+    "typedef void (__fastcall *InvalidateFn)(HudUiElement *self);",
+    "",
+    "struct HudUiCommon_FTable {",
+    "    unsigned int slots[9];",
+    "};",
+    "",
+    "struct HudUiElement {",
+    "    const HudUiCommon_FTable *ftable;",
+    "    unsigned char m_padding_04[0x14 - 0x04];",
+    "    int x;",
+    "    int y;",
+    "",
+    "    void SetPos(int newX, int newY);",
+    "    void SetX(int newX);",
+    "    void SetY(int newY);",
+    "};",
+    "",
+    "// Reimplements 0x404cd0: HudUiElement::SetPos",
+    "void HudUiElement::SetPos(int newX, int newY) {",
+    "    x = newX;",
+    "    y = newY;",
+    "    ((InvalidateFn)ftable->slots[8])(this);",
+    "}",
+    "",
+    "// Reimplements 0x404cf0: HudUiElement::SetX",
+    "void HudUiElement::SetX(int newX) {",
+    "    x = newX;",
+    "    ((InvalidateFn)ftable->slots[8])(this);",
+    "}",
+    "",
+    "// Reimplements 0x404d00: HudUiElement::SetY",
+    "void HudUiElement::SetY(int newY) {",
+    "    y = newY;",
+    "    ((InvalidateFn)ftable->slots[8])(this);",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x404cd0",
+      "symbol": "?SetPos@HudUiElement@@QAEXHH@Z",
+      "name": "HudUiElement::SetPos"
+    },
+    {
+      "address": "0x404cf0",
+      "symbol": "?SetX@HudUiElement@@QAEXH@Z",
+      "name": "HudUiElement::SetX"
+    },
+    {
+      "address": "0x404d00",
+      "symbol": "?SetY@HudUiElement@@QAEXH@Z",
+      "name": "HudUiElement::SetY"
+    }
+  ]
+}

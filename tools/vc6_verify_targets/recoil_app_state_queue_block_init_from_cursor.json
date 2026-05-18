@@ -1,0 +1,61 @@
+{
+  "name": "recoil_app_state_queue_block_init_from_cursor",
+  "description": "RecoilApp state-queue block cursor initializer.",
+  "source_filename": "RecoilApp_StateQueueBlock_InitFromCursor.cpp",
+  "source": [
+    "#include \"Battlesport/RecoilApp.h\"",
+    "",
+    "// Reimplements 0x443700: RecoilApp_StateQueueBlock::InitFromCursor",
+    "RecoilApp_StateQueueBlock *RECOIL_THISCALL",
+    "RecoilApp_StateQueueBlock::InitFromCursor(RecoilPtr32 cursor, RecoilPtr32 chunkPtrSlot) {",
+    "    RecoilPtr32 *const chunkSlot = (RecoilPtr32 *)chunkPtrSlot;",
+    "    const RecoilPtr32 chunkBegin = *chunkSlot;",
+    "    m_chunkBegin = chunkBegin;",
+    "    m_chunkEnd = chunkBegin + 0x1000;",
+    "    m_cursor = cursor;",
+    "    m_chunkPtrSlot = chunkPtrSlot;",
+    "    return this;",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x443700",
+      "symbol": "?InitFromCursor@RecoilApp_StateQueueBlock@@QAEPAU1@II@Z",
+      "name": "RecoilApp_StateQueueBlock::InitFromCursor"
+    }
+  ],
+  "generated_files": {
+    "Battlesport/RecoilApp.h": [
+      "#pragma once",
+      "",
+      "#define RECOIL_THISCALL",
+      "",
+      "typedef unsigned int RecoilPtr32;",
+      "",
+      "struct RecoilApp_StateQueueBlock {",
+      "    RecoilPtr32 m_chunkBegin;",
+      "    RecoilPtr32 m_chunkEnd;",
+      "    RecoilPtr32 m_cursor;",
+      "    RecoilPtr32 m_chunkPtrSlot;",
+      "",
+      "    RecoilApp_StateQueueBlock *RECOIL_THISCALL InitFromCursor(RecoilPtr32 cursor, RecoilPtr32 chunkPtrSlot);",
+      "};"
+    ]
+  }
+}

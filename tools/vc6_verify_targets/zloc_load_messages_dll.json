@@ -1,0 +1,63 @@
+{
+  "name": "zloc_load_messages_dll",
+  "description": "zLoc messages DLL loader and ZLocGetID resolver.",
+  "source_filename": "zLoc_LoadMessagesDll.cpp",
+  "source": [
+    "#include \"GameZRecoil/zLoc/zLoc.h\"",
+    "",
+    "namespace zLoc {",
+    "// Reimplements 0x4a5ad0: zLoc::LoadMessagesDll",
+    "int RECOIL_FASTCALL LoadMessagesDll(const char *dllPath) {",
+    "    int result = 0;",
+    "    HMODULE const module = LoadLibraryA(dllPath);",
+    "    g_zLoc_MessagesDllHandle = module;",
+    "    if (module != 0) {",
+    "        result = 1;",
+    "        g_zLoc_GetIdProc =",
+    "            (unsigned int(RECOIL_CDECL *)(const char *))GetProcAddress(module, \"ZLocGetID\");",
+    "    }",
+    "    return result;",
+    "}",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zLoc/zLoc.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5ad0",
+      "symbol": "?LoadMessagesDll@zLoc@@YIHPBD@Z",
+      "name": "zLoc::LoadMessagesDll"
+    }
+  ],
+  "generated_files": {
+    "GameZRecoil/zLoc/zLoc.h": [
+      "#pragma once",
+      "",
+      "#define RECOIL_FASTCALL __fastcall",
+      "#define RECOIL_CDECL __cdecl",
+      "",
+      "typedef void *HMODULE;",
+      "typedef int (__stdcall *FARPROC)();",
+      "",
+      "extern \"C\" __declspec(dllimport) HMODULE __stdcall LoadLibraryA(const char *lpLibFileName);",
+      "extern \"C\" __declspec(dllimport) FARPROC __stdcall GetProcAddress(HMODULE hModule, const char *lpProcName);",
+      "",
+      "extern HMODULE g_zLoc_MessagesDllHandle;",
+      "extern unsigned int(RECOIL_CDECL *g_zLoc_GetIdProc)(const char *key);"
+    ]
+  }
+}

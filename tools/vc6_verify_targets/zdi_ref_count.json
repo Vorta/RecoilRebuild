@@ -1,0 +1,62 @@
+{
+  "name": "zdi_ref_count",
+  "description": "zDi AddRef/Release leaf reference-count helpers.",
+  "source_filename": "zDi_RefCount.cpp",
+  "source": [
+    "#include \"zDi.h\"",
+    "",
+    "namespace zDi {",
+    "    // Reimplements 0x4826f0: zDi::AddRef (GameZRecoil/zDi/zdi.c)",
+    "    int RECOIL_FASTCALL AddRef(zDiPartial *self) {",
+    "        ++self->refCount;",
+    "        return 0;",
+    "    }",
+    "",
+    "    // Reimplements 0x482700: zDi::Release (GameZRecoil/zDi/zdi.c)",
+    "    int RECOIL_FASTCALL Release(zDiPartial *self) {",
+    "        --self->refCount;",
+    "        return 0;",
+    "    }",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/Battlesport/zModel/gdi.c"
+  ],
+  "functions": [
+    {
+      "address": "0x4826f0",
+      "symbol": "?AddRef@zDi@@YIHPAUzDiPartial@@@Z",
+      "name": "zDi::AddRef"
+    },
+    {
+      "address": "0x482700",
+      "symbol": "?Release@zDi@@YIHPAUzDiPartial@@@Z",
+      "name": "zDi::Release"
+    }
+  ],
+  "generated_files": {
+    "zDi.h": [
+      "#pragma once",
+      "",
+      "#define RECOIL_FASTCALL __fastcall",
+      "",
+      "struct zDiPartial {",
+      "    unsigned char m_padding_00[8];",
+      "    int refCount;",
+      "};"
+    ]
+  }
+}

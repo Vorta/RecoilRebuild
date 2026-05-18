@@ -1,0 +1,72 @@
+{
+  "name": "zsys_cpu",
+  "description": "zSys CPU-class and feature-detection helpers from src/GameZRecoil/zSys.",
+  "source_filename": "zsys_cpu_verify.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs"
+  ],
+  "include_dirs": [
+    "src"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSys/zSys_cpu_asm.inl",
+    "src/GameZRecoil/zSys/zSys_cpu_detect.inl",
+    "src/GameZRecoil/zSys/zSys_cpu_get_class.inl"
+  ],
+  "functions": [
+    {
+      "address": "0x4b31b0",
+      "symbol": "?GetCpuClass@zSys@@YAHXZ",
+      "name": "zSys::GetCpuClass"
+    },
+    {
+      "address": "0x4b3420",
+      "symbol": "?DetectCpuClassAndFeatures@zSys@@YAHXZ",
+      "name": "zSys::DetectCpuClassAndFeatures"
+    },
+    {
+      "address": "0x4b3510",
+      "symbol": "?ProbeDivZeroFlagBehavior@zSys@@YAHXZ",
+      "name": "zSys::ProbeDivZeroFlagBehavior"
+    },
+    {
+      "address": "0x4b3550",
+      "symbol": "?DetectIs8086ByEflagsHiBits@zSys@@YAHXZ",
+      "name": "zSys::DetectIs8086ByEflagsHiBits"
+    },
+    {
+      "address": "0x4b35a0",
+      "symbol": "?DetectIs80286ByEflagsHiBits@zSys@@YAHXZ",
+      "name": "zSys::DetectIs80286ByEflagsHiBits"
+    },
+    {
+      "address": "0x4b35f0",
+      "symbol": "?DetectIs80386ByAcFlag@zSys@@YAHXZ",
+      "name": "zSys::DetectIs80386ByAcFlag"
+    }
+  ],
+  "source": [
+    "#define RECOIL_CDECL __cdecl",
+    "#define RECOIL_NOINLINE",
+    "",
+    "extern \"C\" unsigned int g_zSys_CpuVendorNonIntelMarker = 0;",
+    "",
+    "namespace zSys {",
+    "RECOIL_NOINLINE int RECOIL_CDECL HasCpuidSupport();",
+    "RECOIL_NOINLINE int RECOIL_CDECL ReadCpuidVendorAndFamily();",
+    "RECOIL_NOINLINE int RECOIL_CDECL DetectCpuClassAndFeatures();",
+    "RECOIL_NOINLINE int RECOIL_CDECL GetCpuClass();",
+    "}",
+    "",
+    "#include \"GameZRecoil/zSys/zSys_cpu_asm.inl\"",
+    "#include \"GameZRecoil/zSys/zSys_cpu_detect.inl\"",
+    "#include \"GameZRecoil/zSys/zSys_cpu_get_class.inl\""
+  ]
+}

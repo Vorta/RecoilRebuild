@@ -1,0 +1,48 @@
+{
+  "name": "hud_ui_panel_set_shadow",
+  "description": "HudUiPanel shadow flag and offset setter.",
+  "source_filename": "HudUiPanel_SetShadow.cpp",
+  "source": [
+    "struct HudUiPanel {",
+    "    unsigned char m_padding_000[0x264];",
+    "    unsigned int m_shadowEnabled;",
+    "    unsigned char m_padding_268[0x29c - 0x268];",
+    "    int m_shadowOffsetX;",
+    "    int m_shadowOffsetY;",
+    "",
+    "    unsigned int SetShadow(unsigned int shadowEnabled, int shadowOffsetX, int shadowOffsetY);",
+    "};",
+    "",
+    "// Reimplements 0x40e040: HudUiPanel::SetShadow",
+    "unsigned int HudUiPanel::SetShadow(unsigned int shadowEnabled, int shadowOffsetX, int shadowOffsetY) {",
+    "    const unsigned int previous = m_shadowEnabled;",
+    "    m_shadowEnabled = shadowEnabled;",
+    "    m_shadowOffsetX = shadowOffsetX;",
+    "    m_shadowOffsetY = shadowOffsetY;",
+    "    return previous;",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x40e040",
+      "symbol": "?SetShadow@HudUiPanel@@QAEIIHH@Z",
+      "name": "HudUiPanel::SetShadow"
+    }
+  ]
+}

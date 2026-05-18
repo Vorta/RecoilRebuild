@@ -1,0 +1,69 @@
+{
+  "name": "recoil_state_main_menu_transition_clear_paused_audio_snapshot",
+  "description": "Recoil main-menu transition paused-audio snapshot cleanup helper.",
+  "source_filename": "RecoilStateMainMenuTransition_ClearPausedAudioSnapshot.cpp",
+  "source_from": "src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_ClearPausedAudioSnapshot.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_ClearPausedAudioSnapshot.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x415630",
+      "symbol": "?ClearPausedAudioSnapshot@RecoilStateMainMenuTransition@@SAXXZ",
+      "name": "RecoilStateMainMenuTransition::ClearPausedAudioSnapshot"
+    }
+  ],
+  "generated_files": {
+    "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h": [
+      "#pragma once",
+      "",
+      "namespace std {",
+      "typedef int int32_t;",
+      "}",
+      "",
+      "#define RECOIL_THISCALL",
+      "#define RECOIL_CDECL __cdecl",
+      "",
+      "typedef unsigned int RecoilPtr32;",
+      "",
+      "enum RecoilMainMenuEntryRoute {",
+      "    RECOIL_MAINMENU_ROUTE_FRONTEND = 0,",
+      "    RECOIL_MAINMENU_ROUTE_INGAME = 1",
+      "};",
+      "",
+      "enum zVidModeIndex {",
+      "    ZVID_MODE_INVALID_COMPLEMENT = -1",
+      "};",
+      "",
+      "struct RecoilStateMainMenuTransition {",
+      "    RecoilPtr32 vftable;",
+      "    volatile RecoilPtr32 m_mainMenuDialog;",
+      "    std::int32_t m_savedHalfResAdjustMode;",
+      "    RecoilMainMenuEntryRoute m_entryRoute;",
+      "    zVidModeIndex m_deferredVideoModeIndex;",
+      "    RecoilPtr32 m_pausedAudioSnapshot;",
+      "",
+      "    static void RECOIL_CDECL ClearPausedAudioSnapshot();",
+      "};",
+      "",
+      "extern RecoilStateMainMenuTransition g_RecoilState_MainMenuTransition;",
+      "",
+      "struct zSndPlayHandleSnapshot {",
+      "    std::int32_t RECOIL_THISCALL Destroy();",
+      "};"
+    ]
+  }
+}

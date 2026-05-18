@@ -1,0 +1,27 @@
+#pragma once
+
+// Generated from support/Recoil.exe by tools/recoil_resource_extract.py.
+// Keep these IDs aligned with the original PE resource table.
+
+#define IDB_GAMEBMP "GAMEBMP"
+#define IDR_MYMENU "MYMENU"
+#define IDD_RECOIL_DIALOG_103 103
+#define IDD_RECOIL_DIALOG_106 106
+#define IDD_RECOIL_DIALOG_132 132
+#define IDD_RECOIL_DIALOG_133 133
+#define IDD_RECOIL_DIALOG_136 136
+#define IDD_RECOIL_DIALOG_139 139
+#define IDD_RECOIL_DIALOG_140 140
+#define IDD_RECOIL_DIALOG_141 141
+#define IDD_RECOIL_DIALOG_142 142
+#define IDD_RECOIL_DIALOG_143 143
+#define IDD_RECOIL_DIALOG_145 145
+#define IDD_RECOIL_DIALOG_146 146
+#define IDD_RECOIL_DIALOG_154 154
+#define IDD_RECOIL_DIALOG_156 156
+#define IDD_RECOIL_DIALOG_157 157
+#define IDD_RECOIL_DIALOG_159 159
+#define IDD_RECOIL_DIALOG_162 162
+#define IDI_RECOIL 151
+#define IDS_GAME_FILE_FILTER 200
+#define IDS_ARIAL_BLACK 206

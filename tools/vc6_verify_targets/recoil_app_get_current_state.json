@@ -1,0 +1,67 @@
+{
+  "name": "recoil_app_get_current_state",
+  "description": "RecoilApp current-state stack accessor.",
+  "source_filename": "RecoilApp_GetCurrentState.cpp",
+  "source": [
+    "#include \"Battlesport/RecoilApp.h\"",
+    "",
+    "// Reimplements 0x443140: RecoilApp::GetCurrentState",
+    "RecoilPtr32 RECOIL_THISCALL RecoilApp::GetCurrentState() const {",
+    "    if (m_currentStateIndex_0c8 < 0) {",
+    "        return 0;",
+    "    }",
+    "",
+    "    if (m_currentStateIndex_0c8 >=",
+    "        static_cast<std::int32_t>(sizeof(m_stateStack_0d8) / sizeof(m_stateStack_0d8[0]))) {",
+    "        return 0;",
+    "    }",
+    "",
+    "    return m_stateStack_0d8[m_currentStateIndex_0c8];",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x443140",
+      "symbol": "?GetCurrentState@RecoilApp@@QBEIXZ",
+      "name": "RecoilApp::GetCurrentState"
+    }
+  ],
+  "generated_files": {
+    "Battlesport/RecoilApp.h": [
+      "#pragma once",
+      "",
+      "namespace std {",
+      "typedef int int32_t;",
+      "}",
+      "",
+      "#define RECOIL_THISCALL",
+      "",
+      "typedef unsigned int RecoilPtr32;",
+      "",
+      "struct RecoilApp {",
+      "    unsigned char m_padding_000[0xc8];",
+      "    std::int32_t m_currentStateIndex_0c8;",
+      "    unsigned char m_padding_0cc[0x0c];",
+      "    RecoilPtr32 m_stateStack_0d8[16];",
+      "",
+      "    RecoilPtr32 RECOIL_THISCALL GetCurrentState() const;",
+      "};"
+    ]
+  }
+}
