@@ -9,89 +9,9 @@ import re
 import sys
 from pathlib import Path
 
+from recoil_tooling import REPO_ROOT, display_path, iter_source_files, strip_comments_and_strings
 
-SOURCE_SUFFIXES = {".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".inl"}
 REINTERPRET_CAST_RE = re.compile(r"\breinterpret_cast\s*<")
-
-
-def strip_comments_and_strings(text: str) -> str:
-    result: list[str] = []
-    i = 0
-    state = "code"
-    while i < len(text):
-        ch = text[i]
-        nxt = text[i + 1] if i + 1 < len(text) else ""
-
-        if state == "code":
-            if ch == "/" and nxt == "/":
-                result.extend("  ")
-                i += 2
-                state = "line_comment"
-            elif ch == "/" and nxt == "*":
-                result.extend("  ")
-                i += 2
-                state = "block_comment"
-            elif ch == '"':
-                result.append(" ")
-                i += 1
-                state = "string"
-            elif ch == "'":
-                result.append(" ")
-                i += 1
-                state = "char"
-            else:
-                result.append(ch)
-                i += 1
-        elif state == "line_comment":
-            if ch == "\n":
-                result.append(ch)
-                state = "code"
-            else:
-                result.append(" ")
-            i += 1
-        elif state == "block_comment":
-            if ch == "*" and nxt == "/":
-                result.extend("  ")
-                i += 2
-                state = "code"
-            else:
-                result.append("\n" if ch == "\n" else " ")
-                i += 1
-        elif state == "string":
-            if ch == "\\":
-                result.extend("  " if nxt else " ")
-                i += 2 if nxt else 1
-            elif ch == '"':
-                result.append(" ")
-                i += 1
-                state = "code"
-            else:
-                result.append("\n" if ch == "\n" else " ")
-                i += 1
-        elif state == "char":
-            if ch == "\\":
-                result.extend("  " if nxt else " ")
-                i += 2 if nxt else 1
-            elif ch == "'":
-                result.append(" ")
-                i += 1
-                state = "code"
-            else:
-                result.append("\n" if ch == "\n" else " ")
-                i += 1
-
-    return "".join(result)
-
-
-def iter_source_files(root: Path) -> list[Path]:
-    return sorted(path for path in root.rglob("*") if path.is_file() and path.suffix in SOURCE_SUFFIXES)
-
-
-def display_path(path: Path, scan_root: Path, repo_root: Path) -> str:
-    try:
-        return path.relative_to(repo_root).as_posix()
-    except ValueError:
-        return path.relative_to(scan_root).as_posix()
 
 
 def baseline_key(rel: str, line: str) -> str:
@@ -120,7 +40,7 @@ def find_occurrences(scan_root: Path, repo_root: Path) -> tuple[Counter[str], li
         text = path.read_text(encoding="utf-8", errors="ignore")
         stripped = strip_comments_and_strings(text)
         lines = text.splitlines()
-        rel = display_path(path, scan_root, repo_root)
+        rel = display_path(path, repo_root, fallback_root=scan_root)
 
         for match in REINTERPRET_CAST_RE.finditer(stripped):
             line_no = stripped.count("\n", 0, match.start()) + 1
@@ -139,7 +59,7 @@ def main() -> int:
     parser.add_argument("--write-baseline", action="store_true", help="write the current baseline and exit")
     args = parser.parse_args()
 
-    repo_root = Path.cwd()
+    repo_root = REPO_ROOT
     scan_root = (repo_root / args.root).resolve()
     baseline_path = repo_root / args.baseline
 

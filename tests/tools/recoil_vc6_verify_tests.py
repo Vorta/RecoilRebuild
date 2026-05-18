@@ -11,9 +11,11 @@ sys.path.insert(0, str(REPO_ROOT / "tools"))
 from recoil_vc6_verify import (  # noqa: E402
     VerifyTarget,
     build_compile_command,
+    covering_targets,
     find_target,
     load_manifest,
     load_manifests,
+    manifest_skeleton,
 )
 
 
@@ -51,6 +53,8 @@ class RecoilVc6VerifyTests(unittest.TestCase):
         self.assertEqual("sample", manifest.name)
         self.assertEqual("sample_verify.cpp", manifest.source_filename)
         self.assertEqual("", manifest.source_from)
+        self.assertEqual("coff_bytes", manifest.compare_mode)
+        self.assertTrue(manifest.trim_trailing_nops)
         self.assertEqual(("src/sample.cpp",), manifest.source_files)
         self.assertEqual((), manifest.generated_files)
         self.assertEqual("0x401000", manifest.functions[0].address)
@@ -103,6 +107,8 @@ class RecoilVc6VerifyTests(unittest.TestCase):
             source_filename="sample_verify.cpp",
             source_text="int main() { return 0; }\n",
             source_from="",
+            compare_mode="coff_bytes",
+            trim_trailing_nops=True,
             compiler_flags=("/nologo", "/TP", "/O2", "/FAcs"),
             include_dirs=("src",),
             source_files=("src/sample.cpp",),
@@ -133,6 +139,31 @@ class RecoilVc6VerifyTests(unittest.TestCase):
 
             with self.assertRaises(ValueError):
                 load_manifest(path)
+
+    def test_load_manifest_accepts_text_compare_mode_and_no_nop_trim(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_manifest(Path(tmp))
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["compare_mode"] = "text"
+            data["trim_trailing_nops"] = False
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+            manifest = load_manifest(path)
+
+        self.assertEqual("text", manifest.compare_mode)
+        self.assertFalse(manifest.trim_trailing_nops)
+
+    def test_coverage_helpers_report_address_matches_and_skeleton(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = load_manifest(write_manifest(Path(tmp)))
+
+        matches = covering_targets([manifest], "0x401000")
+        skeleton = manifest_skeleton("0x401234")
+
+        self.assertEqual(1, len(matches))
+        self.assertIs(matches[0][0], manifest)
+        self.assertEqual("0x401234", skeleton["functions"][0]["address"])
+        self.assertEqual("verify_401234", skeleton["name"])
 
 
 if __name__ == "__main__":

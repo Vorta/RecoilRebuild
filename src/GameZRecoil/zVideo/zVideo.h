@@ -479,11 +479,6 @@ RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockPrimarySurfaceState();
 RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(void *pixels, int width,
                                                         int height,
                                                         int pitchBytes);
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3Config_QueuePrimitiveRaw(zVideoFxPass3Config *config,
-                                                                     void *primitive,
-                                                                     int width,
-                                                                     int height,
-                                                                     int pitchBytes);
 RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3Config_UpdateLocal(zVideoFxPass3Config *config,
                                                                float deltaTime);
 RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3Config_SetPrimaryElementParamsLocal(
@@ -504,7 +499,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetInputRectByIndex(int index,
                                                                  HudUiRect *rectOrNull);
 RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_UpdateLocal(float deltaTime);
 RECOIL_NOINLINE void RECOIL_CDECL RunPostprocessOnSwBuffer();
-RECOIL_NOINLINE void RECOIL_CDECL RunPostprocessOnPrimaryBuffer();
+RECOIL_NOINLINE int RECOIL_CDECL RunPostprocessOnPrimaryBuffer();
 RECOIL_NOINLINE int RECOIL_FASTCALL
 AdjustSurfacesIfEnabled(zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForPresent,
                         int blitPrimaryToSwFirst);

@@ -7,8 +7,8 @@ compiled output can be compared against the original retail executable.
 
 The recovered decompiled source and original executable analysis are the
 behavioral and ABI reference. Source in this workspace is rewritten from that
-evidence, then checked through native builds, focused tests, and
-assembly-listing comparison. The rebuilt binary is allowed to have different
+evidence, then checked through native builds, focused tests, and VC6
+object-byte comparison. The rebuilt binary is allowed to have different
 addresses, but function behavior, calling conventions, layout, imports, memory
 side effects, and generated instruction structure must match the original where
 a function is marked binary-safe.
@@ -128,9 +128,11 @@ Completion is tracked per function in `.agent/RECOIL_PLAN.md`:
 Useful commands:
 
 ```powershell
+python tools/recoil_status.py
 python tools/recoil_plan_cli.py next
 python tools/recoil_frontier.py 0x4301e0 --depth 1
 python tools/recoil_asm_verify.py 0x407170
+python tools/recoil_vc6_verify.py 0x407170
 python tools/recoil_pe_reference.py --reference support/Recoil.exe --manifest .agent/REFERENCE_EXECUTABLE.json --verify
 python tools/recoil_plan_audit.py --summary
 ```
@@ -149,7 +151,11 @@ python tools/recoil_resource_extract.py
 
 CTest also includes source guards that reject new raw original-image addresses,
 raw assembly/naked functions, and new `reinterpret_cast` uses in production
-source.
+source. The Python tooling tests can also be run directly:
+
+```powershell
+python -m unittest discover -s tests/tools -p *_tests.py
+```
 
 ## Documentation
 

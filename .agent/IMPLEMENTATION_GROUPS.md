@@ -1,14 +1,14 @@
 # Implementation Groups
 
-Use this file for temporary dependency-group notes during binary-safe reimplementation.
-
-The plan remains address-based. This file is only for grouping functions that must be implemented or verified together because they share a dependency closure, class/vtable contract, recursive call cycle, source file, or ABI-sensitive layout.
+Use this file for temporary dependency-group notes during binary-safe reimplementation. The plan remains address-based; this file only groups functions that must be implemented or verified together because they share a dependency closure, class/vtable contract, recursive call cycle, source file, or ABI-sensitive layout.
 
 ## Rules
 
-- Create or update a group when a task touches more than one function or a shared type/global/vtable.
+- Create or update a group before editing when a task touches more than one function or a shared type/global/vtable.
 - Keep groups scoped. Prefer one class, one source file cluster, one recursive cycle, or one call-chain frontier.
-- Do not mark plan entries done from this file alone. Plan markers still require source/build/BN evidence.
+- Do not mark plan entries done from this file alone. Plan markers still require current source/build/Binary Ninja evidence.
+- Keep notes concise and temporary. Move durable facts into source comments, Binary Ninja comments, tests, README, or narrow subsystem docs before pruning.
+- Use `python tools/recoil_groups_audit.py --summary` to find stale, completed, or overgrown groups.
 - Remove stale groups or move them to `Completed Groups` when every listed plan entry has the intended markers.
 - If a group blocks another group, name the blocking group explicitly.
 

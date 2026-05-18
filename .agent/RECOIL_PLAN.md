@@ -2,23 +2,21 @@
 
 ## Purpose
 
-This file is the work breakdown for turning the reconstructed Recoil executable into a binary-safe reimplementation.
-
-Use this file to track reconstruction state, source implementation state, and binary-safety verification for each function address.
+This file is the address-based work breakdown for turning the reconstructed Recoil executable into a binary-safe reimplementation.
 
 ## End Goal
 
-Use `Recoil.bndb` as the source of truth and produce native C/C++ code that compiles, behaves like the original 1999 Windows x86 engine, and matches the original function assembly after rebuilding, except for accepted relocation/symbol-spelling/toolchain-only differences.
+Use the currently loaded `Recoil.bndb` as the behavioral/ABI source of truth and produce native C/C++ that compiles, behaves like the original 1999 Windows x86 engine, and matches original function assembly after rebuilding except for accepted relocation, symbol-spelling, and toolchain-only differences.
 
 ## Plan Usage Rules
 
-- Keep this file updated with state of each function documented using the appropriate emojis.
-- Addresses are stable identifiers. Function names may change as Binary Ninja reconstruction improves.
+- Keep this file updated with each function's reconstruction, dependency, implementation, and binary-safety state.
+- Addresses are stable identifiers. Function names may change as Binary Ninja reconstruction improves or as source implementation reveals a better source-level name.
 - Use `python tools/recoil_plan_cli.py next/show/find/milestone` for normal plan navigation and `python tools/recoil_plan_cli.py set ...` for marker updates.
 - Do not use line-number dependent reads such as `Get-Content .agent\RECOIL_PLAN.md | Select-Object -Skip ...` except as a read-only fallback while diagnosing a broken plan CLI.
-- If Binary Ninja reconstruction improves, update the `Reconstructed` name/status for the affected entry only after following `AGENTS.md`.
-- If a function does not belong to the milestone it is under, move it according to the rules in `AGENTS.md`.
-- Any other edits to this file are forbidden unless the user explicitly asks.
+- If Binary Ninja reconstruction improves, update only the affected `Reconstructed` name/status after following `AGENTS.md`.
+- If a function does not belong to the milestone it is under, move it according to `AGENTS.md`.
+- Do not add narrative progress notes here. Use `.agent/IMPLEMENTATION_GROUPS.md` for temporary group notes and README or narrow subsystem docs for durable contributor knowledge.
 
 ## Milestone Catalog
 
@@ -29,17 +27,17 @@ Each milestone contains addresses of functions that belong to it.
 
 Each function has these trackers:
 
-- Reconstructed - Binary Ninja reconstruction state. `✅` means all Binary Ninja reconstruction criteria in `AGENTS.md` are met. `☑️` means reconstruction is accepted with a documented Binary Ninja/tool limitation. The bracketed name is the current Binary Ninja function name.
-- Source dependencies satisfied - direct callees plus required provider/type/global/vtable dependencies are reimplemented, externally provided, or otherwise accepted for the caller’s source/ABI contract. This is a hard prerequisite for source reimplementation: `❓` means not audited yet and blocks source work, `❌` means at least one blocker must be handled first, and only `✅` or justified `☑️` permits implementing the function.
-- Reimplemented - Intermediate source milestone. Native C/C++ code exists, compiles, and is source/ABI-contract equivalent to the reconstructed function, but the function is not done until binary-safe verification also passes. The bracketed name and file point to the source implementation. For compiler/runtime/import functions, this line names the external provider instead of an authored source file.
-- Binary-safe verified - Final acceptance gate for authored functions. The built 32-bit artifact was checked against the same function's Binary Ninja assembly and accepted as matching. Original image addresses may differ from rebuilt addresses, but referenced symbols, imports, callees, memory operands, control flow, stack/register behavior, call cleanup, constants, side effects, and floating-point behavior must match. External/compiler-provided functions use import/prototype/ABI verification against original call sites instead.
+- Reconstructed - Binary Ninja identity, signature, types, globals, callers/callees, and decompilation state meet `AGENTS.md` criteria. The bracketed name is the current Binary Ninja name and may be temporary.
+- Source dependencies satisfied - direct callees plus required provider/type/global/vtable dependencies are ready for the caller's source/ABI contract. `❓` and `❌` block source work; only `✅` or justified `☑️` permits implementation.
+- Reimplemented - source exists, compiles, and matches the source/ABI contract. This is not complete until binary-safe verification passes. The bracketed name/file are the source-level implementation identity and may intentionally differ from a placeholder Binary Ninja name. Compiler/runtime/import functions name the external provider instead of authored source.
+- Binary-safe verified - final gate for authored functions. Generated 32-bit assembly or provider ABI evidence was compared against Binary Ninja/original call-site evidence and accepted. Missing VC6 manifest coverage is remaining verification work, not a reason to skip the active blocker.
 
 ### State types
 
 ❓ - UNKNOWN - State of this task is unknown. Evaluate the state and replace with correct marker before proceeding.
 ❌ - NOT DONE - This point or milestone does not meet the definition of done.
 ✅ - DONE - Work on this point is done, verified in the current evidence, and no more work is needed.
-☑️ - LIMITED - Accepted with a specific documented Binary Ninja, toolchain, or provider limitation after all reasonable fixes were exhausted. For "Binary-safe verified" state, this marker is allowed only temporary.
+☑️ - LIMITED - Accepted with a specific documented Binary Ninja, toolchain, or provider limitation after all reasonable fixes were exhausted. Limited is not fully complete.
 
 ### Work order rules
 
@@ -53,8 +51,9 @@ Each function has these trackers:
 - Use `.agent/IMPLEMENTATION_GROUPS.md` for any multi-function dependency closure, class/vtable cluster, source-file cluster, or recursive/cyclic group.
 - Do not implement callers merely because they appear earlier in this file when an unimplemented callee, shared type/global, provider contract, or build dependency controls their correct source or ABI behavior.
 - If implementation reveals that reconstruction can be improved, update Binary Ninja first and then return to source work.
-- After source compiles, update `Reimplemented` with the source-level name and file using `python tools/recoil_plan_cli.py set ...`.
+- After source compiles, update `Reimplemented` with the source-level name and file using `python tools/recoil_plan_cli.py set ...`; choose a behavior-based name when the current database name is only a placeholder.
 - Mark `Binary-safe verified` only after assembly or provider ABI verification is complete and accepted as matching. A function with `✅ Reimplemented` but `❌ Binary-safe verified` is not done.
+- If `Binary-safe verified` is the active blocker and no VC6 manifest covers the address, create or extend a VC6 verification manifest for the function or dependency group before asking to skip it. Missing verification-target coverage is not a reason to move to a later plan entry by itself.
 
 ## M01. RecoilApp shell and app-state host
 
@@ -67,7 +66,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: RecoilStateDialogHost::OnWndActivate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateDialogHost::OnWndActivate File: src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x40c370:
   - [✅] Reconstructed (Name: zSys::ProbePlatformAndVideoCaps)
   - [✅] Source dependencies satisfied
@@ -3871,7 +3870,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiDialogController::BlitOwnedSurfaceToPrimary)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiDialogController::BlitOwnedSurfaceToPrimary File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4ba3a0:
   - [✅] Reconstructed (Name: HudUiContainer::InvalidateChildren)
   - [✅] Source dependencies satisfied
@@ -15839,7 +15838,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zOpt::GetWindowSection)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetWindowSection File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4086d0:
   - [✅] Reconstructed (Name: zOpt::GetWindowSectionHeight)
   - [✅] Source dependencies satisfied
@@ -16512,7 +16511,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zVideo::Fx_SetSurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Fx_SetSurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x48ea20:
   - [☑️] Reconstructed (Name: zVideo_FxSurface_ApplyBlueTintRect)
   - [❓] Source dependencies satisfied
@@ -16537,7 +16536,7 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zVid_Image::BlitToActiveTarget)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image::BlitToActiveTarget File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x48f560:
   - [✅] Reconstructed (Name: zVideo_Image_BlitToFramebufferClipped)
   - [❓] Source dependencies satisfied
@@ -16562,7 +16561,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zRndr::SetFrameBufferRegion)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SetFrameBufferRegion File: src/GameZRecoil/zRndr/zRndr.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x490480:
   - [✅] Reconstructed (Name: zRndr::SetPerspectiveAdaptiveSpanParams)
   - [✅] Source dependencies satisfied
@@ -16637,7 +16636,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zVideo::Dispatch_UnlockPrimarySurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Dispatch_UnlockPrimarySurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a6b80:
   - [✅] Reconstructed (Name: zVideo_SetClearColorPacked16)
   - [❓] Source dependencies satisfied
@@ -16966,8 +16965,8 @@ Each function has these trackers:
 - 0x4bee20:
   - [✅] Reconstructed (Name: zVideo::FxPass3Config_QueuePrimitiveRaw)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zVideo::FxPass3Config_QueuePrimitiveRaw File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Reimplemented (Name: zVideoFxPass3Config::QueuePrimitiveRaw File: src/GameZRecoil/zVideo/zVideo.cpp)
+  - [✅] Binary-safe verified
 - 0x4bee40:
   - [✅] Reconstructed (Name: zVideoFxPass3Config::CrtInitGlobalSingleton)
   - [❓] Source dependencies satisfied
@@ -17050,7 +17049,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfacePixels)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::GetPrimarySurfacePixels File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a6800:
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfaceWidth)
   - [✅] Source dependencies satisfied
@@ -17080,7 +17079,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zVideo::AdjustSurfacesIfEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::AdjustSurfacesIfEnabled File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a6930:
   - [✅] Reconstructed (Name: zVideo_dd::PrepareWindowForMode)
   - [❓] Source dependencies satisfied
@@ -17163,22 +17162,22 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4a7fc0:
   - [✅] Reconstructed (Name: zVideo_dd::LockSurfaceState)
-  - [❓] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::LockSurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8030:
   - [✅] Reconstructed (Name: zVideo_dd::UnlockSurfaceState)
-  - [❓] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::UnlockSurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8060:
   - [✅] Reconstructed (Name: zVideo_dd::LockDirectDrawSurface)
-  - [❓] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::LockDirectDrawSurface File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a80c0:
   - [✅] Reconstructed (Name: zVideo_dd::UnlockDirectDrawSurface)
-  - [❓] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::UnlockDirectDrawSurface File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8100:
@@ -17533,12 +17532,12 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zVideo::RunPostprocessOnPrimaryBuffer)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::RunPostprocessOnPrimaryBuffer File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a69c0:
   - [✅] Reconstructed (Name: zVideo_buff::ClipCoordToRange)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_buff::ClipCoordToRange File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a69e0:
   - [✅] Reconstructed (Name: zVideo_buff::BltSourceToPrimaryClipped)
   - [✅] Source dependencies satisfied
@@ -17633,7 +17632,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zVideo::FxPass3_QueuePrimitive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::FxPass3_QueuePrimitive File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4bef70:
   - [✅] Reconstructed (Name: zVideo::FxPass3_UpdateLocal)
   - [✅] Source dependencies satisfied

@@ -24,6 +24,9 @@ class RecoilFrontierTests(unittest.TestCase):
     def test_direct_named_call_is_not_indirect(self) -> None:
         self.assertFalse(is_indirect_call_token("zOpt::GetWindowSection"))
 
+    def test_register_call_is_indirect(self) -> None:
+        self.assertTrue(is_indirect_call_token("eax"))
+
 
 if __name__ == "__main__":
     unittest.main()

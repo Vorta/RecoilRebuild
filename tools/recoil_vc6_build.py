@@ -3,17 +3,23 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 import json
-import os
 from pathlib import Path
 import shutil
-import subprocess
 import sys
-from typing import Any
+
+from recoil_tooling import (
+    REPO_ROOT,
+    display_path,
+    quote_cmd_arg,
+    repo_path,
+    require_string,
+    require_string_list,
+    response_line,
+    run_cmd_script,
+)
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = REPO_ROOT / "tools" / "vc6_final_build.json"
-DEFAULT_VC6_ROOT = REPO_ROOT.parent / "Compiler" / "VC6"
 
 
 @dataclass(frozen=True)
@@ -68,35 +74,6 @@ class CommandResult:
     stderr_log: Path
 
 
-def require_string(data: dict[str, Any], key: str, *, manifest_path: Path) -> str:
-    value = data.get(key)
-    if not isinstance(value, str) or not value:
-        raise ValueError(f"{manifest_path}: expected non-empty string field '{key}'")
-    return value
-
-
-def require_string_list(data: dict[str, Any], key: str, *, manifest_path: Path) -> tuple[str, ...]:
-    value = data.get(key, [])
-    if not isinstance(value, list) or any(not isinstance(item, str) or not item for item in value):
-        raise ValueError(f"{manifest_path}: expected non-empty string list field '{key}'")
-    return tuple(value)
-
-
-def expand_config_path(path_text: str | Path) -> str:
-    text = str(path_text)
-    vc6_root = os.environ.get("RECOIL_VC6_ROOT", str(DEFAULT_VC6_ROOT))
-    text = text.replace("${RECOIL_VC6_ROOT}", vc6_root)
-    text = text.replace("%RECOIL_VC6_ROOT%", vc6_root)
-    return os.path.expandvars(text)
-
-
-def repo_path(path_text: str | Path) -> Path:
-    path = Path(expand_config_path(path_text))
-    if path.is_absolute():
-        return path
-    return REPO_ROOT / path
-
-
 def load_config(path: str | Path = DEFAULT_MANIFEST) -> FinalBuildConfig:
     manifest_path = Path(path)
     with manifest_path.open("r", encoding="utf-8") as handle:
@@ -127,17 +104,6 @@ def load_config(path: str | Path = DEFAULT_MANIFEST) -> FinalBuildConfig:
     )
 
 
-def quote_cmd_arg(value: str | Path) -> str:
-    text = str(value)
-    if '"' in text:
-        raise ValueError(f"Command argument contains an unsupported quote: {text}")
-    return f'"{text}"'
-
-
-def response_line(value: str | Path) -> str:
-    return quote_cmd_arg(value) if any(char.isspace() for char in str(value)) else str(value)
-
-
 def safe_object_stem(source: Path) -> Path:
     try:
         rel = source.relative_to(REPO_ROOT)
@@ -148,13 +114,6 @@ def safe_object_stem(source: Path) -> Path:
 
 def object_path(config: FinalBuildConfig, paths: BuildPaths, source: Path) -> Path:
     return paths.obj_dir / safe_object_stem(source)
-
-
-def display_path(path: Path) -> str:
-    try:
-        return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
-    except ValueError:
-        return str(path).replace("\\", "/")
 
 
 def build_paths(config: FinalBuildConfig) -> BuildPaths:
@@ -284,22 +243,15 @@ def make_script_command(name: str, command: str, paths: BuildPaths) -> CommandSp
 def run_command(spec: CommandSpec) -> CommandResult:
     spec.stdout_log.parent.mkdir(parents=True, exist_ok=True)
     spec.stderr_log.parent.mkdir(parents=True, exist_ok=True)
-    script_path = spec.stdout_log.parent / f"_{spec.name.replace(':', '_').replace('/', '_')}.cmd"
-    script_path.write_text("@echo off\r\n" + spec.command + "\r\n", encoding="ascii")
-    creation_flags = 0
-    if sys.platform == "win32":
-        creation_flags = subprocess.CREATE_NO_WINDOW  # type: ignore[attr-defined]
-    comspec = os.environ.get("ComSpec", r"C:\Windows\System32\cmd.exe")
     with spec.stdout_log.open("w", encoding="utf-8", errors="replace") as stdout, spec.stderr_log.open(
         "w", encoding="utf-8", errors="replace"
     ) as stderr:
-        completed = subprocess.run(
-            [comspec, "/d", "/c", str(script_path)],
-            cwd=str(spec.cwd),
+        completed = run_cmd_script(
+            spec.command,
+            cwd=spec.cwd,
             stdout=stdout,
             stderr=stderr,
-            text=True,
-            creationflags=creation_flags,
+            script_name=str(spec.stdout_log.parent / f"_{spec.name.replace(':', '_').replace('/', '_')}.cmd"),
         )
     return CommandResult(
         name=spec.name,

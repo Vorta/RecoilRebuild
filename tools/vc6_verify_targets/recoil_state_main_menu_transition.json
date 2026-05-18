@@ -29,6 +29,11 @@
       "address": "0x415190",
       "symbol": "?ScalarDeletingDestructor@RecoilStateMainMenuTransition@@QAEPAU1@I@Z",
       "name": "RecoilStateMainMenuTransition::ScalarDeletingDestructor"
+    },
+    {
+      "address": "0x4151b0",
+      "symbol": "?Destructor@RecoilStateMainMenuTransition@@QAEXXZ",
+      "name": "RecoilStateMainMenuTransition::Destructor"
     }
   ],
   "generated_files": {

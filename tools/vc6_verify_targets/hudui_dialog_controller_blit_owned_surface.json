@@ -1,0 +1,56 @@
+{
+  "name": "hudui_dialog_controller_blit_owned_surface",
+  "description": "HudUiDialogController captured-image blit wrapper.",
+  "source_filename": "HudUiDialogController_BlitOwnedSurface.cpp",
+  "source": [
+    "#define RECOIL_FASTCALL __fastcall",
+    "#define RECOIL_THISCALL",
+    "#define RECOIL_NOINLINE",
+    "",
+    "struct zVidImagePartial;",
+    "struct zVidRect32;",
+    "",
+    "namespace zVid_Image {",
+    "RECOIL_NOINLINE void RECOIL_FASTCALL BlitToActiveTarget(zVidImagePartial *image, int dstX,",
+    "                                                        int dstY, int clipFlags,",
+    "                                                        zVidRect32 *srcRect);",
+    "}",
+    "",
+    "struct HudUiDialogController {",
+    "    unsigned char reserved_000[0x114];",
+    "    zVidImagePartial *capturedImage;",
+    "",
+    "    void RECOIL_THISCALL BlitOwnedSurfaceToPrimary();",
+    "};",
+    "",
+    "// Reimplements 0x4ba380: HudUiDialogController::BlitOwnedSurfaceToPrimary",
+    "RECOIL_NOINLINE void RECOIL_THISCALL HudUiDialogController::BlitOwnedSurfaceToPrimary() {",
+    "    if (capturedImage != 0) {",
+    "        zVid_Image::BlitToActiveTarget(capturedImage, 0, 0, 0, 0);",
+    "    }",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4ba380",
+      "symbol": "?BlitOwnedSurfaceToPrimary@HudUiDialogController@@QAEXXZ",
+      "name": "HudUiDialogController::BlitOwnedSurfaceToPrimary"
+    }
+  ]
+}

@@ -9,6 +9,9 @@ import struct
 import sys
 from typing import NamedTuple
 
+from recoil_pe import PeFormatError, PeSection, data_directory, hex32, parse_pe_headers, rva_to_offset
+from recoil_tooling import write_if_changed, write_text_if_changed
+
 
 RESOURCE_TYPE_NAMES = {
     1: "cursor",
@@ -57,15 +60,6 @@ STANDARD_DIALOG_CLASSES = {
     0x84: "ScrollBar",
     0x85: "ComboBox",
 }
-
-
-@dataclass(frozen=True)
-class PeSection:
-    name: str
-    virtual_address: int
-    virtual_size: int
-    raw_pointer: int
-    raw_size: int
 
 
 @dataclass(frozen=True)
@@ -125,10 +119,6 @@ class ResPayload(NamedTuple):
     name: int | str
     language: int
     payload: bytes
-
-
-def hex32(value: int) -> str:
-    return f"0x{value:x}"
 
 
 def resource_label(value: int | str) -> str:
@@ -211,44 +201,13 @@ def rc_options(flags: int, ignored: int = 0) -> str:
     return ", " + ", ".join(options) if options else ""
 
 
-def rva_to_offset(rva: int, sections: list[PeSection]) -> int | None:
-    for section in sections:
-        size = max(section.virtual_size, section.raw_size)
-        if section.virtual_address <= rva < section.virtual_address + size:
-            return section.raw_pointer + (rva - section.virtual_address)
-    return None
-
-
 def parse_sections(data: bytes) -> tuple[int, int, list[PeSection]]:
-    if len(data) < 0x40 or data[:2] != b"MZ":
-        raise ResourceExtractError("not a DOS/PE executable")
-
-    pe_offset = struct.unpack_from("<I", data, 0x3c)[0]
-    if data[pe_offset : pe_offset + 4] != b"PE\0\0":
-        raise ResourceExtractError(f"PE signature not found at {hex32(pe_offset)}")
-
-    coff_offset = pe_offset + 4
-    _machine, section_count, _timestamp, _symbols, _symbol_count, optional_size, _chars = (
-        struct.unpack_from("<HHIIIHH", data, coff_offset)
-    )
-    optional_offset = coff_offset + 20
-    optional_magic = struct.unpack_from("<H", data, optional_offset)[0]
-    if optional_magic != 0x10B:
-        raise ResourceExtractError(f"expected PE32 optional header, found {hex32(optional_magic)}")
-
-    rsrc_rva, rsrc_size = struct.unpack_from("<II", data, optional_offset + 96 + 2 * 8)
-
-    section_offset = optional_offset + optional_size
-    sections: list[PeSection] = []
-    for index in range(section_count):
-        current = section_offset + index * 40
-        name = data[current : current + 8].rstrip(b"\0").decode("ascii", errors="replace")
-        virtual_size, virtual_address, raw_size, raw_pointer = struct.unpack_from(
-            "<IIII", data, current + 8
-        )
-        sections.append(PeSection(name, virtual_address, virtual_size, raw_pointer, raw_size))
-
-    return rsrc_rva, rsrc_size, sections
+    try:
+        headers = parse_pe_headers(data)
+    except PeFormatError as exc:
+        raise ResourceExtractError(str(exc)) from exc
+    resource_directory = data_directory(headers, 2)
+    return resource_directory.rva, resource_directory.size, list(headers.sections)
 
 
 def read_resource_name(data: bytes, base_offset: int, relative_offset: int) -> str:
@@ -374,18 +333,6 @@ def raw_resource_filename(entry: ResourceEntry) -> str:
     type_part = resource_type_label(entry.type_id)
     name_part = resource_file_token(entry.name)
     return f"{type_part}_{name_part}_{entry.language:04x}.bin"
-
-
-def write_if_changed(path: Path, content: bytes) -> bool:
-    if path.exists() and path.read_bytes() == content:
-        return False
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(content)
-    return True
-
-
-def write_text_if_changed(path: Path, content: str) -> bool:
-    return write_if_changed(path, content.encode("utf-8"))
 
 
 def bitmap_file_from_dib(dib: bytes) -> bytes:

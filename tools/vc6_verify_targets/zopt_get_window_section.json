@@ -1,0 +1,42 @@
+{
+  "name": "zopt_get_window_section",
+  "description": "zOpt window section option accessor.",
+  "source_filename": "zOpt_GetWindowSection.cpp",
+  "source": [
+    "#define RECOIL_CDECL __cdecl",
+    "#define RECOIL_NOINLINE",
+    "",
+    "struct zOpt_ViewRectSection;",
+    "zOpt_ViewRectSection **g_zOpt_WindowSectionOption = 0;",
+    "",
+    "namespace zOpt {",
+    "// Reimplements 0x4086c0: zOpt::GetWindowSection",
+    "RECOIL_NOINLINE zOpt_ViewRectSection *RECOIL_CDECL GetWindowSection() {",
+    "    return *g_zOpt_WindowSectionOption;",
+    "}",
+    "} // namespace zOpt"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zGame/zGame.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4086c0",
+      "symbol": "?GetWindowSection@zOpt@@YAPAUzOpt_ViewRectSection@@XZ",
+      "name": "zOpt::GetWindowSection"
+    }
+  ]
+}

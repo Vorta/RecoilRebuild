@@ -3,18 +3,32 @@ from __future__ import annotations
 import argparse
 from collections import deque
 from dataclasses import dataclass, field
+import json
 from pathlib import Path
 import re
 import sys
 
 from recoil_binja import BinaryNinjaBridge, BridgeError, Symbol
 from recoil_plan import PlanEntry, load_plan, normalize_address
+from recoil_vc6_verify import DEFAULT_MANIFEST_DIR, load_manifests
 
 
 CALL_RE = re.compile(r"\bcall\s+([^;]+)")
 MLIL_CALL_RE = re.compile(r"\b(0x[0-9A-Fa-f]+)\(")
 ADDR_RE = re.compile(r"^(0x[0-9A-Fa-f]+)$")
 INDIRECT_CALL_PREFIXES = ("byte ", "word ", "dword ", "qword ", "[")
+INDIRECT_CALL_REGISTERS = {
+    "eax",
+    "ebx",
+    "ecx",
+    "edx",
+    "esi",
+    "edi",
+    "esp",
+    "ebp",
+}
+ORIGINAL_IMAGE_START = 0x00400000
+ORIGINAL_IMAGE_END = 0x004FFFFF
 
 
 @dataclass
@@ -40,12 +54,12 @@ class Node:
 
     def blocks_source(self) -> bool:
         if self.plan is None:
-            return self.kind != "import"
+            return self.kind not in {"import", "external"}
         return not self.plan.is_source_dependencies_satisfied or not self.plan.is_reimplemented
 
     def source_block_reason(self) -> str:
         if self.plan is None:
-            return "not in plan" if self.kind != "import" else ""
+            return "not in plan" if self.kind not in {"import", "external"} else ""
         if not self.plan.is_source_dependencies_satisfied:
             return f"deps={self.plan.source_dependencies_status}"
         if not self.plan.is_reimplemented:
@@ -54,8 +68,32 @@ class Node:
 
     def blocks_binary_verification(self) -> bool:
         if self.plan is None:
-            return self.kind != "import"
+            return self.kind not in {"import", "external"}
         return not self.plan.is_binary_verified
+
+
+def node_to_dict(node: Node) -> dict[str, object]:
+    return {
+        "address": node.address,
+        "name": node.name,
+        "kind": node.kind,
+        "status": node.status_summary(),
+        "blocks_source": node.blocks_source(),
+        "source_block_reason": node.source_block_reason(),
+        "blocks_binary_verification": node.blocks_binary_verification(),
+        "callees": node.callees,
+        "unresolved_calls": node.unresolved_calls,
+        "indirect_calls": node.indirect_calls,
+        "bridge_error": node.bridge_error,
+    }
+
+
+def vc6_coverage_by_address(manifest_dir: Path) -> dict[str, list[str]]:
+    coverage: dict[str, list[str]] = {}
+    for manifest in load_manifests(manifest_dir):
+        for function in manifest.functions:
+            coverage.setdefault(function.address, []).append(manifest.name)
+    return coverage
 
 
 def extract_call_tokens(assembly: str, mlil: str) -> list[str]:
@@ -72,7 +110,7 @@ def extract_call_tokens(assembly: str, mlil: str) -> list[str]:
 
 def is_indirect_call_token(token: str) -> bool:
     text = " ".join(token.strip().lower().split())
-    return text.startswith(INDIRECT_CALL_PREFIXES)
+    return text in INDIRECT_CALL_REGISTERS or text.startswith(INDIRECT_CALL_PREFIXES)
 
 
 def resolve_call(token: str, symbols_by_name: dict[str, Symbol]) -> str | None:
@@ -85,6 +123,15 @@ def resolve_call(token: str, symbols_by_name: dict[str, Symbol]) -> str | None:
     if symbol:
         return symbol.address
     return None
+
+
+def inferred_symbol_kind(address: str, symbol: Symbol | None) -> str:
+    if symbol is not None:
+        return symbol.kind
+    value = int(normalize_address(address), 16)
+    if value < ORIGINAL_IMAGE_START or value > ORIGINAL_IMAGE_END:
+        return "external"
+    return "function"
 
 
 def load_node(
@@ -100,7 +147,7 @@ def load_node(
     node = Node(
         address=address,
         name=(symbol.name if symbol else (entry.reconstructed_name if entry else "")),
-        kind=(symbol.kind if symbol else "function"),
+        kind=inferred_symbol_kind(address, symbol),
         plan=entry,
     )
     try:
@@ -177,7 +224,8 @@ def recommendation(root: str, nodes: dict[str, Node]) -> str:
     return "No blocking dependency visible at requested depth."
 
 
-def print_report(root: str, nodes: dict[str, Node]) -> None:
+def print_report(root: str, nodes: dict[str, Node], *, vc6_coverage: dict[str, list[str]] | None = None) -> None:
+    vc6_coverage = vc6_coverage or {}
     root_node = nodes[root]
     print("# Recoil Dependency Frontier")
     print()
@@ -207,6 +255,15 @@ def print_report(root: str, nodes: dict[str, Node]) -> None:
         for token in root_node.indirect_calls:
             print(f"- `{token}`")
     print()
+    print("## VC6 Verification Coverage")
+    reported = [root_node.address, *root_node.callees]
+    for address in reported:
+        node = nodes.get(address)
+        name = node.name if node else ""
+        targets = vc6_coverage.get(address, [])
+        target_text = ", ".join(targets) if targets else "none"
+        print(f"- `{address}` `{name}` targets={target_text}")
+    print()
     print("## Blocking Dependencies")
     blockers = [node for node in nodes.values() if node.address != root and node.blocks_source()]
     if not blockers:
@@ -224,6 +281,27 @@ def print_report(root: str, nodes: dict[str, Node]) -> None:
         "Note: this report uses direct calls parsed from BN assembly/MLIL. Inspect vtable "
         "calls, indirect calls, globals, and shared types in BN before editing source."
     )
+
+
+def report_to_dict(
+    root: str,
+    nodes: dict[str, Node],
+    *,
+    vc6_coverage: dict[str, list[str]] | None = None,
+) -> dict[str, object]:
+    vc6_coverage = vc6_coverage or {}
+    root_node = nodes[root]
+    return {
+        "anchor": node_to_dict(root_node),
+        "direct_callees": [node_to_dict(nodes[callee]) for callee in root_node.callees if callee in nodes],
+        "vc6_coverage": {address: vc6_coverage.get(address, []) for address in [root, *root_node.callees]},
+        "blocking_dependencies": [
+            node_to_dict(node)
+            for node in nodes.values()
+            if node.address != root and node.blocks_source()
+        ],
+        "recommended_next": recommendation(root, nodes),
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -248,6 +326,8 @@ def main(argv: list[str] | None = None) -> int:
         default="http://localhost:9009",
         help="Binary Ninja bridge URL",
     )
+    parser.add_argument("--vc6-manifest-dir", default=str(DEFAULT_MANIFEST_DIR))
+    parser.add_argument("--json", action="store_true", help="Emit a machine-readable frontier report.")
     args = parser.parse_args(argv)
 
     plan_path = Path(args.plan)
@@ -259,7 +339,11 @@ def main(argv: list[str] | None = None) -> int:
         bridge = BinaryNinjaBridge(args.bridge_url)
         root = normalize_address(args.address)
         nodes = build_frontier(root, args.depth, bridge, plan)
-        print_report(root, nodes)
+        coverage = vc6_coverage_by_address(Path(args.vc6_manifest_dir))
+        if args.json:
+            print(json.dumps(report_to_dict(root, nodes, vc6_coverage=coverage), indent=2, ensure_ascii=False))
+        else:
+            print_report(root, nodes, vc6_coverage=coverage)
     except (BridgeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 1

@@ -230,6 +230,10 @@ struct zVideoFxPass3Config {
 
     RECOIL_NOINLINE void RECOIL_THISCALL SetInputRectByIndex(int index,
                                                              HudUiRect *rectOrNull);
+    RECOIL_NOINLINE void RECOIL_THISCALL QueuePrimitiveRaw(void *primitive,
+                                                           int width,
+                                                           int height,
+                                                           int pitchBytes);
 };
 #if defined(_M_IX86) || defined(__i386__)
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3RootElement) == 0x48);
@@ -872,17 +876,16 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipCoordToRange(int *coordPtr,
                                                               int minCoord,
                                                               int maxCoord) {
     const int coord = *coordPtr;
+    int clipped = 0;
     if (coord < minCoord) {
+        clipped = coord - minCoord;
         *coordPtr = minCoord;
-        return coord - minCoord;
-    }
-
-    if (coord > maxCoord) {
+    } else if (coord > maxCoord) {
+        clipped = coord - maxCoord;
         *coordPtr = maxCoord;
-        return coord - maxCoord;
     }
 
-    return 0;
+    return clipped;
 }
 
 // Reimplements 0x4a6fe0: zVideo_buff::CopySurfaceRectToImage
@@ -980,20 +983,28 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSourceToPrimaryClipped(zVidImagePartial 
                                                                int srcColorKeyEnable,
                                                                zVidRect32 *srcRect) {
     zVidRect32 srcRectLocal;
-    int srcX = 0;
-    int srcY = 0;
-    int srcRight = srcImage->width;
-    int srcBottom = srcImage->height;
+    int srcX;
+    int srcY;
+    int srcRight;
+    int srcBottom;
     if (srcRect != 0) {
         srcX = srcRect->left;
         srcY = srcRect->top;
         srcRight = srcRect->right;
         srcBottom = srcRect->bottom;
+        srcRectLocal.left = srcX;
+        srcRectLocal.top = srcY;
+        srcRectLocal.right = srcRight;
+    } else {
+        srcRight = srcImage->width;
+        srcBottom = srcImage->height;
+        srcX = 0;
+        srcY = 0;
+        srcRectLocal.left = srcX;
+        srcRectLocal.top = srcY;
+        srcRectLocal.right = srcRight;
     }
 
-    srcRectLocal.left = srcX;
-    srcRectLocal.top = srcY;
-    srcRectLocal.right = srcRight;
     srcRectLocal.bottom = srcBottom;
 
     zVidRect32 dstRectLocal;
@@ -1046,8 +1057,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSourceToPrimaryClipped(zVidImagePartial 
     const DWORD bltFlags = DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE |
                            ((srcImage->formatFlagsPacked & 0x02u) != 0 ? DDBLT_KEYSRC : 0);
     const HRESULT hresult =
-        primarySurface->Blt(reinterpret_cast<RECT *>(&dstRectLocal), srcImage->surface,
-                            reinterpret_cast<RECT *>(&srcRectLocal), bltFlags, 0);
+        primarySurface->Blt((RECT *)&dstRectLocal, srcImage->surface,
+                            (RECT *)&srcRectLocal, bltFlags, 0);
 
     if (wasLocked != 0) {
         zVideo_dd::LockSurfaceState(&g_zVideo_PrimarySurfaceState);
@@ -1324,24 +1335,25 @@ RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockPrimarySurfaceState() {
 RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(void *pixels, int width,
                                                         int height,
                                                         int pitchBytes) {
-    g_zVideo_FxSurfacePixels16 = static_cast<unsigned short *>(pixels);
     g_zVideo_FxSurfaceWidth = width;
     g_zVideo_FxSurfaceHeight = height;
     g_zVideo_FxSurfacePitchBytes = pitchBytes;
-    g_zVideo_FxSurfacePitchPixels16 = (pitchBytes - (pitchBytes >> 31)) >> 1;
+    g_zVideo_FxSurfacePixels16 = static_cast<unsigned short *>(pixels);
+    g_zVideo_FxSurfacePitchPixels16 = pitchBytes / 2;
 }
 
+} // namespace zVideo
+
 // Reimplements 0x4bee20: zVideo::FxPass3Config_QueuePrimitiveRaw
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3Config_QueuePrimitiveRaw(zVideoFxPass3Config *config,
-                                                                     void *primitive,
-                                                                     int width,
-                                                                     int height,
-                                                                     int pitchBytes) {
-    config->surfacePixels = static_cast<unsigned short *>(primitive);
-    config->surfaceWidth = width;
-    config->surfaceHeight = height;
-    config->surfacePitchBytes = pitchBytes;
+RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::QueuePrimitiveRaw(
+    void *primitive, int width, int height, int pitchBytes) {
+    surfacePixels = static_cast<unsigned short *>(primitive);
+    surfaceWidth = width;
+    surfaceHeight = height;
+    surfacePitchBytes = pitchBytes;
 }
+
+namespace zVideo {
 
 // Reimplements 0x4bed30: zVideo::FxPass3Config_UpdateLocal
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
@@ -1403,8 +1415,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueueElementLocal(
 RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueuePrimitive(void *primitive, int width,
                                                             int height,
                                                             int pitchBytes) {
-    FxPass3Config_QueuePrimitiveRaw(&g_zVideo_FxPass3ConfigLocal, primitive, width, height,
-                                    pitchBytes);
+    g_zVideo_FxPass3ConfigLocal.QueuePrimitiveRaw(primitive, width, height, pitchBytes);
 }
 
 // Reimplements 0x4bef40: zVideo::FxPass3_SetInputRectByIndex
@@ -1433,7 +1444,7 @@ RECOIL_NOINLINE void RECOIL_CDECL RunPostprocessOnSwBuffer() {
 }
 
 // Reimplements 0x4a6840: zVideo::RunPostprocessOnPrimaryBuffer
-RECOIL_NOINLINE void RECOIL_CDECL RunPostprocessOnPrimaryBuffer() {
+RECOIL_NOINLINE int RECOIL_CDECL RunPostprocessOnPrimaryBuffer() {
     if (g_zVideo_RendererType != 0 || g_zVideo_UseHalfResBackbuffer != 0) {
         g_zVideo_pfnLockSurfaceState(&g_zVideo_PrimarySurfaceState);
     }
@@ -1448,19 +1459,21 @@ RECOIL_NOINLINE void RECOIL_CDECL RunPostprocessOnPrimaryBuffer() {
     if (g_zVideo_UseHalfResBackbuffer != 0) {
         g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
     }
+
+    return 0;
 }
 
 // Reimplements 0x4a6900: zVideo::AdjustSurfacesIfEnabled
 RECOIL_NOINLINE int RECOIL_FASTCALL
 AdjustSurfacesIfEnabled(zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForPresent,
                         int blitPrimaryToSwFirst) {
-    if (g_zVideo_AdjustSurfacesDisableGate > 0) {
-        return g_zVideo_AdjustSurfacesDisableGate;
+    int result = g_zVideo_AdjustSurfacesDisableGate;
+    if (result <= 0) {
+        result = g_zVideo_pfnAdjustSurfaces(srcRect, dstRect, waitForPresent,
+                                            blitPrimaryToSwFirst);
+        ++g_zVideo_FrameTick;
     }
 
-    const int result =
-        g_zVideo_pfnAdjustSurfaces(srcRect, dstRect, waitForPresent, blitPrimaryToSwFirst);
-    ++g_zVideo_FrameTick;
     return result;
 }
 
@@ -5157,23 +5170,29 @@ UnlockSurface_WaitRestore(IDirectDrawSurface3 *surface) {
 // Reimplements 0x4a7fc0: zVideo_dd::LockSurfaceState
 RECOIL_NOINLINE int RECOIL_FASTCALL
 LockSurfaceState(zVideo_SurfaceStatePartial *surfaceState) {
-    if (g_zVideo_FullscreenOption == 0 && surfaceState == &g_zVideo_DisplayModeSurfaceState) {
-        return 0;
+    if (g_zVideo_FullscreenOption != 0) {
+        goto CheckLocked;
     }
+    if (surfaceState != &g_zVideo_DisplayModeSurfaceState) {
+        goto CheckLocked;
+    }
+    return 0;
 
+CheckLocked:
     if (surfaceState->locked != 0) {
         return 0;
     }
 
-    DDSURFACEDESC lockedSurfaceDesc = {0};
+    DDSURFACEDESC lockedSurfaceDesc;
     const int result = LockDirectDrawSurface(surfaceState->surf, &lockedSurfaceDesc);
     if (result == 0) {
+        const int locked = 1;
         surfaceState->width = static_cast<int>(lockedSurfaceDesc.dwWidth);
+        surfaceState->locked = locked;
         surfaceState->height = static_cast<int>(lockedSurfaceDesc.dwHeight);
-        surfaceState->pitch = lockedSurfaceDesc.lPitch;
-        surfaceState->lockInfoValid = 1;
+        surfaceState->lockInfoValid = locked;
+        surfaceState->pitch = static_cast<int>(lockedSurfaceDesc.lPitch);
         surfaceState->pixels = lockedSurfaceDesc.lpSurface;
-        surfaceState->locked = 1;
     }
 
     return result;
@@ -5182,10 +5201,15 @@ LockSurfaceState(zVideo_SurfaceStatePartial *surfaceState) {
 // Reimplements 0x4a8030: zVideo_dd::UnlockSurfaceState
 RECOIL_NOINLINE int RECOIL_FASTCALL
 UnlockSurfaceState(zVideo_SurfaceStatePartial *surfaceState) {
-    if (g_zVideo_FullscreenOption == 0 && surfaceState == &g_zVideo_DisplayModeSurfaceState) {
-        return 0;
+    if (g_zVideo_FullscreenOption != 0) {
+        goto CheckLocked;
     }
+    if (surfaceState != &g_zVideo_DisplayModeSurfaceState) {
+        goto CheckLocked;
+    }
+    return 0;
 
+CheckLocked:
     if (surfaceState->locked == 0) {
         return 0;
     }

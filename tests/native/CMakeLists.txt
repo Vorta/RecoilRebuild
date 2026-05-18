@@ -63,3 +63,12 @@ add_test(
         --baseline .agent/REINTERPRET_CAST_BASELINE.txt
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
+
+add_test(
+    NAME recoil_tools_unittest
+    COMMAND ${Python3_EXECUTABLE}
+        -m unittest discover
+        -s tests/tools
+        -p *_tests.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)

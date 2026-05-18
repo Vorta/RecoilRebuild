@@ -6,19 +6,26 @@ import json
 import os
 import shutil
 from pathlib import Path
-import subprocess
 import sys
-from typing import Any
 
-from recoil_asm_verify import compare_bn_to_cod
+from recoil_asm_verify import compare_bn_to_cod, compare_bn_to_obj
 from recoil_binja import BridgeError
 from recoil_plan import normalize_address
+from recoil_tooling import (
+    DEFAULT_VC6_ROOT as DEFAULT_VC6_ROOT_BASE,
+    REPO_ROOT,
+    optional_bool,
+    quote_cmd_arg,
+    repo_path,
+    require_string,
+    require_string_list,
+    run_cmd_script as run_tool_cmd_script,
+)
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST_DIR = REPO_ROOT / "tools" / "vc6_verify_targets"
 DEFAULT_BUILD_ROOT = REPO_ROOT / "build" / "vc6-verify"
-DEFAULT_VC6_ROOT = Path(os.environ.get("RECOIL_VC6_ROOT", str(REPO_ROOT.parent / "Compiler" / "VC6")))
+DEFAULT_VC6_ROOT = Path(os.environ.get("RECOIL_VC6_ROOT", str(DEFAULT_VC6_ROOT_BASE)))
 DEFAULT_VC6_ENV = Path(os.environ.get("RECOIL_VC6_ENV", str(DEFAULT_VC6_ROOT / "vc6-env.cmd")))
 
 
@@ -36,26 +43,14 @@ class VerifyTarget:
     source_filename: str
     source_text: str
     source_from: str
+    compare_mode: str
+    trim_trailing_nops: bool
     compiler_flags: tuple[str, ...]
     include_dirs: tuple[str, ...]
     source_files: tuple[str, ...]
     generated_files: tuple[tuple[str, str], ...]
     functions: tuple[VerifyFunction, ...]
     manifest_path: Path
-
-
-def require_string(data: dict[str, Any], key: str, *, manifest_path: Path) -> str:
-    value = data.get(key)
-    if not isinstance(value, str) or not value:
-        raise ValueError(f"{manifest_path}: expected non-empty string field '{key}'")
-    return value
-
-
-def require_string_list(data: dict[str, Any], key: str, *, manifest_path: Path) -> tuple[str, ...]:
-    value = data.get(key, [])
-    if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
-        raise ValueError(f"{manifest_path}: expected string list field '{key}'")
-    return tuple(value)
 
 
 def load_manifest(path: Path) -> VerifyTarget:
@@ -110,15 +105,21 @@ def load_manifest(path: Path) -> VerifyTarget:
             raise ValueError(f"{path}: expected non-empty function name for {address}")
         functions.append(VerifyFunction(address=address, symbol=symbol, name=name))
 
+    compare_mode = data.get("compare_mode", "coff_bytes")
+    if not isinstance(compare_mode, str) or compare_mode not in {"coff_bytes", "text"}:
+        raise ValueError(f"{path}: expected 'compare_mode' to be 'coff_bytes' or 'text'")
+
     return VerifyTarget(
         name=require_string(data, "name", manifest_path=path),
         description=require_string(data, "description", manifest_path=path),
         source_filename=require_string(data, "source_filename", manifest_path=path),
         source_text=source_text,
         source_from=source_from or "",
-        compiler_flags=require_string_list(data, "compiler_flags", manifest_path=path),
-        include_dirs=require_string_list(data, "include_dirs", manifest_path=path),
-        source_files=require_string_list(data, "source_files", manifest_path=path),
+        compare_mode=compare_mode,
+        trim_trailing_nops=optional_bool(data, "trim_trailing_nops", True, manifest_path=path),
+        compiler_flags=require_string_list(data, "compiler_flags", manifest_path=path, allow_empty_items=True),
+        include_dirs=require_string_list(data, "include_dirs", manifest_path=path, allow_empty_items=True),
+        source_files=require_string_list(data, "source_files", manifest_path=path, allow_empty_items=True),
         generated_files=tuple(generated_files),
         functions=tuple(functions),
         manifest_path=path,
@@ -161,18 +162,56 @@ def find_target(manifests: list[VerifyTarget], selector: str) -> tuple[VerifyTar
     raise ValueError(f"Unknown VC6 verification target: {selector}")
 
 
-def quote_cmd_arg(value: str | Path) -> str:
-    text = str(value)
-    if '"' in text:
-        raise ValueError(f"Command argument contains an unsupported quote: {text}")
-    return f'"{text}"'
+def covering_targets(manifests: list[VerifyTarget], address: str) -> list[tuple[VerifyTarget, VerifyFunction]]:
+    normalized_address = normalize_address(address)
+    return [
+        (manifest, function)
+        for manifest in manifests
+        for function in manifest.functions
+        if function.address == normalized_address
+    ]
+
+
+def manifest_skeleton(address: str) -> dict[str, object]:
+    normalized_address = normalize_address(address)
+    safe_address = normalized_address[2:]
+    return {
+        "name": f"verify_{safe_address}",
+        "description": f"VC6 verification target for {normalized_address}.",
+        "source_filename": f"verify_{safe_address}.cpp",
+        "compiler_flags": ["/nologo", "/TP", "/O2", "/FAcs"],
+        "include_dirs": ["src"],
+        "source_files": [],
+        "functions": [
+            {
+                "address": normalized_address,
+                "symbol": "TODO_DECORATED_VC6_SYMBOL",
+                "name": "TODO_SOURCE_NAME",
+            }
+        ],
+        "source": [
+            "// TODO: include the production body or a focused VC6-compatible translation unit.",
+        ],
+    }
+
+
+def print_missing_explanation(manifests: list[VerifyTarget], address: str) -> None:
+    normalized_address = normalize_address(address)
+    matches = covering_targets(manifests, normalized_address)
+    if matches:
+        print(f"{normalized_address} is covered by:")
+        for manifest, function in matches:
+            print(f"- {manifest.name}: {function.symbol} ({manifest.manifest_path})")
+        return
+
+    print(f"No VC6 verification manifest covers {normalized_address}.")
+    print("Create or extend a JSON manifest under tools/vc6_verify_targets/.")
+    print("Suggested starting point:")
+    print(json.dumps(manifest_skeleton(normalized_address), indent=2))
 
 
 def resolve_repo_path(path_text: str) -> Path:
-    path = Path(path_text)
-    if path.is_absolute():
-        return path
-    return REPO_ROOT / path
+    return repo_path(path_text)
 
 
 def build_compile_command(target: VerifyTarget, source_path: Path, vc6_env: Path, build_dir: Path | None = None) -> str:
@@ -188,20 +227,12 @@ def build_compile_command(target: VerifyTarget, source_path: Path, vc6_env: Path
     return f"call {quote_cmd_arg(vc6_env)} && cl {flags} {include_args} /c {quote_cmd_arg(source_arg)}"
 
 
-def run_cmd_script(command: str, *, cwd: Path) -> int:
-    batch_path = cwd / "_run_vc6_verify.cmd"
-    batch_path.write_text("@echo off\r\n" + command + "\r\n", encoding="ascii")
-    creation_flags = 0
-    if sys.platform == "win32":
-        creation_flags = subprocess.CREATE_NO_WINDOW  # type: ignore[attr-defined]
-
-    comspec = os.environ.get("ComSpec", r"C:\Windows\System32\cmd.exe")
-    completed = subprocess.run(
-        [comspec, "/d", "/c", batch_path.name],
-        cwd=str(cwd),
-        text=True,
+def run_vc6_script(command: str, *, cwd: Path) -> int:
+    completed = run_tool_cmd_script(
+        command,
+        cwd=cwd,
+        script_name="_run_vc6_verify.cmd",
         capture_output=True,
-        creationflags=creation_flags,
     )
     if completed.stdout:
         print(completed.stdout, end="")
@@ -261,7 +292,7 @@ def run_target(
         return 2
 
     compile_cmd = build_compile_command(target, source_path, vc6_env, build_dir)
-    rc = run_cmd_script(compile_cmd, cwd=build_dir)
+    rc = run_vc6_script(compile_cmd, cwd=build_dir)
     if rc != 0:
         return rc
 
@@ -269,59 +300,122 @@ def run_target(
     if not cod_path.exists():
         print(f"Expected COD listing was not emitted: {cod_path}", file=sys.stderr)
         return 3
+    obj_path = source_path.with_suffix(".obj")
+    if target.compare_mode == "coff_bytes" and not obj_path.exists():
+        print(f"Expected COFF object was not emitted: {obj_path}", file=sys.stderr)
+        return 3
 
     print(f"VC6 target: {target.name}")
     print(f"Manifest: {target.manifest_path}")
     print(f"Source files: {', '.join(target.source_files) if target.source_files else '<manifest source only>'}")
+    print(f"Compare mode: {target.compare_mode}")
     print(f"Compiler flags: {' '.join(target.compiler_flags)}")
     print(f"VC6 listing: {cod_path}")
+    if target.compare_mode == "coff_bytes":
+        print(f"VC6 object: {obj_path}")
 
     if skip_bn_compare:
         return 0
 
     verify_dir = build_dir / "verify"
-    rows: list[tuple[VerifyFunction, dict[str, int], Path, int]] = []
+    rows: list[tuple[VerifyFunction, str, int, int, int, int, int, Path]] = []
     overall = 0
     for function in selected_functions:
         try:
-            comparison = compare_bn_to_cod(
-                address=function.address,
-                cod_path=cod_path,
-                symbol=function.symbol,
-                out_dir=verify_dir,
-                bridge_url=bridge_url,
-            )
+            if target.compare_mode == "coff_bytes":
+                comparison = compare_bn_to_obj(
+                    address=function.address,
+                    obj_path=obj_path,
+                    symbol=function.symbol,
+                    out_dir=verify_dir,
+                    bridge_url=bridge_url,
+                    cod_path=cod_path,
+                    trim_padding_nops=target.trim_trailing_nops,
+                )
+                rows.append(
+                    (
+                        function,
+                        "bytes",
+                        comparison.mismatch_count,
+                        comparison.relocation_masked_bytes,
+                        comparison.trailing_vc6_nops_trimmed,
+                        comparison.bn_size,
+                        comparison.vc6_size,
+                        comparison.diff_path,
+                    )
+                )
+            else:
+                comparison = compare_bn_to_cod(
+                    address=function.address,
+                    cod_path=cod_path,
+                    symbol=function.symbol,
+                    out_dir=verify_dir,
+                    bridge_url=bridge_url,
+                )
+                summary = read_classified_summary(comparison.classified_path)
+                rows.append(
+                    (
+                        function,
+                        "text",
+                        comparison.mismatch_count,
+                        summary.get("relocation_sensitive_differences", 0),
+                        summary.get("schedule_equivalent_differences", 0),
+                        summary.get("exact_or_normalized_matches", 0),
+                        comparison.diff_count,
+                        comparison.classified_path,
+                    )
+                )
         except (BridgeError, ValueError) as exc:
             print(f"{function.address} {function.name}: {exc}", file=sys.stderr)
             overall = 1
             continue
-        summary = read_classified_summary(comparison.classified_path)
-        rows.append((function, summary, comparison.classified_path, comparison.diff_count))
-        if comparison.mismatch_count:
+        if rows[-1][2]:
             overall = 1
 
     print("Verification summary:")
-    print("address    status  mismatches  byte-same  reloc  normalized/exact  evidence")
-    for function, summary, classified_path, diff_count in rows:
-        mismatches = summary.get("mismatches", 0)
-        status = "FAIL" if mismatches else ("OK*" if diff_count else "OK")
-        print(
-            f"{function.address}  {status:5}  "
-            f"{mismatches:10}  "
-            f"{summary.get('byte_identical_spelling_differences', 0):9}  "
-            f"{summary.get('relocation_sensitive_differences', 0):5}  "
-            f"{summary.get('exact_or_normalized_matches', 0):16}  "
-            f"{classified_path}"
-        )
-    print("OK* means no instruction mismatches; only accepted spelling/listing/relocation differences remain.")
+    if target.compare_mode == "coff_bytes":
+        print("address    status  mismatches  reloc-bytes  trim-nops  bn-size  vc6-size  evidence")
+        for function, _mode, mismatches, reloc_bytes, trim_nops, bn_size, vc6_size, evidence_path in rows:
+            status = "FAIL" if mismatches else "OK"
+            print(
+                f"{function.address}  {status:5}  "
+                f"{mismatches:10}  "
+                f"{reloc_bytes:11}  "
+                f"{trim_nops:9}  "
+                f"{bn_size:7}  "
+                f"{vc6_size:8}  "
+                f"{evidence_path}"
+            )
+        print("Relocation bytes are masked from COFF relocation records; unmasked byte differences are failures.")
+    else:
+        print("address    status  mismatches  reloc  sched  normalized/exact  diff-lines  evidence")
+        for function, _mode, mismatches, reloc, sched, normalized, diff_count, evidence_path in rows:
+            status = "FAIL" if mismatches else ("OK*" if diff_count else "OK")
+            print(
+                f"{function.address}  {status:5}  "
+                f"{mismatches:10}  "
+                f"{reloc:5}  "
+                f"{sched:5}  "
+                f"{normalized:16}  "
+                f"{diff_count:10}  "
+                f"{evidence_path}"
+            )
+        print("OK* means no instruction mismatches; only accepted text-normalization differences remain.")
     print(f"Verification evidence: {verify_dir}")
     return overall
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Compile VC6 verification targets and compare .cod listings to BN.")
+    parser = argparse.ArgumentParser(
+        description="Compile VC6 verification targets and compare relocation-masked COFF bytes to BN."
+    )
     parser.add_argument("target", nargs="?", help="Target manifest name or covered function address, e.g. zsys_cpu or 0x4b3510")
     parser.add_argument("--list", action="store_true", help="List available VC6 verification targets.")
+    parser.add_argument(
+        "--explain-missing",
+        metavar="ADDRESS",
+        help="Explain VC6 coverage for an address and print a skeleton manifest if none exists.",
+    )
     parser.add_argument("--manifest-dir", default=str(DEFAULT_MANIFEST_DIR))
     parser.add_argument("--build-root", default=str(DEFAULT_BUILD_ROOT))
     parser.add_argument("--vc6-env", default=str(DEFAULT_VC6_ENV))
@@ -338,8 +432,11 @@ def main(argv: list[str] | None = None) -> int:
         if args.list:
             print_target_list(manifests)
             return 0
+        if args.explain_missing:
+            print_missing_explanation(manifests, args.explain_missing)
+            return 0
         if not args.target:
-            parser.error("target is required unless --list is used")
+            parser.error("target is required unless --list or --explain-missing is used")
         target, functions, selector = find_target(manifests, args.target)
         if selector != target.name:
             print(f"Resolved {selector} to VC6 target {target.name}")

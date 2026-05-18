@@ -43,7 +43,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiDialogController) == 0x118);
 RECOIL_STATIC_ASSERT(offsetof(HudUiDialogController, capturedImage_114) == 0x114);
 
 namespace zVideo {
-void RECOIL_CDECL RunPostprocessOnPrimaryBuffer();
+int RECOIL_CDECL RunPostprocessOnPrimaryBuffer();
 int RECOIL_CDECL Dispatch_UnlockPrimarySurfaceState();
 int RECOIL_FASTCALL AdjustSurfacesIfEnabled(zVidRect32 *srcRect,
                                             zVidRect32 *dstRect,
