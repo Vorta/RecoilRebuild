@@ -1,0 +1,47 @@
+{
+  "name": "zloc_get_message_string",
+  "description": "zLoc fixed-buffer message string formatter.",
+  "source_filename": "zLoc_GetMessageString.cpp",
+  "source": [
+    "#define RECOIL_FASTCALL __fastcall",
+    "#define RECOIL_CDECL __cdecl",
+    "",
+    "extern char g_zLoc_TempMessageBuffer[0x100];",
+    "",
+    "namespace zLoc {",
+    "unsigned int RECOIL_CDECL FormatMessage(char *outBuffer, int maxChars, unsigned int messageId, ...);",
+    "",
+    "// Reimplements 0x4a5bf0: zLoc::GetMessageString",
+    "char *RECOIL_FASTCALL GetMessageString(unsigned int messageId) {",
+    "    char *message = 0;",
+    "    if (FormatMessage(g_zLoc_TempMessageBuffer, sizeof(g_zLoc_TempMessageBuffer), messageId) != 0) {",
+    "        message = g_zLoc_TempMessageBuffer;",
+    "    }",
+    "    return message;",
+    "}",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zLoc/zLoc.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5bf0",
+      "symbol": "?GetMessageString@zLoc@@YIPADI@Z",
+      "name": "zLoc::GetMessageString"
+    }
+  ]
+}

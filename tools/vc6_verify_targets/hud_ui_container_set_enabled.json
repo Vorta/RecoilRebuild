@@ -1,0 +1,45 @@
+{
+  "name": "hud_ui_container_set_enabled",
+  "description": "HudUiContainer enabled flag setter.",
+  "source_filename": "HudUiContainer_SetEnabled.cpp",
+  "source": [
+    "struct HudUiElement;",
+    "",
+    "struct HudUiContainer {",
+    "    const void *vptr;",
+    "    int enabled;",
+    "    HudUiElement *childHead;",
+    "    HudUiElement *childTail;",
+    "",
+    "    void SetEnabled(int enabled);",
+    "};",
+    "",
+    "// Reimplements 0x40d9d0: HudUiContainer::SetEnabled",
+    "void HudUiContainer::SetEnabled(int enabledValue) {",
+    "    enabled = enabledValue;",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x40d9d0",
+      "symbol": "?SetEnabled@HudUiContainer@@QAEXH@Z",
+      "name": "HudUiContainer::SetEnabled"
+    }
+  ]
+}

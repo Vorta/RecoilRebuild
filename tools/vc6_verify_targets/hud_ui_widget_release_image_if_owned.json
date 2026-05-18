@@ -1,0 +1,53 @@
+{
+  "name": "hud_ui_widget_release_image_if_owned",
+  "description": "HudUiWidget owned-image release helper.",
+  "source_filename": "HudUiWidget_ReleaseImageIfOwned.cpp",
+  "source": [
+    "struct zVidImagePartial;",
+    "",
+    "namespace zVid_Image {",
+    "int __fastcall ReleaseIfNotDefault(zVidImagePartial *image);",
+    "}",
+    "",
+    "struct HudUiWidget {",
+    "    unsigned char m_padding_000[0x34];",
+    "    unsigned int ownsImage;",
+    "    unsigned int dirtyRectCount;",
+    "    zVidImagePartial *image;",
+    "",
+    "    void ReleaseImageIfOwned();",
+    "};",
+    "",
+    "// Reimplements 0x4b3da0: HudUiWidget::ReleaseImageIfOwned",
+    "void HudUiWidget::ReleaseImageIfOwned() {",
+    "    if (image != 0 && ownsImage != 0) {",
+    "        image = (zVidImagePartial *)zVid_Image::ReleaseIfNotDefault(image);",
+    "    }",
+    "",
+    "    ownsImage = 0;",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4b3da0",
+      "symbol": "?ReleaseImageIfOwned@HudUiWidget@@QAEXXZ",
+      "name": "HudUiWidget::ReleaseImageIfOwned"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "zloc_get_message_id",
+  "description": "zLoc message id callback wrapper.",
+  "source_filename": "zLoc_GetMessageId.cpp",
+  "source": [
+    "#define RECOIL_FASTCALL __fastcall",
+    "#define RECOIL_CDECL __cdecl",
+    "",
+    "extern unsigned int(RECOIL_CDECL *g_zLoc_GetIdProc)(const char *key);",
+    "",
+    "namespace zLoc {",
+    "// Reimplements 0x4a5b20: zLoc::GetMessageId",
+    "unsigned int RECOIL_FASTCALL GetMessageId(const char *key) {",
+    "    if (g_zLoc_GetIdProc != 0) {",
+    "        return g_zLoc_GetIdProc(key);",
+    "    }",
+    "",
+    "    return 0;",
+    "}",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zLoc/zLoc.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5b20",
+      "symbol": "?GetMessageId@zLoc@@YIIPBD@Z",
+      "name": "zLoc::GetMessageId"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "hud_ui_widget_destructor_core",
+  "description": "HudUiWidget destructor core vtable reset and owned-image release.",
+  "source_filename": "HudUiWidget_DestructorCore.cpp",
+  "source": [
+    "struct HudUiWidget_FTable;",
+    "",
+    "extern const HudUiWidget_FTable g_HudUiWidget_FTable;",
+    "extern const HudUiWidget_FTable g_HudUiCommon_FTable;",
+    "",
+    "struct HudUiWidget {",
+    "    const HudUiWidget_FTable *ftable;",
+    "",
+    "    void DestructorCore();",
+    "    void ReleaseImageIfOwned();",
+    "};",
+    "",
+    "// Reimplements 0x4b3d50: HudUiWidget::DestructorCore",
+    "void HudUiWidget::DestructorCore() {",
+    "    ftable = &g_HudUiWidget_FTable;",
+    "    ReleaseImageIfOwned();",
+    "    ftable = &g_HudUiCommon_FTable;",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4b3d50",
+      "symbol": "?DestructorCore@HudUiWidget@@QAEXXZ",
+      "name": "HudUiWidget::DestructorCore"
+    }
+  ]
+}

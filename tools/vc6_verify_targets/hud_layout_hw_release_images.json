@@ -1,0 +1,59 @@
+{
+  "name": "hud_layout_hw_release_images",
+  "description": "HudLayoutHW variant image release helper.",
+  "source_filename": "HudLayoutHW_ReleaseImages.cpp",
+  "source": [
+    "struct zVidImagePartial;",
+    "",
+    "namespace zVid_Image {",
+    "int __fastcall ReleaseIfNotDefault(zVidImagePartial *image);",
+    "}",
+    "",
+    "struct HudLayoutHW {",
+    "    unsigned char m_padding_000[0x1ac];",
+    "    zVidImagePartial *widget1Image320;",
+    "    zVidImagePartial *widget1Image400;",
+    "    unsigned char m_padding_1b4[0x274 - 0x1b4];",
+    "    zVidImagePartial *widget2Image320;",
+    "    zVidImagePartial *widget2Image400;",
+    "",
+    "    void ReleaseImages();",
+    "};",
+    "",
+    "// Reimplements 0x413080: HudLayoutHW::ReleaseImages",
+    "void HudLayoutHW::ReleaseImages() {",
+    "    zVid_Image::ReleaseIfNotDefault(widget1Image320);",
+    "    zVid_Image::ReleaseIfNotDefault(widget1Image400);",
+    "    zVid_Image::ReleaseIfNotDefault(widget2Image320);",
+    "    zVid_Image::ReleaseIfNotDefault(widget2Image400);",
+    "",
+    "    widget2Image400 = 0;",
+    "    widget2Image320 = 0;",
+    "    widget1Image400 = 0;",
+    "    widget1Image320 = 0;",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x413080",
+      "symbol": "?ReleaseImages@HudLayoutHW@@QAEXXZ",
+      "name": "HudLayoutHW::ReleaseImages"
+    }
+  ]
+}

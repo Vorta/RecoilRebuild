@@ -1,0 +1,63 @@
+{
+  "name": "recoil_state_base",
+  "description": "RecoilApp state base scalar-deleting destructor from src/GameZRecoil/RecoilApp.",
+  "source_filename": "RecoilStateBase.cpp",
+  "source_from": "src/GameZRecoil/RecoilApp/RecoilStateBase.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/RecoilApp/RecoilStateBase.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x407170",
+      "symbol": "?ScalarDeletingDestructor@RecoilStateBase@@QAEPAURecoilApp_IState@@I@Z",
+      "name": "RecoilStateBase::ScalarDeletingDestructor"
+    }
+  ],
+  "generated_files": {
+    "GameZRecoil/RecoilApp/RecoilStateBase.h": [
+      "#pragma once",
+      "",
+      "namespace std {",
+      "typedef unsigned int uint32_t;",
+      "}",
+      "",
+      "#define RECOIL_THISCALL",
+      "",
+      "struct RecoilApp_IState_Vtbl {",
+      "    void *slots[10];",
+      "};",
+      "",
+      "extern RecoilApp_IState_Vtbl g_RecoilStateBase_Vtbl;",
+      "",
+      "typedef RecoilApp_IState_Vtbl *RecoilPtr32;",
+      "#define kRecoilStateBase_VtblAddress ((RecoilPtr32)&g_RecoilStateBase_Vtbl)",
+      "",
+      "struct RecoilApp_IState {",
+      "    RecoilPtr32 vftable;",
+      "};",
+      "",
+      "struct RecoilStateBase {",
+      "    RecoilPtr32 vftable;",
+      "",
+      "    RecoilApp_IState *RECOIL_THISCALL ScalarDeletingDestructor(std::uint32_t flags);",
+      "};"
+    ],
+    "new": [
+      "#pragma once",
+      "void __cdecl operator delete(void *);"
+    ]
+  }
+}

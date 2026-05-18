@@ -1,0 +1,56 @@
+{
+  "name": "hud_layout_base_enable_disable",
+  "description": "HudLayoutBase active state virtual toggles.",
+  "source_filename": "HudLayoutBase_EnableDisable.cpp",
+  "source": [
+    "struct HudLayoutBase {",
+    "    virtual void Slot0();",
+    "    virtual int SetActive(int active);",
+    "    virtual void Slot2();",
+    "    virtual void Slot3();",
+    "    virtual void Slot4();",
+    "    virtual void Slot5();",
+    "",
+    "    void Enable();",
+    "    void Disable();",
+    "};",
+    "",
+    "// Reimplements 0x412bf0: HudLayoutBase::Enable",
+    "void HudLayoutBase::Enable() {",
+    "    SetActive(1);",
+    "}",
+    "",
+    "// Reimplements 0x412c00: HudLayoutBase::Disable",
+    "void HudLayoutBase::Disable() {",
+    "    SetActive(0);",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x412bf0",
+      "symbol": "?Enable@HudLayoutBase@@QAEXXZ",
+      "name": "HudLayoutBase::Enable"
+    },
+    {
+      "address": "0x412c00",
+      "symbol": "?Disable@HudLayoutBase@@QAEXXZ",
+      "name": "HudLayoutBase::Disable"
+    }
+  ]
+}

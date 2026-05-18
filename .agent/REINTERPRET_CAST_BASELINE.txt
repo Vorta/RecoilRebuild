@@ -1,0 +1,1460 @@
+src/Battlesport/Briefing.cpp	*reinterpret_cast<float *>(reinterpret_cast<unsigned char *>(widget) +
+src/Battlesport/Briefing.cpp	*reinterpret_cast<float *>(reinterpret_cast<unsigned char *>(widget) +
+src/Battlesport/Briefing.cpp	BriefingSetNormalizedValue const setNormalizedValue = reinterpret_cast<BriefingSetNormalizedValue>(ftable[0x84 / 4]);
+src/Battlesport/Briefing.cpp	HudPanelSetTextFmt const method = reinterpret_cast<HudPanelSetTextFmt>(HudVtable(panel)[0x74 / 4]);
+src/Battlesport/Briefing.cpp	HudVirtualNoArg const method = reinterpret_cast<HudVirtualNoArg>(HudVtable(element)[vtableOffset / 4]);
+src/Battlesport/Briefing.cpp	HudVirtualSetVisible const method = reinterpret_cast<HudVirtualSetVisible>(HudVtable(element)[0x60 / 4]);
+src/Battlesport/Briefing.cpp	const unsigned int *const ftable = *reinterpret_cast<const unsigned int *const *>(entry);
+src/Battlesport/Briefing.cpp	layout->base.BindWidgetByName(loadedRoot, reinterpret_cast<HudUiWidget *>(
+src/Battlesport/Briefing.cpp	loadedRoot, reinterpret_cast<HudUiElement *>(&layout->locatorPanels[0]), "LOCATOR1");
+src/Battlesport/Briefing.cpp	loadedRoot, reinterpret_cast<HudUiElement *>(&layout->locatorPanels[1]), "LOCATOR2");
+src/Battlesport/Briefing.cpp	loadedRoot, reinterpret_cast<HudUiElement *>(&layout->locatorPanels[2]), "LOCATOR3");
+src/Battlesport/Briefing.cpp	loadedRoot, reinterpret_cast<HudUiElement *>(&layout->locatorPanels[3]), "LOCATOR4");
+src/Battlesport/Briefing.cpp	loadedRoot, reinterpret_cast<HudUiElement *>(&layout->locatorPanels[4]), "LOCATOR5");
+src/Battlesport/Briefing.cpp	loadedRoot, reinterpret_cast<HudUiElement *>(&layout->locatorPanels[5]), "LOCATOR6");
+src/Battlesport/Briefing.cpp	loadedRoot, reinterpret_cast<HudUiElement *>(&layout->messagesPanel), "MESSAGES");
+src/Battlesport/Briefing.cpp	loadedRoot, reinterpret_cast<HudUiElement *>(&layout->missionName), "MISSION_NAME");
+src/Battlesport/Briefing.cpp	loadedRoot, reinterpret_cast<HudUiElement *>(&layout->objectiveDesc),
+src/Battlesport/Briefing.cpp	loadedRoot, reinterpret_cast<HudUiElement *>(&layout->objectivePicture),
+src/Battlesport/Briefing.cpp	loadedRoot, reinterpret_cast<HudUiElement *>(&layout->objectiveSummary),
+src/Battlesport/Briefing.cpp	loadedRoot, reinterpret_cast<HudUiElement *>(&layout->transmissionHalted),
+src/Battlesport/Briefing.cpp	reinterpret_cast<HudUiBackground *>(this)->Update(deltaSec);
+src/Battlesport/Briefing.cpp	reinterpret_cast<HudUiBriefingRuntimeScalarDeletingDestructor>(
+src/Battlesport/Briefing.cpp	reinterpret_cast<HudUiBriefingRuntimeUpdate>(
+src/Battlesport/Briefing.cpp	reinterpret_cast<HudUiContainer *>(g_Briefing_Runtime)->UpdateAll(g_FrameDeltaTimeSec);
+src/Battlesport/Briefing.cpp	reinterpret_cast<HudUiElement *>(&layout->objectivePicture.base)->Invalidate();
+src/Battlesport/Briefing.cpp	reinterpret_cast<HudUiPanel *>(&layout->messagesPanel)->Destructor();
+src/Battlesport/Briefing.cpp	reinterpret_cast<ScalarDeletingDestructorFn>(ftable[0])(entry, 0);
+src/Battlesport/Briefing.cpp	reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiBriefingRuntime_FTable);
+src/Battlesport/Briefing.cpp	reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiBriefingRuntime_FTable);
+src/Battlesport/Briefing.cpp	reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiBriefingTransportProgress_FTable);
+src/Battlesport/Briefing.cpp	reinterpret_cast<zVidRect32 *>(&base.base.clipRect));
+src/Battlesport/Briefing.cpp	return *reinterpret_cast<const unsigned int *const *>(element);
+src/Battlesport/Briefing.cpp	return reinterpret_cast<HudUiBriefingRuntimeLayout *>(runtime);
+src/Battlesport/Briefing.cpp	return reinterpret_cast<HudUiPanel *>(panelStorage);
+src/Battlesport/Briefing.cpp	return reinterpret_cast<T *>(reinterpret_cast<unsigned char *>(runtime) + offset);
+src/Battlesport/Briefing.cpp	return reinterpret_cast<T *>(reinterpret_cast<unsigned char *>(runtime) + offset);
+src/Battlesport/Briefing.cpp	table.SetEnabled = reinterpret_cast<HudUiBriefingRuntimeSetEnabled>(
+src/Battlesport/CZGameFrame.cpp	*reinterpret_cast<RecoilPtr32 *>(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
+src/Battlesport/CZGameFrame.cpp	*reinterpret_cast<RecoilPtr32 *>(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
+src/Battlesport/CZGameFrame.cpp	CFrameWndDestructorProc const destructor = reinterpret_cast<CFrameWndDestructorProc>(
+src/Battlesport/CZGameFrame.cpp	QueryValidityMethod const method = reinterpret_cast<QueryValidityMethod>(pWnd->vftable[4]);
+src/Battlesport/CZGameFrame.cpp	RecoilApp *const app = reinterpret_cast<RecoilApp *>(m_app);
+src/Battlesport/CZGameFrame.cpp	RecoilApp_IState *const state = reinterpret_cast<RecoilApp_IState *>(static_cast<unsigned int>(stateValue));
+src/Battlesport/CZGameFrame.cpp	RecoilStateWndActivateMethod const method = reinterpret_cast<RecoilStateWndActivateMethod>(
+src/Battlesport/CZGameFrame.cpp	const RecoilApp_IState_Vtbl *const vtable = reinterpret_cast<const RecoilApp_IState_Vtbl *>(
+src/Battlesport/CZGameFrame.cpp	return static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(symbol));
+src/Battlesport/CZRecoilFrame.cpp	CMenu *const mainMenu = reinterpret_cast<CMenu *>(&m_mainMenuVftable);
+src/Battlesport/CZRecoilFrame.cpp	CMenuDestroyMenuProc const destroyMenu = reinterpret_cast<CMenuDestroyMenuProc>(
+src/Battlesport/CZRecoilFrame.cpp	CString *formattedTitle = reinterpret_cast<CString *>(formattedTitleStorage);
+src/Battlesport/CZRecoilFrame.cpp	CString *title = reinterpret_cast<CString *>(titleStorage);
+src/Battlesport/CZRecoilFrame.cpp	CString *titleCopy = reinterpret_cast<CString *>(titleCopyStorage);
+src/Battlesport/CZRecoilFrame.cpp	const UINT resultCode = static_cast<UINT>(reinterpret_cast<UINT_PTR>(findResult));
+src/Battlesport/CZRecoilFrame.cpp	if (GetOpenFileNameA(reinterpret_cast<LPOPENFILENAMEA>(&ofn)) != 0) {
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<CWnd *>(this)->CenterWindow(0);
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<CWnd *>(this)->CreateEx(0x20000, kRecoilWndClassName, title->m_pchData,
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<CWnd *>(this)->MessageBoxA(zLoc::GetMessageString(0x20),
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<CWnd *>(this)->MessageBoxA(zLoc::GetMessageString(0x21),
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<CWnd *>(this)->MessageBoxA(zLoc::GetMessageString(0x22),
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<CWnd *>(this)->MessageBoxA(zLoc::GetMessageString(0x24),
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<CWnd *>(this)->SetWindowTextA(formattedTitle->m_pchData);
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<CZGameFrame *>(this)->Constructor("recoil");
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<CZGameFrame *>(this)->Destructor();
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<CZGameFrame *>(this)->OnSize(nType, cx, cy);
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<CZGameFrame *>(this)->m_app);
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<CZGameFrame *>(this)->m_app->vftable->OnAppDeactivate(
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<HINSTANCE>(static_cast<unsigned int>(g_RecoilApp.m_hInstance_6c));
+src/Battlesport/CZRecoilFrame.cpp	reinterpret_cast<int *>(&m_vidMemFreeBytes));
+src/Battlesport/CZRecoilFrame.cpp	return static_cast<unsigned int>(reinterpret_cast<unsigned int>(symbol));
+src/Battlesport/GameNet.cpp	g_HudUiTopMessageStack->base.RemoveChild(reinterpret_cast<HudUiElement *>(&row->hudWidget));
+src/Battlesport/GameNet.cpp	reinterpret_cast<unsigned char *>(packet) + sizeof(zNetworkPacketHeader));
+src/Battlesport/GameNet.cpp	return *reinterpret_cast<T *>(reinterpret_cast<unsigned char *>(&panel) + offset);
+src/Battlesport/GameNet.cpp	return *reinterpret_cast<T *>(reinterpret_cast<unsigned char *>(&panel) + offset);
+src/Battlesport/GameNet.cpp	saveStateOrLocal = reinterpret_cast<zUtil_SaveGameState *>(g_GameStateOrMapTable);
+src/Battlesport/GameNet.cpp	zEffectAnimActivationRecord *const record = reinterpret_cast<zEffectAnimActivationRecord *>(
+src/Battlesport/HudSensorTracker.cpp	&reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState)
+src/Battlesport/HudSensorTracker.cpp	const int splitResult = reinterpret_cast<HudRectI *>(&tracker->innerRectExpanded)
+src/Battlesport/HudSensorTracker.cpp	reinterpret_cast<HudUiContainer *>(&g_zVideo_FxPass3ConfigLocal)->RemoveChild(fxPass3Obj);
+src/Battlesport/HudSensorTracker.cpp	reinterpret_cast<ScalarDeletingDestructorFn>(element->ftable->slots[0])(element, 1);
+src/Battlesport/HudSensorTracker.cpp	reinterpret_cast<SetVisibleFn>(element->ftable->slots[24])(element, visible);
+src/Battlesport/HudSensorTracker.cpp	reinterpret_cast<const HudRectI *>(&tracker->outerRect));
+src/Battlesport/HudSensorTracker.cpp	reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+src/Battlesport/HudSensorTracker.cpp	reinterpret_cast<const zVec3 *>(&points[selectedPointIndex]), &selectedPoint, 1);
+src/Battlesport/HudSensorTracker.cpp	reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState);
+src/Battlesport/HudSensorTracker.cpp	reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState);
+src/Battlesport/HudSensorTracker.cpp	reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState);
+src/Battlesport/HudSensorTracker.cpp	reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState);
+src/Battlesport/HudSensorTracker.cpp	reinterpret_cast<zUtil_SaveGameState *>(g_GameStateOrMapTable);
+src/Battlesport/HudSensorTracker.cpp	trackedForwardVec = reinterpret_cast<zVec3 *>(playerState->bytes + 0x580);
+src/Battlesport/HudSensorTracker.cpp	trackedWorldOriginPtr = reinterpret_cast<zVec3 *>(playerState->bytes + 0x3ec);
+src/Battlesport/HudSensorTracker.cpp	tracker->ProjectWorldPointsToOverlay(reinterpret_cast<const zVec3 *>(points),
+src/Battlesport/HudSensorTracker.cpp	zMath::MatStackPushPtr(reinterpret_cast<float *>(&cameraScratchMatrix));
+src/Battlesport/HudSensorTracker.cpp	zMath::ProjectPointBatch(segmentPoints, reinterpret_cast<zProjectedPoint *>(segmentPoints),
+src/Battlesport/HudUiNetExitPanel.cpp	*reinterpret_cast<const unsigned int *>(&g_FrameDeltaTimeSec);
+src/Battlesport/HudUiNetExitPanel.cpp	reinterpret_cast<HidePreviewFn>(base.base.ftable->slots[0x40 / 4])(this);
+src/Battlesport/HudUiNetExitPanel.cpp	reinterpret_cast<UpdateAllBitsFn>(ftable->updateAll)(g_HudUiNetExitPanel, deltaBits);
+src/Battlesport/HudUiNetExitPanel.cpp	reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiNetExitPanel_FTable);
+src/Battlesport/HudUiNetExitPanel.cpp	reinterpret_cast<const HudUiNetExitPanel_FTable *>(g_HudUiNetExitPanel->base.base.base.vptr);
+src/Battlesport/HudUiNetExitPanel.cpp	reinterpret_cast<const HudUiNetExitPanel_FTable *>(g_HudUiNetExitPanel->base.base.base.vptr);
+src/Battlesport/HudUiNetExitPanel.cpp	reinterpret_cast<const HudUiNetExitPanel_FTable *>(g_HudUiNetExitPanel->base.base.base.vptr);
+src/Battlesport/HudUiNetExitPanel.cpp	reinterpret_cast<const HudUiNetExitPanel_FTable *>(panel->base.base.base.vptr);
+src/Battlesport/HudUiNetExitPanel.cpp	static_cast<int>(reinterpret_cast<unsigned int>(loadedSection)));
+src/Battlesport/HudUiNetExitPanel.cpp	table.slots[32] = reinterpret_cast<unsigned int>(&HudUiWidgetPostLoadNoOp);
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<RecoilPtr32 *>(static_cast<unsigned int>(chunkSlot)) = chunk;
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<RecoilPtr32 *>(static_cast<unsigned int>(chunkSlot)) = chunk;
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<RecoilPtr32 *>(static_cast<unsigned int>(chunkSlot)) = chunk;
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<RecoilPtr32 *>(static_cast<unsigned int>(chunkSlot)) = chunk;
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<RecoilPtr32 *>(static_cast<unsigned int>(chunkSlot)) = chunk;
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<RecoilPtr32 *>(static_cast<unsigned int>(chunkSlot)) = chunk;
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<RecoilPtr32 *>(static_cast<unsigned int>(chunkSlot));
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<RecoilPtr32 *>(static_cast<unsigned int>(oldChunkSlot));
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<RecoilPtr32 *>(static_cast<unsigned int>(writeCursor)) = itemValue;
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<RecoilPtr32 *>(static_cast<unsigned int>(writeCursor)) = itemValue;
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<RecoilPtr32 *>(static_cast<unsigned int>(writeCursor)) = itemValue;
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<const RecoilPtr32 *>(static_cast<unsigned int>(currentState)),
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<const RecoilPtr32 *>(static_cast<unsigned int>(mainWnd + 0x20));
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<volatile RecoilPtr32 *>(&m_mpExitDialogState_220.base.vftable) =
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<volatile RecoilPtr32 *>(&vftable) = kRecoilApp_VtblAddress;
+src/Battlesport/RecoilApp.cpp	*reinterpret_cast<volatile unsigned int *>(&m_transitionFadeTimer150) = 0;
+src/Battlesport/RecoilApp.cpp	::operator delete(reinterpret_cast<void *>(
+src/Battlesport/RecoilApp.cpp	::operator delete(reinterpret_cast<void *>(static_cast<unsigned int>(chunk)));
+src/Battlesport/RecoilApp.cpp	::operator delete(reinterpret_cast<void *>(static_cast<unsigned int>(m_chunkPtrList)));
+src/Battlesport/RecoilApp.cpp	CZRecoilFrame *const frame = reinterpret_cast<CZRecoilFrame *>(static_cast<unsigned int>(GetMainWnd()));
+src/Battlesport/RecoilApp.cpp	CZRecoilFrame *const mainWnd = reinterpret_cast<CZRecoilFrame *>(static_cast<unsigned int>(GetMainWnd()));
+src/Battlesport/RecoilApp.cpp	GetClientRect(g_RecoilApp_hWndMain, reinterpret_cast<RECT *>(m_clientRect_30));
+src/Battlesport/RecoilApp.cpp	GetLastError(), 0x400, reinterpret_cast<LPSTR>(&systemErrorText), 0,
+src/Battlesport/RecoilApp.cpp	HudUiMgr::InitHudLayouts(reinterpret_cast<const HudUiRect *>(zOpt::GetDisplaySection()),
+src/Battlesport/RecoilApp.cpp	MessageBoxExA(reinterpret_cast<HWND>(static_cast<unsigned int>(hwnd)),
+src/Battlesport/RecoilApp.cpp	RecoilAppNoArgIntMethod const exitInstance = reinterpret_cast<RecoilAppNoArgIntMethod>(
+src/Battlesport/RecoilApp.cpp	RecoilAppNoArgVoidMethod const shutdownEngine = reinterpret_cast<RecoilAppNoArgVoidMethod>(
+src/Battlesport/RecoilApp.cpp	RecoilAppStartEngineMethod const startEngine = reinterpret_cast<RecoilAppStartEngineMethod>(
+src/Battlesport/RecoilApp.cpp	RecoilApp_IState *const state = reinterpret_cast<RecoilApp_IState *>(static_cast<unsigned int>(stateValue));
+src/Battlesport/RecoilApp.cpp	RecoilStateIdleMethod const method = reinterpret_cast<RecoilStateIdleMethod>(static_cast<unsigned int>(methodValue));
+src/Battlesport/RecoilApp.cpp	RecoilStateMethod const method = reinterpret_cast<RecoilStateMethod>(static_cast<unsigned int>(methodValue));
+src/Battlesport/RecoilApp.cpp	UpdateWindow(reinterpret_cast<CWnd *>(static_cast<unsigned int>(m_pMainWnd))->m_hWnd);
+src/Battlesport/RecoilApp.cpp	const CreateMainWndMethod *const createMainWnd = reinterpret_cast<const CreateMainWndMethod *>(static_cast<unsigned int>(vftable + 0xb8));
+src/Battlesport/RecoilApp.cpp	const RecoilPtr32 * srcSlot = reinterpret_cast<const RecoilPtr32 *>(
+src/Battlesport/RecoilApp.cpp	const RecoilPtr32 *const srcEnd = reinterpret_cast<const RecoilPtr32 *>(
+src/Battlesport/RecoilApp.cpp	const RecoilPtr32 methodValue = *reinterpret_cast<const RecoilPtr32 *>(
+src/Battlesport/RecoilApp.cpp	const RecoilPtr32 newState = static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(state));
+src/Battlesport/RecoilApp.cpp	const RecoilPtr32 newState = static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(state));
+src/Battlesport/RecoilApp.cpp	const unsigned int selfValue = reinterpret_cast<unsigned int>(this);
+src/Battlesport/RecoilApp.cpp	if (zVideo::InitVideoSystem(reinterpret_cast<HWND>(static_cast<unsigned int>(hwnd)),
+src/Battlesport/RecoilApp.cpp	itemValue = static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(item));
+src/Battlesport/RecoilApp.cpp	itemValue = static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(item));
+src/Battlesport/RecoilApp.cpp	itemValue = static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(item));
+src/Battlesport/RecoilApp.cpp	m_chunkPtrList = static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(newList));
+src/Battlesport/RecoilApp.cpp	m_pMainWnd = static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>((*createMainWnd)(this)));
+src/Battlesport/RecoilApp.cpp	mainWnd->m_app = static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(this));
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<CWinApp *>(this)->CWinApp::ExitInstance();
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<CWinApp *>(this)->CWinApp::~CWinApp();
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<CWinApp *>(this)->Enable3dControls();
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<CWnd *>(static_cast<unsigned int>(m_pMainWnd))->ShowWindow(SW_SHOW);
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<CZRecoilFrame *>(static_cast<unsigned int>(GetMainWnd()))
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<HINSTANCE>(
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<RecoilApp_IState *>(static_cast<unsigned int>(m_pendingState_0c4));
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<const HudUiRect *>(windowSection));
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<zFMV_Script *>(m_attractFmvState_160.m_fmv_10)->Cleanup();
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<zFMV_Script *>(m_fmv_08)->BeginNow(1);
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<zFMV_Script *>(m_fmv_08)->Cleanup();
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<zFMV_Script *>(m_fmv_08)->Cleanup();
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<zFMV_Script *>(m_fmv_08)->Init(0, 0, 0);
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<zFMV_Script *>(m_fmv_08)->Init(0, 0, 0);
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<zFMV_Script *>(m_fmv_10)->BeginNow(0);
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<zFMV_Script *>(m_fmv_10)->Cleanup();
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<zFMV_Script *>(m_fmv_10)->Init(0, 0, 0);
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<zFMV_Script *>(m_introFmvState_1a0.m_fmv_08)->Cleanup();
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<zFMV_Script *>(m_introFmvState_1a0.m_fmv_08)->Init(0, 0, 0);
+src/Battlesport/RecoilApp.cpp	reinterpret_cast<zFMV_Script *>(m_missionFmvState_1d8.m_fmv_08)->Cleanup();
+src/Battlesport/RecoilApp.cpp	return *reinterpret_cast<const RecoilFn32 *>(static_cast<unsigned int>(vftable + offset));
+src/Battlesport/RecoilApp.cpp	return method(reinterpret_cast<RecoilApp_IState *>(static_cast<unsigned int>(currentState)),
+src/Battlesport/RecoilApp.cpp	return reinterpret_cast<LPCSTR>(value);
+src/Battlesport/RecoilApp.cpp	return static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(centerSlot));
+src/Battlesport/RecoilApp.cpp	static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(&chunkList[1]));
+src/Battlesport/RecoilApp.cpp	static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(&chunkList[1]));
+src/Battlesport/RecoilApp.cpp	static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(&chunkList[1]));
+src/Battlesport/RecoilApp.cpp	static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(&m_introFmvState_1a0));
+src/Battlesport/RecoilApp.cpp	static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(::operator new(0x1000)));
+src/Battlesport/RecoilApp.cpp	static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(::operator new(0x1000)));
+src/Battlesport/RecoilApp.cpp	static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(::operator new(0x1000)));
+src/Battlesport/RecoilApp.cpp	static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(chunkList));
+src/Battlesport/RecoilApp.cpp	static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(chunkList));
+src/Battlesport/RecoilApp.cpp	static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(chunkList));
+src/Battlesport/RecoilApp.cpp	unsigned char *const ctorTagBytes = reinterpret_cast<unsigned char *>(&m_stateQueue_118.m_ctorTag_00);
+src/Battlesport/RecoilApp.cpp	zFMV_Script *const script = reinterpret_cast<zFMV_Script *>(m_fmv_08);
+src/Battlesport/RecoilApp.cpp	zFMV_Script *const script = reinterpret_cast<zFMV_Script *>(m_fmv_08);
+src/Battlesport/RecoilApp.cpp	zFMV_Script *const script = reinterpret_cast<zFMV_Script *>(m_fmv_10);
+src/Battlesport/RecoilApp.cpp	zFMV_Script *const script = reinterpret_cast<zFMV_Script *>(m_fmv_10);
+src/Battlesport/RecoilApp.cpp	zInput::Init(reinterpret_cast<HWND>(static_cast<unsigned int>(hwnd)),
+src/Battlesport/RecoilApp.cpp	zInput::Init(reinterpret_cast<HWND>(static_cast<unsigned int>(hwnd)), g_RecoilApp_hInstance);
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	g_zVideo_pfnBltSwToPrimaryRectDirect(reinterpret_cast<zVidRect32 *>(renderSection),
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	pDisplaySection = reinterpret_cast<RecoilPtr32>(zOpt::GetDisplaySection());
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	pRenderSection = reinterpret_cast<RecoilPtr32>(zOpt::GetRenderSection());
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	pWindowSection = reinterpret_cast<RecoilPtr32>(zOpt::GetWindowSection());
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	reinterpret_cast<zVidRect32 *>(displaySection));
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	reinterpret_cast<zVidRect32 *>(windowSection));
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	reinterpret_cast<zVidRect32 *>(windowSection), 0, 0);
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	return reinterpret_cast<zOpt_ViewRectSection *>(static_cast<unsigned int>(ptr));
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	zRndr::SetActiveRegionSizeFromRect(reinterpret_cast<HudUiRect *>(windowSection));
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	zRndr::SetActiveRegionSizeFromRect(reinterpret_cast<HudUiRect *>(windowSection));
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	zRndr::SetActiveRegionSizeFromRect(reinterpret_cast<HudUiRect *>(windowSection));
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	zVideo::AdjustSurfacesIfEnabled(reinterpret_cast<zVidRect32 *>(windowSection),
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	zVideo::CallClearPrimarySurfaceAndZBuffer(reinterpret_cast<zVidRect32 *>(clearRect));
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	zVideo::CallClearSwSurfaceAndZBuffer(reinterpret_cast<zVidRect32 *>(clearRect),
+src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp	zVideo::FxPass3_SetInputRectByIndex(0, reinterpret_cast<HudUiRect *>(renderSection));
+src/Battlesport/pickup.cpp	return reinterpret_cast<PickupSpawnDef *>(pickupNode->callbackContext);
+src/Battlesport/player.cpp	reinterpret_cast<HudUiContainer *>(&g_zVideo_FxPass3ConfigLocal)
+src/Battlesport/player.cpp	reinterpret_cast<HudUiContainer *>(&g_zVideo_FxPass3ConfigLocal)
+src/Battlesport/player.cpp	reinterpret_cast<HudUiMgrSensorTrackNode *>(playerState->rootNode->callbackContext);
+src/Battlesport/player.cpp	reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState);
+src/Battlesport/player.cpp	void *const controllerATrail = *reinterpret_cast<void **>(cursor - 0x54);
+src/Battlesport/player.cpp	void *const controllerBTrail = *reinterpret_cast<void **>(cursor);
+src/Battlesport/zModel/zModel_Display.cpp	g_zModel_SpanOcclusionProc = reinterpret_cast<void *>(kSpanOcclusionTestSphereVisible);
+src/Battlesport/zModel/zModel_Display.cpp	zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+src/GameZRecoil/RecoilApp/RecoilStateBase.cpp	return reinterpret_cast<RecoilApp_IState *>(this);
+src/GameZRecoil/include/zClass.h	return *reinterpret_cast<zClass_TypeListBucket *>(g_zClass_TypeList_HeadSlotPtrs[bucket]);
+src/GameZRecoil/zClass/Camera.c	reinterpret_cast<zSndListenerState *>(data->worldTransform), &listenerVelocity);
+src/GameZRecoil/zClass/Camera.c	zMath_Camera_StageInverseRotation(reinterpret_cast<zMat4x3 *>(data->worldTransform));
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<const zMat4x3 *>(objectData->cachedWorldMatrix));
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<const zMat4x3 *>(objectData->cachedWorldMatrix));
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<const zMat4x3 *>(objectData->localMatrix),
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<const zMat4x3 *>(objectData->localMatrix), bbox, outCorners);
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<const zMat4x3 *>(objectData->localMatrix), matMode);
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<unsigned char *>(node) + 0x8c));
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<zBoundsMinMaxPartial *>(PrimaryBBox(node)));
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<zClass_NodeFreeListSlot *>(node) - g_zClass_NodeArray;
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<zClass_NodeFreeListSlot *>(node)->damageHandler);
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(node->userDataOrDiRef));
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(node->userDataOrDiRef));
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(node->userDataOrDiRef));
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(node->userDataOrDiRef));
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(node->userDataOrDiRef));
+src/GameZRecoil/zClass/Class.c	reinterpret_cast<zVec3 *>(&objectData->localMatrix[9]),
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<OptCatalogDamageHandlerPartial *&>(
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<const zBBox3f *>(node->cachedBounds);
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<const zBBox3f *>(reinterpret_cast<const unsigned char *>(node) +
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<const zBBox3f *>(reinterpret_cast<const unsigned char *>(node) +
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<const zBBox3f *>(reinterpret_cast<const unsigned char *>(node) +
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<const zBBox3f *>(reinterpret_cast<const unsigned char *>(node) +
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<const zMat4x3 *>(static_cast<const unsigned char *>(base) + offset);
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<const zVec3 *>(static_cast<const unsigned char *>(base) + offset);
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<zBBox3f *>(reinterpret_cast<unsigned char *>(node) + 0x8c);
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<zBBox3f *>(reinterpret_cast<unsigned char *>(node) + 0x8c);
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<zBBox3f *>(reinterpret_cast<unsigned char *>(node) + 0xa4);
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<zBBox3f *>(reinterpret_cast<unsigned char *>(node) + 0xa4);
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<zMat4x3 *>(static_cast<unsigned char *>(base) + offset);
+src/GameZRecoil/zClass/Class.c	return reinterpret_cast<zVec3 *>(static_cast<unsigned char *>(base) + offset);
+src/GameZRecoil/zClass/Class.c	return static_cast<int>(reinterpret_cast<unsigned int>(node));
+src/GameZRecoil/zClass/Class.c	static_cast<unsigned int>(reinterpret_cast<unsigned int>(displayInstance));
+src/GameZRecoil/zClass/Class.c	zDi::RebuildBounds(di, reinterpret_cast<zBoundsMinMaxPartial *>(
+src/GameZRecoil/zClass/Class.c	zMath::MatStackPushPtr(reinterpret_cast<float *>(&matrix));
+src/GameZRecoil/zClass/Class.c	zMath::MatStackPushPtr(reinterpret_cast<float *>(&matrix));
+src/GameZRecoil/zClass/Class.c	zMath::MatStackPushPtr(reinterpret_cast<float *>(MatrixAt(cameraData, 0x80)));
+src/GameZRecoil/zClass/Display.c	zVid_PackColorRgbFloats(reinterpret_cast<zVideo_ColorRgbFloat *>(&data->backgroundR));
+src/GameZRecoil/zClass/Light.c	const zMat4x3 *matrix = reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+src/GameZRecoil/zClass/Light.c	zMath::MatStackPushAndCloneParent(reinterpret_cast<float *>(&slotBuffer));
+src/GameZRecoil/zClass/Light.c	zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+src/GameZRecoil/zClass/List.c	reinterpret_cast<zClass_NodeActionCallback>(node->actionCallback);
+src/GameZRecoil/zClass/Object3d.c	reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(node->userDataOrDiRef));
+src/GameZRecoil/zClass/Sound.c	reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+src/GameZRecoil/zClass/Sound.c	zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+src/GameZRecoil/zClass/Window.c	static_cast<unsigned int>(reinterpret_cast<unsigned int>(buffer)),
+src/GameZRecoil/zClass/Window.c	static_cast<unsigned int>(reinterpret_cast<unsigned int>(data)),
+src/GameZRecoil/zClass/cls_di.c	node, reinterpret_cast<void *>(static_cast<unsigned int>(depth)));
+src/GameZRecoil/zClass/cls_di.c	node, reinterpret_cast<void *>(static_cast<unsigned int>(depth)));
+src/GameZRecoil/zClass/cls_di.c	node, reinterpret_cast<void *>(static_cast<unsigned int>(nodeFlags)));
+src/GameZRecoil/zClass/cls_di.c	node, reinterpret_cast<void *>(static_cast<unsigned int>(nodeFlags)));
+src/GameZRecoil/zClass/cls_di.c	node, reinterpret_cast<void *>(static_cast<unsigned int>(nodeFlags)));
+src/GameZRecoil/zClass/cls_di.c	return reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+src/GameZRecoil/zClass/cls_di.c	return reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(node->userDataOrDiRef));
+src/GameZRecoil/zClass/cls_di.c	return reinterpret_cast<zModel_PickFaceData *>(
+src/GameZRecoil/zClass/cls_di.c	return static_cast<int>(reinterpret_cast<unsigned int>(node));
+src/GameZRecoil/zClass/cls_di.c	zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(animateData->animatedTransform),
+src/GameZRecoil/zClass/cls_di.c	zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(animateData->animatedTransform),
+src/GameZRecoil/zClass/cls_di.c	zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(objectData->localMatrix),
+src/GameZRecoil/zClass/cls_di.c	zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(objectData->localMatrix),
+src/GameZRecoil/zClass/cls_di.c	zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(objectData->localMatrix),
+src/GameZRecoil/zClass/cls_di.c	zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(objectData->localMatrix),
+src/GameZRecoil/zClass/cls_di.c	zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+src/GameZRecoil/zClass/cls_di.c	zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+src/GameZRecoil/zClass/cls_util.c	dest, reinterpret_cast<zDiPartial *>(
+src/GameZRecoil/zClass/cls_util.c	reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(displayInstanceValue)));
+src/GameZRecoil/zClass/cls_util.c	reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(node->userDataOrDiRef));
+src/GameZRecoil/zClass/cls_util.c	reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(sourceDisplayInstanceValue));
+src/GameZRecoil/zClass/cls_world.c	BBox_MinMaxToBoundingSphere(reinterpret_cast<const zBBox3f *>(area->bbox),
+src/GameZRecoil/zClass/cls_world.c	data->lightDataList, reinterpret_cast<zModel_LightStatePartial **>(data->lightNodes),
+src/GameZRecoil/zClass/cls_world.c	static_cast<unsigned int>(reinterpret_cast<unsigned int>(light)));
+src/GameZRecoil/zClass/cls_world.c	static_cast<unsigned int>(reinterpret_cast<unsigned int>(light)));
+src/GameZRecoil/zClass/cls_world.c	static_cast<unsigned int>(reinterpret_cast<unsigned int>(sound)));
+src/GameZRecoil/zClass/cls_world.c	static_cast<unsigned int>(reinterpret_cast<unsigned int>(sound)));
+src/GameZRecoil/zClass/cls_world.c	static_cast<unsigned int>(reinterpret_cast<unsigned int>(world)),
+src/GameZRecoil/zClass/cls_world.c	static_cast<unsigned int>(reinterpret_cast<unsigned int>(world)),
+src/GameZRecoil/zClass/cls_world.c	static_cast<unsigned int>(reinterpret_cast<unsigned int>(world)),
+src/GameZRecoil/zClass/cls_world.c	static_cast<unsigned int>(reinterpret_cast<unsigned int>(world)),
+src/GameZRecoil/zClass/cls_zbd.c	data.horizonNode = reinterpret_cast<zClass_NodePartial *>(
+src/GameZRecoil/zClass/cls_zbd.c	data.horizonXZNode = reinterpret_cast<zClass_NodePartial *>(
+src/GameZRecoil/zClass/cls_zbd.c	data.windowNode = reinterpret_cast<zClass_NodePartial *>(
+src/GameZRecoil/zClass/cls_zbd.c	data.worldNode = reinterpret_cast<zClass_NodePartial *>(
+src/GameZRecoil/zClass/cls_zbd.c	int *indices = reinterpret_cast<int *>(g_GameZ_Zbd_NodeIndexScratch);
+src/GameZRecoil/zClass/cls_zbd.c	node, reinterpret_cast<zDiPartial *>(
+src/GameZRecoil/zClass/cls_zbd.c	node->userDataOrDiRef = static_cast<unsigned int>(reinterpret_cast<unsigned int>(
+src/GameZRecoil/zClass/cls_zbd.c	return static_cast<int>(reinterpret_cast<zClass_NodeFreeListSlot *>(node) -
+src/GameZRecoil/zClass/cls_zbd.c	static_cast<int>(reinterpret_cast<int>(data->horizonNode)));
+src/GameZRecoil/zClass/cls_zbd.c	static_cast<int>(reinterpret_cast<int>(data->horizonXZNode)));
+src/GameZRecoil/zClass/cls_zbd.c	static_cast<int>(reinterpret_cast<int>(data->windowNode)));
+src/GameZRecoil/zClass/cls_zbd.c	static_cast<int>(reinterpret_cast<int>(data->worldNode)));
+src/GameZRecoil/zClass/cls_zbd.c	static_cast<int>(reinterpret_cast<int>(nodeRefList[i]));
+src/GameZRecoil/zClass/cls_zbd.c	static_cast<unsigned int>(zDi::PtrToIndexOrMinus1(reinterpret_cast<zDiPartial *>(
+src/GameZRecoil/zClass/cls_zbd.c	zDiPartial *const oldDisplayInstance = reinterpret_cast<zDiPartial *>(
+src/GameZRecoil/zCom/zCom.cpp	IUnknown *const resolvedInterface = reinterpret_cast<IUnknown *>(static_cast<unsigned char *>(objectBase) + interfaceOffset);
+src/GameZRecoil/zCom/zCom.cpp	QueryInterfaceResolver resolver = reinterpret_cast<QueryInterfaceResolver>(resolverRaw);
+src/GameZRecoil/zCom/zCom.cpp	const unsigned int * lhsWords = reinterpret_cast<const unsigned int *>(lhs);
+src/GameZRecoil/zCom/zCom.cpp	const unsigned int * rhsWords = reinterpret_cast<const unsigned int *>(rhs);
+src/GameZRecoil/zCom/zCom.cpp	const unsigned int * words = reinterpret_cast<const unsigned int *>(iid);
+src/GameZRecoil/zCom/zCom.cpp	reinterpret_cast<void **>(&cpc.ptr));
+src/GameZRecoil/zCom/zCom.cpp	reinterpret_cast<void **>(&cpc.ptr));
+src/GameZRecoil/zDEClient/zdec_init.cpp	capNode->callbackContext = reinterpret_cast<zClass_NodePartial *>(featureInstance);
+src/GameZRecoil/zDEClient/zdec_init.cpp	node->callbackContext = reinterpret_cast<zClass_NodePartial *>(featureInstance);
+src/GameZRecoil/zDEClient/zdec_init.cpp	node->callbackContext = reinterpret_cast<zClass_NodePartial *>(featureInstance);
+src/GameZRecoil/zDEClient/zdec_init.cpp	reinterpret_cast<zDEClient_CameraNodeClassDataPartial *>(g_zDEClient_CameraNodeClassData);
+src/GameZRecoil/zDEClient/zdec_init.cpp	reinterpret_cast<zDEClient_FeatureContextOverlapView *>(
+src/GameZRecoil/zDEClient/zdec_init.cpp	reinterpret_cast<zDEClient_FeatureContextOverlapView *>(
+src/GameZRecoil/zDEClient/zdec_init.cpp	reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(displayInstanceValue));
+src/GameZRecoil/zDEClient/zdec_init.cpp	reinterpret_cast<zModel_MaterialPartial *>(result->eventTemplate.craterMaterialSlot);
+src/GameZRecoil/zDEClient/zdec_init.cpp	zModel_DiPool::FreeIfUnreferenced(reinterpret_cast<zDiPartial *>(
+src/GameZRecoil/zEffect/zEffect.cpp	&position, reinterpret_cast<const zVec3 *>(&self->velocityX));
+src/GameZRecoil/zEffect/zEffect.cpp	*reinterpret_cast<unsigned int *>(&g_zEffect_RandUnitScale) = kRandUnitScaleBits;
+src/GameZRecoil/zEffect/zEffect.cpp	basisNode = reinterpret_cast<zClass_NodePartial *>(
+src/GameZRecoil/zEffect/zEffect.cpp	basisNode = reinterpret_cast<zClass_NodePartial *>(
+src/GameZRecoil/zEffect/zEffect.cpp	basisNode = reinterpret_cast<zClass_NodePartial *>(
+src/GameZRecoil/zEffect/zEffect.cpp	const zMat4x3 *matrix = reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+src/GameZRecoil/zEffect/zEffect.cpp	entry, entry->callbackNode, reinterpret_cast<void *>(zEffect::TickResetDelayOnHit));
+src/GameZRecoil/zEffect/zEffect.cpp	entry, entry->callbackNode, reinterpret_cast<void *>(zEffect::TickResetDelayOnHit));
+src/GameZRecoil/zEffect/zEffect.cpp	entry->effectNode, reinterpret_cast<void *>(&RuntimeNodeActionCallback));
+src/GameZRecoil/zEffect/zEffect.cpp	entry->effectNode->callbackContext = reinterpret_cast<zClass_NodePartial *>(entry);
+src/GameZRecoil/zEffect/zEffect.cpp	entry->runtimeNode, reinterpret_cast<void *>(&RunStopSequenceCallback));
+src/GameZRecoil/zEffect/zEffect.cpp	entry->runtimeNode->callbackContext = reinterpret_cast<zClass_NodePartial *>(entry);
+src/GameZRecoil/zEffect/zEffect.cpp	g_zEffect_RuntimeManager.loadedTemplateTree = reinterpret_cast<zClass_NodePartial *>(rootNode);
+src/GameZRecoil/zEffect/zEffect.cpp	node != 0 ? reinterpret_cast<zEffectAnimEntry *>(node->callbackContext) : 0;
+src/GameZRecoil/zEffect/zEffect.cpp	node = reinterpret_cast<zClass_NodePartial *>(
+src/GameZRecoil/zEffect/zEffect.cpp	refNodeA = reinterpret_cast<zClass_NodePartial *>(self);
+src/GameZRecoil/zEffect/zEffect.cpp	refNodeB = reinterpret_cast<zClass_NodePartial *>(self);
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<const zVec3 *>(&record->params[1]),
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<const zVec3 *>(&record->params[1]),
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<const zVec3 *>(&record->params[4]));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<const zVec3 *>(&record->params[5]));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<unsigned char *>(keyframeEvent) +
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<unsigned char *>(keyframeEvent) +
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<unsigned int *>(node->userDataOrDiRef);
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<unsigned int>(GameZ_ZBD::NodeIndexToPtr(header.nodeRefAIndex)));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<unsigned int>(GameZ_ZBD::NodeIndexToPtr(header.nodeRefBIndex)));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<unsigned int>(runtime->currentEvent);
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<void *>(&zEffect_Anim::RunSequence));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<void *>(&zEffect_Anim::RunSequence));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<void *>(static_cast<unsigned char *>(runtimeCopy.currentEvent) -
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<void *>(zEffect::TickResetDelayOnTimer));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<void *>(zEffect::TickResetDelayOnTimer));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zClass_NodePartial *>(entryToActivate);
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zDiPartial *>(targetNode->userDataOrDiRef);
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectActivateEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectAnimEventHeader *>(currentEvent);
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectAnimEventHeader *>(nextEvent)->eventType;
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectAnimEventHeader *>(nextEvent);
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectAnimEventHeader *>(nextEvent);
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectAnimLightEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectAnimRunningSaveHeader *>(buffer);
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectAnimSoundEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectAnimTrackedNodeSaveRecord *>(payload + sizeof(*header));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectAnimTrackedNodeSaveRecord *>(static_cast<unsigned char *>(data) +
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectAttachEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectBeamDetachEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectConditionalEvent *>(marker);
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectKeyframeSampleChannel *>(sampleHeader + 1);
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectKeyframeSampleHeader *>(
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectKeyframeSampleHeader *>(
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectLightRangeSpecularAnimEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectNodeAnimEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffectNodeAnimEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zEffect_RuntimeEntry *>(node->callbackContext);
+src/GameZRecoil/zEffect/zEffect.cpp	reinterpret_cast<zReader::Node *>(g_zEffect_RuntimeManager.loadedTemplateTree));
+src/GameZRecoil/zEffect/zEffect.cpp	return reinterpret_cast<void *>(static_cast<unsigned int>(userDataValue));
+src/GameZRecoil/zEffect/zEffect.cpp	return reinterpret_cast<zClass_NodePartial *>(
+src/GameZRecoil/zEffect/zEffect.cpp	return zEffect::HandleFogEvent(self, reinterpret_cast<zEffectFogEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectAnimEmitterEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectAnimEmitterEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectAnimEmitterEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectAnimRefOffsetEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectAnimRefOffsetEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectEvaluateKeyframeEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectNodeScaleEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectParentChildEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectParentChildEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectSurfaceControlEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectSurfaceControlEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectTopMessageEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectTransformEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectTransformEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, reinterpret_cast<zEffectTransformRefsEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, sequenceRuntime, reinterpret_cast<zEffectAnimCallbackEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, sequenceRuntime, reinterpret_cast<zEffectAnimLoopEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, sequenceRuntime, reinterpret_cast<zEffectCameraAnimEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, sequenceRuntime, reinterpret_cast<zEffectCameraEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, sequenceRuntime, reinterpret_cast<zEffectConditionalEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, sequenceRuntime, reinterpret_cast<zEffectKeyframeEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, sequenceRuntime, reinterpret_cast<zEffectRunKeyframeEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, sequenceRuntime, reinterpret_cast<zEffectScreenColorFxEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, sequenceRuntime, reinterpret_cast<zEffectScreenOverlayFxEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self, sequenceRuntime, reinterpret_cast<zEffectSurfaceRefEvent *>(currentEvent));
+src/GameZRecoil/zEffect/zEffect.cpp	self->eventCallback = reinterpret_cast<zEffectAnimEventCallback>(callback);
+src/GameZRecoil/zEffect/zEffect.cpp	self->runtimeNode, reinterpret_cast<void *>(&RunStopDelayCallback));
+src/GameZRecoil/zEffect/zEffect.cpp	static_cast<unsigned int>(reinterpret_cast<unsigned int>(refNode));
+src/GameZRecoil/zEffect/zEffect.cpp	static_cast<unsigned int>(reinterpret_cast<unsigned int>(refNodeA));
+src/GameZRecoil/zEffect/zEffect.cpp	static_cast<unsigned int>(reinterpret_cast<unsigned int>(refNodeB));
+src/GameZRecoil/zEffect/zEffect.cpp	unsigned int *const di = reinterpret_cast<unsigned int *>(node->userDataOrDiRef);
+src/GameZRecoil/zEffect/zEffect.cpp	void *const kLoadActivationRecordsProc = reinterpret_cast<void *>(0x004606d0);
+src/GameZRecoil/zEffect/zEffect.cpp	void *const kLoadAnimRecordsProc = reinterpret_cast<void *>(0x00461670);
+src/GameZRecoil/zEffect/zEffect.cpp	void *const kLoadRunningAnimRecordsProc = reinterpret_cast<void *>(0x00461040);
+src/GameZRecoil/zEffect/zEffect.cpp	void *const kSaveActivationRecordsProc = reinterpret_cast<void *>(0x00460490);
+src/GameZRecoil/zEffect/zEffect.cpp	void *const kSaveAnimRecordsProc = reinterpret_cast<void *>(0x00461430);
+src/GameZRecoil/zEffect/zEffect.cpp	void *const kSaveRunningAnimRecordsProc = reinterpret_cast<void *>(0x00460f80);
+src/GameZRecoil/zEffect/zEffect.cpp	zDi::SetCurrentVariant(reinterpret_cast<zDiPartial *>(targetNode->userDataOrDiRef),
+src/GameZRecoil/zEffect/zEffect.cpp	zDiPartial *const di = reinterpret_cast<zDiPartial *>(node->userDataOrDiRef);
+src/GameZRecoil/zEffect/zEffect.cpp	zDiPartial *const di = reinterpret_cast<zDiPartial *>(node->userDataOrDiRef);
+src/GameZRecoil/zEffect/zEffect.cpp	zDiPartial *const di = reinterpret_cast<zDiPartial *>(node->userDataOrDiRef);
+src/GameZRecoil/zEffect/zEffect.cpp	zEffectAnimEntry *const entry = reinterpret_cast<zEffectAnimEntry *>(node->callbackContext);
+src/GameZRecoil/zEffect/zEffect.cpp	zEffectAnimEntry *const entry = reinterpret_cast<zEffectAnimEntry *>(node->callbackContext);
+src/GameZRecoil/zEffect/zEffect.cpp	zEffectAnimSaveHeader *const header = reinterpret_cast<zEffectAnimSaveHeader *>(payload);
+src/GameZRecoil/zEffect/zEffect.cpp	zMath::MatStackPushPtr(reinterpret_cast<float *>(&matrix));
+src/GameZRecoil/zEffect/zEffect.cpp	zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+src/GameZRecoil/zEffect/zEffect.cpp	zUtil::StoreInt32(reinterpret_cast<int *>(gfxData), 1);
+src/GameZRecoil/zFMV/fmv_script.cpp	*reinterpret_cast<zFMV_Action *volatile *>(&m_cur) = action;
+src/GameZRecoil/zFMV/fmv_script.cpp	*reinterpret_cast<zFMV_Action *volatile *>(&m_head) = action;
+src/GameZRecoil/zFMV/fmv_script.cpp	*reinterpret_cast<zFMV_Action *volatile *>(&m_tail) = action;
+src/GameZRecoil/zFMV/fmv_script.cpp	AVIStreamRelease(reinterpret_cast<PAVISTREAM>(FieldAt<void *>(this, kAudioStreamOffset)));
+src/GameZRecoil/zFMV/fmv_script.cpp	AVIStreamRelease(reinterpret_cast<PAVISTREAM>(FieldAt<void *>(this, kVideoStreamOffset)));
+src/GameZRecoil/zFMV/fmv_script.cpp	DWORD mciError = mciSendCommandA(0, 0x803, 0x2202, reinterpret_cast<DWORD_PTR>(&openParams));
+src/GameZRecoil/zFMV/fmv_script.cpp	HIC const codec = reinterpret_cast<HIC>(FieldAt<void *>(this, kCodecOffset));
+src/GameZRecoil/zFMV/fmv_script.cpp	if (ICDecompress(reinterpret_cast<HIC>(FieldAt<void *>(this, kCodecOffset)), 0,
+src/GameZRecoil/zFMV/fmv_script.cpp	mciError = mciSendCommandA(mciDeviceId, 0x804, 0x2, reinterpret_cast<DWORD_PTR>(&self));
+src/GameZRecoil/zFMV/fmv_script.cpp	mciError = mciSendCommandA(mciDeviceId, 0x811, 0x302, reinterpret_cast<DWORD_PTR>(&setParams));
+src/GameZRecoil/zFMV/fmv_script.cpp	mciSendCommandA(mciDeviceId, 0x806, playFlags, reinterpret_cast<DWORD_PTR>(&playParams));
+src/GameZRecoil/zFMV/fmv_script.cpp	mciSendCommandA(mciDeviceId, 0x841, 0x10002, reinterpret_cast<DWORD_PTR>(&windowParams));
+src/GameZRecoil/zFMV/fmv_script.cpp	mciSendCommandA(mciDeviceId, 0x842, 0x50002, reinterpret_cast<DWORD_PTR>(&destParams));
+src/GameZRecoil/zFMV/fmv_script.cpp	playParams.callback = reinterpret_cast<DWORD_PTR>(notifyHwnd);
+src/GameZRecoil/zFMV/fmv_script.cpp	reinterpret_cast<AVISTREAMINFOA *>(
+src/GameZRecoil/zFMV/fmv_script.cpp	reinterpret_cast<AVISTREAMINFOA *>(
+src/GameZRecoil/zFMV/fmv_script.cpp	reinterpret_cast<DWORD_PTR>(&sourceParams));
+src/GameZRecoil/zFMV/fmv_script.cpp	reinterpret_cast<DWORD_PTR>(srcFormat), reinterpret_cast<DWORD_PTR>(dstFormat));
+src/GameZRecoil/zFMV/fmv_script.cpp	reinterpret_cast<DWORD_PTR>(srcFormat), reinterpret_cast<DWORD_PTR>(dstFormat));
+src/GameZRecoil/zFMV/fmv_script.cpp	reinterpret_cast<LPBITMAPINFOHEADER>(dstFormat), ICMODE_DECOMPRESS);
+src/GameZRecoil/zFMV/fmv_script.cpp	reinterpret_cast<unsigned int *>(&dstHeader->bV4BlueMask));
+src/GameZRecoil/zFMV/fmv_script.cpp	reinterpret_cast<unsigned int *>(&dstHeader->bV4GreenMask),
+src/GameZRecoil/zFMV/fmv_script.cpp	reinterpret_cast<zFMV_ImageEnsureSurfaceProc>(
+src/GameZRecoil/zFMV/fmv_script.cpp	reinterpret_cast<zVidImagePartial *>(this));
+src/GameZRecoil/zFMV/fmv_script.cpp	return *reinterpret_cast<T *>(static_cast<unsigned char *>(base) + offset);
+src/GameZRecoil/zFMV/fmv_script.cpp	setParams.audio = static_cast<DWORD>(reinterpret_cast<unsigned int>(notifyHwnd));
+src/GameZRecoil/zFMV/fmv_script.cpp	vftable = reinterpret_cast<zFMV_Action_Vtbl *>(
+src/GameZRecoil/zFMV/fmv_script.cpp	vftable = reinterpret_cast<zFMV_Action_Vtbl *>(
+src/GameZRecoil/zFMV/fmv_script.cpp	vftable = reinterpret_cast<zFMV_Action_Vtbl *>(
+src/GameZRecoil/zFMV/fmv_script.cpp	vftable = reinterpret_cast<zFMV_Action_Vtbl *>(
+src/GameZRecoil/zFMV/fmv_script.cpp	vftable = reinterpret_cast<zFMV_Action_Vtbl *>(
+src/GameZRecoil/zFMV/fmv_script.cpp	zVideo::PixelPack_GetRgbMasks(reinterpret_cast<unsigned int *>(&dstHeader->bV4RedMask),
+src/GameZRecoil/zGame/zGame.cpp	char *const buffer = reinterpret_cast<char *>(ZOPT_PLAYER_NAME->payloadOrBuffer);
+src/GameZRecoil/zGame/zGame.cpp	const BYTE *payload = reinterpret_cast<const BYTE *>(entry);
+src/GameZRecoil/zGame/zGame.cpp	payload = reinterpret_cast<BYTE *>(entry);
+src/GameZRecoil/zGame/zGame.cpp	payload = reinterpret_cast<BYTE *>(entry);
+src/GameZRecoil/zGame/zGame.cpp	payload = reinterpret_cast<BYTE *>(static_cast<unsigned int>(entry->payloadOrBuffer));
+src/GameZRecoil/zGame/zGame.cpp	reinterpret_cast<const BYTE *>(static_cast<unsigned int>(entry->payloadOrBuffer));
+src/GameZRecoil/zGame/zGame.cpp	reinterpret_cast<void *>(static_cast<unsigned int>(entry->payloadOrBuffer));
+src/GameZRecoil/zGame/zGame.cpp	result->payloadOrBuffer = reinterpret_cast<int>(calloc(1, dataSize));
+src/GameZRecoil/zGame/zGame.cpp	return reinterpret_cast<T *>(entry);
+src/GameZRecoil/zGame/zGame.cpp	return reinterpret_cast<char *>(ZOPT_PLAYER_NAME->payloadOrBuffer);
+src/GameZRecoil/zGeometry/zgeo_convexify.cpp	const zVec3 *quadPoints = reinterpret_cast<const zVec3 *>(sourcePointDwords);
+src/GameZRecoil/zGeometry/zgeo_convexify.cpp	float *outputDwords = reinterpret_cast<float *>(outputPointWriteCursor);
+src/GameZRecoil/zGeometry/zgeo_convexify.cpp	return reinterpret_cast<const float *>(points) + pointDwordOffset;
+src/GameZRecoil/zGeometry/zgeo_model.cpp	0, reinterpret_cast<const int *>(&localUserTag));
+src/GameZRecoil/zGeometry/zgeo_model.cpp	reinterpret_cast<zClipUV *>(polygon->uvBasis), 0, 0, 0, polygon->material,
+src/GameZRecoil/zGeometry/zgeo_model.cpp	reinterpret_cast<zGeometry_ClipPatchModelNodeBoundsView *>(node);
+src/GameZRecoil/zGeometry/zgeo_model.cpp	reinterpret_cast<zGeometry_ClipPatchModelNodeBoundsView *>(node);
+src/GameZRecoil/zGeometry/zgeo_model.cpp	return reinterpret_cast<zModel_DrawBatchBasePartial *>(
+src/GameZRecoil/zGeometry/zgeo_model.cpp	return reinterpret_cast<zVec3 *>(reinterpret_cast<float *>(points) + pointDwordOffset);
+src/GameZRecoil/zGeometry/zgeo_model.cpp	return reinterpret_cast<zVec3 *>(reinterpret_cast<float *>(points) + pointDwordOffset);
+src/GameZRecoil/zGeometry/zgeo_weiler.cpp	polygonBuffer, 1, reinterpret_cast<void **>(&polygonSet->polygons)));
+src/GameZRecoil/zGeometry/zgeo_weiler.cpp	reinterpret_cast<void **>(&outClip->pointList.points)));
+src/GameZRecoil/zGeometry/zgeo_weiler.cpp	reinterpret_cast<void **>(&outClip->pointList.points)));
+src/GameZRecoil/zGeometry/zgeo_weiler.cpp	reinterpret_cast<void **>(&outClip->polygonSetB.polygons)));
+src/GameZRecoil/zGeometry/zgeo_weiler.cpp	reinterpret_cast<zGeometry_WeilerXingPartial *>(xing);
+src/GameZRecoil/zGeometry/zgeo_weiler.cpp	self->appendPtr = reinterpret_cast<void *>(reinterpret_cast<unsigned int>(base) +
+src/GameZRecoil/zGeometry/zgeo_weiler.cpp	self->appendPtr = reinterpret_cast<void *>(reinterpret_cast<unsigned int>(base) +
+src/GameZRecoil/zGeometry/zgeo_weiler.cpp	self->appendPtr = reinterpret_cast<void *>(reinterpret_cast<unsigned int>(self->appendPtr) +
+src/GameZRecoil/zGeometry/zgeo_weiler.cpp	self->appendPtr = reinterpret_cast<void *>(reinterpret_cast<unsigned int>(self->appendPtr) +
+src/GameZRecoil/zGeometry/zgeo_weiler.cpp	self->appendPtr = reinterpret_cast<void *>(reinterpret_cast<unsigned int>(self->base) +
+src/GameZRecoil/zGeometry/zgeo_weiler.cpp	self->appendPtr = reinterpret_cast<void *>(reinterpret_cast<unsigned int>(self->base) +
+src/GameZRecoil/zHud/zhud_ui.cpp	&weaponPayload[index], reinterpret_cast<const HudUiPanelFontParams *>(&ammoFont));
+src/GameZRecoil/zHud/zhud_ui.cpp	*reinterpret_cast<const HudUiCompositePanel_FTable **>(this) = &g_HudUiCompositePanel_FTable;
+src/GameZRecoil/zHud/zhud_ui.cpp	*reinterpret_cast<const HudUiPanel_FTable **>(this) = &g_HudUiTransitionTextPanel_FTable;
+src/GameZRecoil/zHud/zhud_ui.cpp	*reinterpret_cast<const HudUiPanel_FTable **>(transitionPanel) =
+src/GameZRecoil/zHud/zhud_ui.cpp	*reinterpret_cast<const HudUiWidget_FTable *const *>(*it);
+src/GameZRecoil/zHud/zhud_ui.cpp	*reinterpret_cast<unsigned int *>(bytes + 0x288) =
+src/GameZRecoil/zHud/zhud_ui.cpp	*reinterpret_cast<unsigned int *>(bytes + 0x288) =
+src/GameZRecoil/zHud/zhud_ui.cpp	->AddChild(reinterpret_cast<HudUiElement *>(&bindPanel));
+src/GameZRecoil/zHud/zhud_ui.cpp	->AddChild(reinterpret_cast<HudUiElement *>(bitmapWidget));
+src/GameZRecoil/zHud/zhud_ui.cpp	->AddChild(reinterpret_cast<HudUiElement *>(item));
+src/GameZRecoil/zHud/zhud_ui.cpp	->AddChild(reinterpret_cast<HudUiElement *>(this));
+src/GameZRecoil/zHud/zhud_ui.cpp	ApplyHudFontStyleTextOnly(reinterpret_cast<HudUiPanel *>(&bindPanel),
+src/GameZRecoil/zHud/zhud_ui.cpp	ApplyHudFontStyleTextOnly(reinterpret_cast<HudUiPanel *>(item), listStyle);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudCmdBindingEntry ** entry = reinterpret_cast<HudCmdBindingEntry **>(bindingVec.begin);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudCmdBindingEntry **const end = reinterpret_cast<HudCmdBindingEntry **>(bindingVec.end);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudLayoutBase *const layout = reinterpret_cast<HudLayoutBase *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudLayoutBase *const layout = reinterpret_cast<HudLayoutBase *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudLayoutBase *const layout = reinterpret_cast<HudLayoutBase *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudReticlePlayerStatePartial *const playerState = reinterpret_cast<HudReticlePlayerStatePartial *>(g_GameStateOrMapTable->playerState);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiBar *const bar = reinterpret_cast<HudUiBar *>(target);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const base = reinterpret_cast<HudUiElement *>(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const baseElement = reinterpret_cast<HudUiElement *>(&base.base);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const child = reinterpret_cast<HudUiElement *>(&item);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(cell);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(transitionPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(transitionPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const element = reinterpret_cast<HudUiElement *>(transitionPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const firstElement = reinterpret_cast<HudUiElement *>(firstPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const firstElement = reinterpret_cast<HudUiElement *>(firstPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const item = reinterpret_cast<HudUiElement *>(&items[index]);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const panelElement = reinterpret_cast<HudUiElement *>(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const reticleElement = reinterpret_cast<HudUiElement *>(&g_HudUiMgrReticleWidget);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const sliderElement = reinterpret_cast<HudUiElement *>(&sliderBorder);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiElement *const sourceElement = reinterpret_cast<HudUiElement *>(source);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiLayoutNode::ReadRect(node, reinterpret_cast<HudUiRect *>(fontArgs));
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiListSelectorItem *const items = reinterpret_cast<HudUiListSelectorItem *>(header + sizeof(int));
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiMessageBoxDialog *const dialog = reinterpret_cast<HudUiMessageBoxDialog *>(base.owner);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiMessageBoxDialog *const dialog = reinterpret_cast<HudUiMessageBoxDialog *>(base.owner);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiMgr::OnViewportChanged(reinterpret_cast<const HudUiRect *>(zOpt::GetDisplaySection()),
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiMgrSensorTrackNode *const selectedTrackNode = reinterpret_cast<HudUiMgrSensorTrackNode *>(trackedProgressSlot->trackNode);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiMgrSensorTrackNode *const trackNode = reinterpret_cast<HudUiMgrSensorTrackNode *>(slot->trackNode);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiMgrSensorTrackNode *const trackNode = reinterpret_cast<HudUiMgrSensorTrackNode *>(trackedProgressSlot->trackNode);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const child = reinterpret_cast<HudUiPanel *>(&backgroundTextPanels[index - 1]);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(&g_HudUiMgrStringMenu->items[index]);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(entriesA[index]);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(transitionPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(transitionPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(transitionPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const percentTextPanel = reinterpret_cast<HudUiPanel *>(&shieldMessageWidget->percentTextPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const percentTextPanel = reinterpret_cast<HudUiPanel *>(&shieldMessageWidget->percentTextPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const textPanel = reinterpret_cast<HudUiPanel *>(&panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanel *const textPanel = reinterpret_cast<HudUiPanel *>(&panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiPanelVirtualSetFontRequired(reinterpret_cast<HudUiPanel *>(&item),
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const layoutWidget2 = reinterpret_cast<HudUiWidget *>(reinterpret_cast<unsigned char *>(&g_HudLayoutHW) + 0x1b4);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const layoutWidget2 = reinterpret_cast<HudUiWidget *>(reinterpret_cast<unsigned char *>(&g_HudLayoutHW) + 0x1b4);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const layoutWidget2 = reinterpret_cast<HudUiWidget *>(reinterpret_cast<unsigned char *>(&g_HudLayoutHW) + 0x1b4);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const layoutWidget2 = reinterpret_cast<HudUiWidget *>(reinterpret_cast<unsigned char *>(&g_HudLayoutHW) + 0x1b4);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const widget1 = reinterpret_cast<HudUiWidget *>(bytes + 0xec);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const widget1 = reinterpret_cast<HudUiWidget *>(bytes + 0xec);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const widget1 = reinterpret_cast<HudUiWidget *>(bytes + 0xec);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const widget2 = reinterpret_cast<HudUiWidget *>(bytes + 0x1b4);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const widget2 = reinterpret_cast<HudUiWidget *>(bytes + 0x1b4);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const widget2 = reinterpret_cast<HudUiWidget *>(bytes + 0x1b4);
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const widget2 = reinterpret_cast<HudUiWidget *>(reinterpret_cast<unsigned char *>(this) +
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const widget2 = reinterpret_cast<HudUiWidget *>(reinterpret_cast<unsigned char *>(this) +
+src/GameZRecoil/zHud/zhud_ui.cpp	HudUiWidget *const widget3 = reinterpret_cast<HudUiWidget *>(bytes + 0x27c);
+src/GameZRecoil/zHud/zhud_ui.cpp	SwitchActiveDialog(reinterpret_cast<HudLayoutBase *>(&g_HudLayoutHW));
+src/GameZRecoil/zHud/zhud_ui.cpp	SwitchActiveDialog(reinterpret_cast<HudLayoutBase *>(&g_HudLayoutSW));
+src/GameZRecoil/zHud/zhud_ui.cpp	UploadPixelsFn uploadPixels = reinterpret_cast<UploadPixelsFn>(uploadAddress);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.AddChild(reinterpret_cast<HudUiElement *>(*rowCell));
+src/GameZRecoil/zHud/zhud_ui.cpp	base.AddChild(reinterpret_cast<HudUiElement *>(header));
+src/GameZRecoil/zHud/zhud_ui.cpp	base.SetInputFocus(reinterpret_cast<HudUiElement *>(&cursorWidget));
+src/GameZRecoil/zHud/zhud_ui.cpp	base.base.AddChild(reinterpret_cast<HudUiElement *>(&child));
+src/GameZRecoil/zHud/zhud_ui.cpp	base.base.AddChild(reinterpret_cast<HudUiElement *>(child));
+src/GameZRecoil/zHud/zhud_ui.cpp	base.base.ftable = reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiSliderBorder_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.base.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiFillBitmap_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.base.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiFillBitmap_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.base.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiZrdWidgetEx17C_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.base.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiZrdWidgetEx17C_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.base.vptr = reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiBackground_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.base.vptr = reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiBackground_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.ftable = reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiBackgroundVideoWidget_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.ftable = reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiBackgroundVideoWidget_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.ftable = reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiPolyline_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.ftable = reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiStatsListElement_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.ftable = reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiTextLabel_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.ftable = reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiTextLabel_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.ftable = reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiTripletPanel_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiBackgroundCursorWidget_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiBackgroundCursorWidget_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiMessage_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiZrdWidget_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiZrdWidget_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.vptr = reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiBackgroundContainer_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.vptr = reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiBackgroundContainer_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.vptr = reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiChatMessageStack_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.vptr = reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiTopMessageStack_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.vptr = reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiTriplet_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	base.vptr = reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiTriplet_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	clipRect.bottom = reinterpret_cast<GetCoordFn>(element->ftable->slots[0x68 / 4])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	clipRect.left = reinterpret_cast<GetCoordFn>(element->ftable->slots[0x64 / 4])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	clipRect.right = reinterpret_cast<GetCoordFn>(element->ftable->slots[0x64 / 4])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	clipRect.top = reinterpret_cast<GetCoordFn>(element->ftable->slots[0x68 / 4])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudFontStyle *const stylesBase = reinterpret_cast<const HudFontStyle *>(
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudFontStyle *const stylesBase = reinterpret_cast<const HudFontStyle *>(static_cast<const unsigned char *>(owner) + 0x1cec);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiBackgroundVideoWidget_FTable *const ftable = reinterpret_cast<const HudUiBackgroundVideoWidget_FTable *>(base.ftable);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiBackgroundVideoWidget_FTable *const ftable = reinterpret_cast<const HudUiBackgroundVideoWidget_FTable *>(base.ftable);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiBackgroundVideoWidget_FTable *const ftable = reinterpret_cast<const HudUiBackgroundVideoWidget_FTable *>(base.ftable);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(entry);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(entry);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(entry);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(entry);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const ftable = *reinterpret_cast<const HudUiCommon_FTable *const *>(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiCommon_FTable *const panelFTable = *reinterpret_cast<const HudUiCommon_FTable *const *>(percentTextPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiMessageBoxDialog_FTable *const ftable = *reinterpret_cast<const HudUiMessageBoxDialog_FTable *const *>(dialog);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiMessageBoxDialog_FTable *const ftable = *reinterpret_cast<const HudUiMessageBoxDialog_FTable *const *>(dialog);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable * descFTable = reinterpret_cast<const HudUiPanel_FTable *>(g_HudUiMgrObjectiveDescTextPanel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable * summaryFTable = reinterpret_cast<const HudUiPanel_FTable *>(g_HudUiMgrObjectiveSummaryTextPanel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(entry);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(firstPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(target);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = *reinterpret_cast<const HudUiPanel_FTable *const *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = reinterpret_cast<const HudUiPanel_FTable *>(panel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = reinterpret_cast<const HudUiPanel_FTable *>(panel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = reinterpret_cast<const HudUiPanel_FTable *>(panel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = reinterpret_cast<const HudUiPanel_FTable *>(panel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = reinterpret_cast<const HudUiPanel_FTable *>(panel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = reinterpret_cast<const HudUiPanel_FTable *>(panel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = reinterpret_cast<const HudUiPanel_FTable *>(panel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = reinterpret_cast<const HudUiPanel_FTable *>(panel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = reinterpret_cast<const HudUiPanel_FTable *>(panel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = reinterpret_cast<const HudUiPanel_FTable *>(panel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = reinterpret_cast<const HudUiPanel_FTable *>(panel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const ftable = reinterpret_cast<const HudUiPanel_FTable *>(panel->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const panelFTable = *reinterpret_cast<const HudUiPanel_FTable *const *>(textPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const panelFTable = *reinterpret_cast<const HudUiPanel_FTable *const *>(textPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiPanel_FTable *const panelFTable = reinterpret_cast<const HudUiPanel_FTable *>(label->vtbl);
+src/GameZRecoil/zHud/zhud_ui.cpp	const HudUiWidget_FTable *const ftable = *reinterpret_cast<const HudUiWidget_FTable *const *>(childWidgetOrNull);
+src/GameZRecoil/zHud/zhud_ui.cpp	const char *text = reinterpret_cast<const char *>(&actionArg2) + 2;
+src/GameZRecoil/zHud/zhud_ui.cpp	const char *text = reinterpret_cast<const char *>(actionArg3);
+src/GameZRecoil/zHud/zhud_ui.cpp	const int rectX = reinterpret_cast<GetCoordFn>(ftable->slots[25])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	const int rectY = reinterpret_cast<GetCoordFn>(ftable->slots[26])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	const int top = reinterpret_cast<HudUiElement *>(slot)->GetY() + 1;
+src/GameZRecoil/zHud/zhud_ui.cpp	const int x = reinterpret_cast<GetCenterFn>(anchorFTable->slots[0x64 / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	const int x = reinterpret_cast<GetCoordFn>(base.ftable->slots[25])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	const int y = reinterpret_cast<GetCenterFn>(anchorFTable->slots[0x68 / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	const int y = reinterpret_cast<GetCoordFn>(base.ftable->slots[26])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	const unsigned int *const ownerFTable = *reinterpret_cast<const unsigned int *const *>(owner);
+src/GameZRecoil/zHud/zhud_ui.cpp	const unsigned int *const projectionBits = reinterpret_cast<const unsigned int *>(g_HudUiMgrReticleProjection);
+src/GameZRecoil/zHud/zhud_ui.cpp	entriesA[index] = reinterpret_cast<HudUiWidget *>(transitionPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	fade * reinterpret_cast<HudUiObjectiveBar *>(&g_HudUiMgrObjectiveBar)->slideRangeX;
+src/GameZRecoil/zHud/zhud_ui.cpp	fade * reinterpret_cast<HudUiObjectiveBar *>(&g_HudUiMgrObjectiveBar)->slideRangeX;
+src/GameZRecoil/zHud/zhud_ui.cpp	firstLabelPanel = reinterpret_cast<HudUiElement *>(base.labelPanels.begin[0]);
+src/GameZRecoil/zHud/zhud_ui.cpp	fontStyleRef = reinterpret_cast<void *>(static_cast<unsigned int>(fontNode->value.u32));
+src/GameZRecoil/zHud/zhud_ui.cpp	ftable = reinterpret_cast<const HudUiSlot_FTable *>(&g_HudUiCommon_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	ftable = reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveBar));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveMeter));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveSensorRect));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveWidget));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(&g_HudUiMgrSensorMeter));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(&g_HudUiMgrSensorOverlay));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(&g_HudUiMgrSensorPanel));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(&shieldMessageWidget->meter));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(&shieldMessageWidget->widget));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(&slot));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(&widget));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveDescTextPanel));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveLabelTextPanel));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveSummaryTextPanel));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(percentTextPanel));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(this));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(this));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiMgr.AddChild(reinterpret_cast<HudUiElement *>(this));
+src/GameZRecoil/zHud/zhud_ui.cpp	g_HudUiTopMessageStack->SetFontAll(reinterpret_cast<const char *>(messagesFont.left),
+src/GameZRecoil/zHud/zhud_ui.cpp	if ((reinterpret_cast<HudUiElement *>(firstLine)->flags & 0x10u) == 0 &&
+src/GameZRecoil/zHud/zhud_ui.cpp	if (IntersectRect(reinterpret_cast<RECT *>(&g_HudLayoutHW.reticleClipRect), &reticleBounds,
+src/GameZRecoil/zHud/zhud_ui.cpp	if (VirtualQuery(reinterpret_cast<const void *>(address), &info, sizeof(info)) == 0 ||
+src/GameZRecoil/zHud/zhud_ui.cpp	if (reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveBar)->ftable == 0) {
+src/GameZRecoil/zHud/zhud_ui.cpp	if (reinterpret_cast<HudUiWidget *>(&counter)->ftable == 0) {
+src/GameZRecoil/zHud/zhud_ui.cpp	if (reinterpret_cast<ShouldHandleInputFn>(widget->ftable->slots[0x54 / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	int left = reinterpret_cast<HudUiElement *>(slot)->GetX();
+src/GameZRecoil/zHud/zhud_ui.cpp	int top = reinterpret_cast<HudUiElement *>(slot)->GetY() - halfHeight;
+src/GameZRecoil/zHud/zhud_ui.cpp	int top = reinterpret_cast<HudUiElement *>(slot)->GetY() - height;
+src/GameZRecoil/zHud/zhud_ui.cpp	int top = reinterpret_cast<HudUiElement *>(slot)->GetY();
+src/GameZRecoil/zHud/zhud_ui.cpp	meter.ftable = reinterpret_cast<const HudUiMeter_FTable *>(&g_HudUiCommon_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	objectiveBar.ftable = reinterpret_cast<const HudUiBar_FTable *>(&g_HudUiCommon_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	objectiveMeter.ftable = reinterpret_cast<const HudUiMeter_FTable *>(&g_HudUiCommon_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	panel = reinterpret_cast<HudUiPanel *>(reinterpret_cast<unsigned char *>(panel) + 0x2a4);
+src/GameZRecoil/zHud/zhud_ui.cpp	panel = reinterpret_cast<HudUiPanel *>(reinterpret_cast<unsigned char *>(panel) + 0x2a4);
+src/GameZRecoil/zHud/zhud_ui.cpp	panel->SetFont(reinterpret_cast<const char *>(fontSpec.left), fontSpec.right, fontSpec.bottom,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<AcceptFn>(ownerFTable[34])(owner);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<AfterInputUpdateFn>(widget->ftable->slots[0x58 / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DispatchFn>(ftable->slots[1])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DispatchFn>(ftable->slots[1])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DispatchFn>(ftable->slots[1])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DispatchFn>(ftable->slots[2])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DispatchFn>(ftable->slots[2])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DispatchFn>(slotWidget.ftable->slots[1])(&slotWidget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DispatchFn>(trackMarkerWidget.ftable->slots[1])(&trackMarkerWidget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DrawBaseFn>(base.ftable->slots[2])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DrawBaseFn>(base.ftable->slots[2])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DrawBaseFn>(ftable->slots[2])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DrawBaseFn>(ftable->slots[2])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DrawFn>(ftable->slots[2])(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<DrawFn>(item.ftable->slots[1])(&item);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<EnableWordWrapFn>(element->ftable->slots[0x6c / 4])(element,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCenterFn>(layoutWidget2FTable->slots[0x64 / 4])(layoutWidget2);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCenterFn>(layoutWidget2FTable->slots[0x68 / 4])(layoutWidget2);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCoordFn>(element->ftable->slots[0x64 / 4])(element),
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCoordFn>(element->ftable->slots[0x64 / 4])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCoordFn>(element->ftable->slots[0x68 / 4])(element),
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCoordFn>(element->ftable->slots[0x68 / 4])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCoordFn>(g_HudUiMgrObjectiveWidget.ftable->slots[25])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCoordFn>(g_HudUiMgrObjectiveWidget.ftable->slots[26])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCoordFn>(layoutWidget2FTable->slots[0x64 / 4])(layoutWidget2);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCoordFn>(layoutWidget2FTable->slots[0x68 / 4])(layoutWidget2);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCoordFn>(panelFTable->slots[0x64 / 4])(percentTextPanel) -
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCoordFn>(panelFTable->slots[0x68 / 4])(percentTextPanel) -
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCoordFn>(widgetFTable->slots[0x64 / 4])(&shieldMessageWidget->widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<GetCoordFn>(widgetFTable->slots[0x68 / 4])(&shieldMessageWidget->widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HitTestFn>(widget->ftable->slots[0x5c / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiBar *>(this)->Constructor();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiBar *>(this)->Constructor();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiChatMessageStack *>(chatStack)->DestructorCore();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiCommon_FTable **>(g_HudUiMgrTimerPanel)[0]->slots[9])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiContainer *>(base.owner)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiContainer *>(base.owner)->AddChild(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiContainer *>(ownerDialog)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiContainer *>(ownerDialog)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiContainer *>(ownerDialog)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiContainer *>(this)->AddChild(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiContainer *>(this)->DestructorCore();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiContainer *>(this)->SetChildFlags(0x0e);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiContainer *>(this)->SetChildFlags(0x0e);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiContainer *>(this)->UpdateAll(deltaSeconds);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiContainer *>(widget->owner)->AddChild(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiContainer *>(widget->owner)->AddChild(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiDialogController *>(this)->BlitOwnedSurfaceToPrimary();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&base)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&base)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&base)->SetBltSourceAndClipRect(clipSource, bounds);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&base)->SetPos(newX, newY);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&base)->SetPos(widgetX, widgetY);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&base)->SetVisible(1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&base.base)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&base.base)->SetVisible(1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&bindPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&bindPanel)->SetPos(base.base.originX, base.base.originY);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&bindPanel)->SetVisible(1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&bindingSlotPanels[index])->SetPos(x, y);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&bindingSlotPanels[index])->SetPos(x, y);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&child)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&child)->SetPos(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&child)->SetVisible(1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrNanitePanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrNanitePanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrNanitePanel)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveBar)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveBar)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveBar)->SetVisible(0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveBar)->SetVisible(1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveSensorRect)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveSensorRect)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveWidget)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveWidget)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrReticleWidget)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrReticleWidget)->SetVisible(0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&g_HudUiMgrSensorMeter)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&item)->SetVisible(0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&message.base)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&message.base)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&message.base)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&message.panel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&message.panel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&slot.slotWidget)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&slot.slotWidget)->SetVisible(0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&slot.trackMarkerWidget)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(&slot.trackMarkerWidget)->SetVisible(0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(dest)->SetTimer(FieldAt<float>(source, 0x10));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(element)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(element)->SetClipRect(rect);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(firstLine)->SetTimer(duration);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveCounterTextPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveCounterTextPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveCounterTextPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveDescTextPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveDescTextPanel)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveDescTextPanel)->SetVisible(0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveDescTextPanel)->SetVisible(1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveLabelTextPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveLabelTextPanel)->SetVisible(0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveLabelTextPanel)->SetVisible(1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveLabelTextPanel)->flags =
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveLabelTextPanel)->flags =
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveSummaryTextPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrObjectiveSummaryTextPanel)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrTimerPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrTimerPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrTimerPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(g_HudUiMgrTimerPanelFloat);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(headerPanels[0])->SetPos(baseX, baseY);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(headerPanels[1])->SetPos(baseX + lapsColumnOffsetX, baseY);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(headerPanels[2])->SetPos(baseX + killsColumnOffsetX, baseY);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(item)->SetBltSourceAndClipRect(clipSource,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(item)->SetVisible(1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(killsCell)->SetPos(baseX + killsColumnOffsetX, y);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(lapsCell)->SetPos(baseX + lapsColumnOffsetX, y);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(nameCell)->SetPos(baseX, y);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(panel)->SetVisible(0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(panel)->SetVisible(visible);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(slot)->GetX() + 1 - image->width;
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(slot)->GetX() - g_HudUiMgrReticleProjectedX;
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(slot)->GetX() - image->width / 2;
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(slot)->GetY() - g_HudUiMgrReticleProjectedY;
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->Constructor(0, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->Constructor(0, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->Constructor(0, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->GetRect(outRect);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->Invalidate();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->SetPos(posX, posY);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->Update(deltaSeconds);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(this)->Update(deltaSeconds);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(trackedProgressSlot)->GetX() - image->width / 2;
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiElement *>(trackedProgressSlot)->GetY() - image->height / 2;
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiObjectiveBar *>(&g_HudUiMgrObjectiveBar)->slideRangeX;
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(&backgroundTextPanels[index - 1])->Destructor();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(&items[index])->Destructor();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(&items[itemIndex])->Destructor();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(&message.panel)->SetText("");
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(&panel)->ConstructorDefault(0, 0, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(&panel)->Destructor();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(&percentTextPanel)->Destructor();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(&templateEntry)->Destructor();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(&templateEntry)->Destructor();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(current)->SetText(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(entry)->SetFont(faceName, height, weight, width, italic,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(entry)->SetTextFmtV(format, args);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(g_HudUiMgrObjectiveCounterTextPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(g_HudUiMgrObjectiveCounterTextPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(g_HudUiMgrObjectiveCounterTextPanel)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(g_HudUiMgrObjectiveCounterTextPanel)->SetTextFmt("        ");
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(g_HudUiMgrObjectiveCounterTextPanel)->SetTextFmt("%d", 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(g_HudUiMgrTimerPanel)->ScalarDeletingDestructor(1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(g_HudUiMgrTimerPanel)->SetTextFmt("00:00:00");
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(g_HudUiMgrTimerPanelFloat)->ScalarDeletingDestructor(1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(next)->GetLastTextPtr());
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(this)->ConstructorCopy(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(this)->ConstructorDefault(0, 0, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(this)->CopyConstructCore(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanel *>(this)->vtbl = &g_HudUiListSelectorItem_FTable;
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanelFontParams *>(&g_HudUiMgrStringMenu->unknown_10[0]);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPanelSimple *>(panel)->Constructor(0, 0, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPrimitiveBindTarget *>(element)->SetSegmentEndpoints(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiPrimitiveBindTarget *>(element)->SetSegmentEndpoints(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiTextLabel *>(this)->Constructor(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiTextLabel *>(this)->ConstructorWithPosAndFlags(text, initX, initY, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiTextLabel *>(this)->CopyConstructor(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiTextLabel *>(this)->UpdateTextExtents();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiTextLabel *>(this)->UpdateTextExtents();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiTopMessageStack *>(topStack)->DestructorCore();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiTransitionTextPanel *>(&templateEntry)->Constructor();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiTransitionTextPanel *>(&templateEntry)->Constructor();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiTransitionTextPanel *>(*it)->SetFlashColorAndRate(flashColor,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiTripletPanel *>(&g_HudUiMgrNanitePanel)->Constructor();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiTripletPanel *>(&g_HudUiMgrNanitePanel)->Draw();
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiWidget *>(&counter)->SetImageBorrowedAndInvalidate(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiWidget *>(&previous)->SetImageBorrowedAndInvalidate(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiWidget *>(element)->SetImageByPathOwned(bitmapPath);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiWidget *>(reinterpret_cast<unsigned char *>(this) + 0x30)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiWidget *>(reinterpret_cast<unsigned char *>(this) + 0x30)
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiWidget *>(this)->Constructor(0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<HudUiWidget *>(this)->SetImageBorrowedAndInvalidate(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(base.ftable->slots[8])(&base);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(base.ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(base.ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(base.ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(baseFTable->slots[0x20 / 4])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(child->ftable->slots[8])(child);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(element->ftable->slots[8])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(ftable->slots[8])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(ftable->slots[8])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(panelFTable->slots[8])(label);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<InvalidateFn>(widget->ftable->slots[8])(widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<KeyFn>(ftable->slots[0])(this, key);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<KeyFn>(ftable->slots[1])(this, key);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<LayoutDisableFn>(g_HudUiMgrCurrentLayout->ftable->slots[5])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<LayoutEnableFn>(g_HudUiMgrCurrentLayout->ftable->slots[4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<LayoutSetActiveFn>(g_HudUiMgrCurrentLayout->ftable->slots[2])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<LayoutSetActiveFn>(newDialog->ftable->slots[2])(newDialog, 1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<LoadFromZrdFn>(widget->ftable->slots[0x7c / 4])(widget, widgetNode,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(descFTable->slots[1])(g_HudUiMgrObjectiveDescTextPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(focusBeforeUpdate->ftable->slots[0x08 / 4])(focusBeforeUpdate);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(ftable->slots[2])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(ftable->slots[3])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(ftable->slots[4])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(ftable->slots[5])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(ftable->slots[6])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(ftable->slots[7])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(g_HudUiMgrCurrentLayout->ftable->slots[3])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(summaryFTable->slots[1])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(widget->ftable->slots[0x30 / 4])(widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(widget->ftable->slots[0x34 / 4])(widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(widget->ftable->slots[0x38 / 4])(widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(widget->ftable->slots[0x3c / 4])(widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(widget->ftable->slots[0x40 / 4])(widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(widget->ftable->slots[0x44 / 4])(widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(widget->ftable->slots[0x48 / 4])(widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(widget->ftable->slots[0x48 / 4])(widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<NoArgFn>(widget->ftable->slots[0x50 / 4])(widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<OnCancelFn>(ftable->slots[4])(dialog);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<OnOkFn>(ftable->slots[3])(dialog);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<PointerFn>(widget->ftable->slots[0x4c / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<PointerFn>(widget->ftable->slots[0x4c / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<PostLoadFromZrdFn>(widget->ftable->slots[0x80 / 4])(widget);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<RebuildBltRectFn>(ftable->slots[0x74 / 4])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<RebuildFn>(ftable->slots[36])(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<RebuildFn>(ftable->slots[36])(panel);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<RebuildFn>(ftable->slots[36])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<RebuildFn>(ftable->slots[36])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<RebuildFn>(ftable->slots[36])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<RebuildFn>(ftable->slots[36])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<RebuildFn>(ftable->slots[36])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<RebuildFn>(ftable->slots[36])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<RebuildFn>(ftable->slots[36])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<RebuildFn>(ftable->slots[36])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<ReleaseSurfaceFn>(releaseAddress);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<ScalarDeletingDestructorFn>(ftable->slots[0])(entry, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<ScalarDeletingDestructorFn>(ftable->slots[0])(entry, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<ScalarDeletingDestructorFn>(ftable->slots[0])(entry, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<ScalarDeletingDtorFn>(ftable->slots[0])(*it, 1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<ScalarDeletingDtorFn>(ftable->slots[0])(childWidgetOrNull, 1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetActiveFn>(ftable->slots[1])(this, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetActiveFn>(ftable->slots[1])(this, 1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetBltSourceAndClipRectFn>(base.ftable->slots[6])(this, 0, &clipRect);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetBltSourceFn>(base.ftable->slots[6])(this, 0, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetBltSourceFn>(base.ftable->slots[6])(this, 0, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetBltSourceFn>(base.ftable->slots[6])(this, capturedImage, &clipRect);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetClipFn>(baseFTable->slots[0x18 / 4])(this, 0, &widgetClipRect);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetClipFn>(element->ftable->slots[0x18 / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetClipFn>(ftable->slots[6])(panel, source, clipRect);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetClipFn>(meterFTable->slots[0x18 / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetClipFn>(panelFTable->slots[0x18 / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetClipFn>(panelFTable->slots[0x18 / 4])(textPanel, 0,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetClipRectFn>(ftable->slots[7])(element, rect);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetClipRectFn>(ftable->slots[7])(this, &rect);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetClipRectFn>(ftable->slots[7])(this, &rect);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetClipRectFn>(ftable->slots[7])(this, rectOrNull);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetEnabledFn>(container->vptr->slots[1])(container, enabled);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetEnabledFn>(reinterpret_cast<HudLayoutBase *>(this)->ftable->slots[1])(this,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetEnabledFn>(reinterpret_cast<HudLayoutBase *>(this)->ftable->slots[1])(this,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetEnabledFn>(reinterpret_cast<HudLayoutBase *>(this)->ftable->slots[1])(this,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetEnabledFn>(reinterpret_cast<HudLayoutBase *>(this)->ftable->slots[1])(this,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetEnabledFn>(vptr->slots[1])(this, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetFontFn>(element->ftable->slots[0x80 / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetFontFn>(ftable->slots[0x80 / 4])(panel, faceName, height, weight,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetFontFn>(ftable->slots[32])(panel, faceName, height, weight, width, italic,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetFontFn>(panelFTable->slots[0x80 / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(base.ftable->slots[0x0c / 4])(this, startX, startY);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(base.ftable->slots[3])(this, pointX, pointY);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(base.ftable->slots[3])(this, x, y);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(baseFTable->slots[0x0c / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(element->ftable->slots[0x0c / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(focusAfterUpdate->ftable->slots[0x0c / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(ftable->slots[0x0c / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(ftable->slots[0x0c / 4])(target, x, y);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(ftable->slots[3])(element, x, y);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(ftable->slots[3])(this, g_HudUiMgrHudOriginX + localX,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(ftable->slots[3])(this, static_cast<int>(x),
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(panelFTable->slots[0x0c / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(widget->ftable->slots[3])(widget, x, y);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetPosFn>(widgetFTable->slots[0x0c / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetTextFmtFn>(ftable->slots[0x74 / 4])(entry, "");
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetTextFmtFn>(ftable->slots[0x74 / 4])(panel, "");
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetTextFmtFn>(ftable->slots[0x74 / 4])(panel, text);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetTextFmtFn>(ftable->slots[0x74 / 4])(target, text != 0 ? text : "");
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetTextFmtFn>(panelFTable->slots[0x74 / 4])(percentTextPanel, "000");
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetTextFmtFn>(panelFTable->slots[0x74 / 4])(textPanel, "   ");
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetTextFn>(ftable->slots[35])(firstPanel, buffer);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetTextFn>(ftable->slots[35])(panel, text);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetTextFn>(ftable->slots[35])(panel, text);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(ftable->slots[24])(element, visible);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(ftable->slots[24])(element, visible);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(ftable->slots[24])(panel, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(ftable->slots[24])(panel, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(ftable->slots[24])(panel, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(ftable->slots[24])(panel, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(ftable->slots[24])(panel, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(ftable->slots[24])(panel, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(ftable->slots[24])(panel, 1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(ftable->slots[24])(panel, 1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(ftable->slots[24])(panel, 1);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(ftable->slots[24])(this, 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetVisibleFn>(item->ftable->slots[24])(item, count > index ? 1 : 0);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetXFn>(ftable->slots[4])(panel, newX);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<SetYFn>(ftable->slots[5])(panel, y);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<UpdateAllFn>(triplet->base.vptr->slots[0])(triplet, deltaSeconds);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<UpdateBoundsFn>(panelFTable->slots[0x78 / 4])(percentTextPanel);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<UpdateFn>(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<UpdateFn>(child->ftable->slots[9])(child, deltaSeconds);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<UpdateFn>(floatingTimerElement->ftable->slots[9])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<UpdateFn>(focusAfterUpdate->ftable->slots[0x24 / 4])(focusAfterUpdate,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<UpdateFn>(ftable->slots[9])(slider, deltaSeconds);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<UpdateFn>(ftable->slots[9])(slider, deltaSeconds);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<UpdateFn>(g_HudUiMgrCurrentLayout->ftable->slots[0])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<UpdateFn>(g_HudUiMgrReticleWidget.ftable->slots[9])(
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiStatsListElement_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiStringMenu_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiPanel *>(source));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiPanel *>(source));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiRect *>(renderSection));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiTextLabel *>(source));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiTextLabel *>(source));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiWidget_FTable *>(&g_HudCmdBindButtonBase_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiBackgroundCursorWidget_MemberFTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCheckToggleWidget_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCheckToggleWidget_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCycleSelectorWidget_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCycleSelectorWidget_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiNumericTextInput_Base_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiNumericTextInput_Base_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiZrdWidgetEx17C_Item_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiZrdWidgetEx17C_Item_FTable);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const RECT *>(zOpt::GetDisplaySection())) != 0) {
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const char *>(messagesFont.left), messagesFont.right,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<const zRndr_LinePoint2I *>(&actionArg0), alphaPointCount - 1,
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<unsigned int>(ZrdArrayString(centerNode, 1));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<void *>(&HudUiNumericTextInput::RawKeyboardCallback), this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<void *>(alpha255), alphaVariantIndex);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<void(RECOIL_THISCALL *)(HudUiElement *)>(ftable->slots[8])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<zClass_NodeFreeListSlot *>(candidate.node);
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<zVidRect32 *>(&base.clipRect));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<zVidRect32 *>(&base.clipRect));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<zVidRect32 *>(&dirtyRect.srcLeft));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<zVidRect32 *>(&fillRect));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<zVidRect32 *>(&previewRect));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<zVidRect32 *>(actionArg4));
+src/GameZRecoil/zHud/zhud_ui.cpp	reinterpret_cast<zVidRect32 *>(bltClipRectOrNull));
+src/GameZRecoil/zHud/zhud_ui.cpp	return *reinterpret_cast<T *>(static_cast<unsigned char *>(base) + offset);
+src/GameZRecoil/zHud/zhud_ui.cpp	return *reinterpret_cast<const T *>(static_cast<const unsigned char *>(base) + offset);
+src/GameZRecoil/zHud/zhud_ui.cpp	return reinterpret_cast<GetCoordFn>(ftable->slots[25])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	return reinterpret_cast<GetCoordFn>(ftable->slots[25])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	return reinterpret_cast<GetCoordFn>(ftable->slots[26])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	return reinterpret_cast<GetCoordFn>(ftable->slots[26])(element);
+src/GameZRecoil/zHud/zhud_ui.cpp	return reinterpret_cast<HudUiElement *>(element)->x;
+src/GameZRecoil/zHud/zhud_ui.cpp	return reinterpret_cast<HudUiElement *>(element)->y;
+src/GameZRecoil/zHud/zhud_ui.cpp	return reinterpret_cast<HudUiPanel *>(&stack->lines[index][0]);
+src/GameZRecoil/zHud/zhud_ui.cpp	return reinterpret_cast<HudUiPanel *>(storage);
+src/GameZRecoil/zHud/zhud_ui.cpp	return reinterpret_cast<RawKeyboardFn>(callbackCtx->base.base.ftable->slots[33])(callbackCtx,
+src/GameZRecoil/zHud/zhud_ui.cpp	slot->srcBottom -= reinterpret_cast<GetCoordFn>(ftable->slots[26])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	slot->srcLeft -= reinterpret_cast<GetCoordFn>(ftable->slots[25])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	slot->srcRight -= reinterpret_cast<GetCoordFn>(ftable->slots[25])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	slot->srcTop -= reinterpret_cast<GetCoordFn>(ftable->slots[26])(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	static_cast<float>(reinterpret_cast<GetCenterXFn>(ftable->slots[0x64 / 4])(
+src/GameZRecoil/zHud/zhud_ui.cpp	table.slots[2] = reinterpret_cast<unsigned int>(&HudUiNoOpMethodStub);
+src/GameZRecoil/zHud/zhud_ui.cpp	table.slots[8] = reinterpret_cast<unsigned int>(&HudUiCommonInvalidateThunk);
+src/GameZRecoil/zHud/zhud_ui.cpp	table.slots[8] = reinterpret_cast<unsigned int>(&HudUiCommonInvalidateThunk);
+src/GameZRecoil/zHud/zhud_ui.cpp	unsigned char *const bytes = reinterpret_cast<unsigned char *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	unsigned char *const bytes = reinterpret_cast<unsigned char *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	unsigned char *const bytes = reinterpret_cast<unsigned char *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	unsigned char *const bytes = reinterpret_cast<unsigned char *>(this);
+src/GameZRecoil/zHud/zhud_ui.cpp	unsigned char *const header = reinterpret_cast<unsigned char *>(items) - sizeof(int);
+src/GameZRecoil/zHud/zhud_ui.cpp	unsigned int *const outBits = reinterpret_cast<unsigned int *>(outProjection);
+src/GameZRecoil/zHud/zhud_ui.cpp	worldPoint, reinterpret_cast<zVec3 *>(&slot->screenX));
+src/GameZRecoil/zHud/zhud_ui.cpp	zRndr_DrawClippedImmediateLineStrip(reinterpret_cast<const zRndr_LinePoint2I *>(points),
+src/GameZRecoil/zHud/zhud_ui.cpp	zRndr_RasterizePoly(reinterpret_cast<zVec3 *>(&actionArg0), rasterVertexCount,
+src/GameZRecoil/zHud/zhud_ui.cpp	zTurret_Runtime *const turretRuntime = reinterpret_cast<zTurret_Runtime *>(candidate->payload);
+src/GameZRecoil/zHud/zhud_ui.cpp	zTurret_Runtime *const turretRuntime = reinterpret_cast<zTurret_Runtime *>(selectedTrackNode->payload);
+src/GameZRecoil/zHud/zhud_ui.cpp	zTurret_Runtime *const turretRuntime = reinterpret_cast<zTurret_Runtime *>(selectedTrackNode->payload);
+src/GameZRecoil/zHud/zhud_ui.cpp	zTurret_Runtime *const turretRuntime = reinterpret_cast<zTurret_Runtime *>(trackNode->payload);
+src/GameZRecoil/zHud/zhud_ui.cpp	zTurret_Runtime *const turretRuntime = reinterpret_cast<zTurret_Runtime *>(trackNode->payload);
+src/GameZRecoil/zHud/zhud_ui.cpp	zTurret_Runtime *const turretRuntime = reinterpret_cast<zTurret_Runtime *>(trackNode->payload);
+src/GameZRecoil/zHud/zhud_ui.cpp	zUtil_PlayerStateStorage *const localPlayerState = reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState);
+src/GameZRecoil/zHud/zhud_ui.cpp	zUtil_SaveGameState *const saveState = reinterpret_cast<zUtil_SaveGameState *>(candidate->payload);
+src/GameZRecoil/zHud/zhud_ui.cpp	zUtil_SaveGameState *const saveState = reinterpret_cast<zUtil_SaveGameState *>(selectedTrackNode->payload);
+src/GameZRecoil/zHud/zhud_ui.cpp	zUtil_SaveGameState *const saveState = reinterpret_cast<zUtil_SaveGameState *>(selectedTrackNode->payload);
+src/GameZRecoil/zHud/zhud_ui.cpp	zUtil_SaveGameState *const saveState = reinterpret_cast<zUtil_SaveGameState *>(trackNode->payload);
+src/GameZRecoil/zHud/zhud_ui.cpp	zUtil_SaveGameState *const saveState = reinterpret_cast<zUtil_SaveGameState *>(trackNode->payload);
+src/GameZRecoil/zHud/zhud_ui.cpp	zUtil_SaveGameState *const saveState = reinterpret_cast<zUtil_SaveGameState *>(trackNode->payload);
+src/GameZRecoil/zHud/zhud_ui.cpp	zVid::DrawNoiseRect(reinterpret_cast<zVidRect32 *>(&g_HudUiMgrSensorBlock.sensorRectRaw),
+src/GameZRecoil/zHud/zhud_ui.cpp	zVid::DrawNoiseRect(reinterpret_cast<zVidRect32 *>(&g_HudUiMgrSensorBlock.sensorRectRaw),
+src/GameZRecoil/zHud/zhud_ui.cpp	zVid_Image::BlitToActiveTarget(reinterpret_cast<zVidImagePartial *>(actionArg2),
+src/GameZRecoil/zHud/zhud_ui.cpp	zVid_Image::BlitToActiveTarget(reinterpret_cast<zVidImagePartial *>(stream), base.x, base.y,
+src/GameZRecoil/zImage/zimg_texture.cpp	reinterpret_cast<int>(g_zImage_TexDirEntries[i].nextVariant)));
+src/GameZRecoil/zImage/zimg_texture.cpp	reinterpret_cast<zVidRect32 *>(glyph));
+src/GameZRecoil/zImage/zimg_texture.cpp	reinterpret_cast<zVideo_TextureRecordFinalizeUploadProc>(
+src/GameZRecoil/zImage/zimg_texture.cpp	return reinterpret_cast<zImage_TexDirEntryPartial *>(&g_zImage_DefaultImagePtr);
+src/GameZRecoil/zImage/zimg_texture.cpp	serializedEntries[i].nextVariant = reinterpret_cast<zImage_TexDirEntryPartial *>(
+src/GameZRecoil/zInput/zInput.cpp	KeyboardRawEventCallbackFn callback = reinterpret_cast<KeyboardRawEventCallbackFn>(g_zInput_KbdRawEventCallback);
+src/GameZRecoil/zInput/zInput.cpp	m_packedBindings = reinterpret_cast<int *>(option->payloadOrBuffer);
+src/GameZRecoil/zInput/zInput.cpp	primary, reinterpret_cast<void *>(&zInput_BindMapContext_DispatchFromKeyboardEvent),
+src/GameZRecoil/zInput/zInput.cpp	reinterpret_cast<KeyboardComboCallbackFn>(callback)(dispatchIndex);
+src/GameZRecoil/zInput/zInput.cpp	reinterpret_cast<LPDIRECTINPUTA *>(&g_zInput_GlobalState), 0);
+src/GameZRecoil/zInput/zInput.cpp	reinterpret_cast<const unsigned char *>(&g_zInput_MouseCurrentState.rgbButtons);
+src/GameZRecoil/zInput/zInput.cpp	reinterpret_cast<const unsigned char *>(&g_zInput_MousePreviousState.rgbButtons);
+src/GameZRecoil/zInput/zInput.cpp	secondary, reinterpret_cast<void *>(&zInput_BindMapContext_DispatchFromKeyboardEvent),
+src/GameZRecoil/zLoc/zLoc.cpp	char *arguments = reinterpret_cast<char *>(&messageId + 1);
+src/GameZRecoil/zLoc/zLoc.cpp	messageId, 0, reinterpret_cast<LPSTR>(&sourceHandle), static_cast<DWORD>(maxChars),
+src/GameZRecoil/zLoc/zLoc.cpp	reinterpret_cast<va_list *>(&arguments));
+src/GameZRecoil/zMath/zMath.cpp	MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+src/GameZRecoil/zMath/zMath.cpp	ProjectPointBatch(dstPoint, reinterpret_cast<zProjectedPoint *>(dstPoint), 1);
+src/GameZRecoil/zMath/zMath.cpp	ProjectPointBatch(dstPoint, reinterpret_cast<zProjectedPoint *>(dstPoint), 1);
+src/GameZRecoil/zMath/zMath.cpp	const zMat4x3 *const matrix = reinterpret_cast<const zMat4x3 *>(*g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	const zMat4x3 *matrix = reinterpret_cast<const zMat4x3 *>(*g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	const zMat4x3 *matrix = reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	const zMat4x3 *matrix = reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	const zMat4x3 *parent = reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]);
+src/GameZRecoil/zMath/zMath.cpp	const zMat4x3 *parent = reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]);
+src/GameZRecoil/zMath/zMath.cpp	current = reinterpret_cast<zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]));
+src/GameZRecoil/zMath/zMath.cpp	reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]), &parentEuler);
+src/GameZRecoil/zMath/zMath.cpp	return reinterpret_cast<zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	zMat4x3 *current = reinterpret_cast<zMat4x3 *>(*g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	zMat4x3 *current = reinterpret_cast<zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	zMat4x3 *current = reinterpret_cast<zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	zMat4x3 *matrix = reinterpret_cast<zMat4x3 *>(*g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	zMat4x3 *matrix = reinterpret_cast<zMat4x3 *>(*g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	zMat4x3 *matrix = reinterpret_cast<zMat4x3 *>(*g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	zMat4x3 *matrix = reinterpret_cast<zMat4x3 *>(*g_currentMatrixPtrSlot);
+src/GameZRecoil/zMath/zMath.cpp	zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]), 1);
+src/GameZRecoil/zMath/zMath.cpp	zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]), 1);
+src/GameZRecoil/zMath/zMath.cpp	zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]), 1);
+src/GameZRecoil/zMath/zMath.cpp	zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]), 1);
+src/GameZRecoil/zMath/zMath.cpp	zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]), 1);
+src/GameZRecoil/zMath/zMath.cpp	zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+src/GameZRecoil/zMath/zMath.cpp	zMath::MatStackPushPtr(reinterpret_cast<float *>(&viewMatrix));
+src/GameZRecoil/zMath/zMath.cpp	zMath::Vec3RotateY(&rowX, reinterpret_cast<const zVec3 *>(matrix), -yaw);
+src/GameZRecoil/zModel/gmod_const.c	reinterpret_cast<zModel_MaterialPartial *>(
+src/GameZRecoil/zModel/gmod_const.c	reinterpret_cast<zModel_MaterialPartial *>(zModel_Matl::GetPoolEntry(
+src/GameZRecoil/zModel/gmod_const.c	reinterpret_cast<zModel_MaterialSlot *>(
+src/GameZRecoil/zModel/gmod_const.c	static_cast<int>(reinterpret_cast<int>(diEntry->material))));
+src/GameZRecoil/zModel/gmod_light.c	reinterpret_cast<const zVec3 *>(&g_Clip_PolyVertsScratch[0]), &projectedY, 1);
+src/GameZRecoil/zModel/gmod_light.c	reinterpret_cast<const zVec3 *>(&g_Clip_PolyVertsScratch[i_250]), &projectedY, 1);
+src/GameZRecoil/zModel/gmod_light.c	zVideo::SetFogColorFromRgb01(reinterpret_cast<zVideo_ColorRgbFloat *>(rgb01));
+src/GameZRecoil/zModel/gmod_matl.c	frameBuffer[i] = reinterpret_cast<zImage_TexDirEntryPartial *>(
+src/GameZRecoil/zModel/gmod_matl.c	reinterpret_cast<int>(material->currentTextureDirectoryEntry)));
+src/GameZRecoil/zModel/gmod_matl.c	reinterpret_cast<int>(material->cycle->frameTable[i])));
+src/GameZRecoil/zModel/gmod_matl.c	reinterpret_cast<zImage_TexDirEntryPartial *>(static_cast<int>(
+src/GameZRecoil/zModel/gmod_matl.c	reinterpret_cast<zVideo_ColorRgbFloat *>(&material->colorRgb));
+src/GameZRecoil/zModel/zModel.cpp	const DrawPointColor16Proc drawPoint = reinterpret_cast<DrawPointColor16Proc>(
+src/GameZRecoil/zModel/zModel.cpp	const zMat4x3 *matrix = reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+src/GameZRecoil/zModel/zModel.cpp	reinterpret_cast<zProjectedSphere *>(&projectedPoint), 1);
+src/GameZRecoil/zModel/zModel.cpp	static_cast<int>(reinterpret_cast<int>(&pointEntry->lensFlareSource[0]));
+src/GameZRecoil/zNetwork/znet_dplay.cpp	DPlayMethod const close = reinterpret_cast<DPlayMethod>(vtbl[4]);
+src/GameZRecoil/zNetwork/znet_dplay.cpp	DPlayMethod const release = reinterpret_cast<DPlayMethod>(vtbl[2]);
+src/GameZRecoil/zNetwork/znet_dplay.cpp	NetPkt01_PlayerColorAssignments * assignments = reinterpret_cast<NetPkt01_PlayerColorAssignments *>(packet);
+src/GameZRecoil/zNetwork/znet_dplay.cpp	void *const *const vtbl = reinterpret_cast<void *const *>(directPlay4->vtbl_00);
+src/GameZRecoil/zReader/zreader_load.cpp	MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPSTR>(&message), 0,
+src/GameZRecoil/zReader/zreader_load.cpp	g_zArchive_Current = reinterpret_cast<zArchiveList *>(payload);
+src/GameZRecoil/zReader/zreader_load.cpp	zIndexArchive *const current = reinterpret_cast<zIndexArchive *>(g_zArchive_Current);
+src/GameZRecoil/zRndr/zRndr.cpp	*reinterpret_cast<int *>(raw + 0x000) = 1;
+src/GameZRecoil/zRndr/zRndr.cpp	*reinterpret_cast<int *>(raw + 0x000) = usingDerivedPaletteKey != 0 ? 1 : 2;
+src/GameZRecoil/zRndr/zRndr.cpp	*reinterpret_cast<int *>(raw + 0x47c) = 0;
+src/GameZRecoil/zRndr/zRndr.cpp	*reinterpret_cast<int *>(raw + 0x47c) = 0;
+src/GameZRecoil/zRndr/zRndr.cpp	*reinterpret_cast<int *>(raw + 0x47c) = 1;
+src/GameZRecoil/zRndr/zRndr.cpp	*reinterpret_cast<int *>(raw + 0x47c) = 1;
+src/GameZRecoil/zRndr/zRndr.cpp	*reinterpret_cast<int *>(raw + 0x488) = g_zRndr_ActivePaletteRemapKey;
+src/GameZRecoil/zRndr/zRndr.cpp	*reinterpret_cast<int *>(raw + 0x488) = texKey;
+src/GameZRecoil/zRndr/zRndr.cpp	? reinterpret_cast<zVec3 *>(raw + 0x304)
+src/GameZRecoil/zRndr/zRndr.cpp	? reinterpret_cast<zVideo_RenderClass *>(stageTexDirEntry->texture)
+src/GameZRecoil/zRndr/zRndr.cpp	FogColor_SetRgb01Clamped(reinterpret_cast<zColorRgb *>(g_fogColorParams.colorRgb01));
+src/GameZRecoil/zRndr/zRndr.cpp	SubmitPolyRenderClassProc submitPoly = reinterpret_cast<SubmitPolyRenderClassProc>(
+src/GameZRecoil/zRndr/zRndr.cpp	cmd.hasClippedTriVerts != 0 ? reinterpret_cast<zVec3 *>(raw + 0x308) : 0;
+src/GameZRecoil/zRndr/zRndr.cpp	const int commandTag = *reinterpret_cast<int *>(raw + 0x000);
+src/GameZRecoil/zRndr/zRndr.cpp	const int texKey = *reinterpret_cast<int *>(raw + 0x488);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned char *alphaMap = reinterpret_cast<const unsigned char *>(g_spanActiveTexAlphaMap);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned char *alphaMap = reinterpret_cast<const unsigned char *>(g_spanActiveTexAlphaMap);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned char *alphaMap = reinterpret_cast<const unsigned char *>(g_spanActiveTexAlphaMap);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned char *alphaMap = reinterpret_cast<const unsigned char *>(g_spanActiveTexAlphaMap);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned char *alphaMap = reinterpret_cast<const unsigned char *>(g_spanActiveTexAlphaMap);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned char *alphaMap = reinterpret_cast<const unsigned char *>(g_spanActiveTexAlphaMap);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned char *alphaMap = reinterpret_cast<const unsigned char *>(g_spanActiveTexAlphaMap);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned char *alphaMap = reinterpret_cast<const unsigned char *>(g_spanActiveTexAlphaMap);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned char *alphaMap = reinterpret_cast<const unsigned char *>(g_spanActiveTexAlphaMap);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned char *alphaMap = reinterpret_cast<const unsigned char *>(g_spanActiveTexAlphaMap);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned char *alphaMap = reinterpret_cast<const unsigned char *>(g_spanActiveTexAlphaMap);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned char *alphaMap = reinterpret_cast<const unsigned char *>(g_spanActiveTexAlphaMap);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned short *texels = reinterpret_cast<const unsigned short *>(g_spanActiveTexels);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned short *texels16 = reinterpret_cast<const unsigned short *>(g_spanActiveTexels);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned short *texels16 = reinterpret_cast<const unsigned short *>(g_spanActiveTexels);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned short *texels16 = reinterpret_cast<const unsigned short *>(g_spanActiveTexels);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned short *texels16 = reinterpret_cast<const unsigned short *>(g_spanActiveTexels);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned short *texels16 = reinterpret_cast<const unsigned short *>(g_spanActiveTexels);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned short *texels16 = reinterpret_cast<const unsigned short *>(g_spanActiveTexels);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned short *texels16 = reinterpret_cast<const unsigned short *>(g_spanActiveTexels);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned short *texels16 = reinterpret_cast<const unsigned short *>(g_spanActiveTexels);
+src/GameZRecoil/zRndr/zRndr.cpp	const unsigned short *texels16 = reinterpret_cast<const unsigned short *>(g_spanActiveTexels);
+src/GameZRecoil/zRndr/zRndr.cpp	float *perVertexAlphaOrShadeF = reinterpret_cast<float *>(raw + 0x374);
+src/GameZRecoil/zRndr/zRndr.cpp	g_zVideo_pfnBltSourceToPrimary = reinterpret_cast<zVideo_BltSourceToPrimaryProc>(0x0048f560);
+src/GameZRecoil/zRndr/zRndr.cpp	if ((reinterpret_cast<unsigned int>(g_spanCurrentDst16) & 3u) != 0) {
+src/GameZRecoil/zRndr/zRndr.cpp	if ((reinterpret_cast<unsigned int>(g_spanCurrentDst16) & 3u) != 0) {
+src/GameZRecoil/zRndr/zRndr.cpp	if (zRndr_SpanOcclusion_TestPointVisibility(reinterpret_cast<zVec3 *>(sample)) == 0) {
+src/GameZRecoil/zRndr/zRndr.cpp	reinterpret_cast<ImmediateRaster4Proc>(zRndr::g_pfnImmediateRaster4)(zRndr::g_frameBuffer, x0,
+src/GameZRecoil/zRndr/zRndr.cpp	reinterpret_cast<ImmediateRaster5Proc>(zRndr::g_pfnImmediateRaster5);
+src/GameZRecoil/zRndr/zRndr.cpp	reinterpret_cast<const zRndr_LineClipRect2I *>(&zRndr::g_activeRegionRect);
+src/GameZRecoil/zRndr/zRndr.cpp	reinterpret_cast<unsigned short *>(frameBase + static_cast<int>(y) * g_pitchBytes +
+src/GameZRecoil/zRndr/zRndr.cpp	reinterpret_cast<unsigned short *>(scanlineBase + byteOffset);
+src/GameZRecoil/zRndr/zRndr.cpp	reinterpret_cast<zColorRgb *>(zRndr::g_fogParamsActive.colorRgb01));
+src/GameZRecoil/zRndr/zRndr.cpp	reinterpret_cast<zColorRgb *>(zRndr::g_fogParamsActive.colorRgb01));
+src/GameZRecoil/zRndr/zRndr.cpp	reinterpret_cast<zRndr_LensFlareSource *>(sample->lensFlareSource);
+src/GameZRecoil/zRndr/zRndr.cpp	reinterpret_cast<zRndr_LensFlareVisibleSampleDef *>(sample);
+src/GameZRecoil/zRndr/zRndr.cpp	reinterpret_cast<zVec3 *>(cmd.triVerts), cmd.vertexCount,
+src/GameZRecoil/zRndr/zRndr.cpp	reinterpret_cast<zVideo_TexCoord *>(triUVs), 4, renderClass, 0x10, 1.0f, 0);
+src/GameZRecoil/zRndr/zRndr.cpp	static_cast<int>(reinterpret_cast<unsigned int>(pixels) & 3u);
+src/GameZRecoil/zRndr/zRndr.cpp	submitPoly(reinterpret_cast<zVideo_XyzVertex *>(projectedVerts),
+src/GameZRecoil/zRndr/zRndr.cpp	unsigned char *raw = reinterpret_cast<unsigned char *>(&cmd);
+src/GameZRecoil/zRndr/zRndr.cpp	unsigned char *raw = reinterpret_cast<unsigned char *>(&cmd);
+src/GameZRecoil/zRndr/zRndr.cpp	unsigned char *raw = reinterpret_cast<unsigned char *>(&cmd);
+src/GameZRecoil/zRndr/zRndr.cpp	unsigned char *raw = reinterpret_cast<unsigned char *>(&cmd);
+src/GameZRecoil/zRndr/zRndr.cpp	unsigned char *raw = reinterpret_cast<unsigned char *>(&cmd);
+src/GameZRecoil/zRndr/zRndr.cpp	unsigned char *raw = reinterpret_cast<unsigned char *>(&cmd);
+src/GameZRecoil/zRndr/zRndr.cpp	unsigned int *rowPairs = reinterpret_cast<unsigned int *>(rowPixels16);
+src/GameZRecoil/zRndr/zRndr.cpp	zMath_UnprojectPointBatchZBuf(reinterpret_cast<const zProjectedPoint *>(sample), outPoint, 1);
+src/GameZRecoil/zRndr/zRndr.cpp	zRndr::g_spanCurrentDst16 = reinterpret_cast<unsigned short *>(
+src/GameZRecoil/zRndr/zRndr.cpp	zRndr::g_spanCurrentDst16 = reinterpret_cast<unsigned short *>(
+src/GameZRecoil/zRndr/zRndr.cpp	zRndr::g_spanCurrentDst16 = reinterpret_cast<unsigned short *>(
+src/GameZRecoil/zRndr/zRndr.cpp	zRndr::g_spanCurrentDst16 = reinterpret_cast<unsigned short *>(
+src/GameZRecoil/zRndr/zRndr.cpp	zRndr::g_spanCurrentDst16 = reinterpret_cast<unsigned short *>(
+src/GameZRecoil/zRndr/zRndr.cpp	zRndr::g_spanCurrentDst16 = reinterpret_cast<unsigned short *>(
+src/GameZRecoil/zRndr/zRndr.cpp	zRndr::g_spanCurrentDst16 = reinterpret_cast<unsigned short *>(
+src/GameZRecoil/zRndr/zRndr.cpp	zRndr_DrawFlatImmediate(reinterpret_cast<zVec3 *>(cmd.polyVerts),
+src/GameZRecoil/zRndr/zRndr.cpp	zRndr_LensFlareSource *lensFlareSource = reinterpret_cast<zRndr_LensFlareSource *>(
+src/GameZRecoil/zRndr/zRndr.cpp	zVec2 *triUVs = reinterpret_cast<zVec2 *>(cmd.triUVs);
+src/GameZRecoil/zRndr/zRndr.cpp	zVec2 *triUVs = reinterpret_cast<zVec2 *>(raw + 0x358);
+src/GameZRecoil/zRndr/zRndr.cpp	zVec3 *clippedTriVerts = *reinterpret_cast<int *>(raw + 0x47c) != 0
+src/GameZRecoil/zRndr/zRndr.cpp	zVec3 *polyVerts = reinterpret_cast<zVec3 *>(cmd.polyVerts);
+src/GameZRecoil/zRndr/zRndr.cpp	zVec3 *polyVerts = reinterpret_cast<zVec3 *>(raw + 0x004);
+src/GameZRecoil/zRndr/zRndr.cpp	zVec3 *triVerts = reinterpret_cast<zVec3 *>(cmd.triVerts);
+src/GameZRecoil/zRndr/zRndr.cpp	zVec3 *triVerts = reinterpret_cast<zVec3 *>(raw + 0x328);
+src/GameZRecoil/zRndr/zRndr.cpp	zVideo::SetFogColorFromRgb01(reinterpret_cast<zVideo_ColorRgbFloat *>(color));
+src/GameZRecoil/zRndr/zRndr.cpp	zVideo::SetFogTargetColorFromRgb01(reinterpret_cast<zVideo_ColorRgbFloat *>(color));
+src/GameZRecoil/zRndr/zRndr.cpp	zVideo_SetPendingFogTargetColorFromRgb01(reinterpret_cast<zVideo_ColorRgbFloat *>(color));
+src/GameZRecoil/zSound/zsnd_cd.cpp	0x807, 0x0a, reinterpret_cast<DWORD_PTR>(&seekParms));
+src/GameZRecoil/zSound/zsnd_cd.cpp	0x808, 0x02, reinterpret_cast<DWORD_PTR>(&stopParms));
+src/GameZRecoil/zSound/zsnd_cd.cpp	MCI_WAIT | MCI_SET_TIME_FORMAT, reinterpret_cast<DWORD_PTR>(&setParms));
+src/GameZRecoil/zSound/zsnd_cd.cpp	MCI_WAIT | MCI_STATUS_ITEM, reinterpret_cast<DWORD_PTR>(&statusParms));
+src/GameZRecoil/zSound/zsnd_cd.cpp	MCI_WAIT | MCI_STATUS_ITEM, reinterpret_cast<DWORD_PTR>(&statusParms));
+src/GameZRecoil/zSound/zsnd_cd.cpp	MCI_WAIT | MCI_STATUS_ITEM, reinterpret_cast<DWORD_PTR>(&statusParms));
+src/GameZRecoil/zSound/zsnd_cd.cpp	mciSendCommandA(0, MCI_OPEN, MCI_OPEN_TYPE, reinterpret_cast<DWORD_PTR>(&openParms));
+src/GameZRecoil/zSound/zsnd_cd.cpp	reinterpret_cast<DWORD_PTR>(&closeParms));
+src/GameZRecoil/zSound/zsnd_cd.cpp	reinterpret_cast<DWORD_PTR>(&playParms));
+src/GameZRecoil/zSound/zsnd_create.cpp	A3dBuffer *buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_create.cpp	A3dBuffer *const buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_create.cpp	A3dBuffer *const buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_create.cpp	A3dDevice *const device = reinterpret_cast<A3dDevice *>(g_zSnd_BackendDevice);
+src/GameZRecoil/zSound/zsnd_create.cpp	DirectSoundBuffer * buffer = reinterpret_cast<DirectSoundBuffer *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_create.cpp	DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_create.cpp	DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_create.cpp	DirectSoundDevice *const device = reinterpret_cast<DirectSoundDevice *>(g_zSnd_BackendDevice);
+src/GameZRecoil/zSound/zsnd_create.cpp	buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_create.cpp	buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_create.cpp	buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_create.cpp	buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_create.cpp	cuePoints = reinterpret_cast<zSndCuePoint *>(body + 4);
+src/GameZRecoil/zSound/zsnd_create.cpp	fmt = reinterpret_cast<WAVEFORMATEX *>(body);
+src/GameZRecoil/zSound/zsnd_group.cpp	childNode, reinterpret_cast<zSndGroupRuntimeFields *>(&result->groupName),
+src/GameZRecoil/zSound/zsnd_group.cpp	g_zSndStream_RootNode, reinterpret_cast<void *>(&zSndStreamMgr_RecycleFinishedRequest));
+src/GameZRecoil/zSound/zsnd_group.cpp	reinterpret_cast<zSndGroupRuntimeFields *>(&result->groupName));
+src/GameZRecoil/zSound/zsnd_group.cpp	reinterpret_cast<zSndGroupRuntimeFields *>(&result->groupName));
+src/GameZRecoil/zSound/zsnd_group.cpp	reinterpret_cast<zSndGroupRuntimeFields *>(&result->groupName));
+src/GameZRecoil/zSound/zsnd_group.cpp	reinterpret_cast<zSndGroupRuntimeFields *>(&result->groupName));
+src/GameZRecoil/zSound/zsnd_group.cpp	reinterpret_cast<zSndStreamRequest *>(request)->streamState = 4;
+src/GameZRecoil/zSound/zsnd_group.cpp	return reinterpret_cast<zSndSample *>(zArchiveList_FindPayloadByPredicate(
+src/GameZRecoil/zSound/zsnd_group.cpp	return request->StateBeginGroup() != 0 ? reinterpret_cast<zSndPlayHandle *>(request) : 0;
+src/GameZRecoil/zSound/zsnd_init.cpp	A3DApi *api = reinterpret_cast<A3DApi *>(g_zSnd_BackendDevice);
+src/GameZRecoil/zSound/zsnd_init.cpp	api, kIID_IA3dGeom, reinterpret_cast<void **>(&g_zSnd_BackendAuxHandleOrConfig));
+src/GameZRecoil/zSound/zsnd_init.cpp	api->vtbl->SetCooperativeLevel(api, reinterpret_cast<HWND>(g_zSnd_WindowHandle), 1);
+src/GameZRecoil/zSound/zsnd_init.cpp	reinterpret_cast<HWND>(g_zSnd_WindowHandle), DSSCL_NORMAL);
+src/GameZRecoil/zSound/zsnd_init.cpp	reinterpret_cast<UnknownReleaseProc>(vtbl[2])(outBuffer);
+src/GameZRecoil/zSound/zsnd_init.cpp	reinterpret_cast<void **>(&g_zSnd_BackendDevice));
+src/GameZRecoil/zSound/zsnd_init.cpp	reinterpret_cast<void **>(&g_zSnd_BackendListenerHandle));
+src/GameZRecoil/zSound/zsnd_init.cpp	void **vtbl = *reinterpret_cast<void ***>(outBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	A3dListener *const listener = reinterpret_cast<A3dListener *>(g_zSnd_BackendListenerHandle);
+src/GameZRecoil/zSound/zsnd_play.cpp	A3dReleaseObject * object = reinterpret_cast<A3dReleaseObject *>(buffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	A3dSource *const primarySource = reinterpret_cast<A3dSource *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	A3dSource *const source = reinterpret_cast<A3dSource *>(backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	A3dSource *const source = reinterpret_cast<A3dSource *>(backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	A3dSource *const source = reinterpret_cast<A3dSource *>(backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	A3dSource *const source = reinterpret_cast<A3dSource *>(handle->backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	A3dSource *const source = reinterpret_cast<A3dSource *>(playHandle->backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	A3dSource *const source = reinterpret_cast<A3dSource *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	A3dSource *const source = reinterpret_cast<A3dSource *>(result->backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	A3dSource *const source = reinterpret_cast<A3dSource *>(voice->backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	BackendDevice *const device = reinterpret_cast<BackendDevice *>(g_zSnd_BackendDevice);
+src/GameZRecoil/zSound/zsnd_play.cpp	BackendDevice *const device = reinterpret_cast<BackendDevice *>(g_zSnd_BackendDevice);
+src/GameZRecoil/zSound/zsnd_play.cpp	BackendDevice *const device = reinterpret_cast<BackendDevice *>(g_zSnd_BackendDevice);
+src/GameZRecoil/zSound/zsnd_play.cpp	DirectSoundBuffer *buffer = reinterpret_cast<DirectSoundBuffer *>(result->backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(handle->backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(playHandle->backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	UnknownBackendComObject * object = reinterpret_cast<UnknownBackendComObject *>(buffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	buffer = reinterpret_cast<DirectSoundBuffer *>(result->backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	buffer = reinterpret_cast<DirectSoundBuffer *>(result->backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	buffer = reinterpret_cast<DirectSoundBuffer *>(result->backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	reinterpret_cast<A3dDeviceVTable *>(device->vtable)
+src/GameZRecoil/zSound/zsnd_play.cpp	reinterpret_cast<A3dDeviceVTable *>(device->vtable)->CommitDeferredSettings(device);
+src/GameZRecoil/zSound/zsnd_play.cpp	reinterpret_cast<DirectSoundBuffer *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	reinterpret_cast<DirectSoundBuffer *>(primaryVoice.backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	reinterpret_cast<DirectSoundBuffer *>(voice->backendBuffer);
+src/GameZRecoil/zSound/zsnd_play.cpp	reinterpret_cast<DirectSoundDeviceVTable *>(device->vtable)
+src/GameZRecoil/zSound/zsnd_play.cpp	return reinterpret_cast<int>(this);
+src/GameZRecoil/zSound/zsnd_play.cpp	return reinterpret_cast<zSndGroup *>(this)->QueueStreamRequestSimple(gainScale);
+src/GameZRecoil/zSound/zsnd_play.cpp	return reinterpret_cast<zSndGroup *>(this)->QueueStreamRequestWithWorldPos(
+src/GameZRecoil/zSound/zsnd_system.cpp	A3dSource *const source = reinterpret_cast<A3dSource *>(handle->backendBuffer);
+src/GameZRecoil/zSound/zsnd_system.cpp	DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(handle->backendBuffer);
+src/GameZRecoil/zSound/zsnd_system.cpp	TickBackendDevice *const device = reinterpret_cast<TickBackendDevice *>(g_zSnd_BackendDevice);
+src/GameZRecoil/zSound/zsnd_system.cpp	return reinterpret_cast<zSndFadeList *>(&g_zSndFadeActiveListFlags);
+src/GameZRecoil/zSys/zSys.cpp	expectedCycles = static_cast<unsigned int>(reinterpret_cast<unsigned int>(outBuffer));
+src/GameZRecoil/zSys/zSys.cpp	if (IDirectDraw_QueryInterface(pDDraw, IID_IDirectDraw2, reinterpret_cast<void **>(&pDDraw2)) <
+src/GameZRecoil/zSys/zSys.cpp	reinterpret_cast<void **>(&pSurface3)) < 0) {
+src/GameZRecoil/zSys/zSys.cpp	reinterpret_cast<void **>(&pSurface4)) >= 0) {
+src/GameZRecoil/zSys/zSys.cpp	return reinterpret_cast<CpuBenchmarkResolver *>(static_cast<unsigned int>(value));
+src/GameZRecoil/zSys/zSys.cpp	static_cast<int>(reinterpret_cast<unsigned int>(this));
+src/GameZRecoil/zSys/zSys.cpp	static_cast<unsigned int>(reinterpret_cast<unsigned int>(this));
+src/GameZRecoil/zSys/zSys.cpp	zDirectDrawCreateFn directDrawCreate = reinterpret_cast<zDirectDrawCreateFn>(GetProcAddress(ddrawModule, kDirectDrawCreateName));
+src/GameZRecoil/zUtil/zZbd.cpp	reinterpret_cast<DataReadyCallback>(onDataReady)(callbackCtx, sectionToken, buffer, size,
+src/GameZRecoil/zUtil/zZbd.cpp	return reinterpret_cast<PreLoadCallback>(onPreLoad)(callbackCtx, userData);
+src/GameZRecoil/zVideo/zVideo.cpp	&textureMemCaps, reinterpret_cast<DWORD *>(&entry.m_textureMemTotalBytes),
+src/GameZRecoil/zVideo/zVideo.cpp	&videoMemCaps, reinterpret_cast<DWORD *>(&entry.m_videoMemTotalBytes),
+src/GameZRecoil/zVideo/zVideo.cpp	&zBufferDesc, reinterpret_cast<IDirectDrawSurface **>(&g_zVideo_pZBufferSurface), 0);
+src/GameZRecoil/zVideo/zVideo.cpp	*reinterpret_cast<DWORD *>(&fogEnd));
+src/GameZRecoil/zVideo/zVideo.cpp	*reinterpret_cast<DWORD *>(&fogEnd));
+src/GameZRecoil/zVideo/zVideo.cpp	*reinterpret_cast<DWORD *>(&fogStart));
+src/GameZRecoil/zVideo/zVideo.cpp	*reinterpret_cast<DWORD *>(&fogStart));
+src/GameZRecoil/zVideo/zVideo.cpp	*reinterpret_cast<unsigned int *>(&driver.m_hwDesc[offset]) = value;
+src/GameZRecoil/zVideo/zVideo.cpp	ClientToScreen(g_zVideo_hWnd, reinterpret_cast<POINT *>(&g_zVideo_CachedClientRectScreen.left));
+src/GameZRecoil/zVideo/zVideo.cpp	ConvertImagePixelsForTexture(reinterpret_cast<unsigned short *>(dstPixels), image,
+src/GameZRecoil/zVideo/zVideo.cpp	IID_IDirect3D2, reinterpret_cast<void **>(&g_zVideo_pD3D2));
+src/GameZRecoil/zVideo/zVideo.cpp	IID_IDirectDraw2, reinterpret_cast<void **>(&g_zVideo_pDirectDraw2));
+src/GameZRecoil/zVideo/zVideo.cpp	IID_IDirectDrawSurface, reinterpret_cast<void **>(&g_zVideo_pZBufferAttachSurface));
+src/GameZRecoil/zVideo/zVideo.cpp	entry.renderClass = reinterpret_cast<int>(renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	entry.renderClass = reinterpret_cast<int>(renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	entry.renderClass = reinterpret_cast<int>(renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	entry.renderClass = reinterpret_cast<int>(renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	entry.renderClass = reinterpret_cast<int>(renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	entry.renderClass = reinterpret_cast<int>(renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	entry.renderClass = reinterpret_cast<int>(renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	entry.renderClass = reinterpret_cast<int>(renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	entry.renderClass = reinterpret_cast<int>(renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	g_zVideo_SwSurfaceState.surf->Blt(reinterpret_cast<RECT *>(dstRect),
+src/GameZRecoil/zVideo/zVideo.cpp	g_zVideo_pfnBltSwToPrimaryRectDirect = reinterpret_cast<zVideo_BltRectDirectProc>(0x004a7d90);
+src/GameZRecoil/zVideo/zVideo.cpp	g_zVideo_pfnShutdownVideoSystem = reinterpret_cast<zVideo_ShutdownVideoSystemProc>(0x004a7d40);
+src/GameZRecoil/zVideo/zVideo.cpp	if (D3DDescReadDword(reinterpret_cast<D3DDEVICEDESC *>(driver.m_hwDesc),
+src/GameZRecoil/zVideo/zVideo.cpp	if (D3DDescReadDword(reinterpret_cast<D3DDEVICEDESC *>(driver.m_hwDesc),
+src/GameZRecoil/zVideo/zVideo.cpp	primarySurface->Blt(reinterpret_cast<RECT *>(&dstRectLocal), srcImage->surface,
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<DWORD *>(&entry.m_textureMemFreeBytes)) != DD_OK) {
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<DWORD *>(&entry.m_videoMemFreeBytes)) != DD_OK) {
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<HudUiContainer *>(config)->UpdateAll(deltaTime);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<IDirectDrawSurface *>(g_zVideo_SwSurfaceState.surf), &g_zVideo_pD3DDevice);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<IDirectDrawSurface3 *>(g_zVideo_pZBufferAttachSurface));
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<IDirectDrawSurface3 *>(textureRecord->m_uploadSurface)) == 0
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<IDirectDrawSurface3 *>(textureRecord->m_uploadSurface),
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<POINT *>(&g_zVideo_CachedClientRectScreen.right));
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<RECT *>(&dstRectLocal), srcImage->surface,
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<RECT *>(&srcRectLocal), bltFlags, 0);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<RECT *>(&srcRectLocal), bltFlags, 0);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<RECT *>(dstRect), g_zVideo_PrimarySurfaceState.surf,
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<RECT *>(dstRect), g_zVideo_SwSurfaceState.surf,
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<RECT *>(srcRect), DDBLT_WAIT, 0);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<RECT *>(srcRect), DDBLT_WAIT, 0);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<RECT *>(srcRect), bltFlags, 0);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<const D3DDEVICEDESC *>(g_zVideo_pSelectedD3DDeviceInfo->m_hwDesc);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<unsigned char *>(result) + 0x200 + recipeIndex * 0x4000);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<unsigned char *>(table) + byteOffset);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<unsigned short *>(reinterpret_cast<unsigned char *>(dest) + 0x200);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<unsigned short *>(reinterpret_cast<unsigned char *>(dest) + 0x200);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<void **>(&g_zVideo_pD3D2));
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<void **>(&surface3));
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<void **>(&texture));
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<void **>(&uploadTexture));
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<void **>(&uploadTexture));
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<void **>(outSurface));
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<zVideo_ClearStateSurfaceAndZBufferProc>(0x004a8220);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<zVideo_ClearSwSurfaceAndZBufferProc>(0x004a82f0);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<zVideo_DestroyTextureRecordProc>(g_zVideo_pfnTextureRecordDestroy)(
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<zVideo_ImageProc>(g_zVideo_pfnImageEnsureSurfaceForCurrentDevice)(
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<zVideo_ReleaseAllTextureUploadSurfacesProc>(
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<zVideo_RenderClass *>(entry.renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<zVideo_RenderClass *>(entry.renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	reinterpret_cast<zVideo_RenderClass *>(entry.renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	return *reinterpret_cast<const unsigned int *>(reinterpret_cast<const unsigned char *>(desc) +
+src/GameZRecoil/zVideo/zVideo.cpp	return *reinterpret_cast<const unsigned int *>(reinterpret_cast<const unsigned char *>(desc) +
+src/GameZRecoil/zVideo/zVideo.cpp	surface->Blt(reinterpret_cast<RECT *>(rect), 0, 0, flags, bltFx);
+src/GameZRecoil/zVideo/zVideo.cpp	unsigned char *alpha = reinterpret_cast<unsigned char *>(image->alphaMap);
+src/GameZRecoil/zVideo/zVideo.cpp	unsigned char *alphaCursor = reinterpret_cast<unsigned char *>(image->alphaMap);
+src/GameZRecoil/zVideo/zVideo.cpp	unsigned char *dstRowBytes = reinterpret_cast<unsigned char *>(dstPixels);
+src/GameZRecoil/zVideo/zVideo.cpp	unsigned short *color = reinterpret_cast<unsigned short *>(
+src/GameZRecoil/zVideo/zVideo.cpp	unsigned short *dest = reinterpret_cast<unsigned short *>(
+src/GameZRecoil/zVideo/zVideo.cpp	unsigned short *dstCursor = reinterpret_cast<unsigned short *>(dstRowBytes);
+src/GameZRecoil/zVideo/zVideo.cpp	unsigned short *dstCursor = reinterpret_cast<unsigned short *>(dstRowBytes);
+src/GameZRecoil/zVideo/zVideo.cpp	zMath::MatStackPushAndCloneParent(reinterpret_cast<float *>(&yawSlotBuffer));
+src/GameZRecoil/zVideo/zVideo.cpp	zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+src/GameZRecoil/zVideo/zVideo.cpp	zVideo_RenderClass *renderClass = reinterpret_cast<zVideo_RenderClass *>(entry.renderClass);
+src/GameZRecoil/zVideo/zVideo.cpp	zVideo_dd::LockSurface_WaitRestore(reinterpret_cast<IDirectDrawSurface3 *>(uploadSurface),
+src/GameZRecoil/zVideo/zVideo.cpp	zVideo_dd::UnlockSurface_WaitRestore(reinterpret_cast<IDirectDrawSurface3 *>(uploadSurface));
+src/GameZRecoil/zWeapon/OptCatalog.c	->damageHandler = reinterpret_cast<void *>(1);
+src/GameZRecoil/zWeapon/OptCatalog.c	reinterpret_cast<OptCatalogDamageTimerCallback>(handler->timerCallback);
+src/GameZRecoil/zWeapon/OptCatalog.c	reinterpret_cast<zClass_NodeFreeListSlot *>(node)->damageHandler);
+src/GameZRecoil/zWeapon/OptCatalog.c	reinterpret_cast<zClass_NodeFreeListSlot *>(runtimeInstance->projectileNode)
+src/GameZRecoil/zWeapon/OptCatalog.c	reinterpret_cast<zClass_NodePartial *>(runtimeInstance);
+src/GameZRecoil/zWeapon/zWeapon.cpp	void *const kOnWeaponsSectionDataReady = reinterpret_cast<void *>(0x004b1160);
+src/GameZRecoil/zWeapon/zWeapon.cpp	void *const kOnWeaponsSectionPreLoad = reinterpret_cast<void *>(0x004b1140);

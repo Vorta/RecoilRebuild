@@ -1,0 +1,55 @@
+{
+  "name": "hud_ui_counter_release_state_images",
+  "description": "HudUiCounter owned state-image release helper.",
+  "source_filename": "HudUiCounter_ReleaseStateImages.cpp",
+  "source": [
+    "struct zVidImagePartial;",
+    "",
+    "namespace zVid_Image {",
+    "int __fastcall ReleaseIfNotDefault(zVidImagePartial *image);",
+    "}",
+    "",
+    "struct HudUiCounter {",
+    "    unsigned char m_padding_000[0xbc];",
+    "    zVidImagePartial *stateImage0;",
+    "    zVidImagePartial *stateImage1;",
+    "    zVidImagePartial *stateImage2;",
+    "",
+    "    void ReleaseStateImages();",
+    "};",
+    "",
+    "// Reimplements 0x40f0f0: HudUiCounter::ReleaseStateImages",
+    "void HudUiCounter::ReleaseStateImages() {",
+    "    zVid_Image::ReleaseIfNotDefault(stateImage0);",
+    "    zVid_Image::ReleaseIfNotDefault(stateImage1);",
+    "    zVid_Image::ReleaseIfNotDefault(stateImage2);",
+    "",
+    "    stateImage2 = 0;",
+    "    stateImage1 = 0;",
+    "    stateImage0 = 0;",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x40f0f0",
+      "symbol": "?ReleaseStateImages@HudUiCounter@@QAEXXZ",
+      "name": "HudUiCounter::ReleaseStateImages"
+    }
+  ]
+}

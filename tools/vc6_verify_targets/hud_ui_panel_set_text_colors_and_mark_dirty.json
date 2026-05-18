@@ -1,0 +1,61 @@
+{
+  "name": "hud_ui_panel_set_text_colors_and_mark_dirty",
+  "description": "HudUiPanel text color setters and dirty flag.",
+  "source_filename": "HudUiPanel_SetTextColorsAndMarkDirty.cpp",
+  "source": [
+    "struct HudUiPanel {",
+    "    unsigned char m_padding_000[0x14c];",
+    "    unsigned int m_textColor0;",
+    "    unsigned int m_textColor1;",
+    "    unsigned char m_padding_154[0x270 - 0x154];",
+    "    unsigned int m_dirty;",
+    "",
+    "    unsigned int SetTextColor(unsigned int color);",
+    "    void SetTextColorsAndMarkDirty(unsigned int color0, unsigned int color1);",
+    "};",
+    "",
+    "// Reimplements 0x40f9e0: HudUiPanel::SetTextColor",
+    "unsigned int HudUiPanel::SetTextColor(unsigned int color) {",
+    "    const unsigned int previous = m_textColor0;",
+    "    m_textColor0 = color;",
+    "    m_textColor1 = color;",
+    "    m_dirty = 1;",
+    "    return previous;",
+    "}",
+    "",
+    "// Reimplements 0x40e010: HudUiPanel::SetTextColorsAndMarkDirty",
+    "void HudUiPanel::SetTextColorsAndMarkDirty(unsigned int color0, unsigned int color1) {",
+    "    m_textColor0 = color0;",
+    "    m_textColor1 = color1;",
+    "    m_dirty = 1;",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x40f9e0",
+      "symbol": "?SetTextColor@HudUiPanel@@QAEII@Z",
+      "name": "HudUiPanel::SetTextColor"
+    },
+    {
+      "address": "0x40e010",
+      "symbol": "?SetTextColorsAndMarkDirty@HudUiPanel@@QAEXII@Z",
+      "name": "HudUiPanel::SetTextColorsAndMarkDirty"
+    }
+  ]
+}

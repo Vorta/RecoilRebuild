@@ -1,0 +1,82 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "ninja-x86-debug",
+      "displayName": "Ninja x86 Debug",
+      "description": "Use from an x86 MSVC Developer PowerShell or after vcvarsall x86.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/ninja-x86-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "RECOIL_REQUIRE_32BIT": "ON"
+      }
+    },
+    {
+      "name": "ninja-x86-release",
+      "displayName": "Ninja x86 Release",
+      "description": "Use from an x86 MSVC Developer PowerShell or after vcvarsall x86.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/ninja-x86-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "RECOIL_REQUIRE_32BIT": "ON"
+      }
+    },
+    {
+      "name": "vs-x86",
+      "displayName": "Visual Studio 2026 Win32",
+      "description": "Generates a Win32 Visual Studio solution for native binary-safe work and VS MCP builds.",
+      "generator": "Visual Studio 18 2026",
+      "architecture": "Win32",
+      "binaryDir": "${sourceDir}/build/vs-x86",
+      "cacheVariables": {
+        "RECOIL_REQUIRE_32BIT": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "ninja-x86-debug",
+      "configurePreset": "ninja-x86-debug"
+    },
+    {
+      "name": "ninja-x86-release",
+      "configurePreset": "ninja-x86-release"
+    },
+    {
+      "name": "vs-x86-debug",
+      "configurePreset": "vs-x86",
+      "configuration": "Debug"
+    },
+    {
+      "name": "vs-x86-release",
+      "configurePreset": "vs-x86",
+      "configuration": "Release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "ninja-x86-debug",
+      "configurePreset": "ninja-x86-debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ninja-x86-release",
+      "configurePreset": "ninja-x86-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "vs-x86-debug",
+      "configurePreset": "vs-x86",
+      "configuration": "Debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "name": "recoil_app_get_message_map",
+  "description": "RecoilApp MFC message-map accessor.",
+  "source_filename": "RecoilApp_GetMessageMap.cpp",
+  "source": [
+    "#include \"Battlesport/RecoilApp.h\"",
+    "",
+    "// Reimplements 0x42de10: RecoilApp::GetMessageMap",
+    "const MfcMsgMap *RECOIL_THISCALL RecoilApp::GetMessageMap() const {",
+    "    return &g_RecoilApp_MessageMap;",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42de10",
+      "symbol": "?GetMessageMap@RecoilApp@@QBEPBUMfcMsgMap@@XZ",
+      "name": "RecoilApp::GetMessageMap"
+    }
+  ],
+  "generated_files": {
+    "Battlesport/RecoilApp.h": [
+      "#pragma once",
+      "",
+      "#define RECOIL_THISCALL",
+      "",
+      "struct MfcMsgMap {",
+      "    const void *baseMap;",
+      "    const void *entries;",
+      "};",
+      "",
+      "struct RecoilApp {",
+      "    const MfcMsgMap *RECOIL_THISCALL GetMessageMap() const;",
+      "};",
+      "",
+      "extern const MfcMsgMap g_RecoilApp_MessageMap;"
+    ]
+  }
+}

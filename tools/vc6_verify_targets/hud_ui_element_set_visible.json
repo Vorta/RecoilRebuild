@@ -1,0 +1,56 @@
+{
+  "name": "hud_ui_element_set_visible",
+  "description": "HudUiElement visibility flag setter with invalidate callback.",
+  "source_filename": "HudUiElement_SetVisible.cpp",
+  "source": [
+    "struct HudUiElement;",
+    "typedef void (__fastcall *InvalidateFn)(HudUiElement *self);",
+    "",
+    "struct HudUiCommon_FTable {",
+    "    unsigned int slots[9];",
+    "};",
+    "",
+    "struct HudUiElement {",
+    "    const HudUiCommon_FTable *ftable;",
+    "    unsigned char m_padding_04[0x0c - 0x04];",
+    "    unsigned int flags;",
+    "",
+    "    void SetVisible(int visible);",
+    "};",
+    "",
+    "// Reimplements 0x404d20: HudUiElement::SetVisible",
+    "void HudUiElement::SetVisible(int visible) {",
+    "    if (visible != 0) {",
+    "        flags &= 0xffffffef;",
+    "        ((InvalidateFn)ftable->slots[8])(this);",
+    "        return;",
+    "    }",
+    "",
+    "    flags |= 0x10;",
+    "    ((InvalidateFn)ftable->slots[8])(this);",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x404d20",
+      "symbol": "?SetVisible@HudUiElement@@QAEXH@Z",
+      "name": "HudUiElement::SetVisible"
+    }
+  ]
+}

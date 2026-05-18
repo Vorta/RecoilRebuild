@@ -1,0 +1,50 @@
+{
+  "name": "recoil_app_register_at_exit",
+  "description": "RecoilApp atexit registration helper.",
+  "source_filename": "RecoilApp_RegisterAtExit.cpp",
+  "source": [
+    "#include \"Battlesport/RecoilApp.h\"",
+    "",
+    "// Reimplements 0x42de40: RecoilApp::RegisterAtExit",
+    "void RECOIL_CDECL RecoilApp::RegisterAtExit() {",
+    "    atexit(AtExitDestructor);",
+    "}"
+  ],
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42de40",
+      "symbol": "?RegisterAtExit@RecoilApp@@SAXXZ",
+      "name": "RecoilApp::RegisterAtExit"
+    }
+  ],
+  "generated_files": {
+    "Battlesport/RecoilApp.h": [
+      "#pragma once",
+      "",
+      "#define RECOIL_CDECL __cdecl",
+      "",
+      "int __cdecl atexit(void (__cdecl *function)(void));",
+      "",
+      "struct RecoilApp {",
+      "    static void RECOIL_CDECL RegisterAtExit();",
+      "    static void RECOIL_CDECL AtExitDestructor();",
+      "};"
+    ]
+  }
+}

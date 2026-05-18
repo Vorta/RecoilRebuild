@@ -1,0 +1,75 @@
+{
+  "name": "recoil_state_main_menu_transition_queue_enter",
+  "description": "Recoil main-menu transition QueueEnter helper.",
+  "source_filename": "RecoilStateMainMenuTransition_QueueEnter.cpp",
+  "source_from": "src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_QueueEnter.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [],
+  "source_files": [
+    "src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_QueueEnter.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x415650",
+      "symbol": "?QueueEnter@RecoilStateMainMenuTransition@@SIXW4RecoilMainMenuEntryRoute@@@Z",
+      "name": "RecoilStateMainMenuTransition::QueueEnter"
+    }
+  ],
+  "generated_files": {
+    "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h": [
+      "#pragma once",
+      "",
+      "namespace std {",
+      "typedef int int32_t;",
+      "}",
+      "",
+      "#define RECOIL_THISCALL",
+      "#define RECOIL_FASTCALL __fastcall",
+      "",
+      "typedef unsigned int RecoilPtr32;",
+      "",
+      "enum RecoilMainMenuEntryRoute {",
+      "    RECOIL_MAINMENU_ROUTE_FRONTEND = 0,",
+      "    RECOIL_MAINMENU_ROUTE_INGAME = 1",
+      "};",
+      "",
+      "enum zVidModeIndex {",
+      "    ZVID_MODE_INVALID_COMPLEMENT = -1",
+      "};",
+      "",
+      "struct RecoilApp_IState {",
+      "    RecoilPtr32 vftable;",
+      "};",
+      "",
+      "struct RecoilStateMainMenuTransition {",
+      "    RecoilPtr32 vftable;",
+      "    volatile RecoilPtr32 m_mainMenuDialog;",
+      "    std::int32_t m_savedHalfResAdjustMode;",
+      "    RecoilMainMenuEntryRoute m_entryRoute;",
+      "    zVidModeIndex m_deferredVideoModeIndex;",
+      "    RecoilPtr32 m_pausedAudioSnapshot;",
+      "",
+      "    static void RECOIL_FASTCALL QueueEnter(RecoilMainMenuEntryRoute entryRoute);",
+      "};",
+      "",
+      "extern RecoilStateMainMenuTransition g_RecoilState_MainMenuTransition;",
+      "",
+      "struct RecoilApp {",
+      "    void RECOIL_THISCALL QueuePushState(RecoilApp_IState *state, std::int32_t unknown);",
+      "};",
+      "",
+      "extern RecoilApp g_RecoilApp;"
+    ]
+  }
+}
