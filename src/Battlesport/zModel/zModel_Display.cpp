@@ -99,7 +99,7 @@ namespace zScene {
 RECOIL_NOINLINE int RECOIL_FASTCALL TestProjectedSphereVisible(zVec3 *center,
                                                                         float radius) {
     zMat4x3 slotBuffer = {0};
-    zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+    zMath::MatStackPushPtr((float *)(&slotBuffer));
     zMath::MatLoadCameraScratchB();
 
     zVec3 viewPoint = *center;
@@ -213,7 +213,7 @@ RECOIL_NOINLINE int RECOIL_CDECL zModel_Display_Init() {
     g_zModel_DisplayInitFlagC = 1;
 
     g_zModel_DisplayClipMode = 2;
-    g_zModel_SpanOcclusionProc = reinterpret_cast<void *>(kSpanOcclusionTestSphereVisible);
+    g_zModel_SpanOcclusionProc = (void *)(kSpanOcclusionTestSphereVisible);
     g_zModel_DisplayScratchCount = 0;
     g_zModel_DisplayScratchPtr = &g_zModel_ViewScaleX;
     g_zModel_DisplayClipX = 0;

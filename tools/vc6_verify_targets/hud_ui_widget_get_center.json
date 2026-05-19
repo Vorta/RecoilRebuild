@@ -1,47 +1,7 @@
 {
   "name": "hud_ui_widget_get_center",
   "description": "HudUiWidget center coordinate accessors.",
-  "source_filename": "HudUiWidget_GetCenter.cpp",
-  "source": [
-    "struct zVidImagePartial {",
-    "    int pixelCount;",
-    "    short width;",
-    "    short height;",
-    "};",
-    "",
-    "struct HudUiWidget {",
-    "    unsigned char m_padding_000[0x14];",
-    "    int x;",
-    "    int y;",
-    "    unsigned char m_padding_01c[0x3c - 0x1c];",
-    "    zVidImagePartial *image;",
-    "    unsigned char m_padding_040[0x48 - 0x40];",
-    "    unsigned int alignFlags;",
-    "",
-    "    int GetCenterX();",
-    "    int GetCenterY();",
-    "};",
-    "",
-    "// Reimplements 0x404d90: HudUiWidget::GetCenterX",
-    "int HudUiWidget::GetCenterX() {",
-    "    if (alignFlags != 0) {",
-    "        const int width = image != 0 ? image->width : 0;",
-    "        return x + (width / 2);",
-    "    }",
-    "",
-    "    return x;",
-    "}",
-    "",
-    "// Reimplements 0x404dd0: HudUiWidget::GetCenterY",
-    "int HudUiWidget::GetCenterY() {",
-    "    if (alignFlags != 0) {",
-    "        const int height = image != 0 ? image->height : 0;",
-    "        return y + (height / 2);",
-    "    }",
-    "",
-    "    return y;",
-    "}"
-  ],
+  "source_filename": "zhud_ui.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -54,7 +14,16 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/zHud/zhud_ui.cpp"
   ],
@@ -69,5 +38,6 @@
       "symbol": "?GetCenterY@HudUiWidget@@QAEHXZ",
       "name": "HudUiWidget::GetCenterY"
     }
-  ]
+  ],
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp"
 }

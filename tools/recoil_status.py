@@ -72,7 +72,8 @@ def print_vc6_status(entry: PlanEntry, manifest_dir: Path) -> None:
         return
 
     for manifest, function in matches:
-        print(f"- {manifest.name}: {function.symbol} mode={manifest.compare_mode}")
+        compiler_env = f" compiler_env={manifest.compiler_env}" if manifest.compiler_env else ""
+        print(f"- {manifest.name}: {function.symbol} mode={manifest.compare_mode}{compiler_env}")
     print(f"- verify: python tools/recoil_vc6_verify.py {entry.address}")
 
 

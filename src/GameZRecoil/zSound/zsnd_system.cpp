@@ -50,7 +50,7 @@ struct TickBackendDevice {
 };
 
 zSndFadeList *ActiveFadeList() {
-    return reinterpret_cast<zSndFadeList *>(&g_zSndFadeActiveListFlags);
+    return (zSndFadeList *)(&g_zSndFadeActiveListFlags);
 }
 
 void UnlinkAndDeleteFadeNode(zSndFadeListNode *node) {
@@ -288,7 +288,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndFadeEntry::TickAndMaybeDispatch(float de
             currentValue = -10000.0f;
         }
 
-        DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(handle->backendBuffer);
+        DirectSoundBuffer *const buffer = (DirectSoundBuffer *)(handle->backendBuffer);
         buffer->vtable->SetVolume(buffer, static_cast<int>(currentValue));
     } else if (g_zSnd_ActiveBackend == 1) {
         if (currentValue > 1.0f) {
@@ -297,7 +297,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndFadeEntry::TickAndMaybeDispatch(float de
             currentValue = 0.0f;
         }
 
-        A3dSource *const source = reinterpret_cast<A3dSource *>(handle->backendBuffer);
+        A3dSource *const source = (A3dSource *)(handle->backendBuffer);
         source->vtable->SetGain(source, zSndSample_PlaySimple(currentValue));
     }
 
@@ -369,7 +369,7 @@ zSndFadeListCursor::PopFrontCursor(zSndFadeListNode **outNode, int unused) {
 // Reimplements 0x49f620: zSnd_Tick
 extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_Tick(int skipA3dCommit) {
     if (g_zSnd_ActiveBackend == 1 && skipA3dCommit == 0) {
-        TickBackendDevice *const device = reinterpret_cast<TickBackendDevice *>(g_zSnd_BackendDevice);
+        TickBackendDevice *const device = (TickBackendDevice *)(g_zSnd_BackendDevice);
         device->vtable->CommitDeferredSettings(device);
         device->vtable->Tick(device);
     }

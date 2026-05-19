@@ -12,13 +12,13 @@ template <typename T> struct ComReleaseOnExit {
 };
 
 bool IsIidUnknown(const GUID *iid) {
-    const unsigned int * words = reinterpret_cast<const unsigned int *>(iid);
+    const unsigned int * words = (const unsigned int *)(iid);
     return words[0] == 0 && words[1] == 0 && words[2] == 0x000000c0 && words[3] == 0x46000000;
 }
 
 bool IsSameIid(const GUID *lhs, const GUID *rhs) {
-    const unsigned int * lhsWords = reinterpret_cast<const unsigned int *>(lhs);
-    const unsigned int * rhsWords = reinterpret_cast<const unsigned int *>(rhs);
+    const unsigned int * lhsWords = (const unsigned int *)(lhs);
+    const unsigned int * rhsWords = (const unsigned int *)(rhs);
     return lhsWords[0] == rhsWords[0] && lhsWords[1] == rhsWords[1] && lhsWords[2] == rhsWords[2] &&
            lhsWords[3] == rhsWords[3];
 }
@@ -53,7 +53,7 @@ HRESULT WINAPI zCom::QueryInterfaceFromInterfaceMap(void *objectBase,
                     break;
                 }
 
-                QueryInterfaceResolver resolver = reinterpret_cast<QueryInterfaceResolver>(resolverRaw);
+                QueryInterfaceResolver resolver = (QueryInterfaceResolver)(resolverRaw);
                 const HRESULT result =
                     resolver(objectBase, requestedIid, outInterface, currentEntry->interfaceOffset);
                 if (result == S_OK) {
@@ -73,7 +73,7 @@ HRESULT WINAPI zCom::QueryInterfaceFromInterfaceMap(void *objectBase,
         }
     }
 
-    IUnknown *const resolvedInterface = reinterpret_cast<IUnknown *>(static_cast<unsigned char *>(objectBase) + interfaceOffset);
+    IUnknown *const resolvedInterface = (IUnknown *)(static_cast<unsigned char *>(objectBase) + interfaceOffset);
     resolvedInterface->AddRef();
     *outInterface = resolvedInterface;
     return S_OK;
@@ -86,7 +86,7 @@ HRESULT WINAPI zCom::ConnectionPointContainer_Advise(IUnknown *source, REFIID co
     ComReleaseOnExit<IConnectionPoint> cp = {0};
 
     HRESULT result = source->QueryInterface(__uuidof(IConnectionPointContainer),
-                                            reinterpret_cast<void **>(&cpc.ptr));
+                                            (void **)(&cpc.ptr));
     if (result >= 0) {
         result = cpc.ptr->FindConnectionPoint(connectionPointIid, &cp.ptr);
         if (result >= 0) {
@@ -104,7 +104,7 @@ HRESULT WINAPI zCom::ConnectionPointContainer_Unadvise(IUnknown *source, REFIID 
     ComReleaseOnExit<IConnectionPoint> cp = {0};
 
     HRESULT result = source->QueryInterface(__uuidof(IConnectionPointContainer),
-                                            reinterpret_cast<void **>(&cpc.ptr));
+                                            (void **)(&cpc.ptr));
     if (result >= 0) {
         result = cpc.ptr->FindConnectionPoint(connectionPointIid, &cp.ptr);
         if (result >= 0) {

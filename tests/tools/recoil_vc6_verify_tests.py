@@ -9,17 +9,26 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 
 from recoil_vc6_verify import (  # noqa: E402
+    SourcePolicyBaseline,
+    VerifySelection,
     VerifyTarget,
     build_compile_command,
     covering_targets,
     find_target,
+    group_selections_by_compile_key,
     load_manifest,
     load_manifests,
     manifest_skeleton,
+    selected_targets_for_source_from,
 )
 
 
 def write_manifest(directory: Path, name: str = "sample") -> Path:
+    source_path = directory / "sample.cpp"
+    source_path.write_text(
+        "// Reimplements 0x401000: Sample\nint __cdecl Sample() { return 1; }\n",
+        encoding="utf-8",
+    )
     path = directory / f"{name}.json"
     path.write_text(
         json.dumps(
@@ -27,6 +36,7 @@ def write_manifest(directory: Path, name: str = "sample") -> Path:
                 "name": name,
                 "description": "sample target",
                 "source_filename": "sample_verify.cpp",
+                "source_from": str(source_path),
                 "compiler_flags": ["/nologo", "/TP", "/O2", "/FAcs"],
                 "include_dirs": ["src"],
                 "source_files": ["src/sample.cpp"],
@@ -37,7 +47,32 @@ def write_manifest(directory: Path, name: str = "sample") -> Path:
                         "name": "Sample",
                     }
                 ],
-                "source": ["int __cdecl Sample();", "#include \"sample.cpp\""],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return path
+
+
+def write_inline_manifest(directory: Path, name: str = "sample_inline") -> Path:
+    path = directory / f"{name}.json"
+    path.write_text(
+        json.dumps(
+            {
+                "name": name,
+                "description": "sample inline target",
+                "source_filename": "sample_inline.cpp",
+                "compiler_flags": ["/nologo", "/TP", "/O2", "/FAcs"],
+                "include_dirs": [],
+                "source_files": ["src/sample.cpp"],
+                "functions": [
+                    {
+                        "address": "0x00401000",
+                        "symbol": "?Sample@@YAHXZ",
+                        "name": "Sample",
+                    }
+                ],
+                "source": ["int __cdecl Sample() { return 1; }"],
             }
         ),
         encoding="utf-8",
@@ -52,20 +87,19 @@ class RecoilVc6VerifyTests(unittest.TestCase):
 
         self.assertEqual("sample", manifest.name)
         self.assertEqual("sample_verify.cpp", manifest.source_filename)
-        self.assertEqual("", manifest.source_from)
+        self.assertTrue(manifest.source_from.endswith("sample.cpp"))
         self.assertEqual("coff_bytes", manifest.compare_mode)
         self.assertTrue(manifest.trim_trailing_nops)
+        self.assertEqual("", manifest.compiler_env)
         self.assertEqual(("src/sample.cpp",), manifest.source_files)
         self.assertEqual((), manifest.generated_files)
         self.assertEqual("0x401000", manifest.functions[0].address)
-        self.assertIn('#include "sample.cpp"', manifest.source_text)
+        self.assertEqual("", manifest.source_text)
 
     def test_load_manifest_accepts_source_from_and_generated_files(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = write_manifest(Path(tmp))
             data = json.loads(path.read_text(encoding="utf-8"))
-            del data["source"]
-            data["source_from"] = "src/sample.cpp"
             data["generated_files"] = {
                 "sample.h": ["#pragma once", "int sample;"],
             }
@@ -73,9 +107,63 @@ class RecoilVc6VerifyTests(unittest.TestCase):
 
             manifest = load_manifest(path)
 
-        self.assertEqual("src/sample.cpp", manifest.source_from)
+        self.assertTrue(manifest.source_from.endswith("sample.cpp"))
         self.assertEqual("", manifest.source_text)
         self.assertEqual((("sample.h", "#pragma once\nint sample;\n"),), manifest.generated_files)
+
+    def test_inline_source_is_rejected_without_baseline_or_explicit_provider_escape(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_inline_manifest(Path(tmp))
+
+            with self.assertRaisesRegex(ValueError, "inline source bodies are not allowed"):
+                load_manifest(path)
+
+    def test_inline_source_can_load_when_recorded_as_legacy_debt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_inline_manifest(Path(tmp))
+            baseline = SourcePolicyBaseline(
+                inline_manifests=frozenset({str(path.resolve()).replace("\\", "/")}),
+                generated_project_files=frozenset(),
+            )
+
+            manifest = load_manifest(path, source_policy_baseline=baseline)
+
+        self.assertIn("Sample", manifest.source_text)
+
+    def test_source_from_requires_provenance_comment(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_manifest(Path(tmp))
+            source_path = Path(json.loads(path.read_text(encoding="utf-8"))["source_from"])
+            source_path.write_text("int __cdecl Sample() { return 1; }\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "does not contain provenance comment"):
+                load_manifest(path)
+
+    def test_source_from_accepts_provenance_in_included_inl(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_manifest(Path(tmp))
+            source_path = Path(json.loads(path.read_text(encoding="utf-8"))["source_from"])
+            source_path.write_text('#include "sample.inl"\n', encoding="utf-8")
+            (source_path.parent / "sample.inl").write_text(
+                "// Reimplements 0x401000: Sample\nint __cdecl Sample() { return 1; }\n",
+                encoding="utf-8",
+            )
+
+            manifest = load_manifest(path)
+
+        self.assertTrue(manifest.source_from.endswith("sample.cpp"))
+
+    def test_generated_project_header_shadow_is_rejected_without_baseline(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_manifest(Path(tmp))
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["generated_files"] = {
+                "GameZRecoil/RecoilApp/RecoilStateBase.h": ["#pragma once"],
+            }
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "generated file shadows project header"):
+                load_manifest(path)
 
     def test_find_target_by_name_selects_all_functions(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -109,6 +197,7 @@ class RecoilVc6VerifyTests(unittest.TestCase):
             source_from="",
             compare_mode="coff_bytes",
             trim_trailing_nops=True,
+            compiler_env="",
             compiler_flags=("/nologo", "/TP", "/O2", "/FAcs"),
             include_dirs=("src",),
             source_files=("src/sample.cpp",),
@@ -164,6 +253,33 @@ class RecoilVc6VerifyTests(unittest.TestCase):
         self.assertIs(matches[0][0], manifest)
         self.assertEqual("0x401234", skeleton["functions"][0]["address"])
         self.assertEqual("verify_401234", skeleton["name"])
+
+    def test_group_selections_by_compile_key_reuses_identical_source_compiles(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            first = load_manifest(write_manifest(directory, "first"))
+            second = load_manifest(write_manifest(directory, "second"))
+
+        groups = group_selections_by_compile_key(
+            [
+                VerifySelection(target=first, functions=first.functions),
+                VerifySelection(target=second, functions=second.functions),
+            ],
+            Path("C:/toolchains/VC6/vc6-env.cmd"),
+        )
+
+        self.assertEqual(1, len(groups))
+        self.assertEqual(2, len(groups[0][1]))
+
+    def test_selected_targets_for_source_from_matches_resolved_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            manifest = load_manifest(write_manifest(directory, "sample"))
+            source_path = Path(manifest.source_from)
+
+            matches = selected_targets_for_source_from([manifest], str(source_path.resolve()))
+
+        self.assertEqual([manifest.name], [selection.target.name for selection in matches])
 
 
 if __name__ == "__main__":

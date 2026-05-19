@@ -1,30 +1,7 @@
 {
   "name": "hud_layout_base_enable_disable",
   "description": "HudLayoutBase active state virtual toggles.",
-  "source_filename": "HudLayoutBase_EnableDisable.cpp",
-  "source": [
-    "struct HudLayoutBase {",
-    "    virtual void Slot0();",
-    "    virtual int SetActive(int active);",
-    "    virtual void Slot2();",
-    "    virtual void Slot3();",
-    "    virtual void Slot4();",
-    "    virtual void Slot5();",
-    "",
-    "    void Enable();",
-    "    void Disable();",
-    "};",
-    "",
-    "// Reimplements 0x412bf0: HudLayoutBase::Enable",
-    "void HudLayoutBase::Enable() {",
-    "    SetActive(1);",
-    "}",
-    "",
-    "// Reimplements 0x412c00: HudLayoutBase::Disable",
-    "void HudLayoutBase::Disable() {",
-    "    SetActive(0);",
-    "}"
-  ],
+  "source_filename": "zhud_ui.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -37,7 +14,16 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/zHud/zhud_ui.cpp"
   ],
@@ -52,5 +38,6 @@
       "symbol": "?Disable@HudLayoutBase@@QAEXXZ",
       "name": "HudLayoutBase::Disable"
     }
-  ]
+  ],
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp"
 }

@@ -587,7 +587,7 @@ namespace zClass_TypeList {
         for (zClass_TypeListLink *link = bucket; link != 0; link = link->next) {
             zClass_NodePartial *node = link->node;
             zClass_NodeActionCallback callback =
-                reinterpret_cast<zClass_NodeActionCallback>(node->actionCallback);
+                (zClass_NodeActionCallback)(node->actionCallback);
             if (callback == 0) {
                 link->pendingRemove = 1;
             } else if (link->pendingRemove == 0 && (node->flags & 0x04) != 0) {

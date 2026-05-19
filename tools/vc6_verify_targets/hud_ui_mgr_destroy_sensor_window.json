@@ -1,41 +1,7 @@
 {
   "name": "hud_ui_mgr_destroy_sensor_window",
   "description": "HudUiMgr sensor FMV window teardown.",
-  "source_filename": "HudUiMgr_DestroySensorWindow.cpp",
-  "source": [
-    "struct zFMV_Playback {",
-    "    void StopAndClose();",
-    "    void Destructor();",
-    "};",
-    "",
-    "struct CWnd {",
-    "    virtual int DestroyWindow();",
-    "};",
-    "",
-    "extern zFMV_Playback *g_HudUiSensorWindowPlayback;",
-    "extern CWnd g_HudUiSensorWindow;",
-    "",
-    "namespace HudUiMgr {",
-    "// Reimplements 0x413730: HudUiMgr::DestroySensorWindow",
-    "void DestroySensorWindow() {",
-    "    zFMV_Playback *playback = g_HudUiSensorWindowPlayback;",
-    "    if (playback == 0) {",
-    "        return;",
-    "    }",
-    "",
-    "    playback->StopAndClose();",
-    "",
-    "    playback = g_HudUiSensorWindowPlayback;",
-    "    if (playback != 0) {",
-    "        playback->Destructor();",
-    "        ::operator delete(playback);",
-    "    }",
-    "",
-    "    g_HudUiSensorWindowPlayback = 0;",
-    "    g_HudUiSensorWindow.CWnd::DestroyWindow();",
-    "}",
-    "}"
-  ],
+  "source_filename": "zhud_ui.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -48,7 +14,16 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/zHud/zhud_ui.cpp"
   ],
@@ -58,5 +33,6 @@
       "symbol": "?DestroySensorWindow@HudUiMgr@@YAXXZ",
       "name": "HudUiMgr::DestroySensorWindow"
     }
-  ]
+  ],
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp"
 }

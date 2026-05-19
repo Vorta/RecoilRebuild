@@ -1,0 +1,38 @@
+{
+  "name": "recoil_state_main_menu_transition_destructor_vc5",
+  "description": "Focused VC5SP3 verification target for the real C++ RecoilStateMainMenuTransition destructor shape.",
+  "source_filename": "RecoilStateMainMenuTransition.cpp",
+  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob1",
+    "/GX",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4151b0",
+      "symbol": "??1RecoilStateMainMenuTransition@@QAE@XZ",
+      "name": "RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition"
+    }
+  ],
+  "source_from": "src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp"
+}

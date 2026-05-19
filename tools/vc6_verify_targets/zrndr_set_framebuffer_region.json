@@ -1,59 +1,7 @@
 {
   "name": "zrndr_set_framebuffer_region",
   "description": "zRndr framebuffer, active-region, bytes-per-pixel, and pitch cache setter.",
-  "source_filename": "zRndr_SetFrameBufferRegion.cpp",
-  "source": [
-    "#define RECOIL_FASTCALL __fastcall",
-    "#define RECOIL_NOINLINE",
-    "",
-    "struct zOpt_ViewRectSection {",
-    "    int x;",
-    "    int y;",
-    "    int rightExclusive;",
-    "    int bottomExclusive;",
-    "};",
-    "",
-    "namespace zRndr {",
-    "struct ActiveRegionRectPartial {",
-    "    int x;",
-    "    int y;",
-    "    int right;",
-    "    int bottom;",
-    "};",
-    "",
-    "void *g_frameBuffer = 0;",
-    "int g_activeRegionWidth = 0;",
-    "int g_activeRegionHeight = 0;",
-    "ActiveRegionRectPartial g_activeRegionRect = {0};",
-    "int g_pitchBytes = 0;",
-    "int g_bytesPerPixel = 0;",
-    "int g_perspectiveTextureDeltaXPow2 = 0;",
-    "int g_perspectiveTextureDeltaXBytes = 0;",
-    "",
-    "// Reimplements 0x490340: zRndr::SetFrameBufferRegion",
-    "RECOIL_NOINLINE void RECOIL_FASTCALL SetFrameBufferRegion(void *pixels,",
-    "                                                          zOpt_ViewRectSection *activeRegionRect,",
-    "                                                          int bitsPerPixel,",
-    "                                                          int pitchBytes) {",
-    "    g_frameBuffer = pixels;",
-    "    if (activeRegionRect != 0) {",
-    "        g_activeRegionWidth = activeRegionRect->rightExclusive - activeRegionRect->x;",
-    "        g_activeRegionHeight = activeRegionRect->bottomExclusive - activeRegionRect->y;",
-    "        g_activeRegionRect.x = activeRegionRect->x;",
-    "        g_activeRegionRect.y = activeRegionRect->y;",
-    "        g_activeRegionRect.right = activeRegionRect->rightExclusive;",
-    "        g_activeRegionRect.bottom = activeRegionRect->bottomExclusive;",
-    "    }",
-    "",
-    "    if (bitsPerPixel != 0) {",
-    "        g_bytesPerPixel = static_cast<int>(static_cast<unsigned int>(bitsPerPixel) >> 3);",
-    "    }",
-    "",
-    "    g_pitchBytes = pitchBytes;",
-    "    g_perspectiveTextureDeltaXBytes = g_perspectiveTextureDeltaXPow2 * g_bytesPerPixel;",
-    "}",
-    "} // namespace zRndr"
-  ],
+  "source_filename": "zRndr.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -66,7 +14,15 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zRndr",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/zRndr/zRndr.cpp"
   ],
@@ -76,5 +32,6 @@
       "symbol": "?SetFrameBufferRegion@zRndr@@YIXPAXPAUzOpt_ViewRectSection@@HH@Z",
       "name": "zRndr::SetFrameBufferRegion"
     }
-  ]
+  ],
+  "source_from": "src/GameZRecoil/zRndr/zRndr.cpp"
 }

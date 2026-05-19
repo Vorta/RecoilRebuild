@@ -66,12 +66,12 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: RecoilStateDialogHost::OnWndActivate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateDialogHost::OnWndActivate File: src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp)
-  - [✅] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40c370:
   - [✅] Reconstructed (Name: zSys::ProbePlatformAndVideoCaps)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSys::ProbePlatformAndVideoCaps File: src/GameZRecoil/zSys/zSys.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x415170:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::Constructor)
   - [✅] Source dependencies satisfied
@@ -209,14 +209,14 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x42e520:
   - [✅] Reconstructed (Name: RecoilApp::InitInstance)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::InitInstance File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42e930:
   - [✅] Reconstructed (Name: RecoilApp::ExitInstance)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::ExitInstance File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42e990:
   - [✅] Reconstructed (Name: RecoilApp::ActivateExistingInstance)
   - [✅] Source dependencies satisfied
@@ -224,39 +224,39 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x42e9f0:
   - [✅] Reconstructed (Name: RecoilApp::PreTranslateMessage)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::PreTranslateMessage File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42ea20:
   - [✅] Reconstructed (Name: RecoilApp_IntroFmvState::OnTryBecomeCurrent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_IntroFmvState::OnTryBecomeCurrent File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42eac0:
   - [✅] Reconstructed (Name: RecoilApp_IntroFmvState::OnUpdateShouldQuit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_IntroFmvState::OnUpdateShouldQuit File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42eb00:
   - [✅] Reconstructed (Name: RecoilApp_FmvState::OnIdleOrDispatch)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_FmvState::OnIdleOrDispatch File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42eb10:
   - [✅] Reconstructed (Name: RecoilApp_IntroFmvState::OnDeactivate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_IntroFmvState::OnDeactivate File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42eb20:
   - [✅] Reconstructed (Name: RecoilApp_MainMenuPrepState::OnTryBecomeCurrent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_MainMenuPrepState::OnTryBecomeCurrent File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42eb60:
   - [✅] Reconstructed (Name: RecoilApp_MainMenuPrepState::OnUpdateShouldQuit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_MainMenuPrepState::OnUpdateShouldQuit File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42eb70:
   - [✅] Reconstructed (Name: RecoilApp_AttractFmvState::Constructor)
   - [✅] Source dependencies satisfied
@@ -264,19 +264,19 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x42ebf0:
   - [✅] Reconstructed (Name: RecoilApp_AttractFmvState::OnTryBecomeCurrent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_AttractFmvState::OnTryBecomeCurrent File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42ec80:
   - [✅] Reconstructed (Name: RecoilApp_AttractFmvState::OnUpdateShouldQuit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_AttractFmvState::OnUpdateShouldQuit File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42eca0:
   - [✅] Reconstructed (Name: RecoilApp_AttractFmvState::OnDeactivate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_AttractFmvState::OnDeactivate File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42eea0:
   - [✅] Reconstructed (Name: RecoilApp_PlayState::Constructor)
   - [✅] Source dependencies satisfied
@@ -284,9 +284,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x42eec0:
   - [✅] Reconstructed (Name: RecoilApp_PlayState::OnWndActivate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_PlayState::OnWndActivate File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42eed0:
   - [✅] Reconstructed (Name: RecoilApp_PlayState::OnTryBecomeCurrent)
   - [❌] Source dependencies satisfied
@@ -304,9 +304,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x42f8a0:
   - [✅] Reconstructed (Name: RecoilApp_PlayState::OnResume)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_PlayState::OnResume File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42f8e0:
   - [✅] Reconstructed (Name: RecoilApp_PlayState::OnDeactivate)
   - [❓] Source dependencies satisfied
@@ -314,19 +314,19 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x42f9d0:
   - [✅] Reconstructed (Name: RecoilApp_LeaveNetworkState::OnTryBecomeCurrent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_LeaveNetworkState::OnTryBecomeCurrent File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4301e0:
   - [☑️] Reconstructed (Name: CZRecoilFrame::CreateObject)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::CreateObject File: src/Battlesport/CZRecoilFrame.cpp)
   - [❌] Binary-safe verified
 - 0x430240:
   - [✅] Reconstructed (Name: CZRecoilFrame::GetRuntimeClass)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::GetRuntimeClass File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x430250:
   - [☑️] Reconstructed (Name: CZRecoilFrame::Constructor)
   - [✅] Source dependencies satisfied
@@ -334,19 +334,19 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x430610:
   - [☑️] Reconstructed (Name: CZRecoilFrame::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::Destructor File: src/Battlesport/CZRecoilFrame.cpp)
   - [❌] Binary-safe verified
 - 0x430680:
   - [✅] Reconstructed (Name: CZRecoilFrame::SetMenuBarVisibility)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::SetMenuBarVisibility File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4306e0:
   - [✅] Reconstructed (Name: CZRecoilFrame::GetMessageMap)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::GetMessageMap File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4306f0:
   - [✅] Reconstructed (Name: CZRecoilFrame::BuildWindowTitle)
   - [✅] Source dependencies satisfied
@@ -354,39 +354,39 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x430740:
   - [☑️] Reconstructed (Name: CZRecoilFrame::OnMenuStartSinglePlayer)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuStartSinglePlayer File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x430760:
   - [☑️] Reconstructed (Name: CZRecoilFrame::OnMenuOpenCampaign)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuOpenCampaign File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x430770:
   - [☑️] Reconstructed (Name: CZRecoilFrame::OnOpenFileDialog)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnOpenFileDialog File: src/Battlesport/CZRecoilFrame.cpp)
   - [❌] Binary-safe verified
 - 0x4308a0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuExitGame)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuExitGame File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4309b0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSetVideoMode2)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuSetVideoMode2 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4309d0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSetVideoMode3)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuSetVideoMode3 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4309f0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSetVideoMode4)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuSetVideoMode4 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x430a10:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSetVideoMode5)
   - [✅] Source dependencies satisfied
@@ -394,222 +394,222 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x430a30:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSetVideoMode6)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuSetVideoMode6 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x430a50:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSetVideoMode7)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuSetVideoMode7 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x430a70:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuToggleHud)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuToggleHud File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x430a90:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateHudCmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateHudCmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x430ab0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuToggleFullscreen)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuToggleFullscreen File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x430ad0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuOpenHelpDocs)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuOpenHelpDocs File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x430c30:
   - [☑️] Reconstructed (Name: CZRecoilFrame::OnMenuAbout)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuAbout File: src/Battlesport/CZRecoilFrame.cpp)
   - [❌] Binary-safe verified
 - 0x430c90:
   - [✅] Reconstructed (Name: RecoilApp::FatalErrorAndExit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::FatalErrorAndExit File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431270:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuStartMultiplayer)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuStartMultiplayer File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431290:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuStartCampaignMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuStartCampaignMode File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4312b0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuStartCampaignMode2)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuStartCampaignMode2 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4312d0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuStartCampaignMode3)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuStartCampaignMode3 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4312f0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuStartCampaignMode4)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuStartCampaignMode4 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431310:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuStartCampaignMode5)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuStartCampaignMode5 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431330:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuToggleArchiveBanks)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuToggleArchiveBanks File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431380:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuToggleTexturePacks)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuToggleTexturePacks File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4313d0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateVideoMode2CmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateVideoMode2CmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431430:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateVideoMode3CmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateVideoMode3CmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431490:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateVideoMode4CmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateVideoMode4CmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4314f0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateVideoMode5CmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateVideoMode5CmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431550:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateVideoMode6CmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateVideoMode6CmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4315b0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateVideoMode7CmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateVideoMode7CmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431790:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSelectHwApi0)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuSelectHwApi0 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4317a0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSelectHwApi1)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuSelectHwApi1 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4317b0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSelectHwApi2)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuSelectHwApi2 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4317c0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSelectHwApi3)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuSelectHwApi3 File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4317d0:
   - [✅] Reconstructed (Name: CZRecoilFrame::UpdateHwApiMenuItem)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::UpdateHwApiMenuItem File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431870:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateHwApi0CmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateHwApi0CmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4318b0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateHwApi1CmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateHwApi1CmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4318c0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateHwApi2CmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateHwApi2CmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4318d0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateHwApi3CmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateHwApi3CmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4318e0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateFullscreenCmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateFullscreenCmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431900:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuToggleCDAudio)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuToggleCDAudio File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431920:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateCDAudioCmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateCDAudioCmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431950:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuToggleJoystick)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuToggleJoystick File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431970:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnUpdateJoystickCmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateJoystickCmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431a80:
   - [✅] Reconstructed (Name: MfcCmdUI::EnableAlways)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: MfcCmdUI::EnableAlways File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431a90:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSelectDirectSound)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuSelectDirectSound File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431aa0:
   - [☑️] Reconstructed (Name: CZRecoilFrame::OnUpdateDirectSoundCmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateDirectSoundCmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431ad0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSelectA3D)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuSelectA3D File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431ae0:
   - [☑️] Reconstructed (Name: CZRecoilFrame::OnUpdateA3DCmdUI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateA3DCmdUI File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431b10:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnSize)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnSize File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431bf0:
   - [✅] Reconstructed (Name: GameNetSpawnPointList::InitGlobals)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNetSpawnPointList::InitGlobals File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x431c20:
   - [✅] Reconstructed (Name: GameNetPlayerRowList::Reset)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNetPlayerRowList::Reset File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x431dd0:
@@ -619,17 +619,17 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x433a40:
   - [✅] Reconstructed (Name: HudTimerPanelNetState::ClearTailFlagsLocal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudTimerPanelNetState::ClearTailFlagsLocal File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x433a50:
   - [✅] Reconstructed (Name: GameNetPlayerRow::ApplyPlayerColorTint)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNetPlayerRow::ApplyPlayerColorTint File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x434650:
   - [✅] Reconstructed (Name: GameNetPlayerRow::DestroyEmbeddedPanel)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNetPlayerRow::DestroyEmbeddedPanel File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x434660:
@@ -674,9 +674,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4429b0:
   - [✅] Reconstructed (Name: RecoilApp_MfcOleModule::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::MfcOleModuleScalarDeletingDestructor File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4429d0:
   - [✅] Reconstructed (Name: RecoilApp::InitMainWindow)
   - [✅] Source dependencies satisfied
@@ -684,14 +684,14 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x442a10:
   - [✅] Reconstructed (Name: RecoilApp::TakeSkipWaitMessage)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::TakeSkipWaitMessage File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x442a30:
   - [✅] Reconstructed (Name: RecoilApp::MarkSkipWaitMessage)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::MarkSkipWaitMessage File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x442a50:
   - [✅] Reconstructed (Name: RecoilApp::EngineInit)
   - [✅] Source dependencies satisfied
@@ -744,9 +744,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x443650:
   - [✅] Reconstructed (Name: RecoilApp::OnIdleOrDispatch)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::OnIdleOrDispatch File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x443690:
   - [✅] Reconstructed (Name: RecoilApp_StateQueue::GrowAndCenterChunkBaseList)
   - [✅] Source dependencies satisfied
@@ -764,24 +764,24 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x443790:
   - [✅] Reconstructed (Name: CZGameFrame::GetBaseRuntimeClass)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::GetBaseRuntimeClass File: src/Battlesport/CZGameFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4437a0:
   - [✅] Reconstructed (Name: CZGameFrame::GetRuntimeClass)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::GetRuntimeClass File: src/Battlesport/CZGameFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4437b0:
   - [✅] Reconstructed (Name: CZGameFrame::GetBaseMessageMap)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::GetBaseMessageMap File: src/Battlesport/CZGameFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4437c0:
   - [✅] Reconstructed (Name: CZGameFrame::GetMessageMap)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::GetMessageMap File: src/Battlesport/CZGameFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4437d0:
   - [✅] Reconstructed (Name: CZGameFrame::Constructor)
   - [✅] Source dependencies satisfied
@@ -789,24 +789,24 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x443830:
   - [☑️] Reconstructed (Name: CZGameFrame::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::Destructor File: src/Battlesport/CZGameFrame.cpp)
   - [❌] Binary-safe verified
 - 0x4438a0:
   - [✅] Reconstructed (Name: CZGameFrame::IsWindowValid)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::IsWindowValid File: src/Battlesport/CZGameFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4438c0:
   - [✅] Reconstructed (Name: CZGameFrame::BuildWindowTitle)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::BuildWindowTitle File: src/Battlesport/CZGameFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4438f0:
   - [✅] Reconstructed (Name: CZGameFrame::OnClose)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::OnClose File: src/Battlesport/CZGameFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x443900:
   - [☑️] Reconstructed (Name: CZGameFrame::OnPaint)
   - [❓] Source dependencies satisfied
@@ -814,37 +814,37 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x443a20:
   - [✅] Reconstructed (Name: CZGameFrame::OnSize)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::OnSize File: src/Battlesport/CZGameFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x443a40:
-  - [✅] Reconstructed (Name: zVid_UpdateCachedClientRectIfUpdateMaskEnabled)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zVid::UpdateCachedClientRectIfUpdateMaskEnabled)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_UpdateCachedClientRectIfUpdateMaskEnabled File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x443a60:
   - [✅] Reconstructed (Name: CZGameFrame::OnCreate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::OnCreate File: src/Battlesport/CZGameFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x443ab0:
   - [✅] Reconstructed (Name: CZGameFrame::OnDestroy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::OnDestroy File: src/Battlesport/CZGameFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x443ae0:
   - [✅] Reconstructed (Name: CZGameFrame::OnActivate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::OnActivate File: src/Battlesport/CZGameFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x443b50:
   - [✅] Reconstructed (Name: CZGameFrame::OnAppIdleDispatchMessage)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::OnAppIdleDispatchMessage File: src/Battlesport/CZGameFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46e3e0:
   - [☑️] Reconstructed (Name: zImage_TexDirEntry::BuildMipChain)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage_TexDirEntryPartial::BuildMipChain File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [❌] Binary-safe verified
 - 0x476700:
@@ -854,16 +854,16 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4803b0:
   - [☑️] Reconstructed (Name: zClipRect::TrivialRejectPolyXY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::TrivialRejectPolyXY File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [❌] Binary-safe verified
 - 0x4804c0:
-  - [✅] Reconstructed (Name: zModel_UpdateSmallPolyRejectThresholds)
+  - [✅] Reconstructed (Name: zModel::UpdateSmallPolyRejectThresholds)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4804e0:
-  - [☑️] Reconstructed (Name: zReader_FindGlobalStringPrefixIndex)
+  - [☑️] Reconstructed (Name: zReader::FindGlobalStringPrefixIndex)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -874,17 +874,17 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x482270:
   - [☑️] Reconstructed (Name: zDi::CloneToInstance)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::CloneToInstance File: src/Battlesport/zModel/gdi.c)
   - [❌] Binary-safe verified
 - 0x4826a0:
   - [✅] Reconstructed (Name: zUtil::StoreInt32)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil::StoreInt32 File: src/Battlesport/zUtil/zutil.cpp)
   - [❌] Binary-safe verified
 - 0x4826b0:
   - [✅] Reconstructed (Name: zDi::SetClonedFlag)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::SetClonedFlag File: src/Battlesport/zModel/gdi.c)
   - [❌] Binary-safe verified
 - 0x4826f0:
@@ -913,13 +913,13 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48bf40:
-  - [☑️] Reconstructed (Name: zNetwork_DeleteAllDispatchHandlers)
+  - [☑️] Reconstructed (Name: zNetwork::DeleteAllDispatchHandlers)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x490330:
   - [✅] Reconstructed (Name: zFloat::Set255f)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFloat::Set255f File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x4a5780:
@@ -934,9 +934,9 @@ Each function has these trackers:
   - [✅] Binary-safe verified
 - 0x4a5b00:
   - [✅] Reconstructed (Name: zLoc::UnloadMessagesDll)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zLoc::UnloadMessagesDll File: src/GameZRecoil/zLoc/zLoc.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a5b20:
   - [✅] Reconstructed (Name: zLoc::GetMessageId)
   - [✅] Source dependencies satisfied
@@ -959,12 +959,12 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4c06a0:
   - [✅] Reconstructed (Name: zZbdSectionHandler::InvokePreLoad)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdSectionHandler::InvokePreLoad File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x4c06c0:
   - [✅] Reconstructed (Name: zZbdSectionHandler::InvokeDataReady)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdSectionHandler::InvokeDataReady File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x4c81c0:
@@ -986,7 +986,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::ScalarDeletingDestructor File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp)
-  - [✅] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x415860:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::ScalarDeletingDestructor)
   - [❓] Source dependencies satisfied
@@ -1096,143 +1096,143 @@ Each function has these trackers:
 ## M02. Briefing runtime
 
 - 0x4038a0:
-  - [✅] Reconstructed (Name: HudUiBriefingObjectivePicture::DrawNoiseOverlay)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingObjectivePicture::DrawWithNoiseOverlay)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBriefingObjectivePicture::DrawNoiseOverlay File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x403930:
   - [✅] Reconstructed (Name: HudUiBriefingRuntime::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBriefingRuntime::Constructor File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x403c10:
   - [✅] Reconstructed (Name: HudUiBriefingLocatorPanel::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBriefingLocatorPanel::Constructor File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x403c90:
   - [✅] Reconstructed (Name: HudUiBriefingLocatorPanel::BlitDirtyRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBriefingLocatorPanel::BlitDirtyRect File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x403cb0:
   - [✅] Reconstructed (Name: HudUiBriefingLocatorPanel::Update)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBriefingLocatorPanel::Update File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x403ed0:
   - [☑️] Reconstructed (Name: HudUiBriefingRuntime::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBriefingRuntime::Destructor File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404070:
   - [✅] Reconstructed (Name: HudUiBriefingRuntime::Update)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBriefingRuntime::Update File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404180:
-  - [✅] Reconstructed (Name: Briefing::StartForMission)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: Briefing::StartMissionBriefingThread)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing::StartForMission File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404280:
-  - [✅] Reconstructed (Name: Briefing::ThreadMain)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: Briefing::RunMissionBriefingLoop)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing::ThreadMain File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404400:
-  - [✅] Reconstructed (Name: Briefing::BuildObjectiveActionsFromIndex)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingRuntime::BuildObjectiveActionsFromIndex)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBriefingRuntime::BuildObjectiveActionsFromIndex File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x4045b0:
-  - [✅] Reconstructed (Name: Briefing_ActionQueue::AddHideElement)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddHideElement)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing_ActionQueue::AddHideElement File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404620:
-  - [✅] Reconstructed (Name: BriefingAction_HideElement::Tick)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingAction_HideElement::Tick)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: BriefingActionHideElement::Tick File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404640:
-  - [✅] Reconstructed (Name: Briefing_ActionQueue::AddShowElement)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddShowElement)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing_ActionQueue::AddShowElement File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x4046b0:
-  - [✅] Reconstructed (Name: BriefingAction_ShowElement::Tick)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingAction_ShowElement::Tick)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: BriefingActionShowElement::Tick File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x4046d0:
-  - [✅] Reconstructed (Name: Briefing_ActionQueue::AddFadeInElement)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddFadeInObjectivePictureNoise)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing_ActionQueue::AddFadeInElement File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404740:
-  - [✅] Reconstructed (Name: BriefingAction_FadeInElement::Tick)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingAction_FadeObjectiveNoise::Tick)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: BriefingActionFadeInElement::Tick File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404780:
-  - [✅] Reconstructed (Name: Briefing_ActionQueue::AddSetPanelText)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddSetPanelText)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing_ActionQueue::AddSetPanelText File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404850:
-  - [✅] Reconstructed (Name: BriefingAction_SetPanelText::Tick)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingAction_SetPanelText::Tick)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: BriefingActionSetPanelText::Tick File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x4048a0:
-  - [✅] Reconstructed (Name: Briefing_ActionQueue::AddSetWidgetImageTimed)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddSetObjectivePictureImageTimed)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing_ActionQueue::AddSetWidgetImageTimed File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404960:
-  - [✅] Reconstructed (Name: BriefingAction_SetWidgetImageTimed::Tick)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingAction_SetObjectivePictureImageTimed::Tick)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: BriefingActionSetWidgetImageTimed::Tick File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x4049d0:
-  - [✅] Reconstructed (Name: Briefing_ActionQueue::AddPlaySampleByName)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddPlaySampleByName)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing_ActionQueue::AddPlaySampleByName File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404aa0:
-  - [✅] Reconstructed (Name: BriefingAction_PlaySample::Tick)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingAction_PlaySample::Tick)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: BriefingActionPlaySample::Tick File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404b30:
   - [✅] Reconstructed (Name: Briefing::SampleEventCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing::SampleEventCallback File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404b40:
-  - [✅] Reconstructed (Name: Briefing_ActionQueue::AddDelayUntilProgress)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddDelayUntilProgress)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing_ActionQueue::AddDelayUntilProgress File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404bb0:
-  - [✅] Reconstructed (Name: BriefingAction_DelayUntilProgress::Tick)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiBriefingAction_DelayUntilProgress::Tick)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: BriefingActionDelayUntilProgress::Tick File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x404bd0:
-  - [✅] Reconstructed (Name: Briefing::StopAndShutdownThread)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: Briefing::StopThreadAndDestroyRuntime)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing::StopAndShutdownThread File: src/Battlesport/Briefing.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x404c50:
-  - [✅] Reconstructed (Name: Briefing::SetProgressAndSleep)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: Briefing::SetTransportProgressAndSleep)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing::SetProgressAndSleep File: src/Battlesport/Briefing.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x404c80:
-  - [✅] Reconstructed (Name: Briefing::BuildObjectiveActionsGlobal)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: Briefing::BuildObjectiveActionsForRuntime)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing::BuildObjectiveActionsGlobal File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
   
@@ -1240,7 +1240,7 @@ Each function has these trackers:
 
 - 0x401000:
   - [✅] Reconstructed (Name: CAboutDlg::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CAboutDlg::CAboutDlg File: src/Battlesport/Recoil.cpp)
   - [❌] Binary-safe verified
 - 0x406890:
@@ -1294,7 +1294,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x406cf0:
-  - [✅] Reconstructed (Name: HudCheat::ProcessInputString)
+  - [✅] Reconstructed (Name: HudCheat::ClearNanitePanelCheatSentinel)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -1373,8 +1373,13 @@ Each function has these trackers:
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
+- 0x408c60:
+  - [❌] Reconstructed (Name: HudUiOptionSelectorWidget::DestructorCoreThunk)
+  - [❓] Source dependencies satisfied
+  - [❌] Reimplemented (Name: pending File: pending)
+  - [❌] Binary-safe verified
 - 0x409010:
-  - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C::EnableChildAtIndex)
+  - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::EnableChildAtIndex)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -1520,7 +1525,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x40a590:
   - [✅] Reconstructed (Name: HudUiPanel::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40a940:
@@ -1932,15 +1937,15 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiPanel::SetTextColorsAndMarkDirty)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::SetTextColorsAndMarkDirty File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40e040:
   - [✅] Reconstructed (Name: HudUiPanel::SetShadow)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::SetShadow File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40e070:
   - [☑️] Reconstructed (Name: HudUiTriplet::DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTriplet::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40e140:
@@ -1950,17 +1955,17 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x40e590:
   - [☑️] Reconstructed (Name: HudUiTriplet::AddEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTriplet::AddEntry File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40e800:
   - [✅] Reconstructed (Name: HudUiTriplet::UpdateEntryData)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTriplet::UpdateEntryData File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40e880:
   - [☑️] Reconstructed (Name: HudUiTriplet::RemoveEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTriplet::RemoveEntry File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40e910:
@@ -1985,7 +1990,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x40fac0:
   - [✅] Reconstructed (Name: HudUiPanelSimple::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanelSimple::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40fb70:
@@ -2198,6 +2203,11 @@ Each function has these trackers:
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
+- 0x40caa0:
+  - [❌] Reconstructed (Name: HudUiCheckToggleWidget::OnActivateThunk)
+  - [❓] Source dependencies satisfied
+  - [❌] Reimplemented (Name: pending File: pending)
+  - [❌] Binary-safe verified
 - 0x41a7b0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupTextInput::OnActivateFocusAndCursor)
   - [❓] Source dependencies satisfied
@@ -2234,7 +2244,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x41c4c0:
-  - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk)
+  - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::ScalarDeletingDestructorThunk)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -2310,119 +2320,119 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4b4390:
   - [✅] Reconstructed (Name: HudUiTextInput::AllocTextBuffer)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::AllocTextBuffer File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b43d0:
   - [✅] Reconstructed (Name: HudUiTextInput::SetContents)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::SetContents File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4410:
   - [✅] Reconstructed (Name: HudUiTextInput::GetBuffer)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::GetBuffer File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4420:
   - [☑️] Reconstructed (Name: HudUiTextInput::SetCursorPosition)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::SetCursorPosition File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4460:
   - [✅] Reconstructed (Name: HudUiTextInput::DispatchKeyAction)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::DispatchKeyAction File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b44e0:
   - [✅] Reconstructed (Name: HudUiTextInput::InsertCharAtCursor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::InsertCharAtCursor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4530:
   - [✅] Reconstructed (Name: HudUiTextInput::BackspaceDeleteChar)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::BackspaceDeleteChar File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4550:
   - [✅] Reconstructed (Name: HudUiTextBuffer::DeleteCharForward)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::DeleteCharForward File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4560:
   - [✅] Reconstructed (Name: HudUiTextBuffer::MoveCursorLeft)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::MoveCursorLeft File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4570:
   - [✅] Reconstructed (Name: HudUiTextBuffer::MoveCursorRight)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::MoveCursorRight File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4590:
   - [✅] Reconstructed (Name: HudUiTextBuffer::ShiftTextRight)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::ShiftTextRight File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b45e0:
   - [✅] Reconstructed (Name: HudUiTextBuffer::ShiftTextLeft)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::ShiftTextLeft File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4620:
   - [☑️] Reconstructed (Name: HudUiSliderBorder::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiSliderBorder::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b47a0:
   - [✅] Reconstructed (Name: HudUiElement::ResetCommonFTable)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::ResetCommonFTable File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b47b0:
   - [☑️] Reconstructed (Name: HudUiSliderBorder::Update)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiSliderBorder::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4810:
   - [✅] Reconstructed (Name: HudUiSliderBorder::SetBounds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiSliderBorder::SetBounds File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b49e0:
   - [☑️] Reconstructed (Name: HudUiNumericTextInput::BaseConstructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::BaseConstructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b4a90:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b4b30:
   - [☑️] Reconstructed (Name: HudUiNumericTextInput::RawKeyboardCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::RawKeyboardCallback File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4ac0:
   - [☑️] Reconstructed (Name: HudUiNumericTextInput::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b4b50:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::OnRawKeyboardChar)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::OnRawKeyboardChar File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4ba0:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::SetInputActive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::SetInputActive File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4c50:
   - [☑️] Reconstructed (Name: HudUiNumericTextInput::SetRawKeyboardCapture)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::SetRawKeyboardCapture File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4c90:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::OnActivate)
   - [❓] Source dependencies satisfied
@@ -2430,24 +2440,24 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4b4ca0:
   - [☑️] Reconstructed (Name: HudUiNumericTextInput::UpdateCaptureUiAndClip)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::UpdateCaptureUiAndClip File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4e40:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::AllocTextBuffer)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::AllocTextBuffer File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4e60:
   - [☑️] Reconstructed (Name: HudUiNumericTextInput::Update)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b4ed0:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::GetBuffer)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::GetBuffer File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4ee0:
   - [☑️] Reconstructed (Name: HudUiZrdWidget::Constructor)
   - [✅] Source dependencies satisfied
@@ -2470,29 +2480,29 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4b5310:
   - [✅] Reconstructed (Name: HudUiZrdWidget::Invalidate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidget::Invalidate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b5350:
   - [☑️] Reconstructed (Name: HudUiZrdWidget::GetBoundsRectOrNull)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidget::GetBoundsRectOrNull File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b5630:
   - [✅] Reconstructed (Name: HudUiZrdWidget::ShowPreview)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidget::ShowPreview File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b5740:
   - [✅] Reconstructed (Name: HudUiZrdWidget::RefreshState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidget::RefreshState File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b5860:
   - [✅] Reconstructed (Name: HudUiZrdWidget::HidePreview)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidget::HidePreview File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b5900:
   - [✅] Reconstructed (Name: HudUiZrdWidget::OnActivate)
   - [✅] Source dependencies satisfied
@@ -2500,247 +2510,252 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4b59f0:
   - [✅] Reconstructed (Name: HudUiZrdWidget::LoadFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidget::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b6fc0:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCheckToggleWidget::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b7000:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCheckToggleWidget::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b7020:
   - [☑️] Reconstructed (Name: HudUiCheckToggleWidget::DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCheckToggleWidget::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b70b0:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::GetBoundsRectOrNull)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCheckToggleWidget::GetBoundsRectOrNull File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b70c0:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::RefreshState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCheckToggleWidget::RefreshState File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b7210:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::ShowPreview)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCheckToggleWidget::ShowPreview File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b7250:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::HidePreview)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCheckToggleWidget::HidePreview File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b7290:
   - [☑️] Reconstructed (Name: HudUiCheckToggleWidget::OnActivate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCheckToggleWidget::OnActivate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b72c0:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::SetChecked)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCheckToggleWidget::SetChecked File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b7340:
   - [☑️] Reconstructed (Name: HudUiCheckToggleWidget::LoadFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCheckToggleWidget::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b7d60:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b7dc0:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b7de0:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b7e60:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::Update)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b7ee0:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::AdvanceSelectionAndActivate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::AdvanceSelectionAndActivate File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b7f20:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::SetIndexClamped)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::SetIndexClamped File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b7f80:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::SetVisibleRange)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::SetVisibleRange File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b7fd0:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::AddTextEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::AddTextEntry File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b8100:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::ApplyFontStyleForEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::ApplyFontStyleForEntry File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b8200:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::AddBitmapEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::AddBitmapEntry File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b82e0:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::LoadFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8450:
   - [✅] Reconstructed (Name: HudUiFillBitmap::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFillBitmap::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [❌] Binary-safe verified
+- 0x40cf50:
+  - [❌] Reconstructed (Name: HudUiFillBitmap::DestructorCoreThunk)
+  - [❓] Source dependencies satisfied
+  - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4b84b0:
   - [✅] Reconstructed (Name: HudUiFillBitmap::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFillBitmap::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b84d0:
   - [✅] Reconstructed (Name: HudUiFillBitmap::DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFillBitmap::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8520:
   - [✅] Reconstructed (Name: HudUiFillBitmap::Draw)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFillBitmap::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b85c0:
   - [☑️] Reconstructed (Name: HudUiFillBitmap::LoadFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFillBitmap::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8650:
   - [✅] Reconstructed (Name: HudUiFillBitmap::UpdateNormalizedFromCursor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFillBitmap::UpdateNormalizedFromCursor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b86b0:
   - [✅] Reconstructed (Name: HudUiFillBitmap::SetNormalizedValueAndRebuild)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFillBitmap::SetNormalizedValueAndRebuild File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8760:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b87a0:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b87c0:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b87d0:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b87e0:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b87f0:
   - [☑️] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8850:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::LoadFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8a90:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::SetSelected)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::SetSelected File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8af0:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8b10:
-  - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C::Constructor)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::Constructor)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8b40:
-  - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::ScalarDeletingDestructor)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8b60:
-  - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C::DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::DestructorCore)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8be0:
-  - [☑️] Reconstructed (Name: HudUiZrdWidgetEx17C::LoadFromZrd)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: HudUiOptionSelectorWidget::LoadFromZrd)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8cf0:
-  - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C::SetSelectedIndex)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::SetSelectedIndex)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::SetSelectedIndex File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8d30:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudCmdBindButtonBase::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b8de0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::LoadFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudCmdBindButtonBase::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b90e0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::RebuildBindingSlotWidgets)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudCmdBindButtonBase::RebuildBindingSlotWidgets File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4b92a0:
   - [✅] Reconstructed (Name: HudUiListSelectorItem::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiListSelectorItem::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ba410:
   - [✅] Reconstructed (Name: HudUiListSelectorItem::Draw)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiListSelectorItem::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc9f0:
   - [☑️] Reconstructed (Name: HudUiTransitionTextPanel::TickFlash)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTransitionTextPanel::TickFlash File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bf060:
@@ -2765,34 +2780,34 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4bf7c0:
   - [✅] Reconstructed (Name: HudUiMessageBoxDialog::OnOk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessageBoxDialog::OnOk File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bf7e0:
   - [✅] Reconstructed (Name: HudUiMessageBoxDialog::OnCancel)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessageBoxDialog::OnCancel File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bf800:
   - [✅] Reconstructed (Name: HudUiMessageBoxOkButton::OnActivate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessageBoxOkButton::OnActivate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bf820:
   - [✅] Reconstructed (Name: HudUiMessageBoxCancelButton::OnActivate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessageBoxCancelButton::OnActivate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bf840:
   - [✅] Reconstructed (Name: HudUiPolyline::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPolyline::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bf8b0:
   - [✅] Reconstructed (Name: HudUiPolyline::SetPoint)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPolyline::SetPoint File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40a920:
   - [✅] Reconstructed (Name: HudCmdDialog::ScalarDeletingDestructor)
   - [❓] Source dependencies satisfied
@@ -2915,17 +2930,17 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiElement::SetPos)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetPos File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x404cf0:
   - [✅] Reconstructed (Name: HudUiElement::SetX)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetX File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x404d00:
   - [✅] Reconstructed (Name: HudUiElement::SetY)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetY File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x404d10:
   - [☑️] Reconstructed (Name: HudUiElement::HitTestTrue)
   - [❓] Source dependencies satisfied
@@ -2938,19 +2953,19 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x404d50:
   - [✅] Reconstructed (Name: HudUiElement::GetX)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::GetX File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x404d60:
   - [✅] Reconstructed (Name: HudUiElement::GetY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::GetY File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x404d70:
   - [☑️] Reconstructed (Name: HudUiCommon::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x404d90:
   - [☑️] Reconstructed (Name: HudUiWidget::GetCenterX)
   - [✅] Source dependencies satisfied
@@ -2963,44 +2978,54 @@ Each function has these trackers:
   - [✅] Binary-safe verified
 - 0x404e10:
   - [✅] Reconstructed (Name: HudUiWidget::RebuildBltRectFromImage)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::RebuildBltRectFromImage File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
+- 0x403c80:
+  - [❌] Reconstructed (Name: HudUiCircle::DrawDirtyForwarder)
+  - [❓] Source dependencies satisfied
+  - [❌] Reimplemented (Name: pending File: pending)
+  - [❌] Binary-safe verified
 - 0x404e60:
   - [☑️] Reconstructed (Name: HudUiCircle::HitTest)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCircle::HitTest File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4089c0:
-  - [☑️] Reconstructed (Name: HudUiMgr::ScreenToWorld)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: HudUiMgr::MapReplicatedScreenToRenderPoint)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::ScreenToWorld File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40be90:
   - [✅] Reconstructed (Name: HudUiPanel::Invalidate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::Invalidate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40bea0:
   - [✅] Reconstructed (Name: HudUiPanel::GetFont)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::GetFont File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40beb0:
   - [✅] Reconstructed (Name: HudUiPanel::SetFontHandle)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::SetFontHandle File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40bec0:
   - [✅] Reconstructed (Name: HudUiPanel::EnableWordWrapWithRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::EnableWordWrapWithRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
+- 0x40bef0:
+  - [❌] Reconstructed (Name: HudUiPanel::DestructorThunk)
+  - [❓] Source dependencies satisfied
+  - [❌] Reimplemented (Name: pending File: pending)
+  - [❌] Binary-safe verified
 - 0x40bf00:
   - [✅] Reconstructed (Name: HudUtil::FreeFieldPtr)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUtil::FreeFieldPtr File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40d270:
   - [☑️] Reconstructed (Name: HudLayoutSW::GlobalInit)
   - [❓] Source dependencies satisfied
@@ -3048,16 +3073,16 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x40d3b0:
   - [☑️] Reconstructed (Name: HudLayoutBase::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutBase::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40d400:
   - [✅] Reconstructed (Name: HudUiMgr::StaticInitAndRegisterAtExit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x40d410:
-  - [✅] Reconstructed (Name: StaticInit_HudUiMgr)
+  - [✅] Reconstructed (Name: HudUiMgr::StaticInit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -3073,32 +3098,32 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x40d590:
   - [☑️] Reconstructed (Name: HudUiMessage::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessage::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40d600:
   - [✅] Reconstructed (Name: HudUiTripletPanel::UnwindDestructFirstItem)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTripletPanel::UnwindDestructFirstItem File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40d610:
   - [☑️] Reconstructed (Name: HudUiTripletPanel::DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTripletPanel::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40d660:
   - [☑️] Reconstructed (Name: HudUiMgrObjectiveBlock::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgrObjectiveBlock::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40d760:
   - [✅] Reconstructed (Name: HudUiMgr::DestructModeCounterArray)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiMgr::DestructModeCounterArray File: external)
   - [❌] Binary-safe verified
 - 0x40d780:
   - [☑️] Reconstructed (Name: HudUiSlot::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiSlot::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40d7e0:
@@ -3113,42 +3138,42 @@ Each function has these trackers:
   - [✅] Binary-safe verified
 - 0x40d9e0:
   - [✅] Reconstructed (Name: HudUiMeter::ConstructorEx)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMeter::ConstructorEx File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40da00:
   - [☑️] Reconstructed (Name: HudUiMessage::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessage::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40dac0:
   - [✅] Reconstructed (Name: HudUiCounter::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCounter::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40daa0:
   - [✅] Reconstructed (Name: HudUiMessage::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessage::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40db00:
   - [✅] Reconstructed (Name: HudUiMgr::DestructMessagesArray)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiMgr::DestructMessagesArray File: external)
   - [❌] Binary-safe verified
 - 0x40db20:
   - [☑️] Reconstructed (Name: HudUiSlot::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiSlot::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40db90:
   - [☑️] Reconstructed (Name: HudUiSlot::Draw)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiSlot::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40dbd0:
   - [✅] Reconstructed (Name: HudUiSlot::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiSlot::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40dbf0:
@@ -3173,27 +3198,27 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x40eca0:
   - [☑️] Reconstructed (Name: HudUiTimerPanel::SetRunning)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTimerPanel::SetRunning File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40ecc0:
   - [✅] Reconstructed (Name: HudUiTimerPanel::SetElapsedSeconds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTimerPanel::SetElapsedSeconds File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40ece0:
   - [✅] Reconstructed (Name: HudUiTimerPanel::SetSeconds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTimerPanel::SetSeconds File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40ed10:
   - [✅] Reconstructed (Name: HudUiTimerPanel::GetSeconds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTimerPanel::GetSeconds File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40ed20:
   - [☑️] Reconstructed (Name: HudUiTimerPanel::Update)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTimerPanel::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40ed80:
@@ -3203,7 +3228,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x40ee60:
   - [☑️] Reconstructed (Name: HudUiTimerPanel::UpdateHMSFromSeconds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTimerPanel::UpdateHMSFromSeconds File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40ef00:
@@ -3230,12 +3255,12 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiCounter::ReleaseStateImages)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCounter::ReleaseStateImages File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40f130:
   - [✅] Reconstructed (Name: HudUiCounter::UpdateLayoutPosition)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCounter::UpdateLayoutPosition File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40f1a0:
   - [✅] Reconstructed (Name: HudUiMgr::SetModeCounterState)
   - [✅] Source dependencies satisfied
@@ -3243,19 +3268,19 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x40f200:
   - [☑️] Reconstructed (Name: HudUiTripletPanel::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTripletPanel::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40f2b0:
   - [✅] Reconstructed (Name: HudUiTripletPanel::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTripletPanel::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40f2d0:
   - [✅] Reconstructed (Name: HudUiWidget::CtorDefaultThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::CtorDefaultThunk File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40f2e0:
   - [☑️] Reconstructed (Name: HudUiNanitePanel::InitLayout)
   - [✅] Source dependencies satisfied
@@ -3273,9 +3298,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x40f460:
   - [✅] Reconstructed (Name: HudUiTripletPanel::SetVisibleCount)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTripletPanel::SetVisibleCount File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40f4c0:
   - [☑️] Reconstructed (Name: HudUiMgr::InitHudLayouts)
   - [✅] Source dependencies satisfied
@@ -3285,35 +3310,35 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiPanel::SetTextColor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::SetTextColor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40fa10:
   - [☑️] Reconstructed (Name: HudUiStatsListElement::Update)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiStatsListElement::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40fa20:
   - [✅] Reconstructed (Name: HudUiStatsListElement::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiStatsListElement::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40fa40:
   - [☑️] Reconstructed (Name: HudUiStatsListElement::DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiStatsListElement::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40fab0:
   - [✅] Reconstructed (Name: HudUiPanelSimple::ConstructorDefaultThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanelSimple::ConstructorDefaultThunk File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40fb90:
   - [☑️] Reconstructed (Name: HudUiTimerPanel::ZarWriteTimerDataCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTimerPanel::ZarWriteTimerDataCallback File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40fbb0:
   - [✅] Reconstructed (Name: HudUiTimerPanel::ZarReadTimerData)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTimerPanel::ZarReadTimerData File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x40fbd0:
@@ -3348,9 +3373,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x410140:
   - [✅] Reconstructed (Name: HudUiMgr::TickLayoutDelay)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::TickLayoutDelay File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x410160:
   - [☑️] Reconstructed (Name: HudUiMgr::EnsureHudLoaded)
   - [✅] Source dependencies satisfied
@@ -3378,32 +3403,32 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x411270:
   - [☑️] Reconstructed (Name: HudUiMgr::UpdateTargetReticleFromCursor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::UpdateTargetReticleFromCursor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x411710:
   - [✅] Reconstructed (Name: HudUiMgr::ReticleStaticAtexitStub)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::ReticleStaticAtexitStub File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x411720:
   - [✅] Reconstructed (Name: HudUiMgr::CopyReticleProjection)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::CopyReticleProjection File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x411740:
   - [✅] Reconstructed (Name: HudUiMgr::SetReticleMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::SetReticleMode File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x411750:
   - [✅] Reconstructed (Name: HudUiMgr::SetNanitePanelCount)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::SetNanitePanelCount File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x411760:
   - [☑️] Reconstructed (Name: HudUiMgrObjective::SetVisibleAndResetMeterFill)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgrObjective::SetVisibleAndResetMeterFill File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4124b0:
@@ -3423,17 +3448,17 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4126e0:
   - [✅] Reconstructed (Name: HudUiMessage::SelectVariantDisplay)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessage::SelectVariantDisplay File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x412790:
   - [✅] Reconstructed (Name: HudUiMessage::ApplySideImageSwap)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessage::ApplySideImageSwap File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4127d0:
   - [✅] Reconstructed (Name: HudUiMessage::ClearDisplay)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessage::ClearDisplay File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x412820:
@@ -3448,24 +3473,24 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x412bd0:
   - [✅] Reconstructed (Name: HudLayout::SetActiveNoOp)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutBase::SetActiveNoOp File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x412be0:
   - [✅] Reconstructed (Name: HudLayout::UpdateAll)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutBase::UpdateAll File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x412bf0:
   - [✅] Reconstructed (Name: HudLayoutBase::Enable)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutBase::Enable File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x412c00:
   - [✅] Reconstructed (Name: HudLayoutBase::Disable)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutBase::Disable File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x412c10:
   - [✅] Reconstructed (Name: HudLayoutSW::LoadTypeIFromZarRoot)
   - [✅] Source dependencies satisfied
@@ -3567,30 +3592,30 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: HudUiMgr::SetAuxOverlayVisible File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4137c0:
-  - [✅] Reconstructed (Name: HudUiAuxOverlay::ClearTextLines)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiAuxOverlay::ClearSensorOverlayTextLines)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiAuxOverlay::ClearTextLines File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4137f0:
-  - [✅] Reconstructed (Name: HudUiAuxOverlay::UpdateTextLine)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiAuxOverlay::ApplyTextLineOp)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiAuxOverlay::UpdateTextLine File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4138d0:
   - [✅] Reconstructed (Name: HudUi::ShowTopMessageLine)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUi::ShowTopMessageLine File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x413910:
   - [✅] Reconstructed (Name: HudUiMgr::EnableTopAndChatStacks)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::EnableTopAndChatStacks File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x413950:
   - [✅] Reconstructed (Name: HudUiMgr::DisableTopAndChatStacks)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::DisableTopAndChatStacks File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x413990:
   - [✅] Reconstructed (Name: HudUiLayoutNode::ApplyTextLabel)
   - [✅] Source dependencies satisfied
@@ -3643,12 +3668,12 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x414180:
   - [☑️] Reconstructed (Name: HudUiLoadingCheckpoint::AdvanceAndLog)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadingCheckpoint::AdvanceAndLog File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x414210:
   - [☑️] Reconstructed (Name: HudUiLoadingCheckpoint::InitTable)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadingCheckpoint::InitTable File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x414300:
@@ -3707,15 +3732,15 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x46da40:
-  - [☑️] Reconstructed (Name: zVid_TexturePack_EnsureDefaultImagePackLoaded)
+  - [☑️] Reconstructed (Name: zVid_TexturePack::EnsureDefaultImagePackLoaded)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_TexturePack_EnsureDefaultImagePackLoaded File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4b3ce0:
   - [☑️] Reconstructed (Name: HudUiWidget::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3d50:
   - [☑️] Reconstructed (Name: HudUiWidget::DestructorCore)
   - [✅] Source dependencies satisfied
@@ -3725,7 +3750,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiWidget::ReleaseImageIfOwned)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::ReleaseImageIfOwned File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3dd0:
   - [✅] Reconstructed (Name: HudUiWidget::SetPos)
   - [❓] Source dependencies satisfied
@@ -3735,12 +3760,12 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiWidget::SetImageByPathOwned)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::SetImageByPathOwned File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3e70:
   - [✅] Reconstructed (Name: HudUiWidget::SetImageBorrowedAndInvalidate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::SetImageBorrowedAndInvalidate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3e90:
   - [☑️] Reconstructed (Name: HudUiWidget::InvalidateRect)
   - [✅] Source dependencies satisfied
@@ -3760,57 +3785,62 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiElement::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b40c0:
   - [☑️] Reconstructed (Name: HudUiElement::CopyConstructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::CopyConstructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4120:
   - [☑️] Reconstructed (Name: HudUiElement::CopyFrom)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::CopyFrom File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4180:
   - [✅] Reconstructed (Name: HudUiElement::Invalidate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::Invalidate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4190:
   - [✅] Reconstructed (Name: HudUiElement::SetBltSourceAndClipRect)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetBltSourceAndClipRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b41b0:
   - [✅] Reconstructed (Name: HudUiElement::SetClipRect)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetClipRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b41e0:
   - [☑️] Reconstructed (Name: HudUiElement::Update)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4280:
   - [☑️] Reconstructed (Name: HudUiElement::SetTimer)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetTimer File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b42c0:
   - [✅] Reconstructed (Name: HudUiElement::GetRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::GetRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b42f0:
   - [✅] Reconstructed (Name: HudUiTextInput::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b4370:
   - [✅] Reconstructed (Name: HudUiTextInput::DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
+- 0x4b4ab0:
+  - [❌] Reconstructed (Name: HudUiTextInput::DestructorCoreThunk)
+  - [❓] Source dependencies satisfied
+  - [❌] Reimplemented (Name: pending File: pending)
+  - [❌] Binary-safe verified
 - 0x4b9520:
   - [☑️] Reconstructed (Name: HudUiListSelectorItem::OnActivate)
   - [❓] Source dependencies satisfied
@@ -3828,9 +3858,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4b9850:
   - [✅] Reconstructed (Name: HudUiBackground::SetEnabled)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackground::SetEnabled File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b98d0:
   - [✅] Reconstructed (Name: HudUiBackground::LoadFromZrd)
   - [✅] Source dependencies satisfied
@@ -3843,7 +3873,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4ba020:
   - [✅] Reconstructed (Name: HudUiTransitionTextPanel::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTransitionTextPanel::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4ba070:
@@ -3858,7 +3888,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4ba0e0:
   - [☑️] Reconstructed (Name: HudUiBackground::BindPrimitiveNodeToElement)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackground::BindPrimitiveNodeToElement File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4ba350:
@@ -3875,70 +3905,70 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiContainer::InvalidateChildren)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::InvalidateChildren File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ba3c0:
   - [✅] Reconstructed (Name: HudUiFillBitmap::SetNormalizedValue)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFillBitmap::SetNormalizedValue File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ba3e0:
   - [✅] Reconstructed (Name: HudUiOwnedTextInput::OnAcceptNotifyOwner)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiOwnedTextInput::OnAcceptNotifyOwner File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ba400:
   - [✅] Reconstructed (Name: HudUiPanel::GetWrapRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::GetWrapRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ba4a0:
   - [✅] Reconstructed (Name: HudFontStyle::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudFontStyle::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ba4c0:
   - [✅] Reconstructed (Name: HudFontStyle::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudFontStyle::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ba4d0:
   - [☑️] Reconstructed (Name: StdPtrVector::EraseRange)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanelPtrVector::EraseRange File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ba510:
   - [✅] Reconstructed (Name: HudUiPanelPtrVector::InsertN)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanelPtrVector::InsertN File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4ba740:
   - [✅] Reconstructed (Name: HudUiPanel::ConstructorDefault)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::ConstructorDefault File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ba850:
   - [✅] Reconstructed (Name: HudUiPanel::CopyConstructCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::CopyConstructCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bb2a0:
   - [☑️] Reconstructed (Name: HudUiPanel::UpdateTextBoundsFromContent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::UpdateTextBoundsFromContent File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bb3d0:
   - [☑️] Reconstructed (Name: HudUiPanel::HitTest)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::HitTest File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bb440:
   - [✅] Reconstructed (Name: HudUiPanel::GetLastTextPtr)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::GetLastTextPtr File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bb460:
   - [✅] Reconstructed (Name: HudUiPanel::Draw)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bb540:
@@ -3948,27 +3978,27 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4bb5e0:
   - [✅] Reconstructed (Name: HudUiPanel::SetTextFmtV)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::SetTextFmtV File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bb680:
   - [☑️] Reconstructed (Name: HudUiPanel::SetText)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::SetText File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bb710:
   - [✅] Reconstructed (Name: HudUiPanel::QueryTextHeight)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::QueryTextHeight File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bb740:
   - [✅] Reconstructed (Name: HudUiPanel::GetTextRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::GetTextRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bb790:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::ConstructorWithEntryCount)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanel::ConstructorWithEntryCount File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bb960:
@@ -3983,79 +4013,79 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4bac10:
   - [☑️] Reconstructed (Name: HudUiPanel::RebuildTextRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::RebuildTextRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bb9f0:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::LayoutEntries)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanel::LayoutEntries File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bbaa0:
   - [✅] Reconstructed (Name: HudUiCompositePanel::SetTextFmt)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanel::SetTextFmt File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bbac0:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::SetTextFmtV)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanel::SetTextFmtV File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bbb20:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::ScrollHistory)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanel::ScrollHistory File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bbbe0:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::SetFont)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanel::SetFont File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bbca0:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::ResizeEntryVectorAndRelayout)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanel::ResizeEntryVectorAndRelayout File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bbe90:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::ReapplyEntryCount)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanel::ReapplyEntryCount File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bbed0:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::ResizeEntryCount)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanel::ResizeEntryCount File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bbfa0:
   - [✅] Reconstructed (Name: HudUiCompositePanelVector::Clear)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanelVector::Clear File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bbff0:
   - [☑️] Reconstructed (Name: HudUiCompositePanelVector::InsertCopies)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanelVector::InsertCopies File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bc320:
   - [☑️] Reconstructed (Name: HudUiCompositePanelEntry::ConstructorCopyRange)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanelEntry::ConstructorCopyRange File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bc3a0:
   - [✅] Reconstructed (Name: HudUiCompositePanelEntry::AssignCopy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanelEntry::AssignCopy File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bc410:
   - [✅] Reconstructed (Name: HudUiCompositePanelEntry::ConstructorCopy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCompositePanelEntry::ConstructorCopy File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bc480:
   - [✅] Reconstructed (Name: HudUiCircle::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCircle::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc4c0:
   - [✅] Reconstructed (Name: HudUiCircle::DrawDirty)
   - [❓] Source dependencies satisfied
@@ -4063,44 +4093,44 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4bc4e0:
   - [☑️] Reconstructed (Name: HudUiCircle::HitTestCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCircle::HitTestCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc510:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundContainer::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc540:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundContainer::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc550:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::SetInputFocus)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundContainer::SetInputFocus File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc560:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::GetInputFocus)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundContainer::GetInputFocus File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc570:
   - [☑️] Reconstructed (Name: HudUiBackground::Update)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackground::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bc760:
-  - [☑️] Reconstructed (Name: HudUi::SetInvalidateMode)
+  - [✅] Reconstructed (Name: HudUi::SetInvalidateMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUi::SetInvalidateMode File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4bc780:
   - [✅] Reconstructed (Name: HudUiContainer::ConstructorDefault)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::ConstructorDefault File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc7b0:
   - [✅] Reconstructed (Name: HudUiContainer::DestructorCore)
   - [✅] Source dependencies satisfied
@@ -4110,30 +4140,30 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiContainer::AddChild)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::AddChild File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc810:
   - [✅] Reconstructed (Name: HudUiContainer::FindChildWithPrev)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::FindChildWithPrev File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc860:
   - [✅] Reconstructed (Name: HudUiContainer::RemoveChild)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::RemoveChild File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc8d0:
   - [☑️] Reconstructed (Name: HudUiContainer::SetChildFlags)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::SetChildFlags File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc900:
   - [✅] Reconstructed (Name: HudUiContainer::UpdateAll)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::UpdateAll File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bc930:
   - [☑️] Reconstructed (Name: HudUiFlashPanel::ResetFlashState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTransitionTextPanel::ResetFlashState File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bc980:
@@ -4143,29 +4173,29 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4bc9b0:
   - [✅] Reconstructed (Name: HudUiFlashPanel::SetFlashColorAndRate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTransitionTextPanel::SetFlashColorAndRate File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bcb50:
   - [✅] Reconstructed (Name: HudUiTextLabel::ConstructorWithPosAndFlags)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextLabel::ConstructorWithPosAndFlags File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bcbe0:
   - [✅] Reconstructed (Name: HudUiTextLabel::CopyConstructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextLabel::CopyConstructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bcc80:
   - [✅] Reconstructed (Name: HudUiTextLabel::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextLabel::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bccf0:
   - [☑️] Reconstructed (Name: HudUiTextLabel::SetTextFmt)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextLabel::SetTextFmt File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bcd40:
   - [✅] Reconstructed (Name: HudUiPanel::SetClip)
   - [❓] Source dependencies satisfied
@@ -4175,17 +4205,17 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiTextLabel::RebuildTextBounds)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextLabel::RebuildTextBounds File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bcdc0:
   - [✅] Reconstructed (Name: HudUiTextLabel::MeasureTextWidth)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextLabel::MeasureTextWidth File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bcdf0:
   - [✅] Reconstructed (Name: HudUiTextLabel::UpdateTextExtents)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextLabel::UpdateTextExtents File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bce30:
   - [✅] Reconstructed (Name: HudUiTextLabel::OnDraw)
   - [❓] Source dependencies satisfied
@@ -4200,7 +4230,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiBar::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBar::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bcf80:
   - [☑️] Reconstructed (Name: HudUiBar::SetPointXY)
   - [✅] Source dependencies satisfied
@@ -4228,19 +4258,19 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4bd160:
   - [☑️] Reconstructed (Name: HudUiTextStack4::PushLine)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextStack4::PushLine File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bd280:
   - [✅] Reconstructed (Name: HudUi::PushTopMessageLine)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUi::PushTopMessageLine File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bd2a0:
   - [✅] Reconstructed (Name: HudUiTextStack4::Clear)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextStack4::Clear File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bd2d0:
   - [✅] Reconstructed (Name: HudUiChatMessageStack::Constructor)
   - [✅] Source dependencies satisfied
@@ -4250,29 +4280,29 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: HudUiTextStack4::SetTextColors)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextStack4::SetTextColors File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bd410:
   - [✅] Reconstructed (Name: HudUiTextStack4::SetXAll)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextStack4::SetXAll File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bd440:
   - [✅] Reconstructed (Name: HudUiTextStack4::SetYDescending)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextStack4::SetYDescending File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bd470:
   - [✅] Reconstructed (Name: zTimedTask::RemoveFromActiveList)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zTimedTask::RemoveFromActiveList File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bd4d0:
-  - [☑️] Reconstructed (Name: zTimedTask::RunImmediateAction)
+  - [☑️] Reconstructed (Name: zTimedTask::RunImmediateDrawAction)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zTimedTask::RunImmediateAction File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bd660:
-  - [☑️] Reconstructed (Name: zTimedTask::TickActiveList)
+  - [☑️] Reconstructed (Name: zTimedTask::TickActiveDrawTaskList)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zTimedTask::TickActiveList File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
@@ -4328,9 +4358,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4bf900:
   - [☑️] Reconstructed (Name: HudUiPolyline::Draw)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPolyline::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bf980:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::MemberConstructorLocal)
   - [✅] Source dependencies satisfied
@@ -4352,12 +4382,12 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bfa90:
-  - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh)
+  - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetCaptureEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bfae0:
-  - [☑️] Reconstructed (Name: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh)
+  - [☑️] Reconstructed (Name: HudUiBackgroundCursorWidget::RebuildCapturedImageForCurrentImage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
@@ -4367,7 +4397,7 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::SetPos File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bfba0:
-  - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::RebuildCapturedImage)
+  - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::CaptureBackgroundUnderCursorImage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::RebuildCapturedImage File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
@@ -4423,7 +4453,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4bffb0:
   - [✅] Reconstructed (Name: HudUiPrimitiveBindTarget::SetSegmentEndpoints)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPrimitiveBindTarget::SetSegmentEndpoints File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bffe0:
@@ -4433,7 +4463,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4c0010:
   - [✅] Reconstructed (Name: zUtil_ZAR::WriteSectionBlob)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZAR::WriteSectionBlob File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x403e20:
@@ -4457,8 +4487,8 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4ba9e0:
-  - [✅] Reconstructed (Name: HudUiPanel::ConstructorCopy)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiPanel::CopyConstructor)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::ConstructorCopy File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bab40:
@@ -4470,17 +4500,17 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiPanel::SetFont)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::SetFont File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bb0c0:
   - [☑️] Reconstructed (Name: HudUiFlashPanel::ComputeFlashBlendColor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFlashPanel::ComputeFlashBlendColor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4bb1c0:
   - [☑️] Reconstructed (Name: HudUiPanel::MeasureTextPrefixRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::MeasureTextPrefixRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
   
 ## M05. HUD multiplayer and session flow
 
@@ -4680,7 +4710,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x41b8ac:
-  - [☑️] Reconstructed (Name: g_NetSessionBrowserDialog_HelpDocsFindExecutableErrorClassTable)
+  - [☑️] Reconstructed (Name: NetSessionBrowserDialog::kHelpDocsFindExecutableErrorClassTable)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -4773,17 +4803,17 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiNetExitPanel::Show)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNetExitPanel::Show File: src/Battlesport/HudUiNetExitPanel.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41c080:
   - [✅] Reconstructed (Name: HudUiNetExitPanel::Tick)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNetExitPanel::Tick File: src/Battlesport/HudUiNetExitPanel.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41c0a0:
   - [✅] Reconstructed (Name: HudUiNetExitPanel::DestroyGlobal)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNetExitPanel::DestroyGlobal File: src/Battlesport/HudUiNetExitPanel.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41ae90:
   - [✅] Reconstructed (Name: NetSessionBrowserDialog::ScalarDeletingDtor)
   - [❓] Source dependencies satisfied
@@ -5019,6 +5049,11 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x43f610:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::CreateInstance)
+  - [❓] Source dependencies satisfied
+  - [❌] Reimplemented (Name: pending File: pending)
+  - [❌] Binary-safe verified
+- 0x43f6b0:
+  - [❌] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnBootstrapServerList)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -5327,6 +5362,11 @@ Each function has these trackers:
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
+- 0x442660:
+  - [❌] Reconstructed (Name: WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFinished)
+  - [❓] Source dependencies satisfied
+  - [❌] Reimplemented (Name: pending File: pending)
+  - [❌] Binary-safe verified
 - 0x442680:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDownloadEventSink::OnDownloadError)
   - [❓] Source dependencies satisfied
@@ -5371,12 +5411,12 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zOpt::SetWolPasswordFlag)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetWolPasswordFlag File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408a20:
-  - [✅] Reconstructed (Name: zOpt_GetWolPasswordFlagValue)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zOpt::GetWolPasswordFlagValue)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt_GetWolPasswordFlagValue File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
   
 ## M07. Map tracker, overlays, and objective presentation
 
@@ -5407,12 +5447,12 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x411900:
   - [☑️] Reconstructed (Name: HudUiMgrObjective::Show)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgrObjective::Show File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x411a20:
   - [☑️] Reconstructed (Name: HudUiMgrObjective::Begin)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgrObjective::Begin File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x411ac0:
@@ -5447,132 +5487,132 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x415ab0:
   - [✅] Reconstructed (Name: HudSensorMapNode::Init)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::Init File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x415ac0:
   - [✅] Reconstructed (Name: HudSensorMapNode::FreePointArray)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::FreePointArray File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x415ae0:
   - [✅] Reconstructed (Name: HudSensorMapNode::SetEnabled)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::SetEnabled File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x415b10:
   - [✅] Reconstructed (Name: HudSensorMapNode::SelectPoint)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::SelectPoint File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x415b40:
   - [✅] Reconstructed (Name: HudSensorMapNode::InitDefaults)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::InitDefaults File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x415b70:
   - [☑️] Reconstructed (Name: HudSensorMapNode::SetColorRgb)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::SetColorRgb File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x415bd0:
   - [✅] Reconstructed (Name: HudSensorMapNode::LoadFromStream)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::LoadFromStream File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x415c90:
-  - [☑️] Reconstructed (Name: HudSensorMapNode::UpdateCachedBounds)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: HudSensorMapNode::GetOrRecomputeCachedBounds)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::UpdateCachedBounds File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x415d30:
   - [☑️] Reconstructed (Name: HudSensorMapNode::DrawOnTracker)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::DrawOnTracker File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x415f40:
   - [✅] Reconstructed (Name: HudSensorTracker::DrawDiamondMarker)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::DrawDiamondMarker File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x415fb0:
   - [☑️] Reconstructed (Name: HudRectI::ClipOrSplitSegment)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudRectI::ClipOrSplitSegment File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416240:
   - [☑️] Reconstructed (Name: HudRectI::CalcOutcode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudRectI::CalcOutcode File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416290:
   - [✅] Reconstructed (Name: HudRectI::IsCornerOutcode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudRectI::IsCornerOutcode File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4162b0:
   - [☑️] Reconstructed (Name: HudRectI::SegmentIntersectsEdge)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudRectI::SegmentIntersectsEdge File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416390:
   - [☑️] Reconstructed (Name: HudGeom2D::ClassifyPointAgainstSegment)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudGeom2D::ClassifyPointAgainstSegment File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416480:
   - [☑️] Reconstructed (Name: HudSensorMapNode::DrawProjectedPath)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::DrawProjectedPath File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4bd6f0:
   - [✅] Reconstructed (Name: HudLineClip::SetCurrentBoundsFromRectI)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLineClip::SetCurrentBoundsFromRectI File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4bd720:
   - [☑️] Reconstructed (Name: zMath::ClipLineSegmentToZRange)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::ClipLineSegmentToZRange File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x4bd800:
   - [☑️] Reconstructed (Name: zMath::ClipLineSegmentPointToZ)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::ClipLineSegmentPointToZ File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x4bd840:
   - [✅] Reconstructed (Name: HudLineClip::ClipSegmentToCurrentBounds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLineClip::ClipSegmentToCurrentBounds File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4bd880:
   - [☑️] Reconstructed (Name: HudLineClip::ClipSegmentToCurrentXBounds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLineClip::ClipSegmentToCurrentXBounds File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4bd9c0:
   - [✅] Reconstructed (Name: HudLineClip::ClipEndpointToX)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLineClip::ClipEndpointToX File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4bd9f0:
   - [☑️] Reconstructed (Name: HudLineClip::ClipSegmentToCurrentYBounds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLineClip::ClipSegmentToCurrentYBounds File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4bdb30:
   - [✅] Reconstructed (Name: HudLineClip::ClipEndpointToY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLineClip::ClipEndpointToY File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416650:
   - [✅] Reconstructed (Name: HudSensorTracker::InitNoBounds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::InitNoBounds File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416660:
   - [☑️] Reconstructed (Name: HudSensorTracker::Init)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::Init File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4166e0:
@@ -5582,144 +5622,144 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x416790:
   - [✅] Reconstructed (Name: HudSensorTracker::MapShutdownAndResetThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::MapShutdownAndResetThunk File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4167a0:
   - [✅] Reconstructed (Name: HudSensorTracker::MapShutdownAndReset)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::MapShutdownAndReset File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4167e0:
   - [✅] Reconstructed (Name: HudSensorTracker::MapRemoveNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::MapRemoveNode File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416840:
   - [☑️] Reconstructed (Name: HudSensorTracker::MapInsertNodeAndGrowBounds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::MapInsertNodeAndGrowBounds File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4168d0:
   - [☑️] Reconstructed (Name: HudSensorTracker::LoadMapFromStream)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::LoadMapFromStream File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4169d0:
   - [✅] Reconstructed (Name: HudSensorTracker::LoadMapFromPath)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::LoadMapFromPath File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416a30:
   - [✅] Reconstructed (Name: HudSensorTracker::MapOverlayBeginShow)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::MapOverlayBeginShow File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416ad0:
   - [✅] Reconstructed (Name: HudSensorTracker::MapOverlayEndShow)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::MapOverlayEndShow File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416b30:
   - [✅] Reconstructed (Name: HudSensorTracker::MapOverlayRefToggle)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::MapOverlayRefToggle File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416b80:
   - [✅] Reconstructed (Name: HudSensorTracker::MapZoomIn)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::MapZoomIn File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416bb0:
   - [✅] Reconstructed (Name: HudSensorTracker::MapZoomOut)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::MapZoomOut File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416be0:
   - [✅] Reconstructed (Name: HudSensorTracker::UpdateMapScaleLerp)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::UpdateMapScaleLerp File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416c90:
   - [☑️] Reconstructed (Name: HudSensorTracker::ProjectWorldPointsToOverlay)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::ProjectWorldPointsToOverlay File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416d50:
   - [☑️] Reconstructed (Name: HudSensorTracker::DrawTrackedSaveStateMarker)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::DrawTrackedSaveStateMarker File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416dd0:
   - [✅] Reconstructed (Name: HudSensorTracker::DrawMarkerCross)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::DrawMarkerCross File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416e50:
   - [☑️] Reconstructed (Name: HudSensorTracker::GetSaveStateRelativeVectorLen)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::GetSaveStateRelativeVectorLen File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416ef0:
   - [✅] Reconstructed (Name: HudSensorTracker::SetSaveStateMarkerMaxDistance)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::SetSaveStateMarkerMaxDistance File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x416f10:
   - [☑️] Reconstructed (Name: HudSensorTracker::DrawSaveStateMarker)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::DrawSaveStateMarker File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x417130:
   - [✅] Reconstructed (Name: HudSensorTracker::Update)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::Update File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x417220:
   - [☑️] Reconstructed (Name: HudSensorTracker::SetTrackedSaveState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::SetTrackedSaveState File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x417260:
   - [✅] Reconstructed (Name: HudSensorTracker::LoadMissionMapAndSfx)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::LoadMissionMapAndSfx File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4172c0:
   - [✅] Reconstructed (Name: HudSensorTracker::SetObjectiveMarkerEnabledAndColor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::SetObjectiveMarkerEnabledAndColor File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x417300:
   - [✅] Reconstructed (Name: HudSensorTracker::SetObjectiveMarkerColorBlink)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::SetObjectiveMarkerColorBlink File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x417360:
   - [✅] Reconstructed (Name: HudSensorTracker::ConstructGlobal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::ConstructGlobal File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x417370:
   - [✅] Reconstructed (Name: HudSensorTracker::RegisterGlobalOnExit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::RegisterGlobalOnExit File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x417380:
   - [✅] Reconstructed (Name: HudSensorTracker::ShutdownGlobal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::ShutdownGlobal File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x417390:
   - [☑️] Reconstructed (Name: HudSensorTracker::Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::Constructor File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x417430:
   - [✅] Reconstructed (Name: HudSensorTracker::WriteMissionDataSection)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::WriteMissionDataSection File: src/Battlesport/HudSensorTracker.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4174f0:
   - [✅] Reconstructed (Name: HudSensorTracker::ApplyMissionDataAndReload)
   - [❓] Source dependencies satisfied
@@ -5732,9 +5772,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x417680:
   - [✅] Reconstructed (Name: HudSensorTracker::ZarMission_SaveCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::ZarMission_SaveCallback File: src/Battlesport/HudSensorTracker.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x417690:
   - [✅] Reconstructed (Name: HudSensorTracker::ZarMission_RestoreCallback)
   - [❓] Source dependencies satisfied
@@ -5742,17 +5782,17 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4176b0:
   - [☑️] Reconstructed (Name: HudSensorTracker::ZarMissionLate_SaveCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::ZarMissionLate_SaveCallback File: src/Battlesport/HudSensorTracker.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4176d0:
   - [✅] Reconstructed (Name: HudSensorTracker::ZarMissionLate_RestoreCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::ZarMissionLate_RestoreCallback File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4176f0:
   - [✅] Reconstructed (Name: HudSensorTracker::ResetMissionState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::ResetMissionState File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x417770:
@@ -5762,7 +5802,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4177a0:
   - [✅] Reconstructed (Name: HudSensorTracker::SetMissionId)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::SetMissionId File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4177d0:
@@ -5772,9 +5812,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x417800:
   - [✅] Reconstructed (Name: HudSensorTracker::GetMissionId)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::GetMissionId File: src/Battlesport/HudSensorTracker.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x417810:
   - [☑️] Reconstructed (Name: HudSensorTracker::LoadMissionCoreResources)
   - [❓] Source dependencies satisfied
@@ -5787,7 +5827,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x417ca0:
   - [✅] Reconstructed (Name: HudSensorTracker::OnObjectiveCommand)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::OnObjectiveCommand File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x417d40:
@@ -5797,77 +5837,77 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x417ee0:
   - [✅] Reconstructed (Name: HudSensorTracker::UnloadObjectives)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::UnloadObjectives File: src/Battlesport/HudSensorTracker.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x417f60:
   - [✅] Reconstructed (Name: HudSensorObjectiveSlot::Reset)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorObjectiveSlot::Reset File: src/Battlesport/HudSensorTracker.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x417f90:
   - [☑️] Reconstructed (Name: HudSensorTracker::LoadObjectivesFromPath)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::LoadObjectivesFromPath File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x418230:
   - [☑️] Reconstructed (Name: HudSensorTracker::LoadObjectivesFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::LoadObjectivesFromZrd File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4184e0:
   - [☑️] Reconstructed (Name: HudSensorTracker::AdvanceObjectiveState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::AdvanceObjectiveState File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x418620:
   - [☑️] Reconstructed (Name: HudSensorTracker::SetObjectiveReviewVisible)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::SetObjectiveReviewVisible File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4186f0:
   - [✅] Reconstructed (Name: HudSensorTracker::GetObjectiveBriefingStringsAndImageRef)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::GetObjectiveBriefingStringsAndImageRef File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x418730:
   - [✅] Reconstructed (Name: HudSensorTracker::Command_ToggleObjectivePanel)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::Command_ToggleObjectivePanel File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x418760:
   - [☑️] Reconstructed (Name: HudSensorTracker::SetObjectivePanelVisible)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::SetObjectivePanelVisible File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4188f0:
   - [✅] Reconstructed (Name: HudSensorTracker::Command_ShowObjectivePickupInfo)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::Command_ShowObjectivePickupInfo File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x418940:
   - [☑️] Reconstructed (Name: HudSensorTracker::ShowObjectivePickupInfo)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::ShowObjectivePickupInfo File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x418c30:
   - [✅] Reconstructed (Name: HudSensorTracker::FindAndHighlightFirstIncompleteObjective)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::FindAndHighlightFirstIncompleteObjective File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x418c70:
   - [☑️] Reconstructed (Name: HudSensorTracker::ResetHudForMissionStart)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::ResetHudForMissionStart File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x418d40:
   - [☑️] Reconstructed (Name: HudSensorTracker::UpdateObjectiveFlow)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::UpdateObjectiveFlow File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x418fb0:
   - [✅] Reconstructed (Name: HudSensorTracker::SaveAndQueueMissionState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::SaveAndQueueMissionState File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x419050:
@@ -5877,27 +5917,27 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4192d0:
   - [✅] Reconstructed (Name: HudSensorTracker::RunStartAnimsFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::RunStartAnimsFromZrd File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x419380:
   - [✅] Reconstructed (Name: HudSensorTracker::OnObjectiveReadSoundEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::OnObjectiveReadSoundEvent File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x4193c0:
   - [☑️] Reconstructed (Name: HudSensorTracker::LoadRaceCheckpointMeta)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::LoadRaceCheckpointMeta File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x419470:
   - [✅] Reconstructed (Name: HudSensorTracker::SetRuntimeTimerSecAndGoalValue)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::SetRuntimeTimerSecAndGoalValue File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x419490:
   - [☑️] Reconstructed (Name: HudSensorTracker::Shutdown)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::Shutdown File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x41ebd0:
@@ -5914,7 +5954,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: RecoilVersion::GetString)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilVersion::GetString File: src/Battlesport/RecoilVersion.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x439990:
   - [✅] Reconstructed (Name: Player::ResetDamageStateAndTimedHitStatus)
   - [❓] Source dependencies satisfied
@@ -5930,7 +5970,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x419010:
   - [☑️] Reconstructed (Name: HudSensorTracker::QueueMissionFmvStateForMissionId)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::QueueMissionFmvStateForMissionId File: src/Battlesport/HudSensorTracker.cpp)
   - [❌] Binary-safe verified
 - 0x420c60:
@@ -5952,7 +5992,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: RecoilApp_MissionFmvState::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_MissionFmvState::Constructor File: src/Battlesport/RecoilApp.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42edb0:
   - [☑️] Reconstructed (Name: RecoilApp_MissionFmvState::OnTryBecomeCurrent)
   - [❓] Source dependencies satisfied
@@ -5978,19 +6018,19 @@ Each function has these trackers:
 
 - 0x41cc10:
   - [✅] Reconstructed (Name: PickupSpawnList::Primary_Init)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: PickupSpawnList::Primary_Init File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41cc40:
   - [✅] Reconstructed (Name: PickupSpawnList::NetCopy_Init)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: PickupSpawnList::NetCopy_Init File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41cc70:
   - [✅] Reconstructed (Name: PickupRespawnQueue::Init)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: PickupRespawnQueue::Init File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41cca0:
   - [☑️] Reconstructed (Name: PickupTypeTable::FreeOptMeta)
   - [✅] Source dependencies satisfied
@@ -5998,9 +6038,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x41ccd0:
   - [✅] Reconstructed (Name: Pickup::Shutdown)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Pickup::Shutdown File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41ccf0:
   - [☑️] Reconstructed (Name: Pickup::Init)
   - [❓] Source dependencies satisfied
@@ -6008,9 +6048,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x41ceb0:
   - [✅] Reconstructed (Name: zClass_Node::ClearPickupFlagsRecursive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Node::ClearPickupFlagsRecursive File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41cef0:
   - [☑️] Reconstructed (Name: zClass_Node::SetPickupFlagsRecursive)
   - [❓] Source dependencies satisfied
@@ -6043,9 +6083,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x41d8a0:
   - [✅] Reconstructed (Name: PickupSpawnList::RemoveAndFreeNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: PickupSpawnList::RemoveAndFreeNode File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41d920:
   - [☑️] Reconstructed (Name: Pickup::CreateSpawnDefAndLink)
   - [❓] Source dependencies satisfied
@@ -6063,9 +6103,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x41db40:
   - [✅] Reconstructed (Name: PickupType::GetByIndex_Pure)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: PickupType::GetByIndex_Pure File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41db60:
   - [☑️] Reconstructed (Name: Pickup::AssignBvolGroupAndId)
   - [❓] Source dependencies satisfied
@@ -6108,9 +6148,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x41e1c0:
   - [✅] Reconstructed (Name: PickupType::GetByIndex)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: PickupType::GetByIndex File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41e1e0:
   - [☑️] Reconstructed (Name: PickupTypeKeyTable::FindIndex)
   - [❓] Source dependencies satisfied
@@ -6118,14 +6158,14 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x41e240:
   - [✅] Reconstructed (Name: PickupSpawnList::Clear)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: PickupSpawnList::Clear File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41e270:
   - [✅] Reconstructed (Name: PickupRespawnQueue::ClearAndFree)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: PickupRespawnQueue::ClearAndFree File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41e2f0:
   - [✅] Reconstructed (Name: Pickup::RemoveOtherSpawnsWithSameOptEntry)
   - [❓] Source dependencies satisfied
@@ -6183,24 +6223,24 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x41e930:
   - [☑️] Reconstructed (Name: Pickup::FindSpawnByPickupId)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Pickup::FindSpawnByPickupId File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41e950:
   - [✅] Reconstructed (Name: Pickup::GetSpawnDefFromNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Pickup::GetSpawnDefFromNode File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41e960:
   - [✅] Reconstructed (Name: Pickup::SetNextPickupId)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Pickup::SetNextPickupId File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41e970:
   - [✅] Reconstructed (Name: Pickup::GetNextPickupId)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Pickup::GetNextPickupId File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x41e980:
   - [☑️] Reconstructed (Name: Pickup::FindDroppableTypeForPlayerCurrentWeapon)
   - [❓] Source dependencies satisfied
@@ -6208,7 +6248,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x41ea00:
   - [✅] Reconstructed (Name: Pickup::FindOptMetaImageByOptEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Pickup::FindOptMetaImageByOptEntry File: src/Battlesport/pickup.cpp)
   - [❌] Binary-safe verified
 - 0x41ea30:
@@ -6268,9 +6308,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x438b10:
   - [✅] Reconstructed (Name: PickupAirdropSpawnRef::ShutdownGlobal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: PickupAirdropSpawnRef::ShutdownGlobal File: src/Battlesport/pickup.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x438b30:
   - [✅] Reconstructed (Name: PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal)
   - [❓] Source dependencies satisfied
@@ -6285,8 +6325,8 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x402f10:
-  - [✅] Reconstructed (Name: Player::AiFinalizeMode2State1ForAllPlayers)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: Player::AiFinalizeMode2AttackPursuitForAllPlayers)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::AiFinalizeMode2State1ForAllPlayers File: src/Battlesport/player.cpp)
   - [❌] Binary-safe verified
 - 0x41bab0:
@@ -6355,27 +6395,27 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x41eb50:
-  - [✅] Reconstructed (Name: Player::InitAndRegisterState7FxPass3UiSingleton)
+  - [✅] Reconstructed (Name: Player::InitAndRegisterProjectileCameraFxPass3UiSingleton)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x41eb60:
-  - [✅] Reconstructed (Name: Player::InitState7FxPass3UiSingleton)
+  - [✅] Reconstructed (Name: Player::InitProjectileCameraFxPass3UiSingleton)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x41eb70:
-  - [✅] Reconstructed (Name: Player::RegisterState7FxPass3UiCleanup)
+  - [✅] Reconstructed (Name: Player::RegisterProjectileCameraFxPass3UiCleanup)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x41eb80:
-  - [✅] Reconstructed (Name: Player::ResetState7FxPass3UiSingleton)
+  - [✅] Reconstructed (Name: Player::ResetProjectileCameraFxPass3UiSingleton)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x41eb90:
-  - [✅] Reconstructed (Name: Player_State7FxPass3Ui::Constructor)
+  - [✅] Reconstructed (Name: Player_ProjectileCameraFxPass3Ui::Constructor)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -6456,7 +6496,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x41f010:
   - [☑️] Reconstructed (Name: Player::BuildMissionSaveData)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::BuildMissionSaveData File: src/Battlesport/player.cpp)
   - [❌] Binary-safe verified
 - 0x41f1d0:
@@ -6491,12 +6531,12 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x41fb80:
   - [✅] Reconstructed (Name: Player::ShutdownMissionRuntime)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::ShutdownMissionRuntime File: src/Battlesport/player.cpp)
   - [❌] Binary-safe verified
 - 0x41fd20:
   - [✅] Reconstructed (Name: Player::DestroySaveGameState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::DestroySaveGameState File: src/Battlesport/player.cpp)
   - [❌] Binary-safe verified
 - 0x41fe40:
@@ -6530,7 +6570,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x421830:
-  - [☑️] Reconstructed (Name: Player::UpdateGroundProbeAndMaybeAlignToSurface)
+  - [☑️] Reconstructed (Name: Player::SampleGroundAndAlignRootToSurface)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -6575,7 +6615,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x423450:
-  - [✅] Reconstructed (Name: Player_State7FxPass3Ui::ApplyGreenMask)
+  - [✅] Reconstructed (Name: Player_ProjectileCameraFxPass3Ui::ApplyGreenMask)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -6590,7 +6630,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x429430:
-  - [✅] Reconstructed (Name: Player::ApplyPitchRollOscillationFromVector_Local)
+  - [✅] Reconstructed (Name: Player::ApplyPitchRollVelocityImpulseFromDirection)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -6646,7 +6686,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x438b60:
   - [✅] Reconstructed (Name: Player::FreeAltWeaponTrailRuntimeStates)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::FreeAltWeaponTrailRuntimeStates File: src/Battlesport/player.cpp)
   - [❌] Binary-safe verified
 - 0x4385f0:
@@ -6680,7 +6720,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x43a600:
-  - [☑️] Reconstructed (Name: Player::ApplyAimDirectionToDualNodes)
+  - [☑️] Reconstructed (Name: Player::UpdateAltGunAimDirection)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -6690,13 +6730,13 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x43aa30:
-  - [✅] Reconstructed (Name: Player::SelectAltGunFirePointAndSlot)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: Player::SelectAltGunFireOriginAndSlot)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::SelectAltGunFirePointAndSlot File: src/Battlesport/player.cpp)
   - [❌] Binary-safe verified
 - 0x43afd0:
   - [☑️] Reconstructed (Name: Player::ComposeAimBasisWorldMatrix)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::ComposeAimBasisWorldMatrix File: src/Battlesport/player.cpp)
   - [❌] Binary-safe verified
 - 0x43b1b0:
@@ -6718,12 +6758,12 @@ Each function has these trackers:
 ## M11. Player camera, pose, movement, and environment probes
 
 - 0x404e90:
-  - [☑️] Reconstructed (Name: Player::TickCameraRuntime)
+  - [☑️] Reconstructed (Name: Player::TickActiveCameraState)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x405040:
-  - [☑️] Reconstructed (Name: Player::UpdateCameraByState)
+  - [☑️] Reconstructed (Name: Player::UpdateChaseCameraFromInput)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -6733,17 +6773,17 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4057d0:
-  - [✅] Reconstructed (Name: Player::UpdateCameraForState2)
+  - [✅] Reconstructed (Name: Player::UpdateTopDownCameraState)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x405870:
-  - [☑️] Reconstructed (Name: Player::UpdateCameraFromStoredTarget)
+  - [☑️] Reconstructed (Name: Player::UpdateCameraFromStoredTargetTowardPlayer)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4059a0:
-  - [☑️] Reconstructed (Name: Player::UpdateCameraForState6)
+  - [☑️] Reconstructed (Name: Player::UpdateFirstPersonCameraFromInput)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -6768,17 +6808,17 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4063f0:
-  - [✅] Reconstructed (Name: Player::ResolveThirdPersonCameraObstruction)
+  - [✅] Reconstructed (Name: Player::RestoreThirdPersonCameraFromObstructionState)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x406430:
-  - [✅] Reconstructed (Name: Player::ClearCurrentSaveStateBindingIfSinglePlayer)
+  - [✅] Reconstructed (Name: Player::UnbindCurrentSaveStateIfSinglePlayer)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x406450:
-  - [✅] Reconstructed (Name: Player::BindCurrentSaveStateToActiveGameState)
+  - [✅] Reconstructed (Name: Player::BindActiveGameStateAsCurrentSaveState)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -6793,17 +6833,17 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x406610:
-  - [☑️] Reconstructed (Name: Player::ApplyCameraVariantTagFromPickCandidate)
+  - [☑️] Reconstructed (Name: Player::UpdateCameraWeatherFxEmitterVisibility)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x406730:
-  - [✅] Reconstructed (Name: Player::UpdateWeatherFxEmitterVisibility)
+  - [✅] Reconstructed (Name: Player::FilterCameraProbeBlockingHits)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4067a0:
-  - [✅] Reconstructed (Name: Player::LowerSubCameraFocusOnProbeHit)
+  - [✅] Reconstructed (Name: Player::AdjustSubCameraFocusForObstruction)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -6833,7 +6873,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x42b810:
-  - [✅] Reconstructed (Name: Player::SyncPoseFromRootNode)
+  - [✅] Reconstructed (Name: Player::SyncLocalPoseFromRootNode)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -6874,7 +6914,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x42bf40:
   - [☑️] Reconstructed (Name: HudUi::PlayPowerupSfx)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUi::PlayPowerupSfx File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x42bf90:
@@ -6918,7 +6958,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x42cb50:
-  - [☑️] Reconstructed (Name: Player::PlayTerrainImpactSfx)
+  - [☑️] Reconstructed (Name: Player::ResetTerrainContactImpulsesAndPlayImpactSfx)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7091,7 +7131,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4266b0:
-  - [☑️] Reconstructed (Name: Player::UpdateForMasterType)
+  - [☑️] Reconstructed (Name: Player::TickMasterTypeAndForceFeedback)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7146,7 +7186,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4289f0:
-  - [☑️] Reconstructed (Name: Player::UpdateMasterTypeSub_FromModalProbe)
+  - [☑️] Reconstructed (Name: Player::UpdateSubModeWaterProbeState)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7209,7 +7249,7 @@ Each function has these trackers:
 ## M13. Player combat, damage, and Battlesport-side weapon coupling
 
 - 0x4024a0:
-  - [☑️] Reconstructed (Name: Player::BuildAltGunInterceptPoint)
+  - [☑️] Reconstructed (Name: Player::SolveAltGunLeadTargetPoint)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7259,7 +7299,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x439690:
-  - [☑️] Reconstructed (Name: HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag)
+  - [☑️] Reconstructed (Name: HudUiMgrSensor::UpdateTrackMarkersAndReticleTarget)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
@@ -7279,17 +7319,17 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x43a400:
-  - [☑️] Reconstructed (Name: Player::ProcessPrimaryGunDispatchTick)
+  - [☑️] Reconstructed (Name: Player::ProcessPrimaryGunDispatchRequest)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x43a900:
-  - [☑️] Reconstructed (Name: Player::UpdateAltGunAimDirection)
+  - [☑️] Reconstructed (Name: Player::DecayAndApplyAltFireSlotOffsetToNode)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x43acf0:
-  - [✅] Reconstructed (Name: Player::SelectPrimaryGunFirePointAndSlot)
+  - [✅] Reconstructed (Name: Player::SelectPrimaryGunFireOriginAndSlot)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7314,12 +7354,12 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x43b730:
-  - [✅] Reconstructed (Name: Player::UpdateStatusMeterWithFeedback)
+  - [✅] Reconstructed (Name: Player::RecordRecentHitFeedback)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x43b790:
-  - [☑️] Reconstructed (Name: Player::RecordRecentHitContext)
+  - [☑️] Reconstructed (Name: Player::UpdateTimedHitStatusFromHitSource)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7339,7 +7379,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x43bc40:
-  - [✅] Reconstructed (Name: Player::ApplyDamageNonLocal)
+  - [✅] Reconstructed (Name: Player::EnterLocalInactiveDestroyedLifecycle)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7354,17 +7394,17 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x43c0c0:
-  - [✅] Reconstructed (Name: Player::TickDestroyedStateCountdown)
+  - [✅] Reconstructed (Name: Player::StartDestroyedStateVehicleEffect)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x43c190:
-  - [☑️] Reconstructed (Name: Player::ProcessAltGunDispatchRequest)
+  - [☑️] Reconstructed (Name: Player::ProcessAltGunFireDispatchRequest)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x43c2d0:
-  - [✅] Reconstructed (Name: Player::UpdateAltGunFireController)
+  - [✅] Reconstructed (Name: Player::UpdateContinuousAltGunFireController)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7410,9 +7450,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x43c9c0:
   - [☑️] Reconstructed (Name: Player::FindAltGunFireControllerForWeaponId)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::FindAltGunFireControllerForWeaponId File: src/Battlesport/player.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x43ca20:
   - [☑️] Reconstructed (Name: zWeapon_OptCatalog::LoadKillVerbString)
   - [❓] Source dependencies satisfied
@@ -7424,7 +7464,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x43cc70:
-  - [✅] Reconstructed (Name: Player::Mines_ZAR_WriteSection)
+  - [✅] Reconstructed (Name: Player::WriteMinesZarSection)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7467,17 +7507,17 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x437430:
-  - [✅] Reconstructed (Name: zTurret_Runtime::Update)
+  - [✅] Reconstructed (Name: zTurret_Runtime::UpdateFirePositionFromParts)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4374a0:
-  - [☑️] Reconstructed (Name: zTurret_Runtime::UpdateFireOrigin)
+  - [☑️] Reconstructed (Name: zTurret_Runtime::UpdateAimAndPartMatrices)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x437730:
-  - [☑️] Reconstructed (Name: zTurret_Runtime::UpdateAimTowardsTarget)
+  - [☑️] Reconstructed (Name: zTurret_Runtime::SelectFirePointAndAimAtTarget)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7507,7 +7547,7 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zTurret_System::Shutdown File: src/GameZRecoil/zTurret/zTurret.cpp)
   - [❌] Binary-safe verified
 - 0x437ac0:
-  - [☑️] Reconstructed (Name: zTurret_System::LoadDefinitionsFromPath_Local)
+  - [☑️] Reconstructed (Name: zTurret_System::LoadDefinitionsFromPath)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7518,7 +7558,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x437d40:
   - [✅] Reconstructed (Name: zTurret_System::DisableTickCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zTurret_System::DisableTickCallback File: src/GameZRecoil/zTurret/zTurret.cpp)
   - [❌] Binary-safe verified
 - 0x437d50:
@@ -7545,7 +7585,7 @@ Each function has these trackers:
 ## M15. AI pathing
 
 - 0x401060:
-  - [☑️] Reconstructed (Name: Player::TickAiMode2)
+  - [☑️] Reconstructed (Name: Player::TickAiMode2TopLevel)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7555,7 +7595,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x401420:
-  - [☑️] Reconstructed (Name: Player::ShouldSwitchPathFollowToAutoTurn)
+  - [☑️] Reconstructed (Name: Player::AiMode2ForwardProbeRequiresAutoTurn)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7579,63 +7619,68 @@ Each function has these trackers:
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
+- 0x401964:
+  - [❌] Reconstructed (Name: Player::UpdateAiMode2MoveAndTurnTowardTargetForwarder)
+  - [❓] Source dependencies satisfied
+  - [❌] Reimplemented (Name: pending File: pending)
+  - [❌] Binary-safe verified
 - 0x401a40:
-  - [✅] Reconstructed (Name: Player::TickAiMode2SteeringSubstate1)
+  - [✅] Reconstructed (Name: Player::TickAiMode2OffsetTargetSteering)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x401ab0:
-  - [✅] Reconstructed (Name: Player::TickAiMode2SteeringSubstate2)
+  - [✅] Reconstructed (Name: Player::TickAiMode2DynamicOffsetTargetSteering)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x401b20:
-  - [☑️] Reconstructed (Name: Player::AiTryEnterMode2State1)
+  - [☑️] Reconstructed (Name: Player::AiTryEnterMode2AttackPursuitIfLineOfSight)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x401c00:
-  - [☑️] Reconstructed (Name: Player::AiPropagateMode2State1ToLinkedPlayers)
+  - [☑️] Reconstructed (Name: Player::AiAlertAttackBuddies)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x401c60:
-  - [☑️] Reconstructed (Name: Player::AiEnterMode2State1)
+  - [☑️] Reconstructed (Name: Player::AiEnterMode2SteeringPursuit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x401d50:
-  - [✅] Reconstructed (Name: Player::TestScenePathBetweenPoints)
+  - [✅] Reconstructed (Name: Player::HasLineOfSightFromLocalPlayerFxOffset)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x401e50:
-  - [✅] Reconstructed (Name: Player::TestScenePathBetweenCameraTargetAndPoint)
+  - [✅] Reconstructed (Name: Player::HasLineOfSightFromCameraTarget)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::TestScenePathBetweenCameraTargetAndPoint File: src/Battlesport/player.cpp)
   - [❌] Binary-safe verified
 - 0x401f60:
-  - [☑️] Reconstructed (Name: Player::AiRebuildPathToNodeIfFar)
+  - [☑️] Reconstructed (Name: Player::AiRebuildSyntheticPathToNodeIfFar)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x402080:
-  - [✅] Reconstructed (Name: Player::AiRestorePreviousTopLevelState)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: Player::AiRestoreSavedTopLevelState)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::AiRestorePreviousTopLevelState File: src/Battlesport/player.cpp)
   - [❌] Binary-safe verified
 - 0x402090:
-  - [☑️] Reconstructed (Name: Player::UpdateAiMode2State2TurnTowardTarget)
+  - [☑️] Reconstructed (Name: Player::UpdateAiMode2TurnTowardPlayerNoThrottle)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x402170:
-  - [☑️] Reconstructed (Name: Player::UpdateAiMode2TurnOnlyTowardTarget)
+  - [☑️] Reconstructed (Name: Player::UpdateAiMode2TurnInPlaceTowardPlayer)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x402250:
-  - [☑️] Reconstructed (Name: Player::UpdateAiMode2AltGunAttack)
+  - [☑️] Reconstructed (Name: Player::TickAiMode2AltGunAttackWindow)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7650,7 +7695,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x402b70:
-  - [☑️] Reconstructed (Name: Player::TickAiMode2State4PathSteering)
+  - [☑️] Reconstructed (Name: Player::TickAiMode2TimedPathSteering)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7706,26 +7751,26 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4037c0:
   - [✅] Reconstructed (Name: AINetNode::Free)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: AINetNode::Free File: src/Battlesport/ainet.cpp)
   - [❌] Binary-safe verified
 - 0x403800:
   - [✅] Reconstructed (Name: AINet::Free)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: AINet::Free File: src/Battlesport/ainet.cpp)
   - [❌] Binary-safe verified
 - 0x403830:
   - [☑️] Reconstructed (Name: Player::AiDiscardNegativeBranchPathNodes)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::AiDiscardNegativeBranchPathNodes File: src/Battlesport/player.cpp)
   - [❌] Binary-safe verified
 - 0x403870:
   - [✅] Reconstructed (Name: AINet::FreeAll)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: AINet::FreeAll File: src/Battlesport/ainet.cpp)
   - [❌] Binary-safe verified
 - 0x41b950:
-  - [☑️] Reconstructed (Name: Player::TickAiMode3)
+  - [☑️] Reconstructed (Name: Player::TickRemoteNetworkPlayer)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -7769,22 +7814,22 @@ Each function has these trackers:
 
 - 0x4138f0:
   - [✅] Reconstructed (Name: HudUi::ShowChatLine)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUi::ShowChatLine File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x414330:
   - [✅] Reconstructed (Name: GameNet::ShowPlayerKillMessage)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::ShowPlayerKillMessage File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x414390:
   - [✅] Reconstructed (Name: GameNet::RefreshPlayerListMenu)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::RefreshPlayerListMenu File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x4143c0:
   - [✅] Reconstructed (Name: HudUi::RemoveScoreboardEntryRow)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUi::RemoveScoreboardEntryRow File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x4143d0:
@@ -7802,9 +7847,14 @@ Each function has these trackers:
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
+- 0x414660:
+  - [❌] Reconstructed (Name: GameNet::EndChatComposeAndSendThunk)
+  - [❓] Source dependencies satisfied
+  - [❌] Reimplemented (Name: pending File: pending)
+  - [❌] Binary-safe verified
 - 0x4143b0:
   - [✅] Reconstructed (Name: HudUi::RefreshScoreboardEntryRow)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUi::RefreshScoreboardEntryRow File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [❌] Binary-safe verified
 - 0x41c980:
@@ -7834,7 +7884,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4320f0:
   - [✅] Reconstructed (Name: GameNet::ResetRemotePlayersAndSpawnLists)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::ResetRemotePlayersAndSpawnLists File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x4321b0:
@@ -7844,7 +7894,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4322a0:
   - [✅] Reconstructed (Name: GameNet::ResetHudTimerPanelNetStateLongCountdown)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::ResetHudTimerPanelNetStateLongCountdown File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x432300:
@@ -7859,7 +7909,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x432830:
   - [✅] Reconstructed (Name: GameNet::FindPlayerRowByKey)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::FindPlayerRowByKey File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x432860:
@@ -7879,7 +7929,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x432e70:
   - [✅] Reconstructed (Name: GameNet::ReassignPlayerColorsAndRefreshRows)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::ReassignPlayerColorsAndRefreshRows File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x432ed0:
@@ -7889,57 +7939,57 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x433000:
   - [✅] Reconstructed (Name: GameNet::SendPkt08_PlayerKillEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::SendPkt08_PlayerKillEvent File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x433060:
   - [☑️] Reconstructed (Name: GameNet::HandlePkt08_PlayerKillEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::HandlePkt08_PlayerKillEvent File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x4330f0:
   - [✅] Reconstructed (Name: GameNet::SendPkt0E_PlayerLapProgress)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::SendPkt0E_PlayerLapProgress File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x433170:
   - [✅] Reconstructed (Name: GameNet::HandlePkt0E_PlayerLapProgress)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::HandlePkt0E_PlayerLapProgress File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x433200:
   - [✅] Reconstructed (Name: GameNet::AreAllPlayersAtLapTarget)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::AreAllPlayersAtLapTarget File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x433250:
   - [✅] Reconstructed (Name: GameNet::HandlePkt0D_HudTimerPanelState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::HandlePkt0D_HudTimerPanelState File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x433310:
   - [✅] Reconstructed (Name: GameNet::SendPkt0D_HudTimerPanelState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::SendPkt0D_HudTimerPanelState File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x433390:
   - [✅] Reconstructed (Name: GameNet::SendPkt0C_HudTimerStatusBits)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::SendPkt0C_HudTimerStatusBits File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x433410:
   - [✅] Reconstructed (Name: GameNet::HandlePkt0C_HudTimerStatusBits)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::HandlePkt0C_HudTimerStatusBits File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x4334f0:
   - [☑️] Reconstructed (Name: GameNet::SendPkt09_PlayerScoreboardSnapshot)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::SendPkt09_PlayerScoreboardSnapshot File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x4335b0:
   - [☑️] Reconstructed (Name: GameNet::HandlePkt09_PlayerScoreboardSnapshot)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::HandlePkt09_PlayerScoreboardSnapshot File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x4336f0:
@@ -7949,17 +7999,17 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x433710:
   - [✅] Reconstructed (Name: GameNet::SetStatusBitsFromFlags)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::SetStatusBitsFromFlags File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x433730:
   - [✅] Reconstructed (Name: GameNet::GetStatusBitAllowMaps)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::GetStatusBitAllowMaps File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x433740:
   - [✅] Reconstructed (Name: GameNet::GetStatusBitNameTags)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::GetStatusBitNameTags File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x433750:
@@ -7969,11 +8019,11 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4337e0:
   - [☑️] Reconstructed (Name: GameNet::HandlePkt0B_ChatMessage)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::HandlePkt0B_ChatMessage File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x433840:
-  - [☑️] Reconstructed (Name: GameNet::PlacePlayerAtSpawnPointAndMaybeSpawnPickup)
+  - [☑️] Reconstructed (Name: GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -8014,7 +8064,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4343f0:
   - [✅] Reconstructed (Name: GameNet::HandlePkt13_EffectAnimActivationRecord)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::HandlePkt13_EffectAnimActivationRecord File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x434430:
@@ -8034,7 +8084,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x434550:
   - [✅] Reconstructed (Name: GameNet::HostUpdateSessionDescStatusFields)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameNet::HostUpdateSessionDescStatusFields File: src/Battlesport/GameNet.cpp)
   - [❌] Binary-safe verified
 - 0x4345a0:
@@ -8052,7 +8102,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x421da0:
   - [✅] Reconstructed (Name: zClass_Node::PropagateExtraFlagsRecursive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Node::PropagateExtraFlagsRecursive File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x421de0:
@@ -8062,7 +8112,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x437e60:
   - [✅] Reconstructed (Name: zClass_Node::SetContextRecursive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Node::SetContextRecursive File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x437ea0:
@@ -8077,9 +8127,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x438180:
   - [✅] Reconstructed (Name: zClass_Object3D_ModelRefLerpQueue::Reset)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D_ModelRefLerpQueue::Reset File: src/GameZRecoil/zClass/Object3d.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4381d0:
   - [☑️] Reconstructed (Name: zClass_Object3D_ModelRefLerpQueue::Update)
   - [❓] Source dependencies satisfied
@@ -8099,7 +8149,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zClass_Class::FreeNodeToFreeList)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::FreeNodeToFreeList File: src/GameZRecoil/zClass/Class.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x447b60:
   - [✅] Reconstructed (Name: zClass_Class::TryFreeNode)
   - [✅] Source dependencies satisfied
@@ -8107,32 +8157,32 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x447bc0:
   - [☑️] Reconstructed (Name: zClass_Class::FindNodeRecursiveByName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::FindNodeRecursiveByName File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x447c60:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetActive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetActive File: src/GameZRecoil/zClass/Class.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x447d20:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetFlag16)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetFlag16 File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x447d70:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetFlag17)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetFlag17 File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x447dc0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetName File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x447e30:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeGetName File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x447e60:
@@ -8157,42 +8207,42 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x448090:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetPriority)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetPriority File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x448100:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetCellPickable)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetCellPickable File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x448140:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetCellPickable)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeGetCellPickable File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x448180:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetNodeType)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeGetNodeType File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4481b0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetRaycastable)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetRaycastable File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4481f0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetRaycastable)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeGetRaycastable File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x448230:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetPickable)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetPickable File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x448270:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetPickable)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeGetPickable File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4482b0:
@@ -8202,32 +8252,32 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4482f0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetBypassFarClip)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetBypassFarClip File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x448330:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetNodeType)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetNodeType File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x448360:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeClearVariantGate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeClearVariantGate File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4483a0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetVertexAlphaOverride)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetVertexAlphaOverride File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4483f0:
   - [✅] Reconstructed (Name: zClass_Class::AddChild)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::AddChild File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4484d0:
   - [✅] Reconstructed (Name: zClass_Class::AddChildGeneric)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::AddChildGeneric File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x448570:
@@ -8282,27 +8332,27 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4497b0:
   - [✅] Reconstructed (Name: gwNode::GetWorldPosition)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: gwNode::GetWorldPosition File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x449850:
   - [✅] Reconstructed (Name: gwNode::TransformPoint)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: gwNode::TransformPoint File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4498e0:
   - [☑️] Reconstructed (Name: gwNode::GetWorldPosAndOrientation)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: gwNode::GetWorldPosAndOrientation File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x449ab0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetRoot)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeGetRoot File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x449af0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetWorldChild)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeGetWorldChild File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x449b40:
@@ -8342,7 +8392,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x44db10:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DAddChild)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DAddChild File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44db60:
@@ -8352,114 +8402,114 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x44dbb0:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DSetVisibleFlag)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetVisibleFlag File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44dc30:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DSetColorAlpha)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetColorAlpha File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44dd90:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DSetAlphaScale)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetAlphaScale File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44de10:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetAlphaScale)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DGetAlphaScale File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44de80:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DSetLitFlag)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetLitFlag File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44df00:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DSetScale)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetScale File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44dfd0:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetScale)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DGetScale File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44e030:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DSetRotation)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetRotation File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44e110:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetRotation)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DGetRotation File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44e170:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DTranslateRotation)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DTranslateRotation File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44e270:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetPosition)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DGetPosition File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44e300:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DSetPosition)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetPosition File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44e3d0:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DTranslatePosition)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DTranslatePosition File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44e4f0:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DSetMatrix)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetMatrix File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44e5b0:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetMatrixPtr)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DGetMatrixPtr File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x44e630:
   - [✅] Reconstructed (Name: zClass_TypeList::AllocLink)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::AllocLink File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44e690:
   - [✅] Reconstructed (Name: zClass_TypeList::FreeLink)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::FreeLink File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44e6d0:
   - [✅] Reconstructed (Name: zClass_TypeList::FreeAll)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::FreeAll File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44e700:
   - [✅] Reconstructed (Name: zClass_TypeList::ProcessPendingRemovals)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::ProcessPendingRemovals File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44e920:
   - [✅] Reconstructed (Name: zClass::ProcessDeferredWork)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass::ProcessDeferredWork File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44ea70:
   - [✅] Reconstructed (Name: zClass_TypeList::UpdateAllBuckets)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::UpdateAllBuckets File: src/GameZRecoil/zClass/List.c)
   - [❌] Binary-safe verified
 - 0x44eaa0:
   - [✅] Reconstructed (Name: zClass_TypeList::UpdateBucket)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::UpdateBucket File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44eb00:
   - [✅] Reconstructed (Name: gwNode::UpdateSubtree)
   - [✅] Source dependencies satisfied
@@ -8477,27 +8527,27 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x44ebe0:
   - [✅] Reconstructed (Name: zClass_TypeList::UpdateSequences)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::UpdateSequences File: src/GameZRecoil/zClass/List.c)
   - [❌] Binary-safe verified
 - 0x44ec30:
   - [✅] Reconstructed (Name: zClass_TypeList::UpdateAnimations)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::UpdateAnimations File: src/GameZRecoil/zClass/List.c)
   - [❌] Binary-safe verified
 - 0x44ec80:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeUpdateAll)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeUpdateAll File: src/GameZRecoil/zClass/List.c)
   - [❌] Binary-safe verified
 - 0x44ec90:
   - [✅] Reconstructed (Name: zClass_TypeList::CountNodes)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::CountNodes File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44ecb0:
   - [✅] Reconstructed (Name: zClass_TypeList::PrintBucket)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::PrintBucket File: src/GameZRecoil/zClass/List.c)
   - [❌] Binary-safe verified
 - 0x44ecf0:
@@ -8509,32 +8559,32 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zClass_TypeList::GetBucketHead)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::GetBucketHead File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44ed60:
   - [✅] Reconstructed (Name: zClass_NodeList::Insert)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_NodeList::Insert File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44ed90:
   - [✅] Reconstructed (Name: zClass_TypeList::Insert)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::Insert File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44ee10:
   - [✅] Reconstructed (Name: zClass_TypeList::InsertChildNodes)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::InsertChildNodes File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44eea0:
   - [✅] Reconstructed (Name: zClass_NodeList::ProcessPendingFrees)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_NodeList::ProcessPendingFrees File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44eed0:
   - [✅] Reconstructed (Name: zClass_TypeList::MarkPendingRemoval)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::MarkPendingRemoval File: src/GameZRecoil/zClass/List.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44f000:
   - [✅] Reconstructed (Name: zClass_List::DeleteNodeFromLists)
   - [✅] Source dependencies satisfied
@@ -8557,32 +8607,32 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x44f690:
   - [✅] Reconstructed (Name: zClass_List::IterateBucketFiltered)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_List::IterateBucketFiltered File: src/GameZRecoil/zClass/List.c)
   - [❌] Binary-safe verified
 - 0x44f6f0:
   - [✅] Reconstructed (Name: zClass::FindNextByTypePrefix)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass::FindNextByTypePrefix File: src/GameZRecoil/zClass/List.c)
   - [❌] Binary-safe verified
 - 0x44f720:
   - [✅] Reconstructed (Name: zClass::FindNextByTypePrefix_Predicate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass::FindNextByTypePrefix_Predicate File: src/GameZRecoil/zClass/List.c)
   - [❌] Binary-safe verified
 - 0x44f740:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeFindNextByName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeFindNextByName File: src/GameZRecoil/zClass/List.c)
   - [❌] Binary-safe verified
 - 0x44f750:
   - [☑️] Reconstructed (Name: zClass_Class::gwNodeFindNextByName_Predicate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeFindNextByName_Predicate File: src/GameZRecoil/zClass/List.c)
   - [❌] Binary-safe verified
 - 0x44f7a0:
   - [✅] Reconstructed (Name: zClass_Window::gwWindowNew)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Window::gwWindowNew File: src/GameZRecoil/zClass/Window.c)
   - [❌] Binary-safe verified
 - 0x44f870:
@@ -8592,7 +8642,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4518b0:
   - [✅] Reconstructed (Name: zClass::SetNodeArraySize)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass::SetNodeArraySize File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x4518e0:
@@ -8614,25 +8664,25 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zClass::ShutdownCore)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass::ShutdownCore File: src/GameZRecoil/zClass/cls_util.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x452770:
   - [☑️] Reconstructed (Name: zClass_Class::FindSubNodeByName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::FindSubNodeByName File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4527f0:
   - [✅] Reconstructed (Name: zClass_Node::HasRenderableDiPredicate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Node::HasRenderableDiPredicate File: src/GameZRecoil/zClass/Object3d.c)
   - [❌] Binary-safe verified
 - 0x452810:
   - [✅] Reconstructed (Name: zClass::AnyNodeMatchesPredicateRecursive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass::AnyNodeMatchesPredicateRecursive File: src/GameZRecoil/zClass/List.c)
   - [❌] Binary-safe verified
 - 0x452860:
   - [✅] Reconstructed (Name: zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4528a0:
@@ -8642,17 +8692,17 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4528b0:
   - [✅] Reconstructed (Name: zClass_Node::InvalidateFlagBit8MaterialImagesRecursive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Node::InvalidateFlagBit8MaterialImagesRecursive File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4528e0:
   - [✅] Reconstructed (Name: zClass_Node::AssignInt32ToDiRecursive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Node::AssignInt32ToDiRecursive File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x452920:
   - [✅] Reconstructed (Name: zClass_Class::AddChildValidated)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::AddChildValidated File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x452970:
@@ -8662,12 +8712,12 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4542a0:
   - [✅] Reconstructed (Name: zClass_Lod::gwLodNew)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Lod::gwLodNew File: src/GameZRecoil/zClass/Lod.c)
   - [❌] Binary-safe verified
 - 0x454310:
   - [✅] Reconstructed (Name: zClass_Lod::gwLodAddChild)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Lod::gwLodAddChild File: src/GameZRecoil/zClass/Lod.c)
   - [❌] Binary-safe verified
 - 0x454320:
@@ -8677,22 +8727,22 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x454330:
   - [✅] Reconstructed (Name: zClass_Lod::SetComputeOwnDistance)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Lod::SetComputeOwnDistance File: src/GameZRecoil/zClass/Lod.c)
   - [❌] Binary-safe verified
 - 0x454340:
   - [✅] Reconstructed (Name: zClass_Lod::SetTargetNodeAndRange)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Lod::SetTargetNodeAndRange File: src/GameZRecoil/zClass/Lod.c)
   - [❌] Binary-safe verified
 - 0x4b25a0:
   - [✅] Reconstructed (Name: zClass_Node::SetDamageHitCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Node::SetDamageHitCallback File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4b25f0:
   - [✅] Reconstructed (Name: zClass_Node::AssignDamageHandlerRecursiveIfMissing)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Node::AssignDamageHandlerRecursiveIfMissing File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4b2630:
@@ -8707,7 +8757,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4b26b0:
   - [✅] Reconstructed (Name: zClass_Node::SetDamageTimerCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Node::SetDamageTimerCallback File: src/GameZRecoil/zClass/Class.c)
   - [❌] Binary-safe verified
 - 0x4b26f0:
@@ -8717,7 +8767,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4b2880:
   - [☑️] Reconstructed (Name: OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback File: src/GameZRecoil/zWeapon/OptCatalog.c)
   - [❌] Binary-safe verified
   
@@ -8725,17 +8775,17 @@ Each function has these trackers:
 
 - 0x449ba0:
   - [✅] Reconstructed (Name: zClass_Camera::SetViewDistance)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::SetViewDistance File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x449be0:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraNew)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraNew File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x449c90:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraAddChild)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraAddChild File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x449cd0:
@@ -8745,27 +8795,27 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x449d20:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetFlagBit0)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetFlagBit0 File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x449da0:
   - [✅] Reconstructed (Name: zClass_Camera::SetTargetNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::SetTargetNode File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x449db0:
   - [✅] Reconstructed (Name: zClass_Camera::SetActiveCamera)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::SetActiveCamera File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x449dc0:
   - [✅] Reconstructed (Name: zClass_Camera::SetObjectHseTestEnabled)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::SetObjectHseTestEnabled File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x449dd0:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetWorld)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetWorld File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x449e80:
@@ -8775,47 +8825,47 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x449e90:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetWindow)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetWindow File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x449ea0:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetPosition)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetPosition File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x449f50:
   - [✅] Reconstructed (Name: zClass_Camera::ActivateChildren)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::ActivateChildren File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x449fb0:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraTranslate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraTranslate File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x44a060:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraGetPosition)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraGetPosition File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x44a0f0:
   - [☑️] Reconstructed (Name: zClass_Camera::gwCameraSetTarget)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetTarget File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x44a1a0:
   - [☑️] Reconstructed (Name: zClass_Camera::gwCameraTranslateTarget)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraTranslateTarget File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x44a250:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraGetTarget)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraGetTarget File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x44a2f0:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetNearFarClip)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetNearFarClip File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x44a380:
@@ -8825,12 +8875,12 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x44a410:
   - [☑️] Reconstructed (Name: zClass_Camera::gwCameraSetViewport)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetViewport File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x44a580:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraGetViewport)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraGetViewport File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x44a610:
@@ -8845,22 +8895,22 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x44a7f0:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraGetClipDistance)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraGetClipDistance File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x44a870:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetClipDistance)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetClipDistance File: src/GameZRecoil/zClass/Camera.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44a910:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetHorizon)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetHorizon File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x44a980:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetHorizonXZ)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetHorizonXZ File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x44a9f0:
@@ -8935,52 +8985,52 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x44d3a0:
   - [☑️] Reconstructed (Name: zClass_Camera::RenderScene)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::RenderScene File: src/GameZRecoil/zClass/Camera.c)
   - [❌] Binary-safe verified
 - 0x44f8b0:
   - [✅] Reconstructed (Name: zClass_Window::gwWindowSetResolution)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Window::gwWindowSetResolution File: src/GameZRecoil/zClass/Window.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44f930:
   - [✅] Reconstructed (Name: zClass_Window::gwWindowGetResolution)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Window::gwWindowGetResolution File: src/GameZRecoil/zClass/Window.c)
   - [❌] Binary-safe verified
 - 0x44f9c0:
   - [☑️] Reconstructed (Name: zClass_Window::gwWindowSetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Window::gwWindowSetSize File: src/GameZRecoil/zClass/Window.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44fa40:
   - [☑️] Reconstructed (Name: zClass_Window::gwWindowGetSize)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Window::gwWindowGetSize File: src/GameZRecoil/zClass/Window.c)
   - [❌] Binary-safe verified
 - 0x44fad0:
   - [✅] Reconstructed (Name: zClass_Window::gwWindowSetBuffer)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Window::gwWindowSetBuffer File: src/GameZRecoil/zClass/Window.c)
   - [❌] Binary-safe verified
 - 0x44fb40:
   - [✅] Reconstructed (Name: zClass_Window::gwWindowSetClearPolygon)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Window::gwWindowSetClearPolygon File: src/GameZRecoil/zClass/Window.c)
   - [❌] Binary-safe verified
 - 0x44fbd0:
   - [☑️] Reconstructed (Name: zClass_Window::gwWindowAddClearPolygonVertex)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Window::gwWindowAddClearPolygonVertex File: src/GameZRecoil/zClass/Window.c)
   - [❌] Binary-safe verified
 - 0x44fcf0:
   - [☑️] Reconstructed (Name: zClass_Window::gwWindowCloseClearPolygon)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Window::gwWindowCloseClearPolygon File: src/GameZRecoil/zClass/Window.c)
   - [❌] Binary-safe verified
 - 0x44fdd0:
   - [✅] Reconstructed (Name: zClass_Display::gwDisplayInit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Display::gwDisplayInit File: src/GameZRecoil/zClass/Display.c)
   - [❌] Binary-safe verified
 - 0x44fe50:
@@ -8992,20 +9042,20 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zClass_Display::gwDisplaySetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Display::gwDisplaySetSize File: src/GameZRecoil/zClass/Display.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44ff10:
   - [✅] Reconstructed (Name: zClass_Display::gwDisplaySetPosition)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Display::gwDisplaySetPosition File: src/GameZRecoil/zClass/Display.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44ff90:
   - [✅] Reconstructed (Name: zClass_Display::gwDisplaySetBackgroundColor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Display::gwDisplaySetBackgroundColor File: src/GameZRecoil/zClass/Display.c)
   - [❌] Binary-safe verified
 - 0x452fd0:
   - [✅] Reconstructed (Name: zClass_Light::gwLightNew)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightNew File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x453110:
@@ -9020,57 +9070,57 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x453200:
   - [✅] Reconstructed (Name: zClass_Light::gwLightSetIntensity)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightSetIntensity File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x453250:
   - [✅] Reconstructed (Name: zClass_Light::gwLightSetFalloff)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightSetFalloff File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x4532a0:
   - [☑️] Reconstructed (Name: zClass_Light::gwLightSetConeAngle)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightSetConeAngle File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x4532f0:
   - [✅] Reconstructed (Name: zClass_Light::gwLightSetPointMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightSetPointMode File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x453350:
   - [✅] Reconstructed (Name: zClass_Light::gwLightSetDirectionalMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightSetDirectionalMode File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x4533b0:
   - [☑️] Reconstructed (Name: zClass_Light::gwLightSetParam)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightSetParam File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x453400:
   - [☑️] Reconstructed (Name: zClass_Light::gwLightSetRange)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightSetRange File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x453500:
   - [✅] Reconstructed (Name: zClass_Light::gwLightGetRange)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightGetRange File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x453560:
   - [✅] Reconstructed (Name: zClass_Light::gwLightSetPosition)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightSetPosition File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x4535c0:
   - [✅] Reconstructed (Name: zClass_Light::gwLightSetRotation)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightSetRotation File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x453620:
   - [☑️] Reconstructed (Name: zClass_Light::ComputeWorldTransform)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::ComputeWorldTransform File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x453880:
@@ -9080,22 +9130,22 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x453a40:
   - [✅] Reconstructed (Name: zClass_Light::gwLightGetSpecularColor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightGetSpecularColor File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x453aa0:
   - [✅] Reconstructed (Name: zClass_Light::gwLightSetSpecularColor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightSetSpecularColor File: src/GameZRecoil/zClass/Light.c)
   - [❌] Binary-safe verified
 - 0x47a200:
   - [☑️] Reconstructed (Name: zClipRect::ClipPolyZRange_NoUV)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::ClipPolyZRange_NoUV File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [❌] Binary-safe verified
 - 0x47a4e0:
   - [☑️] Reconstructed (Name: zClipRect::ClipPolyZRange_NoUV_WithAttribs)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::ClipPolyZRange_NoUV_WithAttribs File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [❌] Binary-safe verified
 - 0x4b2160:
@@ -9110,9 +9160,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4b2520:
   - [✅] Reconstructed (Name: Light::AllocFromFreeListAndAttach)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Light::AllocFromFreeListAndAttach File: src/GameZRecoil/zClass/Light.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b2570:
   - [✅] Reconstructed (Name: Light::ReturnToFreeList)
   - [❓] Source dependencies satisfied
@@ -9128,12 +9178,12 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x443c60:
   - [✅] Reconstructed (Name: zClass_cls_di::SetStopAfterFirstHit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::SetStopAfterFirstHit File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x443c50:
   - [✅] Reconstructed (Name: zClass_cls_di::SetBreakOnFirstCandidate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::SetBreakOnFirstCandidate File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x443c70:
@@ -9183,37 +9233,37 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x444de0:
   - [☑️] Reconstructed (Name: zClass_cls_di::RaycastSelectClosestHitBetweenPoints)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::RaycastSelectClosestHitBetweenPoints File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x444e90:
   - [☑️] Reconstructed (Name: zClass_cls_di::RaycastFindClosest)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::RaycastFindClosest File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x4455f0:
   - [✅] Reconstructed (Name: zClass_cls_di::BuildPickCandidatesForSegment)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::BuildPickCandidatesForSegment File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x445650:
   - [☑️] Reconstructed (Name: zClass_cls_di::BuildPickCandidatesForSegmentChildFallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::BuildPickCandidatesForSegmentChildFallback File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x445a00:
   - [☑️] Reconstructed (Name: zClass_cls_di::BuildPickCandidatesForSegmentRecursive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::BuildPickCandidatesForSegmentRecursive File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x445b20:
   - [☑️] Reconstructed (Name: zClass_cls_di::BuildPickCandidatesForSegmentForCamera)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::BuildPickCandidatesForSegmentForCamera File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x445c20:
   - [☑️] Reconstructed (Name: zClass_cls_di::BuildPickCandidatesForSegmentForLight)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::BuildPickCandidatesForSegmentForLight File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x445d40:
@@ -9268,7 +9318,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x447540:
   - [☑️] Reconstructed (Name: zClass_cls_di::FilterPointsBBox)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::FilterPointsBBox File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x4476f0:
@@ -9353,9 +9403,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x450a00:
   - [✅] Reconstructed (Name: zClass_World::GetAreaPartitionAtGrid)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::GetAreaPartitionAtGrid File: src/GameZRecoil/zClass/cls_world.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x450a70:
   - [✅] Reconstructed (Name: zClass_World::EnsureGridCellDisplayPosition)
   - [✅] Source dependencies satisfied
@@ -9363,27 +9413,27 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x450ae0:
   - [✅] Reconstructed (Name: zClass_World::SetPendingFogState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::SetPendingFogState File: src/GameZRecoil/zClass/cls_world.c)
   - [❌] Binary-safe verified
 - 0x450af0:
   - [✅] Reconstructed (Name: zClass_World::SetPendingFogColorRgb01)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::SetPendingFogColorRgb01 File: src/GameZRecoil/zClass/cls_world.c)
   - [❌] Binary-safe verified
 - 0x450b20:
   - [✅] Reconstructed (Name: zClass_World::SetPendingFogAltitudeRange)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::SetPendingFogAltitudeRange File: src/GameZRecoil/zClass/cls_world.c)
   - [❌] Binary-safe verified
 - 0x450b40:
   - [✅] Reconstructed (Name: zClass_World::SetPendingFogRange)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::SetPendingFogRange File: src/GameZRecoil/zClass/cls_world.c)
   - [❌] Binary-safe verified
 - 0x450b60:
   - [✅] Reconstructed (Name: zClass_World::SetPendingFogDensity)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::SetPendingFogDensity File: src/GameZRecoil/zClass/cls_world.c)
   - [❌] Binary-safe verified
 - 0x450b80:
@@ -9430,7 +9480,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zClass_World::FreeVirtualAreaPartitions)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::FreeVirtualAreaPartitions File: src/GameZRecoil/zClass/cls_world.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x450f00:
   - [✅] Reconstructed (Name: zClass_World::gwWorldSetPartitionInclusionTolerance)
   - [❓] Source dependencies satisfied
@@ -9448,7 +9498,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4510e0:
   - [☑️] Reconstructed (Name: zClass_World::AddChildAtGrid)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::AddChildAtGrid File: src/GameZRecoil/zClass/cls_world.c)
   - [❌] Binary-safe verified
 - 0x451240:
@@ -9458,7 +9508,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x451360:
   - [☑️] Reconstructed (Name: zClass_World::AddLight)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::AddLight File: src/GameZRecoil/zClass/cls_world.c)
   - [❌] Binary-safe verified
 - 0x451410:
@@ -9467,7 +9517,7 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zClass_World::RemoveLight File: src/GameZRecoil/zClass/cls_world.c)
   - [❌] Binary-safe verified
 - 0x451540:
-  - [✅] Reconstructed (Name: zClass_World::InitLightPointInPolygonXZ)
+  - [✅] Reconstructed (Name: zClass_World::BuildActiveLightList)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::InitLightPointInPolygonXZ File: src/GameZRecoil/zClass/cls_world.c)
   - [❌] Binary-safe verified
@@ -9478,7 +9528,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x451590:
   - [☑️] Reconstructed (Name: zClass_World::AddSound)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::AddSound File: src/GameZRecoil/zClass/cls_world.c)
   - [❌] Binary-safe verified
 - 0x451640:
@@ -9508,72 +9558,72 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x451b20:
   - [☑️] Reconstructed (Name: zClass_cls_util::CopyNodeDisplayInstance)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyNodeDisplayInstance File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x451bd0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNodeBaseData)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyNodeBaseData File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x451f70:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyCameraNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyCameraNode File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x4520c0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyLightNode_Unimplemented)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyLightNode_Unimplemented File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x4520e0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopySoundNode_Unimplemented)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopySoundNode_Unimplemented File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x452100:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyObject3DNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyObject3DNode File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x452230:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyAnimateNode_Unimplemented)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyAnimateNode_Unimplemented File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x452250:
   - [☑️] Reconstructed (Name: zClass_cls_util::CopyLodNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyLodNode File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x4523c0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopySequenceNode_Unimplemented)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopySequenceNode_Unimplemented File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x4523e0:
-  - [✅] Reconstructed (Name: zClass_cls_util::CopySwitchNode_Stub)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zClass_cls_util::CopySwitchNode_Unimplemented)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopySwitchNode_Stub File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x452400:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNodeDispatch)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyNodeDispatch File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x452500:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNodeWithCloneOptions)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyNodeWithCloneOptions File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x452560:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyNode File: src/GameZRecoil/zClass/cls_util.c)
   - [❌] Binary-safe verified
 - 0x4529c0:
   - [☑️] Reconstructed (Name: zClass_Sound::gwSoundNew)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sound::gwSoundNew File: src/GameZRecoil/zClass/Sound.c)
   - [❌] Binary-safe verified
 - 0x452ab0:
@@ -9588,17 +9638,17 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x452bc0:
   - [✅] Reconstructed (Name: zClass_Sound::SetSampleSetByName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sound::SetSampleSetByName File: src/GameZRecoil/zClass/Sound.c)
   - [❌] Binary-safe verified
 - 0x452c60:
   - [✅] Reconstructed (Name: zClass_Sound::gwSoundSetActive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sound::gwSoundSetActive File: src/GameZRecoil/zClass/Sound.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x452d00:
   - [✅] Reconstructed (Name: zClass_Sound::gwSoundSetPosition)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sound::gwSoundSetPosition File: src/GameZRecoil/zClass/Sound.c)
   - [❌] Binary-safe verified
 - 0x452d60:
@@ -9623,7 +9673,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x453b40:
   - [✅] Reconstructed (Name: zClass_Animate::AddChild)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Animate::AddChild File: src/GameZRecoil/zClass/Animate.c)
   - [❌] Binary-safe verified
 - 0x453b80:
@@ -9633,27 +9683,27 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x453bd0:
   - [☑️] Reconstructed (Name: zClass_Animate::UpdateNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Animate::UpdateNode File: src/GameZRecoil/zClass/Animate.c)
   - [❌] Binary-safe verified
 - 0x453c90:
   - [✅] Reconstructed (Name: zClass_Animate::AdvanceTime)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Animate::AdvanceTime File: src/GameZRecoil/zClass/Animate.c)
   - [❌] Binary-safe verified
 - 0x453d20:
   - [✅] Reconstructed (Name: zClass_Animate::SampleTransform)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Animate::SampleTransform File: src/GameZRecoil/zClass/Animate.c)
   - [❌] Binary-safe verified
 - 0x453ee0:
   - [✅] Reconstructed (Name: zClass_Sequence::gwSequenceNew)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sequence::gwSequenceNew File: src/GameZRecoil/zClass/Seq.c)
   - [❌] Binary-safe verified
 - 0x453f40:
   - [☑️] Reconstructed (Name: zClass_Sequence::gwSequenceAddChild)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sequence::gwSequenceAddChild File: src/GameZRecoil/zClass/Seq.c)
   - [❌] Binary-safe verified
 - 0x454000:
@@ -9663,27 +9713,27 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4540c0:
   - [✅] Reconstructed (Name: zClass_Sequence::SetActive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sequence::SetActive File: src/GameZRecoil/zClass/Seq.c)
   - [❌] Binary-safe verified
 - 0x454100:
   - [✅] Reconstructed (Name: zClass_Sequence::SetRepeat)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sequence::SetRepeat File: src/GameZRecoil/zClass/Seq.c)
   - [❌] Binary-safe verified
 - 0x454140:
   - [✅] Reconstructed (Name: zClass_Sequence::SetLoop)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sequence::SetLoop File: src/GameZRecoil/zClass/Seq.c)
   - [❌] Binary-safe verified
 - 0x454180:
   - [✅] Reconstructed (Name: zClass_Sequence::SetPause)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sequence::SetPause File: src/GameZRecoil/zClass/Seq.c)
   - [❌] Binary-safe verified
 - 0x4541c0:
   - [✅] Reconstructed (Name: zClass_Sequence::Update)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sequence::Update File: src/GameZRecoil/zClass/Seq.c)
   - [❌] Binary-safe verified
 - 0x454360:
@@ -9693,77 +9743,77 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x454370:
   - [☑️] Reconstructed (Name: GameZ_ZBD::NodePtrToIndex)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ_ZBD::NodePtrToIndex File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x4543d0:
   - [✅] Reconstructed (Name: GameZ_ZBD::NodeIndexToPtr)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ_ZBD::NodeIndexToPtr File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x4543f0:
   - [✅] Reconstructed (Name: GameZ_ZBD::WriteNodeRefListIndices)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ_ZBD::WriteNodeRefListIndices File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x4544b0:
   - [☑️] Reconstructed (Name: GameZ_ZBD::WriteSingleNodeClassData)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ_ZBD::WriteSingleNodeClassData File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x454890:
   - [☑️] Reconstructed (Name: GameZ_ZBD::WriteNodeTable)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ_ZBD::WriteNodeTable File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x454a50:
   - [☑️] Reconstructed (Name: GameZ::WriteZBDFile)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ::WriteZBDFile File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x454bf0:
   - [✅] Reconstructed (Name: GameZ_ZBD::ReadNodeRefListIndices)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ_ZBD::ReadNodeRefListIndices File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x454c60:
   - [☑️] Reconstructed (Name: GameZ_ZBD::ReadSingleNodeClassData)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ_ZBD::ReadSingleNodeClassData File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x455350:
   - [☑️] Reconstructed (Name: GameZ_ZBD::ReadNodeTable)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ_ZBD::ReadNodeTable File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x455520:
   - [☑️] Reconstructed (Name: GameZ::ReadZBDFile)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ::ReadZBDFile File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x4556a0:
   - [✅] Reconstructed (Name: GameZ::OpenAndReadZBDHeader)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ::OpenAndReadZBDHeader File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x455730:
-  - [✅] Reconstructed (Name: GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: GameZ_ZBD::ReloadDisplayInstancesFromCurrentZbdPath)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x4557a0:
-  - [✅] Reconstructed (Name: GameZ_ZBD::ReloadDisplayInstancesRecursive_Local)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: GameZ_ZBD::ReloadDisplayInstancesRecursive)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: GameZ_ZBD::ReloadDisplayInstancesRecursive_Local File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x4543a0:
   - [✅] Reconstructed (Name: zClass::NodePtrToValidatedIndex)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass::NodePtrToValidatedIndex File: src/GameZRecoil/zClass/cls_zbd.c)
   - [❌] Binary-safe verified
 - 0x4558f0:
   - [☑️] Reconstructed (Name: zDEClient::LoadConfigResources)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient::LoadConfigResources File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x484e00:
@@ -9773,12 +9823,12 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x484fc0:
   - [☑️] Reconstructed (Name: zClass_cls_di::AppendPickCandidatesForFace)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::AppendPickCandidatesForFace File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x485380:
   - [✅] Reconstructed (Name: zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x4856d0:
@@ -9788,12 +9838,12 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4857f0:
   - [☑️] Reconstructed (Name: zClass_cls_di::BuildPickCandidateForSegmentVsPolygon)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::BuildPickCandidateForSegmentVsPolygon File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x485d10:
   - [☑️] Reconstructed (Name: zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x486290:
@@ -9830,10 +9880,10 @@ Each function has these trackers:
 ## M20. zDEClient initialization and shared effect setup
 
 - 0x455dd0:
-  - [✅] Reconstructed (Name: zDEClient::LoadMaterialFromTexturePath_Local)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zDEClient::LoadOrCreateMaterialFromTexturePath)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient::LoadMaterialFromTexturePath_Local File: src/GameZRecoil/zDEClient/zdec_init.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x455e40:
   - [✅] Reconstructed (Name: zDEClient::ShutdownGlobals)
   - [✅] Source dependencies satisfied
@@ -9841,17 +9891,17 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x455ea0:
   - [✅] Reconstructed (Name: zDEClient_QSand::DestroyFeature)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_QSand::DestroyFeature File: src/GameZRecoil/zDEClient/zdec_init.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x455ed0:
-  - [✅] Reconstructed (Name: zDEClient::CopyQuickSandEventTemplateDefaults_Local)
+  - [✅] Reconstructed (Name: zDEClient::CopyQSandEventTemplateDefaults)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4575f0:
   - [✅] Reconstructed (Name: zDEClient::SubmitFeatureGeometry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient::SubmitFeatureGeometry File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x457650:
@@ -9881,12 +9931,12 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x457750:
   - [✅] Reconstructed (Name: zDEClient::ClearFeatureDisplayNodes)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient::ClearFeatureDisplayNodes File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x457840:
   - [✅] Reconstructed (Name: zDEClient::AppendFeatureEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient::AppendFeatureEntry File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x457ae0:
@@ -9896,7 +9946,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x457b40:
   - [✅] Reconstructed (Name: zDEClient::WriteFeatureSectionsToZAR)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient::WriteFeatureSectionsToZAR File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x457c10:
@@ -9916,7 +9966,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x457d90:
   - [✅] Reconstructed (Name: zDEClient_MapTreeState::FindOrInsertKey)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_MapTreeState::FindOrInsertKey File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x457e80:
@@ -9961,22 +10011,22 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x458aa0:
   - [✅] Reconstructed (Name: zDEClient::SetCameraNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient::SetCameraNode File: src/GameZRecoil/zDEClient/zdec_init.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x458ac0:
   - [✅] Reconstructed (Name: zDEClient::GetFeatureGridCell)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient::GetFeatureGridCell File: src/GameZRecoil/zDEClient/zdec_init.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x458ae0:
   - [✅] Reconstructed (Name: zDEClient::GetCameraNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient::GetCameraNode File: src/GameZRecoil/zDEClient/zdec_init.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x458af0:
   - [✅] Reconstructed (Name: zEffect::SetConditionalRefPos)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::SetConditionalRefPos File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x458b20:
@@ -9986,30 +10036,30 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x46af20:
   - [✅] Reconstructed (Name: zGeometry_ClipPatchOutput::Destroy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ClipPatchOutput::Destroy File: src/GameZRecoil/zDEClient/zdec_init.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46af40:
   - [✅] Reconstructed (Name: zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x46b030:
   - [✅] Reconstructed (Name: zGeometry_ClipPolygon::SnapPointsNearNodeModelXY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ClipPolygon::SnapPointsNearNodeModelXY File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46b1f0:
   - [✅] Reconstructed (Name: zGeometry_Model::ClipPatch)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Model::ClipPatch File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
   
 ## M21. zDEClient crater and quicksand
 
 - 0x455ef0:
-  - [✅] Reconstructed (Name: zDEClient_QSand::InstanceEventMaybeRelay)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zDEClient_QSand::InstanceEventWithNetRelay)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_QSand::InstanceEventMaybeRelay File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x456b20:
@@ -10019,7 +10069,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x457140:
   - [✅] Reconstructed (Name: zDEClient_Crater::CreateFeature)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_Crater::CreateFeature File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x433ad0:
@@ -10039,52 +10089,52 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x456010:
   - [✅] Reconstructed (Name: zDEClient_QSand::InitFeatureFromEventTemplate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_QSand::InitFeatureFromEventTemplate File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x4563d0:
   - [✅] Reconstructed (Name: zDEClient_QSand::CreateFeatureStructFromEventTemplate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_QSand::CreateFeatureStructFromEventTemplate File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x456450:
   - [✅] Reconstructed (Name: zDEClient_QSand::Build)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_QSand::Build File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x4564b0:
   - [✅] Reconstructed (Name: zDEClient_QSand::CreateFeature)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_QSand::CreateFeature File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x456ad0:
   - [✅] Reconstructed (Name: zDEClient_Crater::DestroyFeature)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_Crater::DestroyFeature File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x456b00:
   - [✅] Reconstructed (Name: zDEClient_Crater::InitEventTemplateDefaults)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_Crater::InitEventTemplateDefaults File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x456c50:
-  - [✅] Reconstructed (Name: zDEClient_Crater::InstanceEventMaybeRelay)
+  - [✅] Reconstructed (Name: zDEClient_Crater::InstanceEventWithNetRelay)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x456c80:
   - [✅] Reconstructed (Name: zDEClient_Crater::InitFeatureFromEventTemplate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_Crater::InitFeatureFromEventTemplate File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x457040:
   - [✅] Reconstructed (Name: zDEClient_Crater::CreateFeatureStructFromEventTemplate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_Crater::CreateFeatureStructFromEventTemplate File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x4570e0:
   - [✅] Reconstructed (Name: zDEClient_Crater::Build)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDEClient_Crater::Build File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
   
@@ -10092,364 +10142,364 @@ Each function has these trackers:
 
 - 0x458b50:
   - [✅] Reconstructed (Name: zEffect::TickResetDelayOnTimer)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::TickResetDelayOnTimer File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x458bb0:
   - [✅] Reconstructed (Name: zEffect::TickResetDelayOnHit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::TickResetDelayOnHit File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x458c10:
   - [✅] Reconstructed (Name: zEffect::UpdateBeamNodeBetweenPoints)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::UpdateBeamNodeBetweenPoints File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x458ce0:
   - [✅] Reconstructed (Name: zEffect::UpdateBeamNodeBetweenFractions)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::UpdateBeamNodeBetweenFractions File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x458e10:
   - [✅] Reconstructed (Name: zEffect::HandleSampleRefOffsetEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleSampleRefOffsetEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x458eb0:
   - [✅] Reconstructed (Name: zEffect::HandleEffectTemplateOffsetEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleEffectTemplateOffsetEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x458f70:
   - [✅] Reconstructed (Name: zEffect::HandleSoundEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleSoundEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x459080:
   - [✅] Reconstructed (Name: zEffect::HandleLightEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleLightEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x459280:
   - [✅] Reconstructed (Name: zEffect::HandleLightAnimEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleLightAnimEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x459510:
   - [✅] Reconstructed (Name: zEffect::HandleFogEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleFogEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x459580:
   - [✅] Reconstructed (Name: zEffect::HandleCameraParamsEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleCameraParamsEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x4596c0:
   - [✅] Reconstructed (Name: zEffect::AnimateCameraParamsOverTime)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::AnimateCameraParamsOverTime File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x459ae0:
   - [✅] Reconstructed (Name: zEffect::HandleRotationEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleRotationEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x459cb0:
   - [✅] Reconstructed (Name: zEffect::HandleNodeScaleEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleNodeScaleEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x459ce0:
   - [✅] Reconstructed (Name: zEffect::HandlePositionEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandlePositionEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x459e30:
   - [✅] Reconstructed (Name: zEffect::HandleActivateEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleActivateEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x459e70:
   - [☑️] Reconstructed (Name: zEffect::HandleNodeAnimEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleNodeAnimEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45a920:
   - [✅] Reconstructed (Name: zEffect::FindNearestPickCandidateBelowPoint)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::FindNearestPickCandidateBelowPoint File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45a9d0:
   - [✅] Reconstructed (Name: zEffect::AnimateNodeOverTime)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::AnimateNodeOverTime File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45ae30:
   - [✅] Reconstructed (Name: zEffect_Anim::AdvanceKeyframeSample)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::AdvanceKeyframeSample File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45ae90:
   - [✅] Reconstructed (Name: zEffect_Anim::AnimateKeyframeSample)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::AnimateKeyframeSample File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45b120:
   - [✅] Reconstructed (Name: zEffect_Anim::AdvanceKeyframe)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::AdvanceKeyframe File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45b210:
   - [✅] Reconstructed (Name: zEffect_Anim::EvaluateKeyframe)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::EvaluateKeyframe File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45b280:
   - [✅] Reconstructed (Name: zEffect_Anim::RunKeyframes)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::RunKeyframes File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45b3b0:
   - [✅] Reconstructed (Name: zEffect::HandleAddChildEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleAddChildEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45b410:
   - [✅] Reconstructed (Name: zEffect::HandleRemoveChildEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleRemoveChildEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45b440:
   - [✅] Reconstructed (Name: zEffect::HandleAttachEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleAttachEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45b4a0:
   - [✅] Reconstructed (Name: zEffect::HandleDetachEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleDetachEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45b8b0:
   - [✅] Reconstructed (Name: zEffect::HandleTransformRefsEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleTransformRefsEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45bb00:
   - [✅] Reconstructed (Name: zEffect::HandleSurfaceStopEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleSurfaceStopEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45bbb0:
   - [✅] Reconstructed (Name: zEffect::HandleSurfacePlayEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleSurfacePlayEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45bc60:
   - [✅] Reconstructed (Name: zEffect::HandleSurfaceRefEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleSurfaceRefEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45bf60:
   - [✅] Reconstructed (Name: zEffect::CleanupLightRefs)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::CleanupLightRefs File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45bfd0:
   - [✅] Reconstructed (Name: zEffect::CleanupSoundRefs)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::CleanupSoundRefs File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c040:
   - [✅] Reconstructed (Name: zEffectAnim::Stop)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::Stop File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c100:
   - [✅] Reconstructed (Name: zEffect::HandleNamedAnimStopEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleNamedAnimStopEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c1a0:
   - [✅] Reconstructed (Name: zEffect::HandleEmitterPlayEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleEmitterPlayEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c240:
   - [✅] Reconstructed (Name: zEffect::HandleEmitterStopEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleEmitterStopEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c2f0:
   - [✅] Reconstructed (Name: zEffect::HandleEmitterResetEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleEmitterResetEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c310:
   - [✅] Reconstructed (Name: zEffect::HandleEmitterLoopEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleEmitterLoopEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c3c0:
   - [✅] Reconstructed (Name: zEffect::HandleConditionalChainEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleConditionalChainEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c530:
   - [✅] Reconstructed (Name: zEffect::TraceUpwardHitFromNodeOrPos)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::TraceUpwardHitFromNodeOrPos File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c640:
   - [✅] Reconstructed (Name: zEffect::GetConditionalRefPosDistanceSq)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::GetConditionalRefPosDistanceSq File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c6b0:
   - [✅] Reconstructed (Name: zEffect::SkipConditionalChainToEnd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::SkipConditionalChainToEnd File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c6e0:
   - [✅] Reconstructed (Name: zEffect::HandleNoOpMarkerEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleNoOpMarkerEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c6f0:
   - [✅] Reconstructed (Name: zEffect::HandleCallbackEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleCallbackEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c710:
   - [☑️] Reconstructed (Name: zEffect::HandleScreenColorFxEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleScreenColorFxEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45c920:
   - [☑️] Reconstructed (Name: zEffect::HandleScreenOverlayFxEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleScreenOverlayFxEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45cbc0:
   - [✅] Reconstructed (Name: zEffect::HandleTopMessageEvent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleTopMessageEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45cc00:
   - [✅] Reconstructed (Name: zEffect_Anim::RunSequenceEvents)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::RunSequenceEvents File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d000:
   - [✅] Reconstructed (Name: zEffect::SetAnimDebugFrameTag)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::SetAnimDebugFrameTag File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d010:
   - [☑️] Reconstructed (Name: zEffect_Anim::RunSequence)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::RunSequence File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d240:
   - [✅] Reconstructed (Name: zEffect_Anim::CaptureNodeStates)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::CaptureNodeStates File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d310:
   - [✅] Reconstructed (Name: zEffect_Anim::RestoreNodeStates)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::RestoreNodeStates File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d3d0:
   - [✅] Reconstructed (Name: zEffectAnim::FinalizeStop)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::FinalizeStop File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d4c0:
   - [✅] Reconstructed (Name: zEffectAnim::RunStopSequenceCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::RunStopSequenceCallback File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d570:
   - [✅] Reconstructed (Name: zEffectAnim::StopAndCleanup)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::StopAndCleanup File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d6b0:
   - [✅] Reconstructed (Name: zEffect_Anim::NodeActionCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::NodeActionCallback File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d6c0:
   - [✅] Reconstructed (Name: zEffectAnim::ResetForNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::ResetForNode File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d770:
   - [✅] Reconstructed (Name: zEffectAnim::RunStopDelayCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::RunStopDelayCallback File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d7a0:
   - [✅] Reconstructed (Name: zEffectAnim::ResetActivationPrereqCount)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::ResetActivationPrereqCount File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d7b0:
   - [✅] Reconstructed (Name: zEffectAnim::SetTransformRotAndVelocity)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::SetTransformRotAndVelocity File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45d930:
   - [✅] Reconstructed (Name: zEffectAnim::ActivateRuntime)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::ActivateRuntime File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45db20:
   - [✅] Reconstructed (Name: zEffectAnim::CheckActivationPrereqs)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::CheckActivationPrereqs File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45dc70:
   - [✅] Reconstructed (Name: zEffectAnim::SetTransformRotAndVelocity_Thunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::SetTransformRotAndVelocity_Thunk File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45dcb0:
   - [✅] Reconstructed (Name: zEffectAnim::SetVelocity)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::SetVelocity File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45dde0:
   - [✅] Reconstructed (Name: zEffectAnim::SetVelocity_Thunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::SetVelocity_Thunk File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45de00:
   - [✅] Reconstructed (Name: zEffectAnim::SetPositionRefAndVelocity)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::SetPositionRefAndVelocity File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45df70:
   - [✅] Reconstructed (Name: zEffectAnim::SetPositionRefAndVelocity_Thunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::SetPositionRefAndVelocity_Thunk File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45df90:
   - [✅] Reconstructed (Name: zEffectAnim::SetTransformRefs)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::SetTransformRefs File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45e0b0:
   - [✅] Reconstructed (Name: zEffectAnim::SetTransformRefs_Thunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::SetTransformRefs_Thunk File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45e0d0:
   - [✅] Reconstructed (Name: zEffectAnimEntry::SetOnStateDoneCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnimEntry::SetOnStateDoneCallback File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x45e0f0:
   - [✅] Reconstructed (Name: zEffect::SetConditionalEffectLevel)
   - [✅] Source dependencies satisfied
@@ -10462,72 +10512,72 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x45e200:
   - [✅] Reconstructed (Name: zEffect::SetWorldNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::SetWorldNode File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x45e210:
   - [✅] Reconstructed (Name: zEffect_Anim::SetZbdFilename)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::SetZbdFilename File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x45e270:
   - [✅] Reconstructed (Name: zEffect::SetResourceNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::SetResourceNode File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x45e280:
   - [✅] Reconstructed (Name: zEffectAnim::FindSoundRefIndexByName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::FindSoundRefIndexByName File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45e300:
   - [✅] Reconstructed (Name: zEffectAnim::FindLightRefIndexByName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::FindLightRefIndexByName File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45e380:
   - [✅] Reconstructed (Name: zEffectAnim::FindOrCreateSoundRef)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::FindOrCreateSoundRef File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45e4a0:
   - [✅] Reconstructed (Name: zEffectAnim::FindOrCreateLightRef)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::FindOrCreateLightRef File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45e5c0:
   - [✅] Reconstructed (Name: zEffectAnim::ResolveNodeByName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::ResolveNodeByName File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45e650:
   - [✅] Reconstructed (Name: zEffectAnim::FindNodeRecursiveByName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::FindNodeRecursiveByName File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45e6d0:
   - [✅] Reconstructed (Name: zEffectAnim::EnsureCopiedRootTree)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::EnsureCopiedRootTree File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45e730:
   - [✅] Reconstructed (Name: zEffectAnim::CloneEntryForNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::CloneEntryForNode File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45ed80:
   - [✅] Reconstructed (Name: zEffectAnim::RebindEntryToNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::RebindEntryToNode File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45efb0:
   - [✅] Reconstructed (Name: zEffect_Anim::LoadZbd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::LoadZbd File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45fb30:
   - [✅] Reconstructed (Name: zEffect_Anim::LoadAndInstantiate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::LoadAndInstantiate File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45fd10:
@@ -10547,19 +10597,19 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x45ff10:
   - [☑️] Reconstructed (Name: zEffectAnim::FindEntryByName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::FindEntryByName File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x45ffa0:
   - [✅] Reconstructed (Name: zEffectAnim::FindNextAsyncEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::FindNextAsyncEntry File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x460010:
   - [✅] Reconstructed (Name: zEffectAnim::GetRootNodeOrNull)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::GetRootNodeOrNull File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x460020:
   - [✅] Reconstructed (Name: zEffect::Init)
   - [✅] Source dependencies satisfied
@@ -10572,7 +10622,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x460070:
   - [☑️] Reconstructed (Name: zEffect::InitFromPath)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::InitFromPath File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x460330:
@@ -10587,144 +10637,144 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x460400:
   - [✅] Reconstructed (Name: zEffect_Anim::HasActivationRecord)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::HasActivationRecord File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x460470:
   - [✅] Reconstructed (Name: zEffect_Anim::GetActivationRecordCount)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::GetActivationRecordCount File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x460480:
   - [✅] Reconstructed (Name: zEffect_Anim::GetActivationRecordAt)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::GetActivationRecordAt File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x460490:
   - [✅] Reconstructed (Name: zEffect_Anim::SaveActivationRecords)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::SaveActivationRecords File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x4606d0:
   - [✅] Reconstructed (Name: zEffect_Anim::LoadActivationRecords)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::LoadActivationRecords File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x460ae0:
   - [✅] Reconstructed (Name: zEffect_Anim::AllocActivationRecord)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::AllocActivationRecord File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x460bc0:
   - [✅] Reconstructed (Name: zEffect_Anim::SaveRunningAnimRecord)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::SaveRunningAnimRecord File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x460f80:
   - [✅] Reconstructed (Name: zEffect_Anim::SaveRunningAnimRecords)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::SaveRunningAnimRecords File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461040:
   - [✅] Reconstructed (Name: zEffect_Anim::LoadRunningAnimRecords)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::LoadRunningAnimRecords File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461430:
   - [✅] Reconstructed (Name: zEffect_Anim::SaveAnimRecords)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::SaveAnimRecords File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461670:
   - [✅] Reconstructed (Name: zEffect_Anim::LoadAnimRecords)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::LoadAnimRecords File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461800:
   - [✅] Reconstructed (Name: zEffect_Anim::GetActivationRecordPackedSize)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::GetActivationRecordPackedSize File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461840:
   - [✅] Reconstructed (Name: zEffect_Anim::ResetFromActivationRecord)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::ResetFromActivationRecord File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461870:
   - [✅] Reconstructed (Name: zEffect_Anim::ProcessActivationRecord)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::ProcessActivationRecord File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461970:
   - [✅] Reconstructed (Name: zEffectAnim::QueueCmdType1TransformRotVelocity)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::QueueCmdType1TransformRotVelocity File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461a90:
   - [✅] Reconstructed (Name: zEffect_Anim::DiscardLastActivationRecord)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::DiscardLastActivationRecord File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461aa0:
   - [✅] Reconstructed (Name: zEffectAnim::QueueCmdType2Velocity)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::QueueCmdType2Velocity File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461ba0:
   - [✅] Reconstructed (Name: zEffectAnim::QueueCmdType3PositionRefAndVelocity)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::QueueCmdType3PositionRefAndVelocity File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461d00:
   - [✅] Reconstructed (Name: zEffectAnim::QueueCmdType4TransformRefs)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::QueueCmdType4TransformRefs File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461eb0:
   - [✅] Reconstructed (Name: zEffect_Anim::SetActivationDispatchContext)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::SetActivationDispatchContext File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461ec0:
   - [✅] Reconstructed (Name: zEffect::FindNodeUserDataRecursive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::FindNodeUserDataRecursive File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461f00:
   - [✅] Reconstructed (Name: zEffect::SpawnRuntimeInstanceAt)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::SpawnRuntimeInstanceAt File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x461f50:
   - [✅] Reconstructed (Name: zEffect::ActivateRuntimeEntryAtPosition)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::ActivateRuntimeEntryAtPosition File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x462050:
   - [✅] Reconstructed (Name: zEffect::ComputeDistanceSqToListener)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::ComputeDistanceSqToListener File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x4620d0:
   - [✅] Reconstructed (Name: zEffect::AcquireRuntimeEntryByIndex)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::AcquireRuntimeEntryByIndex File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x462130:
   - [✅] Reconstructed (Name: zEffect::CloneRuntimeEntryFromTemplate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::CloneRuntimeEntryFromTemplate File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x4621b0:
   - [✅] Reconstructed (Name: zEffect::RuntimeNodeActionCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::RuntimeNodeActionCallback File: src/GameZRecoil/zEffect/zEffect.cpp)
   - [❌] Binary-safe verified
 - 0x462280:
   - [✅] Reconstructed (Name: zEffect::FindTemplateIndexByName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::FindTemplateIndexByName File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4622f0:
   - [✅] Reconstructed (Name: zError::EmitDebugBuffer)
   - [✅] Source dependencies satisfied
@@ -10734,10 +10784,10 @@ Each function has these trackers:
 ## M23. zError legacy error path
 
 - 0x404e80:
-  - [✅] Reconstructed (Name: zError::ReportOld)
+  - [✅] Reconstructed (Name: zError::ReportOldNoOp)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zError::ReportOld File: src/GameZRecoil/zError/zerr_old.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462310:
   - [✅] Reconstructed (Name: RecoilError::InitOutputContext)
   - [✅] Source dependencies satisfied
@@ -10750,32 +10800,32 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zFMV_Playback::Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Playback::Init File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462360:
   - [✅] Reconstructed (Name: zFMV_Playback::~zFMV_Playback)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Playback::Destructor File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462370:
-  - [✅] Reconstructed (Name: zFMV_Playback_OpenAndPlay)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zFMV_Playback::OpenAndPlay)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Playback::OpenAndPlay File: src/GameZRecoil/zFMV/fmv_script.cpp)
   - [❌] Binary-safe verified
 - 0x4624f0:
   - [✅] Reconstructed (Name: zFMV_Playback::StopAndClose)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Playback::StopAndClose File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462540:
   - [✅] Reconstructed (Name: zFMV_Playback::SetDestRect)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Playback::SetDestRect File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462570:
   - [✅] Reconstructed (Name: zFMV_Playback::ReportMciError)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Playback::ReportMciError File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4625e0:
   - [✅] Reconstructed (Name: zFMV_Script::Init)
   - [✅] Source dependencies satisfied
@@ -10785,14 +10835,14 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zFMV_Script::Cleanup)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Script::Cleanup File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x463ef0:
-  - [✅] Reconstructed (Name: zFMV_Stream_Ctor)
+  - [✅] Reconstructed (Name: zFMV_Stream::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Stream::Constructor File: src/GameZRecoil/zFMV/fmv_script.cpp)
   - [❌] Binary-safe verified
 - 0x4641a0:
-  - [✅] Reconstructed (Name: zFMV_Stream_OpenAudio)
+  - [✅] Reconstructed (Name: zFMV_Stream::OpenAudio)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Stream::OpenAudio File: src/GameZRecoil/zFMV/fmv_script.cpp)
   - [❌] Binary-safe verified
@@ -10810,57 +10860,57 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zFMV_ActionBase_ScalarDeletingDtor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Action::ScalarDeletingDestructor File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462ed0:
-  - [✅] Reconstructed (Name: zFMV_ActionWait_Begin)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zFMV_ActionWait::Begin)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_ActionWait::Begin File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462ee0:
-  - [✅] Reconstructed (Name: zFMV_ActionWait_Update)
+  - [✅] Reconstructed (Name: zFMV_ActionWait::Update)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: zFMV_ActionWait::Update File: src/GameZRecoil/zFMV/fmv_script.cpp)
   - [❌] Binary-safe verified
 - 0x462f00:
-  - [✅] Reconstructed (Name: zFMV_Action_FlipSurfaces)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zFMV_Action::FlipSurfaces)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Action::FlipSurfaces File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462f10:
   - [✅] Reconstructed (Name: zFMV_Script::AppendAction)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Script::AppendAction File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462f50:
   - [✅] Reconstructed (Name: zFMV_Script::RunBlocking)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Script::RunBlocking File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462f90:
   - [✅] Reconstructed (Name: zFMV_Script::BeginCurrentAction)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Script::BeginCurrentAction File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x463000:
   - [✅] Reconstructed (Name: zFMV_Script::Update)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Script::Update File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4630a0:
   - [✅] Reconstructed (Name: zFMV_Script::BeginAtTime)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Script::BeginAtTime File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4630e0:
   - [✅] Reconstructed (Name: zFMV_Script::UpdateAtTime)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Script::UpdateAtTime File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x463120:
   - [✅] Reconstructed (Name: zFMV_Script::BeginNow)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Script::BeginNow File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x463130:
   - [✅] Reconstructed (Name: zFMV_ActionImage::ConstructorWithScreenRect)
   - [✅] Source dependencies satisfied
@@ -10877,22 +10927,22 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zFMV_ActionImage::ConstructorScaled File: src/GameZRecoil/zFMV/fmv_script.cpp)
   - [❌] Binary-safe verified
 - 0x4632a0:
-  - [✅] Reconstructed (Name: zFMV_ActionImage_Dtor)
+  - [✅] Reconstructed (Name: zFMV_ActionImage::Destructor)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x463300:
-  - [✅] Reconstructed (Name: zFMV_ActionImage_Begin)
+  - [✅] Reconstructed (Name: zFMV_ActionImage::Begin)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x463320:
-  - [✅] Reconstructed (Name: zFMV_ActionImage_Update)
+  - [✅] Reconstructed (Name: zFMV_ActionImage::Update)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4633a0:
-  - [✅] Reconstructed (Name: zFMV_ActionImage_End)
+  - [✅] Reconstructed (Name: zFMV_ActionImage::End)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -10900,19 +10950,19 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zFMV_ActionFade::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_ActionFade::Constructor File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x463410:
-  - [✅] Reconstructed (Name: zFMV_ActionFade_Begin)
+  - [✅] Reconstructed (Name: zFMV_ActionFade::Begin)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x463440:
-  - [☑️] Reconstructed (Name: zFMV_ActionFade_Update)
+  - [☑️] Reconstructed (Name: zFMV_ActionFade::Update)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x463550:
-  - [✅] Reconstructed (Name: zFMV_ActionFade_End)
+  - [✅] Reconstructed (Name: zFMV_ActionFade::End)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -10927,22 +10977,22 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x463670:
-  - [✅] Reconstructed (Name: zFMV_ActionPlayAvi_Dtor)
+  - [✅] Reconstructed (Name: zFMV_ActionPlayAvi::Destructor)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4636d0:
-  - [☑️] Reconstructed (Name: zFMV_ActionPlayAvi_Update)
+  - [☑️] Reconstructed (Name: zFMV_ActionPlayAvi::Update)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x463790:
-  - [✅] Reconstructed (Name: zFMV_ActionPlayAvi_Begin)
+  - [✅] Reconstructed (Name: zFMV_ActionPlayAvi::Begin)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x463820:
-  - [✅] Reconstructed (Name: zFMV_ActionPlayAvi_End)
+  - [✅] Reconstructed (Name: zFMV_ActionPlayAvi::End)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -10950,29 +11000,29 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zFMV_ActionBlur::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_ActionBlur::Constructor File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x463870:
-  - [✅] Reconstructed (Name: zFMV_ActionBlur_Begin)
+  - [✅] Reconstructed (Name: zFMV_ActionBlur::Begin)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x463920:
-  - [✅] Reconstructed (Name: zFMV_ActionBlur_End)
+  - [✅] Reconstructed (Name: zFMV_ActionBlur::End)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x463950:
-  - [✅] Reconstructed (Name: zFMV_ActionBlur_Update)
+  - [✅] Reconstructed (Name: zFMV_ActionBlur::Update)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4639e0:
-  - [✅] Reconstructed (Name: zFMV_ActionBlurH_Update)
+  - [✅] Reconstructed (Name: zFMV_ActionBlurH::Update)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x463a70:
-  - [✅] Reconstructed (Name: zFMV_ActionBlurV_Update)
+  - [✅] Reconstructed (Name: zFMV_ActionBlurV::Update)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -10987,12 +11037,12 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x463c10:
-  - [✅] Reconstructed (Name: zFMV_ActionPlayMci_Dtor)
+  - [✅] Reconstructed (Name: zFMV_ActionPlayMci::Destructor)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x463c90:
-  - [✅] Reconstructed (Name: zFMV_ActionPlayMci_Update)
+  - [✅] Reconstructed (Name: zFMV_ActionPlayMci::Update)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -11000,63 +11050,63 @@ Each function has these trackers:
 ## M25. zFMV scripting
 
 - 0x4159d0:
-  - [✅] Reconstructed (Name: zFMV_Action_NoOpUpdate)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zFMV_Action::NoOpUpdate)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Action::NoOpUpdate File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4159e0:
-  - [✅] Reconstructed (Name: zFMV_Action_RunBlockingTimed)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zFMV_Action::RunBlockingTimed)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Action::RunBlockingTimed File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x415aa0:
-  - [✅] Reconstructed (Name: zFMV_ActionBase_Dtor)
+  - [✅] Reconstructed (Name: zFMV_ActionBase::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Action::Destructor File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462660:
   - [✅] Reconstructed (Name: zFMV_Script::Reset)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Script::Reset File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4626b0:
   - [☑️] Reconstructed (Name: zFMV_Script::LoadActionsFromZrd)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Script::LoadActionsFromZrd File: src/GameZRecoil/zFMV/fmv_script.cpp)
   - [❌] Binary-safe verified
 - 0x462e30:
-  - [✅] Reconstructed (Name: zFMV_Action_RunBlockingImmediate)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zFMV_Action::RunBlockingImmediate)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Action::RunBlockingImmediate File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462e70:
   - [✅] Reconstructed (Name: zFMV_ActionDerived_ScalarDeletingDtor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Action::DerivedScalarDeletingDestructor File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x462e90:
-  - [✅] Reconstructed (Name: zFMV_ActionPlaySound_Begin)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zFMV_ActionPlaySound::Begin)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_ActionPlaySound::Begin File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x463ca0:
-  - [✅] Reconstructed (Name: zFMV_ActionPlayMci_Begin)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zFMV_ActionPlayMci::Begin)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_ActionPlayMci::Begin File: src/GameZRecoil/zFMV/fmv_script.cpp)
   - [❌] Binary-safe verified
 - 0x463cc0:
-  - [✅] Reconstructed (Name: zFMV_ActionPlayMci_End)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zFMV_ActionPlayMci::End)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_ActionPlayMci::End File: src/GameZRecoil/zFMV/fmv_script.cpp)
   - [❌] Binary-safe verified
 - 0x463d50:
-  - [✅] Reconstructed (Name: zFMV_Stream_Init)
+  - [✅] Reconstructed (Name: zFMV_Stream::Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Stream::Init File: src/GameZRecoil/zFMV/fmv_script.cpp)
   - [❌] Binary-safe verified
 - 0x463dd0:
   - [✅] Reconstructed (Name: zFMV_Stream::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Stream::Destructor File: src/GameZRecoil/zFMV/fmv_script.cpp)
   - [❌] Binary-safe verified
   
@@ -11064,137 +11114,137 @@ Each function has these trackers:
 
 - 0x464680:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::Init)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::Init File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x469e50:
   - [☑️] Reconstructed (Name: zGeometry_Vec3::IsNearEqualXY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Vec3::IsNearEqualXY File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x469e90:
   - [☑️] Reconstructed (Name: zGeometry_Vec3::SnapPointToSegmentXYIfNear)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Vec3::SnapPointToSegmentXYIfNear File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46a080:
   - [✅] Reconstructed (Name: zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x46a130:
   - [☑️] Reconstructed (Name: zGeometry_Polygon::SnapPointsXYIfNear)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Polygon::SnapPointsXYIfNear File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46a5e0:
   - [✅] Reconstructed (Name: zGeometry_Vec3Array::RotateNeg90AroundX)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Vec3Array::RotateNeg90AroundX File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46a620:
   - [✅] Reconstructed (Name: zGeometry_Bounds2D::OverlapsWithUnitMargin)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Bounds2D::OverlapsWithUnitMargin File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46a690:
   - [☑️] Reconstructed (Name: zGeometry_Model::FindOrCreateRandomDebugMaterial)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Model::FindOrCreateRandomDebugMaterial File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46a770:
   - [☑️] Reconstructed (Name: zGeometry_Model::AddPolygonToDi)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Model::AddPolygonToDi File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46a7f0:
   - [☑️] Reconstructed (Name: zGeometry_Model::BuildPolygonUvList)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Model::BuildPolygonUvList File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46a8e0:
   - [☑️] Reconstructed (Name: zGeometry_Polygon::SolveUvAxisCoefficientsXZ)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Polygon::SolveUvAxisCoefficientsXZ File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46aa40:
   - [☑️] Reconstructed (Name: zGeometry_ClipPolygon::CreateFromPointList)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ClipPolygon::CreateFromPointList File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46aab0:
   - [✅] Reconstructed (Name: zGeometry_ClipPolygon::CopyPointsOutRotatedBack)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ClipPolygon::CopyPointsOutRotatedBack File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46ba90:
   - [✅] Reconstructed (Name: zGeometry_Model::AddPointListPolygonToDi)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Model::AddPointListPolygonToDi File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46bd50:
   - [✅] Reconstructed (Name: zGeometry_TriangulateHole::TryAppendBridgeEdge)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_TriangulateHole::TryAppendBridgeEdge File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
 - 0x46bf30:
   - [☑️] Reconstructed (Name: zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
 - 0x46bfc0:
   - [☑️] Reconstructed (Name: zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
 - 0x46c070:
   - [☑️] Reconstructed (Name: zGeometry::TriangulatePolygonWithHole)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry::TriangulatePolygonWithHole File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
 - 0x46c390:
   - [✅] Reconstructed (Name: zGeometry_TriangulateHole::CacheCombinedPlane)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_TriangulateHole::CacheCombinedPlane File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
 - 0x46c3a0:
   - [☑️] Reconstructed (Name: zGeometry_Vec3Array::ComputeNewellPlane)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Vec3Array::ComputeNewellPlane File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
 - 0x46c570:
   - [☑️] Reconstructed (Name: zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
 - 0x46c5b0:
   - [☑️] Reconstructed (Name: zGeometry_Vec3Array::ReversePoints)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Vec3Array::ReversePoints File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
 - 0x46c620:
   - [☑️] Reconstructed (Name: zGeometry_Vec3Array::EnsurePositiveCrossZ)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Vec3Array::EnsurePositiveCrossZ File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
 - 0x46c720:
   - [✅] Reconstructed (Name: zGeometry_ConvexPolygonSet::Destroy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ConvexPolygonSet::Destroy File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
 - 0x46c760:
   - [☑️] Reconstructed (Name: zGeometry_Polygon::Convexify)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Polygon::Convexify File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
 - 0x46cb50:
   - [☑️] Reconstructed (Name: zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
 - 0x46ced0:
   - [☑️] Reconstructed (Name: zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
   
@@ -11202,282 +11252,282 @@ Each function has these trackers:
 
 - 0x464670:
   - [✅] Reconstructed (Name: zGeometry_Weiler::GetInputContourAPointList)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::GetInputContourAPointList File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x464790:
   - [✅] Reconstructed (Name: zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x4647d0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::DestroyState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::DestroyState File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x464810:
   - [✅] Reconstructed (Name: zGeometry_Weiler::ClipPointList)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::ClipPointList File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x464b30:
   - [✅] Reconstructed (Name: zGeometry_WeilerClipOutput::Destroy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_WeilerClipOutput::Destroy File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x464b90:
   - [✅] Reconstructed (Name: zGeometry_Weiler::InitInputContourPair)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::InitInputContourPair File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x464c90:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::ClassifyInputContourPairBounds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::ClassifyInputContourPairBounds File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x464ea0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::OutputPreclassifiedContourPairResult)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::OutputPreclassifiedContourPairResult File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x464f70:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::PreclassifyInputContourPair)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::PreclassifyInputContourPair File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x465ac0:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::ClassifyContainedContour)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::ClassifyContainedContour File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x467600:
   - [✅] Reconstructed (Name: zGeometry_WeilerBuffer::Init)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_WeilerBuffer::Init File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x467630:
   - [✅] Reconstructed (Name: zGeometry_WeilerBuffer::Destroy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_WeilerBuffer::Destroy File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x467660:
   - [✅] Reconstructed (Name: zGeometry_WeilerBuffer::GetAppendSpace)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_WeilerBuffer::GetAppendSpace File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x4676c0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::EnsureContourOutput)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::EnsureContourOutput File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x467710:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::MergeContours)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::MergeContours File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x4680b0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::NewContour)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::NewContour File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x4681a0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::OutputContoursForClipMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::OutputContoursForClipMode File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x4682c0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::OutputContourToPolygonSet)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::OutputContourToPolygonSet File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x4683a0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::TogglePointAxesForContourSource)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::TogglePointAxesForContourSource File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x468410:
   - [✅] Reconstructed (Name: zGeometry_WeilerContourSegment::UpdateBounds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_WeilerContourSegment::UpdateBounds File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x468470:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::BuildPointSideTablesForContourPair)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::BuildPointSideTablesForContourPair File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x468580:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::DivideContourSegmentAtPoint)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::DivideContourSegmentAtPoint File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x468650:
   - [✅] Reconstructed (Name: zGeometry_Weiler::CreateForwardSegmentPairAtPoint)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::CreateForwardSegmentPairAtPoint File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x468700:
   - [✅] Reconstructed (Name: zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x4687b0:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::GenerateOutsideResults)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::GenerateOutsideResults File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x468a10:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::ClassifyPointInContourPointListXY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::ClassifyPointInContourPointListXY File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x468c40:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::Intersect2d)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::Intersect2d File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x468fa0:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::ClassifyIntersect2d)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::ClassifyIntersect2d File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x4693a0:
   - [✅] Reconstructed (Name: zGeometry_WeilerContourSegmentArray::UpdateBounds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_WeilerContourSegmentArray::UpdateBounds File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x4693c0:
   - [☑️] Reconstructed (Name: zGeometry_WeilerContourSegmentArray::InitFromPointList)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_WeilerContourSegmentArray::InitFromPointList File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x469430:
   - [✅] Reconstructed (Name: zGeometry_Weiler::GetNextContourSegmentForTraversal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::GetNextContourSegmentForTraversal File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x469450:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x469560:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x469960:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::RecenterPointSetsIfOutOfRange)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::RecenterPointSetsIfOutOfRange File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x469a30:
   - [✅] Reconstructed (Name: zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x469ae0:
   - [✅] Reconstructed (Name: zGeometry_WeilerBuffer::SetCountAndAppendPtr)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_WeilerBuffer::SetCountAndAppendPtr File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x469af0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::RestorePointTranslation)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::RestorePointTranslation File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x469b60:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::RestoreOutputZFromInputPlane)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::RestoreOutputZFromInputPlane File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x469ca0:
   - [✅] Reconstructed (Name: zGeometry_Vec3::IsBetweenEndpointsXY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Vec3::IsBetweenEndpointsXY File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x469d60:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::SelectForwardStartPointInContourA)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::SelectForwardStartPointInContourA File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x46a1f0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::ValidateXings)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Weiler::ValidateXings File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x46a600:
   - [✅] Reconstructed (Name: zGeometry_Vec3Array::RotatePos90AroundX)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Vec3Array::RotatePos90AroundX File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x46a9c0:
   - [☑️] Reconstructed (Name: zGeometry_Vec3Array::ComputeBoundsXY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Vec3Array::ComputeBoundsXY File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x46ab10:
   - [✅] Reconstructed (Name: zGeometry_ClipPolygon::FinalizeAndDestroy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ClipPolygon::FinalizeAndDestroy File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x46ab40:
   - [✅] Reconstructed (Name: zGeometry_ClipPolygon::FindPointIndexXY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ClipPolygon::FindPointIndexXY File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x46ab90:
   - [✅] Reconstructed (Name: zGeometry_ClipPolygon::UpsertPointListXY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ClipPolygon::UpsertPointListXY File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x46ac80:
   - [☑️] Reconstructed (Name: zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x46ae40:
   - [☑️] Reconstructed (Name: zGeometry_ClipPatchOutput::ApplyNodeDiPairs)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ClipPatchOutput::ApplyNodeDiPairs File: src/GameZRecoil/zDEClient/zdec_init.cpp)
   - [❌] Binary-safe verified
 - 0x46af00:
   - [✅] Reconstructed (Name: zGeometry_ClipPatchOutput::Create)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ClipPatchOutput::Create File: src/GameZRecoil/zDEClient/zdec_init.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46b550:
   - [☑️] Reconstructed (Name: zGeometry_ClipPolygon::ProcessNodePolygonSetXY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_ClipPolygon::ProcessNodePolygonSetXY File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46b650:
   - [✅] Reconstructed (Name: zGeometry_Model::GetLinearBufferOfPolygonVertices)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Model::GetLinearBufferOfPolygonVertices File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x46b6d0:
   - [☑️] Reconstructed (Name: zGeometry_Model::ProcessClipPatchNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Model::ProcessClipPatchNode File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46bb30:
   - [✅] Reconstructed (Name: zGeometry_Model::AddIndexedPolygonToDi)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Model::AddIndexedPolygonToDi File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46bb90:
   - [☑️] Reconstructed (Name: zGeometry_Model::IsFullyInsideClipPolygonXY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Model::IsFullyInsideClipPolygonXY File: src/GameZRecoil/zGeometry/zgeo_model.cpp)
   - [❌] Binary-safe verified
 - 0x46be20:
   - [☑️] Reconstructed (Name: zGeometry_Segment::IntersectsSegmentXY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_Segment::IntersectsSegmentXY File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp)
   - [❌] Binary-safe verified
 - 0x46bf70:
   - [✅] Reconstructed (Name: zGeometry_TriangulateHole::FindActiveEdgeState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGeometry_TriangulateHole::FindActiveEdgeState File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp)
   - [❌] Binary-safe verified
   
@@ -11485,34 +11535,34 @@ Each function has these trackers:
 
 - 0x46d310:
   - [✅] Reconstructed (Name: zImage::TexDirEntryToIndex)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::TexDirEntryToIndex File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46d340:
   - [✅] Reconstructed (Name: zImage::TexIndexToDirEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::TexIndexToDirEntry File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46d360:
   - [☑️] Reconstructed (Name: zImage::WriteTextureDirectory)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::WriteTextureDirectory File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [❌] Binary-safe verified
 - 0x46d420:
   - [✅] Reconstructed (Name: zImage::ReadTextureDirectory)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::ReadTextureDirectory File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [❌] Binary-safe verified
 - 0x46d4c0:
   - [✅] Reconstructed (Name: zImage::GetDefaultImageRefPtr)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::GetDefaultImageRefPtr File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46d4d0:
   - [☑️] Reconstructed (Name: zImage::FindTexDirEntryByName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::FindTexDirEntryByName File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46d550:
   - [✅] Reconstructed (Name: zImage::InitTextureDirectory)
   - [❓] Source dependencies satisfied
@@ -11529,23 +11579,23 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zImage::ShutdownTextureDirectoryRuntime File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x46d900:
-  - [✅] Reconstructed (Name: zImage_TexDir_FindOrCreateByPath)
+  - [✅] Reconstructed (Name: zImage::TexDirFindOrCreateByPath)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::TexDir_FindOrCreateByPath File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [❌] Binary-safe verified
 - 0x46d940:
-  - [✅] Reconstructed (Name: zVid_TexturePack_LoadImageByName)
+  - [✅] Reconstructed (Name: zVid_TexturePack::LoadImageByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_TexturePack_LoadImageByName File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x46e250:
   - [✅] Reconstructed (Name: zImage::InvalidateLoadedVariantChain)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::InvalidateLoadedVariantChain File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [❌] Binary-safe verified
 - 0x46e2c0:
   - [✅] Reconstructed (Name: zImage::SetPathExtension)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::SetPathExtension File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [❌] Binary-safe verified
 - 0x46e4e0:
@@ -11574,7 +11624,7 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zImage::Shutdown File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [❌] Binary-safe verified
 - 0x46ebd0:
-  - [✅] Reconstructed (Name: zImage_InitMissionResources)
+  - [✅] Reconstructed (Name: zImage::InitMissionResources)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage_InitMissionResources File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [❌] Binary-safe verified
@@ -11604,10 +11654,10 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zVid_Image::SetFormatCode File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x46ec70:
-  - [✅] Reconstructed (Name: zVid_Image_SetPixels)
+  - [✅] Reconstructed (Name: zVid_Image::SetPixels)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image_SetPixels File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46ec90:
   - [✅] Reconstructed (Name: zVid_Image::SetSize)
   - [✅] Source dependencies satisfied
@@ -11642,7 +11692,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zImage_Font::GetByIndexOrDefault)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage_Font::GetByIndexOrDefault File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46efe0:
   - [☑️] Reconstructed (Name: zImage::FontsLoadFromPath)
   - [✅] Source dependencies satisfied
@@ -11662,7 +11712,7 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zImage_Font::MeasureString)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage_Font::MeasureString File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4c7f00:
   - [✅] Reconstructed (Name: zImage_Font::BlitStringToActiveTarget)
   - [✅] Source dependencies satisfied
@@ -11670,29 +11720,29 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4902b0:
   - [✅] Reconstructed (Name: zVid_Image::CalcPow2ScratchFields)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image::CalcPow2ScratchFields File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
   
 ## M29. zInput device/bootstrap
 
 - 0x429f10:
-  - [✅] Reconstructed (Name: zInput_BindGroupList_StaticInitAndRegisterAtExit)
+  - [✅] Reconstructed (Name: zInput::BindGroupList_StaticInitAndRegisterAtExit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x429f20:
-  - [☑️] Reconstructed (Name: zInput_BindGroupList_StaticInit)
+  - [☑️] Reconstructed (Name: zInput::BindGroupListStaticInit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x429f40:
-  - [✅] Reconstructed (Name: zInput_BindGroupList_RegisterAtExit)
+  - [✅] Reconstructed (Name: zInput::BindGroupListRegisterAtExit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x429f50:
-  - [☑️] Reconstructed (Name: zInput_BindGroupList_AtExitDestructor)
+  - [☑️] Reconstructed (Name: zInput::BindGroupListAtExitDestructor)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -11718,69 +11768,69 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x42a480:
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetCount)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindGroupList_GetCount File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42a4a0:
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetGroupTitle)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindGroupList_GetGroupTitle File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42a4b0:
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetGroupCommandCount)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindGroupList_GetGroupCommandCount File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42a4d0:
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetGroupCommandId)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindGroupList_GetGroupCommandId File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42a4e0:
   - [✅] Reconstructed (Name: zInput::BindMap_GetCommandLabel)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_GetCommandLabel File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4719e0:
-  - [✅] Reconstructed (Name: zInput_GlobalState_StaticInitAndRegisterAtExit)
+  - [✅] Reconstructed (Name: zInput::GlobalStateStaticInitAndRegisterAtExit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4719f0:
-  - [✅] Reconstructed (Name: zInput_GlobalState_StaticInit)
+  - [✅] Reconstructed (Name: zInput::GlobalStateStaticInit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x471a00:
-  - [✅] Reconstructed (Name: zInput_GlobalState_RegisterAtExit)
+  - [✅] Reconstructed (Name: zInput::GlobalStateRegisterAtExit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x471a10:
-  - [✅] Reconstructed (Name: zInput_GlobalState_AtExitDtor)
+  - [✅] Reconstructed (Name: zInput::GlobalStateAtExitDestructor)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x471a20:
-  - [✅] Reconstructed (Name: zInput_GlobalState_Dtor)
+  - [✅] Reconstructed (Name: zInput_GlobalState::Destructor)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x471ab0:
-  - [✅] Reconstructed (Name: zInput_GlobalState_Ctor)
+  - [✅] Reconstructed (Name: zInput_GlobalState::Constructor)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x471ae0:
   - [✅] Reconstructed (Name: zInput::OnAppDeactivate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::OnAppDeactivate File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471b20:
   - [✅] Reconstructed (Name: zInput::OnAppActivate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::OnAppActivate File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471b50:
   - [☑️] Reconstructed (Name: zInput::Init)
   - [✅] Source dependencies satisfied
@@ -11795,40 +11845,40 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zInput::ResetAllTransitionState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::ResetAllTransitionState File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471de0:
   - [✅] Reconstructed (Name: zInput::PollActiveDevices)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::PollActiveDevices File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
   
 ## M30. zInput bindings, keyboard, mouse, joystick, and command dispatch
 
 - 0x404140:
-  - [✅] Reconstructed (Name: zInput_WaitForAnyKeyPressWithTimeoutMs)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zInput::WaitForAnyKeyPressWithTimeoutMs)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_WaitForAnyKeyPressWithTimeoutMs File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x408390:
   - [✅] Reconstructed (Name: zInp::SetJoystickOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInp::SetJoystickOption File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4083a0:
   - [✅] Reconstructed (Name: zInp::SetJoystickAxesCountOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInp::SetJoystickAxesCountOption File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4083b0:
   - [✅] Reconstructed (Name: zInp::SetJoystickButtonCountOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInp::SetJoystickButtonCountOption File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4083c0:
   - [✅] Reconstructed (Name: zInp::GetJoystickOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInp::GetJoystickOption File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408a30:
   - [☑️] Reconstructed (Name: HudUiControlsDialog::Constructor)
   - [❓] Source dependencies satisfied
@@ -11906,7 +11956,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x42a4f0:
   - [✅] Reconstructed (Name: zInput::BindMap_GetCommandHint)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_GetCommandHint File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42a500:
@@ -11930,53 +11980,53 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zInput::DI_SetJoystickEnabled File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42f9f0:
-  - [☑️] Reconstructed (Name: zInput_DI_InitForceFeedbackEffectSet)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zInputDI::InitForceFeedbackEffectSet)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_DI_InitForceFeedbackEffectSet File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42fa80:
-  - [✅] Reconstructed (Name: zInput_DI_IsForceFeedbackEnabled)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zInputDI::IsForceFeedbackEnabled)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_DI_IsForceFeedbackEnabled File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42faa0:
-  - [✅] Reconstructed (Name: zInput_DI_RestartPrimaryFireEffect)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zInputDI::RestartPrimaryFireEffect)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_DI_RestartPrimaryFireEffect File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42fac0:
-  - [☑️] Reconstructed (Name: zInput_DI_PlayAltFireEffect)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zInputDI::PlayAltFireEffect)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_DI_PlayAltFireEffect File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42fb50:
-  - [☑️] Reconstructed (Name: zInput_DI_PlayCollisionImpactEffect)
+  - [☑️] Reconstructed (Name: zInputDI::PlayCollisionImpactEffect)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: zInput_DI_PlayCollisionImpactEffect File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42fc90:
-  - [☑️] Reconstructed (Name: zInput_DI_PlayDamageHitEffect)
+  - [☑️] Reconstructed (Name: zInputDI::PlayDamageHitEffect)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: zInput_DI_PlayDamageHitEffect File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42fdc0:
-  - [☑️] Reconstructed (Name: zInput_DI_UpdateSteerAndPitchForceEffects)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zInputDI::UpdateSteerAndPitchForceEffects)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_DI_UpdateSteerAndPitchForceEffects File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x42ffa0:
-  - [☑️] Reconstructed (Name: zInput_DI_CreateConstantForceEffectScaled)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zInputDI::CreateConstantForceEffectScaled)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_DI_CreateConstantForceEffectScaled File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x430070:
-  - [✅] Reconstructed (Name: zInput_DI_CreateConstantForceEffectWithDirection)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zInputDI::CreateConstantForceEffectWithDirection)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_DI_CreateConstantForceEffectWithDirection File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x430100:
-  - [☑️] Reconstructed (Name: zInput_DI_CreateSineEffectScaled)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zInputDI::CreateSineEffectScaled)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_DI_CreateSineEffectScaled File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x46f300:
@@ -11993,50 +12043,50 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zInput::Keyboard_ResetTransitionState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_ResetTransitionState File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46f690:
   - [☑️] Reconstructed (Name: zInput::Keyboard_PollState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_PollState File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x46f970:
   - [✅] Reconstructed (Name: zInput::Keyboard_SetRawEventCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_SetRawEventCallback File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x46f980:
   - [✅] Reconstructed (Name: zInput::Keyboard_GetKeyTransitionState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_GetKeyTransitionState File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x46f9b0:
   - [✅] Reconstructed (Name: zInput::Keyboard_RegisterKeyCallback)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_RegisterKeyCallback File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46f9d0:
   - [✅] Reconstructed (Name: zInput::Keyboard_UnregisterKeyCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_UnregisterKeyCallback File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x46f9f0:
   - [✅] Reconstructed (Name: zInput::Keyboard_ClearKeyCallbackTable)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_ClearKeyCallbackTable File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46fa10:
   - [☑️] Reconstructed (Name: zInput::Keyboard_WaitForAnyKeyPress)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_WaitForAnyKeyPress File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x46fba0:
   - [✅] Reconstructed (Name: zInput::Keyboard_TranslateDikToAscii)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_TranslateDikToAscii File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x46fd20:
   - [✅] Reconstructed (Name: zInput::Keyboard_InitDikToAsciiTable)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_InitDikToAsciiTable File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470020:
@@ -12051,7 +12101,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4700a0:
   - [☑️] Reconstructed (Name: zInput::Mouse_SetNormalizedCursorPos)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_SetNormalizedCursorPos File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470150:
@@ -12061,14 +12111,14 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x470180:
   - [✅] Reconstructed (Name: zInput::Mouse_RecenterCursorX)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_RecenterCursorX File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470190:
   - [✅] Reconstructed (Name: zInput::Mouse_IsInitialized)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_IsInitialized File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4701a0:
   - [✅] Reconstructed (Name: zInput::Mouse_SetClientSizeAndCenter)
   - [✅] Source dependencies satisfied
@@ -12081,32 +12131,32 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4702e0:
   - [☑️] Reconstructed (Name: zInput::Mouse_GetButtonTransitionState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_GetButtonTransitionState File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470310:
   - [✅] Reconstructed (Name: zInput::Mouse_UpdateAcquireState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_UpdateAcquireState File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x470360:
   - [✅] Reconstructed (Name: zInput::Mouse_ShutdownDevice)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_ShutdownDevice File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4703a0:
   - [✅] Reconstructed (Name: zInput::Mouse_GetStateSnapshotPtr)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_GetStateSnapshotPtr File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4703b0:
   - [✅] Reconstructed (Name: zInput::Mouse_PollAndStoreState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_PollAndStoreState File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4703c0:
   - [☑️] Reconstructed (Name: zInput::Mouse_PollState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_PollState File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4704f0:
@@ -12116,14 +12166,14 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4705f0:
   - [✅] Reconstructed (Name: zInput::Mouse_GetStateSnapshot)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_GetStateSnapshot File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470610:
   - [✅] Reconstructed (Name: zInput::Mouse_ResetTransitionState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_ResetTransitionState File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x470670:
   - [✅] Reconstructed (Name: zInput::Mouse_SetCooperativeLevelFlags)
   - [✅] Source dependencies satisfied
@@ -12131,157 +12181,157 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x470680:
   - [☑️] Reconstructed (Name: zInput::Mouse_WaitForButtonPress)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_WaitForButtonPress File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4706c0:
   - [☑️] Reconstructed (Name: zInput_BindMapContext::InitFromTemplate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::InitFromTemplate File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4707a0:
   - [✅] Reconstructed (Name: zInput::BindMapContext_FreeAllBuffers)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::FreeAllBuffers File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470820:
   - [☑️] Reconstructed (Name: zInput::BindMapContext_RebuildLookupIndices)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::RebuildLookupIndices File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4708f0:
   - [✅] Reconstructed (Name: zInput_BindMapContext::InitCommandMap)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::InitCommandMap File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x470960:
   - [✅] Reconstructed (Name: zInput::BindMapContext_FreeNonOwnedBuffers)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::FreeNonOwnedBuffers File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4709d0:
   - [✅] Reconstructed (Name: zInput_BindMapContext::ResetAllBindings)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::ResetAllBindings File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x470a10:
   - [✅] Reconstructed (Name: zInput::BindMap_PackBindingCode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_PackBindingCode File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x470a40:
   - [✅] Reconstructed (Name: zInput::BindMapContext_GetPrimaryKeyboardKey)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::GetPrimaryKeyboardKey File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x470a60:
   - [✅] Reconstructed (Name: zInput::BindMapContext_GetSecondaryKeyboardKey)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::GetSecondaryKeyboardKey File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x470a80:
   - [✅] Reconstructed (Name: zInput::BindMapContext_GetJoystickButtonSlot)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::GetJoystickButtonSlot File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470aa0:
-  - [✅] Reconstructed (Name: zInput::BindMapContext_GetMouseButtonSlot)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zInput_BindMapContext::GetMouseButtonSlot)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::GetMouseButtonSlot File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470ac0:
   - [✅] Reconstructed (Name: zInput::BindMapContext_GetCommandByPrimaryKey)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::GetCommandByPrimaryKey File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470ad0:
   - [✅] Reconstructed (Name: zInput::BindMapContext_GetCommandBySecondaryKey)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::GetCommandBySecondaryKey File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470ae0:
-  - [✅] Reconstructed (Name: zInput_BindMapContext_GetCommandByAnyKeyboardKey)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zInput_BindMapContext::GetCommandByAnyKeyboardKey)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::GetCommandByAnyKeyboardKey File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470b00:
   - [✅] Reconstructed (Name: zInput_BindMapContext::GetCommandByJoystickSlot)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::GetCommandByJoystickSlot File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470b10:
   - [✅] Reconstructed (Name: zInput::BindMapContext_GetCommandByMouseSlot)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::GetCommandByMouseSlot File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470b20:
-  - [✅] Reconstructed (Name: zInput::BindMapContext_SetPrimaryKeyBinding)
+  - [✅] Reconstructed (Name: zInput_BindMapContext::SetPrimaryKeyBinding)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::SetPrimaryKeyBinding File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470b80:
-  - [✅] Reconstructed (Name: zInput::BindMapContext_SetSecondaryKeyBinding)
+  - [✅] Reconstructed (Name: zInput_BindMapContext::SetSecondaryKeyBinding)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::SetSecondaryKeyBinding File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470bf0:
-  - [✅] Reconstructed (Name: zInput::BindMapContext_SetJoystickBinding)
+  - [✅] Reconstructed (Name: zInput_BindMapContext::SetJoystickBinding)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::SetJoystickBinding File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470c60:
-  - [✅] Reconstructed (Name: zInput::BindMapContext_SetMouseBinding)
+  - [✅] Reconstructed (Name: zInput_BindMapContext::SetMouseBinding)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::SetMouseBinding File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470cd0:
-  - [✅] Reconstructed (Name: zInput::BindMapContext_SetBindingRecord)
+  - [✅] Reconstructed (Name: zInput_BindMapContext::SetBindingRecord)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::SetBindingRecord File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470d40:
   - [☑️] Reconstructed (Name: zInput_BindMapContext::DispatchMouseButtonCallbacks)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::DispatchMouseButtonCallbacks File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470db0:
   - [✅] Reconstructed (Name: zInput_BindMapContext::DispatchJoystickButtonCallbacks)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::DispatchJoystickButtonCallbacks File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470df0:
   - [✅] Reconstructed (Name: zInput::BindMapContext_SetCommandCallback)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::SetCommandCallback File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x470e80:
-  - [☑️] Reconstructed (Name: zInput_BindMapContext_DispatchFromKeyboardEvent)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zInputBindMapContext::DispatchFromKeyboardEvent)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext_DispatchFromKeyboardEvent File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470eb0:
-  - [✅] Reconstructed (Name: zInput_BindMapContext_ReadCommandInputState)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zInputBindMapContext::ReadCommandInputState)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::ReadCommandInputState File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470f50:
   - [✅] Reconstructed (Name: zInput::BindMapContext_CopyCommandLabel)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::CopyCommandLabel File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x470f80:
   - [☑️] Reconstructed (Name: zInput::BindMap_FormatKeyComboName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_FormatKeyComboName File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471040:
   - [✅] Reconstructed (Name: zInput::BindMap_CopyJoystickButtonName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_CopyJoystickButtonName File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471070:
   - [✅] Reconstructed (Name: zInput::BindMap_CopyMouseButtonName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_CopyMouseButtonName File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4710a0:
@@ -12293,20 +12343,20 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zInput::BindMap_InitDikKeyNameTable)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_InitDikKeyNameTable File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4715e0:
   - [✅] Reconstructed (Name: zInput::BindMap_InitJoystickButtonNameTable)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_InitJoystickButtonNameTable File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471640:
   - [✅] Reconstructed (Name: zInput::BindMap_InitMouseButtonNameTable)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_InitMouseButtonNameTable File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471660:
   - [✅] Reconstructed (Name: zInput::BindMapSystem_Shutdown)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapSystem_Shutdown File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4716b0:
@@ -12316,67 +12366,67 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4716c0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_ResetAllBindings)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_ResetAllBindings File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4716d0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetPrimaryKeyboardKey)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetPrimaryKeyboardKey File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4716e0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetSecondaryKeyboardKey)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetSecondaryKeyboardKey File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4716f0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetJoystickButtonSlot)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetJoystickButtonSlot File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471700:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetMouseButtonSlot)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetMouseButtonSlot File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471710:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetCommandByPrimaryKey)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetCommandByPrimaryKey File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471720:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetCommandBySecondaryKey)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetCommandBySecondaryKey File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471730:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetCommandByJoystickSlot)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetCommandByJoystickSlot File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471740:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetCommandByMouseSlot)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetCommandByMouseSlot File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471750:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_SetPrimaryKeyBinding)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_SetPrimaryKeyBinding File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471760:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_SetSecondaryKeyBinding)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_SetSecondaryKeyBinding File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471770:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_SetJoystickBinding)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_SetJoystickBinding File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471780:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_SetMouseBinding)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_SetMouseBinding File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471790:
@@ -12385,90 +12435,90 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zInput::BindMap_Current_SetBindingRecord File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4717c0:
-  - [✅] Reconstructed (Name: zInput_BindMap_Current_SetCommandCallback)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zInputBindMap::SetCurrentCommandCallback)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_Current_SetCommandCallback File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4717d0:
-  - [✅] Reconstructed (Name: zInput_BindMap_Current_ReadCommandInputState)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zInputBindMap::ReadCurrentCommandInputState)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_Current_ReadCommandInputState File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4717e0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_CopyCommandLabel)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_CopyCommandLabel File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471800:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_FormatKeyComboName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_FormatKeyComboName File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471820:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_CopyJoystickButtonName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_CopyJoystickButtonName File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471840:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_CopyMouseButtonName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_CopyMouseButtonName File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471860:
-  - [☑️] Reconstructed (Name: zInput::BindMapContext_Push)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zInput::PushBindMapContextOverlay)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapContext_Push File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471950:
-  - [☑️] Reconstructed (Name: zInput::BindMapContext_Pop)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zInput::PopBindMapContextOverlay)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapContext_Pop File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471c60:
   - [✅] Reconstructed (Name: zInput::Mouse_IsUnsuspended)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_IsUnsuspended File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471c70:
   - [✅] Reconstructed (Name: zInput::Joystick_IsUnsuspended)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Joystick_IsUnsuspended File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471c80:
-  - [✅] Reconstructed (Name: zInput_Keyboard_IsUnsuspended)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zInputKeyboard::IsUnsuspended)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_Keyboard_IsUnsuspended File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471c90:
   - [✅] Reconstructed (Name: zInput::Mouse_ResumeFromSuspend)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_ResumeFromSuspend File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471cb0:
   - [✅] Reconstructed (Name: zInput::Joystick_ResumeFromSuspend)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Joystick_ResumeFromSuspend File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471cd0:
   - [✅] Reconstructed (Name: zInput::Keyboard_ResumeFromSuspend)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_ResumeFromSuspend File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471cf0:
   - [✅] Reconstructed (Name: zInput::Mouse_Suspend)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_Suspend File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471d00:
   - [✅] Reconstructed (Name: zInput::Joystick_Suspend)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Joystick_Suspend File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471d10:
   - [✅] Reconstructed (Name: zInput::Keyboard_Suspend)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_Suspend File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x471d20:
   - [✅] Reconstructed (Name: zInput::Keyboard_AddRef)
   - [✅] Source dependencies satisfied
@@ -12501,7 +12551,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x471f60:
   - [✅] Reconstructed (Name: zInput::DI_EnumDevicesCallback_SelectFirstJoystick)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::DI_EnumDevicesCallback_SelectFirstJoystick File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x471fb0:
@@ -12541,18 +12591,23 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4722c0:
   - [✅] Reconstructed (Name: zInput::DI_PollJoystickState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::DI_PollJoystickState File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x472390:
   - [✅] Reconstructed (Name: zInput::DI_GetCurrentState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::DI_GetCurrentState File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x4723a0:
   - [☑️] Reconstructed (Name: zInput::DI_GetButtonTransitionState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::DI_GetButtonTransitionState File: src/GameZRecoil/zInput/zInput.cpp)
+  - [❌] Binary-safe verified
+- 0x4525d0:
+  - [❌] Reconstructed (Name: BBox::MinMaxToBoundingSphere)
+  - [❓] Source dependencies satisfied
+  - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x452650:
   - [☑️] Reconstructed (Name: BBox::CornersToBoundingSphere)
@@ -12561,29 +12616,29 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4723d0:
   - [☑️] Reconstructed (Name: zInput::DI_WaitForButtonPress)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::DI_WaitForButtonPress File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x472410:
   - [☑️] Reconstructed (Name: zInput::DI_ResetTransitionState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::DI_ResetTransitionState File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x472450:
-  - [☑️] Reconstructed (Name: zInput_DI_CreateForceFeedbackEffect)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zInputDI::CreateForceFeedbackEffect)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_DI_CreateForceFeedbackEffect File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x472480:
-  - [✅] Reconstructed (Name: zInput_DI_HasForceFeedback)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zInputDI::HasForceFeedback)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_DI_HasForceFeedback File: src/GameZRecoil/zInput/zInput.cpp)
   - [❌] Binary-safe verified
 - 0x472490:
   - [☑️] Reconstructed (Name: zInput::DI_ReportError)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::DI_ReportError File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
   
 ## M31. zInterp parser/runtime
 
@@ -12613,7 +12668,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x414ad0:
-  - [☑️] Reconstructed (Name: zInterp_Command_WeaponSetMaxTetherAltitude)
+  - [☑️] Reconstructed (Name: zInterp_Command::WeaponSetMaxTetherAltitude)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -12633,22 +12688,22 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1020:
-  - [☑️] Reconstructed (Name: zInterp_Context_RunString)
+  - [☑️] Reconstructed (Name: zInterp_Context::RunString)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1090:
-  - [☑️] Reconstructed (Name: zInterp_Context_RunStream)
+  - [☑️] Reconstructed (Name: zInterp_Context::RunStream)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1160:
-  - [☑️] Reconstructed (Name: zInterp_Context_ReadLineOrPreparedTokens)
+  - [☑️] Reconstructed (Name: zInterp_Context::ReadLineOrPreparedTokens)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1250:
-  - [☑️] Reconstructed (Name: zInterp_Context_ExpandMacroRefs)
+  - [☑️] Reconstructed (Name: zInterp_Context::ExpandMacroRefs)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -12658,87 +12713,87 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1500:
-  - [☑️] Reconstructed (Name: zInterp_Context_RunScriptFile)
+  - [☑️] Reconstructed (Name: zInterp_Context::RunScriptFile)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c15f0:
-  - [☑️] Reconstructed (Name: zInterp_Context_FindMacroValue)
+  - [☑️] Reconstructed (Name: zInterp_Context::FindMacroValue)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1670:
-  - [✅] Reconstructed (Name: zInterp_Context_ClearMacroTable)
+  - [✅] Reconstructed (Name: zInterp_Context::ClearMacroTable)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c16c0:
-  - [✅] Reconstructed (Name: zInterp_Context_ClearVarTable)
+  - [✅] Reconstructed (Name: zInterp_Context::ClearVarTable)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1710:
-  - [☑️] Reconstructed (Name: zInterp_Context_IsMacroTrue)
+  - [☑️] Reconstructed (Name: zInterp_Context::IsMacroTrue)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1780:
-  - [☑️] Reconstructed (Name: zInterp_Context_SetMacro)
+  - [☑️] Reconstructed (Name: zInterp_Context::SetMacro)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1870:
-  - [✅] Reconstructed (Name: zInterp_Context_EchoTokens)
+  - [✅] Reconstructed (Name: zInterp_Context::EchoTokens)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c18c0:
-  - [✅] Reconstructed (Name: zInterp_Context_PushFileFrame)
+  - [✅] Reconstructed (Name: zInterp_Context::PushFileFrame)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1940:
-  - [☑️] Reconstructed (Name: zInterp_Context_PopFileFrame)
+  - [☑️] Reconstructed (Name: zInterp_Context::PopFileFrame)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1960:
-  - [✅] Reconstructed (Name: zInterp_Context_ClearFileFrameStack)
+  - [✅] Reconstructed (Name: zInterp_Context::ClearFileFrameStack)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1990:
-  - [✅] Reconstructed (Name: zInterp_Context_NextToken)
+  - [✅] Reconstructed (Name: zInterp_Context::NextToken)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c19c0:
-  - [✅] Reconstructed (Name: zInterp_Context_ParseBoolToken)
+  - [✅] Reconstructed (Name: zInterp_Context::ParseBoolToken)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1a00:
-  - [☑️] Reconstructed (Name: zInterp_Context_ParseFloatToken)
+  - [☑️] Reconstructed (Name: zInterp_Context::ParseFloatToken)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1a20:
-  - [✅] Reconstructed (Name: zInterp_Context_ParseIntToken)
+  - [✅] Reconstructed (Name: zInterp_Context::ParseIntToken)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1a40:
-  - [☑️] Reconstructed (Name: zInterp_Context_FindVarEntry)
+  - [☑️] Reconstructed (Name: zInterp_Context::FindVarEntry)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1ab0:
-  - [☑️] Reconstructed (Name: zInterp_Context_DumpVarEntry)
+  - [☑️] Reconstructed (Name: zInterp_Context::DumpVarEntry)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1b20:
-  - [✅] Reconstructed (Name: zInterp_Context_IncErrorCount)
+  - [✅] Reconstructed (Name: zInterp_Context::IncErrorCount)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -12748,12 +12803,12 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1b50:
-  - [☑️] Reconstructed (Name: zInterp_Context_EvalConditionExpr)
+  - [☑️] Reconstructed (Name: zInterp_Context::EvalConditionExpr)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c1c50:
-  - [☑️] Reconstructed (Name: zInterp_Context_HandleBuiltinCommand)
+  - [☑️] Reconstructed (Name: zInterp_Context::HandleBuiltinCommand)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -12763,22 +12818,22 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c2090:
-  - [✅] Reconstructed (Name: zInterp_Context_ReportParseError)
+  - [✅] Reconstructed (Name: zInterp_Context::ReportParseError)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c20a0:
-  - [☑️] Reconstructed (Name: zInterp_Context_DispatchCoreCommand)
+  - [☑️] Reconstructed (Name: zInterp_Context::DispatchCoreCommand)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c5480:
-  - [☑️] Reconstructed (Name: zInterp_Context_CommandEqualsPrefix)
+  - [☑️] Reconstructed (Name: zInterp_Context::CommandEqualsPrefix)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c54b0:
-  - [☑️] Reconstructed (Name: zInterp_Context_CommandEquals)
+  - [☑️] Reconstructed (Name: zInterp_Context::CommandEquals)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -12788,27 +12843,27 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c5520:
-  - [✅] Reconstructed (Name: zInterp_Context_ReportErrorf)
+  - [✅] Reconstructed (Name: zInterp_Context::ReportErrorf)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c5550:
-  - [☑️] Reconstructed (Name: zInterp_Context_LoadPreparedScriptIndex)
+  - [☑️] Reconstructed (Name: zInterp_Context::LoadPreparedScriptIndex)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c5740:
-  - [☑️] Reconstructed (Name: zInterp_Context_OpenPreparedScriptStream)
+  - [☑️] Reconstructed (Name: zInterp_Context::OpenPreparedScriptStream)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c5820:
-  - [✅] Reconstructed (Name: zInterp_Context_ValidateArgsAndNodeType)
+  - [✅] Reconstructed (Name: zInterp_Context::ValidateArgsAndNodeType)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c58c0:
-  - [✅] Reconstructed (Name: zInterp_Context_DefaultDispatchHook)
+  - [✅] Reconstructed (Name: zInterp_Context::DefaultDispatchHook)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -12836,13 +12891,13 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zMath::Vec3Normalize File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x42d560:
-  - [✅] Reconstructed (Name: zMath_Vec3_SetMidpoint_Local)
+  - [✅] Reconstructed (Name: zMath::Vec3Midpoint)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x472670:
   - [☑️] Reconstructed (Name: zMath::Vec3DeltaLengthSq)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::Vec3DeltaLengthSq File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x4726d0:
@@ -12851,18 +12906,18 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x472730:
-  - [☑️] Reconstructed (Name: zMath_Vec3_DistSqXZ)
+  - [☑️] Reconstructed (Name: zMath::Vec3DistSqXZ)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x472770:
-  - [✅] Reconstructed (Name: zMath_Vec3_ScaleAdd)
+  - [✅] Reconstructed (Name: zMath::Vec3ScaleAdd)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4727a0:
-  - [☑️] Reconstructed (Name: zMath_Vec3_DivScalar)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zMath::Vec3DivScalar)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Vec3_DivScalar File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x4727f0:
@@ -12871,42 +12926,42 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x472860:
-  - [☑️] Reconstructed (Name: zMath_Vec3_Reflect)
+  - [☑️] Reconstructed (Name: zMath::Vec3Reflect)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x472960:
-  - [☑️] Reconstructed (Name: zMath_Vec3_Lerp)
+  - [☑️] Reconstructed (Name: zMath::Vec3Lerp)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4729b0:
-  - [☑️] Reconstructed (Name: zMath_Vec3_DirectionTo)
+  - [☑️] Reconstructed (Name: zMath::Vec3DirectionTo)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4729f0:
-  - [✅] Reconstructed (Name: zMath_Vec3_LerpNormalize)
+  - [✅] Reconstructed (Name: zMath::Vec3LerpNormalize)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x472a10:
-  - [☑️] Reconstructed (Name: zMath_Vec3_Slerp)
+  - [☑️] Reconstructed (Name: zMath::Vec3Slerp)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x472cc0:
-  - [☑️] Reconstructed (Name: zMath_Vec3_Perp2D)
+  - [☑️] Reconstructed (Name: zMath::Vec3Perp2D)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x472d30:
-  - [☑️] Reconstructed (Name: zMath_CRT_MatherrHandler)
+  - [☑️] Reconstructed (Name: zMath::CrtMatherrHandler)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x472ed0:
-  - [✅] Reconstructed (Name: zMath_Project_GetLastScreenScaleXY)
+  - [✅] Reconstructed (Name: zMath::ProjectGetLastScreenScaleXY)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Project_GetLastScreenScaleXY File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
@@ -12932,22 +12987,22 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x472fa0:
   - [✅] Reconstructed (Name: zMath::MatLoadCameraScratchA)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatLoadCameraScratchA File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x472fb0:
-  - [☑️] Reconstructed (Name: zMath_Mat_LoadProjection)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zMath::MatLoadProjection)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_LoadProjection File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x473060:
-  - [☑️] Reconstructed (Name: zMath_Mat_LoadView)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zMath::MatLoadView)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_LoadView File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x4731f0:
-  - [✅] Reconstructed (Name: zMath_Mat_SetupCamera)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zMath::MatSetupCamera)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_SetupCamera File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x473210:
@@ -12956,12 +13011,12 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zMath::MatCopyCurrentTo File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x473230:
-  - [✅] Reconstructed (Name: zMath_Mat_GetCurrent)
+  - [✅] Reconstructed (Name: zMath::MatGetCurrent)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_GetCurrent File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x473240:
-  - [✅] Reconstructed (Name: zMath_Mat_IsCurrentIdentity)
+  - [✅] Reconstructed (Name: zMath::MatIsCurrentIdentity)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_IsCurrentIdentity File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
@@ -12986,7 +13041,7 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zMath::MatMultiply File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x473690:
-  - [☑️] Reconstructed (Name: zMath_Mat_Scale)
+  - [☑️] Reconstructed (Name: zMath::MatScale)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_Scale File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
@@ -13011,13 +13066,13 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zMath::MatRotateZ File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x473e60:
-  - [☑️] Reconstructed (Name: zMath_Camera_StageInverseRotation)
+  - [☑️] Reconstructed (Name: zMath::CameraStageInverseRotation)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Camera_StageInverseRotation File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x473fc0:
   - [☑️] Reconstructed (Name: zMath::Vec3ArrayProjectToCachedY)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::Vec3ArrayProjectToCachedY File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474010:
@@ -13031,23 +13086,23 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4743e0:
-  - [✅] Reconstructed (Name: zMath_SetScreenSize)
+  - [✅] Reconstructed (Name: zMath::SetScreenSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_SetScreenSize File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474400:
-  - [☑️] Reconstructed (Name: zMath_Setup_Projection)
+  - [☑️] Reconstructed (Name: zMath::SetupProjection)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Setup_Projection File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x4744f0:
-  - [✅] Reconstructed (Name: zMath_Vec3Array_AddScaled)
+  - [✅] Reconstructed (Name: zMath::Vec3ArrayAddScaled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Vec3Array_AddScaled File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474580:
-  - [✅] Reconstructed (Name: zMath_Vec3_DirFromYaw)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zMath::Vec3DirFromYaw)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Vec3_DirFromYaw File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x4745c0:
@@ -13056,7 +13111,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4745e0:
-  - [☑️] Reconstructed (Name: zMath_Vec3Array_UntransformDirection)
+  - [☑️] Reconstructed (Name: zMath::Vec3ArrayUntransformDirection)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Vec3Array_UntransformDirection File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
@@ -13066,17 +13121,17 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x474710:
-  - [☑️] Reconstructed (Name: zMath_Mat_TransformNormalBatch)
+  - [☑️] Reconstructed (Name: zMath::MatTransformNormalBatch)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_TransformNormalBatch File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x4747d0:
   - [☑️] Reconstructed (Name: zMath::MatTransformPointBatchInPlace)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatTransformPointBatchInPlace File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474870:
-  - [☑️] Reconstructed (Name: zMath_Mat_TransformBBoxToCorners)
+  - [☑️] Reconstructed (Name: zMath::MatTransformBBoxToCorners)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_TransformBBoxToCorners File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
@@ -13086,42 +13141,42 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zMath::ProjectPointBatch File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474b70:
-  - [☑️] Reconstructed (Name: zMath_ProjectSphereBatch)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zMath::ProjectSphereBatch)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_ProjectSphereBatch File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474bc0:
-  - [☑️] Reconstructed (Name: zMath_UnprojectPointBatch)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zMath::UnprojectPointBatch)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_UnprojectPointBatch File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474c20:
-  - [☑️] Reconstructed (Name: zMath_UnprojectPointBatchZBuf)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zMath::UnprojectPointBatchZBuf)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_UnprojectPointBatchZBuf File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474d10:
   - [✅] Reconstructed (Name: zMath::Vec3DirectionAnglesBetweenPoints)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::Vec3DirectionAnglesBetweenPoints File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474d90:
-  - [☑️] Reconstructed (Name: zMath_Vec3_ElevationAngleBetweenPoints)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zMath::Vec3ElevationAngleBetweenPoints)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Vec3_ElevationAngleBetweenPoints File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474de0:
-  - [☑️] Reconstructed (Name: zMath_Mat_ExtractYaw)
+  - [☑️] Reconstructed (Name: zMath::MatExtractYaw)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_ExtractYaw File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474e10:
-  - [✅] Reconstructed (Name: zMath_Mat_ExtractEulerAngles)
+  - [✅] Reconstructed (Name: zMath::MatExtractEulerAngles)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_ExtractEulerAngles File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474ec0:
-  - [☑️] Reconstructed (Name: zMath_Vec3_RotateX)
+  - [☑️] Reconstructed (Name: zMath::Vec3RotateX)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Vec3_RotateX File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
@@ -13131,57 +13186,57 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zMath::Vec3RotateY File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x474fc0:
-  - [☑️] Reconstructed (Name: zMath_ApproxExpNeg)
+  - [☑️] Reconstructed (Name: zMath::ApproxExpNeg)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x475070:
-  - [☑️] Reconstructed (Name: zMath_Vec3_TriangleNormal)
+  - [☑️] Reconstructed (Name: zMath::Vec3TriangleNormal)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Vec3_TriangleNormal File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x475130:
-  - [✅] Reconstructed (Name: zMath_SolveLinearGradient2D)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zMath::SolveLinearGradient2D)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_SolveLinearGradient2D File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x475210:
-  - [☑️] Reconstructed (Name: zMath_LineVsSphereHit)
+  - [☑️] Reconstructed (Name: zMath::LineVsSphereHit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4753e0:
-  - [☑️] Reconstructed (Name: zMath_BuildPerspectiveTextureInterpolants)
+  - [☑️] Reconstructed (Name: zMath::BuildPerspectiveTextureInterpolants)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_BuildPerspectiveTextureInterpolants File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x4757c0:
-  - [☑️] Reconstructed (Name: zMath_Quat_FromEuler)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zMath::QuatFromEuler)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Quat_FromEuler File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x475910:
-  - [✅] Reconstructed (Name: zMath_Quat_Multiply)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zMath::QuatMultiply)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Quat_Multiply File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x4759d0:
-  - [✅] Reconstructed (Name: zMath_Quat_MultiplyInverse)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zMath::QuatMultiplyInverse)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Quat_MultiplyInverse File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x475a80:
-  - [☑️] Reconstructed (Name: zMath_Quat_ToMatrix)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zMath::QuatToMatrix)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Quat_ToMatrix File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x475b80:
-  - [✅] Reconstructed (Name: zMath_Quat_FromRotationVector)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zMath::QuatFromRotationVector)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Quat_FromRotationVector File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x475c40:
-  - [✅] Reconstructed (Name: zModel_Display_Init)
+  - [✅] Reconstructed (Name: zModel_Display::Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Display_Init File: src/Battlesport/zModel/zModel_Display.cpp)
   - [❌] Binary-safe verified
@@ -13194,7 +13249,7 @@ Each function has these trackers:
 ## M33. zModel constants, init, lighting, and materials
 
 - 0x475e70:
-  - [☑️] Reconstructed (Name: zModel_Init)
+  - [☑️] Reconstructed (Name: zModel::Init)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -13202,54 +13257,54 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zModel_Display::Reset)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Display::Reset File: src/Battlesport/zModel/zModel_Display.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x475fa0:
   - [✅] Reconstructed (Name: zModel_Display::Shutdown)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Display::Shutdown File: src/Battlesport/zModel/zModel_Display.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x475ff0:
-  - [✅] Reconstructed (Name: zModel_Init_SetModel3DArraySize)
+  - [✅] Reconstructed (Name: zModel::SetDisplayInstancePoolCapacity)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x476020:
-  - [✅] Reconstructed (Name: zModel_SetSoftwarePathActive)
+  - [✅] Reconstructed (Name: zModel::SetSoftwarePathActive)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x476030:
-  - [✅] Reconstructed (Name: zModel_SetVertexShadingEnabled)
+  - [✅] Reconstructed (Name: zModel::SetVertexShadingEnabled)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x476040:
-  - [✅] Reconstructed (Name: zModel_FogTargetColorOverride_SetCurrent)
+  - [✅] Reconstructed (Name: zModel::SetFogTargetColorOverride)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_FogTargetColorOverride_SetCurrent File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x476070:
-  - [✅] Reconstructed (Name: zModel_RenderAlphaScale_SetCurrent)
+  - [✅] Reconstructed (Name: zModel::SetRenderAlphaScale)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_RenderAlphaScale_SetCurrent File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x476080:
-  - [✅] Reconstructed (Name: zModel_RenderVertexAlphaEnabled_SetCurrent)
+  - [✅] Reconstructed (Name: zModel::SetRenderVertexAlphaEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_RenderVertexAlphaEnabled_SetCurrent File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x476090:
-  - [✅] Reconstructed (Name: zModel_SetTextureWorldPerMeter)
+  - [✅] Reconstructed (Name: zModel::SetTextureWorldPerMeter)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4760b0:
-  - [✅] Reconstructed (Name: zModel_SetTextureWorldBase)
+  - [✅] Reconstructed (Name: zModel::SetTextureWorldBase)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4760d0:
-  - [✅] Reconstructed (Name: zModel_Di_SetTextureWorldPerMeter)
+  - [✅] Reconstructed (Name: zModel::SetDiTextureWorldPerMeter)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -13257,69 +13312,69 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zClipAlt::SetSourceRect)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipAlt::SetSourceRect File: src/GameZRecoil/zGeometry/zClipAlt.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x476170:
-  - [✅] Reconstructed (Name: zModel_Fog_SetEnabled)
+  - [✅] Reconstructed (Name: zModel_Fog::SetEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Fog_SetEnabled File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x476180:
-  - [✅] Reconstructed (Name: zModel_Fog_IsEnabled)
+  - [✅] Reconstructed (Name: zModel_Fog::IsEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Fog_IsEnabled File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x47a1d0:
-  - [✅] Reconstructed (Name: zClipAlt_BuildFrustumPlanes)
+  - [✅] Reconstructed (Name: zClipAlt::BuildFrustumPlanes)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipAlt_BuildFrustumPlanes File: src/GameZRecoil/zGeometry/zClipAlt.cpp)
   - [❌] Binary-safe verified
 - 0x476190:
-  - [✅] Reconstructed (Name: zModel_Fog_SetDistanceStart)
+  - [✅] Reconstructed (Name: zModel_Fog::SetDistanceStart)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Fog_SetDistanceStart File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x4761d0:
-  - [☑️] Reconstructed (Name: zModel_Fog_GetDistanceStart)
+  - [☑️] Reconstructed (Name: zModel_Fog::GetDistanceStart)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Fog_GetDistanceStart File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x4761e0:
-  - [✅] Reconstructed (Name: zModel_Fog_SetDistanceEnd)
+  - [✅] Reconstructed (Name: zModel_Fog::SetDistanceEnd)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Fog_SetDistanceEnd File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x476220:
-  - [✅] Reconstructed (Name: zModel_Fog_SetHeightHigh)
+  - [✅] Reconstructed (Name: zModel_Fog::SetHeightHigh)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Fog_SetHeightHigh File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x476260:
-  - [✅] Reconstructed (Name: zModel_Fog_SetHeightLow)
+  - [✅] Reconstructed (Name: zModel_Fog::SetHeightLow)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Fog_SetHeightLow File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x4762a0:
-  - [✅] Reconstructed (Name: zModel_Fog_SetDensity)
+  - [✅] Reconstructed (Name: zModel_Fog::SetDensity)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Fog_SetDensity File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x4762b0:
-  - [✅] Reconstructed (Name: zModel_Fog_SetLinearModeEnabled)
+  - [✅] Reconstructed (Name: zModel_Fog::SetLinearModeEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Fog_SetLinearModeEnabled File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x4762c0:
-  - [✅] Reconstructed (Name: zModel_Fog_SetColorRgb01)
+  - [✅] Reconstructed (Name: zModel_Fog::SetColorRgb01)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Fog_SetColorRgb01 File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x4762f0:
-  - [✅] Reconstructed (Name: zModel_Fog_ApplyCurrentColor)
+  - [✅] Reconstructed (Name: zModel_Fog::ApplyCurrentColor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Fog_ApplyCurrentColor File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x476300:
-  - [✅] Reconstructed (Name: zRndr_SetInverseZTolerance)
+  - [✅] Reconstructed (Name: zRndr::SetInverseZTolerance)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -13339,18 +13394,18 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: VariantTag::CurrentAllowsId File: src/Battlesport/zModel/zModel_Display.cpp)
   - [❌] Binary-safe verified
 - 0x476460:
-  - [✅] Reconstructed (Name: zModel_SetBFEToleranceScalar_Local)
+  - [✅] Reconstructed (Name: zModel::SetBackfaceEliminationToleranceScalar)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x476470:
-  - [☑️] Reconstructed (Name: zModel_GetBFEToleranceScalar_Local)
+  - [☑️] Reconstructed (Name: zModel::GetBackfaceEliminationToleranceScalar)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x476480:
   - [☑️] Reconstructed (Name: zMath::ProjectPointAndClampToScreenClip)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::ProjectPointAndClampToScreenClip File: src/GameZRecoil/zMath/zMath.cpp)
   - [❌] Binary-safe verified
 - 0x4766a0:
@@ -13359,28 +13414,28 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zClipAlt::RemapPointXYInPlace File: src/GameZRecoil/zGeometry/zClipAlt.cpp)
   - [❌] Binary-safe verified
 - 0x477b30:
-  - [☑️] Reconstructed (Name: zModel_RenderNodeHardware)
+  - [☑️] Reconstructed (Name: zModel::RenderNodeHardware)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x478c70:
-  - [☑️] Reconstructed (Name: zVideo_FrustumTestSphereClipMask)
+  - [☑️] Reconstructed (Name: zVideo::FrustumTestSphereClipMask)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_FrustumTestSphereClipMask File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x478fc0:
-  - [✅] Reconstructed (Name: zModel_Instance_UpdateScrollingTexturesIfNeeded)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zModel_Instance::UpdateScrollingTexturesIfNeeded)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Instance_UpdateScrollingTexturesIfNeeded File: src/GameZRecoil/zModel/zModel.cpp)
   - [❌] Binary-safe verified
 - 0x479020:
-  - [☑️] Reconstructed (Name: zModel_RenderPointQueueEntry)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zModel::RenderPointQueueEntry)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_RenderPointQueueEntry File: src/GameZRecoil/zModel/zModel.cpp)
   - [❌] Binary-safe verified
 - 0x4791c0:
-  - [☑️] Reconstructed (Name: zModel_Instance_UpdateScrollingTextures)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zModel_Instance::UpdateScrollingTextures)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Instance_UpdateScrollingTextures File: src/GameZRecoil/zModel/zModel.cpp)
   - [❌] Binary-safe verified
 - 0x479660:
@@ -13399,47 +13454,47 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x479c80:
-  - [✅] Reconstructed (Name: OptCatalog_IsDamageMaskEnabled)
+  - [✅] Reconstructed (Name: OptCatalog::IsDamageMaskEnabled)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x479c90:
-  - [✅] Reconstructed (Name: OptCatalog_SetDamageMaskUv)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: OptCatalog::SetDamageMaskUv)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog_SetDamageMaskUv File: src/Battlesport/zModel/zModel_Display.cpp)
   - [❌] Binary-safe verified
 - 0x479cb0:
-  - [✅] Reconstructed (Name: OptCatalog_SetDamageMaskEnabled)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: OptCatalog::SetDamageMaskEnabled)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog_SetDamageMaskEnabled File: src/Battlesport/zModel/zModel_Display.cpp)
   - [❌] Binary-safe verified
 - 0x479cc0:
-  - [✅] Reconstructed (Name: OptCatalog_IsDamageMaskSlotPtrRegistered)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: OptCatalog::IsDamageMaskSlotPtrRegistered)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog_IsDamageMaskSlotPtrRegistered File: src/Battlesport/zModel/zModel_Display.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x479f90:
   - [✅] Reconstructed (Name: zClipAlt::SetTargetRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipAlt::SetTargetRect File: src/GameZRecoil/zGeometry/zClipAlt.cpp)
   - [❌] Binary-safe verified
 - 0x4805b0:
   - [☑️] Reconstructed (Name: zModel_MatlSlot::IndexFromPtrOrMinus1)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_MatlSlot::IndexFromPtrOrMinus1 File: src/GameZRecoil/zModel/gmod_matl.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x480600:
   - [☑️] Reconstructed (Name: zModel_MatlBuffer::WriteGameZ)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_MatlBuffer::WriteGameZ File: src/GameZRecoil/zModel/gmod_matl.c)
   - [❌] Binary-safe verified
 - 0x4808c0:
   - [☑️] Reconstructed (Name: zModel_MatlBuffer::ReadGameZ)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_MatlBuffer::ReadGameZ File: src/GameZRecoil/zModel/gmod_matl.c)
   - [❌] Binary-safe verified
 - 0x480ae0:
-  - [☑️] Reconstructed (Name: zModel_Matl_InitGlobals)
+  - [☑️] Reconstructed (Name: zModel_Matl::InitGlobals)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -13450,24 +13505,24 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x480c40:
   - [✅] Reconstructed (Name: zModel_Material::ResetDefaults)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::ResetDefaults File: src/Battlesport/zModel/gdi.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x480c80:
   - [✅] Reconstructed (Name: zModel_Material::HasAuxData)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::HasAuxData File: src/Battlesport/zModel/gdi.c)
   - [❌] Binary-safe verified
 - 0x480ca0:
   - [✅] Reconstructed (Name: zModel_Material::FindOrClone)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::FindOrClone File: src/Battlesport/zModel/gdi.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x480d20:
   - [☑️] Reconstructed (Name: zModel_Material::CompareForReuse)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::CompareForReuse File: src/Battlesport/zModel/gdi.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x480d80:
   - [✅] Reconstructed (Name: zModel_MatlBuffer::ReleaseAllActive)
   - [✅] Source dependencies satisfied
@@ -13490,7 +13545,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x480f80:
   - [☑️] Reconstructed (Name: zModel_Material::InvalidateImagesIfEligible)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::InvalidateImagesIfEligible File: src/Battlesport/zModel/gdi.c)
   - [❌] Binary-safe verified
 - 0x480fd0:
@@ -13500,49 +13555,49 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x481040:
   - [✅] Reconstructed (Name: zModel_Material::SetUserTag)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::SetUserTag File: src/Battlesport/zModel/gdi.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x481050:
   - [✅] Reconstructed (Name: zModel_Material::SetCycleTextureCount)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::SetCycleTextureCount File: src/Battlesport/zModel/gdi.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x481100:
   - [✅] Reconstructed (Name: zModel_Material::AddCycleTexture)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::AddCycleTexture File: src/Battlesport/zModel/gdi.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x481140:
-  - [☑️] Reconstructed (Name: zModel_Matl_UpdateCycleIfNeeded)
+  - [☑️] Reconstructed (Name: zModel_Material::UpdateCycleIfNeeded)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x481220:
   - [✅] Reconstructed (Name: zModel_Material::SetCycleTextureLoop)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::SetCycleTextureLoop File: src/Battlesport/zModel/gdi.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x481260:
   - [✅] Reconstructed (Name: zModel_Material::SetCycleTextureSpeed)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::SetCycleTextureSpeed File: src/Battlesport/zModel/gdi.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4812b0:
   - [✅] Reconstructed (Name: zModel_Material::Clone)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::Clone File: src/Battlesport/zModel/gdi.c)
   - [❌] Binary-safe verified
 - 0x4812c0:
   - [☑️] Reconstructed (Name: zModel_MatlBuffer::CloneToActiveSlot)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_MatlBuffer::CloneToActiveSlot File: src/Battlesport/zModel/gdi.c)
   - [❌] Binary-safe verified
 - 0x481420:
   - [☑️] Reconstructed (Name: zModel_Material::FindByTexDirEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::FindByTexDirEntry File: src/Battlesport/zModel/gdi.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x481460:
   - [☑️] Reconstructed (Name: zRndr_GlobalStringTable::LoadDynamicEntriesFromPath)
   - [❓] Source dependencies satisfied
@@ -13550,14 +13605,14 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x481530:
   - [☑️] Reconstructed (Name: zModel_Const::GetVertexMergeEpsilon)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Const::GetVertexMergeEpsilon File: src/GameZRecoil/zModel/gmod_const.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x481540:
   - [✅] Reconstructed (Name: zModel_Const::SetVertexMergeEpsilon)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Const::SetVertexMergeEpsilon File: src/GameZRecoil/zModel/gmod_const.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x481550:
   - [☑️] Reconstructed (Name: zModel_Const::SetCoplanarTolerance)
   - [❓] Source dependencies satisfied
@@ -13570,49 +13625,49 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x481570:
   - [☑️] Reconstructed (Name: zDi::PtrToIndexOrMinus1)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::PtrToIndexOrMinus1 File: src/Battlesport/zModel/zModel_Display.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4815a0:
   - [✅] Reconstructed (Name: zDi::IndexToPtrOrNull)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::IndexToPtrOrNull File: src/Battlesport/zModel/zModel_Display.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4815c0:
   - [☑️] Reconstructed (Name: zModel_DiPool::WriteToStream)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_DiPool::WriteToStream File: src/GameZRecoil/zModel/gmod_const.c)
   - [❌] Binary-safe verified
 - 0x481aa0:
   - [✅] Reconstructed (Name: zModel_DiPool::ReadEntryByIndexFromStream)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_DiPool::ReadEntryByIndexFromStream File: src/GameZRecoil/zModel/gmod_const.c)
   - [❌] Binary-safe verified
 - 0x481bc0:
   - [✅] Reconstructed (Name: zModel_DiPool::ReadHeaderFromStream)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_DiPool::ReadHeaderFromStream File: src/GameZRecoil/zModel/gmod_const.c)
   - [❌] Binary-safe verified
 - 0x481c50:
   - [☑️] Reconstructed (Name: zModel_DiPool::ReadEntryDynamicDataFromStream)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_DiPool::ReadEntryDynamicDataFromStream File: src/GameZRecoil/zModel/gmod_const.c)
   - [❌] Binary-safe verified
 - 0x481fa0:
   - [☑️] Reconstructed (Name: zModel_DiPool::ReadFromStream)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_DiPool::ReadFromStream File: src/GameZRecoil/zModel/gmod_const.c)
   - [❌] Binary-safe verified
 - 0x482080:
   - [☑️] Reconstructed (Name: zModel_DiPool::AllocFromFreeList)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_DiPool::AllocFromFreeList File: src/Battlesport/zModel/zModel_Display.cpp)
   - [❌] Binary-safe verified
 - 0x4820f0:
   - [✅] Reconstructed (Name: zModel_DiPool::FreeIfUnreferenced)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_DiPool::FreeIfUnreferenced File: src/Battlesport/zModel/zModel_Display.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x482a10:
   - [☑️] Reconstructed (Name: zModel_Const::FindOrAppendNormalIndex)
   - [❓] Source dependencies satisfied
@@ -13655,7 +13710,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x483610:
   - [✅] Reconstructed (Name: zDi::AddPolygon)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::AddPolygon File: src/GameZRecoil/zModel/zModel.cpp)
   - [❌] Binary-safe verified
 - 0x483650:
@@ -13665,7 +13720,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x483a60:
   - [☑️] Reconstructed (Name: zDi::HasSpecialFlagsOrAuxMaterialData)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::HasSpecialFlagsOrAuxMaterialData File: src/Battlesport/zModel/gdi.c)
   - [❌] Binary-safe verified
 - 0x483ad0:
@@ -13699,22 +13754,22 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4841b0:
-  - [✅] Reconstructed (Name: zDi_SetMaterialFlagBit9ForFlagBit0Entries)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zDi::SetMaterialFlagBit9ForFlagBit0Entries)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi_SetMaterialFlagBit9ForFlagBit0Entries File: src/Battlesport/zModel/gdi.c)
   - [❌] Binary-safe verified
 - 0x4841f0:
   - [☑️] Reconstructed (Name: zDi::InvalidateImagesForFlagBit8Materials)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::InvalidateImagesForFlagBit8Materials File: src/Battlesport/zModel/gdi.c)
   - [❌] Binary-safe verified
 - 0x484230:
   - [✅] Reconstructed (Name: zDi::ResetCurrentVariant)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::ResetCurrentVariant File: src/GameZRecoil/zModel/zModel.cpp)
   - [❌] Binary-safe verified
 - 0x484250:
-  - [✅] Reconstructed (Name: zDi_SetCurrentVariantCycleTextureCount)
+  - [✅] Reconstructed (Name: zDi::SetCurrentVariantCycleTextureCount)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -13724,17 +13779,17 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4842f0:
-  - [✅] Reconstructed (Name: zModel_Instance_SetCycleTextureLoop)
+  - [✅] Reconstructed (Name: zModel_Instance::SetCycleTextureLoop)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x484310:
-  - [✅] Reconstructed (Name: zDi_SetCurrentVariantCycleTextureSpeed)
+  - [✅] Reconstructed (Name: zDi::SetCurrentVariantCycleTextureSpeed)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x484330:
-  - [✅] Reconstructed (Name: zModel_Instance_AddCycleTexture)
+  - [✅] Reconstructed (Name: zModel_Instance::AddCycleTexture)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -13759,57 +13814,57 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zDi::BuildPickCandidateForQueryPoint File: src/GameZRecoil/zClass/cls_di.c)
   - [❌] Binary-safe verified
 - 0x484b70:
-  - [☑️] Reconstructed (Name: zModel_Const_AddFaceToPlayerProbeSampleBuckets)
+  - [☑️] Reconstructed (Name: zModelConst::AddFaceToPlayerProbeSampleBuckets)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x487a30:
-  - [☑️] Reconstructed (Name: zModel_Light_PointInPolygonInitXZ)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zModel_Light::BuildActiveLightList)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Light_PointInPolygonInitXZ File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x487c50:
-  - [☑️] Reconstructed (Name: zModel_Light::PointInPolygonTestRadiusXZ)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zModel_Light::EvaluateActiveLightsForSphereXZ)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Light::PointInPolygonTestRadiusXZ File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x487f10:
-  - [☑️] Reconstructed (Name: zModel_Light_SetActiveLights)
+  - [☑️] Reconstructed (Name: zModel_Light::SetActiveLights)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x488d60:
-  - [☑️] Reconstructed (Name: zModel_Light_BuildLightWeights)
+  - [☑️] Reconstructed (Name: zModel_Light::BuildLightWeights)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4894f0:
   - [☑️] Reconstructed (Name: zModel_Light::EvalDistanceWeight)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Light::EvalDistanceWeight File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x489540:
   - [☑️] Reconstructed (Name: zModel_Light::EvalSphereFogFade)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Light::EvalSphereFogFade File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x4896d0:
   - [☑️] Reconstructed (Name: zModel_Light::BuildAttr0DepthFade)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Light::BuildAttr0DepthFade File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x489920:
   - [☑️] Reconstructed (Name: zModel_Light::EvalBatchSphereFade)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Light::EvalBatchSphereFade File: src/GameZRecoil/zModel/gmod_light.c)
   - [❌] Binary-safe verified
 - 0x489a90:
-  - [☑️] Reconstructed (Name: zModel_Light_BuildAttr1Falloff)
+  - [☑️] Reconstructed (Name: zModel_Light::BuildAttr1Falloff)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x489d00:
-  - [☑️] Reconstructed (Name: zNetwork_InitSessionRuntime)
+  - [☑️] Reconstructed (Name: zNetwork::InitSessionRuntime)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -13837,17 +13892,17 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zNetwork::ClearEnumeratedSessionList File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x489f70:
-  - [✅] Reconstructed (Name: zNetwork_GetLocalPlayerKey)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetwork::GetLocalPlayerKey)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_GetLocalPlayerKey File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x489f80:
   - [✅] Reconstructed (Name: zNetwork::IsHost)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork::IsHost File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x489f90:
-  - [✅] Reconstructed (Name: zNetwork_SetFatalDisconnectCallback)
+  - [✅] Reconstructed (Name: zNetwork::SetFatalDisconnectCallback)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -13862,122 +13917,122 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zNetwork::ClearPlayerRecordList File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48a0d0:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_RefreshServiceProviderList)
+  - [✅] Reconstructed (Name: zNetwork_DPlay::RefreshServiceProviderList)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48a130:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_GetServiceProviderListAfterRefresh)
+  - [✅] Reconstructed (Name: zNetworkDPlay::RefreshAndGetServiceProviderList)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48a140:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_InitializeConnectionFromProviderInfo)
+  - [✅] Reconstructed (Name: zNetworkDPlay::InitializeConnectionFromProviderInfo)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48a180:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_SelectServiceProviderAndInitConnection)
+  - [☑️] Reconstructed (Name: zNetworkDPlay::SelectServiceProviderAndInitConnection)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48a220:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_EnumSessions)
+  - [☑️] Reconstructed (Name: zNetwork_DPlay::EnumSessions)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48a2c0:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_GetEnumeratedSessionNameByIndex)
+  - [☑️] Reconstructed (Name: zNetworkDPlay::GetEnumeratedSessionNameByIndex)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48a2e0:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_GetEnumeratedSessionPlayerCountsByIndex)
+  - [✅] Reconstructed (Name: zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48a310:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_EnumPlayers)
+  - [✅] Reconstructed (Name: zNetwork_DPlay::EnumPlayers)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48a350:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_QueryCapsAndConfigureSendMode)
+  - [✅] Reconstructed (Name: zNetworkDPlay::QueryCapsAndConfigureSendMode)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48a410:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_CreateSessionFromStatusFields)
+  - [☑️] Reconstructed (Name: zNetwork_DPlay::CreateSessionFromStatusFields)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48a520:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_OpenSelectedSessionAndReadStatusFields)
+  - [☑️] Reconstructed (Name: zNetworkDPlay::OpenSelectedSessionAndReadStatusFields)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48a980:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_DestroyCachedLocalPlayer)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetwork_DPlay::DestroyCachedLocalPlayer)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_DPlay_DestroyCachedLocalPlayer File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48a9c0:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_CreateLocalPlayerRecordAndRegister)
+  - [☑️] Reconstructed (Name: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48acf0:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_SendUnreliable)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetworkDPlay::SendUnreliable)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_DPlay_SendUnreliable File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48ad30:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_SendReliable)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetworkDPlay::SendReliable)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_DPlay_SendReliable File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48ad70:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_SendExUnreliableTracked)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetworkDPlay::SendExUnreliableTracked)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_DPlay_SendExUnreliableTracked File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48ae10:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_SendExReliable)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zNetworkDPlay::SendExReliable)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_DPlay_SendExReliable File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48ae70:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_ReceivePendingMessages)
+  - [☑️] Reconstructed (Name: zNetworkDPlay::ReceivePendingMessages)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48afa0:
-  - [☑️] Reconstructed (Name: zNetwork_GetPlayerNameByKey)
+  - [☑️] Reconstructed (Name: zNetwork::GetPlayerNameByKey)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48afe0:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_PumpIncomingMessages)
+  - [☑️] Reconstructed (Name: zNetworkDPlay::PumpIncomingMessages)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48b3a0:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_EnumConnectionsCallback_AddServiceProviderInfo)
+  - [☑️] Reconstructed (Name: zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48b5e0:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_EnumSessionCallback_AddSessionDescCache)
+  - [☑️] Reconstructed (Name: zNetworkDPlay::EnumSessionCallback_AddSessionDescCache)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48b660:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_EnumPlayerCallback_AddPlayerRecord)
+  - [☑️] Reconstructed (Name: zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48b730:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_CreateInterfaceAndCoInitialize)
+  - [☑️] Reconstructed (Name: zNetwork_DPlay::CreateInterfaceAndCoInitialize)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -13987,102 +14042,102 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zNetwork_DPlay::CloseReleaseAndCoUninitialize File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48b820:
-  - [✅] Reconstructed (Name: zNetwork_ApplyPkt01_PlayerColorAssignments)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetwork::ApplyPlayerColorAssignmentsPacket)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_ApplyPkt01_PlayerColorAssignments File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48b860:
-  - [☑️] Reconstructed (Name: zNetwork_HostSendPkt01_PlayerColorAssignments)
+  - [☑️] Reconstructed (Name: zNetwork::HostSendPlayerColorAssignmentsPacket)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48b940:
-  - [✅] Reconstructed (Name: zNetwork_AllocFreePlayerColorIndex)
+  - [✅] Reconstructed (Name: zNetwork::AllocFreePlayerColorIndex)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48b980:
-  - [✅] Reconstructed (Name: zNetwork_GetLocalPlayerColorIndex)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetwork::GetLocalPlayerColorIndex)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_GetLocalPlayerColorIndex File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48b9a0:
-  - [✅] Reconstructed (Name: zNetwork_GetPlayerColorIndexByKey)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetwork::GetPlayerColorIndexByKey)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_GetPlayerColorIndexByKey File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48b9d0:
-  - [✅] Reconstructed (Name: zNetwork_GetPlayerRecordCount)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetwork::GetPlayerRecordCount)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_GetPlayerRecordCount File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48b9e0:
-  - [☑️] Reconstructed (Name: zNetwork_RemovePlayerRecordByKey)
+  - [☑️] Reconstructed (Name: zNetwork::RemovePlayerRecordByKey)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48ba60:
-  - [☑️] Reconstructed (Name: zNetwork_FindPlayerRecordByKey)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zNetwork::FindPlayerRecordByKey)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_FindPlayerRecordByKey File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48bab0:
-  - [✅] Reconstructed (Name: zNetwork_ExtractStatusFieldsFromSessionDesc)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetwork::ExtractStatusFieldsFromSessionDesc)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_ExtractStatusFieldsFromSessionDesc File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48bb20:
-  - [☑️] Reconstructed (Name: zNetwork_ApplyStatusFieldsToSessionDesc)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zNetwork::ApplyStatusFieldsToSessionDesc)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_ApplyStatusFieldsToSessionDesc File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48bbe0:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_SetupForcedTcpIpProviderAndMaybeEnumSessions)
+  - [☑️] Reconstructed (Name: zNetworkDPlay::SelectTcpIpProviderAndEnumSessions)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48be10:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_CreateLobby3AInterface)
+  - [✅] Reconstructed (Name: zNetworkDPlay::CreateLobby3AInterface)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48be70:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_EnumSessionsForCurrentApp)
+  - [☑️] Reconstructed (Name: zNetworkDPlay::EnumSessionsForCurrentApp)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48bee0:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_FreeServiceProviderInfoBuffers)
+  - [✅] Reconstructed (Name: zNetworkDPlay::FreeServiceProviderInfoBuffers)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48bfb0:
-  - [☑️] Reconstructed (Name: zNetwork_CreateEmptyDispatchHandlerList)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zNetwork::CreateEmptyDispatchHandlerList)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_CreateEmptyDispatchHandlerList File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48bfe0:
-  - [✅] Reconstructed (Name: zNetwork_RegisterDispatchHandlerListShutdown)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetwork::RegisterDispatchHandlerListShutdown)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_RegisterDispatchHandlerListShutdown File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48bff0:
-  - [☑️] Reconstructed (Name: zNetwork_DestroyDispatchHandlerList)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zNetwork::DestroyDispatchHandlerList)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_DestroyDispatchHandlerList File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48c060:
-  - [✅] Reconstructed (Name: zNetwork_SendPacketUnreliable)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetwork::SendPacketUnreliable)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_SendPacketUnreliable File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48c080:
-  - [✅] Reconstructed (Name: zNetwork_SendPacketReliable)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetwork::SendPacketReliable)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_SendPacketReliable File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48c0a0:
-  - [☑️] Reconstructed (Name: zNetwork_RegisterPacketHandler)
+  - [☑️] Reconstructed (Name: zNetwork::RegisterPacketHandler)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -14092,15 +14147,15 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zNetwork::UnregisterPacketHandler File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48c200:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay_DispatchPacketToHandlers)
+  - [☑️] Reconstructed (Name: zNetwork_DPlay::DispatchPacketToHandlers)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48c250:
-  - [✅] Reconstructed (Name: zNetwork_DPlay_ReportError)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetwork_DPlay::ReportError)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_DPlay_ReportError File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
   
 ## M35. zReader archive/index/path plus node/value parsing
 
@@ -14111,27 +14166,27 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x420be0:
   - [☑️] Reconstructed (Name: zReader::LoadMoversFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader::LoadMoversFromZrd File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x421e20:
   - [☑️] Reconstructed (Name: zReader::BuildResolvedParentDir)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader::BuildResolvedParentDir File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x4805e0:
   - [✅] Reconstructed (Name: zModel_Matl::GetPoolEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Matl::GetPoolEntry File: src/Battlesport/zModel/zModel_Display.cpp)
   - [❌] Binary-safe verified
 - 0x480f60:
-  - [✅] Reconstructed (Name: zModel_Material_SetFlagBit9)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zModel_Material::SetFlagBit9)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material_SetFlagBit9 File: src/Battlesport/zModel/gdi.c)
   - [❌] Binary-safe verified
 - 0x48cd40:
   - [☑️] Reconstructed (Name: zReader::TryResolvePath)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader::TryResolvePath File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x48cdc0:
@@ -14145,17 +14200,17 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zReader::FreeLoadedTree File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x48ce60:
-  - [✅] Reconstructed (Name: zReader_FreeNodeRecursive)
+  - [✅] Reconstructed (Name: zReader::FreeNodeRecursive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader_FreeNodeRecursive File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x48cec0:
-  - [✅] Reconstructed (Name: zReader_FindChildRecursive)
+  - [✅] Reconstructed (Name: zReader::FindChildRecursive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader_FindChildRecursive File: src/GameZRecoil/zReader/zreader_lookup.cpp)
   - [❌] Binary-safe verified
 - 0x48cf70:
-  - [✅] Reconstructed (Name: zReader_GetNamedNode)
+  - [✅] Reconstructed (Name: zReader::GetNamedNode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader_GetNamedNode File: src/GameZRecoil/zReader/zreader_lookup.cpp)
   - [❌] Binary-safe verified
@@ -14175,12 +14230,12 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zReader::ReadNamedInt File: src/GameZRecoil/zReader/zreader_lookup.cpp)
   - [❌] Binary-safe verified
 - 0x48d080:
-  - [✅] Reconstructed (Name: zReader_ReadNode)
+  - [✅] Reconstructed (Name: zReader::ReadNode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader_ReadNode File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x48d1c0:
-  - [✅] Reconstructed (Name: zReader_OpenFileFromMountedArchives)
+  - [✅] Reconstructed (Name: zReader::OpenFileFromMountedArchives)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader_OpenFileFromMountedArchives File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
@@ -14188,98 +14243,98 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zUtil_ZRDR::UnloadMountedArchives)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_UnloadMountedArchives File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a5c20:
   - [✅] Reconstructed (Name: zReader::FileExists)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader::FileExists File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a5c40:
-  - [✅] Reconstructed (Name: zReader_FileExists_Wrapper)
+  - [✅] Reconstructed (Name: zReader::FileExistsWrapper)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader_FileExists_Wrapper File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a61b0:
   - [✅] Reconstructed (Name: zIndexArchive::Destroy)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zIndexArchive::Destroy File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
   
 ## M36. zRender draw path
 
 - 0x46e380:
   - [✅] Reconstructed (Name: zImage::TexDirSetBaseNameFromPath)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::TexDirSetBaseNameFromPath File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [❌] Binary-safe verified
 - 0x476340:
   - [✅] Reconstructed (Name: zDi::SetVariantTagIfUnset)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::SetVariantTagIfUnset File: src/GameZRecoil/zModel/gmod_matl.c)
   - [❌] Binary-safe verified
 - 0x476a50:
   - [☑️] Reconstructed (Name: zDi::EvalBoundingSphereLightingFlags)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::EvalBoundingSphereLightingFlags File: src/GameZRecoil/zModel/zModel.cpp)
   - [❌] Binary-safe verified
 - 0x476cf0:
-  - [☑️] Reconstructed (Name: zModel_RenderNodeSoftware)
+  - [☑️] Reconstructed (Name: zModel::RenderNodeSoftware)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x47aa80:
   - [☑️] Reconstructed (Name: zClipRect::ClipPolyNearZ)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::ClipPolyNearZ File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [❌] Binary-safe verified
 - 0x47af60:
   - [☑️] Reconstructed (Name: zClipRect::ClipPolyNearZ_WithAttr0)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::ClipPolyNearZ_WithAttr0 File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [❌] Binary-safe verified
 - 0x47b540:
   - [☑️] Reconstructed (Name: zClipRect::ClipPoly_NoUV_Alt)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::ClipPoly_NoUV_Alt File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [❌] Binary-safe verified
 - 0x47bd30:
   - [☑️] Reconstructed (Name: zClipRect::ClipPoly_NoUV_WithAttr012_Alt)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::ClipPoly_NoUV_WithAttr012_Alt File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [❌] Binary-safe verified
 - 0x47cdc0:
   - [☑️] Reconstructed (Name: zClipRect::ClipPoly_NoUV)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::ClipPoly_NoUV File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [❌] Binary-safe verified
 - 0x47d3f0:
   - [☑️] Reconstructed (Name: zClipRect::ClipPoly)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::ClipPoly File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [❌] Binary-safe verified
 - 0x47dfb0:
   - [☑️] Reconstructed (Name: zClipRect::ClipPoly_NoUV_WithAttr0_Alt)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::ClipPoly_NoUV_WithAttr0_Alt File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [❌] Binary-safe verified
 - 0x47e900:
   - [☑️] Reconstructed (Name: zClipRect::ClipPolyZRange_WithAttr012)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::ClipPolyZRange_WithAttr012 File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [❌] Binary-safe verified
 - 0x47efd0:
   - [☑️] Reconstructed (Name: zClipRect::ClipPoly_WithAttr012)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::ClipPoly_WithAttr012 File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [❌] Binary-safe verified
 - 0x48d450:
   - [☑️] Reconstructed (Name: zRndr::OverlayBlendRow555_Scalar)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::OverlayBlendRow555_Scalar File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x48d4b0:
   - [☑️] Reconstructed (Name: zRndr::OverlayBlendRow565_Scalar)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::OverlayBlendRow565_Scalar File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x48d510:
@@ -14293,12 +14348,12 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48d6d0:
-  - [☑️] Reconstructed (Name: zRndr_OverlayRect_Submit)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr_OverlayRect::Submit)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_OverlayRect_Submit File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x48d7a0:
-  - [☑️] Reconstructed (Name: zRndr_OverlayRect_FlushSw)
+  - [☑️] Reconstructed (Name: zRndr_OverlayRect::FlushSw)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_OverlayRect_FlushSw File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
@@ -14316,14 +14371,14 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zRndr::GetActiveRegionState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::GetActiveRegionState File: src/GameZRecoil/zRndr/zRndr.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x490430:
-  - [✅] Reconstructed (Name: zRndr_SetPerspectiveTextureDeltaX)
+  - [✅] Reconstructed (Name: zRndr::SetPerspectiveTextureDeltaX)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4904a0:
-  - [✅] Reconstructed (Name: zRndr_SetPerspectiveTextureFarZ)
+  - [✅] Reconstructed (Name: zRndr::SetPerspectiveTextureFarZ)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -14346,7 +14401,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zRndr::SpanOcclusionResetFrame)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanOcclusionResetFrame File: src/GameZRecoil/zRndr/zRndr.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x490610:
   - [☑️] Reconstructed (Name: zRndr::SpanOcclusionSubmitOccluderRect)
   - [✅] Source dependencies satisfied
@@ -14358,37 +14413,37 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zRndr::SpanOcclusionShutdown File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x4907c0:
-  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion_TestSpanDepthOrderPair)
+  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::TestSpanDepthOrderPair)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SpanOcclusion_TestSpanDepthOrderPair File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x490ae0:
-  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion_InsertSpanNode_Local)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::InsertSpanNodeIntoColumn)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SpanOcclusion_InsertSpanNode_Local File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x4912a0:
-  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::InsertSpanNodeNoDepthTest)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x491840:
-  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion_BuildSpanList)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::BuildSpanList)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SpanOcclusion_BuildSpanList File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x491da0:
-  - [✅] Reconstructed (Name: zRndr_SpanOcclusion_BuildSpanListFast)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zRndr_SpanOcclusion::BuildSpanListFast)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SpanOcclusion_BuildSpanListFast File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x491dd0:
-  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion_TestColumnVisibility)
+  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::TestColumnVisibility)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SpanOcclusion_TestColumnVisibility File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x492000:
-  - [☑️] Reconstructed (Name: zRndr_RasterizePolyWithSpanList)
+  - [☑️] Reconstructed (Name: zRndr::RasterizePolyWithSpanList)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_RasterizePolyWithSpanList File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
@@ -14398,197 +14453,197 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zRndr::SpanOcclusionRasterizeOccluderPoly File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x492f00:
-  - [☑️] Reconstructed (Name: zRndr_DrawFlatImmediate)
+  - [☑️] Reconstructed (Name: zRndr::DrawFlatImmediate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_DrawFlatImmediate File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x4936d0:
-  - [☑️] Reconstructed (Name: zRndr_RasterizePoly)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr::RasterizePoly)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_RasterizePoly File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x493df0:
-  - [☑️] Reconstructed (Name: zRndr_DrawFlatQueued)
+  - [☑️] Reconstructed (Name: zRndr::DrawFlatQueued)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_DrawFlatQueued File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x494af0:
-  - [☑️] Reconstructed (Name: Renderer_DrawPolyTLV)
+  - [☑️] Reconstructed (Name: zRndr::DrawPolyTLV)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: Renderer_DrawPolyTLV File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x495850:
-  - [☑️] Reconstructed (Name: zRndr_DrawTexturedQueued)
+  - [☑️] Reconstructed (Name: zRndr::DrawTexturedQueued)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_DrawTexturedQueued File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x4969d0:
-  - [☑️] Reconstructed (Name: zRndr_DrawTexturedQueuedAlpha)
+  - [☑️] Reconstructed (Name: zRndr::DrawTexturedQueuedAlpha)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_DrawTexturedQueuedAlpha File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x497ac0:
-  - [☑️] Reconstructed (Name: zRndr_DrawTexturedFanTri)
+  - [☑️] Reconstructed (Name: zRndr::DrawTexturedFanTri)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_DrawTexturedFanTri File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x498bd0:
-  - [✅] Reconstructed (Name: zRndr_DrawImmediateLine)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zRndr::DrawImmediateLine)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_DrawImmediateLine File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x498c00:
-  - [☑️] Reconstructed (Name: zRndr_DrawClippedImmediateLineStrip)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr::DrawClippedImmediateLineStrip)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_DrawClippedImmediateLineStrip File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x498c40:
-  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion_TestPointVisibility)
+  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::TestPointVisibility)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SpanOcclusion_TestPointVisibility File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x498cb0:
   - [☑️] Reconstructed (Name: zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x498f90:
-  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion_TestSample)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::TestSample)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SpanOcclusion_TestSample File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x498fb0:
-  - [✅] Reconstructed (Name: zRndr_DrawCircleOutline16_Framebuffer)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zRndr::DrawCircleOutline16Framebuffer)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_DrawCircleOutline16_Framebuffer File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x499020:
-  - [✅] Reconstructed (Name: zRndr_DrawCircleOctants16_Framebuffer)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zRndr::DrawCircleOctants16Framebuffer)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_DrawCircleOctants16_Framebuffer File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x499130:
-  - [☑️] Reconstructed (Name: zRndr_TextureMip_SelectVariantImage)
+  - [☑️] Reconstructed (Name: zRndr_TextureMip::SelectVariantImage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_TextureMip_SelectVariantImage File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x4992b0:
-  - [✅] Reconstructed (Name: zRndr_PlotPixel16)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zRndr::PlotPixel16)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_PlotPixel16 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x4992d0:
-  - [✅] Reconstructed (Name: zRndr_DrawLine16)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zRndr::DrawLine16)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_DrawLine16 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x4993a0:
-  - [☑️] Reconstructed (Name: zRndr_DrawLine16_Segmented)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr::DrawLine16Segmented)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_DrawLine16_Segmented File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x499500:
-  - [☑️] Reconstructed (Name: zRndr_DrawLine16_Clipped)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr::DrawLine16Clipped)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_DrawLine16_Clipped File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x4997d0:
-  - [✅] Reconstructed (Name: zRndr_FillSpan16Opaque)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zRndr::FillSpan16Opaque)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_FillSpan16Opaque File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x499810:
-  - [✅] Reconstructed (Name: zRndr_FillSpan555Solid)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zRndr::FillSpan555Solid)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_FillSpan555Solid File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x4998a0:
-  - [☑️] Reconstructed (Name: zRndr_FillSpan565Solid)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr::FillSpan565Solid)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_FillSpan565Solid File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x499930:
-  - [☑️] Reconstructed (Name: zRndr_SetPaletteRemapKey)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr::SetPaletteRemapKey)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SetPaletteRemapKey File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x499990:
-  - [✅] Reconstructed (Name: zRndr_SetPaletteRemapKeyFromRgb01)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zRndr::SetPaletteRemapKeyFromRgb01)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SetPaletteRemapKeyFromRgb01 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x499a00:
-  - [☑️] Reconstructed (Name: zRndr_SetPaletteShadeRecipeIndex)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr::SetPaletteShadeRecipeIndex)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SetPaletteShadeRecipeIndex File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x499a20:
-  - [☑️] Reconstructed (Name: zRndr_SubmitPolyWithSpanList)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr::SubmitPolyWithSpanList)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SubmitPolyWithSpanList File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x499c40:
-  - [☑️] Reconstructed (Name: zRndr_SubmitTexturedPolyUniformAlphaOrShade)
+  - [☑️] Reconstructed (Name: zRndr::SubmitTexturedPolyUniformAlphaOrShade)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SubmitTexturedPolyUniformAlphaOrShade File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x499ec0:
-  - [☑️] Reconstructed (Name: zRndr_SubmitTexturedPolyPerVertexAlphaOrShade)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr::SubmitTexturedPolyPerVertexAlphaOrShade)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SubmitTexturedPolyPerVertexAlphaOrShade File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49a2b0:
-  - [☑️] Reconstructed (Name: zRndr_FlushTransparentQueue)
+  - [☑️] Reconstructed (Name: zRndr::FlushTransparentQueue)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_FlushTransparentQueue File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49a490:
-  - [☑️] Reconstructed (Name: zRndr_FlushOverwriteQueue)
+  - [☑️] Reconstructed (Name: zRndr::FlushOverwriteQueue)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_FlushOverwriteQueue File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49a830:
-  - [✅] Reconstructed (Name: zRndr_LensFlare_QueueProjectedSample)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zRndr_LensFlare::QueueProjectedSample)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_LensFlare_QueueProjectedSample File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49a8b0:
-  - [✅] Reconstructed (Name: zRndr_LensFlare_GetQueuedSampleCount)
+  - [✅] Reconstructed (Name: zRndr_LensFlare::GetQueuedSampleCount)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_LensFlare_GetQueuedSampleCount File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49a910:
   - [✅] Reconstructed (Name: zRndr::LensFlare_ResetSampleQueue)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::LensFlare_ResetSampleQueue File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49aa30:
-  - [✅] Reconstructed (Name: zRndr_SpanOcclusion_FilterSampleList)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zRndr_SpanOcclusion::FilterSampleList)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_SpanOcclusion_FilterSampleList File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49aa40:
-  - [✅] Reconstructed (Name: zRndr_LensFlare_SetVisibleSampleStage)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zRndr_LensFlare::SetVisibleSampleStage)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_LensFlare_SetVisibleSampleStage File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49aa90:
-  - [☑️] Reconstructed (Name: zRndr_LensFlare_DrawSampleStageClipped)
+  - [☑️] Reconstructed (Name: zRndr_LensFlare::DrawSampleStageClipped)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_LensFlare_DrawSampleStageClipped File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49afb0:
-  - [☑️] Reconstructed (Name: zRndr_LensFlare_DrawVisibleSample)
+  - [☑️] Reconstructed (Name: zRndr_LensFlare::DrawVisibleSample)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_LensFlare_DrawVisibleSample File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49b020:
-  - [☑️] Reconstructed (Name: zRndr_LensFlare_DrawVisibleSampleStages)
+  - [☑️] Reconstructed (Name: zRndr_LensFlare::DrawVisibleSampleStages)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_LensFlare_DrawVisibleSampleStages File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49b1a0:
-  - [✅] Reconstructed (Name: zRndr_LensFlare_DrawVisibleSamples)
+  - [✅] Reconstructed (Name: zRndr_LensFlare::DrawVisibleSamples)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_LensFlare_DrawVisibleSamples File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
@@ -14599,141 +14654,141 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x49b350:
   - [☑️] Reconstructed (Name: zRndr::SetFogTargetColorRgb01Clamped)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SetFogTargetColorRgb01Clamped File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49b4c0:
   - [☑️] Reconstructed (Name: zRndr::CommitDirectFogParamsIfChanged)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::CommitDirectFogParamsIfChanged File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49b530:
   - [☑️] Reconstructed (Name: zRndr::CommitFogColorParamsIfChanged)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::CommitFogColorParamsIfChanged File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49b5a0:
-  - [☑️] Reconstructed (Name: zRndr_FogTargetColorStaged_SetRgb01Clamped)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zRndr_FogTargetColorStaged::SetRgb01Clamped)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_FogTargetColorStaged_SetRgb01Clamped File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49b710:
   - [☑️] Reconstructed (Name: zRndr::CommitStagedFogParamsIfChanged)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::CommitStagedFogParamsIfChanged File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49b780:
   - [✅] Reconstructed (Name: zRndr::BlendPackedColor565WithFogInPlace)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::BlendPackedColor565WithFogInPlace File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49b7e0:
   - [☑️] Reconstructed (Name: zRndr::SpanMasked16FromTex16SwitchVShift)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanMasked16FromTex16SwitchVShift File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49bbf0:
   - [☑️] Reconstructed (Name: zRndr::SpanMasked16FromPal8SwitchVShift)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanMasked16FromPal8SwitchVShift File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49c020:
   - [☑️] Reconstructed (Name: zRndr::SpanMasked16FromPal8To565)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanMasked16FromPal8To565 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49c150:
   - [☑️] Reconstructed (Name: zRndr::SpanMasked16FromTex16To565)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanMasked16FromTex16To565 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49c230:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565ConstAlphaFromPal8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend565ConstAlphaFromPal8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49c360:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565FromTex16Alpha8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend565FromTex16Alpha8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49c560:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555FromTex16Alpha8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend555FromTex16Alpha8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49c760:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565ConstAlphaFromTex16)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend565ConstAlphaFromTex16 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49c860:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555ConstAlphaFromTex16)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend555ConstAlphaFromTex16 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49c970:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49ca90:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49cbb0:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49cea0:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49d1a0:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565FromPal8Alpha8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend565FromPal8Alpha8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49d3b0:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555FromPal8Alpha8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend555FromPal8Alpha8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49d5c0:
   - [✅] Reconstructed (Name: zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49d6e0:
   - [✅] Reconstructed (Name: zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49d810:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49d950:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49da80:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49ddb0:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49e0e0:
-  - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565_Mmx_FromPal8)
+  - [☑️] Reconstructed (Name: zRndr::FogTarget565_SetPackedColorAndRamp)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanAlphaBlend565_Mmx_FromPal8 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
@@ -14744,80 +14799,80 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x49e200:
   - [☑️] Reconstructed (Name: zRndr::FogBlendSpan565Scalar)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::FogBlendSpan565Scalar File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49e300:
   - [☑️] Reconstructed (Name: zRndr::FogBlendSpan555Scalar)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::FogBlendSpan555Scalar File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49e400:
   - [☑️] Reconstructed (Name: zRndr::FogBlendSpan565Mmx)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::FogBlendSpan565Mmx File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49e560:
   - [☑️] Reconstructed (Name: zRndr::FogBlendSpan555Mmx)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::FogBlendSpan555Mmx File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49e6c0:
   - [☑️] Reconstructed (Name: zRndr::SpanCopy16FromTex16SwitchVShift)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanCopy16FromTex16SwitchVShift File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49ea40:
   - [✅] Reconstructed (Name: zRndr::SpanMmxSetTexUvMasksAndVShift)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanMmxSetTexUvMasksAndVShift File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49ea80:
   - [☑️] Reconstructed (Name: zRndr::SpanCopy16FromTex16)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanCopy16FromTex16 File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49ec20:
   - [☑️] Reconstructed (Name: zRndr::SpanCopy16FromTex16ExplicitVShift)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanCopy16FromTex16ExplicitVShift File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49edc0:
   - [☑️] Reconstructed (Name: zRndr::SpanCopy16FromPal8SwitchVShift)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanCopy16FromPal8SwitchVShift File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49f180:
   - [☑️] Reconstructed (Name: zRndr::SpanShade16FromPal8SwitchVShift)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanShade16FromPal8SwitchVShift File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
   
 ## M37. zSound init/create/parameter setup
 
 - 0x49f614:
-  - [✅] Reconstructed (Name: zSnd_TickWrapper)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zSnd::TickWrapper)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd_TickWrapper File: src/GameZRecoil/zSound/zsnd_system.cpp)
   - [❌] Binary-safe verified
 - 0x49f620:
-  - [☑️] Reconstructed (Name: zSnd_Tick)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zSnd::Tick)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd_Tick File: src/GameZRecoil/zSound/zsnd_system.cpp)
   - [❌] Binary-safe verified
 - 0x4a0810:
-  - [☑️] Reconstructed (Name: zSnd_SetUseArchiveBanks)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zSnd::SetUseArchiveBanks)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd_SetUseArchiveBanks File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
   - [❌] Binary-safe verified
 - 0x4a0830:
-  - [✅] Reconstructed (Name: zSndSampleSetRegistry_RegisterAtExit)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zSndSampleSetRegistry::RegisterAtExit)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSetRegistry_RegisterAtExit File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
   - [❌] Binary-safe verified
 - 0x4a0840:
-  - [✅] Reconstructed (Name: zSndSampleSetRegistry_Shutdown)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zSndSampleSetRegistry::Shutdown)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSetRegistry_Shutdown File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
   - [❌] Binary-safe verified
 - 0x4a0860:
@@ -14839,12 +14894,12 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSndSampleSetRegistry::GetByIndex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSetRegistry_GetByIndex File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a0900:
   - [✅] Reconstructed (Name: zSndSampleSetRegistry::GetCount)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSetRegistry_GetCount File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a0920:
   - [✅] Reconstructed (Name: zSndSampleSetRegistry::FindByName)
   - [✅] Source dependencies satisfied
@@ -14874,9 +14929,9 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSndSampleSet::GetSampleAt)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSet::GetSampleAt File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a0ec0:
-  - [☑️] Reconstructed (Name: zSndSampleSet_FindSampleByName)
+  - [☑️] Reconstructed (Name: zSndSampleSet::FindSampleByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSet::FindSampleByName File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
   - [❌] Binary-safe verified
@@ -14889,9 +14944,9 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSnd::GetActiveBackend)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::GetActiveBackend File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a12c0:
-  - [✅] Reconstructed (Name: zSnd_PreInitializeRuntimeState)
+  - [✅] Reconstructed (Name: zSnd::PreInitializeRuntimeState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd_PreInitializeRuntimeState File: src/GameZRecoil/zSound/zsnd_init.cpp)
   - [❌] Binary-safe verified
@@ -14901,27 +14956,27 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zSndSystem::Shutdown File: src/GameZRecoil/zSound/zsnd_system.cpp)
   - [❌] Binary-safe verified
 - 0x4a1420:
-  - [☑️] Reconstructed (Name: zSndSystem_Init)
+  - [☑️] Reconstructed (Name: zSndSystem::Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSystem_Init File: src/GameZRecoil/zSound/zsnd_init.cpp)
   - [❌] Binary-safe verified
 - 0x4a1510:
-  - [☑️] Reconstructed (Name: zSndSystem_InitLegacySetsSyntax)
+  - [☑️] Reconstructed (Name: zSndSystem::InitLegacySetsSyntax)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSystem_InitLegacySetsSyntax File: src/GameZRecoil/zSound/zsnd_system.cpp)
   - [❌] Binary-safe verified
 - 0x4a1870:
-  - [☑️] Reconstructed (Name: zSndSystem_InitNamedSetsSyntax)
+  - [☑️] Reconstructed (Name: zSndSystem::InitNamedSetsSyntax)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSystem_InitNamedSetsSyntax File: src/GameZRecoil/zSound/zsnd_system.cpp)
   - [❌] Binary-safe verified
 - 0x4a1d10:
-  - [☑️] Reconstructed (Name: zSndBackend_InitA3D)
+  - [☑️] Reconstructed (Name: zSndBackend::InitA3D)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndBackend_InitA3D File: src/GameZRecoil/zSound/zsnd_init.cpp)
   - [❌] Binary-safe verified
 - 0x4a1e50:
-  - [☑️] Reconstructed (Name: zSndBackend_InitDirectSound)
+  - [☑️] Reconstructed (Name: zSndBackend::InitDirectSound)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndBackend_InitDirectSound File: src/GameZRecoil/zSound/zsnd_init.cpp)
   - [❌] Binary-safe verified
@@ -14946,12 +15001,12 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zSndSample::UnlockBackendBuffers File: src/GameZRecoil/zSound/zsnd_create.cpp)
   - [❌] Binary-safe verified
 - 0x4a44c0:
-  - [✅] Reconstructed (Name: zSndPendingList_FindByName)
+  - [✅] Reconstructed (Name: zSndPendingList::FindByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPendingList_FindByName File: src/GameZRecoil/zSound/zsnd_group.cpp)
   - [❌] Binary-safe verified
 - 0x4a44e0:
-  - [☑️] Reconstructed (Name: zSndPendingList_MatchNamePredicate)
+  - [☑️] Reconstructed (Name: zSndPendingList::MatchNamePredicate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPendingList_MatchNamePredicate File: src/GameZRecoil/zSound/zsnd_group.cpp)
   - [❌] Binary-safe verified
@@ -14959,17 +15014,17 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSnd::CachedDirectSound_GetCaps)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::CachedDirectSound_GetCaps File: src/GameZRecoil/zSound/zsnd_init.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b2fe0:
   - [☑️] Reconstructed (Name: zSys::HasCpuidSupport)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSys::HasCpuidSupport File: src/GameZRecoil/zSys/zSys.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3020:
   - [☑️] Reconstructed (Name: zCpu::HasMmxSupport)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zCpu::HasMmxSupport File: src/GameZRecoil/zSys/zSys.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
   
 ## M38. zSound playback, groups, and 3D
 
@@ -14999,10 +15054,10 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zSnd::GainScaleToDirectSoundAttenuation File: src/GameZRecoil/zSound/zsnd_play.cpp)
   - [❌] Binary-safe verified
 - 0x49fa00:
-  - [☑️] Reconstructed (Name: zSndSample::PlaySimple)
+  - [☑️] Reconstructed (Name: zSndSample::PassThroughGainScale)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample_PlaySimple File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x49fa10:
   - [✅] Reconstructed (Name: zSndSample::PlayOnActiveBackend)
   - [✅] Source dependencies satisfied
@@ -15025,7 +15080,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x49fd50:
   - [✅] Reconstructed (Name: zSndSample::PlayDirectSound)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::PlayDirectSound File: src/GameZRecoil/zSound/zsnd_play.cpp)
   - [❌] Binary-safe verified
 - 0x49fda0:
@@ -15035,7 +15090,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x49fec0:
   - [✅] Reconstructed (Name: zSndSample::StopActiveVoicesIfPlaying)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::StopActiveVoicesIfPlaying File: src/GameZRecoil/zSound/zsnd_play.cpp)
   - [❌] Binary-safe verified
 - 0x49fff0:
@@ -15047,7 +15102,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❓] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a0380:
   - [☑️] Reconstructed (Name: zSndPlayHandle::PlayWithDelta_A3D)
   - [✅] Source dependencies satisfied
@@ -15067,7 +15122,7 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zSndPlayHandleSnapshot::StopAllIfPlaying)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPlayHandleSnapshot::StopAllIfPlaying File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a0590:
   - [☑️] Reconstructed (Name: zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta)
   - [✅] Source dependencies satisfied
@@ -15077,7 +15132,7 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zSndPlayHandleSnapshot::Destroy)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPlayHandleSnapshot::Destroy File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a0670:
   - [☑️] Reconstructed (Name: zSnd::ApplyMuteStateToActiveVoices)
   - [✅] Source dependencies satisfied
@@ -15087,20 +15142,20 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSnd::IsMuted)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::IsMuted File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a07c0:
   - [✅] Reconstructed (Name: zSndPlayHandleSnapshotItem::NewNode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPlayHandleSnapshotItem::NewNode File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❓] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a07f0:
   - [✅] Reconstructed (Name: zSnd::SetUseArchiveBanksFlag)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::SetUseArchiveBanksFlag File: src/GameZRecoil/zSound/zsnd_cd.cpp)
   - [❌] Binary-safe verified
 - 0x4a0800:
-  - [✅] Reconstructed (Name: zSnd_SetUseArchiveBanksAndRegisterAtExit)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zSnd::SetUseArchiveBanksAndRegisterAtExit)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd_SetUseArchiveBanksAndRegisterAtExit File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
   - [❌] Binary-safe verified
 - 0x4a0c00:
@@ -15112,47 +15167,47 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zSnd::SetGlobalVolumeScale)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::SetGlobalVolumeScale File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a10b0:
   - [✅] Reconstructed (Name: zSnd::MulGlobalVolumeScaleAndGetPrev)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::MulGlobalVolumeScaleAndGetPrev File: src/GameZRecoil/zSound/zsnd_play.cpp)
   - [❌] Binary-safe verified
 - 0x4a10d0:
   - [✅] Reconstructed (Name: zSnd::SetFlag10PlaybackEnabled)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::SetFlag10PlaybackEnabled File: src/GameZRecoil/zSound/zsnd_play.cpp)
   - [❌] Binary-safe verified
 - 0x4a10e0:
-  - [☑️] Reconstructed (Name: zSndPlayHandle_SetFreqScaled)
+  - [☑️] Reconstructed (Name: zSndPlayHandle::SetFreqScaled)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a11d0:
-  - [☑️] Reconstructed (Name: zSndPlayHandle_SetEnableScale)
+  - [☑️] Reconstructed (Name: zSndPlayHandle::SetEnableScale)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a1240:
   - [✅] Reconstructed (Name: zSndSample::SetPlaybackEventHandler)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::SetPlaybackEventHandler File: src/GameZRecoil/zSound/zsnd_parm.cpp)
   - [❌] Binary-safe verified
 - 0x4a1250:
-  - [✅] Reconstructed (Name: zSndPlayHandle_TryEnableManaged)
+  - [✅] Reconstructed (Name: zSndPlayHandle::TryEnableManaged)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPlayHandle_TryEnableManaged File: src/GameZRecoil/zSound/zsnd_parm.cpp)
   - [❌] Binary-safe verified
 - 0x4a1270:
-  - [✅] Reconstructed (Name: zSndPlayHandle_TryDisableManaged)
+  - [✅] Reconstructed (Name: zSndPlayHandle::TryDisableManaged)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPlayHandle_TryDisableManaged File: src/GameZRecoil/zSound/zsnd_parm.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a1290:
   - [✅] Reconstructed (Name: zSnd::SetActiveBackendPreInit)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::SetActiveBackendPreInit File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a2a70:
   - [☑️] Reconstructed (Name: zSndPlayHandle::Update3D_A3D)
   - [✅] Source dependencies satisfied
@@ -15164,7 +15219,7 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zSndPlayHandle::Update3D File: src/GameZRecoil/zSound/zsnd_play.cpp)
   - [❌] Binary-safe verified
 - 0x4a2e70:
-  - [☑️] Reconstructed (Name: zSnd_GetSpeedOfSoundMps)
+  - [☑️] Reconstructed (Name: zSnd::GetSpeedOfSoundMps)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd_GetSpeedOfSoundMps File: src/GameZRecoil/zSound/zsnd_play.cpp)
   - [❌] Binary-safe verified
@@ -15194,32 +15249,32 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zSndSample::DestroyOwnedData File: src/GameZRecoil/zSound/zsnd_play.cpp)
   - [❌] Binary-safe verified
 - 0x4a3850:
-  - [✅] Reconstructed (Name: zSndSample_CreateQueuedStreamingSample)
+  - [✅] Reconstructed (Name: zSndSample::CreateQueuedStreamingSample)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample_CreateQueuedStreamingSample File: src/GameZRecoil/zSound/zsnd_create.cpp)
   - [❌] Binary-safe verified
 - 0x4a3910:
   - [✅] Reconstructed (Name: zSndSample::Destroy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::Destroy File: src/GameZRecoil/zSound/zsnd_play.cpp)
   - [❌] Binary-safe verified
 - 0x4a3930:
-  - [✅] Reconstructed (Name: zSndFadeLists_Init)
+  - [✅] Reconstructed (Name: zSndFadeLists::Init)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a3940:
-  - [☑️] Reconstructed (Name: zSndFadeLists_InitGlobals)
+  - [☑️] Reconstructed (Name: zSndFadeLists::InitGlobals)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a39a0:
-  - [✅] Reconstructed (Name: zSndFadeLists_RegisterShutdownAtExit)
+  - [✅] Reconstructed (Name: zSndFadeLists::RegisterShutdownAtExit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a39b0:
-  - [☑️] Reconstructed (Name: zSndFadeLists_ShutdownAtExit)
+  - [☑️] Reconstructed (Name: zSndFadeLists::ShutdownAtExit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -15229,13 +15284,13 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zSndFadeDispatchList::PushBack File: src/GameZRecoil/zSound/zsnd_system.cpp)
   - [❌] Binary-safe verified
 - 0x4a3ad0:
-  - [☑️] Reconstructed (Name: zSndFadeEntry_TickAndMaybeDispatch)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zSndFadeEntry::UpdateAndQueueCompletion)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndFadeEntry::TickAndMaybeDispatch File: src/GameZRecoil/zSound/zsnd_system.cpp)
   - [❌] Binary-safe verified
 - 0x4a3c20:
-  - [☑️] Reconstructed (Name: zSndFadeActiveList_TickAll)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zSndFadeActiveList::TickAll)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndFadeActiveList_TickAll File: src/GameZRecoil/zSound/zsnd_system.cpp)
   - [❌] Binary-safe verified
 - 0x4a3d20:
@@ -15257,7 +15312,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSnd::ReportMciError)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::ReportMciError File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a3ef0:
   - [✅] Reconstructed (Name: zSnd::ReportA3DError)
   - [✅] Source dependencies satisfied
@@ -15279,7 +15334,7 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zSndGroup_LoadConfigBlock File: src/GameZRecoil/zSound/zsnd_group.cpp)
   - [❌] Binary-safe verified
 - 0x4a4c40:
-  - [✅] Reconstructed (Name: zSndStreamMgr_UpdateActiveRequestPredicate)
+  - [✅] Reconstructed (Name: zSndStreamMgr::UpdateActiveRequestPredicate)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -15309,7 +15364,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a5050:
-  - [✅] Reconstructed (Name: zSndStreamMgr_RecycleFinishedRequest)
+  - [✅] Reconstructed (Name: zSndStreamMgr::RecycleFinishedRequest)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -15319,18 +15374,18 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zSndStreamMgr::Shutdown File: src/GameZRecoil/zSound/zsnd_group.cpp)
   - [❌] Binary-safe verified
 - 0x4a51e0:
-  - [✅] Reconstructed (Name: zSndStreamRequest_MatchRequestPredicate)
+  - [✅] Reconstructed (Name: zSndStreamRequest::MatchRequestPredicate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: MatchStreamRequestPredicate File: src/GameZRecoil/zSound/zsnd_group.cpp)
   - [❌] Binary-safe verified
 - 0x4a51f0:
-  - [✅] Reconstructed (Name: zSndStreamRequest_StopIfActive)
+  - [✅] Reconstructed (Name: zSndStreamRequest::StopIfActive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndStreamRequest_StopIfActive File: src/GameZRecoil/zSound/zsnd_group.cpp)
   - [❌] Binary-safe verified
 - 0x4a5220:
-  - [✅] Reconstructed (Name: zSndStreamRequest_MatchGroupPredicate)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zSndStreamRequest::MatchGroupPredicate)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndStreamRequest_MatchGroupPredicate File: src/GameZRecoil/zSound/zsnd_group.cpp)
   - [❌] Binary-safe verified
 - 0x4a5230:
@@ -15344,7 +15399,7 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zSndGroup::QueueStreamRequest File: src/GameZRecoil/zSound/zsnd_group.cpp)
   - [❌] Binary-safe verified
 - 0x4a5350:
-  - [✅] Reconstructed (Name: zSndStreamMgr_EnsureInit)
+  - [✅] Reconstructed (Name: zSndStreamMgr::EnsureInit)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndStreamMgr_EnsureInit File: src/GameZRecoil/zSound/zsnd_group.cpp)
   - [❌] Binary-safe verified
@@ -15390,29 +15445,29 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4a56d0:
   - [☑️] Reconstructed (Name: Time::Tick)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Time::Tick File: src/GameZRecoil/Time/Time.cpp)
   - [❌] Binary-safe verified
   
 ## M39. zSound CD/media
 
 - 0x4a2010:
-  - [✅] Reconstructed (Name: zSndCdTrackList_StaticInit)
+  - [✅] Reconstructed (Name: zSndCdTrackList::StaticInit)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a2020:
-  - [☑️] Reconstructed (Name: zSndCdTrackList_StaticCtor)
+  - [☑️] Reconstructed (Name: zSndCdTrackList::StaticConstructor)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a2050:
-  - [✅] Reconstructed (Name: zSndCdTrackList_RegisterAtExitDtor)
+  - [✅] Reconstructed (Name: zSndCdTrackList::RegisterAtExitDestructor)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a2060:
-  - [☑️] Reconstructed (Name: zSndCdTrackList_StaticDtor)
+  - [☑️] Reconstructed (Name: zSndCdTrackList::StaticDestructor)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -15425,7 +15480,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSndCd::ResetTrackState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::ResetTrackState File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a24d0:
   - [☑️] Reconstructed (Name: zSndCd::Shutdown)
   - [✅] Source dependencies satisfied
@@ -15435,32 +15490,32 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSndCd::PlayTrackWithMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::PlayTrackWithMode File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a2600:
   - [✅] Reconstructed (Name: zSndCd::ApplyPlaybackMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::ApplyPlaybackMode File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a26b0:
   - [✅] Reconstructed (Name: zSndCd::OnMciNotify)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::OnMciNotify File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a26f0:
   - [✅] Reconstructed (Name: zSndCd::Stop)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::Stop File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a2750:
   - [✅] Reconstructed (Name: zSndCd::PlayTrack)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::PlayTrack File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a27d0:
   - [✅] Reconstructed (Name: zSndCd::IsStereoAuxEnabled)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::IsStereoAuxEnabled File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a27f0:
   - [☑️] Reconstructed (Name: zSndCd::GetVolume)
   - [❓] Source dependencies satisfied
@@ -15473,11 +15528,11 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4a2930:
   - [✅] Reconstructed (Name: zSndCd::GetTrackCount)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::GetTrackCount File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a2950:
-  - [✅] Reconstructed (Name: zSnd_UpdateListenerState)
+  - [✅] Reconstructed (Name: zSnd::UpdateListenerState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd_UpdateListenerState File: src/GameZRecoil/zSound/zsnd_play.cpp)
   - [❌] Binary-safe verified
@@ -15513,7 +15568,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zGame::ReturnOnlyStub)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGame::ReturnOnlyStub File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407700:
   - [☑️] Reconstructed (Name: zGame::Options_LoadGameOptions)
   - [✅] Source dependencies satisfied
@@ -15521,84 +15576,84 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x407e00:
   - [✅] Reconstructed (Name: zGame::Options_SaveGameOptions)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGame::Options_SaveGameOptions File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407e20:
   - [✅] Reconstructed (Name: zOpt::SetGameControlOptions)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetGameControlOptions File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407e30:
   - [✅] Reconstructed (Name: zOpt::SetThrottleMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetThrottleMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407e50:
   - [✅] Reconstructed (Name: zOpt::GetThrottleMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetThrottleMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407e60:
   - [✅] Reconstructed (Name: zOpt::SetSteeringMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetSteeringMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407e80:
   - [✅] Reconstructed (Name: zOpt::GetSteeringMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetSteeringMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407e90:
   - [✅] Reconstructed (Name: zOpt::SetCursorMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetCursorMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407eb0:
   - [✅] Reconstructed (Name: zOpt::GetCursorMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetCursorMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407ec0:
   - [✅] Reconstructed (Name: zOpt::SetCameraMode)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x407ef0:
-  - [☑️] Reconstructed (Name: zOpt::GetCameraModePlayerState)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zOpt::GetCameraModeAsPlayerCameraState)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetCameraModePlayerState File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407f10:
   - [✅] Reconstructed (Name: zOpt::SetGameDifficultyMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetGameDifficultyMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407f20:
   - [✅] Reconstructed (Name: zOpt::GetGameDifficultyMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetGameDifficultyMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407f30:
   - [✅] Reconstructed (Name: zOpt::SetEffectsLevelForCurrentHwMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetEffectsLevelForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407f80:
   - [✅] Reconstructed (Name: zOpt::GetEffectsLevelForCurrentHwMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetEffectsLevelForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x407fa0:
   - [☑️] Reconstructed (Name: zOpt::SetObjectLODForCurrentHwMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetObjectLODForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408030:
   - [✅] Reconstructed (Name: zOpt::GetObjectLODForCurrentHwMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetObjectLODForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408050:
   - [✅] Reconstructed (Name: zOpt::SetMuteSoundOption)
   - [✅] Source dependencies satisfied
@@ -15606,114 +15661,114 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x408060:
   - [✅] Reconstructed (Name: zOpt::GetMuteSoundOption)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetMuteSoundOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408070:
   - [☑️] Reconstructed (Name: zOpt::SetSoundVolumeOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetSoundVolumeOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408090:
   - [✅] Reconstructed (Name: zOpt::GetSoundVolumeOption)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetSoundVolumeOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4080a0:
   - [✅] Reconstructed (Name: zSnd::SetAudioApiOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::SetAudioApiOption File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4080b0:
   - [✅] Reconstructed (Name: zSnd::GetAudioApiOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::GetAudioApiOption File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4080c0:
   - [✅] Reconstructed (Name: zOpt::SetSoundLODOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetSoundLODOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4080d0:
   - [✅] Reconstructed (Name: zOpt::GetSoundLODOption)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetSoundLODOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4080e0:
   - [✅] Reconstructed (Name: zOpt::SetTextureMemoryForCurrentHwMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetTextureMemoryForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408100:
   - [✅] Reconstructed (Name: zOpt::GetTextureMemoryForCurrentHwMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetTextureMemoryForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408120:
   - [☑️] Reconstructed (Name: zOpt::SetPlayerName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetPlayerName File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408190:
-  - [✅] Reconstructed (Name: zOpt_GetPlayerName)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zOpt::GetPlayerName)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt_GetPlayerName File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4081a0:
   - [✅] Reconstructed (Name: zOpt::SetGraphicsFlagsForCurrentHwMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetGraphicsFlagsForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4081f0:
   - [✅] Reconstructed (Name: zOpt::GetGraphicsFlagsForCurrentHwMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetGraphicsFlagsForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408210:
   - [✅] Reconstructed (Name: zSnd::SetCDAudioOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::SetCDAudioOption File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408220:
   - [✅] Reconstructed (Name: zSnd::GetCDAudioOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::GetCDAudioOption File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408230:
   - [✅] Reconstructed (Name: zOpt::SetNetworkEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetNetworkEnabled File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408240:
   - [✅] Reconstructed (Name: zOpt::SetNetworkModemEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetNetworkModemEnabled File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408250:
   - [✅] Reconstructed (Name: zOpt::SetNetworkListenEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetNetworkListenEnabled File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408260:
   - [✅] Reconstructed (Name: zOpt::GetNetworkEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetNetworkEnabled File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408270:
   - [✅] Reconstructed (Name: zOpt::GetNetworkModemEnabled)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetNetworkModemEnabled File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4082a0:
   - [✅] Reconstructed (Name: zOpt::SetFullscreenOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetFullscreenOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4082b0:
   - [✅] Reconstructed (Name: zOpt::SetHudVisibilityOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetHudVisibilityOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4082d0:
   - [✅] Reconstructed (Name: zOpt::SetHudTypeForCurrentHwMode)
   - [✅] Source dependencies satisfied
@@ -15723,117 +15778,117 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zOpt::SetReplicateMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetReplicateMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408330:
   - [✅] Reconstructed (Name: zOpt::GetFullscreenOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetFullscreenOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408340:
   - [✅] Reconstructed (Name: zOpt::GetHudVisibilityOption)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetHudVisibilityOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408360:
   - [✅] Reconstructed (Name: zOpt::GetHudTypeForCurrentHwMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetHudTypeForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408380:
   - [✅] Reconstructed (Name: zOpt::GetReplicateMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetReplicateMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408400:
   - [✅] Reconstructed (Name: zOpt::ViewRectSection_SetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::ViewRectSection_SetSize File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408430:
   - [☑️] Reconstructed (Name: zOpt_ViewRectSection::ClampPointToInclusiveBounds)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::ViewRectSection_ClampPointToInclusiveBounds File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4083d0:
   - [✅] Reconstructed (Name: zOpt::ViewRectSection_SetPosition)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::ViewRectSection_SetPosition File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408480:
   - [✅] Reconstructed (Name: zOpt::CameraSection_SetActiveCamera)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::CameraSection_SetActiveCamera File: src/GameZRecoil/zGame/zGame.cpp)
   - [❌] Binary-safe verified
 - 0x4084e0:
-  - [✅] Reconstructed (Name: zOpt_CameraSection_GetActiveCamera)
+  - [✅] Reconstructed (Name: zOpt::CameraSection_GetActiveCamera)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt_CameraSection_GetActiveCamera File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408500:
   - [✅] Reconstructed (Name: zOpt::RenderSection_SetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::RenderSection_SetSize File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408530:
   - [✅] Reconstructed (Name: zOpt::RenderSection_SetPosition)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::RenderSection_SetPosition File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408570:
   - [✅] Reconstructed (Name: zOpt::RenderSection_SetTargetWindow)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::RenderSection_SetTargetWindow File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4085a0:
   - [✅] Reconstructed (Name: zOpt::GetRenderSection)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetRenderSection File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4085b0:
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetTargetDisplay)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::DisplaySection_SetTargetDisplay File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4085e0:
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetPosition)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::DisplaySection_SetPosition File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408620:
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::DisplaySection_SetSize File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408650:
   - [✅] Reconstructed (Name: zOpt::GetDisplaySection)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetDisplaySection File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408660:
-  - [✅] Reconstructed (Name: zOpt_DisplaySection_GetWidth)
+  - [✅] Reconstructed (Name: zOpt::DisplaySection_GetWidth)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt_DisplaySection_GetWidth File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408670:
-  - [✅] Reconstructed (Name: zOpt_DisplaySection_GetHeight)
+  - [✅] Reconstructed (Name: zOpt::DisplaySection_GetHeight)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt_DisplaySection_GetHeight File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408680:
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetBitsPerPixel)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::DisplaySection_SetBitsPerPixel File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408690:
   - [✅] Reconstructed (Name: zOpt::GetDisplaySectionBitsPerPixel)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetDisplaySectionBitsPerPixel File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4086a0:
   - [✅] Reconstructed (Name: zOpt::GetVideoStrideValue)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetVideoStrideValue File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4086c0:
   - [✅] Reconstructed (Name: zOpt::GetWindowSection)
   - [✅] Source dependencies satisfied
@@ -15843,139 +15898,139 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zOpt::GetWindowSectionHeight)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetWindowSectionHeight File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4086e0:
   - [✅] Reconstructed (Name: zOpt::WindowSection_SetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::WindowSection_SetSize File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408700:
   - [✅] Reconstructed (Name: zOpt::WindowSection_SetPosition)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::WindowSection_SetPosition File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40bdc0:
-  - [☑️] Reconstructed (Name: zUtil_StdPtrVector_Clear)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: StdPtrVector::Clear)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_StdPtrVector_Clear File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40c1d0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::ClearBindingEntries)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudCmdBindButtonBase::ClearBindingEntries File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42a9f0:
   - [✅] Reconstructed (Name: Player::AddScaledHudCounterValue)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::AddScaledHudCounterValue File: src/Battlesport/player.cpp)
   - [❌] Binary-safe verified
 - 0x4ba470:
-  - [✅] Reconstructed (Name: zUtil_StdPtrVector_FreeBufferAndReset)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: StdPtrVector::FreeBufferAndReset)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_StdPtrVector_FreeBufferAndReset File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x42ecb0:
   - [✅] Reconstructed (Name: zUtil::SetMissionZrdrPathsAndMountZbd)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4383e0:
-  - [✅] Reconstructed (Name: zUtil_SaveGameStateList_Init)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zUtil_SaveGameStateList::Constructor)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_SaveGameStateList_Init File: src/GameZRecoil/zUtil/zSaveGame.cpp)
   - [❌] Binary-safe verified
 - 0x438430:
   - [✅] Reconstructed (Name: zUtil_SaveGameState::FreeOwnedResources)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_SaveGameState::FreeOwnedResources File: src/GameZRecoil/zUtil/zSaveGame.cpp)
   - [❌] Binary-safe verified
 - 0x4384e0:
-  - [✅] Reconstructed (Name: zUtil_SaveGameStateList_AllocAppend)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zUtil_SaveGameStateList::AllocAppend)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_SaveGameStateList_AllocAppend File: src/GameZRecoil/zUtil/zSaveGame.cpp)
   - [❌] Binary-safe verified
 - 0x4826d0:
   - [✅] Reconstructed (Name: zDi::SetFlagBit0)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::SetFlagBit0 File: src/Battlesport/zModel/gdi.c)
   - [❌] Binary-safe verified
 - 0x48bfa0:
-  - [✅] Reconstructed (Name: zNetwork_InitMessageHandlers)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zNetwork::InitMessageHandlers)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork_InitMessageHandlers File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
   - [❌] Binary-safe verified
 - 0x48c7d0:
   - [✅] Reconstructed (Name: zUtil::ZRDR_PreallocNodePool)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil::ZRDR_PreallocNodePool File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48c800:
-  - [✅] Reconstructed (Name: zUtil_ZRDR_GrowFreePool)
+  - [✅] Reconstructed (Name: zUtil_ZRDR::GrowFreePool)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_GrowFreePool File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48c820:
-  - [✅] Reconstructed (Name: zUtil_ZRDR_PushFreeNode)
+  - [✅] Reconstructed (Name: zUtil_ZRDR::PushFreeNode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_PushFreeNode File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48c890:
   - [✅] Reconstructed (Name: zUtil_ZRDR::FreeNodePool)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_FreeNodePool File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48c8e0:
-  - [✅] Reconstructed (Name: zUtil_ZRDR_PopFreeNode)
+  - [✅] Reconstructed (Name: zUtil_ZRDR::PopFreeNode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_PopFreeNode File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48c950:
-  - [✅] Reconstructed (Name: zArchiveList_CreateEmpty)
+  - [✅] Reconstructed (Name: zArchiveList::CreateEmpty)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_CreateEmpty File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48c970:
   - [✅] Reconstructed (Name: zArchiveList::Destroy)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_Destroy File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48c9a0:
-  - [✅] Reconstructed (Name: zArchiveList_LinkNodeBetween)
+  - [✅] Reconstructed (Name: zArchiveList::LinkNodeBetween)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_LinkNodeBetween File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48c9c0:
-  - [✅] Reconstructed (Name: zArchiveList_PushFrontPayload)
+  - [✅] Reconstructed (Name: zArchiveList::PushFrontPayload)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_PushFrontPayload File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48ca10:
-  - [✅] Reconstructed (Name: zUtil_ZRDR_AllocNodeWithPayload)
+  - [✅] Reconstructed (Name: zUtil_ZRDR::AllocNodeWithPayload)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_AllocNodeWithPayload File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48ca30:
   - [✅] Reconstructed (Name: zArchiveList::PushBackPayload)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_PushBackPayload File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48ca70:
-  - [✅] Reconstructed (Name: zArchiveList_RemovePayload)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zArchiveList::RemovePayload)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_RemovePayload File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x48cae0:
-  - [✅] Reconstructed (Name: zArchiveList_FreeNode)
+  - [✅] Reconstructed (Name: zArchiveList::FreeNode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_FreeNode File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48cb00:
-  - [✅] Reconstructed (Name: zArchiveList_FindNodeByPayload)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zArchiveList::FindNodeByPayload)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_FindNodeByPayload File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x48cb30:
-  - [✅] Reconstructed (Name: zArchiveList_GetAt)
+  - [✅] Reconstructed (Name: zArchiveList::GetAt)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_GetAt File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
@@ -15983,24 +16038,24 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zArchiveList::PopFrontPayload)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_PopFrontPayload File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48cbd0:
   - [✅] Reconstructed (Name: zArchiveList::FindPayloadByPredicate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_FindPayloadByPredicate File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48cc20:
-  - [✅] Reconstructed (Name: zArchiveList_FindPayloadByValue)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zArchiveList::FindPayloadByValue)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_FindPayloadByValue File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x48cc50:
-  - [✅] Reconstructed (Name: zArchiveList_FindPayloadByPredicate_Thunk)
+  - [✅] Reconstructed (Name: zArchiveList::FindPayloadByPredicateThunk)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_FindPayloadByPredicate_Thunk File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48cc60:
-  - [✅] Reconstructed (Name: zArchiveList_GetCount)
+  - [✅] Reconstructed (Name: zArchiveList::GetCount)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_GetCount File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
@@ -16008,14 +16063,14 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zUtil::ZRDR_Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil::ZRDR_Init File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48cca0:
-  - [✅] Reconstructed (Name: zUtil_ZRDR_SetSearchPath)
+  - [✅] Reconstructed (Name: zUtil_ZRDR::SetSearchPath)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_SetSearchPath File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x48cce0:
-  - [✅] Reconstructed (Name: zUtil_ZRDR_AppendSearchPath)
+  - [✅] Reconstructed (Name: zUtil_ZRDR::AppendSearchPath)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -16025,7 +16080,7 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zUtil_ZRDR_Shutdown File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x48cda0:
-  - [✅] Reconstructed (Name: zReader_AllocateNode)
+  - [✅] Reconstructed (Name: zReader::AllocateNode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader_AllocateNode File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
@@ -16040,10 +16095,10 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zUtil::ZRDR_GetFileSize File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x4a5ca0:
-  - [✅] Reconstructed (Name: zUtil_ZRDR_CreateSearchPathList)
+  - [✅] Reconstructed (Name: zUtil_ZRDR::CreateSearchPathList)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_CreateSearchPathList File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a5cc0:
   - [✅] Reconstructed (Name: zUtil_ZRDR::FreeSearchPathList)
   - [✅] Source dependencies satisfied
@@ -16053,12 +16108,12 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zUtil::ZRDR_AddSearchPaths)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil::ZRDR_AddSearchPaths File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a5da0:
-  - [☑️] Reconstructed (Name: zUtil_ZRDR_StrCmpPredicate)
+  - [☑️] Reconstructed (Name: zUtil_ZRDR::StrCmpPredicate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_StrCmpPredicate File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a5df0:
   - [✅] Reconstructed (Name: zUtil_ZRDR::FreeScratchSearchPathList)
   - [✅] Source dependencies satisfied
@@ -16068,7 +16123,7 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zUtil_ZRDR::FreePathList)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_FreePathList File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a5e50:
   - [✅] Reconstructed (Name: zUtil::ZRDR_ResolvePathInSearchPathList)
   - [✅] Source dependencies satisfied
@@ -16080,17 +16135,17 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zUtil_ZRDR_SearchPathContainsFilePredicate File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x4a5f50:
-  - [✅] Reconstructed (Name: zUtil_ZRDR_OpenFileResolved)
+  - [✅] Reconstructed (Name: zUtil_ZRDR::OpenFileResolved)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_OpenFileResolved File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x4a5f90:
-  - [✅] Reconstructed (Name: zUtil_ZRDR_InitWildcardPath)
+  - [✅] Reconstructed (Name: zUtil_ZRDR::InitWildcardPath)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a6070:
-  - [✅] Reconstructed (Name: zUtil_ZRDR_NextWildcardPath)
+  - [✅] Reconstructed (Name: zUtil_ZRDR::NextWildcardPath)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -16100,7 +16155,7 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zUtil_ZRDR_ShutdownWildcardPath File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x4a6110:
-  - [✅] Reconstructed (Name: zReader_ReadString)
+  - [✅] Reconstructed (Name: zReader::ReadString)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader_ReadString File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
@@ -16108,7 +16163,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zIndexArchive::Reset)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zIndexArchive::Reset File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a61d0:
   - [✅] Reconstructed (Name: zIndexArchive::Init)
   - [✅] Source dependencies satisfied
@@ -16116,14 +16171,14 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4a6270:
   - [✅] Reconstructed (Name: zIndexArchive::OpenCreateWrite)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zIndexArchive::OpenCreateWrite File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x4a62b0:
   - [✅] Reconstructed (Name: zIndexArchive::CloseAndFreeRecords)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zIndexArchive::CloseAndFreeRecords File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a62f0:
   - [✅] Reconstructed (Name: zIndexArchive::EnsureCapacity)
   - [✅] Source dependencies satisfied
@@ -16133,29 +16188,29 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zIndexArchive::FreeRecordsAndReset)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zIndexArchive::FreeRecordsAndReset File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a6360:
   - [✅] Reconstructed (Name: zIndexArchive::FlushIndexToTail)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zIndexArchive::FlushIndexToTail File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a63f0:
   - [✅] Reconstructed (Name: zIndexArchive::LoadIndexFromTail)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zIndexArchive::LoadIndexFromTail File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x4a64d0:
-  - [✅] Reconstructed (Name: zIndexArchive_AddFileRecord)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zIndexArchive::AddFileRecord)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zIndexArchive::AddFileRecord File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x4a65d0:
-  - [✅] Reconstructed (Name: zIndexArchive_FindRecordByNameCI)
+  - [✅] Reconstructed (Name: zIndexArchive::FindRecordByNameCI)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zIndexArchive::FindRecordByNameCI File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
 - 0x4a6630:
-  - [✅] Reconstructed (Name: zIndexArchive_OpenFileByName)
+  - [✅] Reconstructed (Name: zIndexArchive::OpenFileByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zIndexArchive::OpenFileByName File: src/GameZRecoil/zReader/zreader_load.cpp)
   - [❌] Binary-safe verified
@@ -16171,44 +16226,44 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4b2bf0:
   - [☑️] Reconstructed (Name: zGame::Options_SaveToRegistry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGame::Options_SaveToRegistry File: src/GameZRecoil/zGame/zGame.cpp)
   - [❌] Binary-safe verified
 - 0x4b2e80:
   - [✅] Reconstructed (Name: zGame::Options_GetOrCreateOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGame::Options_GetOrCreateOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b2f50:
   - [✅] Reconstructed (Name: zSnd::AcquireCachedDirectSound)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::AcquireCachedDirectSound File: src/GameZRecoil/zSound/zsnd_init.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b2fa0:
   - [✅] Reconstructed (Name: zSnd::ReleaseCachedDirectSound)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::ReleaseCachedDirectSound File: src/GameZRecoil/zSound/zsnd_init.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3260:
   - [✅] Reconstructed (Name: zGame::Options_InitRegistryContext)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGame::Options_InitRegistryContext File: src/GameZRecoil/zGame/zGame.cpp)
   - [❌] Binary-safe verified
 - 0x4b32c0:
   - [✅] Reconstructed (Name: zGame::Options_ShutdownRegistryContext)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGame::Options_ShutdownRegistryContext File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3380:
   - [☑️] Reconstructed (Name: zGame::Options_FindOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGame::Options_FindOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b33f0:
   - [☑️] Reconstructed (Name: zSys::HasCpuidSupport)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSys::HasCpuidSupport File: src/GameZRecoil/zSys/zSys.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3420:
   - [☑️] Reconstructed (Name: zSys::DetectCpuClassAndFeatures)
   - [✅] Source dependencies satisfied
@@ -16216,36 +16271,36 @@ Each function has these trackers:
   - [✅] Binary-safe verified
 - 0x4c0030:
   - [✅] Reconstructed (Name: zUtil::ZBD_LoadEntriesGlobal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil::ZBD_LoadEntriesGlobal File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x4c0050:
   - [✅] Reconstructed (Name: zUtil::ZAR_LoadFileGlobal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil::ZAR_LoadFileGlobal File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x4c0070:
   - [✅] Reconstructed (Name: zUtil::ZAR_RequestStopGlobal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil::ZAR_RequestStopGlobal File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x4c0080:
-  - [✅] Reconstructed (Name: zUtil_ZBD_OpenTempWriteStream)
+  - [✅] Reconstructed (Name: zUtil_ZBD::OpenTempWriteStream)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c00a0:
-  - [✅] Reconstructed (Name: zUtil_ZBD_FlushTempWriteStreamToSectionRecord)
+  - [✅] Reconstructed (Name: zUtil_ZBD::FlushTempWriteStreamToSectionRecord)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c00c0:
-  - [✅] Reconstructed (Name: zUtil_ZBD_OpenTempReadStream)
+  - [✅] Reconstructed (Name: zUtil_ZBD::OpenTempReadStream)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c00e0:
-  - [✅] Reconstructed (Name: zUtil_ZBD_CloseTempReadStream)
+  - [✅] Reconstructed (Name: zUtil_ZBD::CloseTempReadStream)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -16256,17 +16311,17 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4c0180:
   - [✅] Reconstructed (Name: zUtil::ZBD_DestroyGlobalManager)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil::ZBD_DestroyGlobalManager File: src/GameZRecoil/zUtil/zZbd.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4c01b0:
   - [☑️] Reconstructed (Name: zZbdManager::Destroy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdManager::Destroy File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x4c0260:
   - [✅] Reconstructed (Name: zZbdSectionHandler::CompareSortOrderLessThan)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdSectionHandler::CompareSortOrderLessThan File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x4c0280:
@@ -16276,27 +16331,27 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4c0370:
   - [☑️] Reconstructed (Name: zZbdManager::LoadEntries)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdManager::LoadEntries File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x4c07d0:
   - [☑️] Reconstructed (Name: zZbdManager::SortSectionHandlers)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdManager::SortSectionHandlers File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x4c0400:
   - [☑️] Reconstructed (Name: zZbdManager::LoadZarFile)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdManager::LoadZarFile File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x4c0620:
   - [✅] Reconstructed (Name: zZbdManager::RequestStop)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdManager::RequestStop File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x4c0630:
-  - [✅] Reconstructed (Name: zZbdManager_WriteSectionRecord)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zZbdManager::WriteSectionRecord)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdManager::WriteSectionRecord File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [❌] Binary-safe verified
 - 0x4c0700:
@@ -16346,32 +16401,32 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zVid::SetAccelerationOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::SetAccelerationOption File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408290:
   - [✅] Reconstructed (Name: zVid::SetHwApiOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::SetHwApiOption File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408310:
   - [✅] Reconstructed (Name: zVid::GetAccelerationOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::GetAccelerationOption File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408320:
   - [✅] Reconstructed (Name: zVid::GetHwApiOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::GetHwApiOption File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4086b0:
   - [✅] Reconstructed (Name: zVid::GetVideoModeIndexFromOptions)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::GetVideoModeIndexFromOptions File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x408720:
   - [✅] Reconstructed (Name: zVid::SetVideoModeIndex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::SetVideoModeIndex File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x40c6e0:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_BackButton::OnActivate)
   - [❓] Source dependencies satisfied
@@ -16381,9 +16436,9 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: HudUiMgr::TriggerCurrentLayoutOnActivated)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::TriggerCurrentLayoutOnActivated File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x437ef0:
-  - [✅] Reconstructed (Name: zVideo_HandleSoftwareModeHotkeyCommand)
+  - [✅] Reconstructed (Name: zVideo::HandleSoftwareModeHotkeyCommand)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -16398,15 +16453,15 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x44d600:
-  - [☑️] Reconstructed (Name: zVideo_sw_RenderFrame)
+  - [☑️] Reconstructed (Name: zVideo_sw::RenderFrame)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x46d5b0:
   - [✅] Reconstructed (Name: zVid::SetTexturePackLoadState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::SetTexturePackLoadState File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46d5c0:
   - [✅] Reconstructed (Name: zVid::GetTexturePackLoadState)
   - [✅] Source dependencies satisfied
@@ -16429,32 +16484,32 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x46d810:
   - [✅] Reconstructed (Name: zImage::TexDir_FindOrAppendByPath)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::TexDir_FindOrAppendByPath File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x46d870:
-  - [✅] Reconstructed (Name: zVid_Image_ClearZeroAlphaPixelsInPlace)
+  - [✅] Reconstructed (Name: zVid_Image::ClearZeroAlphaPixelsInPlace)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image_ClearZeroAlphaPixelsInPlace File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x46dae0:
-  - [☑️] Reconstructed (Name: zVid_TexturePackEntry_LoadFromFile)
+  - [☑️] Reconstructed (Name: zVid_TexturePackEntry::LoadFromFile)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_TexturePackEntry_LoadFromFile File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x46dd30:
-  - [✅] Reconstructed (Name: zVid_TexturePack_LoadBuiltinImageByName)
+  - [✅] Reconstructed (Name: zVid_TexturePack::LoadBuiltinImageByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_TexturePack_LoadBuiltinImageByName File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x46de50:
   - [☑️] Reconstructed (Name: zImage::TexDir_LoadPendingEntries)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::TexDir_LoadPendingEntries File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [❌] Binary-safe verified
 - 0x46df50:
-  - [☑️] Reconstructed (Name: zVid_TexturePack_EnsureBuiltinTexturePacksLoaded)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zVid_TexturePack::EnsureBuiltinTexturePacksLoaded)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_TexturePack_EnsureBuiltinTexturePacksLoaded File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x46e290:
@@ -16463,47 +16518,47 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zImage_TexDirEntryPartial::GetVariantImageAtIndex File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [❌] Binary-safe verified
 - 0x46e720:
-  - [☑️] Reconstructed (Name: zVid_PaletteRemap_BuildPaletteVariant)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zVid_PaletteRemap::BuildPaletteVariant)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_PaletteRemap_BuildPaletteVariant File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x46e8d0:
-  - [✅] Reconstructed (Name: zVid_PaletteRemap_BuildAllRecipeVariantsForPalette)
+  - [✅] Reconstructed (Name: zVid_PaletteRemap::BuildAllRecipeVariantsForPalette)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_PaletteRemap_BuildAllRecipeVariantsForPalette File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x46e960:
-  - [✅] Reconstructed (Name: zVid_PaletteRemap_FindRecipeIndexFromRgb)
+  - [✅] Reconstructed (Name: zVid_PaletteRemap::FindRecipeIndexFromRgb)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_PaletteRemap_FindRecipeIndexFromRgb File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x46e9b0:
   - [☑️] Reconstructed (Name: zVid_Image::ResampleSquare)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image::ResampleSquare File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x46eb20:
-  - [✅] Reconstructed (Name: zImage_Init)
+  - [✅] Reconstructed (Name: zImage::Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage_Init File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [❌] Binary-safe verified
 - 0x4c7fd0:
-  - [☑️] Reconstructed (Name: zVideo_LoadPaletteFileEntries_Local)
+  - [☑️] Reconstructed (Name: zVideo::LoadPaletteFileAndApplyBrightness)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4c8070:
-  - [☑️] Reconstructed (Name: zVideo_ApplyPaletteEntriesWithBrightness_Local)
+  - [☑️] Reconstructed (Name: zVideo::ApplyBrightnessToPaletteEntries)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x47a0c0:
-  - [✅] Reconstructed (Name: zVideo_UpdateProjectionStateFromCameraData)
+  - [✅] Reconstructed (Name: zVideo::UpdateProjectionStateFromCameraData)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_UpdateProjectionStateFromCameraData File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x479ce0:
-  - [☑️] Reconstructed (Name: zVideo_SetActiveViewContext)
+  - [☑️] Reconstructed (Name: zVideo::SetActiveViewContext)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_SetActiveViewContext File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
@@ -16513,22 +16568,22 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zVideo::Fx_SetSurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [✅] Binary-safe verified
 - 0x48ea20:
-  - [☑️] Reconstructed (Name: zVideo_FxSurface_ApplyBlueTintRect)
+  - [☑️] Reconstructed (Name: zVideo_FxSurface::ApplyBlueTintRect)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48eb80:
-  - [☑️] Reconstructed (Name: zVideo_FxSurface_ApplyGreenMaskRect)
+  - [☑️] Reconstructed (Name: zVideo_FxSurface::ApplyGreenMaskRect)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48ec90:
-  - [☑️] Reconstructed (Name: zVideo_FxSurface_DrawColoredLinesBatch)
+  - [☑️] Reconstructed (Name: zVideo_FxSurface::DrawColoredLinesBatch)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x48ed60:
-  - [☑️] Reconstructed (Name: zVideo_FxSurface_DrawAlphaBlendedLine)
+  - [☑️] Reconstructed (Name: zVideo_FxSurface::DrawAlphaBlendedLine)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -16538,7 +16593,7 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zVid_Image::BlitToActiveTarget File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [✅] Binary-safe verified
 - 0x48f560:
-  - [✅] Reconstructed (Name: zVideo_Image_BlitToFramebufferClipped)
+  - [✅] Reconstructed (Name: zVid_Image::BlitToFramebufferClipped)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -16578,35 +16633,35 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49a920:
-  - [☑️] Reconstructed (Name: zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList)
+  - [☑️] Reconstructed (Name: zRndr_LensFlare::DrawQueuedSamples16AndBuildVisibleList)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList File: src/GameZRecoil/zRndr/zRndr.cpp)
   - [❌] Binary-safe verified
 - 0x49a9c0:
-  - [☑️] Reconstructed (Name: zRndr_LensFlare_BuildVisibleSampleListFromQueue)
+  - [☑️] Reconstructed (Name: zRndr_LensFlare::BuildVisibleSampleListFromQueue)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a5980:
   - [✅] Reconstructed (Name: zSys::ExitProcessWithCleanup)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSys::ExitProcessWithCleanup File: src/GameZRecoil/zSys/zSys.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a59a0:
   - [✅] Reconstructed (Name: zVid::SetCachedClientRectUpdateMask)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::SetCachedClientRectUpdateMask File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a59b0:
-  - [✅] Reconstructed (Name: zVid_QueryCachedClientRectUpdateMaskIf3dfx)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zVid::QueryCachedClientRectUpdateMaskIf3dfx)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_QueryCachedClientRectUpdateMaskIf3dfx File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a59e0:
-  - [☑️] Reconstructed (Name: zSys_FindFileOnDriveType)
+  - [☑️] Reconstructed (Name: zSys::FindFileOnDriveType)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSys::FindFileOnDriveType File: src/GameZRecoil/zSys/zSys.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a66e0:
   - [✅] Reconstructed (Name: zVideo::GetDisplayModeBpp)
   - [✅] Source dependencies satisfied
@@ -16638,8 +16693,8 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zVideo::Dispatch_UnlockPrimarySurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [✅] Binary-safe verified
 - 0x4a6b80:
-  - [✅] Reconstructed (Name: zVideo_SetClearColorPacked16)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zVideo::SetClearColorPacked16)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_SetClearColorPacked16 File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7220:
@@ -16648,22 +16703,22 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zVideo::SetFogColorFromRgb01 File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7250:
-  - [☑️] Reconstructed (Name: zVideo_SetPendingFogTargetColorFromRgb01)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zVideo::SetPendingFogTargetColorFromRgb01)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_SetPendingFogTargetColorFromRgb01 File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7300:
   - [✅] Reconstructed (Name: zVideo::SetFogTargetColorFromRgb01)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::SetFogTargetColorFromRgb01 File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7330:
-  - [☑️] Reconstructed (Name: zVideo_CommitFogColorIfChanged)
+  - [☑️] Reconstructed (Name: zVideo::CommitFogColorIfChanged)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a73a0:
-  - [☑️] Reconstructed (Name: zVideo_CommitFogTargetColorIfChanged)
+  - [☑️] Reconstructed (Name: zVideo::CommitFogTargetColorIfChanged)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -16671,14 +16726,14 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zVid::GetAcceptedDirectDrawDeviceCount)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::GetAcceptedDirectDrawDeviceCount File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a74d0:
-  - [✅] Reconstructed (Name: zVideo_d3d_SceneEnter)
+  - [✅] Reconstructed (Name: zVideoD3D::SceneEnter)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a74f0:
-  - [✅] Reconstructed (Name: zVideo_d3d_SceneLeave)
+  - [✅] Reconstructed (Name: zVideoD3D::SceneLeave)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -16691,17 +16746,17 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zVideo::UpdateCachedClientRectScreenCoords)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::UpdateCachedClientRectScreenCoords File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a7740:
   - [✅] Reconstructed (Name: zVideo::ShutdownVideoSystem)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::ShutdownVideoSystem File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a7770:
-  - [✅] Reconstructed (Name: zVideo_RestoreIconicFullscreenWindowIfNeeded)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zVideo::RestoreIconicFullscreenWindowIfNeeded)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_RestoreIconicFullscreenWindowIfNeeded File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a77a0:
   - [✅] Reconstructed (Name: zVideo::BindRendererDispatch)
   - [✅] Source dependencies satisfied
@@ -16724,22 +16779,22 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4a7b30:
   - [✅] Reconstructed (Name: zVideo::GetClearScreenBufferEnabled)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::GetClearScreenBufferEnabled File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7b60:
-  - [☑️] Reconstructed (Name: zVideo_dd_PresentDisplayModeSurface)
+  - [☑️] Reconstructed (Name: zVideo_dd::PresentDisplayModeSurface)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4a7d90:
-  - [✅] Reconstructed (Name: zVideo_dd_BltSwToPrimaryRectDirect)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zVideo_dd::BltSwToPrimaryRectDirect)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::BltSwToPrimaryRectDirect File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7dd0:
-  - [✅] Reconstructed (Name: zVideo_dd_BltPrimaryToSwRectDirect)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zVideoDD::BltPrimaryToSwRectDirect)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::BltPrimaryToSwRectDirect File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8870:
@@ -16749,7 +16804,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4a88f0:
   - [✅] Reconstructed (Name: zVideo_dd::CreateFullscreenSurfacesForRenderer)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::CreateFullscreenSurfacesForRenderer File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a9900:
@@ -16761,7 +16816,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zVid::GetAcceptedHardwareRendererCount_Cached)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::GetAcceptedHardwareRendererCount_Cached File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a9920:
   - [☑️] Reconstructed (Name: zVideo_dd::GetHwApiDeviceFeatureFlags)
   - [❓] Source dependencies satisfied
@@ -16769,9 +16824,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4a9940:
   - [✅] Reconstructed (Name: zVid::GetSelectedD3DDeviceNameOrDefault)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::GetSelectedD3DDeviceNameOrDefault File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a9950:
   - [☑️] Reconstructed (Name: zVid::QueryDeviceVideoMemoryBytes)
   - [❓] Source dependencies satisfied
@@ -16801,22 +16856,22 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zSys::CheckCpuSignatureMask)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSys::CheckCpuSignatureMask File: src/GameZRecoil/zSys/zSys.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3090:
   - [✅] Reconstructed (Name: zGame_OptionsRuntimeConfig::CopyDefault)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGame_OptionsRuntimeConfig::CopyDefault File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b30b0:
   - [✅] Reconstructed (Name: zGame_OptionsRuntimeConfig::InitFromSystem)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGame_OptionsRuntimeConfig::InitFromSystem File: src/GameZRecoil/zGame/zGame.cpp)
   - [❌] Binary-safe verified
 - 0x4b3160:
   - [☑️] Reconstructed (Name: zGame_OptionsRuntimeConfig::LoadCpuVendorString)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zGame_OptionsRuntimeConfig::LoadCpuVendorString File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b31b0:
   - [☑️] Reconstructed (Name: zSys::GetCpuClass)
   - [✅] Source dependencies satisfied
@@ -16824,34 +16879,34 @@ Each function has these trackers:
   - [✅] Binary-safe verified
 - 0x4b31c0:
   - [✅] Reconstructed (Name: zSys::GetCpuMhz)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSys::GetCpuMhz File: src/GameZRecoil/zSys/zSys.cpp)
   - [❌] Binary-safe verified
 - 0x4b31f0:
   - [✅] Reconstructed (Name: zSnd::HasMmxMixerSupport)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::HasMmxMixerSupport File: src/GameZRecoil/zSound/zsnd_init.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3210:
   - [✅] Reconstructed (Name: zSys::ReturnZeroStub)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSys::ReturnZeroStub File: src/GameZRecoil/zSys/zSys.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3220:
   - [☑️] Reconstructed (Name: zVid::HasAcceptedHardwareRenderer)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::HasAcceptedHardwareRenderer File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3230:
   - [✅] Reconstructed (Name: zSys::GetTotalPhysKb)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSys::GetTotalPhysKb File: src/GameZRecoil/zSys/zSys.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3480:
   - [☑️] Reconstructed (Name: zSys::ReadCpuidFeatureFlags)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSys::ReadCpuidFeatureFlags File: src/GameZRecoil/zSys/zSys.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b3510:
   - [☑️] Reconstructed (Name: zSys::ProbeDivZeroFlagBehavior)
   - [✅] Source dependencies satisfied
@@ -16876,20 +16931,20 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zSys::ReadCpuidVendorAndFamily)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSys::ReadCpuidVendorAndFamily File: src/GameZRecoil/zSys/zSys.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b36f0:
   - [☑️] Reconstructed (Name: zSys::ResolveCpuBenchmarkPacket)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CpuBenchmarkResolver::ResolveCpuBenchmarkPacket File: src/GameZRecoil/zSys/zSys.cpp)
   - [❌] Binary-safe verified
 - 0x4b37f0:
   - [☑️] Reconstructed (Name: zSys::MeasureMhzViaBsfLoop_Qpc)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc File: src/GameZRecoil/zSys/zSys.cpp)
   - [❌] Binary-safe verified
 - 0x4b38e0:
   - [☑️] Reconstructed (Name: zSys::MeasureCpuMhz_RdtscQpc)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc File: src/GameZRecoil/zSys/zSys.cpp)
   - [❌] Binary-safe verified
 - 0x4b3b00:
@@ -16904,7 +16959,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4b3b50:
   - [☑️] Reconstructed (Name: zSys::MeasureCpuMhz_CmosRtc)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc File: src/GameZRecoil/zSys/zSys.cpp)
   - [❌] Binary-safe verified
 - 0x4b3ca0:
@@ -16916,7 +16971,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiWidget::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4bdb60:
   - [✅] Reconstructed (Name: zVideoFxPass3Element::Draw)
   - [❓] Source dependencies satisfied
@@ -16934,7 +16989,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4bdc00:
   - [✅] Reconstructed (Name: zVideoFxPass3Slot::SetRectAndPayload)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideoFxPass3Slot::SetRectAndPayload File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4bdc40:
@@ -16948,13 +17003,13 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zVideo::FxPass3Config_UpdateLocal File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4bed90:
-  - [✅] Reconstructed (Name: zVideo_FxPass3Config_QueueElementLocal)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zVideo_FxPass3Config::QueueElementLocal)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_FxPass3Config_QueueElementLocal File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4bed50:
-  - [☑️] Reconstructed (Name: zVideo_FxPass3Config_SetPrimaryElementParamsLocal)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zVideo_FxPass3Config::SetPrimaryElementParamsLocal)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_FxPass3Config_SetPrimaryElementParamsLocal File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4bee00:
@@ -16978,8 +17033,8 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4bef10:
-  - [✅] Reconstructed (Name: zVideo_FxPass3_QueueElementLocal)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zVideo_FxPass3::QueueElementLocal)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_FxPass3_QueueElementLocal File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
   
@@ -16989,27 +17044,27 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: CZRecoilFrame::ConfigureModeFeatureFlags)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::ConfigureModeFeatureFlags File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431610:
   - [✅] Reconstructed (Name: CZRecoilFrame::SetHwApiAndInitMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::SetHwApiAndInitMode File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431680:
   - [✅] Reconstructed (Name: CZRecoilFrame::InitFallbackMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::InitFallbackMode File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4316c0:
   - [☑️] Reconstructed (Name: CZRecoilFrame::EnsureHwApiInitialized)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::EnsureHwApiInitialized File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x431730:
   - [✅] Reconstructed (Name: CZRecoilFrame::InitStartupHwApiFromOptions)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::InitStartupHwApiFromOptions File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x44d990:
   - [✅] Reconstructed (Name: zClass_Node::PropagateTransformDirtyRecursive)
   - [✅] Source dependencies satisfied
@@ -17017,32 +17072,32 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4a6710:
   - [✅] Reconstructed (Name: zVideo::GetSwSurfacePixels)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::GetSwSurfacePixels File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a6720:
   - [✅] Reconstructed (Name: zVideo::GetSwSurfaceWidth)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::GetSwSurfaceWidth File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a6730:
   - [✅] Reconstructed (Name: zVideo::GetSwSurfaceHeight)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::GetSwSurfaceHeight File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a6740:
   - [✅] Reconstructed (Name: zVideo::GetSwSurfacePitch)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::GetSwSurfacePitch File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a6750:
   - [✅] Reconstructed (Name: zVideo_dd3d::CallClearZBufferRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::CallClearZBufferRect File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a67e0:
   - [✅] Reconstructed (Name: zVideo::GetSwSurfaceLockedFlag)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::GetSwSurfaceLockedFlag File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a67f0:
@@ -17066,63 +17121,63 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zVideo::GetPrimarySurfacePitch File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a68e0:
-  - [✅] Reconstructed (Name: zVideo_Dispatch_LockDisplayModeSurfaceState)
+  - [✅] Reconstructed (Name: zVideo::Dispatch_LockDisplayModeSurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Dispatch_LockDisplayModeSurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a68f0:
-  - [✅] Reconstructed (Name: zVideo_Dispatch_UnlockDisplayModeSurfaceState)
+  - [✅] Reconstructed (Name: zVideo::Dispatch_UnlockDisplayModeSurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Dispatch_UnlockDisplayModeSurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a6900:
-  - [✅] Reconstructed (Name: zVideo::AdjustSurfacesIfEnabled)
+  - [✅] Reconstructed (Name: zVideo::PresentOrAdjustSurfacesIfEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::AdjustSurfacesIfEnabled File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [✅] Binary-safe verified
 - 0x4a6930:
   - [✅] Reconstructed (Name: zVideo_dd::PrepareWindowForMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::PrepareWindowForMode File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a6b70:
-  - [✅] Reconstructed (Name: zVideo_dd3d_SetPendingDitherEnable)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: zVideoDD3D::SetPendingDitherEnable)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::SetPendingDitherEnable File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a71c0:
   - [✅] Reconstructed (Name: zVideo::SetHalfResAdjustMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::SetHalfResAdjustMode File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a7200:
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfaceRectScratch)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::GetPrimarySurfaceRectScratch File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7410:
   - [✅] Reconstructed (Name: zVid::GetSelectedHwApiDescriptionOrDefault)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::GetSelectedHwApiDescriptionOrDefault File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7430:
   - [✅] Reconstructed (Name: zVid::GetHwApiDescription)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::GetHwApiDescription File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7450:
   - [✅] Reconstructed (Name: zVid::GetHwApiDriverName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::GetHwApiDriverName File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7490:
   - [☑️] Reconstructed (Name: zVideo::SelectHwApiDeviceOrFallback)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::SelectHwApiDeviceOrFallback File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a7520:
   - [☑️] Reconstructed (Name: zVideo::AtExitReleaseAllInterfacesAndSurfaces)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::AtExitReleaseAllInterfacesAndSurfaces File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7530:
@@ -17142,22 +17197,22 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4a7d20:
   - [✅] Reconstructed (Name: zVideo_dd::OpenVideoMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::OpenVideoMode File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7d40:
   - [✅] Reconstructed (Name: zVideo_dd::ShutdownVideoSystem)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::ShutdownVideoSystem File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7d70:
   - [✅] Reconstructed (Name: zVideo_dd::FlipToGDIIfAttached)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::FlipToGDIIfAttached File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a7e10:
   - [☑️] Reconstructed (Name: zVideo_dd::BltSwToPrimaryRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::BltSwToPrimaryRect File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a7fc0:
@@ -17182,122 +17237,122 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4a8100:
   - [✅] Reconstructed (Name: zVideo_dd::LockSurface_WaitRestore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::LockSurface_WaitRestore File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8160:
   - [✅] Reconstructed (Name: zVideo_dd::UnlockSurface_WaitRestore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::UnlockSurface_WaitRestore File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a81a0:
   - [✅] Reconstructed (Name: zVideo_dd::ZBuffer_DepthFillRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::ZBuffer_DepthFillRect File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8220:
   - [✅] Reconstructed (Name: zVideo_dd::ClearScreenAndZBufferRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::ClearScreenAndZBufferRect File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a82f0:
   - [✅] Reconstructed (Name: zVideo_dd::ClearSwBackbufferAndZBufferRects)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::ClearSwBackbufferAndZBufferRects File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a83d0:
   - [☑️] Reconstructed (Name: zVideo_dd::Image_LazyCreateBackingSurface)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::Image_LazyCreateBackingSurface File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a84c0:
   - [☑️] Reconstructed (Name: zVideo_dd::Image_LazyCreateVideoMemorySurface)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::Image_LazyCreateVideoMemorySurface File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8500:
   - [✅] Reconstructed (Name: zVideo_dd::Image_PopulateSurfaceFromHeapPixels)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::Image_PopulateSurfaceFromHeapPixels File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8650:
   - [✅] Reconstructed (Name: zVideo_dd::Image_EnsureSurfaceForCurrentDevice)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::Image_EnsureSurfaceForCurrentDevice File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8680:
   - [☑️] Reconstructed (Name: zVideo_dd::Image_UploadPixelsToSurface)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::Image_UploadPixelsToSurface File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a86f0:
   - [☑️] Reconstructed (Name: zVideo_dd::Image_ReleaseSurface)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::Image_ReleaseSurface File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8720:
   - [✅] Reconstructed (Name: zVideo_dd::SetDisplayMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::SetDisplayMode File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8790:
   - [☑️] Reconstructed (Name: zVideo_dd::SetVideoMode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::SetVideoMode File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8800:
   - [☑️] Reconstructed (Name: zVideo_dd::CreateDirectDraw2ForSelectedDevice)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::CreateDirectDraw2ForSelectedDevice File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a88b0:
   - [✅] Reconstructed (Name: zVideo_dd::CreateSurface3FromDesc)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::CreateSurface3FromDesc File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8920:
   - [☑️] Reconstructed (Name: zVideo_dd::CreateHalfResBackbufferSurfaces)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::CreateHalfResBackbufferSurfaces File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8b20:
   - [☑️] Reconstructed (Name: zVideo_dd::CreateFullscreenSoftwareSurfaces)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::CreateFullscreenSoftwareSurfaces File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8dc0:
   - [☑️] Reconstructed (Name: zVideo_dd::CreateFullscreenHardwareSurfaces)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::CreateFullscreenHardwareSurfaces File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a8f80:
   - [✅] Reconstructed (Name: zVideo_dd::InitFullscreenSoftwarePixelPack)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::InitFullscreenSoftwarePixelPack File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a9060:
   - [☑️] Reconstructed (Name: zVideo_dd::VerifyFullscreenSurfaceLocks)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::VerifyFullscreenSurfaceLocks File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a90e0:
   - [✅] Reconstructed (Name: zVideo_dd::RestoreDisplaySurfaces)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::RestoreDisplaySurfaces File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a9160:
   - [✅] Reconstructed (Name: zVideo_dd::VerifySurfaceStateLocking)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::VerifySurfaceStateLocking File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a91b0:
   - [✅] Reconstructed (Name: zVideo_dd::ReleaseAllInterfacesAndSurfaces)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::ReleaseAllInterfacesAndSurfaces File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a9300:
   - [✅] Reconstructed (Name: zVideo_dd::TeardownVideoSubsystem)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::TeardownVideoSubsystem File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a9390:
@@ -17307,167 +17362,167 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4a93d0:
   - [☑️] Reconstructed (Name: zVideo_dd::EnumDirectDrawDeviceCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::EnumDirectDrawDeviceCallback File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a95e0:
   - [☑️] Reconstructed (Name: zVideo_dd::EnumerateDirect3DDevicesForRecord)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::EnumerateDirect3DDevicesForRecord File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a96b0:
   - [☑️] Reconstructed (Name: zVideo_dd::EnumDirect3DDeviceCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::EnumDirect3DDeviceCallback File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a9890:
   - [☑️] Reconstructed (Name: zVideo_dd::PaletteSetEntries)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd::PaletteSetEntries File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a9b70:
   - [☑️] Reconstructed (Name: zVideo_dd3d::PresentDisplayModeSurface)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::PresentDisplayModeSurface File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a9c20:
   - [☑️] Reconstructed (Name: zVideo_dd3d::CreateDeviceState)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::CreateDeviceState File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aa0f0:
   - [☑️] Reconstructed (Name: zVideo_dd3d::CreateTextureRecord)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::CreateTextureRecord File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aa600:
   - [✅] Reconstructed (Name: zVideo_dd3d::UploadImageToSurface)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::UploadImageToSurface File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aa6f0:
   - [☑️] Reconstructed (Name: zVideo_dd3d::ConvertImagePixelsForTexture)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::ConvertImagePixelsForTexture File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aa8b0:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_LockUploadSurface)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::TextureRecord_LockUploadSurface File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aa8f0:
   - [☑️] Reconstructed (Name: zVideo_dd3d::TextureRecord_UnlockUploadSurface)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::TextureRecord_UnlockUploadSurface File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aa900:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aa920:
   - [☑️] Reconstructed (Name: zVideo_dd3d::TextureRecord_FinalizeUpload)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::TextureRecord_FinalizeUpload File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aa980:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_Destroy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::TextureRecord_Destroy File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aa9d0:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_Create)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::TextureRecord_Create File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aa9e0:
   - [✅] Reconstructed (Name: zVideo_dd3d::SetFogEnable)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::SetFogEnable File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aaa30:
   - [☑️] Reconstructed (Name: zVideo_dd3d::SetFogStart)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::SetFogStart File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aaa60:
   - [☑️] Reconstructed (Name: zVideo_dd3d::SetFogEnd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::SetFogEnd File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aaa90:
   - [☑️] Reconstructed (Name: zVideo_dd3d::ApplyFogStateFromGlobals)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::ApplyFogStateFromGlobals File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aab30:
   - [☑️] Reconstructed (Name: zVideo_dd3d::UpdateFogColor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::UpdateFogColor File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aab90:
   - [☑️] Reconstructed (Name: zVideo_dd3d::SubmitPolyFlatColor16)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::SubmitPolyFlatColor16 File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4aaef0:
   - [☑️] Reconstructed (Name: zVideo_dd3d::SubmitPolyGouraudColor16)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::SubmitPolyGouraudColor16 File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4ab320:
   - [☑️] Reconstructed (Name: zVideo_dd3d::SubmitPolyColorAttr)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::SubmitPolyColorAttr File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4ab6d0:
   - [☑️] Reconstructed (Name: zVideo_dd3d::SubmitPolyRenderClass)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::SubmitPolyRenderClass File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4abb20:
   - [☑️] Reconstructed (Name: zVideo_dd3d::SubmitPolygon)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::SubmitPolygon File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4ac370:
   - [☑️] Reconstructed (Name: zVideo_dd3d::SubmitPolygonLit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::SubmitPolygonLit File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4acbd0:
   - [✅] Reconstructed (Name: zVideo_dd3d::DrawPointColor16)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::DrawPointColor16 File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4accc0:
   - [☑️] Reconstructed (Name: zVideo_dd3d::SetQuadBatchDepthAndRhw)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::SetQuadBatchDepthAndRhw File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4acd00:
   - [☑️] Reconstructed (Name: zVideo_dd3d::QueueSolidQuad)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::QueueSolidQuad File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4ace30:
   - [☑️] Reconstructed (Name: zVideo_dd3d::FlushSortedPolys)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::FlushSortedPolys File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4ad120:
   - [✅] Reconstructed (Name: zVideo_dd3d::FlushQuadBatch)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::FlushQuadBatch File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4ad250:
   - [☑️] Reconstructed (Name: zVideo_dd3d::FlushOverwritePolys)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::FlushOverwritePolys File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4ad680:
   - [✅] Reconstructed (Name: zVideo_dd3d::FloorPowerOfTwo)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_dd3d::FloorPowerOfTwo File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4ad6a0:
@@ -17490,7 +17545,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x48d910:
   - [☑️] Reconstructed (Name: zVid::DrawNoiseRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::DrawNoiseRect File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x48da60:
@@ -17547,7 +17602,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zVideo::SetRendererTypeAndActivePath)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::SetRendererTypeAndActivePath File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a6b60:
   - [✅] Reconstructed (Name: zVideo_dd3d::SetPendingWireframeState)
   - [❓] Source dependencies satisfied
@@ -17572,19 +17627,19 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zVideo_PixelPack::SetupFromMasks)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::PixelPack_SetupFromMasks File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a6ca0:
-  - [☑️] Reconstructed (Name: zVid_PackColor00RRGGBB)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zVid::PackColor00RRGGBB)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_PackColor00RRGGBB File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4a6cf0:
-  - [✅] Reconstructed (Name: zVid_PackColorRGB)
+  - [✅] Reconstructed (Name: zVid::PackColorRGB)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_PackColorRGB File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a6d40:
-  - [☑️] Reconstructed (Name: zVid_PackColorRgbFloats)
+  - [☑️] Reconstructed (Name: zVid::PackColorRgbFloats)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_PackColorRgbFloats File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
@@ -17592,9 +17647,9 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zVideo_TexturePixelPack::SetupFromMasks)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::TexturePixelPack_SetupFromMasks File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4a6e80:
-  - [✅] Reconstructed (Name: zVideo_buff_CaptureSurfaceToImage)
+  - [✅] Reconstructed (Name: zVideoBuffer::CaptureSurfaceToImage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_buff_CaptureSurfaceToImage File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
@@ -17619,8 +17674,8 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4beee0:
-  - [☑️] Reconstructed (Name: zVideo_FxPass3_SetPrimaryElementParamsLocal)
-  - [❓] Source dependencies satisfied
+  - [☑️] Reconstructed (Name: zVideo_FxPass3::SetPrimaryElementParamsLocal)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_FxPass3_SetPrimaryElementParamsLocal File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [❌] Binary-safe verified
 - 0x4bef40:
@@ -17647,25 +17702,25 @@ Each function has these trackers:
 ## M44. zWeapon runtime contracts
 
 - 0x4ae3c0:
-  - [☑️] Reconstructed (Name: OptCatalog_FindEntryByName)
+  - [☑️] Reconstructed (Name: OptCatalog::FindEntryByName)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4ae450:
   - [✅] Reconstructed (Name: OptCatalog::FindEntryById)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog::FindEntryById File: src/GameZRecoil/zWeapon/OptCatalog.c)
   - [❌] Binary-safe verified
 - 0x4ae4a0:
   - [✅] Reconstructed (Name: OptCatalog::SetPendingSpawnTargetOverrides)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog::SetPendingSpawnTargetOverrides File: src/GameZRecoil/zWeapon/OptCatalog.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ae4b0:
   - [✅] Reconstructed (Name: OptCatalog::AllocOrReuseAttachNodeChildClone)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog::AllocOrReuseAttachNodeChildClone File: src/GameZRecoil/zWeapon/OptCatalog.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ae4e0:
   - [✅] Reconstructed (Name: OptCatalog::RecycleAttachNodeClone)
   - [❓] Source dependencies satisfied
@@ -17673,14 +17728,14 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4ae520:
   - [✅] Reconstructed (Name: OptCatalog::ClearRuntimeInstanceAsyncFxHandleCallback)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog::ClearRuntimeInstanceAsyncFxHandleCallback File: src/GameZRecoil/zWeapon/OptCatalog.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ae530:
   - [✅] Reconstructed (Name: OptCatalog::AllocOrReuseAttachNodeClone)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog::AllocOrReuseAttachNodeClone File: src/GameZRecoil/zWeapon/OptCatalog.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4ae590:
   - [☑️] Reconstructed (Name: OptCatalog::RecycleRuntimeInstanceStorage)
   - [❓] Source dependencies satisfied
@@ -17693,9 +17748,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4aeaa0:
   - [✅] Reconstructed (Name: OptCatalog::SpawnRuntimeInstanceAt)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog::SpawnRuntimeInstanceAt File: src/GameZRecoil/zWeapon/OptCatalog.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4aeb50:
   - [✅] Reconstructed (Name: OptCatalog::RecycleRuntimeInstance)
   - [❓] Source dependencies satisfied
@@ -17717,7 +17772,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4aee40:
-  - [☑️] Reconstructed (Name: OptCatalog_ActivateTrailRuntimeState)
+  - [☑️] Reconstructed (Name: OptCatalog::ActivateTrailRuntimeState)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -17738,19 +17793,19 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4b0600:
   - [✅] Reconstructed (Name: OptCatalog::PlayTriggerInactiveWarning)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog::PlayTriggerInactiveWarning File: src/GameZRecoil/zWeapon/OptCatalog.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b0620:
   - [✅] Reconstructed (Name: OptCatalog::PlayWeaponInactiveWarning)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog::PlayWeaponInactiveWarning File: src/GameZRecoil/zWeapon/OptCatalog.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b0640:
   - [✅] Reconstructed (Name: OptCatalog::PlayNoAmmoWarning)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog::PlayNoAmmoWarning File: src/GameZRecoil/zWeapon/OptCatalog.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b0660:
   - [☑️] Reconstructed (Name: OptCatalog::EmitQSandImpactEvent)
   - [❓] Source dependencies satisfied
@@ -17797,7 +17852,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4b0f70:
-  - [☑️] Reconstructed (Name: OptCatalog_UpdateTrailSegmentVisual)
+  - [☑️] Reconstructed (Name: OptCatalog::UpdateTrailSegmentVisual)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -17812,7 +17867,7 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4b1090:
-  - [✅] Reconstructed (Name: zWepInit)
+  - [✅] Reconstructed (Name: zWeapon::Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zWepInit File: src/GameZRecoil/zWeapon/zWeapon.cpp)
   - [❌] Binary-safe verified
@@ -17832,12 +17887,12 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: OptCatalog::Shutdown File: src/GameZRecoil/zWeapon/OptCatalog.c)
   - [❌] Binary-safe verified
 - 0x4b1190:
-  - [☑️] Reconstructed (Name: zWeapon_OptCatalog_LoadFromPath)
+  - [☑️] Reconstructed (Name: zWeapon::LoadOptCatalogFromPath)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4b1d80:
-  - [✅] Reconstructed (Name: zWeapon_SetMaxTetherAltitude)
+  - [✅] Reconstructed (Name: zWeapon::SetMaxTetherAltitude)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -17845,9 +17900,9 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: OptCatalog::ShutdownCore)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog::ShutdownCore File: src/GameZRecoil/zWeapon/OptCatalog.c)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 - 0x4b1ec0:
-  - [✅] Reconstructed (Name: OptCatalog_CreateTrailRuntimeState)
+  - [✅] Reconstructed (Name: OptCatalog::CreateTrailRuntimeState)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -17857,12 +17912,12 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: OptCatalog::FreeTrailRuntimeStateStorage File: src/GameZRecoil/zWeapon/OptCatalog.c)
   - [❌] Binary-safe verified
 - 0x4b1fa0:
-  - [☑️] Reconstructed (Name: OptCatalog_LoadFxSpecFromReaderNode)
+  - [☑️] Reconstructed (Name: OptCatalog::LoadFxSpecFromReaderNode)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4b2130:
-  - [✅] Reconstructed (Name: OptCatalog_CreateTrailSegmentNodeFromTemplate)
+  - [✅] Reconstructed (Name: OptCatalog::CreateTrailSegmentNodeFromTemplate)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -17897,17 +17952,17 @@ Each function has these trackers:
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4b2920:
-  - [✅] Reconstructed (Name: HitContext_GetCurrentOwnerOrCtx)
+  - [✅] Reconstructed (Name: HitContext::GetCurrentOwnerOrCtx)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4b2930:
-  - [✅] Reconstructed (Name: OptCatalog_MineIterator_Begin)
+  - [✅] Reconstructed (Name: OptCatalog_MineIterator::Begin)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
 - 0x4b2940:
-  - [✅] Reconstructed (Name: OptCatalog_MineIterator_Next)
+  - [✅] Reconstructed (Name: OptCatalog_MineIterator::Next)
   - [❓] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Binary-safe verified
@@ -17936,67 +17991,67 @@ Each function has these trackers:
 
 - 0x4ba830:
   - [✅] Reconstructed (Name: HudUiPanel::ScalarDeletingDestructorThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiPanel::ScalarDeletingDestructorThunk File: external)
   - [❌] Binary-safe verified
 - 0x4bcb48:
   - [✅] Reconstructed (Name: padding_before_HudUiTextLabel_ConstructorWithPosAndFlags)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: padding_before_HudUiTextLabel_ConstructorWithPosAndFlags File: external)
   - [❌] Binary-safe verified
 - 0x4bde20:
   - [✅] Reconstructed (Name: HudWeatherFx::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudWeatherFx::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4be2c0:
   - [✅] Reconstructed (Name: HudWeatherFxSnow::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudWeatherFxSnow::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4be2e0:
   - [✅] Reconstructed (Name: HudWeatherFxSnow::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudWeatherFxSnow::Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4be850:
   - [✅] Reconstructed (Name: HudWeatherFxRain::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudWeatherFxRain::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4bfa00:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiBackgroundCursorWidget::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4bfcb0:
   - [✅] Reconstructed (Name: HudUiBackgroundVideoWidget::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiBackgroundVideoWidget::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x409950:
-  - [✅] Reconstructed (Name: CRT_StaticInit_Credits)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: RecoilStateCredits::StaticInitAndRegisterAtExit)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: CRT_StaticInit_Credits File: external)
   - [❌] Binary-safe verified
 - 0x409960:
   - [✅] Reconstructed (Name: RecoilStateCredits::StaticConstructGlobal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: RecoilStateCredits::StaticConstructGlobal File: external)
   - [❌] Binary-safe verified
 - 0x409970:
   - [✅] Reconstructed (Name: RecoilStateCredits::StaticInit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: RecoilStateCredits::StaticInit File: external)
   - [❌] Binary-safe verified
 - 0x409980:
   - [✅] Reconstructed (Name: RecoilStateCredits::RegisterAtExit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: RecoilStateCredits::RegisterAtExit File: external)
   - [❌] Binary-safe verified
 - 0x4099d0:
   - [✅] Reconstructed (Name: RecoilStateCredits::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: RecoilStateCredits::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4a7470:
@@ -18005,263 +18060,263 @@ Each function has these trackers:
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: zVid::GetAcceptedHardwareRendererCountThunk File: external)
   - [❌] Binary-safe verified
 - 0x403d70:
-  - [✅] Reconstructed (Name: HudUiWidget::SharedScalarDeletingDestructorThunk)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiWidget::SharedScalarDeletingDestructor)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiWidget::SharedScalarDeletingDestructorThunk File: external)
   - [❌] Binary-safe verified
 - 0x403d90:
   - [✅] Reconstructed (Name: HudUiBriefingRuntime::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBriefingRuntime::ScalarDeletingDestructor File: src/Battlesport/Briefing.cpp)
   - [❌] Binary-safe verified
 - 0x403db0:
   - [✅] Reconstructed (Name: zZbdSectionHandlerList::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: zZbdSectionHandlerList::Destructor File: external)
   - [❌] Binary-safe verified
 - 0x403eb0:
-  - [✅] Reconstructed (Name: HudUiFillBitmap::SharedScalarDeletingDestructorThunk)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiFillBitmap::SharedScalarDeletingDestructor)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiFillBitmap::SharedScalarDeletingDestructorThunk File: external)
   - [❌] Binary-safe verified
 - 0x40b0a0:
   - [✅] Reconstructed (Name: HudCmdCommandList::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudCmdCommandList::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x40b0c0:
   - [✅] Reconstructed (Name: HudCmdKeyAButton::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudCmdKeyAButton::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x40b0e0:
   - [✅] Reconstructed (Name: HudCmdKeyBButton::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudCmdKeyBButton::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x40b100:
   - [✅] Reconstructed (Name: HudCmdJoyButton::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudCmdJoyButton::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x40b120:
   - [✅] Reconstructed (Name: HudCmdMouseButton::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudCmdMouseButton::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x40c260:
   - [✅] Reconstructed (Name: HudCmdBindButtonBase::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudCmdBindButtonBase::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x40d0e0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiOptionsPanelOverlayOwner::DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x40d1f0:
   - [✅] Reconstructed (Name: StaticInit_g_HudUiTripletWndClassName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: StaticInit_g_HudUiTripletWndClassName File: external)
   - [❌] Binary-safe verified
 - 0x40d200:
   - [✅] Reconstructed (Name: g_HudUiTripletWndClassName_RegisterAtExit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: g_HudUiTripletWndClassName_RegisterAtExit File: external)
   - [❌] Binary-safe verified
 - 0x40d210:
   - [✅] Reconstructed (Name: g_HudUiTripletWndClassName_Dtor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: g_HudUiTripletWndClassName_Dtor File: external)
   - [❌] Binary-safe verified
 - 0x40d260:
   - [✅] Reconstructed (Name: HudLayoutSW::CrtInitGlobalSingleton)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudLayoutSW::CrtInitGlobalSingleton File: external)
   - [❌] Binary-safe verified
 - 0x415020:
-  - [✅] Reconstructed (Name: HudUiMainMenuDialog_ScalarDeletingDtor)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: HudUiMainMenuDialog::ScalarDeletingDestructor)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiMainMenuDialog_ScalarDeletingDtor File: external)
   - [❌] Binary-safe verified
 - 0x415790:
   - [✅] Reconstructed (Name: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x419850:
   - [✅] Reconstructed (Name: HudUiMpExitDialog::ScalarDeletingDestructorThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiMpExitDialog::ScalarDeletingDestructorThunk File: external)
   - [❌] Binary-safe verified
 - 0x41a3d0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_ScalarDeletingDtor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiNetGameSetupPanel_ScalarDeletingDtor File: external)
   - [❌] Binary-safe verified
 - 0x41abc0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x41b8f0:
   - [✅] Reconstructed (Name: CCheckListBox::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: CCheckListBox::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x41b910:
   - [✅] Reconstructed (Name: CComboBox::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: CComboBox::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x41b930:
   - [✅] Reconstructed (Name: CEdit::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: CEdit::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x41be90:
-  - [✅] Reconstructed (Name: HudUiNetExitPanel_ScalarDeletingDtor)
+  - [✅] Reconstructed (Name: HudUiNetExitPanel::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNetExitPanel::ScalarDeletingDestructor File: src/Battlesport/HudUiNetExitPanel.cpp)
   - [❌] Binary-safe verified
 - 0x41c3e0:
   - [✅] Reconstructed (Name: HudUiNewGamePanel::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiNewGamePanel::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x41c610:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x41c7d0:
   - [✅] Reconstructed (Name: NetSessionConfigDialog::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: NetSessionConfigDialog::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x41cbf0:
   - [✅] Reconstructed (Name: CSpinButtonCtrl::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: CSpinButtonCtrl::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x41ebb0:
   - [✅] Reconstructed (Name: HudUiElement::SharedScalarDeletingDestructorThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiElement::SharedScalarDeletingDestructorThunk File: external)
   - [❌] Binary-safe verified
 - 0x4305f0:
   - [✅] Reconstructed (Name: CZRecoilFrame::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: CZRecoilFrame::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x431b50:
   - [✅] Reconstructed (Name: CObject::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: CObject::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x431b80:
   - [✅] Reconstructed (Name: CMenu::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: CMenu::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x434b70:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiSaveLoadDialog::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4353e0:
   - [✅] Reconstructed (Name: HudUiSaveGameDialog::SaveSelectedGameAndExitThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiSaveGameDialog::SaveSelectedGameAndExitThunk File: external)
   - [❌] Binary-safe verified
 - 0x43cf20:
   - [✅] Reconstructed (Name: zStr::CrtInitStub)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: zStr::CrtInitStub File: external)
   - [❌] Binary-safe verified
 - 0x44300b:
   - [✅] Reconstructed (Name: MsvcEh_CMemoryException_FatalOomHandler)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CMemoryException_FatalOomHandler File: external)
   - [❌] Binary-safe verified
 - 0x443029:
   - [✅] Reconstructed (Name: MsvcEh_CMemoryException_FuncletReturn4430f3)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CMemoryException_FuncletReturn4430f3 File: external)
   - [❌] Binary-safe verified
 - 0x4430c3:
   - [✅] Reconstructed (Name: MsvcEh_CFileException_FuncletReturn4430f3)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CFileException_FuncletReturn4430f3 File: external)
   - [❌] Binary-safe verified
 - 0x4430ea:
   - [✅] Reconstructed (Name: MsvcEh_CException_FuncletReturn4430f3)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CException_FuncletReturn4430f3 File: external)
   - [❌] Binary-safe verified
 - 0x441890:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeConfigDialog::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: WestwoodOnlineUpgradeConfigDialog::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x443810:
   - [✅] Reconstructed (Name: CZGameFrame::ScalarDeletingDtor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: CZGameFrame::ScalarDeletingDtor File: external)
   - [❌] Binary-safe verified
 - 0x443b70:
   - [✅] Reconstructed (Name: CGdiObject::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: CGdiObject::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x443b90:
   - [✅] Reconstructed (Name: CGdiObject::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: CGdiObject::Destructor File: external)
   - [❌] Binary-safe verified
 - 0x443c00:
   - [✅] Reconstructed (Name: CBitmap::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: CBitmap::Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4b92c0:
   - [✅] Reconstructed (Name: HudUiListSelectorItem::VectorDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiListSelectorItem::VectorDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4b9710:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::MemberScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiBackgroundCursorWidget::MemberScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4b9740:
   - [✅] Reconstructed (Name: HudUiBackground::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: HudUiBackground::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4c5f50:
   - [✅] Reconstructed (Name: MSVC_EH_ArrayDestructor_OrphanEpilogue)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MSVC_EH_ArrayDestructor_OrphanEpilogue File: external)
   - [❌] Binary-safe verified
 - 0x4c62b7:
   - [☑️] Reconstructed (Name: no_bn_function_0x4c62b7)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: no_bn_function_0x4c62b7 File: external)
   - [❌] Binary-safe verified
 - 0x4c6300:
   - [✅] Reconstructed (Name: type_info::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: type_info::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4c5fe0:
   - [✅] Reconstructed (Name: MSVC_EH_ArrayDestructor_CxxExceptionFilter)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MSVC_EH_ArrayDestructor_CxxExceptionFilter File: external)
   - [❌] Binary-safe verified
 - 0x4c608c:
   - [✅] Reconstructed (Name: MSVC_EH_ArrayConstructor_OrphanEpilogue)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MSVC_EH_ArrayConstructor_OrphanEpilogue File: external)
   - [❌] Binary-safe verified
 - 0x4c60a6:
@@ -18276,1279 +18331,1279 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4c62f0:
   - [✅] Reconstructed (Name: _purecall)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: _purecall File: external)
   - [❌] Binary-safe verified
 - 0x4c6326:
   - [✅] Reconstructed (Name: _except_handler3)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: _except_handler3 File: external)
   - [❌] Binary-safe verified
 - 0x4c633e:
   - [✅] Reconstructed (Name: _initterm)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: _initterm File: external)
   - [❌] Binary-safe verified
 - 0x4c8ff3:
   - [✅] Reconstructed (Name: __ehhandler_HudUiSlot_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiSlot_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9059:
   - [✅] Reconstructed (Name: __ehhandler_HudUiTriplet_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiTriplet_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9949:
   - [✅] Reconstructed (Name: __ehhandler_NetSessionBrowserDialog_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_NetSessionBrowserDialog_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c99ab:
   - [✅] Reconstructed (Name: __ehhandler_NetSessionBrowserDialog_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_NetSessionBrowserDialog_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c99cb:
   - [✅] Reconstructed (Name: __ehhandler_NetSessionBrowserDialog_RefreshSessionList)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_NetSessionBrowserDialog_RefreshSessionList File: external)
   - [❌] Binary-safe verified
 - 0x4c9a26:
   - [✅] Reconstructed (Name: __ehhandler_HudUiNetExitPanel_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiNetExitPanel_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9a3b:
   - [✅] Reconstructed (Name: __ehhandler_HudUiNetExitPanel_CreateGlobal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiNetExitPanel_CreateGlobal File: external)
   - [❌] Binary-safe verified
 - 0x4c9a60:
   - [✅] Reconstructed (Name: __ehhandler_AiPropertyDlg_UpdatePropertyLabels)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_AiPropertyDlg_UpdatePropertyLabels File: external)
   - [❌] Binary-safe verified
 - 0x4c9ab0:
   - [✅] Reconstructed (Name: __ehhandler_HudUiNewGamePanel_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiNewGamePanel_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9cf0:
   - [✅] Reconstructed (Name: __ehhandler_zCom_ConnectionPointContainer_Advise)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zCom_ConnectionPointContainer_Advise File: external)
   - [❌] Binary-safe verified
 - 0x4c9d10:
   - [✅] Reconstructed (Name: __ehhandler_zCom_ConnectionPointContainer_Unadvise)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zCom_ConnectionPointContainer_Unadvise File: external)
   - [❌] Binary-safe verified
 - 0x4c9d78:
   - [✅] Reconstructed (Name: RecoilApp_Dtor_EhFrameHandlerThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: RecoilApp_Dtor_EhFrameHandlerThunk File: external)
   - [❌] Binary-safe verified
 - 0x4c9d98:
   - [✅] Reconstructed (Name: __ehhandler_RecoilApp_AttractFmvState_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilApp_AttractFmvState_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9db8:
   - [✅] Reconstructed (Name: RecoilApp_IntroFmvState_Dtor_EhFrameHandlerThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: RecoilApp_IntroFmvState_Dtor_EhFrameHandlerThunk File: external)
   - [❌] Binary-safe verified
 - 0x4c9e26:
   - [✅] Reconstructed (Name: RecoilApp_Ctor_EhFrameHandlerThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: RecoilApp_Ctor_EhFrameHandlerThunk File: external)
   - [❌] Binary-safe verified
 - 0x4c9e5a:
   - [✅] Reconstructed (Name: RecoilApp_CreateMainWnd_EhFrameHandlerThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: RecoilApp_CreateMainWnd_EhFrameHandlerThunk File: external)
   - [❌] Binary-safe verified
 - 0x4c9ec0:
   - [✅] Reconstructed (Name: __ehhandler_RecoilApp_PlayState_OnUpdateShouldQuit)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilApp_PlayState_OnUpdateShouldQuit File: external)
   - [❌] Binary-safe verified
 - 0x4c9ed8:
   - [✅] Reconstructed (Name: __ehhandler_RecoilApp_PlayState_OnDeactivate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilApp_PlayState_OnDeactivate File: external)
   - [❌] Binary-safe verified
 - 0x4c9f60:
   - [✅] Reconstructed (Name: __ehhandler_CZRecoilFrame_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_CZRecoilFrame_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9f78:
   - [✅] Reconstructed (Name: __ehhandler_CZRecoilFrame_OnMenuAbout)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_CZRecoilFrame_OnMenuAbout File: external)
   - [❌] Binary-safe verified
 - 0x4c82c8:
   - [✅] Reconstructed (Name: __ehhandler_HudUiBriefingRuntime_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiBriefingRuntime_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c82e8:
   - [✅] Reconstructed (Name: __ehhandler_HudUiBriefingLocatorPanel_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiBriefingLocatorPanel_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8308:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCompositePanel_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCompositePanel_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c83b8:
   - [✅] Reconstructed (Name: __ehhandler_HudUiBriefingRuntime_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiBriefingRuntime_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c83db:
   - [✅] Reconstructed (Name: __ehhandler_Briefing_StartForMission)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_Briefing_StartForMission File: external)
   - [❌] Binary-safe verified
 - 0x4c83fb:
   - [✅] Reconstructed (Name: __ehhandler_Briefing_ActionQueue_AddSetPanelText)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_Briefing_ActionQueue_AddSetPanelText File: external)
   - [❌] Binary-safe verified
 - 0x4c841b:
   - [✅] Reconstructed (Name: __ehhandler_Briefing_ActionQueue_AddSetWidgetImageTimed)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_Briefing_ActionQueue_AddSetWidgetImageTimed File: external)
   - [❌] Binary-safe verified
 - 0x4c843b:
   - [✅] Reconstructed (Name: __ehhandler_Briefing_ActionQueue_AddPlaySampleByName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_Briefing_ActionQueue_AddPlaySampleByName File: external)
   - [❌] Binary-safe verified
 - 0x4c847c:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCheatCodeDialog_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCheatCodeDialog_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c84a6:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCheatCodeDialog_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCheatCodeDialog_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c84b8:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateCheatCode_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilStateCheatCode_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c84db:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateCheatCode_OnTryBecomeCurrent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilStateCheatCode_OnTryBecomeCurrent File: external)
   - [❌] Binary-safe verified
 - 0x4c84f8:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateCheatCode_OnDeactivate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilStateCheatCode_OnDeactivate File: external)
   - [❌] Binary-safe verified
 - 0x4c857a:
   - [✅] Reconstructed (Name: __ehhandler_HudUiControlsDialog_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiControlsDialog_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c85ec:
   - [✅] Reconstructed (Name: __ehhandler_HudUiControlsDialog_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiControlsDialog_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8608:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateControls_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilStateControls_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c862b:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateControls_OnTryBecomeCurrent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilStateControls_OnTryBecomeCurrent File: external)
   - [❌] Binary-safe verified
 - 0x4c8672:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCreditsPanel_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCreditsPanel_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8688:
   - [✅] Reconstructed (Name: __ehhandler_HudUiZrdScrollingText_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiZrdScrollingText_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c86cc:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCreditsPanel_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCreditsPanel_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c86f6:
   - [✅] Reconstructed (Name: __ehhandler_HudUiZrdScrollingText_LoadFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiZrdScrollingText_LoadFromZrd File: external)
   - [❌] Binary-safe verified
 - 0x4c8708:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateCredits_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilStateCredits_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c872b:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateCredits_OnTryBecomeCurrent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilStateCredits_OnTryBecomeCurrent File: external)
   - [❌] Binary-safe verified
 - 0x4c880c:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdDialog_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdDialog_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8844:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdCommandList_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdCommandList_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8874:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdKeyAButton_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdKeyAButton_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c88a4:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdKeyBButton_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdKeyBButton_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c88d4:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdJoyButton_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdJoyButton_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8904:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdMouseButton_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdMouseButton_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8a82:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdDialog_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdDialog_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8a98:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdDialogState_DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdDialogState_DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x4c8abb:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdDialogState_OnTryBecomeCurrent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdDialogState_OnTryBecomeCurrent File: external)
   - [❌] Binary-safe verified
 - 0x4c8adb:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdBindingEntry_DeletingDtor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdBindingEntry_DeletingDtor File: external)
   - [❌] Binary-safe verified
 - 0x4c8b14:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdBindButtonBase_DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdBindButtonBase_DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x4c8bde:
   - [✅] Reconstructed (Name: __ehhandler_HudOptionsDialog_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudOptionsDialog_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8ca0:
   - [✅] Reconstructed (Name: __ehhandler_HudOptionsDialog_DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudOptionsDialog_DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x4c8cb8:
   - [✅] Reconstructed (Name: __ehhandler_HudOptionsDialogState_DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudOptionsDialogState_DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x4c8cdb:
   - [✅] Reconstructed (Name: __ehhandler_HudOptionsDialogState_OnTryBecomeCurrent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudOptionsDialogState_OnTryBecomeCurrent File: external)
   - [❌] Binary-safe verified
 - 0x4c8cf8:
   - [✅] Reconstructed (Name: __ehhandler_HudLayoutSW_GlobalDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudLayoutSW_GlobalDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8d3c:
   - [✅] Reconstructed (Name: __ehhandler_HudLayoutHW_GlobalDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudLayoutHW_GlobalDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8d58:
   - [✅] Reconstructed (Name: __ehhandler_HudLayoutBase_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudLayoutBase_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8e46:
   - [✅] Reconstructed (Name: __ehhandler_HudUiMessage_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiMessage_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8e58:
   - [✅] Reconstructed (Name: __ehhandler_HudUiTripletPanel_DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiTripletPanel_DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x4c8ea5:
   - [✅] Reconstructed (Name: __ehhandler_HudUiMgrObjectiveBlock_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiMgrObjectiveBlock_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8ebb:
   - [✅] Reconstructed (Name: __ehhandler_HudUiMgrSensorBlock_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiMgrSensorBlock_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8ee3:
   - [✅] Reconstructed (Name: __ehhandler_HudUiSlot_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiSlot_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8fd6:
   - [✅] Reconstructed (Name: __ehhandler_HudUiMessage_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiMessage_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9010:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCounterTextPanel_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCounterTextPanel_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9083:
   - [✅] Reconstructed (Name: __ehhandler_HudUiTriplet_DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiTriplet_DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x4c90a0:
   - [✅] Reconstructed (Name: __ehhandler_HudUiTimerPanel_ConstructorDefault)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiTimerPanel_ConstructorDefault File: external)
   - [❌] Binary-safe verified
 - 0x4c90c0:
   - [✅] Reconstructed (Name: __ehhandler_HudUiTimerPanelFloat_ConstructorDefault)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiTimerPanelFloat_ConstructorDefault File: external)
   - [❌] Binary-safe verified
 - 0x4c90f1:
   - [✅] Reconstructed (Name: __ehhandler_HudUiTripletPanel_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiTripletPanel_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c91e6:
   - [✅] Reconstructed (Name: __ehhandler_HudUiMgr_InitHudLayouts)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiMgr_InitHudLayouts File: external)
   - [❌] Binary-safe verified
 - 0x4c91f8:
   - [✅] Reconstructed (Name: __ehhandler_HudUiStatsListElement_DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiStatsListElement_DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x4c9278:
   - [✅] Reconstructed (Name: __ehhandler_HudUiTextStack4_DestructorCore_TopStack)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiTextStack4_DestructorCore_TopStack File: external)
   - [❌] Binary-safe verified
 - 0x4c92c3:
   - [✅] Reconstructed (Name: __ehhandler_HudLayoutSW_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudLayoutSW_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9315:
   - [✅] Reconstructed (Name: __ehhandler_HudLayoutHW_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudLayoutHW_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9398:
   - [✅] Reconstructed (Name: __ehhandler_HudUiMainMenuDialog_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiMainMenuDialog_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c941a:
   - [✅] Reconstructed (Name: __ehhandler_HudUiMainMenuDialog_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiMainMenuDialog_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9438:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateMainMenuTransition_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilStateMainMenuTransition_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9463:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateMainMenuTransition_OnTryBecomeCurrent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilStateMainMenuTransition_OnTryBecomeCurrent File: external)
   - [❌] Binary-safe verified
 - 0x4c94b6:
   - [✅] Reconstructed (Name: __ehhandler_HudUiBackgroundConfirmQuit_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiBackgroundConfirmQuit_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c94c8:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateConfirmQuit_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilStateConfirmQuit_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9552:
   - [✅] Reconstructed (Name: __ehhandler_HudSensorTracker_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudSensorTracker_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9568:
   - [✅] Reconstructed (Name: __ehhandler_HudSensorTracker_LoadMissionCoreResources)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudSensorTracker_LoadMissionCoreResources File: external)
   - [❌] Binary-safe verified
 - 0x4c9596:
   - [✅] Reconstructed (Name: __ehhandler_HudSensorTracker_LoadMissionWeatherFx)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudSensorTracker_LoadMissionWeatherFx File: external)
   - [❌] Binary-safe verified
 - 0x4c95a8:
   - [✅] Reconstructed (Name: __ehhandler_HudSensorTracker_LoadRaceCheckpointMeta)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudSensorTracker_LoadRaceCheckpointMeta File: external)
   - [❌] Binary-safe verified
 - 0x4c9636:
   - [✅] Reconstructed (Name: __ehhandler_HudUiMpExitDialog_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiMpExitDialog_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9752:
   - [✅] Reconstructed (Name: __ehhandler_HudUiNetGameSetupPanel_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiNetGameSetupPanel_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9768:
   - [✅] Reconstructed (Name: __ehhandler_HudUiNumericTextInput_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiNumericTextInput_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c98a4:
   - [✅] Reconstructed (Name: __ehhandler_HudUiNetGameSetupPanel_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiNetGameSetupPanel_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c98b8:
   - [✅] Reconstructed (Name: __ehhandler_HudUiNetGameSetupOverlayOwner_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiNetGameSetupOverlayOwner_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9af2:
   - [✅] Reconstructed (Name: __ehhandler_HudUiNewGamePanel_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiNewGamePanel_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9b0b:
   - [✅] Reconstructed (Name: __ehhandler_HudUiNewGamePanelOverlayOwner_OnTryBecomeCurrent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiNewGamePanelOverlayOwner_OnTryBecomeCurrent File: external)
   - [❌] Binary-safe verified
 - 0x4c9b8b:
   - [✅] Reconstructed (Name: __ehhandler_NetSessionConfigDialog_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_NetSessionConfigDialog_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9bdd:
   - [✅] Reconstructed (Name: __ehhandler_NetSessionConfigDialog_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_NetSessionConfigDialog_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9bfb:
   - [✅] Reconstructed (Name: __ehhandler_Player_InitMissionRuntimeFromWorldAndCamera)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_Player_InitMissionRuntimeFromWorldAndCamera File: external)
   - [❌] Binary-safe verified
 - 0x4c9c60:
   - [✅] Reconstructed (Name: __ehhandler_HudSensorTracker_ParseCheckpointNumberFromNode)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudSensorTracker_ParseCheckpointNumberFromNode File: external)
   - [❌] Binary-safe verified
 - 0x4c9c7b:
   - [✅] Reconstructed (Name: __ehhandler_Player_RegisterGameplayCommandCallbacksAndCreateFfEffects)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_Player_RegisterGameplayCommandCallbacksAndCreateFfEffects File: external)
   - [❌] Binary-safe verified
 - 0x4c9ca3:
   - [✅] Reconstructed (Name: __ehhandler_zInput_BindGroupInfo_Destroy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zInput_BindGroupInfo_Destroy File: external)
   - [❌] Binary-safe verified
 - 0x4ca108:
   - [✅] Reconstructed (Name: __ehhandler_CZRecoilFrame_OnMenuOpenMultiplayerSessionBrowser)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_CZRecoilFrame_OnMenuOpenMultiplayerSessionBrowser File: external)
   - [❌] Binary-safe verified
 - 0x4ca128:
   - [✅] Reconstructed (Name: __ehhandler_CMenu_dtor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_CMenu_dtor File: external)
   - [❌] Binary-safe verified
 - 0x4ca1cc:
   - [✅] Reconstructed (Name: __ehhandler_HudUiSaveGameDialog_InitLayout)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiSaveGameDialog_InitLayout File: external)
   - [❌] Binary-safe verified
 - 0x4ca22e:
   - [✅] Reconstructed (Name: __ehhandler_HudUiSaveLoadDialog_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiSaveLoadDialog_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4ca296:
   - [✅] Reconstructed (Name: __ehhandler_HudUiSaveGameDialog_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiSaveGameDialog_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4ca30c:
   - [✅] Reconstructed (Name: __ehhandler_HudUiSaveLoadDialog_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiSaveLoadDialog_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4ca376:
   - [✅] Reconstructed (Name: __ehhandler_HudUiLoadGameDialog_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiLoadGameDialog_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4ca388:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateSaveLoadTransition_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilStateSaveLoadTransition_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4ca3be:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateSaveLoadTransition_OnTryBecomeCurrent)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilStateSaveLoadTransition_OnTryBecomeCurrent File: external)
   - [❌] Binary-safe verified
 - 0x4ca3db:
   - [✅] Reconstructed (Name: __ehhandler_zTurret_System_LoadDefinitionsFromPath_Local)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zTurret_System_LoadDefinitionsFromPath_Local File: external)
   - [❌] Binary-safe verified
 - 0x4ca466:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeApi_Init)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeApi_Init File: external)
   - [❌] Binary-safe verified
 - 0x4ca57f:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeDialog_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeDialog_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4ca69f:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeDialog_ScalarDeletingDtor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeDialog_ScalarDeletingDtor File: external)
   - [❌] Binary-safe verified
 - 0x4ca6e8:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeDialog_OnInitDialogBootstrap)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeDialog_OnInitDialogBootstrap File: external)
   - [❌] Binary-safe verified
 - 0x4ca70b:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeDialog_OnRefreshCurrentQuery)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeDialog_OnRefreshCurrentQuery File: external)
   - [❌] Binary-safe verified
 - 0x4ca8fc:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeDialog_ShowModalAndGetSelectedMissionIndex)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeDialog_ShowModalAndGetSelectedMissionIndex File: external)
   - [❌] Binary-safe verified
 - 0x4ca923:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeApiEventSink_CreateInstance)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeApiEventSink_CreateInstance File: external)
   - [❌] Binary-safe verified
 - 0x4ca9a0:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeApiEventSink_ApplyEncodedQueryString1)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeApiEventSink_ApplyEncodedQueryString1 File: external)
   - [❌] Binary-safe verified
 - 0x4ca9f0:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeApiEventSink_ApplyEncodedQueryString0)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeApiEventSink_ApplyEncodedQueryString0 File: external)
   - [❌] Binary-safe verified
 - 0x4caa08:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeApiEventSink_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeApiEventSink_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4caabd:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeConfigDialog_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeConfigDialog_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4cab55:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeConfigDialog_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeConfigDialog_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4cac3f:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeConfigDialog_ShowModalAndApplySelectedProfileValues)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeConfigDialog_ShowModalAndApplySelectedProfileValues File: external)
   - [❌] Binary-safe verified
 - 0x4cac58:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeDialog_SetSelectedProfilePlayerName)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeDialog_SetSelectedProfilePlayerName File: external)
   - [❌] Binary-safe verified
 - 0x4caca3:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeDownloadEventSink_CreateInstance)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeDownloadEventSink_CreateInstance File: external)
   - [❌] Binary-safe verified
 - 0x4cacb8:
   - [✅] Reconstructed (Name: __ehhandler_WestwoodOnlineUpgradeDownloadEventSink_Dtor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_WestwoodOnlineUpgradeDownloadEventSink_Dtor File: external)
   - [❌] Binary-safe verified
 - 0x4cacd0:
   - [✅] Reconstructed (Name: __ehhandler_RecoilApp_Run)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_RecoilApp_Run File: external)
   - [❌] Binary-safe verified
 - 0x4cacea:
   - [✅] Reconstructed (Name: __ehhandler_CZGameFrame_CreateObject)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_CZGameFrame_CreateObject File: external)
   - [❌] Binary-safe verified
 - 0x4cad10:
   - [✅] Reconstructed (Name: __ehhandler_CZGameFrame_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_CZGameFrame_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4cad28:
   - [✅] Reconstructed (Name: __ehhandler_CZGameFrame_OnPaint)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_CZGameFrame_OnPaint File: external)
   - [❌] Binary-safe verified
 - 0x4cadb2:
   - [✅] Reconstructed (Name: __ehhandler_zDEClient_MapTreeState_EraseRange)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zDEClient_MapTreeState_EraseRange File: external)
   - [❌] Binary-safe verified
 - 0x4cadc9:
   - [✅] Reconstructed (Name: __ehhandler_zDEClient_MapTreeState_EraseAndAdvance)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zDEClient_MapTreeState_EraseAndAdvance File: external)
   - [❌] Binary-safe verified
 - 0x4cade9:
   - [✅] Reconstructed (Name: __ehhandler_zDEClient_MapTreeState_DestroySubtree)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zDEClient_MapTreeState_DestroySubtree File: external)
   - [❌] Binary-safe verified
 - 0x4cae09:
   - [✅] Reconstructed (Name: __ehhandler_zDEClient_MapTreeState_InsertAt)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zDEClient_MapTreeState_InsertAt File: external)
   - [❌] Binary-safe verified
 - 0x4cae29:
   - [✅] Reconstructed (Name: __ehhandler_zDEClient_MapTreeState_IterNextNodeRef)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zDEClient_MapTreeState_IterNextNodeRef File: external)
   - [❌] Binary-safe verified
 - 0x4cae49:
   - [✅] Reconstructed (Name: __ehhandler_zDEClient_MapTreeState_IterPrevNodeRef)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zDEClient_MapTreeState_IterPrevNodeRef File: external)
   - [❌] Binary-safe verified
 - 0x4caeec:
   - [✅] Reconstructed (Name: __ehhandler_zFMV_Script_LoadActionsFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zFMV_Script_LoadActionsFromZrd File: external)
   - [❌] Binary-safe verified
 - 0x4caf08:
   - [✅] Reconstructed (Name: __ehhandler_zFMV_ActionImage_CtorWithScreenRect)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zFMV_ActionImage_CtorWithScreenRect File: external)
   - [❌] Binary-safe verified
 - 0x4caf28:
   - [✅] Reconstructed (Name: __ehhandler_zFMV_ActionImage_CtorScaled)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zFMV_ActionImage_CtorScaled File: external)
   - [❌] Binary-safe verified
 - 0x4caf48:
   - [✅] Reconstructed (Name: __ehhandler_zFMV_ActionImage_Dtor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zFMV_ActionImage_Dtor File: external)
   - [❌] Binary-safe verified
 - 0x4caf88:
   - [✅] Reconstructed (Name: __ehhandler_zFMV_ActionPlayAvi_Dtor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zFMV_ActionPlayAvi_Dtor File: external)
   - [❌] Binary-safe verified
 - 0x4cafd3:
   - [✅] Reconstructed (Name: __ehhandler_zFMV_ActionPlayMci_Ctor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zFMV_ActionPlayMci_Ctor File: external)
   - [❌] Binary-safe verified
 - 0x4cafe8:
   - [✅] Reconstructed (Name: __ehhandler_zFMV_ActionPlayMci_Dtor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zFMV_ActionPlayMci_Dtor File: external)
   - [❌] Binary-safe verified
 - 0x4cb00b:
   - [✅] Reconstructed (Name: __ehhandler_zInput_BindMapSystem_Init)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zInput_BindMapSystem_Init File: external)
   - [❌] Binary-safe verified
 - 0x4cb02b:
   - [✅] Reconstructed (Name: __ehhandler_zInput_BindMapContext_Push)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zInput_BindMapContext_Push File: external)
   - [❌] Binary-safe verified
 - 0x4cb04b:
   - [✅] Reconstructed (Name: __ehhandler_zNetwork_InitSessionRuntime)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zNetwork_InitSessionRuntime File: external)
   - [❌] Binary-safe verified
 - 0x4cb06b:
   - [✅] Reconstructed (Name: __ehhandler_zNetwork_DPlay_CreateLocalPlayerRecordAndRegister)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zNetwork_DPlay_CreateLocalPlayerRecordAndRegister File: external)
   - [❌] Binary-safe verified
 - 0x4cb08b:
   - [✅] Reconstructed (Name: __ehhandler_zNetwork_DPlay_PumpIncomingMessages)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zNetwork_DPlay_PumpIncomingMessages File: external)
   - [❌] Binary-safe verified
 - 0x4cb0ab:
   - [✅] Reconstructed (Name: __ehhandler_zNetwork_DPlay_EnumConnectionsCallback_AddServiceProviderInfo)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zNetwork_DPlay_EnumConnectionsCallback_AddServiceProviderInfo File: external)
   - [❌] Binary-safe verified
 - 0x4cb0cb:
   - [✅] Reconstructed (Name: __ehhandler_zNetwork_DPlay_EnumPlayerCallback_AddPlayerRecord)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zNetwork_DPlay_EnumPlayerCallback_AddPlayerRecord File: external)
   - [❌] Binary-safe verified
 - 0x4cb0e8:
   - [✅] Reconstructed (Name: __ehhandler_zNetwork_DPlay_SetupForcedTcpIpProviderAndMaybeEnumSessions)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zNetwork_DPlay_SetupForcedTcpIpProviderAndMaybeEnumSessions File: external)
   - [❌] Binary-safe verified
 - 0x4cb10b:
   - [✅] Reconstructed (Name: __ehhandler_zArchive_MountIndexArchive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zArchive_MountIndexArchive File: external)
   - [❌] Binary-safe verified
 - 0x4cb12b:
   - [✅] Reconstructed (Name: __ehhandler_zSndPlayHandleSnapshot_CreateFromActiveSamples)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zSndPlayHandleSnapshot_CreateFromActiveSamples File: external)
   - [❌] Binary-safe verified
 - 0x4cb153:
   - [✅] Reconstructed (Name: __ehhandler_zSndSampleSet_Init)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zSndSampleSet_Init File: external)
   - [❌] Binary-safe verified
 - 0x4cb16b:
   - [✅] Reconstructed (Name: __ehhandler_zSndSampleSet_LoadSamplesFromIndexArchive)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zSndSampleSet_LoadSamplesFromIndexArchive File: external)
   - [❌] Binary-safe verified
 - 0x4cb18b:
   - [✅] Reconstructed (Name: __ehhandler_zSndSystem_InitLegacySetsSyntax)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zSndSystem_InitLegacySetsSyntax File: external)
   - [❌] Binary-safe verified
 - 0x4cb1ab:
   - [✅] Reconstructed (Name: __ehhandler_zSndSystem_InitNamedSetsSyntax)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zSndSystem_InitNamedSetsSyntax File: external)
   - [❌] Binary-safe verified
 - 0x4cb1cb:
   - [✅] Reconstructed (Name: __ehhandler_zSndCd_Init)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zSndCd_Init File: external)
   - [❌] Binary-safe verified
 - 0x4cb1e8:
   - [✅] Reconstructed (Name: __ehhandler_zSndSample_CreateQueuedStreamingSample)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zSndSample_CreateQueuedStreamingSample File: external)
   - [❌] Binary-safe verified
 - 0x4cb208:
   - [✅] Reconstructed (Name: __ehhandler_HudUiWidget_DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiWidget_DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x4cb228:
   - [✅] Reconstructed (Name: __ehhandler_HudUiSliderBorder_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiSliderBorder_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb264:
   - [✅] Reconstructed (Name: __ehhandler_HudUiNumericTextInput_BaseConstructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiNumericTextInput_BaseConstructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb294:
   - [✅] Reconstructed (Name: __ehhandler_HudUiNumericTextInput_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiNumericTextInput_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb2e0:
   - [✅] Reconstructed (Name: __ehhandler_HudUiZrdWidget_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiZrdWidget_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb330:
   - [✅] Reconstructed (Name: __ehhandler_HudUiZrdWidget_DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiZrdWidget_DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x4cb398:
   - [✅] Reconstructed (Name: __ehhandler_HudUiZrdWidget_LoadFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiZrdWidget_LoadFromZrd File: external)
   - [❌] Binary-safe verified
 - 0x4cb3b8:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCheckToggleWidget_DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCheckToggleWidget_DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x4cb407:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCheckToggleWidget_LoadFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCheckToggleWidget_LoadFromZrd File: external)
   - [❌] Binary-safe verified
 - 0x4cb428:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCycleSelectorWidget_DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCycleSelectorWidget_DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x4cb44b:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCycleSelectorWidget_AddTextEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCycleSelectorWidget_AddTextEntry File: external)
   - [❌] Binary-safe verified
 - 0x4cb46b:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCycleSelectorWidget_AddBitmapEntry)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCycleSelectorWidget_AddBitmapEntry File: external)
   - [❌] Binary-safe verified
 - 0x4cb488:
   - [✅] Reconstructed (Name: __ehhandler_HudUiZrdWidgetEx17C_DestructorCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiZrdWidgetEx17C_DestructorCore File: external)
   - [❌] Binary-safe verified
 - 0x4cb4ab:
   - [✅] Reconstructed (Name: __ehhandler_HudUiZrdWidgetEx17C_LoadFromZrd)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiZrdWidgetEx17C_LoadFromZrd File: external)
   - [❌] Binary-safe verified
 - 0x4cb4c8:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdBindButtonBase_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdBindButtonBase_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb4eb:
   - [✅] Reconstructed (Name: __ehhandler_HudCmdBindButtonBase_RebuildBindingSlotWidgets)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudCmdBindButtonBase_RebuildBindingSlotWidgets File: external)
   - [❌] Binary-safe verified
 - 0x4cb561:
   - [✅] Reconstructed (Name: __ehhandler_HudUiBackground_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiBackground_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb5d1:
   - [✅] Reconstructed (Name: __ehhandler_HudUiBackground_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiBackground_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb5e8:
   - [✅] Reconstructed (Name: __ehhandler_HudUiPanel_ConstructorDefault)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiPanel_ConstructorDefault File: external)
   - [❌] Binary-safe verified
 - 0x4cb608:
   - [✅] Reconstructed (Name: __ehhandler_HudUiPanel_CopyConstructCore)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiPanel_CopyConstructCore File: external)
   - [❌] Binary-safe verified
 - 0x4cb628:
   - [✅] Reconstructed (Name: __ehhandler_HudUiPanel_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiPanel_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb667:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCompositePanel_ConstructorWithEntryCount)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCompositePanel_ConstructorWithEntryCount File: external)
   - [❌] Binary-safe verified
 - 0x4cb68b:
   - [✅] Reconstructed (Name: __ehhandler_HudUiCompositePanel_ResizeEntryVectorAndRelayout)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiCompositePanel_ResizeEntryVectorAndRelayout File: external)
   - [❌] Binary-safe verified
 - 0x4cb6a8:
   - [✅] Reconstructed (Name: __ehhandler_HudUiTextLabel_ConstructorWithPosAndFlags)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiTextLabel_ConstructorWithPosAndFlags File: external)
   - [❌] Binary-safe verified
 - 0x4cb6c8:
   - [✅] Reconstructed (Name: __ehhandler_HudUiTextLabel_CopyConstructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiTextLabel_CopyConstructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb6e8:
   - [✅] Reconstructed (Name: __ehhandler_HudUiBar_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiBar_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb721:
   - [✅] Reconstructed (Name: __ehhandler_HudUiTopMessageStack_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiTopMessageStack_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb751:
   - [✅] Reconstructed (Name: __ehhandler_HudUiChatMessageStack_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiChatMessageStack_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb768:
   - [✅] Reconstructed (Name: __ehhandler_HudWeatherFx_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudWeatherFx_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb788:
   - [✅] Reconstructed (Name: __ehhandler_HudWeatherFx_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudWeatherFx_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb7b3:
   - [✅] Reconstructed (Name: __ehhandler_zVideoFxPass3Config_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zVideoFxPass3Config_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb7e9:
   - [✅] Reconstructed (Name: __ehhandler_zVideo_FxPass3Config_CtorLocal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zVideo_FxPass3Config_CtorLocal File: external)
   - [❌] Binary-safe verified
 - 0x4cb84e:
   - [✅] Reconstructed (Name: __ehhandler_HudUiMessageBoxDialog_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiMessageBoxDialog_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb8ae:
   - [✅] Reconstructed (Name: __ehhandler_HudUiMessageBoxDialog_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiMessageBoxDialog_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb8c8:
   - [✅] Reconstructed (Name: __ehhandler_HudUiPolyline_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiPolyline_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb8e8:
   - [✅] Reconstructed (Name: __ehhandler_HudUiBackgroundCursorWidget_MemberConstructorLocal)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiBackgroundCursorWidget_MemberConstructorLocal File: external)
   - [❌] Binary-safe verified
 - 0x4cb908:
   - [✅] Reconstructed (Name: __ehhandler_HudUiBackgroundVideoWidget_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiBackgroundVideoWidget_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb92b:
   - [✅] Reconstructed (Name: __ehhandler_HudUiBackgroundVideoWidget_SetMediaPathOwnedAndRefresh)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiBackgroundVideoWidget_SetMediaPathOwnedAndRefresh File: external)
   - [❌] Binary-safe verified
 - 0x4cb953:
   - [✅] Reconstructed (Name: __ehhandler_zUtil_ZBD_Init)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zUtil_ZBD_Init File: external)
   - [❌] Binary-safe verified
 - 0x4cb968:
   - [✅] Reconstructed (Name: __ehhandler_zZbdManager_Destroy)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zZbdManager_Destroy File: external)
   - [❌] Binary-safe verified
 - 0x4cb9a1:
   - [✅] Reconstructed (Name: __ehhandler_zZbdManager_SortSectionHandlers)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zZbdManager_SortSectionHandlers File: external)
   - [❌] Binary-safe verified
 - 0x4cb9be:
   - [✅] Reconstructed (Name: __ehhandler_zInterp_Context_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zInterp_Context_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4cb9de:
   - [✅] Reconstructed (Name: __ehhandler_zInterp_Context_Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_zInterp_Context_Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8e1f:
   - [✅] Reconstructed (Name: __ehhandler_HudUiMgr_StaticDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiMgr_StaticDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4c8fb3:
   - [✅] Reconstructed (Name: __ehhandler_HudUiMgr_Constructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiMgr_Constructor File: external)
   - [❌] Binary-safe verified
 - 0x4c9218:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d5220)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d5220 File: external)
   - [❌] Binary-safe verified
 - 0x4c9238:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d52e8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d52e8 File: external)
   - [❌] Binary-safe verified
 - 0x4c925b:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d5310)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d5310 File: external)
   - [❌] Binary-safe verified
 - 0x4c9298:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d5360)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d5360 File: external)
   - [❌] Binary-safe verified
 - 0x4c9494:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d5548)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d5548 File: external)
   - [❌] Binary-safe verified
 - 0x4c94eb:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d55b0)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d55b0 File: external)
   - [❌] Binary-safe verified
 - 0x4c950b:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d55e0)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d55e0 File: external)
   - [❌] Binary-safe verified
 - 0x4c95e4:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d56f0)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d56f0 File: external)
   - [❌] Binary-safe verified
 - 0x4c9611:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d5718)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d5718 File: external)
   - [❌] Binary-safe verified
 - 0x4c9788:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d57b8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d57b8 File: external)
   - [❌] Binary-safe verified
 - 0x4c98db:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d58c8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d58c8 File: external)
   - [❌] Binary-safe verified
 - 0x4c9a04:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d5a78)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d5a78 File: external)
   - [❌] Binary-safe verified
 - 0x4c9b28:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d5ba8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d5ba8 File: external)
   - [❌] Binary-safe verified
 - 0x4c9c18:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d5c88)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d5c88 File: external)
   - [❌] Binary-safe verified
 - 0x4c9c3b:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d5cd0)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d5cd0 File: external)
   - [❌] Binary-safe verified
 - 0x4c9cce:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d5da0)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d5da0 File: external)
   - [❌] Binary-safe verified
 - 0x4c9e38:
   - [✅] Reconstructed (Name: RecoilApp_MissionFmvState_Dtor_EhFrameHandlerThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: RecoilApp_MissionFmvState_Dtor_EhFrameHandlerThunk File: external)
   - [❌] Binary-safe verified
 - 0x4c9e78:
   - [✅] Reconstructed (Name: RecoilApp_AttractFmvState_Ctor_EhFrameHandlerThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: RecoilApp_AttractFmvState_Ctor_EhFrameHandlerThunk File: external)
   - [❌] Binary-safe verified
 - 0x4c9e98:
   - [✅] Reconstructed (Name: RecoilApp_MissionFmvState_Ctor_EhFrameHandlerThunk)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: RecoilApp_MissionFmvState_Ctor_EhFrameHandlerThunk File: external)
   - [❌] Binary-safe verified
 - 0x4c9efa:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d6068)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d6068 File: external)
   - [❌] Binary-safe verified
 - 0x4c9f3e:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d6090)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d6090 File: external)
   - [❌] Binary-safe verified
 - 0x4ca14b:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d6130)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d6130 File: external)
   - [❌] Binary-safe verified
 - 0x4ca3fb:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d64b0)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d64b0 File: external)
   - [❌] Binary-safe verified
 - 0x4ca41b:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d64e8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d64e8 File: external)
   - [❌] Binary-safe verified
 - 0x4ca438:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d6510)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d6510 File: external)
   - [❌] Binary-safe verified
 - 0x4ca72b:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d6738)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d6738 File: external)
   - [❌] Binary-safe verified
 - 0x4ca951:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d6950)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d6950 File: external)
   - [❌] Binary-safe verified
 - 0x4cac78:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d6ba8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d6ba8 File: external)
   - [❌] Binary-safe verified
 - 0x4cad48:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d6dd8)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d6dd8 File: external)
   - [❌] Binary-safe verified
 - 0x4cad68:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d6e08)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d6e08 File: external)
   - [❌] Binary-safe verified
 - 0x4cad89:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d6e30)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d6e30 File: external)
   - [❌] Binary-safe verified
 - 0x4caf68:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d7050)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d7050 File: external)
   - [❌] Binary-safe verified
 - 0x4cafab:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d70a0)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d70a0 File: external)
   - [❌] Binary-safe verified
 ### Linked CRT / MFC / framework code
 
 - 0x401040:
-  - [✅] Reconstructed (Name: CWnd_DisableWindow)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: CWnd::DisableWindow)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: CWnd_DisableWindow File: external)
   - [❌] Binary-safe verified
 - 0x401050:
-  - [✅] Reconstructed (Name: CWnd_EnableWindow)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: CWnd::EnableWindow)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: CWnd_EnableWindow File: external)
   - [❌] Binary-safe verified
 - 0x431b70:
   - [✅] Reconstructed (Name: CObject::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: CObject::Destructor File: external)
   - [❌] Binary-safe verified
 - 0x431ba0:
   - [✅] Reconstructed (Name: CMenu::Destructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: CMenu::Destructor File: external)
   - [❌] Binary-safe verified
 - 0x4428a0:
-  - [✅] Reconstructed (Name: COleControlModule_GetBaseMessageMap)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: COleControlModule::GetBaseMessageMap)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: COleControlModule_GetBaseMessageMap File: external)
   - [❌] Binary-safe verified
 - 0x443be0:
   - [✅] Reconstructed (Name: CBitmap::ScalarDeletingDestructor)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: CBitmap::ScalarDeletingDestructor File: external)
   - [❌] Binary-safe verified
 - 0x4c5ba0:
-  - [✅] Reconstructed (Name: CString_CtorDefault)
+  - [✅] Reconstructed (Name: CString::ConstructorDefault)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: CString_CtorDefault File: external)
   - [❌] Binary-safe verified
 - 0x4c6140:
   - [✅] Reconstructed (Name: _start)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: _start File: external)
   - [❌] Binary-safe verified
 - 0x4c6350:
-  - [✅] Reconstructed (Name: CRT_SetDefaultPrecision)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: CRT::SetDefaultPrecision)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: CRT_SetDefaultPrecision File: external)
   - [❌] Binary-safe verified
 - 0x4c81d8:
-  - [✅] Reconstructed (Name: MFC_ModuleState_SetMbcpData)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: MFC_ModuleState::SetMbcpData)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: MFC_ModuleState_SetMbcpData File: external)
   - [❌] Binary-safe verified
 - 0x4c8201:
-  - [✅] Reconstructed (Name: MFC_ModuleState_InitStaticObject421)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: MFC_ModuleState::InitStaticObject421)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: MFC_ModuleState_InitStaticObject421 File: external)
   - [❌] Binary-safe verified
 - 0x4c8214:
-  - [✅] Reconstructed (Name: MFC_ModuleState_InitStaticObject421_Thunk)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: MFC_ModuleState::InitStaticObject421Thunk)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: MFC_ModuleState_InitStaticObject421_Thunk File: external)
   - [❌] Binary-safe verified
 - 0x4c8230:
   - [✅] Reconstructed (Name: MSVC_EH_HudUiBriefingRuntime_Ctor_Unwind_DestroyHudUiBackground)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: MSVC_EH_HudUiBriefingRuntime_Ctor_Unwind_DestroyHudUiBackground File: external)
   - [❌] Binary-safe verified
 - 0x4c8238:
   - [✅] Reconstructed (Name: MSVC_EH_HudUiBriefingRuntime_Ctor_Unwind_DestroyActionQueue)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: MSVC_EH_HudUiBriefingRuntime_Ctor_Unwind_DestroyActionQueue File: external)
   - [❌] Binary-safe verified
 - 0x4c8246:
   - [✅] Reconstructed (Name: MSVC_EH_HudUiBriefingRuntime_Ctor_Unwind_DestroyTransportProgress)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by CRT/MFC/framework; Name: MSVC_EH_HudUiBriefingRuntime_Ctor_Unwind_DestroyTransportProgress File: external)
   - [❌] Binary-safe verified
 
@@ -19558,13 +19613,13 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: ??3@YAXPAX@Z)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Provided by import/jump/dispatch thunk; Name: ??3@YAXPAX@Z File: external)
-  - [❓] Binary-safe verified
+  - [❌] Binary-safe verified
 
 ### Non-authored no-op helpers
 
 - 0x401020:
-  - [✅] Reconstructed (Name: MFC_NoOpVirtual_OneArg)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: MFC::NoOpVirtualOneArg)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler/no-op glue; Name: MFC_NoOpVirtual_OneArg File: external)
   - [❌] Binary-safe verified
 - 0x413eb0:
@@ -19576,50 +19631,50 @@ Each function has these trackers:
 ### Non-authored templated/container helpers
 
 - 0x40bdf0:
-  - [✅] Reconstructed (Name: zUtil_StdPtrVector_ClearNoOpDestroy)
+  - [✅] Reconstructed (Name: StdPtrVector::ClearNoOpDestroy)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler/template instantiation; Name: zUtil_StdPtrVector_ClearNoOpDestroy File: external)
   - [❌] Binary-safe verified
 - 0x40c190:
-  - [✅] Reconstructed (Name: zUtil_UninitializedFillDwordN)
+  - [✅] Reconstructed (Name: zUtil::UninitializedFillDwordN)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler/template instantiation; Name: zUtil_UninitializedFillDwordN File: external)
   - [❌] Binary-safe verified
 - 0x40c1c0:
-  - [✅] Reconstructed (Name: zUtil_CopySingleDword)
+  - [✅] Reconstructed (Name: zUtil::CopySingleDword)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler/template instantiation; Name: zUtil_CopySingleDword File: external)
   - [❌] Binary-safe verified
 - 0x48bf10:
-  - [✅] Reconstructed (Name: zUtil_CopyDwordRange)
+  - [✅] Reconstructed (Name: zUtil::CopyDwordRange)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler/template instantiation; Name: zUtil_CopyDwordRange File: external)
   - [❌] Binary-safe verified
 - 0x4233b0:
-  - [✅] Reconstructed (Name: StdVector16_CopyRange)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: PlayerNodeFlagRestoreEntryVector::CopyRange)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler/template instantiation; Name: StdVector16_CopyRange File: external)
   - [❌] Binary-safe verified
 - 0x423400:
-  - [✅] Reconstructed (Name: StdVector16_FillN)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: PlayerNodeFlagRestoreEntryVector::FillN)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler/template instantiation; Name: StdVector16_FillN File: external)
   - [❌] Binary-safe verified
 - 0x435fd0:
   - [✅] Reconstructed (Name: HudUiSaveLoadEntries::InsertCopiesAt)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler/template instantiation; Name: HudUiSaveLoadEntries::InsertCopiesAt File: external)
   - [❌] Binary-safe verified
 ### Runtime import-address getter stubs
 
 - 0x401030:
-  - [✅] Reconstructed (Name: Mfc42_GetProcByOrdinal4234GetterAddr)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: MFC42::GetProcByOrdinal4234GetterAddr)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by import-address getter stub; Name: Mfc42_GetProcByOrdinal4234GetterAddr File: external)
   - [❌] Binary-safe verified
 - 0x442890:
   - [✅] Reconstructed (Name: Mfc42_Ordinal4274Getter)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by import-address getter stub; Name: Mfc42_Ordinal4274Getter File: external)
   - [❌] Binary-safe verified
 ### Imported runtime thunks and wrappers
@@ -19630,33 +19685,33 @@ Each function has these trackers:
   - [✅] Reimplemented (Provided by imported runtime wrapper; Name: GetTickCount File: external)
   - [❌] Binary-safe verified
 - 0x4c06f0:
-  - [✅] Reconstructed (Name: tmpfile_wrapper)
-  - [❓] Source dependencies satisfied
+  - [✅] Reconstructed (Name: CRT::TmpFileThunk)
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by imported runtime wrapper; Name: tmpfile_wrapper File: external)
   - [❌] Binary-safe verified
 - 0x4c6130:
   - [✅] Reconstructed (Name: _CIasin)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by imported runtime wrapper; Name: _CIasin File: external)
   - [❌] Binary-safe verified
 - 0x4c6320:
   - [✅] Reconstructed (Name: _CIacos)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by imported runtime wrapper; Name: _CIacos File: external)
   - [❌] Binary-safe verified
 - 0x4c6338:
   - [✅] Reconstructed (Name: _XcptFilter)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by imported runtime wrapper; Name: _XcptFilter File: external)
   - [❌] Binary-safe verified
 - 0x4c6376:
   - [✅] Reconstructed (Name: _controlfp)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by imported runtime wrapper; Name: _controlfp File: external)
   - [❌] Binary-safe verified
 - 0x4c637c:
   - [✅] Reconstructed (Name: GetOpenFileNameA)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by imported runtime wrapper; Name: GetOpenFileNameA File: external)
   - [❌] Binary-safe verified
 - 0x4c6390:
@@ -19671,7 +19726,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4c639c:
   - [✅] Reconstructed (Name: ICClose)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by imported runtime wrapper; Name: ICClose File: external)
   - [❌] Binary-safe verified
 - 0x4c63a2:
@@ -19681,7 +19736,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4c63a8:
   - [✅] Reconstructed (Name: AVIStreamRelease)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by imported runtime wrapper; Name: AVIStreamRelease File: external)
   - [❌] Binary-safe verified
 - 0x4c63ae:
@@ -19721,7 +19776,7 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4c63de:
   - [✅] Reconstructed (Name: DirectDrawCreate)
-  - [❓] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [✅] Reimplemented (Provided by imported runtime wrapper; Name: DirectDrawCreate File: external)
   - [❌] Binary-safe verified
 - 0x4c63e4:

@@ -7,21 +7,21 @@
 #include <string.h>
 
 namespace {
-    template <typename T> const T &min(const T &lhs, const T &rhs) {
+    template <class T> const T &MinValue(const T &lhs, const T &rhs) {
         return lhs < rhs ? lhs : rhs;
     }
 
-    template <typename T> const T &max(const T &lhs, const T &rhs) {
+    template <class T> const T &MaxValue(const T &lhs, const T &rhs) {
         return lhs < rhs ? rhs : lhs;
     }
 
     void IncludePoint(zBoundsMinMaxPartial * bounds, const zVec3 &point) {
-        bounds->min.x = min(bounds->min.x, point.x);
-        bounds->max.x = max(bounds->max.x, point.x);
-        bounds->min.y = min(bounds->min.y, point.y);
-        bounds->max.y = max(bounds->max.y, point.y);
-        bounds->min.z = min(bounds->min.z, point.z);
-        bounds->max.z = max(bounds->max.z, point.z);
+        bounds->min.x = MinValue(bounds->min.x, point.x);
+        bounds->max.x = MaxValue(bounds->max.x, point.x);
+        bounds->min.y = MinValue(bounds->min.y, point.y);
+        bounds->max.y = MaxValue(bounds->max.y, point.y);
+        bounds->min.z = MinValue(bounds->min.z, point.z);
+        bounds->max.z = MaxValue(bounds->max.z, point.z);
     }
 
     void InitializeBounds(zBoundsMinMaxPartial * bounds, const zVec3 &point) {
@@ -339,12 +339,12 @@ namespace zDi {
         zDiPartial * self, zBoundsMinMaxPartial * outBoundsMinMax) {
         BuildAabb(self, outBoundsMinMax);
 
-        float extentX = max((float)fabs(outBoundsMinMax->min.x), outBoundsMinMax->max.x);
-        float extentY = max((float)fabs(outBoundsMinMax->min.y), outBoundsMinMax->max.y);
-        float extentZ = max((float)fabs(outBoundsMinMax->min.z), outBoundsMinMax->max.z);
+        float extentX = MaxValue((float)fabs(outBoundsMinMax->min.x), outBoundsMinMax->max.x);
+        float extentY = MaxValue((float)fabs(outBoundsMinMax->min.y), outBoundsMinMax->max.y);
+        float extentZ = MaxValue((float)fabs(outBoundsMinMax->min.z), outBoundsMinMax->max.z);
 
         if ((self->flags & 0x10) != 0) {
-            const float maxExtent = max(extentX, max(extentY, extentZ));
+            const float maxExtent = MaxValue(extentX, MaxValue(extentY, extentZ));
             outBoundsMinMax->min.x = -maxExtent;
             outBoundsMinMax->min.y = -maxExtent;
             outBoundsMinMax->min.z = -maxExtent;
@@ -355,7 +355,7 @@ namespace zDi {
         }
 
         if ((self->flags & 0x20) == 0) {
-            const float xzExtent = max(extentX, extentZ);
+            const float xzExtent = MaxValue(extentX, extentZ);
             extentX = xzExtent;
             extentZ = xzExtent;
         }

@@ -102,7 +102,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Mat_TransformNormalBatch(const zVec3 
         return;
     }
 
-    const zMat4x3 *matrix = reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+    const zMat4x3 *matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
     for (int i = 0; i < count; ++i) {
         const zVec3 normal = normals[i];
         outNormals[i].x =
@@ -126,7 +126,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3Array_UntransformDirection(zVec3 
         return;
     }
 
-    const zMat4x3 *matrix = reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+    const zMat4x3 *matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
     for (int i = 0; i < count; ++i) {
         const zVec3 vector = vectors[i];
         vectors[i].z = vector.x * matrix->xz + vector.y * matrix->yz + vector.z * matrix->zz;
@@ -297,7 +297,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadCurrentFrom(const zMat4x3 *src) {
 
 // Reimplements 0x473370: zMath::MatMultiply
 RECOIL_NOINLINE void RECOIL_FASTCALL MatMultiply(const zMat4x3 *src, int mode) {
-    zMat4x3 *current = reinterpret_cast<zMat4x3 *>(*g_currentMatrixPtrSlot);
+    zMat4x3 *current = (zMat4x3 *)(*g_currentMatrixPtrSlot);
     if (*g_currentMatrixIdentityFlagSlot != 0) {
         memcpy(current, src, sizeof(zMat4x3));
         *g_currentMatrixIdentityFlagSlot = 0;
@@ -333,7 +333,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL MatMultiply(const zMat4x3 *src, int mode) {
 
 // Reimplements 0x4737e0: zMath::MatTranslate (GameZRecoil/zMath/zmath_matrix.cpp)
 RECOIL_NOINLINE void RECOIL_STDCALL MatTranslate(float tx, float ty, float tz) {
-    zMat4x3 *matrix = reinterpret_cast<zMat4x3 *>(*g_currentMatrixPtrSlot);
+    zMat4x3 *matrix = (zMat4x3 *)(*g_currentMatrixPtrSlot);
 
     if (*g_currentMatrixIdentityFlagSlot != 0) {
         matrix->posX = tx;
@@ -353,7 +353,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL MatTranslate(float tx, float ty, float tz) {
 RECOIL_NOINLINE void RECOIL_STDCALL MatRotateX(float angleRad) {
     const float sinAngle = sin(angleRad);
     const float cosAngle = cos(angleRad);
-    zMat4x3 *matrix = reinterpret_cast<zMat4x3 *>(*g_currentMatrixPtrSlot);
+    zMat4x3 *matrix = (zMat4x3 *)(*g_currentMatrixPtrSlot);
 
     if (*g_currentMatrixIdentityFlagSlot != 0) {
         matrix->yy = cosAngle;
@@ -384,7 +384,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL MatRotateX(float angleRad) {
 RECOIL_NOINLINE void RECOIL_STDCALL MatRotateY(float angleRad) {
     const float sinAngle = sin(angleRad);
     const float cosAngle = cos(angleRad);
-    zMat4x3 *matrix = reinterpret_cast<zMat4x3 *>(*g_currentMatrixPtrSlot);
+    zMat4x3 *matrix = (zMat4x3 *)(*g_currentMatrixPtrSlot);
 
     if (*g_currentMatrixIdentityFlagSlot != 0) {
         matrix->xx = cosAngle;
@@ -427,7 +427,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL MatRotateY(float angleRad) {
 RECOIL_NOINLINE void RECOIL_STDCALL MatRotateZ(float angleRad) {
     const float sinAngle = sin(angleRad);
     const float cosAngle = cos(angleRad);
-    zMat4x3 *matrix = reinterpret_cast<zMat4x3 *>(*g_currentMatrixPtrSlot);
+    zMat4x3 *matrix = (zMat4x3 *)(*g_currentMatrixPtrSlot);
 
     if (*g_currentMatrixIdentityFlagSlot != 0) {
         matrix->xx = cosAngle;
@@ -550,7 +550,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL MatTransformPointBatchInPlace(zVec3 *points
         return;
     }
 
-    const zMat4x3 *matrix = reinterpret_cast<const zMat4x3 *>(*g_currentMatrixPtrSlot);
+    const zMat4x3 *matrix = (const zMat4x3 *)(*g_currentMatrixPtrSlot);
     for (int i = 0; i < count; ++i) {
         const zVec3 point = points[i];
         points[i].x =
@@ -620,13 +620,13 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipLineSegmentToZRange(zVec3 *pointA, zVec3
 RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointAndClampToScreenClip(const zVec3 *srcPoint,
                                                                               zVec3 *dstPoint) {
     zMat4x3 slotBuffer = {0};
-    MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+    MatStackPushPtr((float *)(&slotBuffer));
     MatLoadCameraScratchB();
 
     if (*g_currentMatrixIdentityFlagSlot != 0) {
         *dstPoint = *srcPoint;
     } else {
-        const zMat4x3 *const matrix = reinterpret_cast<const zMat4x3 *>(*g_currentMatrixPtrSlot);
+        const zMat4x3 *const matrix = (const zMat4x3 *)(*g_currentMatrixPtrSlot);
         dstPoint->x = srcPoint->x * matrix->xx + srcPoint->y * matrix->yx +
                       srcPoint->z * matrix->zx + matrix->posX;
         dstPoint->z = srcPoint->x * matrix->xz + srcPoint->y * matrix->yz +
@@ -645,7 +645,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointAndClampToScreenClip(const zVec3
             dstPoint->z = -dstPoint->z;
         }
 
-        ProjectPointBatch(dstPoint, reinterpret_cast<zProjectedPoint *>(dstPoint), 1);
+        ProjectPointBatch(dstPoint, (zProjectedPoint *)(dstPoint), 1);
         if (dstPoint->x < -5000.0f) {
             dstPoint->x = -5000.0f;
         } else if (dstPoint->x > 5000.0f) {
@@ -658,7 +658,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointAndClampToScreenClip(const zVec3
         return result;
     }
 
-    ProjectPointBatch(dstPoint, reinterpret_cast<zProjectedPoint *>(dstPoint), 1);
+    ProjectPointBatch(dstPoint, (zProjectedPoint *)(dstPoint), 1);
 
     int result = 0;
     if (dstPoint->x < g_zVideo_ProjectClipLeft) {
@@ -736,7 +736,7 @@ RECOIL_NOINLINE float RECOIL_FASTCALL zMath_Vec3_ElevationAngleBetweenPoints(con
 // Reimplements 0x4731f0: zMath_Mat_SetupCamera
 RECOIL_NOINLINE void RECOIL_CDECL zMath_Mat_SetupCamera() {
     zMath::MatLoadCameraScratchB();
-    zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]), 1);
+    zMath::MatMultiply((const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]), 1);
 }
 
 // Reimplements 0x472fb0: zMath_Mat_LoadProjection
@@ -744,23 +744,23 @@ RECOIL_NOINLINE void RECOIL_STDCALL zMath_Mat_LoadProjection(float zOffset) {
     float parentYaw = 0.0f;
     if (zMath::g_currentMatrixIdentityFlagSlot[-1] == 0) {
         parentYaw = zMath_Mat_ExtractYaw(
-            reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]));
+            (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]));
     }
 
     zMath::MatLoadIdentity();
     zMath::MatRotateY(zOffset - parentYaw);
-    zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]), 1);
+    zMath::MatMultiply((const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]), 1);
 
-    zMat4x3 *current = reinterpret_cast<zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
-    const zMat4x3 *parent = reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]);
+    zMat4x3 *current = (zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+    const zMat4x3 *parent = (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]);
     current->posX = parent->posX;
     current->posY = parent->posY;
     current->posZ = parent->posZ;
 
     zMat4x3 slotBuffer = {0};
-    zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+    zMath::MatStackPushPtr((float *)(&slotBuffer));
     zMath::MatLoadCameraScratchB();
-    zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]), 1);
+    zMath::MatMultiply((const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]), 1);
     zMath::MatStackPopPtr();
     zMath::MatLoadCurrentFrom(&slotBuffer);
 }
@@ -798,11 +798,11 @@ RECOIL_NOINLINE void RECOIL_CDECL zMath_Mat_LoadView() {
     zVec3 parentEuler = {0};
     if (zMath::g_currentMatrixIdentityFlagSlot[-1] == 0) {
         zMath_Mat_ExtractEulerAngles(
-            reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]), &parentEuler);
+            (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]), &parentEuler);
     }
 
     zMath::MatLoadCameraScratchA();
-    zMat4x3 *current = reinterpret_cast<zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+    zMat4x3 *current = (zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
     current->yx = -current->yx;
     current->yy = -current->yy;
     current->yz = -current->yz;
@@ -825,24 +825,24 @@ RECOIL_NOINLINE void RECOIL_CDECL zMath_Mat_LoadView() {
     zMat4x3 viewMatrix = {0};
     zMath_Quat_ToMatrix(&relativeQuat, &viewMatrix);
     zMath::MatLoadCurrentFrom(&viewMatrix);
-    zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]), 1);
+    zMath::MatMultiply((const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]), 1);
 
-    current = reinterpret_cast<zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
-    const zMat4x3 *parent = reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]);
+    current = (zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+    const zMat4x3 *parent = (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]);
     current->posX = parent->posX;
     current->posY = parent->posY;
     current->posZ = parent->posZ;
 
-    zMath::MatStackPushPtr(reinterpret_cast<float *>(&viewMatrix));
+    zMath::MatStackPushPtr((float *)(&viewMatrix));
     zMath::MatLoadCameraScratchB();
-    zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(zMath::g_currentMatrixPtrSlot[-1]), 1);
+    zMath::MatMultiply((const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]), 1);
     zMath::MatStackPopPtr();
     zMath::MatLoadCurrentFrom(&viewMatrix);
 }
 
 // Reimplements 0x473230: zMath_Mat_GetCurrent
 RECOIL_NOINLINE zMat4x3 *RECOIL_CDECL zMath_Mat_GetCurrent() {
-    return reinterpret_cast<zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+    return (zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
 }
 
 // Reimplements 0x473240: zMath_Mat_IsCurrentIdentity
@@ -867,7 +867,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Mat_ExtractEulerAngles(const zMat4x3 
     const float pitch = atan2(-matrix->zy, horizontalLength);
 
     zVec3 rowX = {0};
-    zMath::Vec3RotateY(&rowX, reinterpret_cast<const zVec3 *>(matrix), -yaw);
+    zMath::Vec3RotateY(&rowX, (const zVec3 *)(matrix), -yaw);
 
     zVec3 flattenedRowX = {0};
     zMath_Vec3_RotateX(&flattenedRowX, &rowX, -pitch);

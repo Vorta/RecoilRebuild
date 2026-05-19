@@ -1,42 +1,7 @@
 {
   "name": "hud_ui_message_release_images",
   "description": "HudUiMessage variant and side-image release helper.",
-  "source_filename": "HudUiMessage_ReleaseImages.cpp",
-  "source": [
-    "struct zVidImagePartial;",
-    "",
-    "namespace zVid_Image {",
-    "int __fastcall ReleaseIfNotDefault(zVidImagePartial *image);",
-    "}",
-    "",
-    "struct HudUiMessage {",
-    "    unsigned char m_padding_000[0xbc];",
-    "    zVidImagePartial *variantImages[5];",
-    "    unsigned char m_padding_0d0[0xd8 - 0xd0];",
-    "    zVidImagePartial *sideImageSwaps[2];",
-    "",
-    "    void ReleaseImages();",
-    "};",
-    "",
-    "// Reimplements 0x413ff0: HudUiMessage::ReleaseImages",
-    "void HudUiMessage::ReleaseImages() {",
-    "    zVid_Image::ReleaseIfNotDefault(variantImages[0]);",
-    "    zVid_Image::ReleaseIfNotDefault(variantImages[1]);",
-    "    zVid_Image::ReleaseIfNotDefault(variantImages[2]);",
-    "    zVid_Image::ReleaseIfNotDefault(variantImages[3]);",
-    "    zVid_Image::ReleaseIfNotDefault(variantImages[4]);",
-    "    zVid_Image::ReleaseIfNotDefault(sideImageSwaps[0]);",
-    "    zVid_Image::ReleaseIfNotDefault(sideImageSwaps[1]);",
-    "",
-    "    sideImageSwaps[1] = 0;",
-    "    sideImageSwaps[0] = 0;",
-    "    variantImages[4] = 0;",
-    "    variantImages[3] = 0;",
-    "    variantImages[2] = 0;",
-    "    variantImages[1] = 0;",
-    "    variantImages[0] = 0;",
-    "}"
-  ],
+  "source_filename": "zhud_ui.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -49,7 +14,16 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/zHud/zhud_ui.cpp"
   ],
@@ -59,5 +33,6 @@
       "symbol": "?ReleaseImages@HudUiMessage@@QAEXXZ",
       "name": "HudUiMessage::ReleaseImages"
     }
-  ]
+  ],
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp"
 }

@@ -79,7 +79,7 @@ namespace zModel_MatlBuffer {
             zModel_MaterialSlot *const slot = &poolCopy[activeIndex];
             if ((slot->material.flags & 0x0100) != 0) {
                 slot->material.currentTextureDirectoryEntry =
-                    reinterpret_cast<zImage_TexDirEntryPartial *>(static_cast<int>(
+                    (zImage_TexDirEntryPartial *)(static_cast<int>(
                         zImage::TexDirEntryToIndex(slot->material.currentTextureDirectoryEntry)));
             }
             activeIndex = slot->nextPoolIndex;
@@ -108,7 +108,7 @@ namespace zModel_MatlBuffer {
                     realloc(frameBuffer, frameBytes));
                 memcpy(frameBuffer, cycle->frameTable, frameBytes);
                 for (int i = 0; i < cycle->frameCount; ++i) {
-                    frameBuffer[i] = reinterpret_cast<zImage_TexDirEntryPartial *>(
+                    frameBuffer[i] = (zImage_TexDirEntryPartial *)(
                         static_cast<int>(zImage::TexDirEntryToIndex(frameBuffer[i])));
                 }
 
@@ -181,10 +181,10 @@ namespace zModel_MatlBuffer {
             if ((material->flags & 0x0100) != 0) {
                 material->currentTextureDirectoryEntry =
                     zImage::TexIndexToDirEntry(static_cast<int>(
-                        reinterpret_cast<int>(material->currentTextureDirectoryEntry)));
+                        (int)(material->currentTextureDirectoryEntry)));
             } else {
                 material->packedColor = zVid_PackColorRgbFloats(
-                    reinterpret_cast<zVideo_ColorRgbFloat *>(&material->colorRgb));
+                    (zVideo_ColorRgbFloat *)(&material->colorRgb));
             }
 
             if ((material->flags & 0x0400) != 0) {
@@ -211,7 +211,7 @@ namespace zModel_MatlBuffer {
                 for (int i = 0; i < material->cycle->frameCount; ++i) {
                     material->cycle->frameTable[i] =
                         zImage::TexIndexToDirEntry(static_cast<int>(
-                            reinterpret_cast<int>(material->cycle->frameTable[i])));
+                            (int)(material->cycle->frameTable[i])));
                 }
             }
 

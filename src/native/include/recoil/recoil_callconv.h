@@ -19,7 +19,11 @@
 #else
 #define RECOIL_NOINLINE
 #endif
+#if _MSC_VER >= 1200
 #define RECOIL_FORCEINLINE __forceinline
+#else
+#define RECOIL_FORCEINLINE inline
+#endif
 #elif defined(__i386__) && (defined(__GNUC__) || defined(__clang__))
 #define RECOIL_CDECL __attribute__((cdecl))
 #define RECOIL_STDCALL __attribute__((stdcall))

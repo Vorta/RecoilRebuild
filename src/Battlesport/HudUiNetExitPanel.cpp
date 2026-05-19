@@ -47,7 +47,7 @@ HudUiWidget_FTable MakeHudUiNetExitPanelExitWidgetFTable()
     table.slots[26] = MethodAddress(&HudUiElement::GetY);
     table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
     table.slots[31] = MethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = reinterpret_cast<unsigned int>(&HudUiWidgetPostLoadNoOp);
+    table.slots[32] = (unsigned int)(&HudUiWidgetPostLoadNoOp);
     return table;
 }
 
@@ -94,14 +94,14 @@ HudUiNetExitPanel *RECOIL_THISCALL HudUiNetExitPanel::Constructor() {
     exitWidget.base.base.ftable = &g_HudUiNetExitPanel_ExitWidget_FTable;
 
     base.base.base.vptr =
-        reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiNetExitPanel_FTable);
+        (const HudUiContainer_FTable *)(&g_HudUiNetExitPanel_FTable);
 
     zReader::Node *const loadedSection = base.LoadFromZrd("dialog.zrd", "NETEXIT", 1);
     if (loadedSection != 0) {
         base.BindWidgetByName(loadedSection, &exitWidget.base.base, "EXIT");
         base.BindWidgetByName(loadedSection, &resumeWidget.base.base, "RESUME");
         base.FreeLoadedTreeRoots(
-            static_cast<int>(reinterpret_cast<unsigned int>(loadedSection)));
+            static_cast<int>((unsigned int)(loadedSection)));
     }
 
     if (zInp::GetJoystickOption() == 0) {
@@ -150,10 +150,10 @@ void RECOIL_THISCALL HudUiNetExitPanel_ExitButton::OnActivate() {
 // Reimplements 0x41bf10: HudUiNetExitPanel_ResumeWidget::OnActivate
 void RECOIL_THISCALL HudUiNetExitPanel_ResumeWidget::OnActivate() {
     typedef void (RECOIL_THISCALL *HidePreviewFn)(HudUiNetExitPanel_ResumeWidget * self);
-    reinterpret_cast<HidePreviewFn>(base.base.ftable->slots[0x40 / 4])(this);
+    ((HidePreviewFn)(base.base.ftable->slots[0x40 / 4]))(this);
 
     const HudUiNetExitPanel_FTable *const panelFtable =
-        reinterpret_cast<const HudUiNetExitPanel_FTable *>(g_HudUiNetExitPanel->base.base.base.vptr);
+        (const HudUiNetExitPanel_FTable *)(g_HudUiNetExitPanel->base.base.base.vptr);
     panelFtable->setEnabled(g_HudUiNetExitPanel, 0);
     HudUiMgr::TriggerCurrentLayoutOnActivated();
     base.OnActivate();
@@ -216,19 +216,19 @@ RECOIL_NOINLINE HudUiNetExitPanel *RECOIL_CDECL HudUiNetExitPanel::CreateGlobal(
 // Reimplements 0x41c070: HudUiNetExitPanel::Show
 RECOIL_NOINLINE void RECOIL_CDECL HudUiNetExitPanel::Show() {
     const HudUiNetExitPanel_FTable *const ftable =
-        reinterpret_cast<const HudUiNetExitPanel_FTable *>(g_HudUiNetExitPanel->base.base.base.vptr);
+        (const HudUiNetExitPanel_FTable *)(g_HudUiNetExitPanel->base.base.base.vptr);
     ftable->setEnabled(g_HudUiNetExitPanel, 1);
 }
 
 // Reimplements 0x41c080: HudUiNetExitPanel::Tick
 RECOIL_NOINLINE int RECOIL_CDECL HudUiNetExitPanel::Tick() {
     const HudUiNetExitPanel_FTable *const ftable =
-        reinterpret_cast<const HudUiNetExitPanel_FTable *>(g_HudUiNetExitPanel->base.base.base.vptr);
+        (const HudUiNetExitPanel_FTable *)(g_HudUiNetExitPanel->base.base.base.vptr);
     const unsigned int deltaBits =
-        *reinterpret_cast<const unsigned int *>(&g_FrameDeltaTimeSec);
+        *(const unsigned int *)(&g_FrameDeltaTimeSec);
     typedef void (RECOIL_THISCALL *UpdateAllBitsFn)(HudUiNetExitPanel * self,
                                                     unsigned int deltaBits);
-    reinterpret_cast<UpdateAllBitsFn>(ftable->updateAll)(g_HudUiNetExitPanel, deltaBits);
+    ((UpdateAllBitsFn)(ftable->updateAll))(g_HudUiNetExitPanel, deltaBits);
     return 0;
 }
 
@@ -237,7 +237,7 @@ RECOIL_NOINLINE void RECOIL_CDECL HudUiNetExitPanel::DestroyGlobal() {
     HudUiNetExitPanel *const panel = g_HudUiNetExitPanel;
     if (panel != 0) {
         const HudUiNetExitPanel_FTable *const ftable =
-            reinterpret_cast<const HudUiNetExitPanel_FTable *>(panel->base.base.base.vptr);
+            (const HudUiNetExitPanel_FTable *)(panel->base.base.base.vptr);
         ftable->scalarDeletingDtor(panel, 1);
         g_HudUiNetExitPanel = 0;
     }

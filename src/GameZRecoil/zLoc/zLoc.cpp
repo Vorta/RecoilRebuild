@@ -54,12 +54,12 @@ RECOIL_NOINLINE char *RECOIL_FASTCALL ResolveMessageKeyOrFallback(const char *ke
 // Reimplements 0x4a5b60: zLoc::FormatMessage
 RECOIL_NOINLINE unsigned int RECOIL_CDECL FormatMessage(char *outBuffer, int maxChars,
                                                          unsigned int messageId, ...) {
-    char *arguments = reinterpret_cast<char *>(&messageId + 1);
+    char *arguments = (char *)(&messageId + 1);
     HLOCAL sourceHandle = 0;
     const unsigned int result = ::FormatMessageA(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_HMODULE, g_zLoc_MessagesDllHandle,
-        messageId, 0, reinterpret_cast<LPSTR>(&sourceHandle), static_cast<DWORD>(maxChars),
-        reinterpret_cast<va_list *>(&arguments));
+        messageId, 0, (LPSTR)(&sourceHandle), static_cast<DWORD>(maxChars),
+        (va_list *)(&arguments));
 
     char *source = static_cast<char *>(sourceHandle);
     if (source != 0) {

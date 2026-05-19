@@ -4653,12 +4653,21 @@ extern "C" int zhud_triplet_scoreboard_entry_update_smoke(void) {
     HudUiPanel *const row0Name = triplet.rowCells[0];
     HudUiPanel *const row0Score = triplet.rowCells[1];
     HudUiPanel *const row0Kills = triplet.rowCells[2];
-    const bool scoreMode = HudUiTripletEntryCountForTest(triplet) == 2 &&
-                           triplet.entries.begin[0].playerKey == alpha.playerKey &&
-                           std::strcmp(row0Name->GetLastTextPtr(), "Alpha") == 0 &&
-                           std::strcmp(row0Score->GetLastTextPtr(), "9") == 0 &&
-                           (reinterpret_cast<HudUiElement *>(row0Kills)->flags & 0x10u) != 0 &&
-                           TestFieldAt<std::uint32_t>(row0Name, 0x14c) == 0x00778899;
+    int scoreModeFail = 0;
+    if (HudUiTripletEntryCountForTest(triplet) != 2) {
+        scoreModeFail = 21;
+    } else if (triplet.entries.begin[0].playerKey != alpha.playerKey) {
+        scoreModeFail = 22;
+    } else if (std::strcmp(row0Name->GetLastTextPtr(), "Alpha") != 0) {
+        scoreModeFail = 23;
+    } else if (std::strcmp(row0Score->GetLastTextPtr(), "9") != 0) {
+        scoreModeFail = 24;
+    } else if ((reinterpret_cast<HudUiElement *>(row0Kills)->flags & 0x10u) == 0) {
+        scoreModeFail = 25;
+    } else if (TestFieldAt<std::uint32_t>(row0Name, 0x14c) != 0x00778899) {
+        scoreModeFail = 26;
+    }
+    const bool scoreMode = scoreModeFail == 0;
 
     g_HudSensorTracker.raceCheckpointMode = 1;
     alpha.score = 1;
@@ -4695,7 +4704,7 @@ extern "C" int zhud_triplet_scoreboard_entry_update_smoke(void) {
     triplet.DestructorCore();
 
     if (!scoreMode) {
-        return 2;
+        return scoreModeFail;
     }
     return scoreMode && lapMode && removed ? 0 : 1;
 }

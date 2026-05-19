@@ -1,16 +1,16 @@
 # Implementation Groups
 
-Use this file for temporary dependency-group notes during binary-safe reimplementation. The plan remains address-based; this file only groups functions that must be implemented or verified together because they share a dependency closure, class/vtable contract, recursive call cycle, source file, or ABI-sensitive layout.
+Use this file for temporary dependency-group notes during binary-safe reimplementation. The plan remains address-based; this file only lists active multi-function/source-readiness groups and their live source blockers.
 
 ## Rules
 
 - Create or update a group before editing when a task touches more than one function or a shared type/global/vtable.
 - Keep groups scoped. Prefer one class, one source file cluster, one recursive cycle, or one call-chain frontier.
 - Do not mark plan entries done from this file alone. Plan markers still require current source/build/Binary Ninja evidence.
-- Keep notes concise and temporary. Move durable facts into source comments, Binary Ninja comments, tests, README, or narrow subsystem docs before pruning.
+- Keep notes concise and temporary. Move durable facts into source comments, Binary Ninja comments, tests, README, or `docs/reconstruction/` before pruning.
+- Verification-only queues that no longer carry source blockers do not belong in this active working file; use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py 0xNNNNNN`, and VC6 manifests for current verification state.
+- Recompute verification scope with `python tools/recoil_status.py 0xNNNNNN` or `python tools/recoil_frontier.py 0xNNNNNN --depth 1` after source blockers clear.
 - Use `python tools/recoil_groups_audit.py --summary` to find stale, completed, or overgrown groups.
-- Remove stale groups or move them to `Completed Groups` when every listed plan entry has the intended markers.
-- If a group blocks another group, name the blocking group explicitly.
 
 ## Active Group Template
 
@@ -19,4271 +19,1936 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 
 - Anchor: 0xNNNNNN Name
 - Reason: dependency closure / class cluster / recursive cycle / shared ABI layout / source file cluster
-- Source files:
-  - src/...
-- Plan entries:
-  - 0xNNNNNN Name - target marker(s)
-- Blocking dependencies:
-  - 0xNNNNNN Name - why it blocks
-- Verification target:
-  - build preset/listing/test evidence
-- Notes:
-  - durable facts only
+- Source blockers:
+  - 0xNNNNNN Name
+- Next action:
+  - python tools/recoil_status.py 0xNNNNNN
 ```
 
 ## Active Groups
 
-### Group: Main menu dialog constructor
-
-- Anchor: 0x415220 RecoilStateMainMenuTransition::OnTryBecomeCurrent
-- Reason: dependency closure / main-menu dialog constructor and button availability helpers
-- Source files:
-  - src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h
-  - src/Battlesport/hud.h
-  - src/Battlesport/hud.cpp
-  - src/Battlesport/HudUiMainMenuDialog.cpp
-  - src/Battlesport/RecoilApp.cpp
-  - src/Battlesport/RecoilStateCredits.cpp
-  - src/GameZRecoil/zInput/zInput.cpp
-  - src/native/CMakeLists.txt
-- Plan entries:
-  - 0x414b60 HudUiMainMenuDialog::CanLoadGame - source implementation in progress
-  - 0x414b90 HudUiMainMenuDialog::CanSaveGame - source implementation in progress
-  - 0x414bc0 HudUiMainMenuDialog::Constructor - source implementation in progress
-- Blocking dependencies:
-  - none after the source dependency audit accepts HudUiBackground, HudUiZrdWidget, zOpt, and loaded-tree helpers
-- Verification target:
-  - hidden x86 Ninja build for recoil_native_smoke and guard CTests; later HudUiMainMenuDialog.cpp listing comparison
-- Notes:
-  - BN shows HudUiMainMenuDialog inherits HudUiBackground and owns eight HudUiZrdWidget buttons at offsets 0xa94c, 0xaa98, 0xabe4, 0xad30, 0xae7c, 0xafc8, 0xb114, and 0xb260.
-
-### Group: Camera frustum grid tile builders
-
-- Anchor: 0x44ce70 zClass_Camera::RenderFrustumGridTiles
-- Reason: shared frustum footprint globals and diamond-ring tile storage in GameZRecoil/zClass/Camera.c
-- Source files:
-  - src/GameZRecoil/include/zClass.h
-  - src/GameZRecoil/zClass/Camera.c
-- Plan entries:
-  - 0x44c3c0 zClass_Camera::BuildFrustumGridTiles - source implementation in progress
-  - 0x44c8e0 zClass_Camera::BuildFrustumGridTilesFromParams - source implementation in progress
-- Blocking dependencies:
-  - none for source implementation after 0x44c1b0, 0x44c230, 0x450650, 0x450790, 0x478c70, 0x487900, and 0x4879c0 source availability
-- Verification target:
-  - hidden x86 Ninja build for recoil_native_smoke; later Camera.c assembly-listing comparison
-- Notes:
-  - BN shows 50 diamond rings, 30 tiles per ring, tile stride 0x18, and ring count at offset 0x2d0.
-
 ### Group: HUD per-frame update
 
-- Anchor: 0x42f280 RecoilApp_PlayState::TickAndRenderFrame
-- Reason: dependency closure / HUD per-frame update called by gameplay frame rendering
-- Source files:
-  - src/GameZRecoil/zHud/zhud_ui.h
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-- Plan entries:
-  - 0x4117f0 HudUiMgrObjective::TickMeterFillAnimation - Reimplemented; binary-safe pending
-  - 0x411ac0 HudUiMgrObjective::StartHide - Reimplemented; binary-safe pending
-  - 0x410fe0 HudUiMgr::UpdateFrame - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - none for source implementation.
-- Verification target:
-  - ninja-x86-debug recoil_native.lib linked; raw-address/raw-assembly guards passed; later zhud_ui.cpp listing comparison
+- Anchor: 0x42f280 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x42f280 pending
+- Next action:
+  - `python tools/recoil_status.py 0x42f280`
 
 ### Group: HUD timed task active list
 
-- Anchor: 0x42f280 RecoilApp_PlayState::TickAndRenderFrame
-- Reason: dependency closure / HUD timed task list used by per-frame HUD update
-- Source files:
-  - src/GameZRecoil/include/zImage.h
-  - src/GameZRecoil/zImage/zimg_texture.cpp
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-- Plan entries:
-  - 0x4c7f00 zImage_Font::BlitStringToActiveTarget - Reimplemented; binary-safe pending
-  - 0x4bd470 zTimedTask::RemoveFromActiveList - Reimplemented; binary-safe pending
-  - 0x4bd4d0 zTimedTask::RunImmediateAction - Reimplemented; binary-safe pending
-  - 0x4bd660 zTimedTask::TickActiveList - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - none for source implementation.
-- Verification target:
-  - ninja-x86-debug recoil_native.lib linked; raw-address/raw-assembly guards passed; later zhud_ui.cpp listing comparison
-
-### Group: HUD loader source body
-
-- Anchor: 0x410160 HudUiMgr::EnsureHudLoaded
-- Reason: dependency closure / HUD layout ZRD loader and shared HUD widget globals
-- Source files:
-  - src/GameZRecoil/zHud/zhud_ui.h
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-- Plan entries:
-  - 0x410160 HudUiMgr::EnsureHudLoaded - Reimplemented; binary-safe pending
-  - 0x413660 HudUiMgr::SwitchActiveDialog - Source dependencies satisfied
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug recoil_native.lib linked; later zhud_ui.cpp listing comparison
-- Notes:
-  - Loader applies hud.zar fonts, layouts, sensor/objective/reticle/stats/weapon/mode sections and leaves binary-safe verification open.
-
-### Group: HUD background cursor capture leaves
-
-- Anchor: 0x41bd80 HudUiNetExitPanel::Constructor
-- Reason: dependency closure / HudUiBackground constructor leaf widgets and capture helper
-- Source files:
-  - src/GameZRecoil/zHud/zhud_ui.h
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-- Plan entries:
-  - 0x4a6fe0 zVideo_buff::CopySurfaceRectToImage - Reimplemented; binary-safe pending
-  - 0x4bf980 HudUiBackgroundCursorWidget::MemberConstructorLocal - Reimplemented; binary-safe pending
-  - 0x4bfa20 HudUiBackgroundCursorWidget::DestructorCore - Reimplemented; binary-safe pending
-  - 0x4bfa50 HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh - Reimplemented; binary-safe pending
-  - 0x4bfa70 HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged - Reimplemented; binary-safe pending
-  - 0x4bfa90 HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh - Reimplemented; binary-safe pending
-  - 0x4bfae0 HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh - Reimplemented; binary-safe pending
-  - 0x4bfb70 HudUiBackgroundCursorWidget::SetPos - Reimplemented; binary-safe pending
-  - 0x4bfba0 HudUiBackgroundCursorWidget::RebuildCapturedImage - Reimplemented; binary-safe pending
-  - 0x4bfc50 HudUiBackgroundCursorWidget::Draw - Reimplemented; binary-safe pending
-  - 0x4bfc60 HudUiBackgroundCursorWidget::DrawBase - Reimplemented; binary-safe pending
-  - 0x4bfc80 HudUiBackgroundVideoWidget::Constructor - Reimplemented; binary-safe pending
-  - 0x4bfcd0 HudUiBackgroundVideoWidget::Destructor - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - 0x4b9540 HudUiBackground::Constructor remains blocked until the full background layout and array construction are implemented.
-- Verification target:
-  - ninja-x86-debug CTest; later zhud_ui.cpp and zVideo.cpp listing comparison
+- Anchor: 0x42f280 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x42f280 pending
+- Next action:
+  - `python tools/recoil_status.py 0x42f280`
 
 ### Group: HudUiNetExitPanel callbacks
 
-- Anchor: 0x42eed0 RecoilApp_PlayState::OnTryBecomeCurrent
-- Reason: source file cluster / NETEXIT dialog widget callback layout
-- Source files:
-  - src/Battlesport/HudUiNetExitPanel.h
-  - src/Battlesport/HudUiNetExitPanel.cpp
-- Plan entries:
-  - 0x41bd80 HudUiNetExitPanel::Constructor - Reimplemented; binary-safe pending
-  - 0x41be90 HudUiNetExitPanel_ScalarDeletingDtor - Reimplemented; binary-safe pending
-  - 0x41beb0 HudUiNetExitPanel::Destructor - Reimplemented; binary-safe pending
-  - 0x41c000 HudUiNetExitPanel::CreateGlobal - Reimplemented; binary-safe pending
-  - 0x41be70 HudUiNetExitPanel_ExitButton::OnActivate - Reimplemented; binary-safe pending
-  - 0x41bf10 HudUiNetExitPanel_ResumeWidget::OnActivate - Reimplemented; binary-safe pending
-  - 0x41bf40 HudUiNetExitPanel_ResumeWidget::OnShowPreview - Reimplemented; binary-safe pending
-  - 0x41bfa0 HudUiNetExitPanel_ResumeWidget::OnHidePreview - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later HudUiNetExitPanel.cpp listing comparison
+- Anchor: 0x42eed0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x42eed0 pending
+- Next action:
+  - `python tools/recoil_status.py 0x42eed0`
 
 ### Group: Briefing objective action queue
 
-- Anchor: 0x42eed0 RecoilApp_PlayState::OnTryBecomeCurrent
-- Reason: dependency closure / briefing objective action queue needed by play-state mission entry
-- Source files:
-  - src/Battlesport/Briefing.h
-  - src/Battlesport/Briefing.cpp
-- Plan entries:
-  - 0x404400 Briefing::BuildObjectiveActionsFromIndex - Reimplemented; binary-safe pending
-  - 0x4045b0 Briefing_ActionQueue::AddHideElement - Reimplemented; binary-safe pending
-  - 0x404620 BriefingAction_HideElement::Tick - Reimplemented; binary-safe pending
-  - 0x404640 Briefing_ActionQueue::AddShowElement - Reimplemented; binary-safe pending
-  - 0x4046b0 BriefingAction_ShowElement::Tick - Reimplemented; binary-safe pending
-  - 0x4046d0 Briefing_ActionQueue::AddFadeInElement - Reimplemented; binary-safe pending
-  - 0x404740 BriefingAction_FadeInElement::Tick - Reimplemented; binary-safe pending
-  - 0x404780 Briefing_ActionQueue::AddSetPanelText - Reimplemented; binary-safe pending
-  - 0x404850 BriefingAction_SetPanelText::Tick - Reimplemented; binary-safe pending
-  - 0x4048a0 Briefing_ActionQueue::AddSetWidgetImageTimed - Reimplemented; binary-safe pending
-  - 0x404960 BriefingAction_SetWidgetImageTimed::Tick - Reimplemented; binary-safe pending
-  - 0x4049d0 Briefing_ActionQueue::AddPlaySampleByName - Reimplemented; binary-safe pending
-  - 0x404aa0 BriefingAction_PlaySample::Tick - Reimplemented; binary-safe pending
-  - 0x404b30 Briefing::SampleEventCallback - Reimplemented; binary-safe pending
-  - 0x404b40 Briefing_ActionQueue::AddDelayUntilProgress - Reimplemented; binary-safe pending
-  - 0x404bb0 BriefingAction_DelayUntilProgress::Tick - Reimplemented; binary-safe pending
-  - 0x404c80 Briefing::BuildObjectiveActionsGlobal - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - 0x42eed0 RecoilApp_PlayState::OnTryBecomeCurrent still needs the wider gameplay-frame dependency frontier audited.
-- Verification target:
-  - ninja-x86-debug CTest passed; later Briefing.cpp listing comparison
-- Notes:
-  - BuildObjectiveActionsGlobal forwards the completed-objective index loaded by 0x42eed0 into the runtime action queue when g_Briefing_Runtime is present.
+- Anchor: 0x42eed0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x42eed0 pending
+  - 0x404400 HudUiBriefingRuntime::BuildObjectiveActionsFromIndex
+  - 0x4045b0 Briefing_ActionQueue::AddHideElement
+  - 0x404620 BriefingActionHideElement::Tick
+  - 0x404640 Briefing_ActionQueue::AddShowElement
+  - 0x4046b0 BriefingActionShowElement::Tick
+  - 0x4046d0 Briefing_ActionQueue::AddFadeInElement
+  - 0x404740 BriefingActionFadeInElement::Tick
+  - 0x404780 Briefing_ActionQueue::AddSetPanelText
+  - 0x404850 BriefingActionSetPanelText::Tick
+  - 0x4048a0 Briefing_ActionQueue::AddSetWidgetImageTimed
+  - 0x404960 BriefingActionSetWidgetImageTimed::Tick
+  - 0x4049d0 Briefing_ActionQueue::AddPlaySampleByName
+  - 0x404aa0 BriefingActionPlaySample::Tick
+  - 0x404b30 Briefing::SampleEventCallback
+  - 0x404b40 Briefing_ActionQueue::AddDelayUntilProgress
+  - 0x404bb0 BriefingActionDelayUntilProgress::Tick
+  - 0x404c80 Briefing::BuildObjectiveActionsGlobal
+- Next action:
+  - `python tools/recoil_status.py 0x42eed0`
 
 ### Group: Briefing thread loop
 
-- Anchor: 0x42eed0 RecoilApp_PlayState::OnTryBecomeCurrent
-- Reason: dependency closure / briefing thread main loop blocks mission-entry briefing startup
-- Source files:
-  - src/Battlesport/Briefing.h
-  - src/Battlesport/Briefing.cpp
-  - src/GameZRecoil/Time/Time.h
-  - src/GameZRecoil/Time/Time.cpp
-  - src/GameZRecoil/zHud/zhud_ui.h
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-- Plan entries:
-  - 0x403930 HudUiBriefingRuntime::Constructor - Reimplemented; binary-safe pending
-  - 0x403d90 HudUiBriefingRuntime::ScalarDeletingDestructor - Reimplemented; binary-safe pending
-  - 0x403ed0 HudUiBriefingRuntime::Destructor - Reimplemented; binary-safe pending
-  - 0x404180 Briefing::StartForMission - Reimplemented; binary-safe pending
-  - 0x404280 Briefing::ThreadMain - Reimplemented; binary-safe pending
-  - 0x4a56d0 Time::Tick - Reimplemented; binary-safe pending
-  - 0x4bc760 HudUi::SetInvalidateMode - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug recoil_native.lib linked; raw-address/raw-assembly guards passed; later Briefing.cpp, Time.cpp, and zhud_ui.cpp listing comparison
+- Anchor: 0x42eed0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x42eed0 pending
+  - 0x403930 HudUiBriefingRuntime::Constructor
+  - 0x403d90 HudUiBriefingRuntime::ScalarDeletingDestructor
+  - 0x403ed0 HudUiBriefingRuntime::Destructor
+  - 0x404180 Briefing::StartForMission
+  - 0x404280 Briefing::ThreadMain
+  - 0x4a56d0 Time::Tick
+- Next action:
+  - `python tools/recoil_status.py 0x42eed0`
 
 ### Group: Briefing locator panel leaves
 
 - Anchor: 0x403930 HudUiBriefingRuntime::Constructor
-- Reason: constructor dependency closure / locator panel array construction and update behavior
-- Source files:
-  - src/Battlesport/Briefing.cpp
-- Plan entries:
-  - 0x403c10 HudUiBriefingLocatorPanel::Constructor - Reimplemented; binary-safe pending
-  - 0x403c90 HudUiBriefingLocatorPanel::BlitDirtyRect - Reimplemented; binary-safe pending
-  - 0x403cb0 HudUiBriefingLocatorPanel::Update - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest passed; later Briefing.cpp listing comparison
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x403930 HudUiBriefingRuntime::Constructor
+  - 0x403c10 HudUiBriefingLocatorPanel::Constructor
+  - 0x403c90 HudUiBriefingLocatorPanel::BlitDirtyRect
+  - 0x403cb0 HudUiBriefingLocatorPanel::Update
+- Next action:
+  - `python tools/recoil_status.py 0x403930`
 
 ### Group: Briefing objective picture noise
 
 - Anchor: 0x403930 HudUiBriefingRuntime::Constructor
-- Reason: constructor dependency closure / objective picture custom draw path
-- Source files:
-  - src/Battlesport/Briefing.cpp
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-- Plan entries:
-  - 0x4038a0 HudUiBriefingObjectivePicture::DrawNoiseOverlay - Reimplemented; binary-safe pending
-  - 0x48d910 zVid::DrawNoiseRect - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest passed; later Briefing.cpp and zVideo.cpp listing comparison
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x403930 HudUiBriefingRuntime::Constructor
+  - 0x4038a0 HudUiBriefingObjectivePicture::DrawNoiseOverlay
+  - 0x48d910 zVid::DrawNoiseRect
+- Next action:
+  - `python tools/recoil_status.py 0x403930`
 
 ### Group: Briefing runtime update
 
 - Anchor: 0x403930 HudUiBriefingRuntime::Constructor
-- Reason: constructor/runtime dependency closure / action queue ticking and background update
-- Source files:
-  - src/Battlesport/Briefing.h
-  - src/Battlesport/Briefing.cpp
-  - src/GameZRecoil/zHud/zhud_ui.h
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-- Plan entries:
-  - 0x404070 HudUiBriefingRuntime::Update - Reimplemented; binary-safe pending
-  - 0x4bc570 HudUiBackground::Update - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest passed; later Briefing.cpp and zhud_ui.cpp listing comparison
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x403930 HudUiBriefingRuntime::Constructor
+  - 0x404070 HudUiBriefingRuntime::Update
+  - 0x4bc570 HudUiBackground::Update
+- Next action:
+  - `python tools/recoil_status.py 0x403930`
 
 ### Group: HUD background ZRD root cleanup
 
 - Anchor: 0x403930 HudUiBriefingRuntime::Constructor
-- Reason: constructor dependency closure / HUD background zReader binding and loaded tree ownership cleanup
-- Source files:
-  - src/GameZRecoil/zHud/zhud_ui.h
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-- Plan entries:
-  - 0x4ba070 HudUiBackground::BindButtonsNodeToWidgetByName - Reimplemented; binary-safe pending
-  - 0x4ba0c0 HudUiBackground::BindWidgetByName - Reimplemented; binary-safe pending
-  - 0x4ba0e0 HudUiBackground::BindPrimitiveNodeToElement - Reimplemented; binary-safe pending
-  - 0x4ba350 HudUiBackground::FreeLoadedTreeRoots - Reimplemented; binary-safe pending
-  - 0x4bffb0 HudUiPrimitiveBindTarget::SetSegmentEndpoints - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest passed; later zhud_ui.cpp listing comparison
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x403930 HudUiBriefingRuntime::Constructor
+  - 0x4ba0e0 HudUiBackground::BindPrimitiveNodeToElement
+  - 0x4bffb0 HudUiPrimitiveBindTarget::SetSegmentEndpoints
+- Next action:
+  - `python tools/recoil_status.py 0x403930`
 
 ### Group: Briefing composite panel constructor dependencies
 
 - Anchor: 0x403930 HudUiBriefingRuntime::Constructor
-- Reason: constructor dependency closure / messages panel vector sizing and entry ownership
-- Source files:
-  - src/GameZRecoil/zHud/zhud_ui.h
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-- Plan entries:
-  - 0x4bb790 HudUiCompositePanel::ConstructorWithEntryCount - Reimplemented; binary-safe pending
-  - 0x4bb9f0 HudUiCompositePanel::LayoutEntries - Reimplemented; binary-safe pending
-  - 0x4bbaa0 HudUiCompositePanel::SetTextFmt - Reimplemented; binary-safe pending
-  - 0x4bbac0 HudUiCompositePanel::SetTextFmtV - Reimplemented; binary-safe pending
-  - 0x4bbb20 HudUiCompositePanel::ScrollHistory - Reimplemented; binary-safe pending
-  - 0x4bbbe0 HudUiCompositePanel::SetFont - Reimplemented; binary-safe pending
-  - 0x4bbca0 HudUiCompositePanel::ResizeEntryVectorAndRelayout - Reimplemented; binary-safe pending
-  - 0x4bbe90 HudUiCompositePanel::ReapplyEntryCount - Reimplemented; binary-safe pending
-  - 0x4bbed0 HudUiCompositePanel::ResizeEntryCount - Reimplemented; binary-safe pending
-  - 0x4bbff0 HudUiCompositePanelVector::InsertCopies - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest passed; later zhud_ui.cpp listing comparison
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x403930 HudUiBriefingRuntime::Constructor
+  - 0x4bb790 HudUiCompositePanel::ConstructorWithEntryCount
+  - 0x4bb9f0 HudUiCompositePanel::LayoutEntries
+  - 0x4bbaa0 HudUiCompositePanel::SetTextFmt
+  - 0x4bbac0 HudUiCompositePanel::SetTextFmtV
+  - 0x4bbb20 HudUiCompositePanel::ScrollHistory
+  - 0x4bbbe0 HudUiCompositePanel::SetFont
+  - 0x4bbca0 HudUiCompositePanel::ResizeEntryVectorAndRelayout
+  - 0x4bbe90 HudUiCompositePanel::ReapplyEntryCount
+  - 0x4bbed0 HudUiCompositePanel::ResizeEntryCount
+  - 0x4bbff0 HudUiCompositePanelVector::InsertCopies
+- Next action:
+  - `python tools/recoil_status.py 0x403930`
 
 ### Group: GameNet gameplay packet handler band
 
-- Anchor: 0x4321b0 GameNet::UnregisterGameplayPacketHandlers
-- Reason: dependency closure / gameplay packet handler symbols, timer/lap packets, and zNetwork callback ABI
-- Source files:
-  - src/Battlesport/GameNet.h
-  - src/Battlesport/GameNet.cpp
-  - src/GameZRecoil/zUtil/zSaveGame.h
-  - src/GameZRecoil/zNetwork/zNetwork.h
-  - src/GameZRecoil/zNetwork/znet_dplay.cpp
-- Plan entries:
-  - 0x4320f0 GameNet::ResetRemotePlayersAndSpawnLists - Reimplemented; binary-safe pending
-  - 0x4330f0 GameNet::SendPkt0E_PlayerLapProgress - Reimplemented; binary-safe pending
-  - 0x433170 GameNet::HandlePkt0E_PlayerLapProgress - Reimplemented; binary-safe pending
-  - 0x433250 GameNet::HandlePkt0D_HudTimerPanelState - Reimplemented; binary-safe pending
-  - 0x433310 GameNet::SendPkt0D_HudTimerPanelState - Reimplemented; binary-safe pending
-  - 0x4343f0 GameNet::HandlePkt13_EffectAnimActivationRecord - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - 0x4321b0 still needs the remaining gameplay handler symbols implemented as real source functions before unregister can be source-complete without raw original addresses.
-- Verification target:
-  - ninja-x86-release `recoil_native_smoke`; guard CTests; later GameNet.cpp/zNetwork listing comparison
-- Notes:
-  - zNetwork packet handlers are invoked through fastcall (`ecx` sender, `edx` packet); `zNetworkPacketHandler` now reflects that ABI.
-  - Player lap-progress state fields are recovered at PlayerState offsets 0x10a0 (`lapTimeSec`) and 0x10ac (`lapCount`).
-  - Packet 0x13 suppresses activation-record echo through `g_GameNetSuppressPkt13ActivationEcho` while processing a new zEffect activation record.
+- Anchor: 0x4321b0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4321b0 pending
+  - 0x4320f0 GameNet::ResetRemotePlayersAndSpawnLists
+  - 0x4330f0 GameNet::SendPkt0E_PlayerLapProgress
+  - 0x433170 GameNet::HandlePkt0E_PlayerLapProgress
+  - 0x433250 GameNet::HandlePkt0D_HudTimerPanelState
+  - 0x433310 GameNet::SendPkt0D_HudTimerPanelState
+  - 0x4343f0 GameNet::HandlePkt13_EffectAnimActivationRecord
+- Next action:
+  - `python tools/recoil_status.py 0x4321b0`
 
 ### Group: HudSensorTracker mission-save queue
 
 - Anchor: 0x418fb0 HudSensorTracker::SaveAndQueueMissionState
-- Reason: dependency closure / mission completion save snapshot and RecoilApp FMV queue bridge
-- Source files:
-  - src/Battlesport/HudSensorTracker.h
-  - src/Battlesport/HudSensorTracker.cpp
-  - src/Battlesport/RecoilApp.h
-  - src/Battlesport/player.h
-  - src/Battlesport/player.cpp
-- Plan entries:
-  - 0x419010 HudSensorTracker::QueueMissionFmvStateForMissionId - Reimplemented; binary-safe pending
-  - 0x41f010 Player::BuildMissionSaveData - Reimplemented; binary-safe pending
-  - 0x418fb0 HudSensorTracker::SaveAndQueueMissionState - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - none for source completion
-- Verification target:
-  - ninja-x86-release `recoil_native_smoke`; guard CTests; later HudSensorTracker.cpp listing comparison for 0x419010
-- Notes:
-  - QueueMissionFmvStateForMissionId clears the mission-FMV skip flag, writes the requested mission id into the app-owned mission FMV state, and queues that state through RecoilApp::QueueSwitchCurrentState.
-  - SaveAndQueueMissionState snapshots PlayerMissionSaveData into HudSensorTracker.pendingPlayerSave, preserves the player nanite-panel level at offset 0x140, marks the pending save, and queues missionId + 1 unless the final-mission flag requests quit-after-credits.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x418fb0 HudSensorTracker::SaveAndQueueMissionState
+  - 0x419010 HudSensorTracker::QueueMissionFmvStateForMissionId
+  - 0x41f010 Player::BuildMissionSaveData
+- Next action:
+  - `python tools/recoil_status.py 0x418fb0`
 
 ### Group: zEffectAnim stop and activation closure
 
 - Anchor: 0x45d7b0 zEffectAnim::SetTransformRotAndVelocity
-- Reason: dependency closure / shared zEffectAnim runtime entry, stop callbacks, sequence runner, and activation record ABI
-- Source files:
-  - src/GameZRecoil/zEffect/zEffect.h
-  - src/GameZRecoil/zEffect/zEffect.cpp
-  - src/GameZRecoil/zDEClient/zdec_init.cpp
-  - src/GameZRecoil/include/zClass.h
-  - src/GameZRecoil/zClass/Class.c
-  - src/GameZRecoil/zMath/zMath.h
-  - src/GameZRecoil/zMath/zMath.cpp
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-- Plan entries:
-  - 0x459280 zEffect::HandleLightAnimEvent - Reimplemented; binary-safe pending
-  - 0x459510 zEffect::HandleFogEvent - Reimplemented; binary-safe pending
-  - 0x459580 zEffect::HandleCameraParamsEvent - Reimplemented; binary-safe pending
-  - 0x4596c0 zEffect::AnimateCameraParamsOverTime - Reimplemented; binary-safe pending
-  - 0x459ae0 zEffect::HandleRotationEvent - Reimplemented; binary-safe pending
-  - 0x459cb0 zEffect::HandleNodeScaleEvent - Reimplemented; binary-safe pending
-  - 0x459ce0 zEffect::HandlePositionEvent - Reimplemented; binary-safe pending
-  - 0x459e30 zEffect::HandleActivateEvent - Reimplemented; binary-safe pending
-  - 0x458c10 zEffect::UpdateBeamNodeBetweenPoints - Reimplemented; binary-safe pending
-  - 0x458ce0 zEffect::UpdateBeamNodeBetweenFractions - Reimplemented; binary-safe pending
-  - 0x443c50 zClass_cls_di::SetBreakOnFirstCandidate - source present; supports conditional chain ray tests
-  - 0x45c040 zEffectAnim::Stop - Reimplemented; binary-safe pending
-  - 0x45c100 zEffect::HandleNamedAnimStopEvent - Reimplemented; binary-safe pending
-  - 0x45c1a0 zEffect::HandleEmitterPlayEvent - Reimplemented; binary-safe pending
-  - 0x45c3c0 zEffect::HandleConditionalChainEvent - Reimplemented; binary-safe pending
-  - 0x45c530 zEffect::TraceUpwardHitFromNodeOrPos - Reimplemented; binary-safe pending
-  - 0x45cbc0 zEffect::HandleTopMessageEvent - Reimplemented; binary-safe pending
-  - 0x45ae30 zEffect_Anim::AdvanceKeyframeSample - Reimplemented; binary-safe pending
-  - 0x45ae90 zEffect_Anim::AnimateKeyframeSample - Reimplemented; binary-safe pending
-  - 0x45b120 zEffect_Anim::AdvanceKeyframe - Reimplemented; binary-safe pending
-  - 0x45b210 zEffect_Anim::EvaluateKeyframe - Reimplemented; binary-safe pending
-  - 0x45b280 zEffect_Anim::RunKeyframes - Reimplemented; binary-safe pending
-  - 0x45b4a0 zEffect::HandleDetachEvent - Reimplemented; binary-safe pending
-  - 0x45c710 zEffect::HandleScreenColorFxEvent - Reimplemented; binary-safe pending
-  - 0x45c920 zEffect::HandleScreenOverlayFxEvent - Reimplemented; binary-safe pending
-  - 0x45b8b0 zEffect::HandleTransformRefsEvent - Reimplemented; binary-safe pending
-  - 0x45bc60 zEffect::HandleSurfaceRefEvent - Reimplemented; binary-safe pending
-  - 0x472ed0 zMath_Project_GetLastScreenScaleXY - Reimplemented; binary-safe pending
-  - 0x476480 zMath::ProjectPointAndClampToScreenClip - Reimplemented; binary-safe pending
-  - 0x4bdc00 zVideoFxPass3Slot::SetRectAndPayload - Reimplemented; binary-safe pending
-  - 0x4bed90 zVideo_FxPass3Config_QueueElementLocal - Reimplemented; binary-safe pending
-  - 0x4bed50 zVideo_FxPass3Config_SetPrimaryElementParamsLocal - Reimplemented; binary-safe pending
-  - 0x4beee0 zVideo_FxPass3_SetPrimaryElementParamsLocal - Reimplemented; binary-safe pending
-  - 0x4bef10 zVideo_FxPass3_QueueElementLocal - Reimplemented; binary-safe pending
-  - 0x4498e0 gwNode::GetWorldPosAndOrientation - Reimplemented; binary-safe pending
-  - 0x474d90 zMath_Vec3_ElevationAngleBetweenPoints - Reimplemented; binary-safe pending
-  - 0x475910 zMath_Quat_Multiply - Reimplemented; binary-safe pending
-  - 0x475b80 zMath_Quat_FromRotationVector - Reimplemented; binary-safe pending
-  - 0x45cc00 zEffect_Anim::RunSequenceEvents - Reimplemented after full event dispatch review; binary-safe pending
-  - 0x45d010 zEffect_Anim::RunSequence - Reimplemented; binary-safe pending
-  - 0x45d3d0 zEffectAnim::FinalizeStop - Reimplemented; binary-safe pending
-  - 0x45d4c0 zEffectAnim::RunStopSequenceCallback - Reimplemented; binary-safe pending
-  - 0x45d570 zEffectAnim::StopAndCleanup - Reimplemented; binary-safe pending
-  - 0x45d6b0 zEffect_Anim::NodeActionCallback - Reimplemented; binary-safe pending
-  - 0x45d770 zEffectAnim::RunStopDelayCallback - Reimplemented; binary-safe pending
-  - 0x45d7b0 zEffectAnim::SetTransformRotAndVelocity - Reimplemented; binary-safe pending
-  - 0x45dcb0 zEffectAnim::SetVelocity - Reimplemented; binary-safe pending
-  - 0x45dde0 zEffectAnim::SetVelocity_Thunk - Reimplemented; binary-safe pending
-  - 0x45de00 zEffectAnim::SetPositionRefAndVelocity - Reimplemented; binary-safe pending
-  - 0x45df70 zEffectAnim::SetPositionRefAndVelocity_Thunk - Reimplemented; binary-safe pending
-  - 0x45df90 zEffectAnim::SetTransformRefs - Reimplemented; binary-safe pending
-  - 0x45e0b0 zEffectAnim::SetTransformRefs_Thunk - Reimplemented; binary-safe pending
-  - 0x45d930 zEffectAnim::ActivateRuntime - Reimplemented; binary-safe pending
-  - 0x45dc70 zEffectAnim::SetTransformRotAndVelocity_Thunk - Reimplemented; binary-safe pending
-  - 0x45a9d0 zEffect::AnimateNodeOverTime - Reimplemented; binary-safe pending
-  - 0x474580 zMath_Vec3_DirFromYaw - Reimplemented with source-level fastcall spelling for MSVC; ABI-equivalent to BN pointer-in-ECX/float-on-stack shape; binary-safe pending
-  - 0x443d20 zClass_cls_di::BuildPickCandidateListBelowPoint - Reimplemented; binary-safe pending
-  - 0x443f80 zClass_cls_di::BuildPickCandidateList - Reimplemented; binary-safe pending
-  - 0x444310 zClass_cls_di::BuildPickCandidatesRecursive - Reimplemented; binary-safe pending
-  - 0x4443e0 zClass_cls_di::BuildPickCandidatesForLight - Reimplemented; binary-safe pending
-  - 0x4472c0 zClass_cls_di::IsPickQueryPointOutsideViewBBoxXZ - Reimplemented; binary-safe pending
-  - 0x484960 zDi::BuildPickCandidateForQueryPoint - Reimplemented; binary-safe pending
-  - 0x4856d0 zClass_cls_di::TryGetPolygonHitAtQueryXZ - Reimplemented; binary-safe pending
-  - 0x45a920 zEffect::FindNearestPickCandidateBelowPoint - Reimplemented; binary-safe pending
-  - 0x459e70 zEffect::HandleNodeAnimEvent - Reimplemented and dispatched from 0x45cc00; binary-safe pending
-- Blocking dependencies:
-  - Binary-safe assembly verification remains pending for the zEffect stop/activation group; source reimplementation coverage for the grouped dispatcher, run/stop loop, and activation setters is complete.
-- Verification target:
-  - ninja-x86-release native smoke and guard CTests; later zEffect.cpp listing comparison for the activation/stop cluster
-- Notes:
-  - The recovered fastcall/stack-pop shape is represented with `RECOIL_FASTCALL` for SetTransformRotAndVelocity and its thunk; 0x45dc70 is a source-level wrapper over 0x45d7b0 because production source cannot use raw assembly.
-  - Focused `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed after adding the initial stop/activation source; the transform-event, surface-ref event, detach event, keyframe handlers, screen-color/screen-overlay events, and small conditional/message/emitter handler source compiles in `recoil_native_smoke`.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x45d7b0 zEffectAnim::SetTransformRotAndVelocity
+  - 0x459280 zEffect::HandleLightAnimEvent
+  - 0x459510 zEffect::HandleFogEvent
+  - 0x459580 zEffect::HandleCameraParamsEvent
+  - 0x4596c0 zEffect::AnimateCameraParamsOverTime
+  - 0x459ae0 zEffect::HandleRotationEvent
+  - 0x459cb0 zEffect::HandleNodeScaleEvent
+  - 0x459ce0 zEffect::HandlePositionEvent
+  - 0x459e30 zEffect::HandleActivateEvent
+  - 0x458c10 zEffect::UpdateBeamNodeBetweenPoints
+  - 0x458ce0 zEffect::UpdateBeamNodeBetweenFractions
+  - 0x443c50 zClass_cls_di::SetBreakOnFirstCandidate
+  - 0x45c040 zEffectAnim::Stop
+  - 0x45c100 zEffect::HandleNamedAnimStopEvent
+  - 0x45c1a0 zEffect::HandleEmitterPlayEvent
+  - 0x45c3c0 zEffect::HandleConditionalChainEvent
+  - 0x45c530 zEffect::TraceUpwardHitFromNodeOrPos
+  - 0x45cbc0 zEffect::HandleTopMessageEvent
+  - 0x45ae30 zEffect_Anim::AdvanceKeyframeSample
+  - 0x45ae90 zEffect_Anim::AnimateKeyframeSample
+  - 0x45b120 zEffect_Anim::AdvanceKeyframe
+  - 0x45b210 zEffect_Anim::EvaluateKeyframe
+  - 0x45b280 zEffect_Anim::RunKeyframes
+  - 0x45b4a0 zEffect::HandleDetachEvent
+  - 0x45c710 zEffect::HandleScreenColorFxEvent
+  - 0x45c920 zEffect::HandleScreenOverlayFxEvent
+  - 0x45b8b0 zEffect::HandleTransformRefsEvent
+  - 0x45bc60 zEffect::HandleSurfaceRefEvent
+  - 0x476480 zMath::ProjectPointAndClampToScreenClip
+  - 0x4bdc00 zVideoFxPass3Slot::SetRectAndPayload
+  - 0x4bed90 zVideo_FxPass3Config_QueueElementLocal
+  - 0x4bed50 zVideo_FxPass3Config_SetPrimaryElementParamsLocal
+  - 0x4beee0 zVideo_FxPass3_SetPrimaryElementParamsLocal
+  - 0x4bef10 zVideo_FxPass3_QueueElementLocal
+  - 0x4498e0 gwNode::GetWorldPosAndOrientation
+  - 0x474d90 zMath_Vec3_ElevationAngleBetweenPoints
+  - 0x475910 zMath_Quat_Multiply
+  - 0x475b80 zMath_Quat_FromRotationVector
+  - 0x45cc00 zEffect_Anim::RunSequenceEvents
+  - 0x45d010 zEffect_Anim::RunSequence
+  - 0x45d3d0 zEffectAnim::FinalizeStop
+  - 0x45d4c0 zEffectAnim::RunStopSequenceCallback
+  - 0x45d570 zEffectAnim::StopAndCleanup
+  - 0x45d6b0 zEffect_Anim::NodeActionCallback
+  - 0x45d770 zEffectAnim::RunStopDelayCallback
+  - 0x45dcb0 zEffectAnim::SetVelocity
+  - 0x45dde0 zEffectAnim::SetVelocity_Thunk
+  - 0x45de00 zEffectAnim::SetPositionRefAndVelocity
+  - 0x45df70 zEffectAnim::SetPositionRefAndVelocity_Thunk
+  - 0x45df90 zEffectAnim::SetTransformRefs
+  - 0x45e0b0 zEffectAnim::SetTransformRefs_Thunk
+  - 0x45d930 zEffectAnim::ActivateRuntime
+  - 0x45dc70 zEffectAnim::SetTransformRotAndVelocity_Thunk
+  - 0x45a9d0 zEffect::AnimateNodeOverTime
+  - 0x474580 zMath_Vec3_DirFromYaw
+  - 0x45a920 zEffect::FindNearestPickCandidateBelowPoint
+  - 0x459e70 zEffect::HandleNodeAnimEvent
+- Next action:
+  - `python tools/recoil_status.py 0x45d7b0`
 
 ### Group: OptCatalog runtime instance free-list leaves
 
-- Anchor: 0x4ae660 OptCatalog::AllocRuntimeInstance
-- Reason: dependency closure / shared OptCatalog runtime-instance and attach-clone free-list layout
-- Source files:
-  - src/GameZRecoil/include/OptCatalog.h
-  - src/GameZRecoil/include/zClass.h
-  - src/GameZRecoil/zEffect/zEffect.h
-  - src/GameZRecoil/zEffect/zEffect.cpp
-  - src/GameZRecoil/zClass/Light.c
-  - src/GameZRecoil/zWeapon/OptCatalog.c
-  - tests/native/zeffect_tests.cpp
-  - tests/native/zweapon_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x4ae4b0 OptCatalog::AllocOrReuseAttachNodeChildClone - Reimplemented; Binary-safe verified
-  - 0x4ae520 OptCatalog::ClearRuntimeInstanceAsyncFxHandleCallback - Reimplemented; Binary-safe verified
-  - 0x4ae530 OptCatalog::AllocOrReuseAttachNodeClone - Reimplemented; Binary-safe verified
-  - 0x4aeaa0 OptCatalog::SpawnRuntimeInstanceAt - Reimplemented; Binary-safe verified
-  - 0x4b2520 Light::AllocFromFreeListAndAttach - Reimplemented; Binary-safe verified
-  - 0x45e0d0 zEffectAnimEntry::SetOnStateDoneCallback - Reimplemented; Binary-safe verified
-  - 0x45e200 zEffect::SetWorldNode - Reimplemented; Binary-safe verified
-  - 0x45e210 zEffect_Anim::SetZbdFilename - Reimplemented; Binary-safe verified
-  - 0x45e270 zEffect::SetResourceNode - Reimplemented; Binary-safe verified
-  - 0x45ffa0 zEffectAnim::FindNextAsyncEntry - Reimplemented; Binary-safe verified
-  - 0x460010 zEffectAnim::GetRootNodeOrNull - Reimplemented; Binary-safe verified
-  - 0x462280 zEffect::FindTemplateIndexByName - Reimplemented; Binary-safe verified
-- Blocking dependencies:
-  - 0x4ae660 OptCatalog::AllocRuntimeInstance - still needs the larger runtime spawn allocator body
-- Verification target:
-  - ninja-x86-release recoil_native_smoke; guard CTests; later zWeapon/OptCatalog listing comparison
-- Notes:
-  - These helpers operate on g_OptCatalogFreeRuntimeInstanceList, entry +0xbc/+0xc4 attach-node fields, and the entry +0xfc attach-clone child free list.
+- Anchor: 0x4ae660 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4ae660 pending
+  - 0x4ae4b0 OptCatalog::AllocOrReuseAttachNodeChildClone
+  - 0x4ae520 OptCatalog::ClearRuntimeInstanceAsyncFxHandleCallback
+  - 0x4ae530 OptCatalog::AllocOrReuseAttachNodeClone
+  - 0x4aeaa0 OptCatalog::SpawnRuntimeInstanceAt
+  - 0x4b2520 Light::AllocFromFreeListAndAttach
+  - 0x45e0d0 zEffectAnimEntry::SetOnStateDoneCallback
+  - 0x45e200 zEffect::SetWorldNode
+  - 0x45e210 zEffect_Anim::SetZbdFilename
+  - 0x45e270 zEffect::SetResourceNode
+  - 0x45ffa0 zEffectAnim::FindNextAsyncEntry
+  - 0x460010 zEffectAnim::GetRootNodeOrNull
+  - 0x462280 zEffect::FindTemplateIndexByName
+- Next action:
+  - `python tools/recoil_status.py 0x4ae660`
 
 ### Group: Player alt-gun fire-point selection
 
 - Anchor: 0x43aa30 Player::SelectAltGunFirePointAndSlot
-- Reason: dependency closure / shared PlayerState fire-point, aim-basis, and gun-slot layout
-- Source files:
-  - src/Battlesport/player.h
-  - src/Battlesport/player.cpp
-  - src/GameZRecoil/zUtil/zSaveGame.h
-  - tests/native/player_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x43aa30 Player::SelectAltGunFirePointAndSlot - Reimplemented; Binary-safe pending
-  - 0x43afd0 Player::ComposeAimBasisWorldMatrix - Reimplemented; Binary-safe pending
-- Blocking dependencies:
-  - 0x43c190 Player::ProcessAltGunDispatchRequest - still needs launch/update/process callees after selection
-- Verification target:
-  - ninja-x86-release recoil_native_smoke; guard CTests; later player.cpp listing comparison
-- Notes:
-  - The selector cycles alt hardpoint states 1 and 2, keeps state 0 centered, writes the chosen PlayerGunFireSlot outparam, and falls back to worldPos plus one meter when gun or turret nodes are missing.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x43aa30 Player::SelectAltGunFirePointAndSlot
+  - 0x43afd0 Player::ComposeAimBasisWorldMatrix
+  - 0x43c190 pending
+- Next action:
+  - `python tools/recoil_status.py 0x43aa30`
 
 ### Group: zClass recursive teardown dependencies
 
 - Anchor: 0x451a60 zClass_Util::DestroyNodeRecursive
-- Reason: dependency closure / recursive node teardown, class-specific delete/remove dispatch, and display-instance pool release
-- Source files:
-  - src/GameZRecoil/include/zClass.h
-  - src/GameZRecoil/include/zDi.h
-  - src/GameZRecoil/zClass/Class.c
-  - src/GameZRecoil/zClass/cls_util.c
-  - src/GameZRecoil/zClass/cls_world.c
-  - src/GameZRecoil/zClass/Sound.c
-  - src/GameZRecoil/zClass/Animate.c
-  - src/GameZRecoil/zClass/Seq.c
-  - src/Battlesport/zModel/gdi.c
-  - src/Battlesport/zModel/zModel_Display.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x447980 zClass_Class::DeleteNodeByType - Reimplemented / Binary-safe pending
-  - 0x447e60 zClass_Class::gwNodeSetDisplayInstance - Reimplemented / Binary-safe pending
-  - 0x448570 zClass_Class::RemoveChild - Reimplemented / Binary-safe pending
-  - 0x450240 zClass_World::DeleteNode - Reimplemented / Binary-safe pending
-  - 0x450e40 zClass_World::FreeVirtualAreaPartitions - Reimplemented / Binary-safe verified
-  - 0x451a60 zClass_Util::DestroyNodeRecursive - Reimplemented / Binary-safe pending
-  - 0x452ab0 zClass_Sound::DeleteNode - Reimplemented / Binary-safe pending
-  - 0x452b80 zClass_Sound::RemoveChild - Reimplemented / Binary-safe pending
-  - 0x453b10 zClass_Animate::DeleteNode - Reimplemented / Binary-safe pending
-  - 0x453b80 zClass_Animate::RemoveChild - Reimplemented / Binary-safe pending
-  - 0x454000 zClass_Sequence::RemoveChild - Reimplemented / Binary-safe pending
-  - 0x481570 zDi::PtrToIndexOrMinus1 - Reimplemented / Binary-safe verified
-  - 0x4815a0 zDi::IndexToPtrOrNull - Reimplemented / Binary-safe verified
-  - 0x4820f0 zModel_DiPool::FreeIfUnreferenced - Reimplemented / Binary-safe verified
-  - 0x482160 zDi::FreeContents - Reimplemented / Binary-safe verified
-  - 0x4826f0 zDi::AddRef - Reimplemented / Binary-safe verified
-  - 0x482700 zDi::Release - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - class-specific remove/delete callees outside this closure still need their own binary-safe verification before the dispatcher functions can be fully verified.
-- Verification target:
-  - ninja-x86-release `recoil_native_smoke`; guard CTests; `build/verification/zclass_*`, `zdi_*`, and `zmodel_dipool_*` listing comparisons
-- Notes:
-  - DestroyNodeRecursive removes listB children through zClass_Class::RemoveChild, recursively deletes children once listCountA reaches zero, detaches a display instance through gwNodeSetDisplayInstance, and frees it through the DI pool when the reference count becomes zero.
-  - zDi::PtrToIndexOrMinus1 returns -1 for null and otherwise pointer-diffs against g_zModel_DiPoolBase; `build/verification/zdi_ptr_to_index_or_minus1/481570_diff.txt` shows only equivalent reciprocal-divide instruction scheduling/direct-load differences from BN.
-  - zDi::IndexToPtrOrNull returns null for negative serialized DI indices and otherwise returns `g_zModel_DiPoolBase + index`; `build/verification/zdi_index_to_ptr_or_null/4815a0_diff.txt` differs only by equivalent multiply-vs-LEA address arithmetic.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x481570 zDi::PtrToIndexOrMinus1
+  - 0x4815a0 zDi::IndexToPtrOrNull
+- Next action:
+  - `python tools/recoil_status.py 0x481570`
 
 ### Group: HudSensorTracker mission identity fields
 
 - Anchor: 0x4177a0 HudSensorTracker::SetMissionId
-- Reason: shared ABI layout / mission id and cached mission path fields
-- Source files:
-  - src/Battlesport/HudSensorTracker.h
-  - src/Battlesport/HudSensorTracker.cpp
-  - tests/native/zeffect_tests.cpp
-- Plan entries:
-  - 0x417770 HudSensorTracker::InitMissionIdAndFlags - CString source layout restored; binary-safe pending
-  - 0x4177a0 HudSensorTracker::SetMissionId - CString source layout restored; binary-safe pending
-  - 0x4177d0 HudSensorTracker::SetZbdPath - CString source layout restored; binary-safe pending
-- Blocking dependencies:
-  - HudSensorTracker construction/destruction and MFC42 CString provider ABI still need listing/provider verification before binary-safe marking.
-- Verification target:
-  - ninja-x86-debug CTest; later HudSensorTracker.cpp listing comparison with MFC42 CString provider calls
-- Notes:
-  - Binary Ninja shows InitMissionIdAndFlags, SetMissionId, SetZbdPath, and ResetMissionState call MFC42 CString methods for the cached path fields at 0xe4, 0xe8, and 0xec.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4177a0 HudSensorTracker::SetMissionId
+- Next action:
+  - `python tools/recoil_status.py 0x4177a0`
 
 ### Group: HudSensorTracker map shutdown helpers
 
-- Anchor: 0x417d40 HudSensorTracker::ShutdownMissionGameplaySystems
-- Reason: dependency closure / shared HudSensorTracker map layout and mission reset UI teardown
-- Source files:
-  - src/Battlesport/HudSensorTracker.h
-  - src/Battlesport/HudSensorTracker.cpp
-  - src/Battlesport/Mfc42Abi.h
-  - src/GameZRecoil/include/zClipAlt.h
-  - src/GameZRecoil/include/zDi.h
-  - src/GameZRecoil/zClass/cls_di.c
-  - src/GameZRecoil/zGeometry/zClipAlt.cpp
-  - src/GameZRecoil/zModel/zModel.h
-  - src/GameZRecoil/zClass/Class.c
-  - src/GameZRecoil/zMath/zMath.h
-  - src/GameZRecoil/zMath/zMath.cpp
-  - src/GameZRecoil/zRndr/zRndr.h
-  - src/GameZRecoil/zVideo/zVideo.h
-  - tests/native/zmath_tests.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/zeffect_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x415ac0 HudSensorMapNode::FreePointArray - Reimplemented; binary-safe pending
-  - 0x415d30 HudSensorMapNode::DrawOnTracker - Reimplemented; binary-safe pending
-  - 0x416480 HudSensorMapNode::DrawProjectedPath - Reimplemented; binary-safe pending
-  - 0x416660 HudSensorTracker::Init - Reimplemented; binary-safe pending
-  - 0x4166e0 HudSensorTracker::SetBounds - Reimplemented; binary-safe pending
-  - 0x4167a0 HudSensorTracker::MapShutdownAndReset - Reimplemented; binary-safe pending
-  - 0x4167e0 HudSensorTracker::MapRemoveNode - Reimplemented; binary-safe pending
-  - 0x416ad0 HudSensorTracker::MapOverlayEndShow - Reimplemented; binary-safe pending
-  - 0x417130 HudSensorTracker::Update - Reimplemented; binary-safe pending
-  - 0x416ef0 HudSensorTracker::SetSaveStateMarkerMaxDistance - Reimplemented; binary-safe pending
-  - 0x417220 HudSensorTracker::SetTrackedSaveState - Reimplemented; binary-safe pending
-  - 0x4176f0 HudSensorTracker::ResetMissionState - Reimplemented; binary-safe pending
-  - 0x443c60 zClass_cls_di::SetStopAfterFirstHit - Reimplemented; binary-safe pending
-  - 0x444de0 zClass_cls_di::RaycastSelectClosestHitBetweenPoints - Reimplemented; binary-safe pending
-  - 0x444e90 zClass_cls_di::RaycastFindClosest - Reimplemented; binary-safe pending
-  - 0x4455f0 zClass_cls_di::BuildPickCandidatesForSegment - Reimplemented; binary-safe pending
-  - 0x445650 zClass_cls_di::BuildPickCandidatesForSegmentChildFallback - Reimplemented; binary-safe pending
-  - 0x445a00 zClass_cls_di::BuildPickCandidatesForSegmentRecursive - Reimplemented; binary-safe pending
-  - 0x445b20 zClass_cls_di::BuildPickCandidatesForSegmentForCamera - Reimplemented; binary-safe pending
-  - 0x445c20 zClass_cls_di::BuildPickCandidatesForSegmentForLight - Reimplemented; binary-safe pending
-  - 0x447540 zClass_cls_di::FilterPointsBBox - Reimplemented; binary-safe pending
-  - 0x448920 zClass_Class::gwNodeGetViewBBoxCorners - Reimplemented; binary-safe pending
-  - 0x485380 zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces - Reimplemented; binary-safe pending
-  - 0x4857f0 zClass_cls_di::BuildPickCandidateForSegmentVsPolygon - Reimplemented; binary-safe pending
-  - 0x484fc0 zClass_cls_di::AppendPickCandidatesForFace - Reimplemented; binary-safe pending
-  - 0x485d10 zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv - Reimplemented; binary-safe pending
-  - 0x472ef0 zMath::MatStackPushAndCloneParent - Reimplemented; binary-safe pending
-  - 0x472670 zMath::Vec3DeltaLengthSq - Reimplemented; binary-safe pending
-  - 0x4737e0 zMath::MatTranslate - Reimplemented; binary-safe pending
-  - 0x473970 zMath::MatRotateX - Reimplemented; binary-safe pending
-  - 0x473cc0 zMath::MatRotateZ - Reimplemented; binary-safe pending
-  - 0x475070 zMath_Vec3_TriangleNormal - Reimplemented; binary-safe pending
-  - 0x475130 zMath_SolveLinearGradient2D - Reimplemented; binary-safe pending
-  - 0x4bd720 zMath::ClipLineSegmentToZRange - Reimplemented; binary-safe pending
-  - 0x4bd800 zMath::ClipLineSegmentPointToZ - Reimplemented; binary-safe pending
-  - 0x476400 VariantTag::CurrentAllowsId - Reimplemented; binary-safe pending
-  - 0x479f90 zClipAlt::SetTargetRect - Reimplemented; binary-safe pending
-  - 0x479c90 OptCatalog_SetDamageMaskUv - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - MFC42 CString provider calls and virtual HudUiElement slot calls need listing/provider verification before binary-safe marking.
-- Verification target:
-  - ninja-x86-release `recoil_native_smoke`; guard CTests; later HudSensorTracker.cpp listing comparison for 0x415ac0, 0x415d30, 0x416480, 0x416660, 0x4166e0, 0x4167a0, 0x4167e0, 0x416ad0, 0x416ef0, 0x417130, 0x417220, and 0x4176f0; zMath.cpp listing comparison for 0x4bd720 and 0x4bd800
-- Notes:
-  - ResetMissionState calls HudUiElement virtual SetVisible slot 24 and scalar deleting destructor slot 0 for the fx-pass element, and removes it through the zVideo fx-pass config interpreted as a HudUiContainer at its first 0x10 bytes.
-  - SetTargetRect mirrors the alt clipping target rectangle and remap bias/scale globals used by the sensor reticle path; SetStopAfterFirstHit mirrors the DI global toggle at 0x5396d4.
-  - VariantTag::CurrentAllowsId uses BN's `g_Variant_CurrentTag` and `g_Variant_FilterEnabled`; MatStackPushAndCloneParent copies the parent matrix slot while preserving the parent identity flag.
-  - MatTranslate and MatRotateX/Z now cover the extra transforms needed by light/camera DI candidate traversal.
-  - TriangleNormal, SolveLinearGradient2D, and OptCatalog_SetDamageMaskUv cover polygon hit normal/UV propagation for DI pick candidates.
-  - gwNodeGetViewBBoxCorners covers the DI bbox-filter view-space transform path, including the BN-limited local x87 matrix-composition block.
-  - BuildPickCandidateForSegmentVsPolygon covers the untextured segment-plane hit and projected inside-edge tests for DI polygon pick candidates.
-  - BuildPickCandidateForSegmentVsPolygonWithUv extends the shared polygon hit path with dominant-axis UV gradient solving and damage-mask UV propagation.
-  - BuildPickCandidatesForSegmentVsBBoxFaces rebuilds the six bbox face quads through the shared four-vertex scratch buffer and clears the candidate scene-payload slot.
-  - AppendPickCandidatesForFace covers face-array traversal, morph-vertex scratch blending, damage-mask UV dispatch, and current-matrix local/world transform handling for DI mesh pick faces.
-  - BuildPickCandidatesForSegment scans listB children, applies enabled/raycastable/variant gates, and passes listCountB+1 into the child fallback as shown by BN assembly.
-  - BuildPickCandidatesForSegmentChildFallback and its animate/camera/light helpers cover candidate-buffer dispatch, break-on-first behavior, object/sequence/LOD traversal, and matrix-stack restoration for recursive DI segment picking.
-  - RaycastSelectClosestHitBetweenPoints wraps RaycastFindClosest and rewrites candidateCount to the nearest candidate index after the x87-style closest-hit reduction.
-  - RaycastFindClosest covers ray packet setup, optional world-grid traversal with clamp offset restoration, queued type-list updates, matrix-stack identity setup/restore, and closest-hit candidate buffer reset.
-  - FilterPointsBBox uses the recovered DI segment query/end/min/max globals and the candidate cursor at offset 0x20 for bbox face gating.
-  - DrawOnTracker projects map-node points to the tracker overlay, clips against the outer and expanded inner rects, handles blink color swapping, selected-point diamond drawing, and dispatches the camera-projected path when the tracker has a draw-path world pointer.
-  - DrawProjectedPath uses the recovered 0x400-entry project scratch array, camera scratch matrix, z-range clipping helpers, in-place point projection, and high-word color drawing.
-  - Update sets the 0.15 map-scale lerp step, advances lerp when active/running, installs the fallback origin if missing, mirrors the original fallback-forward write without assigning trackedForwardVecPtr, draws map nodes only outside network mode, then iterates save states after the head sentinel.
+- Anchor: 0x417d40 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x417d40 pending
+  - 0x415ac0 HudSensorMapNode::FreePointArray
+  - 0x415d30 HudSensorMapNode::DrawOnTracker
+  - 0x416480 HudSensorMapNode::DrawProjectedPath
+  - 0x416660 HudSensorTracker::Init
+  - 0x4167a0 HudSensorTracker::MapShutdownAndReset
+  - 0x4167e0 HudSensorTracker::MapRemoveNode
+  - 0x416ad0 HudSensorTracker::MapOverlayEndShow
+  - 0x417130 HudSensorTracker::Update
+  - 0x416ef0 HudSensorTracker::SetSaveStateMarkerMaxDistance
+  - 0x417220 HudSensorTracker::SetTrackedSaveState
+  - 0x4176f0 HudSensorTracker::ResetMissionState
+  - 0x443c60 zClass_cls_di::SetStopAfterFirstHit
+  - 0x444de0 zClass_cls_di::RaycastSelectClosestHitBetweenPoints
+  - 0x444e90 zClass_cls_di::RaycastFindClosest
+  - 0x4455f0 zClass_cls_di::BuildPickCandidatesForSegment
+  - 0x445650 zClass_cls_di::BuildPickCandidatesForSegmentChildFallback
+  - 0x445a00 zClass_cls_di::BuildPickCandidatesForSegmentRecursive
+  - 0x445b20 zClass_cls_di::BuildPickCandidatesForSegmentForCamera
+  - 0x445c20 zClass_cls_di::BuildPickCandidatesForSegmentForLight
+  - 0x447540 zClass_cls_di::FilterPointsBBox
+  - 0x485380 zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces
+  - 0x4857f0 zClass_cls_di::BuildPickCandidateForSegmentVsPolygon
+  - 0x484fc0 zClass_cls_di::AppendPickCandidatesForFace
+  - 0x485d10 zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv
+  - 0x472670 zMath::Vec3DeltaLengthSq
+  - 0x475130 zMath_SolveLinearGradient2D
+  - 0x4bd720 zMath::ClipLineSegmentToZRange
+  - 0x4bd800 zMath::ClipLineSegmentPointToZ
+  - 0x479f90 zClipAlt::SetTargetRect
+  - 0x479c90 OptCatalog_SetDamageMaskUv
+- Next action:
+  - `python tools/recoil_status.py 0x417d40`
 
 ### Group: HudSensorMapNode leaf helpers
 
 - Anchor: 0x415ab0 HudSensorMapNode::Init
-- Reason: leaf cluster / shared map-node layout and color/selection helpers
-- Source files:
-  - src/Battlesport/HudSensorTracker.h
-  - src/Battlesport/HudSensorTracker.cpp
-  - tests/native/zeffect_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x415ab0 HudSensorMapNode::Init - Reimplemented; binary-safe pending
-  - 0x415ae0 HudSensorMapNode::SetEnabled - Reimplemented; binary-safe pending
-  - 0x415b10 HudSensorMapNode::SelectPoint - Reimplemented; binary-safe pending
-  - 0x415b40 HudSensorMapNode::InitDefaults - Reimplemented; binary-safe pending
-  - 0x415b70 HudSensorMapNode::SetColorRgb - Reimplemented; binary-safe pending
-  - 0x415bd0 HudSensorMapNode::LoadFromStream - Reimplemented; binary-safe pending
-  - 0x415c90 HudSensorMapNode::UpdateCachedBounds - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - Listing comparison is still needed for binary-safe marking; 0x415b70 remains reconstruction-limited in Binary Ninja due byte-register RGB packing display.
-- Verification target:
-  - ninja-x86-release `recoil_native_smoke`; guard CTests; later HudSensorTracker.cpp listing comparison for 0x415ab0, 0x415ae0, 0x415b10, 0x415b40, 0x415b70, 0x415bd0, and 0x415c90
-- Notes:
-  - HudSensorMapPoint is a 12-byte x/y/z point. SetColorRgb packs the stored bytes as red = color[0], green = color[2], blue = color[1], then caches full and half-intensity 565 values.
-  - HudSensorMapBounds follows min/max X/Y/Z order; UpdateCachedBounds recomputes X/Z, writes minY as zero, and leaves maxY unchanged.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x415ab0 HudSensorMapNode::Init
+  - 0x415ae0 HudSensorMapNode::SetEnabled
+  - 0x415b10 HudSensorMapNode::SelectPoint
+  - 0x415b40 HudSensorMapNode::InitDefaults
+  - 0x415b70 HudSensorMapNode::SetColorRgb
+  - 0x415bd0 HudSensorMapNode::LoadFromStream
+  - 0x415c90 HudSensorMapNode::UpdateCachedBounds
+- Next action:
+  - `python tools/recoil_status.py 0x415ab0`
 
 ### Group: CZRecoilFrame About dialog
 
 - Anchor: 0x430c30 CZRecoilFrame::OnMenuAbout
-- Reason: dependency closure / MFC dialog provider call chain
-- Source files:
-  - src/Battlesport/CZRecoilFrame.h
-  - src/Battlesport/CZRecoilFrame.cpp
-  - src/Battlesport/Recoil.h
-  - src/Battlesport/Recoil.cpp
-- Plan entries:
-  - 0x430c30 CZRecoilFrame::OnMenuAbout - Reimplemented / Binary-safe pending on EH/provider match
-  - 0x401000 CAboutDlg::Constructor - Reimplemented / Binary-safe pending on CAboutDlg vtable/provider layout
-- Blocking dependencies:
-  - MFC42 CDialog constructor, DoModal, and destructor provider ABI
-- Verification target:
-  - ninja-x86-debug build; `CZRecoilFrame.cod` and `Recoil.cod` listing comparison
-- Notes:
-  - 0x430c30 constructs a stack CAboutDlg, calls CDialog::DoModal directly, then destroys the CDialog base during unwind.
-  - 0x401000 calls CDialog::CDialog with resource id 0x67 and parent CWnd*, then stores the CAboutDlg vtable.
-  - `build/verification/czrecoil_menu_about/430c30_diff.txt` still shows modern EH cookie scaffolding around the stack object. `build/verification/caboutdlg_constructor/401000_diff.txt` shows equivalent constructor call/return shape, but the rebuilt compiler-generated CAboutDlg vtable is not yet modeled to the original full CDialogVTable surface.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x430c30 CZRecoilFrame::OnMenuAbout
+  - 0x401000 CAboutDlg::CAboutDlg
+- Next action:
+  - `python tools/recoil_status.py 0x430c30`
 
 ### Group: RecoilApp PlayState activation
 
-- Anchor: 0x42eed0 RecoilApp_PlayState::OnTryBecomeCurrent
-- Reason: dependency closure / PlayState activation, frame tick, and mission HUD startup sequence
-- Source files:
-  - src/Battlesport/RecoilApp.h
-  - src/Battlesport/RecoilApp.cpp
-  - src/Battlesport/Briefing.h
-  - src/Battlesport/Briefing.cpp
-  - src/Battlesport/HudUiNetExitPanel.h
-  - src/Battlesport/HudUiNetExitPanel.cpp
-  - src/Battlesport/GameNet.h
-  - src/Battlesport/GameNet.cpp
-  - src/Battlesport/HudSensorTracker.h
-  - src/Battlesport/HudSensorTracker.cpp
-  - src/Battlesport/player.h
-  - src/Battlesport/player.cpp
-  - src/Battlesport/pickup.h
-  - src/Battlesport/pickup.cpp
-  - src/GameZRecoil/include/zClass.h
-  - src/GameZRecoil/zClass/Class.c
-  - src/GameZRecoil/zHud/zhud_ui.h
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-  - src/GameZRecoil/zModel/zModel.h
-  - src/Battlesport/zModel/zModel_Display.cpp
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_play.cpp
-  - src/GameZRecoil/zSound/zsnd_parm.cpp
-  - src/GameZRecoil/zTurret/zTurret.h
-  - src/GameZRecoil/zTurret/zTurret.cpp
-- Plan entries:
-  - 0x42eed0 RecoilApp_PlayState::OnTryBecomeCurrent - Reimplemented / Binary-safe pending
-  - 0x42f280 RecoilApp_PlayState::TickAndRenderFrame - Reimplemented / Binary-safe pending
-  - 0x42f5e0 RecoilApp_PlayState::OnUpdateShouldQuit - Reimplemented / Binary-safe pending
-  - 0x42f8a0 RecoilApp_PlayState::OnResume - Reimplemented / Binary-safe pending
-  - 0x42f8e0 RecoilApp_PlayState::OnDeactivate - Reimplemented / Binary-safe pending
-  - 0x410e90 HudUiMgr::EnableHud - Reimplemented / Binary-safe pending
-  - 0x413660 HudUiMgr::SwitchActiveDialog - Reimplemented / Binary-safe pending
-  - 0x4136b0 HudUiMgr::ApplyHudModeSwitch - Reimplemented / Binary-safe pending
-  - 0x411760 HudUiMgrObjective::SetVisibleAndResetMeterFill - Reimplemented / Binary-safe pending
-  - 0x411900 HudUiMgrObjective::Show - Reimplemented / Binary-safe pending
-  - 0x416a30 HudSensorTracker::MapOverlayBeginShow - Reimplemented / Binary-safe pending
-  - 0x416b30 HudSensorTracker::MapOverlayRefToggle - Reimplemented / Binary-safe pending
-  - 0x416b80 HudSensorTracker::MapZoomIn - Reimplemented / Binary-safe pending
-  - 0x416bb0 HudSensorTracker::MapZoomOut - Reimplemented / Binary-safe pending
-  - 0x416be0 HudSensorTracker::UpdateMapScaleLerp - Reimplemented / Binary-safe pending
-  - 0x416c90 HudSensorTracker::ProjectWorldPointsToOverlay - Reimplemented / Binary-safe pending
-  - 0x416d50 HudSensorTracker::DrawTrackedSaveStateMarker - Reimplemented / Binary-safe pending
-  - 0x416dd0 HudSensorTracker::DrawMarkerCross - Reimplemented / Binary-safe pending
-  - 0x415f40 HudSensorTracker::DrawDiamondMarker - Reimplemented / Binary-safe pending
-  - 0x416e50 HudSensorTracker::GetSaveStateRelativeVectorLen - Reimplemented / Binary-safe pending
-  - 0x416f10 HudSensorTracker::DrawSaveStateMarker - Reimplemented / Binary-safe pending
-  - 0x415fb0 HudRectI::ClipOrSplitSegment - Reimplemented / Binary-safe pending
-  - 0x416240 HudRectI::CalcOutcode - Reimplemented / Binary-safe pending
-  - 0x416290 HudRectI::IsCornerOutcode - Reimplemented / Binary-safe pending
-  - 0x4162b0 HudRectI::SegmentIntersectsEdge - Reimplemented / Binary-safe pending
-  - 0x416390 HudGeom2D::ClassifyPointAgainstSegment - Reimplemented / Binary-safe pending
-  - 0x4bd6f0 HudLineClip::SetCurrentBoundsFromRectI - Reimplemented / Binary-safe pending
-  - 0x4bd840 HudLineClip::ClipSegmentToCurrentBounds - Reimplemented / Binary-safe pending
-  - 0x4bd880 HudLineClip::ClipSegmentToCurrentXBounds - Reimplemented / Binary-safe pending
-  - 0x4bd9c0 HudLineClip::ClipEndpointToX - Reimplemented / Binary-safe pending
-  - 0x4bd9f0 HudLineClip::ClipSegmentToCurrentYBounds - Reimplemented / Binary-safe pending
-  - 0x4bdb30 HudLineClip::ClipEndpointToY - Reimplemented / Binary-safe pending
-  - 0x416840 HudSensorTracker::MapInsertNodeAndGrowBounds - Reimplemented / Binary-safe pending
-  - 0x4168d0 HudSensorTracker::LoadMapFromStream - Reimplemented / Binary-safe pending
-  - 0x4169d0 HudSensorTracker::LoadMapFromPath - Reimplemented / Binary-safe pending
-  - 0x416650 HudSensorTracker::InitNoBounds - Reimplemented / Binary-safe pending
-  - 0x416790 HudSensorTracker::MapShutdownAndResetThunk - Reimplemented / Binary-safe pending
-  - 0x417360 HudSensorTracker::ConstructGlobal - Reimplemented / Binary-safe pending
-  - 0x417370 HudSensorTracker::RegisterGlobalOnExit - Reimplemented / Binary-safe pending
-  - 0x417380 HudSensorTracker::ShutdownGlobal - Reimplemented / Binary-safe pending
-  - 0x417390 HudSensorTracker::Constructor - Reimplemented / Binary-safe pending
-  - 0x417260 HudSensorTracker::LoadMissionMapAndSfx - Reimplemented / Binary-safe pending
-  - 0x4172c0 HudSensorTracker::SetObjectiveMarkerEnabledAndColor - Reimplemented / Binary-safe pending
-  - 0x417300 HudSensorTracker::SetObjectiveMarkerColorBlink - Reimplemented / Binary-safe pending
-  - 0x417ca0 HudSensorTracker::OnObjectiveCommand - Reimplemented / Binary-safe pending
-  - 0x417f90 HudSensorTracker::LoadObjectivesFromPath - Reimplemented / Binary-safe pending
-  - 0x418230 HudSensorTracker::LoadObjectivesFromZrd - Reimplemented / Binary-safe pending
-  - 0x4184e0 HudSensorTracker::AdvanceObjectiveState - Reimplemented / Binary-safe pending
-  - 0x418620 HudSensorTracker::SetObjectiveReviewVisible - Reimplemented / Binary-safe pending
-  - 0x418730 HudSensorTracker::Command_ToggleObjectivePanel - Reimplemented / Binary-safe pending
-  - 0x418760 HudSensorTracker::SetObjectivePanelVisible - Reimplemented / Binary-safe pending
-  - 0x4188f0 HudSensorTracker::Command_ShowObjectivePickupInfo - Reimplemented / Binary-safe pending
-  - 0x418940 HudSensorTracker::ShowObjectivePickupInfo - Reimplemented / Binary-safe pending
-  - 0x4186f0 HudSensorTracker::GetObjectiveBriefingStringsAndImageRef - Reimplemented / Binary-safe pending
-  - 0x418c30 HudSensorTracker::FindAndHighlightFirstIncompleteObjective - Reimplemented / Binary-safe pending
-  - 0x418d40 HudSensorTracker::UpdateObjectiveFlow - Reimplemented / Binary-safe pending
-  - 0x419380 HudSensorTracker::OnObjectiveReadSoundEvent - Reimplemented / Binary-safe pending
-  - 0x4192d0 HudSensorTracker::RunStartAnimsFromZrd - Reimplemented / Binary-safe pending
-  - 0x4193c0 HudSensorTracker::LoadRaceCheckpointMeta - Reimplemented / Binary-safe pending
-  - 0x419470 HudSensorTracker::SetRuntimeTimerSecAndGoalValue - Reimplemented / Binary-safe pending
-  - 0x419490 HudSensorTracker::Shutdown - Reimplemented / Binary-safe pending
-  - 0x418c70 HudSensorTracker::ResetHudForMissionStart - Reimplemented / Binary-safe pending
-  - 0x42bf40 HudUi::PlayPowerupSfx - Reimplemented / Binary-safe pending
-  - 0x41ea00 Pickup::FindOptMetaImageByOptEntry - Reimplemented / Binary-safe pending
-  - 0x402080 Player::AiRestorePreviousTopLevelState - Reimplemented / Binary-safe pending
-  - 0x402f10 Player::AiFinalizeMode2State1ForAllPlayers - Reimplemented / Binary-safe pending
-  - 0x447bc0 zClass_Class::FindNodeRecursiveByName - Reimplemented / Binary-safe pending
-  - 0x479cb0 OptCatalog_SetDamageMaskEnabled - Reimplemented / Binary-safe pending
-  - 0x437d40 zTurret_System::DisableTickCallback - Reimplemented / Binary-safe pending
-  - 0x4a10b0 zSnd::MulGlobalVolumeScaleAndGetPrev - Reimplemented / Binary-safe pending
-  - 0x4a10d0 zSnd::SetFlag10PlaybackEnabled - Reimplemented / Binary-safe pending
-  - 0x4a1240 zSndSample::SetPlaybackEventHandler - Reimplemented / Binary-safe pending
-  - 0x49fec0 zSndSample::StopActiveVoicesIfPlaying - Reimplemented / Binary-safe pending
-  - 0x4a6ca0 zVid_PackColor00RRGGBB - Reimplemented / Binary-safe pending
-  - 0x41c070 HudUiNetExitPanel::Show - Reimplemented / Binary-safe verified
-  - 0x41c080 HudUiNetExitPanel::Tick - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - 0x42f280 RecoilApp_PlayState::TickAndRenderFrame - direct activation dependency
-  - HudSensorTracker mission startup helpers - direct activation dependencies, source declarations/coverage needed
-  - Briefing mission/objective helpers - direct activation dependencies, source declarations/coverage needed
-- Verification target:
-  - ninja-x86-debug CTest; later RecoilApp.cpp listing comparison against 0x42eed0 and PlayState lifecycle methods
-- Notes:
-  - 0x42eed0 seeds Briefing::BuildObjectiveActionsGlobal from g_HudSensorTracker.completedObjectiveCount before mission resources finish loading.
-  - 0x41c070 and 0x41c080 are verified against `build/verification/hud_net_exit_show/41c070_diff.txt` and `build/verification/hud_net_exit_tick/41c080_diff.txt`; differences are modern indirect-call lowering and equivalent balanced x87 float argument staging for `g_FrameDeltaTimeSec`.
-  - HudUiMgr mode switching now covers the active-layout swap path used by PlayState after mission resources load; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - HudSensorTracker objective definitions now load READ_TIME/REVIEW_DELAY/FINAL_MISSION and OBJECTIVEn records from objectives ZRD data; binary-safe listing comparison remains pending.
-  - Objective briefing string/image lookup now maps directly to `HudSensorObjectiveSlot` title, desc, and image fields.
-  - First-incomplete objective highlighting now walks completion flags and enables the matching map marker with the recovered blue RGB24 constant.
-  - Start animation ZRD handling now clears activation prereqs and starts each listed zEffectAnim entry with zero velocity in non-network mode.
-  - Race checkpoint metadata now loads `race.zrd`/`cp_count` for mission core startup; `zReader::LoadNodeFromPath` keeps the original ignored fastcall search-path parameter typed as `const char*`.
-  - Runtime race/timer HUD setter now stores goal value and timer seconds into the recovered tracker fields.
-  - Global sound-volume scaling now includes both the direct setter and previous-value multiply helper used by HUD/objective sound transitions.
-  - Objective read sound restoration can now call the native flag-10 sound playback gate setter.
-  - Objective read samples can now install the recovered playback event callback when the sample create guard is clear.
-  - Objective ZRD runtime hookup now resolves ACTIVE/INACTIVE node paths, read/review/complete sounds, and first-incomplete marker startup through native source; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - Objective label/meter visibility reset now has native source for the ResetHudForMissionStart path; binary-safe listing comparison remains pending.
-  - Mission-start HUD reset now covers network HUD re-enable/reticle refresh and single-player objective read-sound deadline scheduling; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - Objective panel toggle and mission-summary formatting now have native source; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - Objective advancement now covers completion/review transitions, read-sound playback, powerup-sfx stop, and HUD audio ducking through native source; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - Objective-flow final-mission leaves now cover marker blink color swapping, player AI state restore/finalize, and turret callback disable; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - Objective pickup-info show/hide and metadata-image lookup are native source; UpdateObjectiveFlow now covers timer capture, non-network completion detection, final-mission lockout, objective HUD state switching, autoplay advancement, and pickup-info auto-hide. `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - Objective command dispatch now covers objective advance/toggle/pickup-info and map overlay zoom/toggle leaves; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - Map scale interpolation now advances/clamps the lerp and updates current X/Y/Z scale from the recovered start/goal vectors; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - Map world-to-overlay projection now writes overlay X/Y from tracked position, forward vector, current scale, zoom, and center fields; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - Save-state marker drawing now packs network/non-network marker color and draws the projected cross marker through clipped immediate line strips; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - Save-state marker range handling now computes horizontal deltas, applies the recovered float-bit edge clamp for far network markers, and submits near markers to span-occlusion sampling; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - Mission map loading now reads `.zmap` files through the recovered stream format, grows tracker bounds from node caches, records the loaded path, and resolves map on/off/click samples; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - HudSensorTracker global construction/shutdown wrappers and no-bounds/map-shutdown thunks now have native source; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - Diamond marker drawing now builds the recovered five-point clipped line strip around projected selected map points; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - HUD inner-rect line clipping helpers now have native source, including outcodes, edge tests, endpoint interpolation, and split-segment scratch globals; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - HUD outer line-clip current-bounds and X/Y segment clipping helpers now have native source; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
+- Anchor: 0x42eed0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x42eed0 pending
+  - 0x42f280 pending
+  - 0x42f5e0 pending
+  - 0x42f8a0 RecoilApp_PlayState::OnResume
+  - 0x42f8e0 pending
+  - 0x411760 HudUiMgrObjective::SetVisibleAndResetMeterFill
+  - 0x411900 HudUiMgrObjective::Show
+  - 0x416a30 HudSensorTracker::MapOverlayBeginShow
+  - 0x416b30 HudSensorTracker::MapOverlayRefToggle
+  - 0x416b80 HudSensorTracker::MapZoomIn
+  - 0x416bb0 HudSensorTracker::MapZoomOut
+  - 0x416be0 HudSensorTracker::UpdateMapScaleLerp
+  - 0x416c90 HudSensorTracker::ProjectWorldPointsToOverlay
+  - 0x416d50 HudSensorTracker::DrawTrackedSaveStateMarker
+  - 0x416dd0 HudSensorTracker::DrawMarkerCross
+  - 0x415f40 HudSensorTracker::DrawDiamondMarker
+  - 0x416e50 HudSensorTracker::GetSaveStateRelativeVectorLen
+  - 0x416f10 HudSensorTracker::DrawSaveStateMarker
+  - 0x415fb0 HudRectI::ClipOrSplitSegment
+  - 0x416240 HudRectI::CalcOutcode
+  - 0x416290 HudRectI::IsCornerOutcode
+  - 0x4162b0 HudRectI::SegmentIntersectsEdge
+  - 0x416390 HudGeom2D::ClassifyPointAgainstSegment
+  - 0x4bd6f0 HudLineClip::SetCurrentBoundsFromRectI
+  - 0x4bd840 HudLineClip::ClipSegmentToCurrentBounds
+  - 0x4bd880 HudLineClip::ClipSegmentToCurrentXBounds
+  - 0x4bd9c0 HudLineClip::ClipEndpointToX
+  - 0x4bd9f0 HudLineClip::ClipSegmentToCurrentYBounds
+  - 0x4bdb30 HudLineClip::ClipEndpointToY
+  - 0x416840 HudSensorTracker::MapInsertNodeAndGrowBounds
+  - 0x4168d0 HudSensorTracker::LoadMapFromStream
+  - 0x4169d0 HudSensorTracker::LoadMapFromPath
+  - 0x416650 HudSensorTracker::InitNoBounds
+  - 0x416790 HudSensorTracker::MapShutdownAndResetThunk
+  - 0x417360 HudSensorTracker::ConstructGlobal
+  - 0x417370 HudSensorTracker::RegisterGlobalOnExit
+  - 0x417380 HudSensorTracker::ShutdownGlobal
+  - 0x417390 HudSensorTracker::Constructor
+  - 0x417260 HudSensorTracker::LoadMissionMapAndSfx
+  - 0x4172c0 HudSensorTracker::SetObjectiveMarkerEnabledAndColor
+  - 0x417300 HudSensorTracker::SetObjectiveMarkerColorBlink
+  - 0x417ca0 HudSensorTracker::OnObjectiveCommand
+  - 0x417f90 HudSensorTracker::LoadObjectivesFromPath
+  - 0x418230 HudSensorTracker::LoadObjectivesFromZrd
+  - 0x4184e0 HudSensorTracker::AdvanceObjectiveState
+  - 0x418620 HudSensorTracker::SetObjectiveReviewVisible
+  - 0x418730 HudSensorTracker::Command_ToggleObjectivePanel
+  - 0x418760 HudSensorTracker::SetObjectivePanelVisible
+  - 0x4188f0 HudSensorTracker::Command_ShowObjectivePickupInfo
+  - 0x418940 HudSensorTracker::ShowObjectivePickupInfo
+  - 0x4186f0 HudSensorTracker::GetObjectiveBriefingStringsAndImageRef
+  - 0x418c30 HudSensorTracker::FindAndHighlightFirstIncompleteObjective
+  - 0x418d40 HudSensorTracker::UpdateObjectiveFlow
+  - 0x419380 HudSensorTracker::OnObjectiveReadSoundEvent
+  - 0x4192d0 HudSensorTracker::RunStartAnimsFromZrd
+  - 0x4193c0 HudSensorTracker::LoadRaceCheckpointMeta
+  - 0x419470 HudSensorTracker::SetRuntimeTimerSecAndGoalValue
+  - 0x419490 HudSensorTracker::Shutdown
+  - 0x418c70 HudSensorTracker::ResetHudForMissionStart
+  - 0x42bf40 HudUi::PlayPowerupSfx
+  - 0x41ea00 Pickup::FindOptMetaImageByOptEntry
+  - 0x402080 Player::AiRestorePreviousTopLevelState
+  - 0x402f10 Player::AiFinalizeMode2State1ForAllPlayers
+  - 0x447bc0 zClass_Class::FindNodeRecursiveByName
+  - 0x479cb0 OptCatalog_SetDamageMaskEnabled
+  - 0x437d40 zTurret_System::DisableTickCallback
+  - 0x4a10b0 zSnd::MulGlobalVolumeScaleAndGetPrev
+  - 0x4a10d0 zSnd::SetFlag10PlaybackEnabled
+  - 0x4a1240 zSndSample::SetPlaybackEventHandler
+  - 0x49fec0 zSndSample::StopActiveVoicesIfPlaying
+  - 0x4a6ca0 zVid_PackColor00RRGGBB
+- Next action:
+  - `python tools/recoil_status.py 0x42eed0`
 
 ### Group: CZRecoilFrame menu shell handlers
 
 - Anchor: 0x430740 CZRecoilFrame::OnMenuStartSinglePlayer
-- Reason: source file cluster / MFC command handlers and shared RecoilApp frame state
-- Source files:
-  - src/Battlesport/CZRecoilFrame.h
-  - src/Battlesport/CZRecoilFrame.cpp
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-- Plan entries:
-  - 0x430740 CZRecoilFrame::OnMenuStartSinglePlayer - Reimplemented / Binary-safe verified
-  - 0x430760 CZRecoilFrame::OnMenuOpenCampaign - Reimplemented / Binary-safe verified
-  - 0x430770 CZRecoilFrame::OnOpenFileDialog - Reimplemented / Binary-safe pending
-  - 0x4308a0 CZRecoilFrame::OnMenuExitGame - Reimplemented / Binary-safe verified
-  - 0x4309b0 CZRecoilFrame::OnMenuSetVideoMode2 - Reimplemented / Binary-safe verified
-  - 0x4309d0 CZRecoilFrame::OnMenuSetVideoMode3 - Reimplemented / Binary-safe verified
-  - 0x4309f0 CZRecoilFrame::OnMenuSetVideoMode4 - Reimplemented / Binary-safe verified
-  - 0x430a10 CZRecoilFrame::OnMenuSetVideoMode5 - Reimplemented / Binary-safe verified
-  - 0x430a30 CZRecoilFrame::OnMenuSetVideoMode6 - Reimplemented / Binary-safe verified
-  - 0x430a50 CZRecoilFrame::OnMenuSetVideoMode7 - Reimplemented / Binary-safe verified
-  - 0x430a70 CZRecoilFrame::OnMenuToggleHud - Reimplemented / Binary-safe verified
-  - 0x430a90 CZRecoilFrame::OnUpdateHudCmdUI - Reimplemented / Binary-safe verified
-  - 0x430ab0 CZRecoilFrame::OnMenuToggleFullscreen - Reimplemented / Binary-safe verified
-  - 0x430ad0 CZRecoilFrame::OnMenuOpenHelpDocs - Reimplemented / Binary-safe verified
-  - 0x431270 CZRecoilFrame::OnMenuStartMultiplayer - Reimplemented / Binary-safe verified
-  - 0x431290 CZRecoilFrame::OnMenuStartCampaignMode - Reimplemented / Binary-safe verified
-  - 0x4312b0 CZRecoilFrame::OnMenuStartCampaignMode2 - Reimplemented / Binary-safe verified
-  - 0x4312d0 CZRecoilFrame::OnMenuStartCampaignMode3 - Reimplemented / Binary-safe verified
-  - 0x4312f0 CZRecoilFrame::OnMenuStartCampaignMode4 - Reimplemented / Binary-safe verified
-  - 0x431310 CZRecoilFrame::OnMenuStartCampaignMode5 - Reimplemented / Binary-safe verified
-  - 0x431330 CZRecoilFrame::OnMenuToggleArchiveBanks - Reimplemented / Binary-safe verified
-  - 0x431380 CZRecoilFrame::OnMenuToggleTexturePacks - Reimplemented / Binary-safe verified
-  - 0x46d5b0 zVid::SetTexturePackLoadState - Reimplemented / Binary-safe verified
-  - 0x4313d0..0x431b10 CZRecoilFrame command/update handlers - Reimplemented / Binary-safe verified, except unrelated 0x430c30 dialog-provider group remains pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; `CZRecoilFrame.cod` listing comparison
-- Notes:
-  - 0x430740 and 0x430760 are verified against `build/verification/czrecoil_menu_singleplayer/430740_diff.txt` and `build/verification/czrecoil_menu_open_campaign/430760_diff.txt`; differences are symbol names and non-observable ECX load/store ordering before the tail jump.
-  - 0x4308a0 through 0x430ab0 command handlers are verified against their `build/verification/czrecoil_menu_*` and `build/verification/czrecoil_update_hud_cmdui` diff files; differences are import-symbol spelling, decimal/hex constants, equivalent option-toggle lowering, and non-observable tail-call lowering.
-  - 0x430ad0 is verified against `build/verification/czrecoil_open_help_docs/430ad0_diff.txt`; differences are modern register allocation and string-copy lowering, with the same FindExecutable/ShellExecute/MessageBoxA ABI behavior and error-map cases.
-  - 0x431270 through 0x431310 are verified against `build/verification/czrecoil_start_*` diff files; differences are field-offset rendering and direct push versus load-then-push for `m_useArchiveBanks`.
-  - 0x431330, 0x431380, and 0x46d5b0 are verified against `build/verification/czrecoil_toggle_*` and `build/verification/zvid_set_texture_pack_load_state` diff files; differences are equivalent flag lowering, symbol spelling, and tail-call lowering.
-  - 0x4313d0 through 0x431b10 command/update handlers are verified against their `build/verification/czrecoil_*` diff files; differences are register allocation, field-offset rendering, equivalent boolean lowering, and non-observable tail-call lowering. 0x4317d0 uses `RECOIL_NO_GS` to match the original no-cookie local label buffer ABI.
-  - 0x430770 matches the dialog/import/copy/setup contract, but `build/verification/czrecoil_open_file_dialog/430770_diff.txt` still differs because modern MSVC emits different zeroing and stack-layout scaffolding.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x430740 CZRecoilFrame::OnMenuStartSinglePlayer
+  - 0x430760 CZRecoilFrame::OnMenuOpenCampaign
+  - 0x430770 CZRecoilFrame::OnOpenFileDialog
+  - 0x4308a0 CZRecoilFrame::OnMenuExitGame
+  - 0x4309b0 CZRecoilFrame::OnMenuSetVideoMode2
+  - 0x4309d0 CZRecoilFrame::OnMenuSetVideoMode3
+  - 0x4309f0 CZRecoilFrame::OnMenuSetVideoMode4
+  - 0x430a30 CZRecoilFrame::OnMenuSetVideoMode6
+  - 0x430a50 CZRecoilFrame::OnMenuSetVideoMode7
+  - 0x430a70 CZRecoilFrame::OnMenuToggleHud
+  - 0x430a90 CZRecoilFrame::OnUpdateHudCmdUI
+  - 0x430ab0 CZRecoilFrame::OnMenuToggleFullscreen
+  - 0x430ad0 CZRecoilFrame::OnMenuOpenHelpDocs
+  - 0x431270 CZRecoilFrame::OnMenuStartMultiplayer
+  - 0x431290 CZRecoilFrame::OnMenuStartCampaignMode
+  - 0x4312b0 CZRecoilFrame::OnMenuStartCampaignMode2
+  - 0x4312d0 CZRecoilFrame::OnMenuStartCampaignMode3
+  - 0x4312f0 CZRecoilFrame::OnMenuStartCampaignMode4
+  - 0x431310 CZRecoilFrame::OnMenuStartCampaignMode5
+  - 0x431330 CZRecoilFrame::OnMenuToggleArchiveBanks
+  - 0x431380 CZRecoilFrame::OnMenuToggleTexturePacks
+  - 0x46d5b0 zVid::SetTexturePackLoadState
+  - 0x4313d0 CZRecoilFrame::OnUpdateVideoMode2CmdUI
+  - 0x431b10 CZRecoilFrame::OnSize
+  - 0x430c30 CZRecoilFrame::OnMenuAbout
+- Next action:
+  - `python tools/recoil_status.py 0x430740`
 
 ### Group: zSnd fade tick list leaves
 
 - Anchor: 0x49f620 zSnd_Tick
-- Reason: dependency closure / active fade-list tick blocks zSnd_Tick and shares fade entry/list globals
-- Source files:
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_system.cpp
-  - tests/native/zsnd_cd_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x49f614 zSnd_TickWrapper - Reimplemented / Binary-safe pending
-  - 0x49f620 zSnd_Tick - Reimplemented / Binary-safe pending
-  - 0x4a3a80 zSndFadeDispatchList::PushBack - Reimplemented / Binary-safe pending
-  - 0x4a3ad0 zSndFadeEntry_TickAndMaybeDispatch - Reimplemented / Binary-safe pending
-  - 0x4a3c20 zSndFadeActiveList_TickAll - Reimplemented / Binary-safe pending
-  - 0x4a3d20 zSndFadeLists::StopAllAndShutdown - Reimplemented / Binary-safe pending
-  - 0x4a3e50 zSndFadeList::DeleteNodeAndAdvanceCursor - Reimplemented / Binary-safe pending
-  - 0x4a3e90 zSndFadeList::PopFrontCursor - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zsnd_system.cpp listing comparison against 0x4a3a80, 0x4a3ad0, 0x4a3c20, 0x4a3d20, 0x4a3e50, and 0x4a3e90
-- Notes:
-  - Fade entries are 0x10 bytes: targetValue, currentValue, zSndPlayHandle pointer, and stopOnComplete.
-  - Fade list nodes are 0x0c bytes: next, prev, and fadeEntry payload.
-  - Active-list ticking compacts surviving fadeEntry payloads forward, then unlinks and deletes the completed-node suffix.
-  - zSnd_Tick uses g_zSndLastVoice as the marker-owning zSndSample pointer and g_zSndLastVoiceHandle as the handle stopped at the configured marker.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x49f620 zSnd_Tick
+  - 0x49f614 zSnd_TickWrapper
+  - 0x4a3ad0 zSndFadeEntry::TickAndMaybeDispatch
+  - 0x4a3c20 zSndFadeActiveList_TickAll
+- Next action:
+  - `python tools/recoil_status.py 0x49f620`
 
 ### Group: zSnd sample-set registry init
 
 - Anchor: 0x4a0810 zSnd_SetUseArchiveBanks
-- Reason: dependency closure / sample-set registry flag, vector reset, and atexit shutdown cluster
-- Source files:
-  - src/GameZRecoil/zReader/zReader.h
-  - src/GameZRecoil/zReader/zreader_load.cpp
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_create.cpp
-  - src/GameZRecoil/zSound/zsnd_sample_set.cpp
-  - tests/native/zsnd_cd_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x4a0800 zSnd_SetUseArchiveBanksAndRegisterAtExit - Reimplemented / Binary-safe pending
-  - 0x4a0810 zSnd_SetUseArchiveBanks - Reimplemented / Binary-safe pending
-  - 0x4a0830 zSndSampleSetRegistry_RegisterAtExit - Reimplemented / Binary-safe pending
-  - 0x4a0840 zSndSampleSetRegistry_Shutdown - Reimplemented / Binary-safe pending
-  - 0x4a0870 zSndSampleSet::DestroyByName - Reimplemented / Binary-safe pending
-  - 0x4a0880 zSndSampleSetRegistry::DestroyAll - Reimplemented / Binary-safe pending
-  - 0x4a08d0 zSndSampleSetRegistry::GetByIndex - Reimplemented / Binary-safe pending
-  - 0x4a0900 zSndSampleSetRegistry::GetCount - Reimplemented / Binary-safe pending
-  - 0x4a0920 zSndSampleSetRegistry::FindByName - Reimplemented / Binary-safe pending
-  - 0x4a0860 zSndSampleSet::InitByName - Reimplemented / Binary-safe pending
-  - 0x4a0c40 zSndSampleSet::Init - Reimplemented / Binary-safe pending
-  - 0x4a0e40 zSndSampleSet::Destroy - Reimplemented / Binary-safe pending
-  - 0x4a0fb0 zSndSampleSet::LoadSamplesFromIndexArchive - Reimplemented / Binary-safe pending
-  - 0x4a5600 zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded - Reimplemented / Binary-safe pending
-  - 0x4a6670 zIndexArchive::ReadFileByName - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zsnd_sample_set.cpp listing comparison against 0x4a0800, 0x4a0810, 0x4a0830, and 0x4a0840
-- Notes:
-  - 0x4a0810 clears the registry begin/end/capacity pointers without deleting the old buffer; 0x4a0840 is the path that deletes the vector buffer.
-  - Registry lookup is a linear setName strcmp over [begin, end); GetByIndex rejects negative indices before the unsigned bounds check.
-  - Sample-set Init uses g_zSnd_UseArchiveBanksFlag for archive bank loading, distinct from the registry useArchiveBanksFlag written by zSnd_SetUseArchiveBanks.
-
-### Group: zSnd shutdown cluster
-
-- Anchor: 0x4a13d0 zSndSystem::Shutdown
-- Reason: dependency closure / top-level shutdown depends on backend and stream-manager teardown ownership
-- Source files:
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_group.cpp
-  - src/GameZRecoil/zSound/zsnd_init.cpp
-  - src/GameZRecoil/zSound/zsnd_system.cpp
-  - tests/native/zsnd_cd_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x4a13d0 zSndSystem::Shutdown - Reimplemented / Binary-safe pending
-  - 0x4a1f40 zSndBackend::Shutdown - Reimplemented / Binary-safe pending
-  - 0x4a50a0 zSndStreamMgr::Shutdown - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zsnd_group.cpp, zsnd_init.cpp, and zsnd_system.cpp listing comparison against 0x4a50a0, 0x4a1f40, and 0x4a13d0
-- Notes:
-  - Stream shutdown frees active/free request payloads directly, but pending configs with createGuard 1 own a config-block array and each block's child chain at offset 0x14.
-  - Backend shutdown releases listener/device handles for DirectSound and aux/listener/device handles for A3D, then clears g_zSnd_IsInitialized.
-
-### Group: zSnd backend buffer lock helpers
-
-- Anchor: 0x4a34e0 zSndSample::LockBackendBuffers
-- Reason: paired DirectSound/A3D backend buffer ABI helpers
-- Source files:
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_create.cpp
-  - tests/native/zsnd_cd_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x4a34e0 zSndSample::LockBackendBuffers - Reimplemented / Binary-safe pending
-  - 0x4a3590 zSndSample::UnlockBackendBuffers - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zsnd_create.cpp listing comparison against 0x4a34e0 and 0x4a3590
-- Notes:
-  - Both helpers are member __fastcall functions: this in ECX and the first explicit parameter in EDX.
-  - Lock uses vtable slot 0x2c for DirectSound and A3D; unlock uses DirectSound slot 0x4c and A3D commit-write slot 0x30.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4a0810 zSnd_SetUseArchiveBanks
+  - 0x4a0800 zSnd_SetUseArchiveBanksAndRegisterAtExit
+  - 0x4a0830 zSndSampleSetRegistry_RegisterAtExit
+  - 0x4a0840 zSndSampleSetRegistry_Shutdown
+- Next action:
+  - `python tools/recoil_status.py 0x4a0810`
 
 ### Group: zSnd DirectSound caps and CPU probes
 
 - Anchor: 0x4b2fc0 zSnd::CachedDirectSound_GetCaps
-- Reason: M37 remaining leaf helpers for cached DirectSound capability query and CPU feature gates
-- Source files:
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_init.cpp
-  - src/GameZRecoil/zSys/zSys.h
-  - src/GameZRecoil/zSys/zSys.cpp
-  - tests/native/zsnd_cd_tests.cpp
-  - tests/native/zsys_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x4b2fc0 zSnd::CachedDirectSound_GetCaps - Reimplemented / Binary-safe verified
-  - 0x4b2fe0 zSys::HasCpuidSupport - Reimplemented / Binary-safe verified
-  - 0x4b3020 zCpu::HasMmxSupport - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zsnd_init.cpp and zSys.cpp listing comparison against 0x4b2fc0, 0x4b2fe0, and 0x4b3020
-- Notes:
-  - CachedDirectSound_GetCaps sets DSCAPS.dwSize to 0x60 before forwarding slot 0x10 on g_zSnd_CachedDirectSound.
-  - HasCpuidSupport follows the original x86 EFLAGS ID-bit toggle probe; HasMmxSupport reads CPUID leaf 1 EDX bit 23.
-
-### Group: zRndr lens flare visible stages
-
-- Anchor: 0x49aa90 zRndr_LensFlare_DrawSampleStageClipped
-- Reason: lens-flare stage drawing dependency chain / shared visible-sample globals
-- Source files:
-  - src/GameZRecoil/zRndr/zRndr.cpp
-  - src/GameZRecoil/zRndr/zRndr.h
-- Plan entries:
-  - 0x49aa90 zRndr_LensFlare_DrawSampleStageClipped - Reimplemented / Binary-safe pending
-  - 0x49afb0 zRndr_LensFlare_DrawVisibleSample - Reimplemented / Binary-safe pending
-  - 0x49b020 zRndr_LensFlare_DrawVisibleSampleStages - Reimplemented / Binary-safe pending
-  - 0x49b1a0 zRndr_LensFlare_DrawVisibleSamples - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none visible for 0x49aa90 source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zRndr.cpp listing comparison against 0x49aa90, 0x49afb0, 0x49b020, and 0x49b1a0
-- Notes:
-  - 0x49aa90 clips a screen-space flare-stage quad against either a caller rect or active region dimensions, remaps edge UVs proportionally, and dispatches to the hardware render-class callback or the software textured submit path.
-  - Software-stage submission uses the recovered quad order bottom-right, top-right, top-left, bottom-left; projected Z is 10.0f, hardware Z is 0.5f, and software clipped tri vertices use screen coordinates scaled by 0.100000001f.
-  - zRndr_LensFlareSource is recovered through offset 0x18: depth fade fields at 0x00..0x08, lensFlareEnabled at 0x0c, fadeNear at 0x14, and fadeFar at 0x18.
-  - 0x49afb0 maps `1.0f / visibleSampleDef->depthDivisor` to full alpha below fadeNear, rejects at or beyond fadeFar, and linearly fades inside the window before calling 0x49b020.
-  - 0x49b020 expands each visible sample into four staged quads using base radius `visibilityAlpha * activeWidth / 32`, stage centers at sample, halfway to center, 10% from center, and the mirrored position, with final radius `baseRadius * 3`.
-  - 0x49b1a0 skips all work when lens-flare visibility is inactive; otherwise it iterates the visible-sample count and clears the count after drawing.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4b2fe0 zSys::HasCpuidSupport
+- Next action:
+  - `python tools/recoil_status.py 0x4b2fe0`
 
 ### Group: zMath projection batches
 
-- Anchor: 0x476cf0 zModel_RenderNodeSoftware
-- Reason: renderer dependency / projection of view-space points and sphere centers into 12-byte screen triplets
-- Source files:
-  - src/GameZRecoil/zMath/zMath.h
-  - src/GameZRecoil/zMath/zMath.cpp
-  - tests/native/zmath_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x474b20 zMath::ProjectPointBatch - Reimplemented / Binary-safe pending
-  - 0x474b70 zMath_ProjectSphereBatch - Reimplemented / Binary-safe pending
-  - 0x474bc0 zMath_UnprojectPointBatch - Reimplemented / Binary-safe pending
-  - 0x474c20 zMath_UnprojectPointBatchZBuf - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zMath.cpp listing comparison against 0x474b20, 0x474b70, 0x474bc0, and 0x474c20
-- Notes:
-  - ProjectPointBatch writes x, y, and reciprocalZ; ProjectSphereBatch writes x, y, and screenRadius using g_zMath_ProjSphereRadiusScale / z.
-  - UnprojectPointBatch treats the projected z field as reciprocal Z and uses g_zMath_InvProjScaleX/Y; UnprojectPointBatchZBuf transforms the view point through camera scratch A before returning it to occlusion callers.
+- Anchor: 0x476cf0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x476cf0 pending
+  - 0x474b70 zMath_ProjectSphereBatch
+  - 0x474bc0 zMath_UnprojectPointBatch
+  - 0x474c20 zMath_UnprojectPointBatchZBuf
+- Next action:
+  - `python tools/recoil_status.py 0x476cf0`
 
 ### Group: zMath renderer point transforms
 
-- Anchor: 0x476cf0 zModel_RenderNodeSoftware
-- Reason: renderer dependency / blend-vertex add-scaled path and current-matrix point transforms
-- Source files:
-  - src/GameZRecoil/zMath/zMath.h
-  - src/GameZRecoil/zMath/zMath.cpp
-  - tests/native/zmath_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x472f90 zMath::MatLoadCameraScratchB - Reimplemented / Binary-safe pending
-  - 0x472fa0 zMath::MatLoadCameraScratchA - Reimplemented / Binary-safe pending
-  - 0x472fb0 zMath_Mat_LoadProjection - Reimplemented / Binary-safe pending
-  - 0x4731f0 zMath_Mat_SetupCamera - Reimplemented / Binary-safe pending
-  - 0x473230 zMath_Mat_GetCurrent - Reimplemented / Binary-safe pending
-  - 0x473240 zMath_Mat_IsCurrentIdentity - Reimplemented / Binary-safe pending
-  - 0x473b10 zMath::MatRotateY - Reimplemented / Binary-safe pending
-  - 0x4744f0 zMath_Vec3Array_AddScaled - Reimplemented / Binary-safe pending
-  - 0x4747d0 zMath::MatTransformPointBatchInPlace - Reimplemented / Binary-safe pending
-  - 0x474de0 zMath_Mat_ExtractYaw - Reimplemented / Binary-safe pending
-  - 0x474e10 zMath_Mat_ExtractEulerAngles - Reimplemented / Binary-safe pending
-  - 0x474ec0 zMath_Vec3_RotateX - Reimplemented / Binary-safe pending
-  - 0x474f40 zMath::Vec3RotateY - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zMath.cpp listing comparison against 0x472f90, 0x472fa0, 0x472fb0, 0x4731f0, 0x473230, 0x473240, 0x473b10, 0x4744f0, 0x4747d0, 0x474de0, 0x474e10, 0x474ec0, and 0x474f40
-- Notes:
-  - MatLoadCameraScratchA/B copy the recovered camera scratch matrices into the current stack slot.
-  - Mat_LoadProjection rotates by zOffset minus parent yaw, preserves parent translation, then composes through camera scratch B using a temporary stack slot.
-  - Mat_SetupCamera loads scratch B and multiplies it by the previous matrix stack slot with mode 1.
-  - Mat_GetCurrent and Mat_IsCurrentIdentity directly return the top matrix slot and identity flag.
-  - MatRotateY builds the identity Y-rotation slots when the current flag is set; otherwise it composes the current X/Z basis and preserves Y/translation.
-  - Vec3Array_AddScaled writes out[i] = bias[i] + src[i] * scale.
-  - MatTransformPointBatchInPlace skips identity/current count-zero cases and stores transformed x/z/y in original assembly order.
-  - Mat_ExtractYaw returns atan2(zx, zz), with a zero return when both fields are zero.
-  - Mat_ExtractEulerAngles extracts yaw/pitch/roll from the matrix through the yaw plus rotateY/rotateX sequence and adjusts roll when matrix->yy is negative.
-  - Vec3_RotateX and Vec3RotateY preserve the untouched axis and use the original sin/cos rotation formulas.
+- Anchor: 0x476cf0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x476cf0 pending
+  - 0x472fa0 zMath::MatLoadCameraScratchA
+  - 0x472fb0 zMath_Mat_LoadProjection
+  - 0x4731f0 zMath_Mat_SetupCamera
+  - 0x4747d0 zMath::MatTransformPointBatchInPlace
+- Next action:
+  - `python tools/recoil_status.py 0x476cf0`
 
 ### Group: zMath camera quaternion helpers
 
 - Anchor: 0x473060 zMath_Mat_LoadView
-- Reason: dependency closure / camera view matrix quaternion conversion helpers
-- Source files:
-  - src/GameZRecoil/zMath/zMath.h
-  - src/GameZRecoil/zMath/zMath.cpp
-  - tests/native/zmath_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x473060 zMath_Mat_LoadView - Reimplemented / Binary-safe pending
-  - 0x4757c0 zMath_Quat_FromEuler - Reimplemented / Binary-safe pending
-  - 0x4759d0 zMath_Quat_MultiplyInverse - Reimplemented / Binary-safe pending
-  - 0x475a80 zMath_Quat_ToMatrix - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zMath.cpp listing comparison against 0x473060, 0x4757c0, 0x4759d0, and 0x475a80
-- Notes:
-  - FromEuler writes w/x/y/z and follows the original half-angle combination order for the three stack floats.
-  - MultiplyInverse computes quatA * conjugate(quatB) for unit-quaternion camera-relative rotation.
-  - ToMatrix writes only the 3x3 row-major rotation portion of zMat4x3 from doubled quaternion components.
-  - Mat_LoadView negates the loaded camera-scratch A Y/Z rows, extracts parent and adjusted-camera Euler triples, builds the relative quaternion, composes with the parent, restores parent translation, then applies camera scratch B through the temporary stack slot.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x473060 zMath_Mat_LoadView
+  - 0x4757c0 zMath_Quat_FromEuler
+  - 0x4759d0 zMath_Quat_MultiplyInverse
+  - 0x475a80 zMath_Quat_ToMatrix
+- Next action:
+  - `python tools/recoil_status.py 0x473060`
 
 ### Group: zMath vector scalar helpers
 
-- Anchor: 0x487f10 zModel_Light_SetActiveLights
-- Reason: renderer light dependency / normalization and scalar division of zVec3 vectors
-- Source files:
-  - src/GameZRecoil/zMath/zMath.h
-  - src/GameZRecoil/zMath/zMath.cpp
-  - tests/native/zmath_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x402f60 zMath::Vec3Normalize - Reimplemented / Binary-safe pending
-  - 0x4727a0 zMath_Vec3_DivScalar - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zMath.cpp listing comparison against 0x402f60 and 0x4727a0
-- Notes:
-  - Vec3Normalize returns the original vector length and leaves zero vectors unchanged.
-  - Vec3_DivScalar copies input on zero divisor unless operating in place.
+- Anchor: 0x487f10 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x487f10 pending
+  - 0x4727a0 zMath_Vec3_DivScalar
+- Next action:
+  - `python tools/recoil_status.py 0x487f10`
 
 ### Group: zModel light depth fade attrs
 
-- Anchor: 0x476cf0 zModel_RenderNodeSoftware
-- Reason: renderer dependency / per-vertex depth-fog attr0 construction for the software draw path
-- Source files:
-  - src/GameZRecoil/zMath/zMath.h
-  - src/GameZRecoil/zMath/zMath.cpp
-  - src/GameZRecoil/zModel/zModel.h
-  - src/GameZRecoil/zModel/gmod_light.c
-  - tests/native/zgame_tests.cpp
-  - tests/native/zmath_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x490330 zFloat::Set255f - Reimplemented / Binary-safe pending
-  - 0x4896d0 zModel_Light::BuildAttr0DepthFade - Reimplemented / Binary-safe pending
-  - 0x489920 zModel_Light::EvalBatchSphereFade - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zMath.cpp and gmod_light.c listing comparison against 0x490330, 0x4896d0, and 0x489920
-- Notes:
-  - BuildAttr0DepthFade uses the original approximate XZ-distance square-root, cached camera-Y projection, and 1/255 visible threshold before writing g_Clip_PolyAttr0.
-  - The no-candidate early return leaves outHasVariation untouched; zero-result after candidate evaluation clears it.
-  - EvalBatchSphereFade evaluates g_Clip_PolyVertsScratch[0], leaves outFade untouched at or before fog start, and returns true only for clamped fade above 0.005.
+- Anchor: 0x476cf0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x476cf0 pending
+  - 0x490330 zFloat::Set255f
+  - 0x4896d0 zModel_Light::BuildAttr0DepthFade
+  - 0x489920 zModel_Light::EvalBatchSphereFade
+- Next action:
+  - `python tools/recoil_status.py 0x476cf0`
 
 ### Group: zModel light per-vertex weights
 
-- Anchor: 0x476cf0 zModel_RenderNodeSoftware
-- Reason: renderer dependency / software per-vertex light weights and fog-color blending
-- Source files:
-  - src/GameZRecoil/zModel/zModel.h
-  - src/GameZRecoil/zModel/gmod_light.c
-  - tests/native/zgame_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x488d60 zModel_Light_BuildLightWeights - source integration in progress / marker pending full edge-case check
-- Blocking dependencies:
-  - 0x49b4c0 zRndr::CommitDirectFogParamsIfChanged - lower-level helper
-  - 0x49b710 zRndr::CommitStagedFogParamsIfChanged - lower-level helper
-  - 0x49b780 zRndr::BlendPackedColor565WithFogInPlace - lower-level helper
-- Verification target:
-  - ninja-x86-debug CTest; later gmod_light.c listing comparison against 0x488d60
-- Notes:
-  - BuildLightWeights has a large 64x64 light/vertex scratch matrix in BN; source marker stays pending until directional, point, cone, fog override, and multi-light paths are all checked.
+- Anchor: 0x476cf0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x476cf0 pending
+  - 0x488d60 pending
+  - 0x49b4c0 zRndr::CommitDirectFogParamsIfChanged
+  - 0x49b710 zRndr::CommitStagedFogParamsIfChanged
+  - 0x49b780 zRndr::BlendPackedColor565WithFogInPlace
+- Next action:
+  - `python tools/recoil_status.py 0x476cf0`
 
 ### Group: zModel fog sphere fade
 
 - Anchor: 0x489540 zModel_Light::EvalSphereFogFade
-- Reason: dependency closure / fog distance-height fade helper and cached-camera Y projection
-- Source files:
-  - src/GameZRecoil/zMath/zMath.h
-  - src/GameZRecoil/zMath/zMath.cpp
-  - src/GameZRecoil/zModel/zModel.h
-  - src/GameZRecoil/zModel/gmod_light.c
-  - tests/native/zmath_tests.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x473fc0 zMath::Vec3ArrayProjectToCachedY - Reimplemented / Binary-safe pending
-  - 0x489540 zModel_Light::EvalSphereFogFade - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zMath.cpp and gmod_light.c listing comparison against 0x473fc0 and 0x489540
-- Notes:
-  - EvalSphereFogFade uses the original exponent-halving XZ distance estimate before applying fog distance and height overlap factors.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x489540 zModel_Light::EvalSphereFogFade
+  - 0x473fc0 zMath::Vec3ArrayProjectToCachedY
+- Next action:
+  - `python tools/recoil_status.py 0x489540`
 
 ### Group: zRndr lens flare projected sample queue
 
-- Anchor: 0x476cf0 zModel_RenderNodeSoftware
-- Reason: renderer dependency / projected point queueing for software lens-flare samples
-- Source files:
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-  - src/GameZRecoil/zRndr/zRndr.h
-  - src/GameZRecoil/zRndr/zRndr.cpp
-  - src/GameZRecoil/zModel/zModel.h
-  - tests/native/zrndr_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x498cb0 zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer - Reimplemented / Binary-safe pending
-  - 0x49a830 zRndr_LensFlare_QueueProjectedSample - Reimplemented / Binary-safe pending
-  - 0x49a8b0 zRndr_LensFlare_GetQueuedSampleCount - Reimplemented / Binary-safe pending
-  - 0x49a910 zRndr::LensFlare_ResetSampleQueue - Reimplemented / Binary-safe pending
-  - 0x49aa30 zRndr_SpanOcclusion_FilterSampleList - Reimplemented / Binary-safe pending
-  - 0x49aa40 zRndr_LensFlare_SetVisibleSampleStage - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zRndr.cpp listing comparison against 0x498cb0, 0x49a830, 0x49a8b0, 0x49a910, 0x49aa30, and 0x49aa40
-- Notes:
-  - LensFlare_DrawQueuedSample16_ClippedFramebuffer scales queued sample x/y into framebuffer coordinates, clips to the active region, optionally blends toward gRndr_OverlayBlendPackedColor16, and applies source depth-fade blending back toward the destination pixel.
-  - QueueProjectedSample mutates projectedPoint->reciprocalZ through inverse-depth scale/bias before appending the 20-byte lens-flare sample record.
-  - SpanOcclusion_FilterSampleList indexes the 64-entry visible-sample definition pointer table and unprojects one definition through zMath_UnprojectPointBatchZBuf.
-  - SetVisibleSampleStage writes only stage indices 0..3, then enables the visibility latch only when all four stage texture entries are non-null.
+- Anchor: 0x476cf0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x476cf0 pending
+  - 0x498cb0 zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer
+  - 0x49a830 zRndr_LensFlare_QueueProjectedSample
+  - 0x49a910 zRndr::LensFlare_ResetSampleQueue
+  - 0x49aa30 zRndr_SpanOcclusion_FilterSampleList
+  - 0x49aa40 zRndr_LensFlare_SetVisibleSampleStage
+- Next action:
+  - `python tools/recoil_status.py 0x476cf0`
 
 ### Group: zModel scrolling texture UV update
 
-- Anchor: 0x476cf0 zModel_RenderNodeSoftware
-- Reason: renderer dependency / per-frame scrolling texture UV update before software draw submission
-- Source files:
-  - src/GameZRecoil/zModel/zModel.h
-  - src/GameZRecoil/zModel/zModel.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x478fc0 zModel_Instance_UpdateScrollingTexturesIfNeeded - Reimplemented / Binary-safe pending
-  - 0x4791c0 zModel_Instance_UpdateScrollingTextures - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zModel.cpp listing comparison against 0x478fc0 and 0x4791c0
-- Notes:
-  - UpdateScrollingTextures uses g_FrameDeltaTimeSec and wraps U/V by 0x800 for software or 0x80 for hardware, shifted by texture metadata bytes at offsets 0x0a and 0x0b.
+- Anchor: 0x476cf0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x476cf0 pending
+  - 0x478fc0 zModel_Instance_UpdateScrollingTexturesIfNeeded
+  - 0x4791c0 zModel_Instance_UpdateScrollingTextures
+- Next action:
+  - `python tools/recoil_status.py 0x476cf0`
 
 ### Group: zModel point queue entry rendering
 
-- Anchor: 0x476cf0 zModel_RenderNodeSoftware
-- Reason: renderer dependency / transformed point projection, hardware point draw, and software lens-flare queueing
-- Source files:
-  - src/GameZRecoil/include/zClipRect.h
-  - src/GameZRecoil/zGeometry/zClipRect.cpp
-  - src/GameZRecoil/zModel/zModel.h
-  - src/GameZRecoil/zModel/zModel.cpp
-  - src/GameZRecoil/zRndr/zRndr.h
-  - src/GameZRecoil/zRndr/zRndr.cpp
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x479020 zModel_RenderPointQueueEntry - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zModel.cpp listing comparison against 0x479020
-- Notes:
-  - RenderPointQueueEntry uses gClipRect_Primary.zMin, projection clip globals, g_zRndr_InverseZTolerance, and the indirect g_zVideo_pfnDrawPointColor16 hardware draw callback.
+- Anchor: 0x476cf0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x476cf0 pending
+  - 0x479020 zModel_RenderPointQueueEntry
+- Next action:
+  - `python tools/recoil_status.py 0x476cf0`
 
 ### Group: zRndr fog commit and packed blend helpers
 
-- Anchor: 0x488d60 zModel_Light_BuildLightWeights
-- Reason: dependency closure / fog parameter commit gates and packed 565 fog blending
-- Source files:
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-  - src/GameZRecoil/zRndr/zRndr.h
-  - src/GameZRecoil/zRndr/zRndr.cpp
-  - tests/native/zrndr_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x49b4c0 zRndr::CommitDirectFogParamsIfChanged - Reimplemented / Binary-safe pending
-  - 0x49b530 zRndr::CommitFogColorParamsIfChanged - Reimplemented / Binary-safe pending
-  - 0x49b710 zRndr::CommitStagedFogParamsIfChanged - Reimplemented / Binary-safe pending
-  - 0x49b780 zRndr::BlendPackedColor565WithFogInPlace - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zRndr.cpp listing comparison against 0x49b4c0, 0x49b530, 0x49b710, and 0x49b780
-- Notes:
-  - Commit helpers copy 0xa0-byte fog params when any RGB channel differs from the active params by at least 0.01.
-  - UpdateScrollingTexturesIfNeeded runs once per g_zVideo_FrameTick and uses the low byte of entry flags as the UV count.
+- Anchor: 0x488d60 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x488d60 pending
+  - 0x49b4c0 zRndr::CommitDirectFogParamsIfChanged
+  - 0x49b530 zRndr::CommitFogColorParamsIfChanged
+  - 0x49b710 zRndr::CommitStagedFogParamsIfChanged
+  - 0x49b780 zRndr::BlendPackedColor565WithFogInPlace
+- Next action:
+  - `python tools/recoil_status.py 0x488d60`
 
 ### Group: zRndr 565 span alpha blend leaf
 
-- Anchor: 0x476cf0 zModel_RenderNodeSoftware
-- Reason: renderer dependency / scalar 5:6:5 paletted span alpha blend helper
-- Source files:
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-  - src/GameZRecoil/zRndr/zRndr.h
-  - src/GameZRecoil/zRndr/zRndr.cpp
-  - tests/native/zrndr_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x49c020 zRndr::SpanMasked16FromPal8To565 - Reimplemented / Binary-safe pending
-  - 0x49c150 zRndr::SpanMasked16FromTex16To565 - Reimplemented / Binary-safe pending
-  - 0x49c230 zRndr::SpanAlphaBlend565ConstAlphaFromPal8 - Reimplemented / Binary-safe pending
-  - 0x49c360 zRndr::SpanAlphaBlend565FromTex16Alpha8 - Reimplemented / Binary-safe pending
-  - 0x49c560 zRndr::SpanAlphaBlend555FromTex16Alpha8 - Reimplemented / Binary-safe pending
-  - 0x49c760 zRndr::SpanAlphaBlend565ConstAlphaFromTex16 - Reimplemented / Binary-safe pending
-  - 0x49c860 zRndr::SpanAlphaBlend555ConstAlphaFromTex16 - Reimplemented / Binary-safe pending
-  - 0x49c970 zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8 - Reimplemented / Binary-safe pending
-  - 0x49ca90 zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8 - Reimplemented / Binary-safe pending
-  - 0x49cbb0 zRndr::SpanAlphaBlend565MmxFromTex16Alpha8 - Reimplemented / Binary-safe pending
-  - 0x49cea0 zRndr::SpanAlphaBlend555MmxFromTex16Alpha8 - Reimplemented / Binary-safe pending
-  - 0x49d1a0 zRndr::SpanAlphaBlend565FromPal8Alpha8 - Reimplemented / Binary-safe pending
-  - 0x49d3b0 zRndr::SpanAlphaBlend555FromPal8Alpha8 - Reimplemented / Binary-safe pending
-  - 0x49d5c0 zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8 - Reimplemented / Binary-safe pending
-  - 0x49d6e0 zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8 - Reimplemented / Binary-safe pending
-  - 0x49d810 zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8 - Reimplemented / Binary-safe pending
-  - 0x49d950 zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8 - Reimplemented / Binary-safe pending
-  - 0x49da80 zRndr::SpanAlphaBlend565MmxFromPal8Alpha8 - Reimplemented / Binary-safe pending
-  - 0x49ddb0 zRndr::SpanAlphaBlend555MmxFromPal8Alpha8 - Reimplemented / Binary-safe pending
-  - 0x49e200 zRndr::FogBlendSpan565Scalar - Reimplemented / Binary-safe pending
-  - 0x49e300 zRndr::FogBlendSpan555Scalar - Reimplemented / Binary-safe pending
-  - 0x49e400 zRndr::FogBlendSpan565Mmx - Reimplemented / Binary-safe pending
-  - 0x49e560 zRndr::FogBlendSpan555Mmx - Reimplemented / Binary-safe pending
-  - 0x49e6c0 zRndr::SpanCopy16FromTex16SwitchVShift - Reimplemented / Binary-safe pending
-  - 0x49b7e0 zRndr::SpanMasked16FromTex16SwitchVShift - Reimplemented / Binary-safe pending
-  - 0x49ea40 zRndr::SpanMmxSetTexUvMasksAndVShift - Reimplemented / Binary-safe pending
-  - 0x49ea80 zRndr::SpanCopy16FromTex16 - Reimplemented / Binary-safe pending
-  - 0x49ec20 zRndr::SpanCopy16FromTex16ExplicitVShift - Reimplemented / Binary-safe pending
-  - 0x49edc0 zRndr::SpanCopy16FromPal8SwitchVShift - Reimplemented / Binary-safe pending
-  - 0x49bbf0 zRndr::SpanMasked16FromPal8SwitchVShift - Reimplemented / Binary-safe pending
-  - 0x49f180 zRndr::SpanShade16FromPal8SwitchVShift - Reimplemented / Binary-safe pending
-  - 0x4907c0 zRndr_SpanOcclusion_TestSpanDepthOrderPair - Reimplemented / Binary-safe pending
-  - 0x490ae0 zRndr_SpanOcclusion_InsertSpanNode_Local - Reimplemented / Binary-safe pending
-  - 0x4912a0 zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest - Reimplemented / Binary-safe pending
-  - 0x491840 zRndr_SpanOcclusion_BuildSpanList - Reimplemented / Binary-safe pending
-  - 0x491da0 zRndr_SpanOcclusion_BuildSpanListFast - Reimplemented / Binary-safe pending
-  - 0x491dd0 zRndr_SpanOcclusion_TestColumnVisibility - Reimplemented / Binary-safe pending
-  - 0x492000 zRndr_RasterizePolyWithSpanList - Reimplemented / Binary-safe pending
-  - 0x4927d0 zRndr::SpanOcclusionRasterizeOccluderPoly - Reimplemented / Binary-safe pending
-  - 0x492f00 zRndr_DrawFlatImmediate - Reimplemented / Binary-safe pending
-  - 0x4936d0 zRndr_RasterizePoly - Reimplemented / Binary-safe pending
-  - 0x494af0 Renderer_DrawPolyTLV - Reimplemented / Binary-safe pending
-  - 0x499a20 zRndr_SubmitPolyWithSpanList - Reimplemented / Binary-safe pending
-  - 0x4753e0 zMath_BuildPerspectiveTextureInterpolants - Reimplemented / Binary-safe pending
-  - 0x46e290 zImage_TexDirEntry::GetVariantImageAtIndex - Reimplemented / Binary-safe pending
-  - 0x499130 zRndr_TextureMip_SelectVariantImage - Reimplemented / Binary-safe pending
-  - 0x493df0 zRndr_DrawFlatQueued - Reimplemented / Binary-safe pending
-  - 0x495850 zRndr_DrawTexturedQueued - Reimplemented / Binary-safe pending
-  - 0x4969d0 zRndr_DrawTexturedQueuedAlpha - Reimplemented / Binary-safe pending
-  - 0x497ac0 zRndr_DrawTexturedFanTri - Reimplemented / Binary-safe pending
-  - 0x498c40 zRndr_SpanOcclusion_TestPointVisibility - Reimplemented / Binary-safe pending
-  - 0x498f90 zRndr_SpanOcclusion_TestSample - Reimplemented / Binary-safe pending
-  - 0x498fb0 zRndr_DrawCircleOutline16_Framebuffer - Reimplemented / Binary-safe pending
-  - 0x499020 zRndr_DrawCircleOctants16_Framebuffer - Reimplemented / Binary-safe pending
-  - 0x4992b0 zRndr_PlotPixel16 - Reimplemented / Binary-safe pending
-  - 0x4992d0 zRndr_DrawLine16 - Reimplemented / Binary-safe pending
-  - 0x4993a0 zRndr_DrawLine16_Segmented - Reimplemented / Binary-safe pending
-  - 0x499500 zRndr_DrawLine16_Clipped - Reimplemented / Binary-safe pending
-  - 0x4997d0 zRndr_FillSpan16Opaque - Reimplemented / Binary-safe pending
-  - 0x499810 zRndr_FillSpan555Solid - Reimplemented / Binary-safe pending
-  - 0x4998a0 zRndr_FillSpan565Solid - Reimplemented / Binary-safe pending
-  - 0x499930 zRndr_SetPaletteRemapKey - Reimplemented / Binary-safe pending
-  - 0x499990 zRndr_SetPaletteRemapKeyFromRgb01 - Reimplemented / Binary-safe pending
-  - 0x499a00 zRndr_SetPaletteShadeRecipeIndex - Reimplemented / Binary-safe pending
-  - 0x499c40 zRndr_SubmitTexturedPolyUniformAlphaOrShade - Reimplemented / Binary-safe pending
-  - 0x499ec0 zRndr_SubmitTexturedPolyPerVertexAlphaOrShade - Reimplemented / Binary-safe pending
-  - 0x49a2b0 zRndr_FlushTransparentQueue - Reimplemented / Binary-safe pending
-  - 0x49a490 zRndr_FlushOverwriteQueue - Reimplemented / Binary-safe pending
-  - 0x46e680 zVid_PaletteRemap::FindRecipeIndex - Reimplemented / Binary-safe pending
-  - 0x46e720 zVid_PaletteRemap_BuildPaletteVariant - Reimplemented / Binary-safe pending
-  - 0x46e960 zVid_PaletteRemap_FindRecipeIndexFromRgb - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zRndr.cpp listing comparison against 0x49c020, 0x49c150, 0x49c230, 0x49c360, 0x49c560, 0x49c760, 0x49c860, 0x49c970, 0x49ca90, 0x49cbb0, 0x49cea0, 0x49d1a0, 0x49d3b0, 0x49d5c0, 0x49d6e0, 0x49d810, 0x49d950, 0x49da80, 0x49ddb0, 0x49e200, 0x49e300, 0x49e400, 0x49e560, 0x49e6c0, 0x49b7e0, 0x49ea40, 0x49ea80, 0x49ec20, 0x49edc0, 0x49bbf0, 0x49f180, 0x4907c0, 0x490ae0, 0x4912a0, 0x491840, 0x491da0, 0x491dd0, 0x4927d0, 0x492f00, 0x4936d0, 0x493df0, 0x494af0, 0x495850, 0x4969d0, 0x497ac0, 0x498c40, 0x498f90, 0x498fb0, 0x499020, 0x4992b0, 0x4992d0, 0x4993a0, 0x499500, 0x4997d0, 0x499810, 0x4998a0, 0x499c40, 0x499ec0, 0x49a2b0, and 0x49a490
-- Notes:
-  - The helpers sample paletted 8-bit texels through fixed-point U/V globals, skip texel 0 and alpha <= 3, write palette[sourceIndex] for alpha >= 0xfc, and use the original destination-indexed palette lookup for partial-alpha interpolation.
-  - SpanMasked16FromTex16To565 samples 16-bit texels through the same fixed-point globals; nonzero texels copy only when alpha >= 0xfc, while the partial-alpha path preserves the destination value.
-  - SpanAlphaBlend565FromTex16Alpha8 samples 8-bit coverage from the active alpha map, skips coverage below 8, overwrites coverage >= 0xf8, blends an odd head pixel with the scalar 565 alpha formula, and processes remaining pixels as packed two-pixel groups using the first sample for each group.
-  - SpanAlphaBlend555FromTex16Alpha8 is the 5:5:5 counterpart, with the same alpha-map thresholds, odd-head scalar path, and packed two-pixel group behavior using 555 masks.
-  - SpanAlphaBlend565ConstAlphaFromTex16Alpha8 scales each alpha-map byte by the float value stored in g_spanActiveConstAlphaBits before applying the recovered 565 threshold/copy/blend path.
-  - SpanAlphaBlend555ConstAlphaFromTex16Alpha8 uses the same float-scaled alpha-map conversion with 555 thresholds; its partial path accumulates channel deltas onto the original destination word.
-  - SpanAlphaBlend565MmxFromTex16Alpha8 scalarizes the MMX quad body with per-pixel alpha-map bytes and no threshold copy/skip; leftover `pixelCount & 3` pixels use scalar 565 thresholds `<=3` skip and `>=0xfc` copy.
-  - SpanAlphaBlend555MmxFromTex16Alpha8 is the 5:5:5 counterpart, with no threshold copy/skip in full quads and scalar tail thresholds `<=7` skip and `>=0xfc` copy.
-  - SpanAlphaBlend565FromPal8Alpha8 expands sampled 8-bit texels through the active palette, uses alpha-map thresholds `<8` skip and `>=0xf8` copy, and processes the even body as two-pixel packed 565 blends using one sample for both destination pixels.
-  - SpanAlphaBlend555FromPal8Alpha8 is the 5:5:5 counterpart with the same alpha-map thresholds and paired one-sample body.
-  - SpanAlphaBlend565ConstAlphaFromPal8Alpha8 scales each alpha-map byte by the float value stored in g_spanActiveConstAlphaBits, expands the 8-bit texel through the palette, and applies scalar 565 thresholds `<=3` skip and `>=0xfc` copy.
-  - SpanAlphaBlend555ConstAlphaFromPal8Alpha8 is the 5:5:5 counterpart, with float-scaled alpha-map bytes, `<=7` skip, `>=0xfc` copy, and the 555 const-alpha-map delta blend.
-  - SpanAlphaBlend565MmxFromPal8Alpha8 scalarizes the MMX quad body with expanded palette texels and per-pixel alpha bytes, with no threshold copy/skip in full quads and scalar tail thresholds `<=3` skip and `>=0xfc` copy.
-  - SpanAlphaBlend555MmxFromPal8Alpha8 is the 5:5:5 counterpart, with no threshold copy/skip in full quads and scalar tail thresholds `<=7` skip and `>=0xfc` copy.
-  - SpanAlphaBlend565ConstAlphaFromTex16 blends 16-bit source texels toward the destination using the recovered red/green/blue 565 delta math and alpha thresholds.
-  - SpanAlphaBlend555ConstAlphaFromTex16 uses the same fixed-point texture walk with 0x7c00/0x03e0/0x001f masks and skips alpha <= 7.
-  - SpanAlphaBlend565ConstAlphaFastFromPal8 expands every 8-bit texel through the palette, including source index 0, before applying the 565 constant-alpha blend thresholds.
-  - SpanAlphaBlend555ConstAlphaFastFromPal8 is the 0x7c00/0x03e0/0x001f counterpart and skips alpha <= 7.
-  - Both helpers advance only their local destination cursor; g_spanCurrentDst16 remains unchanged after return, matching the original global load-only behavior.
-  - FogBlendSpan565Scalar and FogBlendSpan555Scalar use signed fixed-point fog thresholds 0x80000 and 0x1000000; after an odd leading pixel, the packed two-pixel loop applies one ramp index to both pixels and advances by 2 * fogCoordStepFixed24.
-  - FogBlendSpan565Mmx and FogBlendSpan555Mmx scalarize the MMX quad body with four high-word fog factors, signed saturating channel deltas, low-word multiplies, and the original wrapper tail coordinate after the quad prefetch.
-  - SpanMmxSetTexUvMasksAndVShift duplicates the active V mask and U mask shifted left 20, while SpanCopy16FromTex16 and ExplicitVShift copy forward from the current 16-bit texture; the switch-VShift helper preserves the original descending destination write order.
-  - SpanMasked16FromTex16SwitchVShift samples 16-bit texels for variable V shifts 10..17, preserves the descending destination write order, and leaves destination pixels unchanged when the source texel is zero.
-  - SpanCopy16FromPal8SwitchVShift uses the same hardcoded shift cases to sample 8-bit texels and expand through the active palette, preserving the descending destination write order.
-  - SpanMasked16FromPal8SwitchVShift samples paletted 8-bit texels for variable V shifts 10..17, preserves the descending destination write order, expands nonzero texels through the active palette, and leaves destination pixels unchanged for texture index 0.
-  - SpanShade16FromPal8SwitchVShift adds the active shade bucket `(shadeFixed16 & 0x00f80000) >> 11` to the 8-bit texel before palette lookup and advances the shade accumulator once per pixel.
-  - zRndr_SpanOcclusion_TestSpanDepthOrderPair evaluates span inverse-depth at shared X coordinates and applies the recovered span-depth bias globals for degenerate endpoint comparisons.
-  - zRndr_SpanOcclusion_InsertSpanNode_Local depth-tests the pending span against column spans, inserts surviving pending fragments into the column list, trims farther column spans, and appends visible fragments.
-  - zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest inserts the pending span into the column list without a depth comparison, trimming or splitting covered spans and appending the new visible span to the callback output list.
-  - zRndr_SpanOcclusion_BuildSpanList reads the column occlusion list without mutating it, depth-tests copied column spans against the pending span, and emits only visible pending fragments.
-  - zRndr_SpanOcclusion_TestSample dispatches g_pfnPointOpActive with framebuffer in ECX, y in EDX, and x/color16 as stack arguments.
-  - zRndr_DrawCircleOctants16_Framebuffer emits the eight symmetric points through the active point op using g_zRndr_CircleCenterX/Y; zRndr_DrawCircleOutline16_Framebuffer stores the center/aux globals and drives the recovered midpoint decision loop.
-  - zRndr_PlotPixel16 and zRndr_DrawLine16 use g_pitchBytes >> 1 as the 16-bit row stride; zRndr_DrawLine16 keeps the recovered inclusive Bresenham count and strict error-threshold branch.
-  - zRndr_DrawLine16_Segmented shares the Bresenham stepping with zRndr_DrawLine16 and toggles pixel writes after the current pixel when the recovered segment counter reaches `(majorDelta + 1) / segmentCount`.
-  - zRndr_DrawLine16_Clipped uses an inclusive integer clip rect, Cohen-Sutherland endpoint outcodes, _ftol-style truncation for slope clipping, and the same inclusive 16-bit Bresenham body as zRndr_DrawLine16.
-  - zRndr_FillSpan16Opaque fills the active 16-bit span without advancing g_spanCurrentDst16; zRndr_FillSpan555Solid and zRndr_FillSpan565Solid apply the recovered low-alpha no-op and >=0xfc overwrite thresholds before per-channel packed-color blending.
-  - zRndr_SubmitTexturedPolyUniformAlphaOrShade writes the textured overwrite/transparent queue records, including raw offset fields for clipped tri vertices, tri UVs, clipped flag, and tex key that are still unnamed in the partial queue structs.
-  - zRndr_SubmitTexturedPolyPerVertexAlphaOrShade shares the textured queue layout, stores per-vertex alpha/shade floats at overwrite offset 0x374 when not using the unreachable derived-key flag, and queues paletted transparent records with alphaOrShadeBits forced to 0xff.
-  - zRndr_FlushTransparentQueue initializes descending sort indices, bubble-sorts by triVerts[0].z, restores saved inverse-depth and scan-convert state per record, dispatches by material/format, and resets the transparent count.
-  - zRndr_FlushOverwriteQueue temporarily switches span-list builders to no-depth/fast variants, restores saved depth/scan state per overwrite record, dispatches by command tag/material format, resets the overwrite count, and restores the normal span-list builders.
-  - zRndr_SpanOcclusion_BuildSpanListFast emits the pending span as the sole visible span and advances the span-node allocation cursor.
-  - zRndr_SpanOcclusion_TestColumnVisibility scans the current pending span against one column list and reports visible when any pending span portion survives nearer occluders.
-  - zRndr::SpanOcclusionRasterizeOccluderPoly reduces duplicate screen vertices, applies the original fixed-point half-pixel scan/span rounding, emits constant-depth occluder spans, and clips them through g_pfnBuildSpanList.
-  - Palette remap recipes use the BN layout: color0 RGB at 0x00, color1 RGB at 0x0c, color0Strength at 0x18, and color1Strength at 0x1c.
-  - zRndr_DrawFlatImmediate uses the secondary span-list builder and dispatches g_pfnFlatImmediateSpanOp with ECX=flatSpanOpEcxArg, EDX=flatSpanOpEdxArg, and stack pixel count.
-  - zRndr_RasterizePoly drops consecutive duplicate XY vertices and dispatches g_pfnSelectedSpanOp for non-occluded horizontal spans without depth-plane state.
-  - Flat queued drawing uses the same four-argument textured span callback ABI, stores the image alpha map as the active texture alpha map when present, and selects the alternate flat queued span op for paletted images.
-  - Renderer_DrawPolyTLV uses the four-argument textured span callback ABI, stores raw float alpha bits for alpha-map images, converts non-alpha-map alpha through the original 0..255 path, and selects the palette alternate poly-TLV span op when a palette is active.
-  - Textured queued alpha uses the four-argument fastcall span ABI: ECX/EDX carry starting U/V fixed-point coordinates, and stack arguments carry pixel count plus the image V shift.
-  - Textured queued non-alpha also builds a screen-space shade plane from the three shadeTriplet values and switches to SpanShade16FromPal8SwitchVShift when a palette shade recipe is active or found from the active fog color.
-  - Textured fan-triangle drawing uses the same four-argument textured span ABI, stores the constant alpha before palette selection, and calls the secondary span-list builder.
-  - zRndr_SpanOcclusion_TestPointVisibility stages a one-pixel span at the current span cursor from samplePoint x/y/z, truncates x/y through the original _ftol behavior, and delegates to zRndr_SpanOcclusion_TestColumnVisibility.
-  - zVidImagePartial texture-raster fields are named at BN offsets 0x1c widthScale, 0x20 queuedAlphaMap, 0x24 uShiftFrom20, 0x28 uMask, and 0x2c vMaskFixed20.
+- Anchor: 0x476cf0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x476cf0 pending
+  - 0x49c020 zRndr::SpanMasked16FromPal8To565
+  - 0x49c150 zRndr::SpanMasked16FromTex16To565
+  - 0x49c230 zRndr::SpanAlphaBlend565ConstAlphaFromPal8
+  - 0x49c360 zRndr::SpanAlphaBlend565FromTex16Alpha8
+  - 0x49c560 zRndr::SpanAlphaBlend555FromTex16Alpha8
+  - 0x49c760 zRndr::SpanAlphaBlend565ConstAlphaFromTex16
+  - 0x49c860 zRndr::SpanAlphaBlend555ConstAlphaFromTex16
+  - 0x49c970 zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8
+  - 0x49ca90 zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8
+  - 0x49cbb0 zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
+  - 0x49cea0 zRndr::SpanAlphaBlend555MmxFromTex16Alpha8
+  - 0x49d1a0 zRndr::SpanAlphaBlend565FromPal8Alpha8
+  - 0x49d3b0 zRndr::SpanAlphaBlend555FromPal8Alpha8
+  - 0x49d5c0 zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8
+  - 0x49d6e0 zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8
+  - 0x49d810 zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8
+  - 0x49d950 zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8
+  - 0x49da80 zRndr::SpanAlphaBlend565MmxFromPal8Alpha8
+  - 0x49ddb0 zRndr::SpanAlphaBlend555MmxFromPal8Alpha8
+  - 0x49e200 zRndr::FogBlendSpan565Scalar
+  - 0x49e300 zRndr::FogBlendSpan555Scalar
+  - 0x49e400 zRndr::FogBlendSpan565Mmx
+  - 0x49e560 zRndr::FogBlendSpan555Mmx
+  - 0x49e6c0 zRndr::SpanCopy16FromTex16SwitchVShift
+  - 0x49b7e0 zRndr::SpanMasked16FromTex16SwitchVShift
+  - 0x49ea40 zRndr::SpanMmxSetTexUvMasksAndVShift
+  - 0x49ea80 zRndr::SpanCopy16FromTex16
+  - 0x49ec20 zRndr::SpanCopy16FromTex16ExplicitVShift
+  - 0x49edc0 zRndr::SpanCopy16FromPal8SwitchVShift
+  - 0x49bbf0 zRndr::SpanMasked16FromPal8SwitchVShift
+  - 0x49f180 zRndr::SpanShade16FromPal8SwitchVShift
+  - 0x490ae0 zRndr_SpanOcclusion_InsertSpanNode_Local
+  - 0x4912a0 zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest
+  - 0x491840 zRndr_SpanOcclusion_BuildSpanList
+  - 0x491da0 zRndr_SpanOcclusion_BuildSpanListFast
+  - 0x4936d0 zRndr_RasterizePoly
+  - 0x499a20 zRndr_SubmitPolyWithSpanList
+  - 0x498f90 zRndr_SpanOcclusion_TestSample
+  - 0x498fb0 zRndr_DrawCircleOutline16_Framebuffer
+  - 0x499020 zRndr_DrawCircleOctants16_Framebuffer
+  - 0x4992b0 zRndr_PlotPixel16
+  - 0x4992d0 zRndr_DrawLine16
+  - 0x4993a0 zRndr_DrawLine16_Segmented
+  - 0x499500 zRndr_DrawLine16_Clipped
+  - 0x4997d0 zRndr_FillSpan16Opaque
+  - 0x499810 zRndr_FillSpan555Solid
+  - 0x4998a0 zRndr_FillSpan565Solid
+  - 0x499930 zRndr_SetPaletteRemapKey
+  - 0x499990 zRndr_SetPaletteRemapKeyFromRgb01
+  - 0x499a00 zRndr_SetPaletteShadeRecipeIndex
+  - 0x499ec0 zRndr_SubmitTexturedPolyPerVertexAlphaOrShade
+  - 0x46e720 zVid_PaletteRemap_BuildPaletteVariant
+- Next action:
+  - `python tools/recoil_status.py 0x476cf0`
 
 ### Group: zModel active-light sphere contribution
 
 - Anchor: 0x476a50 zDi::EvalBoundingSphereLightingFlags
-- Reason: dependency closure / active-light contribution flags and clip attribute weights
-- Source files:
-  - src/GameZRecoil/include/zClass.h
-  - src/GameZRecoil/zModel/zModel.h
-  - src/GameZRecoil/zModel/zModel.cpp
-  - src/GameZRecoil/zModel/gmod_light.c
-  - tests/native/zgame_tests.cpp
-- Plan entries:
-  - 0x476a50 zDi::EvalBoundingSphereLightingFlags - Reimplemented / Binary-safe pending
-  - 0x4894f0 zModel_Light::EvalDistanceWeight - Reimplemented / Binary-safe pending
-  - 0x487c50 zModel_Light::PointInPolygonTestRadiusXZ - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later gmod_light.c listing comparison against 0x4894f0 and 0x487c50
-- Notes:
-  - PointInPolygonTestRadiusXZ stores non-point weights in g_Clip_PolyAttr0 and point-light weights in g_Clip_PolyAttr1; software point lights prune non-point contributors when the software path flag is active.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x476a50 zDi::EvalBoundingSphereLightingFlags
+  - 0x4894f0 zModel_Light::EvalDistanceWeight
+  - 0x487c50 zModel_Light::PointInPolygonTestRadiusXZ
+- Next action:
+  - `python tools/recoil_status.py 0x476a50`
 
 ### Group: zRndr direct fog target color
 
 - Anchor: 0x49b350 zRndr::SetFogTargetColorRgb01Clamped
-- Reason: dependency closure / direct fog-target RGB state and video hardware target conversion
-- Source files:
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-  - src/GameZRecoil/zRndr/zRndr.h
-  - src/GameZRecoil/zRndr/zRndr.cpp
-  - tests/native/zrndr_tests.cpp
-- Plan entries:
-  - 0x4a7300 zVideo::SetFogTargetColorFromRgb01 - Reimplemented / Binary-safe pending
-  - 0x49b350 zRndr::SetFogTargetColorRgb01Clamped - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zVideo.cpp and zRndr.cpp listing comparison against 0x4a7300 and 0x49b350
-- Notes:
-  - SetFogTargetColorRgb01Clamped updates g_fogParamsActive only when any clamped channel differs from the current direct target by at least 0.01.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x49b350 zRndr::SetFogTargetColorRgb01Clamped
+  - 0x4a7300 zVideo::SetFogTargetColorFromRgb01
+- Next action:
+  - `python tools/recoil_status.py 0x49b350`
 
 ### Group: zClipRect near-z clipping
 
-- Anchor: 0x476cf0 zModel_RenderNodeSoftware
-- Reason: renderer dependency / near-plane and alternate XY clipping of scratch polygon vertices, UVs, and scalar attributes
-- Source files:
-  - src/GameZRecoil/include/zClipRect.h
-  - src/GameZRecoil/zGeometry/zClipRect.cpp
-  - tests/native/zrndr_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x47a200 zClipRect::ClipPolyZRange_NoUV - Reimplemented / Binary-safe pending
-  - 0x47a4e0 zClipRect::ClipPolyZRange_NoUV_WithAttribs - Reimplemented / Binary-safe pending
-  - 0x47aa80 zClipRect::ClipPolyNearZ - Reimplemented / Binary-safe pending
-  - 0x47af60 zClipRect::ClipPolyNearZ_WithAttr0 - Reimplemented / Binary-safe pending
-  - 0x47b540 zClipRect::ClipPoly_NoUV_Alt - Reimplemented / Binary-safe pending
-  - 0x47bd30 zClipRect::ClipPoly_NoUV_WithAttr012_Alt - Reimplemented / Binary-safe pending
-  - 0x47cdc0 zClipRect::ClipPoly_NoUV - Reimplemented / Binary-safe pending
-  - 0x47d3f0 zClipRect::ClipPoly - Reimplemented / Binary-safe pending
-  - 0x47dfb0 zClipRect::ClipPoly_NoUV_WithAttr0_Alt - Reimplemented / Binary-safe pending
-  - 0x47e900 zClipRect::ClipPolyZRange_WithAttr012 - Reimplemented / Binary-safe pending
-  - 0x47efd0 zClipRect::ClipPoly_WithAttr012 - Reimplemented / Binary-safe pending
-  - 0x4803b0 zClipRect::TrivialRejectPolyXY - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zClipRect.cpp listing comparison against 0x47a200, 0x47a4e0, 0x47aa80, 0x47af60, 0x47b540, 0x47bd30, 0x47cdc0, 0x47d3f0, 0x47dfb0, 0x47e900, 0x47efd0, and 0x4803b0
-- Notes:
-  - The function first rejects polygons wholly beyond zMax when flag 0x20 is set, then clips only against zMin when flag 0x10 is set.
-  - ClipPolyZRange_NoUV uses g_Clip_PolyVertsScratch only; ClipPolyZRange_NoUV_WithAttribs carries g_Clip_PolyAttr0, g_Clip_PolyAttr1, and g_Clip_PolyAttr2 without UVs.
-  - The attr0 variant preserves g_Clip_PolyAttr0 with the same edge interpolation used for vertices and UVs.
-  - ClipPoly_NoUV_Alt uses g_Clip_PolyVerts and flags 1/2/4/8 for xMin/xMaxAlt/yMin/yMaxAlt; max-plane inside tests are strict less-than.
-  - ClipPoly_NoUV shares the same source-level XY clip contract; BN assembly for 0x47cdc0 only preserves x/y in the inner loops, so exact z-slot behavior remains for binary-safe verification.
-  - ClipPoly carries g_Clip_PolyUvs through the same XY clipping planes and copies UVs back alongside g_Clip_PolyVerts.
-  - ClipPoly_NoUV_WithAttr0_Alt carries g_Clip_PolyAttr0 through the same alternate XY clipping planes.
-  - ClipPoly_NoUV_WithAttr012_Alt carries g_Clip_PolyAttr0, g_Clip_PolyAttr1, and g_Clip_PolyAttr2 through the same alternate XY clipping planes.
-  - ClipPolyZRange_WithAttr012 clips g_Clip_PolyVertsScratch against zMin when flag 0x10 is set and carries g_Clip_PolyUvs plus all three scalar attributes; flag 0x20 is a whole-polygon far reject.
-  - ClipPoly_WithAttr012 carries g_Clip_PolyUvs plus all three scalar attributes through the same XY clipping planes as ClipPoly.
-  - TrivialRejectPolyXY returns 0 when every g_Clip_PolyVerts point lies outside any flagged xMin/xMax/yMin/yMax plane; otherwise it returns 1.
-
-### Group: zOpt integer compare leaf
-
-- Anchor: 0x407220 zOpt::EvalIntCompareOp
-- Reason: source file leaf / OPT profile integer condition operator helper
-- Source files:
-  - src/GameZRecoil/zGame/zGame.h
-  - src/GameZRecoil/zGame/zGame.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x407220 zOpt::EvalIntCompareOp - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zGame.cpp listing comparison against 0x407220 for fastcall ABI and x87 tolerance comparison
-- Notes:
-  - "~=" uses strict `abs(lhs - rhs) < lhs * 0.02`; equal-to-threshold and zero-base cases return false.
+- Anchor: 0x476cf0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x476cf0 pending
+  - 0x47a200 zClipRect::ClipPolyZRange_NoUV
+  - 0x47a4e0 zClipRect::ClipPolyZRange_NoUV_WithAttribs
+  - 0x47aa80 zClipRect::ClipPolyNearZ
+  - 0x47af60 zClipRect::ClipPolyNearZ_WithAttr0
+  - 0x47b540 zClipRect::ClipPoly_NoUV_Alt
+  - 0x47bd30 zClipRect::ClipPoly_NoUV_WithAttr012_Alt
+  - 0x47cdc0 zClipRect::ClipPoly_NoUV
+  - 0x47d3f0 zClipRect::ClipPoly
+  - 0x47dfb0 zClipRect::ClipPoly_NoUV_WithAttr0_Alt
+  - 0x47e900 zClipRect::ClipPolyZRange_WithAttr012
+  - 0x47efd0 zClipRect::ClipPoly_WithAttr012
+  - 0x4803b0 zClipRect::TrivialRejectPolyXY
+- Next action:
+  - `python tools/recoil_status.py 0x476cf0`
 
 ### Group: zReader movers load dependency chain
 
 - Anchor: 0x420be0 zReader::LoadMoversFromZrd
-- Reason: dependency closure / zReader movers.zrd loader and zClass node recursive helpers
-- Source files:
-  - src/GameZRecoil/include/zClass.h
-  - src/GameZRecoil/zClass/Class.c
-  - src/GameZRecoil/zReader/zReader.h
-  - src/GameZRecoil/zReader/zreader_load.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/zreader_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x421da0 zClass_Node::PropagateExtraFlagsRecursive - Reimplemented / Binary-safe pending
-  - 0x437e60 zClass_Node::SetContextRecursive - Reimplemented / Binary-safe pending
-  - 0x420be0 zReader::LoadMoversFromZrd - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - 0x421da0 zClass_Node::PropagateExtraFlagsRecursive - required by LoadMoversFromZrd
-  - 0x437e60 zClass_Node::SetContextRecursive - required by LoadMoversFromZrd
-- Verification target:
-  - ninja-x86-debug CTest; later Class.c and zreader_load.cpp listing comparison against 0x421da0, 0x437e60, and 0x420be0
-- Notes:
-  - LoadMoversFromZrd walks all mover name entries except the final reserved/sentinel slot.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x420be0 zReader::LoadMoversFromZrd
+  - 0x421da0 zClass_Node::PropagateExtraFlagsRecursive
+  - 0x437e60 zClass_Node::SetContextRecursive
+- Next action:
+  - `python tools/recoil_status.py 0x420be0`
 
 ### Group: zReader path resolution leaves
 
 - Anchor: 0x421e20 zReader::BuildResolvedParentDir
-- Reason: dependency closure / path resolution helper and parent-directory builder
-- Source files:
-  - src/GameZRecoil/zReader/zReader.h
-  - src/GameZRecoil/zReader/zreader_load.cpp
-  - tests/native/zreader_tests.cpp
-- Plan entries:
-  - 0x48cd40 zReader::TryResolvePath - Reimplemented / Binary-safe pending
-  - 0x421e20 zReader::BuildResolvedParentDir - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - 0x48cd40 zReader::TryResolvePath - direct callee of BuildResolvedParentDir
-- Verification target:
-  - ninja-x86-debug CTest; later zreader_load.cpp listing comparison against 0x48cd40 and 0x421e20
-- Notes:
-  - BuildResolvedParentDir keeps the trailing separator returned by `_splitpath` in the directory segment.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x421e20 zReader::BuildResolvedParentDir
+  - 0x48cd40 zReader::TryResolvePath
+- Next action:
+  - `python tools/recoil_status.py 0x421e20`
 
 ### Group: zModel material pool accessor
 
 - Anchor: 0x4805e0 zModel_Matl::GetPoolEntry
-- Reason: source file leaf / material pool slot stride helper
-- Source files:
-  - src/GameZRecoil/zModel/zModel.h
-  - src/Battlesport/zModel/zModel_Display.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x4805e0 zModel_Matl::GetPoolEntry - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zModel_Display.cpp listing comparison against 0x4805e0
-- Notes:
-  - Negative indices return null; nonnegative indices use the recovered 0x2c material slot stride.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4805e0 zModel_Matl::GetPoolEntry
+- Next action:
+  - `python tools/recoil_status.py 0x4805e0`
 
 ### Group: zImage texture path leaves
 
 - Anchor: 0x46e380 zImage::TexDirSetBaseNameFromPath
-- Reason: dependency closure / texture-path basename and extension mutators
-- Source files:
-  - src/GameZRecoil/include/zImage.h
-  - src/GameZRecoil/zImage/zimg_texture.cpp
-  - tests/native/zimage_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x46e2c0 zImage::SetPathExtension - Reimplemented / Binary-safe pending
-  - 0x46e380 zImage::TexDirSetBaseNameFromPath - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - 0x46e2c0 zImage::SetPathExtension - direct callee of TexDirSetBaseNameFromPath
-- Verification target:
-  - ninja-x86-debug CTest; later zimg_texture.cpp listing comparison against 0x46e2c0 and 0x46e380
-- Notes:
-  - TexDirSetBaseNameFromPath copies from the last slash character itself, then strips the extension.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x46e380 zImage::TexDirSetBaseNameFromPath
+  - 0x46e2c0 zImage::SetPathExtension
+- Next action:
+  - `python tools/recoil_status.py 0x46e380`
 
 ### Group: zDi variant tag leaf
 
 - Anchor: 0x476340 zDi::SetVariantTagIfUnset
-- Reason: source file leaf / zDi entry variant tag initialization
-- Source files:
-  - src/GameZRecoil/include/zDi.h
-  - src/GameZRecoil/zModel/gmod_matl.c
-  - src/native/CMakeLists.txt
-  - tests/native/zgame_tests.cpp
-- Plan entries:
-  - 0x476340 zDi::SetVariantTagIfUnset - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later gmod_matl.c listing comparison against 0x476340
-- Notes:
-  - The helper writes the tag byte only when the per-entry initialized byte at offset 0x18 is zero.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x476340 zDi::SetVariantTagIfUnset
+- Next action:
+  - `python tools/recoil_status.py 0x476340`
 
 ### Group: player HUD counter leaf
 
 - Anchor: 0x42a9f0 Player::AddScaledHudCounterValue
-- Reason: dependency closure / shared player HUD counter and HudSensorTracker layout
-- Source files:
-  - src/Battlesport/player.h
-  - src/Battlesport/player.cpp
-  - src/Battlesport/HudSensorTracker.h
-  - src/native/CMakeLists.txt
-  - tests/native/zgame_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x42a9f0 Player::AddScaledHudCounterValue - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - _ftol provider ABI still needs binary-safe verification for exact x87 conversion behavior
-- Verification target:
-  - ninja-x86-debug CTest; later player.cpp listing comparison against 0x42a9f0
-- Notes:
-  - The scale is damage-feedback hit count divided by HudSensorTracker primary-gun dispatch count when that count is positive; otherwise the scale is 1.0.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x42a9f0 Player::AddScaledHudCounterValue
+- Next action:
+  - `python tools/recoil_status.py 0x42a9f0`
 
 ### Group: Player mission runtime shutdown
 
 - Anchor: 0x41fb80 Player::ShutdownMissionRuntime
-- Reason: dependency closure / shared player save-state, AI-net, sensor-track, and mission runtime list globals
-- Source files:
-  - src/Battlesport/ainet.h
-  - src/Battlesport/ainet.cpp
-  - src/Battlesport/player.h
-  - src/Battlesport/player.cpp
-  - src/Battlesport/GameNet.h
-  - src/GameZRecoil/zUtil/zSaveGame.h
-  - src/GameZRecoil/zUtil/zSaveGame.cpp
-  - src/native/CMakeLists.txt
-  - tests/native/player_tests.cpp
-  - tests/native/CMakeLists.txt
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x4037c0 AINetNode::Free - Reimplemented; binary-safe pending
-  - 0x403800 AINet::Free - Reimplemented; binary-safe pending
-  - 0x403830 Player::AiDiscardNegativeBranchPathNodes - Reimplemented; binary-safe pending
-  - 0x403870 AINet::FreeAll - Reimplemented; binary-safe pending
-  - 0x41fb80 Player::ShutdownMissionRuntime - Reimplemented; binary-safe pending
-  - 0x41fd20 Player::DestroySaveGameState - Reimplemented; binary-safe pending
-  - 0x438430 zUtil_SaveGameState::FreeOwnedResources - Reimplemented; binary-safe pending
-  - 0x438b60 Player::FreeAltWeaponTrailRuntimeStates - Reimplemented; binary-safe pending
-- Blocking dependencies:
-  - Listing comparison is still needed for binary-safe marking; 0x403830 remains reconstruction-limited in Binary Ninja due the neighbor-slot union display.
-- Verification target:
-  - ninja-x86-release `recoil_native_smoke`; guard CTests; later player.cpp, ainet.cpp, and zSaveGame.cpp listing comparison for the addresses above
-- Notes:
-  - `g_GameStateOrMapTable` is provided by zInput; player shutdown clears the existing symbol rather than defining a duplicate global.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x41fb80 Player::ShutdownMissionRuntime
+  - 0x4037c0 AINetNode::Free
+  - 0x403800 AINet::Free
+  - 0x403830 Player::AiDiscardNegativeBranchPathNodes
+  - 0x403870 AINet::FreeAll
+  - 0x41fd20 Player::DestroySaveGameState
+  - 0x438430 zUtil_SaveGameState::FreeOwnedResources
+  - 0x438b60 Player::FreeAltWeaponTrailRuntimeStates
+- Next action:
+  - `python tools/recoil_status.py 0x41fb80`
 
 ### Group: save-game state list leaves
 
 - Anchor: 0x4383e0 zUtil_SaveGameStateList_Init
-- Reason: dependency closure / save-game list layout and allocation helpers
-- Source files:
-  - src/GameZRecoil/zUtil/zSaveGame.h
-  - src/GameZRecoil/zUtil/zSaveGame.cpp
-  - src/native/CMakeLists.txt
-  - tests/native/zgame_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x4383e0 zUtil_SaveGameStateList_Init - Reimplemented / Binary-safe pending
-  - 0x4384e0 zUtil_SaveGameStateList_AllocAppend - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - 0x438430 zUtil_SaveGameState::FreeOwnedResources - still depends on Player::AiDiscardNegativeBranchPathNodes and modal-state cleanup details
-- Verification target:
-  - ninja-x86-debug CTest; later zSaveGame.cpp listing comparison against 0x4383e0 and 0x4384e0
-- Notes:
-  - Init allocates and zeroes a 0x10c4-byte PlayerState storage block at offset 0x04.
-  - AllocAppend allocates a zeroed 0xc4-byte save-state node and links it through first/head/tail/count fields at offsets 0x08/0x14/0x18/0x1c.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4383e0 zUtil_SaveGameStateList_Init
+  - 0x4384e0 zUtil_SaveGameStateList_AllocAppend
+  - 0x438430 zUtil_SaveGameState::FreeOwnedResources
+- Next action:
+  - `python tools/recoil_status.py 0x4383e0`
 
 ### Group: zNetwork dispatch handler list
 
 - Anchor: 0x48bfa0 zNetwork_InitMessageHandlers
-- Reason: dependency closure / global dispatch-handler sentinel lifecycle
-- Source files:
-  - src/GameZRecoil/zNetwork/zNetwork.h
-  - src/GameZRecoil/zNetwork/znet_dplay.cpp
-  - tests/native/znetwork_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x48bfa0 zNetwork_InitMessageHandlers - Reimplemented / Binary-safe pending
-  - 0x48bfb0 zNetwork_CreateEmptyDispatchHandlerList - Reimplemented / Binary-safe pending
-  - 0x48bfe0 zNetwork_RegisterDispatchHandlerListShutdown - Reimplemented / Binary-safe pending
-  - 0x48bff0 zNetwork_DestroyDispatchHandlerList - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later znet_dplay listing comparison and atexit/provider ABI review
-- Notes:
-  - Create allocates a 0x0c-byte sentinel with next/prev self-links and resets the list count.
-  - Destroy deletes handler nodes and the sentinel, then clears sentinel/count; rebuilt code also tolerates a null sentinel so test cleanup and registered atexit cleanup cannot double-delete.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x48bfa0 zNetwork_InitMessageHandlers
+  - 0x48bfb0 zNetwork_CreateEmptyDispatchHandlerList
+  - 0x48bfe0 zNetwork_RegisterDispatchHandlerListShutdown
+  - 0x48bff0 zNetwork_DestroyDispatchHandlerList
+- Next action:
+  - `python tools/recoil_status.py 0x48bfa0`
 
 ### Group: RecoilApp load-ZBD startup
 
 - Anchor: 0x42e490 RecoilApp::LoadZbdAndStartEngine
-- Reason: dependency closure / app startup ZBD registration wrapper
-- Source files:
-  - src/Battlesport/RecoilApp.h
-  - src/Battlesport/RecoilApp.cpp
-  - src/Battlesport/HudSensorTracker.h
-  - src/Battlesport/HudSensorTracker.cpp
-  - src/Battlesport/CZRecoilFrame.cpp
-  - tests/native/zeffect_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x42e490 RecoilApp::LoadZbdAndStartEngine - Reimplemented / Binary-safe pending
-  - 0x42e4d0 RecoilApp::LoadZbdAndSetupSensorTracker - Reimplemented / Binary-safe pending
-  - 0x417430 HudSensorTracker::WriteMissionDataSection - Reimplemented / Binary-safe verified
-  - 0x417640 HudSensorTracker::RegisterMissionSectionHandlers - Reimplemented / Binary-safe pending
-  - 0x417680 HudSensorTracker::ZarMission_SaveCallback - Reimplemented / Binary-safe verified
-  - 0x4176d0 HudSensorTracker::ZarMissionLate_RestoreCallback - Reimplemented / Binary-safe pending
-  - 0x417770 HudSensorTracker::InitMissionIdAndFlags - Reimplemented / Binary-safe pending
-  - 0x4177d0 HudSensorTracker::SetZbdPath - Reimplemented / Binary-safe pending
-  - 0x4176b0 HudSensorTracker::ZarMissionLate_SaveCallback - Reimplemented / Binary-safe verified
-  - 0x417800 HudSensorTracker::GetMissionId - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - 0x417690 HudSensorTracker::ZarMission_RestoreCallback - callback body still pending outside registration wrapper
-- Verification target:
-  - ninja-x86-debug CTest; later RecoilApp/map.cpp listing comparison
-- Notes:
-  - RegisterMissionSectionHandlers stores named callback symbols for Mission and MissionLate; full callback behavior remains a separate dependency.
-  - ZarMissionLate_RestoreCallback now replays StartAnims.zrd group LOAD_GAME_START through the tracker user-data pointer.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x417430 HudSensorTracker::WriteMissionDataSection
+  - 0x417680 HudSensorTracker::ZarMission_SaveCallback
+  - 0x4176d0 HudSensorTracker::ZarMissionLate_RestoreCallback
+  - 0x4176b0 HudSensorTracker::ZarMissionLate_SaveCallback
+  - 0x417800 HudSensorTracker::GetMissionId
+  - 0x417690 pending
+- Next action:
+  - `python tools/recoil_status.py 0x417430`
 
 ### Group: ZAR read-side mount helpers
 
 - Anchor: 0x48d210 zArchive::MountIndexArchive
-- Reason: dependency closure / zIndexArchive read-side class cluster
-- Source files:
-  - src/GameZRecoil/zReader/zReader.h
-  - src/GameZRecoil/zReader/zreader_load.cpp
-  - tests/native/zreader_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x48ca30 zArchiveList::PushBackPayload - Reimplemented / Binary-safe pending
-  - 0x48d210 zArchive::MountIndexArchive - Reimplemented / Binary-safe limited
-  - 0x4a6190 zIndexArchive::Reset - Reimplemented / Binary-safe verified
-  - 0x4a61b0 zIndexArchive::Destroy - Reimplemented / Binary-safe pending
-  - 0x4a61d0 zIndexArchive::Init - Reimplemented / Binary-safe pending
-  - 0x4a6270 zIndexArchive::OpenCreateWrite - Reimplemented / Binary-safe pending
-  - 0x4a62b0 zIndexArchive::CloseAndFreeRecords - Reimplemented / Binary-safe pending
-  - 0x4a6330 zIndexArchive::FreeRecordsAndReset - Reimplemented / Binary-safe pending
-  - 0x4a6360 zIndexArchive::FlushIndexToTail - Reimplemented / Binary-safe pending
-  - 0x4a63f0 zIndexArchive::LoadIndexFromTail - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later zutl_zar listing comparison
-- Notes:
-  - MountIndexArchive expects g_zArchive_MountedList to have been created by zUtil::ZRDR_Init before mounting.
-  - 0x48d210 now preserves the original null-allocation call shape by still calling `zIndexArchive::Init` with the reset payload value; `build/verification/48d210_diff.txt` is limited by the missing VC5 EH registration frame and equivalent success/failure block ordering.
-  - 0x4a6190 `zIndexArchive::Reset` is verified against `build/verification/4a6190_diff.txt`; field offsets and return value match BN, with only zeroing idiom differences.
-  - 0x4a6270 creates/truncates the target archive for GENERIC_READ|GENERIC_WRITE and stores only the handle; `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4a6270 zIndexArchive::OpenCreateWrite
+- Next action:
+  - `python tools/recoil_status.py 0x4a6270`
 
 ### Group: ZBD manager load helpers
 
 - Anchor: 0x4c0030 zUtil::ZBD_LoadEntriesGlobal
-- Reason: dependency closure / ZBD/ZAR manager load wrappers and callback dispatch
-- Source files:
-  - src/GameZRecoil/zUtil/zZbd.h
-  - src/GameZRecoil/zUtil/zZbd.cpp
-  - src/GameZRecoil/zReader/zReader.h
-  - src/GameZRecoil/zReader/zreader_load.cpp
-- Plan entries:
-  - 0x4c0030 zUtil::ZBD_LoadEntriesGlobal - Reimplemented / Binary-safe pending
-  - 0x4c0050 zUtil::ZAR_LoadFileGlobal - Reimplemented / Binary-safe pending
-  - 0x4c0070 zUtil::ZAR_RequestStopGlobal - Reimplemented / Binary-safe pending
-  - 0x4c0260 zZbdSectionHandler::CompareSortOrderLessThan - Reimplemented / Binary-safe pending
-  - 0x4c0370 zZbdManager::LoadEntries - Reimplemented / Binary-safe pending
-  - 0x4c0400 zZbdManager::LoadZarFile - Reimplemented / Binary-safe pending
-  - 0x4c0620 zZbdManager::RequestStop - Reimplemented / Binary-safe pending
-  - 0x4c06a0 zZbdSectionHandler::InvokePreLoad - Reimplemented / Binary-safe pending
-  - 0x4c06c0 zZbdSectionHandler::InvokeDataReady - Reimplemented / Binary-safe pending
-  - 0x4c07d0 zZbdManager::SortSectionHandlers - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-release CTest; later zZbd.cpp and zutl_zar listing comparison
-- Notes:
-  - LoadEntries opens a create-write zIndexArchive, stable-sorts section handlers by sortOrder, invokes PreLoad callbacks with the recovered `{manager, sectionHandler}` context, and closes the archive on success and callback veto paths.
-  - LoadZarFile opens the indexed archive, splits record names as `section/token`, dispatches matched DataReady callbacks through the recovered register/stack ABI, grows the reusable temp buffer, and honors the cooperative stop flag.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4c0030 zUtil::ZBD_LoadEntriesGlobal
+  - 0x4c0050 zUtil::ZAR_LoadFileGlobal
+  - 0x4c0070 zUtil::ZAR_RequestStopGlobal
+  - 0x4c0260 zZbdSectionHandler::CompareSortOrderLessThan
+  - 0x4c0370 zZbdManager::LoadEntries
+  - 0x4c0400 zZbdManager::LoadZarFile
+  - 0x4c0620 zZbdManager::RequestStop
+  - 0x4c06a0 zZbdSectionHandler::InvokePreLoad
+  - 0x4c06c0 zZbdSectionHandler::InvokeDataReady
+  - 0x4c07d0 zZbdManager::SortSectionHandlers
+- Next action:
+  - `python tools/recoil_status.py 0x4c0030`
 
 ### Group: RecoilApp InitInstance leaves
 
 - Anchor: 0x42e520 RecoilApp::InitInstance
-- Reason: dependency closure / app startup leaf helpers
-- Source files:
-  - src/Battlesport/RecoilApp.h
-  - src/Battlesport/RecoilApp.cpp
-  - src/GameZRecoil/zLoc/zLoc.h
-  - src/GameZRecoil/zLoc/zLoc.cpp
-  - src/GameZRecoil/zGame/zGame.h
-  - src/GameZRecoil/zGame/zGame.cpp
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_init.cpp
-  - src/GameZRecoil/zSys/zSys.h
-  - src/GameZRecoil/zSys/zSys.cpp
-  - src/GameZRecoil/zUtil/zZbd.h
-  - src/GameZRecoil/zUtil/zZbd.cpp
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-  - tests/native/recoil_app_message_map.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/zsys_tests.cpp
-  - tests/native/zvideo_tests.cpp
-  - tests/native/zeffect_tests.cpp
-  - tests/native/zloc_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x42e990 RecoilApp::ActivateExistingInstance - Reimplemented / Binary-safe pending
-  - 0x4429d0 RecoilApp::InitMainWindow - Reimplemented / Binary-safe verified
-  - 0x4a5ad0 zLoc::LoadMessagesDll - Reimplemented / Binary-safe verified
-  - 0x4a5b00 zLoc::UnloadMessagesDll - Reimplemented / Binary-safe verified
-  - 0x4c0100 zUtil::ZBD_Init - Reimplemented / Binary-safe limited
-  - 0x4b3090 zGame_OptionsRuntimeConfig::CopyDefault - Reimplemented / Binary-safe verified
-  - 0x4b30b0 zGame_OptionsRuntimeConfig::InitFromSystem - Reimplemented / Binary-safe pending
-  - 0x4b3160 zGame_OptionsRuntimeConfig::LoadCpuVendorString - Reimplemented / Binary-safe verified
-  - 0x4b2e80 zGame::Options_GetOrCreateOption - Reimplemented / Binary-safe verified
-  - 0x4b3260 zGame::Options_InitRegistryContext - Reimplemented / Binary-safe pending
-  - 0x4b31b0 zSys::GetCpuClass - Reimplemented / Binary-safe pending
-  - 0x4b31c0 zSys::GetCpuMhz - Reimplemented / Binary-safe pending
-  - 0x4b33f0 zSys::HasCpuidSupport - Reimplemented / Binary-safe verified
-  - 0x4b3420 zSys::DetectCpuClassAndFeatures - Reimplemented / Binary-safe pending
-  - 0x4b3480 zSys::ReadCpuidFeatureFlags - Reimplemented / Binary-safe verified
-  - 0x4b3640 zSys::ReadCpuidVendorAndFamily - Reimplemented / Binary-safe verified
-  - 0x4b36f0 zSys::ResolveCpuBenchmarkPacket - Reimplemented / Binary-safe pending
-  - 0x4b37f0 zSys::MeasureMhzViaBsfLoop_Qpc - Reimplemented / Binary-safe pending
-  - 0x4b38e0 zSys::MeasureCpuMhz_RdtscQpc - Reimplemented / Binary-safe pending
-  - 0x4b3b50 zSys::MeasureCpuMhz_CmosRtc - Reimplemented / Binary-safe pending
-  - 0x4b31f0 zSnd::HasMmxMixerSupport - Reimplemented / Binary-safe verified
-  - 0x4b3210 zSys::ReturnZeroStub - Reimplemented / Binary-safe verified
-  - 0x4b3220 zVid::HasAcceptedHardwareRenderer - Reimplemented / Binary-safe verified
-  - 0x4b3230 zSys::GetTotalPhysKb - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug CTest; later RecoilApp.cpp listing comparison
-- Notes:
-  - ActivateExistingInstance returns 1 when no prior RecoilClass window is present; otherwise it foregrounds/restores the existing window and returns 0.
-  - 0x4429d0 now follows the original MFC startup shape: `CWinApp::Enable3dControls`, vtable slot 0xb8 `CreateMainWnd`, `GetMainWnd` back-pointer write, MFC `CWnd::ShowWindow`, and Win32 `UpdateWindow`; `build/verification/4429d0_diff.txt` is limited to register allocation, indirect-call spelling, and the local public `Enable3dControls` declaration being linker-aliased to the protected MFC42 import verified in `support/sdk/MFC42/Lib/x86/MFC42.LIB`.
-  - 0x4a5ad0 `zLoc::LoadMessagesDll` is verified against `build/verification/4a5ad0_diff.txt`; differences are limited to return-zero lowering and omitted saved `esi`, with `LoadLibraryA`/`GetProcAddress` imports and global stores matching BN.
-  - 0x4a5b60 is now the recovered variadic cdecl helper rather than fastcall; 0x4a5bf0 calls it with the original stack-cleanup shape, so `InitInstance` message prompt call sites now match the BN ABI.
-  - 0x4a5b00 `zLoc::UnloadMessagesDll` is verified against `build/verification/4a5b00_diff.txt`; differences are symbol names and branch labels only.
-  - 0x4c0100 `zUtil::ZBD_Init` now uses ordinary `operator new(uint)` and direct sentinel initialization; `build/verification/4c0100_diff.txt` is limited by the modern MSVC omission of the original VC5 C++ EH registration frame, with allocation sizes, field offsets, global store, `zIndexArchive::Reset`, and return contract matching BN.
-  - 0x4086b0 and 0x408720 are verified against `build/verification/4086b0_diff.txt` and `build/verification/408720_diff.txt`; `SetVideoModeIndex` now ignores invalid modes like BN and differs only by equivalent register/constant spelling inside valid cases.
-  - 0x4a59e0 `zSys::FindFileOnDriveType` is verified against `build/verification/4a59e0_diff.txt`; drive filtering, path formatting, `_stat` provider, static buffer return, and fastcall cleanup match, with loop lowering differences only.
-  - 0x42e990 now uses the recovered MFC `CWnd::FromHandle` and `CWnd::ShowWindow` call shape; `build/verification/42e990_diff.txt` is limited to symbol/label naming and the compiler's zero-plus-one return idiom.
-  - 0x42e9f0 now filters `WM_SYSKEYDOWN..WM_SYSKEYUP` only when video acceleration is enabled; `build/verification/42e9f0_diff.txt` shows equivalent modern unsigned-range lowering.
-  - 0x42e520 now has native source in `src/Battlesport/RecoilApp.cpp`; ninja-x86-release CTest passes, and `build/verification/42e520_diff.txt` captures the remaining large MSVC/BN listing differences.
-  - 0x407700 now has startup option-loader source in `src/GameZRecoil/zGame/zGame.cpp`; binary verification stays open because the listing is still dominated by modern MSVC lowering and pending subsystem setter side-effect verification.
-  - 0x4b2960 now has native registry-overlay source in `src/GameZRecoil/zGame/zGame.cpp`; `build/verification/4b2960_diff.txt` shows tolerated modern MSVC path-building/register-allocation differences after `RECOIL_NO_GS`.
-  - 0x407190, 0x4071f0, 0x407470, and 0x407680 now have native profile-selection source; their verification diffs are limited by BN strcmp flag-lift limitations, modern compare lowering, and local named-value table placement.
-  - 0x408a10 and 0x408a20 now cover the WOL password flag option row used by `Options_LoadGameOptions`; listing diffs are symbol-address naming only.
-  - 0x42e930 shutdown source now matches the original call order; `build/verification/42e930_diff.txt` differs only by symbol naming and labels after the `AFX_MODULE_STATE` instance-handle offset fix.
-  - 0x407e00, 0x4b32c0, 0x4c0180, and 0x4a5980 are verified against release listings in `build/verification`; 0x4a5980 has an unreachable modern-MSVC epilogue after the non-returning `ExitProcess` import.
-  - 0x4b2bf0 and 0x4c01b0 remain limited binary-safe verifications: 0x4b2bf0 is dominated by modern string/path construction lowering, and 0x4c01b0 omits the original VC5 C++ EH frame while preserving teardown ownership and list unlinking.
-  - 0x4b30b0 now reads `DSCAPS::dwTotalHwMemBytes` at the original 0x44 caps offset; `build/ninja-x86-release/4b30b0_diff.txt` is down to symbol names, equivalent flag-bit lowering, and pending CPU benchmark dependency verification.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x42e520 RecoilApp::InitInstance
+  - 0x4a5b00 zLoc::UnloadMessagesDll
+  - 0x4b30b0 zGame_OptionsRuntimeConfig::InitFromSystem
+  - 0x4b3260 zGame::Options_InitRegistryContext
+  - 0x4b31c0 zSys::GetCpuMhz
+  - 0x4b36f0 CpuBenchmarkResolver::ResolveCpuBenchmarkPacket
+  - 0x4b37f0 CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc
+  - 0x4b38e0 CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc
+  - 0x4b3b50 CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc
+- Next action:
+  - `python tools/recoil_status.py 0x42e520`
 
 ### Group: zSound stream request playback leaves
 
 - Anchor: 0x4b5900 HudUiZrdWidget::OnActivate
-- Reason: dependency closure / sound playback leaf dependency
-- Source files:
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_group.cpp
-  - src/GameZRecoil/zSound/zsnd_play.cpp
-  - tests/native/zsnd_cd_tests.cpp
-- Plan entries:
-  - 0x49f6d0 zSndSample::AcquirePlayHandleDispatch - Reimplemented / Binary-safe pending
-  - 0x49f6f0 zSndSample::AcquireA3dVoice - Reimplemented / Binary-safe pending
-  - 0x49f830 zSndSample::AcquireVoice - Reimplemented / Binary-safe pending
-  - 0x49f960 zSndSample::PlayA3DSimple - Reimplemented / Binary-safe pending
-  - 0x49fa00 zSndSample_PlaySimple - Reimplemented / Binary-safe verified
-  - 0x49fa10 zSndSample::PlayOnActiveBackend - Reimplemented / Binary-safe pending
-  - 0x49fa60 zSndSample::PlayOnA3D - Reimplemented / Binary-safe pending
-  - 0x49fbb0 zSndSample::PlayOnDirectSound - Reimplemented / Binary-safe pending
-  - 0x49fcf0 zSndSample::PlayA3D - Reimplemented / Binary-safe pending
-  - 0x49fd50 zSndSample::PlayDirectSound - Reimplemented / Binary-safe pending
-  - 0x4a07a0 zSnd::IsMuted - Reimplemented / Binary-safe verified
-  - 0x4a4cb0 zSndStreamRequest::StateBeginGroup - Reimplemented / Binary-safe pending
-  - 0x4a4d10 zSndGroup::SelectWeightedEntry - Reimplemented / Binary-safe pending
-  - 0x4a51e0 zSndStreamRequest_MatchRequestPredicate - Reimplemented / Binary-safe pending
-  - 0x4a51f0 zSndStreamRequest_StopIfActive - Reimplemented / Binary-safe pending
-  - 0x4a5220 zSndStreamRequest_MatchGroupPredicate - Reimplemented / Binary-safe pending
-  - 0x4a5230 zSndGroup::QueueStreamRequestSimple - Reimplemented / Binary-safe pending
-  - 0x4a5250 zSndGroup::QueueStreamRequest - Reimplemented / Binary-safe pending
-  - 0x4a5350 zSndStreamMgr_EnsureInit - Reimplemented / Binary-safe pending
-  - 0x4a53d0 zSndGroup::QueueStreamRequestWithWorldPos - Reimplemented / Binary-safe pending
-  - 0x49f9a0 zSnd::GainScaleToDirectSoundAttenuation - Reimplemented / Binary-safe pending
-  - 0x49fda0 zSndPlayHandle::StopIfActive - Reimplemented / Binary-safe pending
-  - 0x4a2950 zSnd_UpdateListenerState - Reimplemented / Binary-safe pending
-  - 0x4a2a30 zSndPlayHandle::Update3DDispatch - Reimplemented / Binary-safe pending
-  - 0x4a2a70 zSndPlayHandle::Update3D_A3D - Reimplemented / Binary-safe pending
-  - 0x4a2b40 zSndPlayHandle::Update3D - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug/release CTest; later zsnd_grp listing comparison
-- Notes:
-  - Stream-request stop marks the request state word at zSndPlayHandle offset 0x34 when the request pointer is present in g_zSndStream_ActiveList.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x49fd50 zSndSample::PlayDirectSound
+  - 0x4a5220 zSndStreamRequest_MatchGroupPredicate
+- Next action:
+  - `python tools/recoil_status.py 0x49fd50`
 
 ### Group: ZAR write-side section records
 
 - Anchor: 0x40fb90 HudUiTimerPanel::ZarWriteTimerDataCallback
-- Reason: dependency closure / zUtil archive write helper chain
-- Source files:
-  - src/GameZRecoil/zReader/zReader.h
-  - src/GameZRecoil/zReader/zreader_load.cpp
-  - src/GameZRecoil/zUtil/zZbd.h
-  - src/GameZRecoil/zUtil/zZbd.cpp
-  - src/GameZRecoil/zHud/zhud_ui.h
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-  - tests/native/zeffect_tests.cpp
-  - tests/native/zhud_ui_tests.cpp
-- Plan entries:
-  - 0x4a62f0 zIndexArchive::EnsureCapacity - Reimplemented / Binary-safe pending
-  - 0x4a64d0 zIndexArchive_AddFileRecord - Reimplemented / Binary-safe pending
-  - 0x4c0630 zZbdManager_WriteSectionRecord - Reimplemented / Binary-safe pending
-  - 0x4c0010 zUtil_ZAR::WriteSectionBlob - Reimplemented / Binary-safe pending
-  - 0x40fb90 HudUiTimerPanel::ZarWriteTimerDataCallback - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug/release CTest; later zutl_zar/zutl_zbd listing comparison
-- Notes:
-  - zIndexArchive append records use the recovered 0x94-byte record layout with the visible name field at offset 0x08 and optional source metadata after offset 0x48.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x40fb90 HudUiTimerPanel::ZarWriteTimerDataCallback
+  - 0x4a64d0 zIndexArchive::AddFileRecord
+  - 0x4c0630 zZbdManager::WriteSectionRecord
+  - 0x4c0010 zUtil_ZAR::WriteSectionBlob
+- Next action:
+  - `python tools/recoil_status.py 0x40fb90`
 
 ### Group: HUD base element and container leaves
 
 - Anchor: 0x40f4c0 HudUiMgr::InitHudLayouts
-- Reason: dependency closure / shared HUD base layouts and local table symbols
-- Source files:
-  - src/Battlesport/GameNet.h
-  - src/Battlesport/GameNet.cpp
-  - src/Battlesport/HudSensorTracker.h
-  - src/GameZRecoil/zHud/zhud_ui.h
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-  - src/GameZRecoil/zGame/zGame.h
-  - src/GameZRecoil/zGame/zGame.cpp
-  - src/GameZRecoil/zInput/zInput.h
-  - src/GameZRecoil/zInput/zInput.cpp
-  - src/GameZRecoil/include/OptCatalog.h
-  - src/GameZRecoil/include/zClass.h
-  - src/GameZRecoil/include/zClipAlt.h
-  - src/GameZRecoil/include/zDi.h
-  - src/GameZRecoil/zGeometry/zClipAlt.cpp
-  - tests/native/zhud_ui_tests.cpp
-  - tests/native/zinput_tests.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/gamenet_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x40bdc0 zUtil_StdPtrVector_Clear - Reimplemented / Binary-safe verified
-  - 0x40c1d0 HudCmdBindButtonBase::ClearBindingEntries - Reimplemented / Binary-safe verified
-  - 0x40d9d0 HudUiContainer::SetEnabled - Reimplemented / Binary-safe verified
-  - 0x4bc7b0 HudUiContainer::DestructorCore - Reimplemented / Binary-safe pending
-  - 0x40dac0 HudUiCounter::Constructor - Reimplemented / Binary-safe verified
-  - 0x40f0f0 HudUiCounter::ReleaseStateImages - Reimplemented / Binary-safe verified
-  - 0x40dbf0 HudUiCounterTextPanel::Constructor - Reimplemented / Binary-safe pending
-  - 0x40da00 HudUiMessage::Constructor - Reimplemented / Binary-safe pending
-  - 0x40d590 HudUiMessage::Destructor - Reimplemented / Binary-safe pending
-  - 0x40daa0 HudUiMessage::ScalarDeletingDestructor - Reimplemented / Binary-safe pending
-  - 0x40db00 HudUiMgr::DestructMessagesArray - Provided by compiler-generated glue / Binary-safe pending
-  - 0x40dcd0 HudUiTriplet::Constructor - Reimplemented / Binary-safe pending
-  - 0x40e070 HudUiTriplet::DestructorCore - Reimplemented / Binary-safe pending
-  - 0x40e140 HudUiTriplet::RebuildDisplay - Reimplemented / Binary-safe pending
-  - 0x40d220 HudUiListMenuEntry::CompareSortKey - Reimplemented / Binary-safe pending
-  - 0x414710 HudUiListMenuEntry::SortRange - Reimplemented / Binary-safe pending
-  - 0x414930 HudUiListMenuEntry::InsertPivotIntoSortedPrefix - Reimplemented / Binary-safe pending
-  - 0x414980 HudUiListMenuEntry::InsertionSortRange - Reimplemented / Binary-safe pending
-  - 0x40e590 HudUiTriplet::AddEntry - Reimplemented / Binary-safe pending
-  - 0x40e800 HudUiTriplet::UpdateEntryData - Reimplemented / Binary-safe pending
-  - 0x40e880 HudUiTriplet::RemoveEntry - Reimplemented / Binary-safe pending
-  - 0x40e910 HudUiTriplet::InterpolateLayout - Reimplemented / Binary-safe pending
-  - 0x414390 GameNet::RefreshPlayerListMenu - Reimplemented / Binary-safe pending
-  - 0x4143b0 HudUi::RefreshScoreboardEntryRow - Reimplemented / Binary-safe pending
-  - 0x4143c0 HudUi::RemoveScoreboardEntryRow - Reimplemented / Binary-safe pending
-  - 0x404cd0 HudUiElement::SetPos - Reimplemented / Binary-safe verified
-  - 0x404cf0 HudUiElement::SetX - Reimplemented / Binary-safe verified
-  - 0x404d00 HudUiElement::SetY - Reimplemented / Binary-safe verified
-  - 0x404d20 HudUiElement::SetVisible - Reimplemented / Binary-safe verified
-  - 0x40e010 HudUiPanel::SetTextColorsAndMarkDirty - Reimplemented / Binary-safe verified
-  - 0x40e040 HudUiPanel::SetShadow - Reimplemented / Binary-safe verified
-  - 0x40a590 HudUiPanel::ScalarDeletingDestructor - Reimplemented / Binary-safe pending
-  - 0x40f9e0 HudUiPanel::SetTextColor - Reimplemented / Binary-safe verified
-  - 0x40fab0 HudUiPanelSimple::ConstructorDefaultThunk - Reimplemented / Binary-safe verified
-  - 0x40fac0 HudUiPanelSimple::Constructor - Reimplemented / Binary-safe pending
-  - 0x40fb70 HudUiMeter::Constructor - Reimplemented / Binary-safe pending
-  - 0x40d9e0 HudUiMeter::ConstructorEx - Reimplemented / Binary-safe pending
-  - 0x40f2d0 HudUiWidget::CtorDefaultThunk - Reimplemented / Binary-safe verified
-  - 0x40d600 HudUiTripletPanel::UnwindDestructFirstItem - Reimplemented / Binary-safe pending
-  - 0x40d610 HudUiTripletPanel::DestructorCore - Reimplemented / Binary-safe pending
-  - 0x40d760 HudUiMgr::DestructModeCounterArray - Provided by compiler-generated glue / Binary-safe pending
-  - 0x40f200 HudUiTripletPanel::Constructor - Reimplemented / Binary-safe pending
-  - 0x40f2e0 HudUiNanitePanel::InitLayout - Reimplemented / Binary-safe pending
-  - 0x40f460 HudUiTripletPanel::SetVisibleCount - Reimplemented / Binary-safe verified
-  - 0x40f3e0 HudUiTripletPanel::ShutdownItems_Stub - Reimplemented / Binary-safe pending
-  - 0x40ef60 HudUiTimerPanelFloat::ConstructorDefault - Reimplemented / Binary-safe pending
-  - 0x40fa10 HudUiStatsListElement::Update - Reimplemented / Binary-safe verified
-  - 0x40fa20 HudUiStatsListElement::ScalarDeletingDestructor - Reimplemented / Binary-safe pending
-  - 0x40fa40 HudUiStatsListElement::DestructorCore - Reimplemented / Binary-safe pending
-  - 0x4b4390 HudUiTextInput::AllocTextBuffer - Reimplemented / Binary-safe verified
-  - 0x4b42f0 HudUiTextInput::Constructor - Reimplemented / Binary-safe verified
-  - 0x4b43d0 HudUiTextInput::SetContents - Reimplemented / Binary-safe verified
-  - 0x4b4410 HudUiTextInput::GetBuffer - Reimplemented / Binary-safe verified
-  - 0x4b4420 HudUiTextInput::SetCursorPosition - Reimplemented / Binary-safe verified
-  - 0x4b4460 HudUiTextInput::DispatchKeyAction - Reimplemented / Binary-safe verified
-  - 0x4b44e0 HudUiTextInput::InsertCharAtCursor - Reimplemented / Binary-safe verified
-  - 0x4b4530 HudUiTextInput::BackspaceDeleteChar - Reimplemented / Binary-safe verified
-  - 0x4b4550 HudUiTextBuffer::DeleteCharForward - Reimplemented / Binary-safe verified
-  - 0x4b4560 HudUiTextBuffer::MoveCursorLeft - Reimplemented / Binary-safe verified
-  - 0x4b4570 HudUiTextBuffer::MoveCursorRight - Reimplemented / Binary-safe verified
-  - 0x4b4590 HudUiTextBuffer::ShiftTextRight - Reimplemented / Binary-safe verified
-  - 0x4b45e0 HudUiTextBuffer::ShiftTextLeft - Reimplemented / Binary-safe verified
-  - 0x4b4370 HudUiTextInput::DestructorCore - Reimplemented / Binary-safe verified
-  - 0x40d660 HudUiMgrObjectiveBlock::Destructor - Reimplemented / Binary-safe pending
-  - 0x40db20 HudUiSlot::Constructor - Reimplemented / Binary-safe pending
-  - 0x40db90 HudUiSlot::Draw - Reimplemented / Binary-safe pending
-  - 0x40d780 HudUiSlot::Destructor - Reimplemented / Binary-safe pending
-  - 0x40dbd0 HudUiSlot::ScalarDeletingDestructor - Reimplemented / Binary-safe pending
-  - 0x40fdd0 HudUiStringMenu::DestructorCore - Reimplemented / Binary-safe pending
-  - 0x40fe30 HudUiShieldMessageWidget::Destructor - Reimplemented / Binary-safe pending
-  - 0x40eb00 HudUiShieldMessageWidget::ApplyLayout - Reimplemented / Binary-safe pending
-  - 0x40fe90 HudUiTopMessageStack::DestructorCore - Reimplemented / Binary-safe pending
-  - 0x40fef0 HudUiChatMessageStack::DestructorCore - Reimplemented / Binary-safe pending
-  - 0x40eca0 HudUiTimerPanel::SetRunning - Reimplemented / Binary-safe verified
-  - 0x40ecc0 HudUiTimerPanel::SetElapsedSeconds - Reimplemented / Binary-safe verified
-  - 0x40ece0 HudUiTimerPanel::SetSeconds - Reimplemented / Binary-safe pending
-  - 0x40ed10 HudUiTimerPanel::GetSeconds - Reimplemented / Binary-safe verified
-  - 0x40ed20 HudUiTimerPanel::Update - Reimplemented / Binary-safe pending
-  - 0x40ed80 HudUiTimerPanel::ConstructorDefault - Reimplemented / Binary-safe pending
-  - 0x40ef00 HudUiTimerPanel::SetTimeSeconds - Reimplemented / Binary-safe pending
-  - 0x40ee60 HudUiTimerPanel::UpdateHMSFromSeconds - Reimplemented / Binary-safe pending
-  - 0x40fbb0 HudUiTimerPanel::ZarReadTimerData - Reimplemented / Binary-safe pending
-  - 0x40f070 HudUiCounter::ApplyFromLayoutNode - Reimplemented / Binary-safe pending
-  - 0x4b3d00 HudUiWidget::Constructor - Reimplemented / Binary-safe verified
-  - 0x4b3e70 HudUiWidget::SetImageBorrowedAndInvalidate - Reimplemented / Binary-safe verified
-  - 0x4b4ee0 HudUiZrdWidget::Constructor - Reimplemented / Binary-safe pending
-  - 0x4b50c0 HudUiZrdWidget::DestructorCore - Reimplemented / Binary-safe pending
-  - 0x4b52f0 HudUiZrdWidget::DeleteChildIfPresent - Reimplemented / Binary-safe pending
-  - 0x4ba4d0 HudUiPanelPtrVector::EraseRange - Reimplemented / Binary-safe verified
-  - 0x4b49e0 HudUiNumericTextInput::BaseConstructor - Reimplemented / Binary-safe pending
-  - 0x4b4a90 HudUiNumericTextInput::ScalarDeletingDestructor - Reimplemented / Binary-safe pending
-  - 0x4b4ac0 HudUiNumericTextInput::Destructor - Reimplemented / Binary-safe pending
-  - 0x4b4e40 HudUiNumericTextInput::AllocTextBuffer - Reimplemented / Binary-safe verified
-  - 0x4b4e60 HudUiNumericTextInput::Update - Reimplemented / Binary-safe pending
-  - 0x4b4ed0 HudUiNumericTextInput::GetBuffer - Reimplemented / Binary-safe verified
-  - 0x4b50a0 HudUiZrdWidget::ScalarDeletingDestructor - Reimplemented / Binary-safe pending
-  - 0x4ba510 HudUiPanelPtrVector::InsertN - Reimplemented / Binary-safe pending
-  - 0x4bc930 HudUiTransitionTextPanel::ResetFlashState - Reimplemented / Binary-safe pending
-  - 0x4bc9b0 HudUiTransitionTextPanel::SetFlashColorAndRate - Reimplemented / Binary-safe pending
-  - 0x4b6fc0 HudUiCheckToggleWidget::Constructor - Reimplemented / Binary-safe verified
-  - 0x4b7000 HudUiCheckToggleWidget::ScalarDeletingDestructor - Reimplemented / Binary-safe verified
-  - 0x4b7020 HudUiCheckToggleWidget::DestructorCore - Reimplemented / Binary-safe verified
-  - 0x4b70b0 HudUiCheckToggleWidget::GetBoundsRectOrNull - Reimplemented / Binary-safe verified
-  - 0x4b70c0 HudUiCheckToggleWidget::RefreshState - Reimplemented / Binary-safe verified
-  - 0x4b7250 HudUiCheckToggleWidget::HidePreview - Reimplemented / Binary-safe verified
-  - 0x4b72c0 HudUiCheckToggleWidget::SetChecked - Reimplemented / Binary-safe verified
-  - 0x4b7d60 HudUiCycleSelectorWidget::Constructor - Reimplemented / Binary-safe pending
-  - 0x4b7dc0 HudUiCycleSelectorWidget::ScalarDeletingDestructor - Reimplemented / Binary-safe pending
-  - 0x4b7de0 HudUiCycleSelectorWidget::DestructorCore - Reimplemented / Binary-safe pending
-  - 0x4b7e60 HudUiCycleSelectorWidget::Update - Reimplemented / Binary-safe pending
-  - 0x4b7ee0 HudUiCycleSelectorWidget::AdvanceSelectionAndActivate - Reimplemented / Binary-safe pending
-  - 0x4b7f20 HudUiCycleSelectorWidget::SetIndexClamped - Reimplemented / Binary-safe verified
-  - 0x4b7f80 HudUiCycleSelectorWidget::SetVisibleRange - Reimplemented / Binary-safe verified
-  - 0x4b7fd0 HudUiCycleSelectorWidget::AddTextEntry - Reimplemented / Binary-safe verified
-  - 0x4b8100 HudUiCycleSelectorWidget::ApplyFontStyleForEntry - Reimplemented / Binary-safe verified
-  - 0x4b8200 HudUiCycleSelectorWidget::AddBitmapEntry - Reimplemented / Binary-safe verified
-  - 0x4b82e0 HudUiCycleSelectorWidget::LoadFromZrd - Reimplemented / Binary-safe pending
-  - 0x4b8450 HudUiFillBitmap::Constructor - Reimplemented / Binary-safe pending
-  - 0x4b84b0 HudUiFillBitmap::ScalarDeletingDestructor - Reimplemented / Binary-safe pending
-  - 0x4b84d0 HudUiFillBitmap::DestructorCore - Reimplemented / Binary-safe pending
-  - 0x4b8520 HudUiFillBitmap::Draw - Reimplemented / Binary-safe pending
-  - 0x4b85c0 HudUiFillBitmap::LoadFromZrd - Reimplemented / Binary-safe pending
-  - 0x4b8650 HudUiFillBitmap::UpdateNormalizedFromCursor - Reimplemented / Binary-safe pending
-  - 0x4b86b0 HudUiFillBitmap::SetNormalizedValueAndRebuild - Reimplemented / Binary-safe pending
-  - 0x4ba3c0 HudUiFillBitmap::SetNormalizedValue - Reimplemented / Binary-safe verified
-  - 0x4b3fb0 HudUiWidget::Draw - Reimplemented / Binary-safe pending
-  - 0x48f500 zVid_Image::BlitToActiveTarget - Reimplemented / Binary-safe pending
-  - 0x4a69e0 zVideo_buff::BltSourceToPrimaryClipped - Reimplemented / Binary-safe pending
-  - 0x4b8760 HudUiZrdWidgetEx17C_Item::Constructor - Reimplemented / Binary-safe pending
-  - 0x4b87a0 HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor - Reimplemented / Binary-safe pending
-  - 0x4b87c0 HudUiZrdWidgetEx17C_Item::DestructorCore - Reimplemented / Binary-safe pending
-  - 0x4b87d0 HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected - Reimplemented / Binary-safe pending
-  - 0x4b87e0 HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected - Reimplemented / Binary-safe pending
-  - 0x4b87f0 HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf - Reimplemented / Binary-safe pending
-  - 0x4b8850 HudUiZrdWidgetEx17C_Item::LoadFromZrd - Reimplemented / Binary-safe pending
-  - 0x4b8a90 HudUiZrdWidgetEx17C_Item::SetSelected - Reimplemented / Binary-safe pending
-  - 0x4b8af0 HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds - Reimplemented / Binary-safe pending
-  - 0x4b8b10 HudUiZrdWidgetEx17C::Constructor - Reimplemented / Binary-safe pending
-  - 0x4b8b40 HudUiZrdWidgetEx17C::ScalarDeletingDestructor - Reimplemented / Binary-safe pending
-  - 0x4b8b60 HudUiZrdWidgetEx17C::DestructorCore - Reimplemented / Binary-safe pending
-  - 0x4b8be0 HudUiZrdWidgetEx17C::LoadFromZrd - Reimplemented / Binary-safe pending
-  - 0x4b8cf0 HudUiZrdWidgetEx17C::SetSelectedIndex - Reimplemented / Binary-safe pending
-  - 0x4b8d30 HudCmdBindButtonBase::Constructor - Reimplemented / Binary-safe pending
-  - 0x4ba470 zUtil_StdPtrVector_FreeBufferAndReset - Reimplemented / Binary-safe verified
-  - 0x4b8de0 HudCmdBindButtonBase::LoadFromZrd - Reimplemented / Binary-safe pending
-  - 0x4b90e0 HudCmdBindButtonBase::RebuildBindingSlotWidgets - Reimplemented / Binary-safe pending
-  - 0x4b92a0 HudUiListSelectorItem::Constructor - Reimplemented / Binary-safe verified
-  - 0x4ba410 HudUiListSelectorItem::Draw - Reimplemented / Binary-safe verified
-  - 0x4b4280 HudUiElement::SetTimer - Reimplemented / Binary-safe verified
-  - 0x4b4120 HudUiElement::CopyFrom - Reimplemented / Binary-safe verified
-  - 0x4b42c0 HudUiElement::GetRect - Reimplemented / Binary-safe verified
-  - 0x4ba400 HudUiPanel::GetWrapRect - Reimplemented / Binary-safe verified
-  - 0x4ba850 HudUiPanel::CopyConstructCore - Reimplemented / Binary-safe pending
-  - 0x4bb3d0 HudUiPanel::HitTest - Reimplemented / Binary-safe verified
-  - 0x4bb440 HudUiPanel::GetLastTextPtr - Reimplemented / Binary-safe verified
-  - 0x4bb740 HudUiPanel::GetTextRect - Reimplemented / Binary-safe verified
-  - 0x40be90 HudUiPanel::Invalidate - Reimplemented / Binary-safe verified
-  - 0x40bea0 HudUiPanel::GetFont - Reimplemented / Binary-safe verified
-  - 0x40beb0 HudUiPanel::SetFontHandle - Reimplemented / Binary-safe verified
-  - 0x40bec0 HudUiPanel::EnableWordWrapWithRect - Reimplemented / Binary-safe verified
-  - 0x40bf00 HudUtil::FreeFieldPtr - Reimplemented / Binary-safe verified
-  - 0x4bb460 HudUiPanel::Draw - Reimplemented / Binary-safe pending
-  - 0x4bb5e0 HudUiPanel::SetTextFmtV - Reimplemented / Binary-safe pending
-  - 0x4bb680 HudUiPanel::SetText - Reimplemented / Binary-safe pending
-  - 0x4bcc80 HudUiTextLabel::Constructor - Reimplemented / Binary-safe pending
-  - 0x4ba9e0 HudUiPanel::ConstructorCopy - Reimplemented / Binary-safe pending
-  - 0x404e60 HudUiCircle::HitTest - Reimplemented / Binary-safe verified
-  - 0x4bc480 HudUiCircle::Constructor - Reimplemented / Binary-safe verified
-  - 0x4bc4e0 HudUiCircle::HitTestCore - Reimplemented / Binary-safe verified
-  - 0x4bbfa0 HudUiCompositePanelVector::Clear - Reimplemented / Binary-safe verified
-  - 0x4bc320 HudUiCompositePanelEntry::ConstructorCopyRange - Reimplemented / Binary-safe pending
-  - 0x4bc3a0 HudUiCompositePanelEntry::AssignCopy - Reimplemented / Binary-safe pending
-  - 0x4bc410 HudUiCompositePanelEntry::ConstructorCopy - Reimplemented / Binary-safe pending
-  - 0x46ec70 zVid_Image_SetPixels - Reimplemented / Binary-safe verified
-  - 0x4bb0c0 HudUiFlashPanel::ComputeFlashBlendColor - Reimplemented / Binary-safe pending
-  - 0x4bc9f0 HudUiTransitionTextPanel::TickFlash - Reimplemented / Binary-safe pending
-  - HudUiTransitionTextPanel flashCountdown typed as float and flashAltColor1 named at 0x2b0 from TickFlash color-swap evidence.
-  - 0x4bf7c0 HudUiMessageBoxDialog::OnOk - Reimplemented / Binary-safe verified
-  - 0x4bf7e0 HudUiMessageBoxDialog::OnCancel - Reimplemented / Binary-safe verified
-  - 0x4bf800 HudUiMessageBoxOkButton::OnActivate - Reimplemented / Binary-safe verified
-  - 0x4bf820 HudUiMessageBoxCancelButton::OnActivate - Reimplemented / Binary-safe verified
-  - 0x4bc510 HudUiBackgroundContainer::Constructor - Reimplemented / Binary-safe verified
-  - 0x4bc540 HudUiBackgroundContainer::Destructor - Reimplemented / Binary-safe verified
-  - 0x4bc550 HudUiBackgroundContainer::SetInputFocus - Reimplemented / Binary-safe verified
-  - 0x4bc560 HudUiBackgroundContainer::GetInputFocus - Reimplemented / Binary-safe verified
-  - 0x4ba3a0 HudUiContainer::InvalidateChildren - Reimplemented / Binary-safe verified
-  - 0x4ba380 HudUiDialogController::BlitOwnedSurfaceToPrimary - Reimplemented / Binary-safe verified
-  - 0x4b9850 HudUiBackground::SetEnabled - Reimplemented / Binary-safe verified
-  - 0x4ba4a0 HudFontStyle::Constructor - Reimplemented / Binary-safe verified
-  - 0x4ba4c0 HudFontStyle::Destructor - Reimplemented / Binary-safe verified
-  - 0x4b4b30 HudUiNumericTextInput::RawKeyboardCallback - Reimplemented / Binary-safe verified
-  - 0x4b4b50 HudUiNumericTextInput::OnRawKeyboardChar - Reimplemented / Binary-safe verified
-  - 0x4b4ba0 HudUiNumericTextInput::SetInputActive - Reimplemented / Binary-safe verified
-  - 0x4b4c50 HudUiNumericTextInput::SetRawKeyboardCapture - Reimplemented / Binary-safe verified
-  - 0x4b4ca0 HudUiNumericTextInput::UpdateCaptureUiAndClip - Reimplemented / Binary-safe verified
-  - 0x4ba3e0 HudUiOwnedTextInput::OnAcceptNotifyOwner - Reimplemented / Binary-safe verified
-  - 0x4b3ce0 HudUiWidget::ScalarDeletingDestructor - Reimplemented / Binary-safe verified
-  - 0x4b3d50 HudUiWidget::DestructorCore - Reimplemented / Binary-safe verified
-  - 0x4b3da0 HudUiWidget::ReleaseImageIfOwned - Reimplemented / Binary-safe verified
-  - 0x4b3e30 HudUiWidget::SetImageByPathOwned - Reimplemented / Binary-safe verified
-  - 0x404d90 HudUiWidget::GetCenterX - Reimplemented / Binary-safe verified
-  - 0x404dd0 HudUiWidget::GetCenterY - Reimplemented / Binary-safe verified
-  - 0x404e10 HudUiWidget::RebuildBltRectFromImage - Reimplemented / Binary-safe verified
-  - 0x4b5310 HudUiZrdWidget::Invalidate - Reimplemented / Binary-safe verified
-  - 0x4b5350 HudUiZrdWidget::GetBoundsRectOrNull - Reimplemented / Binary-safe pending
-  - 0x4b5740 HudUiZrdWidget::RefreshState - Reimplemented / Binary-safe verified
-  - 0x4b5860 HudUiZrdWidget::HidePreview - Reimplemented / Binary-safe verified
-  - 0x4b40c0 HudUiElement::CopyConstructor - Reimplemented / Binary-safe verified
-  - 0x4b4070 HudUiElement::Constructor - Reimplemented / Binary-safe verified
-  - 0x4b4180 HudUiElement::Invalidate - Reimplemented / Binary-safe verified
-  - 0x4b4190 HudUiElement::SetBltSourceAndClipRect - Reimplemented / Binary-safe verified
-  - 0x4b41b0 HudUiElement::SetClipRect - Reimplemented / Binary-safe verified
-  - 0x4b41e0 HudUiElement::Update - Reimplemented / Binary-safe verified
-  - 0x4b47a0 HudUiElement::ResetCommonFTable - Reimplemented / Binary-safe verified
-  - 0x404d50 HudUiElement::GetX - Reimplemented / Binary-safe verified
-  - 0x404d60 HudUiElement::GetY - Reimplemented / Binary-safe verified
-  - 0x404d70 HudUiCommon::ScalarDeletingDestructor - Reimplemented / Binary-safe verified
-  - 0x4bcbe0 HudUiTextLabel::CopyConstructor - Reimplemented / Binary-safe verified
-  - 0x4bf840 HudUiPolyline::Constructor - Reimplemented / Binary-safe verified
-  - 0x4bf8b0 HudUiPolyline::SetPoint - Reimplemented / Binary-safe verified
-  - 0x4bf900 HudUiPolyline::Draw - Reimplemented / Binary-safe verified
-  - 0x4b4620 HudUiSliderBorder::Constructor - Reimplemented / Binary-safe verified
-  - 0x4b47b0 HudUiSliderBorder::Update - Reimplemented / Binary-safe verified
-  - 0x4b4810 HudUiSliderBorder::SetBounds - Reimplemented / Binary-safe verified
-  - 0x4ba740 HudUiPanel::ConstructorDefault - Reimplemented / Binary-safe verified
-  - 0x4babb0 HudUiPanel::SetFont - Reimplemented / Binary-safe verified
-  - 0x4bac10 HudUiPanel::RebuildTextRect - Reimplemented / Binary-safe pending
-  - 0x4bb1c0 HudUiPanel::MeasureTextPrefixRect - Reimplemented / Binary-safe verified
-  - 0x4bb2a0 HudUiPanel::UpdateTextBoundsFromContent - Reimplemented / Binary-safe pending
-  - 0x4bb710 HudUiPanel::QueryTextHeight - Reimplemented / Binary-safe verified
-  - 0x4bb540 HudUiPanel::SetTextFmt - Reimplemented / Binary-safe pending
-  - 0x4bc780 HudUiContainer::ConstructorDefault - Reimplemented / Binary-safe verified
-  - 0x4bc7c0 HudUiContainer::AddChild - Reimplemented / Binary-safe verified
-  - 0x4bc810 HudUiContainer::FindChildWithPrev - Reimplemented / Binary-safe verified
-  - 0x4bc860 HudUiContainer::RemoveChild - Reimplemented / Binary-safe verified
-  - 0x4bc8d0 HudUiContainer::SetChildFlags - Reimplemented / Binary-safe verified
-  - 0x4bc900 HudUiContainer::UpdateAll - Reimplemented / Binary-safe verified
-  - 0x4138d0 HudUi::ShowTopMessageLine - Reimplemented / Binary-safe pending
-  - 0x4138f0 HudUi::ShowChatLine - Reimplemented / Binary-safe pending
-  - 0x4bcf20 HudUiBar::Constructor - Reimplemented / Binary-safe verified
-  - 0x4bcf80 HudUiBar::SetPointXY - Reimplemented / Binary-safe pending
-  - 0x4bd020 HudUiTopMessageStack::Constructor - Reimplemented / Binary-safe pending
-  - 0x4bd110 HudUiTextStack4::SetFontAll - Reimplemented / Binary-safe pending
-  - 0x4bd160 HudUiTextStack4::PushLine - Reimplemented / Binary-safe pending
-  - 0x4bd280 HudUi::PushTopMessageLine - Reimplemented / Binary-safe pending
-  - 0x4bd2d0 HudUiChatMessageStack::Constructor - Reimplemented / Binary-safe pending
-  - 0x4bd3d0 HudUiTextStack4::SetTextColors - Reimplemented / Binary-safe verified
-  - 0x4bd410 HudUiTextStack4::SetXAll - Reimplemented / Binary-safe verified
-  - 0x4bd440 HudUiTextStack4::SetYDescending - Reimplemented / Binary-safe verified
-  - 0x40f2b0 HudUiTripletPanel::ScalarDeletingDestructor - Reimplemented / Binary-safe verified
-  - 0x40f400 HudUiTripletPanel::Draw - Reimplemented / Binary-safe pending
-  - 0x40ff50 HudUiMgr::ActivateHud - Reimplemented / Binary-safe verified
-  - 0x40ff80 HudUiMgr::OnViewportChanged - Reimplemented / Binary-safe pending
-  - 0x40f4c0 HudUiMgr::InitHudLayouts - Reimplemented / Binary-safe pending
-  - 0x40fbd0 HudUiMgr::ShutdownResources - Reimplemented / Binary-safe pending
-  - 0x40f130 HudUiCounter::UpdateLayoutPosition - Reimplemented / Binary-safe verified
-  - 0x413080 HudLayoutHW::ReleaseImages - Reimplemented / Binary-safe verified
-  - 0x4130d0 HudLayoutHW::SetActive - Reimplemented / Binary-safe pending
-  - 0x40d3b0 HudLayoutBase::Destructor - Reimplemented / Binary-safe verified
-  - 0x412bd0 HudLayout::SetActiveNoOp - Reimplemented / Binary-safe verified
-  - 0x412be0 HudLayout::UpdateAll - Reimplemented / Binary-safe verified
-  - 0x412bf0 HudLayoutBase::Enable - Reimplemented / Binary-safe verified
-  - 0x412c00 HudLayoutBase::Disable - Reimplemented / Binary-safe verified
-  - 0x413ff0 HudUiMessage::ReleaseImages - Reimplemented / Binary-safe verified
-  - 0x4126e0 HudUiMessage::SelectVariantDisplay - Reimplemented / Binary-safe verified
-  - 0x412790 HudUiMessage::ApplySideImageSwap - Reimplemented / Binary-safe verified
-  - 0x4127d0 HudUiMessage::ClearDisplay - Reimplemented / Binary-safe pending
-  - 0x413ec0 HudUiMessage::LoadWeaponLayoutFromNode - Reimplemented / Binary-safe pending
-  - 0x414070 HudUiMessage::RebuildWeaponLayout - Reimplemented / Binary-safe pending
-  - 0x410d10 HudUiMgrSensor::SetViewportRect - Reimplemented / Binary-safe verified
-  - 0x411eb0 HudUiMgrObjective::Update - Reimplemented / Binary-safe pending
-  - 0x411a20 HudUiMgrObjective::Begin - Reimplemented / Binary-safe pending
-  - 0x4118b0 HudUiMgrObjective::UpdateMeterXPoints - Reimplemented / Binary-safe pending
-  - 0x410140 HudUiMgr::TickLayoutDelay - Reimplemented / Binary-safe verified
-  - 0x40f1a0 HudUiMgr::SetModeCounterState - Reimplemented / Binary-safe verified
-  - 0x412c10 HudLayoutBase::LoadTypeIFromZarRoot - Reimplemented / Binary-safe pending
-  - 0x412db0 HudLayout::ApplyViewportRect - Reimplemented / Binary-safe pending
-  - 0x412f70 HudLayoutHW::LoadTypeIIFromZarRoot - Reimplemented / Binary-safe pending
-  - 0x413340 HudLayoutHW::OnActivated - Reimplemented / Binary-safe pending
-  - 0x4132b0 HudLayoutHW::UpdateObjectiveDirtyRect - Reimplemented / Binary-safe pending
-  - 0x413540 HudLayoutHW::Enable - Reimplemented / Binary-safe pending
-  - 0x4135f0 HudLayoutHW::Disable - Reimplemented / Binary-safe pending
-  - 0x4b3e90 HudUiWidget::InvalidateRect - Reimplemented / Binary-safe pending
-  - 0x413990 HudUiLayoutNode::ApplyTextLabel - Reimplemented / Binary-safe pending
-  - 0x413a10 HudUiLayoutNode::ReadRectOffsetAndSize - Reimplemented / Binary-safe pending
-  - 0x413aa0 HudUiLayoutNode::ReadRect - Reimplemented / Binary-safe pending
-  - 0x413ad0 HudUiLayoutNode::ReadInt3 - Reimplemented / Binary-safe pending
-  - 0x413b10 HudUiLayoutNode::ApplyCornerTextQuad - Reimplemented / Binary-safe pending
-  - 0x413c10 HudUiLayoutNode::ApplyMeterQuad - Reimplemented / Binary-safe pending
-  - 0x413d30 HudUiLayoutNode::ApplyImageWidget - Reimplemented / Binary-safe pending
-  - 0x411750 HudUiMgr::SetNanitePanelCount - Reimplemented / Binary-safe verified
-  - 0x411710 HudUiMgr::ReticleStaticAtexitStub - Reimplemented / Binary-safe verified
-  - 0x411720 HudUiMgr::CopyReticleProjection - Reimplemented / Binary-safe verified
-  - 0x411740 HudUiMgr::SetReticleMode - Reimplemented / Binary-safe verified
-  - 0x411270 HudUiMgr::UpdateTargetReticleFromCursor - Reimplemented / Binary-safe pending
-  - 0x413770 HudUiMgr::SetFloatTimerVisible - Reimplemented / Binary-safe pending
-  - 0x4137a0 HudUiMgr::SetAuxOverlayVisible - Reimplemented / Binary-safe pending
-  - 0x4089c0 HudUiMgr::ScreenToWorld - Reimplemented / Binary-safe verified
-  - 0x408380 zOpt::GetReplicateMode - completed
-  - 0x408430 zOpt_ViewRectSection::ClampPointToInclusiveBounds - Reimplemented / Binary-safe verified
-  - 0x4083d0 zOpt::ViewRectSection_SetPosition - Reimplemented / Binary-safe verified
-  - 0x408400 zOpt::ViewRectSection_SetSize - Reimplemented / Binary-safe verified
-  - 0x4086e0 zOpt::WindowSection_SetSize - Reimplemented / Binary-safe verified
-  - 0x408700 zOpt::WindowSection_SetPosition - Reimplemented / Binary-safe verified
-  - 0x408260 zOpt::GetNetworkEnabled - completed
-  - 0x40ec90 HudLayoutBase::Shutdown_Stub - Reimplemented / Binary-safe pending
-  - 0x476120 zClipAlt::SetSourceRect - Reimplemented / Binary-safe verified
-  - 0x471c50 zInput::ResetAllTransitionState - Reimplemented / Binary-safe verified
-  - 0x471de0 zInput::PollActiveDevices - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - None for the current source implementation slice.
-- Newly reimplemented dependencies:
-  - 0x4b7340 HudUiCheckToggleWidget::LoadFromZrd - Reimplemented / Binary-safe pending
-  - 0x4b7290 HudUiCheckToggleWidget::OnActivate - Reimplemented / Binary-safe verified
-  - 0x4b7210 HudUiCheckToggleWidget::ShowPreview - Reimplemented / Binary-safe verified
-  - 0x4b59f0 HudUiZrdWidget::LoadFromZrd - Reimplemented / Binary-safe pending
-  - 0x4ba020 HudUiTransitionTextPanel::Constructor - Reimplemented / Binary-safe pending
-  - 0x46efc0 zImage_Font::GetByIndexOrDefault - Reimplemented / Binary-safe pending
-  - 0x46f260 zImage_Font::MeasureString - Reimplemented / Binary-safe pending
-  - 0x4bcd80 HudUiTextLabel::RebuildTextBounds - Reimplemented / Binary-safe pending
-  - 0x4bcdc0 HudUiTextLabel::MeasureTextWidth - Reimplemented / Binary-safe pending
-  - 0x4bcdf0 HudUiTextLabel::UpdateTextExtents - Reimplemented / Binary-safe verified
-  - 0x4bccf0 HudUiTextLabel::SetTextFmt - Reimplemented / Binary-safe verified
-  - 0x4bcb50 HudUiTextLabel::ConstructorWithPosAndFlags - Reimplemented / Binary-safe verified
-- Verification target:
-  - ninja-x86-debug/release CTest; later zhud_ui listing comparison for store order, virtual dispatch, and table-pointer identity
-- Notes:
-  - HUD table identity in source now uses rebuild-local table symbols instead of adding original image address literals.
-  - Top/chat text-stack ftable providers populate the HudUiContainer::SetEnabled slot so PushLine and manager enable/disable paths can preserve the original virtual SetEnabled call shape.
-  - HudUiElement::Constructor stores only the 16-bit state at offset 0x30; the padding word at 0x32 remains untouched like the original.
-  - HudUiMgr::UpdateTargetReticleFromCursor covers reticle mode visibility, cursor projection/clipping, ray miss fallback to the alt reticle image, player/projectile raycastable toggles, and alternate clip target updates.
-
-### Group: RecoilApp EngineInit subsystem leaves
-
-- Anchor: 0x442a50 RecoilApp::EngineInit
-- Reason: dependency closure / subsystem startup sequence
-- Source files:
-  - src/GameZRecoil/zReader/zReader.h
-  - src/GameZRecoil/zReader/zreader_load.cpp
-  - src/GameZRecoil/include/zImage.h
-  - src/GameZRecoil/zImage/zimg_texture.cpp
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-  - src/GameZRecoil/zModel/zModel.h
-  - src/Battlesport/zModel/zModel_Display.cpp
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_init.cpp
-  - src/GameZRecoil/zEffect/zEffect.h
-  - src/GameZRecoil/zEffect/zEffect.cpp
-  - src/GameZRecoil/zInput/zInput.h
-  - src/GameZRecoil/zInput/zInput.cpp
-  - src/GameZRecoil/Time/Time.h
-  - src/GameZRecoil/Time/Time.cpp
-  - src/GameZRecoil/zRndr/zRndr.h
-  - src/GameZRecoil/zRndr/zRndr.cpp
-  - src/GameZRecoil/zUtil/zZbd.h
-  - src/GameZRecoil/zUtil/zZbd.cpp
-  - src/GameZRecoil/zWeapon/zWeapon.h
-  - src/GameZRecoil/zWeapon/zWeapon.cpp
-  - src/GameZRecoil/zWeapon/OptCatalog.c
-  - src/GameZRecoil/include/OptCatalog.h
-  - tests/native/zreader_tests.cpp
-  - tests/native/zimage_tests.cpp
-  - tests/native/zvideo_tests.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/zsnd_cd_tests.cpp
-  - tests/native/zeffect_tests.cpp
-  - tests/native/zinput_tests.cpp
-  - tests/native/time_tests.cpp
-  - tests/native/zrndr_tests.cpp
-  - tests/native/zweapon_tests.cpp
-- Plan entries:
-  - 0x442a50 RecoilApp::EngineInit - Reimplemented / Binary-safe pending
-  - 0x48c7d0 zUtil::ZRDR_PreallocNodePool - Binary-safe verified
-  - 0x48cc70 zUtil::ZRDR_Init - Binary-safe verified
-  - 0x48cca0 zUtil_ZRDR_SetSearchPath - Binary-safe verified
-  - 0x4a5e10 zUtil_ZRDR::FreePathList - Binary-safe verified
-  - 0x48cae0 zArchiveList_FreeNode - Reimplemented / Binary-safe pending
-  - 0x48cb70 zArchiveList::PopFrontPayload - Reimplemented / Binary-safe pending
-  - 0x48ce40 zReader::FreeLoadedTree - Reimplemented / Binary-safe pending
-  - 0x48ce60 zReader_FreeNodeRecursive - Reimplemented / Binary-safe pending
-  - 0x4a5e50 zUtil::ZRDR_ResolvePathInSearchPathList - Reimplemented / Binary-safe pending
-  - 0x4a5f20 zUtil::ZRDR_SearchPathContainsFilePredicate - Reimplemented / Binary-safe pending
-  - 0x4a5f50 zUtil_ZRDR_OpenFileResolved - Reimplemented / Binary-safe pending
-  - 0x46ebd0 zImage_InitMissionResources - Reimplemented / Binary-safe pending
-  - 0x46e4e0 zVid_PaletteRemap::ApplyRecipeToPaletteVariant - Reimplemented / Binary-safe pending
-  - 0x46e8d0 zVid_PaletteRemap_BuildAllRecipeVariantsForPalette - Reimplemented / Binary-safe pending
-  - 0x4a6b90 zVideo::PixelPack_GetRgbBits - Reimplemented / Binary-safe pending
-  - 0x46dae0 zVid_TexturePackEntry_LoadFromFile - Reimplemented / Binary-safe pending
-  - 0x46da40 zVid_TexturePack_EnsureDefaultImagePackLoaded - Reimplemented / Binary-safe pending
-  - 0x46d940 zVid_TexturePack_LoadImageByName - Reimplemented / Binary-safe pending
-  - 0x46dd30 zVid_TexturePack_LoadBuiltinImageByName - Reimplemented / Binary-safe pending
-  - 0x46d900 zImage_TexDir_FindOrCreateByPath - Reimplemented / Binary-safe pending
-  - 0x46ec00 zVid_Image::Create - Reimplemented / Binary-safe pending
-  - 0x46ec20 zVid_Image::QueryBytesPerPixel - Reimplemented / Binary-safe pending
-  - 0x46ec30 zVid_Image::SetHeaderFlagsByte - Reimplemented / Binary-safe pending
-  - 0x46ec40 zVid_Image::QueryPixelDataBytes - Reimplemented / Binary-safe pending
-  - 0x46ec60 zVid_Image::SetFormatCode - Reimplemented / Binary-safe pending
-  - 0x46ec90 zVid_Image::SetSize - Reimplemented / Binary-safe pending
-  - 0x46ed70 zVid_Image::ReadHeader - Reimplemented / Binary-safe pending
-  - 0x46ede0 zVid_Image::ReadData - Reimplemented / Binary-safe pending
-  - 0x46ef70 zVid_Image::ReadFromFile - Reimplemented / Binary-safe pending
-  - 0x46d870 zVid_Image_ClearZeroAlphaPixelsInPlace - Reimplemented / Binary-safe pending
-  - 0x46f130 zImage_Font::BuildGlyphRects - Reimplemented / Binary-safe pending
-  - 0x46f210 zImage_Font::IsImageColumnTransparent - Reimplemented / Binary-safe pending
-  - 0x46efe0 zImage::FontsLoadFromPath - Reimplemented / Binary-safe pending
-  - 0x46eb20 zImage_Init - Reimplemented / Binary-safe pending
-  - 0x46f300 zInput::Keyboard_InitDevice - Reimplemented / Binary-safe pending
-
-### Group: zImage shutdown texture directory
-
-- Anchor: 0x46eb90 zImage::ShutdownSubsystem
-- Current dependency frontier:
-  - 0x46d5d0 zVid_TexDir::Shutdown - Reimplemented / Binary-safe pending
-  - 0x46d6b0 zVid_TexturePack::ShutdownBuiltinPacks - Reimplemented / Binary-safe pending
-  - 0x46d730 zImage::ShutdownTextureDirectoryRuntime - Reimplemented / Binary-safe pending
-  - 0x46d780 zVid_TexturePack::Shutdown - Reimplemented / Binary-safe pending
-  - 0x46ebb0 zImage::Shutdown - Reimplemented / Binary-safe pending
-  - 0x46eb90 zImage::ShutdownSubsystem - Reimplemented / Binary-safe pending
-
-### Group: RecoilApp shutdown subsystem wrapper
-
-- Anchor: 0x442bc0 RecoilApp::ShutdownSubsystems
-- Current dependency frontier:
-  - 0x442bc0 RecoilApp::ShutdownSubsystems - Reimplemented / Binary-safe pending
-  - 0x4b1180 OptCatalog::Shutdown - Source present / cleanup fidelity pending
-  - 0x4518e0 zClass::Shutdown - Source present / list-deletion fidelity pending
-  - 0x475e60 zModel_Display::ShutdownThunk - Source present / material-list fidelity pending
-  - 0x4a13d0 zSndSystem::Shutdown - Source present / fade-list and stream-pending fidelity pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x40bdc0 zUtil_StdPtrVector_Clear
+  - 0x40c1d0 HudCmdBindButtonBase::ClearBindingEntries
+  - 0x40dac0 HudUiCounter::Constructor
+  - 0x40da00 HudUiMessage::Constructor
+  - 0x40d590 HudUiMessage::Destructor
+  - 0x40daa0 HudUiMessage::ScalarDeletingDestructor
+  - 0x40db00 HudUiMgr::DestructMessagesArray
+  - 0x40e070 HudUiTriplet::DestructorCore
+  - 0x40e590 HudUiTriplet::AddEntry
+  - 0x40e800 HudUiTriplet::UpdateEntryData
+  - 0x40e880 HudUiTriplet::RemoveEntry
+  - 0x414390 GameNet::RefreshPlayerListMenu
+  - 0x4143b0 HudUi::RefreshScoreboardEntryRow
+  - 0x4143c0 HudUi::RemoveScoreboardEntryRow
+  - 0x40a590 HudUiPanel::ScalarDeletingDestructor
+  - 0x40fab0 HudUiPanelSimple::ConstructorDefaultThunk
+  - 0x40fac0 HudUiPanelSimple::Constructor
+  - 0x40d9e0 HudUiMeter::ConstructorEx
+  - 0x40f2d0 HudUiWidget::CtorDefaultThunk
+  - 0x40d600 HudUiTripletPanel::UnwindDestructFirstItem
+  - 0x40d610 HudUiTripletPanel::DestructorCore
+  - 0x40d760 HudUiMgr::DestructModeCounterArray
+  - 0x40f200 HudUiTripletPanel::Constructor
+  - 0x40f460 HudUiTripletPanel::SetVisibleCount
+  - 0x40fa10 HudUiStatsListElement::Update
+  - 0x40fa20 HudUiStatsListElement::ScalarDeletingDestructor
+  - 0x40fa40 HudUiStatsListElement::DestructorCore
+  - 0x4b4390 HudUiTextInput::AllocTextBuffer
+  - 0x4b42f0 HudUiTextInput::Constructor
+  - 0x4b43d0 HudUiTextInput::SetContents
+  - 0x4b4410 HudUiTextInput::GetBuffer
+  - 0x4b4420 HudUiTextInput::SetCursorPosition
+  - 0x4b4460 HudUiTextInput::DispatchKeyAction
+  - 0x4b44e0 HudUiTextInput::InsertCharAtCursor
+  - 0x4b4530 HudUiTextInput::BackspaceDeleteChar
+  - 0x4b4550 HudUiTextInput::DeleteCharForward
+  - 0x4b4560 HudUiTextInput::MoveCursorLeft
+  - 0x4b4570 HudUiTextInput::MoveCursorRight
+  - 0x4b4590 HudUiTextInput::ShiftTextRight
+  - 0x4b45e0 HudUiTextInput::ShiftTextLeft
+  - 0x4b4370 HudUiTextInput::DestructorCore
+  - 0x40d660 HudUiMgrObjectiveBlock::Destructor
+  - 0x40db20 HudUiSlot::Constructor
+  - 0x40db90 HudUiSlot::Draw
+  - 0x40d780 HudUiSlot::Destructor
+  - 0x40dbd0 HudUiSlot::ScalarDeletingDestructor
+  - 0x40eca0 HudUiTimerPanel::SetRunning
+  - 0x40ecc0 HudUiTimerPanel::SetElapsedSeconds
+  - 0x40ece0 HudUiTimerPanel::SetSeconds
+  - 0x40ed10 HudUiTimerPanel::GetSeconds
+  - 0x40ed20 HudUiTimerPanel::Update
+  - 0x40ee60 HudUiTimerPanel::UpdateHMSFromSeconds
+  - 0x40fbb0 HudUiTimerPanel::ZarReadTimerData
+  - 0x4b49e0 HudUiNumericTextInput::BaseConstructor
+  - 0x4b4a90 HudUiNumericTextInput::ScalarDeletingDestructor
+  - 0x4b4ac0 HudUiNumericTextInput::Destructor
+  - 0x4b4e40 HudUiNumericTextInput::AllocTextBuffer
+  - 0x4b4e60 HudUiNumericTextInput::Update
+  - 0x4b4ed0 HudUiNumericTextInput::GetBuffer
+  - 0x4ba510 HudUiPanelPtrVector::InsertN
+  - 0x4bc930 HudUiTransitionTextPanel::ResetFlashState
+  - 0x4bc9b0 HudUiTransitionTextPanel::SetFlashColorAndRate
+  - 0x4b6fc0 HudUiCheckToggleWidget::Constructor
+  - 0x4b7000 HudUiCheckToggleWidget::ScalarDeletingDestructor
+  - 0x4b7020 HudUiCheckToggleWidget::DestructorCore
+  - 0x4b70b0 HudUiCheckToggleWidget::GetBoundsRectOrNull
+  - 0x4b70c0 HudUiCheckToggleWidget::RefreshState
+  - 0x4b7250 HudUiCheckToggleWidget::HidePreview
+  - 0x4b72c0 HudUiCheckToggleWidget::SetChecked
+  - 0x4b7d60 HudUiCycleSelectorWidget::Constructor
+  - 0x4b7dc0 HudUiCycleSelectorWidget::ScalarDeletingDestructor
+  - 0x4b7de0 HudUiCycleSelectorWidget::DestructorCore
+  - 0x4b7e60 HudUiCycleSelectorWidget::Update
+  - 0x4b7ee0 HudUiCycleSelectorWidget::AdvanceSelectionAndActivate
+  - 0x4b7f20 HudUiCycleSelectorWidget::SetIndexClamped
+  - 0x4b7f80 HudUiCycleSelectorWidget::SetVisibleRange
+  - 0x4b7fd0 HudUiCycleSelectorWidget::AddTextEntry
+  - 0x4b8100 HudUiCycleSelectorWidget::ApplyFontStyleForEntry
+  - 0x4b8200 HudUiCycleSelectorWidget::AddBitmapEntry
+  - 0x4b82e0 HudUiCycleSelectorWidget::LoadFromZrd
+  - 0x4b8450 HudUiFillBitmap::Constructor
+  - 0x4b84b0 HudUiFillBitmap::ScalarDeletingDestructor
+  - 0x4b84d0 HudUiFillBitmap::DestructorCore
+  - 0x4b8520 HudUiFillBitmap::Draw
+  - 0x4b85c0 HudUiFillBitmap::LoadFromZrd
+  - 0x4b8650 HudUiFillBitmap::UpdateNormalizedFromCursor
+  - 0x4b86b0 HudUiFillBitmap::SetNormalizedValueAndRebuild
+  - 0x4ba3c0 HudUiFillBitmap::SetNormalizedValue
+  - 0x4b8760 HudUiZrdWidgetEx17C_Item::Constructor
+  - 0x4b87a0 HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor
+  - 0x4b87c0 HudUiZrdWidgetEx17C_Item::DestructorCore
+  - 0x4b87d0 HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected
+  - 0x4b87e0 HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected
+  - 0x4b87f0 HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf
+  - 0x4b8850 HudUiZrdWidgetEx17C_Item::LoadFromZrd
+  - 0x4b8a90 HudUiZrdWidgetEx17C_Item::SetSelected
+  - 0x4b8af0 HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds
+  - 0x4b8b10 HudUiZrdWidgetEx17C::Constructor
+  - 0x4b8b40 HudUiZrdWidgetEx17C::ScalarDeletingDestructor
+  - 0x4b8b60 HudUiZrdWidgetEx17C::DestructorCore
+  - 0x4b8be0 HudUiZrdWidgetEx17C::LoadFromZrd
+  - 0x4b8cf0 HudUiZrdWidgetEx17C::SetSelectedIndex
+  - 0x4b8d30 HudCmdBindButtonBase::Constructor
+  - 0x4ba470 zUtil_StdPtrVector_FreeBufferAndReset
+  - 0x4b8de0 HudCmdBindButtonBase::LoadFromZrd
+  - 0x4b90e0 HudCmdBindButtonBase::RebuildBindingSlotWidgets
+  - 0x4b92a0 HudUiListSelectorItem::Constructor
+  - 0x4ba410 HudUiListSelectorItem::Draw
+  - 0x4b4280 HudUiElement::SetTimer
+  - 0x4b4120 HudUiElement::CopyFrom
+  - 0x4b42c0 HudUiElement::GetRect
+  - 0x4ba400 HudUiPanel::GetWrapRect
+  - 0x4ba850 HudUiPanel::CopyConstructCore
+  - 0x4bb3d0 HudUiPanel::HitTest
+  - 0x4bb440 HudUiPanel::GetLastTextPtr
+  - 0x4bb740 HudUiPanel::GetTextRect
+  - 0x40be90 HudUiPanel::Invalidate
+  - 0x40bea0 HudUiPanel::GetFont
+  - 0x40beb0 HudUiPanel::SetFontHandle
+  - 0x40bec0 HudUiPanel::EnableWordWrapWithRect
+  - 0x40bf00 HudUtil::FreeFieldPtr
+  - 0x4bb460 HudUiPanel::Draw
+  - 0x4bb5e0 HudUiPanel::SetTextFmtV
+  - 0x4bb680 HudUiPanel::SetText
+  - 0x4bcc80 HudUiTextLabel::Constructor
+  - 0x4ba9e0 HudUiPanel::ConstructorCopy
+  - 0x404e60 HudUiCircle::HitTest
+  - 0x4bc480 HudUiCircle::Constructor
+  - 0x4bc4e0 HudUiCircle::HitTestCore
+  - 0x4bbfa0 HudUiCompositePanelVector::Clear
+  - 0x4bc320 HudUiCompositePanelEntry::ConstructorCopyRange
+  - 0x4bc3a0 HudUiCompositePanelEntry::AssignCopy
+  - 0x4bc410 HudUiCompositePanelEntry::ConstructorCopy
+  - 0x4bb0c0 HudUiFlashPanel::ComputeFlashBlendColor
+  - 0x4bc9f0 HudUiTransitionTextPanel::TickFlash
+  - 0x4bf7c0 HudUiMessageBoxDialog::OnOk
+  - 0x4bf7e0 HudUiMessageBoxDialog::OnCancel
+  - 0x4bf800 HudUiMessageBoxOkButton::OnActivate
+  - 0x4bf820 HudUiMessageBoxCancelButton::OnActivate
+  - 0x4bc510 HudUiBackgroundContainer::Constructor
+  - 0x4bc540 HudUiBackgroundContainer::Destructor
+  - 0x4b9850 HudUiBackground::SetEnabled
+  - 0x4ba4a0 HudFontStyle::Constructor
+  - 0x4ba4c0 HudFontStyle::Destructor
+  - 0x4b4b30 HudUiNumericTextInput::RawKeyboardCallback
+  - 0x4b4b50 HudUiNumericTextInput::OnRawKeyboardChar
+  - 0x4b4ba0 HudUiNumericTextInput::SetInputActive
+  - 0x4b4c50 HudUiNumericTextInput::SetRawKeyboardCapture
+  - 0x4b4ca0 HudUiNumericTextInput::UpdateCaptureUiAndClip
+  - 0x4ba3e0 HudUiOwnedTextInput::OnAcceptNotifyOwner
+  - 0x4b3ce0 HudUiWidget::ScalarDeletingDestructor
+  - 0x404e10 HudUiWidget::RebuildBltRectFromImage
+  - 0x4b5310 HudUiZrdWidget::Invalidate
+  - 0x4b5350 HudUiZrdWidget::GetBoundsRectOrNull
+  - 0x4b5740 HudUiZrdWidget::RefreshState
+  - 0x4b5860 HudUiZrdWidget::HidePreview
+  - 0x4b40c0 HudUiElement::CopyConstructor
+  - 0x4b47a0 HudUiElement::ResetCommonFTable
+  - 0x404d50 HudUiElement::GetX
+  - 0x404d60 HudUiElement::GetY
+  - 0x404d70 HudUiElement::ScalarDeletingDestructor
+  - 0x4bcbe0 HudUiTextLabel::CopyConstructor
+  - 0x4bf840 HudUiPolyline::Constructor
+  - 0x4bf8b0 HudUiPolyline::SetPoint
+  - 0x4bf900 HudUiPolyline::Draw
+  - 0x4b4620 HudUiSliderBorder::Constructor
+  - 0x4b47b0 HudUiSliderBorder::Update
+  - 0x4b4810 HudUiSliderBorder::SetBounds
+  - 0x4bac10 HudUiPanel::RebuildTextRect
+  - 0x4bb1c0 HudUiPanel::MeasureTextPrefixRect
+  - 0x4bb2a0 HudUiPanel::UpdateTextBoundsFromContent
+  - 0x4bb710 HudUiPanel::QueryTextHeight
+  - 0x4bc810 HudUiContainer::FindChildWithPrev
+  - 0x4bc860 HudUiContainer::RemoveChild
+  - 0x4bc900 HudUiContainer::UpdateAll
+  - 0x4138d0 HudUi::ShowTopMessageLine
+  - 0x4138f0 HudUi::ShowChatLine
+  - 0x4bd160 HudUiTextStack4::PushLine
+  - 0x4bd280 HudUi::PushTopMessageLine
+  - 0x40f2b0 HudUiTripletPanel::ScalarDeletingDestructor
+  - 0x40f130 HudUiCounter::UpdateLayoutPosition
+  - 0x40d3b0 HudLayoutBase::Destructor
+  - 0x412bd0 HudLayoutBase::SetActiveNoOp
+  - 0x412be0 HudLayoutBase::UpdateAll
+  - 0x4126e0 HudUiMessage::SelectVariantDisplay
+  - 0x412790 HudUiMessage::ApplySideImageSwap
+  - 0x4127d0 HudUiMessage::ClearDisplay
+  - 0x411a20 HudUiMgrObjective::Begin
+  - 0x410140 HudUiMgr::TickLayoutDelay
+  - 0x411750 HudUiMgr::SetNanitePanelCount
+  - 0x411710 HudUiMgr::ReticleStaticAtexitStub
+  - 0x411720 HudUiMgr::CopyReticleProjection
+  - 0x411740 HudUiMgr::SetReticleMode
+  - 0x411270 HudUiMgr::UpdateTargetReticleFromCursor
+  - 0x4089c0 HudUiMgr::ScreenToWorld
+  - 0x408430 zOpt::ViewRectSection_ClampPointToInclusiveBounds
+  - 0x471de0 zInput::PollActiveDevices
+  - 0x4b7340 HudUiCheckToggleWidget::LoadFromZrd
+  - 0x4b7290 HudUiCheckToggleWidget::OnActivate
+  - 0x4b7210 HudUiCheckToggleWidget::ShowPreview
+  - 0x4b59f0 HudUiZrdWidget::LoadFromZrd
+  - 0x4ba020 HudUiTransitionTextPanel::Constructor
+- Next action:
+  - `python tools/recoil_status.py 0x40bdc0`
 
 ### Group: RecoilApp shutdown engine wrapper
 
 - Anchor: 0x42e430 RecoilApp::ShutdownEngine
-- Current dependency frontier:
-  - 0x42e430 RecoilApp::ShutdownEngine - Reimplemented / Binary-safe pending
-  - 0x442bc0 RecoilApp::ShutdownSubsystems - Reimplemented / Binary-safe pending
-  - 0x437ab0 zTurret_System::Shutdown - Reimplemented / Binary-safe pending
-  - 0x455e40 zDEClient::ShutdownGlobals - Reimplemented / Binary-safe pending
-  - 0x48b820/0x489e10 zNetwork shutdown packet/session leaves - Reimplemented / Binary-safe pending
-  - 0x4a13d0 zSndSystem::Shutdown - Source present / fade-list and stream-pending fidelity pending
-  - 0x46f9f0 zInput::Keyboard_ClearKeyCallbackTable - Binary-safe verified
-  - 0x470020 zInput::Mouse_ApplyClientCursorPosToOS - Reimplemented / Binary-safe pending
-  - 0x470060 zInput::Mouse_UpdateClientRectAndCenter - Reimplemented / Binary-safe pending
-  - 0x470150 zInput::Mouse_RecenterCursor - Reimplemented / Binary-safe pending
-  - 0x4701f0 zInput::Mouse_InitDevice - Reimplemented / Binary-safe pending
-  - 0x470670 zInput::Mouse_SetCooperativeLevelFlags - Reimplemented / Binary-safe pending
-  - 0x471b50 zInput::Init - Reimplemented / Binary-safe pending
-  - 0x471d20 zInput::Keyboard_AddRef - Reimplemented / Binary-safe pending
-  - 0x46f970 zInput::Keyboard_SetRawEventCallback - Reimplemented / Binary-safe pending
-  - 0x471da0 zInput::Mouse_AddRef - Reimplemented / Binary-safe pending
-  - 0x471e40 zInput::DI_InitJoystickDevice - Reimplemented / Binary-safe pending
-  - 0x471f60 zInput::DI_EnumDevicesCallback_SelectFirstJoystick - Reimplemented / Binary-safe pending
-  - 0x471fb0 zInput::DI_AcquireJoystickDevice - Reimplemented / Binary-safe pending
-  - 0x475c40 zModel_Display_Init - Reimplemented / Binary-safe pending
-  - 0x4a12c0 zSnd_PreInitializeRuntimeState - Reimplemented / Binary-safe pending
-  - 0x4a1420 zSndSystem_Init - Reimplemented / Binary-safe pending
-  - 0x45fd10 zEffectAnim::ShutdownEntry - Reimplemented / Binary-safe pending
-  - 0x45fe50 zEffect_Anim::Shutdown - Reimplemented / Binary-safe pending
-  - 0x45e100 zEffect_Anim::Init - Reimplemented / Binary-safe pending
-  - 0x458af0 zEffect::SetConditionalRefPos - Reimplemented / Binary-safe pending
-  - 0x458e10 zEffect::HandleSampleRefOffsetEvent - Reimplemented / Binary-safe pending
-  - 0x458eb0 zEffect::HandleEffectTemplateOffsetEvent - Reimplemented / Binary-safe pending
-  - 0x458f70 zEffect::HandleSoundEvent - Reimplemented / Binary-safe pending
-  - 0x459080 zEffect::HandleLightEvent - Reimplemented / Binary-safe pending
-  - 0x45c240 zEffect::HandleEmitterStopEvent - Reimplemented / Binary-safe pending
-  - 0x45c2f0 zEffect::HandleEmitterResetEvent - Reimplemented / Binary-safe pending
-  - 0x45c310 zEffect::HandleEmitterLoopEvent - Reimplemented / Binary-safe pending
-  - 0x45c640 zEffect::GetConditionalRefPosDistanceSq - Reimplemented / Binary-safe pending
-  - 0x45c6b0 zEffect::SkipConditionalChainToEnd - Reimplemented / Binary-safe pending
-  - 0x45c6e0 zEffect::HandleNoOpMarkerEvent - Reimplemented / Binary-safe pending
-  - 0x45c6f0 zEffect::HandleCallbackEvent - Reimplemented / Binary-safe pending
-  - 0x45bf60 zEffect::CleanupLightRefs - Reimplemented / Binary-safe pending
-  - 0x45bfd0 zEffect::CleanupSoundRefs - Reimplemented / Binary-safe pending
-  - 0x45d240 zEffect_Anim::CaptureNodeStates - Reimplemented / Binary-safe pending
-  - 0x45d310 zEffect_Anim::RestoreNodeStates - Reimplemented / Binary-safe pending
-  - 0x45d6c0 zEffectAnim::ResetForNode - Reimplemented / Binary-safe pending
-  - 0x447dc0 zClass_Class::gwNodeSetName - Reimplemented / Binary-safe pending
-  - 0x447e30 zClass_Class::gwNodeGetName - Reimplemented / Binary-safe pending
-  - 0x4483f0 zClass_Class::AddChild - Reimplemented / Binary-safe pending
-  - 0x4497b0 gwNode::GetWorldPosition - Reimplemented / Binary-safe pending
-  - 0x449850 gwNode::TransformPoint - Reimplemented / Binary-safe pending
-  - 0x4510e0 zClass_World::AddChildAtGrid - Reimplemented / Binary-safe pending
-  - 0x451360 zClass_World::AddLight - Reimplemented / Binary-safe pending
-  - 0x451410 zClass_World::RemoveLight - Reimplemented / Binary-safe pending
-  - 0x451590 zClass_World::AddSound - Reimplemented / Binary-safe pending
-  - 0x451640 zClass_World::RemoveSound - Reimplemented / Binary-safe pending
-  - 0x451b20 zClass_cls_util::CopyNodeDisplayInstance - Reimplemented / Binary-safe pending
-  - 0x451bd0 zClass_cls_util::CopyNodeBaseData - Reimplemented / Binary-safe pending
-  - 0x451f70 zClass_cls_util::CopyCameraNode - Reimplemented / Binary-safe pending
-  - 0x4520c0 zClass_cls_util::CopyLightNode_Unimplemented - Reimplemented / Binary-safe pending
-  - 0x4520e0 zClass_cls_util::CopySoundNode_Unimplemented - Reimplemented / Binary-safe pending
-  - 0x452100 zClass_cls_util::CopyObject3DNode - Reimplemented / Binary-safe pending
-  - 0x452230 zClass_cls_util::CopyAnimateNode_Unimplemented - Reimplemented / Binary-safe pending
-  - 0x452250 zClass_cls_util::CopyLodNode - Reimplemented / Binary-safe pending
-  - 0x4523c0 zClass_cls_util::CopySequenceNode_Unimplemented - Reimplemented / Binary-safe pending
-  - 0x4523e0 zClass_cls_util::CopySwitchNode_Stub - Reimplemented / Binary-safe pending
-  - 0x452400 zClass_cls_util::CopyNodeDispatch - Reimplemented / Binary-safe pending
-  - 0x452500 zClass_cls_util::CopyNodeWithCloneOptions - Reimplemented / Binary-safe pending
-  - 0x452560 zClass_cls_util::CopyNode - Reimplemented / Binary-safe pending
-  - 0x453b40 zClass_Animate::AddChild - Reimplemented / Binary-safe pending
-  - 0x4529c0 zClass_Sound::gwSoundNew - Reimplemented / Binary-safe pending
-  - 0x452bc0 zClass_Sound::SetSampleSetByName - Reimplemented / Binary-safe pending
-  - 0x452d00 zClass_Sound::gwSoundSetPosition - Reimplemented / Binary-safe pending
-  - 0x480c80 zModel_Material::HasAuxData - Reimplemented / Binary-safe pending
-  - 0x4805b0 zModel_MatlSlot::IndexFromPtrOrMinus1 - Reimplemented / Binary-safe verified
-  - 0x480600 zModel_MatlBuffer::WriteGameZ - Reimplemented / Binary-safe pending
-  - 0x4808c0 zModel_MatlBuffer::ReadGameZ - Reimplemented / Binary-safe pending
-  - 0x4812b0 zModel_Material::Clone - Reimplemented / Binary-safe pending
-  - 0x4812c0 zModel_MatlBuffer::CloneToActiveSlot - Reimplemented / Binary-safe pending
-  - 0x4815c0 zModel_DiPool::WriteToStream - Reimplemented / Binary-safe pending
-  - 0x481bc0 zModel_DiPool::ReadHeaderFromStream - Reimplemented / Binary-safe pending
-  - 0x481c50 zModel_DiPool::ReadEntryDynamicDataFromStream - Reimplemented / Binary-safe pending
-  - 0x481fa0 zModel_DiPool::ReadFromStream - Reimplemented / Binary-safe pending
-  - 0x482080 zModel_DiPool::AllocFromFreeList - Reimplemented / Binary-safe pending
-  - 0x482270 zDi::CloneToInstance - Reimplemented / Binary-safe pending
-  - 0x4826b0 zDi::SetClonedFlag - Reimplemented / Binary-safe pending
-  - 0x483a60 zDi::HasSpecialFlagsOrAuxMaterialData - Reimplemented / Binary-safe pending
-  - 0x484230 zDi::ResetCurrentVariant - Reimplemented / Binary-safe pending
-  - 0x45ff10 zEffectAnim::FindEntryByName - Reimplemented / Binary-safe pending
-  - 0x45d7a0 zEffectAnim::ResetActivationPrereqCount - Reimplemented / Binary-safe pending
-  - 0x45db20 zEffectAnim::CheckActivationPrereqs - Reimplemented / Binary-safe pending
-  - 0x45e280 zEffectAnim::FindSoundRefIndexByName - Reimplemented / Binary-safe pending
-  - 0x45e300 zEffectAnim::FindLightRefIndexByName - Reimplemented / Binary-safe pending
-  - 0x45e380 zEffectAnim::FindOrCreateSoundRef - Reimplemented / Binary-safe pending
-  - 0x45e4a0 zEffectAnim::FindOrCreateLightRef - Reimplemented / Binary-safe pending
-  - 0x45e5c0 zEffectAnim::ResolveNodeByName - Reimplemented / Binary-safe pending
-  - 0x45e650 zEffectAnim::FindNodeRecursiveByName - Reimplemented / Binary-safe pending
-  - 0x45e6d0 zEffectAnim::EnsureCopiedRootTree - Reimplemented / Binary-safe pending
-  - 0x45e730 zEffectAnim::CloneEntryForNode - Reimplemented / Binary-safe pending
-  - 0x45ed80 zEffectAnim::RebindEntryToNode - Reimplemented / Binary-safe pending
-  - 0x4603d0 zEffect_Anim::ClearActivationRecords - Reimplemented / Binary-safe pending
-  - 0x460400 zEffect_Anim::HasActivationRecord - Reimplemented / Binary-safe pending
-  - 0x460470 zEffect_Anim::GetActivationRecordCount - Reimplemented / Binary-safe pending
-  - 0x460480 zEffect_Anim::GetActivationRecordAt - Reimplemented / Binary-safe pending
-  - 0x460ae0 zEffect_Anim::AllocActivationRecord - Reimplemented / Binary-safe pending
-  - 0x461800 zEffect_Anim::GetActivationRecordPackedSize - Reimplemented / Binary-safe pending
-  - 0x461970 zEffectAnim::QueueCmdType1TransformRotVelocity - Reimplemented / Binary-safe pending
-  - 0x461a90 zEffect_Anim::DiscardLastActivationRecord - Reimplemented / Binary-safe pending
-  - 0x461aa0 zEffectAnim::QueueCmdType2Velocity - Reimplemented / Binary-safe pending
-  - 0x461ba0 zEffectAnim::QueueCmdType3PositionRefAndVelocity - Reimplemented / Binary-safe pending
-  - 0x461d00 zEffectAnim::QueueCmdType4TransformRefs - Reimplemented / Binary-safe pending
-  - 0x461eb0 zEffect_Anim::SetActivationDispatchContext - Reimplemented / Binary-safe pending
-  - 0x461ec0 zEffect::FindNodeUserDataRecursive - Reimplemented / Binary-safe pending
-  - 0x461f00 zEffect::SpawnRuntimeInstanceAt - Reimplemented / Binary-safe pending
-  - 0x461f50 zEffect::ActivateRuntimeEntryAtPosition - Reimplemented / Binary-safe pending
-  - 0x462050 zEffect::ComputeDistanceSqToListener - Reimplemented / Binary-safe pending
-  - 0x4620d0 zEffect::AcquireRuntimeEntryByIndex - Reimplemented / Binary-safe pending
-  - 0x462130 zEffect::CloneRuntimeEntryFromTemplate - Reimplemented / Binary-safe pending
-  - 0x4621b0 zEffect::RuntimeNodeActionCallback - Reimplemented / Binary-safe pending
-  - 0x460020 zEffect::Init - Reimplemented / Binary-safe pending
-  - 0x4904d0 zRndr::SetPerspectiveAdaptiveCorrection - Reimplemented / Binary-safe pending
-  - 0x48fd80 zRndr::InitGlobals - Reimplemented / Binary-safe pending
-  - 0x498bd0 zRndr_DrawImmediateLine - Reimplemented / Binary-safe pending
-  - 0x498c00 zRndr_DrawClippedImmediateLineStrip - Reimplemented / Binary-safe pending
-  - 0x4b1090 zWepInit - Reimplemented / Binary-safe pending
-  - 0x4bffe0 zUtil_ZAR::RegisterSectionHandler - Reimplemented / Binary-safe pending
-  - 0x48ca70 zArchiveList_RemovePayload - Reimplemented / Binary-safe pending
-  - 0x48cb00 zArchiveList_FindNodeByPayload - Reimplemented / Binary-safe pending
-  - 0x48cc20 zArchiveList_FindPayloadByValue - Reimplemented / Binary-safe pending
-  - 0x4c0280 zZbdManager::RegisterSectionHandler - Reimplemented / Binary-safe pending
-  - 0x4a5670 Time::Reset - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug/release CTest; later EngineInit and subsystem leaf listing comparison
-- Notes:
-  - `zModel_Display_Init` seeds the low-resolution 320x200 model display defaults, model fog mirrors, scratch-vector pointers, graphics flag option pointer, and current variant tag.
-  - `zEffect::Init` clears the recovered runtime manager fields except the listener node pointer at 0x18, then initializes the animation subsystem and optional ZAR handler registrations.
-  - Sound/light animation events now create runtime refs on demand, attach and detach ref nodes through the recovered world light/sound lists, and apply direct or parent-transformed positions before setter-specific field updates.
-  - `zRndr::InitGlobals` resets software renderer span/perspective/fog/framebuffer globals, installs the recovered blit callback address, and falls back graphics flags to the recovered default `-1`.
-  - `zSnd_PreInitializeRuntimeState` is the one-shot sound runtime preinit gate; it binds `SoundLOD`, `MuteSound`, and `SoundVolume` option pointers to live option entries or recovered local defaults.
-  - `zWepInit` resets OptCatalog runtime state and registers the `Weapons` ZBD section callbacks when the recovered registration gate is enabled.
-  - zImage init and font loading now cover mission-resource path setup, zReader loaded-tree cleanup, glyph rectangle scanning, transparent-column detection, texture-pack lookup/read, alpha-map zero clearing, image header/data reads, and no-recipe palette remap expansion.
-  - `zModel_MatlBuffer::WriteGameZ` writes the four material-pool header globals, serializes a copied pool with 0x0100 texture refs converted to texture-directory indices, then writes 0x0400 cycle records and converted frame-table indices.
-  - `zModel_MatlBuffer::ReadGameZ` reads the four material-pool header globals, malloc/reallocs `g_zModel_MatlPool` only when needed, restores 0x0100 texture refs through `zImage::TexIndexToDirEntry`, packs non-textured RGB floats to the 16-bit material color field, and allocates/restores 0x0400 cycle records plus frame tables; `build/verification/zmodel_matlbuffer_read_gamez/4808c0_diff.txt` remains pending due modern register/error-tail/loop codegen.
-  - `zModel_MatlSlot::IndexFromPtrOrMinus1` returns -1 for null and otherwise pointer-diffs against `g_zModel_MatlPool`; `build/verification/zmodel_matlslot_index_from_ptr_or_minus1/4805b0_diff.txt` shows only equivalent reciprocal-divide scheduling/direct-load differences from BN.
-  - `zModel_DiPool::WriteToStream` writes DI pool header/table data, serializes dynamic vertex/point/entry arrays, converts entry material pointers through `zModel_MatlSlot::IndexFromPtrOrMinus1`, writes per-entry index and UV arrays, patches live `nextFreeIndex` fields to dynamic-data file offsets, then seeks back to rewrite the table.
-  - `zModel_DiPool::ReadFromStream` reads DI pool header/table data, malloc/reallocs `g_zModel_DiPoolBase`, restores each slot's vertex/normal/blend/point/entry arrays, converts serialized material indices through `zModel_Matl::GetPoolEntry`, restores polygon index/UV arrays, and repacks point RGB into the low 16 bits of `packedColor16`; `build/verification/zmodel_dipool_read_*` diffs remain pending due modern error-tail/loop/x87 codegen.
-  - `Time::Reset` clears the recovered frame/current-time accumulators and seeds current time from `GetTickCount() * 0.00100000005f`.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x48b820 zNetwork_ApplyPkt01_PlayerColorAssignments
+  - 0x46f970 zInput::Keyboard_SetRawEventCallback
+  - 0x471f60 zInput::DI_EnumDevicesCallback_SelectFirstJoystick
+  - 0x458af0 zEffect::SetConditionalRefPos
+  - 0x458e10 zEffect::HandleSampleRefOffsetEvent
+  - 0x458eb0 zEffect::HandleEffectTemplateOffsetEvent
+  - 0x458f70 zEffect::HandleSoundEvent
+  - 0x459080 zEffect::HandleLightEvent
+  - 0x45c240 zEffect::HandleEmitterStopEvent
+  - 0x45c2f0 zEffect::HandleEmitterResetEvent
+  - 0x45c310 zEffect::HandleEmitterLoopEvent
+  - 0x45c640 zEffect::GetConditionalRefPosDistanceSq
+  - 0x45c6b0 zEffect::SkipConditionalChainToEnd
+  - 0x45c6e0 zEffect::HandleNoOpMarkerEvent
+  - 0x45c6f0 zEffect::HandleCallbackEvent
+  - 0x45bf60 zEffect::CleanupLightRefs
+  - 0x45bfd0 zEffect::CleanupSoundRefs
+  - 0x45d240 zEffect_Anim::CaptureNodeStates
+  - 0x45d310 zEffect_Anim::RestoreNodeStates
+  - 0x45d6c0 zEffectAnim::ResetForNode
+  - 0x447dc0 zClass_Class::gwNodeSetName
+  - 0x447e30 zClass_Class::gwNodeGetName
+  - 0x4483f0 zClass_Class::AddChild
+  - 0x4497b0 gwNode::GetWorldPosition
+  - 0x449850 gwNode::TransformPoint
+  - 0x4510e0 zClass_World::AddChildAtGrid
+  - 0x451360 zClass_World::AddLight
+  - 0x451590 zClass_World::AddSound
+  - 0x451b20 zClass_cls_util::CopyNodeDisplayInstance
+  - 0x451bd0 zClass_cls_util::CopyNodeBaseData
+  - 0x451f70 zClass_cls_util::CopyCameraNode
+  - 0x4520c0 zClass_cls_util::CopyLightNode_Unimplemented
+  - 0x4520e0 zClass_cls_util::CopySoundNode_Unimplemented
+  - 0x452100 zClass_cls_util::CopyObject3DNode
+  - 0x452230 zClass_cls_util::CopyAnimateNode_Unimplemented
+  - 0x452250 zClass_cls_util::CopyLodNode
+  - 0x4523c0 zClass_cls_util::CopySequenceNode_Unimplemented
+  - 0x4523e0 zClass_cls_util::CopySwitchNode_Stub
+  - 0x452400 zClass_cls_util::CopyNodeDispatch
+  - 0x452500 zClass_cls_util::CopyNodeWithCloneOptions
+  - 0x452560 zClass_cls_util::CopyNode
+  - 0x453b40 zClass_Animate::AddChild
+  - 0x4529c0 zClass_Sound::gwSoundNew
+  - 0x452bc0 zClass_Sound::SetSampleSetByName
+  - 0x452d00 zClass_Sound::gwSoundSetPosition
+  - 0x480c80 zModel_Material::HasAuxData
+  - 0x480600 zModel_MatlBuffer::WriteGameZ
+  - 0x4808c0 zModel_MatlBuffer::ReadGameZ
+  - 0x4812b0 zModel_Material::Clone
+  - 0x4812c0 zModel_MatlBuffer::CloneToActiveSlot
+  - 0x4815c0 zModel_DiPool::WriteToStream
+  - 0x481bc0 zModel_DiPool::ReadHeaderFromStream
+  - 0x481c50 zModel_DiPool::ReadEntryDynamicDataFromStream
+  - 0x481fa0 zModel_DiPool::ReadFromStream
+  - 0x482080 zModel_DiPool::AllocFromFreeList
+  - 0x482270 zDi::CloneToInstance
+  - 0x4826b0 zDi::SetClonedFlag
+  - 0x483a60 zDi::HasSpecialFlagsOrAuxMaterialData
+  - 0x484230 zDi::ResetCurrentVariant
+  - 0x45ff10 zEffectAnim::FindEntryByName
+  - 0x45d7a0 zEffectAnim::ResetActivationPrereqCount
+  - 0x45db20 zEffectAnim::CheckActivationPrereqs
+  - 0x45e280 zEffectAnim::FindSoundRefIndexByName
+  - 0x45e300 zEffectAnim::FindLightRefIndexByName
+  - 0x45e380 zEffectAnim::FindOrCreateSoundRef
+  - 0x45e4a0 zEffectAnim::FindOrCreateLightRef
+  - 0x45e5c0 zEffectAnim::ResolveNodeByName
+  - 0x45e650 zEffectAnim::FindNodeRecursiveByName
+  - 0x45e6d0 zEffectAnim::EnsureCopiedRootTree
+  - 0x45e730 zEffectAnim::CloneEntryForNode
+  - 0x45ed80 zEffectAnim::RebindEntryToNode
+  - 0x460400 zEffect_Anim::HasActivationRecord
+  - 0x460470 zEffect_Anim::GetActivationRecordCount
+  - 0x460480 zEffect_Anim::GetActivationRecordAt
+  - 0x460ae0 zEffect_Anim::AllocActivationRecord
+  - 0x461800 zEffect_Anim::GetActivationRecordPackedSize
+  - 0x461970 zEffectAnim::QueueCmdType1TransformRotVelocity
+  - 0x461a90 zEffect_Anim::DiscardLastActivationRecord
+  - 0x461aa0 zEffectAnim::QueueCmdType2Velocity
+  - 0x461ba0 zEffectAnim::QueueCmdType3PositionRefAndVelocity
+  - 0x461d00 zEffectAnim::QueueCmdType4TransformRefs
+  - 0x461eb0 zEffect_Anim::SetActivationDispatchContext
+  - 0x461ec0 zEffect::FindNodeUserDataRecursive
+  - 0x461f00 zEffect::SpawnRuntimeInstanceAt
+  - 0x461f50 zEffect::ActivateRuntimeEntryAtPosition
+  - 0x462050 zEffect::ComputeDistanceSqToListener
+  - 0x4620d0 zEffect::AcquireRuntimeEntryByIndex
+  - 0x462130 zEffect::CloneRuntimeEntryFromTemplate
+  - 0x4621b0 zEffect::RuntimeNodeActionCallback
+  - 0x498bd0 zRndr_DrawImmediateLine
+  - 0x498c00 zRndr_DrawClippedImmediateLineStrip
+  - 0x48ca70 zArchiveList_RemovePayload
+  - 0x48cb00 zArchiveList_FindNodeByPayload
+  - 0x48cc20 zArchiveList_FindPayloadByValue
+- Next action:
+  - `python tools/recoil_status.py 0x48b820`
 
 ### Group: RecoilApp display init leaf helpers
 
 - Anchor: 0x42e330 RecoilApp::InitializeDisplay
-- Reason: dependency closure / shared video-render option state
-- Source files:
-  - src/GameZRecoil/zGame/zGame.h
-  - src/GameZRecoil/zGame/zGame.cpp
-  - src/GameZRecoil/zRndr/zRndr.h
-  - src/GameZRecoil/zRndr/zRndr.cpp
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/zrndr_tests.cpp
-  - tests/native/zvideo_tests.cpp
-- Plan entries:
-  - 0x42e330 RecoilApp::InitializeDisplay - source blocked by display/video startup callees
-  - 0x4a66e0 zVideo::GetDisplayModeBpp - Reimplemented / Binary-safe pending
-  - 0x4a66f0 zVideo::Init_ApplyModeIndex - Reimplemented / Binary-safe pending
-  - 0x4a75f0 zVideo::InitVideoSystem - Reimplemented / Binary-safe pending
-  - 0x408650 zOpt::GetDisplaySection - Reimplemented / Binary-safe verified
-  - 0x408660 zOpt_DisplaySection_GetWidth - Reimplemented / Binary-safe verified
-  - 0x408670 zOpt_DisplaySection_GetHeight - Reimplemented / Binary-safe verified
-  - 0x408690 zOpt::GetDisplaySectionBitsPerPixel - Reimplemented / Binary-safe verified
-  - 0x4086a0 zOpt::GetVideoStrideValue - Reimplemented / Binary-safe verified
-  - 0x4086c0 zOpt::GetWindowSection - Reimplemented / Binary-safe verified
-  - 0x4086d0 zOpt::GetWindowSectionHeight - Reimplemented / Binary-safe verified
-  - 0x4903e0 zRndr::SetVideoStrideMirrors - Reimplemented / Binary-safe pending
-  - 0x490340 zRndr::SetFrameBufferRegion - Reimplemented / Binary-safe pending
-  - 0x490600 zRndr::SpanOcclusionResetFrame - Reimplemented / Binary-safe pending
-  - 0x490780 zRndr::SpanOcclusionShutdown - Reimplemented / Binary-safe pending
-  - 0x4a6760 zVideo::CallClearSwSurfaceAndZBuffer - Reimplemented / Binary-safe pending
-  - 0x4a6830 zVideo::CallClearPrimarySurfaceAndZBuffer - Reimplemented / Binary-safe pending
-  - 0x4a7990 zVideo::Init_SetSurfaceGeometryFromModeIndex - Reimplemented / Binary-safe pending
-  - 0x4a7af0 zVideo::SetVideoMode - Reimplemented / Binary-safe pending
-  - 0x4a7b20 zVideo::ExchangeClearScreenBufferEnabled - Reimplemented / Binary-safe pending
-  - 0x4a7b30 zVideo::GetClearScreenBufferEnabled - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - 0x4a75f0 zVideo::InitVideoSystem - display system startup path
-  - 0x490520 zRndr::SpanOcclusionInit - span setup closure
-  - 0x48ff70 zVid::InitFrameScratchBuffers - noise/span routine setup
-  - 0x48d340 zVid::Noise_InitBuffers - Reimplemented / Binary-safe pending
-  - 0x48d450 zRndr::OverlayBlendRow555_Scalar - Reimplemented / Binary-safe pending
-  - 0x49e140 zRndr::SpanMmxSetPixelFormatMasks - Reimplemented / Binary-safe pending
-  - 0x490480 zRndr::SetPerspectiveAdaptiveSpanParams - Reimplemented / Binary-safe pending
-  - 0x4a6bb0 zVideo::PixelPack_GetRgbMasks - Reimplemented / Binary-safe pending
-  - 0x4a6bd0 zVideo::PixelPack_GetPackingParams - Reimplemented / Binary-safe pending
-  - 0x4b3050 zSys::CheckCpuSignatureMask - Reimplemented / Binary-safe verified
-- Verification target:
-  - ninja-x86-debug/release CTest; later zGame/zRndr/zVideo listing comparison
-- Notes:
-  - 0x42e330 uses these helpers in the startup display warmup clear path after zVideo::InitVideoSystem succeeds.
-  - The startup dispatch slots for OpenVideoMode, SetVideoMode, and CreateTextureRecord now point at rebuilt callable functions in source; unrelated dispatch slots may still carry original-address placeholders.
-
-### Group: Turret runtime leaf helpers
-
-- Anchor: 0x42e430 RecoilApp::ShutdownEngine
-- Reason: dependency closure / shared turret runtime globals
-- Source files:
-  - src/GameZRecoil/include/OptCatalog.h
-  - src/GameZRecoil/zWeapon/OptCatalog.c
-  - src/GameZRecoil/zTurret/zTurret.h
-  - src/GameZRecoil/zTurret/zTurret.cpp
-  - tests/native/zturret_tests.cpp
-- Plan entries:
-  - 0x437aa0 zTurret_System::ResetIterationState - Reimplemented / Binary-safe pending
-  - 0x4b1f90 OptCatalog::FreeTrailRuntimeStateStorage - Reimplemented / Binary-safe pending
-  - 0x436e00 zTurret_Runtime::Shutdown - Reimplemented / Binary-safe pending
-  - 0x437dc0 zTurret_System::FreeAllRuntimes - Reimplemented / Binary-safe pending
-  - 0x437ab0 zTurret_System::Shutdown - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug/release CTest; later zTurret listing comparison
-- Notes:
-  - StartEngine prints PASSED when this helper returns zero.
-  - ShutdownEngine frees turret runtime records, the loaded definition tree, and the optional callback node through this chain.
-
-### Group: zLoc startup message lookup
-
-- Anchor: 0x42e220 RecoilApp::StartEngine
-- Reason: dependency closure / source file cluster
-- Source files:
-  - src/GameZRecoil/zLoc/zLoc.h
-  - src/GameZRecoil/zLoc/zLoc.cpp
-  - tests/native/zloc_tests.cpp
-- Plan entries:
-  - 0x4a5b20 zLoc::GetMessageId - Reimplemented / Binary-safe verified
-  - 0x4a5b40 zLoc::ResolveMessageKeyOrFallback - Reimplemented / Binary-safe verified
-  - 0x4a5b60 zLoc::FormatMessage - Reimplemented / Binary-safe verified
-  - 0x4a5bf0 zLoc::GetMessageString - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - Windows FormatMessageA/LocalFree import provider
-- Verification target:
-  - ninja-x86-debug/release CTest; later import/provider and listing comparison
-- Notes:
-  - StartEngine uses this pair only for the display-init failure message box.
-  - 0x4a5b60 is the recovered variadic cdecl helper rather than fastcall; `build/verification/4a5b60_diff.txt` shows matching stack ABI, two-local vararg/source-handle setup, Win32 `FormatMessageA`, CR trimming, conditional copy/free, and only register/order spelling differences.
-  - 0x4a5bf0 now calls the cdecl `zLoc::FormatMessage`; `build/verification/4a5bf0_diff.txt` differs by branchless null-or-temp-buffer return lowering only.
-  - 0x4a5b20 and 0x4a5b40 are verified against `build/verification/4a5b20_diff.txt` and `build/verification/4a5b40_diff.txt`; differences are branch/tail-call spelling only.
-
-### Group: zDEClient shutdown globals
-
-- Anchor: 0x42e430 RecoilApp::ShutdownEngine
-- Reason: dependency closure / shared feature list and map-tree state
-- Source files:
-  - src/GameZRecoil/zDEClient/zdec.h
-  - src/GameZRecoil/zDEClient/zdec_init.cpp
-  - src/GameZRecoil/include/zDi.h
-  - src/GameZRecoil/include/zImage.h
-  - src/GameZRecoil/zImage/zimg_texture.cpp
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-  - src/Battlesport/zModel/gdi.c
-  - tests/native/zgame_tests.cpp
-  - tests/native/zimage_tests.cpp
-  - tests/native/zdeclient_tests.cpp
-- Plan entries:
-  - 0x458510 zDEClient_MapTreeState::DestroySubtree - Reimplemented / Binary-safe pending
-  - 0x4588c0 zDEClient_MapTreeState::IterNextNodeRef - Reimplemented / Binary-safe pending
-  - 0x457fe0 zDEClient_MapTreeState::EraseAndAdvance - Reimplemented / Binary-safe pending
-  - 0x457e80 zDEClient_MapTreeState::EraseRange - Reimplemented / Binary-safe pending
-  - 0x457ae0 zDEClient::ClearFeatureEntriesAndMapTree - Reimplemented / Binary-safe pending
-  - 0x455e40 zDEClient::ShutdownGlobals - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug/release CTest; later zdec_init listing comparison
-- Notes:
-  - ShutdownGlobals only acts when g_zDEClient_QuickSandEnabled is nonzero, then clears feature entries, frees quicksand/crater allocations, and resets the enable flag.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4a7b30 zVideo::GetClearScreenBufferEnabled
+  - 0x48d450 zRndr::OverlayBlendRow555_Scalar
+- Next action:
+  - `python tools/recoil_status.py 0x4a7b30`
 
 ### Group: zDEClient config resource load closure
 
 - Anchor: 0x4558f0 zDEClient::LoadConfigResources
-- Reason: dependency closure / config-resource loader fanout through camera globals, material cycle setup, image texture directory helpers, and zReader-driven configuration
-- Source files:
-  - src/GameZRecoil/zDEClient/zdec.h
-  - src/GameZRecoil/zDEClient/zdec_init.cpp
-  - src/GameZRecoil/include/zClass.h
-  - src/GameZRecoil/zClass/cls_world.c
-  - src/GameZRecoil/include/zDi.h
-  - src/GameZRecoil/zModel/zModel.h
-  - src/GameZRecoil/zModel/zModel.cpp
-  - src/GameZRecoil/zModel/gmod_const.c
-  - src/GameZRecoil/zGeometry/zGeometry.h
-  - src/GameZRecoil/zGeometry/zgeo_convexify.cpp
-  - src/GameZRecoil/zGeometry/zgeo_model.cpp
-  - src/GameZRecoil/zGeometry/zgeo_weiler.cpp
-  - src/GameZRecoil/include/zImage.h
-  - src/GameZRecoil/zImage/zimg_texture.cpp
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-  - tests/native/zdeclient_tests.cpp
-  - tests/native/zimage_tests.cpp
-  - tests/native/zvideo_tests.cpp
-- Plan entries:
-  - 0x4558f0 zDEClient::LoadConfigResources - Reimplemented / Binary-safe pending
-  - 0x455ef0 zDEClient_QSand::InstanceEventMaybeRelay - Reimplemented / Binary-safe pending
-  - 0x458aa0 zDEClient::SetCameraNode - Reimplemented / Binary-safe verified
-  - 0x455dd0 zDEClient::LoadMaterialFromTexturePath_Local - Reimplemented / Binary-safe verified
-  - 0x480c40 zModel_Material::ResetDefaults - Reimplemented / Binary-safe verified
-  - 0x481050 zModel_Material::SetCycleTextureCount - Reimplemented / Binary-safe verified
-  - 0x481260 zModel_Material::SetCycleTextureSpeed - Reimplemented / Binary-safe verified
-  - 0x481220 zModel_Material::SetCycleTextureLoop - Reimplemented / Binary-safe verified
-  - 0x46d4c0 zImage::GetDefaultImageRefPtr - Reimplemented / Binary-safe verified
-  - 0x46d810 zImage::TexDir_FindOrAppendByPath - Reimplemented / Binary-safe verified
-  - 0x481100 zModel_Material::AddCycleTexture - Reimplemented / Binary-safe verified
-  - 0x480ca0 zModel_Material::FindOrClone - Reimplemented / Binary-safe verified
-  - 0x480d20 zModel_Material::CompareForReuse - Reimplemented / Binary-safe verified
-  - 0x481040 zModel_Material::SetUserTag - Reimplemented / Binary-safe verified
-  - 0x46d4d0 zImage::FindTexDirEntryByName - Reimplemented / Binary-safe verified
-  - 0x46de50 zImage::TexDir_LoadPendingEntries - Reimplemented / Binary-safe pending
-  - 0x46df50 zVid_TexturePack_EnsureBuiltinTexturePacksLoaded - Reimplemented / Binary-safe pending
-  - 0x46e3e0 zImage_TexDirEntry::BuildMipChain - Reimplemented / Binary-safe pending
-  - 0x479cc0 OptCatalog_IsDamageMaskSlotPtrRegistered - Reimplemented / Binary-safe verified
-  - 0x4902b0 zVid_Image::CalcPow2ScratchFields - Reimplemented / Binary-safe verified
-  - 0x481420 zModel_Material::FindByTexDirEntry - Reimplemented / Binary-safe verified
-  - 0x457b40 zDEClient::WriteFeatureSectionsToZAR - Reimplemented / Binary-safe pending
-  - 0x457750 zDEClient::ClearFeatureDisplayNodes - Reimplemented / Binary-safe pending
-  - 0x457840 zDEClient::AppendFeatureEntry - Reimplemented / Binary-safe pending
-  - 0x457d90 zDEClient_MapTreeState::FindOrInsertKey - Reimplemented / Binary-safe pending
-  - 0x4575f0 zDEClient::SubmitFeatureGeometry - Reimplemented / Binary-safe pending
-  - 0x450a00 zClass_World::GetAreaPartitionAtGrid - Reimplemented / Binary-safe verified
-  - 0x481530 zModel_Const::GetVertexMergeEpsilon - Reimplemented / Binary-safe verified
-  - 0x481540 zModel_Const::SetVertexMergeEpsilon - Reimplemented / Binary-safe verified
-  - 0x46af00 zGeometry_ClipPatchOutput::Create - Reimplemented / Binary-safe verified
-  - 0x46af20 zGeometry_ClipPatchOutput::Destroy - Reimplemented / Binary-safe verified
-  - 0x46ae40 zGeometry_ClipPatchOutput::ApplyNodeDiPairs - Reimplemented / Binary-safe pending
-  - 0x46af40 zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition - Reimplemented / Binary-safe pending
-  - 0x46b1f0 zGeometry_Model::ClipPatch - Reimplemented / Binary-safe pending
-  - 0x458ae0 zDEClient::GetCameraNode - Reimplemented / Binary-safe verified
-  - 0x458ac0 zDEClient::GetFeatureGridCell - Reimplemented / Binary-safe verified
-  - 0x455ea0 zDEClient_QSand::DestroyFeature - Reimplemented / Binary-safe verified
-  - 0x456ad0 zDEClient_Crater::DestroyFeature - Reimplemented / Binary-safe pending
-  - 0x456b00 zDEClient_Crater::InitEventTemplateDefaults - Reimplemented / Binary-safe pending
-  - 0x456b20 zDEClient_Crater::InstanceEvent - source present; Reimplemented pending zEffectAnim activation closure acceptance
-  - 0x456c50 zDEClient_Crater::InstanceEventMaybeRelay - source present; Reimplemented pending 0x456b20 acceptance
-  - 0x456c80 zDEClient_Crater::InitFeatureFromEventTemplate - Reimplemented / Binary-safe pending
-  - 0x4563d0 zDEClient_QSand::CreateFeatureStructFromEventTemplate - Reimplemented / Binary-safe pending
-  - 0x457040 zDEClient_Crater::CreateFeatureStructFromEventTemplate - Reimplemented / Binary-safe pending
-  - 0x4570e0 zDEClient_Crater::Build - Reimplemented / Binary-safe pending
-  - 0x457140 zDEClient_Crater::CreateFeature - Reimplemented / Binary-safe pending
-  - 0x450790 zClass_World::WorldToGridCoordsClamped - Reimplemented / Binary-safe pending
-  - 0x456010 zDEClient_QSand::InitFeatureFromEventTemplate - Reimplemented / Binary-safe pending
-  - 0x456450 zDEClient_QSand::Build - Reimplemented / Binary-safe pending
-  - 0x4564b0 zDEClient_QSand::CreateFeature - Reimplemented / Binary-safe pending
-  - 0x46a5e0 zGeometry_Vec3Array::RotateNeg90AroundX - Reimplemented / Binary-safe pending
-  - 0x46a600 zGeometry_Vec3Array::RotatePos90AroundX - Reimplemented / Binary-safe pending
-  - 0x46a9c0 zGeometry_Vec3Array::ComputeBoundsXY - Reimplemented / Binary-safe pending
-  - 0x469e50 zGeometry_Vec3::IsNearEqualXY - Reimplemented / Binary-safe pending
-  - 0x469e90 zGeometry_Vec3::SnapPointToSegmentXYIfNear - Reimplemented / Binary-safe pending
-  - 0x46a130 zGeometry_Polygon::SnapPointsXYIfNear - Reimplemented / Binary-safe pending
-  - 0x46a620 zGeometry_Bounds2D::OverlapsWithUnitMargin - Reimplemented / Binary-safe pending
-  - 0x46a690 zGeometry_Model::FindOrCreateRandomDebugMaterial - Reimplemented / Binary-safe pending
-  - 0x46a770 zGeometry_Model::AddPolygonToDi - Reimplemented / Binary-safe pending
-  - 0x46a7f0 zGeometry_Model::BuildPolygonUvList - Reimplemented / Binary-safe pending
-  - 0x46a8e0 zGeometry_Polygon::SolveUvAxisCoefficientsXZ - Reimplemented / Binary-safe pending
-  - 0x46ab40 zGeometry_ClipPolygon::FindPointIndexXY - Reimplemented / Binary-safe pending
-  - 0x46ac80 zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex - Reimplemented / Binary-safe pending
-  - 0x46ab90 zGeometry_ClipPolygon::UpsertPointListXY - Reimplemented / Binary-safe pending
-  - 0x464790 zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints - Reimplemented / Binary-safe pending
-  - 0x464810 zGeometry_Weiler::ClipPointList - Reimplemented / Binary-safe pending
-  - 0x46bb90 zGeometry_Model::IsFullyInsideClipPolygonXY - Reimplemented / Binary-safe pending
-  - 0x4826a0 zUtil::StoreInt32 - Reimplemented / Binary-safe pending
-  - 0x46aa40 zGeometry_ClipPolygon::CreateFromPointList - Reimplemented / Binary-safe pending
-  - 0x46aab0 zGeometry_ClipPolygon::CopyPointsOutRotatedBack - Reimplemented / Binary-safe pending
-  - 0x46ab10 zGeometry_ClipPolygon::FinalizeAndDestroy - Reimplemented / Binary-safe pending
-  - 0x46b030 zGeometry_ClipPolygon::SnapPointsNearNodeModelXY - Reimplemented / Binary-safe pending
-  - 0x464680 zGeometry_Weiler::Init - Reimplemented / Binary-safe pending
-  - 0x464670 zGeometry_Weiler::GetInputContourAPointList - Reimplemented / Binary-safe pending
-  - 0x464b30 zGeometry_WeilerClipOutput::Destroy - Reimplemented / Binary-safe pending
-  - 0x464b90 zGeometry_Weiler::InitInputContourPair - Reimplemented / Binary-safe pending
-  - 0x4647d0 zGeometry_Weiler::DestroyState - Reimplemented / Binary-safe pending
-  - 0x4676c0 zGeometry_Weiler::EnsureContourOutput - Reimplemented / Binary-safe pending
-  - 0x467710 zGeometry_Weiler::MergeContours - Reimplemented / Binary-safe pending
-  - 0x464c90 zGeometry_Weiler::ClassifyInputContourPairBounds - Reimplemented / Binary-safe pending
-  - 0x464ea0 zGeometry_Weiler::OutputPreclassifiedContourPairResult - Reimplemented / Binary-safe pending
-  - 0x4681a0 zGeometry_Weiler::OutputContoursForClipMode - Reimplemented / Binary-safe pending
-  - 0x4682c0 zGeometry_Weiler::OutputContourToPolygonSet - Reimplemented / Binary-safe pending
-  - 0x468650 zGeometry_Weiler::CreateForwardSegmentPairAtPoint - Reimplemented / Binary-safe pending
-  - 0x468700 zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA - Reimplemented / Binary-safe pending
-  - 0x4687b0 zGeometry_Weiler::GenerateOutsideResults - Reimplemented / Binary-safe pending
-  - 0x4680b0 zGeometry_Weiler::NewContour - Reimplemented / Binary-safe pending
-  - 0x468a10 zGeometry_Weiler::ClassifyPointInContourPointListXY - Reimplemented / Binary-safe pending
-  - 0x469430 zGeometry_Weiler::GetNextContourSegmentForTraversal - Reimplemented / Binary-safe pending
-  - 0x469ae0 zGeometry_WeilerBuffer::SetCountAndAppendPtr - Reimplemented / Binary-safe pending
-  - 0x469a30 zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs - Reimplemented / Binary-safe pending
-  - 0x468470 zGeometry_Weiler::BuildPointSideTablesForContourPair - Reimplemented / Binary-safe pending
-  - 0x464f70 zGeometry_Weiler::PreclassifyInputContourPair - Reimplemented / Binary-safe pending
-  - 0x465ac0 zGeometry_Weiler::ClassifyContainedContour - Reimplemented / Binary-safe pending
-  - 0x468580 zGeometry_Weiler::DivideContourSegmentAtPoint - Reimplemented / Binary-safe pending
-  - 0x468c40 zGeometry_Weiler::Intersect2d - Reimplemented / Binary-safe pending
-  - 0x468fa0 zGeometry_Weiler::ClassifyIntersect2d - Reimplemented / Binary-safe pending
-  - 0x4683a0 zGeometry_Weiler::TogglePointAxesForContourSource - Reimplemented / Binary-safe pending
-  - 0x469af0 zGeometry_Weiler::RestorePointTranslation - Reimplemented / Binary-safe pending
-  - 0x469b60 zGeometry_Weiler::RestoreOutputZFromInputPlane - Reimplemented / Binary-safe pending
-  - 0x469ca0 zGeometry_Vec3::IsBetweenEndpointsXY - Reimplemented / Binary-safe pending
-  - 0x469d60 zGeometry_Weiler::SelectForwardStartPointInContourA - Reimplemented / Binary-safe pending
-  - 0x469450 zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment - Reimplemented / Binary-safe pending
-  - 0x469560 zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair - Reimplemented / Binary-safe pending
-  - 0x46a1f0 zGeometry_Weiler::ValidateXings - Reimplemented / Binary-safe pending
-  - 0x468410 zGeometry_WeilerContourSegment::UpdateBounds - Reimplemented / Binary-safe pending
-  - 0x4693a0 zGeometry_WeilerContourSegmentArray::UpdateBounds - Reimplemented / Binary-safe pending
-  - 0x4693c0 zGeometry_WeilerContourSegmentArray::InitFromPointList - Reimplemented / Binary-safe pending
-  - 0x469960 zGeometry_Weiler::RecenterPointSetsIfOutOfRange - Reimplemented / Binary-safe pending
-  - 0x467600 zGeometry_WeilerBuffer::Init - Reimplemented / Binary-safe pending
-  - 0x467660 zGeometry_WeilerBuffer::GetAppendSpace - Reimplemented / Binary-safe pending
-  - 0x467630 zGeometry_WeilerBuffer::Destroy - Reimplemented / Binary-safe pending
-  - 0x46b550 zGeometry_ClipPolygon::ProcessNodePolygonSetXY - Reimplemented / Binary-safe pending
-  - 0x46b650 zGeometry_Model::GetLinearBufferOfPolygonVertices - Reimplemented / Binary-safe pending
-  - 0x46b6d0 zGeometry_Model::ProcessClipPatchNode - Reimplemented / Binary-safe pending
-  - 0x46ba90 zGeometry_Model::AddPointListPolygonToDi - Reimplemented / Binary-safe pending
-  - 0x46bb30 zGeometry_Model::AddIndexedPolygonToDi - Reimplemented / Binary-safe pending
-  - 0x46bd50 zGeometry_TriangulateHole::TryAppendBridgeEdge - Reimplemented / Binary-safe pending
-  - 0x46be20 zGeometry_Segment::IntersectsSegmentXY - Reimplemented / Binary-safe pending
-  - 0x46bf30 zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex - Reimplemented / Binary-safe pending
-  - 0x46bf70 zGeometry_TriangulateHole::FindActiveEdgeState - Reimplemented / Binary-safe pending
-  - 0x46bfc0 zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair - Reimplemented / Binary-safe pending
-  - 0x46c070 zGeometry::TriangulatePolygonWithHole - Reimplemented / Binary-safe pending
-  - 0x46c390 zGeometry_TriangulateHole::CacheCombinedPlane - Reimplemented / Binary-safe pending
-  - 0x46c3a0 zGeometry_Vec3Array::ComputeNewellPlane - Reimplemented / Binary-safe pending
-  - 0x46c570 zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane - Reimplemented / Binary-safe pending
-  - 0x46c5b0 zGeometry_Vec3Array::ReversePoints - Reimplemented / Binary-safe pending
-  - 0x46c620 zGeometry_Vec3Array::EnsurePositiveCrossZ - Reimplemented / Binary-safe pending
-  - 0x46c720 zGeometry_ConvexPolygonSet::Destroy - Reimplemented / Binary-safe pending
-  - 0x46c760 zGeometry_Polygon::Convexify - Reimplemented / Binary-safe pending
-  - 0x46cb50 zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive - Reimplemented / Binary-safe pending
-  - 0x46ced0 zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal - Reimplemented / Binary-safe pending
-  - 0x483610 zDi::AddPolygon - Reimplemented / Binary-safe pending
-  - 0x483650 zDi::AddPolygonEx - normal append source path present; full split/generated-UV implementation pending
-- Blocking dependencies:
-  - zEffectAnim stop/activation closure - 0x456b20 now calls zEffectAnim::SetTransformRotAndVelocity_Thunk, but the thunk depends on the broader zEffect sequence runner closure before acceptance
-- Verification target:
-  - ninja-x86-release native smoke plus per-function listing comparisons
-- Notes:
-  - zDEClient::LoadConfigResources now loads crater display-source defaults and texture/animation mappings from `declient.zrd`, builds quicksand texture/cycle materials, loads pending texture-directory entries when needed, frees the reader tree, and registers the `zDEClient` ZAR handler through real callback symbols; focused `ninja-x86-release` native smoke and raw-address/raw-assembly CTests passed.
-  - zDEClient_Crater::InstanceEvent now uses the recovered `zEffectAnim::SetTransformRotAndVelocity_Thunk` source path instead of queueing only an activation record; focused `ninja-x86-release` native smoke and guard CTests passed after the zEffectAnim source additions.
-  - zDEClient::SetCameraNode stores the non-null camera node and its classData pointer into `g_zDEClient_CameraNode`/`g_zDEClient_CameraNodeClassData`; `build/verification/zdeclient_set_camera_node/458aa0_diff.txt` is binary-safe with only symbolic address/label spelling and `ret` formatting differences.
-  - zImage::FindTexDirEntryByName scans nonzero-loadState texture directory entries by 0x14-byte baseName at entry+0x08; `build/verification/zimage_find_texdir_entry_by_name/46d4d0_diff.txt` is binary-safe with equivalent inline strcmp equality semantics despite cached count and nonzero compare-result spelling differences.
-  - zImage::TexDir_FindOrAppendByPath temporarily strips/restores the last dot extension for lookup, appends at `g_zImage_TexDirEntryCount`, writes baseName through TexDirSetBaseNameFromPath, and sets loadState 2; `build/verification/zimage_texdir_find_or_append_by_path/46d810_diff.txt` is binary-safe with only equivalent branch ordering and import-symbol spelling differences.
-  - zModel_Material::ResetDefaults preserves high material flags, clears texture/cycle/user tag, sets default RGB 255.0f, scalar fields 0.5f/0.0f, and packedColor 0x7fff; `build/verification/zmodel_material_reset_defaults/480c40_diff.txt` is binary-safe because the x87 constant stores produce the same canonical float bit patterns and no live x87 stack remains.
-  - zModel_Material::FindByTexDirEntry walks `g_zModel_MatlActiveHeadIndex` through `nextPoolIndex` and returns the embedded material at slot offset 0; `build/verification/zmodel_material_find_by_texdir_entry/481420_diff.txt` is binary-safe with equivalent stride arithmetic and branch spelling.
-  - zModel_Material::CompareForReuse quick-rejects texture-directory mismatch, compares the first 0x20 material bytes, promotes a nonzero user tag into the zero side, and otherwise returns 1 for conflicting nonzero tags; `build/verification/zmodel_material_compare_for_reuse/480d20_diff.txt` is binary-safe with equivalent inlined memcmp/register allocation differences.
-  - zImage::GetDefaultImageRefPtr returns the address of the default image pointer symbol, which the material cycle table uses as a degenerate default texture reference; `build/verification/zimage_get_default_image_ref_ptr/46d4c0_diff.txt` differs only by relocated symbol spelling.
-  - zModel_Material::FindOrClone checks the MRU reuse cache, then the active material slot list, then clones and updates the cache; `build/verification/zmodel_material_find_or_clone/480ca0_diff.txt` is binary-safe with equivalent slot-stride codegen and register allocation.
-  - zModel_Material::SetUserTag, SetCycleTextureCount, AddCycleTexture, SetCycleTextureLoop, and SetCycleTextureSpeed now cover the cycle setup path; `build/verification/zmodel_material_set_*` and `zmodel_material_add_cycle_texture` diffs are binary-safe after forcing SetCycleTextureSpeed to copy raw float bits like BN.
-  - zDEClient::LoadMaterialFromTexturePath_Local reuses an existing texdir material or appends a texdir entry and clones a default material flagged 0x0100; `build/verification/zdeclient_load_material_from_texture_path_local/455dd0_diff.txt` is binary-safe after disabling GS for the 0x28-byte local material temporary.
-  - zVid_TexturePack_EnsureBuiltinTexturePacksLoaded reopens existing builtin pack handles and allocates/selects the initial builtin texture pack name through the renderer-memory or texture-memory option fallback ladder; `build/verification/zvid_texture_pack_ensure_builtin_texture_packs_loaded/46df50_diff.txt` remains binary-safe pending due the large code-shape difference.
-  - OptCatalog_IsDamageMaskSlotPtrRegistered scans the three `g_OptCatalogDamageMaskHandles` slots and returns 1 on a pointer match, including null if a slot is null; `build/verification/optcatalog_is_damage_mask_slot_ptr_registered/479cc0_diff.txt` differs only by index-based loop spelling.
-  - zVid_Image::CalcPow2ScratchFields clears the pow2 shift bytes, derives U/V shifts from width/height, and fills the renderer scratch masks; `build/verification/zvid_image_calc_pow2_scratch_fields/4902b0_diff.txt` is binary-safe with equivalent guarded shift codegen and constant 1.0f store spelling.
-  - zImage_TexDirEntry::BuildMipChain copies a `_1` base texture path, walks `_2` and later variants, links found or newly loaded texdir entries, and writes integer width-scale ratios; `build/verification/zimage_texdir_entry_build_mip_chain/46e3e0_diff.txt` remains binary-safe pending because the BN-limited existing-variant path needs deeper proof.
-  - zImage::TexDir_LoadPendingEntries loads pending state-2/3 texture-directory entries, clears `nextVariant`, applies fallback/default images, builds mip chains, creates or finalizes texture records, and shuts down texture-directory runtime state; `build/verification/zimage_texdir_load_pending_entries/46de50_diff.txt` remains binary-safe pending due loop/register code-shape differences and pending callee verification for 0x46df50/0x46e3e0.
-  - zDEClient::WriteFeatureSectionsToZAR writes the dummy reload section, then serializes feature entries as `Crater%d` and `QSand%d` while the ZAR write callback succeeds; `build/verification/zdeclient_write_feature_sections_to_zar/457b40_diff.txt` remains binary-safe pending due GS/local-layout and code-shape differences.
-  - zClass_World::GetAreaPartitionAtGrid validates the world node/classData, reports the original `cls_world.c` null diagnostics, and returns `areaGridRows[row][col]`; `build/verification/zclass_world_get_area_partition_at_grid/450a00_diff.txt` is binary-safe with equivalent preserved-register and row-load spelling.
-  - zDEClient::ClearFeatureDisplayNodes reloads display instances for mapped clip-patch nodes, clears the world-area display refresh byte, removes `ZDEC_FEATURE` nodes from parents, releases their display instance, and deletes them; `build/verification/zdeclient_clear_feature_display_nodes/457750_diff.txt` remains binary-safe pending due loop/global-load/register code-shape differences.
-  - zModel_Const::GetVertexMergeEpsilon and SetVertexMergeEpsilon expose `g_zModel_ConstVertexMergeEpsilon`; `build/verification/zmodel_const_*_vertex_merge_epsilon/4815*_diff.txt` differs only by relocated symbol names and `ret` spelling.
-  - zGeometry_ClipPatchOutput::Create/Destroy allocate the 0x10-byte output record and release partition storage; `build/verification/zgeometry_clippatchoutput_{create,destroy}` diffs are binary-safe with equivalent import/register spelling.
-  - zDEClient::GetCameraNode and GetFeatureGridCell read the camera globals and index the zDEClient feature-grid rows at camera-data offset 0x80; `build/verification/zdeclient_get_{camera_node,feature_grid_cell}` diffs are binary-safe with relocated symbol/register spelling.
-  - zDEClient_QSand::DestroyFeature frees the owned point list, destroys the clip-patch output, then frees the feature; `build/verification/zdeclient_qsand_destroy_feature/455ea0_diff.txt` is binary-safe with equivalent direct import calls.
-  - zDEClient_QSand::CreateFeatureStructFromEventTemplate allocates/zeros the 0x50-byte feature, copies the 0x2c-byte event template, allocates point storage, creates clip output, and applies default quicksand material pointers; `build/verification/zdeclient_qsand_create_feature_struct_from_event_template/4563d0_diff.txt` remains binary-safe pending due code-shape differences.
-  - zClass_World::WorldToGridCoordsClamped clamps world X/Z with the original 0.1 margin and converts to grid indices; `build/verification/zclass_world_world_to_grid_coords_clamped/450790_diff.txt` remains binary-safe pending due x87/control-flow codegen differences.
-
-### Group: Pickup shutdown opt metadata
-
-- Anchor: 0x42e430 RecoilApp::ShutdownEngine
-- Reason: dependency closure / pickup type table image ownership
-- Source files:
-  - src/Battlesport/pickup.h
-  - src/Battlesport/pickup.cpp
-  - tests/native/pickup_tests.cpp
-- Plan entries:
-  - 0x41cca0 PickupTypeTable::FreeOptMeta - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug/release CTest; later pickup.cpp listing comparison
-- Notes:
-  - FreeOptMeta walks 40 PickupType rows at 0x30-byte stride and clears optMetaImage after releasing non-default images.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4558f0 zDEClient::LoadConfigResources
+  - 0x455ef0 zDEClient_QSand::InstanceEventMaybeRelay
+  - 0x458aa0 zDEClient::SetCameraNode
+  - 0x455dd0 zDEClient::LoadMaterialFromTexturePath_Local
+  - 0x480c40 zModel_Material::ResetDefaults
+  - 0x481050 zModel_Material::SetCycleTextureCount
+  - 0x481260 zModel_Material::SetCycleTextureSpeed
+  - 0x481220 zModel_Material::SetCycleTextureLoop
+  - 0x46d4c0 zImage::GetDefaultImageRefPtr
+  - 0x46d810 zImage::TexDir_FindOrAppendByPath
+  - 0x481100 zModel_Material::AddCycleTexture
+  - 0x480ca0 zModel_Material::FindOrClone
+  - 0x480d20 zModel_Material::CompareForReuse
+  - 0x481040 zModel_Material::SetUserTag
+  - 0x46d4d0 zImage::FindTexDirEntryByName
+  - 0x46de50 zImage::TexDir_LoadPendingEntries
+  - 0x46df50 zVid_TexturePack_EnsureBuiltinTexturePacksLoaded
+  - 0x46e3e0 zImage_TexDirEntryPartial::BuildMipChain
+  - 0x479cc0 OptCatalog_IsDamageMaskSlotPtrRegistered
+  - 0x4902b0 zVid_Image::CalcPow2ScratchFields
+  - 0x481420 zModel_Material::FindByTexDirEntry
+  - 0x457b40 zDEClient::WriteFeatureSectionsToZAR
+  - 0x457750 zDEClient::ClearFeatureDisplayNodes
+  - 0x457840 zDEClient::AppendFeatureEntry
+  - 0x457d90 zDEClient_MapTreeState::FindOrInsertKey
+  - 0x4575f0 zDEClient::SubmitFeatureGeometry
+  - 0x450a00 zClass_World::GetAreaPartitionAtGrid
+  - 0x481530 zModel_Const::GetVertexMergeEpsilon
+  - 0x481540 zModel_Const::SetVertexMergeEpsilon
+  - 0x46af00 zGeometry_ClipPatchOutput::Create
+  - 0x46af20 zGeometry_ClipPatchOutput::Destroy
+  - 0x46ae40 zGeometry_ClipPatchOutput::ApplyNodeDiPairs
+  - 0x46af40 zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition
+  - 0x46b1f0 zGeometry_Model::ClipPatch
+  - 0x458ae0 zDEClient::GetCameraNode
+  - 0x458ac0 zDEClient::GetFeatureGridCell
+  - 0x455ea0 zDEClient_QSand::DestroyFeature
+  - 0x456ad0 zDEClient_Crater::DestroyFeature
+  - 0x456b00 zDEClient_Crater::InitEventTemplateDefaults
+  - 0x456b20 pending
+  - 0x456c50 pending
+  - 0x456c80 zDEClient_Crater::InitFeatureFromEventTemplate
+  - 0x4563d0 zDEClient_QSand::CreateFeatureStructFromEventTemplate
+  - 0x457040 zDEClient_Crater::CreateFeatureStructFromEventTemplate
+  - 0x4570e0 zDEClient_Crater::Build
+  - 0x457140 zDEClient_Crater::CreateFeature
+  - 0x456010 zDEClient_QSand::InitFeatureFromEventTemplate
+  - 0x456450 zDEClient_QSand::Build
+  - 0x4564b0 zDEClient_QSand::CreateFeature
+  - 0x46a5e0 zGeometry_Vec3Array::RotateNeg90AroundX
+  - 0x46a600 zGeometry_Vec3Array::RotatePos90AroundX
+  - 0x46a9c0 zGeometry_Vec3Array::ComputeBoundsXY
+  - 0x469e50 zGeometry_Vec3::IsNearEqualXY
+  - 0x469e90 zGeometry_Vec3::SnapPointToSegmentXYIfNear
+  - 0x46a130 zGeometry_Polygon::SnapPointsXYIfNear
+  - 0x46a620 zGeometry_Bounds2D::OverlapsWithUnitMargin
+  - 0x46a690 zGeometry_Model::FindOrCreateRandomDebugMaterial
+  - 0x46a770 zGeometry_Model::AddPolygonToDi
+  - 0x46a7f0 zGeometry_Model::BuildPolygonUvList
+  - 0x46a8e0 zGeometry_Polygon::SolveUvAxisCoefficientsXZ
+  - 0x46ab40 zGeometry_ClipPolygon::FindPointIndexXY
+  - 0x46ac80 zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex
+  - 0x46ab90 zGeometry_ClipPolygon::UpsertPointListXY
+  - 0x464790 zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints
+  - 0x464810 zGeometry_Weiler::ClipPointList
+  - 0x46bb90 zGeometry_Model::IsFullyInsideClipPolygonXY
+  - 0x4826a0 zUtil::StoreInt32
+  - 0x46aa40 zGeometry_ClipPolygon::CreateFromPointList
+  - 0x46aab0 zGeometry_ClipPolygon::CopyPointsOutRotatedBack
+  - 0x46ab10 zGeometry_ClipPolygon::FinalizeAndDestroy
+  - 0x46b030 zGeometry_ClipPolygon::SnapPointsNearNodeModelXY
+  - 0x464680 zGeometry_Weiler::Init
+  - 0x464670 zGeometry_Weiler::GetInputContourAPointList
+  - 0x464b30 zGeometry_WeilerClipOutput::Destroy
+  - 0x464b90 zGeometry_Weiler::InitInputContourPair
+  - 0x4647d0 zGeometry_Weiler::DestroyState
+  - 0x4676c0 zGeometry_Weiler::EnsureContourOutput
+  - 0x467710 zGeometry_Weiler::MergeContours
+  - 0x464c90 zGeometry_Weiler::ClassifyInputContourPairBounds
+  - 0x464ea0 zGeometry_Weiler::OutputPreclassifiedContourPairResult
+  - 0x4681a0 zGeometry_Weiler::OutputContoursForClipMode
+  - 0x4682c0 zGeometry_Weiler::OutputContourToPolygonSet
+  - 0x468650 zGeometry_Weiler::CreateForwardSegmentPairAtPoint
+  - 0x468700 zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA
+  - 0x4687b0 zGeometry_Weiler::GenerateOutsideResults
+  - 0x4680b0 zGeometry_Weiler::NewContour
+  - 0x468a10 zGeometry_Weiler::ClassifyPointInContourPointListXY
+  - 0x469430 zGeometry_Weiler::GetNextContourSegmentForTraversal
+  - 0x469ae0 zGeometry_WeilerBuffer::SetCountAndAppendPtr
+  - 0x469a30 zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs
+  - 0x468470 zGeometry_Weiler::BuildPointSideTablesForContourPair
+  - 0x464f70 zGeometry_Weiler::PreclassifyInputContourPair
+  - 0x465ac0 zGeometry_Weiler::ClassifyContainedContour
+  - 0x468580 zGeometry_Weiler::DivideContourSegmentAtPoint
+  - 0x468c40 zGeometry_Weiler::Intersect2d
+  - 0x468fa0 zGeometry_Weiler::ClassifyIntersect2d
+  - 0x4683a0 zGeometry_Weiler::TogglePointAxesForContourSource
+  - 0x469af0 zGeometry_Weiler::RestorePointTranslation
+  - 0x469b60 zGeometry_Weiler::RestoreOutputZFromInputPlane
+  - 0x469ca0 zGeometry_Vec3::IsBetweenEndpointsXY
+  - 0x469d60 zGeometry_Weiler::SelectForwardStartPointInContourA
+  - 0x469450 zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment
+  - 0x469560 zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair
+  - 0x46a1f0 zGeometry_Weiler::ValidateXings
+  - 0x468410 zGeometry_WeilerContourSegment::UpdateBounds
+  - 0x4693a0 zGeometry_WeilerContourSegmentArray::UpdateBounds
+  - 0x4693c0 zGeometry_WeilerContourSegmentArray::InitFromPointList
+  - 0x469960 zGeometry_Weiler::RecenterPointSetsIfOutOfRange
+  - 0x467600 zGeometry_WeilerBuffer::Init
+  - 0x467660 zGeometry_WeilerBuffer::GetAppendSpace
+  - 0x467630 zGeometry_WeilerBuffer::Destroy
+  - 0x46b550 zGeometry_ClipPolygon::ProcessNodePolygonSetXY
+  - 0x46b650 zGeometry_Model::GetLinearBufferOfPolygonVertices
+  - 0x46b6d0 zGeometry_Model::ProcessClipPatchNode
+  - 0x46ba90 zGeometry_Model::AddPointListPolygonToDi
+  - 0x46bb30 zGeometry_Model::AddIndexedPolygonToDi
+  - 0x46bd50 zGeometry_TriangulateHole::TryAppendBridgeEdge
+  - 0x46be20 zGeometry_Segment::IntersectsSegmentXY
+  - 0x46bf30 zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex
+  - 0x46bf70 zGeometry_TriangulateHole::FindActiveEdgeState
+  - 0x46bfc0 zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair
+  - 0x46c070 zGeometry::TriangulatePolygonWithHole
+  - 0x46c390 zGeometry_TriangulateHole::CacheCombinedPlane
+  - 0x46c3a0 zGeometry_Vec3Array::ComputeNewellPlane
+  - 0x46c570 zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane
+  - 0x46c5b0 zGeometry_Vec3Array::ReversePoints
+  - 0x46c620 zGeometry_Vec3Array::EnsurePositiveCrossZ
+  - 0x46c720 zGeometry_ConvexPolygonSet::Destroy
+  - 0x46c760 zGeometry_Polygon::Convexify
+  - 0x46cb50 zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive
+  - 0x46ced0 zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal
+  - 0x483610 zDi::AddPolygon
+  - 0x483650 pending
+- Next action:
+  - `python tools/recoil_status.py 0x4558f0`
 
 ### Group: zNetwork session runtime shutdown
 
 - Anchor: 0x42e430 RecoilApp::ShutdownEngine
-- Reason: dependency closure / DirectPlay session and owned list cleanup
-- Source files:
-  - src/GameZRecoil/zNetwork/zNetwork.h
-  - src/GameZRecoil/zNetwork/znet_dplay.cpp
-  - src/GameZRecoil/zReader/zReader.h
-  - src/GameZRecoil/zReader/zreader_load.cpp
-  - tests/native/znetwork_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x48b7f0 zNetwork_DPlay::CloseReleaseAndCoUninitialize - Reimplemented / Binary-safe pending
-  - 0x48c120 zNetwork::UnregisterPacketHandler - Reimplemented / Binary-safe pending
-  - 0x489f30 zNetwork::ClearEnumeratedSessionList - Reimplemented / Binary-safe pending
-  - 0x489f70 zNetwork_GetLocalPlayerKey - Reimplemented / Binary-safe pending
-  - 0x489f80 zNetwork::IsHost - Reimplemented / Binary-safe pending
-  - 0x48c970 zArchiveList::Destroy - Binary-safe verified
-  - 0x489fa0 zNetwork::ClearServiceProviderList - Reimplemented / Binary-safe pending
-  - 0x48a030 zNetwork::ClearPlayerRecordList - Reimplemented / Binary-safe pending
-  - 0x48ba60 zNetwork_FindPlayerRecordByKey - Reimplemented / Binary-safe pending
-  - 0x48b820 zNetwork_ApplyPkt01_PlayerColorAssignments - Reimplemented / Binary-safe pending
-  - 0x48b980 zNetwork_GetLocalPlayerColorIndex - Reimplemented / Binary-safe pending
-  - 0x48b9a0 zNetwork_GetPlayerColorIndexByKey - Reimplemented / Binary-safe pending
-  - 0x48b9d0 zNetwork_GetPlayerRecordCount - Reimplemented / Binary-safe pending
-  - 0x48bab0 zNetwork_ExtractStatusFieldsFromSessionDesc - Reimplemented / Binary-safe pending
-  - 0x48bb20 zNetwork_ApplyStatusFieldsToSessionDesc - Reimplemented / Binary-safe pending
-  - 0x48acf0 zNetwork_DPlay_SendUnreliable - Reimplemented / Binary-safe pending
-  - 0x48ad30 zNetwork_DPlay_SendReliable - Reimplemented / Binary-safe pending
-  - 0x48ad70 zNetwork_DPlay_SendExUnreliableTracked - Reimplemented / Binary-safe pending
-  - 0x48ae10 zNetwork_DPlay_SendExReliable - Reimplemented / Binary-safe pending
-  - 0x48c060 zNetwork_SendPacketUnreliable - Reimplemented / Binary-safe pending
-  - 0x48c080 zNetwork_SendPacketReliable - Reimplemented / Binary-safe pending
-  - 0x489e10 zNetwork::ShutdownSessionRuntime - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - COM/DirectPlay provider ABI, packet-handler list layout, and SetSessionDesc provider behavior need listing/import verification
-- Verification target:
-  - ninja-x86-debug/release CTest; later znet_dplay listing and import/provider comparison
-- Notes:
-  - ShutdownSessionRuntime unregisters the packet 1 player-color handler by local symbol identity, clears session/provider/player lists, frees receive storage, and resets session runtime globals.
-  - The recovered DirectPlay session descriptor cache has an 8-byte prefix before the 0x50-byte descriptor; session status helpers copy custom event/status/value/aux fields plus maxPlayers and the session-name buffer through that descriptor.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x489f70 zNetwork_GetLocalPlayerKey
+  - 0x489f80 zNetwork::IsHost
+  - 0x48ba60 zNetwork_FindPlayerRecordByKey
+  - 0x48b820 zNetwork_ApplyPkt01_PlayerColorAssignments
+  - 0x48b980 zNetwork_GetLocalPlayerColorIndex
+  - 0x48b9a0 zNetwork_GetPlayerColorIndexByKey
+  - 0x48b9d0 zNetwork_GetPlayerRecordCount
+  - 0x48bab0 zNetwork_ExtractStatusFieldsFromSessionDesc
+  - 0x48bb20 zNetwork_ApplyStatusFieldsToSessionDesc
+  - 0x48acf0 zNetwork_DPlay_SendUnreliable
+  - 0x48ad30 zNetwork_DPlay_SendReliable
+  - 0x48ad70 zNetwork_DPlay_SendExUnreliableTracked
+  - 0x48ae10 zNetwork_DPlay_SendExReliable
+  - 0x48c060 zNetwork_SendPacketUnreliable
+  - 0x48c080 zNetwork_SendPacketReliable
+- Next action:
+  - `python tools/recoil_status.py 0x489f70`
 
 ### Group: zInput startup leaf helpers
 
 - Anchor: 0x42e220 RecoilApp::StartEngine
-- Reason: dependency closure / source file cluster
-- Source files:
-  - src/GameZRecoil/zInput/zInput.h
-  - src/GameZRecoil/zInput/zInput.cpp
-  - tests/native/zinput_tests.cpp
-- Plan entries:
-  - 0x42e170 zInput::DI_SetJoystickEnabled - Reimplemented / Binary-safe pending
-  - 0x471d50 zInput::DI_AddJoystickRef - Reimplemented / Binary-safe pending
-  - 0x471d80 zInput::DI_ReleaseJoystickRef - Reimplemented / Binary-safe pending
-  - 0x471dd0 zInput::DI_GetJoystickRefCount - Reimplemented / Binary-safe pending
-  - 0x471fd0 zInput::DI_ApplyAxisConfig - Reimplemented / Binary-safe pending
-  - 0x4721a0 zInput::DI_SetAxisDeadzone - Reimplemented / Binary-safe pending
-  - 0x4721e0 zInput::DI_SetAxisRange - Reimplemented / Binary-safe pending
-  - 0x472230 zInput::DI_GetAxisRange - Reimplemented / Binary-safe pending
-  - 0x4722b0 zInput::DI_IsJoystickDeviceReady - Reimplemented / Binary-safe pending
-  - 0x4701a0 zInput::Mouse_SetClientSizeAndCenter - Reimplemented / Binary-safe pending
-  - 0x470670 zInput::Mouse_SetCooperativeLevelFlags - Reimplemented / Binary-safe pending
-  - 0x470180 zInput::Mouse_RecenterCursorX - Reimplemented / Binary-safe pending
-  - 0x470190 zInput::Mouse_IsInitialized - completed
-  - 0x4703b0 zInput::Mouse_PollAndStoreState - Reimplemented / Binary-safe pending
-  - 0x4703c0 zInput::Mouse_PollState - Reimplemented / Binary-safe pending
-  - 0x470680 zInput::Mouse_WaitForButtonPress - Reimplemented / Binary-safe pending
-  - 0x46f300 zInput::Keyboard_InitDevice - Reimplemented / Binary-safe pending
-  - 0x46f690 zInput::Keyboard_PollState - Reimplemented / Binary-safe pending
-  - 0x46f9f0 zInput::Keyboard_ClearKeyCallbackTable - Binary-safe verified
-  - 0x470020 zInput::Mouse_ApplyClientCursorPosToOS - Reimplemented / Binary-safe pending
-  - 0x470060 zInput::Mouse_UpdateClientRectAndCenter - Reimplemented / Binary-safe pending
-  - 0x470150 zInput::Mouse_RecenterCursor - Reimplemented / Binary-safe pending
-  - 0x4701f0 zInput::Mouse_InitDevice - Reimplemented / Binary-safe pending
-  - 0x4703a0 zInput::Mouse_GetStateSnapshotPtr - Reimplemented / Binary-safe pending
-  - 0x4705f0 zInput::Mouse_GetStateSnapshot - Reimplemented / Binary-safe pending
-  - 0x4702e0 zInput::Mouse_GetButtonTransitionState - Reimplemented / Binary-safe pending
-  - 0x46f980 zInput::Keyboard_GetKeyTransitionState - Reimplemented / Binary-safe pending
-  - 0x46f9b0 zInput::Keyboard_RegisterKeyCallback - Binary-safe verified
-  - 0x46f9d0 zInput::Keyboard_UnregisterKeyCallback - Reimplemented / Binary-safe pending
-  - 0x46fa10 zInput::Keyboard_WaitForAnyKeyPress - Reimplemented / Binary-safe pending
-  - 0x404140 zInput_WaitForAnyKeyPressWithTimeoutMs - Reimplemented / Binary-safe pending
-  - 0x42f9f0 zInput_DI_InitForceFeedbackEffectSet - Reimplemented / Binary-safe pending
-  - 0x42fb50 zInput_DI_PlayCollisionImpactEffect - Reimplemented / Binary-safe pending
-  - 0x42fc90 zInput_DI_PlayDamageHitEffect - Reimplemented / Binary-safe pending
-  - 0x42fdc0 zInput_DI_UpdateSteerAndPitchForceEffects - Reimplemented / Binary-safe pending
-  - 0x4706c0 zInput_BindMapContext::InitFromTemplate - Reimplemented / Binary-safe verified
-  - 0x4707a0 zInput::BindMapContext_FreeAllBuffers - Reimplemented / Binary-safe pending
-  - 0x470820 zInput::BindMapContext_RebuildLookupIndices - Binary-safe verified
-  - 0x4708f0 zInput_BindMapContext::InitCommandMap - Reimplemented / Binary-safe verified
-  - 0x470960 zInput::BindMapContext_FreeNonOwnedBuffers - Reimplemented / Binary-safe pending
-  - 0x4709d0 zInput_BindMapContext::ResetAllBindings - Binary-safe verified
-  - 0x470a10 zInput::BindMap_PackBindingCode - Binary-safe verified
-  - 0x470a40 zInput::BindMapContext_GetPrimaryKeyboardKey - Binary-safe verified
-  - 0x470a60 zInput::BindMapContext_GetSecondaryKeyboardKey - Binary-safe verified
-  - 0x470a80 zInput::BindMapContext_GetJoystickButtonSlot - Reimplemented / Binary-safe pending
-  - 0x470aa0 zInput::BindMapContext_GetMouseButtonSlot - Reimplemented / Binary-safe pending
-  - 0x470ac0 zInput::BindMapContext_GetCommandByPrimaryKey - Reimplemented / Binary-safe pending
-  - 0x470ad0 zInput::BindMapContext_GetCommandBySecondaryKey - Reimplemented / Binary-safe pending
-  - 0x470ae0 zInput_BindMapContext_GetCommandByAnyKeyboardKey - Reimplemented / Binary-safe pending
-  - 0x470b00 zInput_BindMapContext::GetCommandByJoystickSlot - Reimplemented / Binary-safe pending
-  - 0x470b10 zInput::BindMapContext_GetCommandByMouseSlot - Reimplemented / Binary-safe pending
-  - 0x470b20 zInput::BindMapContext_SetPrimaryKeyBinding - Reimplemented / Binary-safe pending
-  - 0x470b80 zInput::BindMapContext_SetSecondaryKeyBinding - Reimplemented / Binary-safe pending
-  - 0x470bf0 zInput::BindMapContext_SetJoystickBinding - Reimplemented / Binary-safe pending
-  - 0x470c60 zInput::BindMapContext_SetMouseBinding - Reimplemented / Binary-safe pending
-  - 0x470cd0 zInput::BindMapContext_SetBindingRecord - Reimplemented / Binary-safe pending
-  - 0x470eb0 zInput_BindMapContext_ReadCommandInputState - Reimplemented / Binary-safe pending
-  - 0x470df0 zInput::BindMapContext_SetCommandCallback - Binary-safe verified
-  - 0x470f50 zInput::BindMapContext_CopyCommandLabel - Reimplemented / Binary-safe pending
-  - 0x470f80 zInput::BindMap_FormatKeyComboName - Reimplemented / Binary-safe pending
-  - 0x471040 zInput::BindMap_CopyJoystickButtonName - Reimplemented / Binary-safe pending
-  - 0x471070 zInput::BindMap_CopyMouseButtonName - Reimplemented / Binary-safe pending
-  - 0x4710a0 zInput::BindMapSystem_Init - Reimplemented / Binary-safe limited
-  - 0x471120 zInput::BindMap_InitDikKeyNameTable - Binary-safe verified
-  - 0x4715e0 zInput::BindMap_InitJoystickButtonNameTable - Binary-safe verified
-  - 0x471640 zInput::BindMap_InitMouseButtonNameTable - Binary-safe verified
-  - 0x471660 zInput::BindMapSystem_Shutdown - Reimplemented / Binary-safe pending
-  - 0x4716b0 zInput::BindMap_Current_RebuildLookupIndices - Reimplemented / Binary-safe pending
-  - 0x4716c0 zInput::BindMapCurrent_ResetAllBindings - Reimplemented / Binary-safe pending
-  - 0x4716d0 zInput::BindMapCurrent_GetPrimaryKeyboardKey - Reimplemented / Binary-safe pending
-  - 0x4716e0 zInput::BindMapCurrent_GetSecondaryKeyboardKey - Reimplemented / Binary-safe pending
-  - 0x4716f0 zInput::BindMapCurrent_GetJoystickButtonSlot - Reimplemented / Binary-safe pending
-  - 0x471700 zInput::BindMapCurrent_GetMouseButtonSlot - Reimplemented / Binary-safe pending
-  - 0x471710 zInput::BindMapCurrent_GetCommandByPrimaryKey - Reimplemented / Binary-safe pending
-  - 0x471720 zInput::BindMapCurrent_GetCommandBySecondaryKey - Reimplemented / Binary-safe pending
-  - 0x471730 zInput::BindMapCurrent_GetCommandByJoystickSlot - Reimplemented / Binary-safe pending
-  - 0x471740 zInput::BindMapCurrent_GetCommandByMouseSlot - Reimplemented / Binary-safe pending
-  - 0x471750 zInput::BindMapCurrent_SetPrimaryKeyBinding - Reimplemented / Binary-safe pending
-  - 0x471760 zInput::BindMapCurrent_SetSecondaryKeyBinding - Reimplemented / Binary-safe pending
-  - 0x471770 zInput::BindMapCurrent_SetJoystickBinding - Reimplemented / Binary-safe pending
-  - 0x471780 zInput::BindMapCurrent_SetMouseBinding - Reimplemented / Binary-safe pending
-  - 0x471790 zInput::BindMap_Current_SetBindingRecord - Reimplemented / Binary-safe pending
-  - 0x4717c0 zInput_BindMap_Current_SetCommandCallback - Reimplemented / Binary-safe pending
-  - 0x4717d0 zInput_BindMap_Current_ReadCommandInputState - Reimplemented / Binary-safe pending
-  - 0x4717e0 zInput::BindMapCurrent_CopyCommandLabel - Reimplemented / Binary-safe pending
-  - 0x471800 zInput::BindMapCurrent_FormatKeyComboName - Reimplemented / Binary-safe pending
-  - 0x471820 zInput::BindMapCurrent_CopyJoystickButtonName - Reimplemented / Binary-safe pending
-  - 0x471840 zInput::BindMapCurrent_CopyMouseButtonName - Reimplemented / Binary-safe pending
-  - 0x471860 zInput::BindMapContext_Push - Reimplemented / Binary-safe pending
-  - 0x471950 zInput::BindMapContext_Pop - Reimplemented / Binary-safe pending
-  - 0x471b50 zInput::Init - Reimplemented / Binary-safe pending
-  - 0x471d20 zInput::Keyboard_AddRef - Reimplemented / Binary-safe pending
-  - 0x471da0 zInput::Mouse_AddRef - Reimplemented / Binary-safe pending
-  - 0x471e40 zInput::DI_InitJoystickDevice - Reimplemented / Binary-safe pending
-  - 0x471f60 zInput::DI_EnumDevicesCallback_SelectFirstJoystick - Reimplemented / Binary-safe pending
-  - 0x471fb0 zInput::DI_AcquireJoystickDevice - Reimplemented / Binary-safe pending
-  - 0x4722c0 zInput::DI_PollJoystickState - Reimplemented / Binary-safe pending
-  - 0x4723a0 zInput::DI_GetButtonTransitionState - Reimplemented / Binary-safe pending
-  - 0x4723d0 zInput::DI_WaitForButtonPress - Reimplemented / Binary-safe pending
-  - 0x42ffa0 zInput_DI_CreateConstantForceEffectScaled - Reimplemented / Binary-safe pending
-  - 0x430070 zInput_DI_CreateConstantForceEffectWithDirection - Reimplemented / Binary-safe pending
-  - 0x430100 zInput_DI_CreateSineEffectScaled - Reimplemented / Binary-safe pending
-  - 0x472450 zInput_DI_CreateForceFeedbackEffect - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - DirectInput SetProperty/GetProperty provider ABI for axis configuration
-- Verification target:
-  - ninja-x86-debug/release CTest; later zInput listing comparison
-- Notes:
-  - StartEngine passes display width/height into this helper after video initialization.
-  - `zInput::Init` now uses the vendored DirectInput 5 provider, resets the recovered startup flags/refcounts, creates keyboard/mouse/joystick devices, and records the recovered packed success flags.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x470180 zInput::Mouse_RecenterCursorX
+  - 0x470190 zInput::Mouse_IsInitialized
+  - 0x4703b0 zInput::Mouse_PollAndStoreState
+  - 0x4703c0 zInput::Mouse_PollState
+  - 0x470680 zInput::Mouse_WaitForButtonPress
+  - 0x46f690 zInput::Keyboard_PollState
+  - 0x4703a0 zInput::Mouse_GetStateSnapshotPtr
+  - 0x4705f0 zInput::Mouse_GetStateSnapshot
+  - 0x4702e0 zInput::Mouse_GetButtonTransitionState
+  - 0x46f980 zInput::Keyboard_GetKeyTransitionState
+  - 0x46f9d0 zInput::Keyboard_UnregisterKeyCallback
+  - 0x46fa10 zInput::Keyboard_WaitForAnyKeyPress
+  - 0x404140 zInput_WaitForAnyKeyPressWithTimeoutMs
+  - 0x42f9f0 zInput_DI_InitForceFeedbackEffectSet
+  - 0x42fb50 zInput_DI_PlayCollisionImpactEffect
+  - 0x42fc90 zInput_DI_PlayDamageHitEffect
+  - 0x42fdc0 zInput_DI_UpdateSteerAndPitchForceEffects
+  - 0x4707a0 zInput_BindMapContext::FreeAllBuffers
+  - 0x470960 zInput_BindMapContext::FreeNonOwnedBuffers
+  - 0x470a80 zInput_BindMapContext::GetJoystickButtonSlot
+  - 0x470aa0 zInput_BindMapContext::GetMouseButtonSlot
+  - 0x470ac0 zInput_BindMapContext::GetCommandByPrimaryKey
+  - 0x470ad0 zInput_BindMapContext::GetCommandBySecondaryKey
+  - 0x470ae0 zInput_BindMapContext::GetCommandByAnyKeyboardKey
+  - 0x470b00 zInput_BindMapContext::GetCommandByJoystickSlot
+  - 0x470b10 zInput_BindMapContext::GetCommandByMouseSlot
+  - 0x470eb0 zInput_BindMapContext::ReadCommandInputState
+  - 0x470f50 zInput_BindMapContext::CopyCommandLabel
+  - 0x470f80 zInput::BindMap_FormatKeyComboName
+  - 0x471040 zInput::BindMap_CopyJoystickButtonName
+  - 0x471070 zInput::BindMap_CopyMouseButtonName
+  - 0x471660 zInput::BindMapSystem_Shutdown
+  - 0x4716c0 zInput::BindMapCurrent_ResetAllBindings
+  - 0x4716d0 zInput::BindMapCurrent_GetPrimaryKeyboardKey
+  - 0x4716e0 zInput::BindMapCurrent_GetSecondaryKeyboardKey
+  - 0x4716f0 zInput::BindMapCurrent_GetJoystickButtonSlot
+  - 0x471700 zInput::BindMapCurrent_GetMouseButtonSlot
+  - 0x471710 zInput::BindMapCurrent_GetCommandByPrimaryKey
+  - 0x471720 zInput::BindMapCurrent_GetCommandBySecondaryKey
+  - 0x471730 zInput::BindMapCurrent_GetCommandByJoystickSlot
+  - 0x471740 zInput::BindMapCurrent_GetCommandByMouseSlot
+  - 0x471750 zInput::BindMapCurrent_SetPrimaryKeyBinding
+  - 0x471760 zInput::BindMapCurrent_SetSecondaryKeyBinding
+  - 0x471770 zInput::BindMapCurrent_SetJoystickBinding
+  - 0x471780 zInput::BindMapCurrent_SetMouseBinding
+  - 0x4717c0 zInput::BindMap_Current_SetCommandCallback
+  - 0x4717d0 zInput::BindMap_Current_ReadCommandInputState
+  - 0x4717e0 zInput::BindMapCurrent_CopyCommandLabel
+  - 0x471800 zInput::BindMapCurrent_FormatKeyComboName
+  - 0x471820 zInput::BindMapCurrent_CopyJoystickButtonName
+  - 0x471840 zInput::BindMapCurrent_CopyMouseButtonName
+  - 0x471860 zInput::BindMapContext_Push
+  - 0x471950 zInput::BindMapContext_Pop
+  - 0x471f60 zInput::DI_EnumDevicesCallback_SelectFirstJoystick
+  - 0x4722c0 zInput::DI_PollJoystickState
+  - 0x4723a0 zInput::DI_GetButtonTransitionState
+  - 0x4723d0 zInput::DI_WaitForButtonPress
+  - 0x42ffa0 zInput_DI_CreateConstantForceEffectScaled
+  - 0x430070 zInput_DI_CreateConstantForceEffectWithDirection
+  - 0x430100 zInput_DI_CreateSineEffectScaled
+  - 0x472450 zInput_DI_CreateForceFeedbackEffect
+- Next action:
+  - `python tools/recoil_status.py 0x470180`
 
 ### Group: controls option accessors
 
-- Anchor: 0x408df0 RecoilStateControls::OnTryBecomeCurrent
-- Reason: dependency closure / controls dialog and adjacent option accessors
-- Source files:
-  - src/GameZRecoil/zGame/zGame.h
-  - src/GameZRecoil/zGame/zGame.cpp
-  - src/GameZRecoil/zEffect/zEffect.h
-  - src/GameZRecoil/zEffect/zEffect.cpp
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_play.cpp
-  - tests/native/zgame_tests.cpp
-- Plan entries:
-  - 0x407e20 zOpt::SetGameControlOptions - completed
-  - 0x407e30 zOpt::SetThrottleMode - completed
-  - 0x407e50 zOpt::GetThrottleMode - completed
-  - 0x407e60 zOpt::SetSteeringMode - completed
-  - 0x407e80 zOpt::GetSteeringMode - completed
-  - 0x407e90 zOpt::SetCursorMode - completed
-  - 0x407eb0 zOpt::GetCursorMode - completed
-  - 0x407ef0 zOpt::GetCameraModePlayerState - Reimplemented / Binary-safe verified
-  - 0x407f10 zOpt::SetGameDifficultyMode - completed
-  - 0x407f20 zOpt::GetGameDifficultyMode - completed
-  - 0x407f30 zOpt::SetEffectsLevelForCurrentHwMode - completed
-  - 0x407f80 zOpt::GetEffectsLevelForCurrentHwMode - completed
-  - 0x407fa0 zOpt::SetObjectLODForCurrentHwMode - Reimplemented / Binary-safe verified
-  - 0x408030 zOpt::GetObjectLODForCurrentHwMode - completed
-  - 0x408060 zOpt::GetMuteSoundOption - completed
-  - 0x408070 zOpt::SetSoundVolumeOption - Reimplemented / Binary-safe verified
-  - 0x408090 zOpt::GetSoundVolumeOption - completed
-  - 0x4080c0 zOpt::SetSoundLODOption - completed
-  - 0x4080d0 zOpt::GetSoundLODOption - completed
-  - 0x4080e0 zOpt::SetTextureMemoryForCurrentHwMode - completed
-  - 0x408100 zOpt::GetTextureMemoryForCurrentHwMode - completed
-  - 0x408120 zOpt::SetPlayerName - Reimplemented / Binary-safe verified
-  - 0x408190 zOpt_GetPlayerName - Reimplemented / Binary-safe verified
-  - 0x4081a0 zOpt::SetGraphicsFlagsForCurrentHwMode - completed
-  - 0x4081f0 zOpt::GetGraphicsFlagsForCurrentHwMode - completed
-  - 0x408230 zOpt::SetNetworkEnabled - completed
-  - 0x408240 zOpt::SetNetworkModemEnabled - completed
-  - 0x408250 zOpt::SetNetworkListenEnabled - completed
-  - 0x408260 zOpt::GetNetworkEnabled - completed
-  - 0x408270 zOpt::GetNetworkModemEnabled - completed
-  - 0x408360 zOpt::GetHudTypeForCurrentHwMode - completed
-  - 0x408570 zOpt::RenderSection_SetTargetWindow - Reimplemented / Binary-safe verified
-  - 0x4085a0 zOpt::GetRenderSection - Reimplemented / Binary-safe verified
-  - 0x4085b0 zOpt::DisplaySection_SetTargetDisplay - Reimplemented / Binary-safe verified
-  - 0x4084e0 zOpt_CameraSection_GetActiveCamera - Reimplemented / Binary-safe verified
-  - 0x408480 zOpt::CameraSection_SetActiveCamera - Reimplemented / Binary-safe pending
-  - 0x45e0f0 zEffect::SetConditionalEffectLevel - Reimplemented / Binary-safe pending
-  - 0x4a1090 zSnd::SetGlobalVolumeScale - Reimplemented / Binary-safe verified
-  - 0x4a0670 zSnd::ApplyMuteStateToActiveVoices - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - 0x407ec0 zOpt::SetCameraMode - still depends on Player::ApplyCameraState
-  - 0x408050 zOpt::SetMuteSoundOption - Reimplemented; binary-safe pending with zSnd::ApplyMuteStateToActiveVoices
-  - 0x4082d0 zOpt::SetHudTypeForCurrentHwMode - still depends on HudUiMgr::ApplyHudModeSwitch
-  - 0x408480 zOpt::CameraSection_SetActiveCamera - Reimplemented; binary-safe pending with zClass_Camera::gwCameraSetFOV
-- Verification target:
-  - ninja-x86-debug CTest; later zGame listing comparison
-- Notes:
-  - Game-control option bits are throttle=0x01, steering=0x02, cursor=0x04, camera third-person=0x08.
-  - Effects option values map to conditional effect levels 0->2, 1->1, 2->0; other values only store the option.
-  - Object LOD values map to camera clip distance 0/default->1.0, 1->0.75, 2->0.5 when an active camera section is present.
-  - Player-name copy stores the NUL terminator for short names and clamps to dataSize-1 for long names.
-  - Graphics flags mirror bit 0x10 to the type-6 "sunlight" node active flag through zClass_Class::gwNodeSetActive.
-
-### Group: zSnd startup backend init leaves
-
-- Anchor: 0x42e220 RecoilApp::StartEngine
-- Reason: dependency closure / source file cluster / shared backend ABI layout
-- Source files:
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_init.cpp
-  - tests/native/zsnd_cd_tests.cpp
-- Plan entries:
-  - 0x4a1d10 zSndBackend_InitA3D - Reimplemented / Binary-safe pending
-  - 0x4a1e50 zSndBackend_InitDirectSound - Reimplemented / Binary-safe pending
-  - 0x4a2e80 zSnd::SetSpeedOfSoundMps - Reimplemented / Binary-safe pending
-  - 0x4a3ef0 zSnd::ReportA3DError - Reimplemented / Binary-safe pending
-  - 0x4a4330 zSnd::ReportDirectSoundError - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - A3D provider availability for runtime success path; source preserves the recovered COM GUID/vtable contract.
-  - DirectSoundCreate/IDirectSound provider ABI for DirectSound startup.
-- Verification target:
-  - ninja-x86-debug/release CTest; later provider/import and listing comparison
-- Notes:
-  - The A3D path uses recovered GUIDs and raw vtable offsets because no repo-local A3D SDK headers exist.
-
-### Group: zSnd sample set leaves
-
-- Anchor: 0x4a1870 zSndSystem_InitNamedSetsSyntax
-- Reason: dependency closure / shared sample-set ABI layout
-- Source files:
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_init.cpp
-  - src/GameZRecoil/zSound/zsnd_sample_set.cpp
-  - src/GameZRecoil/zSound/zsnd_system.cpp
-  - tests/native/zsnd_cd_tests.cpp
-- Plan entries:
-  - 0x4a1420 zSndSystem_Init - Reimplemented / Binary-safe pending
-  - 0x4a1510 zSndSystem_InitLegacySetsSyntax - Reimplemented / Binary-safe pending
-  - 0x4a1870 zSndSystem_InitNamedSetsSyntax - Reimplemented / Binary-safe pending
-  - 0x4a09e0 zSndSampleSetRegistry::AddEntry - Reimplemented / Binary-safe pending
-  - 0x4a0e90 zSndSampleSet::GetSampleAt - Reimplemented / Binary-safe pending
-  - 0x4a0ec0 zSndSampleSet::FindSampleByName - Reimplemented / Binary-safe pending
-  - 0x4a44c0 zSndPendingList_FindByName - Reimplemented / Binary-safe pending
-  - 0x4a44e0 zSndPendingList_MatchNamePredicate - Reimplemented / Binary-safe pending
-  - 0x4a0990 zSnd::FindSampleByName - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - CRT `calloc`, `_strdup`, and compiler `operator new/delete` providers for registry storage.
-- Verification target:
-  - ninja-x86-debug/release CTest; later zsnd_sample_set listing comparison
-- Notes:
-  - `GetSampleAt` performs only a signed upper-bound check; negative indexes are not rejected before indexing the samples pointer.
-  - `AddEntry` initializes the sample-set object passed in ECX and appends that pointer to the recovered registry vector.
-  - `zSndSystem_InitNamedSetsSyntax` uses `g_zSnd_ConfigRootNode` as the recovered source of config data, not the ECX argument, and loads CD tracks, optional sound search paths, speed of sound, named SETS sample entries, and optional SOUND_GROUPS.
-  - `zSndSystem_InitLegacySetsSyntax` shares the same config-root globals but parses flat legacy sample records with optional gain, three TRUE/FALSE flag slots, optional range, and default quality variants.
-  - `zSndSystem_Init` requires `g_zSnd_PreInitialized`, sets `g_zSnd_IsInitialized` before config loading, falls back from failed A3D to DirectSound through a recursive call, and dispatches SYNTAX 1/2 to the legacy/named parsers.
-
-### Group: zSnd group config load leaves
-
-- Anchor: 0x4a4530 zSndGroup::QueuePendingLoadsFromConfigNode
-- Reason: dependency closure / recursive group config block parser
-- Source files:
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_group.cpp
-  - tests/native/zsnd_cd_tests.cpp
-- Plan entries:
-  - 0x4a4530 zSndGroup::QueuePendingLoadsFromConfigNode - Reimplemented / Binary-safe pending
-  - 0x4a4590 zSndGroup::LoadFromConfigNode - Reimplemented / Binary-safe pending
-  - 0x4a49b0 zSndGroup::LoadConfigBlock - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - `zError::ReportOld` and `_ftol` provider behavior for invalid field and float play-count paths.
-  - zArchiveList pending-load queue allocation/push helpers.
-- Verification target:
-  - ninja-x86-debug/release CTest; later zsnd_grp listing comparison
-- Notes:
-  - The parser recognizes `DELAY_PLAY`, `PLAY_COUNT`, and `WEIGHT`; other strings become stream names, and nested arrays chain child config blocks.
-  - Runtime group loading recognizes `DELAY_REPEAT`, `DELAY_TERMINATION`, `DYNAMIC_WEIGHTS`, `PLAY_SOLO`, and `REPEAT`; config block weights default to `100 / configBlockCount` when any block weight remains below 0.0001.
-
-### Group: zSnd CD media leaves
-
-- Anchor: 0x4a20d0 zSndCd::Init
-- Reason: dependency closure / MCI CD state and track-list cleanup
-- Source files:
-  - src/GameZRecoil/zSound/zSound.h
-  - src/GameZRecoil/zSound/zsnd_cd.cpp
-  - tests/native/zsnd_cd_tests.cpp
-- Plan entries:
-  - 0x4a20d0 zSndCd::Init - Reimplemented / Binary-safe pending
-  - 0x4a24d0 zSndCd::Shutdown - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - WinMM MCI/AUX provider ABI for CD open/status/set/close and AUX volume probing.
-  - Existing `zSndCd::Stop` and `zSndCd::ResetTrackState`.
-- Verification target:
-  - ninja-x86-debug/release CTest; later zsnd_cd listing/provider comparison
-- Notes:
-  - Shutdown frees each track entry archive name, deletes entry payloads, unlinks all track nodes from the circular list, clears the ready flag, and leaves the sentinel node allocated.
-  - Init follows the recovered MCI provider path and builds configured CD track entries from optional reader-node arrays; smoke coverage exercises the ready guard because normal CI cannot depend on a physical CD device.
-
-### Group: zReader named node lookup leaves
-
-- Anchor: 0x4a1420 zSndSystem_Init
-- Reason: dependency closure / shared ZRD node ABI layout
-- Source files:
-  - src/GameZRecoil/zReader/zReader.h
-  - src/GameZRecoil/zReader/zreader_lookup.cpp
-  - tests/native/zreader_tests.cpp
-- Plan entries:
-  - 0x48cec0 zReader_FindChildRecursive - Reimplemented / Binary-safe pending
-  - 0x48cf70 zReader_GetNamedNode - Reimplemented / Binary-safe pending
-  - 0x48cf80 zReader::ReadNamedString - Reimplemented / Binary-safe pending
-  - 0x48cfb0 zReader::ReadNamedFloat - Reimplemented / Binary-safe pending
-  - 0x48d030 zReader::ReadNamedInt - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - none for named-int lookup; archive load remains separate.
-- Verification target:
-  - ninja-x86-debug/release CTest; later zReader listing comparison
-- Notes:
-  - ZRD arrays use element 0 as a header node: type int, value child-count; real children begin at index 1.
-
-### Group: zReader archive-backed node load leaves
-
-- Anchor: 0x4a1420 zSndSystem_Init
-- Reason: dependency closure / archive list and ZRD node load ABI layout
-- Source files:
-  - src/GameZRecoil/zReader/zReader.h
-  - src/GameZRecoil/zReader/zreader_load.cpp
-  - tests/native/zreader_tests.cpp
-- Plan entries:
-  - 0x48c950 zArchiveList_CreateEmpty - Binary-safe verified
-  - 0x48cda0 zReader_AllocateNode - Reimplemented / Binary-safe pending
-  - 0x48cdc0 zReader::LoadNodeFromPath - Reimplemented / Binary-safe pending
-  - 0x48d080 zReader_ReadNode - Reimplemented / Binary-safe pending
-  - 0x48d1c0 zReader_OpenFileFromMountedArchives - Reimplemented / Binary-safe pending
-  - 0x48cb30 zArchiveList_GetAt - Reimplemented / Binary-safe pending
-  - 0x48cc60 zArchiveList_GetCount - Reimplemented / Binary-safe pending
-  - 0x4a5c20 zReader::FileExists - Binary-safe verified
-  - 0x4a5c40 zReader_FileExists_Wrapper - Binary-safe verified
-  - 0x4a6110 zReader_ReadString - Reimplemented / Binary-safe pending
-  - 0x4a65d0 zIndexArchive_FindRecordByNameCI - Reimplemented / Binary-safe pending
-  - 0x4a6630 zIndexArchive_OpenFileByName - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - Win32 `ReadFile`/`SetFilePointer` import provider ABI.
-- Verification target:
-  - ninja-x86-debug/release CTest; later zReader/zutl_zar listing comparison
-- Notes:
-  - Mounted archive open returns the shared archive file handle after repositioning it to the record offset.
-
-### Group: zReader search path list helpers
-
-- Anchor: 0x4a1420 zSndSystem_Init
-- Reason: dependency closure / shared archive/search path list ABI layout
-- Source files:
-  - src/GameZRecoil/zReader/zReader.h
-  - src/GameZRecoil/zReader/zreader_load.cpp
-  - tests/native/zreader_tests.cpp
-- Plan entries:
-  - 0x48c800 zUtil_ZRDR_GrowFreePool - Binary-safe verified
-  - 0x48c7d0 zUtil::ZRDR_PreallocNodePool - Binary-safe verified
-  - 0x48c820 zUtil_ZRDR_PushFreeNode - Binary-safe verified
-  - 0x48c8e0 zUtil_ZRDR_PopFreeNode - Binary-safe verified
-  - 0x48c9a0 zArchiveList_LinkNodeBetween - Binary-safe verified
-  - 0x48c9c0 zArchiveList_PushFrontPayload - Binary-safe verified
-  - 0x48ca10 zUtil_ZRDR_AllocNodeWithPayload - Binary-safe verified
-  - 0x48cae0 zArchiveList_FreeNode - Binary-safe verified
-  - 0x48cb70 zArchiveList::PopFrontPayload - Binary-safe verified
-  - 0x48cbd0 zArchiveList::FindPayloadByPredicate - Binary-safe verified
-  - 0x48cc50 zArchiveList_FindPayloadByPredicate_Thunk - Binary-safe verified
-  - 0x48cc70 zUtil::ZRDR_Init - Binary-safe verified
-  - 0x48cca0 zUtil_ZRDR_SetSearchPath - Binary-safe verified
-  - 0x4a5ca0 zUtil_ZRDR_CreateSearchPathList - Binary-safe verified
-  - 0x4a5ce0 zUtil::ZRDR_AddSearchPaths - Binary-safe verified
-  - 0x4a5da0 zUtil_ZRDR_StrCmpPredicate - Binary-safe verified
-  - 0x4a5e10 zUtil_ZRDR::FreePathList - Binary-safe verified
-- Blocking dependencies:
-  - `zReader::FileExists` and `_strdup`/`strtok`/`free` CRT provider ABI.
-- Verification target:
-  - ninja-x86-debug/release CTest; later zReader/zutl_zar listing comparison
-- Notes:
-  - Search path addition processes the explicit list and then the scratch search-path list, adding only existing path tokens and suppressing duplicates with the recovered strcmp predicate.
-  - `zArchiveList_FreeNode` returns the removed payload while returning the list node to the ZRDR free pool; `FreePathList` repeatedly pops payloads and frees the strings while leaving the list object allocated.
+- Anchor: 0x408df0 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x408df0 pending
+  - 0x407e30 zOpt::SetThrottleMode
+  - 0x407e50 zOpt::GetThrottleMode
+  - 0x407e60 zOpt::SetSteeringMode
+  - 0x407e80 zOpt::GetSteeringMode
+  - 0x407e90 zOpt::SetCursorMode
+  - 0x407eb0 zOpt::GetCursorMode
+  - 0x407ef0 zOpt::GetCameraModePlayerState
+  - 0x407f20 zOpt::GetGameDifficultyMode
+  - 0x408030 zOpt::GetObjectLODForCurrentHwMode
+  - 0x408060 zOpt::GetMuteSoundOption
+  - 0x408090 zOpt::GetSoundVolumeOption
+  - 0x4080d0 zOpt::GetSoundLODOption
+  - 0x408100 zOpt::GetTextureMemoryForCurrentHwMode
+  - 0x408190 zOpt_GetPlayerName
+  - 0x4081f0 zOpt::GetGraphicsFlagsForCurrentHwMode
+  - 0x408270 zOpt::GetNetworkModemEnabled
+  - 0x408570 zOpt::RenderSection_SetTargetWindow
+  - 0x4085b0 zOpt::DisplaySection_SetTargetDisplay
+  - 0x408480 zOpt::CameraSection_SetActiveCamera
+  - 0x407ec0 pending
+- Next action:
+  - `python tools/recoil_status.py 0x408df0`
 
 ### Group: MFC frame shell cluster
 
 - Anchor: 0x42e110 RecoilApp::CreateMainWnd
-- Reason: dependency closure / MFC42 frame class cluster / shared ABI layout
-- Source files:
-  - src/Battlesport/CZRecoilFrame.h
-  - src/Battlesport/CZRecoilFrame.cpp
-  - src/Battlesport/CZGameFrame.h
-  - src/Battlesport/CZGameFrame.cpp
-  - src/Battlesport/RecoilApp.cpp
-  - src/GameZRecoil/zGame/zGame.cpp
-  - src/GameZRecoil/zInput/zInput.cpp
-  - src/GameZRecoil/zNetwork/znet_dplay.cpp
-  - src/GameZRecoil/zError/zerr_old.c
-  - src/GameZRecoil/zSound/zsnd_cd.cpp
-  - src/GameZRecoil/zVideo/zVideo.cpp
-- Plan entries:
-  - 0x42e110 RecoilApp::CreateMainWnd - Reimplemented / Binary-safe limited
-  - 0x430240 CZRecoilFrame::GetRuntimeClass - completed
-  - 0x430250 CZRecoilFrame::Constructor - Reimplemented / Binary-safe limited
-  - 0x430610 CZRecoilFrame::Destructor - Reimplemented / Binary-safe verified
-  - 0x430680 CZRecoilFrame::SetMenuBarVisibility - completed
-  - 0x4306e0 CZRecoilFrame::GetMessageMap - completed
-  - 0x4306f0 CZRecoilFrame::BuildWindowTitle - completed
-  - 0x4308c0 CZRecoilFrame::ConfigureModeFeatureFlags - Reimplemented / Binary-safe verified
-  - 0x4308a0 CZRecoilFrame::OnMenuExitGame - Reimplemented / Binary-safe verified
-  - 0x4309b0 CZRecoilFrame::OnMenuSetVideoMode2 - Reimplemented / Binary-safe verified
-  - 0x4309d0 CZRecoilFrame::OnMenuSetVideoMode3 - Reimplemented / Binary-safe verified
-  - 0x4309f0 CZRecoilFrame::OnMenuSetVideoMode4 - Reimplemented / Binary-safe verified
-  - 0x430a10 CZRecoilFrame::OnMenuSetVideoMode5 - Reimplemented / Binary-safe verified
-  - 0x430a30 CZRecoilFrame::OnMenuSetVideoMode6 - Reimplemented / Binary-safe verified
-  - 0x430a50 CZRecoilFrame::OnMenuSetVideoMode7 - Reimplemented / Binary-safe verified
-  - 0x430a70 CZRecoilFrame::OnMenuToggleHud - Reimplemented / Binary-safe verified
-  - 0x430a90 CZRecoilFrame::OnUpdateHudCmdUI - Reimplemented / Binary-safe verified
-  - 0x430ab0 CZRecoilFrame::OnMenuToggleFullscreen - Reimplemented / Binary-safe verified
-  - 0x4313d0 CZRecoilFrame::OnUpdateVideoMode2CmdUI - Reimplemented / Binary-safe verified
-  - 0x431430 CZRecoilFrame::OnUpdateVideoMode3CmdUI - Reimplemented / Binary-safe verified
-  - 0x431490 CZRecoilFrame::OnUpdateVideoMode4CmdUI - Reimplemented / Binary-safe verified
-  - 0x4314f0 CZRecoilFrame::OnUpdateVideoMode5CmdUI - Reimplemented / Binary-safe verified
-  - 0x431550 CZRecoilFrame::OnUpdateVideoMode6CmdUI - Reimplemented / Binary-safe verified
-  - 0x4315b0 CZRecoilFrame::OnUpdateVideoMode7CmdUI - Reimplemented / Binary-safe verified
-  - 0x431610 CZRecoilFrame::SetHwApiAndInitMode - Reimplemented / Binary-safe verified
-  - 0x431680 CZRecoilFrame::InitFallbackMode - Reimplemented / Binary-safe verified
-  - 0x4316c0 CZRecoilFrame::EnsureHwApiInitialized - Reimplemented / Binary-safe verified
-  - 0x431730 CZRecoilFrame::InitStartupHwApiFromOptions - Reimplemented / Binary-safe verified
-  - 0x431790 CZRecoilFrame::OnMenuSelectHwApi0 - Reimplemented / Binary-safe verified
-  - 0x4317a0 CZRecoilFrame::OnMenuSelectHwApi1 - Reimplemented / Binary-safe verified
-  - 0x4317b0 CZRecoilFrame::OnMenuSelectHwApi2 - Reimplemented / Binary-safe verified
-  - 0x4317c0 CZRecoilFrame::OnMenuSelectHwApi3 - Reimplemented / Binary-safe verified
-  - 0x4317d0 CZRecoilFrame::UpdateHwApiMenuItem - Reimplemented / Binary-safe verified
-  - 0x431870 CZRecoilFrame::OnUpdateHwApi0CmdUI - Reimplemented / Binary-safe verified
-  - 0x4318b0 CZRecoilFrame::OnUpdateHwApi1CmdUI - Reimplemented / Binary-safe verified
-  - 0x4318c0 CZRecoilFrame::OnUpdateHwApi2CmdUI - Reimplemented / Binary-safe verified
-  - 0x4318d0 CZRecoilFrame::OnUpdateHwApi3CmdUI - Reimplemented / Binary-safe verified
-  - 0x4318e0 CZRecoilFrame::OnUpdateFullscreenCmdUI - Reimplemented / Binary-safe verified
-  - 0x431900 CZRecoilFrame::OnMenuToggleCDAudio - Reimplemented / Binary-safe verified
-  - 0x431920 CZRecoilFrame::OnUpdateCDAudioCmdUI - Reimplemented / Binary-safe verified
-  - 0x431950 CZRecoilFrame::OnMenuToggleJoystick - Reimplemented / Binary-safe verified
-  - 0x431970 CZRecoilFrame::OnUpdateJoystickCmdUI - Reimplemented / Binary-safe verified
-  - 0x431a80 MfcCmdUI::EnableAlways - Reimplemented / Binary-safe verified
-  - 0x431a90 CZRecoilFrame::OnMenuSelectDirectSound - Reimplemented / Binary-safe verified
-  - 0x431aa0 CZRecoilFrame::OnUpdateDirectSoundCmdUI - Reimplemented / Binary-safe verified
-  - 0x431ad0 CZRecoilFrame::OnMenuSelectA3D - Reimplemented / Binary-safe verified
-  - 0x431ae0 CZRecoilFrame::OnUpdateA3DCmdUI - Reimplemented / Binary-safe verified
-  - 0x431b10 CZRecoilFrame::OnSize - Reimplemented / Binary-safe verified
-  - 0x4437a0 CZGameFrame::GetRuntimeClass - completed
-  - 0x4437b0 CZGameFrame::GetBaseMessageMap - Reimplemented / Binary-safe verified
-  - 0x4437c0 CZGameFrame::GetMessageMap - completed
-  - 0x4437d0 CZGameFrame::Constructor - Reimplemented / Binary-safe verified
-  - 0x443830 CZGameFrame::Destructor - Reimplemented / Binary-safe verified
-  - 0x4438a0 CZGameFrame::IsWindowValid - completed
-  - 0x4438c0 CZGameFrame::BuildWindowTitle - completed
-  - 0x4438f0 CZGameFrame::OnClose - completed
-  - 0x443a20 CZGameFrame::OnSize - completed
-  - 0x443a60 CZGameFrame::OnCreate - Reimplemented / Binary-safe verified
-  - 0x443ab0 CZGameFrame::OnDestroy - Reimplemented / Binary-safe verified
-  - 0x443ae0 CZGameFrame::OnActivate - Reimplemented / Binary-safe verified
-  - 0x443b50 CZGameFrame::OnAppIdleDispatchMessage - completed
-  - 0x4076f0 zGame::ReturnOnlyStub - Reimplemented / Binary-safe verified
-  - 0x470310 zInput::Mouse_UpdateAcquireState - Reimplemented / Binary-safe verified
-  - 0x470360 zInput::Mouse_ShutdownDevice - Reimplemented / Binary-safe verified
-  - 0x471c60 zInput::Mouse_IsUnsuspended - Reimplemented / Binary-safe verified
-  - 0x471c70 zInput::Joystick_IsUnsuspended - Reimplemented / Binary-safe verified
-  - 0x471c80 zInput_Keyboard_IsUnsuspended - Reimplemented / Binary-safe verified
-  - 0x471cf0 zInput::Mouse_Suspend - Reimplemented / Binary-safe verified
-  - 0x471d00 zInput::Joystick_Suspend - Reimplemented / Binary-safe verified
-  - 0x471d10 zInput::Keyboard_Suspend - Reimplemented / Binary-safe verified
-  - 0x471ae0 zInput::OnAppDeactivate - Reimplemented / Binary-safe verified
-  - 0x471b20 zInput::OnAppActivate - Reimplemented / Binary-safe verified
-  - 0x4704f0 zInput::Mouse_ApplyAccumulatedDelta - Reimplemented / Binary-safe verified
-  - 0x470610 zInput::Mouse_ResetTransitionState - Reimplemented / Binary-safe verified
-  - 0x471c90 zInput::Mouse_ResumeFromSuspend - Reimplemented / Binary-safe verified
-  - 0x46f450 zInput::Keyboard_ResetTransitionState - Reimplemented / Binary-safe verified
-  - 0x471cd0 zInput::Keyboard_ResumeFromSuspend - Reimplemented / Binary-safe verified
-  - 0x471cb0 zInput::Joystick_ResumeFromSuspend - completed
-  - 0x472410 zInput::DI_ResetTransitionState - completed
-  - 0x472490 zInput::DI_ReportError - Reimplemented / Binary-safe verified
-  - 0x4a26f0 zSndCd::Stop - Reimplemented / Binary-safe verified
-  - 0x4a7740 zVideo::ShutdownVideoSystem - Reimplemented / Binary-safe verified
-  - 0x4a7770 zVideo_RestoreIconicFullscreenWindowIfNeeded - Reimplemented / Binary-safe verified
-  - 0x48a980 zNetwork_DPlay_DestroyCachedLocalPlayer - Reimplemented / Binary-safe verified
-  - 0x48c250 zNetwork_DPlay_ReportError - Reimplemented / Binary-safe verified
-  - 0x404e80 zError::ReportOld - Reimplemented / Binary-safe verified
-  - 0x462310 RecoilError::InitOutputContext - Reimplemented / Binary-safe verified
-  - 0x4080a0 zSnd::SetAudioApiOption - Reimplemented / Binary-safe verified
-  - 0x4080b0 zSnd::GetAudioApiOption - Reimplemented / Binary-safe verified
-  - 0x408210 zSnd::SetCDAudioOption - Reimplemented / Binary-safe verified
-  - 0x408220 zSnd::GetCDAudioOption - Reimplemented / Binary-safe verified
-  - 0x408390 zInp::SetJoystickOption - Reimplemented / Binary-safe verified
-  - 0x4083a0 zInp::SetJoystickAxesCountOption - Reimplemented
-  - 0x4083b0 zInp::SetJoystickButtonCountOption - Reimplemented
-  - 0x4083c0 zInp::GetJoystickOption - Reimplemented / Binary-safe verified
-  - 0x4a1290 zSnd::SetActiveBackendPreInit - Reimplemented / Binary-safe verified
-  - 0x4a12b0 zSnd::GetActiveBackend - Reimplemented / Binary-safe verified
-  - 0x46d5c0 zVid::GetTexturePackLoadState - Reimplemented / Binary-safe verified
-  - 0x4a07f0 zSnd::SetUseArchiveBanksFlag - Reimplemented / Binary-safe verified
-  - 0x4a9910 zVid::GetAcceptedHardwareRendererCount_Cached - Reimplemented / Binary-safe verified
-  - 0x443a40 zVid_UpdateCachedClientRectIfUpdateMaskEnabled - completed
-  - 0x4a59a0 zVid::SetCachedClientRectUpdateMask - completed
-  - 0x4a59b0 zVid_QueryCachedClientRectUpdateMaskIf3dfx - completed
-  - 0x4a7700 zVideo::UpdateCachedClientRectScreenCoords - completed
-  - 0x42a480 zInput::BindGroupList_GetCount - Reimplemented
-  - 0x429f80 zInput::BindGroupList_Clear - Reimplemented
-  - 0x42a000 zInput::BindGroupInfo_Destroy - Reimplemented
-  - 0x42a070 zInput::BindGroupList_AddGroup - Reimplemented
-  - 0x42a4a0 zInput::BindGroupList_GetGroupTitle - Reimplemented
-  - 0x42a4b0 zInput::BindGroupList_GetGroupCommandCount - Reimplemented
-  - 0x42a4d0 zInput::BindGroupList_GetGroupCommandId - Reimplemented
-  - 0x42a2c0 zInput::BindGroupList_AddCommandToGroup - Reimplemented
-  - 0x42a4e0 zInput::BindMap_GetCommandLabel - Reimplemented
-  - 0x42a4f0 zInput::BindMap_GetCommandHint - Reimplemented
-  - 0x42a500 zInput::BindMap_AddDefaultBinding - Reimplemented
-  - 0x42a550 zInput::BindMap_InitDefaultBindings - Reimplemented
-  - 0x42a9d0 zInput_BindGroupInfoVec::Count - Reimplemented
-  - 0x46fba0 zInput::Keyboard_TranslateDikToAscii - Reimplemented
-  - 0x46fd20 zInput::Keyboard_InitDikToAsciiTable - Reimplemented
-  - 0x42fa80 zInput_DI_IsForceFeedbackEnabled - Reimplemented
-  - 0x472480 zInput_DI_HasForceFeedback - Reimplemented
-  - 0x4700a0 zInput::Mouse_SetNormalizedCursorPos - Reimplemented
-  - 0x472390 zInput::DI_GetCurrentState - Reimplemented
-  - 0x470d40 zInput_BindMapContext::DispatchMouseButtonCallbacks - Reimplemented
-  - 0x470db0 zInput_BindMapContext::DispatchJoystickButtonCallbacks - Reimplemented
-  - 0x470e80 zInput_BindMapContext_DispatchFromKeyboardEvent - Reimplemented
-  - 0x42faa0 zInput_DI_RestartPrimaryFireEffect - Reimplemented
-  - 0x42fac0 zInput_DI_PlayAltFireEffect - Reimplemented
-- Blocking dependencies:
-  - MFC42 CWnd/CFrameWnd/CMenu/CString imports - provider ABI must stay MFC42, not modern MFC
-  - CZRecoilFrame shared layout - must match 0x230 allocation and frame/menu fields used by BN
-- Verification target:
-  - ninja-x86-debug build and CTest; ninja-x86-release with RECOIL_EMIT_ASM=ON and recoil_asm_verify.py
-- Notes:
-  - 0x42e110 allocates 0x230 bytes and calls 0x430250; modern MSVC EH/unwind around operator new differs from VC5.
-  - 0x430250 now uses the embedded CMenu member for Attach, copies g_RecoilApp.m_hInstance into g_RecoilApp_hInstance, mutates the main menu unconditionally, and follows the CString default/Format("%s") title path; binary-safe verification remains limited by BN 5.2 MFC/EH modeling and modern MSVC codegen.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x430240 CZRecoilFrame::GetRuntimeClass
+  - 0x430610 CZRecoilFrame::Destructor
+  - 0x430680 CZRecoilFrame::SetMenuBarVisibility
+  - 0x4306e0 CZRecoilFrame::GetMessageMap
+  - 0x4308a0 CZRecoilFrame::OnMenuExitGame
+  - 0x4309b0 CZRecoilFrame::OnMenuSetVideoMode2
+  - 0x4309d0 CZRecoilFrame::OnMenuSetVideoMode3
+  - 0x4309f0 CZRecoilFrame::OnMenuSetVideoMode4
+  - 0x430a30 CZRecoilFrame::OnMenuSetVideoMode6
+  - 0x430a50 CZRecoilFrame::OnMenuSetVideoMode7
+  - 0x430a70 CZRecoilFrame::OnMenuToggleHud
+  - 0x430a90 CZRecoilFrame::OnUpdateHudCmdUI
+  - 0x430ab0 CZRecoilFrame::OnMenuToggleFullscreen
+  - 0x4313d0 CZRecoilFrame::OnUpdateVideoMode2CmdUI
+  - 0x431430 CZRecoilFrame::OnUpdateVideoMode3CmdUI
+  - 0x431490 CZRecoilFrame::OnUpdateVideoMode4CmdUI
+  - 0x4314f0 CZRecoilFrame::OnUpdateVideoMode5CmdUI
+  - 0x431550 CZRecoilFrame::OnUpdateVideoMode6CmdUI
+  - 0x4315b0 CZRecoilFrame::OnUpdateVideoMode7CmdUI
+  - 0x4316c0 CZRecoilFrame::EnsureHwApiInitialized
+  - 0x431790 CZRecoilFrame::OnMenuSelectHwApi0
+  - 0x4317a0 CZRecoilFrame::OnMenuSelectHwApi1
+  - 0x4317b0 CZRecoilFrame::OnMenuSelectHwApi2
+  - 0x4317c0 CZRecoilFrame::OnMenuSelectHwApi3
+  - 0x4317d0 CZRecoilFrame::UpdateHwApiMenuItem
+  - 0x431870 CZRecoilFrame::OnUpdateHwApi0CmdUI
+  - 0x4318b0 CZRecoilFrame::OnUpdateHwApi1CmdUI
+  - 0x4318c0 CZRecoilFrame::OnUpdateHwApi2CmdUI
+  - 0x4318d0 CZRecoilFrame::OnUpdateHwApi3CmdUI
+  - 0x4318e0 CZRecoilFrame::OnUpdateFullscreenCmdUI
+  - 0x431900 CZRecoilFrame::OnMenuToggleCDAudio
+  - 0x431920 CZRecoilFrame::OnUpdateCDAudioCmdUI
+  - 0x431950 CZRecoilFrame::OnMenuToggleJoystick
+  - 0x431970 CZRecoilFrame::OnUpdateJoystickCmdUI
+  - 0x431a80 MfcCmdUI::EnableAlways
+  - 0x431a90 CZRecoilFrame::OnMenuSelectDirectSound
+  - 0x431aa0 CZRecoilFrame::OnUpdateDirectSoundCmdUI
+  - 0x431ad0 CZRecoilFrame::OnMenuSelectA3D
+  - 0x431ae0 CZRecoilFrame::OnUpdateA3DCmdUI
+  - 0x431b10 CZRecoilFrame::OnSize
+  - 0x4437a0 CZGameFrame::GetRuntimeClass
+  - 0x4437b0 CZGameFrame::GetBaseMessageMap
+  - 0x4437c0 CZGameFrame::GetMessageMap
+  - 0x443830 CZGameFrame::Destructor
+  - 0x4438a0 CZGameFrame::IsWindowValid
+  - 0x4438c0 CZGameFrame::BuildWindowTitle
+  - 0x4438f0 CZGameFrame::OnClose
+  - 0x443a20 CZGameFrame::OnSize
+  - 0x443a60 CZGameFrame::OnCreate
+  - 0x443ab0 CZGameFrame::OnDestroy
+  - 0x443ae0 CZGameFrame::OnActivate
+  - 0x443b50 CZGameFrame::OnAppIdleDispatchMessage
+  - 0x471c60 zInput::Mouse_IsUnsuspended
+  - 0x471c70 zInput::Joystick_IsUnsuspended
+  - 0x471c80 zInput_Keyboard_IsUnsuspended
+  - 0x471cf0 zInput::Mouse_Suspend
+  - 0x471d00 zInput::Joystick_Suspend
+  - 0x471d10 zInput::Keyboard_Suspend
+  - 0x471ae0 zInput::OnAppDeactivate
+  - 0x471b20 zInput::OnAppActivate
+  - 0x471c90 zInput::Mouse_ResumeFromSuspend
+  - 0x471cd0 zInput::Keyboard_ResumeFromSuspend
+  - 0x471cb0 zInput::Joystick_ResumeFromSuspend
+  - 0x4a7770 zVideo_RestoreIconicFullscreenWindowIfNeeded
+  - 0x48a980 zNetwork_DPlay_DestroyCachedLocalPlayer
+  - 0x48c250 zNetwork_DPlay_ReportError
+  - 0x443a40 zVid_UpdateCachedClientRectIfUpdateMaskEnabled
+  - 0x4a59b0 zVid_QueryCachedClientRectUpdateMaskIf3dfx
+  - 0x42a480 zInput::BindGroupList_GetCount
+  - 0x42a4a0 zInput::BindGroupList_GetGroupTitle
+  - 0x42a4b0 zInput::BindGroupList_GetGroupCommandCount
+  - 0x42a4d0 zInput::BindGroupList_GetGroupCommandId
+  - 0x42a4e0 zInput::BindMap_GetCommandLabel
+  - 0x42a4f0 zInput::BindMap_GetCommandHint
+  - 0x46fba0 zInput::Keyboard_TranslateDikToAscii
+  - 0x46fd20 zInput::Keyboard_InitDikToAsciiTable
+  - 0x42fa80 zInput_DI_IsForceFeedbackEnabled
+  - 0x472480 zInput_DI_HasForceFeedback
+  - 0x4700a0 zInput::Mouse_SetNormalizedCursorPos
+  - 0x472390 zInput::DI_GetCurrentState
+  - 0x470d40 zInput_BindMapContext::DispatchMouseButtonCallbacks
+  - 0x470db0 zInput_BindMapContext::DispatchJoystickButtonCallbacks
+  - 0x470e80 zInput_BindMapContext_DispatchFromKeyboardEvent
+  - 0x42faa0 zInput_DI_RestartPrimaryFireEffect
+  - 0x42fac0 zInput_DI_PlayAltFireEffect
+- Next action:
+  - `python tools/recoil_status.py 0x430240`
 
 ### Group: RecoilApp startup construction cluster
 
 - Anchor: 0x42de20 RecoilApp::StaticInitAndRegisterAtExit
-- Reason: dependency closure / source file cluster
-- Source files:
-  - src/Battlesport/RecoilApp.cpp
-  - src/Battlesport/RecoilApp.h
-  - src/GameZRecoil/zFMV/fmv_script.cpp
-  - src/GameZRecoil/zFMV/fmv.h
-  - src/GameZRecoil/zSound/zsnd_cd.cpp
-  - src/GameZRecoil/zSound/zsnd_create.cpp
-- Plan entries:
-  - 0x42de20 RecoilApp::StaticInitAndRegisterAtExit - Reimplemented / Binary-safe limited
-  - 0x42de30 RecoilApp::StaticInit - Reimplemented / Binary-safe limited
-  - 0x42de40 RecoilApp::RegisterAtExit - Reimplemented / Binary-safe verified
-    - 0x42de50 RecoilApp::AtExitDestructor - Reimplemented / Binary-safe limited
-    - 0x42de60 RecoilApp::Destructor - Reimplemented / Binary-safe limited by modern EH/unwind mismatch
-    - 0x42dfa0 RecoilApp::Constructor - Reimplemented / Binary-safe limited by modern EH/unwind mismatch
-    - 0x42e220 RecoilApp::StartEngine - Reimplemented / Binary-safe limited
-    - 0x42e330 RecoilApp::InitializeDisplay - Reimplemented / Binary-safe limited
-  - 0x4428b0 RecoilApp_MfcOleModule::Destructor - completed
-  - 0x4429b0 RecoilApp_MfcOleModule::ScalarDeletingDestructor - completed
-  - 0x442c70 RecoilApp::MfcOleModule::Constructor - completed
-  - 0x42eb70 RecoilApp_AttractFmvState::Constructor - completed
-  - 0x42ed30 RecoilApp_MissionFmvState::Constructor - completed
-  - 0x42df90 RecoilApp_IState::Destructor - completed
-  - 0x42eea0 RecoilApp_PlayState::Constructor - completed
-  - 0x42eec0 RecoilApp_PlayState::OnWndActivate - completed
-  - 0x413630 HudUiMgr::TriggerCurrentLayoutOnActivated - completed
-  - 0x438980 RecoilVersion::GetString - completed
-  - 0x4a9940 zVid::GetSelectedD3DDeviceNameOrDefault - completed
-  - 0x404c50 Briefing::SetProgressAndSleep - completed
-  - 0x414180 HudUiLoadingCheckpoint::AdvanceAndLog - Reimplemented / Binary-safe limited
-  - 0x414210 HudUiLoadingCheckpoint::InitTable - Reimplemented / Binary-safe limited
-  - 0x4bd2a0 HudUiTextStack4::Clear - completed
-  - 0x413910 HudUiMgr::EnableTopAndChatStacks - completed
-  - 0x413950 HudUiMgr::DisableTopAndChatStacks - completed
-  - 0x443140 RecoilApp::GetCurrentState - completed
-  - 0x443160 RecoilApp::QueueSwitchCurrentState - Reimplemented / Binary-safe verified
-  - 0x443310 RecoilApp::QueuePushState - completed
-  - 0x4434b0 RecoilApp::QueueExitCurrentState - completed
-  - 0x443650 RecoilApp::OnIdleOrDispatch - completed
-  - 0x443690 RecoilApp_StateQueue::GrowAndCenterChunkBaseList - completed
-  - 0x443700 RecoilApp_StateQueueBlock::InitFromCursor - completed
-  - 0x462330 zFMV_Playback::Init - completed
-  - 0x462360 zFMV_Playback::~zFMV_Playback - completed
-  - 0x462370 zFMV_Playback_OpenAndPlay - Reimplemented; binary-safe verification pending
-  - 0x4624f0 zFMV_Playback::StopAndClose - completed
-  - 0x462540 zFMV_Playback::SetDestRect - completed
-  - 0x462570 zFMV_Playback::ReportMciError - completed
-  - 0x4159d0 zFMV_Action_NoOpUpdate - completed
-  - 0x4159e0 zFMV_Action_RunBlockingTimed - completed
-  - 0x415a80 zFMV_ActionBase_ScalarDeletingDtor - completed
-  - 0x415aa0 zFMV_ActionBase_Dtor - completed
-  - 0x462e30 zFMV_Action_RunBlockingImmediate - completed
-  - 0x462e70 zFMV_ActionDerived_ScalarDeletingDtor - completed
-  - 0x462e90 zFMV_ActionPlaySound_Begin - completed
-  - 0x463ca0 zFMV_ActionPlayMci_Begin - Reimplemented; binary-safe verification pending
-  - 0x462ed0 zFMV_ActionWait_Begin - completed
-  - 0x462ee0 zFMV_ActionWait_Update - completed
-  - 0x462f00 zFMV_Action_FlipSurfaces - completed
-  - 0x462f10 zFMV_Script::AppendAction - completed
-  - 0x462f90 zFMV_Script::BeginCurrentAction - completed
-  - 0x463000 zFMV_Script::Update - Reimplemented; binary-safe verification pending
-  - 0x4630a0 zFMV_Script::BeginAtTime - completed
-  - 0x4630e0 zFMV_Script::UpdateAtTime - Reimplemented; binary-safe verification pending
-  - 0x463120 zFMV_Script::BeginNow - completed
-  - 0x463130 zFMV_ActionImage::ConstructorWithScreenRect - Reimplemented; binary-safe verification blocked by modern EH/unwind mismatch
-  - 0x4631f0 zFMV_ActionImage::ConstructorScaled - Reimplemented; binary-safe verification blocked by modern EH/unwind mismatch
-  - 0x4633c0 zFMV_ActionFade::Constructor - completed
-  - 0x463570 zFMV_ActionPlayAvi::Constructor - Reimplemented; binary-safe verification blocked by 0x4a59e0 and modern security-cookie codegen
-  - 0x463b00 zFMV_ActionPlayMci::Constructor - Reimplemented; binary-safe verification blocked by modern EH/unwind and string-scan codegen mismatch
-    - 0x463cc0 zFMV_ActionPlayMci_End - Reimplemented; binary-safe verification pending
-    - 0x463d50 zFMV_Stream::Init - Reimplemented; binary-safe verification pending
-    - 0x463dd0 zFMV_Stream::Destructor - Reimplemented; binary-safe verification pending
-    - 0x463ef0 zFMV_Stream_Ctor - Reimplemented; binary-safe verification pending
-    - 0x4641a0 zFMV_Stream::OpenAudio - Reimplemented; binary-safe verification pending
-  - 0x48d420 zVideo::Fx_SetSurfaceState - completed
-  - 0x4a6840 zVideo::RunPostprocessOnPrimaryBuffer - Reimplemented; binary-safe verification pending
-  - 0x4a68d0 zVideo::Dispatch_UnlockPrimarySurfaceState - completed
-  - 0x4a6e80 zVideo_buff_CaptureSurfaceToImage - Reimplemented; binary-safe verification pending
-  - 0x4bee20 zVideo::FxPass3Config_QueuePrimitiveRaw - Reimplemented; binary-safe verification pending
-  - 0x4bef50 zVideo::FxPass3_QueuePrimitive - Reimplemented; binary-safe verification pending
-    - 0x4903f0 zRndr::GetActiveRegionState - completed
-    - 0x490520 zRndr::SpanOcclusionInit - Reimplemented; binary-safe verification pending
-    - 0x490590 zRndr::SpanOcclusionBuildColumnHeadTable - Reimplemented; binary-safe verification pending
-    - 0x48ff70 zVid::InitFrameScratchBuffers - Reimplemented; binary-safe verification pending
-  - 0x4a59e0 zSys::FindFileOnDriveType - Reimplemented; binary-safe verification blocked by limited reconstruction and modern security-cookie codegen
-  - 0x4a6cf0 zVid_PackColorRGB - completed
-    - 0x4a3690 zSndSample::DestroyOwnedData - Reimplemented; binary-safe verification pending
-    - 0x4a3910 zSndSample::Destroy - Reimplemented; binary-safe verification pending
-    - 0x49fff0 zSndPlayHandleSnapshot::CreateFromActiveSamples - Reimplemented; binary-safe verification pending
-    - 0x4a0300 zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle - Reimplemented; binary-safe verification pending
-    - 0x4a0500 zSndPlayHandleSnapshot::StopAllIfPlaying - Reimplemented; binary-safe verification pending
-    - 0x4a05f0 zSndPlayHandleSnapshot::Destroy - Reimplemented; binary-safe verification pending
-    - 0x4a07c0 zSndPlayHandleSnapshotItem::NewNode - Reimplemented; binary-safe verification pending
-    - 0x4a2ea0 zSndSample::InitFromWaveData - Reimplemented; binary-safe verification pending
-    - 0x4a2ec0 zSndSample::InitFromWaveData_A3D - Reimplemented; binary-safe verification pending
-    - 0x4a3180 zSndSample::InitFromWaveData_DirectSound - Reimplemented; binary-safe verification pending
-    - 0x4a3850 zSndSample_CreateQueuedStreamingSample - Reimplemented; binary-safe verification pending
-  - 0x4a53f0 zSndWaveData::ConstructorFromPath - Reimplemented; binary-safe verification pending
-  - 0x4a5440 zSndWaveData::Destructor - Reimplemented; binary-safe verification pending
-  - 0x4a5460 zSndWaveData::ParseLoadedWaveFile - Reimplemented; binary-safe verification pending
-  - 0x4a5540 zSndWaveData::LoadAndParseIfNeeded - Reimplemented; binary-safe verification pending
-  - 0x4a55c0 zSndWaveData::Reset - Reimplemented; binary-safe verification pending
-- Blocking dependencies:
-  - 0x4625e0 zFMV_Script::Init - Reimplemented; binary-safe verification pending
-  - 0x4626b0 zFMV_Script::LoadActionsFromZrd - Reimplemented; binary-safe verification pending
-  - 0x463850 zFMV_ActionBlur::Constructor - Reimplemented; binary-safe verification pending
-- Verification target:
-  - ninja-x86-debug build and CTest; ninja-x86-release with RECOIL_EMIT_ASM=ON and recoil_asm_verify.py
-- Notes:
-  - 0x42dfa0 calls FMV Init with null zrdPath/tagPrefix for embedded startup states, but zFMV_Script::Init itself has a non-null parser path through LoadActionsFromZrd.
-  - 0x443650 dispatches MCI notify through zSndCd before forwarding to the current state vtable slot.
-  - 0x442c70 and 0x4428b0 chain to vendored MFC42.LIB imports ??0CWinApp@@QAE@PBD@Z and ??1CWinApp@@UAE@XZ.
-  - Native MSVC x86 builds use /arch:IA32 to avoid SSE codegen in binary-sensitive 1999 x86 functions.
-  - 0x42de60, 0x42df10, and 0x42df50 source behavior matches the destructor cleanup order, but modern MSVC does not emit the original VC5-style EH registration/unwind state.
-  - 0x42dfa0 source behavior matches the startup construction order and final memory-store order; modern MSVC still does not emit the original VC5-style constructor EH registration.
-  - 0x4a5780 RecoilApp::InitStdLogFiles is implemented with the original log filename/fallback behavior; binary-safe verification remains blocked by modern CRT stream-provider differences (`__acrt_iob_func` vs original `_iob`).
-  - 0x42e220 is built with RECOIL_NO_GS so the 0x80 caption buffer does not introduce a modern security cookie; remaining verification is limited by modern strcpy expansion/register allocation against the original rep-copy sequence.
-  - 0x42e330 source includes the assembly-visible HSE failure path even though BN HLIL folds it through the current SpanOcclusionInit model; verification is limited by modern CRT stdout provider and register allocation differences.
-  - 0x42e430 now calls zVideo::ReturnSuccessStub after zVideo::ShutdownVideoSystem like BN; MSVC tail-jumps the final call but preserves the shutdown side-effect order.
-  - 0x463130 and 0x4631f0 source behavior matches the image-action constructors, but modern MSVC does not emit the original VC5-style EH registration around _strdup.
-  - 0x463b00 source behavior matches the MCI action constructor, including the 0x53a718 destination rect model, but modern MSVC does not emit the original VC5-style EH registration around playback allocation.
-  - 0x463dd0 source behavior follows the BN FMV stream destructor order: audio frees/sample destroy/AVI release, video codec and image buffers, optional surface release through the renderer function pointer, then critical-section and media-path teardown.
-  - 0x463ef0 source behavior follows the BN video stream open/setup sequence, including BITMAPV4 destination format expansion, display-mask conversion, top-down DIB flip, and failure tail through zError/AVIFileExit.
-  - 0x462f90 and 0x4630a0 are implemented and verified in `build/verification/462f90_diff.txt` and `build/verification/4630a0_diff.txt`; remaining differences are modern register allocation and unsigned time conversion lowering.
-  - 0x42ea20 now primes renderer/video surface state and starts the INTRO FMV when `m_skipIntroFmv` is zero; `build/verification/42ea20_diff.txt` is limited to register allocation and symbol naming.
-  - 0x42eac0 now routes skipped intro FMV to the mission-FMV state and otherwise advances the embedded FMV script, switching to main-menu prep when the script finishes.
-  - The FMV update abort path now uses real zSndPlayHandleSnapshot intrusive-list payloads rather than a placeholder; StopAll skips the first anchor node as in BN.
-  - 0x463000, 0x4630e0, 0x42eac0, 0x471de0, 0x4a0300, 0x4a0500, 0x4a05f0, and 0x4a07c0 are verified in `build/verification/*_diff.txt`; differences are modern register allocation, tail-call lowering, and equivalent x87/unsigned time conversion.
-  - 0x42eb00, 0x42eb10, and 0x463120 are verified in `build/verification/*_diff.txt`; differences are only label/symbol names and the modern MSVC tail-jump from BeginNow to Reset.
-  - 0x42eb20 and 0x42eb60 are verified in `build/verification/42eb20_diff.txt` and `build/verification/42eb60_diff.txt`; differences are register allocation, store scheduling, and symbol names.
-  - 0x42ebf0 is verified in `build/verification/42ebf0_diff.txt`; behavior matches the reload-mode global, client-rect capture, ATTRACT script load order, and BeginAtTime path.
-  - 0x42ec80 and 0x42eca0 are verified in `build/verification/42ec80_diff.txt` and `build/verification/42eca0_diff.txt`; differences are symbol names and equivalent immediate formatting.
-  - 0x413630 and 0x42eec0 are verified in `build/verification/413630_diff.txt` and `build/verification/42eec0_diff.txt`; differences are symbol names and equivalent vtable-tailcall lowering.
-  - 0x438980 and 0x4a9940 are verified in `build/verification/438980_diff.txt` and `build/verification/4a9940_diff.txt`; differences are relocation names for rebuilt string/global symbols.
-  - 0x404c50 is verified in `build/verification/404c50_diff.txt`; MSVC tail-jumps the final stdcall Sleep but preserves callee stack cleanup and progress-widget vtable slot 0x84.
-  - 0x414180 and 0x414210 are limited-verified in `build/verification/414180_diff.txt` and `build/verification/414210_diff.txt`; behavior matches the checkpoint index clamp, stdout log/progress update, and 19-entry single-precision normalization table, while modern MSVC lowers CRT stdout and table initialization differently.
-  - 0x4bd2a0, 0x413910, and 0x413950 are verified in `build/verification/*_diff.txt`; differences are symbol names and equivalent indirect-call lowering, with text-stack rows still cleared through vtable slots 0x74 and 0x60.
-  - 0x49fff0 is reimplemented and limited-verified in `build/verification/49fff0_diff.txt`; modern MSVC omits the original VC5 EH frame and lowers the repeated snapshot-node append path through source helpers.
-    - 0x4a2ec0 A3D wave initialization is implemented with recovered backend vtable calls for buffer creation, format/size setup, lock/copy/commit, reset, spatialization/range, and cue/end marker construction.
-    - 0x4a3180 DirectSound wave initialization is implemented with a local 0x14-byte DirectSound buffer-desc model, backend vtable calls, PCM lock/copy/unlock, reset-to-start, and cue/end marker construction.
-  - zFMV_Script::Init null-path and non-null LoadActionsFromZrd parser paths are implemented and smoked with a mounted fmv.zrd archive.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4429b0 RecoilApp::MfcOleModuleScalarDeletingDestructor
+  - 0x42eec0 RecoilApp_PlayState::OnWndActivate
+  - 0x4a9940 zVid::GetSelectedD3DDeviceNameOrDefault
+  - 0x404c50 Briefing::SetProgressAndSleep
+  - 0x414180 HudUiLoadingCheckpoint::AdvanceAndLog
+  - 0x414210 HudUiLoadingCheckpoint::InitTable
+  - 0x4bd2a0 HudUiTextStack4::Clear
+  - 0x413910 HudUiMgr::EnableTopAndChatStacks
+  - 0x413950 HudUiMgr::DisableTopAndChatStacks
+  - 0x443650 RecoilApp::OnIdleOrDispatch
+  - 0x462370 zFMV_Playback::OpenAndPlay
+  - 0x4159d0 zFMV_Action::NoOpUpdate
+  - 0x4159e0 zFMV_Action::RunBlockingTimed
+  - 0x462e30 zFMV_Action::RunBlockingImmediate
+  - 0x462e90 zFMV_ActionPlaySound::Begin
+  - 0x463ca0 zFMV_ActionPlayMci::Begin
+  - 0x462ed0 zFMV_ActionWait::Begin
+  - 0x462ee0 zFMV_ActionWait::Update
+  - 0x462f00 zFMV_Action::FlipSurfaces
+  - 0x462f90 zFMV_Script::BeginCurrentAction
+  - 0x463000 zFMV_Script::Update
+  - 0x4630a0 zFMV_Script::BeginAtTime
+  - 0x4630e0 zFMV_Script::UpdateAtTime
+  - 0x463120 zFMV_Script::BeginNow
+  - 0x463cc0 zFMV_ActionPlayMci::End
+  - 0x463dd0 zFMV_Stream::Destructor
+  - 0x4a3910 zSndSample::Destroy
+- Next action:
+  - `python tools/recoil_status.py 0x4429b0`
 
 ### Group: GameNet list globals cluster
 
 - Anchor: 0x431bf0 GameNetSpawnPointList::InitGlobals
-- Reason: source file cluster / shared global list and player-row layout
-- Source files:
-  - src/Battlesport/GameNet.h
-  - src/Battlesport/GameNet.cpp
-  - src/Battlesport/zModel/gdi.c
-  - src/GameZRecoil/zHud/zhud_ui.h
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-  - src/GameZRecoil/include/zClass.h
-  - src/GameZRecoil/include/zDi.h
-  - src/GameZRecoil/include/zImage.h
-  - src/GameZRecoil/include/OptCatalog.h
-  - src/GameZRecoil/zClass/Camera.c
-  - src/GameZRecoil/zImage/zimg_texture.cpp
-  - src/GameZRecoil/zWeapon/OptCatalog.c
-  - src/GameZRecoil/zClass/Class.c
-  - src/GameZRecoil/zClass/List.c
-  - src/GameZRecoil/zClass/Animate.c
-  - src/GameZRecoil/zClass/Seq.c
-  - src/GameZRecoil/zClass/cls_util.c
-  - src/GameZRecoil/zClass/cls_zbd.c
-  - src/GameZRecoil/zClass/Object3d.c
-  - src/GameZRecoil/zClass/Lod.c
-  - src/GameZRecoil/zClass/Light.c
-  - src/GameZRecoil/zClass/Sound.c
-  - src/GameZRecoil/zClass/Window.c
-  - src/GameZRecoil/zSound/zsnd_parm.cpp
-  - src/GameZRecoil/zRndr/zRndr.h
-  - src/GameZRecoil/zRndr/zRndr.cpp
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-  - src/GameZRecoil/zMath/zMath.h
-  - src/GameZRecoil/zMath/zMath.cpp
-  - src/native/CMakeLists.txt
-  - tests/native/gamenet_tests.cpp
-  - tests/native/smoke.cpp
-  - tests/native/zgame_tests.cpp
-  - tests/native/zmath_tests.cpp
-  - tests/native/zrndr_tests.cpp
-  - tests/native/zvideo_tests.cpp
-  - tests/native/zweapon_tests.cpp
-- Plan entries:
-  - 0x431bf0 GameNetSpawnPointList::InitGlobals - Reimplemented / Binary-safe pending
-  - 0x431c20 GameNetPlayerRowList::Reset - Reimplemented / Binary-safe pending
-  - 0x4322a0 GameNet::ResetHudTimerPanelNetStateLongCountdown - Reimplemented / Binary-safe pending
-  - 0x414330 GameNet::ShowPlayerKillMessage - Reimplemented / Binary-safe pending
-  - 0x414390 GameNet::RefreshPlayerListMenu - Reimplemented / Binary-safe pending
-  - 0x4143b0 HudUi::RefreshScoreboardEntryRow - Reimplemented / Binary-safe pending
-  - 0x4143c0 HudUi::RemoveScoreboardEntryRow - Reimplemented / Binary-safe pending
-  - 0x432e70 GameNet::ReassignPlayerColorsAndRefreshRows - Reimplemented / Binary-safe pending
-  - 0x4ae450 OptCatalog::FindEntryById - Reimplemented / Binary-safe pending
-  - 0x433000 GameNet::SendPkt08_PlayerKillEvent - Reimplemented / Binary-safe pending
-  - 0x433060 GameNet::HandlePkt08_PlayerKillEvent - Reimplemented / Binary-safe pending
-  - 0x432830 GameNet::FindPlayerRowByKey - Reimplemented / Binary-safe pending
-  - 0x433200 GameNet::AreAllPlayersAtLapTarget - Reimplemented / Binary-safe pending
-  - 0x433390 GameNet::SendPkt0C_HudTimerStatusBits - Reimplemented / Binary-safe pending
-  - 0x433410 GameNet::HandlePkt0C_HudTimerStatusBits - Reimplemented / Binary-safe pending
-  - 0x4334f0 GameNet::SendPkt09_PlayerScoreboardSnapshot - Reimplemented / Binary-safe pending
-  - 0x4335b0 GameNet::HandlePkt09_PlayerScoreboardSnapshot - Reimplemented / Binary-safe pending
-  - 0x4337e0 GameNet::HandlePkt0B_ChatMessage - Reimplemented / Binary-safe pending
-  - 0x433710 GameNet::SetStatusBitsFromFlags - Reimplemented / Binary-safe pending
-  - 0x433730 GameNet::GetStatusBitAllowMaps - Reimplemented / Binary-safe pending
-  - 0x433740 GameNet::GetStatusBitNameTags - Reimplemented / Binary-safe pending
-  - 0x434550 GameNet::HostUpdateSessionDescStatusFields - Reimplemented / Binary-safe pending
-  - 0x433a50 GameNetPlayerRow::ApplyPlayerColorTint - Reimplemented / Binary-safe pending
-  - 0x433a40 HudTimerPanelNetState::ClearTailFlagsLocal - Reimplemented / Binary-safe pending
-  - 0x434650 GameNetPlayerRow::DestroyEmbeddedPanel - Reimplemented / Binary-safe pending
-  - 0x447c60 zClass_Class::gwNodeSetActive - Reimplemented / Binary-safe verified
-  - 0x447d20 zClass_Class::gwNodeSetFlag16 - Reimplemented / Binary-safe verified
-  - 0x447d70 zClass_Class::gwNodeSetFlag17 - Reimplemented / Binary-safe verified
-  - 0x4478c0 zClass_Class::AllocNodeFromFreeList - Reimplemented / Binary-safe pending
-  - 0x447a70 zClass_Class::FreeNodeToFreeList - Reimplemented / Binary-safe verified
-  - 0x447b60 zClass_Class::TryFreeNode - Reimplemented / Binary-safe pending
-  - 0x447f00 zClass_Class::gwNodeGetUserData - Reimplemented / Binary-safe pending
-  - 0x447f30 zClass_Class::gwNodeSetActionCallback - Reimplemented / Binary-safe pending
-  - 0x447fe0 zClass_Class::gwNodeSetActionCallbackTail - Reimplemented / Binary-safe pending
-  - 0x448090 zClass_Class::gwNodeSetPriority - Reimplemented / Binary-safe pending
-  - 0x452c60 zClass_Sound::gwSoundSetActive - Reimplemented / Binary-safe verified
-  - 0x4a1270 zSndPlayHandle_TryDisableManaged - Reimplemented / Binary-safe verified
-  - 0x44f870 zClass::RemoveChildChecked - Reimplemented / Binary-safe pending
-  - 0x44f7a0 zClass_Window::gwWindowNew - Reimplemented / Binary-safe pending
-  - 0x44f930 zClass_Window::gwWindowGetResolution - Reimplemented / Binary-safe pending
-  - 0x44fa40 zClass_Window::gwWindowGetSize - Reimplemented / Binary-safe pending
-  - 0x44fad0 zClass_Window::gwWindowSetBuffer - Reimplemented / Binary-safe pending
-  - 0x44fb40 zClass_Window::gwWindowSetClearPolygon - Reimplemented / Binary-safe pending
-  - 0x44fbd0 zClass_Window::gwWindowAddClearPolygonVertex - Reimplemented / Binary-safe pending
-  - 0x44fcf0 zClass_Window::gwWindowCloseClearPolygon - Reimplemented / Binary-safe pending
-  - 0x44fdd0 zClass_Display::gwDisplayInit - Reimplemented / Binary-safe pending
-  - 0x44fe50 zClass_Display::RemoveChild - Reimplemented / Binary-safe pending
-  - 0x44ff90 zClass_Display::gwDisplaySetBackgroundColor - Reimplemented / Binary-safe pending
-  - 0x452fd0 zClass_Light::gwLightNew - Reimplemented / Binary-safe pending
-  - 0x453110 zClass_Light::DeleteNode - Reimplemented / Binary-safe pending
-  - 0x4531c0 zClass_Light::RemoveChild - Reimplemented / Binary-safe pending
-  - 0x453200 zClass_Light::gwLightSetIntensity - Reimplemented / Binary-safe pending
-  - 0x453250 zClass_Light::gwLightSetFalloff - Reimplemented / Binary-safe pending
-  - 0x4532a0 zClass_Light::gwLightSetConeAngle - Reimplemented / Binary-safe pending
-  - 0x4532f0 zClass_Light::gwLightSetPointMode - Reimplemented / Binary-safe pending
-  - 0x453350 zClass_Light::gwLightSetDirectionalMode - Reimplemented / Binary-safe pending
-  - 0x4533b0 zClass_Light::gwLightSetParam - Reimplemented / Binary-safe pending
-  - 0x453400 zClass_Light::gwLightSetRange - Reimplemented / Binary-safe pending
-  - 0x453500 zClass_Light::gwLightGetRange - Reimplemented / Binary-safe pending
-  - 0x453560 zClass_Light::gwLightSetPosition - Reimplemented / Binary-safe pending
-  - 0x4535c0 zClass_Light::gwLightSetRotation - Reimplemented / Binary-safe pending
-  - 0x453a40 zClass_Light::gwLightGetSpecularColor - Reimplemented / Binary-safe pending
-  - 0x453aa0 zClass_Light::gwLightSetSpecularColor - Reimplemented / Binary-safe pending
-  - 0x4622f0 zError::EmitDebugBuffer - Reimplemented / Binary-safe pending
-  - 0x472f30 zMath::MatStackPushPtr - Reimplemented / Binary-safe pending
-  - 0x472f60 zMath::MatStackPopPtr - Reimplemented / Binary-safe pending
-  - 0x473210 zMath::MatCopyCurrentTo - Reimplemented / Binary-safe pending
-  - 0x473250 zMath::MatLoadCurrentFrom - Reimplemented / Binary-safe pending
-  - 0x4732f0 zMath::MatLoadIdentity - Reimplemented / Binary-safe pending
-  - 0x473370 zMath::MatMultiply - Reimplemented / Binary-safe pending
-  - 0x474010 zMath::MatApplyLocalTRS - Reimplemented / Binary-safe pending
-  - 0x474870 zMath_Mat_TransformBBoxToCorners - Reimplemented / Binary-safe pending
-  - 0x474d10 zMath::Vec3DirectionAnglesBetweenPoints - Reimplemented / Binary-safe pending
-  - 0x490710 zRndr::SpanOcclusionAddPolygon - Reimplemented / Binary-safe pending
-  - 0x49b5a0 zRndr_FogTargetColorStaged_SetRgb01Clamped - Reimplemented / Binary-safe pending
-  - 0x49e0e0 zRndr::SpanAlphaBlend565_Mmx_FromPal8 - Reimplemented / Binary-safe pending
-  - 0x4a6b80 zVideo_SetClearColorPacked16 - Reimplemented / Binary-safe pending
-  - 0x4a6d40 zVid_PackColorRgbFloats - Reimplemented / Binary-safe pending
-  - 0x4a7250 zVideo_SetPendingFogTargetColorFromRgb01 - Reimplemented / Binary-safe pending
-  - 0x449ba0 zClass_Camera::SetViewDistance - Reimplemented / Binary-safe pending
-  - 0x4487c0 zClass_Class::gwNodeGetWorldBBoxCorners - Reimplemented / Binary-safe pending
-  - 0x448e90 zClass_Class::gwNodeRecalcBBox - Reimplemented / Binary-safe pending
-  - 0x4491b0 zClass_Class::gwNodeComputeChildBBox - Reimplemented / Binary-safe pending
-  - 0x449420 zClass_Class::gwNodeUpdateDisplayInstance - Reimplemented / Binary-safe pending
-  - 0x450030 zClass_World::QueueAreaUpdate - Reimplemented / Binary-safe pending
-  - 0x4500b0 zClass_World::RebuildAreaBounds - Reimplemented / Binary-safe pending
-  - 0x450840 zClass_World::WorldRectToGridIndex - Reimplemented / Binary-safe pending
-  - 0x450a70 zClass_World::EnsureGridCellDisplayPosition - Reimplemented / Binary-safe pending
-  - 0x450ae0 zClass_World::SetPendingFogState - Reimplemented / Binary-safe pending
-  - 0x450af0 zClass_World::SetPendingFogColorRgb01 - Reimplemented / Binary-safe pending
-  - 0x450b20 zClass_World::SetPendingFogAltitudeRange - Reimplemented / Binary-safe pending
-  - 0x450b40 zClass_World::SetPendingFogRange - Reimplemented / Binary-safe pending
-  - 0x450b60 zClass_World::SetPendingFogDensity - Reimplemented / Binary-safe pending
-  - 0x450f60 zClass_World::AddChildToGridCell - Reimplemented / Binary-safe pending
-  - 0x451240 zClass_World::RemoveChildAtGrid - Reimplemented / Binary-safe pending
-  - 0x449480 gwNode::BuildNodeToAncestorMatrix - Reimplemented / Binary-safe pending
-  - 0x44eb00 gwNode::UpdateSubtree - Reimplemented / Binary-safe pending
-  - 0x44eb50 gwNode::UpdateTree - Reimplemented / Binary-safe pending
-  - 0x44eba0 zClass_TypeList::UpdateQueuedTrees - Reimplemented / Binary-safe pending
-  - 0x453620 zClass_Light::ComputeWorldTransform - Reimplemented / Binary-safe pending
-  - 0x483ad0 zDi::RebuildBounds - Reimplemented / Binary-safe pending
-  - 0x483b80 zDi::BuildAabb - Reimplemented / Binary-safe pending
-  - 0x483e60 zDi::BuildOriginSymmetricAabb - Reimplemented / Binary-safe pending
-  - 0x449be0 zClass_Camera::gwCameraNew - Reimplemented / Binary-safe pending
-  - 0x449c90 zClass_Camera::gwCameraAddChild - Reimplemented / Binary-safe pending
-  - 0x449cd0 zClass_Camera::gwCameraRemoveChild - Reimplemented / Binary-safe pending
-  - 0x449d20 zClass_Camera::gwCameraSetFlagBit0 - Reimplemented / Binary-safe pending
-  - 0x449da0 zClass_Camera::SetTargetNode - Reimplemented / Binary-safe pending
-  - 0x449db0 zClass_Camera::SetActiveCamera - Reimplemented / Binary-safe pending
-  - 0x449dc0 zClass_Camera::SetObjectHseTestEnabled - Reimplemented / Binary-safe pending
-  - 0x449dd0 zClass_Camera::gwCameraSetWorld - Reimplemented / Binary-safe pending
-  - 0x449e80 zClass_Camera::gwCameraGetWorld - Reimplemented / Binary-safe pending
-  - 0x449e90 zClass_Camera::gwCameraSetWindow - Reimplemented / Binary-safe pending
-  - 0x449ea0 zClass_Camera::gwCameraSetPosition - Reimplemented / Binary-safe pending
-  - 0x449f50 zClass_Camera::ActivateChildren - Reimplemented / Binary-safe pending
-  - 0x449fb0 zClass_Camera::gwCameraTranslate - Reimplemented / Binary-safe pending
-  - 0x44a060 zClass_Camera::gwCameraGetPosition - Reimplemented / Binary-safe pending
-  - 0x44a0f0 zClass_Camera::gwCameraSetTarget - Reimplemented / Binary-safe pending
-  - 0x44a1a0 zClass_Camera::gwCameraTranslateTarget - Reimplemented / Binary-safe pending
-  - 0x44a250 zClass_Camera::gwCameraGetTarget - Reimplemented / Binary-safe pending
-  - 0x44a2f0 zClass_Camera::gwCameraSetNearFarClip - Reimplemented / Binary-safe pending
-  - 0x44a380 zClass_Camera::gwCameraGetNearFarClip - Reimplemented / Binary-safe pending
-  - 0x44a410 zClass_Camera::gwCameraSetViewport - Reimplemented / Binary-safe pending
-  - 0x44a580 zClass_Camera::gwCameraGetViewport - Reimplemented / Binary-safe pending
-  - 0x44a760 zClass_Camera::gwCameraGetFOV - Reimplemented / Binary-safe pending
-  - 0x44a7f0 zClass_Camera::gwCameraGetClipDistance - Reimplemented / Binary-safe pending
-  - 0x44a610 zClass_Camera::gwCameraSetFOV - Reimplemented / Binary-safe pending
-  - 0x44a870 zClass_Camera::gwCameraSetClipDistance - Reimplemented / Binary-safe verified
-  - 0x44a910 zClass_Camera::gwCameraSetHorizon - Reimplemented / Binary-safe pending
-  - 0x44a980 zClass_Camera::gwCameraSetHorizonXZ - Reimplemented / Binary-safe pending
-  - 0x452770 zClass_Class::FindSubNodeByName - Reimplemented / Binary-safe pending
-  - 0x452860 zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive - Reimplemented / Binary-safe pending
-  - 0x4528b0 zClass_Node::InvalidateFlagBit8MaterialImagesRecursive - Reimplemented / Binary-safe pending
-  - 0x4528e0 zClass_Node::AssignInt32ToDiRecursive - Reimplemented / Binary-safe pending
-  - 0x452920 zClass_Class::AddChildValidated - Reimplemented / Binary-safe pending
-  - 0x452970 zClass_Class::RemoveChildValidated - Reimplemented / Binary-safe pending
-  - 0x4542a0 zClass_Lod::gwLodNew - Reimplemented / Binary-safe pending
-  - 0x454310 zClass_Lod::gwLodAddChild - Reimplemented / Binary-safe pending
-  - 0x454320 zClass_Lod::RemoveChild - Reimplemented / Binary-safe pending
-  - 0x454330 zClass_Lod::SetComputeOwnDistance - Reimplemented / Binary-safe pending
-  - 0x454340 zClass_Lod::SetTargetNodeAndRange - Reimplemented / Binary-safe pending
-  - 0x46d5a0 zVid_Image::ReleaseIfNotDefault - Reimplemented / Binary-safe pending
-  - 0x46e250 zImage::InvalidateLoadedVariantChain - Reimplemented / Binary-safe pending
-  - 0x480f60 zModel_Material_SetFlagBit9 - Reimplemented / Binary-safe pending
-  - 0x480f80 zModel_Material::InvalidateImagesIfEligible - Reimplemented / Binary-safe pending
-  - 0x4826d0 zDi::SetFlagBit0 - Reimplemented / Binary-safe pending
-  - 0x4841b0 zDi_SetMaterialFlagBit9ForFlagBit0Entries - Reimplemented / Binary-safe pending
-  - 0x4841f0 zDi::InvalidateImagesForFlagBit8Materials - Reimplemented / Binary-safe pending
-  - 0x4b25a0 zClass_Node::SetDamageHitCallback - Reimplemented / Binary-safe pending
-  - 0x4b25f0 zClass_Node::AssignDamageHandlerRecursiveIfMissing - Reimplemented / Binary-safe pending
-  - 0x4b2630 zClass_Node::ClearDamageHandler - Reimplemented / Binary-safe pending
-  - 0x4b2670 zClass_Node::ClearDamageHandlerRecursive - Reimplemented / Binary-safe pending
-  - 0x4b26b0 zClass_Node::SetDamageTimerCallback - Reimplemented / Binary-safe pending
-  - 0x4b2880 OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback - Reimplemented / Binary-safe pending
-  - 0x448100 zClass_Class::gwNodeSetCellPickable - Reimplemented / Binary-safe pending
-  - 0x448140 zClass_Class::gwNodeGetCellPickable - Reimplemented / Binary-safe pending
-  - 0x448180 zClass_Class::gwNodeGetNodeType - Reimplemented / Binary-safe pending
-  - 0x4481b0 zClass_Class::gwNodeSetRaycastable - Reimplemented / Binary-safe pending
-  - 0x4481f0 zClass_Class::gwNodeGetRaycastable - Reimplemented / Binary-safe pending
-  - 0x448230 zClass_Class::gwNodeSetPickable - Reimplemented / Binary-safe pending
-  - 0x448270 zClass_Class::gwNodeGetPickable - Reimplemented / Binary-safe pending
-  - 0x4482b0 zClass_Class::gwNodeSetHasHitCallback - Reimplemented / Binary-safe pending
-  - 0x4482f0 zClass_Class::gwNodeSetBypassFarClip - Reimplemented / Binary-safe pending
-  - 0x448330 zClass_Class::gwNodeSetNodeType - Reimplemented / Binary-safe pending
-  - 0x448360 zClass_Class::gwNodeClearVariantGate - Reimplemented / Binary-safe pending
-  - 0x4483a0 zClass_Class::gwNodeSetVertexAlphaOverride - Reimplemented / Binary-safe pending
-  - 0x4484d0 zClass_Class::AddChildGeneric - Reimplemented / Binary-safe pending
-  - 0x448660 zClass_Class::RemoveChildGeneric - Reimplemented / Binary-safe pending
-  - 0x449ab0 zClass_Class::gwNodeGetRoot - Reimplemented / Binary-safe pending
-  - 0x449af0 zClass_Class::gwNodeGetWorldChild - Reimplemented / Binary-safe pending
-  - 0x449b40 zClass_Class::SetSingleParentFlagRecursive - Reimplemented / Binary-safe pending
-  - 0x44d9e0 zClass_Object3D::PropagateTransformDirty - Reimplemented / Binary-safe pending
-  - 0x44daa0 zClass_Object3D::gwObject3DInit - Reimplemented / Binary-safe pending
-  - 0x44db00 zClass_Object3D::DeleteNode - Reimplemented / Binary-safe pending
-  - 0x44db10 zClass_Object3D::gwObject3DAddChild - Reimplemented / Binary-safe pending
-  - 0x44db60 zClass_Object3D::RemoveChild - Reimplemented / Binary-safe pending
-  - 0x44dbb0 zClass_Object3D::gwObject3DSetVisibleFlag - Reimplemented / Binary-safe verified
-  - 0x44dc30 zClass_Object3D::gwObject3DSetColorAlpha - Reimplemented / Binary-safe verified
-  - 0x44dd90 zClass_Object3D::gwObject3DSetAlphaScale - Reimplemented / Binary-safe verified
-  - 0x44de10 zClass_Object3D::gwObject3DGetAlphaScale - Reimplemented / Binary-safe verified
-  - 0x44de80 zClass_Object3D::gwObject3DSetLitFlag - Reimplemented / Binary-safe verified
-  - 0x44df00 zClass_Object3D::gwObject3DSetScale - Reimplemented / Binary-safe pending
-  - 0x44dfd0 zClass_Object3D::gwObject3DGetScale - Reimplemented / Binary-safe verified
-  - 0x44e030 zClass_Object3D::gwObject3DSetRotation - Reimplemented / Binary-safe pending
-  - 0x44e110 zClass_Object3D::gwObject3DGetRotation - Reimplemented / Binary-safe verified
-  - 0x44e170 zClass_Object3D::gwObject3DTranslateRotation - Reimplemented / Binary-safe pending
-  - 0x44e270 zClass_Object3D::gwObject3DGetPosition - Reimplemented / Binary-safe verified
-  - 0x44e300 zClass_Object3D::gwObject3DSetPosition - Reimplemented / Binary-safe pending
-  - 0x44e3d0 zClass_Object3D::gwObject3DTranslatePosition - Reimplemented / Binary-safe pending
-  - 0x44e4f0 zClass_Object3D::gwObject3DSetMatrix - Reimplemented / Binary-safe verified
-  - 0x44e5b0 zClass_Object3D::gwObject3DGetMatrixPtr - Reimplemented / Binary-safe verified
-  - 0x44e630 zClass_TypeList::AllocLink - Reimplemented / Binary-safe verified
-  - 0x44e690 zClass_TypeList::FreeLink - Reimplemented / Binary-safe verified
-  - 0x44e6d0 zClass_TypeList::FreeAll - Reimplemented / Binary-safe verified
-  - 0x44e700 zClass_TypeList::ProcessPendingRemovals - Reimplemented / Binary-safe verified
-  - 0x44e920 zClass::ProcessDeferredWork - Reimplemented / Binary-safe verified
-  - 0x44ea70 zClass_TypeList::UpdateAllBuckets - Reimplemented / Binary-safe pending
-  - 0x44eaa0 zClass_TypeList::UpdateBucket - Reimplemented / Binary-safe verified
-  - 0x44ebe0 zClass_TypeList::UpdateSequences - Reimplemented / Binary-safe pending
-  - 0x44ec30 zClass_TypeList::UpdateAnimations - Reimplemented / Binary-safe pending
-  - 0x44ec80 zClass_Class::gwNodeUpdateAll - Reimplemented / Binary-safe pending
-  - 0x44ec90 zClass_TypeList::CountNodes - Reimplemented / Binary-safe verified
-  - 0x448cc0 zClass_Class::gwNodeUpdate - Reimplemented / Binary-safe pending
-  - 0x44ecb0 zClass_TypeList::PrintBucket - Reimplemented / Binary-safe pending
-  - 0x44ecf0 zClass::FindByTypeAndName - Reimplemented / Binary-safe pending
-  - 0x44ed50 zClass_TypeList::GetBucketHead - Reimplemented / Binary-safe verified
-  - 0x44ed60 zClass_NodeList::Insert - Reimplemented / Binary-safe verified
-  - 0x44ed90 zClass_TypeList::Insert - Reimplemented / Binary-safe verified
-  - 0x44ee10 zClass_TypeList::InsertChildNodes - Reimplemented / Binary-safe verified
-  - 0x44eea0 zClass_NodeList::ProcessPendingFrees - Reimplemented / Binary-safe verified
-  - 0x44eed0 zClass_TypeList::MarkPendingRemoval - Reimplemented / Binary-safe verified
-  - 0x453bd0 zClass_Animate::UpdateNode - Reimplemented / Binary-safe pending
-  - 0x453c90 zClass_Animate::AdvanceTime - Reimplemented / Binary-safe pending
-  - 0x453d20 zClass_Animate::SampleTransform - Reimplemented / Binary-safe pending
-  - 0x453ee0 zClass_Sequence::gwSequenceNew - Reimplemented / Binary-safe pending
-  - 0x453f40 zClass_Sequence::gwSequenceAddChild - Reimplemented / Binary-safe pending
-  - 0x4540c0 zClass_Sequence::SetActive - Reimplemented / Binary-safe pending
-  - 0x454100 zClass_Sequence::SetRepeat - Reimplemented / Binary-safe pending
-  - 0x454140 zClass_Sequence::SetLoop - Reimplemented / Binary-safe pending
-  - 0x454180 zClass_Sequence::SetPause - Reimplemented / Binary-safe pending
-  - 0x4541c0 zClass_Sequence::Update - Reimplemented / Binary-safe pending
-  - 0x44f000 zClass_List::DeleteNodeFromLists - Reimplemented / Binary-safe pending
-  - 0x44f690 zClass_List::IterateBucketFiltered - Reimplemented / Binary-safe pending
-  - 0x44f6f0 zClass::FindNextByTypePrefix - Reimplemented / Binary-safe pending
-  - 0x44f720 zClass::FindNextByTypePrefix_Predicate - Reimplemented / Binary-safe pending
-  - 0x44f740 zClass_Class::gwNodeFindNextByName - Reimplemented / Binary-safe pending
-  - 0x44f750 zClass_Class::gwNodeFindNextByName_Predicate - Reimplemented / Binary-safe pending
-  - 0x4518b0 zClass::SetNodeArraySize - Reimplemented / Binary-safe pending
-  - 0x4518f0 zClass::IsInitialized - Reimplemented / Binary-safe pending
-  - 0x4527f0 zClass_Node::HasRenderableDiPredicate - Reimplemented / Binary-safe pending
-  - 0x452810 zClass::AnyNodeMatchesPredicateRecursive - Reimplemented / Binary-safe pending
-  - 0x454360 zClass::ResetCurrentZbdPath - Reimplemented / Binary-safe pending
-  - 0x454370 GameZ_ZBD::NodePtrToIndex - Reimplemented / Binary-safe pending
-  - 0x4543a0 zClass::NodePtrToValidatedIndex - Reimplemented / Binary-safe pending
-  - 0x4543d0 GameZ_ZBD::NodeIndexToPtr - Reimplemented / Binary-safe pending
-  - 0x4543f0 GameZ_ZBD::WriteNodeRefListIndices - Reimplemented / Binary-safe pending
-  - 0x4544b0 GameZ_ZBD::WriteSingleNodeClassData - Reimplemented / Binary-safe pending
-  - 0x454890 GameZ_ZBD::WriteNodeTable - Reimplemented / Binary-safe pending
-  - 0x454a50 GameZ::WriteZBDFile - Reimplemented / Binary-safe pending
-  - 0x454bf0 GameZ_ZBD::ReadNodeRefListIndices - Reimplemented / Binary-safe pending
-  - 0x454c60 GameZ_ZBD::ReadSingleNodeClassData - Reimplemented / Binary-safe pending
-  - 0x455350 GameZ_ZBD::ReadNodeTable - Reimplemented / Binary-safe pending
-  - 0x455520 GameZ::ReadZBDFile - Reimplemented / Binary-safe pending
-  - 0x4556a0 GameZ::OpenAndReadZBDHeader - Reimplemented / Binary-safe pending
-  - 0x455730 GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local - Reimplemented / Binary-safe pending
-  - 0x4557a0 GameZ_ZBD::ReloadDisplayInstancesRecursive_Local - Reimplemented / Binary-safe pending
-  - 0x46d310 zImage::TexDirEntryToIndex - Reimplemented / Binary-safe verified
-  - 0x46d340 zImage::TexIndexToDirEntry - Reimplemented / Binary-safe verified
-  - 0x46d360 zImage::WriteTextureDirectory - Reimplemented / Binary-safe pending
-  - 0x46d420 zImage::ReadTextureDirectory - Reimplemented / Binary-safe pending
-  - 0x4808c0 zModel_MatlBuffer::ReadGameZ - Reimplemented / Binary-safe pending
-  - 0x481aa0 zModel_DiPool::ReadEntryByIndexFromStream - Reimplemented / Binary-safe pending
-  - 0x481bc0 zModel_DiPool::ReadHeaderFromStream - Reimplemented / Binary-safe pending
-  - 0x481c50 zModel_DiPool::ReadEntryDynamicDataFromStream - Reimplemented / Binary-safe pending
-  - 0x481fa0 zModel_DiPool::ReadFromStream - Reimplemented / Binary-safe pending
-  - 0x46ecc0 zVid_Image::Destroy - Reimplemented / Binary-safe verified
-  - 0x46ecf0 zVid_Image::ReleaseOwnedBuffers - Reimplemented / Binary-safe verified
-  - 0x4bab40 HudUiPanel::Destructor - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - none for source implementation
-- Verification target:
-  - ninja-x86-debug/release CTest; later listing comparison for zero-store order, x87 RGB conversion, and object3D setter clamps
-- Notes:
-  - The list reset functions zero four recovered 32-bit globals in the original store order.
-  - HudTimerPanelNetState::ClearTailFlagsLocal zeroes eight dwords at offset 0x2c.
-  - GameNetPlayerRow::ApplyPlayerColorTint reads the 9-entry 00RRGGBB table at 0x4dcd88, expands low/mid/high bytes to floats, applies color alpha 0.2 at Object3D classData+0x14, and sets visible on primaryModalState->modalNode.
-  - Object3D classData has flags at +0x00, alphaScale at +0x04, RGB tint at +0x08, color alpha at +0x14, rotation at +0x18, scale at +0x24, local matrix at +0x30, and matrix position at +0x54.
-  - Packet 0C uses a 0x14-byte reusable buffer with status flags in the high word at offset 0x12; SendPkt0C schedules the next resend at accumulated time + 30 seconds and applies the packet locally after reliable broadcast.
-  - OptCatalog::FindEntryById scans the loaded 0x164-byte entry table and returns only active slots with a non-null keyName and matching ordinalIndex.
-  - GameNetPlayerRow::DestroyEmbeddedPanel is the original 0x64 this-adjust thunk into HudUiPanel::Destructor; the HUD panel destructor writes the recovered panel/common vtable constants, destroys textPick through zVid_Image::Destroy, then calls DeleteObject on hFont.
-  - zClass_TypeList::Insert prepends to a bucket; InsertChildNodes appends and both recursively queue listA children for bucket 7 unless already flagged or classType is world.
-  - zClass_Animate runtime starts at animate classData+0x68; keyframes are 9-float rotation/position/scale rows, sampled output lives at runtime+0x08/+0x14/+0x20, and output scale rows at runtime+0x2c/+0x38/+0x44.
-  - zClass_Sequence::gwSequenceAddChild grows sequence classData to old entryCount*8+0x28 bytes, increments entryCount, shifts entries backward, then writes the child/delay pair at the requested insert index.
-  - GameZ_ZBD::WriteSingleNodeClassData writes classData blobs for class IDs 1/2/3/4/5/6/9/10, converts camera refs at +0/+4/+8/+0xc into node indices in a stack copy, writes world light/sound node-index lists after the 0xac-byte world blob, then serializes each 0x40-byte area followed by its child node-index list.
-  - 0x4544b0 has source plus smoke coverage; `build/verification/gamez_zbd_write_single_node_class_data/4544b0_diff.txt` remains pending for binary-safe marking due modern stack alignment/control-flow differences.
-  - GameZ_ZBD::WriteNodeTable serializes a copied zClass node pool, clears empty list pointers and action callbacks in the copy, converts display-instance pointers through zDi::PtrToIndexOrMinus1, writes class-data payloads, and patches each written payload offset into the copied slot freeTag low 24 bits before rewriting the table header.
-  - 0x454890 has source plus smoke coverage; `build/verification/gamez_zbd_write_node_table/454890_diff.txt` remains pending for binary-safe marking due modern loop/memcpy/codegen differences.
-  - GameZ::WriteZBDFile validates non-empty filenames, copies paths shorter than 0x2f bytes into `g_zClass_CurrentZbdPath`, writes and rewrites the 0x24-byte ZBD header around texture/material/model/node section serialization, and leaves error paths with the original success-only `fclose` behavior.
-  - 0x454a50 has source plus smoke coverage; `build/verification/gamez_write_zbd_file/454a50_diff.txt` remains pending for binary-safe marking due modern strlen/memcpy lowering differences.
-  - GameZ_ZBD::ReadSingleNodeClassData allocates and reads class-data blobs for class IDs 1/2/3/4/5/6/9/10, restores serialized camera refs and node-ref lists through NodeIndexToPtr, rebuilds world light/sound/area-grid arrays, runs camera near/far/viewport and world fog fixups, then reads listA/listB node refs; `build/verification/gamez_zbd_read_single_node_class_data/454c60_diff.txt` remains pending due modern switch/helper/codegen differences.
-  - GameZ_ZBD::ReadNodeTable allocates/reallocates `g_zClass_NodeArray`, reads the serialized node slots, restores node DI refs through zDi::IndexToPtrOrNull, clears action callbacks, rebuilds class-data bodies, patches active freeTag bits, and post-fills world light/sound class-data caches; `build/verification/gamez_zbd_read_node_table/455350_diff.txt` remains pending due modern loop/memset/codegen differences.
-  - GameZ::ReadZBDFile validates non-empty filenames, copies short paths into `g_zClass_CurrentZbdPath`, opens and validates the ZBD header, seeks to each section offset, reads texture/material/model/node sections in order, restores `g_zClass_NodeFreeHeadIndex` from the header, and closes the stream on success and section failures; `build/verification/gamez_read_zbd_file/455520_diff.txt` remains pending due modern strlen/memcpy and error-tail codegen differences.
-  - GameZ::OpenAndReadZBDHeader opens the requested file in `rb` mode, reads and validates the 0x24-byte ZBD header magic/version, closes on header failures after the original cls_zbd.c line diagnostics, and returns the open stream on success; `build/verification/gamez_open_and_read_zbd_header/4556a0_diff.txt` remains pending due modern error-argument and stack-cleanup codegen differences.
-  - GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local reopens `g_zClass_CurrentZbdPath`, delegates to the recursive reload helper, closes the stream, and returns 1 when the current path is empty or header open fails; `build/verification/gamez_zbd_reload_display_instances_from_current_path/455730_diff.txt` remains pending due modern strlen lowering and register scheduling.
-  - GameZ_ZBD::ReloadDisplayInstancesRecursive_Local uses NodePtrToIndex to seek one serialized 0xc4-byte node slot, reloads that slot's serialized DI index from the model3d section, restores the old display instance if no new DI is read, frees an unreferenced old DI after a successful replacement, and optionally recurses over listB children; `build/verification/gamez_zbd_reload_display_instances_recursive/4557a0_diff.txt` remains pending due modern stack/register/error-tail codegen.
-  - Pending fog setters stage fog state/color/range/altitude/density on zClass_WorldDataPartial and OR pending flags 0x01/0x02/0x04/0x20/0x08 respectively; `build/verification/zclass_world_set_pending_fog_*` diffs remain pending because MSVC listing stores float arguments through x87 where the original copies stack dwords.
-  - zClass_Camera::gwCameraSetViewport validates with Camera.c lines 0x553/0x554/0x555, derives FOV from existing frustum size and new viewport, clamps normalized FOV at 1.39600003f, and recomputes yaw/pitch plus reciprocal tangent viewport scales; `build/verification/zclass_camera_gw_camera_set_viewport/44a410_diff.txt` remains pending because modern MSVC emits CRT `__CItan` calls instead of the original inline x87 `fptan` stack sequence.
-  - zImage::WriteTextureDirectory serializes a copied g_zImage_TexDirEntries array and converts each copied nextVariant pointer to a texture-directory index; 0x46d310 and 0x46d340 are binary-safe with only equivalent symbolic/LEA scheduling differences, while `build/verification/zimage_write_texture_directory/46d360_diff.txt` and `build/verification/zimage_read_texture_directory/46d420_diff.txt` remain pending due modern fread/loop codegen.
-  - zModel_DiPool::ReadEntryByIndexFromStream reads a serialized DI pool header, seeks to one 0x58-byte slot, copies the first 0x54 bytes into an allocated live DI entry, seeks to the serialized dynamic-data offset stored in `nextFreeIndex`, and frees the allocation on dynamic-data read failure; `build/verification/zmodel_dipool_read_entry_by_index_from_stream/481aa0_diff.txt` remains pending due modern frame/register/error-tail codegen.
-  - 0x44ea70, 0x44ec30, 0x44ec80, 0x453bd0, 0x453c90, 0x453d20, 0x453ee0, 0x453f40, 0x4540c0, 0x454100, 0x454140, and 0x454180 have source plus smoke coverage; `build/verification/zclass_*` diffs remain pending for binary-safe marking due modern loop/x87/conversion lowering.
-
-### Group: zVideo module init cluster
-
-- Anchor: 0x4a7530 zVideo::ModuleInit
-- Reason: dependency closure / zVideo globals and dispatch table
-- Source files:
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-- Plan entries:
-  - 0x4a7530 zVideo::ModuleInit - Reimplemented; binary-safe verification blocked by global zero-span/listing comparison and CRT/provider imports
-  - 0x4a6b40 zVideo::SetRendererTypeAndActivePath - Reimplemented / Binary-safe verified
-  - 0x4a6bf0 zVideo_PixelPack::SetupFromMasks - Reimplemented / Binary-safe verified
-  - 0x4a6db0 zVideo_TexturePixelPack::SetupFromMasks - Reimplemented / Binary-safe verified
-  - 0x4a7220 zVideo::SetFogColorFromRgb01 - Reimplemented / Binary-safe pending
-  - 0x49b1e0 zRndr::FogColor_SetRgb01Clamped - Reimplemented / Binary-safe pending
-  - 0x450530 zClass_World::ApplyPendingFogSettings - Reimplemented / Binary-safe pending
-  - 0x476170 zModel_Fog_SetEnabled - Reimplemented / Binary-safe pending
-  - 0x476190 zModel_Fog_SetDistanceStart - Reimplemented / Binary-safe pending
-  - 0x4761e0 zModel_Fog_SetDistanceEnd - Reimplemented / Binary-safe pending
-  - 0x476220 zModel_Fog_SetHeightHigh - Reimplemented / Binary-safe pending
-  - 0x476260 zModel_Fog_SetHeightLow - Reimplemented / Binary-safe pending
-  - 0x4762a0 zModel_Fog_SetDensity - Reimplemented / Binary-safe pending
-  - 0x4762b0 zModel_Fog_SetLinearModeEnabled - Reimplemented / Binary-safe pending
-  - 0x4762c0 zModel_Fog_SetColorRgb01 - Reimplemented / Binary-safe pending
-  - 0x4762f0 zModel_Fog_ApplyCurrentColor - Reimplemented / Binary-safe pending
-  - 0x4a77a0 zVideo::BindRendererDispatch - Reimplemented; binary-safe verification blocked by dispatch slots storing original target addresses until rebuilt callees are available
-  - 0x4a7b40 zVideo_dd::StartupEnumerateAndDefaultSelect - Reimplemented; binary-safe verification blocked by provider/import and listing comparison
-- Blocking dependencies:
-  - 0x4a77a0 zVideo::BindRendererDispatch - dispatch target address table needs stable local representation
-  - 0x4a7b40 zVideo_dd::StartupEnumerateAndDefaultSelect - DirectDraw enumeration path now has native source; provider/import and assembly evidence still need verification
-- Verification target:
-  - ninja-x86-debug/release CTest; zVideo.cod via recoil_asm_verify.py
-- Notes:
-  - ModuleInit source resets the recovered named globals before installing the software renderer dispatch defaults; the original wide zero span still needs listing-level verification.
-  - 0x4a77a0 now binds rebuilt callable functions for OpenVideoMode, SetVideoMode, and CreateTextureRecord; unrelated dispatch slots still preserve recovered target addresses as data until their downstream users are migrated.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x431bf0 GameNetSpawnPointList::InitGlobals
+  - 0x431c20 GameNetPlayerRowList::Reset
+  - 0x4322a0 GameNet::ResetHudTimerPanelNetStateLongCountdown
+  - 0x414330 GameNet::ShowPlayerKillMessage
+  - 0x414390 GameNet::RefreshPlayerListMenu
+  - 0x4143b0 HudUi::RefreshScoreboardEntryRow
+  - 0x4143c0 HudUi::RemoveScoreboardEntryRow
+  - 0x432e70 GameNet::ReassignPlayerColorsAndRefreshRows
+  - 0x4ae450 OptCatalog::FindEntryById
+  - 0x433000 GameNet::SendPkt08_PlayerKillEvent
+  - 0x433060 GameNet::HandlePkt08_PlayerKillEvent
+  - 0x432830 GameNet::FindPlayerRowByKey
+  - 0x433200 GameNet::AreAllPlayersAtLapTarget
+  - 0x433390 GameNet::SendPkt0C_HudTimerStatusBits
+  - 0x433410 GameNet::HandlePkt0C_HudTimerStatusBits
+  - 0x4334f0 GameNet::SendPkt09_PlayerScoreboardSnapshot
+  - 0x4335b0 GameNet::HandlePkt09_PlayerScoreboardSnapshot
+  - 0x4337e0 GameNet::HandlePkt0B_ChatMessage
+  - 0x433710 GameNet::SetStatusBitsFromFlags
+  - 0x433730 GameNet::GetStatusBitAllowMaps
+  - 0x433740 GameNet::GetStatusBitNameTags
+  - 0x434550 GameNet::HostUpdateSessionDescStatusFields
+  - 0x433a50 GameNetPlayerRow::ApplyPlayerColorTint
+  - 0x433a40 HudTimerPanelNetState::ClearTailFlagsLocal
+  - 0x434650 GameNetPlayerRow::DestroyEmbeddedPanel
+  - 0x447d20 zClass_Class::gwNodeSetFlag16
+  - 0x447d70 zClass_Class::gwNodeSetFlag17
+  - 0x448090 zClass_Class::gwNodeSetPriority
+  - 0x44f7a0 zClass_Window::gwWindowNew
+  - 0x44f930 zClass_Window::gwWindowGetResolution
+  - 0x44fa40 zClass_Window::gwWindowGetSize
+  - 0x44fad0 zClass_Window::gwWindowSetBuffer
+  - 0x44fb40 zClass_Window::gwWindowSetClearPolygon
+  - 0x44fbd0 zClass_Window::gwWindowAddClearPolygonVertex
+  - 0x44fcf0 zClass_Window::gwWindowCloseClearPolygon
+  - 0x44fdd0 zClass_Display::gwDisplayInit
+  - 0x44ff90 zClass_Display::gwDisplaySetBackgroundColor
+  - 0x452fd0 zClass_Light::gwLightNew
+  - 0x453200 zClass_Light::gwLightSetIntensity
+  - 0x453250 zClass_Light::gwLightSetFalloff
+  - 0x4532a0 zClass_Light::gwLightSetConeAngle
+  - 0x4532f0 zClass_Light::gwLightSetPointMode
+  - 0x453350 zClass_Light::gwLightSetDirectionalMode
+  - 0x4533b0 zClass_Light::gwLightSetParam
+  - 0x453400 zClass_Light::gwLightSetRange
+  - 0x453500 zClass_Light::gwLightGetRange
+  - 0x453560 zClass_Light::gwLightSetPosition
+  - 0x4535c0 zClass_Light::gwLightSetRotation
+  - 0x453a40 zClass_Light::gwLightGetSpecularColor
+  - 0x453aa0 zClass_Light::gwLightSetSpecularColor
+  - 0x474d10 zMath::Vec3DirectionAnglesBetweenPoints
+  - 0x49b5a0 zRndr_FogTargetColorStaged_SetRgb01Clamped
+  - 0x4a6b80 zVideo_SetClearColorPacked16
+  - 0x4a7250 zVideo_SetPendingFogTargetColorFromRgb01
+  - 0x449ba0 zClass_Camera::SetViewDistance
+  - 0x450ae0 zClass_World::SetPendingFogState
+  - 0x450af0 zClass_World::SetPendingFogColorRgb01
+  - 0x450b20 zClass_World::SetPendingFogAltitudeRange
+  - 0x450b40 zClass_World::SetPendingFogRange
+  - 0x450b60 zClass_World::SetPendingFogDensity
+  - 0x453620 zClass_Light::ComputeWorldTransform
+  - 0x449be0 zClass_Camera::gwCameraNew
+  - 0x449c90 zClass_Camera::gwCameraAddChild
+  - 0x449d20 zClass_Camera::gwCameraSetFlagBit0
+  - 0x449da0 zClass_Camera::SetTargetNode
+  - 0x449db0 zClass_Camera::SetActiveCamera
+  - 0x449dc0 zClass_Camera::SetObjectHseTestEnabled
+  - 0x449dd0 zClass_Camera::gwCameraSetWorld
+  - 0x449e90 zClass_Camera::gwCameraSetWindow
+  - 0x449ea0 zClass_Camera::gwCameraSetPosition
+  - 0x449f50 zClass_Camera::ActivateChildren
+  - 0x449fb0 zClass_Camera::gwCameraTranslate
+  - 0x44a060 zClass_Camera::gwCameraGetPosition
+  - 0x44a0f0 zClass_Camera::gwCameraSetTarget
+  - 0x44a1a0 zClass_Camera::gwCameraTranslateTarget
+  - 0x44a250 zClass_Camera::gwCameraGetTarget
+  - 0x44a2f0 zClass_Camera::gwCameraSetNearFarClip
+  - 0x44a410 zClass_Camera::gwCameraSetViewport
+  - 0x44a580 zClass_Camera::gwCameraGetViewport
+  - 0x44a7f0 zClass_Camera::gwCameraGetClipDistance
+  - 0x44a910 zClass_Camera::gwCameraSetHorizon
+  - 0x44a980 zClass_Camera::gwCameraSetHorizonXZ
+  - 0x452770 zClass_Class::FindSubNodeByName
+  - 0x452860 zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive
+  - 0x4528b0 zClass_Node::InvalidateFlagBit8MaterialImagesRecursive
+  - 0x4528e0 zClass_Node::AssignInt32ToDiRecursive
+  - 0x452920 zClass_Class::AddChildValidated
+  - 0x4542a0 zClass_Lod::gwLodNew
+  - 0x454310 zClass_Lod::gwLodAddChild
+  - 0x454330 zClass_Lod::SetComputeOwnDistance
+  - 0x454340 zClass_Lod::SetTargetNodeAndRange
+  - 0x46e250 zImage::InvalidateLoadedVariantChain
+  - 0x480f60 zModel_Material_SetFlagBit9
+  - 0x480f80 zModel_Material::InvalidateImagesIfEligible
+  - 0x4826d0 zDi::SetFlagBit0
+  - 0x4841b0 zDi_SetMaterialFlagBit9ForFlagBit0Entries
+  - 0x4841f0 zDi::InvalidateImagesForFlagBit8Materials
+  - 0x4b25a0 zClass_Node::SetDamageHitCallback
+  - 0x4b25f0 zClass_Node::AssignDamageHandlerRecursiveIfMissing
+  - 0x4b26b0 zClass_Node::SetDamageTimerCallback
+  - 0x4b2880 OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback
+  - 0x448100 zClass_Class::gwNodeSetCellPickable
+  - 0x448140 zClass_Class::gwNodeGetCellPickable
+  - 0x448180 zClass_Class::gwNodeGetNodeType
+  - 0x4481b0 zClass_Class::gwNodeSetRaycastable
+  - 0x4481f0 zClass_Class::gwNodeGetRaycastable
+  - 0x448230 zClass_Class::gwNodeSetPickable
+  - 0x448270 zClass_Class::gwNodeGetPickable
+  - 0x4482f0 zClass_Class::gwNodeSetBypassFarClip
+  - 0x448330 zClass_Class::gwNodeSetNodeType
+  - 0x448360 zClass_Class::gwNodeClearVariantGate
+  - 0x4483a0 zClass_Class::gwNodeSetVertexAlphaOverride
+  - 0x4484d0 zClass_Class::AddChildGeneric
+  - 0x449ab0 zClass_Class::gwNodeGetRoot
+  - 0x449af0 zClass_Class::gwNodeGetWorldChild
+  - 0x44db10 zClass_Object3D::gwObject3DAddChild
+  - 0x44dbb0 zClass_Object3D::gwObject3DSetVisibleFlag
+  - 0x44dc30 zClass_Object3D::gwObject3DSetColorAlpha
+  - 0x44dd90 zClass_Object3D::gwObject3DSetAlphaScale
+  - 0x44de10 zClass_Object3D::gwObject3DGetAlphaScale
+  - 0x44de80 zClass_Object3D::gwObject3DSetLitFlag
+  - 0x44df00 zClass_Object3D::gwObject3DSetScale
+  - 0x44dfd0 zClass_Object3D::gwObject3DGetScale
+  - 0x44e030 zClass_Object3D::gwObject3DSetRotation
+  - 0x44e110 zClass_Object3D::gwObject3DGetRotation
+  - 0x44e170 zClass_Object3D::gwObject3DTranslateRotation
+  - 0x44e270 zClass_Object3D::gwObject3DGetPosition
+  - 0x44e300 zClass_Object3D::gwObject3DSetPosition
+  - 0x44e3d0 zClass_Object3D::gwObject3DTranslatePosition
+  - 0x44e4f0 zClass_Object3D::gwObject3DSetMatrix
+  - 0x44e5b0 zClass_Object3D::gwObject3DGetMatrixPtr
+  - 0x44ea70 zClass_TypeList::UpdateAllBuckets
+  - 0x44eaa0 zClass_TypeList::UpdateBucket
+  - 0x44ebe0 zClass_TypeList::UpdateSequences
+  - 0x44ec30 zClass_TypeList::UpdateAnimations
+  - 0x44ec80 zClass_Class::gwNodeUpdateAll
+  - 0x44ecb0 zClass_TypeList::PrintBucket
+  - 0x453bd0 zClass_Animate::UpdateNode
+  - 0x453c90 zClass_Animate::AdvanceTime
+  - 0x453d20 zClass_Animate::SampleTransform
+  - 0x453ee0 zClass_Sequence::gwSequenceNew
+  - 0x453f40 zClass_Sequence::gwSequenceAddChild
+  - 0x4540c0 zClass_Sequence::SetActive
+  - 0x454100 zClass_Sequence::SetRepeat
+  - 0x454140 zClass_Sequence::SetLoop
+  - 0x454180 zClass_Sequence::SetPause
+  - 0x4541c0 zClass_Sequence::Update
+  - 0x44f690 zClass_List::IterateBucketFiltered
+  - 0x44f6f0 zClass::FindNextByTypePrefix
+  - 0x44f720 zClass::FindNextByTypePrefix_Predicate
+  - 0x44f740 zClass_Class::gwNodeFindNextByName
+  - 0x44f750 zClass_Class::gwNodeFindNextByName_Predicate
+  - 0x4518b0 zClass::SetNodeArraySize
+  - 0x4527f0 zClass_Node::HasRenderableDiPredicate
+  - 0x452810 zClass::AnyNodeMatchesPredicateRecursive
+  - 0x454370 GameZ_ZBD::NodePtrToIndex
+  - 0x4543a0 zClass::NodePtrToValidatedIndex
+  - 0x4543d0 GameZ_ZBD::NodeIndexToPtr
+  - 0x4543f0 GameZ_ZBD::WriteNodeRefListIndices
+  - 0x4544b0 GameZ_ZBD::WriteSingleNodeClassData
+  - 0x454890 GameZ_ZBD::WriteNodeTable
+  - 0x454a50 GameZ::WriteZBDFile
+  - 0x454bf0 GameZ_ZBD::ReadNodeRefListIndices
+  - 0x454c60 GameZ_ZBD::ReadSingleNodeClassData
+  - 0x455350 GameZ_ZBD::ReadNodeTable
+  - 0x455520 GameZ::ReadZBDFile
+  - 0x4556a0 GameZ::OpenAndReadZBDHeader
+  - 0x455730 GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local
+  - 0x4557a0 GameZ_ZBD::ReloadDisplayInstancesRecursive_Local
+  - 0x46d310 zImage::TexDirEntryToIndex
+  - 0x46d340 zImage::TexIndexToDirEntry
+  - 0x46d360 zImage::WriteTextureDirectory
+  - 0x46d420 zImage::ReadTextureDirectory
+  - 0x4808c0 zModel_MatlBuffer::ReadGameZ
+  - 0x481aa0 zModel_DiPool::ReadEntryByIndexFromStream
+  - 0x481bc0 zModel_DiPool::ReadHeaderFromStream
+  - 0x481c50 zModel_DiPool::ReadEntryDynamicDataFromStream
+  - 0x481fa0 zModel_DiPool::ReadFromStream
+- Next action:
+  - `python tools/recoil_status.py 0x431bf0`
 
 ### Group: Pickup shutdown lists
 
 - Anchor: 0x41ccd0 Pickup::Shutdown
-- Reason: dependency closure / pickup spawn and respawn list teardown
-- Source files:
-  - src/Battlesport/pickup.h
-  - src/Battlesport/pickup.cpp
-  - tests/native/pickup_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x41cc10 PickupSpawnList::Primary_Init - Reimplemented / Binary-safe verified
-  - 0x41cc40 PickupSpawnList::NetCopy_Init - Reimplemented / Binary-safe verified
-  - 0x41cc70 PickupRespawnQueue::Init - Reimplemented / Binary-safe verified
-  - 0x41ccd0 Pickup::Shutdown - Reimplemented / Binary-safe verified
-  - 0x41d8a0 PickupSpawnList::RemoveAndFreeNode - Reimplemented / Binary-safe verified
-  - 0x41e240 PickupSpawnList::Clear - Reimplemented / Binary-safe verified
-  - 0x41e270 PickupRespawnQueue::ClearAndFree - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - none
-- Verification target:
-  - ninja-x86-release recoil_native_smoke; guard CTests; `pickup.cod` listing comparison
-- Notes:
-  - Spawn-list nodes use next at offset 0x50 and pickup object at offset 0x24. Respawn queue entries use next at offset 0x08. The primary-list clear resets g_NextPickupId.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x41ccd0 Pickup::Shutdown
+  - 0x41cc10 PickupSpawnList::Primary_Init
+  - 0x41cc40 PickupSpawnList::NetCopy_Init
+  - 0x41cc70 PickupRespawnQueue::Init
+  - 0x41d8a0 PickupSpawnList::RemoveAndFreeNode
+  - 0x41e240 PickupSpawnList::Clear
+  - 0x41e270 PickupRespawnQueue::ClearAndFree
+- Next action:
+  - `python tools/recoil_status.py 0x41ccd0`
 
 ### Group: Pickup packet leaf helpers
 
-- Anchor: 0x433f40 Pickup::HandlePkt11_SpawnDelta
-- Reason: dependency closure / shared pickup spawn-list and node-flag layout
-- Source files:
-  - src/Battlesport/pickup.h
-  - src/Battlesport/pickup.cpp
-  - tests/native/pickup_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x41ceb0 zClass_Node::ClearPickupFlagsRecursive - Reimplemented / Binary-safe verified
-  - 0x41db40 PickupType::GetByIndex_Pure - Reimplemented / Binary-safe verified
-  - 0x41e1c0 PickupType::GetByIndex - Reimplemented / Binary-safe verified
-  - 0x41e930 Pickup::FindSpawnByPickupId - Reimplemented / Binary-safe verified
-  - 0x41e950 Pickup::GetSpawnDefFromNode - Reimplemented / Binary-safe verified
-  - 0x41e960 Pickup::SetNextPickupId - Reimplemented / Binary-safe verified
-  - 0x41e970 Pickup::GetNextPickupId - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - none for these leaf helpers
-- Verification target:
-  - ninja-x86-release recoil_native_smoke; guard CTests; `pickup.cod` listing comparison
-- Notes:
-  - The packet-handler create/remove paths remain blocked by larger pickup runtime helpers, but these leaf helpers only depend on already-recovered list, type-table, and zClass_NodePartial layouts.
+- Anchor: 0x433f40 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x433f40 pending
+  - 0x41ceb0 zClass_Node::ClearPickupFlagsRecursive
+  - 0x41db40 PickupType::GetByIndex_Pure
+  - 0x41e1c0 PickupType::GetByIndex
+  - 0x41e930 Pickup::FindSpawnByPickupId
+  - 0x41e950 Pickup::GetSpawnDefFromNode
+  - 0x41e960 Pickup::SetNextPickupId
+  - 0x41e970 Pickup::GetNextPickupId
+- Next action:
+  - `python tools/recoil_status.py 0x433f40`
 
 ### Group: GameNet packet 07 OptCatalog leaf
 
-- Anchor: 0x434190 GameNet::HandlePkt07_AltGunDispatch
-- Reason: dependency closure / packet 07 OptCatalog pending-target override globals
-- Source files:
-  - src/GameZRecoil/include/OptCatalog.h
-  - src/GameZRecoil/zWeapon/OptCatalog.c
-  - tests/native/zweapon_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x4ae4a0 OptCatalog::SetPendingSpawnTargetOverrides - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - none for this OptCatalog leaf
-- Verification target:
-  - ninja-x86-release recoil_native_smoke; guard CTests; `OptCatalog.cod` listing comparison
-- Notes:
-  - The leaf stores the pending target-count pointer from ECX and pending target-list pointer from EDX into the global override slots used by OptCatalog runtime spawn processing.
+- Anchor: 0x434190 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x434190 pending
+  - 0x4ae4a0 OptCatalog::SetPendingSpawnTargetOverrides
+- Next action:
+  - `python tools/recoil_status.py 0x434190`
 
 ### Group: Player alt-gun controller lookup
 
 - Anchor: 0x43c9c0 Player::FindAltGunFireControllerForWeaponId
-- Reason: dependency closure / shared PlayerState alt-weapon-bank layout
-- Source files:
-  - src/Battlesport/player.h
-  - src/Battlesport/player.cpp
-  - src/GameZRecoil/zUtil/zSaveGame.h
-  - tests/native/player_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x43c9c0 Player::FindAltGunFireControllerForWeaponId - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - none
-- Verification target:
-  - ninja-x86-release recoil_native_smoke; guard CTests; `player.cod` listing comparison
-- Notes:
-  - The lookup resolves the weapon id through OptCatalog, scans banks 2 through 9 with controller A priority over controller B, and falls back to bank 1 controller A.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x43c9c0 Player::FindAltGunFireControllerForWeaponId
+- Next action:
+  - `python tools/recoil_status.py 0x43c9c0`
 
 ### Group: OptCatalog warning samples
 
 - Anchor: 0x4b0600 OptCatalog::PlayTriggerInactiveWarning
-- Reason: source file cluster / shared warning sample globals
-- Source files:
-  - src/GameZRecoil/include/OptCatalog.h
-  - src/GameZRecoil/zWeapon/OptCatalog.c
-- Plan entries:
-  - 0x4b0600 OptCatalog::PlayTriggerInactiveWarning - Reimplemented / Binary-safe verified
-  - 0x4b0620 OptCatalog::PlayWeaponInactiveWarning - Reimplemented / Binary-safe verified
-  - 0x4b0640 OptCatalog::PlayNoAmmoWarning - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - none
-- Verification target:
-  - ninja-x86-release recoil_native_smoke; guard CTests; `OptCatalog.cod` listing comparison
-- Notes:
-  - Each helper plays one recovered global warning sample at gain 1.0.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4b0600 OptCatalog::PlayTriggerInactiveWarning
+  - 0x4b0620 OptCatalog::PlayWeaponInactiveWarning
+  - 0x4b0640 OptCatalog::PlayNoAmmoWarning
+- Next action:
+  - `python tools/recoil_status.py 0x4b0600`
 
 ### Group: RecoilApp fatal-error shutdown
 
 - Anchor: 0x430c90 RecoilApp::FatalErrorAndExit
-- Reason: dependency closure / source file cluster / shared briefing runtime globals
-- Source files:
-  - src/Battlesport/RecoilApp.h
-  - src/Battlesport/RecoilApp.cpp
-  - src/Battlesport/Briefing.h
-  - src/Battlesport/Briefing.cpp
-  - tests/native/briefing_tests.cpp
-  - tests/native/smoke.cpp
-- Plan entries:
-  - 0x430c90 RecoilApp::FatalErrorAndExit - Reimplemented / Binary-safe verified
-  - 0x404bd0 Briefing::StopAndShutdownThread - Reimplemented / Binary-safe verified
-- Blocking dependencies:
-  - none visible after 0x404bd0 leaf inspection
-- Verification target:
-  - ninja-x86-debug CTest; `RecoilApp.cod` and `Briefing.cod` listing comparison
-- Notes:
-  - 0x430c90 calls 0x404bd0 before video, sound, network, video shutdown, printf, Sleep, MessageBeep, MessageBoxA, and zSys exit.
-  - 0x404bd0 gates an optional input wait on g_Briefing_SequenceActiveFlag and g_Briefing_AllowAdvanceFlag, clears g_Briefing_ThreadRunFlag, waits for g_Briefing_ThreadExitedFlag, deletes g_Briefing_Runtime through vtable slot 0x08 with flag 1, and clears g_Briefing_SystemActiveFlag.
-  - 0x430c90 and 0x404bd0 are verified against `build/verification/recoilapp_fatal_error_exit/430c90_diff.txt` and `build/verification/briefing_stop_shutdown_thread/404bd0_diff.txt`; differences are modern string-copy lowering, callee-saved register use only on paths that need it, symbol spelling, and equivalent import call spelling.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x430c90 RecoilApp::FatalErrorAndExit
+  - 0x404bd0 Briefing::StopAndShutdownThread
+- Next action:
+  - `python tools/recoil_status.py 0x430c90`
 
 ### Group: zVideo DD3D polygon queues
 
 - Anchor: 0x4aab90 zVideo_dd3d::SubmitPolyFlatColor16
-- Reason: dependency closure / shared queue layouts and D3D render-state cache globals
-- Source files:
-  - src/GameZRecoil/zVideo/zVideo.h
-  - src/GameZRecoil/zVideo/zVideo.cpp
-  - tests/native/zvideo_tests.cpp
-- Plan entries:
-  - 0x4aab90 zVideo_dd3d::SubmitPolyFlatColor16 - Reimplemented
-  - 0x4aaef0 zVideo_dd3d::SubmitPolyGouraudColor16 - Reimplemented
-  - 0x4ab320 zVideo_dd3d::SubmitPolyColorAttr - Reimplemented
-  - 0x4ab6d0 zVideo_dd3d::SubmitPolyRenderClass - Reimplemented
-  - 0x4abb20 zVideo_dd3d::SubmitPolygon - Reimplemented
-  - 0x4ac370 zVideo_dd3d::SubmitPolygonLit - Reimplemented
-  - 0x4acbd0 zVideo_dd3d::DrawPointColor16 - Reimplemented
-  - 0x4acd00 zVideo_dd3d::QueueSolidQuad - Reimplemented
-  - 0x4ace30 zVideo_dd3d::FlushSortedPolys - Reimplemented
-  - 0x4ad120 zVideo_dd3d::FlushQuadBatch - Reimplemented
-  - 0x4ad250 zVideo_dd3d::FlushOverwritePolys - Reimplemented
-- Blocking dependencies:
-  - IDirect3DDevice2 provider calls - render-state and DrawPrimitive ABI must remain Direct3D2
-- Verification target:
-  - ninja-x86-debug/release CTest; later zVideo.cod listing comparison for queue layout and D3D call order
-- Notes:
-  - 0x4aab90 uses a 64-entry D3DTLVERTEX temp buffer, a 256-entry sorted queue with 0x80c stride, and a 0x180-entry overwrite queue with 0x810 stride.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x4aab90 zVideo_dd3d::SubmitPolyFlatColor16
+  - 0x4aaef0 zVideo_dd3d::SubmitPolyGouraudColor16
+  - 0x4ab320 zVideo_dd3d::SubmitPolyColorAttr
+  - 0x4ab6d0 zVideo_dd3d::SubmitPolyRenderClass
+  - 0x4abb20 zVideo_dd3d::SubmitPolygon
+  - 0x4ac370 zVideo_dd3d::SubmitPolygonLit
+  - 0x4acbd0 zVideo_dd3d::DrawPointColor16
+  - 0x4acd00 zVideo_dd3d::QueueSolidQuad
+  - 0x4ace30 zVideo_dd3d::FlushSortedPolys
+  - 0x4ad120 zVideo_dd3d::FlushQuadBatch
+  - 0x4ad250 zVideo_dd3d::FlushOverwritePolys
+- Next action:
+  - `python tools/recoil_status.py 0x4aab90`
 
 ### Group: zEffectAnim ZBD load closure
 
 - Anchor: 0x45efb0 zEffect_Anim::LoadZbd
-- Reason: dependency closure / animation ZBD file import and runtime instantiation
-- Source files:
-  - src/GameZRecoil/zEffect/zEffect.h
-  - src/GameZRecoil/zEffect/zEffect.cpp
-- Plan entries:
-  - 0x458b50 zEffect::TickResetDelayOnTimer - Reimplemented / Binary-safe pending
-  - 0x458bb0 zEffect::TickResetDelayOnHit - Reimplemented / Binary-safe pending
-  - 0x45efb0 zEffect_Anim::LoadZbd - Reimplemented / Binary-safe pending
-  - 0x45fb30 zEffect_Anim::LoadAndInstantiate - Reimplemented / Binary-safe pending
-  - 0x460070 zEffect::InitFromPath - Reimplemented / Binary-safe pending
-  - 0x460490 zEffect_Anim::SaveActivationRecords - Reimplemented / Binary-safe pending
-  - 0x4606d0 zEffect_Anim::LoadActivationRecords - Reimplemented / Binary-safe pending
-  - 0x460bc0 zEffect_Anim::SaveRunningAnimRecord - Reimplemented / Binary-safe pending
-  - 0x460f80 zEffect_Anim::SaveRunningAnimRecords - Reimplemented / Binary-safe pending
-  - 0x461040 zEffect_Anim::LoadRunningAnimRecords - Reimplemented / Binary-safe pending
-  - 0x461430 zEffect_Anim::SaveAnimRecords - Reimplemented / Binary-safe pending
-  - 0x461670 zEffect_Anim::LoadAnimRecords - Reimplemented / Binary-safe pending
-  - 0x461840 zEffect_Anim::ResetFromActivationRecord - Reimplemented / Binary-safe pending
-  - 0x461870 zEffect_Anim::ProcessActivationRecord - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - zClass node search/copy/object/light/sound helpers, zSnd sample lookup, zLoc message id lookup, and zEffect template lookup are already available.
-- Verification target:
-  - ninja-x86-release `recoil_native_smoke` and raw-address/raw-assembly guard CTests pass; later `zEffect.cod` listing comparison remains for loader call order and ABI.
-- Notes:
-  - The rebuilt loader should read the copied 0x3c original global band through a recovered local header struct instead of depending on adjacent C++ global storage.
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x45efb0 zEffect_Anim::LoadZbd
+  - 0x458b50 zEffect::TickResetDelayOnTimer
+  - 0x458bb0 zEffect::TickResetDelayOnHit
+  - 0x45fb30 zEffect_Anim::LoadAndInstantiate
+  - 0x460070 zEffect::InitFromPath
+  - 0x460490 zEffect_Anim::SaveActivationRecords
+  - 0x4606d0 zEffect_Anim::LoadActivationRecords
+  - 0x460bc0 zEffect_Anim::SaveRunningAnimRecord
+  - 0x460f80 zEffect_Anim::SaveRunningAnimRecords
+  - 0x461040 zEffect_Anim::LoadRunningAnimRecords
+  - 0x461430 zEffect_Anim::SaveAnimRecords
+  - 0x461670 zEffect_Anim::LoadAnimRecords
+  - 0x461840 zEffect_Anim::ResetFromActivationRecord
+  - 0x461870 zEffect_Anim::ProcessActivationRecord
+- Next action:
+  - `python tools/recoil_status.py 0x45efb0`
 
 ### Group: RecoilApp play-state frame tick
 
-- Anchor: 0x42f280 RecoilApp_PlayState::TickAndRenderFrame
-- Reason: dependency closure / source file cluster / shared video-HUD frame globals
-- Source files:
-  - src/Battlesport/RecoilApp.h
-  - src/Battlesport/RecoilApp.cpp
-  - src/Battlesport/player.h
-  - src/Battlesport/player.cpp
-  - src/GameZRecoil/zHud/zhud_ui.h
-  - src/GameZRecoil/zHud/zhud_ui.cpp
-  - src/GameZRecoil/zClass/List_RenderActiveCameras.cpp
-  - src/GameZRecoil/zClass/Camera.c
-  - src/GameZRecoil/zClass/cls_world.c
-- Plan entries:
-  - 0x42f280 RecoilApp_PlayState::TickAndRenderFrame - in progress
-  - 0x44d320 zClass_Camera::SyncViewContextPositions - Reimplemented / Binary-safe pending
-  - 0x451540 zClass_World::InitLightPointInPolygonXZ - Reimplemented / Binary-safe pending
-  - 0x44f630 zClass_List::RenderActiveCameras - source written / dependency gate blocked
-  - 0x439690 HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag - Reimplemented / Binary-safe pending
-- Blocking dependencies:
-  - direct frame helpers are source-available or provider/import functions; assembly verification remains pending
-- Verification target:
-  - ninja-x86-debug focused native build and raw-address/raw-assembly guards; later RecoilApp.cod comparison
-- Notes:
-  - 0x42f280 has software, hardware+replicate, and hardware non-replicate postprocess/present paths and returns 1 only for quit/escape transitions.
-
-### Group: Display-instance pick candidate recursion
-
-- Anchor: 0x443c70 zClass_cls_di::FindBestPickCandidateBelowPoint
-- Reason: recursive source-dependency gate for zClass display-instance pick candidate traversal
-- Source files:
-  - src/GameZRecoil/zClass/cls_di.c
-  - src/Battlesport/zModel/gdi.c
-  - src/GameZRecoil/zMath/zMath.cpp
-- Plan entries:
-  - 0x443f80 zClass_cls_di::BuildPickCandidateList - Source dependencies satisfied
-  - 0x444310 zClass_cls_di::BuildPickCandidatesRecursive - Source dependencies satisfied
-  - 0x4443e0 zClass_cls_di::BuildPickCandidatesForLight - Source dependencies satisfied
-  - 0x484960 zDi::BuildPickCandidateForQueryPoint - Source dependencies satisfied
-- Blocking dependencies:
-  - none at source level
-- Verification target:
-  - ninja-x86-debug CTest; later cls_di/gdi listing comparison for traversal and pick math
-- Notes:
-  - Source-level dependency gating accepted compiler/runtime copy lowering for parsed external token data outside the plan function inventory.
-
-### Group: Render traversal dispatch cluster
-
-- Anchor: 0x44c0e0 zClass_Class::gwNodeRenderDispatch
-- Reason: dependency closure / shared render traversal state for the frustum-grid renderer
-- Source files:
-  - src/GameZRecoil/include/zClass.h
-  - src/GameZRecoil/zClass/Class.c
-  - src/GameZRecoil/zClass/Object3d.c
-  - src/GameZRecoil/zClass/Lod.c
-  - src/GameZRecoil/zClass/Animate.c
-  - src/GameZRecoil/zClass/Light.c
-  - src/GameZRecoil/zClass/Sound.c
-  - src/GameZRecoil/zClass/Seq.c
-  - src/GameZRecoil/zClass/Switch.c
-  - src/GameZRecoil/zClass/cls_util.c
-  - src/GameZRecoil/zModel/gmod_light.c
-- Plan entries:
-  - 0x452650 BBox::CornersToBoundingSphere - active
-  - 0x476040 zModel_FogTargetColorOverride_SetCurrent - active
-  - 0x476070 zModel_RenderAlphaScale_SetCurrent - active
-  - 0x476080 zModel_RenderVertexAlphaEnabled_SetCurrent - active
-  - 0x44ada0 zClass_Camera::RenderTraverse - active
-  - 0x44af60 zClass_Sound::RenderTraverse - active
-  - 0x44b140 zClass_Light::RenderTraverse - active
-  - 0x44b300 zClass_Object3D::RenderTraverse - active
-  - 0x44b710 zClass_Animate::RenderTraverse - active
-  - 0x44b8c0 zClass_Lod::RenderTraverse - active
-  - 0x44bea0 zClass_Sequence::RenderTraverse - active
-  - 0x44bfb0 zClass_Switch::RenderTraverse - active
-  - 0x44c0e0 zClass_Class::gwNodeRenderDispatch - active
-- Blocking dependencies:
-  - render-state globals, model render callback provider, and per-node cached view-sphere overlay are shared across the traversal cluster
-- Verification target:
-  - ninja-x86-debug focused native build and raw-address/raw-assembly guard CTests; later Class/Object3d/Lod/Camera listings for call order and x87 details
+- Anchor: 0x42f280 pending
+- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Source blockers:
+  - 0x42f280 pending
+  - 0x44f630 pending
+- Next action:
+  - `python tools/recoil_status.py 0x42f280`
 
 ## Completed Groups
 
 ### Group: zSys CPU feature detection probes
 
 - Anchor: 0x4b3420 zSys::DetectCpuClassAndFeatures
-- Reason: cyclic/source-level CPU probe cluster with user-approved raw x86 assembly exception
-- Source files:
-  - src/GameZRecoil/zSys/zSys.cpp
-  - src/GameZRecoil/zSys/zSys.h
-  - tools/recoil_no_raw_assembly.py
-  - tests/native/CMakeLists.txt
-  - .agent/RAW_ASSEMBLY_ALLOWLIST.txt
-- Plan entries:
-  - 0x4b3420 zSys::DetectCpuClassAndFeatures - active
-  - 0x4b3510 zSys::ProbeDivZeroFlagBehavior - active
-  - 0x4b3550 zSys::DetectIs8086ByEflagsHiBits - active
-  - 0x4b35a0 zSys::DetectIs80286ByEflagsHiBits - active
-  - 0x4b35f0 zSys::DetectIs80386ByAcFlag - active
-- Blocking dependencies:
-  - none at source level after accepting AP-485 style raw x86 flag-probe assembly for this exact group
-- Verification target:
-  - ninja-x86-debug CTest including raw-assembly allowlist guard; later zSys listing comparison for the five CPU probe routines
+- Status: completed group retained for short-term traceability.
+- Addresses:
+  - 0x4b3420 zSys::DetectCpuClassAndFeatures
+  - 0x4b3510 zSys::ProbeDivZeroFlagBehavior
+  - 0x4b3550 zSys::DetectIs8086ByEflagsHiBits
+  - 0x4b35a0 zSys::DetectIs80286ByEflagsHiBits
+  - 0x4b35f0 zSys::DetectIs80386ByAcFlag

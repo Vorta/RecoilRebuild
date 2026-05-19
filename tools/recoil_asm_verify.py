@@ -112,6 +112,7 @@ class ObjectByteComparison:
     vc6_path: Path
     mask_path: Path
     diff_path: Path
+    triage_path: Path
     text_diff_path: Path | None
     mismatch_count: int
     relocation_masked_bytes: int
@@ -280,6 +281,7 @@ COFF_SECTION_HEADER_SIZE = 40
 COFF_SYMBOL_SIZE = 18
 COFF_RELOCATION_SIZE = 10
 IMAGE_SCN_CNT_CODE = 0x00000020
+IMAGE_SCN_CNT_UNINITIALIZED_DATA = 0x00000080
 IMAGE_REL_I386_DIR32 = 0x0006
 IMAGE_REL_I386_DIR32NB = 0x0007
 IMAGE_REL_I386_REL32 = 0x0014
@@ -404,13 +406,18 @@ class CoffObject:
             relocation_offset = struct.unpack_from("<I", data, offset + 24)[0]
             relocation_count = struct.unpack_from("<H", data, offset + 32)[0]
             characteristics = struct.unpack_from("<I", data, offset + 36)[0]
-            if raw_offset + raw_size > len(data):
+            raw_data_is_file_backed = raw_size == 0 or (raw_offset != 0 and raw_offset + raw_size <= len(data))
+            if raw_data_is_file_backed:
+                raw_data = data[raw_offset : raw_offset + raw_size]
+            elif characteristics & IMAGE_SCN_CNT_UNINITIALIZED_DATA:
+                raw_data = b"\x00" * raw_size
+            else:
                 raise ValueError(f"COFF section {name} raw data is truncated")
             sections.append(
                 CoffSection(
                     index=index + 1,
                     name=name,
-                    raw_data=data[raw_offset : raw_offset + raw_size],
+                    raw_data=raw_data,
                     relocation_offset=relocation_offset,
                     relocation_count=relocation_count,
                     characteristics=characteristics,
@@ -848,6 +855,92 @@ def format_byte_diff_lines(
     return lines
 
 
+def mismatch_clusters(
+    mismatches: tuple[ByteMismatch, ...],
+    *,
+    max_gap: int = 4,
+) -> list[tuple[int, int, int]]:
+    if not mismatches:
+        return []
+
+    clusters: list[tuple[int, int, int]] = []
+    start = mismatches[0].offset
+    end = start
+    count = 1
+    for mismatch in mismatches[1:]:
+        if mismatch.offset <= end + max_gap:
+            end = mismatch.offset
+            count += 1
+            continue
+        clusters.append((start, end, count))
+        start = mismatch.offset
+        end = mismatch.offset
+        count = 1
+    clusters.append((start, end, count))
+    return clusters
+
+
+def format_byte_triage_lines(
+    *,
+    address: str,
+    symbol: str,
+    comparison: MaskedByteComparison,
+) -> list[str]:
+    base_address = int(normalize_address(address), 16)
+    size_delta = comparison.vc6_size - comparison.bn_size
+    lines = [
+        f"address: {normalize_address(address)}",
+        f"symbol: {symbol}",
+        f"status: {'OK' if comparison.mismatch_count == 0 else 'FAIL'}",
+        f"bn_size: {comparison.bn_size}",
+        f"vc6_size: {comparison.vc6_size}",
+        f"size_delta_vc6_minus_bn: {size_delta}",
+        f"compared_size_after_trim: {comparison.compared_size}",
+        f"relocation_masked_bytes: {comparison.relocation_masked_bytes}",
+        f"trailing_bn_nops_trimmed: {comparison.trailing_bn_nops_trimmed}",
+        f"trailing_vc6_nops_trimmed: {comparison.trailing_vc6_nops_trimmed}",
+        f"mismatches: {comparison.mismatch_count}",
+        "",
+    ]
+
+    if comparison.mismatch_count == 0:
+        lines.append("Triage: byte sequences match after relocation masking and optional trailing NOP trimming.")
+        return lines
+
+    first = comparison.mismatches[0]
+    lines.extend(
+        [
+            f"first_mismatch_offset: 0x{first.offset:x}",
+            f"first_mismatch_original: 0x{base_address + first.offset:x}",
+            "",
+            "Mismatch clusters:",
+        ]
+    )
+    for start, end, count in mismatch_clusters(comparison.mismatches)[:20]:
+        original_start = base_address + start
+        original_end = base_address + end
+        if start == end:
+            span = f"offset 0x{start:x} original 0x{original_start:x}"
+        else:
+            span = f"offsets 0x{start:x}..0x{end:x} originals 0x{original_start:x}..0x{original_end:x}"
+        lines.append(f"- {span}: {count} mismatch byte(s)")
+    clusters = mismatch_clusters(comparison.mismatches)
+    if len(clusters) > 20:
+        lines.append(f"- ... {len(clusters) - 20} additional cluster(s) omitted")
+
+    lines.extend(["", "Likely next checks:"])
+    if first.offset == 0:
+        lines.append("- Function entry differs; inspect calling convention, prologue, and compiler flags first.")
+    if size_delta != 0:
+        lines.append("- Function size differs; inspect control-flow shape, helper inlining, EH cleanup, and epilogue emission.")
+    if comparison.relocation_masked_bytes:
+        lines.append("- COFF relocation bytes were masked; focus on the unmasked mismatch clusters above.")
+    if comparison.trailing_bn_nops_trimmed or comparison.trailing_vc6_nops_trimmed:
+        lines.append("- Trailing NOP padding was trimmed; remaining mismatches are not explained by end padding.")
+    lines.append("- Compare the normalized asm text diff beside the byte artifacts to identify instruction-level drift.")
+    return lines
+
+
 def write_optional_text_diff(
     *,
     bn_lines: list[str],
@@ -929,6 +1022,15 @@ def compare_bn_to_obj(
             vc6_bytes=function.data,
         ),
     )
+    triage_path = out_dir / f"{safe_address}_byte_triage.txt"
+    write_lines(
+        triage_path,
+        format_byte_triage_lines(
+            address=address,
+            symbol=symbol,
+            comparison=comparison,
+        ),
+    )
     text_diff_path = write_optional_text_diff(
         bn_lines=bn_lines,
         cod_path=cod_path,
@@ -945,6 +1047,7 @@ def compare_bn_to_obj(
         vc6_path=vc6_path,
         mask_path=mask_path,
         diff_path=diff_path,
+        triage_path=triage_path,
         text_diff_path=text_diff_path,
         mismatch_count=comparison.mismatch_count,
         relocation_masked_bytes=comparison.relocation_masked_bytes,

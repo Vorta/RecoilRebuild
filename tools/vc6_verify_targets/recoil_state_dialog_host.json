@@ -15,7 +15,14 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp"
   ],
@@ -25,61 +32,5 @@
       "symbol": "?OnWndActivate@RecoilStateDialogHost@@QAEXH@Z",
       "name": "RecoilStateDialogHost::OnWndActivate"
     }
-  ],
-  "generated_files": {
-    "GameZRecoil/RecoilApp/RecoilStateDialogHost.h": [
-      "#pragma once",
-      "",
-      "namespace std {",
-      "typedef int int32_t;",
-      "}",
-      "",
-      "#define RECOIL_THISCALL",
-      "#define RECOIL_CDECL __cdecl",
-      "#define RECOIL_FASTCALL __fastcall",
-      "",
-      "typedef unsigned int RecoilPtr32;",
-      "typedef unsigned int RecoilFn32;",
-      "",
-      "struct HudUiDialogController;",
-      "struct zVidRect32;",
-      "struct zOpt_ViewRectSection;",
-      "",
-      "struct RecoilStateDialogHost {",
-      "    RecoilPtr32 vftable;",
-      "    volatile RecoilPtr32 dialog_04;",
-      "    std::int32_t stateValue_08;",
-      "    RecoilPtr32 statePtr_0C;",
-      "",
-      "    void RECOIL_THISCALL OnWndActivate(std::int32_t activateCode);",
-      "};",
-      "",
-      "struct HudUiDialogController_Vtbl {",
-      "    RecoilFn32 Update;",
-      "    RecoilFn32 SetEnabled;",
-      "};",
-      "",
-      "struct HudUiDialogController {",
-      "    virtual void Update();",
-      "    virtual void SetEnabled(std::int32_t enabled);",
-      "    unsigned char _padding_04[0x110];",
-      "    RecoilPtr32 capturedImage_114;",
-      "",
-      "    void RECOIL_THISCALL BlitOwnedSurfaceToPrimary();",
-      "};",
-      "",
-      "namespace zVideo {",
-      "int RECOIL_CDECL RunPostprocessOnPrimaryBuffer();",
-      "int RECOIL_CDECL Dispatch_UnlockPrimarySurfaceState();",
-      "int RECOIL_FASTCALL AdjustSurfacesIfEnabled(zVidRect32 *srcRect,",
-      "                                            zVidRect32 *dstRect,",
-      "                                            std::int32_t waitForPresent,",
-      "                                            std::int32_t blitPrimaryToSwFirst);",
-      "}",
-      "",
-      "namespace zOpt {",
-      "zOpt_ViewRectSection *RECOIL_CDECL GetWindowSection();",
-      "}"
-    ]
-  }
+  ]
 }

@@ -1,43 +1,7 @@
 {
   "name": "zvideo_adjust_surfaces",
   "description": "zVideo gated adjust-surfaces dispatch trampoline.",
-  "source_filename": "zVideo_AdjustSurfaces.cpp",
-  "source": [
-    "#define RECOIL_FASTCALL __fastcall",
-    "#define RECOIL_NOINLINE",
-    "",
-    "struct zVidRect32 {",
-    "    int left;",
-    "    int top;",
-    "    int right;",
-    "    int bottom;",
-    "};",
-    "",
-    "typedef int (RECOIL_FASTCALL *zVideo_AdjustSurfacesProc)(zVidRect32 *srcRect,",
-    "                                                         zVidRect32 *dstRect,",
-    "                                                         int waitForPresent,",
-    "                                                         int blitPrimaryToSwFirst);",
-    "",
-    "int g_zVideo_AdjustSurfacesDisableGate = 0;",
-    "int g_zVideo_FrameTick = 0;",
-    "zVideo_AdjustSurfacesProc g_zVideo_pfnAdjustSurfaces = 0;",
-    "",
-    "namespace zVideo {",
-    "// Reimplements 0x4a6900: zVideo::AdjustSurfacesIfEnabled",
-    "RECOIL_NOINLINE int RECOIL_FASTCALL",
-    "AdjustSurfacesIfEnabled(zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForPresent,",
-    "                        int blitPrimaryToSwFirst) {",
-    "    int result = g_zVideo_AdjustSurfacesDisableGate;",
-    "    if (result <= 0) {",
-    "        result = g_zVideo_pfnAdjustSurfaces(srcRect, dstRect, waitForPresent,",
-    "                                            blitPrimaryToSwFirst);",
-    "        ++g_zVideo_FrameTick;",
-    "    }",
-    "",
-    "    return result;",
-    "}",
-    "} // namespace zVideo"
-  ],
+  "source_filename": "zVideo.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -50,7 +14,15 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/zVideo/zVideo.cpp"
   ],
@@ -60,5 +32,6 @@
       "symbol": "?AdjustSurfacesIfEnabled@zVideo@@YIHPAUzVidRect32@@0HH@Z",
       "name": "zVideo::AdjustSurfacesIfEnabled"
     }
-  ]
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp"
 }

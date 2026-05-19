@@ -84,15 +84,15 @@ RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
     IDirectDraw2_Release(pDDraw2);
     *outVideoCaps = ZSYS_VIDEO_CAPS_DDRAW2;
 
-    HMODULE dinputModule = loadLibrary(kDinputDll);
-    if (dinputModule == 0) {
+    register HMODULE dinputModule = loadLibrary(kDinputDll);
+    HMODULE dinputHandle = dinputModule;
+    if (dinputHandle == 0) {
         OutputDebugStringA(kCouldNotLoadDinput);
         IDirectDraw_Release(pDDraw);
         FreeLibrary(ddrawModule);
         return;
     }
 
-    HMODULE dinputHandle = dinputModule;
     FARPROC directInputCreate = GetProcAddress(dinputHandle, kDirectInputCreateName);
     dinputModule = (HMODULE)directInputCreate;
     FreeLibrary(dinputHandle);
@@ -129,19 +129,22 @@ RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
     }
 
     if (IDirectDrawSurface_QueryInterface(pSurface, IID_IDirectDrawSurface3,
-                                          (void **)&pSurface3) >= 0) {
-        *outVideoCaps = ZSYS_VIDEO_CAPS_SURFACE3;
-        if (IDirectDrawSurface_QueryInterface(pSurface, IID_IDirectDrawSurface4,
-                                              (void **)&pSurface4) >= 0) {
-            *outVideoCaps = ZSYS_VIDEO_CAPS_SURFACE4;
-            IDirectDrawSurface_Release(pSurface);
-        }
-
+                                          (void **)&pSurface3) < 0) {
         IDirectDraw_Release(pDDraw);
         FreeLibrary(ddrawModule);
         return;
     }
 
+    *outVideoCaps = ZSYS_VIDEO_CAPS_SURFACE3;
+    if (IDirectDrawSurface_QueryInterface(pSurface, IID_IDirectDrawSurface4,
+                                          (void **)&pSurface4) < 0) {
+        IDirectDraw_Release(pDDraw);
+        FreeLibrary(ddrawModule);
+        return;
+    }
+
+    *outVideoCaps = ZSYS_VIDEO_CAPS_SURFACE4;
+    IDirectDrawSurface_Release(pSurface);
     IDirectDraw_Release(pDDraw);
     FreeLibrary(ddrawModule);
 }

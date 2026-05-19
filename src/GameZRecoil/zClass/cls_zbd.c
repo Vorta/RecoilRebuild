@@ -206,7 +206,7 @@ namespace GameZ_ZBD {
             return -1;
         }
 
-        return static_cast<int>(reinterpret_cast<zClass_NodeFreeListSlot *>(node) -
+        return static_cast<int>((zClass_NodeFreeListSlot *)(node) -
                                          g_zClass_NodeArray);
     }
 
@@ -234,7 +234,7 @@ namespace GameZ_ZBD {
         }
 
         memcpy(g_GameZ_Zbd_NodeIndexScratch, nodeRefList, byteCount);
-        int *indices = reinterpret_cast<int *>(g_GameZ_Zbd_NodeIndexScratch);
+        int *indices = (int *)(g_GameZ_Zbd_NodeIndexScratch);
         for (int i = 0; i < entryCount; ++i) {
             indices[i] = NodePtrToIndex(g_GameZ_Zbd_NodeIndexScratch[i]);
         }
@@ -310,13 +310,13 @@ namespace GameZ_ZBD {
             result = 1;
             zClass_CameraDataPartial data;
             memcpy(&data, node->classData, sizeof(data));
-            data.worldNode = reinterpret_cast<zClass_NodePartial *>(
+            data.worldNode = (zClass_NodePartial *)(
                 static_cast<int>(NodePtrToIndex(data.worldNode)));
-            data.windowNode = reinterpret_cast<zClass_NodePartial *>(
+            data.windowNode = (zClass_NodePartial *)(
                 static_cast<int>(NodePtrToIndex(data.windowNode)));
-            data.horizonNode = reinterpret_cast<zClass_NodePartial *>(
+            data.horizonNode = (zClass_NodePartial *)(
                 static_cast<int>(NodePtrToIndex(data.horizonNode)));
-            data.horizonXZNode = reinterpret_cast<zClass_NodePartial *>(
+            data.horizonXZNode = (zClass_NodePartial *)(
                 static_cast<int>(NodePtrToIndex(data.horizonXZNode)));
 
             if (!WriteZbdBlob(&data, sizeof(data), stream)) {
@@ -417,7 +417,7 @@ namespace GameZ_ZBD {
                 node->listB = 0;
             }
             node->userDataOrDiRef =
-                static_cast<unsigned int>(zDi::PtrToIndexOrMinus1(reinterpret_cast<zDiPartial *>(
+                static_cast<unsigned int>(zDi::PtrToIndexOrMinus1((zDiPartial *)(
                     static_cast<unsigned int>(node->userDataOrDiRef))));
             node->actionCallback = 0;
         }
@@ -475,7 +475,7 @@ namespace GameZ_ZBD {
 
         for (int i = 0; i < entryCount; ++i) {
             const int index =
-                static_cast<int>(reinterpret_cast<int>(nodeRefList[i]));
+                static_cast<int>((int)(nodeRefList[i]));
             nodeRefList[i] = NodeIndexToPtr(index);
         }
 
@@ -568,13 +568,13 @@ namespace GameZ_ZBD {
             }
 
             data->worldNode = NodeIndexToPtr(
-                static_cast<int>(reinterpret_cast<int>(data->worldNode)));
+                static_cast<int>((int)(data->worldNode)));
             data->windowNode = NodeIndexToPtr(
-                static_cast<int>(reinterpret_cast<int>(data->windowNode)));
+                static_cast<int>((int)(data->windowNode)));
             data->horizonNode = NodeIndexToPtr(
-                static_cast<int>(reinterpret_cast<int>(data->horizonNode)));
+                static_cast<int>((int)(data->horizonNode)));
             data->horizonXZNode = NodeIndexToPtr(
-                static_cast<int>(reinterpret_cast<int>(data->horizonXZNode)));
+                static_cast<int>((int)(data->horizonXZNode)));
 
             zClass_TypeList::Insert(6, node);
             zClass_TypeList::Insert(8, node);
@@ -746,7 +746,7 @@ namespace GameZ_ZBD {
         g_zClass_ActiveNodeCount = 0;
         for (int i = 0; i < g_zClass_NodeArraySize; ++i) {
             zClass_NodePartial *node = &g_zClass_NodeArray[i].node;
-            node->userDataOrDiRef = static_cast<unsigned int>(reinterpret_cast<unsigned int>(
+            node->userDataOrDiRef = static_cast<unsigned int>((unsigned int)(
                 zDi::IndexToPtrOrNull(static_cast<int>(node->userDataOrDiRef))));
             node->actionCallback = 0;
 
@@ -842,11 +842,11 @@ namespace GameZ_ZBD {
             zModel_DiPool::ReadEntryByIndexFromStream(file, displayInstanceIndex);
         if (displayInstance == 0) {
             zClass_Class::gwNodeSetDisplayInstance(
-                node, reinterpret_cast<zDiPartial *>(
+                node, (zDiPartial *)(
                           static_cast<unsigned int>(oldDisplayInstanceValue)));
         } else {
             zClass_Class::gwNodeSetDisplayInstance(node, displayInstance);
-            zDiPartial *const oldDisplayInstance = reinterpret_cast<zDiPartial *>(
+            zDiPartial *const oldDisplayInstance = (zDiPartial *)(
                 static_cast<unsigned int>(oldDisplayInstanceValue));
             if (oldDisplayInstance != 0) {
                 zModel_DiPool::FreeIfUnreferenced(oldDisplayInstance);

@@ -1,25 +1,7 @@
 {
   "name": "zloc_resolve_message_key_or_fallback",
   "description": "zLoc message key fallback resolver.",
-  "source_filename": "zLoc_ResolveMessageKeyOrFallback.cpp",
-  "source": [
-    "#define RECOIL_FASTCALL __fastcall",
-    "",
-    "namespace zLoc {",
-    "unsigned int RECOIL_FASTCALL GetMessageId(const char *key);",
-    "char *RECOIL_FASTCALL GetMessageString(unsigned int messageId);",
-    "",
-    "// Reimplements 0x4a5b40: zLoc::ResolveMessageKeyOrFallback",
-    "char *RECOIL_FASTCALL ResolveMessageKeyOrFallback(const char *key) {",
-    "    const unsigned int messageId = GetMessageId(key);",
-    "    if (messageId != 0) {",
-    "        return GetMessageString(messageId);",
-    "    }",
-    "",
-    "    return (char *)key;",
-    "}",
-    "}"
-  ],
+  "source_filename": "zLoc.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -32,7 +14,13 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/zLoc/zLoc.cpp"
   ],
@@ -42,5 +30,6 @@
       "symbol": "?ResolveMessageKeyOrFallback@zLoc@@YIPADPBD@Z",
       "name": "zLoc::ResolveMessageKeyOrFallback"
     }
-  ]
+  ],
+  "source_from": "src/GameZRecoil/zLoc/zLoc.cpp"
 }

@@ -1,39 +1,7 @@
 {
   "name": "hud_ui_mgr_set_mode_counter_state",
   "description": "HudUiMgr mode-counter image state selector.",
-  "source_filename": "HudUiMgr_SetModeCounterState.cpp",
-  "source": [
-    "struct zVidImagePartial;",
-    "",
-    "struct HudUiWidget {",
-    "    unsigned char m_padding_000[0xbc];",
-    "    zVidImagePartial *SetImageBorrowedAndInvalidate(zVidImagePartial *image);",
-    "};",
-    "",
-    "struct HudUiCounter : HudUiWidget {",
-    "    zVidImagePartial *stateImage0;",
-    "    zVidImagePartial *stateImage1;",
-    "    zVidImagePartial *stateImage2;",
-    "    unsigned char m_padding_0c8[0xe0 - 0xc8];",
-    "};",
-    "",
-    "extern HudUiCounter g_HudUiMgrModeCounters[4];",
-    "extern int g_HudUiMgrActiveModeCounterIndex;",
-    "",
-    "namespace HudUiMgr {",
-    "// Reimplements 0x40f1a0: HudUiMgr::SetModeCounterState",
-    "void __fastcall SetModeCounterState(int counterIndex, int state) {",
-    "    if (state == 2) {",
-    "        HudUiCounter &previous = g_HudUiMgrModeCounters[g_HudUiMgrActiveModeCounterIndex];",
-    "        previous.SetImageBorrowedAndInvalidate(previous.stateImage1);",
-    "        g_HudUiMgrActiveModeCounterIndex = counterIndex;",
-    "    }",
-    "",
-    "    HudUiCounter &counter = g_HudUiMgrModeCounters[counterIndex];",
-    "    counter.SetImageBorrowedAndInvalidate(*(zVidImagePartial **)((char *)&counter.stateImage0 + state * 4));",
-    "}",
-    "}"
-  ],
+  "source_filename": "zhud_ui.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -46,7 +14,16 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/zHud/zhud_ui.cpp"
   ],
@@ -56,5 +33,6 @@
       "symbol": "?SetModeCounterState@HudUiMgr@@YIXHH@Z",
       "name": "HudUiMgr::SetModeCounterState"
     }
-  ]
+  ],
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp"
 }

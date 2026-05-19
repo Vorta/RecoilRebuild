@@ -59,7 +59,7 @@ struct CpuBenchmarkResolver {
 };
 
 CpuBenchmarkResolver *CpuBenchmarkResolverFromValue(unsigned int value) {
-    return reinterpret_cast<CpuBenchmarkResolver *>(static_cast<unsigned int>(value));
+    return (CpuBenchmarkResolver *)(static_cast<unsigned int>(value));
 }
 
 unsigned long RecoilBitScanForward(unsigned long value) {
@@ -249,7 +249,7 @@ CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(zSys::CpuBenchmarkResult *outBuff
     }
 
     const unsigned int expectedCycles =
-        static_cast<unsigned int>(reinterpret_cast<unsigned int>(this));
+        static_cast<unsigned int>((unsigned int)(this));
     const unsigned int microseconds =
         DivideRoundedHalfUp(static_cast<unsigned __int64>(minTicks) * 1000000ui64,
                             static_cast<unsigned int>(frequency.LowPart));
@@ -400,7 +400,7 @@ CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(zSys::CpuBenchmarkResult *outBuf
     const int cpuClass = zSys::DetectCpuClassAndFeatures();
     const unsigned int featureFlags = zSys::ReadCpuidFeatureFlags();
     const int cpuClassHint =
-        static_cast<int>(reinterpret_cast<unsigned int>(this));
+        static_cast<int>((unsigned int)(this));
 
     if ((cpuClass & 0x8000) != 0) {
         ZeroBenchmarkResult(outBuffer);
@@ -415,7 +415,7 @@ CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(zSys::CpuBenchmarkResult *outBuf
         forcedLowHint = true;
         expectedCycles = static_cast<unsigned int>(cpuClassHint) * 0x0fa0u;
     } else {
-        expectedCycles = static_cast<unsigned int>(reinterpret_cast<unsigned int>(outBuffer));
+        expectedCycles = static_cast<unsigned int>((unsigned int)(outBuffer));
     }
 
     zSys::CpuBenchmarkResult localResult;

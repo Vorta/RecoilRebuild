@@ -84,13 +84,13 @@ void ClearZbdPath(HudSensorTracker *tracker) {
 void HudUiElementSetVisibleVirtual(HudUiElement *element, int visible) {
     typedef void (RECOIL_THISCALL *SetVisibleFn)(HudUiElement * self, int visible);
 
-    reinterpret_cast<SetVisibleFn>(element->ftable->slots[24])(element, visible);
+    ((SetVisibleFn)(element->ftable->slots[24]))(element, visible);
 }
 
 void HudUiElementDeleteVirtual(HudUiElement *element) {
     typedef HudUiElement * (RECOIL_THISCALL *ScalarDeletingDestructorFn)(HudUiElement * self, unsigned int flags);
 
-    reinterpret_cast<ScalarDeletingDestructorFn>(element->ftable->slots[0])(element, 1);
+    ((ScalarDeletingDestructorFn)(element->ftable->slots[0]))(element, 1);
 }
 
 int FloatToRawSeconds(float value) {
@@ -695,8 +695,8 @@ HudSensorTracker::SetTrackedSaveState(zUtil_SaveGameState *saveState) {
     } else {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
         trackedSaveStateSelection = saveState;
-        trackedWorldOriginPtr = reinterpret_cast<zVec3 *>(playerState->bytes + 0x3ec);
-        trackedForwardVec = reinterpret_cast<zVec3 *>(playerState->bytes + 0x580);
+        trackedWorldOriginPtr = (zVec3 *)(playerState->bytes + 0x3ec);
+        trackedForwardVec = (zVec3 *)(playerState->bytes + 0x580);
     }
 
     trackedForwardVecPtr = trackedForwardVec;
@@ -900,7 +900,7 @@ HudSensorMapNode::DrawProjectedPath(HudSensorTracker *tracker) {
     }
 
     zMat4x3 cameraScratchMatrix;
-    zMath::MatStackPushPtr(reinterpret_cast<float *>(&cameraScratchMatrix));
+    zMath::MatStackPushPtr((float *)(&cameraScratchMatrix));
     zMath::MatLoadCameraScratchB();
 
     if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
@@ -908,7 +908,7 @@ HudSensorMapNode::DrawProjectedPath(HudSensorTracker *tracker) {
                     static_cast<size_t>(pointCount) * sizeof(zVec3));
     } else {
         const zMat4x3 *const matrix =
-            reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+            (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
         for (int i = 0; i < pointCount; ++i) {
             const HudSensorMapPoint *const sourcePoint = &points[i];
             zVec3 *const projectedPoint = &g_HudSensor_ProjectScratch[i];
@@ -935,7 +935,7 @@ HudSensorMapNode::DrawProjectedPath(HudSensorTracker *tracker) {
             continue;
         }
 
-        zMath::ProjectPointBatch(segmentPoints, reinterpret_cast<zProjectedPoint *>(segmentPoints),
+        zMath::ProjectPointBatch(segmentPoints, (zProjectedPoint *)(segmentPoints),
                                  2);
 
         zRndr_LinePoint2I linePoints[2];
@@ -965,7 +965,7 @@ HudSensorMapNode::DrawOnTracker(HudSensorTracker *tracker, const zVec3 *drawPath
     }
 
     zVec3 projectedPathPointBuffer[0x401];
-    tracker->ProjectWorldPointsToOverlay(reinterpret_cast<const zVec3 *>(points),
+    tracker->ProjectWorldPointsToOverlay((const zVec3 *)(points),
                                          projectedPathPointBuffer, pointCount);
     projectedPathPointBuffer[pointCount] = projectedPathPointBuffer[0];
 
@@ -976,14 +976,13 @@ HudSensorMapNode::DrawOnTracker(HudSensorTracker *tracker, const zVec3 *drawPath
         int point1Clipped;
 
         HudLineClip::SetCurrentBoundsFromRectI(
-            reinterpret_cast<const HudRectI *>(&tracker->outerRect));
+            (const HudRectI *)(&tracker->outerRect));
         if (HudLineClip::ClipSegmentToCurrentBounds(&segmentStart, &segmentEnd, &point0Clipped,
                                                     &point1Clipped) == 0) {
             continue;
         }
 
-        const int splitResult = reinterpret_cast<HudRectI *>(&tracker->innerRectExpanded)
-                                             ->ClipOrSplitSegment(&segmentStart, &segmentEnd);
+        const int splitResult = ((HudRectI *)(&tracker->innerRectExpanded))->ClipOrSplitSegment(&segmentStart, &segmentEnd);
         if (splitResult == 0) {
             continue;
         }
@@ -1006,7 +1005,7 @@ HudSensorMapNode::DrawOnTracker(HudSensorTracker *tracker, const zVec3 *drawPath
     if (selectedPointIndex != -1) {
         zVec3 selectedPoint;
         tracker->ProjectWorldPointsToOverlay(
-            reinterpret_cast<const zVec3 *>(&points[selectedPointIndex]), &selectedPoint, 1);
+            (const zVec3 *)(&points[selectedPointIndex]), &selectedPoint, 1);
         HudSensorTracker::DrawDiamondMarker(
             static_cast<int>(selectedPoint.x), static_cast<int>(selectedPoint.y),
             4, 4, static_cast<unsigned int>(packedColor565Pair) >> 16, tracker);
@@ -1025,7 +1024,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::DrawTrackedSaveStateMarker
     unsigned short markerColor;
     if (zOpt::GetNetworkEnabled() != 0) {
         zUtil_SaveGameState *const gameState =
-            reinterpret_cast<zUtil_SaveGameState *>(g_GameStateOrMapTable);
+            (zUtil_SaveGameState *)(g_GameStateOrMapTable);
         markerColor = static_cast<unsigned short>(
             zVid_PackColor00RRGGBB(gameState->netPlayerRow->playerColorPackedRgb));
     } else {
@@ -1064,8 +1063,7 @@ HudSensorTracker::DrawSaveStateMarker(zUtil_SaveGameState *saveState) {
         relativeDelta.z *= edgeScale;
 
         const zVec3 *const localWorldPos =
-            &reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState)
-                 ->worldPos;
+            &((zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState))->worldPos;
         markerPoint.x = localWorldPos->x + relativeDelta.x;
         markerPoint.y = localWorldPos->y + relativeDelta.y;
         markerPoint.z = localWorldPos->z + relativeDelta.z;
@@ -1316,7 +1314,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::ResetMissionState() {
 
     if (fxElement != 0) {
         HudUiElementSetVisibleVirtual(fxElement, 0);
-        reinterpret_cast<HudUiContainer *>(&g_zVideo_FxPass3ConfigLocal)->RemoveChild(fxPass3Obj);
+        ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->RemoveChild(fxPass3Obj);
 
         if (fxPass3Obj != 0) {
             HudUiElementDeleteVirtual(fxPass3Obj);
@@ -1902,7 +1900,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::ResetHudForMissionStart()
         }
 
         zUtil_PlayerStateStorage *const playerState =
-            reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState);
+            (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
         HudUi::ShowTopMessageLine(playerState->activeAltGunController->optCatalogEntry->description,
                                   5.0f);
         HudUiTimerPanel::SetRunning(1);
@@ -1989,7 +1987,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::Command_ShowObjectivePick
 
     const int visible = (objectiveUiMode == 3 || objectiveUiMode == 4) ? 0 : 1;
     zUtil_PlayerStateStorage *const playerState =
-        reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState);
+        (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
     ShowObjectivePickupInfo(visible, 0, playerState->activeAltGunController->optCatalogEntry);
 }
 
@@ -2076,7 +2074,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::UpdateObjectiveFlow() {
             RawSecondsToFloat(objectiveReadTimeSecRaw) + menuTransitionDelaySec <=
                 g_Time_AccumulatedTimeSec) {
             zUtil_PlayerStateStorage *const playerState =
-                reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState);
+                (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
             if (playerState->lifecycleState == 4) {
                 RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_INGAME);
             }
@@ -2158,7 +2156,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::UpdateObjectiveFlow() {
     if (objectiveUiMode == 4 &&
         g_Time_UnscaledAccumulatedTimeSec >= RawSecondsToFloat(objectiveFlowDeadlineSecRaw)) {
         zUtil_PlayerStateStorage *const playerState =
-            reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState);
+            (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
         ShowObjectivePickupInfo(0, 1, playerState->activeAltGunController->optCatalogEntry);
     }
 

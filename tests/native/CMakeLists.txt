@@ -33,9 +33,16 @@ add_executable(recoil_native_smoke
 
 target_link_libraries(recoil_native_smoke PRIVATE recoil_native)
 
-add_test(NAME recoil_native_smoke COMMAND recoil_native_smoke)
-
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
+add_test(
+    NAME recoil_native_smoke
+    COMMAND ${Python3_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/run_native_smokes.py
+        $<TARGET_FILE:recoil_native_smoke>
+        --smoke-cpp ${CMAKE_CURRENT_SOURCE_DIR}/smoke.cpp
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
 
 add_test(
     NAME recoil_no_raw_image_addresses
@@ -60,7 +67,37 @@ add_test(
     COMMAND ${Python3_EXECUTABLE}
         ${PROJECT_SOURCE_DIR}/tools/recoil_no_reinterpret_cast.py
         --root src
-        --baseline .agent/REINTERPRET_CAST_BASELINE.txt
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME recoil_vc6_manifest_source_policy
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_vc6_manifest_source_guard.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME recoil_source_file_map_current
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_source_file_map.py
+        --check docs/reconstruction/source_file_map.md
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME recoil_compiler_linker_provenance
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_provenance_audit.py
+        --strict
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME recoil_workspace_hygiene
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_workspace_hygiene.py
+        --strict
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 

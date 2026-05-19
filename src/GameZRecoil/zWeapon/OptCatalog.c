@@ -37,7 +37,7 @@ zSndSample *g_OptCatalogSndNoAmmoWarning = 0;
 namespace {
     OptCatalogDamageHandlerPartial *DamageHandlerForNode(zClass_NodePartial * node) {
         return static_cast<OptCatalogDamageHandlerPartial *>(
-            reinterpret_cast<zClass_NodeFreeListSlot *>(node)->damageHandler);
+            ((zClass_NodeFreeListSlot *)(node))->damageHandler);
     }
 }
 
@@ -128,10 +128,9 @@ namespace OptCatalog {
 
         zClass_Class::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
         runtimeInstance->projectileNode->flags |= 0x08000000;
-        reinterpret_cast<zClass_NodeFreeListSlot *>(runtimeInstance->projectileNode)
-            ->damageHandler = reinterpret_cast<void *>(1);
+        ((zClass_NodeFreeListSlot *)(runtimeInstance->projectileNode))->damageHandler = (void *)(1);
         runtimeInstance->projectileNode->callbackContext =
-            reinterpret_cast<zClass_NodePartial *>(runtimeInstance);
+            (zClass_NodePartial *)(runtimeInstance);
         runtimeInstance->projectileScale = self->flyoutHealth;
 
         zClass_Object3D::gwObject3DSetPosition(runtimeInstance->projectileNode, spawnPos->x,
@@ -237,7 +236,7 @@ namespace OptCatalog {
         }
 
         OptCatalogDamageTimerCallback callback =
-            reinterpret_cast<OptCatalogDamageTimerCallback>(handler->timerCallback);
+            (OptCatalogDamageTimerCallback)(handler->timerCallback);
         return callback(handler->timerContext, damageAmount);
     }
 }

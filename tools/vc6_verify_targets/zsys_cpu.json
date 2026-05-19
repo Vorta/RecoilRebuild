@@ -1,7 +1,7 @@
 {
   "name": "zsys_cpu",
   "description": "zSys CPU-class and feature-detection helpers from src/GameZRecoil/zSys.",
-  "source_filename": "zsys_cpu_verify.cpp",
+  "source_filename": "zSys.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -10,12 +10,18 @@
     "/O2",
     "/Ob0",
     "/Zp4",
+    "/DRECOIL_ENABLE_ZSYS_CPU_RAW_ASM",
     "/FAcs"
   ],
   "include_dirs": [
-    "src"
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
   ],
   "source_files": [
+    "src/GameZRecoil/zSys/zSys.cpp",
     "src/GameZRecoil/zSys/zSys_cpu_asm.inl",
     "src/GameZRecoil/zSys/zSys_cpu_detect.inl",
     "src/GameZRecoil/zSys/zSys_cpu_get_class.inl"
@@ -52,21 +58,5 @@
       "name": "zSys::DetectIs80386ByAcFlag"
     }
   ],
-  "source": [
-    "#define RECOIL_CDECL __cdecl",
-    "#define RECOIL_NOINLINE",
-    "",
-    "extern \"C\" unsigned int g_zSys_CpuVendorNonIntelMarker = 0;",
-    "",
-    "namespace zSys {",
-    "RECOIL_NOINLINE int RECOIL_CDECL HasCpuidSupport();",
-    "RECOIL_NOINLINE int RECOIL_CDECL ReadCpuidVendorAndFamily();",
-    "RECOIL_NOINLINE int RECOIL_CDECL DetectCpuClassAndFeatures();",
-    "RECOIL_NOINLINE int RECOIL_CDECL GetCpuClass();",
-    "}",
-    "",
-    "#include \"GameZRecoil/zSys/zSys_cpu_asm.inl\"",
-    "#include \"GameZRecoil/zSys/zSys_cpu_detect.inl\"",
-    "#include \"GameZRecoil/zSys/zSys_cpu_get_class.inl\""
-  ]
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp"
 }

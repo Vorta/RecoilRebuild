@@ -1,0 +1,3 @@
+# Temporary baseline for legacy VC6 verification manifests that still use
+# manifest-local source bodies or generated project-header shadows.
+# New or migrated targets must not be added here.

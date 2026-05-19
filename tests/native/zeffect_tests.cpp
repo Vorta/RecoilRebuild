@@ -76,6 +76,12 @@ void ResetZClassRuntimeForZEffectTest() {
     g_zClass_TypeList_PeakLiveLinkCount = 0;
 }
 
+void EnsureZrdrFreePool() {
+    if (g_zUtil_ZRDR_FreePool == nullptr) {
+        g_zUtil_ZRDR_FreePool = zArchiveList_CreateEmpty();
+    }
+}
+
 void RECOIL_FASTCALL EffectAnimDispatchCallback(zEffectAnimActivationRecord *record) {
     ++g_effectAnimDispatchCallCount;
     g_effectAnimDispatchRecord = record;
@@ -2021,6 +2027,7 @@ extern "C" int zeffect_init_smoke(void) {
     }
 
     ResetZClassRuntimeForZEffectTest();
+    EnsureZrdrFreePool();
     zArchiveList *runtimeFreeList = zArchiveList_CreateEmpty();
     zEffect_RuntimeEntry templates[1] = {};
     zClass_NodePartial parentNode = {};

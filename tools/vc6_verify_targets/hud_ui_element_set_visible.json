@@ -1,35 +1,7 @@
 {
   "name": "hud_ui_element_set_visible",
   "description": "HudUiElement visibility flag setter with invalidate callback.",
-  "source_filename": "HudUiElement_SetVisible.cpp",
-  "source": [
-    "struct HudUiElement;",
-    "typedef void (__fastcall *InvalidateFn)(HudUiElement *self);",
-    "",
-    "struct HudUiCommon_FTable {",
-    "    unsigned int slots[9];",
-    "};",
-    "",
-    "struct HudUiElement {",
-    "    const HudUiCommon_FTable *ftable;",
-    "    unsigned char m_padding_04[0x0c - 0x04];",
-    "    unsigned int flags;",
-    "",
-    "    void SetVisible(int visible);",
-    "};",
-    "",
-    "// Reimplements 0x404d20: HudUiElement::SetVisible",
-    "void HudUiElement::SetVisible(int visible) {",
-    "    if (visible != 0) {",
-    "        flags &= 0xffffffef;",
-    "        ((InvalidateFn)ftable->slots[8])(this);",
-    "        return;",
-    "    }",
-    "",
-    "    flags |= 0x10;",
-    "    ((InvalidateFn)ftable->slots[8])(this);",
-    "}"
-  ],
+  "source_filename": "zhud_ui.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -42,7 +14,16 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/zHud/zhud_ui.cpp"
   ],
@@ -52,5 +33,6 @@
       "symbol": "?SetVisible@HudUiElement@@QAEXH@Z",
       "name": "HudUiElement::SetVisible"
     }
-  ]
+  ],
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp"
 }

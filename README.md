@@ -57,6 +57,8 @@ Ignored local-only paths used by private verification include:
 The root `AGENTS.md` is the authoritative workflow for reconstruction agents.
 It defines the binary-safety gate, source style rules, decompiled-source workflow,
 plan marker meanings, and required verification process.
+Use `docs/reconstruction/agent_launch_checklist.md` as the compact launch
+checklist before assigning a new reconstruction agent.
 
 ## Engine Overview
 
@@ -88,11 +90,29 @@ environment for binary-safe builds. The current native build expects local
 legacy DirectX/MFC42 SDK mirrors under `support/sdk/`; those files are not part
 of the public source-only repository.
 
+Before configuring from a new shell, run the environment preflight:
+
+```powershell
+python tools/recoil_env_check.py --native-x86
+```
+
+It checks that `cl.exe`, `INCLUDE`, `LIB`, the Windows SDK headers, the x86
+compiler target, local DirectX/MFC42 mirrors, and `support/Recoil.exe` are
+visible from the same shell that will run CMake.
+`python tools/recoil_doctor.py --quick --binja` is the normal process-health
+preflight; it does not replace the native x86 shell check before CMake work.
+
 ```powershell
 cmake --preset ninja-x86-debug
 cmake --build --preset ninja-x86-debug
 ctest --preset ninja-x86-debug
 ```
+
+VC6 verification manifests must compile production source through
+`source_from`; manifest-local function copies and generated project-header
+shadows are rejected unless they are recorded as existing baseline debt. Run
+`python tools/recoil_vc6_manifest_source_guard.py` after changing verification
+targets.
 
 A Visual Studio Win32 solution can be generated with:
 
@@ -150,7 +170,7 @@ python tools/recoil_resource_extract.py
 ```
 
 CTest also includes source guards that reject new raw original-image addresses,
-raw assembly/naked functions, and new `reinterpret_cast` uses in production
+raw assembly/naked functions, and `reinterpret_cast` uses in production
 source. The Python tooling tests can also be run directly:
 
 ```powershell
@@ -164,13 +184,27 @@ python -m unittest discover -s tests/tools -p *_tests.py
 - `.agent/IMPLEMENTATION_GROUPS.md` - temporary dependency-group notes.
 - `tools/README.md` - tool usage for plan navigation, dependency frontiers,
   assembly evidence, and source guards.
+- `docs/reconstruction/knowledge_index.md` - entry point for durable
+  reconstruction ledgers.
+- `docs/reconstruction/agent_launch_checklist.md` - compact launch checklist
+  for reconstruction agents.
+- `docs/reconstruction/README.md` - rules for compact durable reconstruction
+  notes.
+- `docs/reconstruction/compiler_linker_provenance.md` - compiler/linker and
+  provider evidence policy.
+- `docs/reconstruction/source_file_map.md` - generated original-source to
+  current-source placement map.
 - `reconstruction/NOTES.md` - accumulated subsystem reconstruction notes and
-  durable decompiled-source findings.
+  durable decompiled-source findings; archival source material, not the
+  preferred location for new notes.
 
 When adding reconstructed source, document durable facts in code where future
 contributors need them: original address provenance, recovered layouts, ABI
 constraints, ownership/cleanup order, provider assumptions, decompiler
 limitations, and binary-verification-sensitive code shape.
+Use `docs/reconstruction/` for cross-file, provider, ABI, file-format, or
+toolchain facts that are likely to be rediscovered by multiple agents; keep
+those notes compact and tied to evidence.
 
 ## License
 

@@ -416,11 +416,11 @@ zVideo_SetActiveViewContext(zClass_CameraDataPartial *viewContext) {
 RECOIL_NOINLINE void RECOIL_FASTCALL
 zVideo_UpdateProjectionStateFromCameraData(zClass_CameraDataPartial *cameraData) {
     zMat4x3 slotBuffer = {0};
-    zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+    zMath::MatStackPushPtr((float *)(&slotBuffer));
     zMath::MatLoadIdentity();
 
     zMat4x3 yawSlotBuffer = {0};
-    zMath::MatStackPushAndCloneParent(reinterpret_cast<float *>(&yawSlotBuffer));
+    zMath::MatStackPushAndCloneParent((float *)(&yawSlotBuffer));
     cameraData->localFrustumLeftNormal.x = 1.0f;
     cameraData->localFrustumLeftNormal.y = 0.0f;
     cameraData->localFrustumLeftNormal.z = 0.0f;
@@ -1136,8 +1136,8 @@ SetRendererTypeAndActivePath(int rendererType) {
 
 // Reimplements 0x4a71c0: zVideo::SetHalfResAdjustMode
 RECOIL_NOINLINE int RECOIL_FASTCALL SetHalfResAdjustMode(int mode) {
-    const int previousMode = g_zVideo_HalfResAdjustMode;
-    if (mode == previousMode) {
+    int previousMode;
+    if (mode == g_zVideo_HalfResAdjustMode) {
         return mode;
     }
 
@@ -1145,6 +1145,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetHalfResAdjustMode(int mode) {
         return 0;
     }
 
+    // VC5 keeps the compare-loaded previous mode in ecx until this assignment.
+    previousMode = g_zVideo_HalfResAdjustMode;
     g_zVideo_HalfResAdjustMode = mode;
     if (mode == 0 && g_zVideo_RendererType == 0) {
         g_zVideo_pfnBltPrimaryToSwRectDirect(0, 0);
@@ -1359,7 +1361,7 @@ namespace zVideo {
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3Config_UpdateLocal(zVideoFxPass3Config *config,
                                                                float deltaTime) {
-    reinterpret_cast<HudUiContainer *>(config)->UpdateAll(deltaTime);
+    ((HudUiContainer *)(config))->UpdateAll(deltaTime);
     config->slotWriteIndex = 0;
 }
 
@@ -1483,7 +1485,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(int rendererType,
     SetRendererTypeAndActivePath(rendererType);
     g_zVideo_FullscreenOption = fullscreenOption;
     g_zVideo_pfnOpenVideoMode = zVideo_dd::OpenVideoMode;
-    g_zVideo_pfnShutdownVideoSystem = reinterpret_cast<zVideo_ShutdownVideoSystemProc>(0x004a7d40);
+    g_zVideo_pfnShutdownVideoSystem = (zVideo_ShutdownVideoSystemProc)(0x004a7d40);
     g_zVideo_pfnPaletteSetEntries = 0x004a9890;
     g_zVideo_pfnSetVideoMode = zVideo_dd::SetVideoMode;
     g_zVideo_pfnAdjustSurfaces = zVideo_dd3d::PresentDisplayModeSurface;
@@ -1491,13 +1493,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(int rendererType,
     g_zVideo_pfnUnlockSurfaceState = zVideo_dd::UnlockSurfaceState;
     g_zVideo_pfnClearZBufferRect = zVideo_dd::ZBuffer_DepthFillRect;
     g_zVideo_pfnClearSwSurfaceAndZBuffer =
-        reinterpret_cast<zVideo_ClearSwSurfaceAndZBufferProc>(0x004a82f0);
+        (zVideo_ClearSwSurfaceAndZBufferProc)(0x004a82f0);
     g_zVideo_pfnClearStateSurfaceAndZBuffer =
-        reinterpret_cast<zVideo_ClearStateSurfaceAndZBufferProc>(0x004a8220);
+        (zVideo_ClearStateSurfaceAndZBufferProc)(0x004a8220);
     g_zVideo_pfnUpdateFogColor = 0x004aab30;
     g_zVideo_pfnQueryTextureMemoryBytes = zVid::QueryTextureMemoryBytes;
     g_zVideo_pfnQueryDeviceVideoMemoryBytes = zVid::QueryDeviceVideoMemoryBytes;
-    g_zVideo_pfnBltSwToPrimaryRectDirect = reinterpret_cast<zVideo_BltRectDirectProc>(0x004a7d90);
+    g_zVideo_pfnBltSwToPrimaryRectDirect = (zVideo_BltRectDirectProc)(0x004a7d90);
     g_zVideo_pfnBltPrimaryToSwRectDirect = zVideo_dd::BltPrimaryToSwRectDirect;
     g_zVideo_pfnBltSwToPrimaryRect = 0x004a7e10;
     g_zVideo_pfnGetHwApiDeviceFeatureFlags = 0x004a9920;
@@ -1645,9 +1647,9 @@ RECOIL_NOINLINE int RECOIL_CDECL ShutdownVideoSystem() {
 // Reimplements 0x4a7700: zVideo::UpdateCachedClientRectScreenCoords
 RECOIL_NOINLINE int RECOIL_CDECL UpdateCachedClientRectScreenCoords() {
     GetClientRect(g_zVideo_hWnd, &g_zVideo_CachedClientRectScreen);
-    ClientToScreen(g_zVideo_hWnd, reinterpret_cast<POINT *>(&g_zVideo_CachedClientRectScreen.left));
+    ClientToScreen(g_zVideo_hWnd, (POINT *)(&g_zVideo_CachedClientRectScreen.left));
     ClientToScreen(g_zVideo_hWnd,
-                   reinterpret_cast<POINT *>(&g_zVideo_CachedClientRectScreen.right));
+                   (POINT *)(&g_zVideo_CachedClientRectScreen.right));
     return 0;
 }
 
@@ -1814,7 +1816,7 @@ RECOIL_NOINLINE zVidImagePartial *RECOIL_CDECL Create() {
 RECOIL_NOINLINE int RECOIL_FASTCALL Destroy(zVidImagePartial *image) {
     if (image != 0) {
         if (image->surface != 0 && g_zVideo_pfnImageEnsureSurfaceForCurrentDevice != 0) {
-            reinterpret_cast<zVideo_ImageProc>(g_zVideo_pfnImageEnsureSurfaceForCurrentDevice)(
+            ((zVideo_ImageProc)(g_zVideo_pfnImageEnsureSurfaceForCurrentDevice))(
                 image);
         }
 
@@ -2010,7 +2012,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClearZeroAlphaPixelsInPlace(zVidImagePartia
         return;
     }
 
-    unsigned char *alpha = reinterpret_cast<unsigned char *>(image->alphaMap);
+    unsigned char *alpha = (unsigned char *)(image->alphaMap);
     if (bytesPerPixel == 1) {
         unsigned char *pixels = static_cast<unsigned char *>(image->pixels);
         for (int i = 0; i < image->pixelCount; ++i) {
@@ -2334,15 +2336,15 @@ zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(unsigned short *palette,
 
     for (int recipeIndex = 0; recipeIndex < g_zVid_PaletteRemapRecipeCount;
          ++recipeIndex) {
-        unsigned short *dest = reinterpret_cast<unsigned short *>(
-            reinterpret_cast<unsigned char *>(result) + 0x200 + recipeIndex * 0x4000);
+        unsigned short *dest = (unsigned short *)(
+            (unsigned char *)(result) + 0x200 + recipeIndex * 0x4000);
         zVidPaletteRemapRecipe *recipe = &g_zVid_PaletteRemapRecipes[recipeIndex];
         {
         for (int variant = 0; variant < 32; ++variant) {
             zVid_PaletteRemap::ApplyRecipeToPaletteVariant(recipe, result, colorCount, variant,
                                                            dest);
             dest =
-                reinterpret_cast<unsigned short *>(reinterpret_cast<unsigned char *>(dest) + 0x200);
+                (unsigned short *)((unsigned char *)(dest) + 0x200);
         }
         }
     }
@@ -2421,8 +2423,8 @@ zVid_TexturePackEntry_LoadFromFile(zVidTexturePackEntry *entry) {
         if (gBits == 5) {
             {
             for (int byteOffset = 0; byteOffset < 0x200; byteOffset += 2) {
-                unsigned short *color = reinterpret_cast<unsigned short *>(
-                    reinterpret_cast<unsigned char *>(table) + byteOffset);
+                unsigned short *color = (unsigned short *)(
+                    (unsigned char *)(table) + byteOffset);
                 const unsigned short value = *color;
                 const unsigned short shifted = static_cast<unsigned short>(value >> 1);
                 const unsigned short lowXor = static_cast<unsigned char>(
@@ -2685,7 +2687,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
             }
 
             if (entry.texture != 0 && g_zVideo_pfnTextureRecordDestroy != 0) {
-                reinterpret_cast<zVideo_DestroyTextureRecordProc>(g_zVideo_pfnTextureRecordDestroy)(
+                ((zVideo_DestroyTextureRecordProc)(g_zVideo_pfnTextureRecordDestroy))(
                     entry.texture);
                 entry.texture = 0;
             }
@@ -2699,8 +2701,8 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
     g_zImage_TexDirEntryCount = 0;
 
     if (g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces != 0) {
-        reinterpret_cast<zVideo_ReleaseAllTextureUploadSurfacesProc>(
-            g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces)();
+        ((zVideo_ReleaseAllTextureUploadSurfacesProc)(
+            g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces))();
     }
 
     for (int i_2693 = 0; i_2693 < g_zVid_PaletteRemapVariantTableCount; ++i_2693) {
@@ -2994,9 +2996,9 @@ PresentDisplayModeSurface(zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForP
     for (;;) {
         if (blitPrimaryToSwFirst != 0) {
             const DWORD bltFlags = waitForPresent != 0 ? DDBLT_WAIT : 0;
-            g_zVideo_SwSurfaceState.surf->Blt(reinterpret_cast<RECT *>(dstRect),
+            g_zVideo_SwSurfaceState.surf->Blt((RECT *)(dstRect),
                                               g_zVideo_PrimarySurfaceState.surf,
-                                              reinterpret_cast<RECT *>(srcRect), bltFlags, 0);
+                                              (RECT *)(srcRect), bltFlags, 0);
         }
 
         HRESULT hresult = g_zVideo_DisplayModeSurfaceState.surf->Flip(
@@ -3032,7 +3034,7 @@ CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlp
     IDirect3DTexture2 *texture = 0;
 
     const D3DDEVICEDESC *selectedDeviceDesc =
-        reinterpret_cast<const D3DDEVICEDESC *>(g_zVideo_pSelectedD3DDeviceInfo->m_hwDesc);
+        (const D3DDEVICEDESC *)(g_zVideo_pSelectedD3DDeviceInfo->m_hwDesc);
     int width = image->width;
     int height = image->height;
     if (static_cast<DWORD>(width) > selectedDeviceDesc->dwMaxTextureWidth ||
@@ -3139,7 +3141,7 @@ CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlp
     if (hresult == DD_OK) {
         UploadImageToSurface(uploadSurface, image, useAlpha);
         hresult = uploadSurface->QueryInterface(IID_IDirect3DTexture2,
-                                                reinterpret_cast<void **>(&uploadTexture));
+                                                (void **)(&uploadTexture));
     }
 
     D3DTEXTUREHANDLE textureHandle = 0;
@@ -3153,7 +3155,7 @@ CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlp
     }
     if (hresult == DD_OK) {
         hresult = textureSurface->QueryInterface(IID_IDirect3DTexture2,
-                                                 reinterpret_cast<void **>(&texture));
+                                                 (void **)(&texture));
     }
     if (hresult == DD_OK) {
         hresult = texture->Load(uploadTexture);
@@ -3207,28 +3209,28 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
     zBufferDesc.dwMipMapCount = 0x10;
 
     HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(
-        &zBufferDesc, reinterpret_cast<IDirectDrawSurface **>(&g_zVideo_pZBufferSurface), 0);
+        &zBufferDesc, (IDirectDrawSurface **)(&g_zVideo_pZBufferSurface), 0);
     if (hresult != DD_OK) {
         return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
                                       0xd3);
     }
 
     hresult = g_zVideo_pZBufferSurface->QueryInterface(
-        IID_IDirectDrawSurface, reinterpret_cast<void **>(&g_zVideo_pZBufferAttachSurface));
+        IID_IDirectDrawSurface, (void **)(&g_zVideo_pZBufferAttachSurface));
     if (hresult != DD_OK) {
         return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
                                       0xd9);
     }
 
     hresult = g_zVideo_SwSurfaceState.surf->AddAttachedSurface(
-        reinterpret_cast<IDirectDrawSurface3 *>(g_zVideo_pZBufferAttachSurface));
+        (IDirectDrawSurface3 *)(g_zVideo_pZBufferAttachSurface));
     if (hresult != DD_OK) {
         return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
                                       0xde);
     }
 
     hresult = g_zVideo_pDirectDraw2->QueryInterface(IID_IDirect3D2,
-                                                    reinterpret_cast<void **>(&g_zVideo_pD3D2));
+                                                    (void **)(&g_zVideo_pD3D2));
     if (hresult != DD_OK) {
         return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
                                       0xe5);
@@ -3236,7 +3238,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
 
     hresult = g_zVideo_pD3D2->CreateDevice(
         *g_zVideo_pSelectedD3DDeviceInfo->pD3DDeviceGuid,
-        reinterpret_cast<IDirectDrawSurface *>(g_zVideo_SwSurfaceState.surf), &g_zVideo_pD3DDevice);
+        (IDirectDrawSurface *)(g_zVideo_SwSurfaceState.surf), &g_zVideo_pD3DDevice);
     if (hresult != DD_OK) {
         return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
                                       0xed);
@@ -3358,7 +3360,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetFogEnable(int enable) {
 RECOIL_NOINLINE void RECOIL_STDCALL SetFogStart(float fogStart) {
     if (g_zVideo_CachedFogStartLightStateValue != fogStart) {
         g_zVideo_pD3DDevice->SetLightState(static_cast<D3DLIGHTSTATETYPE>(5),
-                                           *reinterpret_cast<DWORD *>(&fogStart));
+                                           *(DWORD *)(&fogStart));
         g_zVideo_CachedFogStartLightStateValue = fogStart;
     }
 }
@@ -3367,7 +3369,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetFogStart(float fogStart) {
 RECOIL_NOINLINE void RECOIL_STDCALL SetFogEnd(float fogEnd) {
     if (g_zVideo_CachedFogEndLightStateValue != fogEnd) {
         g_zVideo_pD3DDevice->SetLightState(static_cast<D3DLIGHTSTATETYPE>(5),
-                                           *reinterpret_cast<DWORD *>(&fogEnd));
+                                           *(DWORD *)(&fogEnd));
         g_zVideo_CachedFogEndLightStateValue = fogEnd;
     }
 }
@@ -3385,9 +3387,9 @@ RECOIL_NOINLINE void RECOIL_STDCALL ApplyFogStateFromGlobals(float fogStart, flo
 
     g_zVideo_pD3DDevice->SetLightState(D3DLIGHTSTATE_FOGMODE, D3DFOG_LINEAR);
     g_zVideo_pD3DDevice->SetLightState(static_cast<D3DLIGHTSTATETYPE>(5),
-                                       *reinterpret_cast<DWORD *>(&fogStart));
+                                       *(DWORD *)(&fogStart));
     g_zVideo_pD3DDevice->SetLightState(static_cast<D3DLIGHTSTATETYPE>(6),
-                                       *reinterpret_cast<DWORD *>(&fogEnd));
+                                       *(DWORD *)(&fogEnd));
 }
 
 // Reimplements 0x4aab30: zVideo_dd3d::UpdateFogColor
@@ -3669,7 +3671,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
             ++g_zVideo_OverwriteQueueCount;
             entry.type = 4;
             entry.vertexCount = vertexCount;
-            entry.renderClass = reinterpret_cast<int>(renderClass);
+            entry.renderClass = (int)(renderClass);
             entry.renderParam = static_cast<int>(renderParam);
             if (vertexCount > 0) {
                 memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
@@ -3726,7 +3728,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
         ++g_zVideo_OverwriteQueueCount;
         entry.type = 0;
         entry.vertexCount = vertexCount;
-        entry.renderClass = reinterpret_cast<int>(renderClass);
+        entry.renderClass = (int)(renderClass);
         entry.renderParam = static_cast<int>(renderParam);
         if (vertexCount > 0) {
             CopyTexturedVerticesReverse(entry.vertices, vertices, texCoords, vertexCount,
@@ -3744,7 +3746,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
 
     zVideo_SortedPolyQueueEntry &entry = g_zVideo_SortedPolyQueueBase[queueIndex];
     entry.vertexCount = vertexCount;
-    entry.renderClass = reinterpret_cast<int>(renderClass);
+    entry.renderClass = (int)(renderClass);
     entry.renderParam = static_cast<int>(renderParam);
     if (vertexCount > 0) {
         CopyTexturedVerticesReverse(entry.vertices, vertices, texCoords, vertexCount, alphaWhite);
@@ -3787,7 +3789,7 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
             ++g_zVideo_OverwriteQueueCount;
             entry.type = 5;
             entry.vertexCount = preparedVertexCount;
-            entry.renderClass = reinterpret_cast<int>(renderClass);
+            entry.renderClass = (int)(renderClass);
             entry.renderParam = static_cast<int>(renderParam);
             if (preparedVertexCount > 0) {
                 memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
@@ -3841,7 +3843,7 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
         zVideo_OverwriteQueueEntry &entry = g_zVideo_OverwriteQueueBase[queueIndex];
         ++g_zVideo_OverwriteQueueCount;
         entry.type = 0;
-        entry.renderClass = reinterpret_cast<int>(renderClass);
+        entry.renderClass = (int)(renderClass);
         entry.renderParam = static_cast<int>(renderParam);
         int preparedVertexCount = vertexCount;
         if (vertexCount > 0) {
@@ -3861,7 +3863,7 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
     }
 
     zVideo_SortedPolyQueueEntry &entry = g_zVideo_SortedPolyQueueBase[queueIndex];
-    entry.renderClass = reinterpret_cast<int>(renderClass);
+    entry.renderClass = (int)(renderClass);
     entry.renderParam = static_cast<int>(renderParam);
     int preparedVertexCount = vertexCount;
     if (vertexCount > 0) {
@@ -3906,7 +3908,7 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
             ++g_zVideo_OverwriteQueueCount;
             entry.type = 6;
             entry.vertexCount = preparedVertexCount;
-            entry.renderClass = reinterpret_cast<int>(renderClass);
+            entry.renderClass = (int)(renderClass);
             entry.renderParam = static_cast<int>(renderParam);
             if (preparedVertexCount > 0) {
                 memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
@@ -3960,7 +3962,7 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
         zVideo_OverwriteQueueEntry &entry = g_zVideo_OverwriteQueueBase[queueIndex];
         ++g_zVideo_OverwriteQueueCount;
         entry.type = 0;
-        entry.renderClass = reinterpret_cast<int>(renderClass);
+        entry.renderClass = (int)(renderClass);
         entry.renderParam = static_cast<int>(renderParam);
         int preparedVertexCount = vertexCount;
         if (vertexCount > 0) {
@@ -3980,7 +3982,7 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
     }
 
     zVideo_SortedPolyQueueEntry &entry = g_zVideo_SortedPolyQueueBase[queueIndex];
-    entry.renderClass = reinterpret_cast<int>(renderClass);
+    entry.renderClass = (int)(renderClass);
     entry.renderParam = static_cast<int>(renderParam);
     int preparedVertexCount = vertexCount;
     if (vertexCount > 0) {
@@ -4115,7 +4117,7 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushSortedPolys() {
     for (unsigned int i_4102 = 0; i_4102 < static_cast<unsigned int>(g_zVideo_SortedPolyQueueCount); ++i_4102) {
         const int drawIndex = g_zVideo_SortedPolyDrawOrder[i_4102];
         zVideo_SortedPolyQueueEntry &entry = g_zVideo_SortedPolyQueueBase[drawIndex];
-        zVideo_RenderClass *renderClass = reinterpret_cast<zVideo_RenderClass *>(entry.renderClass);
+        zVideo_RenderClass *renderClass = (zVideo_RenderClass *)(entry.renderClass);
 
         if (renderClass != 0) {
             if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
@@ -4241,7 +4243,7 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
             }
 
             zVideo_RenderClass *renderClass =
-                reinterpret_cast<zVideo_RenderClass *>(entry.renderClass);
+                (zVideo_RenderClass *)(entry.renderClass);
             if (renderClass != 0) {
                 if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
                     g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
@@ -4318,7 +4320,7 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
             }
 
             zVideo_RenderClass *renderClass =
-                reinterpret_cast<zVideo_RenderClass *>(entry.renderClass);
+                (zVideo_RenderClass *)(entry.renderClass);
             if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
                 g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
                                                     renderClass->textureHandle);
@@ -4354,7 +4356,7 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
             }
 
             zVideo_RenderClass *renderClass =
-                reinterpret_cast<zVideo_RenderClass *>(entry.renderClass);
+                (zVideo_RenderClass *)(entry.renderClass);
             if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
                 g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
                                                     renderClass->textureHandle);
@@ -4420,7 +4422,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TextureRecord_LockUploadSurface(
     zVideo_TextureRecordPartial *textureRecord, void **outPixels, int *outPitchBytes) {
     DDSURFACEDESC lockedDescOut = {0};
     if (zVideo_dd::LockSurface_WaitRestore(
-            reinterpret_cast<IDirectDrawSurface3 *>(textureRecord->m_uploadSurface),
+            (IDirectDrawSurface3 *)(textureRecord->m_uploadSurface),
             &lockedDescOut) != 0) {
         return 0;
     }
@@ -4440,13 +4442,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(unsigned short
     const int width = image->width;
     const int height = image->height;
     unsigned short *srcPixels = static_cast<unsigned short *>(image->pixels);
-    unsigned char *dstRowBytes = reinterpret_cast<unsigned char *>(dstPixels);
+    unsigned char *dstRowBytes = (unsigned char *)(dstPixels);
 
     if (image->alphaMap == 0) {
         const unsigned int redGreenMask = g_zVideo_PixelPack_RMask | g_zVideo_PixelPack_GMask;
         {
         for (int row = 0; row < height; ++row) {
-            unsigned short *dstCursor = reinterpret_cast<unsigned short *>(dstRowBytes);
+            unsigned short *dstCursor = (unsigned short *)(dstRowBytes);
             {
             for (int column = 0; column < width; ++column) {
                 const unsigned short src = *srcPixels++;
@@ -4462,7 +4464,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(unsigned short
         return;
     }
 
-    unsigned char *alphaCursor = reinterpret_cast<unsigned char *>(image->alphaMap);
+    unsigned char *alphaCursor = (unsigned char *)(image->alphaMap);
     unsigned int redAlphaMask;
     int redAlphaShift;
     unsigned int greenAlphaMask;
@@ -4481,7 +4483,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(unsigned short
 
     {
     for (int row = 0; row < height; ++row) {
-        unsigned short *dstCursor = reinterpret_cast<unsigned short *>(dstRowBytes);
+        unsigned short *dstCursor = (unsigned short *)(dstRowBytes);
         {
         for (int column = 0; column < width; ++column) {
             const unsigned short src = *srcPixels++;
@@ -4502,13 +4504,13 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UploadImageToSurface(IDirectDrawSurface *upl
                                                                   zVidImagePartial *image,
                                                                   int useAlpha) {
     DDSURFACEDESC lockedDescOut = {0};
-    zVideo_dd::LockSurface_WaitRestore(reinterpret_cast<IDirectDrawSurface3 *>(uploadSurface),
+    zVideo_dd::LockSurface_WaitRestore((IDirectDrawSurface3 *)(uploadSurface),
                                        &lockedDescOut);
 
     unsigned char *dstPixels = static_cast<unsigned char *>(lockedDescOut.lpSurface);
     unsigned char *srcPixels = static_cast<unsigned char *>(image->pixels);
     if (useAlpha != 0) {
-        ConvertImagePixelsForTexture(reinterpret_cast<unsigned short *>(dstPixels), image,
+        ConvertImagePixelsForTexture((unsigned short *)(dstPixels), image,
                                      lockedDescOut.lPitch, useAlpha);
     } else {
         const int width = image->width;
@@ -4529,7 +4531,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UploadImageToSurface(IDirectDrawSurface *upl
         }
     }
 
-    zVideo_dd::UnlockSurface_WaitRestore(reinterpret_cast<IDirectDrawSurface3 *>(uploadSurface));
+    zVideo_dd::UnlockSurface_WaitRestore((IDirectDrawSurface3 *)(uploadSurface));
     return 1;
 }
 
@@ -4537,7 +4539,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UploadImageToSurface(IDirectDrawSurface *upl
 RECOIL_NOINLINE int RECOIL_FASTCALL
 TextureRecord_UnlockUploadSurface(zVideo_TextureRecordPartial *textureRecord) {
     return zVideo_dd::UnlockSurface_WaitRestore(
-               reinterpret_cast<IDirectDrawSurface3 *>(textureRecord->m_uploadSurface)) == 0
+               (IDirectDrawSurface3 *)(textureRecord->m_uploadSurface)) == 0
                ? 1
                : 0;
 }
@@ -4566,7 +4568,7 @@ TextureRecord_FinalizeUpload(zVideo_TextureRecordPartial *textureRecord, zVidIma
 
     IDirect3DTexture2 *uploadTexture = 0;
     HRESULT hresult = uploadSurface->QueryInterface(IID_IDirect3DTexture2,
-                                                    reinterpret_cast<void **>(&uploadTexture));
+                                                    (void **)(&uploadTexture));
     if (hresult != DD_OK) {
         return;
     }
@@ -4614,13 +4616,13 @@ const size_t kD3DDescMaxTextureWidthOffset = 0xb4;
 const size_t kD3DDescMaxTextureHeightOffset = 0xb8;
 
 unsigned int D3DDescReadDword(const D3DDEVICEDESC *desc, size_t offset) {
-    return *reinterpret_cast<const unsigned int *>(reinterpret_cast<const unsigned char *>(desc) +
+    return *(const unsigned int *)((const unsigned char *)(desc) +
                                                     offset);
 }
 
 void D3DDriverDescWriteDword(zVidD3DDriverRecordPartial &driver, size_t offset,
                              unsigned int value) {
-    *reinterpret_cast<unsigned int *>(&driver.m_hwDesc[offset]) = value;
+    *(unsigned int *)(&driver.m_hwDesc[offset]) = value;
 }
 
 template <typename InterfaceT> void ReleaseComInterface(InterfaceT *&value) {
@@ -4649,7 +4651,7 @@ bool BltFillWithRestore(IDirectDrawSurface3 *surface, zVidRect32 *rect, DWORD fl
                         int reportLine) {
     for (;;) {
         HRESULT hresult =
-            surface->Blt(reinterpret_cast<RECT *>(rect), 0, 0, flags, bltFx);
+            surface->Blt((RECT *)(rect), 0, 0, flags, bltFx);
         if (hresult == DD_OK) {
             return true;
         }
@@ -4886,8 +4888,8 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(GUID *guid, LPSTR driverDescription, 
     DDSCAPS videoMemCaps = {0};
     videoMemCaps.dwCaps = DDSCAPS_VIDEOMEMORY;
     if (g_zVideo_pDirectDraw2->GetAvailableVidMem(
-            &videoMemCaps, reinterpret_cast<DWORD *>(&entry.m_videoMemTotalBytes),
-            reinterpret_cast<DWORD *>(&entry.m_videoMemFreeBytes)) != DD_OK) {
+            &videoMemCaps, (DWORD *)(&entry.m_videoMemTotalBytes),
+            (DWORD *)(&entry.m_videoMemFreeBytes)) != DD_OK) {
         entry.m_videoMemFreeBytes = 0;
         entry.m_videoMemTotalBytes = 0;
     }
@@ -4895,8 +4897,8 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(GUID *guid, LPSTR driverDescription, 
     DDSCAPS textureMemCaps = {0};
     textureMemCaps.dwCaps = DDSCAPS_TEXTURE;
     if (g_zVideo_pDirectDraw2->GetAvailableVidMem(
-            &textureMemCaps, reinterpret_cast<DWORD *>(&entry.m_textureMemTotalBytes),
-            reinterpret_cast<DWORD *>(&entry.m_textureMemFreeBytes)) != DD_OK) {
+            &textureMemCaps, (DWORD *)(&entry.m_textureMemTotalBytes),
+            (DWORD *)(&entry.m_textureMemFreeBytes)) != DD_OK) {
         entry.m_textureMemFreeBytes = 0;
         entry.m_textureMemTotalBytes = 0;
     }
@@ -4954,11 +4956,11 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(GUID *guid, LPSTR deviceDescription,
     }
 
     memcpy(driver.m_hwDesc, hwDesc, kD3DDescCopyBytes);
-    if (D3DDescReadDword(reinterpret_cast<D3DDEVICEDESC *>(driver.m_hwDesc),
+    if (D3DDescReadDword((D3DDEVICEDESC *)(driver.m_hwDesc),
                          kD3DDescMaxTextureWidthOffset) == 0) {
         D3DDriverDescWriteDword(driver, kD3DDescMaxTextureWidthOffset, 0x100);
     }
-    if (D3DDescReadDword(reinterpret_cast<D3DDEVICEDESC *>(driver.m_hwDesc),
+    if (D3DDescReadDword((D3DDEVICEDESC *)(driver.m_hwDesc),
                          kD3DDescMaxTextureHeightOffset) == 0) {
         D3DDriverDescWriteDword(driver, kD3DDescMaxTextureHeightOffset, 0x100);
     }
@@ -5023,7 +5025,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDirectDraw2ForSelectedDevice() {
     }
 
     const HRESULT queryResult = directDraw1->QueryInterface(
-        IID_IDirectDraw2, reinterpret_cast<void **>(&g_zVideo_pDirectDraw2));
+        IID_IDirectDraw2, (void **)(&g_zVideo_pDirectDraw2));
     if (queryResult != DD_OK) {
         return ReportError(static_cast<int>(queryResult), kZVideoDirectDrawSourceFile,
                            0x3cb);
@@ -5043,7 +5045,7 @@ EnumerateDirect3DDevicesForRecord(zVidHwApiDeviceRecordPartial *entry) {
     fflush(stdout);
 
     const HRESULT queryResult = g_zVideo_pDirectDraw2->QueryInterface(
-        IID_IDirect3D2, reinterpret_cast<void **>(&g_zVideo_pD3D2));
+        IID_IDirect3D2, (void **)(&g_zVideo_pD3D2));
     if (queryResult != DD_OK) {
         ReportError(static_cast<int>(queryResult), kZVideoDirectDrawSourceFile, 0x781);
         return 0;
@@ -5239,7 +5241,7 @@ Image_LazyCreateBackingSurface(zVidImagePartial *image, unsigned int ddsCapsFlag
     HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(&desc, &baseSurface, 0);
     if (hresult == DD_OK) {
         hresult = baseSurface->QueryInterface(IID_IDirectDrawSurface3,
-                                              reinterpret_cast<void **>(&surface3));
+                                              (void **)(&surface3));
         if (hresult == DD_OK) {
             image->surface = surface3;
             Image_PopulateSurfaceFromHeapPixels(image);
@@ -5385,8 +5387,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Image_ReleaseSurface(zVidImagePartial *image
 RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRectDirect(zVidRect32 *srcRect,
                                                               zVidRect32 *dstRect) {
     const HRESULT hresult = g_zVideo_PrimarySurfaceState.surf->Blt(
-        reinterpret_cast<RECT *>(dstRect), g_zVideo_SwSurfaceState.surf,
-        reinterpret_cast<RECT *>(srcRect), DDBLT_WAIT, 0);
+        (RECT *)(dstRect), g_zVideo_SwSurfaceState.surf,
+        (RECT *)(srcRect), DDBLT_WAIT, 0);
     if (hresult != DD_OK) {
         ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0xe9);
     }
@@ -5396,8 +5398,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRectDirect(zVidRect32 *srcRec
 RECOIL_NOINLINE void RECOIL_FASTCALL BltPrimaryToSwRectDirect(zVidRect32 *srcRect,
                                                               zVidRect32 *dstRect) {
     const HRESULT hresult = g_zVideo_SwSurfaceState.surf->Blt(
-        reinterpret_cast<RECT *>(dstRect), g_zVideo_PrimarySurfaceState.surf,
-        reinterpret_cast<RECT *>(srcRect), DDBLT_WAIT, 0);
+        (RECT *)(dstRect), g_zVideo_PrimarySurfaceState.surf,
+        (RECT *)(srcRect), DDBLT_WAIT, 0);
     if (hresult != DD_OK) {
         ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0xfc);
     }
@@ -5480,8 +5482,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(zVidImagePartial *srcIma
     const DWORD bltFlags =
         DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE | (srcColorKeyEnable != 0 ? DDBLT_KEYSRC : 0);
     const HRESULT hresult = g_zVideo_PrimarySurfaceState.surf->Blt(
-        reinterpret_cast<RECT *>(&dstRectLocal), srcImage->surface,
-        reinterpret_cast<RECT *>(&srcRectLocal), bltFlags, 0);
+        (RECT *)(&dstRectLocal), srcImage->surface,
+        (RECT *)(&srcRectLocal), bltFlags, 0);
 
     if (wasLocked != 0) {
         LockSurfaceState(&g_zVideo_PrimarySurfaceState);
@@ -5694,7 +5696,7 @@ RECOIL_NOINLINE HRESULT RECOIL_FASTCALL CreateSurface3FromDesc(IDirectDraw2 *dir
     HRESULT result = directDraw->CreateSurface(desc, &createdSurface, 0);
     if (result == DD_OK) {
         result = createdSurface->QueryInterface(IID_IDirectDrawSurface3,
-                                                reinterpret_cast<void **>(outSurface));
+                                                (void **)(outSurface));
         if (result == DD_OK) {
             return createdSurface->Release();
         }

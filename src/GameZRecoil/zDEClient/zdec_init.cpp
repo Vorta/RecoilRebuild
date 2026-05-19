@@ -188,7 +188,7 @@ CreateFeatureStructFromEventTemplate(zDEClient_CraterEventTemplate *eventTemplat
 
     if ((result->eventTemplate.featureFlags & 0x1008) != 0) {
         zModel_MaterialPartial *const sourceMaterial =
-            reinterpret_cast<zModel_MaterialPartial *>(result->eventTemplate.craterMaterialSlot);
+            (zModel_MaterialPartial *)(result->eventTemplate.craterMaterialSlot);
         result->displaySourceEntry = g_zDEClient_CraterDisplaySourceList;
 
         for (int i = 1; i < g_zDEClient_CraterDisplaySourceCount; ++i) {
@@ -306,7 +306,7 @@ InitFeatureFromEventTemplate(zDEClient_CraterEventTemplate *eventTemplate) {
                 zGeometry_ClipPatchNodeView *node = *nodeCursor;
                 if (strcmp(node->name, "ZDEC_FEATURE") == 0) {
                     zDEClient_FeatureContextOverlapView *context =
-                        reinterpret_cast<zDEClient_FeatureContextOverlapView *>(
+                        (zDEClient_FeatureContextOverlapView *)(
                             node->callbackContext);
                     if (context != 0) {
                         const int featureType = context->featureType;
@@ -375,7 +375,7 @@ CreateFeature(zDEClient_CraterFeature *featureInstance) {
         featureInstance->clipPatchOutput->partitions, zDEClient::GetCameraNode(), &node);
     if (node != 0) {
         zClass_Class::gwNodeSetName(node, "ZDEC_FEATURE");
-        node->callbackContext = reinterpret_cast<zClass_NodePartial *>(featureInstance);
+        node->callbackContext = (zClass_NodePartial *)(featureInstance);
     }
 
     if (displayInstance == 0) {
@@ -698,7 +698,7 @@ InitFeatureFromEventTemplate(zDEClient_QSandEventTemplate *eventTemplate) {
                 zGeometry_ClipPatchNodeView *node = *nodeCursor;
                 if (strcmp(node->name, "ZDEC_FEATURE") == 0) {
                     zDEClient_FeatureContextOverlapView *context =
-                        reinterpret_cast<zDEClient_FeatureContextOverlapView *>(
+                        (zDEClient_FeatureContextOverlapView *)(
                             node->callbackContext);
                     if (context != 0) {
                         const int featureType = context->featureType;
@@ -778,7 +778,7 @@ CreateFeature(zDEClient_QSandFeature *featureInstance) {
     }
 
     zClass_Class::gwNodeSetName(node, "ZDEC_FEATURE");
-    node->callbackContext = reinterpret_cast<zClass_NodePartial *>(featureInstance);
+    node->callbackContext = (zClass_NodePartial *)(featureInstance);
 
     zVec3 *const points = featureInstance->points;
     const int pointCount = featureInstance->eventTemplate.pointCount;
@@ -896,7 +896,7 @@ CreateFeature(zDEClient_QSandFeature *featureInstance) {
     }
 
     zClass_Class::gwNodeSetName(capNode, "ZDEC_FEATURE");
-    capNode->callbackContext = reinterpret_cast<zClass_NodePartial *>(featureInstance);
+    capNode->callbackContext = (zClass_NodePartial *)(featureInstance);
 
     for (int i_901 = 0; i_901 < pointCount; ++i_901) {
         const int nextIndex = (i_901 + 1) % pointCount;
@@ -1015,7 +1015,7 @@ ApplyNodeDiPairs(zGeometry_ClipPatchOutputPartial *self) {
             zClass_Class::gwNodeSetDisplayInstance(pair->node, pair->di);
 
             if (oldDisplayInstanceValue != 0) {
-                zModel_DiPool::FreeIfUnreferenced(reinterpret_cast<zDiPartial *>(
+                zModel_DiPool::FreeIfUnreferenced((zDiPartial *)(
                     static_cast<unsigned int>(oldDisplayInstanceValue)));
             }
         }
@@ -1471,7 +1471,7 @@ GetFeatureGridCell(int gridCol, int gridRow) {
     }
 
     zDEClient_CameraNodeClassDataPartial *data =
-        reinterpret_cast<zDEClient_CameraNodeClassDataPartial *>(g_zDEClient_CameraNodeClassData);
+        (zDEClient_CameraNodeClassDataPartial *)(g_zDEClient_CameraNodeClassData);
     return &data->featureGridRows[gridRow][gridCol];
 }
 
@@ -1633,7 +1633,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ClearFeatureDisplayNodes() {
         zClass_Class::gwNodeGetUserData(child, &displayInstanceValue);
         if (displayInstanceValue != 0) {
             zDiPartial *displayInstance =
-                reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(displayInstanceValue));
+                (zDiPartial *)(static_cast<unsigned int>(displayInstanceValue));
             zClass_Class::gwNodeSetDisplayInstance(child, 0);
             zModel_DiPool::FreeIfUnreferenced(displayInstance);
         }

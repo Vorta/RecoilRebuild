@@ -11,6 +11,8 @@ from recoil_asm_verify import (  # noqa: E402
     CoffObject,
     classify_instruction_differences,
     compare_masked_byte_sequences,
+    format_byte_triage_lines,
+    mismatch_clusters,
     normalize_instruction_line,
     parse_assembly,
 )
@@ -50,6 +52,55 @@ def build_coff_object(raw_code: bytes, relocations: list[tuple[int, int, int]], 
     )
     relocation_bytes = b"".join(struct.pack("<IIH", offset, symbol_index, relocation_type) for offset, symbol_index, relocation_type in relocations)
     return header + section + raw_code + relocation_bytes + b"".join(symbols) + string_table
+
+
+def build_coff_object_with_bss_before_text(raw_code: bytes, bss_size: int, symbols: list[bytes]) -> bytes:
+    header_size = 20
+    section_header_size = 40
+    text_raw_offset = header_size + section_header_size * 2
+    symbol_table_offset = text_raw_offset + len(raw_code)
+    string_table = struct.pack("<I", 4)
+    header = struct.pack(
+        "<HHIIIHH",
+        0x14C,
+        2,
+        0,
+        symbol_table_offset,
+        len(symbols),
+        0,
+        0,
+    )
+    bss_section = (
+        coff_short_name(".bss")
+        + struct.pack("<IIIIIIHHI", 0, 0, bss_size, 0, 0, 0, 0, 0, 0x80)
+    )
+    text_section = (
+        coff_short_name(".text")
+        + struct.pack("<IIIIIIHHI", 0, 0, len(raw_code), text_raw_offset, 0, 0, 0, 0, 0x20)
+    )
+    return header + bss_section + text_section + raw_code + b"".join(symbols) + string_table
+
+
+def build_coff_object_with_truncated_text(raw_size: int, raw_offset: int) -> bytes:
+    header_size = 20
+    section_header_size = 40
+    symbol_table_offset = header_size + section_header_size
+    string_table = struct.pack("<I", 4)
+    header = struct.pack(
+        "<HHIIIHH",
+        0x14C,
+        1,
+        0,
+        symbol_table_offset,
+        0,
+        0,
+        0,
+    )
+    section = (
+        coff_short_name(".text")
+        + struct.pack("<IIIIIIHHI", 0, 0, raw_size, raw_offset, 0, 0, 0, 0, 0x20)
+    )
+    return header + section + string_table
 
 
 class RecoilAsmVerifyTests(unittest.TestCase):
@@ -323,6 +374,20 @@ class RecoilAsmVerifyTests(unittest.TestCase):
 
         self.assertEqual(bytes.fromhex("90 c3"), function.data)
 
+    def test_coff_bss_section_without_raw_bytes_is_zero_filled(self):
+        raw_code = bytes.fromhex("90 c3")
+        symbols = [coff_symbol("_Sample", 0, 2)]
+        obj = CoffObject.from_bytes(build_coff_object_with_bss_before_text(raw_code, 16, symbols))
+
+        self.assertEqual(b"\x00" * 16, obj.section(1).raw_data)
+        self.assertEqual(raw_code, obj.function_bytes("_Sample").data)
+
+    def test_coff_truncated_text_section_is_rejected(self):
+        obj_bytes = build_coff_object_with_truncated_text(raw_size=4, raw_offset=999)
+
+        with self.assertRaisesRegex(ValueError, r"COFF section \.text raw data is truncated"):
+            CoffObject.from_bytes(obj_bytes)
+
     def test_masked_byte_compare_accepts_relocated_operand_bytes(self):
         result = compare_masked_byte_sequences(
             bytes.fromhex("b8 78 56 34 12 c3"),
@@ -352,6 +417,34 @@ class RecoilAsmVerifyTests(unittest.TestCase):
 
         self.assertEqual(0, result.mismatch_count)
         self.assertEqual(2, result.trailing_vc6_nops_trimmed)
+
+    def test_mismatch_clusters_group_nearby_offsets(self):
+        result = compare_masked_byte_sequences(
+            bytes.fromhex("01 02 03 04 05 06"),
+            bytes.fromhex("01 ff ee 04 dd cc"),
+            (False, False, False, False, False, False),
+            trim_padding_nops=False,
+        )
+
+        self.assertEqual([(1, 2, 2), (4, 5, 2)], mismatch_clusters(result.mismatches, max_gap=1))
+
+    def test_byte_triage_reports_first_cluster_and_next_checks(self):
+        result = compare_masked_byte_sequences(
+            bytes.fromhex("55 8b ec c3"),
+            bytes.fromhex("55 8b 00 c3 90"),
+            (False, False, False, False, False),
+            trim_padding_nops=False,
+        )
+
+        report = "\n".join(
+            format_byte_triage_lines(address="0x401000", symbol="_Sample", comparison=result)
+        )
+
+        self.assertIn("status: FAIL", report)
+        self.assertIn("size_delta_vc6_minus_bn: 1", report)
+        self.assertIn("first_mismatch_original: 0x401002", report)
+        self.assertIn("Mismatch clusters:", report)
+        self.assertIn("Function size differs", report)
 
 
 if __name__ == "__main__":
