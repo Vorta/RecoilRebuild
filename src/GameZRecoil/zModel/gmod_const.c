@@ -140,10 +140,10 @@ namespace zModel_DiPool {
                 {
                 for (int entryIndex = 0; entryIndex < di->entryCount; ++entryIndex) {
                     const int materialIndex = zModel_MatlSlot::IndexFromPtrOrMinus1(
-                        reinterpret_cast<zModel_MaterialSlot *>(
+                        (zModel_MaterialSlot *)(
                             serializedEntries[entryIndex].material));
                     serializedEntries[entryIndex].material =
-                        reinterpret_cast<zModel_MaterialPartial *>(
+                        (zModel_MaterialPartial *)(
                             static_cast<int>(materialIndex));
                 }
                 }
@@ -321,8 +321,8 @@ namespace zModel_DiPool {
         for (int entryIndex = 0; entryIndex < entry->entryCount; ++entryIndex) {
             zDiEntryPartial *const diEntry = &entry->entries[entryIndex];
             diEntry->material =
-                reinterpret_cast<zModel_MaterialPartial *>(zModel_Matl::GetPoolEntry(
-                    static_cast<int>(reinterpret_cast<int>(diEntry->material))));
+                (zModel_MaterialPartial *)(zModel_Matl::GetPoolEntry(
+                    static_cast<int>((int)(diEntry->material))));
         }
         }
 

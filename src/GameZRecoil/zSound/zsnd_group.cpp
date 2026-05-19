@@ -145,7 +145,7 @@ zSndStreamRequest_StopIfActive(zSndPlayHandle *request) {
         return 0;
     }
 
-    reinterpret_cast<zSndStreamRequest *>(request)->streamState = 4;
+    ((zSndStreamRequest *)(request))->streamState = 4;
     return 1;
 }
 
@@ -171,7 +171,7 @@ zSndPendingList_FindByName(const char *sampleName) {
         return 0;
     }
 
-    return reinterpret_cast<zSndSample *>(zArchiveList_FindPayloadByPredicate(
+    return (zSndSample *)(zArchiveList_FindPayloadByPredicate(
         g_zSndStream_PendingList, &zSndPendingList_MatchNamePredicate,
         const_cast<char *>(sampleName)));
 }
@@ -259,7 +259,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndStreamMgr_EnsureInit() {
         }
 
         zClass_Class::gwNodeSetActionCallbackTail(
-            g_zSndStream_RootNode, reinterpret_cast<void *>(&zSndStreamMgr_RecycleFinishedRequest));
+            g_zSndStream_RootNode, (void *)(&zSndStreamMgr_RecycleFinishedRequest));
     }
 
     if (g_zSndStream_PendingList == 0) {
@@ -393,7 +393,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndGroup::QueueStreamRequest(
         request->hasWorldPos = 0;
     }
 
-    return request->StateBeginGroup() != 0 ? reinterpret_cast<zSndPlayHandle *>(request) : 0;
+    return request->StateBeginGroup() != 0 ? (zSndPlayHandle *)(request) : 0;
 }
 
 // Reimplements 0x4a5230: zSndGroup::QueueStreamRequestSimple
@@ -527,7 +527,7 @@ zSndGroup_LoadFromConfigNode(zReader::Node *readerNode) {
                 zSndGroupConfigBlock *block = &blocks[result->configBlockCount];
                 memset(block, 0, sizeof(*block));
                 zSndGroup_LoadConfigBlock(
-                    childNode, reinterpret_cast<zSndGroupRuntimeFields *>(&result->groupName),
+                    childNode, (zSndGroupRuntimeFields *)(&result->groupName),
                     block);
                 ++result->configBlockCount;
             }
@@ -543,20 +543,20 @@ zSndGroup_LoadFromConfigNode(zReader::Node *readerNode) {
         if (strcmp(key, "DELAY_REPEAT") == 0) {
             if (!StoreFloatField(valueNode, &result->delayRepeatSec)) {
                 ReportConfigError(0x141, "Error loading DELAY_REPEAT for sound group (%s)",
-                                  reinterpret_cast<zSndGroupRuntimeFields *>(&result->groupName));
+                                  (zSndGroupRuntimeFields *)(&result->groupName));
             }
             ++childIndex;
         } else if (strcmp(key, "DELAY_TERMINATION") == 0) {
             if (!StoreFloatField(valueNode, &result->delayTerminationSec)) {
                 ReportConfigError(0x14f, "Error loading DELAY_TERMINATION for sound group (%s)",
-                                  reinterpret_cast<zSndGroupRuntimeFields *>(&result->groupName));
+                                  (zSndGroupRuntimeFields *)(&result->groupName));
             }
             ++childIndex;
         } else if (strcmp(key, "DYNAMIC_WEIGHTS") == 0) {
             result->dynamicWeightsEnabled = 1;
             if (!StoreFloatField(valueNode, &result->dynamicWeightScale)) {
                 ReportConfigError(0x15f, "Error loading DYNAMIC_WEIGHTS for sound group (%s)",
-                                  reinterpret_cast<zSndGroupRuntimeFields *>(&result->groupName));
+                                  (zSndGroupRuntimeFields *)(&result->groupName));
             }
 
             if (result->dynamicWeightScale <= 0.0f) {
@@ -570,7 +570,7 @@ zSndGroup_LoadFromConfigNode(zReader::Node *readerNode) {
         } else if (strcmp(key, "REPEAT") == 0) {
             if (!StoreRepeatCount(valueNode, &result->repeatCount)) {
                 ReportConfigError(0x174, "Error loading REPEAT for sound group (%s)",
-                                  reinterpret_cast<zSndGroupRuntimeFields *>(&result->groupName));
+                                  (zSndGroupRuntimeFields *)(&result->groupName));
             }
             ++childIndex;
         } else {

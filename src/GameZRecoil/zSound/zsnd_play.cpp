@@ -135,7 +135,7 @@ bool DirectSoundHandleIsAvailable(zSndPlayHandle *handle) {
         return false;
     }
 
-    DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(handle->backendBuffer);
+    DirectSoundBuffer *const buffer = (DirectSoundBuffer *)(handle->backendBuffer);
     int status = 0;
     buffer->vtable->GetStatus(buffer, &status);
     return (status & 1) == 0;
@@ -146,21 +146,21 @@ bool A3dHandleIsAvailable(zSndPlayHandle *handle) {
         return false;
     }
 
-    A3dSource *const source = reinterpret_cast<A3dSource *>(handle->backendBuffer);
+    A3dSource *const source = (A3dSource *)(handle->backendBuffer);
     int status = 0;
     source->vtable->GetStatus(source, &status);
     return (status & 1) == 0;
 }
 
 bool DirectSoundBufferIsPlaying(zSndBuffer *backendBuffer) {
-    DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(backendBuffer);
+    DirectSoundBuffer *const buffer = (DirectSoundBuffer *)(backendBuffer);
     int status = 0;
     buffer->vtable->GetStatus(buffer, &status);
     return (status & 1) != 0;
 }
 
 bool A3dSourceIsPlaying(zSndBuffer *backendBuffer) {
-    A3dSource *const source = reinterpret_cast<A3dSource *>(backendBuffer);
+    A3dSource *const source = (A3dSource *)(backendBuffer);
     int status = 0;
     source->vtable->GetStatus(source, &status);
     return (status & 1) != 0;
@@ -191,7 +191,7 @@ void AppendSnapshotPayload(zSndPlayHandleSnapshot *snapshot,
 
 void ReleaseBackendBuffer(zSndBuffer *buffer) {
     if (buffer != 0) {
-        UnknownBackendComObject * object = reinterpret_cast<UnknownBackendComObject *>(buffer);
+        UnknownBackendComObject * object = (UnknownBackendComObject *)(buffer);
         object->vtable->Release(object);
     }
 }
@@ -201,7 +201,7 @@ int FreeA3dWaveData(zSndBuffer *buffer) {
         return 0;
     }
 
-    A3dReleaseObject * object = reinterpret_cast<A3dReleaseObject *>(buffer);
+    A3dReleaseObject * object = (A3dReleaseObject *)(buffer);
     return object->vtable->FreeWaveData(object);
 }
 
@@ -338,10 +338,9 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireVoice() {
         result = static_cast<zSndPlayHandle *>(malloc(sizeof(zSndPlayHandle)));
         memset(result, 0, sizeof(zSndPlayHandle));
 
-        BackendDevice *const device = reinterpret_cast<BackendDevice *>(g_zSnd_BackendDevice);
+        BackendDevice *const device = (BackendDevice *)(g_zSnd_BackendDevice);
         const int error =
-            reinterpret_cast<DirectSoundDeviceVTable *>(device->vtable)
-                ->DuplicateSoundBuffer(device, primaryVoice.backendBuffer, &result->backendBuffer);
+            ((DirectSoundDeviceVTable *)(device->vtable))->DuplicateSoundBuffer(device, primaryVoice.backendBuffer, &result->backendBuffer);
         if (error != 0) {
             free(result);
             return 0;
@@ -382,10 +381,9 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireA3dVoice() {
         result = static_cast<zSndPlayHandle *>(malloc(sizeof(zSndPlayHandle)));
         memset(result, 0, sizeof(zSndPlayHandle));
 
-        BackendDevice *const device = reinterpret_cast<BackendDevice *>(g_zSnd_BackendDevice);
+        BackendDevice *const device = (BackendDevice *)(g_zSnd_BackendDevice);
         const int error =
-            reinterpret_cast<A3dDeviceVTable *>(device->vtable)
-                ->DuplicateBufferA3D(device, primaryVoice.backendBuffer, &result->backendBuffer);
+            ((A3dDeviceVTable *)(device->vtable))->DuplicateBufferA3D(device, primaryVoice.backendBuffer, &result->backendBuffer);
         if (error < 0) {
             zSnd::ReportA3DError(error, kZSndPlaySourceFile, 0xb2);
             free(result);
@@ -475,7 +473,7 @@ zSnd::ApplyMuteStateToActiveVoices(int enableMute) {
     if (g_zSnd_ActiveBackend == 0) {
         while (item != listHead) {
             zSndPlayHandle *const playHandle = item->payload.playHandle;
-            DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(playHandle->backendBuffer);
+            DirectSoundBuffer *const buffer = (DirectSoundBuffer *)(playHandle->backendBuffer);
             const int volume = zSnd::IsMuted() != 0 ? -10000 : playHandle->gainScaled;
             buffer->vtable->SetVolume(buffer, volume);
             item = item->next;
@@ -483,7 +481,7 @@ zSnd::ApplyMuteStateToActiveVoices(int enableMute) {
     } else if (g_zSnd_ActiveBackend == 1) {
         while (item != listHead) {
             zSndPlayHandle *const playHandle = item->payload.playHandle;
-            A3dSource *const source = reinterpret_cast<A3dSource *>(playHandle->backendBuffer);
+            A3dSource *const source = (A3dSource *)(playHandle->backendBuffer);
             if (zSnd::IsMuted() != 0) {
                 source->vtable->SetGain(source, 0.0f);
             } else {
@@ -524,8 +522,13 @@ zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(zSndPlayHandle *playHandle)
     this->playHandle = playHandle;
     sourceSample = playHandle->ownerSample;
 
-    if (g_zSnd_ActiveBackend == 0 || g_zSnd_ActiveBackend == 1) {
+    switch (g_zSnd_ActiveBackend) {
+    case 0:
         volumeScaleRaw = static_cast<unsigned int>(sourceSample->primaryVoice.gainScaled);
+        break;
+    case 1:
+        volumeScaleRaw = static_cast<unsigned int>(sourceSample->primaryVoice.gainScaled);
+        break;
     }
 
     if (playHandle->hasWorldPos == 0) {
@@ -533,8 +536,12 @@ zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(zSndPlayHandle *playHandle)
     }
 
     flags |= 1;
-    worldPos = playHandle->worldPos;
-    velocityOrDir = playHandle->velocityOrDir;
+    zVec3 *const worldPosDest = &worldPos;
+    const zVec3 *const worldPosSrc = &playHandle->worldPos;
+    zVec3 *const velocityDest = &velocityOrDir;
+    const zVec3 *const velocitySrc = &playHandle->velocityOrDir;
+    *worldPosDest = *worldPosSrc;
+    *velocityDest = *velocitySrc;
 }
 
 // Reimplements 0x49fff0: zSndPlayHandleSnapshot::CreateFromActiveSamples
@@ -551,13 +558,10 @@ zSndPlayHandleSnapshot::CreateFromActiveSamples() {
     snapshot->listHead = listHead;
     snapshot->itemCount = 0;
 
-    if (g_zSnd_GlobalVolumeScalePtr != 0) {
-        memcpy(&payload.volumeScaleRaw, g_zSnd_GlobalVolumeScalePtr,
-                    sizeof(payload.volumeScaleRaw));
-    }
+    const int sampleSetCount = zSndSampleSetRegistry_GetCount();
+    memcpy(&payload.volumeScaleRaw, g_zSnd_GlobalVolumeScalePtr, sizeof(payload.volumeScaleRaw));
     AppendSnapshotPayload(snapshot, payload);
 
-    const int sampleSetCount = zSndSampleSetRegistry_GetCount();
     for (int sampleSetIndex = 0;
          static_cast<unsigned int>(sampleSetIndex) < static_cast<unsigned int>(sampleSetCount);
          ++sampleSetIndex) {
@@ -766,7 +770,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::StopIfActive() {
     }
 
     if (g_zSnd_ActiveBackend == 0) {
-        DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(backendBuffer);
+        DirectSoundBuffer *const buffer = (DirectSoundBuffer *)(backendBuffer);
         if (buffer == 0) {
             return -1;
         }
@@ -793,7 +797,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::StopIfActive() {
     }
 
     if (g_zSnd_ActiveBackend == 1) {
-        A3dSource *const source = reinterpret_cast<A3dSource *>(backendBuffer);
+        A3dSource *const source = (A3dSource *)(backendBuffer);
         if (source == 0) {
             return -1;
         }
@@ -806,7 +810,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::StopIfActive() {
         return error;
     }
 
-    return reinterpret_cast<int>(this);
+    return (int)(this);
 }
 
 // Reimplements 0x49fec0: zSndSample::StopActiveVoicesIfPlaying
@@ -817,7 +821,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndSample::StopActiveVoicesIfPlaying() {
 
     if (g_zSnd_ActiveBackend == 0) {
         DirectSoundBuffer *const primaryBuffer =
-            reinterpret_cast<DirectSoundBuffer *>(primaryVoice.backendBuffer);
+            (DirectSoundBuffer *)(primaryVoice.backendBuffer);
         if (primaryBuffer == 0) {
             return 0;
         }
@@ -832,7 +836,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndSample::StopActiveVoicesIfPlaying() {
             zSndPlayHandle *const voice = duplicateVoices[index];
             if (voice != 0) {
                 DirectSoundBuffer *const buffer =
-                    reinterpret_cast<DirectSoundBuffer *>(voice->backendBuffer);
+                    (DirectSoundBuffer *)(voice->backendBuffer);
                 error = buffer->vtable->Stop(buffer);
                 if (error != 0) {
                     return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x3de);
@@ -845,7 +849,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndSample::StopActiveVoicesIfPlaying() {
     }
 
     if (g_zSnd_ActiveBackend == 1) {
-        A3dSource *const primarySource = reinterpret_cast<A3dSource *>(primaryVoice.backendBuffer);
+        A3dSource *const primarySource = (A3dSource *)(primaryVoice.backendBuffer);
         if (primarySource == 0) {
             return 0;
         }
@@ -859,7 +863,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndSample::StopActiveVoicesIfPlaying() {
         for (int index = 0; index < duplicateVoiceCount; ++index) {
             zSndPlayHandle *const voice = duplicateVoices[index];
             if (voice != 0) {
-                A3dSource *const source = reinterpret_cast<A3dSource *>(voice->backendBuffer);
+                A3dSource *const source = (A3dSource *)(voice->backendBuffer);
                 error = source->vtable->Stop(source);
                 if (error != 0) {
                     return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x3cb);
@@ -885,14 +889,14 @@ RECOIL_NOINLINE unsigned int RECOIL_THISCALL zSndSample::GetPlayCursorBytes() {
     if (g_zSnd_ActiveBackend == 0) {
         unsigned int writeCursorBytes = 0;
         DirectSoundBuffer *const buffer =
-            reinterpret_cast<DirectSoundBuffer *>(primaryVoice.backendBuffer);
+            (DirectSoundBuffer *)(primaryVoice.backendBuffer);
         const int result =
             buffer->vtable->GetCurrentPosition(buffer, &playCursorBytes, &writeCursorBytes);
         return result == 0 ? playCursorBytes : 0;
     }
 
     if (g_zSnd_ActiveBackend == 1) {
-        A3dSource *const source = reinterpret_cast<A3dSource *>(primaryVoice.backendBuffer);
+        A3dSource *const source = (A3dSource *)(primaryVoice.backendBuffer);
         source->vtable->GetCurrentPosition(source, &playCursorBytes);
         return playCursorBytes;
     }
@@ -917,7 +921,7 @@ zSnd_UpdateListenerState(zSndListenerState *listenerState, zVec3 *listenerVeloci
     }
 
     if (g_zSnd_ActiveBackend == 1) {
-        A3dListener *const listener = reinterpret_cast<A3dListener *>(g_zSnd_BackendListenerHandle);
+        A3dListener *const listener = (A3dListener *)(g_zSnd_BackendListenerHandle);
         if (listener == 0) {
             return -1;
         }
@@ -972,7 +976,7 @@ zSndPlayHandle::Update3D(zVec3 *worldPos, zVec3 *velocity, int velocityScaleMode
         return 1;
     }
 
-    DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(backendBuffer);
+    DirectSoundBuffer *const buffer = (DirectSoundBuffer *)(backendBuffer);
     if (buffer == 0) {
         return -1;
     }
@@ -1069,7 +1073,7 @@ zSndPlayHandle::Update3D_A3D(zVec3 *worldPos, zVec3 *velocity, int velocityScale
         return 1;
     }
 
-    A3dSource *const source = reinterpret_cast<A3dSource *>(backendBuffer);
+    A3dSource *const source = (A3dSource *)(backendBuffer);
     if (source == 0) {
         return -1;
     }
@@ -1129,7 +1133,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndSample::PlayOnA3D(zVec3 *wor
     result->ownerSample = this;
     result->gainScaled = FloatToBits(gainScale);
 
-    A3dSource *const source = reinterpret_cast<A3dSource *>(result->backendBuffer);
+    A3dSource *const source = (A3dSource *)(result->backendBuffer);
     if (worldPos != 0) {
         source->vtable->SetSpatializationEnabled(source, 0);
         if (result->Update3DDispatch(worldPos, velocity, 0) == 0 &&
@@ -1151,8 +1155,8 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndSample::PlayOnA3D(zVec3 *wor
 
     const int playError = source->vtable->Play(source, replayFields.flags & 0x01);
 
-    BackendDevice *const device = reinterpret_cast<BackendDevice *>(g_zSnd_BackendDevice);
-    reinterpret_cast<A3dDeviceVTable *>(device->vtable)->CommitDeferredSettings(device);
+    BackendDevice *const device = (BackendDevice *)(g_zSnd_BackendDevice);
+    ((A3dDeviceVTable *)(device->vtable))->CommitDeferredSettings(device);
 
     if (playError != 0) {
         zSnd::ReportA3DError(playError, kZSndPlaySourceFile, 0x209);
@@ -1177,14 +1181,14 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndSample::PlayOnDirectSound(
         result = &primaryVoice;
     }
 
-    DirectSoundBuffer *buffer = reinterpret_cast<DirectSoundBuffer *>(result->backendBuffer);
+    DirectSoundBuffer *buffer = (DirectSoundBuffer *)(result->backendBuffer);
     result->handleKind = ZSND_PLAYHANDLE_BACKEND;
     result->ownerSample = this;
 
     int status = 0;
     buffer->vtable->GetStatus(buffer, &status);
     if ((status & 0x02) != 0) {
-        buffer = reinterpret_cast<DirectSoundBuffer *>(result->backendBuffer);
+        buffer = (DirectSoundBuffer *)(result->backendBuffer);
         buffer->vtable->Restore(buffer);
     }
 
@@ -1195,11 +1199,11 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndSample::PlayOnDirectSound(
             return 0;
         }
     } else {
-        buffer = reinterpret_cast<DirectSoundBuffer *>(result->backendBuffer);
+        buffer = (DirectSoundBuffer *)(result->backendBuffer);
         buffer->vtable->SetVolume(buffer, zSnd::IsMuted() != 0 ? -10000 : result->gainScaled);
     }
 
-    buffer = reinterpret_cast<DirectSoundBuffer *>(result->backendBuffer);
+    buffer = (DirectSoundBuffer *)(result->backendBuffer);
     buffer->vtable->SetCurrentPosition(buffer, backendArg);
     RefreshPlaybackMarkers(this, result);
 
@@ -1220,7 +1224,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndSample::PlayA3D(zVec3 *world
     }
 
     if (createGuard == 1) {
-        return reinterpret_cast<zSndGroup *>(this)->QueueStreamRequestWithWorldPos(
+        return ((zSndGroup *)(this))->QueueStreamRequestWithWorldPos(
             worldPos, gainScale, velocity);
     }
 
@@ -1264,7 +1268,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::PlayA3DSimple(float 
     }
 
     if (createGuard == 1) {
-        return reinterpret_cast<zSndGroup *>(this)->QueueStreamRequestSimple(gainScale);
+        return ((zSndGroup *)(this))->QueueStreamRequestSimple(gainScale);
     }
 
     return PlayA3D(0, gainScale, 0);

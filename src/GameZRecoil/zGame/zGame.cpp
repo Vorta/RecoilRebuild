@@ -164,7 +164,7 @@ const int ZOPT_GRAPHICS_GLOBAL_LIGHT = 0x10;
 const int ZOPT_GRAPHICS_ALL_VIDEO_BUFFER = 0x20;
 
 template <typename T> T *OptionValuePointer(zOptionEntryPartial *entry) {
-    return reinterpret_cast<T *>(entry);
+    return (T *)(entry);
 }
 
 int BuildGraphicsFlags(zReader::Node *profileRoot, const char *globalLightKey,
@@ -281,7 +281,7 @@ RECOIL_NOINLINE zOptionEntryPartial *RECOIL_FASTCALL Options_GetOrCreateOption(
             free(result);
             return 0;
         }
-        result->payloadOrBuffer = reinterpret_cast<int>(calloc(1, dataSize));
+        result->payloadOrBuffer = (int)(calloc(1, dataSize));
         break;
 
     default:
@@ -350,12 +350,12 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_LoadFromRegistry() {
         case 0:
         case 1:
             expectedSize = 4;
-            payload = reinterpret_cast<BYTE *>(entry);
+            payload = (BYTE *)(entry);
             break;
 
         case 2:
             expectedSize = 8;
-            payload = reinterpret_cast<BYTE *>(entry);
+            payload = (BYTE *)(entry);
             break;
 
         case 3:
@@ -364,7 +364,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_LoadFromRegistry() {
         case 6:
         case 7:
             expectedSize = static_cast<DWORD>(entry->dataSize);
-            payload = reinterpret_cast<BYTE *>(static_cast<unsigned int>(entry->payloadOrBuffer));
+            payload = (BYTE *)(static_cast<unsigned int>(entry->payloadOrBuffer));
             break;
 
         default:
@@ -431,12 +431,12 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_SaveToRegistry() {
         }
 
         DWORD valueType = REG_BINARY;
-        const BYTE *payload = reinterpret_cast<const BYTE *>(entry);
+        const BYTE *payload = (const BYTE *)(entry);
         if (entry->storageType == ZGAME_OPTION_INLINE_DWORD) {
             valueType = REG_DWORD;
         } else if (entry->storageType >= ZGAME_OPTION_STRING_BUFFER) {
             payload =
-                reinterpret_cast<const BYTE *>(static_cast<unsigned int>(entry->payloadOrBuffer));
+                (const BYTE *)(static_cast<unsigned int>(entry->payloadOrBuffer));
         }
 
         if (RegSetValueExA(*key, entry->name, 0, valueType, payload,
@@ -476,7 +476,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Options_ShutdownRegistryContext() {
             entry->storageType > ZGAME_OPTION_INLINE_BINARY8 &&
             entry->storageType <= ZGAME_OPTION_STORAGE_MAX) {
             void *const payload =
-                reinterpret_cast<void *>(static_cast<unsigned int>(entry->payloadOrBuffer));
+                (void *)(static_cast<unsigned int>(entry->payloadOrBuffer));
             if (payload != 0) {
                 free(payload);
                 entry->payloadOrBuffer = 0;
@@ -1097,7 +1097,7 @@ RECOIL_NOINLINE int RECOIL_CDECL GetTextureMemoryForCurrentHwMode() {
 
 // Reimplements 0x408120: zOpt::SetPlayerName
 RECOIL_NOINLINE void RECOIL_FASTCALL SetPlayerName(const char *name) {
-    char *const buffer = reinterpret_cast<char *>(ZOPT_PLAYER_NAME->payloadOrBuffer);
+    char *const buffer = (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
     const unsigned int dataSize = static_cast<unsigned int>(ZOPT_PLAYER_NAME->dataSize);
     const size_t nameLength = strlen(name);
 
@@ -1380,7 +1380,7 @@ RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL zOpt_CameraSection_GetActiveCam
 
 // Reimplements 0x408190: zOpt_GetPlayerName
 RECOIL_NOINLINE char *RECOIL_CDECL zOpt_GetPlayerName() {
-    return reinterpret_cast<char *>(ZOPT_PLAYER_NAME->payloadOrBuffer);
+    return (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
 }
 
 // Reimplements 0x408a20: zOpt_GetWolPasswordFlagValue

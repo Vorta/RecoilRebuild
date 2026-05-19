@@ -150,7 +150,7 @@ namespace zClass_Display {
         data->backgroundG = green;
         data->backgroundB = blue;
         const unsigned short packedColor =
-            zVid_PackColorRgbFloats(reinterpret_cast<zVideo_ColorRgbFloat *>(&data->backgroundR));
+            zVid_PackColorRgbFloats((zVideo_ColorRgbFloat *)(&data->backgroundR));
         zVideo_SetClearColorPacked16(packedColor);
         return 0;
     }

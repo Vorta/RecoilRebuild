@@ -535,7 +535,7 @@ zUtil_ZRDR_UnloadMountedArchives(int destroyCurrentToo) {
     zIndexArchive *archive =
         static_cast<zIndexArchive *>(zArchiveList_PopFrontPayload(g_zArchive_MountedList));
     while (archive != 0) {
-        zIndexArchive *const current = reinterpret_cast<zIndexArchive *>(g_zArchive_Current);
+        zIndexArchive *const current = (zIndexArchive *)(g_zArchive_Current);
         if (destroyCurrentToo != 0 || archive != current) {
             if (current == archive) {
                 g_zArchive_Current = 0;
@@ -639,7 +639,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::Init(const char *filepath) {
     const DWORD lastError = GetLastError();
     char *message = 0;
     FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, 0, lastError,
-                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPSTR>(&message), 0,
+                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)(&message), 0,
                    0);
     zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zUtil\\zutl_zar.cpp", 0x4c,
                       "GetLastError(0x%08x): %s", lastError, message);
@@ -847,7 +847,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL MountIndexArchive(const char *path,
     }
 
     if (setCurrent != 0) {
-        g_zArchive_Current = reinterpret_cast<zArchiveList *>(payload);
+        g_zArchive_Current = (zArchiveList *)(payload);
     }
 
     zArchiveList_PushBackPayload(g_zArchive_MountedList, payload);

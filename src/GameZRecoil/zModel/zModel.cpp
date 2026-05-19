@@ -15,7 +15,7 @@ namespace {
 const double kVisibleContributionThreshold = 1.0 / 255.0;
 
 zVec3 TransformPointByCurrentMatrix(const zVec3 *point) {
-    const zMat4x3 *matrix = reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+    const zMat4x3 *matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
     zVec3 out = {0};
     out.x = point->x * matrix->xx + point->y * matrix->yx + point->z * matrix->zx + matrix->posX;
     out.y = point->x * matrix->xy + point->y * matrix->yy + point->z * matrix->zy + matrix->posY;
@@ -305,7 +305,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_RenderPointQueueEntry(
         zMath::ProjectPointBatch(&transformedPoint, &projectedPoint, 1);
     } else {
         zMath_ProjectSphereBatch(&transformedPoint,
-                                 reinterpret_cast<zProjectedSphere *>(&projectedPoint), 1);
+                                 (zProjectedSphere *)(&projectedPoint), 1);
     }
 
     if (!ProjectedPointInClipBounds(projectedPoint)) {
@@ -314,7 +314,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_RenderPointQueueEntry(
 
     const int color16 = packedColor16 & 0xffff;
     const int source =
-        static_cast<int>(reinterpret_cast<int>(&pointEntry->lensFlareSource[0]));
+        static_cast<int>((int)(&pointEntry->lensFlareSource[0]));
     if (g_zVideo_ActiveRendererPath == 0) {
         zRndr_LensFlare_QueueProjectedSample(&projectedPoint, color16, source);
         return;
@@ -325,7 +325,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_RenderPointQueueEntry(
         ((static_cast<float>(depthBias) * g_zRndr_InverseZTolerance) + 1.0f) *
         projectedPoint.reciprocalZ;
 
-    const DrawPointColor16Proc drawPoint = reinterpret_cast<DrawPointColor16Proc>(
+    const DrawPointColor16Proc drawPoint = (DrawPointColor16Proc)(
         static_cast<unsigned int>(g_zVideo_pfnDrawPointColor16));
     drawPoint(&projectedPoint, static_cast<unsigned int>(color16), 1);
     zRndr_LensFlare_QueueProjectedSample(&projectedPoint, color16, source);

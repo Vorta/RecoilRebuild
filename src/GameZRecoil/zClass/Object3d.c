@@ -643,7 +643,7 @@ namespace zClass_Node {
     RECOIL_NOINLINE int RECOIL_FASTCALL HasRenderableDiPredicate(zClass_NodePartial *
                                                                           node) {
         zDiPartial *di =
-            reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(node->userDataOrDiRef));
+            (zDiPartial *)(static_cast<unsigned int>(node->userDataOrDiRef));
         if (di != 0 && di->mode == 1 && (di->flags & 0x10) == 0) {
             return 1;
         }

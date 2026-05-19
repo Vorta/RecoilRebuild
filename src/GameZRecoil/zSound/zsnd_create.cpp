@@ -180,7 +180,7 @@ zSndSample::InitFromWaveData_DirectSound(zSndWaveData *waveData) {
         desc.flags |= 0x10000;
     }
 
-    DirectSoundDevice *const device = reinterpret_cast<DirectSoundDevice *>(g_zSnd_BackendDevice);
+    DirectSoundDevice *const device = (DirectSoundDevice *)(g_zSnd_BackendDevice);
     int error =
         device->vtable->CreateSoundBuffer(device, &desc, &primaryVoice.backendBuffer, 0);
     if (error != 0) {
@@ -191,7 +191,7 @@ zSndSample::InitFromWaveData_DirectSound(zSndWaveData *waveData) {
     }
 
     primaryVoice.handleKind = ZSND_PLAYHANDLE_BACKEND;
-    DirectSoundBuffer * buffer = reinterpret_cast<DirectSoundBuffer *>(primaryVoice.backendBuffer);
+    DirectSoundBuffer * buffer = (DirectSoundBuffer *)(primaryVoice.backendBuffer);
 
     int status = 0;
     error = buffer->vtable->GetStatus(buffer, &status);
@@ -245,13 +245,13 @@ zSndSample::InitFromWaveData_A3D(zSndWaveData *waveData) {
         return 0;
     }
 
-    A3dDevice *const device = reinterpret_cast<A3dDevice *>(g_zSnd_BackendDevice);
+    A3dDevice *const device = (A3dDevice *)(g_zSnd_BackendDevice);
     int error = device->vtable->CreateBufferByKind(device, 0, &primaryVoice.backendBuffer);
     if (error != 0) {
         return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x4e);
     }
 
-    A3dBuffer *buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+    A3dBuffer *buffer = (A3dBuffer *)(primaryVoice.backendBuffer);
     error = buffer->vtable->SetWaveFormat(buffer, waveData->fmt);
     if (error != 0) {
         return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x51);
@@ -279,19 +279,19 @@ zSndSample::InitFromWaveData_A3D(zSndWaveData *waveData) {
         audioBytes1 += audioBytes2;
     }
 
-    buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+    buffer = (A3dBuffer *)(primaryVoice.backendBuffer);
     error = buffer->vtable->CommitWrite(buffer, audioPtr1, audioBytes1, audioPtr2, audioBytes2);
     if (error != 0) {
         return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x66);
     }
 
-    buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+    buffer = (A3dBuffer *)(primaryVoice.backendBuffer);
     buffer->vtable->Reset(buffer);
 
-    buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+    buffer = (A3dBuffer *)(primaryVoice.backendBuffer);
     if (((replayFields.flags >> 2) & 1) != 0) {
         buffer->vtable->SetRange(buffer, rangeMin, rangeMax, 1);
-        buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+        buffer = (A3dBuffer *)(primaryVoice.backendBuffer);
         buffer->vtable->SetA3DDistanceScale(buffer, a3dDistanceScale);
     } else {
         buffer->vtable->SetSpatializationEnabled(buffer, 1);
@@ -314,14 +314,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::LockBackendBuffers(
 
     int error = 0;
     if (g_zSnd_ActiveBackend == 0) {
-        DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(primaryVoice.backendBuffer);
+        DirectSoundBuffer *const buffer = (DirectSoundBuffer *)(primaryVoice.backendBuffer);
         error = buffer->vtable->Lock(buffer, offset, bytes, buffer1, buffer1Bytes, buffer2,
                                      buffer2Bytes, 0);
         if (error != 0) {
             return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x1ec);
         }
     } else if (g_zSnd_ActiveBackend == 1) {
-        A3dBuffer *const buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+        A3dBuffer *const buffer = (A3dBuffer *)(primaryVoice.backendBuffer);
         error = buffer->vtable->Lock(buffer, offset, bytes, buffer1, buffer1Bytes, buffer2,
                                      buffer2Bytes, 0);
         if (error != 0) {
@@ -341,13 +341,13 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::UnlockBackendBuffers(
 
     int error = 0;
     if (g_zSnd_ActiveBackend == 0) {
-        DirectSoundBuffer *const buffer = reinterpret_cast<DirectSoundBuffer *>(primaryVoice.backendBuffer);
+        DirectSoundBuffer *const buffer = (DirectSoundBuffer *)(primaryVoice.backendBuffer);
         error = buffer->vtable->Unlock(buffer, buffer1, buffer1Bytes, buffer2, buffer2Bytes);
         if (error != 0) {
             return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x222);
         }
     } else if (g_zSnd_ActiveBackend == 1) {
-        A3dBuffer *const buffer = reinterpret_cast<A3dBuffer *>(primaryVoice.backendBuffer);
+        A3dBuffer *const buffer = (A3dBuffer *)(primaryVoice.backendBuffer);
         error = buffer->vtable->CommitWrite(buffer, buffer1, buffer1Bytes, buffer2, buffer2Bytes);
         if (error != 0) {
             return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x21b);
@@ -451,14 +451,14 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::ParseLoadedWaveFile() {
             if (chunkId == kCueChunkMagic) {
                 if (cuePoints == 0 || cuePointCount == 0) {
                     cuePointCount = static_cast<int>(ReadU32(body));
-                    cuePoints = reinterpret_cast<zSndCuePoint *>(body + 4);
+                    cuePoints = (zSndCuePoint *)(body + 4);
                 }
             } else if (chunkId == kFmtChunkMagic) {
                 if (fmt == 0) {
                     if (chunkSize < 0x0e) {
                         invalidFmtChunk = 1;
                     } else {
-                        fmt = reinterpret_cast<WAVEFORMATEX *>(body);
+                        fmt = (WAVEFORMATEX *)(body);
                     }
                 }
             } else if (chunkId == kDataChunkMagic) {

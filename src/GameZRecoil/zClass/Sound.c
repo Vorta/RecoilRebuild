@@ -301,7 +301,7 @@ namespace zClass_Sound {
         zVec3 localPoint = {0.0f, 0.0f, 0.0f};
         zMat4x3 slotBuffer = {0};
 
-        zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+        zMath::MatStackPushPtr((float *)(&slotBuffer));
         zMath::MatLoadIdentity();
         gwNode::BuildNodeToAncestorMatrix(node, 1);
 
@@ -309,7 +309,7 @@ namespace zClass_Sound {
             soundData->worldPos = localPoint;
         } else {
             const zMat4x3 *matrix =
-                reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
             soundData->worldPos.x =
                 localPoint.x * matrix->xx + localPoint.y * matrix->yx +
                 localPoint.z * matrix->zx + matrix->posX;

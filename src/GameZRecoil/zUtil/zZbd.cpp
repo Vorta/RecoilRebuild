@@ -235,7 +235,7 @@ zZbdSectionHandler::InvokePreLoad(zZbdSectionCallbackCtx *callbackCtx) {
     }
 
     typedef int (RECOIL_FASTCALL *PreLoadCallback)(zZbdSectionCallbackCtx *, void *);
-    return reinterpret_cast<PreLoadCallback>(onPreLoad)(callbackCtx, userData);
+    return ((PreLoadCallback)(onPreLoad))(callbackCtx, userData);
 }
 
 // Reimplements 0x4c06c0: zZbdSectionHandler::InvokeDataReady
@@ -246,7 +246,7 @@ zZbdSectionHandler::InvokeDataReady(zZbdSectionCallbackCtx *callbackCtx, const c
     if (onDataReady != 0) {
         typedef void (RECOIL_FASTCALL *DataReadyCallback)(zZbdSectionCallbackCtx *, const char *,
                                                           void *, unsigned int, void *);
-        reinterpret_cast<DataReadyCallback>(onDataReady)(callbackCtx, sectionToken, buffer, size,
+        ((DataReadyCallback)(onDataReady))(callbackCtx, sectionToken, buffer, size,
                                                          userData);
     }
 }

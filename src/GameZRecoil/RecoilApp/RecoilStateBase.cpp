@@ -9,5 +9,5 @@ RecoilApp_IState *RECOIL_THISCALL RecoilStateBase::ScalarDeletingDestructor(unsi
         ::operator delete(static_cast<void *>(this));
     }
 
-    return reinterpret_cast<RecoilApp_IState *>(this);
+    return (RecoilApp_IState *)(this);
 }

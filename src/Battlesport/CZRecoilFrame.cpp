@@ -62,7 +62,7 @@ const RecoilNamedVtable kCObject_Vtable = {"CObject vtable"};
 typedef int (RECOIL_THISCALL *CMenuDestroyMenuProc)(void *);
 
 unsigned int Ptr32FromSymbol(const void *symbol) {
-    return static_cast<unsigned int>(reinterpret_cast<unsigned int>(symbol));
+    return static_cast<unsigned int>((unsigned int)(symbol));
 }
 
 CRuntimeClass *RECOIL_STDCALL GetCZRecoilFrameBaseRuntimeClass() {
@@ -80,7 +80,7 @@ void CallMfcCMenuDestroyMenu(void *menu) {
     }
 
     if (mfc42 != 0) {
-        CMenuDestroyMenuProc const destroyMenu = reinterpret_cast<CMenuDestroyMenuProc>(
+        CMenuDestroyMenuProc const destroyMenu = (CMenuDestroyMenuProc)(
             GetProcAddress(mfc42, "?DestroyMenu@CMenu@@QAEHXZ"));
         if (destroyMenu != 0) {
             destroyMenu(menu);
@@ -163,19 +163,19 @@ RECOIL_FRAME_NOINLINE void RECOIL_STDCALL EnableAlways(CZRecoilCmdUI *cmdUi) {
 
 // Reimplements 0x430250: CZRecoilFrame::Constructor
 RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor() {
-    reinterpret_cast<CZGameFrame *>(this)->Constructor("recoil");
+    ((CZGameFrame *)(this))->Constructor("recoil");
     m_mainMenuVftable = Ptr32FromSymbol(&kCMenu_Vtable);
     m_mainMenuHandle = 0;
     vftable = Ptr32FromSymbol(&kCZRecoilFrame_Vtable);
 
     unsigned long titleStorage[(sizeof(CString) + sizeof(unsigned long) - 1) /
                                sizeof(unsigned long)];
-    CString *title = reinterpret_cast<CString *>(titleStorage);
+    CString *title = (CString *)(titleStorage);
     BuildWindowTitle(title);
     const int windowHeight = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYMENU) +
                              (GetSystemMetrics(SM_CYFRAME) << 1) + 0x1e0;
     const int windowWidth = (GetSystemMetrics(SM_CXFRAME) << 1) + 0x280;
-    reinterpret_cast<CWnd *>(this)->CreateEx(0x20000, kRecoilWndClassName, title->m_pchData,
+    ((CWnd *)(this))->CreateEx(0x20000, kRecoilWndClassName, title->m_pchData,
                                              kMainWindowStyle, CW_USEDEFAULT, CW_USEDEFAULT,
                                              windowWidth, windowHeight, 0, 0, 0);
     title->~CString();
@@ -194,7 +194,7 @@ RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor(
     free(commandLineCopy);
 
     zError::InitOutputContext(m_hWnd, 0xe00, "recoil.err");
-    CMenu *const mainMenu = reinterpret_cast<CMenu *>(&m_mainMenuVftable);
+    CMenu *const mainMenu = (CMenu *)(&m_mainMenuVftable);
     mainMenu->Attach(LoadMenuA(AfxFindResourceHandle(kMainMenuResourceName, MAKEINTRESOURCEA(4)),
                                kMainMenuResourceName));
     m_mainMenuHandle = mainMenu->m_hMenu;
@@ -210,20 +210,20 @@ RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor(
     RemoveMenu(SubMenuHandleOrNull(m_mainMenuHandle, 2), kFullscreenMenuCommandId, MF_BYCOMMAND);
 
     g_RecoilApp_hInstance =
-        reinterpret_cast<HINSTANCE>(static_cast<unsigned int>(g_RecoilApp.m_hInstance_6c));
+        (HINSTANCE)(static_cast<unsigned int>(g_RecoilApp.m_hInstance_6c));
     g_RecoilApp_hWndMain = m_hWnd;
 
     unsigned long formattedTitleStorage[(sizeof(CString) + sizeof(unsigned long) - 1) /
                                         sizeof(unsigned long)];
-    CString *formattedTitle = reinterpret_cast<CString *>(formattedTitleStorage);
+    CString *formattedTitle = (CString *)(formattedTitleStorage);
     new (formattedTitle) CString();
     unsigned long titleCopyStorage[(sizeof(CString) + sizeof(unsigned long) - 1) /
                                    sizeof(unsigned long)];
-    CString *titleCopy = reinterpret_cast<CString *>(titleCopyStorage);
+    CString *titleCopy = (CString *)(titleCopyStorage);
     BuildWindowTitle(titleCopy);
     formattedTitle->Format("%s", titleCopy->m_pchData);
     titleCopy->~CString();
-    reinterpret_cast<CWnd *>(this)->SetWindowTextA(formattedTitle->m_pchData);
+    ((CWnd *)(this))->SetWindowTextA(formattedTitle->m_pchData);
     formattedTitle->~CString();
 
     m_openZbdFilePath[0] = 0;
@@ -250,7 +250,7 @@ RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor(
         RegCloseKey(wolApiRegKey);
     }
 
-    reinterpret_cast<CWnd *>(this)->CenterWindow(0);
+    ((CWnd *)(this))->CenterWindow(0);
     SetCursor(LoadCursorA(0, IDC_ARROW));
     return this;
 }
@@ -260,7 +260,7 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::Destructor() {
     m_mainMenuVftable = Ptr32FromSymbol(&kCMenu_Vtable);
     CallMfcCMenuDestroyMenu(&m_mainMenuVftable);
     m_mainMenuVftable = Ptr32FromSymbol(&kCObject_Vtable);
-    reinterpret_cast<CZGameFrame *>(this)->Destructor();
+    ((CZGameFrame *)(this))->Destructor();
 }
 
 // Reimplements 0x430680: CZRecoilFrame::SetMenuBarVisibility
@@ -330,7 +330,7 @@ RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL CZRecoilFrame::OnOpenFil
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
     ofn.lpstrDefExt = "gs";
 
-    if (GetOpenFileNameA(reinterpret_cast<LPOPENFILENAMEA>(&ofn)) != 0) {
+    if (GetOpenFileNameA((LPOPENFILENAMEA)(&ofn)) != 0) {
         strcpy(m_openZbdFilePath, ofn.lpstrFile);
         g_RecoilApp.LoadZbdAndSetupSensorTracker(0, m_openZbdFilePath, 1, 1);
     }
@@ -439,26 +439,26 @@ RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL CZRecoilFrame::OnMenuOpe
     char messageBoxTitle[0x80];
     strcpy(messageBoxTitle, zLoc::GetMessageString(0x19));
 
-    const UINT resultCode = static_cast<UINT>(reinterpret_cast<UINT_PTR>(findResult));
+    const UINT resultCode = static_cast<UINT>((UINT_PTR)(findResult));
     if (resultCode <= 0x1f) {
         switch (kFindExecutableErrorMap[resultCode]) {
         case 0:
-            reinterpret_cast<CWnd *>(this)->MessageBoxA(zLoc::GetMessageString(0x20),
+            ((CWnd *)(this))->MessageBoxA(zLoc::GetMessageString(0x20),
                                                         messageBoxTitle, 0x30);
             return;
 
         case 1:
-            reinterpret_cast<CWnd *>(this)->MessageBoxA(zLoc::GetMessageString(0x22),
+            ((CWnd *)(this))->MessageBoxA(zLoc::GetMessageString(0x22),
                                                         messageBoxTitle, 0x30);
             return;
 
         case 2:
-            reinterpret_cast<CWnd *>(this)->MessageBoxA(zLoc::GetMessageString(0x24),
+            ((CWnd *)(this))->MessageBoxA(zLoc::GetMessageString(0x24),
                                                         messageBoxTitle, 0x30);
             return;
 
         case 3:
-            reinterpret_cast<CWnd *>(this)->MessageBoxA(zLoc::GetMessageString(0x21),
+            ((CWnd *)(this))->MessageBoxA(zLoc::GetMessageString(0x21),
                                                         messageBoxTitle, 0x30);
             return;
 
@@ -679,11 +679,11 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnUpdateA3DCmdUI(CZRec
 // Reimplements 0x431b10: CZRecoilFrame::OnSize
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnSize(unsigned int nType,
                                                                  int cx, int cy) {
-    reinterpret_cast<CZGameFrame *>(this)->OnSize(nType, cx, cy);
+    ((CZGameFrame *)(this))->OnSize(nType, cx, cy);
 
     if (nType == 4 || nType == 1) {
-        reinterpret_cast<CZGameFrame *>(this)->m_app->vftable->OnAppDeactivate(
-            reinterpret_cast<CZGameFrame *>(this)->m_app);
+        ((CZGameFrame *)(this))->m_app->vftable->OnAppDeactivate(
+            ((CZGameFrame *)(this))->m_app);
     }
 }
 
@@ -692,7 +692,7 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
 CZRecoilFrame::SetHwApiAndInitMode(int hwApiIndex) {
     zVid::SetHwApiOption(zVideo::SelectHwApiDeviceOrFallback(hwApiIndex));
     g_zVideo_pfnQueryDeviceVideoMemoryBytes(hwApiIndex, &m_vidMemTotalBytes,
-                                            reinterpret_cast<int *>(&m_vidMemFreeBytes));
+                                            (int *)(&m_vidMemFreeBytes));
     m_fullscreenOption = zOpt::GetFullscreenOption();
     zOpt::SetFullscreenOption(1);
     zVid::SetAccelerationOption(1);

@@ -24,6 +24,7 @@
 
 namespace {
 typedef HRESULT(WINAPI *zDirectDrawCreateFn)(GUID *, LPDIRECTDRAW *, IUnknown *);
+typedef HMODULE(RECOIL_STDCALL *zLoadLibraryAFn)(const char *);
 
 const char kDdrawDll[] = "DDRAW.DLL";
 const char kDinputDll[] = "DINPUT.DLL";
@@ -58,7 +59,7 @@ struct CpuBenchmarkResolver {
 };
 
 CpuBenchmarkResolver *CpuBenchmarkResolverFromValue(unsigned int value) {
-    return reinterpret_cast<CpuBenchmarkResolver *>(static_cast<unsigned int>(value));
+    return (CpuBenchmarkResolver *)(static_cast<unsigned int>(value));
 }
 
 unsigned long RecoilBitScanForward(unsigned long value) {
@@ -107,150 +108,7 @@ unsigned int ReadCmosRtcSecondsBcd() {
 
 extern "C" unsigned int g_zSys_CpuVendorNonIntelMarker = 0;
 
-// Reimplements 0x40c370: zSys::ProbePlatformAndVideoCaps
-RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
-    zSysVideoCapsLevel *outVideoCaps, zSysPlatformCapsLevel *outPlatformCaps) {
-    LPDIRECTDRAW pDDraw = 0;
-    LPDIRECTDRAW2 pDDraw2 = 0;
-    LPDIRECTDRAWSURFACE pSurface = 0;
-    LPDIRECTDRAWSURFACE3 pSurface3 = 0;
-    LPDIRECTDRAWSURFACE4 pSurface4 = 0;
-
-    OSVERSIONINFOA osVer;
-    osVer.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
-    RECOIL_STATIC_ASSERT(sizeof(OSVERSIONINFOA) == 0x94);
-
-    if (GetVersionExA(&osVer) == 0) {
-        *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
-        *outPlatformCaps = ZSYS_PLATFORM_CAPS_UNSUPPORTED;
-        return;
-    }
-
-    if (osVer.dwPlatformId == VER_PLATFORM_WIN32_NT) {
-        *outPlatformCaps = ZSYS_PLATFORM_CAPS_NT4_PLUS;
-        if (osVer.dwMajorVersion < 4) {
-            *outPlatformCaps = ZSYS_PLATFORM_CAPS_UNSUPPORTED;
-            return;
-        }
-
-        if (osVer.dwMajorVersion == 4) {
-            *outVideoCaps = ZSYS_VIDEO_CAPS_DDRAW2;
-            HMODULE dinputModule = LoadLibraryA(kDinputDll);
-            if (dinputModule == 0) {
-                OutputDebugStringA(kCouldNotLoadDinput);
-                return;
-            }
-
-            FARPROC directInputCreate = GetProcAddress(dinputModule, kDirectInputCreateName);
-            FreeLibrary(dinputModule);
-            if (directInputCreate == 0) {
-                OutputDebugStringA(kCouldNotGetDinputCreate);
-                return;
-            }
-
-            *outVideoCaps = ZSYS_VIDEO_CAPS_DDRAW2_DINPUT;
-            return;
-        }
-    } else {
-        *outPlatformCaps = ZSYS_PLATFORM_CAPS_NON_NT;
-    }
-
-    HMODULE ddrawModule = LoadLibraryA(kDdrawDll);
-    if (ddrawModule == 0) {
-        *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
-        *outPlatformCaps = ZSYS_PLATFORM_CAPS_UNSUPPORTED;
-        FreeLibrary(ddrawModule);
-        return;
-    }
-
-    zDirectDrawCreateFn directDrawCreate = reinterpret_cast<zDirectDrawCreateFn>(GetProcAddress(ddrawModule, kDirectDrawCreateName));
-    if (directDrawCreate == 0) {
-        *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
-        *outPlatformCaps = ZSYS_PLATFORM_CAPS_UNSUPPORTED;
-        FreeLibrary(ddrawModule);
-        OutputDebugStringA(kCouldNotLoadDDraw);
-        return;
-    }
-
-    if (directDrawCreate(0, &pDDraw, 0) < 0) {
-        *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
-        *outPlatformCaps = ZSYS_PLATFORM_CAPS_UNSUPPORTED;
-        FreeLibrary(ddrawModule);
-        OutputDebugStringA(kCouldNotCreateDDraw);
-        return;
-    }
-
-    *outVideoCaps = ZSYS_VIDEO_CAPS_DDRAW;
-    if (IDirectDraw_QueryInterface(pDDraw, IID_IDirectDraw2, reinterpret_cast<void **>(&pDDraw2)) <
-        0) {
-        IDirectDraw_Release(pDDraw);
-        FreeLibrary(ddrawModule);
-        OutputDebugStringA(kCouldNotQiDDraw2);
-        return;
-    }
-
-    IDirectDraw2_Release(pDDraw2);
-    *outVideoCaps = ZSYS_VIDEO_CAPS_DDRAW2;
-
-    HMODULE dinputModule = LoadLibraryA(kDinputDll);
-    if (dinputModule == 0) {
-        OutputDebugStringA(kCouldNotLoadDinput);
-        IDirectDraw_Release(pDDraw);
-        FreeLibrary(ddrawModule);
-        return;
-    }
-
-    FARPROC directInputCreate = GetProcAddress(dinputModule, kDirectInputCreateName);
-    FreeLibrary(dinputModule);
-    if (directInputCreate == 0) {
-        FreeLibrary(ddrawModule);
-        IDirectDraw_Release(pDDraw);
-        OutputDebugStringA(kCouldNotGetDinputCreate);
-        return;
-    }
-
-    *outVideoCaps = ZSYS_VIDEO_CAPS_DDRAW2_DINPUT;
-
-    DDSURFACEDESC desc;
-    memset(&desc, 0, sizeof(desc));
-    RECOIL_STATIC_ASSERT(sizeof(DDSURFACEDESC) == 0x6c);
-    desc.dwSize = sizeof(DDSURFACEDESC);
-    desc.dwFlags = DDSD_CAPS;
-    desc.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-
-    if (IDirectDraw_SetCooperativeLevel(pDDraw, 0, DDSCL_NORMAL) < 0) {
-        IDirectDraw_Release(pDDraw);
-        FreeLibrary(ddrawModule);
-        *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
-        OutputDebugStringA(kCouldNotSetCoopLevel);
-        return;
-    }
-
-    if (IDirectDraw_CreateSurface(pDDraw, &desc, &pSurface, 0) < 0) {
-        IDirectDraw_Release(pDDraw);
-        FreeLibrary(ddrawModule);
-        *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
-        OutputDebugStringA(kCouldNotCreateSurface);
-        return;
-    }
-
-    if (IDirectDrawSurface_QueryInterface(pSurface, IID_IDirectDrawSurface3,
-                                          reinterpret_cast<void **>(&pSurface3)) < 0) {
-        IDirectDraw_Release(pDDraw);
-        FreeLibrary(ddrawModule);
-        return;
-    }
-
-    *outVideoCaps = ZSYS_VIDEO_CAPS_SURFACE3;
-    if (IDirectDrawSurface_QueryInterface(pSurface, IID_IDirectDrawSurface4,
-                                          reinterpret_cast<void **>(&pSurface4)) >= 0) {
-        *outVideoCaps = ZSYS_VIDEO_CAPS_SURFACE4;
-        IDirectDrawSurface_Release(pSurface);
-    }
-
-    IDirectDraw_Release(pDDraw);
-    FreeLibrary(ddrawModule);
-}
+#include "GameZRecoil/zSys/zSys_probe_platform.inl"
 
 // Reimplements 0x4a59e0: zSys::FindFileOnDriveType
 RECOIL_NOINLINE RECOIL_NO_GS char *RECOIL_FASTCALL
@@ -391,7 +249,7 @@ CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(zSys::CpuBenchmarkResult *outBuff
     }
 
     const unsigned int expectedCycles =
-        static_cast<unsigned int>(reinterpret_cast<unsigned int>(this));
+        static_cast<unsigned int>((unsigned int)(this));
     const unsigned int microseconds =
         DivideRoundedHalfUp(static_cast<unsigned __int64>(minTicks) * 1000000ui64,
                             static_cast<unsigned int>(frequency.LowPart));
@@ -542,7 +400,7 @@ CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(zSys::CpuBenchmarkResult *outBuf
     const int cpuClass = zSys::DetectCpuClassAndFeatures();
     const unsigned int featureFlags = zSys::ReadCpuidFeatureFlags();
     const int cpuClassHint =
-        static_cast<int>(reinterpret_cast<unsigned int>(this));
+        static_cast<int>((unsigned int)(this));
 
     if ((cpuClass & 0x8000) != 0) {
         ZeroBenchmarkResult(outBuffer);
@@ -557,7 +415,7 @@ CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(zSys::CpuBenchmarkResult *outBuf
         forcedLowHint = true;
         expectedCycles = static_cast<unsigned int>(cpuClassHint) * 0x0fa0u;
     } else {
-        expectedCycles = static_cast<unsigned int>(reinterpret_cast<unsigned int>(outBuffer));
+        expectedCycles = static_cast<unsigned int>((unsigned int)(outBuffer));
     }
 
     zSys::CpuBenchmarkResult localResult;

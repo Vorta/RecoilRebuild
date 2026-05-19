@@ -22,7 +22,7 @@ typedef void (RECOIL_THISCALL *RecoilStateWndActivateMethod)(RecoilApp_IState *,
 typedef void (RECOIL_THISCALL *CFrameWndDestructorProc)(CFrameWnd *);
 
 RecoilPtr32 Ptr32FromSymbol(const void *symbol) {
-    return static_cast<RecoilPtr32>(reinterpret_cast<unsigned int>(symbol));
+    return static_cast<RecoilPtr32>((unsigned int)(symbol));
 }
 
 CRuntimeClass *RECOIL_STDCALL GetCZGameFrameBaseRuntimeClass() {
@@ -30,10 +30,10 @@ CRuntimeClass *RECOIL_STDCALL GetCZGameFrameBaseRuntimeClass() {
 }
 
 void CallStateWndActivate(RecoilPtr32 stateValue, unsigned int nState) {
-    RecoilApp_IState *const state = reinterpret_cast<RecoilApp_IState *>(static_cast<unsigned int>(stateValue));
-    const RecoilApp_IState_Vtbl *const vtable = reinterpret_cast<const RecoilApp_IState_Vtbl *>(
+    RecoilApp_IState *const state = (RecoilApp_IState *)(static_cast<unsigned int>(stateValue));
+    const RecoilApp_IState_Vtbl *const vtable = (const RecoilApp_IState_Vtbl *)(
         static_cast<unsigned int>(state->vftable));
-    RecoilStateWndActivateMethod const method = reinterpret_cast<RecoilStateWndActivateMethod>(
+    RecoilStateWndActivateMethod const method = (RecoilStateWndActivateMethod)(
         static_cast<unsigned int>(vtable->OnWndActivate));
     method(state, nState);
 }
@@ -45,7 +45,7 @@ void CallMfcCFrameWndDestructor(CFrameWnd *frame) {
     }
 
     if (mfc42 != 0) {
-        CFrameWndDestructorProc const destructor = reinterpret_cast<CFrameWndDestructorProc>(
+        CFrameWndDestructorProc const destructor = (CFrameWndDestructorProc)(
             GetProcAddress(mfc42, "??1CFrameWnd@@UAE@XZ"));
         if (destructor != 0) {
             destructor(frame);
@@ -95,7 +95,7 @@ CZGameFrame::IsWindowValid(CZGameFrameMfcWindow *pWnd) {
     }
 
     typedef int (RECOIL_THISCALL *QueryValidityMethod)(CZGameFrameMfcWindow *);
-    QueryValidityMethod const method = reinterpret_cast<QueryValidityMethod>(pWnd->vftable[4]);
+    QueryValidityMethod const method = (QueryValidityMethod)(pWnd->vftable[4]);
     return method(pWnd) == 0 ? 1 : 0;
 }
 
@@ -104,14 +104,14 @@ CZGameFrame::Constructor(const char *appId) {
     new (static_cast<CFrameWnd *>(this)) CFrameWnd();
     m_gameBitmap.vftable = const_cast<RecoilNamedVtable *>(&kCBitmap_Vtable);
     m_gameBitmap.m_hObject = 0;
-    *reinterpret_cast<RecoilPtr32 *>(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
+    *(RecoilPtr32 *)(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
     RecoilApp::InitStdLogFiles(appId);
     zVideo::ModuleInit();
     return this;
 }
 
 RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::Destructor() {
-    *reinterpret_cast<RecoilPtr32 *>(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
+    *(RecoilPtr32 *)(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
     zVideo::ReturnSuccessStub();
     m_gameBitmap.vftable = const_cast<RecoilNamedVtable *>(&kCGdiObject_Vtable);
     m_gameBitmap.DeleteObject();
@@ -160,7 +160,7 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnActivate(unsigned
                                                                         BOOL bMinimized) {
     CFrameWnd::OnActivate(nState, pWndOther, bMinimized);
 
-    RecoilApp *const app = reinterpret_cast<RecoilApp *>(m_app);
+    RecoilApp *const app = (RecoilApp *)(m_app);
     const RecoilPtr32 currentState = app->GetCurrentState();
     if (currentState != 0) {
         CallStateWndActivate(currentState, nState);

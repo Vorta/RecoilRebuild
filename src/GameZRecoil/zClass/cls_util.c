@@ -149,7 +149,7 @@ namespace zClass_Util {
         }
 
         zDiPartial *displayInstance =
-            reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(node->userDataOrDiRef));
+            (zDiPartial *)(static_cast<unsigned int>(node->userDataOrDiRef));
         if (displayInstance != 0) {
             const int setResult = zClass_Class::gwNodeSetDisplayInstance(node, 0);
             if (setResult != 0) {
@@ -183,7 +183,7 @@ namespace zClass_cls_util {
             result = zClass_Class::gwNodeGetUserData(source, &displayInstanceValue);
             if (result == 0) {
                 return zClass_Class::gwNodeSetDisplayInstance(
-                    dest, reinterpret_cast<zDiPartial *>(
+                    dest, (zDiPartial *)(
                               static_cast<unsigned int>(displayInstanceValue)));
             }
             return result;
@@ -196,7 +196,7 @@ namespace zClass_cls_util {
         }
 
         zDiPartial *const sourceDisplayInstance =
-            reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(sourceDisplayInstanceValue));
+            (zDiPartial *)(static_cast<unsigned int>(sourceDisplayInstanceValue));
         displayInstanceValue = sourceDisplayInstanceValue;
         int cloneInstance = 1;
         if (g_zClass_CopyNodeDiArg1 != 0 &&
@@ -207,7 +207,7 @@ namespace zClass_cls_util {
         if (cloneInstance == 0) {
             return zClass_Class::gwNodeSetDisplayInstance(
                 dest,
-                reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(displayInstanceValue)));
+                (zDiPartial *)(static_cast<unsigned int>(displayInstanceValue)));
         }
 
         zDiPartial *const clonedDisplayInstance = zDi::CloneToInstance(

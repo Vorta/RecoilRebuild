@@ -705,7 +705,7 @@ RECOIL_NOINLINE void *RECOIL_FASTCALL GetAppendSpace(zGeometry_WeilerBufferParti
         self->capacity += appendCount + 0x10;
         void *const base = realloc(self->base, self->capacity * self->elementSize);
         self->base = base;
-        self->appendPtr = reinterpret_cast<void *>(reinterpret_cast<unsigned int>(base) +
+        self->appendPtr = (void *)((unsigned int)(base) +
                                                    self->elementSize * self->count);
 
         if (outBase != 0) {
@@ -715,7 +715,7 @@ RECOIL_NOINLINE void *RECOIL_FASTCALL GetAppendSpace(zGeometry_WeilerBufferParti
 
     void *const result = self->appendPtr;
     self->count = newCount;
-    self->appendPtr = reinterpret_cast<void *>(reinterpret_cast<unsigned int>(self->appendPtr) +
+    self->appendPtr = (void *)((unsigned int)(self->appendPtr) +
                                                appendCount * self->elementSize);
     return result;
 }
@@ -725,7 +725,7 @@ RECOIL_NOINLINE void *RECOIL_FASTCALL GetAppendSpace(zGeometry_WeilerBufferParti
 RECOIL_NOINLINE void RECOIL_FASTCALL SetCountAndAppendPtr(zGeometry_WeilerBufferPartial *self,
                                                           int count) {
     self->count = count;
-    self->appendPtr = reinterpret_cast<void *>(reinterpret_cast<unsigned int>(self->base) +
+    self->appendPtr = (void *)((unsigned int)(self->base) +
                                                count * self->elementSize);
 }
 
@@ -1490,7 +1490,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DivideContourSegmentAtPoint(
     }
 
     zGeometry_WeilerXingPartial *const xingLink =
-        reinterpret_cast<zGeometry_WeilerXingPartial *>(xing);
+        (zGeometry_WeilerXingPartial *)(xing);
     if (updateSplitLinks != 0) {
         segment->endXing = xingLink;
         nextSegment->startXing = xingLink;
@@ -1827,7 +1827,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OutputContourToPolygonSet(
 
     zGeometry_PolygonPointSpanPartial *const polygon =
         static_cast<zGeometry_PolygonPointSpanPartial *>(zGeometry_WeilerBuffer::GetAppendSpace(
-            polygonBuffer, 1, reinterpret_cast<void **>(&polygonSet->polygons)));
+            polygonBuffer, 1, (void **)(&polygonSet->polygons)));
     if (polygon == 0) {
         return 0;
     }
@@ -1838,7 +1838,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OutputContourToPolygonSet(
 
     zVec3 *outPoint = static_cast<zVec3 *>(zGeometry_WeilerBuffer::GetAppendSpace(
         &self->pointListBuffer, contour->pointCount,
-        reinterpret_cast<void **>(&outClip->pointList.points)));
+        (void **)(&outClip->pointList.points)));
     if (outPoint == 0) {
         fprintf(stderr, "%s %d: outputContour call to bufEntry failed.\n",
                      kZGeoWeilerSourceFile, 0xfb9);
@@ -1967,7 +1967,7 @@ GenerateOutsideResults(zGeometry_WeilerStatePartial *self) {
     zGeometry_PolygonPointSpanPartial *const polygon =
         static_cast<zGeometry_PolygonPointSpanPartial *>(zGeometry_WeilerBuffer::GetAppendSpace(
             &self->polygonSetBBuffer, 1,
-            reinterpret_cast<void **>(&outClip->polygonSetB.polygons)));
+            (void **)(&outClip->polygonSetB.polygons)));
     if (polygon == 0) {
         fprintf(stderr, "%s %d: _gen._outside_rslts call to buf_entry failed\n",
                      kZGeoWeilerSourceFile, 0x11f7);
@@ -1980,7 +1980,7 @@ GenerateOutsideResults(zGeometry_WeilerStatePartial *self) {
 
     zVec3 *outPoint = static_cast<zVec3 *>(zGeometry_WeilerBuffer::GetAppendSpace(
         &self->pointListBuffer, polygon->pointCount,
-        reinterpret_cast<void **>(&outClip->pointList.points)));
+        (void **)(&outClip->pointList.points)));
     if (outPoint == 0) {
         fprintf(stderr, "%s %d: _gen._outside_rslts call to buf_entry failed\n",
                      kZGeoWeilerSourceFile, 0x120f);

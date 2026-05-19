@@ -87,8 +87,8 @@ namespace zClass_Window {
             zRndr::GetActiveRegionState(&data->fbWidth, &data->fbHeight, &data->fbBpp, &pitchBytes);
         data->buffer = buffer;
         printf("Window (new %x) buffer: %x (%d x %d x %d)\n",
-                    static_cast<unsigned int>(reinterpret_cast<unsigned int>(data)),
-                    static_cast<unsigned int>(reinterpret_cast<unsigned int>(buffer)),
+                    static_cast<unsigned int>((unsigned int)(data)),
+                    static_cast<unsigned int>((unsigned int)(buffer)),
                     data->fbWidth, data->fbHeight, data->fbBpp);
 
         if (zClass_TypeList::Insert(14, node) != 0) {

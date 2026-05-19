@@ -207,7 +207,7 @@ zInput_BindMapContext::InitCommandMap(int commandCount) {
     m_commandCount = commandCount;
     zOptionEntryPartial *option = zGame::Options_GetOrCreateOption(
         "CmdMap", 7, commandCount * static_cast<int>(sizeof(int)), 1);
-    m_packedBindings = reinterpret_cast<int *>(option->payloadOrBuffer);
+    m_packedBindings = (int *)(option->payloadOrBuffer);
     m_commandCallbacks = static_cast<zInputCommandCallbackFn *>(
         calloc(commandCount, sizeof(zInputCommandCallbackFn)));
     m_commandLabels = static_cast<char **>(calloc(commandCount, sizeof(char *)));
@@ -440,12 +440,12 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::SetCommandCallback(
     m_commandCallbacks[commandId] = callback;
     if (primary != 0) {
         zInput::Keyboard_RegisterKeyCallback(
-            primary, reinterpret_cast<void *>(&zInput_BindMapContext_DispatchFromKeyboardEvent),
+            primary, (void *)(&zInput_BindMapContext_DispatchFromKeyboardEvent),
             m_commandLabels[commandId]);
     }
     if (secondary != 0) {
         zInput::Keyboard_RegisterKeyCallback(
-            secondary, reinterpret_cast<void *>(&zInput_BindMapContext_DispatchFromKeyboardEvent),
+            secondary, (void *)(&zInput_BindMapContext_DispatchFromKeyboardEvent),
             m_commandLabels[commandId]);
     }
 
@@ -1021,7 +1021,7 @@ int ApplyKeyboardPollEvent(DIDeviceObjectData &event) {
     if ((event.dwData & 0x80) != 0) {
         dispatch.state = dispatch.state == 1 ? 3 : 1;
         if (g_zInput_KbdRawEventCallback != 0) {
-            KeyboardRawEventCallbackFn callback = reinterpret_cast<KeyboardRawEventCallbackFn>(g_zInput_KbdRawEventCallback);
+            KeyboardRawEventCallbackFn callback = (KeyboardRawEventCallbackFn)(g_zInput_KbdRawEventCallback);
             callback(Keyboard_TranslateDikToAscii(static_cast<int>(dispatchIndex)),
                      g_zInput_KbdRawEventCallbackCtx);
         }
@@ -1745,7 +1745,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Init(HWND hWnd, HINSTANCE hInstance) {
 
     const HRESULT hr =
         DirectInputCreateA(hInstance, kDirectInputVersion,
-                           reinterpret_cast<LPDIRECTINPUTA *>(&g_zInput_GlobalState), 0);
+                           (LPDIRECTINPUTA *)(&g_zInput_GlobalState), 0);
     if (hr != 0) {
         DI_ReportError(hr, kZInputInitSourceFile, 0x93);
         return -1;
@@ -1816,9 +1816,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Mouse_SetCooperativeLevelFlags(int flags) {
 RECOIL_NOINLINE int RECOIL_FASTCALL
 Mouse_GetButtonTransitionState(int buttonNumber) {
     const unsigned char *currentButtons =
-        reinterpret_cast<const unsigned char *>(&g_zInput_MouseCurrentState.rgbButtons);
+        (const unsigned char *)(&g_zInput_MouseCurrentState.rgbButtons);
     const unsigned char *previousButtons =
-        reinterpret_cast<const unsigned char *>(&g_zInput_MousePreviousState.rgbButtons);
+        (const unsigned char *)(&g_zInput_MousePreviousState.rgbButtons);
 
     const unsigned char current = currentButtons[buttonNumber - 1];
     const unsigned char previous = previousButtons[buttonNumber - 1];
@@ -2235,7 +2235,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Keyboard_PollState(int dispatchCallbacks) {
 
         void *const callback = g_zInputKbdKeyDispatchTable[dispatchIndex].callback;
         if (callback != 0 && (g_zInputKbdKeyDispatchTable[dispatchIndex].state & 1) != 0) {
-            reinterpret_cast<KeyboardComboCallbackFn>(callback)(dispatchIndex);
+            ((KeyboardComboCallbackFn)(callback))(dispatchIndex);
             g_zInputKbdKeyDispatchTable[dispatchIndex].state = 0;
         }
     }

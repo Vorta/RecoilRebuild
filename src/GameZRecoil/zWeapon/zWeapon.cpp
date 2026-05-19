@@ -10,8 +10,8 @@ float g_zWeapon_MaxTetherAltitude = 0.0f;
 }
 
 namespace {
-void *const kOnWeaponsSectionPreLoad = reinterpret_cast<void *>(0x004b1140);
-void *const kOnWeaponsSectionDataReady = reinterpret_cast<void *>(0x004b1160);
+void *const kOnWeaponsSectionPreLoad = (void *)(0x004b1140);
+void *const kOnWeaponsSectionDataReady = (void *)(0x004b1160);
 } // namespace
 
 // Reimplements 0x4b1090: zWepInit

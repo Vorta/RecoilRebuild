@@ -245,7 +245,7 @@ namespace zClass_World {
             ExpandAreaYBounds(area, corners);
         }
 
-        BBox_MinMaxToBoundingSphere(reinterpret_cast<const zBBox3f *>(area->bbox),
+        BBox_MinMaxToBoundingSphere((const zBBox3f *)(area->bbox),
                                     &area->bboxCenter, &area->bboxRadius);
         return 0;
     }
@@ -671,8 +671,8 @@ namespace zClass_World {
                          "%s: Line %d: ERROR deleting light; not found in world list.\n"
                          "        world_ptr = %x; light_ptr = %x\n",
                          kWorldSourceFile, 0x108d,
-                         static_cast<unsigned int>(reinterpret_cast<unsigned int>(world)),
-                         static_cast<unsigned int>(reinterpret_cast<unsigned int>(light)));
+                         static_cast<unsigned int>((unsigned int)(world)),
+                         static_cast<unsigned int>((unsigned int)(light)));
             zError::EmitDebugBuffer(5);
             return 5;
         }
@@ -698,8 +698,8 @@ namespace zClass_World {
                 "%s: Line %d: ERROR deleting light; world not found in light's world list.\n"
                 "        world_ptr = %x; light_ptr = %x\n",
                 kWorldSourceFile, 0x10b4,
-                static_cast<unsigned int>(reinterpret_cast<unsigned int>(world)),
-                static_cast<unsigned int>(reinterpret_cast<unsigned int>(light)));
+                static_cast<unsigned int>((unsigned int)(world)),
+                static_cast<unsigned int>((unsigned int)(light)));
             zError::EmitDebugBuffer(5);
             return 5;
         }
@@ -718,7 +718,7 @@ namespace zClass_World {
     InitLightPointInPolygonXZ(zClass_NodePartial *world) {
         zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
         zModel_Light_PointInPolygonInitXZ(
-            data->lightDataList, reinterpret_cast<zModel_LightStatePartial **>(data->lightNodes),
+            data->lightDataList, (zModel_LightStatePartial **)(data->lightNodes),
             data->lightCount);
         return 0;
     }
@@ -779,8 +779,8 @@ namespace zClass_World {
                          "%s: Line %d: ERROR deleting sound; not found in world list.\n"
                          "        world_ptr = %x; sound_ptr = %x\n",
                          kWorldSourceFile, 0x11cc,
-                         static_cast<unsigned int>(reinterpret_cast<unsigned int>(world)),
-                         static_cast<unsigned int>(reinterpret_cast<unsigned int>(sound)));
+                         static_cast<unsigned int>((unsigned int)(world)),
+                         static_cast<unsigned int>((unsigned int)(sound)));
             zError::EmitDebugBuffer(5);
             return 5;
         }
@@ -806,8 +806,8 @@ namespace zClass_World {
                 "%s: Line %d: ERROR deleting sound; world not found in sound's world list.\n"
                 "        world_ptr = %x; sound_ptr = %x\n",
                 kWorldSourceFile, 0x11f3,
-                static_cast<unsigned int>(reinterpret_cast<unsigned int>(world)),
-                static_cast<unsigned int>(reinterpret_cast<unsigned int>(sound)));
+                static_cast<unsigned int>((unsigned int)(world)),
+                static_cast<unsigned int>((unsigned int)(sound)));
             zError::EmitDebugBuffer(5);
             return 5;
         }

@@ -52,7 +52,7 @@ int g_GameNetSuppressPkt13ActivationEcho = 0;
 
 namespace {
 template <typename T> T &EmbeddedHudPanelField(HudUiPanel &panel, size_t offset) {
-    return *reinterpret_cast<T *>(reinterpret_cast<unsigned char *>(&panel) + offset);
+    return *(T *)((unsigned char *)(&panel) + offset);
 }
 
 void SetEmbeddedHudPanelColor(GameNetPlayerRow *row, unsigned int color) {
@@ -132,7 +132,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ResetRemotePlayersAndSpawnLists() {
     GameNetPlayerRow *row = g_GameNetPlayerRowHead;
     while (row != 0) {
         HudUi::RemoveScoreboardEntryRow(row);
-        g_HudUiTopMessageStack->base.RemoveChild(reinterpret_cast<HudUiElement *>(&row->hudWidget));
+        g_HudUiTopMessageStack->base.RemoveChild((HudUiElement *)(&row->hudWidget));
         row = row->next;
     }
 
@@ -363,7 +363,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt08_PlayerKillEvent(
     zUtil_SaveGameState *saveState, short killMethodOrOptCatalogEntryId) {
     zUtil_SaveGameState *saveStateOrLocal = saveState;
     if (saveStateOrLocal == 0) {
-        saveStateOrLocal = reinterpret_cast<zUtil_SaveGameState *>(g_GameStateOrMapTable);
+        saveStateOrLocal = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
     }
 
     NetPkt08_PlayerKillEvent packet;
@@ -556,8 +556,8 @@ HandlePkt0E_PlayerLapProgress(int senderPlayerId, NetPkt0E_PlayerLapProgress *pa
 // (D:\Proj\GameZRecoil\GameNet.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL
 HandlePkt13_EffectAnimActivationRecord(int, zNetworkPacketHeader *packet) {
-    zEffectAnimActivationRecord *const record = reinterpret_cast<zEffectAnimActivationRecord *>(
-        reinterpret_cast<unsigned char *>(packet) + sizeof(zNetworkPacketHeader));
+    zEffectAnimActivationRecord *const record = (zEffectAnimActivationRecord *)(
+        (unsigned char *)(packet) + sizeof(zNetworkPacketHeader));
     if (zEffect_Anim::HasActivationRecord(record) == 0) {
         g_GameNetSuppressPkt13ActivationEcho = 1;
         zEffect_Anim::ProcessActivationRecord(record);
