@@ -1,32 +1,7 @@
 {
   "name": "hud_ui_widget_release_image_if_owned",
   "description": "HudUiWidget owned-image release helper.",
-  "source_filename": "HudUiWidget_ReleaseImageIfOwned.cpp",
-  "source": [
-    "struct zVidImagePartial;",
-    "",
-    "namespace zVid_Image {",
-    "int __fastcall ReleaseIfNotDefault(zVidImagePartial *image);",
-    "}",
-    "",
-    "struct HudUiWidget {",
-    "    unsigned char m_padding_000[0x34];",
-    "    unsigned int ownsImage;",
-    "    unsigned int dirtyRectCount;",
-    "    zVidImagePartial *image;",
-    "",
-    "    void ReleaseImageIfOwned();",
-    "};",
-    "",
-    "// Reimplements 0x4b3da0: HudUiWidget::ReleaseImageIfOwned",
-    "void HudUiWidget::ReleaseImageIfOwned() {",
-    "    if (image != 0 && ownsImage != 0) {",
-    "        image = (zVidImagePartial *)zVid_Image::ReleaseIfNotDefault(image);",
-    "    }",
-    "",
-    "    ownsImage = 0;",
-    "}"
-  ],
+  "source_filename": "zhud_ui.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -39,7 +14,16 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/zHud/zhud_ui.cpp"
   ],
@@ -49,5 +33,6 @@
       "symbol": "?ReleaseImageIfOwned@HudUiWidget@@QAEXXZ",
       "name": "HudUiWidget::ReleaseImageIfOwned"
     }
-  ]
+  ],
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp"
 }

@@ -12,15 +12,13 @@ SCRIPT = REPO_ROOT / "tools" / "recoil_no_reinterpret_cast.py"
 
 
 class RecoilNoReinterpretCastTests(unittest.TestCase):
-    def run_guard(self, root: Path, baseline: Path, *extra: str) -> subprocess.CompletedProcess[str]:
+    def run_guard(self, root: Path, *extra: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [
                 sys.executable,
                 str(SCRIPT),
                 "--root",
                 str(root),
-                "--baseline",
-                str(baseline),
                 *extra,
             ],
             cwd=REPO_ROOT,
@@ -29,79 +27,53 @@ class RecoilNoReinterpretCastTests(unittest.TestCase):
             encoding="utf-8",
         )
 
-    def make_temp(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
+    def make_temp(self) -> tuple[tempfile.TemporaryDirectory[str], Path]:
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
         root = Path(temp.name) / "src"
         root.mkdir()
-        baseline = Path(temp.name) / "baseline.txt"
-        return temp, root, baseline
+        return temp, root
 
     def test_clean_source_passes(self) -> None:
-        _, root, baseline = self.make_temp()
+        _, root = self.make_temp()
         (root / "clean.cpp").write_text("void f() { int *p = (int *)0; }\n", encoding="utf-8")
-        result = self.run_guard(root, baseline)
+        result = self.run_guard(root)
         self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_comments_and_strings_are_ignored(self) -> None:
-        _, root, baseline = self.make_temp()
+        _, root = self.make_temp()
         (root / "ignored.cpp").write_text(
             'const char *s = "reinterpret_cast<int *>(p)";\n'
             "// reinterpret_cast<int *>(p)\n"
             "/* reinterpret_cast<int *>(p) */\n",
             encoding="utf-8",
         )
-        result = self.run_guard(root, baseline)
+        result = self.run_guard(root)
         self.assertEqual(result.returncode, 0, result.stderr)
 
-    def test_unbaselined_cast_fails(self) -> None:
-        _, root, baseline = self.make_temp()
+    def test_cast_fails(self) -> None:
+        _, root = self.make_temp()
         (root / "bad.cpp").write_text(
             "void f(void *p) { int *x = reinterpret_cast<int *>(p); }\n",
             encoding="utf-8",
         )
-        result = self.run_guard(root, baseline)
+        result = self.run_guard(root)
         self.assertEqual(result.returncode, 1)
         self.assertIn("bad.cpp:1", result.stdout)
 
-    def test_baselined_cast_passes(self) -> None:
-        _, root, baseline = self.make_temp()
-        (root / "old.cpp").write_text(
-            "void f(void *p) { int *x = reinterpret_cast<int *>(p); }\n",
-            encoding="utf-8",
-        )
-        write_result = self.run_guard(root, baseline, "--write-baseline")
-        self.assertEqual(write_result.returncode, 0, write_result.stderr)
-
-        check_result = self.run_guard(root, baseline)
-        self.assertEqual(check_result.returncode, 0, check_result.stderr)
-
-    def test_baseline_count_rejects_new_duplicate(self) -> None:
-        _, root, baseline = self.make_temp()
-        source = root / "old.cpp"
+    def test_summary_reports_current_and_top_files(self) -> None:
+        _, root = self.make_temp()
+        directory = root / "GameZRecoil" / "zHud"
+        directory.mkdir(parents=True)
+        source = directory / "hud.cpp"
         source.write_text("void f(void *p) { int *x = reinterpret_cast<int *>(p); }\n", encoding="utf-8")
-        write_result = self.run_guard(root, baseline, "--write-baseline")
-        self.assertEqual(write_result.returncode, 0, write_result.stderr)
 
-        source.write_text(
-            "void f(void *p) { int *x = reinterpret_cast<int *>(p); }\n"
-            "void f(void *p) { int *x = reinterpret_cast<int *>(p); }\n",
-            encoding="utf-8",
-        )
-        check_result = self.run_guard(root, baseline)
-        self.assertEqual(check_result.returncode, 1)
-        self.assertIn("old.cpp:2", check_result.stdout)
+        result = self.run_guard(root, "--summary", "--top", "1")
 
-    def test_removed_baseline_occurrence_does_not_fail(self) -> None:
-        _, root, baseline = self.make_temp()
-        source = root / "old.cpp"
-        source.write_text("void f(void *p) { int *x = reinterpret_cast<int *>(p); }\n", encoding="utf-8")
-        write_result = self.run_guard(root, baseline, "--write-baseline")
-        self.assertEqual(write_result.returncode, 0, write_result.stderr)
-
-        source.write_text("void f(void *p) { int *x = (int *)p; }\n", encoding="utf-8")
-        check_result = self.run_guard(root, baseline)
-        self.assertEqual(check_result.returncode, 0, check_result.stderr)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("reinterpret_cast summary:", result.stdout)
+        self.assertIn("current occurrences: 1", result.stdout)
+        self.assertIn("hud.cpp", result.stdout)
 
 
 if __name__ == "__main__":

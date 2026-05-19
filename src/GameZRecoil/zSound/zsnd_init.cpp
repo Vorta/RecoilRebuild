@@ -420,7 +420,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndBackend_InitDirectSound() {
     }
 
     directSoundError = g_zSnd_BackendDevice->SetCooperativeLevel(
-        reinterpret_cast<HWND>(g_zSnd_WindowHandle), DSSCL_NORMAL);
+        (HWND)(g_zSnd_WindowHandle), DSSCL_NORMAL);
     if (directSoundError != DS_OK) {
         return zSnd::ReportDirectSoundError(directSoundError, kZSndInitSourceFile, 0x26d);
     }
@@ -450,7 +450,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndBackend_InitA3D() {
     }
 
     HRESULT a3dError = CoCreateInstance(kCLSID_A3DApi, 0, CLSCTX_INPROC_SERVER, kIID_IA3d3,
-                                        reinterpret_cast<void **>(&g_zSnd_BackendDevice));
+                                        (void **)(&g_zSnd_BackendDevice));
     if (a3dError < 0) {
         if (a3dError == CLASS_E_NOAGGREGATION) {
             printf("A3D: This class cannot be created as part of an aggregate.\n");
@@ -466,18 +466,18 @@ extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndBackend_InitA3D() {
         return 0;
     }
 
-    A3DApi *api = reinterpret_cast<A3DApi *>(g_zSnd_BackendDevice);
+    A3DApi *api = (A3DApi *)(g_zSnd_BackendDevice);
     api->vtbl->ConfigureOutput(api, 0, 0x28, 0x0c);
-    api->vtbl->SetCooperativeLevel(api, reinterpret_cast<HWND>(g_zSnd_WindowHandle), 1);
+    api->vtbl->SetCooperativeLevel(api, (HWND)(g_zSnd_WindowHandle), 1);
 
     a3dError = api->vtbl->QueryInterface(
-        api, kIID_IA3dGeom, reinterpret_cast<void **>(&g_zSnd_BackendAuxHandleOrConfig));
+        api, kIID_IA3dGeom, (void **)(&g_zSnd_BackendAuxHandleOrConfig));
     if (a3dError != 0) {
         return zSnd::ReportA3DError(a3dError, kZSndInitSourceFile, 0x245);
     }
 
     a3dError = api->vtbl->QueryInterface(api, kIID_IA3dListener,
-                                         reinterpret_cast<void **>(&g_zSnd_BackendListenerHandle));
+                                         (void **)(&g_zSnd_BackendListenerHandle));
     if (a3dError != 0) {
         return zSnd::ReportA3DError(a3dError, kZSndInitSourceFile, 0x24b);
     }
@@ -492,8 +492,8 @@ extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndBackend_InitA3D() {
     void *outBuffer = 0;
     api->vtbl->CreateBufferByKind(api, 0, &outBuffer);
     if (outBuffer != 0) {
-        void **vtbl = *reinterpret_cast<void ***>(outBuffer);
-        reinterpret_cast<UnknownReleaseProc>(vtbl[2])(outBuffer);
+        void **vtbl = *(void ***)(outBuffer);
+        ((UnknownReleaseProc)(vtbl[2]))(outBuffer);
     }
 
     return 1;

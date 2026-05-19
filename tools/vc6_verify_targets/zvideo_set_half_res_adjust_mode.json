@@ -1,0 +1,38 @@
+{
+  "name": "zvideo_set_half_res_adjust_mode",
+  "description": "zVideo half-resolution adjust mode setter.",
+  "source_filename": "zVideo.cpp",
+  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zVideo.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a71c0",
+      "symbol": "?SetHalfResAdjustMode@zVideo@@YIHH@Z",
+      "name": "zVideo::SetHalfResAdjustMode"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp"
+}

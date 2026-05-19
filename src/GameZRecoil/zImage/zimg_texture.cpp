@@ -27,7 +27,7 @@ namespace zImage {
 // Reimplements 0x46d4c0: zImage::GetDefaultImageRefPtr
 // (GameZRecoil/zImage/zimg_texture.cpp)
 RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_CDECL GetDefaultImageRefPtr() {
-    return reinterpret_cast<zImage_TexDirEntryPartial *>(&g_zImage_DefaultImagePtr);
+    return (zImage_TexDirEntryPartial *)(&g_zImage_DefaultImagePtr);
 }
 } // namespace zImage
 
@@ -126,8 +126,9 @@ RECOIL_NOINLINE int RECOIL_CDECL TexDir_LoadPendingEntries() {
             OptCatalog_IsDamageMaskSlotPtrRegistered(entry) != 0) {
             zVid_Image::CalcPow2ScratchFields(entry->image);
         } else if (entry->loadState == 3) {
-            reinterpret_cast<zVideo_TextureRecordFinalizeUploadProc>(
-                g_zVideo_pfnTextureRecordFinalizeUpload)(entry->texture, 0, entry->image);
+            zVideo_TextureRecordFinalizeUploadProc finalizeUpload =
+                (zVideo_TextureRecordFinalizeUploadProc)(g_zVideo_pfnTextureRecordFinalizeUpload);
+            finalizeUpload(entry->texture, 0, entry->image);
         } else if (entry->texture == 0) {
             image = entry->image;
             const unsigned short textureAddressFlags =
@@ -255,7 +256,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL WriteTextureDirectory(void *stream) {
     memcpy(serializedEntries, g_zImage_TexDirEntries, byteCount);
 
     for (int i = 0; i < count; ++i) {
-        serializedEntries[i].nextVariant = reinterpret_cast<zImage_TexDirEntryPartial *>(
+        serializedEntries[i].nextVariant = (zImage_TexDirEntryPartial *)(
             static_cast<int>(TexDirEntryToIndex(serializedEntries[i].nextVariant)));
     }
 
@@ -295,7 +296,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadTextureDirectory(int entryCount,
     g_zImage_TexDirEntryCount = count;
     for (int i = 0; i < count; ++i) {
         g_zImage_TexDirEntries[i].nextVariant = TexIndexToDirEntry(static_cast<int>(
-            reinterpret_cast<int>(g_zImage_TexDirEntries[i].nextVariant)));
+            (int)(g_zImage_TexDirEntries[i].nextVariant)));
     }
 
     return g_zImage_TexDirEntryCount;
@@ -519,7 +520,7 @@ zImage_Font::BlitStringToActiveTarget(const char *text, int dstX, int dstY,
 
             RECT *glyph = &font->glyphRects[glyphIndex];
             zVid_Image::BlitToActiveTarget(font->image, currentX, currentY, 0,
-                                           reinterpret_cast<zVidRect32 *>(glyph));
+                                           (zVidRect32 *)(glyph));
             currentX += glyph->right - glyph->left;
         }
     }

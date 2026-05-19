@@ -1,21 +1,7 @@
 {
   "name": "czrecoilframe_build_window_title",
   "description": "CZRecoilFrame window-title CString builder.",
-  "source_filename": "CZRecoilFrame_BuildWindowTitle.cpp",
-  "source": [
-    "#include \"Battlesport/CZRecoilFrame.h\"",
-    "",
-    "// Reimplements 0x4306f0: CZRecoilFrame::BuildWindowTitle",
-    "CString *RECOIL_THISCALL CZRecoilFrame::BuildWindowTitle(CString *outTitle) {",
-    "    if (g_zVideo_ActiveRendererPath == kRendererBackend3dfx) {",
-    "        new (outTitle) CString(\"RECOIL (3Dfx)\");",
-    "        return outTitle;",
-    "    }",
-    "",
-    "    new (outTitle) CString(\"RECOIL\");",
-    "    return outTitle;",
-    "}"
-  ],
+  "source_filename": "CZRecoilFrame.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -29,7 +15,15 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/Battlesport/CZRecoilFrame.cpp"
   ],
@@ -40,28 +34,5 @@
       "name": "CZRecoilFrame::BuildWindowTitle"
     }
   ],
-  "generated_files": {
-    "Battlesport/CZRecoilFrame.h": [
-      "#pragma once",
-      "",
-      "#define RECOIL_THISCALL",
-      "",
-      "inline void *__cdecl operator new(unsigned int, void *ptr) { return ptr; }",
-      "",
-      "class CString {",
-      "  public:",
-      "    CString(const char *text);",
-      "};",
-      "",
-      "enum RendererBackend {",
-      "    kRendererBackend3dfx = 2",
-      "};",
-      "",
-      "extern int g_zVideo_ActiveRendererPath;",
-      "",
-      "struct CZRecoilFrame {",
-      "    CString *RECOIL_THISCALL BuildWindowTitle(CString *outTitle);",
-      "};"
-    ]
-  }
+  "source_from": "src/Battlesport/CZRecoilFrame.cpp"
 }

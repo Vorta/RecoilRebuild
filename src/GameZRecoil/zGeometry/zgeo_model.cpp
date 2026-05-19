@@ -30,14 +30,14 @@ RECOIL_STATIC_ASSERT(offsetof(zGeometry_ClipPatchModelNodeBoundsView, boundsMaxX
 RECOIL_STATIC_ASSERT(offsetof(zGeometry_ClipPatchModelNodeBoundsView, boundsNegMinY) == 0xa0);
 
 zModel_DrawBatchBasePartial *ModelDrawBatchFromNode(zGeometry_ClipPatchNodeView *node) {
-    return reinterpret_cast<zModel_DrawBatchBasePartial *>(
+    return (zModel_DrawBatchBasePartial *)(
         static_cast<unsigned int>(node->userDataOrDiRef));
 }
 
 bool IsClipPatchNodeOutsideClipBoundsXY(zGeometry_ClipPolygonPartial *clipPolygon,
                                         zGeometry_ClipPatchNodeView *node) {
     zGeometry_ClipPatchModelNodeBoundsView *const modelBounds =
-        reinterpret_cast<zGeometry_ClipPatchModelNodeBoundsView *>(node);
+        (zGeometry_ClipPatchModelNodeBoundsView *)(node);
 
     if (modelBounds->boundsMinX > clipPolygon->bounds.maxX + 1.0f) {
         return true;
@@ -59,7 +59,7 @@ bool IsClipPatchNodeOutsideClipBoundsXY(zGeometry_ClipPolygonPartial *clipPolygo
 }
 
 zVec3 *PointAtDwordOffset(zVec3 *points, int pointDwordOffset) {
-    return reinterpret_cast<zVec3 *>(reinterpret_cast<float *>(points) + pointDwordOffset);
+    return (zVec3 *)((float *)(points) + pointDwordOffset);
 }
 
 zModel_MaterialPartial *g_zGeometry_Model_LastRandomDebugMaterial = 0;
@@ -626,7 +626,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointsNearNodeModelXY(
 
     if ((node->flags & 0x200) != 0) {
         zGeometry_ClipPatchModelNodeBoundsView *modelBounds =
-            reinterpret_cast<zGeometry_ClipPatchModelNodeBoundsView *>(node);
+            (zGeometry_ClipPatchModelNodeBoundsView *)(node);
 
         if (modelBounds->boundsMinX > clipPolygon->bounds.maxX + 1.0f) {
             return 0;
@@ -763,7 +763,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygonToDi(zDiPartial *di, int pointCoun
     }
 
     return zDi::AddPolygon(di, pointCount, points, uvPairs, 0, 0, 0, material, 0,
-                           0, reinterpret_cast<const int *>(&localUserTag));
+                           0, (const int *)(&localUserTag));
 }
 
 // Reimplements 0x46a7f0: zGeometry_Model::BuildPolygonUvList
@@ -837,7 +837,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddIndexedPolygonToDi(
     const unsigned int vertexCountAndFlags = polygon->vertexCountAndFlags;
     const int result = zDi::AddPolygon(
         di, static_cast<int>(vertexCountAndFlags & 0xff), polygonPointsBuffer,
-        reinterpret_cast<zClipUV *>(polygon->uvBasis), 0, 0, 0, polygon->material,
+        (zClipUV *)(polygon->uvBasis), 0, 0, 0, polygon->material,
         polygon->drawFlags, static_cast<int>((vertexCountAndFlags >> 8) & 1),
         &polygon->userTag);
 

@@ -22,8 +22,8 @@ struct RecoilStateMainMenuTransitionBaseVtableGuard {
 };
 } // namespace
 
-// Reimplements 0x4151b0: RecoilStateMainMenuTransition::Destructor
-RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL RecoilStateMainMenuTransition::Destructor() {
+// Reimplements 0x4151b0: RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition
+RECOIL_NOINLINE RECOIL_NO_GS RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition() {
     vftable = kRecoilStateMainMenuTransition_VtblAddress;
     RecoilStateMainMenuTransitionBaseVtableGuard baseVtableOnExit = {this};
 
@@ -46,7 +46,7 @@ RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL RecoilStateMainMenuTransition:
 // (D:\Proj\GameZRecoil\RecoilApp\RecoilStateMainMenuTransition.cpp)
 RECOIL_NOINLINE RecoilStateMainMenuTransition *RECOIL_THISCALL
 RecoilStateMainMenuTransition::ScalarDeletingDestructor(unsigned int flags) {
-    Destructor();
+    this->~RecoilStateMainMenuTransition();
 
     if ((flags & 1u) != 0) {
         ::operator delete(this);

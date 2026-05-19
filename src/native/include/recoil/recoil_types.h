@@ -2,6 +2,10 @@
 
 #include <stddef.h>
 
+#if defined(__cplusplus) && (!defined(_MSC_VER) || _MSC_VER >= 1300)
+#include <new>
+#endif
+
 namespace recoil {
 typedef unsigned int Ptr32;
 typedef unsigned int Fn32;
@@ -26,8 +30,10 @@ inline void *RECOIL_PLACEMENT_NEW_CDECL operator new(size_t, void *place)
     return place;
 }
 
+#if !defined(_MSC_VER)
 inline void RECOIL_PLACEMENT_NEW_CDECL operator delete(void *, void *)
 {
 }
+#endif
 #undef RECOIL_PLACEMENT_NEW_CDECL
 #endif

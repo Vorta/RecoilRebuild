@@ -145,7 +145,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL Init(zReader::Node *cdTracksNod
     MCI_OPEN_PARMSA openParms = {0};
     openParms.lpstrDeviceType = "cdaudio";
     DWORD mciError =
-        mciSendCommandA(0, MCI_OPEN, MCI_OPEN_TYPE, reinterpret_cast<DWORD_PTR>(&openParms));
+        mciSendCommandA(0, MCI_OPEN, MCI_OPEN_TYPE, (DWORD_PTR)(&openParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x43);
     }
@@ -157,7 +157,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL Init(zReader::Node *cdTracksNod
     statusParms.dwItem = 5;
     mciError =
         mciSendCommandA(static_cast<MCIDEVICEID>(g_zSndCdDeviceId & 0xffff), MCI_STATUS,
-                        MCI_WAIT | MCI_STATUS_ITEM, reinterpret_cast<DWORD_PTR>(&statusParms));
+                        MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)(&statusParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x4d);
     }
@@ -171,7 +171,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL Init(zReader::Node *cdTracksNod
     setParms.dwTimeFormat = MCI_FORMAT_TMSF;
     mciError =
         mciSendCommandA(static_cast<MCIDEVICEID>(g_zSndCdDeviceId & 0xffff), MCI_SET,
-                        MCI_WAIT | MCI_SET_TIME_FORMAT, reinterpret_cast<DWORD_PTR>(&setParms));
+                        MCI_WAIT | MCI_SET_TIME_FORMAT, (DWORD_PTR)(&setParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x5d);
     }
@@ -180,7 +180,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL Init(zReader::Node *cdTracksNod
     statusParms.dwItem = 3;
     mciError =
         mciSendCommandA(static_cast<MCIDEVICEID>(g_zSndCdDeviceId & 0xffff), MCI_STATUS,
-                        MCI_WAIT | MCI_STATUS_ITEM, reinterpret_cast<DWORD_PTR>(&statusParms));
+                        MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)(&statusParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x66);
     }
@@ -190,7 +190,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL Init(zReader::Node *cdTracksNod
     statusParms.dwTrack = 0;
     mciError =
         mciSendCommandA(static_cast<MCIDEVICEID>(g_zSndCdDeviceId & 0xffff), MCI_STATUS,
-                        MCI_WAIT | MCI_STATUS_ITEM, reinterpret_cast<DWORD_PTR>(&statusParms));
+                        MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)(&statusParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x70);
     }
@@ -298,7 +298,7 @@ ApplyPlaybackMode(int playbackMode) {
 
     const DWORD mciError =
         mciSendCommandA(static_cast<MCIDEVICEID>(g_zSndCdDeviceId & 0xffff), 0x806, playFlags,
-                        reinterpret_cast<DWORD_PTR>(&playParms));
+                        (DWORD_PTR)(&playParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0xf1);
     }
@@ -326,7 +326,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL PlayTrack(int trackIndex) {
     seekParms.dwTo = static_cast<DWORD>(trackIndex & 0xff);
 
     const DWORD mciError = mciSendCommandA(static_cast<MCIDEVICEID>(g_zSndCdDeviceId & 0xffff),
-                                           0x807, 0x0a, reinterpret_cast<DWORD_PTR>(&seekParms));
+                                           0x807, 0x0a, (DWORD_PTR)(&seekParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x16e);
     }
@@ -366,7 +366,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Stop() {
 
     MCI_GENERIC_PARMS stopParms;
     const DWORD mciError = mciSendCommandA(static_cast<MCIDEVICEID>(g_zSndCdDeviceId & 0xffff),
-                                           0x808, 0x02, reinterpret_cast<DWORD_PTR>(&stopParms));
+                                           0x808, 0x02, (DWORD_PTR)(&stopParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x10e);
     }
@@ -383,7 +383,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
     if ((g_zSndCdDeviceId & 0xffff) != 0) {
         MCI_GENERIC_PARMS closeParms = {0};
         mciSendCommandA(static_cast<MCIDEVICEID>(g_zSndCdDeviceId & 0xffff), MCI_CLOSE, MCI_WAIT,
-                        reinterpret_cast<DWORD_PTR>(&closeParms));
+                        (DWORD_PTR)(&closeParms));
         g_zSndCdDeviceId &= 0xffff0000;
     }
 

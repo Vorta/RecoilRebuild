@@ -8,9 +8,15 @@ import re
 import sys
 from pathlib import Path
 
+from recoil_tooling import (
+    ASM_SUFFIXES,
+    REPO_ROOT,
+    SOURCE_SUFFIXES,
+    display_path,
+    iter_source_files,
+    strip_comments_and_strings,
+)
 
-SOURCE_SUFFIXES = {".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".inl"}
-ASM_SUFFIXES = {".asm", ".s", ".S"}
 FORBIDDEN_PATTERNS = [
     ("__asm", re.compile(r"\b__asm\b")),
     ("_asm", re.compile(r"\b_asm\b")),
@@ -51,96 +57,20 @@ def find_reimplements_address(lines: list[str], line_no: int) -> str | None:
     return None
 
 
-def strip_comments_and_strings(text: str) -> str:
-    result: list[str] = []
-    i = 0
-    state = "code"
-    while i < len(text):
-        ch = text[i]
-        nxt = text[i + 1] if i + 1 < len(text) else ""
-
-        if state == "code":
-            if ch == "/" and nxt == "/":
-                result.extend("  ")
-                i += 2
-                state = "line_comment"
-            elif ch == "/" and nxt == "*":
-                result.extend("  ")
-                i += 2
-                state = "block_comment"
-            elif ch == '"':
-                result.append(" ")
-                i += 1
-                state = "string"
-            elif ch == "'":
-                result.append(" ")
-                i += 1
-                state = "char"
-            else:
-                result.append(ch)
-                i += 1
-        elif state == "line_comment":
-            if ch == "\n":
-                result.append(ch)
-                state = "code"
-            else:
-                result.append(" ")
-            i += 1
-        elif state == "block_comment":
-            if ch == "*" and nxt == "/":
-                result.extend("  ")
-                i += 2
-                state = "code"
-            else:
-                result.append("\n" if ch == "\n" else " ")
-                i += 1
-        elif state == "string":
-            if ch == "\\":
-                result.extend("  " if nxt else " ")
-                i += 2 if nxt else 1
-            elif ch == '"':
-                result.append(" ")
-                i += 1
-                state = "code"
-            else:
-                result.append("\n" if ch == "\n" else " ")
-                i += 1
-        elif state == "char":
-            if ch == "\\":
-                result.extend("  " if nxt else " ")
-                i += 2 if nxt else 1
-            elif ch == "'":
-                result.append(" ")
-                i += 1
-                state = "code"
-            else:
-                result.append("\n" if ch == "\n" else " ")
-                i += 1
-
-    return "".join(result)
-
-
-def iter_source_files(root: Path) -> list[Path]:
-    return sorted(
-        path for path in root.rglob("*")
-        if path.is_file() and path.suffix in ASM_SUFFIXES.union(SOURCE_SUFFIXES)
-    )
-
-
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", default="src", help="production source root to scan")
     parser.add_argument("--allowlist", default=None, help="approved raw-assembly exceptions")
     args = parser.parse_args()
 
-    repo_root = Path.cwd()
+    repo_root = REPO_ROOT
     scan_root = (repo_root / args.root).resolve()
     allowlist = load_allowlist(repo_root / args.allowlist) if args.allowlist else set()
     violations: list[tuple[str, int, str, str]] = []
 
-    for path in iter_source_files(scan_root):
-        rel = path.relative_to(repo_root).as_posix()
-        if path.suffix in ASM_SUFFIXES:
+    for path in iter_source_files(scan_root, suffixes=ASM_SUFFIXES.union(SOURCE_SUFFIXES)):
+        rel = display_path(path, repo_root, fallback_root=scan_root)
+        if path.suffix.lower() in {suffix.lower() for suffix in ASM_SUFFIXES}:
             violations.append((rel, 1, path.suffix, "checked-in assembly source file"))
             continue
 

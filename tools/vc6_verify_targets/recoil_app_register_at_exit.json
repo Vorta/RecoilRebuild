@@ -1,15 +1,7 @@
 {
   "name": "recoil_app_register_at_exit",
   "description": "RecoilApp atexit registration helper.",
-  "source_filename": "RecoilApp_RegisterAtExit.cpp",
-  "source": [
-    "#include \"Battlesport/RecoilApp.h\"",
-    "",
-    "// Reimplements 0x42de40: RecoilApp::RegisterAtExit",
-    "void RECOIL_CDECL RecoilApp::RegisterAtExit() {",
-    "    atexit(AtExitDestructor);",
-    "}"
-  ],
+  "source_filename": "RecoilApp.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -22,7 +14,15 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/Battlesport/RecoilApp.cpp"
   ],
@@ -33,18 +33,5 @@
       "name": "RecoilApp::RegisterAtExit"
     }
   ],
-  "generated_files": {
-    "Battlesport/RecoilApp.h": [
-      "#pragma once",
-      "",
-      "#define RECOIL_CDECL __cdecl",
-      "",
-      "int __cdecl atexit(void (__cdecl *function)(void));",
-      "",
-      "struct RecoilApp {",
-      "    static void RECOIL_CDECL RegisterAtExit();",
-      "    static void RECOIL_CDECL AtExitDestructor();",
-      "};"
-    ]
-  }
+  "source_from": "src/Battlesport/RecoilApp.cpp"
 }

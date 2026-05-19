@@ -612,6 +612,12 @@ void ResetStopBackendCounters() {
     g_testLastRangeMax = -1.0f;
     g_testLastDistanceScale = -1.0f;
 }
+
+void EnsureZrdrFreePool() {
+    if (g_zUtil_ZRDR_FreePool == nullptr) {
+        g_zUtil_ZRDR_FreePool = zArchiveList_CreateEmpty();
+    }
+}
 } // namespace
 
 extern "C" int zsnd_set_use_archive_banks_flag_smoke(void) {
@@ -996,6 +1002,7 @@ extern "C" int zsnd_find_sample_by_name_smoke(void) {
     zSndGroup pendingGroup = {};
     pendingGroup.groupName = "pending";
     g_zSnd_ActiveBackend = 0;
+    EnsureZrdrFreePool();
     g_zSndStream_PendingList = zArchiveList_CreateEmpty();
     zArchiveList_PushFrontPayload(g_zSndStream_PendingList, &pendingGroup);
     const auto *const pendingAsSample = reinterpret_cast<zSndSample *>(&pendingGroup);
@@ -1564,6 +1571,7 @@ extern "C" int zsnd_stream_mgr_shutdown_lists_smoke(void) {
     g_zSndStream_MatchedRequest = reinterpret_cast<zSndStreamRequest *>(0x1234);
     g_zSndStream_MatchedRequestCount = 3;
 
+    EnsureZrdrFreePool();
     g_zSndStream_ActiveList = zArchiveList_CreateEmpty();
     g_zSndStream_FreeList = zArchiveList_CreateEmpty();
     g_zSndStream_PendingList = zArchiveList_CreateEmpty();
@@ -1690,6 +1698,7 @@ extern "C" int zsnd_play_handle_stop_if_active_smoke(void) {
     zSndPlayHandle request{};
     request.handleKind = ZSND_PLAYHANDLE_STREAM_REQUEST;
     request.backendState1 = 0;
+    EnsureZrdrFreePool();
     g_zSndStream_ActiveList = zArchiveList_CreateEmpty();
     zArchiveList_PushFrontPayload(g_zSndStream_ActiveList, &request);
     if (request.StopIfActive() != 1 || request.backendState1 != 4) {
@@ -1765,7 +1774,9 @@ extern "C" int zsnd_play_handle_update3d_a3d_smoke(void) {
     }
 
     sample.replayFields.flags = 4;
+    const int oldInitialized = g_zSnd_IsInitialized;
     g_zSnd_PreInitialized = 1;
+    g_zSnd_IsInitialized = 1;
     g_zSnd_MuteDepth = 0;
     if (handle.Update3D_A3D(&worldPos, &velocity, 1) != 1 || g_testSetPositionCount != 1 ||
         g_testSetVelocityCount != 1 || g_testSetGainCount != 1 || g_testSetDopplerScaleCount != 1 ||
@@ -1773,6 +1784,7 @@ extern "C" int zsnd_play_handle_update3d_a3d_smoke(void) {
         g_testLastPosition.z != 3.0f || g_testLastVelocity.x != 4.0f ||
         g_testLastVelocity.y != 5.0f || g_testLastVelocity.z != 6.0f || g_testLastGain != 7.0f ||
         g_testLastDopplerScale != 1.0f) {
+        g_zSnd_IsInitialized = oldInitialized;
         return 3;
     }
 
@@ -1780,11 +1792,14 @@ extern "C" int zsnd_play_handle_update3d_a3d_smoke(void) {
     if (handle.Update3D_A3D(nullptr, nullptr, 0) != 1 || g_testSetPositionCount != 1 ||
         g_testSetVelocityCount != 1 || g_testSetGainCount != 2 || g_testSetDopplerScaleCount != 2 ||
         g_testLastGain != 0.0f || g_testLastDopplerScale != 0.0f) {
+        g_zSnd_IsInitialized = oldInitialized;
         return 4;
     }
 
     handle.backendBuffer = nullptr;
-    return handle.Update3D_A3D(nullptr, nullptr, 0) == -1 ? 0 : 5;
+    const int result = handle.Update3D_A3D(nullptr, nullptr, 0) == -1 ? 0 : 5;
+    g_zSnd_IsInitialized = oldInitialized;
+    return result;
 }
 
 extern "C" int zsnd_update_listener_state_smoke(void) {

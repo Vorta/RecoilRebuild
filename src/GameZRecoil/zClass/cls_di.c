@@ -223,7 +223,7 @@ namespace {
     }
 
     const zMat4x3 *CurrentMatrix() {
-        return reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+        return (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
     }
 
     zVec3 TransformWorldPointToModel(const zVec3 *point) {
@@ -265,7 +265,7 @@ namespace {
     }
 
     zModel_PickFaceData *NodePickFaceData(zClass_NodePartial * node) {
-        return reinterpret_cast<zModel_PickFaceData *>(
+        return (zModel_PickFaceData *)(
             static_cast<unsigned int>(node->userDataOrDiRef));
     }
 
@@ -410,7 +410,7 @@ namespace {
     }
 
     zDiPartial *NodeDiRef(zClass_NodePartial * node) {
-        return reinterpret_cast<zDiPartial *>(static_cast<unsigned int>(node->userDataOrDiRef));
+        return (zDiPartial *)(static_cast<unsigned int>(node->userDataOrDiRef));
     }
 
     bool NodePassesQueryVariant(zClass_NodePartial * node) {
@@ -517,7 +517,7 @@ namespace zClass_cls_di {
             static_cast<zClass_WorldDataPartial *>(world->classData);
 
         zMat4x3 slotBuffer = {0};
-        zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+        zMath::MatStackPushPtr((float *)(&slotBuffer));
         zMath::MatLoadIdentity();
 
         const int gridCol = static_cast<int>(
@@ -645,11 +645,11 @@ namespace zClass_cls_di {
                 pushedMatrix = 1;
                 if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(objectData->localMatrix),
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix),
                                        1);
                 } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) != 0) {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(objectData->localMatrix),
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix),
                                        1);
                     if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
                         objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
@@ -727,7 +727,7 @@ namespace zClass_cls_di {
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
-            zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(animateData->animatedTransform),
+            zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform),
                                1);
         }
 
@@ -1185,7 +1185,7 @@ namespace zClass_cls_di {
         g_DiPickCandidateCursor = rayData->entries;
 
         zMat4x3 slotBuffer = {0};
-        zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+        zMath::MatStackPushPtr((float *)(&slotBuffer));
         zMath::MatLoadIdentity();
 
         const bool segmentOverlapsWorld =
@@ -1304,7 +1304,7 @@ namespace zClass_cls_di {
         zClass_NodePartial * node, int depth) {
         if (depth > 1 || (node->flags & kNodeFlagPointCandidate) != 0) {
             const int result = FilterPointsBBox(
-                node, reinterpret_cast<void *>(static_cast<unsigned int>(depth)));
+                node, (void *)(static_cast<unsigned int>(depth)));
             if (result != 0) {
                 return result;
             }
@@ -1321,7 +1321,7 @@ namespace zClass_cls_di {
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
-            zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(animateData->animatedTransform),
+            zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform),
                                1);
         }
 
@@ -1373,7 +1373,7 @@ namespace zClass_cls_di {
 
         if (depth > 1 || (node->flags & kNodeFlagPointCandidate) != 0) {
             const int result = FilterPointsBBox(
-                node, reinterpret_cast<void *>(static_cast<unsigned int>(depth)));
+                node, (void *)(static_cast<unsigned int>(depth)));
             if (result != 0) {
                 return result;
             }
@@ -1436,7 +1436,7 @@ namespace zClass_cls_di {
         case kNodeClassObject3D: {
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
                 const int result = FilterPointsBBox(
-                    node, reinterpret_cast<void *>(static_cast<unsigned int>(nodeFlags)));
+                    node, (void *)(static_cast<unsigned int>(nodeFlags)));
                 if (result != 0) {
                     return result;
                 }
@@ -1454,11 +1454,11 @@ namespace zClass_cls_di {
                 pushedMatrix = 1;
                 if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(objectData->localMatrix),
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix),
                                        3);
                 } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) != 0) {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply(reinterpret_cast<const zMat4x3 *>(objectData->localMatrix),
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix),
                                        1);
                     if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
                         objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
@@ -1488,7 +1488,7 @@ namespace zClass_cls_di {
 
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
                 const int result = FilterPointsBBox(
-                    node, reinterpret_cast<void *>(static_cast<unsigned int>(nodeFlags)));
+                    node, (void *)(static_cast<unsigned int>(nodeFlags)));
                 if (result != 0) {
                     return result;
                 }
@@ -1512,7 +1512,7 @@ namespace zClass_cls_di {
 
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
                 const int result = FilterPointsBBox(
-                    node, reinterpret_cast<void *>(static_cast<unsigned int>(nodeFlags)));
+                    node, (void *)(static_cast<unsigned int>(nodeFlags)));
                 if (result != 0) {
                     return result;
                 }
@@ -1534,7 +1534,7 @@ namespace zClass_cls_di {
             return BuildPickCandidatesForSegmentForLight(node, nodeCountHint);
 
         case kNodeClassSound:
-            return static_cast<int>(reinterpret_cast<unsigned int>(node));
+            return static_cast<int>((unsigned int)(node));
 
         default:
             zError::ReportOld(0x200, kClsDiSourceFile, 0x97a,

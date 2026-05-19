@@ -387,7 +387,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zNetwork_InitMessageHandlers() {
 // Reimplements 0x48b820: zNetwork_ApplyPkt01_PlayerColorAssignments
 extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
 zNetwork_ApplyPkt01_PlayerColorAssignments(int, zNetworkPacketHeader *packet) {
-    NetPkt01_PlayerColorAssignments * assignments = reinterpret_cast<NetPkt01_PlayerColorAssignments *>(packet);
+    NetPkt01_PlayerColorAssignments * assignments = (NetPkt01_PlayerColorAssignments *)(packet);
     const int assignmentCount = assignments->pairCount;
     for (int i = 0; i < assignmentCount; ++i) {
         const zNetworkPlayerColorPair &pair = assignments->pairs[i];
@@ -410,9 +410,9 @@ CloseReleaseAndCoUninitialize(zNetwork_DPlay4 *directPlay4) {
     int releaseRefCount = 0;
     if (directPlay4 != 0) {
         typedef int (RECOIL_STDCALL *DPlayMethod)(zNetwork_DPlay4 * self);
-        void *const *const vtbl = reinterpret_cast<void *const *>(directPlay4->vtbl_00);
-        DPlayMethod const close = reinterpret_cast<DPlayMethod>(vtbl[4]);
-        DPlayMethod const release = reinterpret_cast<DPlayMethod>(vtbl[2]);
+        void *const *const vtbl = (void *const *)(directPlay4->vtbl_00);
+        DPlayMethod const close = (DPlayMethod)(vtbl[4]);
+        DPlayMethod const release = (DPlayMethod)(vtbl[2]);
 
         close(directPlay4);
         releaseRefCount = release(directPlay4);

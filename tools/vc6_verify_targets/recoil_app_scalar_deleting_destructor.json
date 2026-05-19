@@ -1,27 +1,7 @@
 {
   "name": "recoil_app_scalar_deleting_destructor",
   "description": "RecoilApp scalar deleting destructor wrapper.",
-  "source_filename": "RecoilApp_ScalarDeletingDestructor.cpp",
-  "source": [
-    "#define RECOIL_THISCALL",
-    "",
-    "struct RecoilApp {",
-    "    RecoilApp *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);",
-    "    void RECOIL_THISCALL Destructor();",
-    "};",
-    "",
-    "void __cdecl operator delete(void *);",
-    "",
-    "// Reimplements 0x42e0b0: RecoilApp::ScalarDeletingDestructor",
-    "RecoilApp *RECOIL_THISCALL RecoilApp::ScalarDeletingDestructor(unsigned int flags) {",
-    "    Destructor();",
-    "    if ((flags & 1) != 0) {",
-    "        ::operator delete(this);",
-    "    }",
-    "",
-    "    return this;",
-    "}"
-  ],
+  "source_filename": "RecoilApp.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -34,7 +14,15 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/Battlesport/RecoilApp.cpp"
   ],
@@ -44,5 +32,6 @@
       "symbol": "?ScalarDeletingDestructor@RecoilApp@@QAEPAU1@I@Z",
       "name": "RecoilApp::ScalarDeletingDestructor"
     }
-  ]
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
 }

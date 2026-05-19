@@ -63,7 +63,7 @@ void CopyOffsetVertex(int *dest, const int *source, int stride) {
 }
 
 const float *PointDwordBase(const zVec3 *points, int pointDwordOffset) {
-    return reinterpret_cast<const float *>(points) + pointDwordOffset;
+    return (const float *)(points) + pointDwordOffset;
 }
 
 zVec3 *CopySpanPoints(zGeometry_ConvexPolygonSetPartial *result, zVec3 *outputPointWriteCursor,
@@ -124,7 +124,7 @@ zVec3 *AppendTriangulatedSpan(zGeometry_ConvexPolygonSetPartial *result,
         ++result->polygonCount;
         result->totalPointCount += 3;
 
-        float *outputDwords = reinterpret_cast<float *>(outputPointWriteCursor);
+        float *outputDwords = (float *)(outputPointWriteCursor);
         {
         for (int dwordIndex = 0; dwordIndex < 9; ++dwordIndex) {
             outputDwords[dwordIndex] =
@@ -726,7 +726,7 @@ RECOIL_NOINLINE zGeometry_ConvexPolygonSetPartial *RECOIL_FASTCALL Convexify(
             outputPointWriteCursor =
                 CopySpanPoints(result, outputPointWriteCursor, sourcePointDwords, 3);
         } else if (polygonPointCount == 4) {
-            const zVec3 *quadPoints = reinterpret_cast<const zVec3 *>(sourcePointDwords);
+            const zVec3 *quadPoints = (const zVec3 *)(sourcePointDwords);
             if (IsConvexQuadXY(quadPoints)) {
                 outputPointWriteCursor =
                     CopySpanPoints(result, outputPointWriteCursor, sourcePointDwords, 4);

@@ -1264,7 +1264,7 @@ namespace zClass_Camera {
         memcpy(data->worldTransform, matrix, sizeof(zMat4x3));
         zMath_Mat_ExtractEulerAngles(matrix, &data->eulerAngles);
         zMath::MatLoadIdentity();
-        zMath_Camera_StageInverseRotation(reinterpret_cast<zMat4x3 *>(data->worldTransform));
+        zMath_Camera_StageInverseRotation((zMat4x3 *)(data->worldTransform));
 
         if ((data->cameraFlags & 0x01) != 0) {
             zVec3 listenerVelocity = {0};
@@ -1292,7 +1292,7 @@ namespace zClass_Camera {
             g_zSnd_PreviousListenerPos.y = data->worldTransform[10];
             g_zSnd_PreviousListenerPos.z = data->worldTransform[11];
             zSnd_UpdateListenerState(
-                reinterpret_cast<zSndListenerState *>(data->worldTransform), &listenerVelocity);
+                (zSndListenerState *)(data->worldTransform), &listenerVelocity);
         }
 
         return 0;

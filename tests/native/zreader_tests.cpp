@@ -4,6 +4,7 @@
 #include <windows.h>
 
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
@@ -16,6 +17,12 @@ void WriteU32(HANDLE file, std::uint32_t value) {
 void WriteBytes(HANDLE file, const char *text, std::uint32_t length) {
     DWORD written = 0;
     WriteFile(file, text, length, &written, nullptr);
+}
+
+void EnsureZrdrFreePool() {
+    if (g_zUtil_ZRDR_FreePool == nullptr) {
+        g_zUtil_ZRDR_FreePool = zArchiveList_CreateEmpty();
+    }
 }
 } // namespace
 
@@ -557,6 +564,7 @@ extern "C" int zreader_resolve_and_open_file_smoke(void) {
         std::fclose(out);
     }
 
+    EnsureZrdrFreePool();
     zArchiveList *list = zArchiveList_CreateEmpty();
     zArchiveList_PushFrontPayload(list, searchDir);
 

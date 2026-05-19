@@ -1,5 +1,9 @@
 # Zipper Interactive - Recoil engine reconstruction
 
+> Archival working evidence. Keep this file for old Binary Ninja cleanup and
+> naming rationale, but add new durable notes under `docs/reconstruction/` using
+> compact evidence-ledger files.
+
 ## Notes on confidence
 
 This document is a reconstruction of the retail `Recoil.exe` codebase and data layout.

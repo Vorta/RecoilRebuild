@@ -154,7 +154,7 @@ extern "C" int recoil_state_main_menu_transition_destructor_smoke(void) {
     state.vftable = 0x11111111;
     state.m_mainMenuDialog = 0;
 
-    state.Destructor();
+    state.~RecoilStateMainMenuTransition();
 
     if (state.vftable != kRecoilStateBase_VtblAddress || state.m_mainMenuDialog != 0) {
         return 1;

@@ -15,7 +15,14 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/RecoilApp/RecoilStateBase.cpp"
   ],
@@ -25,39 +32,5 @@
       "symbol": "?ScalarDeletingDestructor@RecoilStateBase@@QAEPAURecoilApp_IState@@I@Z",
       "name": "RecoilStateBase::ScalarDeletingDestructor"
     }
-  ],
-  "generated_files": {
-    "GameZRecoil/RecoilApp/RecoilStateBase.h": [
-      "#pragma once",
-      "",
-      "namespace std {",
-      "typedef unsigned int uint32_t;",
-      "}",
-      "",
-      "#define RECOIL_THISCALL",
-      "",
-      "struct RecoilApp_IState_Vtbl {",
-      "    void *slots[10];",
-      "};",
-      "",
-      "extern RecoilApp_IState_Vtbl g_RecoilStateBase_Vtbl;",
-      "",
-      "typedef RecoilApp_IState_Vtbl *RecoilPtr32;",
-      "#define kRecoilStateBase_VtblAddress ((RecoilPtr32)&g_RecoilStateBase_Vtbl)",
-      "",
-      "struct RecoilApp_IState {",
-      "    RecoilPtr32 vftable;",
-      "};",
-      "",
-      "struct RecoilStateBase {",
-      "    RecoilPtr32 vftable;",
-      "",
-      "    RecoilApp_IState *RECOIL_THISCALL ScalarDeletingDestructor(std::uint32_t flags);",
-      "};"
-    ],
-    "new": [
-      "#pragma once",
-      "void __cdecl operator delete(void *);"
-    ]
-  }
+  ]
 }

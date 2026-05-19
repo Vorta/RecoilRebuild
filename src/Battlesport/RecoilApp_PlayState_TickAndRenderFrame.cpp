@@ -22,7 +22,7 @@ int HalfTruncTowardZero(int value)
 
 zOpt_ViewRectSection *ViewRectFromPtr(RecoilPtr32 ptr)
 {
-    return reinterpret_cast<zOpt_ViewRectSection *>(static_cast<unsigned int>(ptr));
+    return (zOpt_ViewRectSection *)(static_cast<unsigned int>(ptr));
 }
 } // namespace
 
@@ -41,9 +41,9 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
 
     zInput::PollActiveDevices(1);
 
-    pRenderSection = reinterpret_cast<RecoilPtr32>(zOpt::GetRenderSection());
-    pDisplaySection = reinterpret_cast<RecoilPtr32>(zOpt::GetDisplaySection());
-    pWindowSection = reinterpret_cast<RecoilPtr32>(zOpt::GetWindowSection());
+    pRenderSection = (RecoilPtr32)(zOpt::GetRenderSection());
+    pDisplaySection = (RecoilPtr32)(zOpt::GetDisplaySection());
+    pWindowSection = (RecoilPtr32)(zOpt::GetWindowSection());
     zOpt_ViewRectSection *const renderSection = ViewRectFromPtr(pRenderSection);
     zOpt_ViewRectSection *const displaySection = ViewRectFromPtr(pDisplaySection);
     zOpt_ViewRectSection *const windowSection = ViewRectFromPtr(pWindowSection);
@@ -69,10 +69,10 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
     zOpt_ViewRectSection *const clearRect = layoutDelay != 0 ? windowSection : renderSection;
 
     if (zVid::GetAccelerationOption() != 0) {
-        zVideo::CallClearSwSurfaceAndZBuffer(reinterpret_cast<zVidRect32 *>(clearRect),
-                                             reinterpret_cast<zVidRect32 *>(windowSection));
+        zVideo::CallClearSwSurfaceAndZBuffer((zVidRect32 *)(clearRect),
+                                             (zVidRect32 *)(windowSection));
     } else {
-        zVideo::CallClearPrimarySurfaceAndZBuffer(reinterpret_cast<zVidRect32 *>(clearRect));
+        zVideo::CallClearPrimarySurfaceAndZBuffer((zVidRect32 *)(clearRect));
     }
     zVideo::ExchangeClearScreenBufferEnabled(savedClearState);
 
@@ -89,7 +89,7 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
     zRndr::SetFrameBufferRegion(pixels, renderSection, zOpt::GetDisplaySectionBitsPerPixel(),
                                 pitchBytes);
     zClass_List::RenderActiveCameras();
-    zVideo::FxPass3_SetInputRectByIndex(0, reinterpret_cast<HudUiRect *>(renderSection));
+    zVideo::FxPass3_SetInputRectByIndex(0, (HudUiRect *)(renderSection));
 
     HudUiMgrSensor::GetFxRect(&g_HudUiMgrSensor_FxRectScratch);
     int fxTop = g_HudUiMgrSensor_FxRectScratch.top;
@@ -128,7 +128,7 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
             return 1;
         }
 
-        zRndr::SetActiveRegionSizeFromRect(reinterpret_cast<HudUiRect *>(windowSection));
+        zRndr::SetActiveRegionSizeFromRect((HudUiRect *)(windowSection));
         HudUiMgr::UpdateFrame();
         if (zOpt::GetNetworkEnabled() != 0) {
             HudUiNetExitPanel::Tick();
@@ -140,8 +140,8 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
         zVideo::Dispatch_UnlockSwSurfaceState();
 
         if (shouldPresent != 0) {
-            g_zVideo_pfnBltSwToPrimaryRectDirect(reinterpret_cast<zVidRect32 *>(renderSection),
-                                                 reinterpret_cast<zVidRect32 *>(displaySection));
+            g_zVideo_pfnBltSwToPrimaryRectDirect((zVidRect32 *)(renderSection),
+                                                 (zVidRect32 *)(displaySection));
         }
 
         zVideo::RunPostprocessOnPrimaryBuffer();
@@ -152,7 +152,7 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
         }
 
         g_HudSensorTracker.UpdateObjectiveFlow();
-        zRndr::SetActiveRegionSizeFromRect(reinterpret_cast<HudUiRect *>(windowSection));
+        zRndr::SetActiveRegionSizeFromRect((HudUiRect *)(windowSection));
         zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(0, 2.0f);
         HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
         HudUiMgr::UpdateFrame();
@@ -171,7 +171,7 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
         }
 
         g_HudSensorTracker.UpdateObjectiveFlow();
-        zRndr::SetActiveRegionSizeFromRect(reinterpret_cast<HudUiRect *>(windowSection));
+        zRndr::SetActiveRegionSizeFromRect((HudUiRect *)(windowSection));
         zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(0, 1.0f);
         HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
         HudUiMgr::UpdateFrame();
@@ -182,8 +182,8 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
     }
 
     if (shouldPresent != 0) {
-        zVideo::AdjustSurfacesIfEnabled(reinterpret_cast<zVidRect32 *>(windowSection),
-                                        reinterpret_cast<zVidRect32 *>(windowSection), 0, 0);
+        zVideo::AdjustSurfacesIfEnabled((zVidRect32 *)(windowSection),
+                                        (zVidRect32 *)(windowSection), 0, 0);
     }
 
     return 0;

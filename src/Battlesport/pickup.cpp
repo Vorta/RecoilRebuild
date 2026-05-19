@@ -192,7 +192,7 @@ RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL FindSpawnByPickupId(int pickupId
 // Reimplements 0x41e950: Pickup::GetSpawnDefFromNode (D:\Proj\Battlesport\pickup.cpp)
 RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL
 GetSpawnDefFromNode(zClass_NodePartial *pickupNode) {
-    return reinterpret_cast<PickupSpawnDef *>(pickupNode->callbackContext);
+    return (PickupSpawnDef *)(pickupNode->callbackContext);
 }
 
 // Reimplements 0x41ea00: Pickup::FindOptMetaImageByOptEntry

@@ -1347,7 +1347,7 @@ extern int g_zClass_CopyNodeDiArg1;
 
 namespace zClass_TypeList {
 RECOIL_FORCEINLINE zClass_TypeListBucket &Bucket(int bucket) {
-    return *reinterpret_cast<zClass_TypeListBucket *>(g_zClass_TypeList_HeadSlotPtrs[bucket]);
+    return *(zClass_TypeListBucket *)(g_zClass_TypeList_HeadSlotPtrs[bucket]);
 }
 
 RECOIL_FORCEINLINE zClass_TypeListLink *&Head(int bucket) {

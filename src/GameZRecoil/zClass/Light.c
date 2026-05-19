@@ -35,7 +35,7 @@ namespace {
             return point;
         }
 
-        const zMat4x3 *matrix = reinterpret_cast<const zMat4x3 *>(*zMath::g_currentMatrixPtrSlot);
+        const zMat4x3 *matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
         zVec3 out = {0};
         out.x = point.x * matrix->xx + point.y * matrix->yx + point.z * matrix->zx + matrix->posX;
         out.y = point.x * matrix->xy + point.y * matrix->yy + point.z * matrix->zy + matrix->posY;
@@ -364,7 +364,7 @@ namespace zClass_Light {
         zVec3 localPointB = {0.0f, 0.0f, -1.0f};
         zMat4x3 slotBuffer = {0};
 
-        zMath::MatStackPushPtr(reinterpret_cast<float *>(&slotBuffer));
+        zMath::MatStackPushPtr((float *)(&slotBuffer));
         zMath::MatLoadIdentity();
         gwNode::BuildNodeToAncestorMatrix(node, 1);
 
@@ -409,7 +409,7 @@ namespace zClass_Light {
 
         zMat4x3 slotBuffer = {0};
         ComputeWorldTransform(node, data);
-        zMath::MatStackPushAndCloneParent(reinterpret_cast<float *>(&slotBuffer));
+        zMath::MatStackPushAndCloneParent((float *)(&slotBuffer));
         zMath::MatLoadCameraScratchB();
 
         if (data->isPointMode != 0 || data->coneAngle != 0.0f) {

@@ -159,7 +159,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Fog_SetLinearModeEnabled(int enabled
 RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Fog_SetColorRgb01(zColorRgb *rgb01) {
     memcpy(&gModel_FogColorRgb01, rgb01, sizeof(gModel_FogColorRgb01));
     if (g_zVideo_ActiveRendererPath != 0) {
-        zVideo::SetFogColorFromRgb01(reinterpret_cast<zVideo_ColorRgbFloat *>(rgb01));
+        zVideo::SetFogColorFromRgb01((zVideo_ColorRgbFloat *)(rgb01));
     }
 }
 
@@ -262,7 +262,7 @@ namespace zModel_Light {
 
             float projectedY = 0.0f;
             zMath::Vec3ArrayProjectToCachedY(
-                reinterpret_cast<const zVec3 *>(&g_Clip_PolyVertsScratch[i_250]), &projectedY, 1);
+                (const zVec3 *)(&g_Clip_PolyVertsScratch[i_250]), &projectedY, 1);
 
             if (projectedY >= gModel_FogHeightHigh) {
                 fade = 0.0f;
@@ -325,7 +325,7 @@ namespace zModel_Light {
 
         float projectedY = 0.0f;
         zMath::Vec3ArrayProjectToCachedY(
-            reinterpret_cast<const zVec3 *>(&g_Clip_PolyVertsScratch[0]), &projectedY, 1);
+            (const zVec3 *)(&g_Clip_PolyVertsScratch[0]), &projectedY, 1);
 
         if (projectedY >= gModel_FogHeightHigh) {
             fade = 0.0f;

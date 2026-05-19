@@ -1,4 +1,6 @@
 #pragma once
+#ifndef GAMEZRECOIL_INCLUDE_ZCLIPRECT_H
+#define GAMEZRECOIL_INCLUDE_ZCLIPRECT_H
 
 #include "recoil/recoil_callconv.h"
 
@@ -67,3 +69,5 @@ ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial *clipRect, int *vertexCount);
 RECOIL_NOINLINE int RECOIL_FASTCALL TrivialRejectPolyXY(zClipRectPartial *clipRect,
                                                                  int vertexCount);
 } // namespace zClipRect
+
+#endif // GAMEZRECOIL_INCLUDE_ZCLIPRECT_H

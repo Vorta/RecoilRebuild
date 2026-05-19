@@ -8,25 +8,7 @@ from pathlib import Path
 import struct
 import sys
 
-
-DIRECTORY_NAMES = [
-    "export",
-    "import",
-    "resource",
-    "exception",
-    "certificate",
-    "base_reloc",
-    "debug",
-    "architecture",
-    "global_ptr",
-    "tls",
-    "load_config",
-    "bound_import",
-    "iat",
-    "delay_import",
-    "com_descriptor",
-    "reserved",
-]
+from recoil_pe import PeFormatError, PeSection, data_directory, hex32, parse_pe_headers, read_c_string, rva_to_offset
 
 
 @dataclass(frozen=True)
@@ -79,30 +61,7 @@ class PeReferenceInfo:
     imports: list[ImportInfo]
 
 
-class PeFormatError(ValueError):
-    pass
-
-
-def hex32(value: int) -> str:
-    return f"0x{value:x}"
-
-
-def read_c_string(data: bytes, offset: int) -> str:
-    end = data.index(b"\0", offset)
-    return data[offset:end].decode("ascii", errors="replace")
-
-
-def rva_to_offset(rva: int, sections: list[tuple[str, int, int, int, int]]) -> int | None:
-    for _name, virtual_address, virtual_size, raw_pointer, raw_size in sections:
-        size = max(virtual_size, raw_size)
-        if virtual_address <= rva < virtual_address + size:
-            return raw_pointer + (rva - virtual_address)
-    return None
-
-
-def parse_imports(
-    data: bytes, import_rva: int, sections: list[tuple[str, int, int, int, int]]
-) -> list[ImportInfo]:
+def parse_imports(data: bytes, import_rva: int, sections: tuple[PeSection, ...]) -> list[ImportInfo]:
     if import_rva == 0:
         return []
     import_offset = rva_to_offset(import_rva, sections)
@@ -147,96 +106,56 @@ def parse_imports(
 
 def parse_pe(path: Path) -> PeReferenceInfo:
     data = path.read_bytes()
-    if len(data) < 0x40 or data[:2] != b"MZ":
-        raise PeFormatError(f"not a DOS/PE executable: {path}")
-    pe_offset = struct.unpack_from("<I", data, 0x3c)[0]
-    if data[pe_offset : pe_offset + 4] != b"PE\0\0":
-        raise PeFormatError(f"PE signature not found at {hex32(pe_offset)}")
+    headers = parse_pe_headers(data, source=str(path))
 
-    coff_offset = pe_offset + 4
-    (
-        machine,
-        section_count,
-        timestamp,
-        _symbol_table,
-        _symbol_count,
-        optional_header_size,
-        characteristics,
-    ) = struct.unpack_from("<HHIIIHH", data, coff_offset)
-    optional_offset = coff_offset + 20
-    optional_magic = struct.unpack_from("<H", data, optional_offset)[0]
-    if optional_magic != 0x10B:
-        raise PeFormatError(f"expected PE32 optional header, found {hex32(optional_magic)}")
-
-    entry_point_rva = struct.unpack_from("<I", data, optional_offset + 16)[0]
-    image_base = struct.unpack_from("<I", data, optional_offset + 28)[0]
-    section_alignment, file_alignment = struct.unpack_from("<II", data, optional_offset + 32)
-    size_of_image = struct.unpack_from("<I", data, optional_offset + 56)[0]
-    checksum = struct.unpack_from("<I", data, optional_offset + 64)[0]
-    subsystem = struct.unpack_from("<H", data, optional_offset + 68)[0]
-    number_of_rva_and_sizes = struct.unpack_from("<I", data, optional_offset + 92)[0]
-
-    section_offset = optional_offset + optional_header_size
-    raw_sections: list[tuple[str, int, int, int, int]] = []
     sections: list[SectionInfo] = []
-    for index in range(section_count):
-        current = section_offset + index * 40
-        name = data[current : current + 8].rstrip(b"\0").decode("ascii", errors="replace")
-        virtual_size, virtual_address, raw_size, raw_pointer, _reloc, _line, _nrel, _nline, sect_chars = (
-            struct.unpack_from("<IIIIIIHHI", data, current + 8)
-        )
-        raw_sections.append((name, virtual_address, virtual_size, raw_pointer, raw_size))
+    for section in headers.sections:
         sections.append(
             SectionInfo(
-                name=name,
-                virtual_address=hex32(virtual_address),
-                virtual_size=hex32(virtual_size),
-                raw_pointer=hex32(raw_pointer),
-                raw_size=hex32(raw_size),
-                characteristics=hex32(sect_chars),
+                name=section.name,
+                virtual_address=hex32(section.virtual_address),
+                virtual_size=hex32(section.virtual_size),
+                raw_pointer=hex32(section.raw_pointer),
+                raw_size=hex32(section.raw_size),
+                characteristics=hex32(section.characteristics),
             )
         )
 
     directories: list[DataDirectoryInfo] = []
-    directory_count = min(number_of_rva_and_sizes, len(DIRECTORY_NAMES))
-    for index in range(directory_count):
-        rva, size = struct.unpack_from("<II", data, optional_offset + 96 + index * 8)
-        file_offset = rva_to_offset(rva, raw_sections) if rva else None
+    for directory in headers.data_directories:
         directories.append(
             DataDirectoryInfo(
-                name=DIRECTORY_NAMES[index],
-                rva=hex32(rva),
-                size=hex32(size),
-                file_offset=hex32(file_offset) if file_offset is not None else None,
+                name=directory.name,
+                rva=hex32(directory.rva),
+                size=hex32(directory.size),
+                file_offset=hex32(directory.file_offset) if directory.file_offset is not None else None,
             )
         )
 
-    import_rva = 0
-    if number_of_rva_and_sizes > 1:
-        import_rva = struct.unpack_from("<I", data, optional_offset + 96 + 8)[0]
+    import_rva = data_directory(headers, 1).rva
 
     return PeReferenceInfo(
         path=str(path),
         size=len(data),
         sha256=sha256(data).hexdigest(),
-        pe_offset=hex32(pe_offset),
-        machine=hex32(machine),
-        section_count=section_count,
-        timestamp=timestamp,
-        characteristics=hex32(characteristics),
-        optional_header_magic=hex32(optional_magic),
-        entry_point_rva=hex32(entry_point_rva),
-        entry_point_va=hex32(image_base + entry_point_rva),
-        image_base=hex32(image_base),
-        section_alignment=hex32(section_alignment),
-        file_alignment=hex32(file_alignment),
-        subsystem=subsystem,
-        size_of_image=hex32(size_of_image),
-        checksum=hex32(checksum),
-        number_of_rva_and_sizes=number_of_rva_and_sizes,
+        pe_offset=hex32(headers.pe_offset),
+        machine=hex32(headers.machine),
+        section_count=headers.section_count,
+        timestamp=headers.timestamp,
+        characteristics=hex32(headers.characteristics),
+        optional_header_magic=hex32(headers.optional_header_magic),
+        entry_point_rva=hex32(headers.entry_point_rva),
+        entry_point_va=hex32(headers.image_base + headers.entry_point_rva),
+        image_base=hex32(headers.image_base),
+        section_alignment=hex32(headers.section_alignment),
+        file_alignment=hex32(headers.file_alignment),
+        subsystem=headers.subsystem,
+        size_of_image=hex32(headers.size_of_image),
+        checksum=hex32(headers.checksum),
+        number_of_rva_and_sizes=headers.number_of_rva_and_sizes,
         sections=sections,
         data_directories=directories,
-        imports=parse_imports(data, import_rva, raw_sections),
+        imports=parse_imports(data, import_rva, headers.sections),
     )
 
 

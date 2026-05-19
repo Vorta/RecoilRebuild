@@ -163,12 +163,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL
 FreeAltWeaponTrailRuntimeStates(zUtil_SaveGameState *saveState) {
     unsigned char *cursor = saveState->playerState->bytes + 0x740;
     for (int i = 0; i < 9; ++i) {
-        void *const controllerATrail = *reinterpret_cast<void **>(cursor - 0x54);
+        void *const controllerATrail = *(void **)(cursor - 0x54);
         if (controllerATrail != 0) {
             OptCatalog::FreeTrailRuntimeStateStorage(controllerATrail);
         }
 
-        void *const controllerBTrail = *reinterpret_cast<void **>(cursor);
+        void *const controllerBTrail = *(void **)(cursor);
         if (controllerBTrail != 0) {
             OptCatalog::FreeTrailRuntimeStateStorage(controllerBTrail);
         }
@@ -204,7 +204,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL
 TestScenePathBetweenCameraTargetAndPoint(zClass_NodePartial *node, const zVec3 *point,
                                          int directionMode) {
     zUtil_PlayerStateStorage *const playerState =
-        reinterpret_cast<zUtil_PlayerStateStorage *>(g_GameStateOrMapTable->playerState);
+        (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
 
     zVec3 cameraTarget = {0};
     zClass_Camera::gwCameraGetTarget(g_MainCamera, &cameraTarget.x, &cameraTarget.y,
@@ -397,7 +397,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DestroySaveGameState(zUtil_SaveGameState *s
     zClass_Node::ClearDamageHandler(playerState->rootNode);
 
     HudUiMgrSensorTrackNode *const trackNode =
-        reinterpret_cast<HudUiMgrSensorTrackNode *>(playerState->rootNode->callbackContext);
+        (HudUiMgrSensorTrackNode *)(playerState->rootNode->callbackContext);
     if (trackNode != 0) {
         RemoveTrackNode(trackNode);
         free(trackNode);
@@ -488,9 +488,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ShutdownMissionRuntime() {
     AINet::FreeAll();
     g_Player_NextOrdinal = 0;
     g_GameStateOrMapTable = 0;
-    reinterpret_cast<HudUiContainer *>(&g_zVideo_FxPass3ConfigLocal)
-        ->RemoveChild(&g_Player_UnderwaterFxPass3Ui);
-    reinterpret_cast<HudUiContainer *>(&g_zVideo_FxPass3ConfigLocal)
-        ->RemoveChild(&g_Player_State7FxPass3Ui);
+    ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->RemoveChild(&g_Player_UnderwaterFxPass3Ui);
+    ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->RemoveChild(&g_Player_State7FxPass3Ui);
 }
 } // namespace Player

@@ -1,27 +1,7 @@
 {
   "name": "hud_ui_widget_destructor_core",
   "description": "HudUiWidget destructor core vtable reset and owned-image release.",
-  "source_filename": "HudUiWidget_DestructorCore.cpp",
-  "source": [
-    "struct HudUiWidget_FTable;",
-    "",
-    "extern const HudUiWidget_FTable g_HudUiWidget_FTable;",
-    "extern const HudUiWidget_FTable g_HudUiCommon_FTable;",
-    "",
-    "struct HudUiWidget {",
-    "    const HudUiWidget_FTable *ftable;",
-    "",
-    "    void DestructorCore();",
-    "    void ReleaseImageIfOwned();",
-    "};",
-    "",
-    "// Reimplements 0x4b3d50: HudUiWidget::DestructorCore",
-    "void HudUiWidget::DestructorCore() {",
-    "    ftable = &g_HudUiWidget_FTable;",
-    "    ReleaseImageIfOwned();",
-    "    ftable = &g_HudUiCommon_FTable;",
-    "}"
-  ],
+  "source_filename": "zhud_ui.cpp",
   "compiler_flags": [
     "/nologo",
     "/TP",
@@ -34,7 +14,16 @@
     "/I",
     "."
   ],
-  "include_dirs": [],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
   "source_files": [
     "src/GameZRecoil/zHud/zhud_ui.cpp"
   ],
@@ -44,5 +33,6 @@
       "symbol": "?DestructorCore@HudUiWidget@@QAEXXZ",
       "name": "HudUiWidget::DestructorCore"
     }
-  ]
+  ],
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp"
 }

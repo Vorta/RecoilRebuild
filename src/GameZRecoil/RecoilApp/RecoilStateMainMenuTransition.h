@@ -31,7 +31,7 @@ struct RecoilStateMainMenuTransition {
     RecoilStateMainMenuTransition *RECOIL_THISCALL Constructor();
     RECOIL_NOINLINE RecoilStateMainMenuTransition *RECOIL_THISCALL
     ScalarDeletingDestructor(unsigned int flags);
-    RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE RECOIL_NO_GS ~RecoilStateMainMenuTransition();
     RECOIL_NO_GS int RECOIL_THISCALL OnTryBecomeCurrent();
     void RECOIL_THISCALL OnResume(int param);
     void RECOIL_THISCALL OnDeactivate();
