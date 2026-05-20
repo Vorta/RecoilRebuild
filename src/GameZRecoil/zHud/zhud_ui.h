@@ -13,17 +13,15 @@
 
 struct zVec3;
 struct zTag4Partial;
+struct HudUiContainer;
+struct HudUiContainer_FTable;
+struct HudUiBackgroundContainer_FTable;
+struct HudUiTriplet_FTable;
+struct HudUiTextStack4_FTable;
+struct HudUiStringMenu_FTable;
 
 struct HudUiCommon_FTable {
     unsigned int slots[29];
-};
-
-struct HudUiContainer_FTable {
-    unsigned int slots[2];
-};
-
-struct HudUiBackgroundContainer_FTable {
-    unsigned int slots[2];
 };
 
 struct HudUiWidget_FTable {
@@ -126,18 +124,6 @@ struct HudUiCounterTextPanel_FTable {
     unsigned int slots[37];
 };
 
-struct HudUiTriplet_FTable {
-    unsigned int slots[2];
-};
-
-struct HudUiTextStack4_FTable {
-    unsigned int slots[2];
-};
-
-struct HudUiStringMenu_FTable {
-    unsigned int slots[2];
-};
-
 struct HudUiStatsListElement_FTable {
     unsigned int slots[29];
 };
@@ -158,7 +144,6 @@ struct HudUiSlot_FTable {
     unsigned int slots[29];
 };
 
-struct HudUiContainer;
 struct HudUiElement;
 struct HudUiPanel;
 struct HudUiCounter;
@@ -573,6 +558,34 @@ struct HudUiContainer {
     void RECOIL_THISCALL SetChildFlags(unsigned int childFlags);
     void RECOIL_THISCALL UpdateAll(float deltaSeconds);
     void RECOIL_THISCALL InvalidateChildren();
+};
+
+typedef void (HudUiContainer::*HudUiContainerUpdateAllFn)(float deltaSeconds);
+typedef void (HudUiContainer::*HudUiContainerSetEnabledFn)(int enabled);
+
+struct HudUiContainer_FTable {
+    HudUiContainerUpdateAllFn updateAll;
+    HudUiContainerSetEnabledFn setEnabled;
+};
+
+struct HudUiBackgroundContainer_FTable {
+    HudUiContainerUpdateAllFn updateAll;
+    HudUiContainerSetEnabledFn setEnabled;
+};
+
+struct HudUiTriplet_FTable {
+    HudUiContainerUpdateAllFn updateAll;
+    HudUiContainerSetEnabledFn setEnabled;
+};
+
+struct HudUiTextStack4_FTable {
+    HudUiContainerUpdateAllFn updateAll;
+    HudUiContainerSetEnabledFn setEnabled;
+};
+
+struct HudUiStringMenu_FTable {
+    HudUiContainerUpdateAllFn updateAll;
+    HudUiContainerSetEnabledFn setEnabled;
 };
 
 struct HudUiBackgroundContainer {
@@ -1517,6 +1530,11 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiShieldMessageWidget, widget) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiShieldMessageWidget, percentTextPanel) == 0xd8);
 RECOIL_STATIC_ASSERT(offsetof(HudUiShieldMessageWidget, meter) == 0x37c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiContainer) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(HudUiContainer_FTable) == 0x08);
+RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundContainer_FTable) == 0x08);
+RECOIL_STATIC_ASSERT(sizeof(HudUiTriplet_FTable) == 0x08);
+RECOIL_STATIC_ASSERT(sizeof(HudUiTextStack4_FTable) == 0x08);
+RECOIL_STATIC_ASSERT(sizeof(HudUiStringMenu_FTable) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(HudUiContainer, enabled) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(HudUiContainer, childHead) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(HudUiContainer, childTail) == 0x0c);

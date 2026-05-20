@@ -18,6 +18,7 @@ COD_OFFSET_RE = re.compile(r"^[0-9A-Fa-f]{5}$")
 DECIMAL_RE = re.compile(r"^-?\d+$")
 HEX_RE = re.compile(r"^0x[0-9a-fA-F]+$")
 COD_C_SYMBOL_RE = re.compile(r"(?<![\w?$@])_[A-Za-z][A-Za-z0-9_]*(?:@[0-9]+)?(?:\+\d+)?(?![\w$])")
+HEXDUMP_BYTES_RE = re.compile(r"^\s*[0-9A-Fa-f]{6,8}\s+((?:[0-9A-Fa-f]{2}\s+){1,16})")
 
 
 @dataclass(frozen=True)
@@ -726,6 +727,19 @@ def instructions_to_bytes(instructions: list[Instruction]) -> bytes:
     return bytes(int(byte, 16) for instruction in instructions for byte in instruction.bytes)
 
 
+def bytes_from_hexdump(hexdump_text: str, *, expected_length: int | None = None) -> bytes:
+    values: list[int] = []
+    for line in hexdump_text.splitlines():
+        match = HEXDUMP_BYTES_RE.match(line)
+        if match is None:
+            continue
+        values.extend(int(byte_text, 16) for byte_text in match.group(1).split())
+    data = bytes(values)
+    if expected_length is not None and len(data) != expected_length:
+        raise ValueError(f"BN hexdump yielded {len(data)} byte(s), expected {expected_length}")
+    return data
+
+
 def trim_trailing_nops(data: bytes, mask: tuple[bool, ...]) -> tuple[bytes, tuple[bool, ...], int]:
     if len(data) != len(mask):
         raise ValueError("Byte data and relocation mask lengths differ")
@@ -983,6 +997,7 @@ def compare_bn_to_obj(
     bridge_url: str,
     cod_path: Path | None = None,
     trim_padding_nops: bool = True,
+    bn_byte_length: int | None = None,
 ) -> ObjectByteComparison:
     address = normalize_address(address)
     safe_address = address[2:]
@@ -991,7 +1006,10 @@ def compare_bn_to_obj(
     bn_asm = bridge.assembly(address)
     bn_instructions = parse_assembly(bn_asm, source="bn")
     bn_lines = [instruction.text for instruction in bn_instructions]
-    bn_bytes = instructions_to_bytes(bn_instructions)
+    if bn_byte_length is None:
+        bn_bytes = instructions_to_bytes(bn_instructions)
+    else:
+        bn_bytes = bytes_from_hexdump(bridge.hexdump(address, bn_byte_length), expected_length=bn_byte_length)
     bn_path = out_dir / f"{safe_address}_bn.bytes"
     write_lines(bn_path, format_byte_dump(bn_bytes, base=int(address, 16)))
     bn_asm_path = out_dir / f"{safe_address}_bn.norm.asm"

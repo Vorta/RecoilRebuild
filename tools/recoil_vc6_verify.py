@@ -42,6 +42,7 @@ class VerifyFunction:
     address: str
     symbol: str
     name: str
+    bn_byte_length: int | None = None
 
 
 @dataclass(frozen=True)
@@ -245,6 +246,17 @@ def validate_source_policy(
             )
 
 
+def optional_positive_int(data: dict[str, Any], key: str, *, manifest_path: Path) -> int | None:
+    value = data.get(key)
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(f"{manifest_path}: expected '{key}' to be a positive integer")
+    if value <= 0:
+        raise ValueError(f"{manifest_path}: expected '{key}' to be a positive integer")
+    return value
+
+
 def load_manifest(
     path: Path,
     *,
@@ -295,7 +307,14 @@ def load_manifest(
         name = item.get("name", symbol)
         if not isinstance(name, str) or not name:
             raise ValueError(f"{path}: expected non-empty function name for {address}")
-        functions.append(VerifyFunction(address=address, symbol=symbol, name=name))
+        functions.append(
+            VerifyFunction(
+                address=address,
+                symbol=symbol,
+                name=name,
+                bn_byte_length=optional_positive_int(item, "bn_byte_length", manifest_path=path),
+            )
+        )
 
     compare_mode = data.get("compare_mode", "coff_bytes")
     if not isinstance(compare_mode, str) or compare_mode not in {"coff_bytes", "text"}:
@@ -655,6 +674,7 @@ def compare_compiled_selections(
                         bridge_url=bridge_url,
                         cod_path=compiled.cod_path,
                         trim_padding_nops=target.trim_trailing_nops,
+                        bn_byte_length=function.bn_byte_length,
                     )
                     results.append(
                         VerificationResult(

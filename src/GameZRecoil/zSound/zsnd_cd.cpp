@@ -10,20 +10,26 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(_MSC_VER) && _MSC_VER <= 1200
+extern "C" FILE *__imp___iob;
+extern "C" int(__cdecl *__imp__fprintf)(FILE *, const char *, ...);
+#endif
+
+struct zSndCdTrackState
+{
+    int track;
+    int minute;
+    int second;
+};
+
 extern "C" int g_zSndCdFlags = 0;
 extern "C" int g_zSndCdLastPlayMode = 0;
 extern "C" int g_zSndCdDeviceId = 0;
 extern "C" int g_zSndCdAuxDeviceId = -1;
 extern "C" int g_zSndCdTrackCountCached = 0;
-extern "C" int g_zSndCdPlayFromTrack = 1;
-extern "C" int g_zSndCdPlayFromMinute = 0;
-extern "C" int g_zSndCdPlayFromSecond = 0;
-extern "C" int g_zSndCdCurrentTrack = 1;
-extern "C" int g_zSndCdCurrentMinute = 0;
-extern "C" int g_zSndCdCurrentSecond = 0;
-extern "C" int g_zSndCdPlayToTrack = 1;
-extern "C" int g_zSndCdPlayToMinute = 0;
-extern "C" int g_zSndCdPlayToSecond = 0;
+extern "C" zSndCdTrackState g_zSndCdPlayFrom = {1, 0, 0};
+extern "C" zSndCdTrackState g_zSndCdCurrent = {1, 0, 0};
+extern "C" zSndCdTrackState g_zSndCdPlayTo = {1, 0, 0};
 extern "C" zSndCdTrackNode *g_zSndCd_TrackListHead = 0;
 extern "C" int g_zSndCd_TrackCount = 0;
 extern "C" int g_zSndCdDiscLengthMinute = 0;
@@ -39,10 +45,20 @@ extern "C" int g_zSnd_UseArchiveBanksFlag = 0;
 extern "C" float g_zSndSpeedOfSoundMps = 0.0f;
 extern "C" float g_zSndInvSpeedOfSoundMps = 0.0f;
 
+#define g_zSndCdPlayFromTrack (g_zSndCdPlayFrom.track)
+#define g_zSndCdPlayFromMinute (g_zSndCdPlayFrom.minute)
+#define g_zSndCdPlayFromSecond (g_zSndCdPlayFrom.second)
+#define g_zSndCdCurrentTrack (g_zSndCdCurrent.track)
+#define g_zSndCdCurrentMinute (g_zSndCdCurrent.minute)
+#define g_zSndCdCurrentSecond (g_zSndCdCurrent.second)
+#define g_zSndCdPlayToTrack (g_zSndCdPlayTo.track)
+#define g_zSndCdPlayToMinute (g_zSndCdPlayTo.minute)
+#define g_zSndCdPlayToSecond (g_zSndCdPlayTo.second)
+
 namespace {
 const int ZSND_CD_FLAG_STEREO_AUX = 1;
 const int ZSND_CD_FLAG_READY = 2;
-const char *kZSndCdSourceFile = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp";
+const char kZSndCdSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp";
 
 zReader::Node *ArrayBase(zReader::Node *node) {
     return node->value.nodes;
@@ -127,13 +143,18 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReportMciError(unsigned int mci
                                                                          int lineNumber) {
     char errorText[0x100];
     mciGetErrorStringA(mciError, errorText, sizeof(errorText));
+#if defined(_MSC_VER) && _MSC_VER <= 1200
+    FILE *stream = __imp___iob + 2;
+    (*__imp__fprintf)(stream, "%s(%d): MCIError [%s]\n", sourceFile, lineNumber, errorText);
+#else
     fprintf(stderr, "%s(%d): MCIError [%s]\n", sourceFile, lineNumber, errorText);
+#endif
     return 0;
 }
 } // namespace zSnd
 
 namespace zSndCd {
-RECOIL_NOINLINE void RECOIL_CDECL ResetTrackState();
+RECOIL_NOINLINE int RECOIL_CDECL ResetTrackState();
 RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
 
 // Reimplements 0x4a20d0: zSndCd::Init
@@ -245,16 +266,12 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL Init(zReader::Node *cdTracksNod
 }
 
 // Reimplements 0x4a2490: zSndCd::ResetTrackState
-RECOIL_NOINLINE void RECOIL_CDECL ResetTrackState() {
-    g_zSndCdPlayFromTrack = 1;
-    g_zSndCdPlayFromMinute = 0;
-    g_zSndCdPlayFromSecond = 0;
-    g_zSndCdCurrentTrack = 1;
-    g_zSndCdCurrentMinute = 0;
-    g_zSndCdCurrentSecond = 0;
-    g_zSndCdPlayToTrack = 1;
-    g_zSndCdPlayToMinute = 0;
-    g_zSndCdPlayToSecond = 0;
+RECOIL_NOINLINE int RECOIL_CDECL ResetTrackState() {
+    zSndCdTrackState state = {1, 0, 0};
+    g_zSndCdPlayFrom = state;
+    g_zSndCdCurrent = state;
+    g_zSndCdPlayTo = state;
+    return state.track;
 }
 
 // Reimplements 0x4a27d0: zSndCd::IsStereoAuxEnabled
@@ -277,19 +294,24 @@ ApplyPlaybackMode(int playbackMode) {
         return 0;
     }
 
-    const int currentTrack = g_zSndCdCurrentTrack;
-    const int trackCount = g_zSndCdTrackCountCached;
-    int playToTrack = trackCount + 1;
-    if (playbackMode == 2 || playbackMode == 5) {
+    register int currentTrack = g_zSndCdCurrentTrack;
+    register int trackCount = g_zSndCdTrackCountCached;
+    register int playToTrack;
+    if (playbackMode == 2) {
         playToTrack = currentTrack + 1;
+    } else {
+        playToTrack = trackCount + 1;
+        if (playbackMode == 5) {
+            playToTrack = currentTrack + 1;
+        }
     }
 
     g_zSndCdPlayToTrack = playToTrack;
 
-    MCI_PLAY_PARMS playParms = {0};
-    playParms.dwCallback = g_zSnd_WindowHandle;
+    MCI_PLAY_PARMS playParms;
     playParms.dwFrom = static_cast<DWORD>(currentTrack & 0xff);
     playParms.dwTo = static_cast<DWORD>(playToTrack & 0xff);
+    playParms.dwCallback = g_zSnd_WindowHandle;
 
     DWORD playFlags = 0x5;
     if (static_cast<unsigned int>(playToTrack) <= static_cast<unsigned int>(trackCount)) {
@@ -322,7 +344,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL PlayTrack(int trackIndex) {
         return 0;
     }
 
-    MCI_SEEK_PARMS seekParms = {0};
+    MCI_SEEK_PARMS seekParms;
     seekParms.dwTo = static_cast<DWORD>(trackIndex & 0xff);
 
     const DWORD mciError = mciSendCommandA(static_cast<MCIDEVICEID>(g_zSndCdDeviceId & 0xffff),

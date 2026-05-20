@@ -1,0 +1,38 @@
+{
+  "name": "hud_ui_container_constructor_default",
+  "description": "HudUiContainer default constructor and initial enabled dispatch.",
+  "source_filename": "zhud_ui.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4bc780",
+      "symbol": "?ConstructorDefault@HudUiContainer@@QAEPAU1@XZ",
+      "name": "HudUiContainer::ConstructorDefault"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp"
+}

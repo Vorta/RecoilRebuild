@@ -47,6 +47,7 @@ Each function has these trackers:
 - Before implementing the anchor, use Binary Ninja to identify direct callees, shared helpers, constructors/destructors, vtable targets, imported/provider functions, globals, structs/classes, constants, and caller-visible ABI requirements.
 - Run `python tools/recoil_frontier.py 0xNNNNNN --depth 1` for the anchor and use the report as a starting work package; Binary Ninja evidence still outranks tool output.
 - Do not implement or mark a caller as `Reimplemented` while `Source dependencies satisfied` is `❓` or `❌`. Audit unknown dependencies first; when dependencies are not satisfied, switch to the lowest blocking dependency or dependency group.
+- For virtual or function-table dispatch, treat `Source dependencies satisfied` as requiring the callee signature, object layout, table ownership, slot mapping, and dispatch semantics to be known before caller implementation. Prefer clean original-era member/virtual/typed-provider calls first; use raw `slots[n]` dispatch only when evidence or VC6 verification proves the clean spelling cannot preserve the original ABI/codegen.
 - Work bottom-up from the lowest blocking dependency or strongly connected dependency group, then return upward to callers and anchors.
 - Use `.agent/IMPLEMENTATION_GROUPS.md` for any multi-function dependency closure, class/vtable cluster, source-file cluster, or recursive/cyclic group.
 - Do not implement callers merely because they appear earlier in this file when an unimplemented callee, shared type/global, provider contract, or build dependency controls their correct source or ABI behavior.
@@ -66,7 +67,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: RecoilStateDialogHost::OnWndActivate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateDialogHost::OnWndActivate File: src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x40c370:
   - [✅] Reconstructed (Name: zSys::ProbePlatformAndVideoCaps)
   - [✅] Source dependencies satisfied
@@ -81,7 +82,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::Destructor File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x415220:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
@@ -4130,7 +4131,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiContainer::ConstructorDefault)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::ConstructorDefault File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4bc7b0:
   - [✅] Reconstructed (Name: HudUiContainer::DestructorCore)
   - [✅] Source dependencies satisfied
@@ -10787,7 +10788,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zError::ReportOldNoOp)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zError::ReportOld File: src/GameZRecoil/zError/zerr_old.c)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x462310:
   - [✅] Reconstructed (Name: RecoilError::InitOutputContext)
   - [✅] Source dependencies satisfied
@@ -15144,9 +15145,9 @@ Each function has these trackers:
   - [✅] Reimplemented (Name: zSnd::IsMuted File: src/GameZRecoil/zSound/zsnd_play.cpp)
   - [❌] Binary-safe verified
 - 0x4a07c0:
-  - [✅] Reconstructed (Name: zSndPlayHandleSnapshotItem::NewNode)
+  - [✅] Reconstructed (Name: zSndPlayHandleSnapshot::NewNode)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zSndPlayHandleSnapshotItem::NewNode File: src/GameZRecoil/zSound/zsnd_play.cpp)
+  - [✅] Reimplemented (Name: zSndPlayHandleSnapshot::NewNode File: src/GameZRecoil/zSound/zsnd_play.cpp)
   - [✅] Binary-safe verified
 - 0x4a07f0:
   - [✅] Reconstructed (Name: zSnd::SetUseArchiveBanksFlag)
@@ -15312,7 +15313,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSnd::ReportMciError)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::ReportMciError File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a3ef0:
   - [✅] Reconstructed (Name: zSnd::ReportA3DError)
   - [✅] Source dependencies satisfied
@@ -15382,7 +15383,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSndStreamRequest::StopIfActive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndStreamRequest_StopIfActive File: src/GameZRecoil/zSound/zsnd_group.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a5220:
   - [✅] Reconstructed (Name: zSndStreamRequest::MatchGroupPredicate)
   - [❌] Source dependencies satisfied
@@ -15480,7 +15481,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSndCd::ResetTrackState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::ResetTrackState File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a24d0:
   - [☑️] Reconstructed (Name: zSndCd::Shutdown)
   - [✅] Source dependencies satisfied
@@ -15510,7 +15511,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSndCd::PlayTrack)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::PlayTrack File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a27d0:
   - [✅] Reconstructed (Name: zSndCd::IsStereoAuxEnabled)
   - [❌] Source dependencies satisfied
@@ -15733,7 +15734,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSnd::GetCDAudioOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::GetCDAudioOption File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x408230:
   - [✅] Reconstructed (Name: zOpt::SetNetworkEnabled)
   - [✅] Source dependencies satisfied
@@ -16043,7 +16044,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zArchiveList::FindPayloadByPredicate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_FindPayloadByPredicate File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x48cc20:
   - [✅] Reconstructed (Name: zArchiveList::FindPayloadByValue)
   - [❌] Source dependencies satisfied

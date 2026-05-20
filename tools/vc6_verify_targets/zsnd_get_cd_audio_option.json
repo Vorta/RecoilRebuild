@@ -1,0 +1,37 @@
+{
+  "name": "zsnd_get_cd_audio_option",
+  "description": "zSnd CD-audio option getter.",
+  "source_filename": "zsnd_cd.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob1",
+    "/Zp4",
+    "/GX",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_cd.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x408220",
+      "symbol": "?GetCDAudioOption@zSnd@@YAHXZ",
+      "name": "zSnd::GetCDAudioOption"
+    }
+  ]
+}

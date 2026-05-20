@@ -1,0 +1,38 @@
+{
+  "name": "zerror_report_old_noop",
+  "description": "zError legacy report no-op stub.",
+  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "source_filename": "zerr_old.c",
+  "source_from": "src/GameZRecoil/zError/zerr_old.c",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob1",
+    "/GX",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zError/zerr_old.c"
+  ],
+  "functions": [
+    {
+      "address": "0x404e80",
+      "symbol": "?ReportOld@zError@@YAXHPBDH0ZZ",
+      "name": "zError::ReportOldNoOp"
+    }
+  ]
+}

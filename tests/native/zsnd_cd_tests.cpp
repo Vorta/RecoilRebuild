@@ -16,15 +16,15 @@ extern "C" std::int32_t g_zSndCdLastPlayMode;
 extern "C" std::int32_t g_zSndCdDeviceId;
 extern "C" std::int32_t g_zSndCdAuxDeviceId;
 extern "C" std::int32_t g_zSndCdTrackCountCached;
-extern "C" std::int32_t g_zSndCdPlayFromTrack;
-extern "C" std::int32_t g_zSndCdPlayFromMinute;
-extern "C" std::int32_t g_zSndCdPlayFromSecond;
-extern "C" std::int32_t g_zSndCdCurrentTrack;
-extern "C" std::int32_t g_zSndCdCurrentMinute;
-extern "C" std::int32_t g_zSndCdCurrentSecond;
-extern "C" std::int32_t g_zSndCdPlayToTrack;
-extern "C" std::int32_t g_zSndCdPlayToMinute;
-extern "C" std::int32_t g_zSndCdPlayToSecond;
+struct zSndCdTrackState
+{
+    std::int32_t track;
+    std::int32_t minute;
+    std::int32_t second;
+};
+extern "C" zSndCdTrackState g_zSndCdPlayFrom;
+extern "C" zSndCdTrackState g_zSndCdCurrent;
+extern "C" zSndCdTrackState g_zSndCdPlayTo;
 extern "C" void *g_zSnd_BackendDevice;
 extern "C" void *g_zSnd_BackendListenerHandle;
 extern "C" DSCAPS g_zSnd_BackendAuxHandleOrConfig;
@@ -38,13 +38,23 @@ extern "C" std::int32_t g_zSnd_ListenerStateValid;
 extern "C" zSndListenerState g_zSnd_ListenerState;
 extern "C" zVec3 g_zSnd_ListenerVelocity;
 
+#define g_zSndCdPlayFromTrack (g_zSndCdPlayFrom.track)
+#define g_zSndCdPlayFromMinute (g_zSndCdPlayFrom.minute)
+#define g_zSndCdPlayFromSecond (g_zSndCdPlayFrom.second)
+#define g_zSndCdCurrentTrack (g_zSndCdCurrent.track)
+#define g_zSndCdCurrentMinute (g_zSndCdCurrent.minute)
+#define g_zSndCdCurrentSecond (g_zSndCdCurrent.second)
+#define g_zSndCdPlayToTrack (g_zSndCdPlayTo.track)
+#define g_zSndCdPlayToMinute (g_zSndCdPlayTo.minute)
+#define g_zSndCdPlayToSecond (g_zSndCdPlayTo.second)
+
 namespace zSnd {
 void RECOIL_FASTCALL SetUseArchiveBanksFlag(std::int32_t useArchiveBanks);
 }
 
 namespace zSndCd {
 std::int32_t RECOIL_FASTCALL Init(zReader::Node *cdTracksNode);
-void RECOIL_CDECL ResetTrackState();
+int RECOIL_CDECL ResetTrackState();
 std::int32_t RECOIL_CDECL IsStereoAuxEnabled();
 std::int32_t RECOIL_FASTCALL ApplyPlaybackMode(std::int32_t playbackMode);
 std::int32_t RECOIL_FASTCALL PlayTrack(std::int32_t trackIndex);

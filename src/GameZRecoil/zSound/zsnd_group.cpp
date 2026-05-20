@@ -141,12 +141,12 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
 zSndStreamRequest_StopIfActive(zSndPlayHandle *request) {
     void *const found = zArchiveList_FindPayloadByPredicate(g_zSndStream_ActiveList,
                                                             &MatchStreamRequestPredicate, request);
-    if (found == 0) {
-        return 0;
+    if (found != 0) {
+        ((zSndStreamRequest *)(request))->streamState = 4;
+        return 1;
     }
 
-    ((zSndStreamRequest *)(request))->streamState = 4;
-    return 1;
+    return 0;
 }
 
 // Reimplements 0x4a5220: zSndStreamRequest_MatchGroupPredicate

@@ -3,6 +3,7 @@
   "description": "RecoilApp dialog-host state window-activation handler from src/GameZRecoil/RecoilApp.",
   "source_filename": "RecoilStateDialogHost.cpp",
   "source_from": "src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp",
+  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
   "compiler_flags": [
     "/nologo",
     "/TP",

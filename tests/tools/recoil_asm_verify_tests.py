@@ -9,6 +9,7 @@ sys.path.insert(0, str(REPO_ROOT / "tools"))
 
 from recoil_asm_verify import (  # noqa: E402
     CoffObject,
+    bytes_from_hexdump,
     classify_instruction_differences,
     compare_masked_byte_sequences,
     format_byte_triage_lines,
@@ -142,6 +143,26 @@ class RecoilAsmVerifyTests(unittest.TestCase):
         self.assertEqual(1, len(instructions))
         self.assertEqual(("8b", "0d", "00", "00", "00", "00"), instructions[0].bytes)
         self.assertEqual("mov ecx, dword _g_zSys_CpuVendorNonIntelMarker", instructions[0].text)
+
+    def test_bytes_from_hexdump_ignores_labels_and_ascii(self):
+        hexdump = "\n".join(
+            [
+                "4a3ef0  zSnd::ReportA3DError:",
+                "4a3ef0  81 ec 00 01 00 00 85 c9 56 8b f2 0f 8f 05 03 00  ........V.......",
+                "4a3f00  00 0f 84 f0                                      ....",
+            ]
+        )
+
+        data = bytes_from_hexdump(hexdump, expected_length=20)
+
+        self.assertEqual(
+            bytes.fromhex("81 ec 00 01 00 00 85 c9 56 8b f2 0f 8f 05 03 00 00 0f 84 f0"),
+            data,
+        )
+
+    def test_bytes_from_hexdump_rejects_wrong_length(self):
+        with self.assertRaisesRegex(ValueError, "expected 2"):
+            bytes_from_hexdump("401000  c3  .", expected_length=2)
 
     def test_byte_identical_branch_label_difference_is_classified(self):
         bn = parse_assembly("004b3428  74 07            je      0x4b3431", source="bn")

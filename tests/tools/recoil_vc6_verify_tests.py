@@ -242,6 +242,27 @@ class RecoilVc6VerifyTests(unittest.TestCase):
         self.assertEqual("text", manifest.compare_mode)
         self.assertFalse(manifest.trim_trailing_nops)
 
+    def test_load_manifest_accepts_function_bn_byte_length(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_manifest(Path(tmp))
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["functions"][0]["bn_byte_length"] = 1088
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+            manifest = load_manifest(path)
+
+        self.assertEqual(1088, manifest.functions[0].bn_byte_length)
+
+    def test_load_manifest_rejects_invalid_bn_byte_length(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_manifest(Path(tmp))
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["functions"][0]["bn_byte_length"] = 0
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "bn_byte_length"):
+                load_manifest(path)
+
     def test_coverage_helpers_report_address_matches_and_skeleton(self):
         with tempfile.TemporaryDirectory() as tmp:
             manifest = load_manifest(write_manifest(Path(tmp)))

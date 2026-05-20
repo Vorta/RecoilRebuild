@@ -80,17 +80,20 @@ struct zSndPlayHandleSnapshotItem {
     zSndPlayHandleSnapshotItem *next;
     zSndPlayHandleSnapshotItem *prev;
     zSndPlayHandleSnapshotPayload payload;
-
-    static RECOIL_NOINLINE zSndPlayHandleSnapshotItem *RECOIL_STDCALL
-    NewNode(zSndPlayHandleSnapshotItem *listHead, zSndPlayHandleSnapshotItem *prev);
 };
 
 struct zSndPlayHandleSnapshot {
-    int backendTag;
+    unsigned char backendTag;
+    unsigned char unknown_01[3];
     zSndPlayHandleSnapshotItem *listHead;
     int itemCount;
 
+    zSndPlayHandleSnapshot(unsigned char backendTag);
+
     static RECOIL_NOINLINE zSndPlayHandleSnapshot *RECOIL_CDECL CreateFromActiveSamples();
+    void AppendPayload(const zSndPlayHandleSnapshotPayload &payload);
+    RECOIL_NOINLINE zSndPlayHandleSnapshotItem *RECOIL_THISCALL
+    NewNode(zSndPlayHandleSnapshotItem *listHead, zSndPlayHandleSnapshotItem *prev);
 
     RECOIL_NOINLINE int RECOIL_THISCALL StopAllIfPlaying();
     RECOIL_NOINLINE int RECOIL_THISCALL RestoreAllWithGlobalVolumeDelta();

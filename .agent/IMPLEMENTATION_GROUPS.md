@@ -27,6 +27,18 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 
 ## Active Groups
 
+### Group: HUD container dispatch model
+
+- Anchor: 0x4bc780 HudUiContainer::ConstructorDefault
+- Reason: shared container ftable/vtable dispatch source cleanup and VC6 verification.
+- Source blockers:
+  - 0x4bc780 HudUiContainer::ConstructorDefault
+  - 0x4bc900 HudUiContainer::UpdateAll
+  - 0x40d9d0 HudUiContainer::SetEnabled
+  - 0x40fa10 HudUiStatsListElement::Update
+- Next action:
+  - `python tools/recoil_status.py 0x4bc780`
+
 ### Group: HUD per-frame update
 
 - Anchor: 0x42f280 pending

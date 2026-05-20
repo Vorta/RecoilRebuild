@@ -15,6 +15,14 @@ for function identity, types, markers, and acceptance state.
   legacy DirectX, imports, and runtime verification.
 - `source_file_map.md` - generated original-source placement map from
   `Reimplements` provenance comments in `src/`.
+- `zsnd_error_verification.md` - zSound error-helper verification notes,
+  including the `ReportA3DError` switch-table comparison limitation.
+- `zsnd_cd_verification.md` - zSound CD helper verification notes, including the
+  recovered playback-position triplet layout used by `ResetTrackState`.
+- `zsnd_play_handle_verification.md` - zSound play-handle verification notes,
+  including the `StopIfActive` backend-dispatch mismatch profile.
+- `zsnd_sample_set_verification.md` - zSound sample-set registry verification
+  notes, including the `FindByName` inline-`strcmp` mismatch profile.
 - `README.md` - rules for when to add durable reconstruction notes.
 
 ## Legacy Notes

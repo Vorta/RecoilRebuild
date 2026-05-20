@@ -111,130 +111,6 @@ const char *DirectSoundErrorName(int directSoundError) {
     }
 }
 
-const char *A3DErrorName(int a3dError) {
-    if (a3dError == 0) {
-        return 0;
-    }
-
-    switch (static_cast<unsigned int>(a3dError)) {
-    case 0x80040001u:
-        return "\tA3DERROR_MEMORY_ALLOCATION\t";
-    case 0x80040002u:
-        return "\tA3DERROR_FAILED_CREATE_PRIMARY_BUFFER\t";
-    case 0x80040003u:
-        return "\tA3DERROR_FAILED_CREATE_SECONDARY_BUFFER\t";
-    case 0x80040004u:
-        return "\tA3DERROR_FAILED_INIT_A3D_DRIVER\t";
-    case 0x80040005u:
-        return "\tA3DERROR_FAILED_QUERY_DIRECTSOUND\t";
-    case 0x80040006u:
-        return "\tA3DERROR_FAILED_QUERY_A3D3\t";
-    case 0x80040007u:
-        return "\tA3DERROR_FAILED_INIT_A3D3\t";
-    case 0x80040008u:
-        return "\tA3DERROR_FAILED_QUERY_A3D2\t";
-    case 0x80040009u:
-        return "\tA3DERROR_FAILED_FILE_OPEN\t";
-    case 0x8004000au:
-        return "\tA3DERROR_FAILED_CREATE_SOUNDBUFFER\t";
-    case 0x8004000bu:
-        return "\tA3DERROR_FAILED_QUERY_3DINTERFACE\t";
-    case 0x8004000cu:
-        return "\tA3DERROR_FAILED_LOCK_BUFFER\t";
-    case 0x8004000du:
-        return "\tA3DERROR_FAILED_UNLOCK_BUFFER\t";
-    case 0x8004000eu:
-        return "\tA3DERROR_UNRECOGNIZED_FORMAT\t";
-    case 0x8004000fu:
-        return "\tA3DERROR_NO_WAVE_DATA\t";
-    case 0x80040010u:
-        return "\tA3DERROR_UNKNOWN_PLAYMODE\t";
-    case 0x80040011u:
-        return "\tA3DERROR_FAILED_PLAY\t";
-    case 0x80040012u:
-        return "\tA3DERROR_FAILED_STOP\t";
-    case 0x80040013u:
-        return "\tA3DERROR_NEEDS_FORMAT_INFORMATION\t";
-    case 0x80040014u:
-        return "\tA3DERROR_FAILED_ALLOCATE_WAVEDATA\t";
-    case 0x80040015u:
-        return "\tA3DERROR_NOT_VALID_SOURCE\t";
-    case 0x80040016u:
-        return "\tA3DERROR_FAILED_DUPLICATION\t";
-    case 0x80040017u:
-        return "\tA3DERROR_FAILED_INIT\t";
-    case 0x80040018u:
-        return "\tA3DERROR_FAILED_SETCOOPERATIVE_LEVEL\t";
-    case 0x80040019u:
-        return "\tA3DERROR_FAILED_INIT_QUERIED_INTERFACE\t";
-    case 0x8004001au:
-        return "\tA3DERROR_GEOMETRY_INPUT_OUTSIDE_BEGIN_END_BLOCK\t";
-    case 0x8004001bu:
-        return "\tA3DERROR_INVALID_NORMAL\t";
-    case 0x8004001cu:
-        return "\tA3DERROR_END_BEFORE_VALID_BEGIN_BLOCK\t";
-    case 0x8004001du:
-        return "\tA3DERROR_INVALID_BEGIN_MODE\t";
-    case 0x8004001eu:
-        return "\tA3DERROR_INVALID_ARGUMENT\t";
-    case 0x8004001fu:
-        return "\tA3DERROR_INVALID_INDEX\t";
-    case 0x80040020u:
-        return "\tA3DERROR_INVALID_VERTEX_INDEX\t";
-    case 0x80040021u:
-        return "\tA3DERROR_INVALID_PRIMITIVE_INDEX\t";
-    case 0x80040022u:
-        return "\tA3DERROR_MIXING_2D_AND_3D_MODES\t";
-    case 0x80040023u:
-        return "\tA3DERROR_2DWALL_REQUIRES_EXACTLY_ONE_LINE\t";
-    case 0x80040024u:
-        return "\tA3DERROR_NO_PRIMITIVES_DEFINED\t";
-    case 0x80040025u:
-        return "\tA3DERROR_PRIMITIVES_NON_PLANAR\t";
-    case 0x80040026u:
-        return "\tA3DERROR_PRIMITIVES_OVERLAPPING\t";
-    case 0x80040027u:
-        return "\tA3DERROR_PRIMITIVES_NOT_ADJACENT\t";
-    case 0x80040028u:
-        return "\tA3DERROR_OBJECT_NOT_FOUND\t";
-    case 0x80040029u:
-        return "\tA3DERROR_ROOM_HAS_NO_SHELL_WALLS\t";
-    case 0x8004002au:
-        return "\tA3DERROR_WALLS_DO_NOT_ENCLOSE_ROOM\t";
-    case 0x8004002bu:
-        return "\tA3DERROR_INVALID_WALL\t";
-    case 0x8004002cu:
-        return "\tA3DERROR_ROOM_HAS_LESS_THAN_4SHELL_WALLS\t";
-    case 0x8004002du:
-        return "\tA3DERROR_ROOM_HAS_LESS_THAN_3UNIQUE_NORMALS\t";
-    case 0x8004002eu:
-        return "\tA3DERROR_INTERSECTING_WALL_EDGES\t";
-    case 0x8004002fu:
-        return "\tA3DERROR_INVALID_ROOM\t";
-    case 0x80040030u:
-        return "\tA3DERROR_SCENE_HAS_ROOMS_INSIDE_ANOTHER_ROOMS\t";
-    case 0x80040031u:
-        return "\tA3DERROR_SCENE_HAS_OVERLAPPING_STATIC_ROOMS\t";
-    case 0x80040032u:
-        return "\tA3DERROR_DYNAMIC_OBJ_UNSUPPORTED\t";
-    case 0x80040033u:
-        return "\tA3DERROR_DIR_AND_UP_VECTORS_NOT_PERPENDICULAR\t";
-    case 0x80040034u:
-        return "\tA3DERROR_INVALID_ROOM_INDEX\t";
-    case 0x80040035u:
-        return "\tA3DERROR_INVALID_WALL_INDEX\t";
-    case 0x80040036u:
-        return "\tA3DERROR_SCENE_INVALID\t";
-    case 0x80040037u:
-        return "\tA3DERROR_UNIMPLEMENTED_FUNCTION\t";
-    case 0x80040038u:
-        return "\tA3DERROR_NO_ROOMS_IN_SCENE\t";
-    case 0x80040039u:
-        return "\tA3DERROR_2D_GEOMETRY_UNIMPLEMENTED\t";
-    default:
-        return "UNKNOWN";
-    }
-}
 } // namespace
 
 namespace zSnd {
@@ -242,13 +118,195 @@ namespace zSnd {
 RECOIL_NOINLINE int RECOIL_FASTCALL ReportA3DError(int a3dError,
                                                             const char *sourceFile,
                                                             int sourceLine) {
-    const char *errorName = A3DErrorName(a3dError);
-    if (errorName == 0) {
-        return 1;
+    char errorNameStorage[0x100];
+    if (a3dError > 0) {
+        goto reportUnknownA3D;
+    }
+    if (a3dError != 0) {
+        switch (static_cast<unsigned int>(a3dError)) {
+    case 0x80040001u:
+        sprintf(errorNameStorage, "\tA3DERROR_MEMORY_ALLOCATION\t");
+        break;
+    case 0x80040002u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_CREATE_PRIMARY_BUFFER\t");
+        break;
+    case 0x80040003u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_CREATE_SECONDARY_BUFFER\t");
+        break;
+    case 0x80040004u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_INIT_A3D_DRIVER\t");
+        break;
+    case 0x80040005u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_QUERY_DIRECTSOUND\t");
+        break;
+    case 0x80040006u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_QUERY_A3D3\t");
+        break;
+    case 0x80040007u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_INIT_A3D3\t");
+        break;
+    case 0x80040008u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_QUERY_A3D2\t");
+        break;
+    case 0x80040009u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_FILE_OPEN\t");
+        break;
+    case 0x8004000au:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_CREATE_SOUNDBUFFER\t");
+        break;
+    case 0x8004000bu:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_QUERY_3DINTERFACE\t");
+        break;
+    case 0x8004000cu:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_LOCK_BUFFER\t");
+        break;
+    case 0x8004000du:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_UNLOCK_BUFFER\t");
+        break;
+    case 0x8004000eu:
+        sprintf(errorNameStorage, "\tA3DERROR_UNRECOGNIZED_FORMAT\t");
+        break;
+    case 0x8004000fu:
+        sprintf(errorNameStorage, "\tA3DERROR_NO_WAVE_DATA\t");
+        break;
+    case 0x80040010u:
+        sprintf(errorNameStorage, "\tA3DERROR_UNKNOWN_PLAYMODE\t");
+        break;
+    case 0x80040011u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_PLAY\t");
+        break;
+    case 0x80040012u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_STOP\t");
+        break;
+    case 0x80040013u:
+        sprintf(errorNameStorage, "\tA3DERROR_NEEDS_FORMAT_INFORMATION\t");
+        break;
+    case 0x80040014u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_ALLOCATE_WAVEDATA\t");
+        break;
+    case 0x80040015u:
+        sprintf(errorNameStorage, "\tA3DERROR_NOT_VALID_SOURCE\t");
+        break;
+    case 0x80040016u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_DUPLICATION\t");
+        break;
+    case 0x80040017u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_INIT\t");
+        break;
+    case 0x80040018u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_SETCOOPERATIVE_LEVEL\t");
+        break;
+    case 0x80040019u:
+        sprintf(errorNameStorage, "\tA3DERROR_FAILED_INIT_QUERIED_INTERFACE\t");
+        break;
+    case 0x8004001au:
+        sprintf(errorNameStorage, "\tA3DERROR_GEOMETRY_INPUT_OUTSIDE_BEGIN_END_BLOCK\t");
+        break;
+    case 0x8004001bu:
+        sprintf(errorNameStorage, "\tA3DERROR_INVALID_NORMAL\t");
+        break;
+    case 0x8004001cu:
+        sprintf(errorNameStorage, "\tA3DERROR_END_BEFORE_VALID_BEGIN_BLOCK\t");
+        break;
+    case 0x8004001du:
+        sprintf(errorNameStorage, "\tA3DERROR_INVALID_BEGIN_MODE\t");
+        break;
+    case 0x8004001eu:
+        sprintf(errorNameStorage, "\tA3DERROR_INVALID_ARGUMENT\t");
+        break;
+    case 0x8004001fu:
+        sprintf(errorNameStorage, "\tA3DERROR_INVALID_INDEX\t");
+        break;
+    case 0x80040020u:
+        sprintf(errorNameStorage, "\tA3DERROR_INVALID_VERTEX_INDEX\t");
+        break;
+    case 0x80040021u:
+        sprintf(errorNameStorage, "\tA3DERROR_INVALID_PRIMITIVE_INDEX\t");
+        break;
+    case 0x80040022u:
+        sprintf(errorNameStorage, "\tA3DERROR_MIXING_2D_AND_3D_MODES\t");
+        break;
+    case 0x80040023u:
+        sprintf(errorNameStorage, "\tA3DERROR_2DWALL_REQUIRES_EXACTLY_ONE_LINE\t");
+        break;
+    case 0x80040024u:
+        sprintf(errorNameStorage, "\tA3DERROR_NO_PRIMITIVES_DEFINED\t");
+        break;
+    case 0x80040025u:
+        sprintf(errorNameStorage, "\tA3DERROR_PRIMITIVES_NON_PLANAR\t");
+        break;
+    case 0x80040026u:
+        sprintf(errorNameStorage, "\tA3DERROR_PRIMITIVES_OVERLAPPING\t");
+        break;
+    case 0x80040027u:
+        sprintf(errorNameStorage, "\tA3DERROR_PRIMITIVES_NOT_ADJACENT\t");
+        break;
+    case 0x80040028u:
+        sprintf(errorNameStorage, "\tA3DERROR_OBJECT_NOT_FOUND\t");
+        break;
+    case 0x80040029u:
+        sprintf(errorNameStorage, "\tA3DERROR_ROOM_HAS_NO_SHELL_WALLS\t");
+        break;
+    case 0x8004002au:
+        sprintf(errorNameStorage, "\tA3DERROR_WALLS_DO_NOT_ENCLOSE_ROOM\t");
+        break;
+    case 0x8004002bu:
+        sprintf(errorNameStorage, "\tA3DERROR_INVALID_WALL\t");
+        break;
+    case 0x8004002cu:
+        sprintf(errorNameStorage, "\tA3DERROR_ROOM_HAS_LESS_THAN_4SHELL_WALLS\t");
+        break;
+    case 0x8004002du:
+        sprintf(errorNameStorage, "\tA3DERROR_ROOM_HAS_LESS_THAN_3UNIQUE_NORMALS\t");
+        break;
+    case 0x8004002eu:
+        sprintf(errorNameStorage, "\tA3DERROR_INTERSECTING_WALL_EDGES\t");
+        break;
+    case 0x8004002fu:
+        sprintf(errorNameStorage, "\tA3DERROR_INVALID_ROOM\t");
+        break;
+    case 0x80040030u:
+        sprintf(errorNameStorage, "\tA3DERROR_SCENE_HAS_ROOMS_INSIDE_ANOTHER_ROOMS\t");
+        break;
+    case 0x80040031u:
+        sprintf(errorNameStorage, "\tA3DERROR_SCENE_HAS_OVERLAPPING_STATIC_ROOMS\t");
+        break;
+    case 0x80040032u:
+        sprintf(errorNameStorage, "\tA3DERROR_DYNAMIC_OBJ_UNSUPPORTED\t");
+        break;
+    case 0x80040033u:
+        sprintf(errorNameStorage, "\tA3DERROR_DIR_AND_UP_VECTORS_NOT_PERPENDICULAR\t");
+        break;
+    case 0x80040034u:
+        sprintf(errorNameStorage, "\tA3DERROR_INVALID_ROOM_INDEX\t");
+        break;
+    case 0x80040035u:
+        sprintf(errorNameStorage, "\tA3DERROR_INVALID_WALL_INDEX\t");
+        break;
+    case 0x80040036u:
+        sprintf(errorNameStorage, "\tA3DERROR_SCENE_INVALID\t");
+        break;
+    case 0x80040037u:
+        sprintf(errorNameStorage, "\tA3DERROR_UNIMPLEMENTED_FUNCTION\t");
+        break;
+    case 0x80040038u:
+        sprintf(errorNameStorage, "\tA3DERROR_NO_ROOMS_IN_SCENE\t");
+        break;
+    case 0x80040039u:
+        sprintf(errorNameStorage, "\tA3DERROR_2D_GEOMETRY_UNIMPLEMENTED\t");
+        break;
+    default:
+        goto reportUnknownA3D;
+        }
+        goto reportA3D;
     }
 
-    char errorNameStorage[0x100];
-    sprintf(errorNameStorage, errorName);
+    return 1;
+
+reportUnknownA3D:
+    sprintf(errorNameStorage, "UNKNOWN");
+
+reportA3D:
     zError::ReportOld(0x400, sourceFile, sourceLine, "A3D Error [%s]", errorNameStorage);
     return 0;
 }

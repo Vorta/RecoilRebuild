@@ -47,6 +47,11 @@ template <typename Method> unsigned int MethodAddress(Method method) {
     return address;
 }
 
+template <typename Slot, typename Method> void AssignMethodSlot(Slot &slot, Method method) {
+    RECOIL_STATIC_ASSERT(sizeof(slot) == sizeof(method));
+    memcpy(&slot, &method, sizeof(slot));
+}
+
 RECOIL_NOINLINE void RECOIL_FASTCALL HudUiCommonInvalidateThunk(HudUiElement *element) {
     element->Invalidate();
 }
@@ -69,14 +74,15 @@ HudUiCommon_FTable MakeHudUiCommonFTable() {
 
 HudUiContainer_FTable MakeHudUiContainerFTable() {
     HudUiContainer_FTable table = {0};
-    table.slots[1] = MethodAddress(&HudUiContainer::SetEnabled);
+    AssignMethodSlot(table.updateAll, &HudUiContainer::UpdateAll);
+    AssignMethodSlot(table.setEnabled, &HudUiContainer::SetEnabled);
     return table;
 }
 
 template <typename FTable> FTable MakeHudUiContainerLikeFTable() {
     FTable table = {0};
-    RECOIL_STATIC_ASSERT((sizeof(table.slots) / sizeof(table.slots[0])) > 1);
-    table.slots[1] = MethodAddress(&HudUiContainer::SetEnabled);
+    AssignMethodSlot(table.updateAll, &HudUiContainer::UpdateAll);
+    AssignMethodSlot(table.setEnabled, &HudUiContainer::SetEnabled);
     return table;
 }
 
@@ -178,7 +184,8 @@ HudUiBackgroundCursorWidget_FTable MakeHudUiBackgroundCursorWidgetFTable() {
 
 HudUiBackgroundContainer_FTable MakeHudUiBackgroundFTable() {
     HudUiBackgroundContainer_FTable table = {0};
-    table.slots[1] = MethodAddress(&HudUiBackground::SetEnabled);
+    AssignMethodSlot(table.updateAll, &HudUiBackground::Update);
+    AssignMethodSlot(table.setEnabled, &HudUiBackground::SetEnabled);
     return table;
 }
 
@@ -340,13 +347,13 @@ const HudUiTimerPanel_FTable g_HudUiTimerPanel_FTable =
 const HudUiCounterTextPanel_FTable g_HudUiCounterTextPanel_FTable =
     MakeHudUiPanelFTable<HudUiCounterTextPanel_FTable>();
 const HudUiTriplet_FTable g_HudUiTriplet_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiTriplet_FTable>();
+    MakeHudUiContainerLikeFTable<HudUiTriplet_FTable>();
 const HudUiTextStack4_FTable g_HudUiTopMessageStack_FTable =
     MakeHudUiContainerLikeFTable<HudUiTextStack4_FTable>();
 const HudUiTextStack4_FTable g_HudUiChatMessageStack_FTable =
     MakeHudUiContainerLikeFTable<HudUiTextStack4_FTable>();
 const HudUiStringMenu_FTable g_HudUiStringMenu_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiStringMenu_FTable>();
+    MakeHudUiContainerLikeFTable<HudUiStringMenu_FTable>();
 const HudUiStatsListElement_FTable g_HudUiStatsListElement_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiStatsListElement_FTable>();
 const HudUiTripletPanel_FTable g_HudUiTripletPanel_FTable = MakeHudUiTripletPanelFTable();
@@ -1038,9 +1045,7 @@ void HudUiPanelVirtualSetTextFmtRequired(HudUiPanel *panel, const char *text) {
 }
 
 void HudUiVirtualSetContainerEnabled(HudUiContainer *container, int enabled) {
-    typedef void (RECOIL_THISCALL *SetEnabledFn)(HudUiContainer * self, int enabled);
-
-    ((SetEnabledFn)(container->vptr->slots[1]))(container, enabled);
+    (container->*(container->vptr->setEnabled))(enabled);
 }
 
 void HudUiVirtualInvalidate(void *element);
@@ -4249,10 +4254,8 @@ unsigned int RECOIL_FASTCALL HudUiFlashPanel::ComputeFlashBlendColor(unsigned in
 
 // Reimplements 0x4bc780: HudUiContainer::ConstructorDefault
 RECOIL_NOINLINE HudUiContainer *RECOIL_THISCALL HudUiContainer::ConstructorDefault() {
-    typedef void (RECOIL_THISCALL *SetEnabledFn)(HudUiContainer * self, int enabled);
-
     vptr = &g_HudUiContainer_FTable;
-    ((SetEnabledFn)(vptr->slots[1]))(this, 0);
+    (this->*(vptr->setEnabled))(0);
     childHead = 0;
     childTail = 0;
     return this;
@@ -7662,9 +7665,7 @@ HudUiSlot *RECOIL_THISCALL HudUiSlot::ScalarDeletingDestructor(unsigned int flag
 
 // Reimplements 0x40fa10: HudUiStatsListElement::Update
 void RECOIL_THISCALL HudUiStatsListElement::Update(float deltaSeconds) {
-    typedef void (RECOIL_FASTCALL *UpdateAllFn)(HudUiTriplet * self, float deltaSeconds);
-
-    ((UpdateAllFn)(triplet->base.vptr->slots[0]))(triplet, deltaSeconds);
+    (triplet->base.*(triplet->base.vptr->updateAll))(deltaSeconds);
 }
 
 // Reimplements 0x40fa40: HudUiStatsListElement::DestructorCore
