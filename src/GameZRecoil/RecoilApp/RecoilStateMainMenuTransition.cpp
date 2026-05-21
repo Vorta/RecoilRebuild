@@ -27,15 +27,13 @@ RECOIL_NOINLINE RECOIL_NO_GS RecoilStateMainMenuTransition::~RecoilStateMainMenu
     vftable = kRecoilStateMainMenuTransition_VtblAddress;
     RecoilStateMainMenuTransitionBaseVtableGuard baseVtableOnExit = {this};
 
-    HudUiMainMenuDialog *dialog = (HudUiMainMenuDialog *)m_mainMenuDialog;
+    HudUiMainMenuDialogVirtual *dialog = (HudUiMainMenuDialogVirtual *)m_mainMenuDialog;
     if (dialog != 0) {
-        HudUiMainMenuDialog_Vtbl *dialogVtbl = (HudUiMainMenuDialog_Vtbl *)dialog->vftable;
-        dialogVtbl->SetEnabled(dialog, 0);
+        dialog->SetEnabled(0);
 
-        dialog = (HudUiMainMenuDialog *)m_mainMenuDialog;
+        dialog = (HudUiMainMenuDialogVirtual *)m_mainMenuDialog;
         if (dialog != 0) {
-            dialogVtbl = (HudUiMainMenuDialog_Vtbl *)dialog->vftable;
-            dialogVtbl->ScalarDeletingDtor(dialog, 1);
+            dialog->ScalarDeletingDestructor(1);
         }
 
         m_mainMenuDialog = 0;

@@ -307,7 +307,7 @@ extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FindPayloadByPredi
 
     zArchiveListNode *node = list->head;
     if (predicate(node->payload, userData) == 0) {
-        return node->payload;
+        goto found;
     }
 
     while (true) {
@@ -317,9 +317,12 @@ extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FindPayloadByPredi
         }
 
         if (predicate(node->payload, userData) == 0) {
-            return node->payload;
+            goto found;
         }
     }
+
+found:
+    return node->payload;
 }
 
 // Reimplements 0x48cc20: zArchiveList_FindPayloadByValue

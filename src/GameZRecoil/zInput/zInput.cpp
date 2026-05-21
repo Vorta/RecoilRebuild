@@ -2838,48 +2838,79 @@ RECOIL_NOINLINE void RECOIL_CDECL Keyboard_ResetTransitionState() {
         return;
     }
 
-    unsigned int inOutCount = 0x80;
+    unsigned int inOutCount = 128;
     const int hresult = g_zInput_KbdDevice->vtbl_00->GetDeviceData_28(
         g_zInput_KbdDevice, sizeof(DIDeviceObjectData), g_zInput_KbdEventBuffer, &inOutCount, 0);
     if (hresult != kDiOk) {
         if (hresult == kDiInputLost) {
             g_zInput_KbdDevice->vtbl_00->Acquire_1c(g_zInput_KbdDevice);
         } else {
-            DI_ReportError(hresult, kZInputKeyboardSourceFile, 0x101);
+            DI_ReportError(hresult, "D:\\Proj\\GameZRecoil\\zInput\\zin_kbd.cpp", 257);
             return;
         }
     }
 
-    for (unsigned int i = 0; i < inOutCount; ++i) {
-        DIDeviceObjectData &event = g_zInput_KbdEventBuffer[i];
-        switch (ClassifyKeyboardOffset(event.dwOfs)) {
-        case 0:
-        case 4:
-            UpdateKeyboardModifierState(0x200, (event.dwData & 0x80) != 0);
+    DIDeviceObjectData *event = g_zInput_KbdEventBuffer;
+    unsigned int controlDataFlag = 0x20;
+    for (unsigned int i = 0; i < inOutCount; ++i, ++event) {
+        unsigned int dispatchIndex = event->dwOfs;
+        switch (dispatchIndex) {
+        case 0x38:
+        case 0xb8:
+            if ((event->dwData & 0x80) != 0) {
+                g_zInput_KbdModifierState |= 0x100;
+            } else {
+                g_zInput_KbdModifierState &= ~0x100;
+            }
             break;
-        case 1:
-        case 2:
-            UpdateKeyboardModifierState(0x400, (event.dwData & 0x80) != 0);
+        case 0x1d:
+        case 0x9d:
+            if ((event->dwData & 0x80) != 0) {
+                g_zInput_KbdModifierState |= 0x200;
+            } else {
+                g_zInput_KbdModifierState &= ~0x200;
+            }
             break;
-        case 3:
-        case 5:
-            UpdateKeyboardModifierState(0x100, (event.dwData & 0x80) != 0);
+        case 0x2a:
+        case 0x36:
+            if ((event->dwData & 0x80) != 0) {
+                g_zInput_KbdModifierState |= 0x400;
+            } else {
+                g_zInput_KbdModifierState &= ~0x400;
+            }
             break;
         default:
-            ApplyKeyboardKeyEvent(event);
+            if ((g_zInput_KbdModifierState & 0x100) != 0) {
+                event->dwData |= 0x40;
+            }
+            if ((g_zInput_KbdModifierState & 0x200) != 0) {
+                event->dwData |= controlDataFlag;
+            }
+            if ((g_zInput_KbdModifierState & 0x400) != 0) {
+                event->dwData |= 0x10;
+            }
+
+            dispatchIndex |= static_cast<unsigned int>(g_zInput_KbdModifierState);
             break;
+        }
+
+        KbdKeyDispatchEntry &dispatch = g_zInputKbdKeyDispatchTable[dispatchIndex];
+        if ((event->dwData & 0x80) != 0) {
+            dispatch.state = dispatch.state == 1 ? 3 : 1;
+        } else {
+            dispatch.state |= 4;
         }
     }
 
     {
-        int entryIndex4;
+        unsigned int entryIndex4;
         for (entryIndex4 = 0;
              entryIndex4 <
-             (int)(sizeof(g_zInputKbdKeyDispatchTable) / sizeof(g_zInputKbdKeyDispatchTable[0]));
+             sizeof(g_zInputKbdKeyDispatchTable) / sizeof(g_zInputKbdKeyDispatchTable[0]);
              ++entryIndex4) {
             KbdKeyDispatchEntry &entry = g_zInputKbdKeyDispatchTable[entryIndex4];
-        entry.state = 0;
-    }
+            entry.state = 0;
+        }
     }
     g_zInput_KbdModifierState = 0;
 }

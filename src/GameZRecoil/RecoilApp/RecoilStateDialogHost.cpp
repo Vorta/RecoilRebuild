@@ -10,8 +10,7 @@ void RECOIL_THISCALL RecoilStateDialogHost::OnWndActivate(int activateCode) {
 
     zVideo::RunPostprocessOnPrimaryBuffer();
 
-    HudUiDialogController *const dialog = (HudUiDialogController *)dialog_04;
-    dialog->SetEnabled(0);
+    ((HudUiDialogControllerVirtual *)dialog_04)->SetEnabled(0);
 
     ((HudUiDialogController *)dialog_04)->BlitOwnedSurfaceToPrimary();
     zVideo::Dispatch_UnlockPrimarySurfaceState();

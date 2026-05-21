@@ -1,10 +1,9 @@
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 
+#include "GameZRecoil/zFMV/fmv.h"
+#include "GameZRecoil/zVideo/zVideo.h"
 
 namespace {
-const RecoilPtr32 kZfmvActionBase_VtableAddress = 0x004cee50;
-const unsigned int kHudUiMainMenuDialogAllocationSize = 0xb3ac;
-
 enum zVideoHalfResAdjustMode {
     ZVIDEO_HALFRES_ADJUST_DISABLED = 0,
 };
@@ -18,25 +17,26 @@ enum zSndCdAudioOption {
 };
 
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
+
+struct zFMV_ActionVirtual {
+    virtual zFMV_Action *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    virtual int RECOIL_THISCALL Update(double timeSec);
+    virtual void RECOIL_THISCALL Begin(double timeSec);
+    virtual void RECOIL_THISCALL End();
+    virtual void RECOIL_THISCALL RunBlocking();
+    void *reserved14;
+};
+
+struct zFMV_ActionBlurStack : zFMV_ActionBlur {
+    zFMV_ActionBlurStack(int framesRemaining, int blurPassCount) {
+        Constructor(framesRemaining, blurPassCount);
+    }
+
+    ~zFMV_ActionBlurStack() {
+        vftable = &g_zFMV_ActionBase_Vtable;
+    }
+};
 } // namespace
-
-struct zFMV_ActionBlur;
-
-struct zFMV_ActionBlur_Vtbl {
-    RecoilFn32 Destroy;
-    int(RECOIL_THISCALL *pfnUpdate)(zFMV_ActionBlur *self, int, int);
-    void(RECOIL_THISCALL *pfnBegin)(zFMV_ActionBlur *self, int, int);
-    void(RECOIL_THISCALL *pfnEnd)(zFMV_ActionBlur *self);
-};
-
-struct zFMV_ActionBlur {
-    RecoilPtr32 vftable; // zFMV_ActionBlur_Vtbl*
-    unsigned char storage[0x2c];
-
-    zFMV_ActionBlur *RECOIL_THISCALL Constructor(int transitionKind,
-                                                 int capturePrimary);
-};
-RECOIL_STATIC_ASSERT(sizeof(zFMV_ActionBlur) == 0x30);
 
 namespace zVideo {
 int RECOIL_FASTCALL SetHalfResAdjustMode(int mode);
@@ -64,18 +64,12 @@ RECOIL_NO_GS int RECOIL_THISCALL RecoilStateMainMenuTransition::OnTryBecomeCurre
     HudUi::SetInvalidateMode(0);
 
     if (m_entryRoute != RECOIL_MAINMENU_ROUTE_FRONTEND) {
-        zFMV_ActionBlur blurAction;
-        blurAction.Constructor(4, 1);
-
-        zFMV_ActionBlur_Vtbl *blurVtbl =
-            (zFMV_ActionBlur_Vtbl *)(unsigned int)blurAction.vftable;
-        blurVtbl->pfnBegin(&blurAction, 0, 0);
-
-        while (blurVtbl->pfnUpdate(&blurAction, 0, 0) != 0) {
+        zFMV_ActionBlurStack blurAction(4, 1);
+        zFMV_ActionVirtual *const actionVirtual = (zFMV_ActionVirtual *)&blurAction;
+        actionVirtual->Begin(0.0);
+        while (actionVirtual->Update(0.0) != 0) {
         }
-
-        blurVtbl->pfnEnd(&blurAction);
-        blurAction.vftable = kZfmvActionBase_VtableAddress;
+        actionVirtual->End();
     }
 
     zSndPlayHandleSnapshot *const audioSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
@@ -85,7 +79,7 @@ RECOIL_NO_GS int RECOIL_THISCALL RecoilStateMainMenuTransition::OnTryBecomeCurre
     zSndSampleSet_InitByName("DIALOG");
 
     HudUiMainMenuDialog *const storage =
-        (HudUiMainMenuDialog *)::operator new(kHudUiMainMenuDialogAllocationSize);
+        (HudUiMainMenuDialog *)::operator new(sizeof(HudUiMainMenuDialog));
     HudUiMainMenuDialog *dialog = 0;
     if (storage != 0) {
         dialog = storage->Constructor(m_entryRoute);
@@ -93,9 +87,8 @@ RECOIL_NO_GS int RECOIL_THISCALL RecoilStateMainMenuTransition::OnTryBecomeCurre
 
     m_mainMenuDialog = (RecoilPtr32)(unsigned int)dialog;
 
-    HudUiMainMenuDialog_Vtbl *const dialogVtbl =
-        (HudUiMainMenuDialog_Vtbl *)(unsigned int)dialog->vftable;
-    dialogVtbl->SetEnabled(dialog, 1);
+    HudUiMainMenuDialogVirtual *const dialogVirtual = (HudUiMainMenuDialogVirtual *)dialog;
+    dialogVirtual->SetEnabled(1);
 
     if (zSnd::GetCDAudioOption() != ZSND_CDAUDIO_DISABLED) {
         zSndCd::PlayTrackWithMode(2, 5);
