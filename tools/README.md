@@ -12,7 +12,15 @@ python tools/recoil_status.py 0x40c370
 python tools/recoil_status.py 0x40c370 --no-frontier
 ```
 
-It combines the active plan entry, claim state, implementation-group context, VC6 manifest coverage, a depth-1 Binary Ninja frontier summary, and the exact next verification or manifest-scaffold command.
+It combines the active plan entry, claim state, implementation-group context, VC manifest coverage, a depth-1 Binary Ninja frontier summary, and the exact next verification or manifest-scaffold command.
+
+Use `recoil_task_packet.py` when launching an agent task and you want the
+preflight, selection, claim, status, coverage, and next commands in one report:
+
+```powershell
+python tools/recoil_task_packet.py --owner <name> --claim-next
+python tools/recoil_task_packet.py --address 0x415220 --skip-doctor
+```
 
 Use `recoil_claim.py` for local address coordination before editing function-scoped work:
 
@@ -25,6 +33,13 @@ python tools/recoil_claim.py prune-stale
 ```
 
 Claim files are local runtime locks under `.agent/claims/functions/`. They prevent duplicate agent work on the same original address; they are not progress evidence and do not replace plan markers.
+
+Use `recoil_handoff.py` before ending a multi-step task:
+
+```powershell
+python tools/recoil_handoff.py 0x415220 --include-artifacts
+python tools/recoil_handoff.py 0x415220 --release --token <token>
+```
 
 Use `recoil_plan_cli.py` for normal `.agent/RECOIL_PLAN.md` navigation and one-entry marker updates:
 
@@ -46,11 +61,12 @@ Use `recoil_frontier.py` before implementing a caller or when choosing the next 
 python tools/recoil_frontier.py 0x4301e0 --depth 1
 python tools/recoil_frontier.py 0x4301e0 --depth 2
 python tools/recoil_frontier.py 0x4301e0 --depth 1 --json
+python tools/recoil_frontier.py 0x4301e0 --depth 1 --lane progress
 ```
 
 Depth-1 reports can exceed 30 seconds because the tool queries Binary Ninja. Use at least a 120-second timeout for `--depth 1` and longer timeouts for `--depth 2` or broader groups.
 
-The report lists direct callees visible from Binary Ninja assembly/MLIL, indirect calls, plan status, VC6 manifest coverage, blockers, and a recommended next item. It does not prove vtable targets, globals, shared layouts, provider contracts, or caller-only ABI requirements; inspect Binary Ninja before source edits or marker updates.
+The report lists direct callees visible from Binary Ninja assembly/MLIL, indirect calls, plan status, VC manifest coverage, blockers, and a recommended next item. It does not prove vtable targets, globals, shared layouts, provider contracts, or caller-only ABI requirements; inspect Binary Ninja before source edits or marker updates.
 
 ## Assembly Evidence
 
@@ -66,17 +82,17 @@ Compare a function against a compiler `.cod` listing:
 python tools/recoil_asm_verify.py 0x407170 --cod build/ninja-x86-release/recoil_state_base.cod --symbol RecoilStateBase_ScalarDeletingDestructor
 ```
 
-Compare a function against a VC6 COFF object using relocation-masked bytes:
+Compare a function against a VC COFF object using relocation-masked bytes:
 
 ```powershell
 python tools/recoil_asm_verify.py 0x407170 --obj build/vc6-verify/recoil_state_base/RecoilStateBase.obj --cod build/vc6-verify/recoil_state_base/RecoilStateBase.cod --symbol "?ScalarDeletingDestructor@RecoilStateBase@@QAEPAURecoilApp_IState@@I@Z"
 ```
 
-Outputs go to `build/verification/`. The object-byte comparison is the preferred gate: it compares original Binary Ninja bytes to VC6 object bytes and masks only COFF relocation fields. `.cod` text and normalized assembly are evidence for review, not the pass/fail authority.
+Outputs go to `build/verification/`. The object-byte comparison is the preferred gate: it compares original Binary Ninja bytes to compiler object bytes and masks only COFF relocation fields. `.cod` text and normalized assembly are evidence for review, not the pass/fail authority.
 
-## VC6 Verification
+## VC Verification
 
-List and run tracked VC6 verification manifests:
+List and run tracked VC verification manifests. The command and target directory names are historical; manifests may use VC5SP3 or VC6 profiles, and new authored-function targets should try VC5SP3 first unless local evidence points to VC6/VS98:
 
 ```powershell
 python tools/recoil_vc6_verify.py --list
@@ -87,7 +103,7 @@ python tools/recoil_vc6_verify.py --all --skip-bn-compare
 python tools/recoil_vc6_verify.py --explain-missing 0xNNNNNN
 ```
 
-`--list` is current coverage, not a whitelist. `--explain-missing` prints existing coverage for an address, or a starter JSON manifest shape when coverage is absent. If an implemented authored function has no target, add or extend a JSON manifest under `tools/vc6_verify_targets/`. Production functions must use `source_from` so VC6 verifies the actual `src/` implementation. Manifest-local source bodies and generated project-header shadows are rejected unless they are recorded as existing baseline debt in `.agent/VC6_MANIFEST_SOURCE_POLICY_BASELINE.txt`; that baseline should stay empty after the cleanup.
+`--list` is current coverage, not a whitelist. `--explain-missing` prints existing coverage for an address, or a starter JSON manifest shape when coverage is absent. If an implemented authored function has no target, add or extend a JSON manifest under `tools/vc6_verify_targets/`. Production functions must use `source_from` so the selected VC profile verifies the actual `src/` implementation. Manifest-local source bodies and generated project-header shadows are rejected unless they are recorded as existing baseline debt in `.agent/VC6_MANIFEST_SOURCE_POLICY_BASELINE.txt`; that baseline should stay empty after the cleanup.
 
 Run the source-policy guard when touching verification manifests:
 
@@ -97,6 +113,19 @@ python tools/recoil_vc6_manifest_source_guard.py
 
 Artifacts are written under `build/vc6-verify/<target>/` for single-target runs and `build/vc6-verify/_batch/` for grouped batch runs, including generated sources, `.cod` listings, COFF objects, relocation masks, byte diffs, byte triage reports, normalized assembly text, and summaries. Review the byte diff and triage report before changing plan markers. Passing single-target runs print a marker-update-ready evidence block; review it, but still update plan markers manually.
 Default manifests use COFF byte comparison. Passing output means unmasked generated bytes match after relocation masking and trailing alignment NOP trimming. A `text` compare mode remains available only for legacy diagnostics.
+
+## Functional Verification
+
+Use functional verification only for implemented functions with a real, reviewed VC byte-verification failure:
+
+```powershell
+python tools/recoil_functional_verify.py --list
+python tools/recoil_functional_verify.py 0xNNNNNN
+python tools/recoil_plan_cli.py next --lane progress
+python tools/recoil_status.py --lane progress
+```
+
+Functional targets live under `tools/functional_verify_targets/` and list the original address, production source file, required native smoke tests, the VC byte-attempt command, and known binary-safety limits. A passing functional target may justify `Functional-equivalent accepted`, but it does not satisfy `Binary-safe verified`; strict/default tooling still reports that debt.
 
 ## Environment Checks
 
@@ -109,7 +138,7 @@ python tools/recoil_doctor.py --active 0x415220
 python tools/recoil_doctor.py --active 0x415220 --bn-compare
 ```
 
-The doctor command runs the manifest source policy guard, source guards, PE reference verification, VC6 manifest load, and Python tool tests. Add `--binja` when Binary Ninja is expected to be open and the bridge/database state should be checked. Plain `--quick` remains usable when Binary Ninja is intentionally unavailable or not needed. `--active` adds status plus compile-only VC6 coverage for one address unless `--bn-compare` is provided.
+The doctor command runs the manifest source policy guard, source guards, PE reference verification, VC manifest load, and Python tool tests. Add `--binja` when Binary Ninja is expected to be open and the bridge/database state should be checked. Plain `--quick` remains usable when Binary Ninja is intentionally unavailable or not needed. `--active` adds status plus compile-only VC coverage for one address unless `--bn-compare` is provided.
 
 Check the local x86 MSVC native build environment before configuring CMake:
 
@@ -164,6 +193,9 @@ python tools/recoil_plan_audit.py --strict
 python tools/recoil_groups_audit.py --summary
 python tools/recoil_groups_audit.py --recommendation needs-review --details
 python tools/recoil_groups_audit.py --recommendation condense
+python tools/recoil_groups_audit.py --summary --wip-limit 4
+python tools/recoil_verification_backlog.py --limit 30
+python tools/recoil_verification_backlog.py --binja --source-from src/GameZRecoil/zSound/zsnd_play.cpp
 ```
 
 Do not prune group notes automatically. Move durable facts to source comments, Binary Ninja comments, tests, README, or narrow subsystem docs first.

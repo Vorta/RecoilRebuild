@@ -1,0 +1,72 @@
+{
+  "name": "zopt_video_section_setters",
+  "description": "zOpt video view-section setters used by zVid::SetVideoModeIndex.",
+  "source_filename": "zGame.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zGame.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x408530",
+      "symbol": "?RenderSection_SetPosition@zOpt@@YIXHH@Z",
+      "name": "zOpt::RenderSection_SetPosition"
+    },
+    {
+      "address": "0x408500",
+      "symbol": "?RenderSection_SetSize@zOpt@@YIXHH@Z",
+      "name": "zOpt::RenderSection_SetSize"
+    },
+    {
+      "address": "0x408700",
+      "symbol": "?WindowSection_SetPosition@zOpt@@YIXHH@Z",
+      "name": "zOpt::WindowSection_SetPosition"
+    },
+    {
+      "address": "0x4086e0",
+      "symbol": "?WindowSection_SetSize@zOpt@@YIXHH@Z",
+      "name": "zOpt::WindowSection_SetSize"
+    },
+    {
+      "address": "0x4085e0",
+      "symbol": "?DisplaySection_SetPosition@zOpt@@YIXHH@Z",
+      "name": "zOpt::DisplaySection_SetPosition"
+    },
+    {
+      "address": "0x408620",
+      "symbol": "?DisplaySection_SetSize@zOpt@@YIXHH@Z",
+      "name": "zOpt::DisplaySection_SetSize"
+    },
+    {
+      "address": "0x408680",
+      "symbol": "?DisplaySection_SetBitsPerPixel@zOpt@@YIXH@Z",
+      "name": "zOpt::DisplaySection_SetBitsPerPixel"
+    },
+    {
+      "address": "0x408300",
+      "symbol": "?SetReplicateMode@zOpt@@YIXH@Z",
+      "name": "zOpt::SetReplicateMode"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zGame/zGame.cpp"
+}

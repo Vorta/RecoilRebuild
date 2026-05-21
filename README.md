@@ -7,8 +7,10 @@ compiled output can be compared against the original retail executable.
 
 The recovered decompiled source and original executable analysis are the
 behavioral and ABI reference. Source in this workspace is rewritten from that
-evidence, then checked through native builds, focused tests, and VC6
-object-byte comparison. The rebuilt binary is allowed to have different
+evidence, then checked through native builds, focused tests, and VC
+object-byte comparison. VC5SP3 is the normal first-pass compiler for
+per-function binary equivalence; VC6/VS98 profiles are used when local evidence
+points there. The rebuilt binary is allowed to have different
 addresses, but function behavior, calling conventions, layout, imports, memory
 side effects, and generated instruction structure must match the original where
 a function is marked binary-safe.
@@ -36,8 +38,9 @@ publishing the executable itself.
   for reconstructed native code.
 - `tools` - plan navigation, decompiled-source frontier reports, assembly evidence,
   and source guard scripts. See `tools/README.md`.
-- `tools/vc6_verify_targets` - public VC6 assembly-verification manifests for
-  reconstructed functions and dependency groups.
+- `tools/vc6_verify_targets` - public VC assembly-verification manifests for
+  reconstructed functions and dependency groups. The directory name is
+  historical; targets may use VC5SP3 or VC6 profiles.
 - `reconstruction` - durable reconstruction notes. The previous large root
   notes file is preserved as `reconstruction/NOTES.md`.
 - `.agent` - long-lived reconstruction plan, implementation group notes, and
@@ -51,8 +54,9 @@ Ignored local-only paths used by private verification include:
   mirrors used for native ABI work.
 - `img/GAMEBMP.bmp` and `img/RECOIL.ico` - extracted resource payloads
   regenerated from a local `support/Recoil.exe`.
-- `RECOIL_VC6_ROOT` or a sibling `Compiler/VC6` directory, plus local
-  decompiler databases - local toolchain and reverse-engineering state.
+- `RECOIL_VC6_ROOT`, a sibling `Compiler/VC6` directory, a sibling
+  `Compiler/VC5SP3` directory, plus local decompiler databases - local
+  toolchain and reverse-engineering state.
 
 The root `AGENTS.md` is the authoritative workflow for reconstruction agents.
 It defines the binary-safety gate, source style rules, decompiled-source workflow,
@@ -82,6 +86,9 @@ The recovered source is organized around the original engine boundaries:
 The codebase intentionally keeps late-1990s Windows C/C++ idioms where they
 matter for ABI and generated assembly. Modern helpers exist only where they
 make reconstruction, testing, or verification practical.
+Authored source uses decimal numeric literals by default for ordinary quantities;
+hexadecimal is reserved for addresses, masks, byte patterns, PE/RVA evidence,
+serialized wire values, and other contracts where the base is meaningful.
 
 ## Building
 
@@ -108,7 +115,7 @@ cmake --build --preset ninja-x86-debug
 ctest --preset ninja-x86-debug
 ```
 
-VC6 verification manifests must compile production source through
+VC verification manifests must compile production source through
 `source_from`; manifest-local function copies and generated project-header
 shadows are rejected unless they are recorded as existing baseline debt. Run
 `python tools/recoil_vc6_manifest_source_guard.py` after changing verification
@@ -144,6 +151,9 @@ Completion is tracked per function in `.agent/RECOIL_PLAN.md`:
   source-level behavior.
 - `Binary-safe verified` means generated 32-bit assembly or provider ABI
   evidence has been compared against the original and accepted.
+- `Functional-equivalent accepted` is an optional progress-lane marker for
+  byte-verification blockers with reviewed VC failure evidence plus targeted
+  native behavior tests. It does not complete `Binary-safe verified`.
 
 Useful commands:
 
@@ -151,7 +161,9 @@ Useful commands:
 python tools/recoil_status.py
 python tools/recoil_claim.py next --owner <name> --claim
 python tools/recoil_plan_cli.py next
+python tools/recoil_plan_cli.py next --lane progress
 python tools/recoil_frontier.py 0x4301e0 --depth 1
+python tools/recoil_functional_verify.py 0x4301e0
 python tools/recoil_asm_verify.py 0x407170
 python tools/recoil_vc6_verify.py 0x407170
 python tools/recoil_pe_reference.py --reference support/Recoil.exe --manifest .agent/REFERENCE_EXECUTABLE.json --verify
@@ -160,9 +172,12 @@ python tools/recoil_plan_audit.py --summary
 
 Use `recoil_claim.py` to coordinate active function ownership between agents.
 `recoil_plan_cli.py next` is read-only navigation; it does not reserve work.
+Strict mode is the default for status, plan, and frontier commands. Use
+`--lane progress` only when intentionally allowing functionally accepted
+byte-verification blockers to stop blocking dependency traversal.
 
 Commands that reference `support/Recoil.exe`, `support/zbd`, `support/sdk`,
-`img/`, or a VC6 toolchain require local private inputs. They are documented so
+`img/`, or a VC toolchain require local private inputs. They are documented so
 the public repo can show the exact pipeline, but they are not expected to run in
 a fresh public clone until those inputs are supplied locally.
 

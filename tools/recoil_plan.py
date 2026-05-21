@@ -17,6 +17,8 @@ ENTRY_RE = re.compile(r"^- (0x[0-9A-Fa-f]+):\s*$")
 NAME_RE = re.compile(r"Name:\s*(.*?)(?:\s+File:|\))")
 FILE_RE = re.compile(r"File:\s*([^)]+)")
 PROVIDER_RE = re.compile(r"Provided by\s*([^;]+);")
+FUNCTIONAL_LABEL = "Functional-equivalent accepted"
+FUNCTIONAL_TARGET_RE = re.compile(r"Target:\s*([^)]+)")
 
 FIELD_LABELS = {
     "recon": "Reconstructed",
@@ -37,6 +39,11 @@ FIELD_ALIASES = {
     "binary_safe": "verify",
     "binary": "verify",
     "verified": "verify",
+    "functional": "functional",
+    "functional-equivalent": "functional",
+    "functional_equivalent": "functional",
+    "functionally-accepted": "functional",
+    "functionally_accepted": "functional",
 }
 
 
@@ -51,6 +58,8 @@ class PlanEntry:
     reimplemented_file: str = ""
     provider: str = ""
     binary_verified_status: str = "?"
+    functional_equivalent_status: str = "?"
+    functional_target: str = ""
     milestone: str = ""
 
     @property
@@ -68,6 +77,10 @@ class PlanEntry:
     @property
     def is_binary_verified(self) -> bool:
         return self.binary_verified_status == DONE_STATUS
+
+    @property
+    def is_functionally_accepted(self) -> bool:
+        return self.functional_equivalent_status == DONE_STATUS
 
 
 @dataclass(frozen=True)
@@ -140,10 +153,10 @@ class PlanDocument:
             or query in self.entries[address].milestone.lower()
         ]
 
-    def first_unfinished(self) -> PlanEntry | None:
+    def first_unfinished(self, *, lane: str = "strict") -> PlanEntry | None:
         for address in self.order:
             entry = self.entries[address]
-            if blocker_field(entry):
+            if blocker_field(entry, lane=lane):
                 return entry
         return None
 
@@ -167,7 +180,7 @@ class PlanDocument:
 
         before = self.entry_text(address)
         block = self._block(address)
-        line_index = block.marker_lines[field]
+        line_index = block.marker_lines.get(field, -1)
         entry = block.entry
 
         if field == "recon":
@@ -181,10 +194,20 @@ class PlanDocument:
             new_line = self._reimplemented_line(status, entry, name, file, provider)
         elif field == "verify":
             new_line = f"  - [{status}] Binary-safe verified"
+        elif field == "functional":
+            target = file or entry.functional_target
+            if status in {DONE_STATUS, LIMITED_STATUS} and not target:
+                raise ValueError("functional updates require --file as the functional target")
+            if status in {NOT_DONE_STATUS, UNKNOWN_STATUS}:
+                target = target or "pending"
+            new_line = f"  - [{status}] {FUNCTIONAL_LABEL} (Target: {target})"
         else:
             raise AssertionError(f"unhandled field {field}")
 
-        self.lines[line_index] = new_line
+        if field == "functional" and line_index < 0:
+            self.lines.insert(block.marker_lines["verify"] + 1, new_line)
+        else:
+            self.lines[line_index] = new_line
         updated = PlanDocument.load_from_lines(self.path, self.lines, self.newline)
         self.entries = updated.entries
         self.order = updated.order
@@ -231,10 +254,21 @@ class PlanDocument:
                         f"{address} expected one {label!r} marker, found {len(matches)}"
                     )
                 marker_lines[field] = matches[0][0]
+            functional_matches = [
+                (line_no, text) for line_no, text in block if FUNCTIONAL_LABEL in text
+            ]
+            if len(functional_matches) > 1:
+                raise ValueError(
+                    f"{address} expected at most one {FUNCTIONAL_LABEL!r} marker, "
+                    f"found {len(functional_matches)}"
+                )
+            if functional_matches:
+                marker_lines["functional"] = functional_matches[0][0]
             reconstructed = lines[marker_lines["recon"]]
             source_dependencies = lines[marker_lines["deps"]]
             reimplemented = lines[marker_lines["impl"]]
             verified = lines[marker_lines["verify"]]
+            functional = lines[marker_lines["functional"]] if "functional" in marker_lines else ""
             entry = PlanEntry(
                 address=address,
                 reconstructed_status=_status(reconstructed),
@@ -245,6 +279,8 @@ class PlanDocument:
                 reimplemented_file=_file(reimplemented),
                 provider=_provider(reimplemented),
                 binary_verified_status=_status(verified),
+                functional_equivalent_status=_status(functional) if functional else "?",
+                functional_target=_functional_target(functional) if functional else "",
                 milestone=milestone,
             )
             entries[address] = entry
@@ -306,6 +342,11 @@ def _provider(line: str) -> str:
     return match.group(1).strip() if match else ""
 
 
+def _functional_target(line: str) -> str:
+    match = FUNCTIONAL_TARGET_RE.search(line)
+    return match.group(1).strip() if match else ""
+
+
 def load_plan(path: str | Path) -> dict[str, PlanEntry]:
     return PlanDocument.load(path).entries
 
@@ -322,29 +363,36 @@ def normalize_address(value: str) -> str:
 def normalize_field(value: str) -> str:
     key = value.strip().lower().replace(" ", "-")
     key = FIELD_ALIASES.get(key, key)
-    if key not in FIELD_LABELS:
+    if key not in FIELD_LABELS and key != "functional":
         valid = ", ".join(sorted(FIELD_LABELS | FIELD_ALIASES))
         raise ValueError(f"invalid field {value!r}; expected one of: {valid}")
     return key
 
 
-def status_summary(entry: PlanEntry) -> str:
-    return (
+def status_summary(entry: PlanEntry, *, include_functional: bool = False) -> str:
+    summary = (
         f"recon={entry.reconstructed_status} "
         f"deps={entry.source_dependencies_status} "
         f"impl={entry.reimplemented_status} "
         f"verify={entry.binary_verified_status}"
     )
+    if include_functional or entry.functional_equivalent_status == DONE_STATUS:
+        summary += f" functional={entry.functional_equivalent_status}"
+    return summary
 
 
-def blocker_field(entry: PlanEntry) -> str | None:
+def blocker_field(entry: PlanEntry, *, lane: str = "strict") -> str | None:
+    if lane not in {"strict", "progress"}:
+        raise ValueError("lane must be 'strict' or 'progress'")
     if entry.reconstructed_status in {NOT_DONE_STATUS, UNKNOWN_STATUS, "?"}:
         return "recon"
     if entry.source_dependencies_status in {NOT_DONE_STATUS, UNKNOWN_STATUS, "?"}:
         return "deps"
     if entry.reimplemented_status != DONE_STATUS:
         return "impl"
-    if entry.binary_verified_status != DONE_STATUS:
+    if entry.binary_verified_status != DONE_STATUS and not (
+        lane == "progress" and entry.is_functionally_accepted
+    ):
         return "verify"
     if entry.reconstructed_status == LIMITED_STATUS:
         return "recon"
@@ -353,8 +401,8 @@ def blocker_field(entry: PlanEntry) -> str | None:
     return None
 
 
-def first_unfinished(entries: Iterable[PlanEntry]) -> PlanEntry | None:
+def first_unfinished(entries: Iterable[PlanEntry], *, lane: str = "strict") -> PlanEntry | None:
     for entry in entries:
-        if blocker_field(entry):
+        if blocker_field(entry, lane=lane):
             return entry
     return None

@@ -10,15 +10,14 @@ void RECOIL_THISCALL RecoilStateMainMenuTransition::OnResume(int param) {
 
     zVideo::RunPostprocessOnPrimaryBuffer();
 
-    HudUiMainMenuDialog *dialog = (HudUiMainMenuDialog *)m_mainMenuDialog;
-    HudUiMainMenuDialog_Vtbl *dialogVtbl = (HudUiMainMenuDialog_Vtbl *)dialog->vftable;
-    dialogVtbl->SetEnabled(dialog, 1);
+    HudUiMainMenuDialogVirtual *dialog =
+        (HudUiMainMenuDialogVirtual *)m_mainMenuDialog;
+    dialog->SetEnabled(1);
 
     ((HudUiContainer *)m_mainMenuDialog)->InvalidateChildren();
 
-    dialog = (HudUiMainMenuDialog *)m_mainMenuDialog;
-    dialogVtbl = (HudUiMainMenuDialog_Vtbl *)dialog->vftable;
-    dialogVtbl->UpdateAll(dialog, 0);
+    dialog = (HudUiMainMenuDialogVirtual *)m_mainMenuDialog;
+    dialog->Update(0.0f);
 
     zVideo::Dispatch_UnlockPrimarySurfaceState();
 

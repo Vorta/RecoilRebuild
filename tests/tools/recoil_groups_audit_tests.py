@@ -121,6 +121,8 @@ class RecoilGroupsAuditTests(unittest.TestCase):
                 sys.executable,
                 str(CLI),
                 "--summary",
+                "--wip-limit",
+                "1000",
                 "--limit",
                 "3",
             ],
@@ -133,6 +135,28 @@ class RecoilGroupsAuditTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("groups:", result.stdout)
         self.assertIn("recommendations:", result.stdout)
+        self.assertIn("active_wip_limit:", result.stdout)
+
+    def test_cli_strict_wip_fails_when_limit_is_exceeded(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(CLI),
+                "--section",
+                "active",
+                "--wip-limit",
+                "0",
+                "--strict-wip",
+                "--limit",
+                "0",
+            ],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+
+        self.assertEqual(result.returncode, 1)
 
 
 if __name__ == "__main__":

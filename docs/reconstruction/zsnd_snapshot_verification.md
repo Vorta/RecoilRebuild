@@ -1,8 +1,63 @@
 # zSnd Snapshot Verification Notes
 
-These notes track address-local verification facts for the active
-`zSndPlayHandleSnapshot::CreateFromActiveSamples` blocker. They do not replace
-Binary Ninja, plan markers, or VC verification output.
+These notes track address-local verification facts for active snapshot
+blockers. They do not replace Binary Ninja, plan markers, or VC verification
+output.
+
+## 0x4a0500 StopAllIfPlaying
+
+- Current source: `src/GameZRecoil/zSound/zsnd_play.cpp`; the old
+  `zsnd_snapshot_stop_all.cpp` file is a build placeholder so this function
+  shares the original sound playback translation-unit register allocation.
+- Current VC target: `tools/vc6_verify_targets/zsnd_snapshot_stop_all_if_playing.json`
+  with VC6 `cl` 12.00.8168, `/G5 /O2 /Oy /Ob0 /Zp4 /FAcs`.
+- Current best verification result: `python tools/recoil_vc6_verify.py zsnd_snapshot_stop_all_if_playing`
+  fails with 27 unmasked byte mismatches, 8 relocation-masked bytes, BN size
+  134, VC6 object size 144, and 10 trailing VC6 NOPs trimmed.
+- BN prologue uses `push ecx; push ebx; push esi; push edi`, `xor edx, edx`,
+  `mov ebx, 1`, then branchless `sete/neg/sbb/inc/test` sentinel materialization.
+  The full-TU VC6 build now matches the stack `GetStatus` scratch at `[esp+0xc]`,
+  A3D `GetStatus` slot `0xe0`, DirectSound `GetStatus` slot `0x24`, playing
+  tests through `BL`, and `StopIfActive` call shape. Remaining drift is limited
+  to the initial and loop-tail sentinel predicates: VC6 omits the pre-compare
+  `xor edx, edx` in the first predicate, emits an extra byte `neg` when checking
+  the materialized byte against zero, and tests against `BL` instead of itself.
+- Predicate probes in `build/experiments/4a0500/bool_shapes.cpp` show plausible
+  `unsigned char` and `int` spellings either keep the extra byte `neg` or regress
+  to `mov 1; sub`, so the current source keeps the 27-mismatch best profile.
+- Functional-equivalence evidence: `tools/functional_verify_targets/zsnd_snapshot_stop_all_if_playing.json`
+  and native smoke `zsnd_snapshot_stop_all_if_playing_smoke` in `tests/native/zsnd_cd_tests.cpp`.
+  `python tools/recoil_functional_verify.py 0x4a0500` passes; `Binary-safe verified` stays `❌`.
+- VC5SP3 full-TU probe (`cl` 11.00.7022, `zsnd_snapshot_stop_all_if_playing_vc5`)
+  now fails with **100** unmasked mismatches and **144-byte** object code, worse
+  than the VC6 full-TU profile.
+- A prior in-`zsnd_play.cpp` VC5 listing (see
+  `build/vc6-verify/zsnd_snapshot_create_from_active_samples/zsnd_play.cod`) used `push ecx`,
+  stack `outStatus`, and `do { } while`, but still used plain `cmp/jne` and an EBP frame — closer
+  prologue/scratch shape, still not a byte match.
+- **Runtime impact of current drift (reviewed 2026-05-21):** no known caller-visible effect.
+  - Return is always `1`; BN and both call sites (`0x4152db`, `0x463035`) ignore it.
+  - After the call, callers reload `ECX` (`mov ecx, imm` / `mov ecx, [esi+…]`), so missing
+    `push/pop ecx` in the rebuild is not an ABI contract for these sites. BN's `push ecx` is
+    reused as the `GetStatus` scratch at `[esp+0xc]`, not callee-saved `this` preservation.
+  - `g_zSndStopAllStatusScratch` vs stack scratch is equivalent on a single-threaded engine unless
+    `StopAllIfPlaying` reenters (not observed).
+  - Branchless vs `cmp/je` loop sentinels are predicate-equivalent; backend `switch` and
+    `test byte …, bl` playing checks match BN semantics (functional smoke covers DS/A3D paths).
+
+## 0x415220 RecoilStateMainMenuTransition::OnTryBecomeCurrent
+
+- Current source: `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp`
+  (uses production `zFMV_ActionBlur` from `fmv.h`).
+- VC target: `tools/vc6_verify_targets/recoil_state_main_menu_transition_on_try_become_current.json`
+  with VC6 `cl` 12.00.8168, `/G5 /O2 /Ob1 /GX /Zp4 /FAcs`, plus `fmv_script.cpp` for blur
+  `Constructor` linkage.
+- Current byte result: **253** unmasked mismatches, BN 321 vs VC6 272 bytes. Root drift is missing
+  retail MSVC SEH/EH scaffolding (`push ebp`, `fs:` chain, `__ehhandler_…`, `[esp+0x40/0x48]` state)
+  around stack `zFMV_ActionBlur` and `operator new` for `HudUiMainMenuDialog`; verify TU emits a
+  plain `sub esp` frame instead.
+- Functional-equivalence: `tools/functional_verify_targets/recoil_state_main_menu_transition_on_try_become_current.json`
+  and smoke `recoil_state_main_menu_transition_on_try_become_current_smoke` (frontend route).
 
 ## 0x49fff0 CreateFromActiveSamples
 

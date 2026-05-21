@@ -3749,17 +3749,18 @@ void RECOIL_THISCALL HudUiElement::SetY(int newY) {
 }
 
 // Reimplements 0x404d20: HudUiElement::SetVisible
-void RECOIL_THISCALL HudUiElement::SetVisible(int visible) {
-    typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiElement * self);
+// BN patches only the low flag byte, then indirect-calls Invalidate through ftable slot 8.
+RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::SetVisible(int visible) {
+    typedef void (RECOIL_FASTCALL *InvalidateFn)(HudUiElement * self);
 
     if (visible != 0) {
         flags &= 0xffffffefu;
-        ((InvalidateFn)(ftable->slots[8]))(this);
-        return;
+    } else {
+        flags |= 0x10u;
     }
 
-    flags |= 0x10;
-    ((InvalidateFn)(ftable->slots[8]))(this);
+    volatile const HudUiCommon_FTable *const dispatchTable = ftable;
+    ((InvalidateFn)(dispatchTable->slots[8]))(this);
 }
 
 // Reimplements 0x4b47a0: HudUiElement::ResetCommonFTable
@@ -4372,11 +4373,22 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiContainer::UpdateAll(float deltaSecond
     }
 }
 
+struct HudUiElementInvalidateDispatch {
+    virtual void Slot0();
+    virtual void Slot1();
+    virtual void Slot2();
+    virtual void Slot3();
+    virtual void Slot4();
+    virtual void Slot5();
+    virtual void Slot6();
+    virtual void Slot7();
+    virtual void Invalidate();
+};
+
 // Reimplements 0x4ba3a0: HudUiContainer::InvalidateChildren
 RECOIL_NOINLINE void RECOIL_THISCALL HudUiContainer::InvalidateChildren() {
     for (HudUiElement *child = childHead; child != 0; child = child->next) {
-        typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiElement * self);
-        ((InvalidateFn)(child->ftable->slots[8]))(child);
+        ((HudUiElementInvalidateDispatch *)child)->Invalidate();
     }
 }
 

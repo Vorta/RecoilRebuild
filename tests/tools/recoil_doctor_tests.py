@@ -15,7 +15,7 @@ class RecoilDoctorTests(unittest.TestCase):
     def test_quick_steps_include_core_process_checks(self) -> None:
         labels = [step.label for step in quick_steps()]
 
-        self.assertIn("VC6 manifest source policy", labels)
+        self.assertIn("VC manifest source policy", labels)
         self.assertIn("compiler/linker provenance", labels)
         self.assertIn("workspace hygiene", labels)
         self.assertIn("raw image address guard", labels)
@@ -23,7 +23,8 @@ class RecoilDoctorTests(unittest.TestCase):
         self.assertIn("reinterpret_cast guard", labels)
         self.assertIn("reference executable manifest", labels)
         self.assertIn("source file map freshness", labels)
-        self.assertIn("VC6 manifest load", labels)
+        self.assertIn("functional manifest load", labels)
+        self.assertIn("VC manifest load", labels)
         self.assertIn("Python tool tests", labels)
         self.assertNotIn("Binary Ninja bridge", labels)
 
@@ -41,7 +42,7 @@ class RecoilDoctorTests(unittest.TestCase):
         args = build_parser().parse_args(["--active", "0x415220"])
 
         steps = build_steps(args)
-        verify_commands = [step.command for step in steps if step.label.startswith("active VC6 compile")]
+        verify_commands = [step.command for step in steps if step.label.startswith("active VC compile")]
 
         self.assertEqual(1, len(verify_commands))
         self.assertIn("--skip-bn-compare", verify_commands[0])
@@ -50,7 +51,7 @@ class RecoilDoctorTests(unittest.TestCase):
         args = build_parser().parse_args(["--active", "0x415220", "--bn-compare"])
 
         steps = build_steps(args)
-        verify_commands = [step.command for step in steps if step.label.startswith("active VC6 byte verify")]
+        verify_commands = [step.command for step in steps if step.label.startswith("active VC byte verify")]
 
         self.assertEqual(1, len(verify_commands))
         self.assertNotIn("--skip-bn-compare", verify_commands[0])

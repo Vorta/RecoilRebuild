@@ -1,5 +1,7 @@
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 
+#include "GameZRecoil/zVideo/zVideo.h"
+
 #include <cstring>
 #include <new>
 
@@ -147,6 +149,37 @@ extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_s
                    static_cast<zVidModeIndex>(5)
                ? 0
                : 1;
+}
+
+// Reimplements 0x415220: RecoilStateMainMenuTransition::OnTryBecomeCurrent (frontend path).
+extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(void) {
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = nullptr;
+
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+
+    RecoilStateMainMenuTransition state{};
+    state.Constructor();
+    state.m_entryRoute = RECOIL_MAINMENU_ROUTE_FRONTEND;
+
+    const int result = state.OnTryBecomeCurrent();
+    if (result != 1) {
+        return 1;
+    }
+    if (g_RecoilState_MainMenuSkipExitDelay != 0) {
+        return 2;
+    }
+    if (state.m_pausedAudioSnapshot == 0) {
+        return 3;
+    }
+    if (state.m_mainMenuDialog == 0) {
+        return 4;
+    }
+
+    RecoilStateMainMenuTransition::ClearPausedAudioSnapshot();
+    return 0;
 }
 
 extern "C" int recoil_state_main_menu_transition_destructor_smoke(void) {

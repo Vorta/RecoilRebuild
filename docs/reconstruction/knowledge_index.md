@@ -11,10 +11,12 @@ for function identity, types, markers, and acceptance state.
   and temporary-state hygiene checks.
 - `compiler_linker_provenance.md` - compiler, linker, and verification-profile
   assumptions guarded by `tools/recoil_provenance_audit.py --strict`.
-- `provider_abi_notes.md` - repo-local provider assumptions for VC6, MFC42,
+- `provider_abi_notes.md` - repo-local provider assumptions for VC5SP3/VC6, MFC42,
   legacy DirectX, imports, and runtime verification.
 - `source_file_map.md` - generated original-source placement map from
   `Reimplements` provenance comments in `src/`.
+- `verified_patterns.md` - compact ledger of currently verified reusable source
+  and verification shapes.
 - `zsnd_error_verification.md` - zSound error-helper verification notes,
   including the `ReportA3DError` switch-table comparison limitation.
 - `zsnd_cd_verification.md` - zSound CD helper verification notes, including the

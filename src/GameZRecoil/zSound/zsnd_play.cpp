@@ -512,6 +512,46 @@ extern "C" RECOIL_NOINLINE float RECOIL_STDCALL zSndSample_PlaySimple(float valu
     return value;
 }
 
+// Reimplements 0x4a0500: zSndPlayHandleSnapshot::StopAllIfPlaying
+RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandleSnapshot::StopAllIfPlaying()
+{
+    int result = 1;
+    int status;
+    zSndPlayHandleSnapshot *const snapshot = this;
+    zSndPlayHandleSnapshotItem *const listHead = snapshot->listHead;
+    zSndPlayHandleSnapshotItem *snapshotItem = listHead->next->next;
+    int hasItem = static_cast<unsigned char>(-(snapshotItem == listHead)) == 0;
+    if ((hasItem & result) != 0) {
+        do {
+            switch (g_zSnd_ActiveBackend) {
+            case 0: {
+                DirectSoundBuffer *const buffer =
+                    (DirectSoundBuffer *)(snapshotItem->payload.playHandle->backendBuffer);
+                buffer->vtable->GetStatus(buffer, &status);
+                if ((status & result) != 0) {
+                    snapshotItem->payload.playHandle->StopIfActive();
+                }
+                break;
+            }
+            case 1: {
+                A3dSource *const source =
+                    (A3dSource *)(snapshotItem->payload.playHandle->backendBuffer);
+                source->vtable->GetStatus(source, &status);
+                if ((status & result) != 0) {
+                    snapshotItem->payload.playHandle->StopIfActive();
+                }
+                break;
+            }
+            }
+
+            snapshotItem = snapshotItem->next;
+            hasItem = static_cast<unsigned char>(-(snapshotItem == snapshot->listHead)) == 0;
+        } while ((hasItem & result) != 0);
+    }
+
+    return result;
+}
+
 // Reimplements 0x4a07c0: zSndPlayHandleSnapshot::NewNode
 // Callers seed ECX with the owning snapshot, while the helper only uses its
 // two stack arguments and returns with ret 8.
@@ -591,24 +631,6 @@ zSndPlayHandleSnapshot::CreateFromActiveSamples() {
              ++sampleIndex) {
             zSndSample *const sample = sampleSet->GetSampleAt(sampleIndex);
             switch (g_zSnd_ActiveBackend) {
-            case 0: {
-                if (sample->primaryVoice.backendBuffer != 0 &&
-                    DirectSoundBufferIsPlaying(sample->primaryVoice.backendBuffer, &status)) {
-                    payload.CaptureFromPlayHandle(&sample->primaryVoice);
-                    snapshot->AppendPayload(payload);
-                }
-
-                for (int voiceIndex = 0; voiceIndex < sample->duplicateVoiceCount;
-                     ++voiceIndex) {
-                    zSndPlayHandle *const voice = sample->duplicateVoices[voiceIndex];
-                    if (voice != 0 && DirectSoundBufferIsPlaying(voice->backendBuffer, &status)) {
-                        payload.CaptureFromPlayHandle(voice);
-                        snapshot->AppendPayload(payload);
-                    }
-                }
-                break;
-            }
-
             case 1: {
                 if (sample->primaryVoice.backendBuffer != 0 &&
                     A3dSourceIsPlaying(sample->primaryVoice.backendBuffer, &status)) {
@@ -635,43 +657,29 @@ zSndPlayHandleSnapshot::CreateFromActiveSamples() {
                 }
                 break;
             }
+
+            case 0: {
+                if (sample->primaryVoice.backendBuffer != 0 &&
+                    DirectSoundBufferIsPlaying(sample->primaryVoice.backendBuffer, &status)) {
+                    payload.CaptureFromPlayHandle(&sample->primaryVoice);
+                    snapshot->AppendPayload(payload);
+                }
+
+                for (int voiceIndex = 0; voiceIndex < sample->duplicateVoiceCount;
+                     ++voiceIndex) {
+                    zSndPlayHandle *const voice = sample->duplicateVoices[voiceIndex];
+                    if (voice != 0 && DirectSoundBufferIsPlaying(voice->backendBuffer, &status)) {
+                        payload.CaptureFromPlayHandle(voice);
+                        snapshot->AppendPayload(payload);
+                    }
+                }
+                break;
+            }
             }
         }
     }
 
     return snapshot;
-}
-
-// Reimplements 0x4a0500: zSndPlayHandleSnapshot::StopAllIfPlaying
-// BN uses MSVC's branchless sete/neg/sbb/inc loop compare; a do-while back edge matches that shape.
-int RECOIL_THISCALL zSndPlayHandleSnapshot::StopAllIfPlaying() {
-    zSndPlayHandleSnapshotItem *const anchor = listHead;
-    zSndPlayHandleSnapshotItem *item = anchor->next->next;
-    if (item == anchor) {
-        return 1;
-    }
-
-    do {
-        int status;
-        int activeBackend = g_zSnd_ActiveBackend;
-        activeBackend -= 0;
-        if (activeBackend == 0) {
-            if (DirectSoundBufferIsPlaying(item->payload.playHandle->backendBuffer, &status)) {
-                item->payload.playHandle->StopIfActive();
-            }
-        } else {
-            activeBackend -= 1;
-            if (activeBackend == 0) {
-                if (A3dSourceIsPlaying(item->payload.playHandle->backendBuffer, &status)) {
-                    item->payload.playHandle->StopIfActive();
-                }
-            }
-        }
-
-        item = item->next;
-    } while (item != anchor);
-
-    return 1;
 }
 
 // Reimplements 0x4a0380: zSndPlayHandle::PlayWithDelta_A3D
@@ -680,12 +688,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSndPlayHandle::PlayWithDelta_A3D(
     zSndSampleReplayFields *replayFields, zSndPlayHandle *playHandle,
     int restartBeforePlay, float gainDelta)
 {
-    if (gainDelta > 0.0f) {
-        gainDelta += FloatFromBits(playHandle->gainScaled);
-        playHandle->gainScaled = FloatToBits(gainDelta);
+    if (gainDelta > 0.0) {
+        gainDelta += *(float *)&playHandle->gainScaled;
+        *(float *)&playHandle->gainScaled = gainDelta;
 
-        A3dSource *const source = (A3dSource *)playHandle->backendBuffer;
-        source->vtable->SetGain(source, zSndSample_PlaySimple(gainDelta));
+        A3dSourceVTable *const vtable = ((A3dSource *)playHandle->backendBuffer)->vtable;
+        vtable->SetGain((A3dSource *)playHandle->backendBuffer,
+                        zSndSample_PlaySimple(gainDelta));
     }
 
     if (restartBeforePlay != 0) {
@@ -694,7 +703,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSndPlayHandle::PlayWithDelta_A3D(
     }
 
     A3dSource *const source = (A3dSource *)playHandle->backendBuffer;
-    const int error = source->vtable->Play(source, replayFields->flags & 1);
+    const int error = source->vtable->Play(
+        source, static_cast<unsigned char>(replayFields->flags) & 1);
     if (error != 0) {
         zSnd::ReportA3DError(error, kZSndPlaySourceFile, 0x58a);
     }
@@ -707,11 +717,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSndPlayHandle::PlayWithDelta_DirectSound(
     int restartBeforePlay, int gainDelta)
 {
     if (gainDelta != 0) {
-        const int volumeDb = playHandle->gainScaled + gainDelta;
-        playHandle->gainScaled = volumeDb;
+        playHandle->gainScaled += gainDelta;
 
         DirectSoundBuffer *const buffer = (DirectSoundBuffer *)playHandle->backendBuffer;
-        const int error = buffer->vtable->SetVolume(buffer, volumeDb);
+        const int error = buffer->vtable->SetVolume(buffer, playHandle->gainScaled);
         if (error != 0) {
             zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x5a5);
         }
@@ -726,7 +735,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSndPlayHandle::PlayWithDelta_DirectSound(
     }
 
     DirectSoundBuffer *const buffer = (DirectSoundBuffer *)playHandle->backendBuffer;
-    const int error = buffer->vtable->Play(buffer, 0, 0, replayFields->flags & 1);
+    const int error = buffer->vtable->Play(
+        buffer, 0, 0, static_cast<unsigned char>(replayFields->flags) & 1);
     if (error != 0) {
         zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x5b4);
     }
@@ -739,19 +749,23 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSndPlayHandle::PlayWithDelta_BackendDispat
     float gainDelta)
 {
     zSndSampleReplayFields *const replayFields = &sourceSample->replayFields;
-    if (g_zSnd_ActiveBackend == 0) {
+    switch (g_zSnd_ActiveBackend) {
+    case 1:
+        if (playHandle->backendBuffer != 0 &&
+            *(float *)&playHandle->gainScaled != 0.0f) {
+            PlayWithDelta_A3D(replayFields, playHandle, restartBeforePlay, gainDelta);
+        }
+        break;
+
+    case 0: {
         const int directSoundGainDelta =
             static_cast<int>(gainDelta * 10000.0f);
         if (playHandle->backendBuffer != 0) {
             PlayWithDelta_DirectSound(replayFields, playHandle, restartBeforePlay,
                                       directSoundGainDelta);
         }
-        return;
+        break;
     }
-
-    if (g_zSnd_ActiveBackend == 1 && playHandle->backendBuffer != 0 &&
-        FloatFromBits(playHandle->gainScaled) != 0.0f) {
-        PlayWithDelta_A3D(replayFields, playHandle, restartBeforePlay, gainDelta);
     }
 }
 
@@ -760,21 +774,21 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSndPlayHandle::PlayWithDelta_BackendDispat
 RECOIL_NOINLINE int RECOIL_THISCALL
 zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta()
 {
-    zSndPlayHandleSnapshotItem *const head = listHead;
-    zSndPlayHandleSnapshotItem *const volumeAnchor = head->next;
+    zSndPlayHandleSnapshot *const snapshot = this;
+    zSndPlayHandleSnapshotItem *const volumeAnchor = snapshot->listHead->next;
+
+    const float gainDelta = *static_cast<float *>(g_zSnd_GlobalVolumeScalePtr) -
+                            *(float *)&volumeAnchor->payload.volumeScaleRaw;
+
     zSndPlayHandleSnapshotItem *item = volumeAnchor->next;
-
-    float anchorVolume = 0.0f;
-    memcpy(&anchorVolume, &volumeAnchor->payload.volumeScaleRaw, sizeof(anchorVolume));
-
-    const float currentVolume =
-        g_zSnd_GlobalVolumeScalePtr != 0 ? *(float *)g_zSnd_GlobalVolumeScalePtr : 0.0f;
-    const float gainDelta = currentVolume - anchorVolume;
-
-    while (item != head) {
-        zSndPlayHandle::PlayWithDelta_BackendDispatch(item->payload.sourceSample,
-                                                      item->payload.playHandle, 0, gainDelta);
-        item = item->next;
+    int hasItem = item != snapshot->listHead;
+    if (hasItem != 0) {
+        do {
+            zSndPlayHandle::PlayWithDelta_BackendDispatch(item->payload.sourceSample,
+                                                          item->payload.playHandle, 0, gainDelta);
+            item = item->next;
+            hasItem = item != snapshot->listHead;
+        } while (hasItem != 0);
     }
 
     return 1;
@@ -837,21 +851,20 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::StopIfActive() {
         }
 
         if (status == 2) {
+            buffer = (DirectSoundBuffer *)(playHandle->backendBuffer);
             error = buffer->vtable->Restore(buffer);
             if (error != 0) {
                 return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x396);
             }
         }
 
+        buffer = (DirectSoundBuffer *)(playHandle->backendBuffer);
         error = buffer->vtable->Stop(buffer);
         if (error != 0) {
             return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x39a);
         }
 
         return error;
-
-    default:
-        return status;
 
     case 1:
         source = (A3dSource *)(playHandle->backendBuffer);
@@ -865,6 +878,9 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::StopIfActive() {
         }
 
         return error;
+
+    default:
+        return status;
     }
 }
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 import os
@@ -14,6 +14,7 @@ from typing import Any
 from recoil_asm_verify import AssemblyComparison, ObjectByteComparison, compare_bn_to_cod, compare_bn_to_obj
 from recoil_binja import BridgeError
 from recoil_plan import normalize_address
+from recoil_profiles import profiles_by_name
 from recoil_tooling import (
     CommandScriptResult,
     DEFAULT_VC6_ROOT as DEFAULT_VC6_ROOT_BASE,
@@ -54,6 +55,7 @@ class VerifyTarget:
     source_from: str
     compare_mode: str
     trim_trailing_nops: bool
+    compiler_profile: str
     compiler_env: str
     compiler_flags: tuple[str, ...]
     include_dirs: tuple[str, ...]
@@ -218,7 +220,7 @@ def validate_source_policy(
         if manifest_key not in baseline.inline_manifests:
             if not allow_inline:
                 raise ValueError(
-                    f"{manifest_path}: inline source bodies are not allowed for VC6 verification; "
+                    f"{manifest_path}: inline source bodies are not allowed for VC verification; "
                     "use source_from to compile production source"
                 )
             inline_lines = source_text_from_data(data, manifest_path).splitlines()
@@ -319,9 +321,28 @@ def load_manifest(
     compare_mode = data.get("compare_mode", "coff_bytes")
     if not isinstance(compare_mode, str) or compare_mode not in {"coff_bytes", "text"}:
         raise ValueError(f"{path}: expected 'compare_mode' to be 'coff_bytes' or 'text'")
-    compiler_env = data.get("compiler_env", "")
-    if compiler_env and not isinstance(compiler_env, str):
-        raise ValueError(f"{path}: expected 'compiler_env' as a string")
+    compiler_profile = data.get("compiler_profile", "")
+    if compiler_profile and not isinstance(compiler_profile, str):
+        raise ValueError(f"{path}: expected 'compiler_profile' as a string")
+    if compiler_profile and ("compiler_env" in data or "compiler_flags" in data):
+        raise ValueError(f"{path}: compiler_profile is mutually exclusive with compiler_env/compiler_flags")
+
+    if compiler_profile:
+        profile = profiles_by_name().get(compiler_profile)
+        if profile is None:
+            raise ValueError(f"{path}: unknown compiler_profile {compiler_profile}")
+        compiler_env = profile.compiler_env
+        compiler_flags = profile.compiler_flags
+    else:
+        compiler_env = data.get("compiler_env", "")
+        if compiler_env and not isinstance(compiler_env, str):
+            raise ValueError(f"{path}: expected 'compiler_env' as a string")
+        compiler_flags = require_string_list(
+            data,
+            "compiler_flags",
+            manifest_path=path,
+            allow_empty_items=True,
+        )
 
     generated_files_tuple = tuple(generated_files)
     functions_tuple = tuple(functions)
@@ -343,8 +364,9 @@ def load_manifest(
         source_from=source_from or "",
         compare_mode=compare_mode,
         trim_trailing_nops=optional_bool(data, "trim_trailing_nops", True, manifest_path=path),
+        compiler_profile=compiler_profile or "",
         compiler_env=compiler_env or "",
-        compiler_flags=require_string_list(data, "compiler_flags", manifest_path=path, allow_empty_items=True),
+        compiler_flags=compiler_flags,
         include_dirs=require_string_list(data, "include_dirs", manifest_path=path, allow_empty_items=True),
         source_files=require_string_list(data, "source_files", manifest_path=path, allow_empty_items=True),
         generated_files=generated_files_tuple,
@@ -367,7 +389,7 @@ def load_manifests(
     names: set[str] = set()
     for manifest in manifests:
         if manifest.name in names:
-            raise ValueError(f"Duplicate VC6 verification target name: {manifest.name}")
+            raise ValueError(f"Duplicate VC verification target name: {manifest.name}")
         names.add(manifest.name)
     return manifests
 
@@ -385,17 +407,17 @@ def find_target(manifests: list[VerifyTarget], selector: str) -> tuple[VerifyTar
             if function.address == normalized_address
         ]
         if not matches:
-            raise ValueError(f"No VC6 verification manifest covers {normalized_address}")
+            raise ValueError(f"No VC verification manifest covers {normalized_address}")
         if len(matches) > 1:
             names = ", ".join(manifest.name for manifest, _function in matches)
-            raise ValueError(f"Multiple VC6 verification manifests cover {normalized_address}: {names}")
+            raise ValueError(f"Multiple VC verification manifests cover {normalized_address}: {names}")
         manifest, function = matches[0]
         return manifest, (function,), normalized_address
 
     for manifest in manifests:
         if manifest.name == selector:
             return manifest, manifest.functions, manifest.name
-    raise ValueError(f"Unknown VC6 verification target: {selector}")
+    raise ValueError(f"Unknown VC verification target: {selector}")
 
 
 def covering_targets(manifests: list[VerifyTarget], address: str) -> list[tuple[VerifyTarget, VerifyFunction]]:
@@ -408,14 +430,39 @@ def covering_targets(manifests: list[VerifyTarget], address: str) -> list[tuple[
     ]
 
 
+def with_compiler_profile_override(target: VerifyTarget, profile_name: str) -> VerifyTarget:
+    profile = profiles_by_name().get(profile_name)
+    if profile is None:
+        raise ValueError(f"Unknown compiler profile override: {profile_name}")
+    return replace(
+        target,
+        compiler_profile=profile.name,
+        compiler_env=profile.compiler_env,
+        compiler_flags=profile.compiler_flags,
+    )
+
+
+def parse_profile_sweep_spec(spec: str) -> list[str]:
+    available = profiles_by_name()
+    if spec == "*":
+        return [name for name in available if "raw_asm" not in name]
+    names = [name.strip() for name in spec.split(",") if name.strip()]
+    if not names:
+        raise ValueError("--profile-sweep requires at least one profile name")
+    for name in names:
+        if name not in available:
+            raise ValueError(f"Unknown compiler profile override: {name}")
+    return names
+
+
 def manifest_skeleton(address: str) -> dict[str, object]:
     normalized_address = normalize_address(address)
     safe_address = normalized_address[2:]
     return {
         "name": f"verify_{safe_address}",
-        "description": f"VC6 verification target for {normalized_address}.",
+        "description": f"VC verification target for {normalized_address}.",
         "source_filename": f"verify_{safe_address}.cpp",
-        "compiler_flags": ["/nologo", "/TP", "/O2", "/FAcs"],
+        "compiler_profile": "vc5_o2_ob0_facs",
         "include_dirs": ["src"],
         "source_files": [],
         "source_from": "src/TODO_SOURCE_FILE.cpp",
@@ -438,7 +485,7 @@ def print_missing_explanation(manifests: list[VerifyTarget], address: str) -> No
             print(f"- {manifest.name}: {function.symbol} ({manifest.manifest_path})")
         return
 
-    print(f"No VC6 verification manifest covers {normalized_address}.")
+    print(f"No VC verification manifest covers {normalized_address}.")
     print("Create or extend a JSON manifest under tools/vc6_verify_targets/.")
     print("Suggested starting point:")
     print(json.dumps(manifest_skeleton(normalized_address), indent=2))
@@ -546,6 +593,13 @@ def selected_targets_for_all(manifests: list[VerifyTarget]) -> list[VerifySelect
     return [VerifySelection(target=manifest, functions=manifest.functions) for manifest in manifests]
 
 
+def selected_targets_covering_address(manifests: list[VerifyTarget], address: str) -> list[VerifySelection]:
+    return [
+        VerifySelection(target=manifest, functions=(function,))
+        for manifest, function in covering_targets(manifests, address)
+    ]
+
+
 def write_compile_inputs(target: VerifyTarget, build_dir: Path) -> Path:
     source_path = build_dir / target.source_filename
     source_path.parent.mkdir(parents=True, exist_ok=True)
@@ -585,7 +639,7 @@ def compile_target(
 
     compiler_env = compiler_env_path(target, vc6_env)
     if not compiler_env.exists():
-        print(f"VC6 environment not found: {compiler_env}", file=sys.stderr)
+        print(f"VC environment not found: {compiler_env}", file=sys.stderr)
         return None, 2
 
     compile_cmd = build_compile_command(target, source_path, compiler_env, build_dir)
@@ -640,16 +694,18 @@ def print_target_list(manifests: list[VerifyTarget]) -> None:
 
 
 def print_compiled_target_info(target: VerifyTarget, compiled: CompiledTarget) -> None:
-    print(f"VC6 target: {target.name}")
+    print(f"VC target: {target.name}")
     print(f"Manifest: {target.manifest_path}")
     print(f"Source files: {', '.join(target.source_files) if target.source_files else '<manifest source only>'}")
     print(f"Compare mode: {target.compare_mode}")
+    if target.compiler_profile:
+        print(f"Compiler profile: {target.compiler_profile}")
     print(f"Compiler env: {compiled.compiler_env}")
     print(f"Compiler version: {compiled.compiler_version}")
     print(f"Compiler flags: {' '.join(target.compiler_flags)}")
-    print(f"VC6 listing: {compiled.cod_path}")
+    print(f"VC listing: {compiled.cod_path}")
     if compiled.obj_path.exists():
-        print(f"VC6 object: {compiled.obj_path}")
+        print(f"VC object: {compiled.obj_path}")
 
 
 def compare_compiled_selections(
@@ -796,12 +852,14 @@ def print_evidence_block(compiled: CompiledTarget, result: VerificationResult) -
     print(f"- Manifest: {target.manifest_path}")
     print(f"- Source: {source}")
     print(f"- Generated symbol: {function.symbol}")
+    if target.compiler_profile:
+        print(f"- Compiler profile: {target.compiler_profile}")
     print(f"- Compiler env: {compiled.compiler_env}")
     print(f"- Compiler version: {compiled.compiler_version}")
     print(f"- Compiler flags: {' '.join(target.compiler_flags)}")
     print("- Target architecture: x86")
-    print(f"- VC6 object: {compiled.obj_path}")
-    print(f"- VC6 listing: {compiled.cod_path}")
+    print(f"- VC object: {compiled.obj_path}")
+    print(f"- VC listing: {compiled.cod_path}")
     if isinstance(result.comparison, ObjectByteComparison):
         print(f"- Relocation mask: {result.comparison.mask_path}")
         print(f"- Byte diff: {result.comparison.diff_path}")
@@ -819,12 +877,13 @@ def run_target(
     target: VerifyTarget,
     selected_functions: tuple[VerifyFunction, ...],
     build_root: Path,
+    build_subdir: str | None = None,
     vc6_env: Path,
     bridge_url: str,
     skip_bn_compare: bool,
 ) -> int:
     try:
-        build_dir = prepare_clean_build_dir(build_root, target.name)
+        build_dir = prepare_clean_build_dir(build_root, build_subdir or target.name)
     except ValueError as exc:
         print(exc, file=sys.stderr)
         return 2
@@ -853,6 +912,101 @@ def run_target(
     return overall
 
 
+def print_profile_sweep_summary(rows: list[tuple[str, VerificationResult | None, int]]) -> None:
+    print()
+    print("Profile sweep summary:")
+    print(
+        "profile                         address    status        mismatches  reloc/text  "
+        "trim/sched  bn/norm  vc6/diff  evidence"
+    )
+    def sort_key(row: tuple[str, VerificationResult | None, int]) -> tuple[int, int, int, int, str]:
+        profile_name, result, rc = row
+        if result is None:
+            return (1, rc, 0, 0, profile_name)
+        return (
+            0,
+            result.mismatches,
+            abs(result.vc6_size_or_diff_count - result.bn_size_or_normalized),
+            result.secondary_metric,
+            profile_name,
+        )
+
+    for profile_name, result, rc in sorted(rows, key=sort_key):
+        if result is None:
+            print(f"{profile_name:30}  <none>     COMPILE({rc})")
+            continue
+        status = "FAIL" if result.mismatches else "OK"
+        print(
+            f"{profile_name:30}  "
+            f"{result.function.address}  {status:12}  "
+            f"{result.mismatches:10}  "
+            f"{result.relocation_or_text_metric:10}  "
+            f"{result.secondary_metric:10}  "
+            f"{result.bn_size_or_normalized:7}  "
+            f"{result.vc6_size_or_diff_count:8}  "
+            f"{result.evidence_path}"
+        )
+
+
+def run_profile_sweep(
+    *,
+    target: VerifyTarget,
+    selected_functions: tuple[VerifyFunction, ...],
+    profile_names: list[str],
+    build_root: Path,
+    vc6_env: Path,
+    bridge_url: str,
+    skip_bn_compare: bool,
+) -> int:
+    rows: list[tuple[str, VerificationResult | None, int]] = []
+    any_success = False
+    overall = 0
+    for profile_name in profile_names:
+        sweep_target = with_compiler_profile_override(target, profile_name)
+        build_subdir = safe_path_component(f"{target.name}__{profile_name}")
+        try:
+            build_dir = prepare_clean_build_dir(build_root, build_subdir)
+        except ValueError as exc:
+            print(exc, file=sys.stderr)
+            return 2
+
+        print()
+        print(f"Profile sweep compile: {profile_name}")
+        compiled, rc = compile_target(target=sweep_target, build_dir=build_dir, vc6_env=vc6_env)
+        if rc != 0:
+            rows.append((profile_name, None, rc))
+            overall = rc if overall == 0 else overall
+            continue
+        if compiled is None:
+            rows.append((profile_name, None, 3))
+            overall = 3 if overall == 0 else overall
+            continue
+        print_compiled_target_info(sweep_target, compiled)
+
+        if skip_bn_compare:
+            any_success = True
+            continue
+
+        selection = VerifySelection(target=sweep_target, functions=selected_functions)
+        results, compare_rc = compare_compiled_selections(
+            compiled=compiled,
+            selections=[selection],
+            bridge_url=bridge_url,
+        )
+        for result in results:
+            rows.append((profile_name, result, compare_rc))
+            if result.mismatches == 0:
+                any_success = True
+        if compare_rc and overall == 0:
+            overall = compare_rc
+
+    if not skip_bn_compare:
+        print_profile_sweep_summary(rows)
+        if any_success:
+            return 0
+    return overall
+
+
 def run_batch(
     *,
     selections: list[VerifySelection],
@@ -862,14 +1016,14 @@ def run_batch(
     skip_bn_compare: bool,
 ) -> int:
     if not selections:
-        print("No VC6 verification targets matched the requested batch.")
+        print("No VC verification targets matched the requested batch.")
         return 2
 
     grouped = group_selections_by_compile_key(selections, vc6_env)
     total_targets = sum(len(group) for _key, group in grouped)
     total_functions = sum(len(selection.functions) for _key, group in grouped for selection in group)
     print(
-        f"VC6 batch: {total_targets} target(s), {total_functions} function(s), "
+        f"VC batch: {total_targets} target(s), {total_functions} function(s), "
         f"{len(grouped)} unique compile(s)."
     )
 
@@ -917,16 +1071,21 @@ def run_batch(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Compile VC6 verification targets and compare relocation-masked COFF bytes to BN."
+        description="Compile VC verification targets and compare relocation-masked COFF bytes to BN."
     )
     parser.add_argument("target", nargs="?", help="Target manifest name or covered function address, e.g. zsys_cpu or 0x4b3510")
-    parser.add_argument("--all", action="store_true", help="Run every VC6 verification target, grouping identical compiles.")
+    parser.add_argument("--all", action="store_true", help="Run every VC verification target, grouping identical compiles.")
     parser.add_argument(
         "--source-from",
         metavar="PATH",
         help="Run every target whose source_from resolves to PATH, grouping identical compiles.",
     )
-    parser.add_argument("--list", action="store_true", help="List available VC6 verification targets.")
+    parser.add_argument(
+        "--all-covering",
+        action="store_true",
+        help="When target is an address, run every manifest covering that address instead of requiring a unique target.",
+    )
+    parser.add_argument("--list", action="store_true", help="List available VC verification targets.")
     parser.add_argument(
         "--explain-missing",
         metavar="ADDRESS",
@@ -937,6 +1096,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--vc6-env", default=str(DEFAULT_VC6_ENV))
     parser.add_argument("--bridge-url", default="http://localhost:9009")
     parser.add_argument("--skip-bn-compare", action="store_true")
+    parser.add_argument(
+        "--compiler-profile",
+        metavar="NAME",
+        help="Temporarily compile one selected target with a profile from tools/compiler_linker_profiles.json.",
+    )
+    parser.add_argument(
+        "--profile-sweep",
+        nargs="?",
+        const="*",
+        metavar="NAMES",
+        help="Temporarily compile one selected target across all profiles, or a comma-separated profile list.",
+    )
     return parser
 
 
@@ -954,6 +1125,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.all or args.source_from:
             if args.target:
                 parser.error("target cannot be combined with --all or --source-from")
+            if args.compiler_profile:
+                parser.error("--compiler-profile is only supported for one selected target")
+            if args.profile_sweep:
+                parser.error("--profile-sweep is only supported for one selected target")
             selections = selected_targets_for_all(manifests) if args.all else selected_targets_for_source_from(manifests, args.source_from)
             return run_batch(
                 selections=selections,
@@ -964,13 +1139,47 @@ def main(argv: list[str] | None = None) -> int:
             )
         if not args.target:
             parser.error("target is required unless --list, --explain-missing, --all, or --source-from is used")
+        if args.all_covering:
+            if not args.target.lower().startswith("0x"):
+                parser.error("--all-covering requires an address target")
+            if args.compiler_profile:
+                parser.error("--compiler-profile is only supported for one selected target")
+            if args.profile_sweep:
+                parser.error("--profile-sweep is only supported for one selected target")
+            selections = selected_targets_covering_address(manifests, args.target)
+            return run_batch(
+                selections=selections,
+                build_root=Path(args.build_root),
+                vc6_env=Path(args.vc6_env),
+                bridge_url=args.bridge_url,
+                skip_bn_compare=args.skip_bn_compare,
+            )
         target, functions, selector = find_target(manifests, args.target)
         if selector != target.name:
-            print(f"Resolved {selector} to VC6 target {target.name}")
+            print(f"Resolved {selector} to VC target {target.name}")
+        if args.compiler_profile and args.profile_sweep:
+            parser.error("--compiler-profile cannot be combined with --profile-sweep")
+        if args.profile_sweep:
+            return run_profile_sweep(
+                target=target,
+                selected_functions=functions,
+                profile_names=parse_profile_sweep_spec(args.profile_sweep),
+                build_root=Path(args.build_root),
+                vc6_env=Path(args.vc6_env),
+                bridge_url=args.bridge_url,
+                skip_bn_compare=args.skip_bn_compare,
+            )
+        if args.compiler_profile:
+            target = with_compiler_profile_override(target, args.compiler_profile)
+            print(f"Compiler profile override: {args.compiler_profile}")
+        build_subdir = None
+        if args.compiler_profile:
+            build_subdir = safe_path_component(f"{target.name}__{args.compiler_profile}")
         return run_target(
             target=target,
             selected_functions=functions,
             build_root=Path(args.build_root),
+            build_subdir=build_subdir,
             vc6_env=Path(args.vc6_env),
             bridge_url=args.bridge_url,
             skip_bn_compare=args.skip_bn_compare,

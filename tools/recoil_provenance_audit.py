@@ -4,87 +4,22 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
-import json
 from pathlib import Path
 import sys
-from typing import Any
 
+from recoil_profiles import (
+    VerificationProfile as Profile,
+    load_json_object as load_json,
+    load_profiles,
+    require_string,
+    require_string_list,
+)
 from recoil_tooling import REPO_ROOT, configure_stdio, display_path
 
 
 DEFAULT_PROFILES = REPO_ROOT / "tools" / "compiler_linker_profiles.json"
 DEFAULT_FINAL_BUILD = REPO_ROOT / "tools" / "vc6_final_build.json"
 DEFAULT_MANIFEST_DIR = REPO_ROOT / "tools" / "vc6_verify_targets"
-
-
-@dataclass(frozen=True)
-class Profile:
-    name: str
-    description: str
-    compiler_env: str
-    compiler_version_prefix: str
-    compiler_flags: tuple[str, ...]
-
-    @property
-    def key(self) -> tuple[str, tuple[str, ...]]:
-        return (self.compiler_env, self.compiler_flags)
-
-
-def load_json(path: Path) -> dict[str, Any]:
-    with path.open(encoding="utf-8") as handle:
-        data = json.load(handle)
-    if not isinstance(data, dict):
-        raise ValueError(f"{path}: expected JSON object")
-    return data
-
-
-def require_string(data: dict[str, Any], key: str, *, path: Path) -> str:
-    value = data.get(key)
-    if not isinstance(value, str) or not value:
-        raise ValueError(f"{path}: expected non-empty string field '{key}'")
-    return value
-
-
-def require_string_list(data: dict[str, Any], key: str, *, path: Path) -> tuple[str, ...]:
-    value = data.get(key)
-    if not isinstance(value, list) or not all(isinstance(item, str) and item for item in value):
-        raise ValueError(f"{path}: expected non-empty string list field '{key}'")
-    return tuple(value)
-
-
-def load_profiles(path: Path) -> tuple[dict[str, Any], list[Profile]]:
-    data = load_json(path)
-    final_build = data.get("final_build")
-    if not isinstance(final_build, dict):
-        raise ValueError(f"{path}: expected object field 'final_build'")
-
-    raw_profiles = data.get("verification_profiles")
-    if not isinstance(raw_profiles, list):
-        raise ValueError(f"{path}: expected list field 'verification_profiles'")
-
-    profiles: list[Profile] = []
-    seen_names: set[str] = set()
-    seen_keys: set[tuple[str, tuple[str, ...]]] = set()
-    for index, item in enumerate(raw_profiles):
-        if not isinstance(item, dict):
-            raise ValueError(f"{path}: verification_profiles[{index}] is not an object")
-        profile = Profile(
-            name=require_string(item, "name", path=path),
-            description=require_string(item, "description", path=path),
-            compiler_env=require_string(item, "compiler_env", path=path),
-            compiler_version_prefix=require_string(item, "compiler_version_prefix", path=path),
-            compiler_flags=require_string_list(item, "compiler_flags", path=path),
-        )
-        if profile.name in seen_names:
-            raise ValueError(f"{path}: duplicate profile name {profile.name}")
-        if profile.key in seen_keys:
-            raise ValueError(f"{path}: duplicate profile tuple {profile.name}")
-        seen_names.add(profile.name)
-        seen_keys.add(profile.key)
-        profiles.append(profile)
-
-    return final_build, profiles
 
 
 def compare_tuple(
@@ -128,31 +63,47 @@ def audit_final_build(final_profile: dict[str, Any], final_build_path: Path) -> 
     return mismatches
 
 
-def manifest_profile_key(manifest: dict[str, Any]) -> tuple[str, tuple[str, ...]]:
+def manifest_profile_key(manifest: dict[str, object], profiles_by_name: dict[str, Profile]) -> tuple[str, tuple[str, ...], str]:
+    profile_name = manifest.get("compiler_profile")
+    has_raw_env = "compiler_env" in manifest
+    has_raw_flags = "compiler_flags" in manifest
+    if profile_name is not None:
+        if not isinstance(profile_name, str) or not profile_name:
+            raise ValueError("expected compiler_profile to be a non-empty string")
+        if has_raw_env or has_raw_flags:
+            raise ValueError("compiler_profile is mutually exclusive with compiler_env/compiler_flags")
+        profile = profiles_by_name.get(profile_name)
+        if profile is None:
+            raise ValueError(f"unknown compiler_profile {profile_name}")
+        return profile.compiler_env, profile.compiler_flags, profile.name
+
     env = manifest.get("compiler_env") or "${RECOIL_VC6_ROOT}/vc6-env.cmd"
     if not isinstance(env, str):
         raise ValueError("expected compiler_env to be a string")
     flags = manifest.get("compiler_flags")
     if not isinstance(flags, list) or not all(isinstance(item, str) and item for item in flags):
         raise ValueError("expected compiler_flags to be a non-empty string list")
-    return env, tuple(flags)
+    return env, tuple(flags), ""
 
 
 def audit_manifests(manifest_dir: Path, profiles: list[Profile]) -> tuple[list[str], dict[str, int]]:
     profile_by_key = {profile.key: profile for profile in profiles}
+    profile_by_name = {profile.name: profile for profile in profiles}
     counts = {profile.name: 0 for profile in profiles}
     mismatches: list[str] = []
 
     for manifest_path in sorted(manifest_dir.glob("*.json")):
         try:
             manifest = load_json(manifest_path)
-            key = manifest_profile_key(manifest)
+            env, flags, explicit_profile_name = manifest_profile_key(manifest, profile_by_name)
         except ValueError as exc:
             mismatches.append(f"{display_path(manifest_path)}: {exc}")
             continue
-        profile = profile_by_key.get(key)
+        if explicit_profile_name:
+            counts[explicit_profile_name] += 1
+            continue
+        profile = profile_by_key.get((env, flags))
         if profile is None:
-            env, flags = key
             mismatches.append(
                 f"{display_path(manifest_path)}: undocumented compiler profile "
                 f"env={env} flags={' '.join(flags)}"

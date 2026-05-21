@@ -22,16 +22,22 @@ def configure_stdio() -> None:
         sys.stderr.reconfigure(encoding="utf-8")
 
 
-def compact_entry(entry: PlanEntry) -> str:
-    blocker = blocker_field(entry) or "none"
+def compact_entry(entry: PlanEntry, *, lane: str = "strict") -> str:
+    blocker = blocker_field(entry, lane=lane) or "none"
     name = entry.reimplemented_name
     if not name or name == "pending":
         name = entry.reconstructed_name or "pending"
     file_name = entry.reimplemented_file or "pending"
     provider = f" provider={entry.provider}" if entry.provider else ""
+    functional = (
+        f" functional_target={entry.functional_target}"
+        if entry.functional_equivalent_status == "✅" and entry.functional_target
+        else ""
+    )
     return (
         f"{entry.address} {entry.milestone} "
-        f"{status_summary(entry)} blocker={blocker} name={name} file={file_name}{provider}"
+        f"{status_summary(entry, include_functional=lane == 'progress')} "
+        f"blocker={blocker} name={name} file={file_name}{provider}{functional}"
     )
 
 
@@ -65,13 +71,13 @@ def command_milestone(doc: PlanDocument, args: argparse.Namespace) -> int:
 
 
 def command_next(doc: PlanDocument, args: argparse.Namespace) -> int:
-    entry = doc.first_unfinished()
+    entry = doc.first_unfinished(lane=args.lane)
     if entry is None:
         print("No unfinished plan entries found.")
         return 0
 
-    field = blocker_field(entry) or "none"
-    print(compact_entry(entry))
+    field = blocker_field(entry, lane=args.lane) or "none"
+    print(compact_entry(entry, lane=args.lane))
     print(f"next_field={field} label={FIELD_LABELS.get(field, field)}")
     print(f"show_command=python tools/recoil_plan_cli.py show {entry.address}")
     return 0
@@ -126,11 +132,17 @@ def build_parser() -> argparse.ArgumentParser:
     milestone.set_defaults(func=command_milestone)
 
     next_entry = subparsers.add_parser("next", help="Print the first unfinished entry and blocker.")
+    next_entry.add_argument(
+        "--lane",
+        choices=["strict", "progress"],
+        default="strict",
+        help="strict keeps Binary-safe verified as the blocker; progress accepts functional markers.",
+    )
     next_entry.set_defaults(func=command_next)
 
     set_marker = subparsers.add_parser("set", help="Update one marker on one plan entry.")
     set_marker.add_argument("address")
-    set_marker.add_argument("field", help="recon, deps, impl, verify, or a supported alias")
+    set_marker.add_argument("field", help="recon, deps, impl, verify, functional, or a supported alias")
     set_marker.add_argument("status", help="One of ✅, ☑️, ❌, ❓")
     set_marker.add_argument("--name", default="", help="Name for Reconstructed/Reimplemented marker.")
     set_marker.add_argument("--file", default="", help="File for Reimplemented marker.")

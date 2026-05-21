@@ -189,7 +189,7 @@ def audit_groups(groups: list[ImplementationGroup], plan: dict[str, PlanEntry]) 
     return [audit_group(group, plan) for group in groups]
 
 
-def print_summary(audits: list[GroupAudit]) -> None:
+def print_summary(audits: list[GroupAudit], *, wip_limit: int | None = None) -> None:
     by_section = Counter(audit.group.section for audit in audits)
     by_recommendation = Counter(audit.recommendation for audit in audits)
     groups_with_missing = sum(1 for audit in audits if audit.missing_addresses)
@@ -209,6 +209,10 @@ def print_summary(audits: list[GroupAudit]) -> None:
     print(f"groups_with_verification_pending: {groups_with_verify_pending}")
     print(f"nonstandard_heading_groups: {nonstandard_groups}")
     print(f"no_address_groups: {no_address_groups}")
+    if wip_limit is not None:
+        active_count = by_section.get("active", 0)
+        status = "OK" if active_count <= wip_limit else "OVER"
+        print(f"active_wip_limit: {active_count}/{wip_limit} {status}")
 
 
 def format_address_list(addresses: tuple[str, ...], limit: int) -> str:
@@ -313,6 +317,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Return nonzero when any group needs review.",
     )
+    parser.add_argument("--wip-limit", type=int, help="Report active group count against this limit.")
+    parser.add_argument(
+        "--strict-wip",
+        action="store_true",
+        help="Return nonzero when active groups exceed --wip-limit.",
+    )
     return parser
 
 
@@ -340,13 +350,20 @@ def main(argv: list[str] | None = None) -> int:
         audits = [audit for audit in audits if audit.recommendation == args.recommendation]
 
     if args.summary:
-        print_summary(audits)
+        print_summary(audits, wip_limit=args.wip_limit)
     print_group_report(audits, limit=args.limit, address_limit=args.address_limit)
     if args.details:
         print_details(audits, plan, args.address_limit)
 
     if args.strict and any(audit.recommendation == "needs-review" for audit in audits):
         return 1
+    if args.strict_wip:
+        if args.wip_limit is None:
+            print("--strict-wip requires --wip-limit", file=sys.stderr)
+            return 2
+        active_count = sum(1 for audit in audits if audit.group.section == "active")
+        if active_count > args.wip_limit:
+            return 1
     return 0
 
 

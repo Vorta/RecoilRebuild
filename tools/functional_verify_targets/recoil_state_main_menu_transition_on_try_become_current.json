@@ -1,0 +1,15 @@
+{
+  "name": "recoil_state_main_menu_transition_on_try_become_current",
+  "description": "RecoilStateMainMenuTransition::OnTryBecomeCurrent activates video/HUD/audio pause and main-menu dialog setup.",
+  "address": "0x415220",
+  "source_from": "src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp",
+  "smoke_tests": [
+    "recoil_state_main_menu_transition_on_try_become_current_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x415220",
+  "known_limits": [
+    "VC6 COFF byte compare fails with 253 unmasked mismatches (BN 321 bytes vs VC6 272 bytes).",
+    "Retail emits MSVC /GX SEH prologue/epilogue (fs: chain, handler 0x4c9463, EH state slots); isolated verify TU does not reproduce that frame from current source.",
+    "Blur path uses production zFMV_ActionBlur; smoke covers frontend route (skips blur) plus snapshot/dialog side effects."
+  ]
+}

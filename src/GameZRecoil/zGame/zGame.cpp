@@ -1127,8 +1127,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetGraphicsFlagsForCurrentHwMode(int flags)
 // Reimplements 0x4082d0: zOpt::SetHudTypeForCurrentHwMode
 RECOIL_NOINLINE int RECOIL_FASTCALL SetHudTypeForCurrentHwMode(int hudType) {
     const int previous = HudUiMgr::ApplyHudModeSwitch(hudType);
-    int *const option = g_zOpt_HwMode != 0 ? ZOPT_HUD_TYPE_HW : ZOPT_HUD_TYPE_SW;
-    *option = hudType;
+
+    if (g_zOpt_HwMode != 0) {
+        *ZOPT_HUD_TYPE_HW = hudType;
+        return previous;
+    }
+
+    *ZOPT_HUD_TYPE_SW = hudType;
     return previous;
 }
 
@@ -1266,9 +1271,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetPosition(int x, int y) {
     zOpt_ViewRectSection *section = *g_zOpt_RenderSectionOption;
     ViewRectSection_SetPosition(section, x, y);
     if (section->target != 0) {
-        zClass_NodePartial * target = static_cast<zClass_NodePartial *>(section->target);
-        zClass_Window::gwWindowSetResolution(target, section->width, section->height);
-        zClass_Window::gwWindowSetSize(target, section->x, section->y);
+        zClass_Window::gwWindowSetResolution(static_cast<zClass_NodePartial *>(section->target),
+                                             section->width, section->height);
+        zClass_Window::gwWindowSetSize(static_cast<zClass_NodePartial *>(section->target),
+                                       section->x, section->y);
     }
 }
 
@@ -1304,9 +1310,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetPosition(int x, int y) {
     zOpt_ViewRectSection *section = *g_zOpt_DisplaySectionOption;
     ViewRectSection_SetPosition(section, x, y);
     if (section->target != 0) {
-        zClass_NodePartial * target = static_cast<zClass_NodePartial *>(section->target);
-        zClass_Display::gwDisplaySetSize(target, section->width, section->height);
-        zClass_Display::gwDisplaySetPosition(target, section->x, section->y);
+        zClass_Display::gwDisplaySetSize(static_cast<zClass_NodePartial *>(section->target),
+                                         section->width, section->height);
+        zClass_Display::gwDisplaySetPosition(static_cast<zClass_NodePartial *>(section->target),
+                                             section->x, section->y);
     }
 }
 

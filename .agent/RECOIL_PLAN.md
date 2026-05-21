@@ -13,7 +13,7 @@ Use the currently loaded `Recoil.bndb` as the behavioral/ABI source of truth and
 - Keep this file updated with each function's reconstruction, dependency, implementation, and binary-safety state.
 - Addresses are stable identifiers. Function names may change as Binary Ninja reconstruction improves or as source implementation reveals a better source-level name.
 - Use `python tools/recoil_plan_cli.py next/show/find/milestone` for normal plan navigation and `python tools/recoil_plan_cli.py set ...` for marker updates. Use `python tools/recoil_claim.py next --owner <name> --claim` when selecting unassigned work for an agent.
-- Claim affected addresses with `python tools/recoil_claim.py claim 0xNNNNNN --owner <name>` before Binary Ninja, source, plan-marker, VC6-manifest, or implementation-group edits; claim files are local coordination state, not plan evidence.
+- Claim affected addresses with `python tools/recoil_claim.py claim 0xNNNNNN --owner <name>` before Binary Ninja, source, plan-marker, VC-verification-manifest, or implementation-group edits; claim files are local coordination state, not plan evidence.
 - Do not use line-number dependent reads such as `Get-Content .agent\RECOIL_PLAN.md | Select-Object -Skip ...` except as a read-only fallback while diagnosing a broken plan CLI.
 - If Binary Ninja reconstruction improves, update only the affected `Reconstructed` name/status after following `AGENTS.md`.
 - If a function does not belong to the milestone it is under, move it according to `AGENTS.md`.
@@ -31,7 +31,7 @@ Each function has these trackers:
 - Reconstructed - Binary Ninja identity, signature, types, globals, callers/callees, and decompilation state meet `AGENTS.md` criteria. The bracketed name is the current Binary Ninja name and may be temporary.
 - Source dependencies satisfied - direct callees plus required provider/type/global/vtable dependencies are ready for the caller's source/ABI contract. `❓` and `❌` block source work; only `✅` or justified `☑️` permits implementation.
 - Reimplemented - source exists, compiles, and matches the source/ABI contract. This is not complete until binary-safe verification passes. The bracketed name/file are the source-level implementation identity and may intentionally differ from a placeholder Binary Ninja name. Compiler/runtime/import functions name the external provider instead of authored source.
-- Binary-safe verified - final gate for authored functions. Generated 32-bit assembly or provider ABI evidence was compared against Binary Ninja/original call-site evidence and accepted. Missing VC6 manifest coverage is remaining verification work, not a reason to skip the active blocker.
+- Binary-safe verified - final gate for authored functions. Generated 32-bit assembly or provider ABI evidence was compared against Binary Ninja/original call-site evidence and accepted. Missing VC verification manifest coverage is remaining verification work, not a reason to skip the active blocker.
 
 ### State types
 
@@ -49,14 +49,14 @@ Each function has these trackers:
 - After claiming, use Binary Ninja to identify direct callees, shared helpers, constructors/destructors, vtable targets, imported/provider functions, globals, structs/classes, constants, and caller-visible ABI requirements.
 - Run `python tools/recoil_frontier.py 0xNNNNNN --depth 1` for the anchor and use the report as a starting work package; Binary Ninja evidence still outranks tool output.
 - Do not implement or mark a caller as `Reimplemented` while `Source dependencies satisfied` is `❓` or `❌`. Audit unknown dependencies first; when dependencies are not satisfied, switch to the lowest blocking dependency or dependency group.
-- For virtual or function-table dispatch, treat `Source dependencies satisfied` as requiring the callee signature, object layout, table ownership, slot mapping, and dispatch semantics to be known before caller implementation. Prefer clean original-era member/virtual/typed-provider calls first; use raw `slots[n]` dispatch only when evidence or VC6 verification proves the clean spelling cannot preserve the original ABI/codegen.
+- For virtual or function-table dispatch, treat `Source dependencies satisfied` as requiring the callee signature, object layout, table ownership, slot mapping, and dispatch semantics to be known before caller implementation. Prefer clean original-era member/virtual/typed-provider calls first; use raw `slots[n]` dispatch only when evidence or VC verification proves the clean spelling cannot preserve the original ABI/codegen.
 - Work bottom-up from the lowest blocking dependency or strongly connected dependency group, then return upward to callers and anchors.
 - Use `.agent/IMPLEMENTATION_GROUPS.md` for any multi-function dependency closure, class/vtable cluster, source-file cluster, or recursive/cyclic group.
 - Do not implement callers merely because they appear earlier in this file when an unimplemented callee, shared type/global, provider contract, or build dependency controls their correct source or ABI behavior.
 - If implementation reveals that reconstruction can be improved, update Binary Ninja first and then return to source work.
 - After source compiles, update `Reimplemented` with the source-level name and file using `python tools/recoil_plan_cli.py set ...`; choose a behavior-based name when the current database name is only a placeholder.
 - Mark `Binary-safe verified` only after assembly or provider ABI verification is complete and accepted as matching. A function with `✅ Reimplemented` but `❌ Binary-safe verified` is not done.
-- If `Binary-safe verified` is the active blocker and no VC6 manifest covers the address, create or extend a VC6 verification manifest for the function or dependency group before asking to skip it. Missing verification-target coverage is not a reason to move to a later plan entry by itself.
+- If `Binary-safe verified` is the active blocker and no VC verification manifest covers the address, create or extend a manifest under `tools/vc6_verify_targets/` for the function or dependency group before asking to skip it. For new authored-function targets, try VC5SP3 first unless local evidence points to VC6/VS98. Missing verification-target coverage is not a reason to move to a later plan entry by itself.
 
 ## M01. RecoilApp shell and app-state host
 
@@ -90,11 +90,12 @@ Each function has these trackers:
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::OnTryBecomeCurrent File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp)
   - [❌] Binary-safe verified
+  - [✅] Functional-equivalent accepted (Target: recoil_state_main_menu_transition_on_try_become_current)
 - 0x415370:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::OnResume)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::OnResume File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnResume.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4153d0:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::OnDeactivate)
   - [✅] Source dependencies satisfied
@@ -1439,8 +1440,8 @@ Each function has these trackers:
 - 0x409550:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::OnActivateResetOwnerFade)
   - [❓] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Binary-safe verified
+  - [✅] Reimplemented (Name: HudUiZrdScrollingText::OnActivateResetOwnerFade File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Binary-safe verified
 - 0x409570:
   - [☑️] Reconstructed (Name: HudUiZrdScrollingText::LoadFromZrd)
   - [❓] Source dependencies satisfied
@@ -2947,23 +2948,23 @@ Each function has these trackers:
 - 0x404d10:
   - [☑️] Reconstructed (Name: HudUiElement::HitTestTrue)
   - [❓] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Binary-safe verified
+  - [✅] Reimplemented (Name: HudUiElement::HitTestTrue File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [☑️] Binary-safe verified
 - 0x404d20:
   - [✅] Reconstructed (Name: HudUiElement::SetVisible)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetVisible File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x404d50:
   - [✅] Reconstructed (Name: HudUiElement::GetX)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::GetX File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x404d60:
   - [✅] Reconstructed (Name: HudUiElement::GetY)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::GetY File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x404d70:
   - [☑️] Reconstructed (Name: HudUiCommon::ScalarDeletingDestructor)
   - [❌] Source dependencies satisfied
@@ -3908,7 +3909,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiContainer::InvalidateChildren)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::InvalidateChildren File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4ba3c0:
   - [✅] Reconstructed (Name: HudUiFillBitmap::SetNormalizedValue)
   - [❌] Source dependencies satisfied
@@ -6004,8 +6005,8 @@ Each function has these trackers:
 - 0x42ee40:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::SetEnabled)
   - [❓] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Binary-safe verified
+  - [✅] Reimplemented (Name: HudUiBackgroundContainer::SetEnabled File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Binary-safe verified
 - 0x42ee50:
   - [✅] Reconstructed (Name: RecoilApp_MissionFmvState::OnDeactivate)
   - [❓] Source dependencies satisfied
@@ -12046,7 +12047,7 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zInput::Keyboard_ResetTransitionState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_ResetTransitionState File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x46f690:
   - [☑️] Reconstructed (Name: zInput::Keyboard_PollState)
   - [❌] Source dependencies satisfied
@@ -14887,7 +14888,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSndSampleSet::DestroyByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSet_DestroyByName File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a0880:
   - [✅] Reconstructed (Name: zSndSampleSetRegistry::DestroyAll)
   - [✅] Source dependencies satisfied
@@ -15060,7 +15061,7 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zSndSample::PassThroughGainScale)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample_PlaySimple File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x49fa10:
   - [✅] Reconstructed (Name: zSndSample::PlayOnActiveBackend)
   - [✅] Source dependencies satisfied
@@ -15110,21 +15111,22 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zSndPlayHandle::PlayWithDelta_A3D)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPlayHandle::PlayWithDelta_A3D File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a0400:
   - [✅] Reconstructed (Name: zSndPlayHandle::PlayWithDelta_DirectSound)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPlayHandle::PlayWithDelta_DirectSound File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a0490:
   - [☑️] Reconstructed (Name: zSndPlayHandle::PlayWithDelta_BackendDispatch)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPlayHandle::PlayWithDelta_BackendDispatch File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a0500:
   - [☑️] Reconstructed (Name: zSndPlayHandleSnapshot::StopAllIfPlaying)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPlayHandleSnapshot::StopAllIfPlaying File: src/GameZRecoil/zSound/zsnd_play.cpp)
+  - [✅] Functional-equivalent accepted (Target: zsnd_snapshot_stop_all_if_playing)
   - [❌] Binary-safe verified
 - 0x4a0590:
   - [☑️] Reconstructed (Name: zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta)
@@ -15364,8 +15366,8 @@ Each function has these trackers:
 - 0x4a5020:
   - [✅] Reconstructed (Name: zSndStreamRequest::StateWaitTerminationDelay)
   - [❓] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Binary-safe verified
+  - [✅] Reimplemented (Name: zSndStreamRequest::StateWaitTerminationDelay File: src/GameZRecoil/zSound/zsnd_group.cpp)
+  - [✅] Binary-safe verified
 - 0x4a5050:
   - [✅] Reconstructed (Name: zSndStreamMgr::RecycleFinishedRequest)
   - [❓] Source dependencies satisfied
@@ -15776,12 +15778,12 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zOpt::SetHudTypeForCurrentHwMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetHudTypeForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x408300:
   - [✅] Reconstructed (Name: zOpt::SetReplicateMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetReplicateMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x408330:
   - [✅] Reconstructed (Name: zOpt::GetFullscreenOption)
   - [✅] Source dependencies satisfied
@@ -15831,12 +15833,12 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zOpt::RenderSection_SetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::RenderSection_SetSize File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x408530:
   - [✅] Reconstructed (Name: zOpt::RenderSection_SetPosition)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::RenderSection_SetPosition File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x408570:
   - [✅] Reconstructed (Name: zOpt::RenderSection_SetTargetWindow)
   - [❌] Source dependencies satisfied
@@ -15856,12 +15858,12 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetPosition)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::DisplaySection_SetPosition File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x408620:
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::DisplaySection_SetSize File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x408650:
   - [✅] Reconstructed (Name: zOpt::GetDisplaySection)
   - [✅] Source dependencies satisfied
@@ -15881,7 +15883,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetBitsPerPixel)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::DisplaySection_SetBitsPerPixel File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x408690:
   - [✅] Reconstructed (Name: zOpt::GetDisplaySectionBitsPerPixel)
   - [✅] Source dependencies satisfied
@@ -15906,12 +15908,12 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zOpt::WindowSection_SetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::WindowSection_SetSize File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x408700:
   - [✅] Reconstructed (Name: zOpt::WindowSection_SetPosition)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::WindowSection_SetPosition File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x40bdc0:
   - [☑️] Reconstructed (Name: StdPtrVector::Clear)
   - [❌] Source dependencies satisfied
@@ -16424,12 +16426,12 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zVid::GetVideoModeIndexFromOptions)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::GetVideoModeIndexFromOptions File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x408720:
   - [✅] Reconstructed (Name: zVid::SetVideoModeIndex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::SetVideoModeIndex File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x40c6e0:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_BackButton::OnActivate)
   - [❓] Source dependencies satisfied
@@ -16439,7 +16441,7 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: HudUiMgr::TriggerCurrentLayoutOnActivated)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::TriggerCurrentLayoutOnActivated File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x437ef0:
   - [✅] Reconstructed (Name: zVideo::HandleSoftwareModeHotkeyCommand)
   - [❓] Source dependencies satisfied
@@ -16674,7 +16676,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zVideo::Init_ApplyModeIndex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Init_ApplyModeIndex File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a6760:
   - [✅] Reconstructed (Name: zVideo::CallClearSwSurfaceAndZBuffer)
   - [✅] Source dependencies satisfied
@@ -16769,7 +16771,7 @@ Each function has these trackers:
   - [☑️] Reconstructed (Name: zVideo::Init_SetSurfaceGeometryFromModeIndex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Init_SetSurfaceGeometryFromModeIndex File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a7af0:
   - [✅] Reconstructed (Name: zVideo::SetVideoMode)
   - [✅] Source dependencies satisfied
@@ -18326,7 +18328,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: _ftol_import_thunk)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: _ftol_import_thunk File: external)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4c60e0:
   - [✅] Reconstructed (Name: atexit)
   - [✅] Source dependencies satisfied
@@ -19616,7 +19618,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: ??3@YAXPAX@Z)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Provided by import/jump/dispatch thunk; Name: ??3@YAXPAX@Z File: external)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 
 ### Non-authored no-op helpers
 
@@ -19636,8 +19638,8 @@ Each function has these trackers:
 - 0x40bdf0:
   - [✅] Reconstructed (Name: StdPtrVector::ClearNoOpDestroy)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Provided by compiler/template instantiation; Name: zUtil_StdPtrVector_ClearNoOpDestroy File: external)
-  - [❌] Binary-safe verified
+  - [✅] Reimplemented (Name: StdPtrVector::ClearNoOpDestroy File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Binary-safe verified
 - 0x40c190:
   - [✅] Reconstructed (Name: zUtil::UninitializedFillDwordN)
   - [✅] Source dependencies satisfied

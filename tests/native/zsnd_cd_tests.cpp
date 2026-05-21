@@ -2573,3 +2573,181 @@ extern "C" int zsnd_sample_init_from_wave_data_a3d_smoke(void) {
     g_testA3dCreateBufferResult = nullptr;
     return ok && spatialOk ? 0 : 1;
 }
+
+namespace {
+// Match the vtable layouts used by zsnd_snapshot_stop_all.cpp (0x4a0500), not the
+// generic TestDirectSoundBuffer/TestA3dSource helpers used elsewhere in this file.
+struct StopAllDirectSoundBufferVTable {
+    void *slots00_0c[4];
+    void *GetCurrentPosition;
+    void *slots14_1c[3];
+    void *GetFrequency;
+    TestBackendGetStatusFn GetStatus;
+    void *slot28;
+    void *slot2c;
+    void *Play;
+    void *SetCurrentPosition;
+    void *slot38;
+    void *SetVolume;
+    void *SetPan;
+    void *SetFrequency;
+    TestBackendSimpleFn Stop;
+    void *slot4c;
+    TestBackendSimpleFn Restore;
+};
+
+struct StopAllDirectSoundBuffer {
+    StopAllDirectSoundBufferVTable *vtable;
+};
+
+struct StopAllA3dSourceVTable {
+    void *slots00_dc[55];
+    TestBackendGetStatusFn GetStatus;
+};
+
+struct StopAllA3dSource {
+    StopAllA3dSourceVTable *vtable;
+};
+
+zSndPlayHandleSnapshot *AllocateSnapshotList(const int payloadCount) {
+    auto *const snapshot = static_cast<zSndPlayHandleSnapshot *>(
+        ::operator new(sizeof(zSndPlayHandleSnapshot)));
+    auto *const head = static_cast<zSndPlayHandleSnapshotItem *>(
+        ::operator new(sizeof(zSndPlayHandleSnapshotItem)));
+    auto *const anchor = static_cast<zSndPlayHandleSnapshotItem *>(
+        ::operator new(sizeof(zSndPlayHandleSnapshotItem)));
+    std::memset(snapshot, 0, sizeof(*snapshot));
+    std::memset(head, 0, sizeof(*head));
+    std::memset(anchor, 0, sizeof(*anchor));
+    snapshot->listHead = head;
+    head->next = anchor;
+    anchor->prev = head;
+    if (payloadCount <= 0) {
+        anchor->next = head;
+        head->prev = anchor;
+        return snapshot;
+    }
+
+    zSndPlayHandleSnapshotItem *prev = anchor;
+    for (int index = 0; index < payloadCount; ++index) {
+        auto *const payload = static_cast<zSndPlayHandleSnapshotItem *>(
+            ::operator new(sizeof(zSndPlayHandleSnapshotItem)));
+        std::memset(payload, 0, sizeof(*payload));
+        prev->next = payload;
+        payload->prev = prev;
+        prev = payload;
+    }
+    prev->next = head;
+    head->prev = prev;
+    return snapshot;
+}
+
+void FreeSnapshotList(zSndPlayHandleSnapshot *snapshot) {
+    if (snapshot == nullptr) {
+        return;
+    }
+
+    zSndPlayHandleSnapshotItem *const head = snapshot->listHead;
+    zSndPlayHandleSnapshotItem *item = head->next;
+    while (item != head) {
+        zSndPlayHandleSnapshotItem *const node = item;
+        item = item->next;
+        ::operator delete(node);
+    }
+    ::operator delete(head);
+    ::operator delete(snapshot);
+}
+
+zSndPlayHandleSnapshotItem *SnapshotPayloadNode(zSndPlayHandleSnapshot *snapshot,
+                                                const int payloadIndex) {
+    zSndPlayHandleSnapshotItem *item = snapshot->listHead->next->next;
+    for (int index = 0; index < payloadIndex; ++index) {
+        item = item->next;
+    }
+    return item;
+}
+} // namespace
+
+// Reimplements 0x4a0500: zSndPlayHandleSnapshot::StopAllIfPlaying list-walk behavior.
+extern "C" int zsnd_snapshot_stop_all_if_playing_smoke(void) {
+    zSndPlayHandle playHandle1 = {};
+    zSndPlayHandle playHandle2 = {};
+    StopAllDirectSoundBufferVTable directSoundVTable = {};
+    StopAllA3dSourceVTable a3dVTable = {};
+    StopAllDirectSoundBuffer directSoundBuffer = {};
+    StopAllA3dSource a3dSource = {};
+
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+
+    directSoundVTable.GetStatus = &TestDirectSoundGetStatus;
+    directSoundVTable.Stop = &TestStop;
+    directSoundVTable.Restore = &TestRestore;
+    directSoundBuffer.vtable = &directSoundVTable;
+
+    a3dVTable.GetStatus = &TestDirectSoundGetStatus;
+    a3dSource.vtable = &a3dVTable;
+
+    playHandle1.handleKind = ZSND_PLAYHANDLE_BACKEND;
+    playHandle1.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+    playHandle2.handleKind = ZSND_PLAYHANDLE_BACKEND;
+    playHandle2.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+
+    ResetStopBackendCounters();
+    g_zSnd_ActiveBackend = 0;
+    zSndPlayHandleSnapshot *const emptySnapshot = AllocateSnapshotList(0);
+    if (emptySnapshot->StopAllIfPlaying() != 1 || g_testGetStatusCount != 0 || g_testStopCount != 0) {
+        FreeSnapshotList(emptySnapshot);
+        return 1;
+    }
+    FreeSnapshotList(emptySnapshot);
+
+    ResetStopBackendCounters();
+    g_zSnd_ActiveBackend = 0;
+    zSndPlayHandleSnapshot *const oneNodeSnapshot = AllocateSnapshotList(1);
+    SnapshotPayloadNode(oneNodeSnapshot, 0)->payload.playHandle = &playHandle1;
+    g_testStatusValue = 0;
+    if (oneNodeSnapshot->StopAllIfPlaying() != 1 || g_testGetStatusCount != 1 || g_testStopCount != 0) {
+        FreeSnapshotList(oneNodeSnapshot);
+        return 2;
+    }
+
+    ResetStopBackendCounters();
+    g_testStatusValue = 1;
+    if (oneNodeSnapshot->StopAllIfPlaying() != 1 || g_testGetStatusCount != 2 || g_testStopCount != 1) {
+        FreeSnapshotList(oneNodeSnapshot);
+        return 3;
+    }
+
+    ResetStopBackendCounters();
+    g_zSnd_ActiveBackend = 1;
+    playHandle1.backendBuffer = reinterpret_cast<zSndBuffer *>(&a3dSource);
+    g_testStatusValue = 0;
+    if (oneNodeSnapshot->StopAllIfPlaying() != 1 || g_testGetStatusCount != 1 || g_testStopCount != 0) {
+        FreeSnapshotList(oneNodeSnapshot);
+        return 4;
+    }
+    FreeSnapshotList(oneNodeSnapshot);
+
+    ResetStopBackendCounters();
+    g_zSnd_ActiveBackend = 0;
+    playHandle1.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+    zSndPlayHandleSnapshot *const twoNodeSnapshot = AllocateSnapshotList(2);
+    SnapshotPayloadNode(twoNodeSnapshot, 0)->payload.playHandle = &playHandle1;
+    SnapshotPayloadNode(twoNodeSnapshot, 1)->payload.playHandle = &playHandle2;
+    g_testStatusValue = 1;
+    if (twoNodeSnapshot->StopAllIfPlaying() != 1 || g_testGetStatusCount != 4 || g_testStopCount != 2) {
+        FreeSnapshotList(twoNodeSnapshot);
+        return 5;
+    }
+
+    ResetStopBackendCounters();
+    g_testStatusValue = 0;
+    if (twoNodeSnapshot->StopAllIfPlaying() != 1 || g_testGetStatusCount != 2 || g_testStopCount != 0) {
+        FreeSnapshotList(twoNodeSnapshot);
+        return 6;
+    }
+    FreeSnapshotList(twoNodeSnapshot);
+
+    return 0;
+}

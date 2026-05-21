@@ -25,7 +25,7 @@ def py(*args: str | Path) -> tuple[str, ...]:
 def quick_steps() -> list[DoctorStep]:
     tools = REPO_ROOT / "tools"
     return [
-        DoctorStep("VC6 manifest source policy", py(tools / "recoil_vc6_manifest_source_guard.py")),
+        DoctorStep("VC manifest source policy", py(tools / "recoil_vc6_manifest_source_guard.py")),
         DoctorStep("compiler/linker provenance", py(tools / "recoil_provenance_audit.py", "--strict")),
         DoctorStep("workspace hygiene", py(tools / "recoil_workspace_hygiene.py", "--strict")),
         DoctorStep(
@@ -71,7 +71,8 @@ def quick_steps() -> list[DoctorStep]:
             "source file map freshness",
             py(tools / "recoil_source_file_map.py", "--check", "docs/reconstruction/source_file_map.md"),
         ),
-        DoctorStep("VC6 manifest load", py(tools / "recoil_vc6_verify.py", "--list")),
+        DoctorStep("functional manifest load", py(tools / "recoil_functional_verify.py", "--list")),
+        DoctorStep("VC manifest load", py(tools / "recoil_vc6_verify.py", "--list")),
         DoctorStep("Python tool tests", py("-m", "unittest", "discover", "-s", "tests/tools", "-p", "*_tests.py")),
     ]
 
@@ -86,12 +87,12 @@ def binja_steps() -> list[DoctorStep]:
 
 def active_steps(address: str, *, bn_compare: bool) -> list[DoctorStep]:
     tools = REPO_ROOT / "tools"
-    verify_args: list[str | Path] = [tools / "recoil_vc6_verify.py", address]
+    verify_args: list[str | Path] = [tools / "recoil_vc6_verify.py", address, "--all-covering"]
     if not bn_compare:
         verify_args.append("--skip-bn-compare")
     return [
         DoctorStep(f"active status {address}", py(tools / "recoil_status.py", address)),
-        DoctorStep(f"active VC6 {'byte verify' if bn_compare else 'compile'} {address}", py(*verify_args)),
+        DoctorStep(f"active VC {'byte verify' if bn_compare else 'compile'} {address}", py(*verify_args)),
     ]
 
 
@@ -138,11 +139,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--quick", action="store_true", help="Run the standard quick checks (default).")
     parser.add_argument("--binja", action="store_true", help="Also check the expected Binary Ninja bridge/database state.")
     parser.add_argument("--native-x86", action="store_true", help="Also check the current native x86 MSVC environment.")
-    parser.add_argument("--active", metavar="ADDRESS", help="Also run status and VC6 verification for an active address.")
+    parser.add_argument("--active", metavar="ADDRESS", help="Also run status and VC verification for an active address.")
     parser.add_argument(
         "--bn-compare",
         action="store_true",
-        help="Use full Binary Ninja byte comparison for --active instead of compile-only VC6 verification.",
+        help="Use full Binary Ninja byte comparison for --active instead of compile-only VC verification.",
     )
     parser.add_argument("--dry-run", action="store_true", help="Print the planned checks without running them.")
     parser.add_argument("--verbose", action="store_true", help="Print successful command output.")

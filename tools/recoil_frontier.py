@@ -42,7 +42,7 @@ class Node:
     indirect_calls: list[str] = field(default_factory=list)
     bridge_error: str = ""
 
-    def status_summary(self) -> str:
+    def status_summary(self, *, lane: str = "strict") -> str:
         if self.plan is None:
             return "not in plan"
         return (
@@ -50,6 +50,11 @@ class Node:
             f"deps={self.plan.source_dependencies_status} "
             f"impl={self.plan.reimplemented_status} "
             f"verify={self.plan.binary_verified_status}"
+            + (
+                f" functional={self.plan.functional_equivalent_status}"
+                if lane == "progress" or self.plan.is_functionally_accepted
+                else ""
+            )
         )
 
     def blocks_source(self) -> bool:
@@ -66,21 +71,23 @@ class Node:
             return f"impl={self.plan.reimplemented_status}"
         return ""
 
-    def blocks_binary_verification(self) -> bool:
+    def blocks_binary_verification(self, *, lane: str = "strict") -> bool:
         if self.plan is None:
             return self.kind not in {"import", "external"}
-        return not self.plan.is_binary_verified
+        return not self.plan.is_binary_verified and not (
+            lane == "progress" and self.plan.is_functionally_accepted
+        )
 
 
-def node_to_dict(node: Node) -> dict[str, object]:
+def node_to_dict(node: Node, *, lane: str = "strict") -> dict[str, object]:
     return {
         "address": node.address,
         "name": node.name,
         "kind": node.kind,
-        "status": node.status_summary(),
+        "status": node.status_summary(lane=lane),
         "blocks_source": node.blocks_source(),
         "source_block_reason": node.source_block_reason(),
-        "blocks_binary_verification": node.blocks_binary_verification(),
+        "blocks_binary_verification": node.blocks_binary_verification(lane=lane),
         "callees": node.callees,
         "unresolved_calls": node.unresolved_calls,
         "indirect_calls": node.indirect_calls,
@@ -196,7 +203,7 @@ def build_frontier(
     return nodes
 
 
-def recommendation(root: str, nodes: dict[str, Node]) -> str:
+def recommendation(root: str, nodes: dict[str, Node], *, lane: str = "strict") -> str:
     root_node = nodes[root]
     for callee in root_node.callees:
         node = nodes.get(callee)
@@ -217,14 +224,24 @@ def recommendation(root: str, nodes: dict[str, Node]) -> str:
         )
     for callee in root_node.callees:
         node = nodes.get(callee)
-        if node and node.blocks_binary_verification():
+        if node and node.blocks_binary_verification(lane=lane):
+            if lane == "progress":
+                return f"{node.address} {node.name} (source done; verification or functional acceptance blocks caller)"
             return f"{node.address} {node.name} (source done; binary verification blocks caller)"
-    if root_node.blocks_binary_verification():
+    if root_node.blocks_binary_verification(lane=lane):
+        if lane == "progress":
+            return f"{root_node.address} {root_node.name} (source done; verify or functionally accept this anchor)"
         return f"{root_node.address} {root_node.name} (source done; verify this anchor)"
     return "No blocking dependency visible at requested depth."
 
 
-def print_report(root: str, nodes: dict[str, Node], *, vc6_coverage: dict[str, list[str]] | None = None) -> None:
+def print_report(
+    root: str,
+    nodes: dict[str, Node],
+    *,
+    vc6_coverage: dict[str, list[str]] | None = None,
+    lane: str = "strict",
+) -> None:
     vc6_coverage = vc6_coverage or {}
     root_node = nodes[root]
     print("# Recoil Dependency Frontier")
@@ -232,7 +249,8 @@ def print_report(root: str, nodes: dict[str, Node], *, vc6_coverage: dict[str, l
     print(f"Anchor: `{root_node.address}` `{root_node.name}`")
     if root_node.plan:
         print(f"Milestone: {root_node.plan.milestone}")
-        print(f"Anchor status: {root_node.status_summary()}")
+        print(f"Anchor status: {root_node.status_summary(lane=lane)}")
+        print(f"Lane: {lane}")
     print()
     print("## Direct Callees")
     if not root_node.callees:
@@ -241,7 +259,7 @@ def print_report(root: str, nodes: dict[str, Node], *, vc6_coverage: dict[str, l
         node = nodes.get(callee)
         if node:
             provider = f" provider={node.plan.provider}" if node.plan and node.plan.provider else ""
-            print(f"- `{node.address}` `{node.name}` {node.status_summary()}{provider}")
+            print(f"- `{node.address}` `{node.name}` {node.status_summary(lane=lane)}{provider}")
         else:
             print(f"- `{callee}` not expanded")
     if root_node.unresolved_calls:
@@ -270,12 +288,12 @@ def print_report(root: str, nodes: dict[str, Node], *, vc6_coverage: dict[str, l
         print("- no source blockers visible at requested depth")
     for node in blockers:
         print(
-            f"- `{node.address}` `{node.name}` {node.status_summary()} "
+            f"- `{node.address}` `{node.name}` {node.status_summary(lane=lane)} "
             f"reason={node.source_block_reason()}"
         )
     print()
     print("## Recommended Next")
-    print(f"- {recommendation(root, nodes)}")
+    print(f"- {recommendation(root, nodes, lane=lane)}")
     print()
     print(
         "Note: this report uses direct calls parsed from BN assembly/MLIL. Inspect vtable "
@@ -288,19 +306,23 @@ def report_to_dict(
     nodes: dict[str, Node],
     *,
     vc6_coverage: dict[str, list[str]] | None = None,
+    lane: str = "strict",
 ) -> dict[str, object]:
     vc6_coverage = vc6_coverage or {}
     root_node = nodes[root]
     return {
-        "anchor": node_to_dict(root_node),
-        "direct_callees": [node_to_dict(nodes[callee]) for callee in root_node.callees if callee in nodes],
+        "lane": lane,
+        "anchor": node_to_dict(root_node, lane=lane),
+        "direct_callees": [
+            node_to_dict(nodes[callee], lane=lane) for callee in root_node.callees if callee in nodes
+        ],
         "vc6_coverage": {address: vc6_coverage.get(address, []) for address in [root, *root_node.callees]},
         "blocking_dependencies": [
-            node_to_dict(node)
+                node_to_dict(node, lane=lane)
             for node in nodes.values()
             if node.address != root and node.blocks_source()
         ],
-        "recommended_next": recommendation(root, nodes),
+        "recommended_next": recommendation(root, nodes, lane=lane),
     }
 
 
@@ -328,6 +350,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--vc6-manifest-dir", default=str(DEFAULT_MANIFEST_DIR))
     parser.add_argument("--json", action="store_true", help="Emit a machine-readable frontier report.")
+    parser.add_argument(
+        "--lane",
+        choices=["strict", "progress"],
+        default="strict",
+        help="strict keeps Binary-safe verified as the blocker; progress accepts functional markers.",
+    )
     args = parser.parse_args(argv)
 
     plan_path = Path(args.plan)
@@ -341,9 +369,15 @@ def main(argv: list[str] | None = None) -> int:
         nodes = build_frontier(root, args.depth, bridge, plan)
         coverage = vc6_coverage_by_address(Path(args.vc6_manifest_dir))
         if args.json:
-            print(json.dumps(report_to_dict(root, nodes, vc6_coverage=coverage), indent=2, ensure_ascii=False))
+            print(
+                json.dumps(
+                    report_to_dict(root, nodes, vc6_coverage=coverage, lane=args.lane),
+                    indent=2,
+                    ensure_ascii=False,
+                )
+            )
         else:
-            print_report(root, nodes, vc6_coverage=coverage)
+            print_report(root, nodes, vc6_coverage=coverage, lane=args.lane)
     except (BridgeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 1

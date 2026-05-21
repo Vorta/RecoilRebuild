@@ -15,6 +15,15 @@ Use plain `--quick` only when Binary Ninja is intentionally unavailable for a
 non-Binary-Ninja task. For active implementation or verification handoff, also
 run the address-specific doctor command described in `AGENTS.md`.
 
+For a combined launch packet, use:
+
+```powershell
+python tools/recoil_task_packet.py --owner <name> --claim-next
+```
+
+Use `--address 0xNNNNNN` for a specific function or `--no-binja` only when the
+task intentionally does not need Binary Ninja.
+
 ## Task selection
 
 Choose and claim the next address from current plan state, not from stale
@@ -28,8 +37,14 @@ python tools/recoil_status.py 0xNNNNNN
 Use `python tools/recoil_plan_cli.py next` only for read-only navigation when
 no agent should claim work yet. If a task expands into a multi-function closure,
 claim every affected address before editing source, Binary Ninja state, plan
-markers, VC6 manifests, or group notes. Release claims at handoff, or report
+markers, VC verification manifests, or group notes. Release claims at handoff, or report
 the owner, token, and addresses if the next session should continue the work.
+
+Generate a handoff report before ending a multi-step reconstruction session:
+
+```powershell
+python tools/recoil_handoff.py 0xNNNNNN --include-artifacts
+```
 
 Treat `.agent/IMPLEMENTATION_GROUPS.md` as temporary context only. If it
 disagrees with `.agent/RECOIL_PLAN.md`, Binary Ninja, or `recoil_status.py`,
@@ -66,6 +81,17 @@ python tools/recoil_source_file_map.py --check docs/reconstruction/source_file_m
 Use `docs/reconstruction/source_file_map.md` as placement guidance, then confirm
 with current Binary Ninja source comments and call-site evidence. Regenerate the
 map only when provenance comments in `src/` changed.
+
+Check `docs/reconstruction/verified_patterns.md` before introducing a new
+destructor, thunk, vtable stub, provider glue, or small-accessor idiom.
+
+## Source literals
+
+Use decimal numeric literals by default in authored C/C++ for ordinary counts,
+sizes, dimensions, enum values, loop bounds, return codes, allocation sizes, test
+expectations, and gameplay/config constants. Keep hexadecimal for addresses,
+bitmasks, byte patterns, PE/RVA/file offsets, serialized wire values, and other
+contracts where hexadecimal grouping carries evidence.
 
 ## Working state hygiene
 

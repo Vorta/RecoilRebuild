@@ -1,6 +1,7 @@
 {
   "name": "zsnd_stream_wait_termination_delay",
   "description": "zSnd stream request termination delay state tick.",
+  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
   "source_filename": "zsnd_group.cpp",
   "compiler_flags": [
     "/nologo",

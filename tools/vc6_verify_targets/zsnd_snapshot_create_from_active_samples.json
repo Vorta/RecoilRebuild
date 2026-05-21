@@ -1,22 +1,9 @@
 {
   "name": "zsnd_snapshot_create_from_active_samples",
   "description": "zSnd active play-handle snapshot construction.",
-  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_profile": "vc5_o2_ob1_gx_facs",
   "source_filename": "zsnd_play.cpp",
   "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
-  "compiler_flags": [
-    "/nologo",
-    "/TP",
-    "/W3",
-    "/G5",
-    "/O2",
-    "/Ob1",
-    "/GX",
-    "/Zp4",
-    "/FAcs",
-    "/I",
-    "."
-  ],
   "include_dirs": [
     "src",
     "src/native/include",
