@@ -58,6 +58,7 @@ add_library(recoil_native STATIC
     ../GameZRecoil/zWeapon/OptCatalog.c
     ../GameZRecoil/zWeapon/zWeapon.cpp
     ../GameZRecoil/zClass/Class.c
+    ../GameZRecoil/zClass/cls_stubs.cpp
     ../GameZRecoil/zClass/Animate.c
     ../GameZRecoil/zClass/Camera.c
     ../GameZRecoil/zClass/cls_di.c

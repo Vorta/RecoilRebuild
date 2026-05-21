@@ -1,6 +1,6 @@
 {
-  "name": "zsnd_report_a3d_error",
-  "description": "zSnd A3D HRESULT reporting helper.",
+  "name": "zsnd_report_direct_sound_error",
+  "description": "zSnd DirectSound HRESULT reporting helper.",
   "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
   "source_filename": "zsnd_init.cpp",
   "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
@@ -35,10 +35,10 @@
   ],
   "functions": [
     {
-      "address": "0x4a3ef0",
-      "symbol": "?ReportA3DError@zSnd@@YIHHPBDH@Z",
-      "name": "zSnd::ReportA3DError",
-      "bn_byte_length": 1088
+      "address": "0x4a4330",
+      "symbol": "?ReportDirectSoundError@zSnd@@YIHHPBDH@Z",
+      "name": "zSnd::ReportDirectSoundError",
+      "bn_byte_length": 399
     }
   ]
 }

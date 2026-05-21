@@ -290,6 +290,7 @@ struct zSndStreamRequest {
     zSndGroup *group;
 
     RECOIL_NOINLINE int RECOIL_THISCALL StateBeginGroup();
+    void RECOIL_THISCALL StateWaitTerminationDelay();
 };
 
 struct zSndFadeEntry {

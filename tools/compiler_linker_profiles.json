@@ -141,6 +141,26 @@
       ]
     },
     {
+      "name": "vc5_o2_ob1_md_gx_facs",
+      "description": "VC5SP3 exception profile with one-level inlining, DLL CRT imports, and C++ EH enabled.",
+      "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/MD",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
       "name": "vc5_o2_ob2_facs",
       "description": "VC5SP3 exception profile with aggressive inlining and no C++ EH flag.",
       "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",

@@ -494,8 +494,13 @@ struct HudUiElement {
                                                                  const HudUiRect *rectOrNull);
     void RECOIL_THISCALL SetClipRect(const HudUiRect *clipRect);
     void RECOIL_THISCALL GetRect(HudUiRect *outRect);
+    unsigned char RECOIL_THISCALL HitTestTrue(int px, int py);
     int RECOIL_THISCALL GetX();
     int RECOIL_THISCALL GetY();
+};
+
+struct StdPtrVector {
+    void RECOIL_THISCALL ClearNoOpDestroy(int *begin, int *end);
 };
 
 struct HudUiPrimitiveBindTarget {
@@ -596,6 +601,7 @@ struct HudUiBackgroundContainer {
 
     HudUiBackgroundContainer *RECOIL_THISCALL Constructor(int initFlag);
     void RECOIL_THISCALL Destructor();
+    void RECOIL_THISCALL SetEnabled(int enabled);
     void RECOIL_THISCALL SetInputFocus(HudUiElement *element);
     HudUiElement *RECOIL_THISCALL GetInputFocus();
 };
@@ -1345,6 +1351,12 @@ struct HudUiBackground {
                                const char *name);
     RECOIL_NOINLINE void RECOIL_THISCALL FreeLoadedTreeRoots(int unused);
     RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSeconds);
+};
+
+struct HudUiZrdScrollingText {
+    HudUiZrdWidget base;
+
+    void RECOIL_THISCALL OnActivateResetOwnerFade();
 };
 
 struct HudUiPanelSimple {

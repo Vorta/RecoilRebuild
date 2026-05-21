@@ -1371,9 +1371,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x407130:
   - [✅] Reconstructed (Name: zStub::ReturnOneNoArgs)
-  - [❓] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Binary-safe verified
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zStub::ReturnOneNoArgs File: src/GameZRecoil/zClass/cls_stubs.cpp)
+  - [✅] Binary-safe verified
 - 0x408c60:
   - [❌] Reconstructed (Name: HudUiOptionSelectorWidget::DestructorCoreThunk)
   - [❓] Source dependencies satisfied
@@ -3801,12 +3801,12 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: HudUiElement::Invalidate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::Invalidate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4b4190:
   - [✅] Reconstructed (Name: HudUiElement::SetBltSourceAndClipRect)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetBltSourceAndClipRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4b41b0:
   - [✅] Reconstructed (Name: HudUiElement::SetClipRect)
   - [✅] Source dependencies satisfied
@@ -4099,9 +4099,9 @@ Each function has these trackers:
   - [❌] Binary-safe verified
 - 0x4bc510:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::Constructor)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundContainer::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4bc540:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::Destructor)
   - [❌] Source dependencies satisfied
@@ -14880,7 +14880,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSndSampleSet::InitByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSet_InitByName File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a0870:
   - [✅] Reconstructed (Name: zSndSampleSet::DestroyByName)
   - [✅] Source dependencies satisfied
@@ -15318,7 +15318,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSnd::ReportA3DError)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::ReportA3DError File: src/GameZRecoil/zSound/zsnd_init.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a4530:
   - [☑️] Reconstructed (Name: zSndGroup::QueuePendingLoadsFromConfigNode)
   - [✅] Source dependencies satisfied
@@ -15491,7 +15491,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSndCd::PlayTrackWithMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::PlayTrackWithMode File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
 - 0x4a2600:
   - [✅] Reconstructed (Name: zSndCd::ApplyPlaybackMode)
   - [✅] Source dependencies satisfied
@@ -15546,7 +15546,7 @@ Each function has these trackers:
   - [✅] Reconstructed (Name: zSnd::ReportDirectSoundError)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::ReportDirectSoundError File: src/GameZRecoil/zSound/zsnd_init.cpp)
-  - [❌] Binary-safe verified
+  - [✅] Binary-safe verified
   
 ## M40. zUtil archive/save helpers
 
@@ -17972,19 +17972,19 @@ Each function has these trackers:
 
 - 0x407140:
   - [✅] Reconstructed (Name: zStub::ReturnZeroNoArgs)
-  - [❓] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Binary-safe verified
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zStub::ReturnZeroNoArgs File: src/GameZRecoil/zClass/cls_stubs.cpp)
+  - [✅] Binary-safe verified
 - 0x407150:
   - [✅] Reconstructed (Name: zStub::NoOp1Arg)
-  - [❓] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Binary-safe verified
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zStub::NoOp1Arg File: src/GameZRecoil/zClass/cls_stubs.cpp)
+  - [✅] Binary-safe verified
 - 0x407160:
   - [✅] Reconstructed (Name: zStub::ReturnOne2Args)
-  - [❓] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Binary-safe verified
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zStub::ReturnOne2Args File: src/GameZRecoil/zClass/cls_stubs.cpp)
+  - [✅] Binary-safe verified
   
 ## M46. Non-Authored Functions Not Needed for Reimplementation
 

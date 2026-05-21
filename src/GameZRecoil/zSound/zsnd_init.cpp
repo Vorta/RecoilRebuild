@@ -74,43 +74,6 @@ struct A3DApi {
 
 typedef ULONG(__stdcall *UnknownReleaseProc)(void *);
 
-const char *DirectSoundErrorName(int directSoundError) {
-    switch (static_cast<HRESULT>(directSoundError)) {
-    case DS_OK:
-        return 0;
-    case DSERR_GENERIC:
-        return "DSERR_GENERIC";
-    case DSERR_UNSUPPORTED:
-        return "DSERR_UNSUPPORTED";
-    case DSERR_OUTOFMEMORY:
-        return "DSERR_OUTOFMEMORY";
-    case DSERR_NOAGGREGATION:
-        return "DSERR_NOAGGREGATION";
-    case DSERR_INVALIDPARAM:
-        return "DSERR_INVALIDPARAM";
-    case DSERR_ALLOCATED:
-        return "DSERR_ALLOCATED";
-    case DSERR_CONTROLUNAVAIL:
-        return "DSERR_CONTROLUNAVAIL";
-    case DSERR_INVALIDCALL:
-        return "DSERR_INVALIDCALL";
-    case DSERR_PRIOLEVELNEEDED:
-        return "DSERR_PRIOLEVELNEEDED";
-    case DSERR_BADFORMAT:
-        return "DSERR_BADFORMAT";
-    case DSERR_NODRIVER:
-        return "DSERR_NODRIVER";
-    case DSERR_ALREADYINITIALIZED:
-        return "DSERR_ALREADYINITIALIZED";
-    case DSERR_BUFFERLOST:
-        return "DSERR_BUFFERLOST";
-    case DSERR_OTHERAPPHASPRIO:
-        return "DSERR_OTHERAPPHASPRIO";
-    default:
-        return "UNKNOWN";
-    }
-}
-
 } // namespace
 
 namespace zSnd {
@@ -119,11 +82,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReportA3DError(int a3dError,
                                                             const char *sourceFile,
                                                             int sourceLine) {
     char errorNameStorage[0x100];
-    if (a3dError > 0) {
-        goto reportUnknownA3D;
-    }
-    if (a3dError != 0) {
-        switch (static_cast<unsigned int>(a3dError)) {
+    if (a3dError <= 0) {
+        if (a3dError != 0) {
+            switch (static_cast<unsigned int>(a3dError)) {
     case 0x80040001u:
         sprintf(errorNameStorage, "\tA3DERROR_MEMORY_ALLOCATION\t");
         break;
@@ -297,11 +258,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReportA3DError(int a3dError,
         break;
     default:
         goto reportUnknownA3D;
-        }
-        goto reportA3D;
-    }
+            }
 
-    return 1;
+            goto reportA3D;
+        }
+        return 1;
+    }
 
 reportUnknownA3D:
     sprintf(errorNameStorage, "UNKNOWN");
@@ -315,13 +277,57 @@ reportA3D:
 RECOIL_NOINLINE int RECOIL_FASTCALL ReportDirectSoundError(int directSoundError,
                                                                     const char *sourceFile,
                                                                     int sourceLine) {
-    const char *errorName = DirectSoundErrorName(directSoundError);
-    if (errorName == 0) {
+    char errorNameStorage[0x100];
+    switch (static_cast<HRESULT>(directSoundError)) {
+    case DSERR_GENERIC:
+        sprintf(errorNameStorage, "DSERR_GENERIC");
+        break;
+    case DSERR_UNSUPPORTED:
+        sprintf(errorNameStorage, "DSERR_UNSUPPORTED");
+        break;
+    case DSERR_OUTOFMEMORY:
+        sprintf(errorNameStorage, "DSERR_OUTOFMEMORY");
+        break;
+    case DSERR_NOAGGREGATION:
+        sprintf(errorNameStorage, "DSERR_NOAGGREGATION");
+        break;
+    case DSERR_INVALIDPARAM:
+        sprintf(errorNameStorage, "DSERR_INVALIDPARAM");
+        break;
+    case DSERR_ALLOCATED:
+        sprintf(errorNameStorage, "DSERR_ALLOCATED");
+        break;
+    case DSERR_CONTROLUNAVAIL:
+        sprintf(errorNameStorage, "DSERR_CONTROLUNAVAIL");
+        break;
+    case DSERR_INVALIDCALL:
+        sprintf(errorNameStorage, "DSERR_INVALIDCALL");
+        break;
+    case DSERR_PRIOLEVELNEEDED:
+        sprintf(errorNameStorage, "DSERR_PRIOLEVELNEEDED");
+        break;
+    case DSERR_BADFORMAT:
+        sprintf(errorNameStorage, "DSERR_BADFORMAT");
+        break;
+    case DSERR_NODRIVER:
+        sprintf(errorNameStorage, "DSERR_NODRIVER");
+        break;
+    case DSERR_ALREADYINITIALIZED:
+        sprintf(errorNameStorage, "DSERR_ALREADYINITIALIZED");
+        break;
+    case DSERR_BUFFERLOST:
+        sprintf(errorNameStorage, "DSERR_BUFFERLOST");
+        break;
+    case DSERR_OTHERAPPHASPRIO:
+        sprintf(errorNameStorage, "DSERR_OTHERAPPHASPRIO");
+        break;
+    case DS_OK:
         return 1;
+    default:
+        sprintf(errorNameStorage, "UNKNOWN");
+        break;
     }
 
-    char errorNameStorage[0x100];
-    sprintf(errorNameStorage, errorName);
     zError::ReportOld(0x400, sourceFile, sourceLine, "DirectSound Error [%s]", errorNameStorage);
     return 0;
 }

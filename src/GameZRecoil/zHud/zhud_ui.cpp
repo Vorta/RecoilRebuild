@@ -3661,15 +3661,17 @@ void RECOIL_CDECL ShutdownResources() {
 } // namespace HudUiMgr
 
 // Reimplements 0x4b4070: HudUiElement::Constructor
-RECOIL_NOINLINE HudUiElement *RECOIL_THISCALL HudUiElement::Constructor(int initX,
-                                                                        int initY) {
+HudUiElement *RECOIL_THISCALL HudUiElement::Constructor(int initX, int initY) {
     y = initY;
     ftable = &g_HudUiCommon_FTable;
     parent = 0;
     next = 0;
     timer = 0.0f;
     x = initX;
-    ((void(RECOIL_THISCALL *)(HudUiElement *))(ftable->slots[8]))(this);
+
+    typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiElement *);
+    ((InvalidateFn)(((const unsigned int *)ftable)[8]))(this);
+
     flags = 0;
     state = 0;
     SetBltSourceAndClipRect(0, 0);
@@ -3817,10 +3819,14 @@ void RECOIL_THISCALL HudUiElement::SetTimer(float duration) {
 // Reimplements 0x4b4190: HudUiElement::SetBltSourceAndClipRect
 RECOIL_NOINLINE void RECOIL_THISCALL
 HudUiElement::SetBltSourceAndClipRect(void *bltSourceOrNull, const HudUiRect *rectOrNull) {
-    typedef void (RECOIL_THISCALL *SetClipRectFn)(HudUiElement * self, const HudUiRect *rect);
+    struct SetClipRectFTable {
+        unsigned int slots[7];
+        void (HudUiElement::*SetClipRect)(const HudUiRect *rect);
+    };
 
     bltSource = bltSourceOrNull;
-    ((SetClipRectFn)(ftable->slots[7]))(this, rectOrNull);
+    const SetClipRectFTable *const dispatch = (const SetClipRectFTable *)ftable;
+    (this->*dispatch->SetClipRect)(rectOrNull);
 }
 
 // Reimplements 0x4b41b0: HudUiElement::SetClipRect
@@ -3843,6 +3849,14 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::GetRect(HudUiRect *outRect) {
     const int rectY = ((GetCoordFn)(ftable->slots[26]))(this);
     outRect->top = rectY;
     outRect->bottom = rectY;
+}
+
+// Reimplements 0x404d10: HudUiElement::HitTestTrue (D:\Proj\Battlesport\hud.cpp)
+// BN returns via AL only (`mov al, 1`); ignore hit-test coordinates.
+unsigned char RECOIL_THISCALL HudUiElement::HitTestTrue(int px, int py) {
+    (void)px;
+    (void)py;
+    return 1;
 }
 
 // Reimplements 0x404d50: HudUiElement::GetX
@@ -4364,6 +4378,19 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiContainer::InvalidateChildren() {
         typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiElement * self);
         ((InvalidateFn)(child->ftable->slots[8]))(child);
     }
+}
+
+// Reimplements 0x42ee40: HudUiBackgroundContainer::SetEnabled
+void RECOIL_THISCALL HudUiBackgroundContainer::SetEnabled(int enabled) {
+    base.enabled = enabled;
+}
+
+// Reimplements 0x409550: HudUiZrdScrollingText::OnActivateResetOwnerFade
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp) owner is HudUiCreditsPanel*; fadeProgress at +0xad58.
+void RECOIL_THISCALL HudUiZrdScrollingText::OnActivateResetOwnerFade() {
+    float *const ownerFadeProgress =
+        (float *)((unsigned char *)(base.owner) + 0xad58u);
+    *ownerFadeProgress = 0.0f;
 }
 
 // Reimplements 0x4bc510: HudUiBackgroundContainer::Constructor
@@ -6949,6 +6976,12 @@ HudCmdBindButtonBase *RECOIL_THISCALL HudCmdBindButtonBase::Constructor() {
     bindingSlotSpacing = 0xf;
     selectedBindingIndex = -1;
     return this;
+}
+
+// Reimplements 0x40bdf0: StdPtrVector::ClearNoOpDestroy
+void RECOIL_THISCALL StdPtrVector::ClearNoOpDestroy(int *begin, int *end) {
+    (void)begin;
+    (void)end;
 }
 
 // Reimplements 0x40bdc0: zUtil_StdPtrVector_Clear

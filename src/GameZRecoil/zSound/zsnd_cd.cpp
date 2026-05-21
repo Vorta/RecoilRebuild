@@ -363,11 +363,13 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL PlayTrack(int trackIndex) {
 // Reimplements 0x4a25e0: zSndCd::PlayTrackWithMode
 RECOIL_NOINLINE int RECOIL_FASTCALL PlayTrackWithMode(int trackIndex,
                                                                int playbackMode) {
-    if (PlayTrack(trackIndex) == 0) {
-        return 0;
+    int result = 0;
+    const int mode = playbackMode;
+    if (PlayTrack(trackIndex) != 0) {
+        result = ApplyPlaybackMode(mode);
     }
 
-    return ApplyPlaybackMode(playbackMode);
+    return result;
 }
 
 // Reimplements 0x4a26b0: zSndCd::OnMciNotify

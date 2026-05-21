@@ -1,5 +1,6 @@
 #include "zSound.h"
 
+#include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zReader/zReader.h"
 
@@ -231,6 +232,18 @@ RECOIL_NOINLINE zSndGroupConfigBlock *RECOIL_THISCALL zSndGroup::SelectWeightedE
     }
 
     return result;
+}
+
+// Reimplements 0x4a5020: zSndStreamRequest::StateWaitTerminationDelay
+// (D:\Proj\GameZRecoil\zSound\zsnd_grp.cpp) x87 elapsed timer vs group delayTerminationSec.
+void RECOIL_THISCALL zSndStreamRequest::StateWaitTerminationDelay() {
+    elapsedSec = elapsedSec + g_FrameDeltaTimeSec;
+    if (elapsedSec < group->delayTerminationSec) {
+        return;
+    }
+
+    elapsedSec = 0.0f;
+    streamState = 4;
 }
 
 // Reimplements 0x4a4cb0: zSndStreamRequest::StateBeginGroup

@@ -11,8 +11,8 @@ extern "C" void *g_zSnd_BackendDevice;
 extern "C" void *g_zSnd_BackendListenerHandle;
 
 namespace {
-const char *kZSndPlaySourceFile = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp";
-const char *kZSnd3dSourceFile = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp";
+const char kZSndPlaySourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp";
+const char kZSnd3dSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp";
 
 typedef int(__stdcall *BackendGetStatusFn)(void *self, int *outStatus);
 typedef int(__stdcall *BackendGetUint32Fn)(void *self, unsigned int *outValue);
@@ -643,23 +643,33 @@ zSndPlayHandleSnapshot::CreateFromActiveSamples() {
 }
 
 // Reimplements 0x4a0500: zSndPlayHandleSnapshot::StopAllIfPlaying
-RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandleSnapshot::StopAllIfPlaying() {
-    zSndPlayHandleSnapshotItem *item = listHead->next->next;
-    while (item != listHead) {
+// BN uses MSVC's branchless sete/neg/sbb/inc loop compare; a do-while back edge matches that shape.
+int RECOIL_THISCALL zSndPlayHandleSnapshot::StopAllIfPlaying() {
+    zSndPlayHandleSnapshotItem *const anchor = listHead;
+    zSndPlayHandleSnapshotItem *item = anchor->next->next;
+    if (item == anchor) {
+        return 1;
+    }
+
+    do {
         int status;
-        const int activeBackend = g_zSnd_ActiveBackend;
+        int activeBackend = g_zSnd_ActiveBackend;
+        activeBackend -= 0;
         if (activeBackend == 0) {
             if (DirectSoundBufferIsPlaying(item->payload.playHandle->backendBuffer, &status)) {
                 item->payload.playHandle->StopIfActive();
             }
-        } else if (activeBackend == 1) {
-            if (A3dSourceIsPlaying(item->payload.playHandle->backendBuffer, &status)) {
-                item->payload.playHandle->StopIfActive();
+        } else {
+            activeBackend -= 1;
+            if (activeBackend == 0) {
+                if (A3dSourceIsPlaying(item->payload.playHandle->backendBuffer, &status)) {
+                    item->payload.playHandle->StopIfActive();
+                }
             }
         }
 
         item = item->next;
-    }
+    } while (item != anchor);
 
     return 1;
 }
@@ -795,62 +805,67 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandleSnapshot::Destroy() {
 
 // Reimplements 0x49fda0: zSndPlayHandle::StopIfActive
 RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::StopIfActive() {
-    if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0 || this == 0) {
+    zSndPlayHandle *playHandle = this;
+    int status;
+    int error;
+    A3dSource *source;
+    DirectSoundBuffer *buffer;
+
+    if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0 || playHandle == 0) {
         return -1;
     }
 
-    if (handleKind == ZSND_PLAYHANDLE_STREAM_REQUEST) {
-        return zSndStreamRequest_StopIfActive(this);
+    if (playHandle->handleKind == ZSND_PLAYHANDLE_STREAM_REQUEST) {
+        return zSndStreamRequest_StopIfActive(playHandle);
     }
 
-    if (ownerSample == g_zSndLastVoice) {
+    if (playHandle->ownerSample == g_zSndLastVoice) {
         g_zSndLastVoiceMarkerIndex = 0;
         g_zSndLastVoice = 0;
     }
 
-    const int activeBackend = g_zSnd_ActiveBackend;
-    if (activeBackend != 0) {
-        if (activeBackend != 1) {
-            return (int)(this);
+    switch (g_zSnd_ActiveBackend) {
+    case 0:
+        buffer = (DirectSoundBuffer *)(playHandle->backendBuffer);
+        if (buffer == 0) {
+            return -1;
         }
 
-        A3dSource *const source = (A3dSource *)(backendBuffer);
+        error = buffer->vtable->GetStatus(buffer, &status);
+        if (error != 0) {
+            return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x392);
+        }
+
+        if (status == 2) {
+            error = buffer->vtable->Restore(buffer);
+            if (error != 0) {
+                return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x396);
+            }
+        }
+
+        error = buffer->vtable->Stop(buffer);
+        if (error != 0) {
+            return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x39a);
+        }
+
+        return error;
+
+    default:
+        return status;
+
+    case 1:
+        source = (A3dSource *)(playHandle->backendBuffer);
         if (source == 0) {
             return -1;
         }
 
-        const int error = source->vtable->Stop(source);
+        error = source->vtable->Stop(source);
         if (error != 0) {
             return zSnd::ReportA3DError(error, kZSndPlaySourceFile, 0x38c);
         }
 
         return error;
     }
-
-    DirectSoundBuffer *const buffer = (DirectSoundBuffer *)(backendBuffer);
-    if (buffer == 0) {
-        return -1;
-    }
-
-    int status = 0;
-    int error = buffer->vtable->GetStatus(buffer, &status);
-    if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x392);
-    }
-
-    if (status == 2) {
-        error = buffer->vtable->Restore(buffer);
-        if (error != 0) {
-            return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x396);
-        }
-    }
-
-    error = buffer->vtable->Stop(buffer);
-    if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x39a);
-    }
-
-    return error;
 }
 
 // Reimplements 0x49fec0: zSndSample::StopActiveVoicesIfPlaying

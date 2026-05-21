@@ -27,6 +27,27 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 
 ## Active Groups
 
+### Group: Sprint0 M01 anchor verification blockers
+
+- Anchor: 0x415220 RecoilStateMainMenuTransition::OnTryBecomeCurrent
+- Reason: anchor `Binary-safe verified` depends on snapshot callee byte matches still failing VC6 COFF compare.
+- Source blockers:
+  - 0x49fff0 zSndPlayHandleSnapshot::CreateFromActiveSamples
+  - 0x4a0500 zSndPlayHandleSnapshot::StopAllIfPlaying
+- Next action:
+  - `python tools/recoil_vc6_verify.py 0x4a0500`
+  - `python tools/recoil_vc6_verify.py 0x49fff0`
+  - `python tools/recoil_vc6_verify.py 0x415220`
+
+### Group: Deferred P0 zRndr Span*SwitchVShift cluster
+
+- Anchor: 0x49e6c0 zRndr::SpanCopy16FromTex16SwitchVShift (priority ranks 654-660)
+- Reason: HLIL-listed P0 leaves with 257-358 HLIL lines; renderer globals/types and span dispatch tables must be stable before implementation or verification is high-cost.
+- Source blockers:
+  - zRndr span switch tables and texture/palette path globals (not audited in this pass)
+- Next action:
+  - defer until `zRndr` dependency frontier is `Source dependencies satisfied` for a chosen renderer anchor
+
 ### Group: HUD container dispatch model
 
 - Anchor: 0x4bc780 HudUiContainer::ConstructorDefault

@@ -148,8 +148,7 @@ zSndSampleSet_DestroyByName(const char *setName) {
 // Reimplements 0x4a0860: zSndSampleSet_InitByName
 extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
 zSndSampleSet_InitByName(const char *setName) {
-    zSndSampleSet *const set = zSndSampleSetRegistry_FindByName(setName);
-    return set != 0 ? set->Init() : 0;
+    return zSndSampleSetRegistry_FindByName(setName)->Init();
 }
 
 // Reimplements 0x4a09e0: zSndSampleSet::RegistryAddEntry

@@ -1,0 +1,37 @@
+{
+  "name": "zsnd_stream_wait_termination_delay",
+  "description": "zSnd stream request termination delay state tick.",
+  "source_filename": "zsnd_group.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob1",
+    "/GX",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_group.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5020",
+      "symbol": "?StateWaitTerminationDelay@zSndStreamRequest@@QAEXXZ",
+      "name": "zSndStreamRequest::StateWaitTerminationDelay"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_group.cpp"
+}
