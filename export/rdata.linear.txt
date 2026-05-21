@@ -1,5 +1,3 @@
-// Export: Linear view .rdata
-
 0x4cc000 BOOL (__stdcall* const ADVAPI32:GetUserNameA)(uint8_t* lpBuffer, uint32_t* pcbBuffer) = GetUserNameA
 0x4cc004 enum WIN32_ERROR (__stdcall* const ADVAPI32:RegCloseKey)(HKEY hKey) = RegCloseKey
 0x4cc008 enum WIN32_ERROR (__stdcall* const ADVAPI32:RegCreateKeyExA)(HKEY hKey, PSTR lpSubKey, uint32_t Reserved, PSTR lpClass, enum REG_OPEN_CREATE_OPTIONS dwOptions, enum REG_SAM_FLAGS samDesired, SECURITY_ATTRIBUTES* lpSecurityAttributes, HKEY* phkResult, enum REG_CREATE_KEY_DISPOSITION* lpdwDisposition) = RegCreateKeyExA
@@ -9738,7 +9736,7 @@
 0x4d44a8 struct MsvcEhUnwindMapEntry g_MsvcEh_UnwindMap_4c82e8 =
 0x4d44a8 {
 0x4d44a8     int32_t toState = -0x1
-0x4d44ac     void (* action)() = sub_4c82e0
+0x4d44ac     void (* action)() = MSVC_EH_UnwindFunclet_4c82e0_HudUiElement_ResetCommonFTable
 0x4d44b0 }
 0x4d44b0 struct MsvcEhFuncInfoVc6 g_MsvcEh_FuncInfo_4c8308 =
 0x4d44b0 {
@@ -9754,7 +9752,7 @@
 0x4d44d0 struct MsvcEhUnwindMapEntry g_MsvcEh_UnwindMap_4c8308 =
 0x4d44d0 {
 0x4d44d0     int32_t toState = -0x1
-0x4d44d4     void (* action)() = sub_4c8300
+0x4d44d4     void (* action)() = MSVC_EH_UnwindFunclet_4c8300_HudUiPanel_Destructor
 0x4d44d8 }
 0x4d44d8 struct MsvcEhFuncInfoVc6 g_MsvcEh_FuncInfo_4c83b8 =
 0x4d44d8 {

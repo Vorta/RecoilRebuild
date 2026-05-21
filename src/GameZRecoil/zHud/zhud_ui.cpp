@@ -47,6 +47,11 @@ template <typename Method> unsigned int MethodAddress(Method method) {
     return address;
 }
 
+template <typename Slot, typename Method> void AssignMethodSlot(Slot &slot, Method method) {
+    RECOIL_STATIC_ASSERT(sizeof(slot) == sizeof(method));
+    memcpy(&slot, &method, sizeof(slot));
+}
+
 RECOIL_NOINLINE void RECOIL_FASTCALL HudUiCommonInvalidateThunk(HudUiElement *element) {
     element->Invalidate();
 }
@@ -69,14 +74,15 @@ HudUiCommon_FTable MakeHudUiCommonFTable() {
 
 HudUiContainer_FTable MakeHudUiContainerFTable() {
     HudUiContainer_FTable table = {0};
-    table.slots[1] = MethodAddress(&HudUiContainer::SetEnabled);
+    AssignMethodSlot(table.updateAll, &HudUiContainer::UpdateAll);
+    AssignMethodSlot(table.setEnabled, &HudUiContainer::SetEnabled);
     return table;
 }
 
 template <typename FTable> FTable MakeHudUiContainerLikeFTable() {
     FTable table = {0};
-    RECOIL_STATIC_ASSERT((sizeof(table.slots) / sizeof(table.slots[0])) > 1);
-    table.slots[1] = MethodAddress(&HudUiContainer::SetEnabled);
+    AssignMethodSlot(table.updateAll, &HudUiContainer::UpdateAll);
+    AssignMethodSlot(table.setEnabled, &HudUiContainer::SetEnabled);
     return table;
 }
 
@@ -178,7 +184,8 @@ HudUiBackgroundCursorWidget_FTable MakeHudUiBackgroundCursorWidgetFTable() {
 
 HudUiBackgroundContainer_FTable MakeHudUiBackgroundFTable() {
     HudUiBackgroundContainer_FTable table = {0};
-    table.slots[1] = MethodAddress(&HudUiBackground::SetEnabled);
+    AssignMethodSlot(table.updateAll, &HudUiBackground::Update);
+    AssignMethodSlot(table.setEnabled, &HudUiBackground::SetEnabled);
     return table;
 }
 
@@ -340,13 +347,13 @@ const HudUiTimerPanel_FTable g_HudUiTimerPanel_FTable =
 const HudUiCounterTextPanel_FTable g_HudUiCounterTextPanel_FTable =
     MakeHudUiPanelFTable<HudUiCounterTextPanel_FTable>();
 const HudUiTriplet_FTable g_HudUiTriplet_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiTriplet_FTable>();
+    MakeHudUiContainerLikeFTable<HudUiTriplet_FTable>();
 const HudUiTextStack4_FTable g_HudUiTopMessageStack_FTable =
     MakeHudUiContainerLikeFTable<HudUiTextStack4_FTable>();
 const HudUiTextStack4_FTable g_HudUiChatMessageStack_FTable =
     MakeHudUiContainerLikeFTable<HudUiTextStack4_FTable>();
 const HudUiStringMenu_FTable g_HudUiStringMenu_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiStringMenu_FTable>();
+    MakeHudUiContainerLikeFTable<HudUiStringMenu_FTable>();
 const HudUiStatsListElement_FTable g_HudUiStatsListElement_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiStatsListElement_FTable>();
 const HudUiTripletPanel_FTable g_HudUiTripletPanel_FTable = MakeHudUiTripletPanelFTable();
@@ -1038,9 +1045,7 @@ void HudUiPanelVirtualSetTextFmtRequired(HudUiPanel *panel, const char *text) {
 }
 
 void HudUiVirtualSetContainerEnabled(HudUiContainer *container, int enabled) {
-    typedef void (RECOIL_THISCALL *SetEnabledFn)(HudUiContainer * self, int enabled);
-
-    ((SetEnabledFn)(container->vptr->slots[1]))(container, enabled);
+    (container->*(container->vptr->setEnabled))(enabled);
 }
 
 void HudUiVirtualInvalidate(void *element);
@@ -3656,15 +3661,17 @@ void RECOIL_CDECL ShutdownResources() {
 } // namespace HudUiMgr
 
 // Reimplements 0x4b4070: HudUiElement::Constructor
-RECOIL_NOINLINE HudUiElement *RECOIL_THISCALL HudUiElement::Constructor(int initX,
-                                                                        int initY) {
+HudUiElement *RECOIL_THISCALL HudUiElement::Constructor(int initX, int initY) {
     y = initY;
     ftable = &g_HudUiCommon_FTable;
     parent = 0;
     next = 0;
     timer = 0.0f;
     x = initX;
-    ((void(RECOIL_THISCALL *)(HudUiElement *))(ftable->slots[8]))(this);
+
+    typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiElement *);
+    ((InvalidateFn)(((const unsigned int *)ftable)[8]))(this);
+
     flags = 0;
     state = 0;
     SetBltSourceAndClipRect(0, 0);
@@ -3742,17 +3749,18 @@ void RECOIL_THISCALL HudUiElement::SetY(int newY) {
 }
 
 // Reimplements 0x404d20: HudUiElement::SetVisible
-void RECOIL_THISCALL HudUiElement::SetVisible(int visible) {
-    typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiElement * self);
+// BN patches only the low flag byte, then indirect-calls Invalidate through ftable slot 8.
+RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::SetVisible(int visible) {
+    typedef void (RECOIL_FASTCALL *InvalidateFn)(HudUiElement * self);
 
     if (visible != 0) {
         flags &= 0xffffffefu;
-        ((InvalidateFn)(ftable->slots[8]))(this);
-        return;
+    } else {
+        flags |= 0x10u;
     }
 
-    flags |= 0x10;
-    ((InvalidateFn)(ftable->slots[8]))(this);
+    volatile const HudUiCommon_FTable *const dispatchTable = ftable;
+    ((InvalidateFn)(dispatchTable->slots[8]))(this);
 }
 
 // Reimplements 0x4b47a0: HudUiElement::ResetCommonFTable
@@ -3812,10 +3820,14 @@ void RECOIL_THISCALL HudUiElement::SetTimer(float duration) {
 // Reimplements 0x4b4190: HudUiElement::SetBltSourceAndClipRect
 RECOIL_NOINLINE void RECOIL_THISCALL
 HudUiElement::SetBltSourceAndClipRect(void *bltSourceOrNull, const HudUiRect *rectOrNull) {
-    typedef void (RECOIL_THISCALL *SetClipRectFn)(HudUiElement * self, const HudUiRect *rect);
+    struct SetClipRectFTable {
+        unsigned int slots[7];
+        void (HudUiElement::*SetClipRect)(const HudUiRect *rect);
+    };
 
     bltSource = bltSourceOrNull;
-    ((SetClipRectFn)(ftable->slots[7]))(this, rectOrNull);
+    const SetClipRectFTable *const dispatch = (const SetClipRectFTable *)ftable;
+    (this->*dispatch->SetClipRect)(rectOrNull);
 }
 
 // Reimplements 0x4b41b0: HudUiElement::SetClipRect
@@ -3838,6 +3850,14 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::GetRect(HudUiRect *outRect) {
     const int rectY = ((GetCoordFn)(ftable->slots[26]))(this);
     outRect->top = rectY;
     outRect->bottom = rectY;
+}
+
+// Reimplements 0x404d10: HudUiElement::HitTestTrue (D:\Proj\Battlesport\hud.cpp)
+// BN returns via AL only (`mov al, 1`); ignore hit-test coordinates.
+unsigned char RECOIL_THISCALL HudUiElement::HitTestTrue(int px, int py) {
+    (void)px;
+    (void)py;
+    return 1;
 }
 
 // Reimplements 0x404d50: HudUiElement::GetX
@@ -4249,10 +4269,8 @@ unsigned int RECOIL_FASTCALL HudUiFlashPanel::ComputeFlashBlendColor(unsigned in
 
 // Reimplements 0x4bc780: HudUiContainer::ConstructorDefault
 RECOIL_NOINLINE HudUiContainer *RECOIL_THISCALL HudUiContainer::ConstructorDefault() {
-    typedef void (RECOIL_THISCALL *SetEnabledFn)(HudUiContainer * self, int enabled);
-
     vptr = &g_HudUiContainer_FTable;
-    ((SetEnabledFn)(vptr->slots[1]))(this, 0);
+    (this->*(vptr->setEnabled))(0);
     childHead = 0;
     childTail = 0;
     return this;
@@ -4355,12 +4373,36 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiContainer::UpdateAll(float deltaSecond
     }
 }
 
+struct HudUiElementInvalidateDispatch {
+    virtual void Slot0();
+    virtual void Slot1();
+    virtual void Slot2();
+    virtual void Slot3();
+    virtual void Slot4();
+    virtual void Slot5();
+    virtual void Slot6();
+    virtual void Slot7();
+    virtual void Invalidate();
+};
+
 // Reimplements 0x4ba3a0: HudUiContainer::InvalidateChildren
 RECOIL_NOINLINE void RECOIL_THISCALL HudUiContainer::InvalidateChildren() {
     for (HudUiElement *child = childHead; child != 0; child = child->next) {
-        typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiElement * self);
-        ((InvalidateFn)(child->ftable->slots[8]))(child);
+        ((HudUiElementInvalidateDispatch *)child)->Invalidate();
     }
+}
+
+// Reimplements 0x42ee40: HudUiBackgroundContainer::SetEnabled
+void RECOIL_THISCALL HudUiBackgroundContainer::SetEnabled(int enabled) {
+    base.enabled = enabled;
+}
+
+// Reimplements 0x409550: HudUiZrdScrollingText::OnActivateResetOwnerFade
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp) owner is HudUiCreditsPanel*; fadeProgress at +0xad58.
+void RECOIL_THISCALL HudUiZrdScrollingText::OnActivateResetOwnerFade() {
+    float *const ownerFadeProgress =
+        (float *)((unsigned char *)(base.owner) + 0xad58u);
+    *ownerFadeProgress = 0.0f;
 }
 
 // Reimplements 0x4bc510: HudUiBackgroundContainer::Constructor
@@ -6948,6 +6990,12 @@ HudCmdBindButtonBase *RECOIL_THISCALL HudCmdBindButtonBase::Constructor() {
     return this;
 }
 
+// Reimplements 0x40bdf0: StdPtrVector::ClearNoOpDestroy
+void RECOIL_THISCALL StdPtrVector::ClearNoOpDestroy(int *begin, int *end) {
+    (void)begin;
+    (void)end;
+}
+
 // Reimplements 0x40bdc0: zUtil_StdPtrVector_Clear
 RECOIL_NOINLINE void **RECOIL_FASTCALL zUtil_StdPtrVector_Clear(HudCmdBindingVector *self) {
     void **const oldEnd = static_cast<void **>(self->end);
@@ -7662,9 +7710,7 @@ HudUiSlot *RECOIL_THISCALL HudUiSlot::ScalarDeletingDestructor(unsigned int flag
 
 // Reimplements 0x40fa10: HudUiStatsListElement::Update
 void RECOIL_THISCALL HudUiStatsListElement::Update(float deltaSeconds) {
-    typedef void (RECOIL_FASTCALL *UpdateAllFn)(HudUiTriplet * self, float deltaSeconds);
-
-    ((UpdateAllFn)(triplet->base.vptr->slots[0]))(triplet, deltaSeconds);
+    (triplet->base.*(triplet->base.vptr->updateAll))(deltaSeconds);
 }
 
 // Reimplements 0x40fa40: HudUiStatsListElement::DestructorCore

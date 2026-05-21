@@ -690,78 +690,79 @@ RECOIL_NOINLINE int RECOIL_CDECL GetVideoModeIndexFromOptions() {
 RECOIL_NOINLINE void RECOIL_FASTCALL SetVideoModeIndex(int modeIndex) {
     switch (modeIndex) {
     case 2:
-        *ZOPT_VIDEO_MODE = modeIndex;
+        *ZOPT_VIDEO_MODE = 2;
         zOpt::RenderSection_SetPosition(0, 0);
-        zOpt::RenderSection_SetSize(0x140, 0xc8);
+        zOpt::RenderSection_SetSize(320, 200);
         zOpt::WindowSection_SetPosition(0, 0);
-        zOpt::WindowSection_SetSize(0x280, 0x190);
+        zOpt::WindowSection_SetSize(640, 400);
         zOpt::DisplaySection_SetPosition(0, 0);
-        zOpt::DisplaySection_SetSize(0x280, 0x190);
-        zOpt::DisplaySection_SetBitsPerPixel(0x10);
+        zOpt::DisplaySection_SetSize(640, 400);
+        zOpt::DisplaySection_SetBitsPerPixel(16);
         zOpt::SetReplicateMode(1);
         return;
 
     case 3:
-        *ZOPT_VIDEO_MODE = modeIndex;
+        *ZOPT_VIDEO_MODE = 3;
         zOpt::RenderSection_SetPosition(0, 0);
-        zOpt::RenderSection_SetSize(0x140, 0xf0);
+        zOpt::RenderSection_SetSize(320, 240);
         zOpt::WindowSection_SetPosition(0, 0);
-        zOpt::WindowSection_SetSize(0x280, 0x1e0);
+        zOpt::WindowSection_SetSize(640, 480);
         zOpt::DisplaySection_SetPosition(0, 0);
-        zOpt::DisplaySection_SetSize(0x280, 0x1e0);
-        zOpt::DisplaySection_SetBitsPerPixel(0x10);
+        zOpt::DisplaySection_SetSize(640, 480);
+        zOpt::DisplaySection_SetBitsPerPixel(16);
         zOpt::SetReplicateMode(1);
         return;
 
     case 4:
-        *ZOPT_VIDEO_MODE = modeIndex;
+        *ZOPT_VIDEO_MODE = 4;
         zOpt::RenderSection_SetPosition(0, 0);
-        zOpt::RenderSection_SetSize(0x280, 0x190);
+        zOpt::RenderSection_SetSize(640, 400);
         zOpt::WindowSection_SetPosition(0, 0);
-        zOpt::WindowSection_SetSize(0x280, 0x190);
+        zOpt::WindowSection_SetSize(640, 400);
         zOpt::DisplaySection_SetPosition(0, 0);
-        zOpt::DisplaySection_SetSize(0x280, 0x190);
-        zOpt::DisplaySection_SetBitsPerPixel(0x10);
+        zOpt::DisplaySection_SetSize(640, 400);
+        zOpt::DisplaySection_SetBitsPerPixel(16);
         zOpt::SetReplicateMode(0);
         return;
 
     case 5:
-        *ZOPT_VIDEO_MODE = modeIndex;
+        *ZOPT_VIDEO_MODE = 5;
         zOpt::RenderSection_SetPosition(0, 0);
-        zOpt::RenderSection_SetSize(0x280, 0x1e0);
+        zOpt::RenderSection_SetSize(640, 480);
         zOpt::WindowSection_SetPosition(0, 0);
-        zOpt::WindowSection_SetSize(0x280, 0x1e0);
+        zOpt::WindowSection_SetSize(640, 480);
         zOpt::DisplaySection_SetPosition(0, 0);
-        zOpt::DisplaySection_SetSize(0x280, 0x1e0);
-        zOpt::DisplaySection_SetBitsPerPixel(0x10);
+        zOpt::DisplaySection_SetSize(640, 480);
+        zOpt::DisplaySection_SetBitsPerPixel(16);
         zOpt::SetReplicateMode(0);
         return;
 
     case 6:
-        *ZOPT_VIDEO_MODE = modeIndex;
+        *ZOPT_VIDEO_MODE = 6;
         zOpt::RenderSection_SetPosition(0, 0);
-        zOpt::RenderSection_SetSize(0x320, 0x258);
+        zOpt::RenderSection_SetSize(800, 600);
         zOpt::WindowSection_SetPosition(0, 0);
-        zOpt::WindowSection_SetSize(0x320, 0x258);
+        zOpt::WindowSection_SetSize(800, 600);
         zOpt::DisplaySection_SetPosition(0, 0);
-        zOpt::DisplaySection_SetSize(0x320, 0x258);
-        zOpt::DisplaySection_SetBitsPerPixel(0x10);
+        zOpt::DisplaySection_SetSize(800, 600);
+        zOpt::DisplaySection_SetBitsPerPixel(16);
         zOpt::SetReplicateMode(0);
         return;
 
     case 7:
-        *ZOPT_VIDEO_MODE = modeIndex;
+        *ZOPT_VIDEO_MODE = 7;
         zOpt::RenderSection_SetPosition(0, 0);
-        zOpt::RenderSection_SetSize(0x400, 0x300);
+        zOpt::RenderSection_SetSize(1024, 768);
         zOpt::WindowSection_SetPosition(0, 0);
-        zOpt::WindowSection_SetSize(0x400, 0x300);
+        zOpt::WindowSection_SetSize(1024, 768);
         zOpt::DisplaySection_SetPosition(0, 0);
-        zOpt::DisplaySection_SetSize(0x400, 0x300);
-        zOpt::DisplaySection_SetBitsPerPixel(0x10);
+        zOpt::DisplaySection_SetSize(1024, 768);
+        zOpt::DisplaySection_SetBitsPerPixel(16);
         zOpt::SetReplicateMode(0);
         return;
 
     default:
+        *ZOPT_VIDEO_MODE = 0;
         return;
     }
 }
@@ -1214,64 +1215,67 @@ RECOIL_NOINLINE int RECOIL_CDECL GetDisplayModeBpp() {
 
 // Reimplements 0x4a7990: zVideo::Init_SetSurfaceGeometryFromModeIndex
 RECOIL_NOINLINE void RECOIL_FASTCALL Init_SetSurfaceGeometryFromModeIndex(int modeIndex) {
-    int displayWidth = 0;
-    int displayHeight = 0;
-    int swWidth = 0;
-    int swHeight = 0;
-    int useHalfRes = 0;
-
     switch (modeIndex) {
     case 2:
-        displayWidth = 0x280;
-        displayHeight = 0x190;
-        swWidth = 0x140;
-        swHeight = 0x0c8;
-        useHalfRes = 1;
+        g_zVideo_UseHalfResBackbuffer = 1;
+        g_zVideo_DisplayModeSurfaceState.width = 640;
+        g_zVideo_PrimarySurfaceState.width = 640;
+        g_zVideo_SwSurfaceState.width = 320;
+        g_zVideo_SwSurfaceState.height = 200;
+        g_zVideo_DisplayModeSurfaceState.height = 400;
         break;
     case 3:
-        displayWidth = 0x280;
-        displayHeight = 0x1e0;
-        swWidth = 0x140;
-        swHeight = 0x0f0;
-        useHalfRes = 1;
-        break;
-    case 4:
-        displayWidth = 0x280;
-        displayHeight = 0x190;
-        swWidth = 0x280;
-        swHeight = 0x190;
+        g_zVideo_UseHalfResBackbuffer = 1;
+        g_zVideo_DisplayModeSurfaceState.width = 640;
+        g_zVideo_PrimarySurfaceState.width = 640;
+        g_zVideo_SwSurfaceState.width = 320;
+        g_zVideo_SwSurfaceState.height = 240;
+        g_zVideo_DisplayModeSurfaceState.height = 480;
         break;
     case 5:
-        displayWidth = 0x280;
-        displayHeight = 0x1e0;
-        swWidth = 0x280;
-        swHeight = 0x1e0;
+        g_zVideo_UseHalfResBackbuffer = 0;
+        g_zVideo_DisplayModeSurfaceState.width = 640;
+        g_zVideo_SwSurfaceState.width = 640;
+        g_zVideo_PrimarySurfaceState.width = 640;
+        g_zVideo_DisplayModeSurfaceState.height = 480;
+        g_zVideo_SwSurfaceState.height = 480;
+        break;
+    case 4:
+        g_zVideo_UseHalfResBackbuffer = 0;
+        g_zVideo_DisplayModeSurfaceState.width = 640;
+        g_zVideo_SwSurfaceState.width = 640;
+        g_zVideo_PrimarySurfaceState.width = 640;
+        g_zVideo_DisplayModeSurfaceState.height = 400;
+        g_zVideo_SwSurfaceState.height = 400;
         break;
     case 6:
-        displayWidth = 0x320;
-        displayHeight = 0x258;
-        swWidth = 0x320;
-        swHeight = 0x258;
+        g_zVideo_UseHalfResBackbuffer = 0;
+        g_zVideo_DisplayModeSurfaceState.width = 800;
+        g_zVideo_SwSurfaceState.width = 800;
+        g_zVideo_PrimarySurfaceState.width = 800;
+        g_zVideo_DisplayModeSurfaceState.height = 600;
+        g_zVideo_SwSurfaceState.height = 600;
         break;
     case 7:
-        displayWidth = 0x400;
-        displayHeight = 0x300;
-        swWidth = 0x400;
-        swHeight = 0x300;
+        g_zVideo_UseHalfResBackbuffer = 0;
+        g_zVideo_DisplayModeSurfaceState.width = 1024;
+        g_zVideo_SwSurfaceState.width = 1024;
+        g_zVideo_PrimarySurfaceState.width = 1024;
+        g_zVideo_DisplayModeSurfaceState.height = 768;
+        g_zVideo_SwSurfaceState.height = 768;
         break;
     default:
         gVideo_resolutionMenuValid = 0;
         return;
     }
 
-    g_zVideo_UseHalfResBackbuffer = useHalfRes;
-    g_zVideo_DisplayModeSurfaceState.width = displayWidth;
-    g_zVideo_DisplayModeSurfaceState.height = displayHeight;
-    g_zVideo_PrimarySurfaceState.width = displayWidth;
-    g_zVideo_PrimarySurfaceState.height = displayHeight;
-    g_zVideo_SwSurfaceState.width = swWidth;
-    g_zVideo_SwSurfaceState.height = swHeight;
-    g_zVideo_DisplayModeBpp = 0x10;
+    g_zVideo_PrimarySurfaceState.height = g_zVideo_DisplayModeSurfaceState.height;
+    // Original code keeps this legacy 8/16-bpp expression after the valid mode switch.
+    int bitsPerPixel = modeIndex <= 1 ? 1 : 0;
+    --bitsPerPixel;
+    bitsPerPixel &= 8;
+    bitsPerPixel += 8;
+    g_zVideo_DisplayModeBpp = bitsPerPixel;
 }
 
 // Reimplements 0x4a66f0: zVideo::Init_ApplyModeIndex

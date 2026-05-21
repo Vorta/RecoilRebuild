@@ -33,6 +33,7 @@ add_library(recoil_native STATIC
     ../GameZRecoil/zSound/zsnd_init.cpp
     ../GameZRecoil/zSound/zsnd_parm.cpp
     ../GameZRecoil/zSound/zsnd_play.cpp
+    ../GameZRecoil/zSound/zsnd_snapshot_stop_all.cpp
     ../GameZRecoil/zSound/zsnd_sample_set.cpp
     ../GameZRecoil/zSound/zsnd_system.cpp
     ../GameZRecoil/Time/Time.cpp
@@ -58,6 +59,7 @@ add_library(recoil_native STATIC
     ../GameZRecoil/zWeapon/OptCatalog.c
     ../GameZRecoil/zWeapon/zWeapon.cpp
     ../GameZRecoil/zClass/Class.c
+    ../GameZRecoil/zClass/cls_stubs.cpp
     ../GameZRecoil/zClass/Animate.c
     ../GameZRecoil/zClass/Camera.c
     ../GameZRecoil/zClass/cls_di.c

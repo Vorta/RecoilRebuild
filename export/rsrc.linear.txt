@@ -1,5 +1,3 @@
-// Export: Linear view .rsrc
-
 0x77a000 struct Resource_Directory_Table __pe_rsrc_root =
 0x77a000 {
 0x77a000     uint32_t characteristics = 0x0

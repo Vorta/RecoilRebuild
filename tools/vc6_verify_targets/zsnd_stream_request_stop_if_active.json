@@ -1,0 +1,39 @@
+{
+  "name": "zsnd_stream_request_stop_if_active",
+  "description": "zSndStreamRequest active-list stop helper.",
+  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "source_filename": "zsnd_group.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_group.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob1",
+    "/GX",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_group.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a51f0",
+      "symbol": "@zSndStreamRequest_StopIfActive@4",
+      "name": "zSndStreamRequest::StopIfActive"
+    }
+  ]
+}

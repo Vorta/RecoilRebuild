@@ -19,10 +19,15 @@ per-target VC verification evidence.
 
 ## Recovered Contract
 
-- Default binary-safe compiler evidence is VC6 `cl` 12.00.8168 with 32-bit x86
-  code generation unless Binary Ninja/original bytes justify a narrower profile.
-- VC5SP3 profiles are explicit exceptions for functions whose original bytes
-  currently match VC5-era code generation better than the default VC6 profile.
+- First-pass binary-safe compiler evidence is VC5SP3 `cl` 11.00.7022 with
+  32-bit x86 code generation unless Binary Ninja/original bytes justify another
+  profile.
+- VC6 `cl` 12.00.8168 profiles are fallbacks for functions whose original
+  bytes, imports, MFC/CRT behavior, or a reviewed VC5SP3 attempt indicate
+  VS98-era code generation is more plausible.
+- Current executable provenance indicates VS97 SP3 `cvtres` for 1 object,
+  VS97 SP3 `link` 5.10.7303 for 293 objects, and VS98-era tooling for 10
+  objects.
 - MFC42, DirectX, CRT, Win32, and imported runtime behavior should be modeled as
   providers, not fake production stand-ins.
 - Production source must preserve 32-bit pointer, alignment, calling convention,

@@ -47,6 +47,15 @@ class BinaryNinjaBridge:
     def assembly(self, address_or_name: str) -> str:
         return str(self.get_json("assembly", name=address_or_name).get("assembly", ""))
 
+    def hexdump(self, address: str, length: int) -> str:
+        query = urlencode({"address": address, "length": str(length)})
+        url = f"{self.base_url}/hexdump?{query}"
+        try:
+            with urlopen(url, timeout=self.timeout) as response:
+                return response.read().decode("utf-8")
+        except Exception as exc:  # pragma: no cover - useful CLI diagnostic
+            raise BridgeError(f"Binary Ninja bridge request failed: {url}: {exc}") from exc
+
     def il(self, address_or_name: str, view: str = "mlil") -> str:
         key = "address" if address_or_name.lower().startswith("0x") else "name"
         return str(self.get_json("il", **{key: address_or_name, "view": view}).get("il", ""))

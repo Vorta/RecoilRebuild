@@ -28,6 +28,13 @@ PLAN_TEXT = textwrap.dedent(
       - [❌] Source dependencies satisfied
       - [❌] Reimplemented (Name: pending File: pending)
       - [❌] Binary-safe verified
+
+    - 0x401040:
+      - [✅] Reconstructed (Name: FunctionalOnly)
+      - [✅] Source dependencies satisfied
+      - [✅] Reimplemented (Name: FunctionalOnly File: src/FunctionalOnly.cpp)
+      - [❌] Binary-safe verified
+      - [✅] Functional-equivalent accepted (Target: functional_only)
     """
 )
 
@@ -126,6 +133,59 @@ class RecoilPlanCliTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         updated = plan.read_text(encoding="utf-8")
         self.assertIn("  - [❓] Reimplemented (Name: pending File: pending)", updated)
+
+    def test_set_functional_marker_inserts_optional_line(self) -> None:
+        temp = self.with_plan()
+        plan = Path(temp.name) / "RECOIL_PLAN.md"
+        result = self.run_cli(
+            plan,
+            "set",
+            "0x401000",
+            "functional",
+            "✅",
+            "--file",
+            "test_leaf_functional",
+            "--evidence",
+            "functional smoke evidence",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        updated = plan.read_text(encoding="utf-8")
+        self.assertIn(
+            "  - [✅] Functional-equivalent accepted (Target: test_leaf_functional)",
+            updated,
+        )
+
+    def test_next_progress_lane_skips_functionally_accepted_byte_blocker(self) -> None:
+        temp = self.with_plan()
+        plan = Path(temp.name) / "RECOIL_PLAN.md"
+        result = self.run_cli(plan, "next", "--lane", "progress")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("0x401000", result.stdout)
+        self.assertIn("next_field=impl", result.stdout)
+
+    def test_strict_lane_keeps_functionally_accepted_byte_blocker(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            plan = Path(tmp) / "RECOIL_PLAN.md"
+            plan.write_text(
+                "# Test Plan\n"
+                "\n"
+                "## M01 Test\n"
+                "\n"
+                "- 0x401000:\n"
+                "  - [✅] Reconstructed (Name: FunctionalOnly)\n"
+                "  - [✅] Source dependencies satisfied\n"
+                "  - [✅] Reimplemented (Name: FunctionalOnly File: src/FunctionalOnly.cpp)\n"
+                "  - [❌] Binary-safe verified\n"
+                "  - [✅] Functional-equivalent accepted (Target: functional_only)\n",
+                encoding="utf-8",
+            )
+            strict_result = self.run_cli(plan, "next")
+            progress_result = self.run_cli(plan, "next", "--lane", "progress")
+
+        self.assertEqual(strict_result.returncode, 0, strict_result.stderr)
+        self.assertIn("next_field=verify", strict_result.stdout)
+        self.assertEqual(progress_result.returncode, 0, progress_result.stderr)
+        self.assertIn("No unfinished plan entries found.", progress_result.stdout)
 
     def test_unknown_address_fails(self) -> None:
         temp = self.with_plan()

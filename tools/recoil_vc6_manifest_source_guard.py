@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Guard VC6 verification manifests against production-source drift."""
+"""Guard VC verification manifests against production-source drift."""
 
 from __future__ import annotations
 
@@ -40,7 +40,7 @@ def actual_policy_debt(manifest_dir: Path) -> tuple[set[str], set[tuple[str, str
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Reject new VC6 manifest-local source bodies and project-header shadows."
+        description="Reject new VC manifest-local source bodies and project-header shadows."
     )
     parser.add_argument("--manifest-dir", default=str(DEFAULT_MANIFEST_DIR))
     parser.add_argument("--baseline", default=str(DEFAULT_SOURCE_POLICY_BASELINE))
@@ -67,7 +67,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     print(
-        f"VC6 manifest source policy OK: {len(actual_inline)} legacy inline manifest(s), "
+        f"VC manifest source policy OK: {len(actual_inline)} legacy inline manifest(s), "
         f"{len(actual_generated)} generated project-header shadow(s) baselined."
     )
     return 0

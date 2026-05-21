@@ -8,7 +8,7 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 - Keep groups scoped. Prefer one class, one source file cluster, one recursive cycle, or one call-chain frontier.
 - Do not mark plan entries done from this file alone. Plan markers still require current source/build/Binary Ninja evidence.
 - Keep notes concise and temporary. Move durable facts into source comments, Binary Ninja comments, tests, README, or `docs/reconstruction/` before pruning.
-- Verification-only queues that no longer carry source blockers do not belong in this active working file; use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py 0xNNNNNN`, and VC6 manifests for current verification state.
+- Verification-only queues that no longer carry source blockers do not belong in this active working file; use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py 0xNNNNNN`, and VC verification manifests for current verification state.
 - Recompute verification scope with `python tools/recoil_status.py 0xNNNNNN` or `python tools/recoil_frontier.py 0xNNNNNN --depth 1` after source blockers clear.
 - Use `python tools/recoil_groups_audit.py --summary` to find stale, completed, or overgrown groups.
 
@@ -26,6 +26,39 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 ```
 
 ## Active Groups
+
+### Group: Sprint0 M01 anchor verification blockers
+
+- Anchor: 0x415220 RecoilStateMainMenuTransition::OnTryBecomeCurrent
+- Reason: anchor `Binary-safe verified` depends on snapshot callee byte matches still failing VC6 COFF compare.
+- Source blockers:
+  - 0x49fff0 zSndPlayHandleSnapshot::CreateFromActiveSamples
+  - 0x4a0500 zSndPlayHandleSnapshot::StopAllIfPlaying
+- Next action:
+  - `python tools/recoil_vc6_verify.py zsnd_snapshot_stop_all_if_playing`
+  - `python tools/recoil_vc6_verify.py 0x49fff0`
+  - `python tools/recoil_vc6_verify.py 0x415220`
+
+### Group: Deferred P0 zRndr Span*SwitchVShift cluster
+
+- Anchor: 0x49e6c0 zRndr::SpanCopy16FromTex16SwitchVShift (priority ranks 654-660)
+- Reason: HLIL-listed P0 leaves with 257-358 HLIL lines; renderer globals/types and span dispatch tables must be stable before implementation or verification is high-cost.
+- Source blockers:
+  - zRndr span switch tables and texture/palette path globals (not audited in this pass)
+- Next action:
+  - defer until `zRndr` dependency frontier is `Source dependencies satisfied` for a chosen renderer anchor
+
+### Group: HUD container dispatch model
+
+- Anchor: 0x4bc780 HudUiContainer::ConstructorDefault
+- Reason: shared container ftable/vtable dispatch source cleanup and VC6 verification.
+- Source blockers:
+  - 0x4bc780 HudUiContainer::ConstructorDefault
+  - 0x4bc900 HudUiContainer::UpdateAll
+  - 0x40d9d0 HudUiContainer::SetEnabled
+  - 0x40fa10 HudUiStatsListElement::Update
+- Next action:
+  - `python tools/recoil_status.py 0x4bc780`
 
 ### Group: HUD per-frame update
 

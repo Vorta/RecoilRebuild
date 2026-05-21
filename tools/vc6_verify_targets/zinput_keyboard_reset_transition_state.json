@@ -1,0 +1,39 @@
+{
+  "name": "zinput_keyboard_reset_transition_state",
+  "description": "zInput keyboard transition-state reset/drain helper.",
+  "source_filename": "zInput.cpp",
+  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x46f450",
+      "symbol": "?Keyboard_ResetTransitionState@zInput@@YAXXZ",
+      "name": "zInput::Keyboard_ResetTransitionState",
+      "bn_byte_length": 576
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp"
+}

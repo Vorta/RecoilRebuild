@@ -1,0 +1,47 @@
+{
+  "name": "zstub_vtable_stubs",
+  "description": "zClass generic vtable stub helpers from cls_stubs.c.",
+  "source_filename": "cls_stubs.cpp",
+  "source_from": "src/GameZRecoil/zClass/cls_stubs.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zClass/cls_stubs.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x407130",
+      "symbol": "?ReturnOneNoArgs@zStub@@QAEHXZ",
+      "name": "zStub::ReturnOneNoArgs"
+    },
+    {
+      "address": "0x407140",
+      "symbol": "?ReturnZeroNoArgs@zStub@@QAEHXZ",
+      "name": "zStub::ReturnZeroNoArgs"
+    },
+    {
+      "address": "0x407150",
+      "symbol": "?NoOp1Arg@zStub@@QAEXH@Z",
+      "name": "zStub::NoOp1Arg"
+    },
+    {
+      "address": "0x407160",
+      "symbol": "?ReturnOne2Args@zStub@@QAEHHH@Z",
+      "name": "zStub::ReturnOne2Args"
+    }
+  ]
+}

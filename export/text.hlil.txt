@@ -1,5 +1,3 @@
-// Export: HLIL (.text)
-
 // CAboutDlg constructor. Calls CDialog::CDialog with resource ID 0x67 (IDD_ABOUTBOX=103), sets derived vtable. Source: D:\Proj\Battlesport\Recoil.cpp
 0x401000 struct CAboutDlg* __thiscall CAboutDlg::Constructor(struct CAboutDlg* self, struct CWnd* parent)
 {
@@ -246,8 +244,9 @@
     if (nodeIndex s>= 0)
         *currentNodeInOut = nextNode
         int32_t candidateBranchIndex = 0
-    // Raw slot scan: neighborOffset walks PlayerAiPathNode.nextNodes byte offsets 0x0c, 0x10, 0x14.
+    // Raw slot scan: neighborByteOffset walks AINetNode.neighborRefs[0..2].node at byte offsets 0x0c, 0x10, 0x14.
         int32_t neighborByteOffset = 0xc
+    // BN array-rendering limitation: this loop scans nextNode->neighborRefs[0..2].node looking for nodeIndex and sets excludedBranchIndex to that branch, or 4 when no reverse neighbor matches.
         int32_t excludedBranchIndex
 
         while (true)
@@ -623,6 +622,7 @@
     aiState->restoreTarget.z = restorePathNode->position.z
     enum PlayerAiMode2SteeringSubstate currentSteeringSubstate = aiState->currentSteeringSubstate
 
+    // BN condition simplification limitation: because PLAYER_AI_MODE2_STEER_TOWARD_TARGET is 0, this is equivalent to currentSteeringSubstate != PLAYER_AI_MODE2_STEER_DYNAMIC_OFFSET_TARGET (2). The fall-through initializes dynamicOffsetDir only for dynamic-offset pursuit.
     if (currentSteeringSubstate == PLAYER_AI_MODE2_STEER_TOWARD_TARGET || currentSteeringSubstate != 2)
         return
 
@@ -753,7 +753,7 @@
     if ((eax_2:1.b & 1) != 0)
         return
 
-    // Allocates PlayerAiPathNode.
+    // Allocates a synthetic AINetNode used as a transient path node; nodeIndex == -1 marks it for AINetNode::Free cleanup.
     struct AINetNode* eax_3 = malloc(0x30)
     __builtin_memset(eax_3, 0, 0x30)
     eax_3->neighborRefs[0].node = targetNode
@@ -771,7 +771,7 @@
     float z_1 = currentPathNode_1->position.z
     float y = eax_3->position.y
     float z = eax_3->position.z
-    // BN displays only the first field for the by-value zVec3 arguments; assembly pushes full from/to position triplets.
+    // BN call rendering limitation: InitFromSegment takes by-value zVec3 triplets. Arguments here are fan, syntheticNode->position, currentPathNode->position, 10.0f; HLIL shows only the .x fields.
     AINetPathProbeFan::InitFromSegment(eax_3->probeFans[0], eax_3->position.x, currentPathNode_1->position.x, 10f)
     ebx->currentPathNode = eax_3
     ebx->pathIndex = 0
@@ -1791,7 +1791,7 @@
                 float z = resolvedNeighbor->position.z
                 float y_2 = y_1
                 float z_2 = z_1
-    // BN collapses the two by-value zVec3 stack arguments; assembly passes current node position and resolved neighbor position plus pathWidth.
+    // BN call rendering limitation: InitFromSegment takes by-value zVec3 triplets. Arguments here are fan, node->position, resolvedNeighbor->position, pathWidth; HLIL shows only the .x fields.
                 AINetPathProbeFan::InitFromSegment((esi_2 - 0xc)->probeFans[0], x, resolvedNeighbor->position.x, pathWidth)
                 nodeListHead_1 = nodeListHead_2
 
@@ -5034,20 +5034,20 @@
 // Source: D:\Proj\Battlesport\hud.cpp
 0x4070e0 void __thiscall HudUiCheatTextInputWidget::OnActivate(struct HudUiCheatTextInputWidget* self)
 {
-    RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+    RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
     HudUiZrdWidget::OnActivate(self)
 }
 
 // Source: D:\Proj\Battlesport\hud.cpp
 0x407100 void HudUiCallback::QueueExitCurrentState()
 {
-    RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+    RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
 }
 
 // Source: D:\Proj\Battlesport\hud.cpp
 0x407110 int32_t HudUiCallback::QueueCheatCodeState()
 {
-    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilStateCheatCode, nullptr)
+    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilStateCheatCode, 0)
     return 1
 }
 
@@ -7192,7 +7192,7 @@
 // Source: recoil_state.cpp. Queues g_RecoilStateControls on g_RecoilApp with replaceTop = 0.
 0x408ff0 void RecoilStateControls::QueueEnter()
 {
-    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilStateControls, nullptr)
+    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilStateControls, 0)
 }
 
 // Source: D:\Proj\Battlesport\hudui_zrdwidget.cpp
@@ -7277,7 +7277,7 @@
 // Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
 0x409160 void __thiscall HudUiZrdWidget::OnActivateQueueExitCurrentState(struct HudUiZrdWidget* self)
 {
-    RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+    RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
     HudUiZrdWidget::OnActivate(self)
 }
 
@@ -7407,7 +7407,7 @@
         RecoilApp::QueueSwitchCurrentState(&g_RecoilApp, &g_RecoilApp.m_leaveNetworkState, 0)
         return
 
-    RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+    RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
 }
 
 // Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
@@ -7420,26 +7420,26 @@
             begin->panel.vtbl->Update(begin, deltaTime)
 }
 
-// Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp. Updates row/panel positions for scrolling credits and toggles panel visibility against the clipping rect. BN limitation: FPU interpolation and integer position add render verbosely (`i+`/ftol) in HLIL.
+// Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp. Updates row HudUiPanelLayoutEntry positions for scrolling credits and toggles embedded panel visibility against the clipping rect. BN limitation: calls pass the entry address, which is address-equivalent to entry->panel at offset 0; FPU interpolation still renders verbosely (`i+`/ftol) in HLIL.
 0x409470 void __thiscall HudUiZrdScrollingText::UpdateScrollPositions(struct HudUiZrdScrollingText* self, float scrollProgress)
 {
     int32_t left = self->rect.left
     int32_t eax = _ftol_import_thunk((self->rect.top - self->totalHeight * scrollProgress + (1.0 - scrollProgress) * self->rect.bottom).q)
 
     for (struct HudUiPanelSpan* row = self->rows.begin; row != self->rows.end; row = &row[1])
-        for (struct HudUiPanel* panel = row->begin; panel != row->end; panel = &panel[1])
+        for (struct HudUiPanelLayoutEntry* entry = row->begin; entry != row->end; entry = &entry[1])
     // BN displays this integer add as `i+`; assembly computes panel->layoutY + scrollOffsetY.
-            int32_t y = panel->layoutY i+ eax
-            panel->vtbl->SetPos(panel, panel->layoutX + left, y)
+            int32_t y = entry->layoutY i+ eax
+            entry->panel.vtbl->SetPos(entry, entry->layoutX + left, y)
             int32_t eax_4
 
             if (y s> self->rect.top)
-                eax_4 = HudUiPanel::QueryTextHeight(panel)
+                eax_4 = HudUiPanel::QueryTextHeight(entry)
 
             if (y s<= self->rect.top || eax_4 + y s>= self->rect.bottom)
-                panel->vtbl->SetVisible(panel, 0)
+                entry->panel.vtbl->SetVisible(entry, 0)
             else
-                panel->vtbl->SetVisible(panel, 1)
+                entry->panel.vtbl->SetVisible(entry, 1)
 }
 
 // Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
@@ -7448,7 +7448,7 @@
     self->base.owner->fadeProgress = 0f
 }
 
-// Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp. Loads scrolling text RECT/SCROLL_RATE/SCROLLING_TEXT data, creates row spans and panels, applies font styles, and computes totalHeight. BN limitation: constructor SEH, STL vector scratch state, and one-based zReader node-slot indexing remain as raw pointer/stack artifacts in HLIL.
+// Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp. Loads scrolling text RECT/SCROLL_RATE/SCROLLING_TEXT data, creates row spans and panels, applies font styles, and computes totalHeight. Recovered stack locals include HudUiPanelSpan templateSpan at -0x2d4 and HudUiPanelLayoutEntry templateEntry at -0x2b8; templateEntry contains the panel passed to HudUiPanel helpers and layoutX/layoutY at +0x2a4/+0x2a8. SCROLLING_TEXT rows and labels are one-based zReader node-slot arrays, so some indexed list access still reflects the original slot-array layout.
 0x409570 int32_t __thiscall HudUiZrdScrollingText::LoadFromZrd(struct HudUiZrdScrollingText* self, struct zReader_Node* zrdSection, struct HudUiCreditsPanel* owner)
 {
     int32_t var_4_2 = 0xffffffff
@@ -7474,10 +7474,10 @@
     if (eax_6 != 0)
         owner->fadeStep = eax_6->value
 
-    struct zReader_Node_Arr_HudTextLabelSpecList* ebx_9 = zReader::GetNamedNode(zrdSection, "SCROLLING_TEXT")
-    struct zReader_Node_Arr_HudTextLabelSpecList* ebx = ebx_9
+    struct zReader_Node_Arr_HudTextLabelSpecList* scrollingTextNode_1 = zReader::GetNamedNode(zrdSection, "SCROLLING_TEXT")
+    struct zReader_Node_Arr_HudTextLabelSpecList* scrollingTextNode = scrollingTextNode_1
 
-    if (ebx_9 != 0)
+    if (scrollingTextNode_1 != 0)
         char var_2d9
         struct zReader_Node_Arr_HudTextLabelSpecList* eax_7
         eax_7.b = var_2d9
@@ -7488,64 +7488,64 @@
         templateSpan.cap = 0
         int32_t esi_1 = 1
         int32_t var_4 = 0
-        int32_t var_2e0_1 = 1
-        int32_t count = ebx_9->list->count
+        int32_t var_2e0 = 1
+        int32_t rowCount = scrollingTextNode_1->list->count
 
-        if (count s> 1)
+        if (rowCount s> 1)
             do
-                int32_t ecx_6 = *((&ebx_9->list->count)[esi_1 * 2] + 4)
-                struct HudUiPanel* end = templateSpan.end
-                struct HudUiPanel* start = HudUiPanel::CopyAssignRange(end, end, templateSpan.begin)
-                HudUiPanel::DestroyRange(start, templateSpan.end)
+                int32_t ecx_6 = *((&scrollingTextNode_1->list->count)[esi_1 * 2] + 4)
+                struct HudUiPanelLayoutEntry* end = templateSpan.end
+                struct HudUiPanelLayoutEntry* start = HudUiPanelLayoutEntry::CopyAssignRange(end, end, templateSpan.begin)
+                HudUiPanelLayoutEntry::DestroyRange(start, templateSpan.end)
                 templateSpan.end = start
-                int32_t var_2d8_1 = 1
+                int32_t labelIndex = 1
 
                 if (ecx_6 s> 1)
                     bool cond:6_1
 
                     do
     // SCROLLING_TEXT rows and entries are one-based zReader node-slot arrays; slot payload pointer is list + 4 + index * 8.
-                        char* eax_11 = zLoc::ResolveMessageKeyOrFallback(*(*((&ebx_9->list->count)[esi_1 * 2] + (var_2d8_1 << 3) + 4) + 0xc))
-                        struct zReader_NodeArray_HudTextLabelSpec* eax_13 = *((&ebx_9->list->count)[esi_1 * 2] + (var_2d8_1 << 3) + 4)
+                        char* eax_11 = zLoc::ResolveMessageKeyOrFallback(*(*((&scrollingTextNode_1->list->count)[esi_1 * 2] + (labelIndex << 3) + 4) + 0xc))
+                        struct zReader_NodeArray_HudTextLabelSpec* eax_13 = *((&scrollingTextNode_1->list->count)[esi_1 * 2] + (labelIndex << 3) + 4)
                         int32_t i32_1 = eax_13->x.i32
                         int32_t i32 = eax_13->y.i32
                         int32_t i32_2 = eax_13->fontStyleRef.i32
-                        struct HudUiPanel templatePanel
-                        HudUiPanel::ConstructorDefault(&templatePanel, nullptr, 0, 0)
+                        struct HudUiPanelLayoutEntry templateEntry
+                        HudUiPanel::ConstructorDefault(&templateEntry, nullptr, 0, 0)
                         var_4.b = 1
-                        HudUiPanel::SetTextFmt(&templatePanel, "%s", eax_11)
+                        HudUiPanel::SetTextFmt(&templateEntry, "%s", eax_11)
                         int32_t ecx_12 = i32_2 * 9
                         struct HudUiZrdDialog* owner_1 = self_2->base.owner
                         int32_t esi_2 = *(&owner_1->fontStyles + (ecx_12 << 2))
                         int32_t esi_3 = neg.d(esi_2)
-                        templatePanel.layoutX = i32_1
-                        struct HudFontStyle* esi_6 = sbb.d(esi_3, esi_3, esi_2 != 0) & (&owner_1->fontStyles + (ecx_12 << 2))
-                        templatePanel.layoutY = i32
+                        templateEntry.layoutX = i32_1
+                        struct HudFontStyle* fontStyle = sbb.d(esi_3, esi_3, esi_2 != 0) & (&owner_1->fontStyles + (ecx_12 << 2))
+                        templateEntry.layoutY = i32
 
-                        if (esi_6 != 0)
-                            HudUiPanel::SetFont(&templatePanel, esi_6->fontName, esi_6->fontSize, esi_6->fontWeight, 0, 0, 0, 2)
-                            uint32_t textColor = esi_6->textColor
-                            templatePanel.textColor0 = textColor
-                            templatePanel.textColor1 = textColor
-                            templatePanel.textDirty = 1
-                            templatePanel.shadowEnabled = esi_6->shadowEnabled
-                            templatePanel.shadowOffsetX = 1
-                            templatePanel.shadowOffsetY = 1
+                        if (fontStyle != 0)
+                            HudUiPanel::SetFont(&templateEntry, fontStyle->fontName, fontStyle->fontSize, fontStyle->fontWeight, 0, 0, 0, 2)
+                            uint32_t textColor = fontStyle->textColor
+                            templateEntry.panel.textColor0 = textColor
+                            templateEntry.panel.textColor1 = textColor
+                            templateEntry.panel.textDirty = 1
+                            templateEntry.panel.shadowEnabled = fontStyle->shadowEnabled
+                            templateEntry.panel.shadowOffsetX = 1
+                            templateEntry.panel.shadowOffsetY = 1
 
-                        HudUiPanelSpan::InsertN(&templateSpan, templateSpan.end, 1, &templatePanel)
+                        HudUiPanelSpan::InsertN(&templateSpan, templateSpan.end, 1, &templateEntry)
                         var_4.b = 0
-                        HudUiPanel::Destructor(&templatePanel)
-                        esi_1 = var_2e0_1
-                        ebx_9 = ebx
-                        cond:6_1 = var_2d8_1 + 1 s< ecx_6
-                        var_2d8_1 += 1
+                        HudUiPanel::Destructor(&templateEntry)
+                        esi_1 = var_2e0
+                        scrollingTextNode_1 = scrollingTextNode
+                        cond:6_1 = labelIndex + 1 s< ecx_6
+                        labelIndex += 1
                     while (cond:6_1)
                     self_1 = self_2
 
                 HudUiPanelSpanVec::InsertN(&self_1->rows, self_1->rows.end, 1, &templateSpan)
                 esi_1 += 1
-                var_2e0_1 = esi_1
-            while (esi_1 s< count)
+                var_2e0 = esi_1
+            while (esi_1 s< rowCount)
 
         self_1->totalHeight = 0
         struct HudUiPanelSpan* begin_1 = self_1->rows.begin
@@ -7556,14 +7556,14 @@
 
             do
                 struct HudUiPanelLayoutEntry* begin_2 = (edi_3 - 8)->begin
-                int32_t ebx_11 = 0
+                int32_t rowHeight = 0
 
                 if (begin_2 != (edi_3 - 8)->end)
                     do
-                        int32_t eax_22 = HudUiPanel::QueryTextHeight(begin_2) + begin_2->layoutY
+                        int32_t rowHeight_1 = HudUiPanel::QueryTextHeight(begin_2) + begin_2->layoutY
 
-                        if (eax_22 s> ebx_11)
-                            ebx_11 = eax_22
+                        if (rowHeight_1 s> rowHeight)
+                            rowHeight = rowHeight_1
 
                         begin_2 = &begin_2[1]
                     while (begin_2 != (edi_3 - 8)->end)
@@ -7575,7 +7575,7 @@
 
                 begin_1 = &begin_1[1]
                 edi_3 = &edi_3[4]
-                self_1->totalHeight += ebx_11
+                self_1->totalHeight += rowHeight
                 begin_4 = begin_1
             while (begin_1 != self_1->rows.end)
 
@@ -7746,7 +7746,7 @@
 // Source: D:\Proj\Battlesport\RecoilStateCredits.cpp
 0x409b00 void RecoilStateCredits::QueuePush()
 {
-    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilStateCredits, nullptr)
+    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilStateCredits, 0)
 }
 
 // Source: D:\Proj\Battlesport\HudUiPanel.cpp. Destroys each owned HudUiPanel in begin/end, frees the backing array, then clears begin/end/cap.
@@ -7763,52 +7763,52 @@
     self->cap = nullptr
 }
 
-// Source: D:\Proj\Battlesport\HudUiPanel.cpp
-0x409b60 void __stdcall HudUiPanel::DestroyRange(struct HudUiPanel* start, struct HudUiPanel* end)
+// Destroys a half-open range of HudUiPanelLayoutEntry values; each entry owns an embedded HudUiPanel at offset 0 plus layoutX/layoutY.
+0x409b60 void __stdcall HudUiPanelLayoutEntry::DestroyRange(struct HudUiPanelLayoutEntry* start, struct HudUiPanelLayoutEntry* end)
 {
-    for (struct HudUiPanel* i = start; i != end; i = &i[1])
+    for (struct HudUiPanelLayoutEntry* i = start; i != end; i = &i[1])
         HudUiPanel::DestructorThunk(i)
 }
 
 // Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
-// BN note: generated vector fill-insert over 0x2ac-byte HudUiPanel elements; some byte-count temporaries render as pointer arithmetic.
-0x409b90 void __thiscall HudUiPanelSpan::InsertN(struct HudUiPanelSpan* self, struct HudUiPanel* insertPos, uint32_t count, struct HudUiPanel* templatePanel)
+// Generated vector fill-insert over HudUiPanelLayoutEntry values (0x2ac bytes each). Helper calls are layout-entry copy/destroy routines; some byte-count temporaries still render as raw pointer arithmetic.
+0x409b90 void __thiscall HudUiPanelSpan::InsertN(struct HudUiPanelSpan* self, struct HudUiPanelLayoutEntry* insertPos, uint32_t count, struct HudUiPanelLayoutEntry const* templatePanel)
 {
     uint32_t count_2 = count
     struct HudUiPanelLayoutEntry* end_2 = self->end
 
     if ((self->cap - end_2) s/ 0x2ac u>= count_2)
-        struct HudUiPanel* insertPos_3 = insertPos
+        struct HudUiPanelLayoutEntry* insertPos_3 = insertPos
 
         if ((end_2 - insertPos_3) s/ 0x2ac u>= count_2)
             if (count_2 u> 0)
                 struct HudUiPanelLayoutEntry* end_6 = end_2
                 uint32_t ebp_3 = count_2 * 0x2ac
-                struct HudUiPanel* source_3 = end_2 - ebp_3
+                struct HudUiPanelLayoutEntry* source_3 = end_2 - ebp_3
 
                 while (source_3 != end_2)
                     if (end_6 != 0)
-                        HudUiPanel::CopyConstruct(end_6, source_3)
+                        HudUiPanelLayoutEntry::CopyConstruct(end_6, source_3)
 
                     source_3 = &source_3[1]
                     end_6 = &end_6[1]
 
                 struct HudUiPanelLayoutEntry* end_5 = self->end
-                struct HudUiPanel* source_1 = end_5 - ebp_3
+                struct HudUiPanelLayoutEntry* source_1 = end_5 - ebp_3
 
                 if (insertPos != source_1)
                     do
                         source_1 -= 0x2ac
                         end_5 -= 0x2ac
-                        HudUiPanel::CopyAssign(end_5, source_1)
+                        HudUiPanelLayoutEntry::CopyAssign(end_5, source_1)
                     while (source_1 != insertPos)
 
                 void* edi_5 = &insertPos[count_2]
-                struct HudUiPanel* insertPos_2 = insertPos
+                struct HudUiPanelLayoutEntry* insertPos_2 = insertPos
 
                 if (insertPos != edi_5)
                     do
-                        HudUiPanel::CopyAssign(insertPos_2, templatePanel)
+                        HudUiPanelLayoutEntry::CopyAssign(insertPos_2, templatePanel)
                         insertPos_2 = &insertPos_2[1]
                     while (insertPos_2 != edi_5)
 
@@ -7816,14 +7816,14 @@
 
             return
 
-        struct HudUiPanel* ebx_2 = &insertPos_3[count_2]
+        struct HudUiPanelLayoutEntry* ebx_2 = &insertPos_3[count_2]
 
         if (insertPos_3 != end_2)
-            struct HudUiPanel* source_2 = ebx_2 - count_2 * 0x2ac
+            struct HudUiPanelLayoutEntry* source_2 = ebx_2 - count_2 * 0x2ac
 
             do
                 if (ebx_2 != 0)
-                    HudUiPanel::CopyConstruct(ebx_2, source_2)
+                    HudUiPanelLayoutEntry::CopyConstruct(ebx_2, source_2)
 
                 source_2 = &source_2[1]
                 ebx_2 = &ebx_2[1]
@@ -7840,7 +7840,7 @@
 
             do
                 if (end_3 != 0)
-                    HudUiPanel::CopyConstruct(end_3, templatePanel)
+                    HudUiPanelLayoutEntry::CopyConstruct(end_3, templatePanel)
 
                 end_3 = &end_3[1]
                 i = i_2
@@ -7848,12 +7848,12 @@
             while (i != 1)
 
         struct HudUiPanelSpan* self_1 = self
-        struct HudUiPanel* insertPos_4 = insertPos_3
+        struct HudUiPanelLayoutEntry* insertPos_4 = insertPos_3
         struct HudUiPanelLayoutEntry* end_1 = self_1->end
 
         if (insertPos_3 != end_1)
             do
-                HudUiPanel::CopyAssign(insertPos_4, templatePanel)
+                HudUiPanelLayoutEntry::CopyAssign(insertPos_4, templatePanel)
                 insertPos_4 = &insertPos_4[1]
             while (insertPos_4 != end_1)
 
@@ -7888,19 +7888,19 @@
 
     // Allocates HudUiPanel[count_1] storage for the expanded span.
     struct HudUiPanelLayoutEntry* eax_11 = operator new(count_1 * 0x2ac)
-    struct HudUiPanel* insertPos_1 = insertPos
-    struct HudUiPanel* ebx_1 = eax_11
+    struct HudUiPanelLayoutEntry* insertPos_1 = insertPos
+    struct HudUiPanelLayoutEntry* ebx_1 = eax_11
     struct HudUiPanelLayoutEntry* begin_1 = self->begin
 
     while (begin_1 != insertPos_1)
         if (ebx_1 != 0)
-            HudUiPanel::CopyConstruct(ebx_1, begin_1)
+            HudUiPanelLayoutEntry::CopyConstruct(ebx_1, begin_1)
 
         insertPos_1 = insertPos
         begin_1 = &begin_1[1]
         ebx_1 = &ebx_1[1]
 
-    struct HudUiPanel* esi_1 = ebx_1
+    struct HudUiPanelLayoutEntry* esi_1 = ebx_1
 
     if (count_2 u> 0)
         uint32_t i_3 = count_2
@@ -7908,7 +7908,7 @@
 
         do
             if (esi_1 != 0)
-                HudUiPanel::CopyConstruct(esi_1, templatePanel)
+                HudUiPanelLayoutEntry::CopyConstruct(esi_1, templatePanel)
 
             esi_1 = &esi_1[1]
             i_1 = i_3
@@ -7919,14 +7919,14 @@
     struct HudUiPanelSpan* self_2 = self
     struct HudUiPanelLayoutEntry* end = self_2->end
     insertPos = end
-    struct HudUiPanel* edi_1 = &ebx_1[count_2]
+    struct HudUiPanelLayoutEntry* edi_1 = &ebx_1[count_2]
 
     if (insertPos_1 != end)
-        struct HudUiPanel* source = edi_1 - ebx_1 + insertPos_1 - count_2 * 0x2ac
+        struct HudUiPanelLayoutEntry* source = edi_1 - ebx_1 + insertPos_1 - count_2 * 0x2ac
 
         do
             if (edi_1 != 0)
-                HudUiPanel::CopyConstruct(edi_1, source)
+                HudUiPanelLayoutEntry::CopyConstruct(edi_1, source)
                 end = insertPos
 
             source = &source[1]
@@ -7962,7 +7962,7 @@
 
 // Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
 // BN note: generated vector fill-insert over 0x10-byte HudUiPanelSpan elements; some byte-count temporaries render as pointer arithmetic.
-0x409f00 void __thiscall HudUiPanelSpanVec::InsertN(struct HudUiPanelSpanVec* self, struct HudUiPanelSpan* insertPos, uint32_t count, struct HudUiPanelSpan* templateSpan)
+0x409f00 void __thiscall HudUiPanelSpanVec::InsertN(struct HudUiPanelSpanVec* self, struct HudUiPanelSpan* insertPos, uint32_t count, struct HudUiPanelSpan const* templateSpan)
 {
     uint32_t count_2 = count
     struct HudUiPanelSpan* end_3 = self->end
@@ -8151,17 +8151,16 @@
     // remaining_capacity = (capacity_end - end) / 0x10 (PanelSpan element size)
 }
 
-// Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
-// BN note: the int32_t* 0xab stride is the gap from one HudUiPanel.layoutX field to the next 0x2ac-byte panel.
-0x40a170 struct HudUiPanel* __fastcall HudUiPanel::CopyAssignRange(struct HudUiPanel* sourceStart, struct HudUiPanel* sourceEnd, struct HudUiPanel* dest)
+// Copies a half-open range of HudUiPanelLayoutEntry values, including the embedded HudUiPanel state and trailing layoutX/layoutY fields.
+0x40a170 struct HudUiPanelLayoutEntry* __fastcall HudUiPanelLayoutEntry::CopyAssignRange(struct HudUiPanelLayoutEntry const* sourceStart, struct HudUiPanelLayoutEntry const* sourceEnd, struct HudUiPanelLayoutEntry* dest)
 {
-    struct HudUiPanel* sourceStart_1 = sourceStart
-    struct HudUiPanel* source = sourceStart
+    struct HudUiPanelLayoutEntry const* sourceStart_1 = sourceStart
+    struct HudUiPanelLayoutEntry const* source = sourceStart
 
     if (source == sourceEnd)
         return dest
 
-    struct HudUiPanel* dest_1 = dest
+    struct HudUiPanelLayoutEntry* dest_1 = dest
     int32_t* ebx = &source->layoutX
     int32_t* edi = &dest_1->layoutX
 
@@ -8179,8 +8178,8 @@
     return dest_1
 }
 
-// Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
-0x40a1e0 struct HudUiPanel* __thiscall HudUiPanel::CopyAssign(struct HudUiPanel* self, struct HudUiPanel* source)
+// Copy-assigns one HudUiPanelLayoutEntry: embedded HudUiPanel copy plus layoutX/layoutY.
+0x40a1e0 struct HudUiPanelLayoutEntry* __thiscall HudUiPanelLayoutEntry::CopyAssign(struct HudUiPanelLayoutEntry* self, struct HudUiPanelLayoutEntry const* source)
 {
     // self.CopyAssignCore(source) — ScalarDeletingDestructorAlt is actually copy-assign-core for 0x2a4 bytes
     HudUiPanel::CopyConstructor(self, source)
@@ -8189,8 +8188,8 @@
     return self
 }
 
-// Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
-0x40a210 struct HudUiPanel* __thiscall HudUiPanel::CopyConstruct(struct HudUiPanel* self, struct HudUiPanel* source)
+// Copy-constructs one HudUiPanelLayoutEntry: embedded HudUiPanel construction plus layoutX/layoutY.
+0x40a210 struct HudUiPanelLayoutEntry* __thiscall HudUiPanelLayoutEntry::CopyConstruct(struct HudUiPanelLayoutEntry* self, struct HudUiPanelLayoutEntry const* source)
 {
     // self.CopyConstructCore(source) — HudUiPanel::Constructor here is the copy-constructor-core for 0x2a4 bytes
     HudUiPanel::CopyConstructCore(self, source)
@@ -8278,7 +8277,7 @@
             struct HudUiPanelLayoutEntry* end_1 = source_2->end
 
             while (begin_4 != end_1)
-                HudUiPanel::CopyAssign(begin_2, begin_4)
+                HudUiPanelLayoutEntry::CopyAssign(begin_2, begin_4)
                 begin_4 = &begin_4[1]
                 begin_2 = &begin_2[1]
 
@@ -8325,7 +8324,7 @@
             else
                 edx_18 = 0
 
-            struct HudUiPanel* source_1 = &begin_4[edx_18]
+            struct HudUiPanelLayoutEntry* source_1 = &begin_4[edx_18]
 
             if (begin_4 != source_1)
                 int32_t* edi = &begin_2->layoutX
@@ -8348,7 +8347,7 @@
 
             while (source_1 != end)
                 if (end_5 != 0)
-                    HudUiPanel::CopyConstruct(end_5, source_1)
+                    HudUiPanelLayoutEntry::CopyConstruct(end_5, source_1)
 
                 source_1 = &source_1[1]
                 end_5 = &end_5[1]
@@ -8384,7 +8383,7 @@
 
         while (begin_3 != end_4)
             if (esi_2 != 0)
-                HudUiPanel::CopyConstruct(esi_2, begin_3)
+                HudUiPanelLayoutEntry::CopyConstruct(esi_2, begin_3)
 
             begin_3 = &begin_3[1]
             esi_2 = &esi_2[1]
@@ -9444,7 +9443,7 @@
 // Source: HudCmdDialog.cpp
 0x40bda0 void HudCmdDialogState::QueueEnter()
 {
-    RecoilApp::QueuePushState(&g_RecoilApp, &g_HudCmdDialogState, nullptr)
+    RecoilApp::QueuePushState(&g_RecoilApp, &g_HudCmdDialogState, 0)
 }
 
 // Source: D:\Proj\Battlesport\zUtil.cpp
@@ -10017,7 +10016,7 @@
     int32_t ecx
     ecx.b = self->owner->fullHudToggle.checked != 0
     zOpt::SetHudTypeForCurrentHwMode(ecx + 1)
-    RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+    RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
     HudUiZrdWidget::OnActivate(self)
 }
 
@@ -10557,7 +10556,7 @@
 // Source: HudOptionsDialog.cpp. Queues g_HudUiOptionsPanelOverlayOwner on g_RecoilApp.
 0x40d1c0 void HudUiOptionsPanelOverlayOwner::QueueEnter()
 {
-    RecoilApp::QueuePushState(&g_RecoilApp, &g_HudUiOptionsPanelOverlayOwner, nullptr)
+    RecoilApp::QueuePushState(&g_RecoilApp, &g_HudUiOptionsPanelOverlayOwner, 0)
 }
 
 // Source: HudUiTriplet.cpp. CRT static initializer entry for g_HudUiTripletWndClassName.
@@ -10736,11 +10735,11 @@
 // Source: D:\Proj\Battlesport\hud.cpp -- HudUiMgr::RegisterAtExit.
 0x40d420 void HudUiMgr::RegisterAtExit()
 {
-    atexit(__cxx_global_atexit_gHudUiMgr)
+    atexit(HudUiMgr::AtExitDestructor)
 }
 
 // Source: D:\Proj\Battlesport\hud.cpp -- compiler-generated atexit callback for g_HudUiMgr.
-0x40d430 void __cxx_global_atexit_gHudUiMgr()
+0x40d430 void HudUiMgr::AtExitDestructor()
 {
     return HudUiMgr::StaticDestructor(&g_HudUiMgr) __tailcall
 }
@@ -12003,6 +12002,7 @@
     int32_t displaySeconds
     double value_2
     displaySeconds:4.d = _ftol_import_thunk(value_2)
+    // BN call rendering limitation: assembly pushes displaySeconds (eax), minutes (ebx), and hours (edi) before calling SetTimeSeconds(self, hours, minutes, displaySeconds).
     HudUiTimerPanel::SetTimeSeconds(self, hours, minutes)
 }
 
@@ -12292,7 +12292,7 @@
             child->vtbl->SetPos(child, 5, y)
             HudUiContainer::AddChild(stringMenu, child)
             child->vtbl->SetVisible(child, 1)
-            child = &child->layoutX
+            child = &child[1]
             y += 0xf
             i = i_1
             i_1 -= 1
@@ -12311,7 +12311,7 @@
     else
         HudUiWidget::Constructor(&shieldMessageWidget->widget, 0)
         var_4_4.b = 5
-        struct HudUiPanel* percentTextPanel = &shieldMessageWidget->percentTextPanel
+        struct HudUiPanelCore* var_10_1 = &shieldMessageWidget->percentTextPanel
         HudUiPanel::ConstructorDefault(&shieldMessageWidget->percentTextPanel, nullptr, 0, 0)
         var_4_4.b = 6
         shieldMessageWidget->percentTextPanel.vtbl = &g_HudUiPanelSimple_FTable
@@ -12324,31 +12324,31 @@
     int32_t var_4_5 = 0xffffffff
     g_HudUiMgr.sensor.shieldMessageWidget = shieldMessageWidget
     // Allocates HudUiCounterTextPanel storage.
-    struct HudUiPanel* counterTextPanelStorage = operator new(0x2a4)
-    struct HudUiPanel* counterTextPanelStorage_1 = counterTextPanelStorage
+    struct HudUiCounterTextPanel* eax_8 = operator new(0x2a4)
+    struct HudUiCounterTextPanel* var_10_2 = eax_8
     int32_t var_4_6 = 8
-    struct HudUiCounterTextPanel* eax_8
+    struct HudUiCounterTextPanel* eax_9
 
-    if (counterTextPanelStorage == 0)
-        eax_8 = nullptr
+    if (eax_8 == 0)
+        eax_9 = nullptr
     else
-        eax_8 = HudUiCounterTextPanel::Constructor(counterTextPanelStorage)
+        eax_9 = HudUiCounterTextPanel::Constructor(eax_8)
 
     int32_t var_4_7 = 0xffffffff
-    g_HudUiMgr.objective.counterTextPanel = eax_8
+    g_HudUiMgr.objective.counterTextPanel = eax_9
     // Allocates HudUiTimerPanel.
-    struct HudUiTimerPanel* eax_9 = operator new(0x2b0)
-    struct HudUiTimerPanel* var_10_1 = eax_9
+    struct HudUiTimerPanel* eax_10 = operator new(0x2b0)
+    struct HudUiTimerPanel* var_10_3 = eax_10
     int32_t var_4_8 = 9
-    struct HudUiTimerPanel* eax_10
+    struct HudUiTimerPanel* eax_11
 
-    if (eax_9 == 0)
-        eax_10 = nullptr
+    if (eax_10 == 0)
+        eax_11 = nullptr
     else
-        eax_10 = HudUiTimerPanel::ConstructorDefault(eax_9)
+        eax_11 = HudUiTimerPanel::ConstructorDefault(eax_10)
 
     int32_t var_4_9 = 0xffffffff
-    g_HudUiMgr.timerPanel = eax_10
+    g_HudUiMgr.timerPanel = eax_11
     // Allocates HudUiStatsListElement.
     struct HudUiStatsListElement* statsListElement = operator new(0x38)
     struct HudUiStatsListElement* statsListElement_1 = statsListElement
@@ -12361,14 +12361,14 @@
         var_4_10.b = 0xb
         statsListElement->base.ftable = &g_HudUiStatsListElement_FTable
     // Allocates HudUiTriplet for stats list.
-        struct HudUiTriplet* statsTripletStorage = operator new(0xe0)
-        struct HudUiTriplet* statsTriplet = statsTripletStorage
+        struct HudUiTriplet* statsTriplet_1 = operator new(0xe0)
+        struct HudUiTriplet* statsTriplet = statsTriplet_1
         var_4_10.b = 0xc
 
-        if (statsTripletStorage == 0)
+        if (statsTriplet_1 == 0)
             statsListElement->triplet = nullptr
         else
-            statsListElement->triplet = HudUiTriplet::Constructor(statsTripletStorage)
+            statsListElement->triplet = HudUiTriplet::Constructor(statsTriplet_1)
 
     int32_t var_4_11 = 0xffffffff
     g_HudUiMgr.statsList = statsListElement
@@ -12430,31 +12430,31 @@
     int32_t var_4_17 = 0xffffffff
     g_HudUiMgr.objective.objectiveLabelTextPanel = objectiveLabelTextPanelInit
     // Allocates HudUiTopMessageStack.
-    struct HudUiTextStack4* topMessageStackStorage = operator new(0xaa0)
-    struct HudUiTextStack4* topMessageStackStorage_1 = topMessageStackStorage
+    struct HudUiTopMessageStack* topMessageStackStorage = operator new(0xaa0)
+    struct HudUiTopMessageStack* topMessageStackStorage_1 = topMessageStackStorage
     int32_t var_4_18 = 0x13
-    struct HudUiTextStack4* eax_16
+    struct HudUiTopMessageStack* eax_17
 
     if (topMessageStackStorage == 0)
-        eax_16 = nullptr
+        eax_17 = nullptr
     else
-        eax_16 = HudUiTopMessageStack::Constructor(topMessageStackStorage)
+        eax_17 = HudUiTopMessageStack::Constructor(topMessageStackStorage)
 
     int32_t var_4_19 = 0xffffffff
-    g_HudUiTopMessageStack = eax_16
+    g_HudUiTopMessageStack = eax_17
     // Allocates HudUiChatMessageStack.
-    struct HudUiTextStack4* chatMessageStackStorage = operator new(0xaa0)
-    struct HudUiTextStack4* chatMessageStackStorage_1 = chatMessageStackStorage
+    struct HudUiChatMessageStack* eax_18 = operator new(0xaa0)
+    struct HudUiChatMessageStack* var_10_4 = eax_18
     int32_t var_4_20 = 0x14
-    struct HudUiTextStack4* chatMessageStackResult
+    struct HudUiChatMessageStack* eax_19
 
-    if (chatMessageStackStorage == 0)
-        chatMessageStackResult = nullptr
+    if (eax_18 == 0)
+        eax_19 = nullptr
     else
-        chatMessageStackResult = HudUiChatMessageStack::Constructor(chatMessageStackStorage)
+        eax_19 = HudUiChatMessageStack::Constructor(eax_18)
 
     int32_t var_4_21 = 0xffffffff
-    g_HudUiChatMessageStack = chatMessageStackResult
+    g_HudUiChatMessageStack = eax_19
     g_HudUiMgr.hudLoaded = 0
     g_HudUiMgr.layoutDelayFrames = 0
     g_HudUiMgr.statsListState1 = 0
@@ -16787,7 +16787,7 @@
 // Source: HudUiMainMenuDialog.cpp. Back button activation queues exit from the current app state, runs the shared HudUiZrdWidget activation behavior, then refreshes the active HUD layout.
 0x414fa0 void __thiscall HudUiMenuBackButton::OnActivate(struct HudUiZrdWidget* self)
 {
-    RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+    RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
     HudUiZrdWidget::OnActivate(self)
     HudUiMgr::TriggerCurrentLayoutOnActivated()
 }
@@ -17131,7 +17131,7 @@
 0x415650 void __fastcall RecoilStateMainMenuTransition::QueueEnter(enum RecoilMainMenuEntryRoute entryRoute)
 {
     g_RecoilState_MainMenuTransition.m_entryRoute = entryRoute
-    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilState_MainMenuTransition, nullptr)
+    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilState_MainMenuTransition, 0)
 }
 
 // Original file: GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp
@@ -17176,7 +17176,7 @@
 {
     g_RecoilState_MainMenuSkipExitDelay = 1
     RecoilApp::QueueExitCurrentState(&g_RecoilApp, 1)
-    RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+    RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
     g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_ON_EXIT
     RecoilApp::QueueSwitchCurrentState(&g_RecoilApp, &g_RecoilApp.m_leaveNetworkState, 0)
     HudUiZrdWidget::OnActivate(self)
@@ -17335,7 +17335,7 @@
 // Source: HudConfirmQuitDialog.cpp. Queues g_RecoilState_ConfirmQuit on g_RecoilApp with replaceTop = 0.
 0x4159b0 void RecoilStateConfirmQuit::QueueEnter()
 {
-    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilState_ConfirmQuit, nullptr)
+    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilState_ConfirmQuit, 0)
 }
 
 // Original file: GameZRecoil/zFMV/fmv_action.cpp
@@ -17353,13 +17353,13 @@
     int32_t var_24 = esi
     int32_t edi
     int32_t var_28 = edi
-    uint32_t eax = GetTickCount()
+    uint32_t eax = KERNEL32_GetTickCount_ImportThunk()
     int32_t var_14 = 0
     int32_t var_2c = 0
     double var_10 = eax.q * 0.00100000005f
     self->vftable->pfnBegin(self, 0f)
     struct zFMV_ActionVtable* vftable = self->vftable
-    uint32_t eax_2 = GetTickCount()
+    uint32_t eax_2 = KERNEL32_GetTickCount_ImportThunk()
     int32_t var_1c = 0
 
     if (vftable->pfnUpdate(self, eax_2.q * 0.00100000005f - eax.q) != 0)
@@ -17367,7 +17367,7 @@
 
         do
             int32_t var_24_1 = 0
-            i = self->vftable->pfnUpdate(self, GetTickCount().q * 0.00100000005f - eax_2.q)
+            i = self->vftable->pfnUpdate(self, KERNEL32_GetTickCount_ImportThunk().q * 0.00100000005f - eax_2.q)
         while (i != 0)
 
     self->vftable->pfnEnd(self)
@@ -20829,7 +20829,7 @@
 // Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp -- HudUiNetGameSetupPanel_CancelButton::OnActivate. Queues exit from the net-game setup overlay, switches to the leave-network app state, then runs the base ZRD activation.
 0x41a160 void __thiscall HudUiNetGameSetupPanel_CancelButton::OnActivate(struct HudUiNetGameSetupBoundWidget* self)
 {
-    RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+    RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
     RecoilApp::QueueSwitchCurrentState(&g_RecoilApp, &g_RecoilApp.m_leaveNetworkState, 0)
     HudUiZrdWidget::OnActivate(self)
 }
@@ -21121,7 +21121,7 @@
     int32_t var_90_1 = ecx_13
     HudSensorTracker::SetRuntimeTimerSecAndGoalValue(&g_HudSensorTracker, eax_15 * 60f, goalValue)
     HudSensorTracker::InitMissionIdAndFlags(&g_HudSensorTracker, owner->worldSelector.selectedIndex + 7, RecoilApp::GetMainWnd(&g_RecoilApp)->m_useArchiveBanks)
-    RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+    RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
 }
 
 // Source: HudUiNetGameSetupDialog.cpp. Moves text-input focus to this network setup input, commits and disables the previous focused input, enables raw keyboard capture on this input, refreshes its text, moves the cursor to the end, then runs the numeric-input OnActivate path.
@@ -21396,7 +21396,7 @@
 0x41ad80 void __fastcall HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(int32_t reconfigureExistingSession)
 {
     g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession = reconfigureExistingSession
-    RecoilApp::QueuePushState(&g_RecoilApp, &g_HudUiNetGameSetupOverlayOwner, nullptr)
+    RecoilApp::QueuePushState(&g_RecoilApp, &g_HudUiNetGameSetupOverlayOwner, 0)
 }
 
 // Source: D:\Proj\Battlesport\GameNet.cpp -- NetSessionBrowserDialog::Constructor. Builds the multiplayer session-browser MFC dialog around dialog resource 0x88, constructs the embedded edit/button/list/combo controls and player-name CString, installs g_NetSessionBrowserDialog_Vtbl, initializes the player-name string to empty, and returns self in eax. BN limitation: MSVC EH registration and construction-state scaffolding remain in the decompilation.
@@ -22552,7 +22552,7 @@
 // Source: hud.cpp. Queues g_HudUiNewGamePanelOverlayOwner on g_RecoilApp with replaceTop = 0.
 0x41c6c0 void HudUiNewGamePanelOverlayOwner::QueueEnter()
 {
-    RecoilApp::QueuePushState(&g_RecoilApp, &g_HudUiNewGamePanelOverlayOwner, nullptr)
+    RecoilApp::QueuePushState(&g_RecoilApp, &g_HudUiNewGamePanelOverlayOwner, 0)
 }
 
 // Source: D:\Proj\Battlesport\GameNet.cpp -- NetSessionConfigDialog constructor. Constructs CDialog resource 0x92, initializes three spin controls, the map combo, the session-name CString, installs the NetSessionConfigDialog vtable, clears the bound numeric fields, and returns self. BN limitation: MSVC constructor EH state scaffolding remains visible.
@@ -29348,14 +29348,14 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CString __saved_esi
-    struct CString* esp = &__saved_esi
+    int32_t __saved_esi
+    int32_t* esp = &__saved_esi
 
     if ((node->flags & 0x200000) != 0)
-        struct CString callbackContext = node->callbackContext
+        char* callbackContext = node->callbackContext
 
-        if ((*(callbackContext + 0x28) & 2) != 0)
-            struct CString callbackContext_1 = callbackContext
+        if ((callbackContext[0x28] & 2) != 0)
+            char* callbackContext_1 = callbackContext
             struct CString _String_1
             CString::CString(&_String_1, callbackContext_1)
             int32_t var_4_1 = 0
@@ -29385,8 +29385,8 @@
             int32_t var_8_1 = 0xffffffff
             CString::~CString(&__saved_esi)
 
-    fsbase->NtTib.ExceptionList = esp->__offset(0xc).d
-    esp->m_pchData
+    fsbase->NtTib.ExceptionList = esp[3]
+    *esp
     return 0
 
     // [comments not attached to rendered lines]
@@ -36052,10 +36052,10 @@
         RecoilApp::QueueSwitchCurrentState(&g_RecoilApp, &g_RecoilApp.m_missionFmvState, 0)
         return 0
 
-    int32_t eax_1 = zFMV_Script::UpdateAtTime(&self->m_fmv)
+    int32_t param = zFMV_Script::UpdateAtTime(&self->m_fmv)
 
-    if (eax_1 == 0)
-        RecoilApp::QueueSwitchCurrentState(&g_RecoilApp, &g_RecoilApp.m_mainMenuPrepState, eax_1)
+    if (param == 0)
+        RecoilApp::QueueSwitchCurrentState(&g_RecoilApp, &g_RecoilApp.m_mainMenuPrepState, param)
 
     return 0
 }
@@ -36146,10 +36146,10 @@
 // Original file: GameZRecoil/RecoilApp/RecoilApp.cpp
 0x42ec80 int32_t __thiscall RecoilApp_AttractFmvState::OnUpdateShouldQuit(struct RecoilApp_AttractFmvState* self)
 {
-    int32_t eax = zFMV_Script::UpdateAtTime(&self->m_fmv)
+    int32_t param = zFMV_Script::UpdateAtTime(&self->m_fmv)
 
-    if (eax == 0)
-        RecoilApp::QueueSwitchCurrentState(&g_RecoilApp, &g_RecoilApp.m_mainMenuPrepState, eax)
+    if (param == 0)
+        RecoilApp::QueueSwitchCurrentState(&g_RecoilApp, &g_RecoilApp.m_mainMenuPrepState, param)
 
     return 0
 }
@@ -37527,7 +37527,7 @@
     lpofn.lpstrDefExt = "gs"
     lpofn.Flags = 0x1800
 
-    if (GetOpenFileNameA(&lpofn) != 0)
+    if (COMDLG32_GetOpenFileNameA_ImportThunk(&lpofn) != 0)
         CHAR* lpstrFile = lpofn.lpstrFile
         int32_t i_1 = 0xffffffff
         int32_t missionFlags = 1
@@ -41113,7 +41113,7 @@
     char* eax = HudUiNumericTextInput::GetBuffer(&self->gameNameInput)
 
     if (eax == 0 || *eax == 0)
-        RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+        RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
         return
 
     _mkdir("SavedGames")
@@ -41206,7 +41206,7 @@
             i_2 = zUtil::ZBD_LoadEntriesGlobal(&saveGamePath)
         while (i_2 == 0)
 
-    RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+    RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
 }
 
 // Non-authored: bounded dispatch thunk; forwards the Save/Load game-name input accept action to owner vtable slot +0x0c.
@@ -41554,7 +41554,7 @@
             RecoilApp::QueueSwitchCurrentState(&g_RecoilApp, &g_RecoilApp.m_missionFmvState, 0)
             return
 
-        RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+        RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
         return
 
     if (m_transitionMode == 1)
@@ -41585,12 +41585,12 @@
 
     if ((((x87_r7 < temp4 ? 1 : 0) << 8 | (is_unordered.t(x87_r7, temp4) ? 1 : 0) << 0xa | (x87_r7 == temp4 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
         g_RecoilApp.m_transitionTimerSec = g_RecoilApp.m_transitionTimerSec - -5f
-        RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+        RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
         return
 
     g_RecoilApp.m_transitionTimerSec = 5f
     zOpt::SetMuteSoundOption(ZOPT_MUTE_SOUND_ENABLED)
-    RecoilApp::QueueExitCurrentState(&g_RecoilApp, nullptr)
+    RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
 }
 
 // Source: GameZRecoil/RecoilApp/RecoilStateSaveLoadTransition.cpp. Constructor for the global save/load transition state.
@@ -41764,7 +41764,7 @@
 
     g_RecoilStateSaveLoadTransition.m_capturePresentationMode = capturePresentationMode
     g_RecoilStateSaveLoadTransition.m_dialogKind = RECOIL_SAVELOAD_DIALOG_SAVE
-    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilStateSaveLoadTransition, nullptr)
+    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilStateSaveLoadTransition, 0)
 }
 
 // Original file: D:\Proj\Battlesport\RecoilApp.cpp — If loading is allowed, stores the requested transition mode, enables presentation capture for QUICKLOAD, switches the shared SaveLoadTransition to LOAD mode, and pushes that state.
@@ -41779,7 +41779,7 @@
         g_RecoilStateSaveLoadTransition.m_capturePresentationMode = RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED
 
     g_RecoilStateSaveLoadTransition.m_dialogKind = RECOIL_SAVELOAD_DIALOG_LOAD
-    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilStateSaveLoadTransition, nullptr)
+    RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilStateSaveLoadTransition, 0)
 }
 
 // Original file: (compiler-generated) — std::vector-style insert(count, value) helper for HudUiSaveLoadEntries. Inserts copyCount copies of the 0x140-byte SaveGameFileEntry payload at position, reallocating and shifting the backing array as needed.
@@ -50108,7 +50108,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    struct CString __saved_esi
+    int32_t __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -50175,7 +50175,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    struct CString __saved_esi
+    int32_t __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -50889,11 +50889,11 @@
 }
 
 // Original file: D:\Proj\Battlesport\WestwoodOnlineUpgradeConfigDialog.cpp
-0x441c60 void __thiscall WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(struct WestwoodOnlineUpgradeConfigDialog* self, char** outPlayerName, char** outConnectString, int32_t* outConnectStringMode)
+0x441c60 void __thiscall WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(struct WestwoodOnlineUpgradeConfigDialog* self, char** outPlayerName, char** outConnectString, int32_t* selectedProfileConnectStringMode)
 {
     *outPlayerName = CString::GetBuffer(&self->m_playerNames[self->m_selectedProfileIndex], 0x20)
     *outConnectString = CString::GetBuffer(&self->m_connectStrings[self->m_selectedProfileIndex], 0x20)
-    *outConnectStringMode = self->m_profileConnectStringModes[self->m_selectedProfileIndex]
+    *selectedProfileConnectStringMode = self->m_profileConnectStringModes[self->m_selectedProfileIndex]
 }
 
 // Original file: D:\Proj\Battlesport\WestwoodOnlineUpgradeConfigDialog.cpp. Shows the WOL config dialog, and on OK applies selected profile name, connect string, and connect-string mode to the upgrade dialog. BN keeps the stack-dialog MSVC EH frame, duplicated destructor cleanup ladders, and CString temporary slot merging for the selected-profile setter calls.
@@ -50904,7 +50904,7 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CString var_13c = 0
+    struct CWnd* var_13c = nullptr
     struct WestwoodOnlineUpgradeConfigDialog configDialog
     WestwoodOnlineUpgradeConfigDialog::Constructor(&configDialog, var_13c)
     int32_t var_4 = 0
@@ -50937,18 +50937,21 @@
 
     int32_t selectedProfileConnectStringMode
     var_13c = &selectedProfileConnectStringMode
+    // GetSelectedProfileValues returns void and fills outPlayerName/outConnectString/selectedProfileConnectStringMode by pointer. HLIL's ecx_3 return capture is a stack-temp artifact.
     char* outPlayerName
     char* outConnectString
-    struct CString ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
+    struct CWnd* ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
     char* outPlayerName_1 = outPlayerName
     // BN models the stack CString temporary slot as var_13c/ecx_*; assembly is reserving and constructing CString temporaries for the two selected-profile setter calls.
     var_13c = ecx_3
-    struct CString* var_130 = &var_13c
+    struct CWnd** var_130 = &var_13c
+    // Constructs a temporary CString from outPlayerName for SetSelectedProfilePlayerName; this is not a CWnd* var_13c semantic local.
     CString::CString(&var_13c, outPlayerName_1)
-    struct CString ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
+    struct CWnd* ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
     char* outConnectString_1 = outConnectString
     var_13c = ecx_6
-    struct CString* var_130_1 = &var_13c
+    struct CWnd** var_130_1 = &var_13c
+    // Constructs a temporary CString from outConnectString for SetSelectedProfileConnectString; this reuses the caller's transient stack argument slot.
     CString::CString(&var_13c, outConnectString_1)
     WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString(g_pWestwoodOnlineUpgradeDialog, var_13c)
     g_pWestwoodOnlineUpgradeDialog->m_selectedProfileConnectStringMode = selectedProfileConnectStringMode
@@ -51810,20 +51813,20 @@
 
 // Original file: Battlesport/RecoilApp.cpp — Queues replacing current state with a new state.
 // BN limitation: the stack slot for stateParam is reused for the allocated RecoilApp_StateQueueItem* before storing into the queue; HLIL may still render the final queued item write as stateParam after reanalysis.
-0x443160 void __thiscall RecoilApp::QueueSwitchCurrentState(struct RecoilApp* self, struct RecoilApp_IState* newState, int32_t arg3)
+0x443160 struct RecoilApp_IState* __thiscall RecoilApp::QueueSwitchCurrentState(struct RecoilApp* self, struct RecoilApp_IState* newState, int32_t param)
 {
-    struct RecoilApp_IState* ebx = RecoilApp::GetCurrentState(self)
+    struct RecoilApp_IState* result = RecoilApp::GetCurrentState(self)
     // Allocates RecoilApp_StateQueueItem.
-    struct RecoilApp_StateQueueItem* eax_1 = operator new(0x10)
+    struct RecoilApp_StateQueueItem* queuedItem_1 = operator new(0x10)
 
-    if (eax_1 == 0)
-        struct RecoilApp_StateQueueItem* arg_8 = nullptr
+    if (queuedItem_1 == 0)
+        int32_t arg_8 = 0
     else
-        eax_1->m_reserved = 0
-        eax_1->m_kind = RecoilApp_StateQueueKind_SwitchCurrent
-        eax_1->m_stateObj = newState
-        eax_1->m_param = arg3
-        struct RecoilApp_StateQueueItem* arg_8_1 = eax_1
+        queuedItem_1->m_reserved = 0
+        queuedItem_1->m_kind = RecoilApp_StateQueueKind_SwitchCurrent
+        queuedItem_1->m_stateObj = newState
+        queuedItem_1->m_param = param
+        struct RecoilApp_StateQueueItem* queuedItem = queuedItem_1
 
     if (self->m_stateQueue.m_itemCount == 0 || self->m_stateQueue.m_writeBlock.m_cursor == self->m_stateQueue.m_writeBlock.m_chunkEnd)
     // Allocates one 0x400-entry RecoilApp_StateQueueItem* chunk.
@@ -51833,100 +51836,18 @@
             struct RecoilApp_StateQueueItem*** m_chunkBaseSlot = self->m_stateQueue.m_writeBlock.m_chunkBaseSlot
 
             if (m_chunkBaseSlot u>= &self->m_stateQueue.m_chunkBaseList[self->m_stateQueue.m_chunkBaseCapacity - 1])
-                int32_t eax_10 = ((m_chunkBaseSlot - self->m_stateQueue.m_readBlock.m_chunkBaseSlot) s>> 2) + 1
-                struct RecoilApp_StateQueueItem*** eax_11 = RecoilApp_StateQueue::GrowAndCenterChunkBaseList(&self->m_stateQueue, eax_10 * 2)
-                struct RecoilApp_StateQueueItem*** chunkBaseSlot = &eax_11[eax_10]
+                int32_t eax_9 = ((m_chunkBaseSlot - self->m_stateQueue.m_readBlock.m_chunkBaseSlot) s>> 2) + 1
+                struct RecoilApp_StateQueueItem*** eax_10 = RecoilApp_StateQueue::GrowAndCenterChunkBaseList(&self->m_stateQueue, eax_9 * 2)
+                struct RecoilApp_StateQueueItem*** chunkBaseSlot = &eax_10[eax_9]
                 *chunkBaseSlot = cursor
-                struct RecoilApp_StateQueueItem** edx_7 = *eax_11
+                struct RecoilApp_StateQueueItem** edx_7 = *eax_10
                 struct RecoilApp_StateQueueBlock var_10
                 var_10.m_cursor = self->m_stateQueue.m_readBlock.m_cursor
                 self->m_stateQueue.m_readBlock.m_chunkBegin = edx_7
                 self->m_stateQueue.m_readBlock.m_chunkEnd = &edx_7[0x400]
                 self->m_stateQueue.m_readBlock.m_cursor = var_10.m_cursor
-                self->m_stateQueue.m_readBlock.m_chunkBaseSlot = eax_11
-                struct RecoilApp_StateQueueBlock* eax_12 = RecoilApp_StateQueueBlock::InitFromCursor(&var_10, cursor, chunkBaseSlot)
-                self->m_stateQueue.m_writeBlock.m_chunkBegin = eax_12->m_chunkBegin
-                self->m_stateQueue.m_writeBlock.m_chunkEnd = eax_12->m_chunkEnd
-                self->m_stateQueue.m_writeBlock.m_cursor = eax_12->m_cursor
-                self->m_stateQueue.m_writeBlock.m_chunkBaseSlot = eax_12->m_chunkBaseSlot
-            else
-                self->m_stateQueue.m_writeBlock.m_chunkBaseSlot = &m_chunkBaseSlot[1]
-                m_chunkBaseSlot[1] = cursor
-                struct RecoilApp_StateQueueItem*** m_chunkBaseSlot_1 = self->m_stateQueue.m_writeBlock.m_chunkBaseSlot
-                struct RecoilApp_StateQueueItem** ecx_6 = *m_chunkBaseSlot_1
-                self->m_stateQueue.m_writeBlock.m_chunkBegin = ecx_6
-                self->m_stateQueue.m_writeBlock.m_chunkEnd = &ecx_6[0x400]
-                self->m_stateQueue.m_writeBlock.m_cursor = cursor
-                self->m_stateQueue.m_writeBlock.m_chunkBaseSlot = m_chunkBaseSlot_1
-        else
-            self->m_stateQueue.m_chunkBaseCapacity = 2
-    // Allocates initial RecoilApp_StateQueueItem** chunk-base list.
-            struct RecoilApp_StateQueueItem*** eax_4 = operator new(8)
-            self->m_stateQueue.m_chunkBaseList = eax_4
-            eax_4[1] = cursor
-            struct RecoilApp_StateQueueItem*** eax_6 = &self->m_stateQueue.m_chunkBaseList[1]
-            struct RecoilApp_StateQueueItem** ecx_3 = *eax_6
-            self->m_stateQueue.m_readBlock.m_chunkBegin = ecx_3
-            self->m_stateQueue.m_readBlock.m_chunkEnd = &ecx_3[0x400]
-            self->m_stateQueue.m_readBlock.m_cursor = &cursor[0x200]
-            self->m_stateQueue.m_readBlock.m_chunkBaseSlot = eax_6
-            self->m_stateQueue.m_writeBlock.m_chunkBegin = ecx_3
-            self->m_stateQueue.m_writeBlock.m_chunkEnd = &ecx_3[0x400]
-            self->m_stateQueue.m_writeBlock.m_cursor = &cursor[0x200]
-            self->m_stateQueue.m_writeBlock.m_chunkBaseSlot = eax_6
-
-    struct RecoilApp_StateQueueItem** m_cursor = self->m_stateQueue.m_writeBlock.m_cursor
-    self->m_stateQueue.m_writeBlock.m_cursor = &m_cursor[1]
-
-    if (m_cursor != 0)
-        *m_cursor = arg3
-
-    self->m_stateQueue.m_itemCount += 1
-    struct RecoilApp_IState* entry_edi
-
-    if (ebx != 0)
-        ebx->vftable->OnExit(entry_edi)
-
-    newState->vftable->OnEnter(entry_edi)
-}
-
-// Original file: Battlesport/RecoilApp.cpp
-// BN limitation: the stack slot for param is reused for the allocated RecoilApp_StateQueueItem* before storing into the queue; HLIL may still render the final queued item write as param after reanalysis. Assembly stores the allocated 0x10-byte queue item pointer through m_writeBlock.m_cursor.
-0x443310 struct RecoilApp_IState* __thiscall RecoilApp::QueuePushState(struct RecoilApp* self, struct RecoilApp_IState* state, struct RecoilApp_StateQueueItem* arg3)
-{
-    struct RecoilApp_IState* result = RecoilApp::GetCurrentState(self)
-    int32_t* eax = operator new(0x10)
-    struct RecoilApp_IState* newState = state
-
-    if (eax == 0)
-        struct RecoilApp_StateQueueItem* arg_8 = nullptr
-    else
-        *eax = 0
-        eax[1] = 2
-        eax[2] = newState
-        eax[3] = arg3
-        int32_t* arg_8_1 = eax
-
-    if (self->m_stateQueue.m_itemCount == 0 || self->m_stateQueue.m_writeBlock.m_cursor == self->m_stateQueue.m_writeBlock.m_chunkEnd)
-        struct RecoilApp_StateQueueItem** cursor = operator new(0x1000)
-
-        if (self->m_stateQueue.m_itemCount != 0)
-            struct RecoilApp_StateQueueItem*** m_chunkBaseSlot = self->m_stateQueue.m_writeBlock.m_chunkBaseSlot
-
-            if (m_chunkBaseSlot u>= &self->m_stateQueue.m_chunkBaseList[self->m_stateQueue.m_chunkBaseCapacity - 1])
-                int32_t eax_8 = ((m_chunkBaseSlot - self->m_stateQueue.m_readBlock.m_chunkBaseSlot) s>> 2) + 1
-                struct RecoilApp_StateQueueItem*** eax_10 = RecoilApp_StateQueue::GrowAndCenterChunkBaseList(&self->m_stateQueue, eax_8 * 2)
-                struct RecoilApp_StateQueueItem*** chunkBaseSlot = &eax_10[eax_8]
-                *chunkBaseSlot = cursor
-                struct RecoilApp_StateQueueItem** edx_6 = *eax_10
-                struct RecoilApp_StateQueueBlock var_10
-                var_10.m_cursor = self->m_stateQueue.m_readBlock.m_cursor
-                self->m_stateQueue.m_readBlock.m_chunkBegin = edx_6
-                self->m_stateQueue.m_readBlock.m_chunkEnd = &edx_6[0x400]
-                self->m_stateQueue.m_readBlock.m_cursor = var_10.m_cursor
                 self->m_stateQueue.m_readBlock.m_chunkBaseSlot = eax_10
                 struct RecoilApp_StateQueueBlock* eax_11 = RecoilApp_StateQueueBlock::InitFromCursor(&var_10, cursor, chunkBaseSlot)
-                newState = state
                 self->m_stateQueue.m_writeBlock.m_chunkBegin = eax_11->m_chunkBegin
                 self->m_stateQueue.m_writeBlock.m_chunkEnd = eax_11->m_chunkEnd
                 self->m_stateQueue.m_writeBlock.m_cursor = eax_11->m_cursor
@@ -51942,47 +51863,57 @@
                 self->m_stateQueue.m_writeBlock.m_chunkBaseSlot = m_chunkBaseSlot_1
         else
             self->m_stateQueue.m_chunkBaseCapacity = 2
-            struct RecoilApp_StateQueueItem*** eax_2 = operator new(8)
-            self->m_stateQueue.m_chunkBaseList = eax_2
-            eax_2[1] = cursor
-            struct RecoilApp_StateQueueItem*** eax_4 = &self->m_stateQueue.m_chunkBaseList[1]
-            struct RecoilApp_StateQueueItem** ecx_4 = *eax_4
-            self->m_stateQueue.m_readBlock.m_chunkBegin = ecx_4
-            self->m_stateQueue.m_readBlock.m_chunkEnd = &ecx_4[0x400]
+    // Allocates initial RecoilApp_StateQueueItem** chunk-base list.
+            struct RecoilApp_StateQueueItem*** eax_3 = operator new(8)
+            self->m_stateQueue.m_chunkBaseList = eax_3
+            eax_3[1] = cursor
+            struct RecoilApp_StateQueueItem*** eax_5 = &self->m_stateQueue.m_chunkBaseList[1]
+            struct RecoilApp_StateQueueItem** ecx_3 = *eax_5
+            self->m_stateQueue.m_readBlock.m_chunkBegin = ecx_3
+            self->m_stateQueue.m_readBlock.m_chunkEnd = &ecx_3[0x400]
             self->m_stateQueue.m_readBlock.m_cursor = &cursor[0x200]
-            self->m_stateQueue.m_readBlock.m_chunkBaseSlot = eax_4
-            self->m_stateQueue.m_writeBlock.m_chunkBegin = ecx_4
-            self->m_stateQueue.m_writeBlock.m_chunkEnd = &ecx_4[0x400]
+            self->m_stateQueue.m_readBlock.m_chunkBaseSlot = eax_5
+            self->m_stateQueue.m_writeBlock.m_chunkBegin = ecx_3
+            self->m_stateQueue.m_writeBlock.m_chunkEnd = &ecx_3[0x400]
             self->m_stateQueue.m_writeBlock.m_cursor = &cursor[0x200]
-            self->m_stateQueue.m_writeBlock.m_chunkBaseSlot = eax_4
+            self->m_stateQueue.m_writeBlock.m_chunkBaseSlot = eax_5
 
     struct RecoilApp_StateQueueItem** m_cursor = self->m_stateQueue.m_writeBlock.m_cursor
     self->m_stateQueue.m_writeBlock.m_cursor = &m_cursor[1]
 
     if (m_cursor != 0)
-        *m_cursor = arg3
+        *m_cursor = param
 
     self->m_stateQueue.m_itemCount += 1
     struct RecoilApp_IState* entry_edi
+
+    if (result != 0)
+        result->vftable->OnExit(entry_edi)
+
     newState->vftable->OnEnter(entry_edi)
     return result
+
+    // [comments not attached to rendered lines]
+    // [comment @ 0x4432e2]
+    // BN lifetime limitation: this stack slot was overwritten at 0x44319d with the allocated RecoilApp_StateQueueItem* (or null at 0x4431a3). This store enqueues that queued item, not the original integer param.
 }
 
 // Original file: Battlesport/RecoilApp.cpp
-// BN limitation: the stack slot for param is reused for the allocated RecoilApp_StateQueueItem* before storing into the queue; HLIL may still render the final queued item write as param after reanalysis.
-0x4434b0 struct RecoilApp_IState* __thiscall RecoilApp::QueueExitCurrentState(struct RecoilApp* self, struct RecoilApp_StateQueueItem* arg2)
+// BN limitation: the stack slot for param is reused for the allocated RecoilApp_StateQueueItem* before storing into the queue; HLIL may still render the final queued item write as param after reanalysis. Assembly stores the allocated 0x10-byte queue item pointer through m_writeBlock.m_cursor.
+0x443310 struct RecoilApp_IState* __thiscall RecoilApp::QueuePushState(struct RecoilApp* self, struct RecoilApp_IState* state, int32_t param)
 {
-    struct RecoilApp_IState* currentState = RecoilApp::GetCurrentState(self)
-    int32_t* eax_1 = operator new(0x10)
+    struct RecoilApp_IState* result = RecoilApp::GetCurrentState(self)
+    struct RecoilApp_StateQueueItem* eax = operator new(0x10)
+    struct RecoilApp_IState* newState = state
 
-    if (eax_1 == 0)
-        struct RecoilApp_StateQueueItem* arg_4 = nullptr
+    if (eax == 0)
+        struct RecoilApp_StateQueueItem* arg_8 = nullptr
     else
-        *eax_1 = 0
-        eax_1[1] = 1
-        eax_1[2] = 0
-        eax_1[3] = arg2
-        int32_t* arg_4_1 = eax_1
+        eax->m_reserved = 0
+        eax->m_kind = RecoilApp_StateQueueKind_PushState
+        eax->m_stateObj = newState
+        eax->m_param = param
+        struct RecoilApp_StateQueueItem* eax_1 = eax
 
     if (self->m_stateQueue.m_itemCount == 0 || self->m_stateQueue.m_writeBlock.m_cursor == self->m_stateQueue.m_writeBlock.m_chunkEnd)
         struct RecoilApp_StateQueueItem** cursor = operator new(0x1000)
@@ -52003,6 +51934,7 @@
                 self->m_stateQueue.m_readBlock.m_cursor = var_10.m_cursor
                 self->m_stateQueue.m_readBlock.m_chunkBaseSlot = eax_11
                 struct RecoilApp_StateQueueBlock* eax_12 = RecoilApp_StateQueueBlock::InitFromCursor(&var_10, cursor, chunkBaseSlot)
+                newState = state
                 self->m_stateQueue.m_writeBlock.m_chunkBegin = eax_12->m_chunkBegin
                 self->m_stateQueue.m_writeBlock.m_chunkEnd = eax_12->m_chunkEnd
                 self->m_stateQueue.m_writeBlock.m_cursor = eax_12->m_cursor
@@ -52036,7 +51968,87 @@
     self->m_stateQueue.m_writeBlock.m_cursor = &m_cursor[1]
 
     if (m_cursor != 0)
-        *m_cursor = arg2
+        *m_cursor = param
+
+    self->m_stateQueue.m_itemCount += 1
+    struct RecoilApp_IState* entry_edi
+    newState->vftable->OnEnter(entry_edi)
+    return result
+
+    // [comments not attached to rendered lines]
+    // [comment @ 0x44348b]
+    // BN lifetime limitation: this stack slot was overwritten at 0x44334c with the allocated RecoilApp_StateQueueItem* (or null at 0x443352). This store enqueues that queued item, not the original integer param.
+}
+
+// Original file: Battlesport/RecoilApp.cpp
+// BN limitation: the stack slot for param is reused for the allocated RecoilApp_StateQueueItem* before storing into the queue; HLIL may still render the final queued item write as param after reanalysis.
+0x4434b0 struct RecoilApp_IState* __thiscall RecoilApp::QueueExitCurrentState(struct RecoilApp* self, int32_t param)
+{
+    struct RecoilApp_IState* currentState = RecoilApp::GetCurrentState(self)
+    struct RecoilApp_StateQueueItem* eax_1 = operator new(0x10)
+
+    if (eax_1 == 0)
+        struct RecoilApp_StateQueueItem* arg_4 = nullptr
+    else
+        eax_1->m_reserved = 0
+        eax_1->m_kind = RecoilApp_StateQueueKind_ExitCurrent
+        eax_1->m_stateObj = nullptr
+        eax_1->m_param = param
+        struct RecoilApp_StateQueueItem* eax = eax_1
+
+    if (self->m_stateQueue.m_itemCount == 0 || self->m_stateQueue.m_writeBlock.m_cursor == self->m_stateQueue.m_writeBlock.m_chunkEnd)
+        struct RecoilApp_StateQueueItem** cursor = operator new(0x1000)
+
+        if (self->m_stateQueue.m_itemCount != 0)
+            struct RecoilApp_StateQueueItem*** m_chunkBaseSlot = self->m_stateQueue.m_writeBlock.m_chunkBaseSlot
+
+            if (m_chunkBaseSlot u>= &self->m_stateQueue.m_chunkBaseList[self->m_stateQueue.m_chunkBaseCapacity - 1])
+                int32_t eax_10 = ((m_chunkBaseSlot - self->m_stateQueue.m_readBlock.m_chunkBaseSlot) s>> 2) + 1
+                struct RecoilApp_StateQueueItem*** eax_12 = RecoilApp_StateQueue::GrowAndCenterChunkBaseList(&self->m_stateQueue, eax_10 * 2)
+                struct RecoilApp_StateQueueItem*** chunkBaseSlot = &eax_12[eax_10]
+                *chunkBaseSlot = cursor
+                struct RecoilApp_StateQueueItem** edx_6 = *eax_12
+                struct RecoilApp_StateQueueBlock var_10
+                var_10.m_cursor = self->m_stateQueue.m_readBlock.m_cursor
+                self->m_stateQueue.m_readBlock.m_chunkBegin = edx_6
+                self->m_stateQueue.m_readBlock.m_chunkEnd = &edx_6[0x400]
+                self->m_stateQueue.m_readBlock.m_cursor = var_10.m_cursor
+                self->m_stateQueue.m_readBlock.m_chunkBaseSlot = eax_12
+                struct RecoilApp_StateQueueBlock* eax_13 = RecoilApp_StateQueueBlock::InitFromCursor(&var_10, cursor, chunkBaseSlot)
+                self->m_stateQueue.m_writeBlock.m_chunkBegin = eax_13->m_chunkBegin
+                self->m_stateQueue.m_writeBlock.m_chunkEnd = eax_13->m_chunkEnd
+                self->m_stateQueue.m_writeBlock.m_cursor = eax_13->m_cursor
+                self->m_stateQueue.m_writeBlock.m_chunkBaseSlot = eax_13->m_chunkBaseSlot
+            else
+                self->m_stateQueue.m_writeBlock.m_chunkBaseSlot = &m_chunkBaseSlot[1]
+                m_chunkBaseSlot[1] = cursor
+                struct RecoilApp_StateQueueItem*** m_chunkBaseSlot_1 = self->m_stateQueue.m_writeBlock.m_chunkBaseSlot
+                struct RecoilApp_StateQueueItem** ecx_6 = *m_chunkBaseSlot_1
+                self->m_stateQueue.m_writeBlock.m_chunkBegin = ecx_6
+                self->m_stateQueue.m_writeBlock.m_chunkEnd = &ecx_6[0x400]
+                self->m_stateQueue.m_writeBlock.m_cursor = cursor
+                self->m_stateQueue.m_writeBlock.m_chunkBaseSlot = m_chunkBaseSlot_1
+        else
+            self->m_stateQueue.m_chunkBaseCapacity = 2
+            struct RecoilApp_StateQueueItem*** eax_4 = operator new(8)
+            self->m_stateQueue.m_chunkBaseList = eax_4
+            eax_4[1] = cursor
+            struct RecoilApp_StateQueueItem*** eax_6 = &self->m_stateQueue.m_chunkBaseList[1]
+            struct RecoilApp_StateQueueItem** ecx_4 = *eax_6
+            self->m_stateQueue.m_readBlock.m_chunkBegin = ecx_4
+            self->m_stateQueue.m_readBlock.m_chunkEnd = &ecx_4[0x400]
+            self->m_stateQueue.m_readBlock.m_cursor = &cursor[0x200]
+            self->m_stateQueue.m_readBlock.m_chunkBaseSlot = eax_6
+            self->m_stateQueue.m_writeBlock.m_chunkBegin = ecx_4
+            self->m_stateQueue.m_writeBlock.m_chunkEnd = &ecx_4[0x400]
+            self->m_stateQueue.m_writeBlock.m_cursor = &cursor[0x200]
+            self->m_stateQueue.m_writeBlock.m_chunkBaseSlot = eax_6
+
+    struct RecoilApp_StateQueueItem** m_cursor = self->m_stateQueue.m_writeBlock.m_cursor
+    self->m_stateQueue.m_writeBlock.m_cursor = &m_cursor[1]
+
+    if (m_cursor != 0)
+        *m_cursor = param
 
     self->m_stateQueue.m_itemCount += 1
     struct RecoilApp_IState* entry_edi
@@ -52044,6 +52056,10 @@
     if (currentState != 0)
         currentState->vftable->OnExit(entry_edi)
     return currentState
+
+    // [comments not attached to rendered lines]
+    // [comment @ 0x443628]
+    // BN lifetime limitation: this stack slot was overwritten at 0x4434e7 with the allocated RecoilApp_StateQueueItem* (or null at 0x4434ed). This store enqueues that queued item, not the original integer param.
 }
 
 // Original file: Battlesport/RecoilApp.cpp
@@ -52062,7 +52078,7 @@
 }
 
 // Original file: Battlesport/RecoilApp.cpp
-0x443690 struct RecoilApp_StateQueueItem*** __thiscall RecoilApp_StateQueue::GrowAndCenterChunkBaseList(int32_t, int32_t newCapacity)
+0x443690 struct RecoilApp_StateQueueItem*** __thiscall RecoilApp_StateQueue::GrowAndCenterChunkBaseList(struct RecoilApp_StateQueue* self, int32_t newCapacity)
 {
     int32_t newCapacity_1 = newCapacity
     int32_t eax = newCapacity_1 << 2
@@ -52071,24 +52087,24 @@
         eax = 0
 
     struct RecoilApp_StateQueueItem*** eax_1 = operator new(eax)
-    struct RecoilApp_StateQueueItem*** writeBlockEndSlot = &ecx->m_writeBlock.m_chunkBaseSlot[1]
+    void* ecx_1 = &self->m_writeBlock.m_chunkBaseSlot[1]
     struct RecoilApp_StateQueueItem*** centerChunkBaseSlot = eax_1 + (newCapacity_1 & 0xfffffffc)
-    struct RecoilApp_StateQueueItem*** srcChunkBaseSlot = ecx->m_readBlock.m_chunkBaseSlot
+    struct RecoilApp_StateQueueItem*** srcChunkBaseSlot = self->m_readBlock.m_chunkBaseSlot
     struct RecoilApp_StateQueueItem*** dstChunkBaseSlot = centerChunkBaseSlot
 
-    if (srcChunkBaseSlot != writeBlockEndSlot)
+    if (srcChunkBaseSlot != ecx_1)
         do
             struct RecoilApp_StateQueueItem** ebp = *srcChunkBaseSlot
             srcChunkBaseSlot = &srcChunkBaseSlot[1]
             *dstChunkBaseSlot = ebp
             dstChunkBaseSlot = &dstChunkBaseSlot[1]
-        while (srcChunkBaseSlot != writeBlockEndSlot)
+        while (srcChunkBaseSlot != ecx_1)
 
         newCapacity_1 = newCapacity
 
-    operator delete(ecx->m_chunkBaseList)
-    ecx->m_chunkBaseList = eax_1
-    ecx->m_chunkBaseCapacity = newCapacity_1
+    operator delete(self->m_chunkBaseList)
+    self->m_chunkBaseList = eax_1
+    self->m_chunkBaseCapacity = newCapacity_1
     return centerChunkBaseSlot
 }
 
@@ -70783,30 +70799,34 @@
     eax.b = *flags
     self->flags = eax.b
     self->allowInsert.b = 0
+    // BN lifetime artifact: ECX is loaded from lea [esp+0x20] for the std::_Lockit guard constructor. This is not zDEClient_MapTreeState::self.
     std::_Lockit::_Lockit(self)
     int32_t var_4_1 = 0
 
     if (g_zDEClient_FeatureMapTreeNil == 0)
-        struct zDEClient_MapTreeNode* nilNode = operator new(0x14)
-        nilNode->parent = nullptr
-        nilNode->colorOrNil = 1
-        g_zDEClient_FeatureMapTreeNil = nilNode
-        nilNode->left = 0
+    // Allocates the shared 0x14-byte zDEClient_MapTreeNode nil node: left=null, parent=null, right=null, colorOrNil=1.
+        int32_t* eax_2 = operator new(0x14)
+        eax_2[1] = 0
+        eax_2[4] = 1
+        g_zDEClient_FeatureMapTreeNil = eax_2
+        *eax_2 = 0
         g_zDEClient_FeatureMapTreeNil->right = nullptr
 
     g_zDEClient_FeatureMapTreeNilRefCount += 1
     struct zDEClient_MapTreeNode* zDEClient_FeatureMapTreeNil_1 = g_zDEClient_FeatureMapTreeNil
-    void** eax_2
+    // Allocates the per-state 0x14-byte zDEClient_MapTreeNode header node. Operator new returns only this node; the paired std::_Lockit* in HLIL is a decompiler artifact.
+    void** eax_3
     std::_Lockit* ecx_1
-    eax_2, ecx_1 = operator new(0x14)
-    eax_2[1] = zDEClient_FeatureMapTreeNil_1
-    eax_2[4] = 0
-    self->header = eax_2
+    eax_3, ecx_1 = operator new(0x14)
+    eax_3[1] = zDEClient_FeatureMapTreeNil_1
+    eax_3[4] = 0
+    self->header = eax_3
     self->nodeCount = 0
-    *eax_2 = eax_2
+    *eax_3 = eax_3
     struct zDEClient_MapTreeNode* header = self->header
     header->right = header
     int32_t var_4_2 = 0xffffffff
+    // Destroys the same stack std::_Lockit guard constructed at 0x457cf4; HLIL's ecx_1 from operator new is not the real receiver.
     std::_Lockit::~_Lockit(ecx_1)
     fsbase->NtTib.ExceptionList = ExceptionList
     return self
@@ -82022,7 +82042,7 @@
     self->audioPlaybackStartPending = 1
     self->modeFlags = modeFlags
     InitializeCriticalSection(&self->audioLock)
-    AVIFileInit()
+    AVIFIL32_AVIFileInit_ImportThunk()
     zFMV_Stream::OpenAudio(self)
     zFMV_Stream::Constructor(self)
     return self
@@ -82049,7 +82069,7 @@
             free(audioFormat)
             self->audioFormat = nullptr
 
-        AVIStreamRelease(self->aviAudioStream)
+        AVIFIL32_AVIStreamRelease_ImportThunk(self->aviAudioStream)
 
     if (self->hasVideoTrack != 0)
         int32_t videoDecompressor = self->videoDecompressor
@@ -82091,8 +82111,8 @@
         if (imagePalette != 0)
             free(imagePalette)
 
-        AVIStreamRelease(self->aviVideoStream)
-        AVIFileExit()
+        AVIFIL32_AVIStreamRelease_ImportThunk(self->aviVideoStream)
+        AVIFIL32_AVIFileExit_ImportThunk()
 
     DeleteCriticalSection(&self->audioLock)
     free(self->mediaPath)
@@ -82232,7 +82252,7 @@
         format = "Cannot Open AVI File"
         line = 0x60
     zError::ReportOldNoOp(0x400, "D:\Proj\GameZRecoil\zFMV\fmv_stream.cpp", line, format)
-    AVIFileExit()
+    AVIFIL32_AVIFileExit_ImportThunk()
 }
 
 // fmv_stream.cpp
@@ -94238,7 +94258,7 @@
     g_zInputKeyboardPollRefCount = 0
     g_zInputJoystickPollRefCount = 0
     g_zInputMousePollRefCount = 0
-    HRESULT hr = DirectInputCreateA(hInstance, 0x500, &g_zInput_GlobalState, nullptr)
+    HRESULT hr = DINPUT_DirectInputCreateA_ImportThunk(hInstance, 0x500, &g_zInput_GlobalState, nullptr)
 
     if (hr != 0)
         zInput::DI_ReportError(hr, "D:\Proj\GameZRecoil\zInput\zin_init.cpp", 0x93)
@@ -94457,7 +94477,7 @@
 
     struct DIDEVCAPS outCaps
     outCaps.dwSize = 0x2c
-    zInput_JoystickDevice_1->vtbl->SetDataFormat(zInput_JoystickDevice_1, &c_dfDIJoystick)
+    zInput_JoystickDevice_1->vtbl->SetDataFormat(zInput_JoystickDevice_1, &CRT_Data_MisidentifiedBytes_4c7eca[0x16])
     zInput_JoystickDevice_1->vtbl->GetCapabilities(zInput_JoystickDevice_1, &outCaps)
     enum zInput_DIDeviceCapsFlags dwFlags = outCaps.dwFlags
     g_zInput_JoystickAxisCount = outCaps.dwAxes
@@ -98416,8 +98436,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, di->vertCount)
 
             int32_t vertIndex = 0
-            uint32_t edi_2
-            edi_2.w = di->entries->materialRef->packedColor
+            int32_t packedColor
+            packedColor.w = di->entries->materialRef->packedColor
 
             if (di->vertCount s> 0)
                 int32_t var_c = 0
@@ -98463,10 +98483,10 @@
 
                                     if ((((x87_r7_12 < temp19_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp19_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp19_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
-                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, edi_2, nullptr)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, packedColor, nullptr)
                                         else
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(&var_3c, edi_2, 1)
+                                            g_zVideo_pfnDrawPointColor16(1)
 
                     int32_t vertIndex = &di_1->mode + 1
                     int32_t var_c_1 = gTransformedVerts_1 + 0xc
@@ -98521,11 +98541,11 @@
                     while (i_1 != 1)
                     di = di_1
                 else
-                    int32_t ecx_20 = vertCount_1 * 0xc
+                    int32_t ecx_19 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_3
-                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_20 & 0xfffffffc)
-                    __builtin_memcpy(edi_3, esi_2, ecx_20 & 3)
+                    int32_t edi_2
+                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_19 & 0xfffffffc)
+                    __builtin_memcpy(edi_2, esi_2, ecx_19 & 3)
         else
             long double x87_r7_13 = di->blendScale
             gTransformedVerts_1 = x87_r7_13
@@ -98625,13 +98645,13 @@
                 int32_t eax_32 = *vertexIndices
                 vertexIndices = &vertexIndices[1]
                 int32_t eax_34 = gTransformedVerts_1 + eax_32 * 0xc
-                struct zClipVert* edi_7 = edx_24
+                struct zClipVert* edi_6 = edx_24
                 edx_24 = &edx_24[1]
                 i_2 = i_13
                 i_13 -= 1
-                edi_7->x = *eax_34
-                edi_7->y = *(eax_34 + 4)
-                edi_7->z = *(eax_34 + 8)
+                edi_6->x = *eax_34
+                edi_6->y = *(eax_34 + 4)
+                edi_6->z = *(eax_34 + 8)
             while (i_2 != 1)
             long double x87_r7_28 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r6_14 = g_Clip_PolyVertsScratch[2].y - g_Clip_PolyVertsScratch[1].y
@@ -98669,11 +98689,11 @@
                 struct zClipVert triClipVerts[0x3]
 
                 if ((outActiveLightState_1:1.b & 1) == 0)
-                    int32_t ecx_58
-                    ecx_58.w = materialRef->packedColor
+                    int32_t ecx_57
+                    ecx_57.w = materialRef->packedColor
                     int32_t esi_13 = 0
                     float outFade = 0f
-                    int32_t var_c_2 = ecx_58
+                    int32_t var_c_2 = ecx_57
 
                     if (outDepthFade != 0)
                         int32_t eax_78
@@ -98709,13 +98729,13 @@
                         struct zClipVert* eax_83 = &g_Clip_PolyVerts
                         long double x87_r7_80 = 0f
                         int32_t i_20 = i_23
-                        float* ecx_64 = &g_Clip_PolyVertsScratch[0x3f + i_23]
+                        float* ecx_63 = &g_Clip_PolyVertsScratch[0x3f + i_23]
                         int32_t i_3
 
                         do
-                            long double x87_r6_26 = eax_83->y * *ecx_64
-                            long double x87_r5_36 = ecx_64[1] * eax_83->x
-                            ecx_64 = eax_83
+                            long double x87_r6_26 = eax_83->y * *ecx_63
+                            long double x87_r5_36 = ecx_63[1] * eax_83->x
+                            ecx_63 = eax_83
                             eax_83 = &eax_83[1]
                             i_3 = i_20
                             i_20 -= 1
@@ -98821,15 +98841,15 @@
                         if (vertexCount_2 s> 0)
     // Attribute clear loop zeros g_Clip_PolyAttr0[i] and the adjacent g_Clip_PolyAttr1[i] array in one stride.
                             float* eax_38 = &g_Clip_PolyAttr0
-                            uint32_t ecx_33 = vertexCount_2
+                            uint32_t ecx_32 = vertexCount_2
                             uint32_t i_6
 
                             do
                                 eax_38[0x40] = 0
                                 *eax_38 = 0f
                                 eax_38 = &eax_38[1]
-                                i_6 = ecx_33
-                                ecx_33 -= 1
+                                i_6 = ecx_32
+                                ecx_32 -= 1
                             while (i_6 != 1)
 
                         int32_t outDepthFade_1 = outDepthFade
@@ -98864,12 +98884,12 @@
                             zRndr::CommitFogColorParamsIfChanged()
                             vertexCount_2 = var_8
 
-                    uint32_t ecx_40 = vertexCount_2 << 3
+                    uint32_t ecx_39 = vertexCount_2 << 3
                     materialRef.b = clipMask.b
                     int32_t esi_9
-                    int32_t edi_9
-                    edi_9, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_40 & 0xfffffffc)
-                    __builtin_memcpy(edi_9, esi_9, ecx_40 & 3)
+                    int32_t edi_8
+                    edi_8, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_39 & 0xfffffffc)
+                    __builtin_memcpy(edi_8, esi_9, ecx_39 & 3)
 
                     if (lightFlags == 0)
                         int32_t eax_65
@@ -98886,13 +98906,13 @@
                             struct zClipVert* eax_67 = &g_Clip_PolyVerts
                             long double x87_r7_60 = 0f
                             int32_t esi_11 = vertexCount
-                            float* ecx_51 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
+                            float* ecx_50 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
                             int32_t i_7
 
                             do
-                                long double x87_r6_23 = eax_67->y * *ecx_51
-                                long double x87_r5_34 = ecx_51[1] * eax_67->x
-                                ecx_51 = eax_67
+                                long double x87_r6_23 = eax_67->y * *ecx_50
+                                long double x87_r5_34 = ecx_50[1] * eax_67->x
+                                ecx_50 = eax_67
                                 eax_67 = &eax_67[1]
                                 i_7 = esi_11
                                 esi_11 -= 1
@@ -98942,14 +98962,14 @@
                                         if (vertexCount_1 s> 0)
     // Alt-clip remap loop walks zClipVert triplets as float x/y pairs; pointer arithmetic is the compiler's tight-loop form.
                                             float* eax_74 = &g_Clip_PolyVerts[0].y
-                                            int32_t ecx_54 = vertexCount_1
+                                            int32_t ecx_53 = vertexCount_1
                                             int32_t i_9
 
                                             do
                                                 long double x87_r7_72 = g_zClipAlt_RemapScaleX * eax_74[-1]
                                                 eax_74 = &eax_74[3]
-                                                i_9 = ecx_54
-                                                ecx_54 -= 1
+                                                i_9 = ecx_53
+                                                ecx_53 -= 1
                                                 eax_74[-4] = x87_r7_72 + g_zClipAlt_RemapBiasX
                                                 eax_74[-3] = g_zClipAlt_RemapScaleY * eax_74[-3] + g_zClipAlt_RemapBiasY
                                             while (i_9 != 1)
@@ -98974,13 +98994,13 @@
                             struct zClipVert* eax_50 = &g_Clip_PolyVerts
                             long double x87_r7_43 = 0f
                             int32_t i_19 = i_22
-                            float* ecx_46 = &g_Clip_PolyVertsScratch[0x3f + i_22]
+                            float* ecx_45 = &g_Clip_PolyVertsScratch[0x3f + i_22]
                             int32_t i_10
 
                             do
-                                long double x87_r6_20 = eax_50->y * *ecx_46
-                                long double x87_r5_32 = ecx_46[1] * eax_50->x
-                                ecx_46 = eax_50
+                                long double x87_r6_20 = eax_50->y * *ecx_45
+                                long double x87_r5_32 = ecx_45[1] * eax_50->x
+                                ecx_45 = eax_50
                                 eax_50 = &eax_50[1]
                                 i_10 = i_19
                                 i_19 -= 1
@@ -116621,7 +116641,7 @@
 {
     struct IDirectPlayLobby* lobby = nullptr
     struct IDirectPlayLobby3A* lobby3A = nullptr
-    int32_t result = Ordinal_DPLAYX_4(nullptr, &lobby, nullptr, nullptr, 0)
+    int32_t result = DPLAYX_Ordinal4_ImportThunk(nullptr, &lobby, nullptr, nullptr, 0)
 
     if (result s>= 0)
         struct IDirectPlayLobby* lobby_1 = lobby
@@ -133047,6 +133067,7 @@
     initialPayload.worldPos.x = *g_zSnd_GlobalVolumeScalePtr
     // The first inserted node is an anchor/sentinel payload seeded from zeroed stack state plus the current global volume scale; subsequent nodes capture active play-handle payloads.
     struct zSndPlayHandleSnapshotItem* anchorListHead = result->listHead
+    // BN call-rendering limitation: NewNode takes (listHead, listHead->prevLink). HLIL currently shows owner result as an extra receiver/argument because ECX is dead to the callee.
     struct zSndPlayHandleSnapshotItem* anchorItem = zSndPlayHandleSnapshotItem::NewNode(anchorListHead, anchorListHead->prevLink)
     anchorListHead->prevLink = anchorItem
     *anchorItem->prevLink = anchorItem
@@ -133081,6 +133102,7 @@
                             if ((outStatus.b & 1) != 0)
                                 zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(&payloadTemp.volumeScale, &sample->primaryVoice)
                                 struct zSndPlayHandleSnapshotItem* listHead_1 = result->listHead
+    // BN stack-merge limitation: call passes (listHead, listHead->prevLink) to zSndPlayHandleSnapshotItem::NewNode; the returned item is a zSndPlayHandleSnapshotItem*, not an item**.
                                 struct zSndPlayHandleSnapshotItem* eax_11 = zSndPlayHandleSnapshotItem::NewNode(listHead_1, listHead_1->prevLink)
                                 listHead_1->prevLink = eax_11
                                 *eax_11->prevLink = eax_11
@@ -133104,6 +133126,7 @@
                                     if ((outStatus.b & 1) != 0)
                                         zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(&payloadTemp.volumeScale, playHandle)
                                         struct zSndPlayHandleSnapshotItem* duplicateVoiceListHeadA3d = result->listHead
+    // BN stack-merge limitation: call passes (listHead, listHead->prevLink) to zSndPlayHandleSnapshotItem::NewNode; the returned item is a zSndPlayHandleSnapshotItem*, not an item**.
                                         struct zSndPlayHandleSnapshotItem* eax_13 = zSndPlayHandleSnapshotItem::NewNode(duplicateVoiceListHeadA3d, duplicateVoiceListHeadA3d->prevLink)
                                         duplicateVoiceListHeadA3d->prevLink = eax_13
                                         *eax_13->prevLink = eax_13
@@ -133126,6 +133149,7 @@
                             if ((outStatus.b & 1) != 0)
                                 zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(&payloadTemp.volumeScale, &sample->primaryVoice)
                                 struct zSndPlayHandleSnapshotItem* listHead = result->listHead
+    // BN stack-merge limitation: call passes (listHead, listHead->prevLink) to zSndPlayHandleSnapshotItem::NewNode; the returned item is a zSndPlayHandleSnapshotItem*, not an item**.
                                 struct zSndPlayHandleSnapshotItem* eax_6 = zSndPlayHandleSnapshotItem::NewNode(listHead, listHead->prevLink)
                                 listHead->prevLink = eax_6
                                 *eax_6->prevLink = eax_6
@@ -133150,6 +133174,7 @@
                                         zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(&payloadTemp.volumeScale, duplicatePlayHandleA3d)
                                         struct zSndPlayHandleSnapshotItem* primaryVoiceListHeadA3d = result->listHead
                                         struct zSndPlayHandleSnapshotItem** prevLink_1 = primaryVoiceListHeadA3d->prevLink
+    // Inlined equivalent of zSndPlayHandleSnapshotItem::NewNode(listHead, listHead->prevLink) on this path; operator new allocates the item, prevLink_1 is not an uninitialized local.
                                         struct zSndPlayHandleSnapshotItem* prevLink = operator new(0x30)
                                         struct zSndPlayHandleSnapshotItem* ecx_14 = primaryVoiceListHeadA3d
 
@@ -133529,11 +133554,13 @@
 
 // Source: D:\Proj\GameZRecoil\zSound\zsnd_play.cpp
 //
-// Allocates a 0x30-byte zSndPlayHandleSnapshotItem and initializes its intrusive linked-list pointers: next = listHead (or self if listHead is null), prevLink = prevLink (or self-pointer if null). Payload is left uninitialized; callers memcpy it in. Used to append to the circular doubly-linked list anchored at zSndPlayHandleSnapshot::listHead.
-0x4a07c0 struct zSndPlayHandleSnapshotItem* __stdcall zSndPlayHandleSnapshotItem::NewNode(struct zSndPlayHandleSnapshotItem* listHead, struct zSndPlayHandleSnapshotItem** prevLink)
+// Allocates a 0x30-byte zSndPlayHandleSnapshotItem and initializes its intrusive linked-list pointers: next = listHead (or self if listHead is null), prev = prev (or self if null). Payload is left uninitialized; callers memcpy it in.
+//
+// Caller evidence at 0x49fff0 sets ECX to the owning zSndPlayHandleSnapshot before each call while the callee ignores ECX and returns with retn 8. Model this as zSndPlayHandleSnapshot::NewNode, a thiscall member with two explicit stack arguments.
+0x4a07c0 struct zSndPlayHandleSnapshotItem* __stdcall zSndPlayHandleSnapshotItem::NewNode(struct zSndPlayHandleSnapshotItem* next, struct zSndPlayHandleSnapshotItem** prevLink)
 {
     struct zSndPlayHandleSnapshotItem* result = operator new(0x30)
-    struct zSndPlayHandleSnapshotItem* nextItem = listHead
+    struct zSndPlayHandleSnapshotItem* nextItem = next
 
     if (nextItem == 0)
         nextItem = result
@@ -138394,7 +138421,7 @@
     g_Time_AccumulatedTimeSec = 0f
     g_FrameDeltaTimeSec = 0f
     uint64_t tickCountMillis64
-    tickCountMillis64.d = GetTickCount()
+    tickCountMillis64.d = KERNEL32_GetTickCount_ImportThunk()
     tickCountMillis64:4.d = 0
     g_Time_CurrentTimeSec = tickCountMillis64 * 0.00100000005f
 }
@@ -138403,7 +138430,7 @@
 0x4a56d0 void Time::Tick()
 {
     uint64_t tickCountMs64
-    tickCountMs64.d = GetTickCount()
+    tickCountMs64.d = KERNEL32_GetTickCount_ImportThunk()
     tickCountMs64:4.d = 0
     long double x87_r6 = g_Time_UnscaledAccumulatedTimeSec
     long double x87_r5 = g_Time_TimeScaleFactor
@@ -138630,7 +138657,7 @@
 }
 
 // Import thunk for KERNEL32!GetTickCount.
-0x4a59d0 uint32_t __stdcall GetTickCount()
+0x4a59d0 uint32_t __stdcall KERNEL32_GetTickCount_ImportThunk()
 {
     return GetTickCount() __tailcall
 }
@@ -141450,7 +141477,7 @@
 {
     struct IDirectDraw* entry_pDirectDraw1
     struct IDirectDraw* pDirectDraw1 = entry_pDirectDraw1
-    HRESULT hresult = DirectDrawCreate(g_zVideo_pSelectedHwApiDeviceRecord->pDirectDrawGuid, &pDirectDraw1, nullptr)
+    HRESULT hresult = DDRAW_DirectDrawCreate_ImportThunk(g_zVideo_pSelectedHwApiDeviceRecord->pDirectDrawGuid, &pDirectDraw1, nullptr)
 
     if (hresult != 0)
         return zVideo_dd::ReportError(hresult, "D:\Proj\GameZRecoil\zVideo\zvid_dd.c", 0x3c4)
@@ -141962,7 +141989,7 @@
 0x4a9390 int32_t zVideo_dd::RunDirectDrawDeviceEnumeration()
 {
     printf("\nENUMERATE GRAPHICS DEVICES...\n")
-    HRESULT hresult = DirectDrawEnumerateA(zVideo_dd::EnumDirectDrawDeviceCallback, nullptr)
+    HRESULT hresult = DDRAW_DirectDrawEnumerateA_ImportThunk(zVideo_dd::EnumDirectDrawDeviceCallback, nullptr)
 
     if (hresult == 0)
         return 1
@@ -146423,12 +146450,12 @@
 0x4af060 void __fastcall OptCatalog::ProcessRuntimeInstances(struct zClass_Node* actionNode)
 {
     __alloca_probe()
-    int32_t impactSlot_1
-    int32_t impactSlot = impactSlot_1
-    int32_t* runtimeState_6
-    int32_t* runtimeState_4 = runtimeState_6
-    struct OptCatalogRuntimeImpactState* runtimeState_3
-    struct OptCatalogRuntimeImpactState* runtimeState = runtimeState_3
+    int32_t entry_impactSlot
+    int32_t impactSlot = entry_impactSlot
+    int32_t* entry_runtimeState
+    int32_t* runtimeState_4 = entry_runtimeState
+    int32_t runtimeState_3
+    int32_t runtimeState = runtimeState_3
     void* edi = &g_OptCatalog_EntryTable[g_OptCatalog_EntryCount]
     struct zTag4 ecx_4 = g_Variant_CurrentTag.count.d
     float runtimeState_5 = *_HUGE
@@ -146466,7 +146493,7 @@
                 for (struct OptCatalogTrailRuntimeState* j = OptCatalog_EntryTable_1->runtimeListHead.activeList; j != 0; j = j->next)
                     struct zTag4* variantTagPtr_10 = j->variantTagPtr
                     struct OptCatalogTrailSegment* segment_1 = &j->segments
-                    runtimeState = nullptr
+                    runtimeState = 0
                     struct OptCatalogTrailSegment* segment_3 = segment_1
 
                     if (variantTagPtr_10 == 0)
@@ -146525,7 +146552,7 @@
                         top = top
 
                         do
-                            runtimeState = &runtimeState->next + 1
+                            runtimeState += 1
                             impactSlot = 0
                             zClass_Class::gwNodeSetActive(segment_1->node, 1)
                             float z_3 = 0f
@@ -146573,12 +146600,12 @@
                                 zClass_Class::gwNodeSetRaycastable(j->projectileNode, 0)
 
                             struct PlayerProbeSampleCandidateBuffer rayData
-                            int32_t eax_93 = zClass_cls_di::RaycastSelectClosestHitBetweenPoints(g_OptCatalogRuntimeWorld, var_1c_18, var_1c_18, &rayData)
+                            int32_t eax_92 = zClass_cls_di::RaycastSelectClosestHitBetweenPoints(g_OptCatalogRuntimeWorld, var_1c_18, var_1c_18, &rayData)
 
                             if (runtimeState == 1)
                                 zClass_Class::gwNodeSetRaycastable(j->projectileNode, 1)
 
-                            if (eax_93 == 0)
+                            if (eax_92 == 0)
                                 int32_t candidateCount = rayData.candidateCount
                                 struct zVec3 var_a8
                                 struct zVec3* reflectedDirOut = &var_a8
@@ -146587,16 +146614,16 @@
                                 float x = &scale
                                 forwardVec = reflectedDirOut
                                 float y = &(&__saved_ebp)[candidateCount * 0xa - 0x558]
-                                int32_t eax_97
+                                int32_t eax_96
                                 int32_t ecx_127
-                                eax_97, ecx_127 = OptCatalog::CanSpawnThroughRay(OptCatalog_EntryTable_1, &(&__saved_ebp)[candidateCount * 0xa - 0x558], forwardVec, var_1c_18, x, y, reflectedDirOut)
+                                eax_96, ecx_127 = OptCatalog::CanSpawnThroughRay(OptCatalog_EntryTable_1, &(&__saved_ebp)[candidateCount * 0xa - 0x558], forwardVec, var_1c_18, x, y, reflectedDirOut)
                                 unimplemented  {fld st0, dword [ebp-0x44]}
                                 unimplemented  {fadd dword [ebp-0x48]}
                                 int16_t flags_2 = (OptCatalog_EntryTable_1->flags).w
                                 float var_48_2 = unimplemented  {fstp dword [ebp-0x44], st0}
                                 unimplemented  {fstp dword [ebp-0x44], st0}
 
-                                if (eax_97 != 0)
+                                if (eax_96 != 0)
                                     if ((flags_2:1.b & 8) != 0)
                                         unimplemented  {fld st0, dword [ebx+0x30]}
                                         unimplemented  {fsub st0, dword [0x56bca8]}
@@ -146692,7 +146719,7 @@
                                         x = hitEvent->pos.x
                                         zClass_Light::gwLightSetPosition(j->attachNode, x, y, hitEvent->pos.z)
 
-                                if (eax_97 != 1)
+                                if (eax_96 != 1)
                                     *x = *(y i+ 0xc)
                                     *(x i+ 4) = *(y i+ 0x10)
                                     *(x i+ 8) = *(y i+ 0x14)
@@ -146721,11 +146748,11 @@
                                 break
                         while (runtimeState s< j->segmentCount)
                     else
-                        void** targetCountPtr = j->targetCountPtr
-                        void* const var_1c_13 = nullptr
+                        int32_t* targetCountPtr = j->targetCountPtr
+                        int32_t var_1c_13 = 0
 
                         if (targetCountPtr != 0)
-                            void* eax_44 = *targetCountPtr
+                            int32_t eax_44 = *targetCountPtr
                             var_1c_13 = eax_44
 
                             if (eax_44 s> 8)
@@ -146747,7 +146774,7 @@
                             struct zVec3 var_9c
                             OptCatalog::ReflectAndSortImpactTraceList(j, &targetProjectionScratch, &var_9c)
                             unimplemented  {call 0x4b0ca0}
-                            void* const ecx_72 = var_1c_13
+                            int32_t ecx_72 = var_1c_13
 
                             if (ecx_72 s> 4)
                                 ecx_72 = 4
@@ -146772,30 +146799,31 @@
                                 while (k != 1)
 
                             struct zVec3* originPos_1 = j->originPos
-                            void* const var_20_4 = nullptr
+                            int32_t var_20_4 = 0
                             targetPos_1.x = originPos_1->x
                             targetPos_1.y = originPos_1->y
                             targetPos_1.z = originPos_1->z
 
                             if (ecx_72 s> 0)
                                 struct zVec3* vec_1 = &j->segments[0].pos
-                                float* var_8 = &targetProjectionScratch
-                                void* const var_18_22 = ecx_72
+                                float (* var_8)[0x8] = &targetProjectionScratch
+                                int32_t var_18_22 = ecx_72
                                 var_20_4 = ecx_72
                                 struct zVec3* out_1
                                 float scale_4
 
                                 do
                                     float y_2 = targetPos_1.y
-                                    vec_1->x = targetPos_1.x
+                                    float* vec_2 = vec_1
+                                    *vec_2 = targetPos_1.x
                                     float z = targetPos_1.z
-                                    vec_1->y = y_2
+                                    vec_2[1] = y_2
                                     out_1 = &targetPos_1
-                                    vec_1->z = z
+                                    vec_2[2] = z
                                     scale_4 = *var_8
                                     zMath::Vec3ScaleAdd(vec_1, &var_9c, scale_4, out_1)
                                     vec_1 += 0x20
-                                    var_8 = &var_8[1]
+                                    var_8 = &(*var_8)[1]
                                     int32_t var_18_24 = scale_4 i- 1
                                 while (scale_4 != 1)
                                 out_3 = out_1
@@ -146846,12 +146874,12 @@
                                     unimplemented  {call 0x4729b0}
                                     (to - 0x14)->__offset(0xfffffffffffffff8).d = unimplemented  {fstp dword [eax-0x8], st0}
                                     unimplemented  {fstp dword [eax-0x8], st0}
-                                    int32_t eax_64 = OptCatalog::ComputeTrailImpactResponse(OptCatalog_EntryTable_1, j, segment, to - 0x14)
+                                    int32_t eax_63 = OptCatalog::ComputeTrailImpactResponse(OptCatalog_EntryTable_1, j, segment, to - 0x14)
                                     unimplemented  {call 0x4b0e20}
-                                    var_24_1 = eax_64
+                                    var_24_1 = eax_63
                                     OptCatalog::UpdateTrailSegmentVisual(segment)
                                     unimplemented  {call 0x4b0f70}
-                                    runtimeState = &runtimeState->next + 1
+                                    runtimeState += 1
 
                                     if (var_24_1 != 0)
                                         break
@@ -146872,7 +146900,7 @@
                                     unimplemented  {call 0x4b0e20}
                                     OptCatalog::UpdateTrailSegmentVisual(&edi_8[-1])
                                     unimplemented  {call 0x4b0f70}
-                                    runtimeState = &runtimeState->next + 1
+                                    runtimeState += 1
                                     edi_8 = &edi_8[8]
                                     segment = &edi_8[7]
                                     to = targetPos + 0x20
@@ -146882,7 +146910,7 @@
                                 segment_2 = segment
 
                             if (var_24_1 == 0)
-                                zMath::Vec3DirectionTo(&segment_2->pos, j->targetList[impactSlot].targetPos, &segment_2->dir)
+                                zMath::Vec3DirectionTo(&segment_2->pos, j->targetList[impactSlot * 2], &segment_2->dir)
                                 unimplemented  {call 0x4729b0}
                                 segment_2->scale = unimplemented  {fstp dword [edi+0x1c], st0}
                                 unimplemented  {fstp dword [edi+0x1c], st0}
@@ -146890,7 +146918,7 @@
                                 unimplemented  {call 0x4b0e20}
                                 OptCatalog::UpdateTrailSegmentVisual(segment_2)
                                 unimplemented  {call 0x4b0f70}
-                                runtimeState = &runtimeState->next + 1
+                                runtimeState += 1
                         else if (var_1c_13 != 1)
                             unimplemented  {fld st0, dword [esi+0x1c]}
                             float scale_3 = unimplemented  {fst dword [ebp-0x8], st0}
@@ -146935,13 +146963,13 @@
                             unimplemented  {call 0x4729b0}
                             segment_1->scale = unimplemented  {fstp dword [edi+0x1c], st0}
                             unimplemented  {fstp dword [edi+0x1c], st0}
-                            int32_t eax_84 = OptCatalog::ComputeTrailImpactResponse(OptCatalog_EntryTable_1, j, segment_1, impactSlot)
+                            int32_t eax_83 = OptCatalog::ComputeTrailImpactResponse(OptCatalog_EntryTable_1, j, segment_1, impactSlot)
                             unimplemented  {call 0x4b0e20}
                             OptCatalog::UpdateTrailSegmentVisual(segment_1)
                             unimplemented  {call 0x4b0f70}
                             runtimeState = 1
 
-                            if (eax_84 == 0)
+                            if (eax_83 == 0)
                                 zMath::Vec3DirectionTo(impactSlot, *j->targetList, segment_1 + 0x30)
                                 unimplemented  {call 0x4729b0}
                                 segment_1[1].scale = unimplemented  {fstp dword [edi+0x1c], st0}
@@ -146952,7 +146980,7 @@
                                 unimplemented  {call 0x4b0f70}
                                 runtimeState = 2
 
-                    struct OptCatalogRuntimeImpactState* runtimeState_2 = runtimeState
+                    int32_t runtimeState_2 = runtimeState
                     runtimeState_4 = runtimeState_2
 
                     if (runtimeState_2 s< j->activeSegmentCount)
@@ -146980,7 +147008,7 @@
                     runtimeState = 1
 
                     if (updateCallback != 0)
-                        updateCallback(runtimeState)
+                        updateCallback(runtimeState, runtimeState_4, impactSlot)
 
                     if (j_1->variantTag.b == 4)
                         struct zTag4 ecx_10
@@ -147026,7 +147054,7 @@
                                     unimplemented  {call 0x4729b0}
                                     runtimeState_4 = unimplemented  {fstp dword [ebp-0x8], st0}
                                     unimplemented  {fstp dword [ebp-0x8], st0}
-                                    enum OptCatalogEntryFlags pendingTargetB
+                                    int32_t pendingTargetB
 
                                     if ((OptCatalog_EntryTable_1->flags:1.b & 0x80) != 0)
                                         pendingTargetB = j_1->pendingTargetB
@@ -147527,7 +147555,7 @@
                                     if ((flags_1:1.b & 0x40) != 0 && (flags_1.b & 0x40) == 0)
                                         OptCatalog::HandleImpactEventFromRuntimeState(OptCatalog_EntryTable_1, j_1)
 
-                                    runtimeState = nullptr
+                                    runtimeState = 0
                                 else if ((flags_1:1.b & 0x40) != 0)
                                     struct zVec3* pendingTargetA_1 = j_1->pendingTargetA
 
@@ -147552,7 +147580,7 @@
 
                                             if ((((c0_26 ? 1 : 0) << 8 | (c2_26 ? 1 : 0) << 0xa | (c3_26 ? 1 : 0) << 0xe | (top & 7) << 0xb):1.b & 0x41) != 0)
                                                 struct zClass_Node* ownerNode = nullptr
-                                                runtimeState = nullptr
+                                                runtimeState = 0
                                                 g_OptCatalog_FallbackImpactProbeEnabled = 0
                                                 OptCatalog::RemoveRuntimeInstance(OptCatalog_EntryTable_1, &j_1->impactPos, ownerNode)
                                                 g_OptCatalog_FallbackImpactProbeEnabled = 1
@@ -147609,15 +147637,15 @@
                                 unimplemented  {call 0x44e170}
                             else
                                 OptCatalog::HandleImpactFromRuntimeProbe(OptCatalog_EntryTable_1, j_1, &var_b60, nullptr)
-                                runtimeState = nullptr
+                                runtimeState = 0
                                 g_OptCatalog_FallbackImpactProbeEnabled = 0
                                 OptCatalog::ProcessRuntimeInstance(OptCatalog_EntryTable_1, j_1)
                                 g_OptCatalog_FallbackImpactProbeEnabled = 1
                     else
                         OptCatalog::HandleImpactEventFromRuntimeState(OptCatalog_EntryTable_1, j_1)
-                        runtimeState = nullptr
+                        runtimeState = 0
 
-                    struct OptCatalogRuntimeImpactState* runtimeState_1 = runtimeState
+                    int32_t runtimeState_1 = runtimeState
                     struct zVec3 var_34
 
                     if (runtimeState_1 == 1)
@@ -147667,7 +147695,7 @@
                                     float var_28
 
                                     if (OptCatalog::CanSpawnThroughRay(OptCatalog_EntryTable_1, ebx_4, rayStart, &var_34, &rayLengthOut, &var_28, &j_1->direction) == 0)
-                                        runtimeState = nullptr
+                                        runtimeState = 0
                                         OptCatalog::HandleImpactEvent(OptCatalog_EntryTable_1, ebx_4, j_1)
                                         break
 
@@ -147773,7 +147801,7 @@
                                     g_OptCatalog_CapturedDamageHitPos.z = ebx_4->pos.z
 
                                 j_1->impactPos.x = ebx_4->pos.x
-                                runtimeState = nullptr
+                                runtimeState = 0
                                 j_1->impactPos.y = ebx_4->pos.y
                                 j_1->impactPos.z = ebx_4->pos.z
                                 g_OptCatalog_CaptureHitSnapshotEnabled = 0
@@ -147801,7 +147829,7 @@
                     enum OptCatalogEntryFlags flags_4 = OptCatalog_EntryTable_1->flags
 
                     if ((flags_4:1.b & 4) != 0)
-                        runtimeState_1 = nullptr
+                        runtimeState_1 = 0
 
                     if (runtimeState_1 == 0)
                         struct OptCatalogRuntimeImpactState* next = j_1->next
@@ -147946,12 +147974,12 @@
             g_OptCatalogLockOnWarningGateTimeSec = unimplemented  {fstp dword [0x779a78], st0}
             unimplemented  {fstp dword [0x779a78], st0}
 
-    struct zTag4 eax_114
-    eax_114.count = var_58.count
-    eax_114.tags[0] = var_58.tags[0]
-    eax_114.tags[1] = var_58.tags[1]
-    eax_114.tags[2] = var_58.tags[2]
-    g_Variant_CurrentTag.count.d = eax_114
+    struct zTag4 eax_113
+    eax_113.count = var_58.count
+    eax_113.tags[0] = var_58.tags[0]
+    eax_113.tags[1] = var_58.tags[1]
+    eax_113.tags[2] = var_58.tags[2]
+    g_Variant_CurrentTag.count.d = eax_113
 }
 
 // Source: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp -- OptCatalog_ComputeAimPitchForTarget.
@@ -152970,7 +152998,7 @@
     struct HudUiZrdDialog* owner_30 = arg3
     struct HudUiWidget_FTable* ftable = self->base.ftable
     self->owner = owner_30
-    ftable->SetVisible(1)
+    ftable->SetVisible(self, 1)
     HudUiContainer::AddChild(owner_30, self)
     self->originX = owner_30->originX
     self->originY = owner_30->originY
@@ -152997,19 +153025,19 @@
             originX += u32_15->x.i32
             originY_8 += u32_15->y.i32
 
-    self->base.ftable->SetPos(originX, originY_8)
+    self->base.ftable->SetPos(self, originX, originY_8)
     struct zVideo_BltSourceHead* clipSource = arg3->clipSource
 
     if (clipSource != 0)
-        int32_t* eax_10 = self->base.ftable->GetBoundsRectOrNull()
+        struct HudUiRect* eax_10 = self->base.ftable->GetBoundsRectOrNull(self)
 
         if (eax_10 != 0)
-            int32_t edx_5 = eax_10[1]
-            int32_t bltSourceOrNull = *eax_10
-            int32_t var_14_1 = eax_10[2]
-            int32_t var_18_1 = edx_5
-            int32_t var_10_1 = eax_10[3]
-            self->base.ftable->SetClip(clipSource, &bltSourceOrNull)
+            int32_t top = eax_10->top
+            int32_t left = eax_10->left
+            int32_t right = eax_10->right
+            int32_t top_1 = top
+            int32_t bottom = eax_10->bottom
+            self->base.ftable->SetClip(self, clipSource, &left)
 
     struct zReader_Node* parentNode = zReader::GetNamedNode(zrdSection, "ROLLOVER")
 
@@ -153058,20 +153086,23 @@
                     owner_29->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_16 = owner_29
-                int32_t edx_15
-                edx_15.b = owner_29->base.elementFlags.b
+                int32_t edx_14
+                edx_14.b = owner_29->base.elementFlags.b
                 int32_t var_4_4 = 0xffffffff
-                owner_29->base.elementFlags = (edx_15 & 0x10) | 2
+                owner_29->base.elementFlags = (edx_14 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_1 = arg3->base.vptr
                 char* fmt_1 = zLoc::ResolveMessageKeyOrFallback(eax_17->list->items[0].payload)
                 vptr_1->SetTextFmt(arg3, fmt_1)
                 struct zReader_NodeArray_HudTextLabelSpec* u32_2 = eax_17->list
-                arg3->base.vptr->PrimaryAction(u32_2->x.i32 + originX_2, u32_2->y.i32 + originY_1)
+                struct HudUiZrdDialog* ecx_42 = arg3
+                int32_t var_44_9 = u32_2->y.i32 + originY_1
+                int32_t var_48_5 = u32_2->x.i32 + originX_2
+                ecx_42->base.vptr->PrimaryAction(ecx_42)
                 struct HudUiZrdDialog* owner_1 = self->owner
-                int32_t edx_20 = eax_17->list->__offset(0x24).d * 9
-                int32_t esi_10 = *(&owner_1->fontStyles + (edx_20 << 2))
+                int32_t edx_19 = eax_17->list->__offset(0x24).d * 9
+                int32_t esi_10 = *(&owner_1->fontStyles + (edx_19 << 2))
                 int32_t esi_11 = neg.d(esi_10)
-                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_20 << 2))
+                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_19 << 2))
 
                 if (esi_13 != 0)
                     struct HudUiZrdDialog* ecx_44 = arg3
@@ -153162,12 +153193,15 @@
                         char* fmt = zLoc::ResolveMessageKeyOrFallback(*((&eax_17->list->count)[var_30_1 * 2] + 0xc))
                         vptr->SetTextFmt(arg3, fmt)
                         struct zReader_NodeArray_HudTextLabelSpec* eax_25 = (&eax_17->list->count)[var_30_1 * 2]
-                        arg3->base.vptr->PrimaryAction(eax_25->x.i32 + originX_1, eax_25->y.i32 + originY_7)
+                        struct HudUiZrdDialog* ecx_28 = arg3
+                        int32_t var_44_5 = eax_25->y.i32 + originY_7
+                        int32_t var_48_3 = eax_25->x.i32 + originX_1
+                        ecx_28->base.vptr->PrimaryAction(ecx_28)
                         struct HudUiZrdDialog* owner = self->owner
-                        int32_t edx_13 = *((&eax_17->list->count)[var_30_1 * 2] + 0x24) * 9
-                        int32_t esi_4 = *(&owner->fontStyles + (edx_13 << 2))
+                        int32_t edx_12 = *((&eax_17->list->count)[var_30_1 * 2] + 0x24) * 9
+                        int32_t esi_4 = *(&owner->fontStyles + (edx_12 << 2))
                         int32_t esi_5 = neg.d(esi_4)
-                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_13 << 2))
+                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_12 << 2))
 
                         if (esi_7 != 0)
                             struct HudUiZrdDialog* ecx_30 = arg3
@@ -153305,20 +153339,23 @@
                     owner_33->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_18 = owner_33
-                int32_t edx_35
-                edx_35.b = owner_33->base.elementFlags.b
+                int32_t edx_34
+                edx_34.b = owner_33->base.elementFlags.b
                 int32_t var_4_8 = 0xffffffff
-                owner_33->base.elementFlags = (edx_35 & 0x10) | 2
+                owner_33->base.elementFlags = (edx_34 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_3 = arg3->base.vptr
                 char* fmt_3 = zLoc::ResolveMessageKeyOrFallback(eax_63->list->items[0].payload)
                 vptr_3->SetTextFmt(arg3, fmt_3)
                 struct zReader_NodeArray_HudTextLabelSpec* list_04_1 = eax_63->list
-                arg3->base.vptr->PrimaryAction(list_04_1->x.i32 + originX_4, list_04_1->y.i32 + originY_3)
+                struct HudUiZrdDialog* ecx_82 = arg3
+                int32_t var_44_18 = list_04_1->y.i32 + originY_3
+                int32_t var_48_10 = list_04_1->x.i32 + originX_4
+                ecx_82->base.vptr->PrimaryAction(ecx_82)
                 struct HudUiZrdDialog* owner_3 = self->owner
-                int32_t edx_40 = eax_63->list->__offset(0x24).d * 9
-                int32_t esi_24 = *(&owner_3->fontStyles + (edx_40 << 2))
+                int32_t edx_39 = eax_63->list->__offset(0x24).d * 9
+                int32_t esi_24 = *(&owner_3->fontStyles + (edx_39 << 2))
                 int32_t esi_25 = neg.d(esi_24)
-                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_40 << 2))
+                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_39 << 2))
 
                 if (esi_27 != 0)
                     struct HudUiZrdDialog* ecx_84 = arg3
@@ -153398,20 +153435,23 @@
                             owner_31->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* owner_17 = owner_31
-                        int32_t edx_26
-                        edx_26.b = owner_31->base.elementFlags.b
+                        int32_t edx_25
+                        edx_25.b = owner_31->base.elementFlags.b
                         int32_t var_4_6 = 0xffffffff
-                        owner_31->base.elementFlags = (edx_26 & 0x10) | 2
+                        owner_31->base.elementFlags = (edx_25 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_2 = arg3->base.vptr
                         char* fmt_2 = zLoc::ResolveMessageKeyOrFallback(*((&eax_63->list->count)[var_30_2 * 2] + 0xc))
                         vptr_2->SetTextFmt(arg3, fmt_2)
+                        struct HudUiZrdDialog* ecx_68 = arg3
                         struct zReader_NodeArray_HudTextLabelSpec* eax_70 = (&eax_63->list->count)[var_30_2 * 2]
-                        arg3->base.vptr->PrimaryAction(eax_70->x.i32 + originX_3, eax_70->y.i32 + originY_2)
+                        int32_t var_44_14 = eax_70->y.i32 + originY_2
+                        int32_t var_48_8 = eax_70->x.i32 + originX_3
+                        ecx_68->base.vptr->PrimaryAction(ecx_68)
                         struct HudUiZrdDialog* owner_2 = self->owner
-                        int32_t edx_33 = *((&eax_63->list->count)[var_30_2 * 2] + 0x24) * 9
-                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_33 << 2))
+                        int32_t edx_32 = *((&eax_63->list->count)[var_30_2 * 2] + 0x24) * 9
+                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_32 << 2))
                         int32_t esi_19 = neg.d(esi_18)
-                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_33 << 2))
+                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_32 << 2))
 
                         if (esi_21 != 0)
                             struct HudUiZrdDialog* ecx_70 = arg3
@@ -153549,20 +153589,23 @@
                     owner_39->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_20 = owner_39
-                int32_t edx_55
-                edx_55.b = owner_39->base.elementFlags.b
+                int32_t edx_54
+                edx_54.b = owner_39->base.elementFlags.b
                 int32_t var_4_12 = 0xffffffff
-                owner_39->base.elementFlags = (edx_55 & 0x10) | 2
+                owner_39->base.elementFlags = (edx_54 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_5 = arg3->base.vptr
                 char* fmt_5 = zLoc::ResolveMessageKeyOrFallback(eax_110->list->items[0].payload)
                 vptr_5->SetTextFmt(arg3, fmt_5)
                 struct zReader_NodeArray_HudTextLabelSpec* u32_7 = eax_110->list
-                arg3->base.vptr->PrimaryAction(u32_7->x.i32 + originX_6, u32_7->y.i32 + originY_5)
+                struct HudUiZrdDialog* ecx_122 = arg3
+                int32_t var_44_27 = u32_7->y.i32 + originY_5
+                int32_t var_48_15 = u32_7->x.i32 + originX_6
+                ecx_122->base.vptr->PrimaryAction(ecx_122)
                 struct HudUiZrdDialog* owner_5 = self->owner
-                int32_t edx_60 = eax_110->list->__offset(0x24).d * 9
-                int32_t esi_38 = *(&owner_5->fontStyles + (edx_60 << 2))
+                int32_t edx_59 = eax_110->list->__offset(0x24).d * 9
+                int32_t esi_38 = *(&owner_5->fontStyles + (edx_59 << 2))
                 int32_t esi_39 = neg.d(esi_38)
-                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_60 << 2))
+                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_59 << 2))
 
                 if (esi_41 != 0)
                     struct HudUiZrdDialog* ecx_124 = arg3
@@ -153642,20 +153685,23 @@
                             owner_35->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* owner_19 = owner_35
-                        int32_t edx_46
-                        edx_46.b = owner_35->base.elementFlags.b
+                        int32_t edx_45
+                        edx_45.b = owner_35->base.elementFlags.b
                         int32_t var_4_10 = 0xffffffff
-                        owner_35->base.elementFlags = (edx_46 & 0x10) | 2
+                        owner_35->base.elementFlags = (edx_45 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_4 = arg3->base.vptr
                         char* fmt_4 = zLoc::ResolveMessageKeyOrFallback(*((&eax_110->list->count)[var_30_3 * 2] + 0xc))
                         vptr_4->SetTextFmt(arg3, fmt_4)
+                        struct HudUiZrdDialog* ecx_108 = arg3
                         struct zReader_NodeArray_HudTextLabelSpec* eax_117 = (&eax_110->list->count)[var_30_3 * 2]
-                        arg3->base.vptr->PrimaryAction(eax_117->x.i32 + originX_5, eax_117->y.i32 + originY_4)
+                        int32_t var_44_23 = eax_117->y.i32 + originY_4
+                        int32_t var_48_13 = eax_117->x.i32 + originX_5
+                        ecx_108->base.vptr->PrimaryAction(ecx_108)
                         struct HudUiZrdDialog* owner_4 = self->owner
-                        int32_t edx_53 = *((&eax_110->list->count)[var_30_3 * 2] + 0x24) * 9
-                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_53 << 2))
+                        int32_t edx_52 = *((&eax_110->list->count)[var_30_3 * 2] + 0x24) * 9
+                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_52 << 2))
                         int32_t esi_33 = neg.d(esi_32)
-                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_53 << 2))
+                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_52 << 2))
 
                         if (esi_35 != 0)
                             struct HudUiZrdDialog* ecx_110 = arg3
@@ -153772,20 +153818,23 @@
                 owner_41->base.flash.flashDirectionSign = 1
 
             struct HudUiTransitionTextPanel* owner_22 = owner_41
-            int32_t edx_71
-            edx_71.b = owner_41->base.elementFlags.b
+            int32_t edx_70
+            edx_70.b = owner_41->base.elementFlags.b
             int32_t var_4_16 = 0xffffffff
-            owner_41->base.elementFlags = (edx_71 & 0x10) | 2
+            owner_41->base.elementFlags = (edx_70 & 0x10) | 2
             struct HudUiTransitionTextPanel_FTable* vptr_7 = arg3->base.vptr
             char* fmt_7 = zLoc::ResolveMessageKeyOrFallback(eax_142->list->items[0].payload)
             vptr_7->SetTextFmt(arg3, fmt_7)
             struct zReader_NodeArray_HudTextLabelSpec* u32_9 = eax_142->list
-            arg3->base.vptr->PrimaryAction(u32_9->x.i32 + originX_8, u32_9->y.i32 + originY_6)
+            struct HudUiZrdDialog* ecx_161 = arg3
+            int32_t var_44_36 = u32_9->y.i32 + originY_6
+            int32_t var_48_20 = u32_9->x.i32 + originX_8
+            ecx_161->base.vptr->PrimaryAction(ecx_161)
             struct HudUiZrdDialog* owner_7 = self->owner
-            int32_t edx_76 = eax_142->list->__offset(0x24).d * 9
-            int32_t esi_51 = *(&owner_7->fontStyles + (edx_76 << 2))
+            int32_t edx_75 = eax_142->list->__offset(0x24).d * 9
+            int32_t esi_51 = *(&owner_7->fontStyles + (edx_75 << 2))
             int32_t esi_52 = neg.d(esi_51)
-            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_76 << 2))
+            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_75 << 2))
 
             if (esi_54 != 0)
                 struct HudUiZrdDialog* ecx_163 = arg3
@@ -153855,10 +153904,10 @@
 
                     if (i != eax_192)
                         do
-                            struct HudUiFlashPanel* edx_91 = *(eax_192 - 4)
+                            struct HudUiFlashPanel* edx_90 = *(eax_192 - 4)
                             eax_192 -= 4
                             end_1 -= 4
-                            *end_1 = edx_91
+                            *end_1 = edx_90
                         while (eax_192 != i)
 
                     for (; i != &i[1]; i = &i[1])
@@ -153996,12 +154045,15 @@
                     char* fmt_6 = zLoc::ResolveMessageKeyOrFallback(*((&eax_142->list->count)[var_30_4 * 2] + 0xc))
                     vptr_6->SetTextFmt(arg3, fmt_6)
                     struct zReader_NodeArray_HudTextLabelSpec* eax_148 = (&eax_142->list->count)[var_30_4 * 2]
-                    arg3->base.vptr->PrimaryAction(eax_148->x.i32 + originX_7, eax_148->y.i32 + originY)
+                    struct HudUiZrdDialog* ecx_147 = arg3
+                    int32_t var_44_32 = eax_148->y.i32 + originY
+                    int32_t var_48_18 = eax_148->x.i32 + originX_7
+                    ecx_147->base.vptr->PrimaryAction(ecx_147)
                     struct HudUiZrdDialog* owner_6 = self->owner
-                    int32_t edx_69 = *((&eax_142->list->count)[var_30_4 * 2] + 0x24) * 9
-                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_69 << 2))
+                    int32_t edx_68 = *((&eax_142->list->count)[var_30_4 * 2] + 0x24) * 9
+                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_68 << 2))
                     int32_t esi_46 = neg.d(esi_45)
-                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_69 << 2))
+                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_68 << 2))
 
                     if (esi_48 != 0)
                         struct HudUiZrdDialog* ecx_149 = arg3
@@ -157164,7 +157216,7 @@
 // Likely original file: D:\Proj\Battlesport\HudUiPanel.cpp
 //
 // Deletes the previous hFont, calls CreateFontA with height negated and the wrapper's order (pszFaceName, cHeight, cWeight, cWidth, bItalic, iCharSet, iPitchAndFamily), stores the returned HFONT in hFont, then sets textDirty. The CreateFontA result remains in EAX incidentally; callers and virtual overrides treat the slot as void.
-0x4babb0 void __thiscall HudUiPanel::SetFont(struct HudUiPanel* self, char const* pszFaceName, int32_t cHeight, int32_t cWeight, int32_t cWidth, uint32_t bItalic, uint32_t iCharSet, uint32_t iPitchAndFamily)
+0x4babb0 void __thiscall HudUiPanel::SetFont(struct HudUiPanel* self, char const* pszFaceName, int32_t cHeight, int32_t cWeight, int32_t cWidth, int32_t bItalic, int32_t iCharSet, int32_t iPitchAndFamily)
 {
     DeleteObject(self->hFont)
     self->hFont = CreateFontA(neg.d(cHeight), cWidth, 0, 0, cWeight, bItalic, 0, 0, iCharSet, 4, 0, 1, iPitchAndFamily, pszFaceName)
@@ -159196,21 +159248,21 @@
 
 // Likely original file: D:\Proj\Battlesport\HudUiTextStack4.cpp
 // Constructs four top-message panel rows at x=0x140; y starts at 0x1e and steps by 0x12.
-0x4bd020 struct HudUiTextStack4* __thiscall HudUiTopMessageStack::Constructor(struct HudUiTextStack4* self)
+0x4bd020 struct HudUiTopMessageStack* __thiscall HudUiTopMessageStack::Constructor(struct HudUiTopMessageStack* self)
 {
     int32_t var_4_1 = 0xffffffff
     int32_t (* var_8)() = __ehhandler_HudUiTopMessageStack_Constructor
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct HudUiTextStack4* self_1 = self
-    struct HudUiTextStack4* self_2 = self
+    struct HudUiTopMessageStack* self_1 = self
+    struct HudUiTopMessageStack* self_2 = self
     HudUiContainer::ConstructorDefault(self)
-    struct HudUiPanel* child = &self->lines
+    struct HudUiPanel* child = &self->base.lines
     int32_t var_4 = 0
     MSVC_EH_ArrayConstructor(child, 0x2a4, 4, HudUiPanel::ConstructorDefaultThunk, HudUiPanel::Destructor)
     var_4.b = 1
-    self->base.vptr = &g_HudUiTopMessageStack_FTable
+    self->base.base.vptr = &g_HudUiTopMessageStack_FTable
 
     for (int32_t y = 0x1e; y s< 0x66; )
         HudUiContainer::AddChild(self, child)
@@ -159222,7 +159274,7 @@
         child->vtbl->SetPos(child, 0x140, y)
         child->vtbl->SetVisible(child, 0)
         y += 0x12
-        child = &child->layoutX
+        child = &child[1]
 
     fsbase->NtTib.ExceptionList = ExceptionList
     return self
@@ -159339,7 +159391,7 @@
     do
         line->vtbl->SetTextFmt(line, &k_EmptyString)
         line->vtbl->SetVisible(line, 0)
-        line = &line->layoutX
+        line = &line[1]
         i = i_1
         i_1 -= 1
     while (i != 1)
@@ -159351,20 +159403,20 @@
 // Rows are positioned at x=0x140 with y starting at 0x159 and stepping
 // backwards by 0x12 (loop exits when y <= 0x111). Text colors differ from
 // the top message stack: textColor0=0x996a00, textColor1=0x95c7ff.
-0x4bd2d0 struct HudUiTextStack4* __thiscall HudUiChatMessageStack::Constructor(struct HudUiTextStack4* self)
+0x4bd2d0 struct HudUiChatMessageStack* __thiscall HudUiChatMessageStack::Constructor(struct HudUiChatMessageStack* self)
 {
     int32_t var_4_1 = 0xffffffff
     int32_t (* var_8)() = __ehhandler_HudUiChatMessageStack_Constructor
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct HudUiTextStack4* self_1 = self
-    struct HudUiTextStack4* self_2 = self
+    struct HudUiChatMessageStack* self_1 = self
+    struct HudUiChatMessageStack* self_2 = self
     HudUiContainer::ConstructorDefault(self)
-    struct HudUiPanel* child = &self->lines
+    struct HudUiPanel* child = &self->base.lines
     int32_t var_4 = 0
     MSVC_EH_ArrayConstructor(child, 0x2a4, 4, HudUiPanel::ConstructorDefaultThunk, HudUiPanel::Destructor)
-    self->base.vptr = &g_HudUiChatMessageStack_FTable
+    self->base.base.vptr = &g_HudUiChatMessageStack_FTable
     var_4.b = 1
 
     for (int32_t y = 0x159; y s> 0x111; )
@@ -159380,7 +159432,7 @@
         child->vtbl->SetPos(child, 0x140, y)
         child->vtbl->SetVisible(child, 0)
         y -= 0x12
-        child = &child->layoutX
+        child = &child[1]
 
     fsbase->NtTib.ExceptionList = ExceptionList
     return self
@@ -159981,6 +160033,7 @@
     self->base.ftable = &g_HudWeatherFx_Vtable
     self->maxParticles = particleCount
     self->particleCount = particleCount
+    // Allocates HudWeatherFxParticleQuad[particleCount] (0x20 bytes per quad). BN keeps the byte-count spelling as particleCount << 5.
     self->particleQuads = operator new(particleCount << 5)
 
     if (particleCount s> 0)
@@ -159992,6 +160045,7 @@
             eax_4 += 0x20
             i = edx_1
             edx_1 -= 1
+    // Initializes each HudWeatherFxParticleQuad's x/y/width/height fields to -1; the loop advances one 0x20-byte quad per iteration.
             *(self->particleQuads + eax_4 - 0x20) = 0xffffffff
             *(self->particleQuads + eax_4 - 0x1c) = 0xffffffff
             *(self->particleQuads + eax_4 - 0x18) = 0xffffffff
@@ -160006,8 +160060,10 @@
     self->activeParticleCount = 0
     self->sourceBufferIndex = 0
     self->destBufferIndex = 1
+    // Allocates source particle position buffer as zVec3[particleCount] (particleCount * 0xc bytes).
     self->particlePositions[self->sourceBufferIndex] = operator new(edi_6)
     int32_t particleIndex = 0
+    // Allocates destination particle position buffer as zVec3[particleCount] (same particleCount * 0xc byte size).
     self->particlePositions[self->destBufferIndex] = operator new(edi_6)
 
     if (particleCount s> 0)
@@ -168287,19 +168343,19 @@
 }
 
 // Non-authored: COMDLG32 GetOpenFileNameA import thunk.
-0x4c637c BOOL __stdcall GetOpenFileNameA(struct tagOFN_NT4A* lpofn)
+0x4c637c BOOL __stdcall COMDLG32_GetOpenFileNameA_ImportThunk(struct tagOFN_NT4A* lpofn)
 {
     return GetOpenFileNameA(lpofn) __tailcall
 }
 
 // Non-authored: AVIFIL32 AVIFileInit import thunk.
-0x4c6390 void __stdcall AVIFileInit()
+0x4c6390 void __stdcall AVIFIL32_AVIFileInit_ImportThunk()
 {
     return AVIFileInit() __tailcall
 }
 
 // Non-authored: AVIFIL32 AVIFileExit import thunk.
-0x4c6396 void __stdcall AVIFileExit()
+0x4c6396 void __stdcall AVIFIL32_AVIFileExit_ImportThunk()
 {
     return AVIFileExit() __tailcall
 }
@@ -168317,7 +168373,7 @@
 }
 
 // Non-authored: AVIFIL32 AVIStreamRelease import thunk.
-0x4c63a8 uint32_t __stdcall AVIStreamRelease(struct IAVIStream pavi)
+0x4c63a8 uint32_t __stdcall AVIFIL32_AVIStreamRelease_ImportThunk(struct IAVIStream pavi)
 {
     return AVIStreamRelease(pavi) __tailcall
 }
@@ -168371,25 +168427,25 @@
 }
 
 // Non-authored: DDRAW DirectDrawCreate import thunk.
-0x4c63de HRESULT __stdcall DirectDrawCreate(GUID* lpGUID, struct IDirectDraw** lplpDD, struct IUnknown* pUnkOuter)
+0x4c63de HRESULT __stdcall DDRAW_DirectDrawCreate_ImportThunk(GUID* lpGUID, struct IDirectDraw** lplpDD, struct IUnknown* pUnkOuter)
 {
     return DirectDrawCreate(lpGUID, lplpDD, pUnkOuter) __tailcall
 }
 
 // Non-authored: DDRAW DirectDrawEnumerateA import thunk.
-0x4c63e4 HRESULT __stdcall DirectDrawEnumerateA(int32_t (__stdcall* callback)(GUID const* lpDirectDrawGuid, char* lpDriverDescription, char* lpDriverName, void* context), void* context)
+0x4c63e4 HRESULT __stdcall DDRAW_DirectDrawEnumerateA_ImportThunk(int32_t (__stdcall* callback)(GUID const* lpDirectDrawGuid, char* lpDriverDescription, char* lpDriverName, void* context), void* context)
 {
     return DirectDrawEnumerateA(callback, context) __tailcall
 }
 
 // Imported DirectPlay ordinal jump thunk. Non-authored runtime residue; not a reconstruction target.
-0x4c63ea int32_t __stdcall Ordinal_DPLAYX_4(GUID* guidServiceProvider, struct IDirectPlayLobby** outLobby, struct IUnknown* outer, void* data, uint32_t dataSize)
+0x4c63ea int32_t __stdcall DPLAYX_Ordinal4_ImportThunk(GUID* guidServiceProvider, struct IDirectPlayLobby** outLobby, struct IUnknown* outer, void* data, uint32_t dataSize)
 {
     return Ordinal_DPLAYX_4() __tailcall
 }
 
 // BN misidentified data/code stub. No code or data xrefs in the current database and bytes do not decode as a meaningful DirectDraw factory thunk.
-0x4c7405 void __convention("regparm") CRT_Data_MisidentifiedCode_4c7405(int32_t arg1, int32_t, uint16_t arg3) __noreturn
+0x4c7405 void __convention("regparm") CRT_Data_MisidentifiedBytes_4c7405(int32_t arg1, int32_t, uint16_t arg3) __noreturn
 {
     int32_t eflags
     int16_t temp0
@@ -168399,13 +168455,13 @@
 }
 
 // Non-authored: DINPUT DirectInputCreateA import thunk.
-0x4c7498 HRESULT __stdcall DirectInputCreateA(struct HINSTANCE__* hinst, uint32_t dwVersion, struct zInput_DirectInput** ppDI, struct IUnknown* punkOuter)
+0x4c7498 HRESULT __stdcall DINPUT_DirectInputCreateA_ImportThunk(struct HINSTANCE__* hinst, uint32_t dwVersion, struct zInput_DirectInput** ppDI, struct IUnknown* punkOuter)
 {
     return DirectInputCreateA(hinst, dwVersion, ppDI, punkOuter) __tailcall
 }
 
 // BN misidentified data/code stub. Bytes form structured data records and there are no live code or data xrefs in the current database.
-0x4c7eca void __convention("regparm") CRT_Data_MisidentifiedCode_4c7eca(char* arg1, int32_t, char* arg3, int32_t arg4 @ ebp, char* arg5 @ esi, char* arg6 @ edi) __noreturn
+0x4c7eca void __convention("regparm") CRT_Data_MisidentifiedBytes_4c7eca(char* arg1, int32_t, char* arg3, int32_t arg4 @ ebp, char* arg5 @ esi, char* arg6 @ edi) __noreturn
 {
     *(arg1 + 0x400) += 1
     *arg6 <<= 1
@@ -168739,7 +168795,7 @@
     return __CxxFrameHandler_iat_thunk() __tailcall
 }
 
-0x4c82e0 int32_t sub_4c82e0(void* arg1 @ ebp)
+0x4c82e0 int32_t MSVC_EH_UnwindFunclet_4c82e0_HudUiElement_ResetCommonFTable(void* arg1 @ ebp)
 {
     return HudUiElement::ResetCommonFTable(*(arg1 - 0x10)) __tailcall
 }
@@ -168750,7 +168806,7 @@
     return __CxxFrameHandler_iat_thunk() __tailcall
 }
 
-0x4c8300 int32_t sub_4c8300(void* arg1 @ ebp)
+0x4c8300 int32_t MSVC_EH_UnwindFunclet_4c8300_HudUiPanel_Destructor(void* arg1 @ ebp)
 {
     return HudUiPanel::Destructor(*(arg1 - 0x24)) __tailcall
 }

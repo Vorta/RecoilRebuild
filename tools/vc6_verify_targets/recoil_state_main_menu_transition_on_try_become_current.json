@@ -3,19 +3,7 @@
   "description": "Main-menu transition activation path: video reset, blur transition, audio snapshot pause, dialog creation, and CD track start.",
   "source_filename": "RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp",
   "source_from": "src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp",
-  "compiler_flags": [
-    "/nologo",
-    "/TP",
-    "/W3",
-    "/G5",
-    "/O2",
-    "/Ob2",
-    "/GX",
-    "/Zp4",
-    "/FAcs",
-    "/I",
-    "."
-  ],
+  "compiler_profile": "vc5_o2_ob1_gx_facs",
   "include_dirs": [
     "src",
     "src/native/include",
@@ -25,7 +13,8 @@
     "support/sdk/MFC42/Include"
   ],
   "source_files": [
-    "src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp"
+    "src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp",
+    "src/GameZRecoil/zFMV/fmv_script.cpp"
   ],
   "functions": [
     {

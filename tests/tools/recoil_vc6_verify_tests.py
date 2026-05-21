@@ -197,6 +197,7 @@ class RecoilVc6VerifyTests(unittest.TestCase):
             source_from="",
             compare_mode="coff_bytes",
             trim_trailing_nops=True,
+            compiler_profile="",
             compiler_env="",
             compiler_flags=("/nologo", "/TP", "/O2", "/FAcs"),
             include_dirs=("src",),
@@ -242,6 +243,27 @@ class RecoilVc6VerifyTests(unittest.TestCase):
         self.assertEqual("text", manifest.compare_mode)
         self.assertFalse(manifest.trim_trailing_nops)
 
+    def test_load_manifest_accepts_function_bn_byte_length(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_manifest(Path(tmp))
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["functions"][0]["bn_byte_length"] = 1088
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+            manifest = load_manifest(path)
+
+        self.assertEqual(1088, manifest.functions[0].bn_byte_length)
+
+    def test_load_manifest_rejects_invalid_bn_byte_length(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_manifest(Path(tmp))
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["functions"][0]["bn_byte_length"] = 0
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "bn_byte_length"):
+                load_manifest(path)
+
     def test_coverage_helpers_report_address_matches_and_skeleton(self):
         with tempfile.TemporaryDirectory() as tmp:
             manifest = load_manifest(write_manifest(Path(tmp)))
@@ -253,6 +275,31 @@ class RecoilVc6VerifyTests(unittest.TestCase):
         self.assertIs(matches[0][0], manifest)
         self.assertEqual("0x401234", skeleton["functions"][0]["address"])
         self.assertEqual("verify_401234", skeleton["name"])
+        self.assertEqual("vc5_o2_ob0_facs", skeleton["compiler_profile"])
+
+    def test_load_manifest_accepts_compiler_profile(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_manifest(Path(tmp))
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data.pop("compiler_flags")
+            data["compiler_profile"] = "vc5_o2_ob0_facs"
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+            manifest = load_manifest(path)
+
+        self.assertEqual("vc5_o2_ob0_facs", manifest.compiler_profile)
+        self.assertIn("VC5SP3", manifest.compiler_env)
+        self.assertIn("/O2", manifest.compiler_flags)
+
+    def test_compiler_profile_rejects_raw_env_or_flags(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_manifest(Path(tmp))
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["compiler_profile"] = "vc5_o2_ob0_facs"
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "mutually exclusive"):
+                load_manifest(path)
 
     def test_group_selections_by_compile_key_reuses_identical_source_compiles(self):
         with tempfile.TemporaryDirectory() as tmp:

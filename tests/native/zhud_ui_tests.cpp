@@ -297,6 +297,11 @@ template <typename Method> std::uintptr_t MethodAddress(Method method) {
     return address;
 }
 
+template <typename Slot, typename Method> void AssignMethodSlot(Slot &slot, Method method) {
+    static_assert(sizeof(slot) == sizeof(method));
+    std::memcpy(&slot, &method, sizeof(slot));
+}
+
 int g_testBlitCount = 0;
 zVidImagePartial *g_testBlitImages[8] = {};
 std::int32_t g_testBlitX[8] = {};
@@ -324,10 +329,12 @@ void RECOIL_FASTCALL TestBltSourceToPrimary(void *self, std::int32_t dstX, std::
 int g_tripletUpdateAllCount = 0;
 float g_tripletUpdateAllDelta = 0.0f;
 
-void RECOIL_FASTCALL TestTripletUpdateAll(HudUiTriplet *, float deltaSeconds) {
-    ++g_tripletUpdateAllCount;
-    g_tripletUpdateAllDelta = deltaSeconds;
-}
+struct TestTripletContainerDispatch {
+    void RECOIL_THISCALL UpdateAll(float deltaSeconds) {
+        ++g_tripletUpdateAllCount;
+        g_tripletUpdateAllDelta = deltaSeconds;
+    }
+};
 
 void TestPanelSetTextFmtV(HudUiPanel *panel, const char *format, ...) {
     va_list args;
@@ -433,7 +440,7 @@ extern "C" int zhud_mgr_disable_hud_smoke(void) {
     visibleTable.slots[24] = MethodAddress(&TestDisableVisibleReceiver::SetVisible);
 
     HudUiContainer_FTable containerTable{};
-    containerTable.slots[1] = MethodAddress(&TestDisableContainer::SetEnabled);
+    AssignMethodSlot(containerTable.setEnabled, &TestDisableContainer::SetEnabled);
 
     HudLayoutBase_FTable layoutTable{};
     layoutTable.slots[5] = MethodAddress(&TestDisableLayout::Disable);
@@ -3718,7 +3725,7 @@ extern "C" int zhud_slot_draw_smoke(void) {
 
 extern "C" int zhud_stats_list_element_update_smoke(void) {
     HudUiTriplet_FTable table{};
-    table.slots[0] = reinterpret_cast<std::uintptr_t>(&TestTripletUpdateAll);
+    AssignMethodSlot(table.updateAll, &TestTripletContainerDispatch::UpdateAll);
 
     HudUiTriplet triplet{};
     triplet.base.vptr = reinterpret_cast<const HudUiContainer_FTable *>(&table);

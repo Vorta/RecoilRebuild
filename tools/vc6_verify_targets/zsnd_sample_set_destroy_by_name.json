@@ -1,0 +1,36 @@
+{
+  "name": "zsnd_sample_set_destroy_by_name",
+  "description": "zSnd sample-set destroy by registry name.",
+  "source_filename": "zsnd_sample_set.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_sample_set.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_sample_set.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a0870",
+      "symbol": "@zSndSampleSet_DestroyByName@4",
+      "name": "zSndSampleSet_DestroyByName"
+    }
+  ]
+}

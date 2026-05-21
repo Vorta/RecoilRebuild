@@ -126,6 +126,7 @@ __pycache__/
 # AI/local assistant state
 .claude/
 .cursor/
+.agent/claims/
 AGENTS.md
 **/AGENTS.md
 

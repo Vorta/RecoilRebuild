@@ -100,6 +100,49 @@ class RecoilProvenanceAuditTests(unittest.TestCase):
         self.assertEqual(1, len(mismatches))
         self.assertIn("undocumented compiler profile", mismatches[0])
 
+    def test_named_manifest_profile_is_counted(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _final_profile, profiles = load_profiles(write_profiles(root))
+            manifest_dir = root / "targets"
+            manifest_dir.mkdir()
+            (manifest_dir / "sample.json").write_text(
+                json.dumps(
+                    {
+                        "name": "sample",
+                        "compiler_profile": "default",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            mismatches, counts = audit_manifests(manifest_dir, profiles)
+
+        self.assertEqual([], mismatches)
+        self.assertEqual({"default": 1}, counts)
+
+    def test_named_manifest_profile_rejects_raw_flags(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _final_profile, profiles = load_profiles(write_profiles(root))
+            manifest_dir = root / "targets"
+            manifest_dir.mkdir()
+            (manifest_dir / "sample.json").write_text(
+                json.dumps(
+                    {
+                        "name": "sample",
+                        "compiler_profile": "default",
+                        "compiler_flags": ["/nologo", "/TP", "/O2"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            mismatches, _counts = audit_manifests(manifest_dir, profiles)
+
+        self.assertEqual(1, len(mismatches))
+        self.assertIn("mutually exclusive", mismatches[0])
+
 
 if __name__ == "__main__":
     unittest.main()

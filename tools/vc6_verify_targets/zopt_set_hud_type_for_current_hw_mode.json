@@ -1,0 +1,37 @@
+{
+  "name": "zopt_set_hud_type_for_current_hw_mode",
+  "description": "zOpt current hardware-mode HUD type setter.",
+  "source_filename": "zGame.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zGame.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4082d0",
+      "symbol": "?SetHudTypeForCurrentHwMode@zOpt@@YIHH@Z",
+      "name": "zOpt::SetHudTypeForCurrentHwMode"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zGame/zGame.cpp"
+}

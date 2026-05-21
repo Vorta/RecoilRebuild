@@ -51,6 +51,13 @@ extern RecoilStateMainMenuTransition g_RecoilState_MainMenuTransition;
 
 struct HudUiMainMenuDialog;
 
+struct HudUiMainMenuDialogVirtual {
+    virtual void RECOIL_THISCALL Update(float deltaSeconds);
+    virtual void RECOIL_THISCALL SetEnabled(int enabled);
+    virtual HudUiMainMenuDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiMainMenuDialogVirtual) == 0x04);
+
 struct HudUiMainMenuDialog_Vtbl {
     void(RECOIL_THISCALL *UpdateAll)(HudUiMainMenuDialog *self, float deltaSeconds);
     void(RECOIL_THISCALL *SetEnabled)(HudUiMainMenuDialog *self, int enabled);

@@ -29,8 +29,8 @@
   "functions": [
     {
       "address": "0x4a07c0",
-      "symbol": "?NewNode@zSndPlayHandleSnapshotItem@@SGPAU1@PAU1@0@Z",
-      "name": "zSndPlayHandleSnapshotItem::NewNode"
+      "symbol": "?NewNode@zSndPlayHandleSnapshot@@QAEPAUzSndPlayHandleSnapshotItem@@PAU2@0@Z",
+      "name": "zSndPlayHandleSnapshot::NewNode"
     }
   ],
   "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp"

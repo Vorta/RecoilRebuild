@@ -1,0 +1,39 @@
+{
+  "name": "hud_ui_element_constructor",
+  "description": "HudUiElement base constructor.",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4b4070",
+      "symbol": "?Constructor@HudUiElement@@QAEPAU1@HH@Z",
+      "name": "HudUiElement::Constructor",
+      "bn_byte_length": 66
+    }
+  ]
+}

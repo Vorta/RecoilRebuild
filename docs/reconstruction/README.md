@@ -23,7 +23,7 @@ rediscovered by multiple agents, for example:
 Keep entries compact:
 
 - name original addresses, symbols, and files when known
-- state the evidence source, such as Binary Ninja, `support/Recoil.exe`, VC6
+- state the evidence source, such as Binary Ninja, `support/Recoil.exe`, VC
   output, tests, or a repo-local SDK/MFC source mirror
 - separate recovered facts from open limits
 - avoid broad progress notes, speculative narrative, and duplicated plan state
