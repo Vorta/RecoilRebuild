@@ -17,12 +17,19 @@ run the address-specific doctor command described in `AGENTS.md`.
 
 ## Task selection
 
-Choose the next address from current plan state, not from stale working notes:
+Choose and claim the next address from current plan state, not from stale
+working notes:
 
 ```powershell
-python tools/recoil_plan_cli.py next
+python tools/recoil_claim.py next --owner <name> --claim
 python tools/recoil_status.py 0xNNNNNN
 ```
+
+Use `python tools/recoil_plan_cli.py next` only for read-only navigation when
+no agent should claim work yet. If a task expands into a multi-function closure,
+claim every affected address before editing source, Binary Ninja state, plan
+markers, VC6 manifests, or group notes. Release claims at handoff, or report
+the owner, token, and addresses if the next session should continue the work.
 
 Treat `.agent/IMPLEMENTATION_GROUPS.md` as temporary context only. If it
 disagrees with `.agent/RECOIL_PLAN.md`, Binary Ninja, or `recoil_status.py`,

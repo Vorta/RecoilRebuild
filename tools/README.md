@@ -12,7 +12,19 @@ python tools/recoil_status.py 0x40c370
 python tools/recoil_status.py 0x40c370 --no-frontier
 ```
 
-It combines the active plan entry, implementation-group context, VC6 manifest coverage, a depth-1 Binary Ninja frontier summary, and the exact next verification or manifest-scaffold command.
+It combines the active plan entry, claim state, implementation-group context, VC6 manifest coverage, a depth-1 Binary Ninja frontier summary, and the exact next verification or manifest-scaffold command.
+
+Use `recoil_claim.py` for local address coordination before editing function-scoped work:
+
+```powershell
+python tools/recoil_claim.py next --owner <name> --claim
+python tools/recoil_claim.py claim 0x464810 --owner <name>
+python tools/recoil_claim.py status 0x464810
+python tools/recoil_claim.py release 0x464810 --token <token>
+python tools/recoil_claim.py prune-stale
+```
+
+Claim files are local runtime locks under `.agent/claims/functions/`. They prevent duplicate agent work on the same original address; they are not progress evidence and do not replace plan markers.
 
 Use `recoil_plan_cli.py` for normal `.agent/RECOIL_PLAN.md` navigation and one-entry marker updates:
 
@@ -24,7 +36,7 @@ python tools/recoil_plan_cli.py milestone M27 --limit 10
 python tools/recoil_plan_cli.py set 0x464810 impl ✅ --name zFoo_Bar --file src/GameZRecoil/zFoo.cpp --evidence "built and source contract checked"
 ```
 
-The tool preserves entry shape and refuses `✅` or `☑️` updates without `--evidence`. Durable evidence belongs in Binary Ninja comments, verification output, source comments, README, or narrow subsystem docs.
+`recoil_plan_cli.py next` is navigation only; use `recoil_claim.py next --owner <name> --claim` when assigning active work. The plan tool preserves entry shape and refuses `✅` or `☑️` updates without `--evidence`. Durable evidence belongs in Binary Ninja comments, verification output, source comments, README, or narrow subsystem docs.
 
 ## Dependency Frontier
 

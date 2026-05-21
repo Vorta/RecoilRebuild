@@ -149,6 +149,7 @@ Useful commands:
 
 ```powershell
 python tools/recoil_status.py
+python tools/recoil_claim.py next --owner <name> --claim
 python tools/recoil_plan_cli.py next
 python tools/recoil_frontier.py 0x4301e0 --depth 1
 python tools/recoil_asm_verify.py 0x407170
@@ -156,6 +157,9 @@ python tools/recoil_vc6_verify.py 0x407170
 python tools/recoil_pe_reference.py --reference support/Recoil.exe --manifest .agent/REFERENCE_EXECUTABLE.json --verify
 python tools/recoil_plan_audit.py --summary
 ```
+
+Use `recoil_claim.py` to coordinate active function ownership between agents.
+`recoil_plan_cli.py next` is read-only navigation; it does not reserve work.
 
 Commands that reference `support/Recoil.exe`, `support/zbd`, `support/sdk`,
 `img/`, or a VC6 toolchain require local private inputs. They are documented so

@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 
 from recoil_binja import BinaryNinjaBridge, BridgeError
+from recoil_claim import DEFAULT_CLAIMS_DIR, format_utc, read_claim
 from recoil_frontier import build_frontier, recommendation
 from recoil_groups_audit import audit_group, parse_groups
 from recoil_plan import FIELD_LABELS, PlanDocument, PlanEntry, blocker_field, normalize_address, status_summary
@@ -61,6 +62,23 @@ def print_group_status(entry: PlanEntry, groups_path: Path, doc: PlanDocument) -
         )
 
 
+def print_claim_status(entry: PlanEntry, claims_dir: Path) -> None:
+    print()
+    print("## Claim")
+    claim = read_claim(claims_dir, entry.address)
+    if claim is None:
+        print("- unclaimed")
+        print(f"- claim: python tools/recoil_claim.py claim {entry.address} --owner <name>")
+        return
+
+    state = "expired" if claim.is_expired else "active"
+    reason = f" reason={claim.reason}" if claim.reason else ""
+    print(
+        f"- {state}: owner={claim.owner} expires={format_utc(claim.expires_at_utc)}{reason}"
+    )
+    print(f"- release: python tools/recoil_claim.py release {entry.address} --token <token>")
+
+
 def print_vc6_status(entry: PlanEntry, manifest_dir: Path) -> None:
     print()
     print("## VC6 Coverage")
@@ -113,6 +131,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("address", nargs="?", help="Plan address. Defaults to first unfinished entry.")
     parser.add_argument("--plan", default=".agent/RECOIL_PLAN.md")
     parser.add_argument("--groups", default=".agent/IMPLEMENTATION_GROUPS.md")
+    parser.add_argument("--claims-dir", default=str(DEFAULT_CLAIMS_DIR))
     parser.add_argument("--vc6-manifest-dir", default=str(DEFAULT_MANIFEST_DIR))
     parser.add_argument("--bridge-url", default="http://localhost:9009")
     parser.add_argument("--depth", type=int, default=1)
@@ -129,6 +148,7 @@ def main(argv: list[str] | None = None) -> int:
         doc = PlanDocument.load(Path(args.plan))
         entry = select_entry(doc, args.address)
         print_plan_status(entry)
+        print_claim_status(entry, Path(args.claims_dir))
         print_group_status(entry, Path(args.groups), doc)
         print_vc6_status(entry, Path(args.vc6_manifest_dir))
         if not args.no_frontier:
