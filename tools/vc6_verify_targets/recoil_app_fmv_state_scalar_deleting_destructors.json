@@ -28,6 +28,26 @@
   ],
   "functions": [
     {
+      "address": "0x42df90",
+      "symbol": "?Destructor@RecoilApp_IState@@QAEXXZ",
+      "name": "RecoilApp_IState::Destructor"
+    },
+    {
+      "address": "0x42df10",
+      "symbol": "?Destructor@RecoilApp_AttractFmvState@@QAEXXZ",
+      "name": "RecoilApp_AttractFmvState::Destructor"
+    },
+    {
+      "address": "0x42df50",
+      "symbol": "?Destructor@RecoilApp_IntroFmvState@@QAEXXZ",
+      "name": "RecoilApp_IntroFmvState::Destructor"
+    },
+    {
+      "address": "0x42e070",
+      "symbol": "?Destructor@RecoilApp_MissionFmvState@@QAEXXZ",
+      "name": "RecoilApp_MissionFmvState::Destructor"
+    },
+    {
       "address": "0x42e0f0",
       "symbol": "?ScalarDeletingDestructor@RecoilApp_IState@@QAEPAU1@I@Z",
       "name": "RecoilApp_IState::ScalarDeletingDestructor"

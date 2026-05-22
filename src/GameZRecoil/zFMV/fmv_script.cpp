@@ -1139,20 +1139,23 @@ void RECOIL_THISCALL zFMV_Script::Cleanup() {
 // Reimplements 0x462660: zFMV_Script::Reset
 RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Script::Reset(int destroyActions) {
     zFMV_Action *action = m_head;
-    if (destroyActions == 0) {
-        m_cur = action;
+    if (destroyActions != 0) {
+        while (action != 0) {
+            zFMV_Action *const next = action->next;
+            action->vftable->ScalarDeletingDestructor(action, 1);
+            action = next;
+        }
+
+        m_tail = 0;
+        m_cur = 0;
+        m_head = 0;
         return;
     }
 
-    while (action != 0) {
-        zFMV_Action *const next = action->next;
-        action->vftable->ScalarDeletingDestructor(action, 1);
-        action = next;
+    {
+        m_cur = action;
+        return;
     }
-
-    m_tail = 0;
-    m_cur = 0;
-    m_head = 0;
 }
 
 // Reimplements 0x4626b0: zFMV_Script::LoadActionsFromZrd

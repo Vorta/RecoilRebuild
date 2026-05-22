@@ -25,6 +25,13 @@ per-target VC verification evidence.
 - VC6 `cl` 12.00.8168 profiles are fallbacks for functions whose original
   bytes, imports, MFC/CRT behavior, or a reviewed VC5SP3 attempt indicate
   VS98-era code generation is more plausible.
+- VC5SP3 `cl` 11.00.7022 rejects an explicit `__thiscall` keyword as C4234, so
+  `RECOIL_THISCALL` intentionally remains empty for `_MSC_VER < 1300`. For VC5
+  function-pointer vtable slots, such as `0x462660 zFMV_Script::Reset`, a raw
+  free-function pointer can still compile as cdecl while Binary Ninja shows
+  member-call dispatch (`ecx = self`, pushed user arguments only). Do not
+  broaden the shared macro to force `__thiscall`; solve these as local ABI
+  modeling or manifest/toolchain issues.
 - Current executable provenance indicates VS97 SP3 `cvtres` for 1 object,
   VS97 SP3 `link` 5.10.7303 for 293 objects, and VS98-era tooling for 10
   objects.

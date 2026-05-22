@@ -940,9 +940,8 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zReader_FreeNodeRecursive(zReade
         return;
     }
 
-    zReader::Node *arrayBase = node->value.nodes;
-    for (int i = 0; i < arrayBase[0].value.i32; ++i) {
-        zReader_FreeNodeRecursive(&arrayBase[i]);
+    for (int i = 0; i < node->value.nodes[0].value.i32; ++i) {
+        zReader_FreeNodeRecursive(&node->value.nodes[i]);
     }
 
     free(node->value.nodes);

@@ -5,10 +5,12 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+import os
 from pathlib import Path
 import subprocess
 import sys
 
+from recoil_binja import BN_CALL_BUDGET_FILE_ENV, create_shared_budget_file, env_with_shared_budget
 from recoil_tooling import REPO_ROOT, hidden_creation_flags
 
 
@@ -111,10 +113,11 @@ def format_command(command: tuple[str, ...]) -> str:
     return " ".join(f'"{part}"' if any(char.isspace() for char in part) else part for part in command)
 
 
-def run_step(step: DoctorStep, *, verbose: bool) -> int:
+def run_step(step: DoctorStep, *, verbose: bool, env: dict[str, str] | None = None) -> int:
     completed = subprocess.run(
         step.command,
         cwd=REPO_ROOT,
+        env=env,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -132,6 +135,10 @@ def run_step(step: DoctorStep, *, verbose: bool) -> int:
     if completed.stdout:
         print(completed.stdout.rstrip())
     return completed.returncode
+
+
+def step_uses_binja(step: DoctorStep) -> bool:
+    return step.label == "Binary Ninja bridge" or step.label.startswith("active ")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -161,11 +168,29 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     print(f"Running {len(steps)} process check(s).")
+    inherited_budget_file = os.environ.get(BN_CALL_BUDGET_FILE_ENV)
+    budget_file = None
+    owns_budget_file = False
+    if args.binja or args.active:
+        if inherited_budget_file:
+            budget_file = Path(inherited_budget_file)
+        else:
+            budget_file = create_shared_budget_file()
+            owns_budget_file = True
+    child_env = env_with_shared_budget(budget_file) if budget_file is not None else None
     failures = 0
-    for index, step in enumerate(steps, start=1):
-        print(f"[{index}/{len(steps)}] {step.label}")
-        if run_step(step, verbose=args.verbose) != 0:
-            failures += 1
+    try:
+        for index, step in enumerate(steps, start=1):
+            print(f"[{index}/{len(steps)}] {step.label}")
+            step_env = child_env if child_env is not None and step_uses_binja(step) else None
+            if run_step(step, verbose=args.verbose, env=step_env) != 0:
+                failures += 1
+    finally:
+        if budget_file is not None and owns_budget_file:
+            try:
+                budget_file.unlink()
+            except FileNotFoundError:
+                pass
 
     if failures:
         print(f"\nDoctor failed: {failures} check(s) failed.")

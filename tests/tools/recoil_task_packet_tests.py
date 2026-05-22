@@ -24,13 +24,15 @@ PLAN_TEXT = textwrap.dedent(
       - [✅] Reconstructed (Name: Done)
       - [✅] Source dependencies satisfied
       - [✅] Reimplemented (Name: Done File: src/Done.cpp)
-      - [✅] Binary-safe verified
+      - [✅] Functional-equivalent (Target: done)
+      - [✅] Binary-safe
 
     - 0x401020:
       - [✅] Reconstructed (Name: Pending)
       - [✅] Source dependencies satisfied
       - [✅] Reimplemented (Name: Pending File: src/Pending.cpp)
-      - [❌] Binary-safe verified
+      - [❌] Functional-equivalent (Target: pending)
+      - [❌] Binary-safe
     """
 )
 
@@ -38,7 +40,7 @@ PLAN_TEXT = textwrap.dedent(
 class RecoilTaskPacketTests(unittest.TestCase):
     def test_select_entry_uses_specific_address(self) -> None:
         doc = PlanDocument.load_from_lines(Path("test"), PLAN_TEXT.splitlines())
-        args = SimpleNamespace(address="0x401000", claim_next=False, lane="strict", claims_dir="")
+        args = SimpleNamespace(address="0x401000", claim_next=False, lane="functional", claims_dir="")
 
         entry, should_claim = select_entry(args, doc)
 
@@ -47,7 +49,7 @@ class RecoilTaskPacketTests(unittest.TestCase):
 
     def test_select_entry_defaults_to_first_unfinished(self) -> None:
         doc = PlanDocument.load_from_lines(Path("test"), PLAN_TEXT.splitlines())
-        args = SimpleNamespace(address="", claim_next=False, lane="strict", claims_dir="")
+        args = SimpleNamespace(address="", claim_next=False, lane="functional", claims_dir="")
 
         entry, should_claim = select_entry(args, doc)
 
@@ -57,4 +59,3 @@ class RecoilTaskPacketTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

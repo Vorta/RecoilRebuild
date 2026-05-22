@@ -1,7 +1,7 @@
 {
   "name": "zsnd_stream_request_stop_if_active",
   "description": "zSndStreamRequest active-list stop helper.",
-  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
   "source_filename": "zsnd_group.cpp",
   "source_from": "src/GameZRecoil/zSound/zsnd_group.cpp",
   "compiler_flags": [

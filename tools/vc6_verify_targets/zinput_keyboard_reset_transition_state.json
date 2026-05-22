@@ -2,7 +2,7 @@
   "name": "zinput_keyboard_reset_transition_state",
   "description": "zInput keyboard transition-state reset/drain helper.",
   "source_filename": "zInput.cpp",
-  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
   "compiler_flags": [
     "/nologo",
     "/TP",

@@ -38,13 +38,15 @@ PLAN_TEXT = textwrap.dedent(
       - [✅] Reconstructed (Name: Claimed)
       - [✅] Source dependencies satisfied
       - [✅] Reimplemented (Name: Claimed File: src/Claimed.cpp)
-      - [❌] Binary-safe verified
+      - [✅] Functional-equivalent (Target: claimed)
+      - [❌] Binary-safe
 
     - 0x401020:
       - [❌] Reconstructed (Name: NextFree)
       - [❌] Source dependencies satisfied
       - [❌] Reimplemented (Name: pending File: pending)
-      - [❌] Binary-safe verified
+      - [❌] Functional-equivalent (Target: pending)
+      - [❌] Binary-safe
     """
 )
 
@@ -184,6 +186,8 @@ class RecoilClaimTests(unittest.TestCase):
                     "--claim",
                     "--owner",
                     "agent-a",
+                    "--lane",
+                    "binary",
                     "--reason",
                     "smoke",
                 ],
@@ -197,6 +201,32 @@ class RecoilClaimTests(unittest.TestCase):
             self.assertIn("0x401000", result.stdout)
             self.assertIn("claim:", result.stdout)
             self.assertEqual("agent-a", read_claim(claims_dir, "0x401000").owner)  # type: ignore[union-attr]
+
+    def test_cli_list_can_filter_by_owner(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            claims_dir = Path(tmp)
+            claim_addresses(["0x401000"], owner="agent-a", ttl_hours=1, reason="", claims_dir=claims_dir)
+            claim_addresses(["0x401020"], owner="agent-b", ttl_hours=1, reason="", claims_dir=claims_dir)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(CLI),
+                    "--claims-dir",
+                    str(claims_dir),
+                    "list",
+                    "--owner",
+                    "agent-a",
+                ],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("0x401000 owner=agent-a", result.stdout)
+            self.assertNotIn("0x401020", result.stdout)
 
 
 if __name__ == "__main__":

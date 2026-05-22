@@ -8,8 +8,8 @@
   ],
   "vc6_attempt": "python tools/recoil_vc6_verify.py 0x415220",
   "known_limits": [
-    "VC6 COFF byte compare fails with 253 unmasked mismatches (BN 321 bytes vs VC6 272 bytes).",
-    "Retail emits MSVC /GX SEH prologue/epilogue (fs: chain, handler 0x4c9463, EH state slots); isolated verify TU does not reproduce that frame from current source.",
-    "Blur path uses production zFMV_ActionBlur; smoke covers frontend route (skips blur) plus snapshot/dialog side effects."
+    "VC5SP3 11.00.7022 /O2 /Ob1 /GX /Zp4 COFF byte compare fails with 81 unmasked mismatches after relocation masking; Binary Ninja body is 321 bytes and the VC object body is 304 bytes with 5 trailing VC NOPs trimmed.",
+    "Reviewed drift is concentrated after operator new for HudUiMainMenuDialog: the retail body stores the allocation in a stack temp and emits constructor-EH cleanup state before the null branch, while the current source's explicit operator new plus Constructor call lets VC5 keep the allocation in ECX and produce a shorter branch sequence.",
+    "The native smoke covers the frontend route: software-renderer skip of the blit callback, half-res/invalidate setup, active-sound snapshot capture and stop, DIALOG sample-set initialization, HudUiMainMenuDialog construction and enable, disabled CD-audio branch, skip-exit reset, and retained dialog/snapshot pointers."
   ]
 }

@@ -2,18 +2,7 @@
   "name": "zdi_ref_count",
   "description": "zDi AddRef/Release leaf reference-count helpers.",
   "source_filename": "gdi.c",
-  "compiler_flags": [
-    "/nologo",
-    "/TP",
-    "/W3",
-    "/G5",
-    "/O2",
-    "/Ob0",
-    "/Zp4",
-    "/FAcs",
-    "/I",
-    "."
-  ],
+  "compiler_profile": "vc5_o2_ob0_facs",
   "include_dirs": [
     "src",
     "src/native/include",
@@ -36,6 +25,11 @@
       "address": "0x482700",
       "symbol": "?Release@zDi@@YIHPAUzDiPartial@@@Z",
       "name": "zDi::Release"
+    },
+    {
+      "address": "0x482710",
+      "symbol": "?GetRefCount@zDi@@YIHPAUzDiPartial@@@Z",
+      "name": "zDi::GetRefCount"
     }
   ],
   "source_from": "src/Battlesport/zModel/gdi.c"

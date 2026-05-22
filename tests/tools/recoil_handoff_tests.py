@@ -26,7 +26,7 @@ PLAN_TEXT = textwrap.dedent(
       - [✅] Reconstructed (Name: Sample)
       - [✅] Source dependencies satisfied
       - [✅] Reimplemented (Name: Sample File: src/Sample.cpp)
-      - [❌] Binary-safe verified
+      - [❌] Binary-safe
     """
 )
 

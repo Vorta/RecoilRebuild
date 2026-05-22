@@ -1,0 +1,15 @@
+{
+  "name": "recoil_app_mission_fmv_state_constructor",
+  "description": "RecoilApp_MissionFmvState::Constructor initializes the base state, embedded FMV script, mission fields, and mission-state vtable.",
+  "address": "0x42ed30",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_fmv_state_constructor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x42ed30",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare fails with 86 unmasked mismatches after masking 4 relocation bytes; Binary Ninja body is 95 bytes and the VC object body is 48 bytes with 1 trailing VC NOP trimmed.",
+    "zFMV_Script::Init is Binary-safe, but this constructor still differs in caller-side state/vtable setup, mission-field stores, and cleanup shape.",
+    "The native smoke checks returned this pointer, final mission vtable, zeroed mission fields, and embedded FMV script initialization state."
+  ]
+}

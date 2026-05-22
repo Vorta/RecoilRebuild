@@ -1,9 +1,19 @@
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 
-#include "GameZRecoil/zVideo/zVideo.h"
-
 #include <cstring>
 #include <new>
+
+#include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zUtil/zSaveGame.h"
+#include "GameZRecoil/zVideo/zVideo.h"
+
+extern "C" int g_RecoilState_MainMenuSkipExitDelay;
+
+extern "C" int(RECOIL_FASTCALL *g_zVideo_pfnLockSurfaceState)(
+    zVideo_SurfaceStatePartial *surfaceState);
+extern "C" int(RECOIL_FASTCALL *g_zVideo_pfnUnlockSurfaceState)(
+    zVideo_SurfaceStatePartial *surfaceState);
 
 namespace {
 int g_queueEnterOnEnterCalls;
@@ -32,6 +42,11 @@ RecoilApp_IState_Vtbl MakeQueueEnterVtable() {
 }
 
 RecoilApp_IState_Vtbl g_queueEnterVtable = MakeQueueEnterVtable();
+
+int RECOIL_FASTCALL TestVideoSurfaceStateNoOp(zVideo_SurfaceStatePartial *surfaceState) {
+    (void)surfaceState;
+    return 0;
+}
 
 void CleanupGlobalAppQueue() {
     RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
@@ -151,10 +166,127 @@ extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_s
                : 1;
 }
 
-// Reimplements 0x415220: RecoilStateMainMenuTransition::OnTryBecomeCurrent (frontend path).
-extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(void) {
+extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const zVideo_BltRectDirectProc oldBltDirect = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    const zVideo_SurfaceStatePartial oldSwSurface = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
+    auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
     g_zVideo_ActiveRendererPath = 0;
     g_zVideo_pfnBltSwToPrimaryRectDirect = nullptr;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+
+    int networkEnabled = 0;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_GameStateOrMapTable = nullptr;
+
+    HudUiMainMenuDialog frontendDialog{};
+    HudUiMainMenuDialog *const frontendResult =
+        frontendDialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+    const bool frontendConstructed =
+        frontendResult == &frontendDialog &&
+        frontendDialog.base.base.base.vptr !=
+            reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiBackground_FTable) &&
+        frontendDialog.base.base.base.enabled == 0 &&
+        frontendDialog.base.base.captureTransitionMask == 1 &&
+        frontendDialog.creditsButton.base.ftable != nullptr &&
+        frontendDialog.backButton.base.ftable != nullptr &&
+        frontendDialog.saveGameButton.base.ftable != nullptr &&
+        frontendDialog.loadGameButton.base.ftable != nullptr &&
+        frontendDialog.newGameButton.base.ftable != nullptr &&
+        frontendDialog.optionsButton.base.ftable != nullptr &&
+        frontendDialog.quitButton.base.ftable != nullptr &&
+        frontendDialog.controlsButton.base.ftable != nullptr &&
+        frontendDialog.creditsButton.base.ftable != frontendDialog.backButton.base.ftable &&
+        frontendDialog.loadGameButton.modeOrEnabled == 1;
+
+    zUtil_PlayerStateStorage playerState{};
+    zInput_GameStateOrMapTablePartial gameState{};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    g_GameStateOrMapTable = &gameState;
+
+    playerState.lifecycleState = 4;
+    HudUiMainMenuDialog resumeDialog{};
+    HudUiMainMenuDialog *const resumeResult =
+        resumeDialog.Constructor(RECOIL_MAINMENU_ROUTE_INGAME);
+    const bool resumeConstructed =
+        resumeResult == &resumeDialog && resumeDialog.saveGameButton.modeOrEnabled == 1 &&
+        resumeDialog.loadGameButton.modeOrEnabled == 1 &&
+        resumeDialog.quitButton.base.ftable != nullptr;
+
+    playerState.lifecycleState = 3;
+    *reinterpret_cast<int *>(playerState.bytes + 0x25c) = 1;
+    HudUiMainMenuDialog blockedDialog{};
+    HudUiMainMenuDialog *const blockedResult =
+        blockedDialog.Constructor(RECOIL_MAINMENU_ROUTE_INGAME);
+    const bool blockedConstructed =
+        blockedResult == &blockedDialog && blockedDialog.saveGameButton.modeOrEnabled == 0 &&
+        blockedDialog.loadGameButton.modeOrEnabled == 0;
+
+    g_GameStateOrMapTable = oldGameState;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+    g_zVideo_SwSurfaceState = oldSwSurface;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_DisplayModeSurfaceState = oldDisplaySurface;
+    if (!frontendConstructed) {
+        return 1;
+    }
+    if (!resumeConstructed) {
+        return 2;
+    }
+    if (!blockedConstructed) {
+        return 3;
+    }
+    return 0;
+}
+
+// Reimplements 0x415220: RecoilStateMainMenuTransition::OnTryBecomeCurrent (frontend path).
+extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const zVideo_BltRectDirectProc oldBltDirect = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    const zVideo_SurfaceStatePartial oldSwSurface = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
+    auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldCdAudio = ZOPT_SOUND_CDAUDIO;
+    void *const oldGlobalVolumeScale = g_zSnd_GlobalVolumeScalePtr;
+    const zSndSampleSetRegistry oldSampleSetRegistry = g_zSnd_SampleSetRegistry;
+
+    int networkEnabled = 0;
+    int cdAudio = 0;
+    float globalVolumeScale = 1.0f;
+    char dialogSetName[] = "DIALOG";
+    zSndSampleSet dialogSet = {};
+    zSndSampleSet *sampleSetSlots[1] = {&dialogSet};
+    dialogSet.setName = dialogSetName;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = nullptr;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    ZOPT_SOUND_CDAUDIO = &cdAudio;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolumeScale;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
 
     g_zSnd_IsInitialized = 1;
     g_zSnd_PreInitialized = 1;
@@ -165,21 +297,33 @@ extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(voi
     state.m_entryRoute = RECOIL_MAINMENU_ROUTE_FRONTEND;
 
     const int result = state.OnTryBecomeCurrent();
+    int failure = 0;
     if (result != 1) {
-        return 1;
+        failure = 1;
     }
-    if (g_RecoilState_MainMenuSkipExitDelay != 0) {
-        return 2;
+    if (failure == 0 && g_RecoilState_MainMenuSkipExitDelay != 0) {
+        failure = 2;
     }
-    if (state.m_pausedAudioSnapshot == 0) {
-        return 3;
+    if (failure == 0 && state.m_pausedAudioSnapshot == 0) {
+        failure = 3;
     }
-    if (state.m_mainMenuDialog == 0) {
-        return 4;
+    if (failure == 0 && state.m_mainMenuDialog == 0) {
+        failure = 4;
     }
 
     RecoilStateMainMenuTransition::ClearPausedAudioSnapshot();
-    return 0;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+    g_zVideo_SwSurfaceState = oldSwSurface;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_DisplayModeSurfaceState = oldDisplaySurface;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    ZOPT_SOUND_CDAUDIO = oldCdAudio;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScale;
+    g_zSnd_SampleSetRegistry = oldSampleSetRegistry;
+    return failure;
 }
 
 extern "C" int recoil_state_main_menu_transition_destructor_smoke(void) {

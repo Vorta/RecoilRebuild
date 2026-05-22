@@ -2,7 +2,7 @@
   "name": "zvideo_init_set_surface_geometry_from_mode_index",
   "description": "zVideo mode-index surface geometry initializer.",
   "source_filename": "zVideo.cpp",
-  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
   "compiler_flags": [
     "/nologo",
     "/TP",

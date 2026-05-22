@@ -11,7 +11,7 @@
 
 namespace zCom {
 typedef HRESULT(WINAPI *QueryInterfaceResolver)(void *objectBase, const GUID *requestedIid,
-                                                void **outInterface, int interfaceOffset);
+                                                void **outInterface, DWORD interfaceOffset);
 
 enum zComInterfaceMapResolverRaw {
     ZCOM_INTERFACE_MAP_END = 0,
@@ -20,7 +20,7 @@ enum zComInterfaceMapResolverRaw {
 
 struct InterfaceMapEntry {
     const GUID *iid;
-    int interfaceOffset;
+    DWORD interfaceOffset;
     unsigned int resolverRaw;
 };
 RECOIL_STATIC_ASSERT(sizeof(InterfaceMapEntry) == 0x0c);
@@ -32,8 +32,8 @@ HRESULT WINAPI QueryInterfaceFromInterfaceMap(void *objectBase,
                                               const InterfaceMapEntry *interfaceMap,
                                               const GUID *requestedIid, void **outInterface);
 
-HRESULT WINAPI ConnectionPointContainer_Advise(IUnknown *source, REFIID connectionPointIid,
-                                               IUnknown *sink, DWORD *cookie);
+HRESULT WINAPI ConnectionPointContainer_Advise(IUnknown *source, IUnknown *sink,
+                                               REFIID connectionPointIid, DWORD *cookie);
 
 HRESULT WINAPI ConnectionPointContainer_Unadvise(IUnknown *source, REFIID connectionPointIid,
                                                  DWORD cookie);

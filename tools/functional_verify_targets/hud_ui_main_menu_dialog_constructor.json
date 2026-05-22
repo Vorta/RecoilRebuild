@@ -1,0 +1,15 @@
+{
+  "name": "hud_ui_main_menu_dialog_constructor",
+  "description": "HudUiMainMenuDialog::Constructor initializes the HUD background, installs main-menu button ftables, selects frontend/in-game menu routes, and refreshes load/save availability.",
+  "address": "0x414bc0",
+  "source_from": "src/Battlesport/HudUiMainMenuDialog.cpp",
+  "smoke_tests": [
+    "hud_ui_main_menu_dialog_constructor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x414bc0",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob1 /GX /Zp4 COFF byte compare fails with 559 unmasked mismatches after masking 320 relocation bytes; Binary Ninja body is 891 bytes and the VC object body is 784 bytes with 1 trailing VC NOP trimmed.",
+    "Reviewed drift is dominated by the retail VC EH registration/state frame around the base and eight HudUiZrdWidget member constructors plus register scheduling around repeated BindWidgetByName calls. The in-game MAINMENU3/MAINMENU1 selection is now spelled as explicit source branches and the VC listing emits separate LoadFromZrd calls for those sections, matching the retail branch shape.",
+    "The native smoke covers frontend construction, custom dialog/button ftable installation, HUD background initialization inherited from HudUiBackground::Constructor, in-game lifecycle 4 route state, and blocked save/load refresh behavior."
+  ]
+}

@@ -1,19 +1,8 @@
 {
   "name": "hud_ui_widget_get_center",
   "description": "HudUiWidget center coordinate accessors.",
+  "compiler_profile": "vc5_o2_ob0_facs",
   "source_filename": "zhud_ui.cpp",
-  "compiler_flags": [
-    "/nologo",
-    "/TP",
-    "/W3",
-    "/G5",
-    "/O2",
-    "/Ob0",
-    "/Zp4",
-    "/FAcs",
-    "/I",
-    "."
-  ],
   "include_dirs": [
     "src",
     "src/native/include",

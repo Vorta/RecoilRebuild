@@ -1,0 +1,15 @@
+{
+  "name": "hud_ui_element_constructor",
+  "description": "HudUiElement::Constructor initializes the base element, dispatches common invalidate slot 8, and clears the blit source through the base clip helper.",
+  "address": "0x4b4070",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_element_constructor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4b4070",
+  "known_limits": [
+    "VC6 /O2 /Ob0 /Zp4 COFF byte compare remains blocked by 12 unmasked mismatches after relocation masking and 14 trailing NOPs trimmed.",
+    "Reviewed drift is limited to constructor argument scheduling: retail loads initX first, stores initY before initX, then dispatches slot 8; VC6 keeps the same side effects but loads/stores the two coordinates in the opposite order before the dispatch.",
+    "The ftable identity, parent/next/timer zeroing, fastcall slot-8 invalidate dispatch, flags/state clearing, SetBltSourceAndClipRect call, return value, and thiscall stack cleanup are covered by source review, VC artifacts, and the native smoke."
+  ]
+}

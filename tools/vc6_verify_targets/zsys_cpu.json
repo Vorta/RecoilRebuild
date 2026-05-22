@@ -33,9 +33,19 @@
       "name": "zSys::GetCpuClass"
     },
     {
+      "address": "0x4b33f0",
+      "symbol": "?HasCpuidSupport@zSys@@YAHXZ",
+      "name": "zSys::HasCpuidSupport"
+    },
+    {
       "address": "0x4b3420",
       "symbol": "?DetectCpuClassAndFeatures@zSys@@YAHXZ",
       "name": "zSys::DetectCpuClassAndFeatures"
+    },
+    {
+      "address": "0x4b3640",
+      "symbol": "?ReadCpuidVendorAndFamily@zSys@@YAHXZ",
+      "name": "zSys::ReadCpuidVendorAndFamily"
     },
     {
       "address": "0x4b3510",

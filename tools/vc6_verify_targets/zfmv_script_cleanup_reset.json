@@ -1,0 +1,46 @@
+{
+  "name": "zfmv_script_cleanup_reset",
+  "description": "zFMV script cleanup and reset helpers.",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "source_filename": "fmv_script.cpp",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zFMV",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zFMV/fmv_script.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4625e0",
+      "symbol": "?Init@zFMV_Script@@QAEPAU1@PBD0PAX@Z",
+      "name": "zFMV_Script::Init"
+    },
+    {
+      "address": "0x4626b0",
+      "symbol": "?LoadActionsFromZrd@zFMV_Script@@QAEHPBD0@Z",
+      "name": "zFMV_Script::LoadActionsFromZrd"
+    },
+    {
+      "address": "0x462630",
+      "symbol": "?Cleanup@zFMV_Script@@QAEXXZ",
+      "name": "zFMV_Script::Cleanup"
+    },
+    {
+      "address": "0x462660",
+      "symbol": "?Reset@zFMV_Script@@QAEXH@Z",
+      "name": "zFMV_Script::Reset"
+    },
+    {
+      "address": "0x462f10",
+      "symbol": "?AppendAction@zFMV_Script@@QAEHPAUzFMV_Action@@@Z",
+      "name": "zFMV_Script::AppendAction"
+    }
+  ]
+}

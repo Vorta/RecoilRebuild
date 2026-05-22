@@ -2,18 +2,7 @@
   "name": "zloc_get_message_string",
   "description": "zLoc fixed-buffer message string formatter.",
   "source_filename": "zLoc.cpp",
-  "compiler_flags": [
-    "/nologo",
-    "/TP",
-    "/W3",
-    "/G5",
-    "/O2",
-    "/Ob0",
-    "/Zp4",
-    "/FAcs",
-    "/I",
-    "."
-  ],
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "include_dirs": [
     "src",
     "src/native/include",

@@ -1,0 +1,24 @@
+{
+  "name": "zreader_find_child_recursive",
+  "description": "zReader recursive named-child lookup.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zreader_lookup.cpp",
+  "source_from": "src/GameZRecoil/zReader/zreader_lookup.cpp",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zReader/zreader_lookup.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x48cec0",
+      "symbol": "@zReader_FindChildRecursive@12",
+      "name": "zReader_FindChildRecursive"
+    }
+  ]
+}

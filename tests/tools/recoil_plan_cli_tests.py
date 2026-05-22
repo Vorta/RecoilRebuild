@@ -21,20 +21,22 @@ PLAN_TEXT = textwrap.dedent(
       - [✅] Reconstructed (Name: TestLeaf)
       - [✅] Source dependencies satisfied
       - [❌] Reimplemented (Name: pending File: pending)
-      - [❌] Binary-safe verified
+      - [❌] Functional-equivalent (Target: pending)
+      - [❌] Binary-safe
 
     - 0x401020:
       - [❌] Reconstructed (Name: TestCaller)
       - [❌] Source dependencies satisfied
       - [❌] Reimplemented (Name: pending File: pending)
-      - [❌] Binary-safe verified
+      - [❌] Functional-equivalent (Target: pending)
+      - [❌] Binary-safe
 
     - 0x401040:
       - [✅] Reconstructed (Name: FunctionalOnly)
       - [✅] Source dependencies satisfied
       - [✅] Reimplemented (Name: FunctionalOnly File: src/FunctionalOnly.cpp)
-      - [❌] Binary-safe verified
-      - [✅] Functional-equivalent accepted (Target: functional_only)
+      - [✅] Functional-equivalent (Target: functional_only)
+      - [❌] Binary-safe
     """
 )
 
@@ -134,7 +136,64 @@ class RecoilPlanCliTests(unittest.TestCase):
         updated = plan.read_text(encoding="utf-8")
         self.assertIn("  - [❓] Reimplemented (Name: pending File: pending)", updated)
 
-    def test_set_functional_marker_inserts_optional_line(self) -> None:
+    def test_set_functional_marker_updates_target(self) -> None:
+        temp = self.with_plan()
+        plan = Path(temp.name) / "RECOIL_PLAN.md"
+        result = self.run_cli(
+            plan,
+            "set",
+            "0x401040",
+            "functional",
+            "✅",
+            "--target",
+            "test_leaf_functional",
+            "--evidence",
+            "functional smoke evidence",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        updated = plan.read_text(encoding="utf-8")
+        self.assertIn(
+            "  - [✅] Functional-equivalent (Target: test_leaf_functional)",
+            updated,
+        )
+
+    def test_positive_deps_requires_reconstructed_marker(self) -> None:
+        temp = self.with_plan()
+        plan = Path(temp.name) / "RECOIL_PLAN.md"
+        result = self.run_cli(
+            plan,
+            "set",
+            "0x401020",
+            "deps",
+            "✅",
+            "--evidence",
+            "dependency audit",
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("requires Reconstructed", result.stderr)
+
+    def test_positive_impl_requires_source_dependencies_marker(self) -> None:
+        temp = self.with_plan()
+        plan = Path(temp.name) / "RECOIL_PLAN.md"
+        downgrade = self.run_cli(plan, "set", "0x401000", "deps", "❌")
+        self.assertEqual(downgrade.returncode, 0, downgrade.stderr)
+        result = self.run_cli(
+            plan,
+            "set",
+            "0x401000",
+            "impl",
+            "✅",
+            "--name",
+            "TestLeaf",
+            "--file",
+            "src/TestLeaf.cpp",
+            "--evidence",
+            "build evidence",
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("requires Source dependencies satisfied", result.stderr)
+
+    def test_positive_functional_requires_reimplemented_marker(self) -> None:
         temp = self.with_plan()
         plan = Path(temp.name) / "RECOIL_PLAN.md"
         result = self.run_cli(
@@ -143,19 +202,74 @@ class RecoilPlanCliTests(unittest.TestCase):
             "0x401000",
             "functional",
             "✅",
-            "--file",
+            "--target",
             "test_leaf_functional",
             "--evidence",
-            "functional smoke evidence",
+            "functional evidence",
         )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("requires Reimplemented", result.stderr)
+
+    def test_positive_binary_requires_functional_marker(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            plan = Path(tmp) / "RECOIL_PLAN.md"
+            plan.write_text(
+                "# Test Plan\n"
+                "\n"
+                "## M01 Test\n"
+                "\n"
+                "- 0x401000:\n"
+                "  - [✅] Reconstructed (Name: NeedsFunctional)\n"
+                "  - [✅] Source dependencies satisfied\n"
+                "  - [✅] Reimplemented (Name: NeedsFunctional File: src/NeedsFunctional.cpp)\n"
+                "  - [❌] Functional-equivalent (Target: pending)\n"
+                "  - [❌] Binary-safe\n",
+                encoding="utf-8",
+            )
+            result = self.run_cli(
+                plan,
+                "set",
+                "0x401000",
+                "verify",
+                "✅",
+                "--evidence",
+                "byte evidence",
+            )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("requires Functional-equivalent", result.stderr)
+
+    def test_downgrade_is_allowed_even_when_later_markers_remain_done(self) -> None:
+        temp = self.with_plan()
+        plan = Path(temp.name) / "RECOIL_PLAN.md"
+        result = self.run_cli(plan, "set", "0x401040", "deps", "❌")
         self.assertEqual(result.returncode, 0, result.stderr)
         updated = plan.read_text(encoding="utf-8")
-        self.assertIn(
-            "  - [✅] Functional-equivalent accepted (Target: test_leaf_functional)",
-            updated,
-        )
+        self.assertIn("  - [❌] Source dependencies satisfied", updated)
+        self.assertIn("  - [✅] Functional-equivalent (Target: functional_only)", updated)
 
-    def test_next_progress_lane_skips_functionally_accepted_byte_blocker(self) -> None:
+    def test_default_functional_lane_stops_at_functional_blocker(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            plan = Path(tmp) / "RECOIL_PLAN.md"
+            plan.write_text(
+                "# Test Plan\n"
+                "\n"
+                "## M01 Test\n"
+                "\n"
+                "- 0x401000:\n"
+                "  - [✅] Reconstructed (Name: NeedsFunctional)\n"
+                "  - [✅] Source dependencies satisfied\n"
+                "  - [✅] Reimplemented (Name: NeedsFunctional File: src/NeedsFunctional.cpp)\n"
+                "  - [❌] Functional-equivalent (Target: pending)\n"
+                "  - [❌] Binary-safe\n",
+                encoding="utf-8",
+            )
+            result = self.run_cli(plan, "next")
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("0x401000", result.stdout)
+        self.assertIn("next_field=functional", result.stdout)
+
+    def test_functional_lane_skips_functionally_equivalent_byte_blocker(self) -> None:
         temp = self.with_plan()
         plan = Path(temp.name) / "RECOIL_PLAN.md"
         result = self.run_cli(plan, "next", "--lane", "progress")
@@ -163,7 +277,7 @@ class RecoilPlanCliTests(unittest.TestCase):
         self.assertIn("0x401000", result.stdout)
         self.assertIn("next_field=impl", result.stdout)
 
-    def test_strict_lane_keeps_functionally_accepted_byte_blocker(self) -> None:
+    def test_binary_lane_keeps_functionally_equivalent_byte_blocker(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             plan = Path(tmp) / "RECOIL_PLAN.md"
             plan.write_text(
@@ -175,13 +289,16 @@ class RecoilPlanCliTests(unittest.TestCase):
                 "  - [✅] Reconstructed (Name: FunctionalOnly)\n"
                 "  - [✅] Source dependencies satisfied\n"
                 "  - [✅] Reimplemented (Name: FunctionalOnly File: src/FunctionalOnly.cpp)\n"
-                "  - [❌] Binary-safe verified\n"
-                "  - [✅] Functional-equivalent accepted (Target: functional_only)\n",
+                "  - [✅] Functional-equivalent (Target: functional_only)\n"
+                "  - [❌] Binary-safe\n",
                 encoding="utf-8",
             )
-            strict_result = self.run_cli(plan, "next")
+            binary_result = self.run_cli(plan, "next", "--lane", "binary")
+            strict_result = self.run_cli(plan, "next", "--lane", "strict")
             progress_result = self.run_cli(plan, "next", "--lane", "progress")
 
+        self.assertEqual(binary_result.returncode, 0, binary_result.stderr)
+        self.assertIn("next_field=verify", binary_result.stdout)
         self.assertEqual(strict_result.returncode, 0, strict_result.stderr)
         self.assertIn("next_field=verify", strict_result.stdout)
         self.assertEqual(progress_result.returncode, 0, progress_result.stderr)

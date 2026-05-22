@@ -30,12 +30,10 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 ### Group: Sprint0 M01 anchor verification blockers
 
 - Anchor: 0x415220 RecoilStateMainMenuTransition::OnTryBecomeCurrent
-- Reason: anchor `Binary-safe verified` depends on snapshot callee byte matches still failing VC6 COFF compare.
+- Reason: anchor `Binary-safe` depends on snapshot callee byte match still failing VC COFF compare.
 - Source blockers:
   - 0x49fff0 zSndPlayHandleSnapshot::CreateFromActiveSamples
-  - 0x4a0500 zSndPlayHandleSnapshot::StopAllIfPlaying
 - Next action:
-  - `python tools/recoil_vc6_verify.py zsnd_snapshot_stop_all_if_playing`
   - `python tools/recoil_vc6_verify.py 0x49fff0`
   - `python tools/recoil_vc6_verify.py 0x415220`
 

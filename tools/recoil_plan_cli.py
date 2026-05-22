@@ -6,11 +6,14 @@ import sys
 
 from recoil_plan import (
     FIELD_LABELS,
+    FUNCTIONAL_LANE,
+    LANE_CHOICES,
     PlanDocument,
     PlanEntry,
     blocker_field,
     normalize_address,
     normalize_field,
+    normalize_lane,
     status_summary,
 )
 
@@ -22,7 +25,8 @@ def configure_stdio() -> None:
         sys.stderr.reconfigure(encoding="utf-8")
 
 
-def compact_entry(entry: PlanEntry, *, lane: str = "strict") -> str:
+def compact_entry(entry: PlanEntry, *, lane: str = FUNCTIONAL_LANE) -> str:
+    lane = normalize_lane(lane)
     blocker = blocker_field(entry, lane=lane) or "none"
     name = entry.reimplemented_name
     if not name or name == "pending":
@@ -36,15 +40,20 @@ def compact_entry(entry: PlanEntry, *, lane: str = "strict") -> str:
     )
     return (
         f"{entry.address} {entry.milestone} "
-        f"{status_summary(entry, include_functional=lane == 'progress')} "
+        f"{status_summary(entry)} "
         f"blocker={blocker} name={name} file={file_name}{provider}{functional}"
     )
 
 
-def print_entries(entries: list[PlanEntry], *, limit: int | None = None) -> None:
+def print_entries(
+    entries: list[PlanEntry],
+    *,
+    limit: int | None = None,
+    lane: str = FUNCTIONAL_LANE,
+) -> None:
     selected = entries[:limit] if limit is not None else entries
     for entry in selected:
-        print(compact_entry(entry))
+        print(compact_entry(entry, lane=lane))
     if limit is not None and len(entries) > limit:
         print(f"... {len(entries) - limit} more")
 
@@ -56,7 +65,7 @@ def command_show(doc: PlanDocument, args: argparse.Namespace) -> int:
 
 def command_find(doc: PlanDocument, args: argparse.Namespace) -> int:
     matches = doc.find(args.query)
-    print_entries(matches, limit=args.limit)
+    print_entries(matches, limit=args.limit, lane=args.lane)
     if not matches:
         return 1
     return 0
@@ -64,20 +73,21 @@ def command_find(doc: PlanDocument, args: argparse.Namespace) -> int:
 
 def command_milestone(doc: PlanDocument, args: argparse.Namespace) -> int:
     matches = doc.milestone_entries(args.milestone)
-    print_entries(matches, limit=args.limit)
+    print_entries(matches, limit=args.limit, lane=args.lane)
     if not matches:
         return 1
     return 0
 
 
 def command_next(doc: PlanDocument, args: argparse.Namespace) -> int:
-    entry = doc.first_unfinished(lane=args.lane)
+    lane = normalize_lane(args.lane)
+    entry = doc.first_unfinished(lane=lane)
     if entry is None:
         print("No unfinished plan entries found.")
         return 0
 
-    field = blocker_field(entry, lane=args.lane) or "none"
-    print(compact_entry(entry, lane=args.lane))
+    field = blocker_field(entry, lane=lane) or "none"
+    print(compact_entry(entry, lane=lane))
     print(f"next_field={field} label={FIELD_LABELS.get(field, field)}")
     print(f"show_command=python tools/recoil_plan_cli.py show {entry.address}")
     return 0
@@ -86,12 +96,13 @@ def command_next(doc: PlanDocument, args: argparse.Namespace) -> int:
 def command_set(doc: PlanDocument, args: argparse.Namespace) -> int:
     address = normalize_address(args.address)
     field = normalize_field(args.field)
+    marker_file = args.target or args.file
     before, after = doc.update_marker(
         address,
         field,
         args.status,
         name=args.name,
-        file=args.file,
+        file=marker_file,
         provider=args.provider,
         evidence=args.evidence,
     )
@@ -124,19 +135,21 @@ def build_parser() -> argparse.ArgumentParser:
     find = subparsers.add_parser("find", help="Search addresses, names, files, providers, and milestones.")
     find.add_argument("query")
     find.add_argument("--limit", type=int, default=50)
+    find.add_argument("--lane", choices=LANE_CHOICES, default=FUNCTIONAL_LANE)
     find.set_defaults(func=command_find)
 
     milestone = subparsers.add_parser("milestone", help="List entries in a milestone.")
     milestone.add_argument("milestone", help="Milestone prefix or substring, e.g. M27")
     milestone.add_argument("--limit", type=int, default=None)
+    milestone.add_argument("--lane", choices=LANE_CHOICES, default=FUNCTIONAL_LANE)
     milestone.set_defaults(func=command_milestone)
 
     next_entry = subparsers.add_parser("next", help="Print the first unfinished entry and blocker.")
     next_entry.add_argument(
         "--lane",
-        choices=["strict", "progress"],
-        default="strict",
-        help="strict keeps Binary-safe verified as the blocker; progress accepts functional markers.",
+        choices=LANE_CHOICES,
+        default=FUNCTIONAL_LANE,
+        help="functional stops at Functional-equivalent; binary also requires Binary-safe.",
     )
     next_entry.set_defaults(func=command_next)
 
@@ -146,6 +159,7 @@ def build_parser() -> argparse.ArgumentParser:
     set_marker.add_argument("status", help="One of ✅, ☑️, ❌, ❓")
     set_marker.add_argument("--name", default="", help="Name for Reconstructed/Reimplemented marker.")
     set_marker.add_argument("--file", default="", help="File for Reimplemented marker.")
+    set_marker.add_argument("--target", default="", help="Functional target for Functional-equivalent marker.")
     set_marker.add_argument("--provider", default="", help="Provider text for external/runtime implementations.")
     set_marker.add_argument(
         "--evidence",

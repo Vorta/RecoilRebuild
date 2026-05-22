@@ -14,7 +14,7 @@ This ledger records the current compiler/linker assumptions used for source-fait
 
 The final candidate executable driver is `tools/vc6_final_build.json`.
 
-- Compiler environment: `${RECOIL_VC6_ROOT}/vc6-env.cmd`
+- Compiler environment: `D:\Recoil Project\Compiler\VC6\vc6-env.cmd`
 - Compiler flags: `/nologo /TP /W3 /G5 /O2 /Ob0 /MD /GX /GR /Zp4`
 - Resource flags: `/r`
 - Link flags: `/nologo /MACHINE:IX86 /SUBSYSTEM:WINDOWS /INCREMENTAL:NO /FIXED /BASE:0x400000`
@@ -28,6 +28,7 @@ Accepted per-target verification profiles are intentionally narrow:
 
 - `vc5_o2_ob0_facs`: first-pass VC5SP3 object-byte verification profile for plain non-EH code.
 - `vc5_o2_ob1_gx_facs`: first-pass VC5SP3 profile when one-level inlining and C++ EH, constructor, destructor, or member-call cleanup shape are relevant.
+- `vc5_o2_ob1_gx_uintptr_facs`: VC5SP3 one-level inlining profile with a `UINT_PTR` compatibility define for focused full-TU MFC frame targets whose production headers otherwise require a later SDK typedef.
 - `vc5_o2_ob1_md_gx_facs`: VC5SP3 profile for functions where the original bytes use DLL CRT import-call forms such as `sprintf`.
 - `vc5_o2_ob2_facs` and `vc5_o2_ob2_gx_facs`: VC5SP3 profiles for local evidence requiring aggressive inlining.
 - `vc6_o2_ob0_facs`: VC6 fallback object-byte verification profile.

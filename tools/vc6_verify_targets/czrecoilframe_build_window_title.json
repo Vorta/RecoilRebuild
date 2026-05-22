@@ -2,19 +2,7 @@
   "name": "czrecoilframe_build_window_title",
   "description": "CZRecoilFrame window-title CString builder.",
   "source_filename": "CZRecoilFrame.cpp",
-  "compiler_flags": [
-    "/nologo",
-    "/TP",
-    "/W3",
-    "/G5",
-    "/O2",
-    "/Ob1",
-    "/Zp4",
-    "/GX",
-    "/FAcs",
-    "/I",
-    "."
-  ],
+  "compiler_profile": "vc5_o2_ob1_gx_uintptr_facs",
   "include_dirs": [
     "src",
     "src/native/include",

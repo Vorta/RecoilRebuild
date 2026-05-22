@@ -25,19 +25,29 @@ PLAN_TEXT = textwrap.dedent(
       - [✅] Reconstructed (Name: VerifiedLeaf)
       - [✅] Source dependencies satisfied
       - [✅] Reimplemented (Name: VerifiedLeaf File: src/VerifiedLeaf.cpp)
-      - [✅] Binary-safe verified
+      - [✅] Functional-equivalent (Target: verified_leaf)
+      - [✅] Binary-safe
 
     - 0x401020:
       - [✅] Reconstructed (Name: SourceDone)
       - [✅] Source dependencies satisfied
       - [✅] Reimplemented (Name: SourceDone File: src/SourceDone.cpp)
-      - [❌] Binary-safe verified
+      - [✅] Functional-equivalent (Target: source_done)
+      - [❌] Binary-safe
 
     - 0x401040:
       - [✅] Reconstructed (Name: SourcePending)
       - [❓] Source dependencies satisfied
       - [❌] Reimplemented (Name: pending File: pending)
-      - [❌] Binary-safe verified
+      - [❌] Functional-equivalent (Target: pending)
+      - [❌] Binary-safe
+
+    - 0x401060:
+      - [✅] Reconstructed (Name: NeedsFunctional)
+      - [✅] Source dependencies satisfied
+      - [✅] Reimplemented (Name: NeedsFunctional File: src/NeedsFunctional.cpp)
+      - [❌] Functional-equivalent (Target: pending)
+      - [❌] Binary-safe
     """
 )
 
@@ -60,10 +70,15 @@ GROUPS_TEXT = textwrap.dedent(
     - Notes:
       - Hex constants such as 0xf80000 are not plan addresses.
 
+    ### Group: functional pending group
+
+    - Plan entries:
+      - 0x401060 NeedsFunctional - functional evidence pending
+
     ### Group: move group
 
     - Plan entries:
-      - 0x401000 VerifiedLeaf - Binary-safe verified
+      - 0x401000 VerifiedLeaf - Binary-safe
 
     ## legacy active note
 
@@ -75,7 +90,7 @@ GROUPS_TEXT = textwrap.dedent(
     ### Group: completed group
 
     - Plan entries:
-      - 0x401000 VerifiedLeaf - Binary-safe verified
+      - 0x401000 VerifiedLeaf - Binary-safe
     """
 )
 
@@ -88,14 +103,18 @@ class RecoilGroupsAuditTests(unittest.TestCase):
             [
                 "source pending group",
                 "condense group",
+                "functional pending group",
                 "move group",
                 "legacy active note",
                 "completed group",
             ],
             [group.title for group in groups],
         )
-        self.assertEqual(["active", "active", "active", "active", "completed"], [group.section for group in groups])
-        self.assertFalse(groups[3].standard_heading)
+        self.assertEqual(
+            ["active", "active", "active", "active", "active", "completed"],
+            [group.section for group in groups],
+        )
+        self.assertFalse(groups[4].standard_heading)
 
     def test_audit_classifies_groups_against_plan_markers(self) -> None:
         plan = PlanDocument.load_from_lines(Path("test"), PLAN_TEXT.splitlines()).entries
@@ -104,6 +123,7 @@ class RecoilGroupsAuditTests(unittest.TestCase):
 
         self.assertEqual("keep-active", recommendations["source pending group"])
         self.assertEqual("condense", recommendations["condense group"])
+        self.assertEqual("keep-active", recommendations["functional pending group"])
         self.assertEqual("move-completed", recommendations["move group"])
         self.assertEqual("needs-review", recommendations["legacy active note"])
         self.assertEqual("completed", recommendations["completed group"])

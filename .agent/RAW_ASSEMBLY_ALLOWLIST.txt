@@ -3,7 +3,9 @@ src/GameZRecoil/zSys/zSys.cpp 0x4b3510 __asm AP-485/BN CPU DIV flag probe; user-
 src/GameZRecoil/zSys/zSys.cpp 0x4b3550 __asm AP-485/BN 8086 FLAGS high-bit probe; user-approved original-source raw assembly exception.
 src/GameZRecoil/zSys/zSys.cpp 0x4b35a0 __asm AP-485/BN 80286 FLAGS high-bit probe; user-approved original-source raw assembly exception.
 src/GameZRecoil/zSys/zSys.cpp 0x4b35f0 __asm AP-485/BN 80386 AC-flag probe; user-approved original-source raw assembly exception.
+src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b33f0 __asm AP-485/BN CPUID ID-flag probe; extends user-approved zSys CPU raw assembly exception.
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3510 __asm AP-485/BN CPU DIV flag probe; user-approved original-source raw assembly exception.
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3550 __asm AP-485/BN 8086 FLAGS high-bit probe; user-approved original-source raw assembly exception.
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b35a0 __asm AP-485/BN 80286 FLAGS high-bit probe; user-approved original-source raw assembly exception.
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b35f0 __asm AP-485/BN 80386 AC-flag probe; user-approved original-source raw assembly exception.
+src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3640 __asm AP-485/BN inline CPUID vendor/family probe; extends user-approved zSys CPU raw assembly exception.

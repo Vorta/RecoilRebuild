@@ -2,18 +2,7 @@
   "name": "zloc_format_message",
   "description": "zLoc FormatMessageA wrapper with CRLF trimming and copy-out.",
   "source_filename": "zLoc.cpp",
-  "compiler_flags": [
-    "/nologo",
-    "/TP",
-    "/W3",
-    "/G5",
-    "/O2",
-    "/Ob0",
-    "/Zp4",
-    "/FAcs",
-    "/I",
-    "."
-  ],
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "include_dirs": [
     "src",
     "src/native/include",

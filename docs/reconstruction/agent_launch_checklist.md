@@ -85,6 +85,11 @@ map only when provenance comments in `src/` changed.
 Check `docs/reconstruction/verified_patterns.md` before introducing a new
 destructor, thunk, vtable stub, provider glue, or small-accessor idiom.
 
+Check `docs/reconstruction/original_class_candidates.md` before introducing or
+reshaping classes, inheritance, vtables, function tables, records, or
+namespace/module boundaries. Treat it as advisory generated evidence and confirm
+against current Binary Ninja facts.
+
 ## Source literals
 
 Use decimal numeric literals by default in authored C/C++ for ordinary counts,

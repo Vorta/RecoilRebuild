@@ -63,7 +63,11 @@ def audit_final_build(final_profile: dict[str, Any], final_build_path: Path) -> 
     return mismatches
 
 
-def manifest_profile_key(manifest: dict[str, object], profiles_by_name: dict[str, Profile]) -> tuple[str, tuple[str, ...], str]:
+def manifest_profile_key(
+    manifest: dict[str, object],
+    profiles_by_name: dict[str, Profile],
+    default_compiler_env: str,
+) -> tuple[str, tuple[str, ...], str]:
     profile_name = manifest.get("compiler_profile")
     has_raw_env = "compiler_env" in manifest
     has_raw_flags = "compiler_flags" in manifest
@@ -77,7 +81,7 @@ def manifest_profile_key(manifest: dict[str, object], profiles_by_name: dict[str
             raise ValueError(f"unknown compiler_profile {profile_name}")
         return profile.compiler_env, profile.compiler_flags, profile.name
 
-    env = manifest.get("compiler_env") or "${RECOIL_VC6_ROOT}/vc6-env.cmd"
+    env = manifest.get("compiler_env") or default_compiler_env
     if not isinstance(env, str):
         raise ValueError("expected compiler_env to be a string")
     flags = manifest.get("compiler_flags")
@@ -90,12 +94,17 @@ def audit_manifests(manifest_dir: Path, profiles: list[Profile]) -> tuple[list[s
     profile_by_key = {profile.key: profile for profile in profiles}
     profile_by_name = {profile.name: profile for profile in profiles}
     counts = {profile.name: 0 for profile in profiles}
+    default_compiler_env = profiles[0].compiler_env if profiles else r"D:\Recoil Project\Compiler\VC6/vc6-env.cmd"
     mismatches: list[str] = []
 
     for manifest_path in sorted(manifest_dir.glob("*.json")):
         try:
             manifest = load_json(manifest_path)
-            env, flags, explicit_profile_name = manifest_profile_key(manifest, profile_by_name)
+            env, flags, explicit_profile_name = manifest_profile_key(
+                manifest,
+                profile_by_name,
+                default_compiler_env,
+            )
         except ValueError as exc:
             mismatches.append(f"{display_path(manifest_path)}: {exc}")
             continue

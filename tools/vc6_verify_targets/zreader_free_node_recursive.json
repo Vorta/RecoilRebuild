@@ -1,0 +1,24 @@
+{
+  "name": "zreader_free_node_recursive",
+  "description": "zReader recursive node free helper.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zreader_load.cpp",
+  "source_from": "src/GameZRecoil/zReader/zreader_load.cpp",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zReader/zreader_load.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x48ce60",
+      "symbol": "@zReader_FreeNodeRecursive@4",
+      "name": "zReader_FreeNodeRecursive"
+    }
+  ]
+}

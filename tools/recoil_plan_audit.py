@@ -16,16 +16,21 @@ def entry_has_limited_marker(entry: PlanEntry) -> bool:
         entry.reconstructed_status,
         entry.source_dependencies_status,
         entry.reimplemented_status,
+        entry.functional_equivalent_status,
         entry.binary_verified_status,
     )
 
 
 def entry_has_unknown_marker(entry: PlanEntry) -> bool:
-    return "❓" in (
-        entry.reconstructed_status,
-        entry.source_dependencies_status,
-        entry.reimplemented_status,
-        entry.binary_verified_status,
+    return any(
+        status in {"❓", "?"}
+        for status in (
+            entry.reconstructed_status,
+            entry.source_dependencies_status,
+            entry.reimplemented_status,
+            entry.functional_equivalent_status,
+            entry.binary_verified_status,
+        )
     )
 
 
@@ -44,6 +49,33 @@ def find_verify_done_impl_not_green(entries: list[PlanEntry]) -> list[PlanEntry]
         for entry in entries
         if entry.binary_verified_status in ACCEPTED_DEP_STATUSES
         and entry.reimplemented_status != DONE_STATUS
+    ]
+
+
+def find_functional_done_impl_not_green(entries: list[PlanEntry]) -> list[PlanEntry]:
+    return [
+        entry
+        for entry in entries
+        if entry.functional_equivalent_status in ACCEPTED_DEP_STATUSES
+        and entry.reimplemented_status != DONE_STATUS
+    ]
+
+
+def find_functional_done_deps_not_green(entries: list[PlanEntry]) -> list[PlanEntry]:
+    return [
+        entry
+        for entry in entries
+        if entry.functional_equivalent_status in ACCEPTED_DEP_STATUSES
+        and entry.source_dependencies_status not in ACCEPTED_DEP_STATUSES
+    ]
+
+
+def find_verify_done_functional_not_green(entries: list[PlanEntry]) -> list[PlanEntry]:
+    return [
+        entry
+        for entry in entries
+        if entry.binary_verified_status in ACCEPTED_DEP_STATUSES
+        and entry.functional_equivalent_status != DONE_STATUS
     ]
 
 
@@ -90,7 +122,8 @@ def main(argv: list[str] | None = None) -> int:
         ("recon", "reconstructed_status"),
         ("deps", "source_dependencies_status"),
         ("impl", "reimplemented_status"),
-        ("verify", "binary_verified_status"),
+        ("functional", "functional_equivalent_status"),
+        ("binary", "binary_verified_status"),
     ]
     print(f"entries: {len(entries)}")
     for label, attr in fields:
@@ -104,6 +137,7 @@ def main(argv: list[str] | None = None) -> int:
         if entry.reconstructed_status == DONE_STATUS
         and entry.source_dependencies_status == DONE_STATUS
         and entry.reimplemented_status == DONE_STATUS
+        and entry.functional_equivalent_status == DONE_STATUS
         and entry.binary_verified_status == DONE_STATUS
     )
     limited = sum(1 for entry in entries if entry_has_limited_marker(entry))
@@ -113,7 +147,10 @@ def main(argv: list[str] | None = None) -> int:
     print(f"entries_with_unknown_marker: {unknown}")
 
     impl_green_deps_not_green = find_impl_green_deps_not_green(entries)
+    functional_done_impl_not_green = find_functional_done_impl_not_green(entries)
+    functional_done_deps_not_green = find_functional_done_deps_not_green(entries)
     verify_done_impl_not_green = find_verify_done_impl_not_green(entries)
+    verify_done_functional_not_green = find_verify_done_functional_not_green(entries)
     verify_done_deps_not_green = find_verify_done_deps_not_green(entries)
 
     print_entries(
@@ -122,8 +159,23 @@ def main(argv: list[str] | None = None) -> int:
         args.limit,
     )
     print_entries(
+        "functional_done_but_reimplemented_not_done:",
+        functional_done_impl_not_green,
+        args.limit,
+    )
+    print_entries(
+        "functional_done_but_dependencies_not_accepted:",
+        functional_done_deps_not_green,
+        args.limit,
+    )
+    print_entries(
         "binary_verified_but_reimplemented_not_done:",
         verify_done_impl_not_green,
+        args.limit,
+    )
+    print_entries(
+        "binary_verified_but_functional_not_done:",
+        verify_done_functional_not_green,
         args.limit,
     )
     print_entries(
@@ -133,7 +185,12 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if args.strict and (
-        impl_green_deps_not_green or verify_done_impl_not_green or verify_done_deps_not_green
+        impl_green_deps_not_green
+        or functional_done_impl_not_green
+        or functional_done_deps_not_green
+        or verify_done_impl_not_green
+        or verify_done_functional_not_green
+        or verify_done_deps_not_green
     ):
         return 1
     return 0

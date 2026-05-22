@@ -8,8 +8,8 @@ import re
 import sys
 
 from recoil_plan import (
+    ACCEPTED_STATUSES,
     DONE_STATUS,
-    LIMITED_STATUS,
     NOT_DONE_STATUS,
     UNKNOWN_STATUS,
     PlanDocument,
@@ -22,8 +22,7 @@ from recoil_plan import (
 ADDRESS_RE = re.compile(r"0x[0-9A-Fa-f]{6,8}")
 GROUP_HEADING_RE = re.compile(r"^### Group:\s*(.+?)\s*$")
 
-ACCEPTED_SOURCE_DEP_STATUSES = {DONE_STATUS, LIMITED_STATUS}
-ACCEPTED_VERIFY_STATUSES = {DONE_STATUS, LIMITED_STATUS}
+ACCEPTED_VERIFY_STATUSES = ACCEPTED_STATUSES
 
 
 @dataclass(frozen=True)
@@ -61,7 +60,8 @@ class GroupAudit:
     reasons: tuple[str, ...]
     missing_addresses: tuple[str, ...]
     source_pending_addresses: tuple[str, ...]
-    verification_pending_addresses: tuple[str, ...]
+    functional_pending_addresses: tuple[str, ...]
+    binary_pending_addresses: tuple[str, ...]
 
     @property
     def address_count(self) -> int:
@@ -127,19 +127,28 @@ def parse_groups(text: str) -> list[ImplementationGroup]:
 def source_pending(entry: PlanEntry) -> bool:
     return (
         entry.reconstructed_status in {NOT_DONE_STATUS, UNKNOWN_STATUS, "?"}
-        or entry.source_dependencies_status not in ACCEPTED_SOURCE_DEP_STATUSES
+        or entry.source_dependencies_status not in ACCEPTED_STATUSES
         or entry.reimplemented_status != DONE_STATUS
     )
 
 
-def verification_pending(entry: PlanEntry) -> bool:
-    return entry.binary_verified_status not in ACCEPTED_VERIFY_STATUSES
+def functional_pending(entry: PlanEntry) -> bool:
+    return not source_pending(entry) and entry.functional_equivalent_status != DONE_STATUS
+
+
+def binary_pending(entry: PlanEntry) -> bool:
+    return (
+        not source_pending(entry)
+        and entry.functional_equivalent_status == DONE_STATUS
+        and entry.binary_verified_status not in ACCEPTED_VERIFY_STATUSES
+    )
 
 
 def audit_group(group: ImplementationGroup, plan: dict[str, PlanEntry]) -> GroupAudit:
     missing: list[str] = []
     source_pending_items: list[str] = []
-    verification_pending_items: list[str] = []
+    functional_pending_items: list[str] = []
+    binary_pending_items: list[str] = []
     reasons: list[str] = []
 
     if not group.standard_heading:
@@ -156,21 +165,23 @@ def audit_group(group: ImplementationGroup, plan: dict[str, PlanEntry]) -> Group
             continue
         if source_pending(entry):
             source_pending_items.append(address)
-        if verification_pending(entry):
-            verification_pending_items.append(address)
+        if functional_pending(entry):
+            functional_pending_items.append(address)
+        if binary_pending(entry):
+            binary_pending_items.append(address)
 
     if missing:
         reasons.append("addresses missing from plan")
 
     if group.section == "completed":
-        if source_pending_items or verification_pending_items:
+        if source_pending_items or functional_pending_items or binary_pending_items:
             reasons.append("completed group still has pending plan markers")
         recommendation = "needs-review" if reasons else "completed"
     elif reasons:
         recommendation = "needs-review"
-    elif source_pending_items:
+    elif source_pending_items or functional_pending_items:
         recommendation = "keep-active"
-    elif verification_pending_items:
+    elif binary_pending_items:
         recommendation = "condense"
     else:
         recommendation = "move-completed"
@@ -181,7 +192,8 @@ def audit_group(group: ImplementationGroup, plan: dict[str, PlanEntry]) -> Group
         reasons=tuple(reasons),
         missing_addresses=tuple(missing),
         source_pending_addresses=tuple(source_pending_items),
-        verification_pending_addresses=tuple(verification_pending_items),
+        functional_pending_addresses=tuple(functional_pending_items),
+        binary_pending_addresses=tuple(binary_pending_items),
     )
 
 
@@ -194,7 +206,8 @@ def print_summary(audits: list[GroupAudit], *, wip_limit: int | None = None) -> 
     by_recommendation = Counter(audit.recommendation for audit in audits)
     groups_with_missing = sum(1 for audit in audits if audit.missing_addresses)
     groups_with_source_pending = sum(1 for audit in audits if audit.source_pending_addresses)
-    groups_with_verify_pending = sum(1 for audit in audits if audit.verification_pending_addresses)
+    groups_with_functional_pending = sum(1 for audit in audits if audit.functional_pending_addresses)
+    groups_with_binary_pending = sum(1 for audit in audits if audit.binary_pending_addresses)
     nonstandard_groups = sum(1 for audit in audits if not audit.group.standard_heading)
     no_address_groups = sum(1 for audit in audits if not audit.group.addresses)
 
@@ -206,7 +219,8 @@ def print_summary(audits: list[GroupAudit], *, wip_limit: int | None = None) -> 
     )
     print(f"groups_with_missing_plan_addresses: {groups_with_missing}")
     print(f"groups_with_source_pending: {groups_with_source_pending}")
-    print(f"groups_with_verification_pending: {groups_with_verify_pending}")
+    print(f"groups_with_functional_pending: {groups_with_functional_pending}")
+    print(f"groups_with_binary_pending: {groups_with_binary_pending}")
     print(f"nonstandard_heading_groups: {nonstandard_groups}")
     print(f"no_address_groups: {no_address_groups}")
     if wip_limit is not None:
@@ -241,10 +255,15 @@ def print_group_report(audits: list[GroupAudit], *, limit: int, address_limit: i
                 "  source_pending: "
                 f"{format_address_list(audit.source_pending_addresses, address_limit)}"
             )
-        if audit.verification_pending_addresses:
+        if audit.functional_pending_addresses:
             print(
-                "  verification_pending: "
-                f"{format_address_list(audit.verification_pending_addresses, address_limit)}"
+                "  functional_pending: "
+                f"{format_address_list(audit.functional_pending_addresses, address_limit)}"
+            )
+        if audit.binary_pending_addresses:
+            print(
+                "  binary_pending: "
+                f"{format_address_list(audit.binary_pending_addresses, address_limit)}"
             )
     if limit >= 0 and len(audits) > limit:
         print(f"- ... {len(audits) - limit} more")
@@ -262,7 +281,8 @@ def print_details(audits: list[GroupAudit], plan: dict[str, PlanEntry], address_
         for label, addresses in (
             ("missing", audit.missing_addresses),
             ("source_pending", audit.source_pending_addresses),
-            ("verification_pending", audit.verification_pending_addresses),
+            ("functional_pending", audit.functional_pending_addresses),
+            ("binary_pending", audit.binary_pending_addresses),
         ):
             if not addresses:
                 continue

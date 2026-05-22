@@ -5,14 +5,11 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
-import json
 from pathlib import Path
 import sys
 from typing import Any
-from urllib.error import URLError
-from urllib.parse import urlencode
-from urllib.request import urlopen
 
+from recoil_binja import BinaryNinjaBridge, BridgeError
 from recoil_tooling import configure_stdio
 
 
@@ -33,18 +30,13 @@ def normalize_path_text(value: str) -> str:
     return str(Path(value.replace("\\", "/"))).replace("\\", "/").lower()
 
 
-def fetch_json(base_url: str, endpoint: str, **params: object) -> dict[str, Any]:
-    query = urlencode({key: value for key, value in params.items() if value is not None})
-    url = f"{base_url.rstrip('/')}/{endpoint.lstrip('/')}"
-    if query:
-        url = f"{url}?{query}"
+def fetch_json(bridge: BinaryNinjaBridge, endpoint: str, **params: object) -> dict[str, Any]:
     try:
-        with urlopen(url, timeout=10.0) as response:
-            data = json.loads(response.read().decode("utf-8"))
-    except (OSError, URLError, json.JSONDecodeError) as exc:
-        raise RuntimeError(f"Binary Ninja bridge request failed: {url}: {exc}") from exc
+        data = bridge.get_json(endpoint, **params)
+    except BridgeError as exc:
+        raise RuntimeError(str(exc)) from exc
     if not isinstance(data, dict):
-        raise RuntimeError(f"Binary Ninja bridge returned non-object JSON: {url}")
+        raise RuntimeError(f"Binary Ninja bridge returned non-object JSON: {endpoint}")
     return data
 
 
@@ -122,9 +114,10 @@ def run_preflight(
 ) -> PreflightResult:
     messages: list[str] = []
     try:
-        status = fetch_json(bridge_url, "status")
-        binaries = fetch_json(bridge_url, "binaries")
-        probe = fetch_json(bridge_url, "functionInfo", address=probe_address)
+        bridge = BinaryNinjaBridge(bridge_url, timeout=10.0)
+        status = fetch_json(bridge, "status")
+        binaries = fetch_json(bridge, "binaries")
+        probe = fetch_json(bridge, "functionInfo", address=probe_address)
     except RuntimeError as exc:
         return PreflightResult(False, (str(exc), remediation_message(expected_file),))
 

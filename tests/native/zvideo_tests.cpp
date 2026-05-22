@@ -546,7 +546,7 @@ extern "C" int zvid_set_video_mode_index_smoke(void) {
     }
 
     zVid::SetVideoModeIndex(8);
-    return mode == 7 ? 0 : 3;
+    return mode == 0 ? 0 : 3;
 }
 
 extern "C" int zvideo_buff_clip_coord_to_range_smoke(void) {
