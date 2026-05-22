@@ -192,14 +192,14 @@ HudUiMainMenuDialog_Vtbl MakeMainMenuDialogFTable()
 
 const HudUiMainMenuDialog_Vtbl g_HudUiMainMenuDialog_FTable = MakeMainMenuDialogFTable();
 
-int PlayerMenuSaveLoadBlocked(zUtil_PlayerStateStorage *playerState)
+RECOIL_FORCEINLINE int PlayerMenuSaveLoadBlocked(zUtil_PlayerStateStorage *playerState)
 {
     const unsigned char *const playerBytes = playerState->bytes;
     return *(const int *)(playerBytes + kPlayerMenuSaveLoadBlockOffset);
 }
 
-void BindButton(HudUiMainMenuDialog *dialog, zReader::Node *loadedSection,
-                HudUiZrdWidget *widget, const char *name)
+RECOIL_FORCEINLINE void BindButton(HudUiMainMenuDialog *dialog, zReader::Node *loadedSection,
+                                   HudUiZrdWidget *widget, const char *name)
 {
     dialog->base.BindWidgetByName(loadedSection, &widget->base, name);
 }
@@ -247,18 +247,23 @@ void BindNetworkButtons(HudUiMainMenuDialog *dialog, zReader::Node *loadedSectio
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
 RECOIL_NOINLINE int RECOIL_CDECL HudUiMainMenuDialog::CanLoadGame()
 {
+    zUtil_PlayerStateStorage *playerState;
     zInput_GameStateOrMapTablePartial *const gameState = g_GameStateOrMapTable;
     if (gameState == 0) {
-        return 1;
+        goto canLoad;
     }
 
-    zUtil_PlayerStateStorage *const playerState =
-        (zUtil_PlayerStateStorage *)gameState->playerState;
+    playerState = (zUtil_PlayerStateStorage *)gameState->playerState;
     if (playerState == 0) {
-        return 1;
+        goto canLoad;
     }
 
-    return PlayerMenuSaveLoadBlocked(playerState) != 0 ? 0 : 1;
+    if (PlayerMenuSaveLoadBlocked(playerState) != 0) {
+        return 0;
+    }
+
+canLoad:
+    return 1;
 }
 
 // Reimplements 0x414b90: HudUiMainMenuDialog::CanSaveGame
@@ -267,16 +272,21 @@ RECOIL_NOINLINE int RECOIL_CDECL HudUiMainMenuDialog::CanSaveGame()
 {
     zInput_GameStateOrMapTablePartial *const gameState = g_GameStateOrMapTable;
     if (gameState == 0) {
-        return 0;
+        return (int)gameState;
     }
 
     zUtil_PlayerStateStorage *const playerState =
         (zUtil_PlayerStateStorage *)gameState->playerState;
     if (playerState == 0) {
-        return 1;
+        goto canSave;
     }
 
-    return PlayerMenuSaveLoadBlocked(playerState) != 0 ? 0 : 1;
+    if (PlayerMenuSaveLoadBlocked(playerState) != 0) {
+        return 0;
+    }
+
+canSave:
+    return 1;
 }
 
 // Reimplements 0x414bc0: HudUiMainMenuDialog::Constructor
@@ -308,7 +318,11 @@ HudUiMainMenuDialog::Constructor(RecoilMainMenuEntryRoute route)
     if (zOpt::GetNetworkEnabled() != 0) {
         zReader::Node *const loadedSection = base.LoadFromZrd("dialog.zrd", "MAINMENU2", 0);
         if (loadedSection != 0) {
-            BindNetworkButtons(this, loadedSection);
+            BindButton(this, loadedSection, &optionsButton, "OPTIONS");
+            BindButton(this, loadedSection, &controlsButton, "CONTROLS");
+            BindButton(this, loadedSection, &creditsButton, "CREDITS");
+            BindButton(this, loadedSection, &backButton, "BACK");
+            BindButton(this, loadedSection, &quitButton, "QUIT");
             base.FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
         }
         return this;
@@ -317,16 +331,27 @@ HudUiMainMenuDialog::Constructor(RecoilMainMenuEntryRoute route)
     if (route != RECOIL_MAINMENU_ROUTE_FRONTEND) {
         zUtil_PlayerStateStorage *const playerState =
             (zUtil_PlayerStateStorage *)g_GameStateOrMapTable->playerState;
-        const char *const sectionName =
-            playerState->lifecycleState == 4 ? "MAINMENU3" : "MAINMENU1";
-        zReader::Node *const loadedSection = base.LoadFromZrd("dialog.zrd", sectionName, 0);
-        if (loadedSection != 0) {
-            if (playerState->lifecycleState == 4) {
-                BindNewLoadQuit(this, loadedSection);
-            } else {
-                BindFullInGameButtons(this, loadedSection);
+        if (playerState->lifecycleState == 4) {
+            zReader::Node *const loadedSection = base.LoadFromZrd("dialog.zrd", "MAINMENU3", 0);
+            if (loadedSection != 0) {
+                BindButton(this, loadedSection, &newGameButton, "NEWGAME");
+                BindButton(this, loadedSection, &loadGameButton, "LOADGAME");
+                BindButton(this, loadedSection, &quitButton, "QUIT");
+                base.FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
             }
-            base.FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
+        } else {
+            zReader::Node *const loadedSection = base.LoadFromZrd("dialog.zrd", "MAINMENU1", 0);
+            if (loadedSection != 0) {
+                BindButton(this, loadedSection, &newGameButton, "NEWGAME");
+                BindButton(this, loadedSection, &saveGameButton, "SAVEGAME");
+                BindButton(this, loadedSection, &loadGameButton, "LOADGAME");
+                BindButton(this, loadedSection, &optionsButton, "OPTIONS");
+                BindButton(this, loadedSection, &controlsButton, "CONTROLS");
+                BindButton(this, loadedSection, &creditsButton, "CREDITS");
+                BindButton(this, loadedSection, &backButton, "BACK");
+                BindButton(this, loadedSection, &quitButton, "QUIT");
+                base.FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
+            }
         }
 
         saveGameButton.modeOrEnabled = CanSaveGame();
@@ -338,7 +363,12 @@ HudUiMainMenuDialog::Constructor(RecoilMainMenuEntryRoute route)
 
     zReader::Node *const loadedSection = base.LoadFromZrd("dialog.zrd", "MAINMENU0", 0);
     if (loadedSection != 0) {
-        BindFrontendButtons(this, loadedSection);
+        BindButton(this, loadedSection, &newGameButton, "NEWGAME");
+        BindButton(this, loadedSection, &loadGameButton, "LOADGAME");
+        BindButton(this, loadedSection, &optionsButton, "OPTIONS");
+        BindButton(this, loadedSection, &controlsButton, "CONTROLS");
+        BindButton(this, loadedSection, &creditsButton, "CREDITS");
+        BindButton(this, loadedSection, &quitButton, "QUIT");
         base.FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
     }
 

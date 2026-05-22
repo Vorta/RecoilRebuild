@@ -114,10 +114,13 @@ RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RecoilSaveLoadTransitionMode 
     }
 
     g_RecoilStateSaveLoadTransition.m_transitionMode = transitionMode;
-    if (transitionMode != RECOIL_SAVELOAD_MODE_STANDARD &&
-        transitionMode == RECOIL_SAVELOAD_MODE_QUICKLOAD) {
+    switch (transitionMode) {
+    case RECOIL_SAVELOAD_MODE_STANDARD:
+        break;
+    case RECOIL_SAVELOAD_MODE_QUICKLOAD:
         g_RecoilStateSaveLoadTransition.m_capturePresentationMode =
             RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED;
+        break;
     }
 
     g_RecoilStateSaveLoadTransition.m_dialogKind = RECOIL_SAVELOAD_DIALOG_LOAD;
@@ -632,12 +635,15 @@ RecoilApp::ScalarDeletingDestructor(unsigned int flags) {
 // Reimplements 0x443700: RecoilApp_StateQueueBlock::InitFromCursor
 RecoilApp_StateQueueBlock *RECOIL_THISCALL
 RecoilApp_StateQueueBlock::InitFromCursor(RecoilPtr32 cursor, RecoilPtr32 chunkPtrSlot) {
-    RecoilPtr32 *const chunkSlot = (RecoilPtr32 *)chunkPtrSlot;
-    const RecoilPtr32 chunkBegin = *chunkSlot;
-    m_chunkBegin = chunkBegin;
-    m_chunkEnd = chunkBegin + 0x1000;
-    m_cursor = cursor;
-    m_chunkPtrSlot = chunkPtrSlot;
+    // Original 0x443700 reloads through the chunk-slot pointer when deriving
+    // m_chunkEnd; keep the volatile read so VC does not collapse the two loads.
+    volatile RecoilApp_StateQueueBlock *const block = this;
+    volatile RecoilPtr32 *const chunkSlot = (volatile RecoilPtr32 *)chunkPtrSlot;
+    block->m_chunkBegin = *chunkSlot;
+    const RecoilPtr32 chunkEnd = *chunkSlot + 0x1000;
+    block->m_chunkPtrSlot = chunkPtrSlot;
+    block->m_chunkEnd = chunkEnd;
+    block->m_cursor = cursor;
     return this;
 }
 

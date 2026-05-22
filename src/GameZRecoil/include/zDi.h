@@ -1,4 +1,6 @@
 #pragma once
+#ifndef RECOIL_GAMEZRECOIL_INCLUDE_ZDI_H
+#define RECOIL_GAMEZRECOIL_INCLUDE_ZDI_H
 
 #include <stddef.h>
 #include "recoil/recoil_types.h"
@@ -337,3 +339,5 @@ RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceData, faces) == 0x30);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceData, baseVertices) == 0x34);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceData, morphVertices) == 0x40);
 RECOIL_STATIC_ASSERT(sizeof(zModel_PickFaceData) == 0x44);
+
+#endif // RECOIL_GAMEZRECOIL_INCLUDE_ZDI_H

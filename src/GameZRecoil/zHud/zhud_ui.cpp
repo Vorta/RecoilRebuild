@@ -473,14 +473,22 @@ void RECOIL_THISCALL HudLayoutBase::UpdateAll(float deltaSeconds) {
 
 // Reimplements 0x412bf0: HudLayoutBase::Enable
 void RECOIL_THISCALL HudLayoutBase::Enable() {
-    typedef int (RECOIL_THISCALL *SetActiveFn)(HudLayoutBase * self, int active);
-    ((SetActiveFn)(ftable->slots[1]))(this, 1);
+    typedef int (RECOIL_THISCALL HudLayoutBase::*SetActiveMethod)(int active);
+    union {
+        unsigned int slot;
+        SetActiveMethod method;
+    } dispatch = {ftable->slots[1]};
+    (this->*dispatch.method)(1);
 }
 
 // Reimplements 0x412c00: HudLayoutBase::Disable
 void RECOIL_THISCALL HudLayoutBase::Disable() {
-    typedef int (RECOIL_THISCALL *SetActiveFn)(HudLayoutBase * self, int active);
-    ((SetActiveFn)(ftable->slots[1]))(this, 0);
+    typedef int (RECOIL_THISCALL HudLayoutBase::*SetActiveMethod)(int active);
+    union {
+        unsigned int slot;
+        SetActiveMethod method;
+    } dispatch = {ftable->slots[1]};
+    (this->*dispatch.method)(0);
 }
 
 // Reimplements 0x412c10: HudLayoutSW::LoadTypeIFromZarRoot
@@ -825,6 +833,48 @@ unsigned int g_HudUi_InvalidateMask = 0;
 namespace {
 const char kNumericTextInputAcceptedRawKeyChars[] = "0123456789.-\x1b\r\x08\x7f\x02\x06";
 
+#if defined(_MSC_VER) && _MSC_VER < 1200
+// VC5 misparses explicit function-template calls such as FieldAt<unsigned int>(...).
+// Keep the same call-site spelling for first-pass VC5 verification without changing
+// VC6 or modern compiler codegen.
+template <typename T> class FieldAt {
+  public:
+    FieldAt(void *base, size_t offset)
+        : address((T *)((unsigned char *)(base) + offset)) {}
+
+    FieldAt(const void *base, size_t offset)
+        : address((T *)((const unsigned char *)(base) + offset)) {}
+
+    operator T &() {
+        return *address;
+    }
+
+    T *operator&() const { return address; }
+
+    FieldAt &operator=(const T &value) {
+        *address = value;
+        return *this;
+    }
+
+    FieldAt &operator|=(const T &value) {
+        *address |= value;
+        return *this;
+    }
+
+    FieldAt &operator+=(const T &value) {
+        *address += value;
+        return *this;
+    }
+
+    FieldAt &operator-=(const T &value) {
+        *address -= value;
+        return *this;
+    }
+
+  private:
+    T *address;
+};
+#else
 template <typename T> T &FieldAt(void *base, size_t offset) {
     return *(T *)(static_cast<unsigned char *>(base) + offset);
 }
@@ -832,6 +882,7 @@ template <typename T> T &FieldAt(void *base, size_t offset) {
 template <typename T> const T &FieldAt(const void *base, size_t offset) {
     return *(const T *)(static_cast<const unsigned char *>(base) + offset);
 }
+#endif
 
 HudUiPanel *NewSimplePanel(int fontSize, int fontWeight) {
     HudUiPanel *const panel = static_cast<HudUiPanel *>(::operator new(0x2a4));
@@ -1519,7 +1570,11 @@ ApplyImageWidget(zReader::Node *layoutNode, HudUiWidget *widget, int baseX,
 namespace {
 
 template <typename T> T &OwnerField(void *owner, size_t offset) {
+#if defined(_MSC_VER) && _MSC_VER < 1200
+    return *&FieldAt<T>(owner, offset);
+#else
     return FieldAt<T>(owner, offset);
+#endif
 }
 
 const HudFontStyle *HudUiZrdOwnerFontStyle(void *owner, int styleIndex) {
@@ -3667,9 +3722,9 @@ HudUiElement *RECOIL_THISCALL HudUiElement::Constructor(int initX, int initY) {
     parent = 0;
     next = 0;
     timer = 0.0f;
-    x = initX;
 
-    typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiElement *);
+    typedef void (RECOIL_FASTCALL *InvalidateFn)(HudUiElement *);
+    x = initX;
     ((InvalidateFn)(((const unsigned int *)ftable)[8]))(this);
 
     flags = 0;
@@ -3725,7 +3780,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::Invalidate() {
 
 // Reimplements 0x404cd0: HudUiElement::SetPos
 void RECOIL_THISCALL HudUiElement::SetPos(int newX, int newY) {
-    typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiElement * self);
+    typedef void (RECOIL_FASTCALL *InvalidateFn)(HudUiElement * self);
 
     x = newX;
     y = newY;
@@ -3734,7 +3789,7 @@ void RECOIL_THISCALL HudUiElement::SetPos(int newX, int newY) {
 
 // Reimplements 0x404cf0: HudUiElement::SetX
 void RECOIL_THISCALL HudUiElement::SetX(int newX) {
-    typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiElement * self);
+    typedef void (RECOIL_FASTCALL *InvalidateFn)(HudUiElement * self);
 
     x = newX;
     ((InvalidateFn)(ftable->slots[8]))(this);
@@ -3742,7 +3797,7 @@ void RECOIL_THISCALL HudUiElement::SetX(int newX) {
 
 // Reimplements 0x404d00: HudUiElement::SetY
 void RECOIL_THISCALL HudUiElement::SetY(int newY) {
-    typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiElement * self);
+    typedef void (RECOIL_FASTCALL *InvalidateFn)(HudUiElement * self);
 
     y = newY;
     ((InvalidateFn)(ftable->slots[8]))(this);
@@ -4860,13 +4915,13 @@ HudUiBackground::BindButtonsNodeToWidgetByName(zReader::Node *parentNode, HudUiW
         zReader::Node *const buttonsNode = zReader_GetNamedNode(parentNode, "BUTTONS");
         zReader::Node *const widgetNode = zReader_GetNamedNode(buttonsNode, name);
         if (widgetNode != 0) {
-            typedef int (RECOIL_THISCALL *LoadFromZrdFn)(HudUiWidget * self, zReader::Node * zrdSection,
-                                                void *ownerDialog);
-            typedef void (RECOIL_THISCALL *PostLoadFromZrdFn)(HudUiWidget * self);
+            typedef int (HudUiWidget::*LoadFromZrdFn)(zReader::Node *zrdSection,
+                                                      void *ownerDialog);
+            typedef void (HudUiWidget::*PostLoadFromZrdFn)();
 
-            ((LoadFromZrdFn)(widget->ftable->slots[0x7c / 4]))(widget, widgetNode,
-                                                                              this);
-            ((PostLoadFromZrdFn)(widget->ftable->slots[0x80 / 4]))(widget);
+            (widget->*((LoadFromZrdFn *)(&widget->ftable->slots[0x7c / 4]))[0])(
+                widgetNode, this);
+            (widget->*((PostLoadFromZrdFn *)(&widget->ftable->slots[0x80 / 4]))[0])();
         }
     }
 
@@ -4876,7 +4931,6 @@ HudUiBackground::BindButtonsNodeToWidgetByName(zReader::Node *parentNode, HudUiW
 // Reimplements 0x4ba0c0: HudUiBackground::BindWidgetByName
 RECOIL_NOINLINE int RECOIL_THISCALL
 HudUiBackground::BindWidgetByName(zReader::Node *, HudUiWidget *widget, const char *name) {
-    zReader::Node *const cfgRoot = FieldAt<zReader::Node *>(this, 0xa940);
     return BindButtonsNodeToWidgetByName(cfgRoot, widget, name) & 0xff;
 }
 
@@ -4995,14 +5049,13 @@ HudUiBackground::BindPrimitiveNodeToElement(zReader::Node *, HudUiElement *eleme
 
 // Reimplements 0x4ba350: HudUiBackground::FreeLoadedTreeRoots (HudUiBackground.cpp)
 RECOIL_NOINLINE void RECOIL_THISCALL HudUiBackground::FreeLoadedTreeRoots(int) {
-    zReader::Node *&loadedRoot = FieldAt<zReader::Node *>(this, 0xa93c);
-
-    if (loadedRoot != 0) {
-        zReader::FreeLoadedTree(loadedRoot);
+    zReader::Node *const root = loadedRoot;
+    if (root != 0) {
+        zReader::FreeLoadedTree(root);
     }
 
     loadedRoot = 0;
-    FieldAt<zReader::Node *>(this, 0xa940) = 0;
+    cfgRoot = 0;
 }
 
 // Reimplements 0x4bc570: HudUiBackground::Update (D:\Proj\Battlesport\HudUi_Background.cpp)
@@ -5025,8 +5078,12 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBackground::Update(float deltaSeconds)
         return;
     }
 
+#if defined(_MSC_VER) && _MSC_VER < 1200
     zInput::MouseStateSnapshot &mouseState =
-        FieldAt<zInput::MouseStateSnapshot>(this, 0x14);
+        *&FieldAt<zInput::MouseStateSnapshot>(this, 0x14);
+#else
+    zInput::MouseStateSnapshot &mouseState = FieldAt<zInput::MouseStateSnapshot>(this, 0x14);
+#endif
     memcpy(&mouseState, zInput::Mouse_GetStateSnapshotPtr(), sizeof(mouseState));
 
     for (HudUiElement *widget = base.base.childHead; widget != 0; widget = widget->next) {
@@ -5136,7 +5193,7 @@ HudUiWidget *RECOIL_THISCALL HudUiWidget::Constructor(unsigned int initAlignFlag
     image = 0;
     ownsImage = 0;
     bltClipRectOrNull = 0;
-    imageStateWord &= 0xffff0000u;
+    *(unsigned short *)((unsigned char *)(this) + 0x40) = 0;
     dirtyRectCount = 0;
 
     {
@@ -5499,16 +5556,26 @@ void RECOIL_THISCALL HudUiBackgroundVideoWidget::RebuildBltRect() {
 // Reimplements 0x4b4ee0: HudUiZrdWidget::Constructor
 HudUiZrdWidget *RECOIL_THISCALL HudUiZrdWidget::Constructor() {
     base.Constructor(0);
+    // VC5 copies an uninitialized STL allocator proxy byte into each vector.
+#if defined(_MSC_VER) && _MSC_VER < 1200
+    char allocatorProxy;
+#else
+    char allocatorProxy = 0;
+#endif
+    labelPanels.allocatorProxy = allocatorProxy;
     labelPanels.begin = 0;
     labelPanels.end = 0;
     labelPanels.capacityEnd = 0;
+    rolloverLabelPanels.allocatorProxy = allocatorProxy;
     rolloverLabelPanels.begin = 0;
     rolloverLabelPanels.end = 0;
     rolloverLabelPanels.capacityEnd = 0;
     activateLabelPanels.begin = 0;
+    activateLabelPanels.allocatorProxy = allocatorProxy;
     activateLabelPanels.end = 0;
     activateLabelPanels.capacityEnd = 0;
     disabledLabelPanels.begin = 0;
+    disabledLabelPanels.allocatorProxy = allocatorProxy;
     disabledLabelPanels.end = 0;
     disabledLabelPanels.capacityEnd = 0;
 
@@ -5528,9 +5595,43 @@ HudUiZrdWidget *RECOIL_THISCALL HudUiZrdWidget::Constructor() {
     activateSoundScale = 1.0f;
     activatePlayHandle = 0;
 
-    base.imageStateWord = (base.imageStateWord & 0xffff0000u) | 1u;
-    ((HudUiElement *)(&base))->Invalidate();
-    base.flags = (base.flags & 0x10u) | 0x02u;
+    HudUiPanel **labelSource = labelPanels.end;
+    HudUiPanel **labelDest = labelPanels.begin;
+    if (labelSource != labelPanels.end) {
+        do {
+            *labelDest++ = *labelSource++;
+        } while (labelSource != labelPanels.end);
+    }
+    ((StdPtrVector *)(&labelPanels))->ClearNoOpDestroy((int *)(labelDest),
+                                                       (int *)(labelPanels.end));
+    labelPanels.end = labelDest;
+
+    HudUiPanel **rolloverSource = rolloverLabelPanels.end;
+    HudUiPanel **rolloverDest = rolloverLabelPanels.begin;
+    if (rolloverSource != rolloverLabelPanels.end) {
+        do {
+            *rolloverDest++ = *rolloverSource++;
+        } while (rolloverSource != rolloverLabelPanels.end);
+    }
+    ((StdPtrVector *)(&rolloverLabelPanels))
+        ->ClearNoOpDestroy((int *)(rolloverDest), (int *)(rolloverLabelPanels.end));
+    rolloverLabelPanels.end = rolloverDest;
+
+    HudUiPanel **activateSource = activateLabelPanels.end;
+    HudUiPanel **activateDest = activateLabelPanels.begin;
+    if (activateSource != activateLabelPanels.end) {
+        do {
+            *activateDest++ = *activateSource++;
+        } while (activateSource != activateLabelPanels.end);
+    }
+    ((StdPtrVector *)(&activateLabelPanels))
+        ->ClearNoOpDestroy((int *)(activateDest), (int *)(activateLabelPanels.end));
+    activateLabelPanels.end = activateDest;
+
+    *((unsigned short *)(&base.imageStateWord)) = 1;
+    typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiZrdWidget * self);
+    ((InvalidateFn)(base.ftable->slots[8]))(this);
+    base.flags = ((unsigned char)(base.flags) & 0x10u) | 0x02u;
     return this;
 }
 
@@ -8900,7 +9001,11 @@ void RECOIL_THISCALL HudUiPanel::RebuildTextRect() {
 
     SelectObject(measureDc, hFont);
 
+#if defined(_MSC_VER) && _MSC_VER < 1200
+    RECT &textRect = *&FieldAt<RECT>(this, 0x28c);
+#else
     RECT &textRect = FieldAt<RECT>(this, 0x28c);
+#endif
     UINT drawFormat = DT_LEFT;
     BOOL measured = FALSE;
     if (FieldAt<unsigned int>(this, 0x278) != 0) {
@@ -9033,7 +9138,7 @@ void RECOIL_THISCALL HudUiPanel::RebuildTextRect() {
                     }
                 }
 
-                FieldAt<int>(this, 0x274) = metrics.tmExternalLeading;
+                FieldAt<int>(this, 0x274) = static_cast<int>(metrics.tmExternalLeading);
             }
         }
     }

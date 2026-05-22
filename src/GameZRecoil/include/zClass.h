@@ -1,3 +1,6 @@
+#ifndef RECOIL_GAMEZRECOIL_INCLUDE_ZCLASS_H
+#define RECOIL_GAMEZRECOIL_INCLUDE_ZCLASS_H
+
 #pragma once
 
 #include <stddef.h>
@@ -1452,3 +1455,5 @@ RECOIL_FORCEINLINE void SetPendingRemovalDirty(int bucket, int value) {
     }
 }
 } // namespace zClass_TypeList
+
+#endif

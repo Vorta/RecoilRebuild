@@ -149,11 +149,11 @@ Completion is tracked per function in `.agent/RECOIL_PLAN.md`:
   for implementation.
 - `Reimplemented` means native source exists and compiles with the correct
   source-level behavior.
-- `Binary-safe verified` means generated 32-bit assembly or provider ABI
+- `Binary-safe` means generated 32-bit assembly or provider ABI
   evidence has been compared against the original and accepted.
-- `Functional-equivalent accepted` is an optional progress-lane marker for
+- `Functional-equivalent` is an optional progress-lane marker for
   byte-verification blockers with reviewed VC failure evidence plus targeted
-  native behavior tests. It does not complete `Binary-safe verified`.
+  native behavior tests. It does not complete `Binary-safe`.
 
 Useful commands:
 
@@ -211,6 +211,9 @@ python -m unittest discover -s tests/tools -p *_tests.py
   notes.
 - `docs/reconstruction/compiler_linker_provenance.md` - compiler/linker and
   provider evidence policy.
+- `docs/reconstruction/original_class_candidates.md` - generated candidate map
+  for original class-like systems, records, vtables/function tables, and
+  namespace boundaries.
 - `docs/reconstruction/source_file_map.md` - generated original-source to
   current-source placement map.
 - `reconstruction/NOTES.md` - accumulated subsystem reconstruction notes and

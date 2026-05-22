@@ -281,12 +281,13 @@ CZRecoilFrame::SetMenuBarVisibility(int visible) {
 
 // Reimplements 0x4306f0: CZRecoilFrame::BuildWindowTitle
 RECOIL_FRAME_NOINLINE CString *RECOIL_THISCALL CZRecoilFrame::BuildWindowTitle(CString *outTitle) {
+    volatile int constructedTitleState = 0;
     if (g_zVideo_ActiveRendererPath == kRendererBackend3dfx) {
-        new (outTitle) CString("RECOIL (3Dfx)");
+        outTitle->CString::CString("RECOIL (3Dfx)");
         return outTitle;
     }
 
-    new (outTitle) CString("RECOIL");
+    outTitle->CString::CString("RECOIL");
     return outTitle;
 }
 

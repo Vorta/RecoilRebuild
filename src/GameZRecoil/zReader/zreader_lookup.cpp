@@ -2,16 +2,6 @@
 
 #include <string.h>
 
-namespace {
-zReader::Node *ArrayBase(zReader::Node *node) {
-    return node->value.nodes;
-}
-
-int ArrayCount(zReader::Node *node) {
-    return ArrayBase(node)->value.i32;
-}
-} // namespace
-
 // Reimplements 0x48cec0: zReader_FindChildRecursive
 extern "C" RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL
 zReader_FindChildRecursive(zReader::Node *node, const char *searchName, int startIndex) {
@@ -19,21 +9,21 @@ zReader_FindChildRecursive(zReader::Node *node, const char *searchName, int star
         return 0;
     }
 
-    zReader::Node *arrayBase = ArrayBase(node);
+    zReader::Node *arrayBase = node->value.nodes;
     if (startIndex >= arrayBase->value.i32) {
         return 0;
     }
 
-    while (startIndex < ArrayCount(node)) {
+    while (startIndex < node->value.nodes->value.i32) {
         zReader::Node *child = &arrayBase[startIndex];
-        if (child->type == zReader::ZRDR_NODE_ARRAY) {
+        int childType = child->type;
+        if (childType == zReader::ZRDR_NODE_ARRAY) {
             zReader::Node *result = zReader_FindChildRecursive(child, searchName, 1);
             if (result != 0) {
                 return result;
             }
         }
-
-        if (child->type == zReader::ZRDR_NODE_STRING &&
+        else if (childType == zReader::ZRDR_NODE_STRING &&
             strcmp(child->value.str, searchName) == 0) {
             return &child[1];
         }

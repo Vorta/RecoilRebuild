@@ -520,8 +520,9 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandleSnapshot::StopAllIfPlaying()
     zSndPlayHandleSnapshot *const snapshot = this;
     zSndPlayHandleSnapshotItem *const listHead = snapshot->listHead;
     zSndPlayHandleSnapshotItem *snapshotItem = listHead->next->next;
-    int hasItem = static_cast<unsigned char>(-(snapshotItem == listHead)) == 0;
-    if ((hasItem & result) != 0) {
+    int hasItem = static_cast<unsigned char>(snapshotItem == listHead) == 0;
+    // The byte mask keeps VC5's list-end compare as test dl,dl/test al,al.
+    if ((hasItem & 0xff) != 0) {
         do {
             switch (g_zSnd_ActiveBackend) {
             case 0: {
@@ -545,8 +546,8 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandleSnapshot::StopAllIfPlaying()
             }
 
             snapshotItem = snapshotItem->next;
-            hasItem = static_cast<unsigned char>(-(snapshotItem == snapshot->listHead)) == 0;
-        } while ((hasItem & result) != 0);
+            hasItem = static_cast<unsigned char>(snapshotItem == snapshot->listHead) == 0;
+        } while ((hasItem & 0xff) != 0);
     }
 
     return result;
@@ -608,6 +609,11 @@ RECOIL_FORCEINLINE zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(unsigned char 
 }
 
 // Reimplements 0x49fff0: zSndPlayHandleSnapshot::CreateFromActiveSamples
+// Modern MSVC /RTC traps the recovered uninitialized backendTag stack byte;
+// keep the retail source shape and disable that debug-only check here.
+#if defined(_MSC_VER)
+#pragma runtime_checks("", off)
+#endif
 RECOIL_NOINLINE zSndPlayHandleSnapshot *RECOIL_CDECL
 zSndPlayHandleSnapshot::CreateFromActiveSamples() {
     zSndPlayHandleSnapshotPayload payload = {0};
@@ -681,6 +687,9 @@ zSndPlayHandleSnapshot::CreateFromActiveSamples() {
 
     return snapshot;
 }
+#if defined(_MSC_VER)
+#pragma runtime_checks("", restore)
+#endif
 
 // Reimplements 0x4a0380: zSndPlayHandle::PlayWithDelta_A3D
 // (D:\Proj\GameZRecoil\zSound\zsnd_play.cpp)
@@ -781,13 +790,13 @@ zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta()
                             *(float *)&volumeAnchor->payload.volumeScaleRaw;
 
     zSndPlayHandleSnapshotItem *item = volumeAnchor->next;
-    int hasItem = item != snapshot->listHead;
+    int hasItem = static_cast<unsigned char>(-(item == snapshot->listHead)) == 0;
     if (hasItem != 0) {
         do {
             zSndPlayHandle::PlayWithDelta_BackendDispatch(item->payload.sourceSample,
                                                           item->payload.playHandle, 0, gainDelta);
             item = item->next;
-            hasItem = item != snapshot->listHead;
+            hasItem = static_cast<unsigned char>(-(item == snapshot->listHead)) == 0;
         } while (hasItem != 0);
     }
 
@@ -799,13 +808,15 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandleSnapshot::Destroy() {
     if (this != 0) {
         zSndPlayHandleSnapshotItem *const head = listHead;
         zSndPlayHandleSnapshotItem *item = head->next;
-        while (item != head) {
+        int hasItem = static_cast<unsigned char>(-(item == head)) == 0;
+        while (hasItem != 0) {
             zSndPlayHandleSnapshotItem *const node = item;
             item = item->next;
             node->prev->next = node->next;
             node->next->prev = node->prev;
             ::operator delete(node);
             --itemCount;
+            hasItem = static_cast<unsigned char>(-(item == head)) == 0;
         }
 
         ::operator delete(listHead);
@@ -818,6 +829,11 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandleSnapshot::Destroy() {
 }
 
 // Reimplements 0x49fda0: zSndPlayHandle::StopIfActive
+// Modern MSVC /RTC traps the recovered unsupported-backend return of the
+// uninitialized status stack slot; keep the retail shape for debug smokes.
+#if defined(_MSC_VER)
+#pragma runtime_checks("", off)
+#endif
 RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::StopIfActive() {
     zSndPlayHandle *playHandle = this;
     int status;
@@ -838,8 +854,8 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::StopIfActive() {
         g_zSndLastVoice = 0;
     }
 
-    switch (g_zSnd_ActiveBackend) {
-    case 0:
+    int activeBackend = g_zSnd_ActiveBackend;
+    if (activeBackend == 0) {
         buffer = (DirectSoundBuffer *)(playHandle->backendBuffer);
         if (buffer == 0) {
             return -1;
@@ -865,8 +881,14 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::StopIfActive() {
         }
 
         return error;
+    }
 
-    case 1:
+    --activeBackend;
+    if (activeBackend != 0) {
+        return status;
+    }
+
+    {
         source = (A3dSource *)(playHandle->backendBuffer);
         if (source == 0) {
             return -1;
@@ -878,11 +900,11 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::StopIfActive() {
         }
 
         return error;
-
-    default:
-        return status;
     }
 }
+#if defined(_MSC_VER)
+#pragma runtime_checks("", restore)
+#endif
 
 // Reimplements 0x49fec0: zSndSample::StopActiveVoicesIfPlaying
 RECOIL_NOINLINE int RECOIL_THISCALL zSndSample::StopActiveVoicesIfPlaying() {

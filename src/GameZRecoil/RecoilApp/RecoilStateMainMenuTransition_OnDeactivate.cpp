@@ -34,8 +34,8 @@ enum zSndCdAudioOption {
 
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
 
-static __forceinline void ApplyDeferredVideoMode(int targetMode,
-                                                 zVideoHalfResAdjustMode halfResMode) {
+static RECOIL_FORCEINLINE void ApplyDeferredVideoMode(int targetMode,
+                                                      zVideoHalfResAdjustMode halfResMode) {
     if (zVid::GetVideoModeIndexFromOptions() == targetMode) {
         return;
     }
@@ -73,18 +73,16 @@ void RECOIL_THISCALL RecoilStateMainMenuTransition::OnDeactivate() {
     if (m_mainMenuDialog != 0) {
         zVideo::RunPostprocessOnPrimaryBuffer();
 
-        HudUiMainMenuDialog *dialog = (HudUiMainMenuDialog *)(unsigned int)m_mainMenuDialog;
-        HudUiMainMenuDialog_Vtbl *dialogVtbl =
-            (HudUiMainMenuDialog_Vtbl *)(unsigned int)dialog->vftable;
-        dialogVtbl->SetEnabled(dialog, 0);
+        HudUiMainMenuDialogVirtual *dialog =
+            (HudUiMainMenuDialogVirtual *)(unsigned int)m_mainMenuDialog;
+        dialog->SetEnabled(0);
 
         ((HudUiDialogController *)(unsigned int)m_mainMenuDialog)->BlitOwnedSurfaceToPrimary();
         zVideo::Dispatch_UnlockPrimarySurfaceState();
 
-        dialog = (HudUiMainMenuDialog *)(unsigned int)m_mainMenuDialog;
+        dialog = (HudUiMainMenuDialogVirtual *)(unsigned int)m_mainMenuDialog;
         if (dialog != 0) {
-            dialogVtbl = (HudUiMainMenuDialog_Vtbl *)(unsigned int)dialog->vftable;
-            dialogVtbl->ScalarDeletingDtor(dialog, 1);
+            dialog->ScalarDeletingDestructor(1);
         }
 
         m_mainMenuDialog = 0;
@@ -95,8 +93,8 @@ void RECOIL_THISCALL RecoilStateMainMenuTransition::OnDeactivate() {
     }
 
     switch (m_deferredVideoModeIndex) {
-    case 2:
-        ApplyDeferredVideoMode(2, ZVIDEO_HALFRES_ADJUST_DISABLED);
+    case 5:
+        ApplyDeferredVideoMode(5, ZVIDEO_HALFRES_ADJUST_ENABLED);
         break;
     case 3:
         ApplyDeferredVideoMode(3, ZVIDEO_HALFRES_ADJUST_DISABLED);
@@ -104,8 +102,8 @@ void RECOIL_THISCALL RecoilStateMainMenuTransition::OnDeactivate() {
     case 4:
         ApplyDeferredVideoMode(4, ZVIDEO_HALFRES_ADJUST_ENABLED);
         break;
-    case 5:
-        ApplyDeferredVideoMode(5, ZVIDEO_HALFRES_ADJUST_ENABLED);
+    case 2:
+        ApplyDeferredVideoMode(2, ZVIDEO_HALFRES_ADJUST_DISABLED);
         break;
     case 6:
         ApplyDeferredVideoMode(6, ZVIDEO_HALFRES_ADJUST_ENABLED);
@@ -121,6 +119,9 @@ void RECOIL_THISCALL RecoilStateMainMenuTransition::OnDeactivate() {
 
     if (m_entryRoute != RECOIL_MAINMENU_ROUTE_FRONTEND) {
         zOpt::SetHudTypeForCurrentHwMode(previousHudType);
+    }
+
+    if (m_entryRoute != RECOIL_MAINMENU_ROUTE_FRONTEND) {
         HudUiMgr::TriggerCurrentLayoutOnActivated();
     }
 

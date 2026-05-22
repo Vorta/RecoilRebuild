@@ -11,17 +11,6 @@ template <typename T> struct ComReleaseOnExit {
     }
 };
 
-bool IsIidUnknown(const GUID *iid) {
-    const unsigned int * words = (const unsigned int *)(iid);
-    return words[0] == 0 && words[1] == 0 && words[2] == 0x000000c0 && words[3] == 0x46000000;
-}
-
-bool IsSameIid(const GUID *lhs, const GUID *rhs) {
-    const unsigned int * lhsWords = (const unsigned int *)(lhs);
-    const unsigned int * rhsWords = (const unsigned int *)(rhs);
-    return lhsWords[0] == rhsWords[0] && lhsWords[1] == rhsWords[1] && lhsWords[2] == rhsWords[2] &&
-           lhsWords[3] == rhsWords[3];
-}
 } // namespace
 
 // Reimplements 0x42db50: zCom::QueryInterfaceFromInterfaceMap
@@ -34,58 +23,54 @@ HRESULT WINAPI zCom::QueryInterfaceFromInterfaceMap(void *objectBase,
 
     *outInterface = 0;
 
-    int interfaceOffset;
-    if (IsIidUnknown(requestedIid)) {
-        interfaceOffset = interfaceMap->interfaceOffset;
-    } else {
-        unsigned int resolverRaw = interfaceMap->resolverRaw;
-        if (resolverRaw == ZCOM_INTERFACE_MAP_END) {
-            return E_NOINTERFACE;
-        }
-
-        const InterfaceMapEntry *currentEntry = interfaceMap;
-        while (true) {
-            const GUID *entryIid = currentEntry->iid;
-            const bool blindEntry = entryIid == 0;
-            if (blindEntry || IsSameIid(entryIid, requestedIid)) {
-                if (resolverRaw == ZCOM_INTERFACE_MAP_DIRECT) {
-                    interfaceOffset = currentEntry->interfaceOffset;
-                    break;
-                }
-
-                QueryInterfaceResolver resolver = (QueryInterfaceResolver)(resolverRaw);
-                const HRESULT result =
-                    resolver(objectBase, requestedIid, outInterface, currentEntry->interfaceOffset);
-                if (result == S_OK) {
-                    return result;
-                }
-
-                if (!blindEntry && result < 0) {
-                    return result;
-                }
-            }
-
-            ++currentEntry;
-            resolverRaw = currentEntry->resolverRaw;
-            if (resolverRaw == ZCOM_INTERFACE_MAP_END) {
-                return E_NOINTERFACE;
-            }
-        }
+    const unsigned int *const requestedWords = (const unsigned int *)(requestedIid);
+    unsigned int resolverRaw;
+    const InterfaceMapEntry *currentEntry;
+    if (requestedWords[0] == 0 && requestedWords[1] == 0 && requestedWords[2] == 0x000000c0 &&
+        requestedWords[3] == 0x46000000) {
+        IUnknown *const resolvedInterface = (IUnknown *)((DWORD)objectBase + interfaceMap->interfaceOffset);
+        resolvedInterface->AddRef();
+        *outInterface = resolvedInterface;
+        return S_OK;
     }
 
-    IUnknown *const resolvedInterface = (IUnknown *)(static_cast<unsigned char *>(objectBase) + interfaceOffset);
-    resolvedInterface->AddRef();
-    *outInterface = resolvedInterface;
-    return S_OK;
+    currentEntry = interfaceMap;
+    while ((resolverRaw = currentEntry->resolverRaw) != ZCOM_INTERFACE_MAP_END) {
+        const GUID *entryIid = currentEntry->iid;
+        int blindEntry = entryIid == 0;
+        const unsigned int *const entryWords = (const unsigned int *)(entryIid);
+        if (blindEntry != 0 ||
+            (entryWords[0] == requestedWords[0] && entryWords[1] == requestedWords[1] &&
+             entryWords[2] == requestedWords[2] && entryWords[3] == requestedWords[3])) {
+            if (resolverRaw == ZCOM_INTERFACE_MAP_DIRECT) {
+                IUnknown *const resolvedInterface =
+                    (IUnknown *)((DWORD)objectBase + currentEntry->interfaceOffset);
+                resolvedInterface->AddRef();
+                *outInterface = resolvedInterface;
+                return S_OK;
+            }
+
+            QueryInterfaceResolver resolver = (QueryInterfaceResolver)(resolverRaw);
+            const HRESULT result =
+                resolver(objectBase, requestedIid, outInterface, currentEntry->interfaceOffset);
+            if (result == S_OK || (!blindEntry && result < 0)) {
+                return result;
+            }
+        }
+
+        ++currentEntry;
+    }
+
+    return E_NOINTERFACE;
 }
 
 // Reimplements 0x42dc30: zCom::ConnectionPointContainer_Advise
-HRESULT WINAPI zCom::ConnectionPointContainer_Advise(IUnknown *source, REFIID connectionPointIid,
-                                                     IUnknown *sink, DWORD *cookie) {
+HRESULT WINAPI zCom::ConnectionPointContainer_Advise(IUnknown *source, IUnknown *sink,
+                                                     REFIID connectionPointIid, DWORD *cookie) {
     ComReleaseOnExit<IConnectionPointContainer> cpc = {0};
     ComReleaseOnExit<IConnectionPoint> cp = {0};
 
-    HRESULT result = source->QueryInterface(__uuidof(IConnectionPointContainer),
+    HRESULT result = source->QueryInterface(IID_IConnectionPointContainer,
                                             (void **)(&cpc.ptr));
     if (result >= 0) {
         result = cpc.ptr->FindConnectionPoint(connectionPointIid, &cp.ptr);
@@ -103,7 +88,7 @@ HRESULT WINAPI zCom::ConnectionPointContainer_Unadvise(IUnknown *source, REFIID 
     ComReleaseOnExit<IConnectionPointContainer> cpc = {0};
     ComReleaseOnExit<IConnectionPoint> cp = {0};
 
-    HRESULT result = source->QueryInterface(__uuidof(IConnectionPointContainer),
+    HRESULT result = source->QueryInterface(IID_IConnectionPointContainer,
                                             (void **)(&cpc.ptr));
     if (result >= 0) {
         result = cpc.ptr->FindConnectionPoint(connectionPointIid, &cp.ptr);
