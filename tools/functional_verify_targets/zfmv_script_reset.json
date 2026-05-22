@@ -1,0 +1,15 @@
+{
+  "name": "zfmv_script_reset",
+  "description": "zFMV_Script::Reset either rewinds the current action or destroys the action list and clears list state.",
+  "address": "0x462660",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_script_reset_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x462660",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare fails with 35 unmasked mismatches after trimming 9 trailing VC NOPs; Binary Ninja body is 71 bytes and the VC object body is 80 bytes.",
+    "A source-equivalent destroy-path fallthrough rewrite improved the VC5 mismatch count from 56 to 35; remaining drift is dominated by VC5 compiling the typed vtable scalar-deleting call as a stack-argument call because the VC5-safe RECOIL_THISCALL macro is empty for function-pointer fields.",
+    "The native smoke covers Reset(0) preserving the list and setting current=head, plus Reset(1) deleting every action with flags=1 and clearing head/tail/current."
+  ]
+}

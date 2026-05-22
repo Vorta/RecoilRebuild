@@ -255,8 +255,9 @@ extern "C" int zcom_connection_point_container_advise_smoke(void) {
     DWORD cookie = 0;
 
     HRESULT result =
-        zCom::ConnectionPointContainer_Advise(reinterpret_cast<IUnknown *>(&source), kTestIid,
-                                              reinterpret_cast<IUnknown *>(&sink), &cookie);
+        zCom::ConnectionPointContainer_Advise(reinterpret_cast<IUnknown *>(&source),
+                                              reinterpret_cast<IUnknown *>(&sink), kTestIid,
+                                              &cookie);
 
     if (result != S_OK || cookie != 0x12345678) {
         return 1;

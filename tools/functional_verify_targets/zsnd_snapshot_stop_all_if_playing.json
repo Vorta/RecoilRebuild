@@ -6,10 +6,11 @@
   "smoke_tests": [
     "zsnd_snapshot_stop_all_if_playing_smoke"
   ],
-  "vc6_attempt": "python tools/recoil_vc6_verify.py zsnd_snapshot_stop_all_if_playing",
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zsnd_snapshot_stop_all_if_playing_vc5",
   "known_limits": [
-    "VC6 full-zsnd_play.cpp COFF byte compare fails with 27 unmasked mismatches (BN 134 bytes vs VC6 144 bytes, 10 trailing VC6 NOPs trimmed).",
-    "The backend dispatch, stack GetStatus scratch at [esp+0xc], vtable call offsets, and StopIfActive call shape match after relocation masking; remaining drift is limited to the branchless list sentinel predicates.",
-    "VC5SP3 full-zsnd_play.cpp probe is worse at 100 unmasked mismatches."
+    "Superseded by exact binary-safe verification: VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare now passes with 0 unmasked mismatches after 8 relocation bytes masked; Binary Ninja body is 134 bytes and the VC object body is 144 bytes with 10 trailing VC NOPs trimmed.",
+    "The source keeps the recovered byte-mask list sentinel spelling so VC5 emits the retail branchless compare sequence and self-tests (test dl,dl / test al,al), while result remains in ebx for the backend status bit tests and return value.",
+    "The older VC6 /O2 /Oy /Ob0 manifest now fails with 100 unmasked mismatches after the VC5 sentinel improvement and is no longer the closest compiler profile.",
+    "Rejected sentinel predicate spellings: plain pointer inequality, testing hasItem directly, explicit byte-self tests, and hasItem & hasItem all preserve behavior but let VC fold or reshape the branchless sentinel idiom, regressing the VC5SP3 byte compare."
   ]
 }

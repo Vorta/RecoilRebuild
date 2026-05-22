@@ -995,13 +995,14 @@ def compare_bn_to_obj(
     symbol: str,
     out_dir: Path,
     bridge_url: str,
+    bridge: BinaryNinjaBridge | None = None,
     cod_path: Path | None = None,
     trim_padding_nops: bool = True,
     bn_byte_length: int | None = None,
 ) -> ObjectByteComparison:
     address = normalize_address(address)
     safe_address = address[2:]
-    bridge = BinaryNinjaBridge(bridge_url)
+    bridge = bridge or BinaryNinjaBridge(bridge_url)
 
     bn_asm = bridge.assembly(address)
     bn_instructions = parse_assembly(bn_asm, source="bn")
@@ -1083,10 +1084,11 @@ def compare_bn_to_cod(
     symbol: str | None,
     out_dir: Path,
     bridge_url: str,
+    bridge: BinaryNinjaBridge | None = None,
 ) -> AssemblyComparison:
     address = normalize_address(address)
     safe_address = address[2:]
-    bridge = BinaryNinjaBridge(bridge_url)
+    bridge = bridge or BinaryNinjaBridge(bridge_url)
 
     bn_asm = bridge.assembly(address)
     bn_instructions = parse_assembly(bn_asm, source="bn")
@@ -1168,7 +1170,7 @@ def main(argv: list[str] | None = None) -> int:
         if comparison.text_diff_path is not None:
             print(f"Wrote {comparison.text_diff_path}")
         if comparison.mismatch_count:
-            print("Object bytes have unmasked mismatches; review the byte diff before marking Binary-safe verified.")
+            print("Object bytes have unmasked mismatches; review the byte diff before marking Binary-safe.")
             return 1 if args.fail_on_diff else 0
         print("Object bytes match after masking COFF relocation fields.")
         return 0
@@ -1216,12 +1218,12 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Wrote {comparison.classified_path}")
 
     if comparison.mismatch_count:
-        print("Assembly has instruction mismatches; review the classified diff before marking Binary-safe verified.")
+        print("Assembly has instruction mismatches; review the classified diff before marking Binary-safe.")
         return 1 if args.fail_on_diff else 0
     if comparison.diff_count:
         print(
             "No instruction mismatches found; normalized assembly differs by spelling or "
-            "relocation-sensitive items. Review the classified diff before marking Binary-safe verified."
+            "relocation-sensitive items. Review the classified diff before marking Binary-safe."
         )
         return 1 if args.fail_on_diff else 0
     print("Normalized assembly matches.")

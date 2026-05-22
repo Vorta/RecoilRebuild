@@ -1,0 +1,39 @@
+{
+  "name": "zreader_load_node_from_path",
+  "description": "zReader node loading helpers used by zrd callers.",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_filename": "zreader_load.cpp",
+  "source_from": "src/GameZRecoil/zReader/zreader_load.cpp",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zReader/zreader_load.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x48cda0",
+      "symbol": "@zReader_AllocateNode@8",
+      "name": "zReader_AllocateNode"
+    },
+    {
+      "address": "0x48cdc0",
+      "symbol": "?LoadNodeFromPath@zReader@@YIPAUNode@1@PBD0H@Z",
+      "name": "zReader::LoadNodeFromPath"
+    },
+    {
+      "address": "0x48d080",
+      "symbol": "@zReader_ReadNode@8",
+      "name": "zReader_ReadNode"
+    },
+    {
+      "address": "0x48d1c0",
+      "symbol": "@zReader_OpenFileFromMountedArchives@4",
+      "name": "zReader_OpenFileFromMountedArchives"
+    }
+  ]
+}

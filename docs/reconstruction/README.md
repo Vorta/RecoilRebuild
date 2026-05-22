@@ -53,6 +53,9 @@ Current durable reconstruction notes:
   for starting reconstruction agents.
 - `compiler_linker_provenance.md` records the compiler/linker/provider evidence
   policy and the audit command that guards it.
+- `original_class_candidates.md` is a generated candidate map for likely
+  original class-like systems, records, vtables/function tables, and namespace
+  boundaries.
 - `provider_abi_notes.md` summarizes workspace-level provider and ABI
   assumptions.
 - `source_file_map.md` maps recovered original source paths to current repo

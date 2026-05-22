@@ -49,9 +49,7 @@ def load_manifest(path: Path) -> FunctionalTarget:
         raise ValueError(f"{path}: missing source_from")
     if not smoke_tests:
         raise ValueError(f"{path}: smoke_tests must list at least one native smoke")
-    if not vc6_attempt:
-        raise ValueError(f"{path}: missing vc6_attempt")
-    if not vc6_attempt.startswith("python tools/recoil_vc6_verify.py"):
+    if vc6_attempt and not vc6_attempt.startswith("python tools/recoil_vc6_verify.py"):
         raise ValueError(f"{path}: vc6_attempt must begin with 'python tools/recoil_vc6_verify.py'")
     if not known_limits:
         raise ValueError(f"{path}: known_limits must list at least one binary-safety limit")
@@ -123,7 +121,7 @@ def run_target(
     print(f"Address: {target.address}")
     print(f"Source: {target.source_from}")
     print(f"Manifest: {target.path}")
-    print(f"VC byte attempt: {target.vc6_attempt}")
+    print(f"VC byte attempt: {target.vc6_attempt or 'not recorded'}")
     if target.known_limits:
         print("Known binary-safety limits:")
         for limit in target.known_limits:
@@ -159,11 +157,13 @@ def run_target(
 
     print()
     print("Functional verification passed.")
+    evidence = f"functional target {target.name} passed"
+    if target.vc6_attempt:
+        evidence += f"; reviewed {target.vc6_attempt}"
     print(
         "marker_command: "
         f"python tools/recoil_plan_cli.py set {target.address} functional ✅ "
-        f"--file {target.name} --evidence \"functional target {target.name} passed; "
-        f"reviewed {target.vc6_attempt}\""
+        f"--target {target.name} --evidence \"{evidence}\""
     )
     return 0
 

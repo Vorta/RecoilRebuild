@@ -3,7 +3,7 @@
   "description": "Recoil main-menu transition resume path: restore dialog activity, invalidate, update, unlock primary surface, and present.",
   "source_filename": "RecoilStateMainMenuTransition_OnResume.cpp",
   "source_from": "src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnResume.cpp",
-  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
   "compiler_flags": [
     "/nologo",
     "/TP",

@@ -1,7 +1,7 @@
 {
   "name": "zsnd_report_a3d_error",
   "description": "zSnd A3D HRESULT reporting helper.",
-  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
   "source_filename": "zsnd_init.cpp",
   "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
   "compiler_flags": [

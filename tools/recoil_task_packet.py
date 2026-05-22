@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import sys
 
+from recoil_binja import create_shared_budget_file, env_with_shared_budget
 from recoil_claim import (
     DEFAULT_CLAIMS_DIR,
     claim_addresses,
@@ -12,11 +13,27 @@ from recoil_claim import (
     print_claim,
     read_claim,
 )
-from recoil_plan import FIELD_LABELS, PlanDocument, PlanEntry, blocker_field, normalize_address, status_summary
+from recoil_plan import (
+    FIELD_LABELS,
+    FUNCTIONAL_LANE,
+    LANE_CHOICES,
+    PlanDocument,
+    PlanEntry,
+    blocker_field,
+    normalize_address,
+    normalize_lane,
+    status_summary,
+)
 from recoil_tooling import REPO_ROOT, configure_stdio, hidden_creation_flags
 
 
-def run_step(label: str, command: list[str], *, enabled: bool = True) -> int:
+def run_step(
+    label: str,
+    command: list[str],
+    *,
+    enabled: bool = True,
+    env: dict[str, str] | None = None,
+) -> int:
     print()
     print(f"## {label}")
     print("command: " + " ".join(command))
@@ -26,6 +43,7 @@ def run_step(label: str, command: list[str], *, enabled: bool = True) -> int:
     completed = subprocess.run(
         command,
         cwd=REPO_ROOT,
+        env=env,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -46,7 +64,7 @@ def select_entry(args: argparse.Namespace, doc: PlanDocument) -> tuple[PlanEntry
             raise ValueError(f"Address not found in plan: {normalized}")
         return entry, False
     if args.claim_next:
-        entry = first_unclaimed_unfinished(doc, Path(args.claims_dir))
+        entry = first_unclaimed_unfinished(doc, Path(args.claims_dir), lane=args.lane)
         if entry is None:
             raise ValueError("No unclaimed unfinished plan entries found.")
         return entry, True
@@ -57,6 +75,7 @@ def select_entry(args: argparse.Namespace, doc: PlanDocument) -> tuple[PlanEntry
 
 
 def print_header(entry: PlanEntry, *, lane: str) -> None:
+    lane = normalize_lane(lane)
     blocker = blocker_field(entry, lane=lane) or "none"
     print("# Recoil Task Packet")
     print()
@@ -64,7 +83,7 @@ def print_header(entry: PlanEntry, *, lane: str) -> None:
     print(f"Milestone: {entry.milestone}")
     print(f"Name: {entry.reimplemented_name or entry.reconstructed_name or 'pending'}")
     print(f"File: {entry.reimplemented_file or 'pending'}")
-    print(f"Plan status: {status_summary(entry, include_functional=lane == 'progress')}")
+    print(f"Plan status: {status_summary(entry)}")
     print(f"Lane: {lane}")
     print(f"Next blocker: {blocker} ({FIELD_LABELS.get(blocker, blocker)})")
 
@@ -104,7 +123,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--owner", default="", help="Claim owner for --claim-next.")
     parser.add_argument("--ttl-hours", type=float, default=12.0)
     parser.add_argument("--reason", default="")
-    parser.add_argument("--lane", choices=["strict", "progress"], default="strict")
+    parser.add_argument(
+        "--lane",
+        choices=LANE_CHOICES,
+        default=FUNCTIONAL_LANE,
+        help="functional stops at Functional-equivalent; binary also requires Binary-safe.",
+    )
     parser.add_argument("--depth", type=int, default=1)
     parser.add_argument("--no-binja", action="store_true", help="Skip Binary Ninja-dependent checks.")
     parser.add_argument("--skip-doctor", action="store_true", help="Skip the quick doctor preflight.")
@@ -118,40 +142,50 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.claim_next and not args.owner:
             raise ValueError("--claim-next requires --owner")
+        args.lane = normalize_lane(args.lane)
         doc = PlanDocument.load(Path(args.plan))
         entry, should_claim = select_entry(args, doc)
         print_header(entry, lane=args.lane)
         print_claim_state(entry, args, should_claim=should_claim)
+        budget_file = create_shared_budget_file() if not args.no_binja else None
+        binja_env = env_with_shared_budget(budget_file) if budget_file is not None else None
 
-        doctor_cmd = [sys.executable, "tools/recoil_doctor.py", "--quick"]
-        if not args.no_binja:
-            doctor_cmd.append("--binja")
-        run_step("Doctor", doctor_cmd, enabled=not args.skip_doctor)
+        try:
+            doctor_cmd = [sys.executable, "tools/recoil_doctor.py", "--quick"]
+            if not args.no_binja:
+                doctor_cmd.append("--binja")
+            run_step("Doctor", doctor_cmd, enabled=not args.skip_doctor, env=binja_env)
 
-        status_cmd = [
-            sys.executable,
-            "tools/recoil_status.py",
-            entry.address,
-            "--lane",
-            args.lane,
-            "--depth",
-            str(args.depth),
-        ]
-        if args.no_binja:
-            status_cmd.append("--no-frontier")
-        run_step("Status", status_cmd)
-
-        run_step(
-            "Source Map",
-            [
+            status_cmd = [
                 sys.executable,
-                "tools/recoil_source_file_map.py",
-                "--check",
-                "docs/reconstruction/source_file_map.md",
-            ],
-        )
-        run_step("Functional Coverage", [sys.executable, "tools/recoil_functional_verify.py", "--list"])
-        run_step("VC Coverage", [sys.executable, "tools/recoil_vc6_verify.py", "--explain-missing", entry.address])
+                "tools/recoil_status.py",
+                entry.address,
+                "--lane",
+                args.lane,
+                "--depth",
+                str(args.depth),
+            ]
+            if args.no_binja:
+                status_cmd.append("--no-frontier")
+            run_step("Status", status_cmd, env=binja_env)
+
+            run_step(
+                "Source Map",
+                [
+                    sys.executable,
+                    "tools/recoil_source_file_map.py",
+                    "--check",
+                    "docs/reconstruction/source_file_map.md",
+                ],
+            )
+            run_step("Functional Coverage", [sys.executable, "tools/recoil_functional_verify.py", "--list"])
+            run_step("VC Coverage", [sys.executable, "tools/recoil_vc6_verify.py", "--explain-missing", entry.address])
+        finally:
+            if budget_file is not None:
+                try:
+                    budget_file.unlink()
+                except FileNotFoundError:
+                    pass
 
         print()
         print("## Next Commands")
@@ -166,4 +200,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

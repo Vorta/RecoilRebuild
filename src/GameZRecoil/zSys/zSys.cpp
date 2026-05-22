@@ -139,11 +139,15 @@ RECOIL_NOINLINE int RECOIL_CDECL zSys::CheckCpuSignatureMask() {
     return (cpuInfo[0] & 0x630) == 0x630 ? 1 : 0;
 }
 
+#if !(defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM))
+// Reimplements 0x4b33f0: zSys::HasCpuidSupport
+// (D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp)
 RECOIL_NOINLINE int RECOIL_CDECL zSys::HasCpuidSupport() {
     return 1;
 }
 
 // Reimplements 0x4b3640: zSys::ReadCpuidVendorAndFamily
+// (D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp)
 RECOIL_NOINLINE int RECOIL_CDECL zSys::ReadCpuidVendorAndFamily() {
     int cpuInfo[4];
     __cpuid(cpuInfo, 0);
@@ -164,6 +168,7 @@ RECOIL_NOINLINE int RECOIL_CDECL zSys::ReadCpuidVendorAndFamily() {
 
     return family;
 }
+#endif
 
 // Reimplements 0x4b3480: zSys::ReadCpuidFeatureFlags
 RECOIL_NOINLINE unsigned int RECOIL_CDECL zSys::ReadCpuidFeatureFlags() {

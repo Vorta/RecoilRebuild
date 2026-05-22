@@ -1,0 +1,26 @@
+{
+  "name": "recoil_app_state_queue_grow_and_center_chunk_base_list",
+  "description": "RecoilApp state-queue chunk-base-list grow and center helper.",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "source_filename": "RecoilApp.cpp",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x443690",
+      "symbol": "?GrowAndCenterChunkBaseList@RecoilApp_StateQueue@@QAEIH@Z",
+      "name": "RecoilApp_StateQueue::GrowAndCenterChunkBaseList"
+    }
+  ]
+}

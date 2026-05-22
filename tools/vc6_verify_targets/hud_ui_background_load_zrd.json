@@ -1,0 +1,32 @@
+{
+  "name": "hud_ui_background_load_zrd",
+  "description": "HudUiBackground ZRD loading entry points.",
+  "compiler_profile": "vc6_o2_ob1_gx_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4b98d0",
+      "symbol": "?LoadFromZrd@HudUiBackground@@QAEPAUNode@zReader@@PBD0H@Z",
+      "name": "HudUiBackground::LoadFromZrd"
+    },
+    {
+      "address": "0x4b9900",
+      "symbol": "?LoadZrdAndSection@HudUiBackground@@QAEPAUNode@zReader@@PAU23@PBDH@Z",
+      "name": "HudUiBackground::LoadZrdAndSection"
+    }
+  ]
+}

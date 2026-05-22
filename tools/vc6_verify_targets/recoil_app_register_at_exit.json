@@ -1,19 +1,8 @@
 {
   "name": "recoil_app_register_at_exit",
-  "description": "RecoilApp atexit registration helper.",
+  "description": "RecoilApp static initialization and atexit registration helpers.",
+  "compiler_profile": "vc5_o2_ob0_facs",
   "source_filename": "RecoilApp.cpp",
-  "compiler_flags": [
-    "/nologo",
-    "/TP",
-    "/W3",
-    "/G5",
-    "/O2",
-    "/Ob0",
-    "/Zp4",
-    "/FAcs",
-    "/I",
-    "."
-  ],
   "include_dirs": [
     "src",
     "src/native/include",
@@ -28,9 +17,34 @@
   ],
   "functions": [
     {
+      "address": "0x42de20",
+      "symbol": "?StaticInitAndRegisterAtExit@RecoilApp@@SAXXZ",
+      "name": "RecoilApp::StaticInitAndRegisterAtExit"
+    },
+    {
+      "address": "0x42de30",
+      "symbol": "?StaticInit@RecoilApp@@SAPAU1@XZ",
+      "name": "RecoilApp::StaticInit"
+    },
+    {
       "address": "0x42de40",
       "symbol": "?RegisterAtExit@RecoilApp@@SAXXZ",
       "name": "RecoilApp::RegisterAtExit"
+    },
+    {
+      "address": "0x42de50",
+      "symbol": "?AtExitDestructor@RecoilApp@@SAXXZ",
+      "name": "RecoilApp::AtExitDestructor"
+    },
+    {
+      "address": "0x42de60",
+      "symbol": "?Destructor@RecoilApp@@QAEXXZ",
+      "name": "RecoilApp::Destructor"
+    },
+    {
+      "address": "0x4428b0",
+      "symbol": "?MfcOleModuleDestructor@RecoilApp@@QAEXXZ",
+      "name": "RecoilApp::MfcOleModuleDestructor"
     }
   ],
   "source_from": "src/Battlesport/RecoilApp.cpp"

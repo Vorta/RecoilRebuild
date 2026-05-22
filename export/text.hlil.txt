@@ -6554,7 +6554,7 @@
 }
 
 // Original file: GameZRecoil/zopt.cpp
-0x4083d0 void __fastcall zOpt::ViewRectSection_SetPosition(struct zOpt_ViewRectSection* self, int32_t x, int32_t y)
+0x4083d0 void __fastcall zOpt_ViewRectSection::SetPosition(struct zOpt_ViewRectSection* self, int32_t x, int32_t y)
 {
     int32_t width = self->width
     self->x = x
@@ -6665,7 +6665,7 @@
 0x408530 void __fastcall zOpt::RenderSection_SetPosition(int32_t x, int32_t y)
 {
     struct zOpt_ViewRectSection* value = g_zOpt_RenderSectionOption->value
-    zOpt::ViewRectSection_SetPosition(value, x, y)
+    zOpt_ViewRectSection::SetPosition(value, x, y)
     struct zClass_Node* m_targetHandle = value->m_targetHandle
 
     if (m_targetHandle != 0)
@@ -6707,7 +6707,7 @@
 0x4085e0 void __fastcall zOpt::DisplaySection_SetPosition(int32_t x, int32_t y)
 {
     struct zOpt_ViewRectSection* value = g_zOpt_DisplaySectionOption->value
-    zOpt::ViewRectSection_SetPosition(value, x, y)
+    zOpt_ViewRectSection::SetPosition(value, x, y)
     struct zClass_Node* m_targetHandle = value->m_targetHandle
 
     if (m_targetHandle != 0)
@@ -6795,7 +6795,7 @@
 // Original file: GameZRecoil/zopt.cpp
 0x408700 void __fastcall zOpt::WindowSection_SetPosition(int32_t x, int32_t y)
 {
-    zOpt::ViewRectSection_SetPosition(g_zOpt_WindowSectionOption->value, x, y)
+    zOpt_ViewRectSection::SetPosition(g_zOpt_WindowSectionOption->value, x, y)
 }
 
 // Likely source: zVid.cpp. Applies one of the persisted shell video-mode presets by updating ZOPT_VIDEO_MODE and the render/window/display option sections, including the replicate flag for half-resolution software modes.
@@ -10011,7 +10011,7 @@
 // Source: HudOptionsDialog.cpp
 // Applies the selected full-HUD toggle as the current hardware-mode HUD type, queues exit from the options state, then chains to HudUiZrdWidget::OnActivate.
 // BN limitation: the setne/inc HUD-type computation remains rendered as an ecx.b byte write.
-0x40c6e0 void __thiscall HudUiOptionsPanel_BackButton::OnActivate(struct HudUiOptionsPanelBackButton* self)
+0x40c6e0 void __thiscall HudUiOptionsPanelBackButton::OnActivate(struct HudUiOptionsPanelBackButton* self)
 {
     int32_t ecx
     ecx.b = self->owner->fullHudToggle.checked != 0
@@ -29348,14 +29348,14 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    int32_t __saved_esi
-    int32_t* esp = &__saved_esi
+    struct CString __saved_esi
+    struct CString* esp = &__saved_esi
 
     if ((node->flags & 0x200000) != 0)
-        char* callbackContext = node->callbackContext
+        struct CString callbackContext = node->callbackContext
 
-        if ((callbackContext[0x28] & 2) != 0)
-            char* callbackContext_1 = callbackContext
+        if ((*(callbackContext + 0x28) & 2) != 0)
+            struct CString callbackContext_1 = callbackContext
             struct CString _String_1
             CString::CString(&_String_1, callbackContext_1)
             int32_t var_4_1 = 0
@@ -29385,8 +29385,8 @@
             int32_t var_8_1 = 0xffffffff
             CString::~CString(&__saved_esi)
 
-    fsbase->NtTib.ExceptionList = esp[3]
-    *esp
+    fsbase->NtTib.ExceptionList = esp->__offset(0xc).d
+    esp->m_pchData
     return 0
 
     // [comments not attached to rendered lines]
@@ -50108,7 +50108,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    int32_t __saved_esi
+    struct CString __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -50175,7 +50175,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    int32_t __saved_esi
+    struct CString __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -50904,7 +50904,7 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CWnd* var_13c = nullptr
+    struct CString var_13c = 0
     struct WestwoodOnlineUpgradeConfigDialog configDialog
     WestwoodOnlineUpgradeConfigDialog::Constructor(&configDialog, var_13c)
     int32_t var_4 = 0
@@ -50940,17 +50940,17 @@
     // GetSelectedProfileValues returns void and fills outPlayerName/outConnectString/selectedProfileConnectStringMode by pointer. HLIL's ecx_3 return capture is a stack-temp artifact.
     char* outPlayerName
     char* outConnectString
-    struct CWnd* ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
+    struct CString ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
     char* outPlayerName_1 = outPlayerName
     // BN models the stack CString temporary slot as var_13c/ecx_*; assembly is reserving and constructing CString temporaries for the two selected-profile setter calls.
     var_13c = ecx_3
-    struct CWnd** var_130 = &var_13c
+    struct CString* var_130 = &var_13c
     // Constructs a temporary CString from outPlayerName for SetSelectedProfilePlayerName; this is not a CWnd* var_13c semantic local.
     CString::CString(&var_13c, outPlayerName_1)
-    struct CWnd* ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
+    struct CString ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
     char* outConnectString_1 = outConnectString
     var_13c = ecx_6
-    struct CWnd** var_130_1 = &var_13c
+    struct CString* var_130_1 = &var_13c
     // Constructs a temporary CString from outConnectString for SetSelectedProfileConnectString; this reuses the caller's transient stack argument slot.
     CString::CString(&var_13c, outConnectString_1)
     WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString(g_pWestwoodOnlineUpgradeDialog, var_13c)
@@ -93123,7 +93123,7 @@
                 i += 1
             while (i s< self->m_commandCount)
 
-        zInput::BindMapContext_RebuildLookupIndices(self)
+        zInput_BindMapContext::RebuildLookupIndices(self)
 
     return self
 
@@ -93135,7 +93135,7 @@
 }
 
 // Likely source: zinput.cpp - Frees the bind-map context's owned callback, label, and packed-binding buffers, then nulls those fields.
-0x4707a0 void __thiscall zInput::BindMapContext_FreeAllBuffers(struct zInput_BindMapContext* self)
+0x4707a0 void __thiscall zInput_BindMapContext::FreeAllBuffers(struct zInput_BindMapContext* self)
 {
     zInputCommandCallbackFn* m_commandCallbacks = self->m_commandCallbacks
 
@@ -93170,7 +93170,7 @@
 }
 
 // Likely source: zinput.cpp - Clears and rebuilds key, joystick, and mouse reverse-lookup tables from packed bindings. BN renders the paired primary/secondary clear loop as pointer backtracking, but assembly shows a simple parallel zero loop over both arrays.
-0x470820 void __thiscall zInput::BindMapContext_RebuildLookupIndices(struct zInput_BindMapContext* self)
+0x470820 void __thiscall zInput_BindMapContext::RebuildLookupIndices(struct zInput_BindMapContext* self)
 {
     int32_t i_1 = 0x7de
     int32_t (* eax)[0x7de] = &self->m_secondaryKeyToCommand
@@ -93235,7 +93235,7 @@
 }
 
 // Likely source: zinput.cpp - Frees callback and label buffers, then nulls the borrowed packed-binding pointer without freeing it.
-0x470960 void __thiscall zInput::BindMapContext_FreeNonOwnedBuffers(struct zInput_BindMapContext* self)
+0x470960 void __thiscall zInput_BindMapContext::FreeNonOwnedBuffers(struct zInput_BindMapContext* self)
 {
     zInputCommandCallbackFn* m_commandCallbacks = self->m_commandCallbacks
 
@@ -93277,7 +93277,7 @@
             self->m_commandCallbacks[i - 1] = 0
         while (i s< self->m_commandCount)
 
-    zInput::BindMapContext_RebuildLookupIndices(self)
+    zInput_BindMapContext::RebuildLookupIndices(self)
 }
 
 // Likely original file: D:\Proj\GameZRecoil\zInput\zinput.cpp. Packs a bind code as primary[0:11] | secondary[11:22] | joy[22:26] | mouse[26:28], masking every field before packing.
@@ -93287,19 +93287,19 @@
 }
 
 // Source: D:\Proj\GameZRecoil\zInput\zinput.cpp -- zInput_BindMapContext_GetPrimaryKeyboardKey. Returns bits 0..10 of m_packedBindings[commandIndex] as the primary DIK key code.
-0x470a40 int32_t __thiscall zInput::BindMapContext_GetPrimaryKeyboardKey(struct zInput_BindMapContext* self, int32_t commandIndex)
+0x470a40 int32_t __thiscall zInput_BindMapContext::GetPrimaryKeyboardKey(struct zInput_BindMapContext* self, int32_t commandIndex)
 {
     return self->m_packedBindings[commandIndex] & 0x7ff
 }
 
 // Source: D:\Proj\GameZRecoil\zInput\zinput.cpp -- zInput_BindMapContext_GetSecondaryKeyboardKey. Returns bits 11..21 of m_packedBindings[commandIndex] as the secondary DIK key code.
-0x470a60 int32_t __thiscall zInput::BindMapContext_GetSecondaryKeyboardKey(struct zInput_BindMapContext* self, int32_t commandIndex)
+0x470a60 int32_t __thiscall zInput_BindMapContext::GetSecondaryKeyboardKey(struct zInput_BindMapContext* self, int32_t commandIndex)
 {
     return self->m_packedBindings[commandIndex] u>> 0xb & 0x7ff
 }
 
 // Returns the joystick button slot for commandIndex (bits 22..25 of m_packedBindings[commandIndex]). Likely source: zinput.cpp.
-0x470a80 int32_t __thiscall zInput::BindMapContext_GetJoystickButtonSlot(struct zInput_BindMapContext* self, int32_t commandIndex)
+0x470a80 int32_t __thiscall zInput_BindMapContext::GetJoystickButtonSlot(struct zInput_BindMapContext* self, int32_t commandIndex)
 {
     return self->m_packedBindings[commandIndex] u>> 0x16 & 0xf
 }
@@ -93311,7 +93311,7 @@
 }
 
 // Source: D:\Proj\GameZRecoil\zInput\zinput.cpp -- zInput_BindMapContext_GetCommandByPrimaryKey. Returns m_primaryKeyToCommand[keyboardKey].
-0x470ac0 int32_t __thiscall zInput::BindMapContext_GetCommandByPrimaryKey(struct zInput_BindMapContext* self, int32_t keyboardKey)
+0x470ac0 int32_t __thiscall zInput_BindMapContext::GetCommandByPrimaryKey(struct zInput_BindMapContext* self, int32_t keyboardKey)
 {
     return self->m_primaryKeyToCommand[keyboardKey]
 }
@@ -93325,7 +93325,7 @@
 // Source: D:\Proj\GameZRecoil\zInput\zinput.cpp -- zInput_BindMapContext_GetCommandByAnyKeyboardKey. Returns the primary-key command for keyboardKey, or the secondary-key command if no primary binding matches.
 0x470ae0 int32_t __thiscall zInput_BindMapContext::GetCommandByAnyKeyboardKey(struct zInput_BindMapContext* self, int32_t keyboardKey)
 {
-    int32_t result = zInput::BindMapContext_GetCommandByPrimaryKey(self, keyboardKey)
+    int32_t result = zInput_BindMapContext::GetCommandByPrimaryKey(self, keyboardKey)
 
     if (result != 0)
         return result
@@ -93468,8 +93468,8 @@
 0x470df0 int32_t __thiscall zInput::BindMapContext_SetCommandCallback(struct zInput_BindMapContext* self, int32_t commandId, zInputCommandCallbackFn callback)
 {
     struct zInput_BindMapContext* self_1 = self
-    int32_t comboIdx = zInput::BindMapContext_GetPrimaryKeyboardKey(self, commandId)
-    int32_t comboIdx_1 = zInput::BindMapContext_GetSecondaryKeyboardKey(self, commandId)
+    int32_t comboIdx = zInput_BindMapContext::GetPrimaryKeyboardKey(self, commandId)
+    int32_t comboIdx_1 = zInput_BindMapContext::GetSecondaryKeyboardKey(self, commandId)
 
     if (comboIdx == 0 && comboIdx_1 == 0)
         return 0
@@ -93477,10 +93477,10 @@
     self->m_commandCallbacks[commandId] = callback
 
     if (comboIdx != 0)
-        zInput::Keyboard_RegisterKeyCallback(comboIdx, zInputBindMapContext::DispatchFromKeyboardEvent, self->m_commandLabels[commandId])
+        zInput::Keyboard_RegisterKeyCallback(comboIdx, zInput_BindMapContext::DispatchFromKeyboardEvent, self->m_commandLabels[commandId])
 
     if (comboIdx_1 != 0)
-        zInput::Keyboard_RegisterKeyCallback(comboIdx_1, zInputBindMapContext::DispatchFromKeyboardEvent, self->m_commandLabels[commandId])
+        zInput::Keyboard_RegisterKeyCallback(comboIdx_1, zInput_BindMapContext::DispatchFromKeyboardEvent, self->m_commandLabels[commandId])
 
     return 1
 }
@@ -93488,7 +93488,7 @@
 // Source: D:\Proj\GameZRecoil\zInput\zinput.cpp -- zInput_BindMapContext_DispatchFromKeyboardEvent. Keyboard hotkey bridge installed in zInput_KBD_RegisterKeyCallback; maps dikCode through g_zInput_BindMap_Current and tail-jumps to the bound command callback if present.
 //
 // BN limitation: the final indirect `jmp edx` is a tailcall to zInputCommandCallbackFn with commandId in ECX. BN keeps it as `jump(edx_1)` and reports unresolved indirect control flow even after the callback local is typed.
-0x470e80 void __fastcall zInputBindMapContext::DispatchFromKeyboardEvent(int32_t dikCode)
+0x470e80 void __fastcall zInput_BindMapContext::DispatchFromKeyboardEvent(int32_t dikCode)
 {
     zInputCommandCallbackFn edx_1 = g_zInput_BindMap_Current->m_commandCallbacks[zInput_BindMapContext::GetCommandByAnyKeyboardKey(g_zInput_BindMap_Current, dikCode)]
 
@@ -93503,8 +93503,8 @@
 0x470eb0 enum zInputButtonTransitionState __thiscall zInputBindMapContext::ReadCommandInputState(struct zInput_BindMapContext* self, int32_t commandIndex)
 {
     int32_t result = 0
-    int32_t keyIndex = zInput::BindMapContext_GetPrimaryKeyboardKey(self, commandIndex)
-    int32_t keyIndex_1 = zInput::BindMapContext_GetSecondaryKeyboardKey(self, commandIndex)
+    int32_t keyIndex = zInput_BindMapContext::GetPrimaryKeyboardKey(self, commandIndex)
+    int32_t keyIndex_1 = zInput_BindMapContext::GetSecondaryKeyboardKey(self, commandIndex)
 
     if (keyIndex != 0)
         result = zInput::Keyboard_GetKeyTransitionState(keyIndex)
@@ -93512,7 +93512,7 @@
     if (keyIndex_1 != 0)
         result |= zInput::Keyboard_GetKeyTransitionState(keyIndex_1)
 
-    int32_t buttonIndex = zInput::BindMapContext_GetJoystickButtonSlot(self, commandIndex)
+    int32_t buttonIndex = zInput_BindMapContext::GetJoystickButtonSlot(self, commandIndex)
 
     if (buttonIndex u> 0 && buttonIndex u< 0xb)
         result |= zInput::DI_GetButtonTransitionState(buttonIndex)
@@ -93861,18 +93861,18 @@
     if (zInput_BindMap_Current_1 == 0)
         return
 
-    zInput::BindMapContext_FreeNonOwnedBuffers(zInput_BindMap_Current_1)
+    zInput_BindMapContext::FreeNonOwnedBuffers(zInput_BindMap_Current_1)
     struct zInput_BindMapContext* zInput_BindMap_Current_2 = g_zInput_BindMap_Current
 
     if (zInput_BindMap_Current_2 != 0)
-        zInput::BindMapContext_FreeAllBuffers(zInput_BindMap_Current_2)
+        zInput_BindMapContext::FreeAllBuffers(zInput_BindMap_Current_2)
         operator delete(zInput_BindMap_Current_2)
 }
 
 // Likely original file: D:\Proj\GameZRecoil\zInput\zinput.cpp. Loads g_zInput_BindMap_Current and tailcalls zInput::BindMapContext_RebuildLookupIndices to refresh the active binding reverse-lookup tables.
 0x4716b0 void zInput::BindMap_Current_RebuildLookupIndices()
 {
-    return zInput::BindMapContext_RebuildLookupIndices(g_zInput_BindMap_Current) __tailcall
+    return zInput_BindMapContext::RebuildLookupIndices(g_zInput_BindMap_Current) __tailcall
 }
 
 // Source: D:\Proj\GameZRecoil\zInput\zinput.cpp -- zInput::BindMapCurrent_ResetAllBindings. Static forwarder that tail-jumps to zInput::BindMapContext_ResetAllBindings(g_zInput_BindMap_Current).
@@ -93890,7 +93890,7 @@
 // Likely source: zinput.cpp
 0x4716d0 int32_t __fastcall zInput::BindMapCurrent_GetPrimaryKeyboardKey(int32_t commandIndex)
 {
-    return zInput::BindMapContext_GetPrimaryKeyboardKey(g_zInput_BindMap_Current, commandIndex)
+    return zInput_BindMapContext::GetPrimaryKeyboardKey(g_zInput_BindMap_Current, commandIndex)
 }
 
 // Static forwarder: g_zInput_BindMap_Current->GetSecondaryKeyboardKey(commandIndex). Returns the DIK secondary key bound to the command (bits 11..21 of the packed binding).
@@ -93898,7 +93898,7 @@
 // Likely source: zinput.cpp
 0x4716e0 int32_t __fastcall zInput::BindMapCurrent_GetSecondaryKeyboardKey(int32_t commandIndex)
 {
-    return zInput::BindMapContext_GetSecondaryKeyboardKey(g_zInput_BindMap_Current, commandIndex)
+    return zInput_BindMapContext::GetSecondaryKeyboardKey(g_zInput_BindMap_Current, commandIndex)
 }
 
 // Static forwarder: g_zInput_BindMap_Current->GetJoystickButtonSlot(commandIndex). Returns bits 22..25 of the packed binding.
@@ -93906,7 +93906,7 @@
 // Likely source: zinput.cpp
 0x4716f0 int32_t __fastcall zInput::BindMapCurrent_GetJoystickButtonSlot(int32_t commandIndex)
 {
-    return zInput::BindMapContext_GetJoystickButtonSlot(g_zInput_BindMap_Current, commandIndex)
+    return zInput_BindMapContext::GetJoystickButtonSlot(g_zInput_BindMap_Current, commandIndex)
 }
 
 // Static forwarder: g_zInput_BindMap_Current->GetMouseButtonSlot(commandIndex). Returns bits 26..27 of the packed binding.
@@ -93922,7 +93922,7 @@
 // Likely source: zinput.cpp
 0x471710 int32_t __fastcall zInput::BindMapCurrent_GetCommandByPrimaryKey(int32_t keyboardKey)
 {
-    return zInput::BindMapContext_GetCommandByPrimaryKey(g_zInput_BindMap_Current, keyboardKey)
+    return zInput_BindMapContext::GetCommandByPrimaryKey(g_zInput_BindMap_Current, keyboardKey)
 }
 
 // Static forwarder: g_zInput_BindMap_Current->GetCommandBySecondaryKey(keyboardKey). Reverse lookup via m_secondaryKeyToCommand.
@@ -94085,7 +94085,7 @@
     g_zInput_BindMapOverlayNodeStackHead = zInput_BindMapOverlayNodeFreeList_1
     g_zInput_BindMapOverlayDepth += 1
     g_zInput_BindMap_Current = bindMapOrNull_2
-    zInput::BindMapContext_RebuildLookupIndices(bindMapOrNull_2)
+    zInput_BindMapContext::RebuildLookupIndices(bindMapOrNull_2)
     fsbase->NtTib.ExceptionList = ExceptionList
 }
 
@@ -94095,7 +94095,7 @@
     struct zInput_BindMapContext* zInput_BindMap_Current_1 = g_zInput_BindMap_Current
 
     if (zInput_BindMap_Current_1->m_isOverlay != 0 && zInput_BindMap_Current_1 != 0)
-        zInput::BindMapContext_FreeAllBuffers(zInput_BindMap_Current_1)
+        zInput_BindMapContext::FreeAllBuffers(zInput_BindMap_Current_1)
         operator delete(zInput_BindMap_Current_1)
 
     struct zInput_BindMapOverlayStackNode* zInput_BindMapOverlayNodeStackHead_1 = g_zInput_BindMapOverlayNodeStackHead
@@ -94132,7 +94132,7 @@
         g_zInput_BindMapOverlayDepth -= 1
 
     g_zInput_BindMap_Current = bindMap
-    zInput::BindMapContext_RebuildLookupIndices(bindMap)
+    zInput_BindMapContext::RebuildLookupIndices(bindMap)
 }
 
 // Source: D:\Proj\GameZRecoil\zInput\zin_init.cpp
@@ -94477,7 +94477,7 @@
 
     struct DIDEVCAPS outCaps
     outCaps.dwSize = 0x2c
-    zInput_JoystickDevice_1->vtbl->SetDataFormat(zInput_JoystickDevice_1, &CRT_Data_MisidentifiedBytes_4c7eca[0x16])
+    zInput_JoystickDevice_1->vtbl->SetDataFormat(zInput_JoystickDevice_1, &(*CRT_Data_MisidentifiedBytes_4c7eca)[0x16])
     zInput_JoystickDevice_1->vtbl->GetCapabilities(zInput_JoystickDevice_1, &outCaps)
     enum zInput_DIDeviceCapsFlags dwFlags = outCaps.dwFlags
     g_zInput_JoystickAxisCount = outCaps.dwAxes
@@ -132691,8 +132691,8 @@
     return _ftol_import_thunk((st1 - 0.5f).q)
 }
 
-// Source: D:\Proj\GameZRecoil\zSound\zSound.cpp -- zSndSample_PlaySimple. Returns the supplied gain scale through x87; BN renders the float-return convention as a long-double conversion artifact.
-0x49fa00 float __stdcall zSndSample::PassThroughGainScale(float value) __pure
+// Source: D:\Proj\GameZRecoil\zSound\zSound.cpp. Returns the supplied gain scale through x87; VC5SP3 verification target zsnd_sample_play_simple matches the retail bytes after COFF relocation masking.
+0x49fa00 float __stdcall zSndSample_PlaySimple(float value) __pure
 {
     return (value).d
 }
@@ -132739,7 +132739,7 @@
         if (cond:0_1)
             float gainScaled = result->gainScaled
             struct zA3dSourceVtable* vtbl_1 = backendBuffer_1->vtbl
-            long double st0_1 = zSndSample::PassThroughGainScale(gainScaled)
+            long double st0_1 = zSndSample_PlaySimple(gainScaled)
             float gainScaled_1 = gainScaled
             vtbl_1->SetGain(result->backendBuffer, st0_1)
         else
@@ -133246,7 +133246,7 @@
     self->velocityOrDir.z = playHandle->velocityOrDir.z
 }
 
-// BN x87 limitation: assembly compares gainDelta > 0.0 before adding it to the A3D source gain.
+// Source: D:\Proj\GameZRecoil\zSound\zsnd_play.cpp -- zSndPlayHandle_PlayWithDelta_A3D. Fastcall helper with replayFields in ECX, playHandle in EDX, restartBeforePlay and gainDelta on the stack. If gainDelta > 0.0, add it to playHandle->gainScaled, pass the updated gain through zSndSample_PlaySimple, and call the A3D source SetGain slot at vtable+0xa0. restartBeforePlay calls the A3D Rewind slot at vtable+0x3c before Play at vtable+0x34 using replayFields->flags & 1. Nonzero Play error reports through zSnd::ReportA3DError with zsnd_play.cpp line 0x58a. BN x87 limitation: HLIL renders the compare through raw status-word expressions; assembly and VC5SP3 byte verification show the source-level condition is gainDelta > 0.0 before adding it to the A3D source gain.
 0x4a0380 void __fastcall zSndPlayHandle::PlayWithDelta_A3D(struct zSndSampleReplayFields* replayFields, struct zSndPlayHandle* playHandle, int32_t restartBeforePlay, float gainDelta)
 {
     long double x87_r7 = gainDelta
@@ -133259,7 +133259,7 @@
         gainDelta = x87_r7_2
         playHandle->gainScaled = x87_r7_2
         struct zA3dSourceVtable* vtbl = backendBuffer->vtbl
-        long double st0_1 = zSndSample::PassThroughGainScale(gainDelta)
+        long double st0_1 = zSndSample_PlaySimple(gainDelta)
         float gainDelta_1 = gainDelta
         vtbl->SetGain(playHandle->backendBuffer, st0_1)
 
@@ -133305,7 +133305,7 @@
         zSnd::ReportDirectSoundError(directSoundError_2, "D:\Proj\GameZRecoil\zSound\zsnd_play.cpp", 0x5b4)
 }
 
-// Source: D:\Proj\GameZRecoil\zSound\zsnd_play.cpp -- zSndPlayHandle_PlayWithDelta_BackendDispatch. Dispatches play-handle replay-with-delta to A3D or DirectSound, converting float gain delta to DirectSound attenuation units on that backend.
+// Source: D:\Proj\GameZRecoil\zSound\zsnd_play.cpp -- zSndPlayHandle_PlayWithDelta_BackendDispatch. Fastcall helper with sourceSample in ECX, playHandle in EDX, restartBeforePlay and float gainDelta on the stack. Dispatches on g_zSnd_ActiveBackend: DirectSound multiplies gainDelta by 10000.0f, converts through _ftol, verifies playHandle->backendBuffer, then calls zSndPlayHandle::PlayWithDelta_DirectSound with &sourceSample->replayFields. A3D verifies backendBuffer and playHandle->gainScaled != 0.0f, then calls zSndPlayHandle::PlayWithDelta_A3D with the original float gainDelta. BN x87 limitation: HLIL renders the A3D nonzero gain check through raw x87 status-word expressions; assembly shows the source-level gainScaled != 0.0f gate.
 0x4a0490 void __fastcall zSndPlayHandle::PlayWithDelta_BackendDispatch(struct zSndSample* sourceSample, struct zSndPlayHandle* playHandle, int32_t restartBeforePlay, float gainDelta)
 {
     enum zSndBackend zSnd_ActiveBackend_1 = g_zSnd_ActiveBackend
@@ -133522,7 +133522,7 @@
                 if (eax_5 == 0)
                     struct zA3dSource* backendBuffer_3 = playHandle->backendBuffer
                     int32_t var_18_2 = ecx_3
-                    backendBuffer_3->vtbl->SetGain(backendBuffer_3, zSndSample::PassThroughGainScale(playHandle->gainScaled))
+                    backendBuffer_3->vtbl->SetGain(backendBuffer_3, zSndSample_PlaySimple(playHandle->gainScaled))
                 else
     // A3D mute path drives SetGain_0a0 to 0.0f; unmute recomputes the audible gain from playHandle->gainScaled through zSndSample_PlaySimple before writing it back.
                     struct zSndBuffer* backendBuffer = playHandle->backendBuffer
@@ -135695,7 +135695,7 @@
 
         if (eax_6 == 0)
             struct zA3dSourceVtable* vtbl = self->backendBuffer->vtbl
-            long double st0_1 = zSndSample::PassThroughGainScale(self->gainScaled)
+            long double st0_1 = zSndSample_PlaySimple(self->gainScaled)
             int32_t var_c_4 = ecx_1
             ecx_3 = vtbl->SetGain(self->backendBuffer, st0_1)
         else
@@ -136575,7 +136575,7 @@
 
         struct zSndBuffer* backendBuffer = fadeEntry->handle->backendBuffer
         struct zSndBufferVtable* vtbl = backendBuffer->vtbl
-        long double st0_1 = zSndSample::PassThroughGainScale(fadeEntry->currentValue)
+        long double st0_1 = zSndSample_PlaySimple(fadeEntry->currentValue)
         struct zSndBuffer* backendBuffer_2 = backendBuffer
         vtbl->SetGain(fadeEntry->handle->backendBuffer, st0_1)
 
@@ -140594,7 +140594,7 @@
         zVideo_pSelectedHwApiDeviceRecord_1->m_deviceFeatureFlags = 0
 }
 
-// Likely source: zVideo.cpp. Applies the global surface geometry for a zVidModeIndex. Half-resolution modes keep a 640-wide display/primary surface while the software surface is 320 wide; full-resolution modes use matching software/display/primary dimensions. Invalid mode indices clear gVideo_resolutionMenuValid. The valid path always sets g_zVideo_DisplayModeBpp to 16.
+// Source: D:\Proj\GameZRecoil\zVideo\zVideo.cpp -- zVideo::Init_SetSurfaceGeometryFromModeIndex. Fastcall helper with modeIndex in ECX. Valid mode indices are 2..7: 2/3 are half-resolution software surfaces (320x200 or 320x240) with 640-wide display/primary surfaces and doubled display heights; 4/5/6/7 set full-resolution 640x400, 640x480, 800x600, or 1024x768 geometry with matching software/display/primary dimensions. Invalid indices clear gVideo_resolutionMenuValid and return. The valid path mirrors the original legacy bpp expression, which resolves to 16 for these valid indices, then stores g_zVideo_DisplayModeBpp.
 0x4a7990 void __thiscall zVideo::Init_SetSurfaceGeometryFromModeIndex(enum zVidModeIndex modeIndex)
 {
     if (modeIndex - 2 u> 5)
@@ -152998,7 +152998,7 @@
     struct HudUiZrdDialog* owner_30 = arg3
     struct HudUiWidget_FTable* ftable = self->base.ftable
     self->owner = owner_30
-    ftable->SetVisible(self, 1)
+    ftable->SetVisible(1)
     HudUiContainer::AddChild(owner_30, self)
     self->originX = owner_30->originX
     self->originY = owner_30->originY
@@ -153025,19 +153025,19 @@
             originX += u32_15->x.i32
             originY_8 += u32_15->y.i32
 
-    self->base.ftable->SetPos(self, originX, originY_8)
+    self->base.ftable->SetPos(originX, originY_8)
     struct zVideo_BltSourceHead* clipSource = arg3->clipSource
 
     if (clipSource != 0)
-        struct HudUiRect* eax_10 = self->base.ftable->GetBoundsRectOrNull(self)
+        int32_t* eax_10 = self->base.ftable->GetBoundsRectOrNull()
 
         if (eax_10 != 0)
-            int32_t top = eax_10->top
-            int32_t left = eax_10->left
-            int32_t right = eax_10->right
-            int32_t top_1 = top
-            int32_t bottom = eax_10->bottom
-            self->base.ftable->SetClip(self, clipSource, &left)
+            int32_t edx_5 = eax_10[1]
+            int32_t bltSourceOrNull = *eax_10
+            int32_t var_14_1 = eax_10[2]
+            int32_t var_18_1 = edx_5
+            int32_t var_10_1 = eax_10[3]
+            self->base.ftable->SetClip(clipSource, &bltSourceOrNull)
 
     struct zReader_Node* parentNode = zReader::GetNamedNode(zrdSection, "ROLLOVER")
 
@@ -153086,23 +153086,20 @@
                     owner_29->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_16 = owner_29
-                int32_t edx_14
-                edx_14.b = owner_29->base.elementFlags.b
+                int32_t edx_15
+                edx_15.b = owner_29->base.elementFlags.b
                 int32_t var_4_4 = 0xffffffff
-                owner_29->base.elementFlags = (edx_14 & 0x10) | 2
+                owner_29->base.elementFlags = (edx_15 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_1 = arg3->base.vptr
                 char* fmt_1 = zLoc::ResolveMessageKeyOrFallback(eax_17->list->items[0].payload)
                 vptr_1->SetTextFmt(arg3, fmt_1)
                 struct zReader_NodeArray_HudTextLabelSpec* u32_2 = eax_17->list
-                struct HudUiZrdDialog* ecx_42 = arg3
-                int32_t var_44_9 = u32_2->y.i32 + originY_1
-                int32_t var_48_5 = u32_2->x.i32 + originX_2
-                ecx_42->base.vptr->PrimaryAction(ecx_42)
+                arg3->base.vptr->PrimaryAction(u32_2->x.i32 + originX_2, u32_2->y.i32 + originY_1)
                 struct HudUiZrdDialog* owner_1 = self->owner
-                int32_t edx_19 = eax_17->list->__offset(0x24).d * 9
-                int32_t esi_10 = *(&owner_1->fontStyles + (edx_19 << 2))
+                int32_t edx_20 = eax_17->list->__offset(0x24).d * 9
+                int32_t esi_10 = *(&owner_1->fontStyles + (edx_20 << 2))
                 int32_t esi_11 = neg.d(esi_10)
-                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_19 << 2))
+                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_20 << 2))
 
                 if (esi_13 != 0)
                     struct HudUiZrdDialog* ecx_44 = arg3
@@ -153193,15 +153190,12 @@
                         char* fmt = zLoc::ResolveMessageKeyOrFallback(*((&eax_17->list->count)[var_30_1 * 2] + 0xc))
                         vptr->SetTextFmt(arg3, fmt)
                         struct zReader_NodeArray_HudTextLabelSpec* eax_25 = (&eax_17->list->count)[var_30_1 * 2]
-                        struct HudUiZrdDialog* ecx_28 = arg3
-                        int32_t var_44_5 = eax_25->y.i32 + originY_7
-                        int32_t var_48_3 = eax_25->x.i32 + originX_1
-                        ecx_28->base.vptr->PrimaryAction(ecx_28)
+                        arg3->base.vptr->PrimaryAction(eax_25->x.i32 + originX_1, eax_25->y.i32 + originY_7)
                         struct HudUiZrdDialog* owner = self->owner
-                        int32_t edx_12 = *((&eax_17->list->count)[var_30_1 * 2] + 0x24) * 9
-                        int32_t esi_4 = *(&owner->fontStyles + (edx_12 << 2))
+                        int32_t edx_13 = *((&eax_17->list->count)[var_30_1 * 2] + 0x24) * 9
+                        int32_t esi_4 = *(&owner->fontStyles + (edx_13 << 2))
                         int32_t esi_5 = neg.d(esi_4)
-                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_12 << 2))
+                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_13 << 2))
 
                         if (esi_7 != 0)
                             struct HudUiZrdDialog* ecx_30 = arg3
@@ -153339,23 +153333,20 @@
                     owner_33->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_18 = owner_33
-                int32_t edx_34
-                edx_34.b = owner_33->base.elementFlags.b
+                int32_t edx_35
+                edx_35.b = owner_33->base.elementFlags.b
                 int32_t var_4_8 = 0xffffffff
-                owner_33->base.elementFlags = (edx_34 & 0x10) | 2
+                owner_33->base.elementFlags = (edx_35 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_3 = arg3->base.vptr
                 char* fmt_3 = zLoc::ResolveMessageKeyOrFallback(eax_63->list->items[0].payload)
                 vptr_3->SetTextFmt(arg3, fmt_3)
                 struct zReader_NodeArray_HudTextLabelSpec* list_04_1 = eax_63->list
-                struct HudUiZrdDialog* ecx_82 = arg3
-                int32_t var_44_18 = list_04_1->y.i32 + originY_3
-                int32_t var_48_10 = list_04_1->x.i32 + originX_4
-                ecx_82->base.vptr->PrimaryAction(ecx_82)
+                arg3->base.vptr->PrimaryAction(list_04_1->x.i32 + originX_4, list_04_1->y.i32 + originY_3)
                 struct HudUiZrdDialog* owner_3 = self->owner
-                int32_t edx_39 = eax_63->list->__offset(0x24).d * 9
-                int32_t esi_24 = *(&owner_3->fontStyles + (edx_39 << 2))
+                int32_t edx_40 = eax_63->list->__offset(0x24).d * 9
+                int32_t esi_24 = *(&owner_3->fontStyles + (edx_40 << 2))
                 int32_t esi_25 = neg.d(esi_24)
-                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_39 << 2))
+                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_40 << 2))
 
                 if (esi_27 != 0)
                     struct HudUiZrdDialog* ecx_84 = arg3
@@ -153435,23 +153426,20 @@
                             owner_31->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* owner_17 = owner_31
-                        int32_t edx_25
-                        edx_25.b = owner_31->base.elementFlags.b
+                        int32_t edx_26
+                        edx_26.b = owner_31->base.elementFlags.b
                         int32_t var_4_6 = 0xffffffff
-                        owner_31->base.elementFlags = (edx_25 & 0x10) | 2
+                        owner_31->base.elementFlags = (edx_26 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_2 = arg3->base.vptr
                         char* fmt_2 = zLoc::ResolveMessageKeyOrFallback(*((&eax_63->list->count)[var_30_2 * 2] + 0xc))
                         vptr_2->SetTextFmt(arg3, fmt_2)
-                        struct HudUiZrdDialog* ecx_68 = arg3
                         struct zReader_NodeArray_HudTextLabelSpec* eax_70 = (&eax_63->list->count)[var_30_2 * 2]
-                        int32_t var_44_14 = eax_70->y.i32 + originY_2
-                        int32_t var_48_8 = eax_70->x.i32 + originX_3
-                        ecx_68->base.vptr->PrimaryAction(ecx_68)
+                        arg3->base.vptr->PrimaryAction(eax_70->x.i32 + originX_3, eax_70->y.i32 + originY_2)
                         struct HudUiZrdDialog* owner_2 = self->owner
-                        int32_t edx_32 = *((&eax_63->list->count)[var_30_2 * 2] + 0x24) * 9
-                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_32 << 2))
+                        int32_t edx_33 = *((&eax_63->list->count)[var_30_2 * 2] + 0x24) * 9
+                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_33 << 2))
                         int32_t esi_19 = neg.d(esi_18)
-                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_32 << 2))
+                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_33 << 2))
 
                         if (esi_21 != 0)
                             struct HudUiZrdDialog* ecx_70 = arg3
@@ -153589,23 +153577,20 @@
                     owner_39->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_20 = owner_39
-                int32_t edx_54
-                edx_54.b = owner_39->base.elementFlags.b
+                int32_t edx_55
+                edx_55.b = owner_39->base.elementFlags.b
                 int32_t var_4_12 = 0xffffffff
-                owner_39->base.elementFlags = (edx_54 & 0x10) | 2
+                owner_39->base.elementFlags = (edx_55 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_5 = arg3->base.vptr
                 char* fmt_5 = zLoc::ResolveMessageKeyOrFallback(eax_110->list->items[0].payload)
                 vptr_5->SetTextFmt(arg3, fmt_5)
                 struct zReader_NodeArray_HudTextLabelSpec* u32_7 = eax_110->list
-                struct HudUiZrdDialog* ecx_122 = arg3
-                int32_t var_44_27 = u32_7->y.i32 + originY_5
-                int32_t var_48_15 = u32_7->x.i32 + originX_6
-                ecx_122->base.vptr->PrimaryAction(ecx_122)
+                arg3->base.vptr->PrimaryAction(u32_7->x.i32 + originX_6, u32_7->y.i32 + originY_5)
                 struct HudUiZrdDialog* owner_5 = self->owner
-                int32_t edx_59 = eax_110->list->__offset(0x24).d * 9
-                int32_t esi_38 = *(&owner_5->fontStyles + (edx_59 << 2))
+                int32_t edx_60 = eax_110->list->__offset(0x24).d * 9
+                int32_t esi_38 = *(&owner_5->fontStyles + (edx_60 << 2))
                 int32_t esi_39 = neg.d(esi_38)
-                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_59 << 2))
+                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_60 << 2))
 
                 if (esi_41 != 0)
                     struct HudUiZrdDialog* ecx_124 = arg3
@@ -153685,23 +153670,20 @@
                             owner_35->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* owner_19 = owner_35
-                        int32_t edx_45
-                        edx_45.b = owner_35->base.elementFlags.b
+                        int32_t edx_46
+                        edx_46.b = owner_35->base.elementFlags.b
                         int32_t var_4_10 = 0xffffffff
-                        owner_35->base.elementFlags = (edx_45 & 0x10) | 2
+                        owner_35->base.elementFlags = (edx_46 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_4 = arg3->base.vptr
                         char* fmt_4 = zLoc::ResolveMessageKeyOrFallback(*((&eax_110->list->count)[var_30_3 * 2] + 0xc))
                         vptr_4->SetTextFmt(arg3, fmt_4)
-                        struct HudUiZrdDialog* ecx_108 = arg3
                         struct zReader_NodeArray_HudTextLabelSpec* eax_117 = (&eax_110->list->count)[var_30_3 * 2]
-                        int32_t var_44_23 = eax_117->y.i32 + originY_4
-                        int32_t var_48_13 = eax_117->x.i32 + originX_5
-                        ecx_108->base.vptr->PrimaryAction(ecx_108)
+                        arg3->base.vptr->PrimaryAction(eax_117->x.i32 + originX_5, eax_117->y.i32 + originY_4)
                         struct HudUiZrdDialog* owner_4 = self->owner
-                        int32_t edx_52 = *((&eax_110->list->count)[var_30_3 * 2] + 0x24) * 9
-                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_52 << 2))
+                        int32_t edx_53 = *((&eax_110->list->count)[var_30_3 * 2] + 0x24) * 9
+                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_53 << 2))
                         int32_t esi_33 = neg.d(esi_32)
-                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_52 << 2))
+                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_53 << 2))
 
                         if (esi_35 != 0)
                             struct HudUiZrdDialog* ecx_110 = arg3
@@ -153818,23 +153800,20 @@
                 owner_41->base.flash.flashDirectionSign = 1
 
             struct HudUiTransitionTextPanel* owner_22 = owner_41
-            int32_t edx_70
-            edx_70.b = owner_41->base.elementFlags.b
+            int32_t edx_71
+            edx_71.b = owner_41->base.elementFlags.b
             int32_t var_4_16 = 0xffffffff
-            owner_41->base.elementFlags = (edx_70 & 0x10) | 2
+            owner_41->base.elementFlags = (edx_71 & 0x10) | 2
             struct HudUiTransitionTextPanel_FTable* vptr_7 = arg3->base.vptr
             char* fmt_7 = zLoc::ResolveMessageKeyOrFallback(eax_142->list->items[0].payload)
             vptr_7->SetTextFmt(arg3, fmt_7)
             struct zReader_NodeArray_HudTextLabelSpec* u32_9 = eax_142->list
-            struct HudUiZrdDialog* ecx_161 = arg3
-            int32_t var_44_36 = u32_9->y.i32 + originY_6
-            int32_t var_48_20 = u32_9->x.i32 + originX_8
-            ecx_161->base.vptr->PrimaryAction(ecx_161)
+            arg3->base.vptr->PrimaryAction(u32_9->x.i32 + originX_8, u32_9->y.i32 + originY_6)
             struct HudUiZrdDialog* owner_7 = self->owner
-            int32_t edx_75 = eax_142->list->__offset(0x24).d * 9
-            int32_t esi_51 = *(&owner_7->fontStyles + (edx_75 << 2))
+            int32_t edx_76 = eax_142->list->__offset(0x24).d * 9
+            int32_t esi_51 = *(&owner_7->fontStyles + (edx_76 << 2))
             int32_t esi_52 = neg.d(esi_51)
-            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_75 << 2))
+            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_76 << 2))
 
             if (esi_54 != 0)
                 struct HudUiZrdDialog* ecx_163 = arg3
@@ -153904,10 +153883,10 @@
 
                     if (i != eax_192)
                         do
-                            struct HudUiFlashPanel* edx_90 = *(eax_192 - 4)
+                            struct HudUiFlashPanel* edx_91 = *(eax_192 - 4)
                             eax_192 -= 4
                             end_1 -= 4
-                            *end_1 = edx_90
+                            *end_1 = edx_91
                         while (eax_192 != i)
 
                     for (; i != &i[1]; i = &i[1])
@@ -154045,15 +154024,12 @@
                     char* fmt_6 = zLoc::ResolveMessageKeyOrFallback(*((&eax_142->list->count)[var_30_4 * 2] + 0xc))
                     vptr_6->SetTextFmt(arg3, fmt_6)
                     struct zReader_NodeArray_HudTextLabelSpec* eax_148 = (&eax_142->list->count)[var_30_4 * 2]
-                    struct HudUiZrdDialog* ecx_147 = arg3
-                    int32_t var_44_32 = eax_148->y.i32 + originY
-                    int32_t var_48_18 = eax_148->x.i32 + originX_7
-                    ecx_147->base.vptr->PrimaryAction(ecx_147)
+                    arg3->base.vptr->PrimaryAction(eax_148->x.i32 + originX_7, eax_148->y.i32 + originY)
                     struct HudUiZrdDialog* owner_6 = self->owner
-                    int32_t edx_68 = *((&eax_142->list->count)[var_30_4 * 2] + 0x24) * 9
-                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_68 << 2))
+                    int32_t edx_69 = *((&eax_142->list->count)[var_30_4 * 2] + 0x24) * 9
+                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_69 << 2))
                     int32_t esi_46 = neg.d(esi_45)
-                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_68 << 2))
+                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_69 << 2))
 
                     if (esi_48 != 0)
                         struct HudUiZrdDialog* ecx_149 = arg3

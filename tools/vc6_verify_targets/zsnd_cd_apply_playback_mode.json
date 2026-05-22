@@ -1,7 +1,7 @@
 {
   "name": "zsnd_cd_apply_playback_mode",
   "description": "zSnd CD playback-mode MCI_PLAY helper.",
-  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
   "source_filename": "zsnd_cd.cpp",
   "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
   "compiler_flags": [

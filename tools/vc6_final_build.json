@@ -1,7 +1,7 @@
 {
   "name": "recoil_vc6_final",
   "description": "Final VC6-oriented build/link driver for a candidate Recoil.exe.",
-  "vc6_env": "${RECOIL_VC6_ROOT}/vc6-env.cmd",
+  "vc6_env": "D:/Recoil Project/Compiler/VC6/vc6-env.cmd",
   "build_dir": "build/vc6-final",
   "output_exe": "Recoil.exe",
   "output_map": "Recoil.map",
@@ -30,8 +30,8 @@
     "support/sdk/MFC42/Include"
   ],
   "lib_dirs": [
-    "${RECOIL_VC6_ROOT}/VC98/LIB",
-    "${RECOIL_VC6_ROOT}/VC98/MFC/LIB",
+    "D:/Recoil Project/Compiler/VC6/VC98/LIB",
+    "D:/Recoil Project/Compiler/VC6/VC98/MFC/LIB",
     "support/sdk/MFC42/Lib/x86",
     "support/sdk/DirectX_Aug2007/Lib/x86"
   ],

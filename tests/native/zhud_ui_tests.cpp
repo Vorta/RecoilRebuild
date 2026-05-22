@@ -192,6 +192,15 @@ void RECOIL_FASTCALL TestElementInvalidate(HudUiElement *element) {
     element->Invalidate();
 }
 
+int g_elementConstructorInvalidateCount = 0;
+HudUiElement *g_elementConstructorInvalidateThis = nullptr;
+
+void RECOIL_FASTCALL TestElementConstructorInvalidate(HudUiElement *element) {
+    ++g_elementConstructorInvalidateCount;
+    g_elementConstructorInvalidateThis = element;
+    element->Invalidate();
+}
+
 int g_containerUpdateCount = 0;
 float g_containerUpdateDelta[4] = {};
 
@@ -262,6 +271,23 @@ struct TestZrdChildWidget {
     TestZrdChildWidget *RECOIL_THISCALL ScalarDeletingDestructor(std::uint32_t flags) {
         deleteFlags = flags;
         return this;
+    }
+};
+
+struct TestBackgroundBindWidget {
+    HudUiWidget base;
+    zReader::Node *loadedNode;
+    void *owner;
+    int postLoadCount;
+
+    int RECOIL_THISCALL LoadFromZrd(zReader::Node *node, void *ownerDialog) {
+        loadedNode = node;
+        owner = ownerDialog;
+        return 1;
+    }
+
+    void RECOIL_THISCALL PostLoadFromZrd() {
+        ++postLoadCount;
     }
 };
 
@@ -539,6 +565,19 @@ extern "C" int zhud_mgr_disable_hud_smoke(void) {
 extern "C" int zhud_element_constructor_smoke(void) {
     g_HudUi_InvalidateMask = 0x80;
 
+    HudUiCommon_FTable *const commonTable =
+        const_cast<HudUiCommon_FTable *>(&g_HudUiCommon_FTable);
+    const unsigned int originalInvalidate = commonTable->slots[8];
+    DWORD oldProtect = 0;
+    if (VirtualProtect(commonTable, sizeof(*commonTable), PAGE_READWRITE, &oldProtect) == 0) {
+        g_HudUi_InvalidateMask = 0;
+        return 1;
+    }
+
+    commonTable->slots[8] = reinterpret_cast<std::uintptr_t>(TestElementConstructorInvalidate);
+    g_elementConstructorInvalidateCount = 0;
+    g_elementConstructorInvalidateThis = nullptr;
+
     HudUiElement element{};
     element.Constructor(17, 29);
 
@@ -546,9 +585,15 @@ extern "C" int zhud_element_constructor_smoke(void) {
                              element.parent == nullptr && element.flags == 0 &&
                              element.timer == 0.0f && element.x == 17 && element.y == 29 &&
                              element.bltSource == nullptr && element.state == 0;
+    const bool invalidated = g_elementConstructorInvalidateCount == 1 &&
+                             g_elementConstructorInvalidateThis == &element;
+
+    commonTable->slots[8] = originalInvalidate;
+    DWORD ignoredProtect = 0;
+    VirtualProtect(commonTable, sizeof(*commonTable), oldProtect, &ignoredProtect);
 
     g_HudUi_InvalidateMask = 0;
-    return initialized ? 0 : 1;
+    return initialized && invalidated ? 0 : 1;
 }
 
 extern "C" int zhud_element_copy_constructor_smoke(void) {
@@ -2809,6 +2854,160 @@ extern "C" int zhud_background_container_focus_smoke(void) {
     const bool destructed = container.base.vptr == &g_HudUiContainer_FTable;
 
     return constructed && focus && destructed ? 0 : 1;
+}
+
+extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void) {
+    HudUiBackgroundCursorWidget cursor{};
+    cursor.captureEnabled = -1;
+    cursor.captureSourceSelector = -1;
+    cursor.capturedImage = reinterpret_cast<zVidImagePartial *>(0x1111);
+    cursor.reservedC8 = 0x2222;
+    cursor.reservedCC = 0x3333;
+
+    const HudUiBackgroundCursorWidget *const result = cursor.MemberConstructorLocal(nullptr, 7);
+
+    const bool constructed =
+        result == &cursor &&
+        cursor.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiBackgroundCursorWidget_FTable) &&
+        cursor.base.image == nullptr && cursor.base.alignFlags == 0 &&
+        cursor.capturedImage == nullptr && cursor.captureEnabled == 7 &&
+        cursor.captureSourceSelector == 1 && cursor.reservedC8 == 0 && cursor.reservedCC == 0;
+
+    cursor.DestructorCore();
+    const bool destructed =
+        cursor.base.ftable == reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+
+    return constructed && destructed ? 0 : 1;
+}
+
+extern "C" int zhud_background_constructor_smoke(void) {
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 6;
+    vmodeOption.name = vmodeName;
+    vmodeOption.next = nullptr;
+
+    zOptionEntryPartial *const oldOptionsHead = g_zGame_Options_OptionListHead;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+
+    HudUiBackground background{};
+    const HudUiBackground *const result = background.Constructor();
+
+    bool soundsInitialized = true;
+    for (int index = 0; index < 10; ++index) {
+        soundsInitialized =
+            soundsInitialized && background.backgroundSounds[index].sample == nullptr &&
+            background.backgroundSounds[index].volume == 1.0f &&
+            background.backgroundSounds[index].playHandle == nullptr;
+    }
+
+    const bool constructed =
+        result == &background &&
+        background.base.base.vptr ==
+            reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiBackground_FTable) &&
+        background.base.base.enabled == 0 && background.base.base.childHead == nullptr &&
+        background.base.base.childTail == nullptr && background.base.inputFocusElement == nullptr &&
+        background.base.captureTransitionMask == 1 &&
+        background.cursorWidget.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(
+                &g_HudUiBackgroundCursorWidget_MemberFTable) &&
+        background.cursorWidget.base.image == nullptr &&
+        background.cursorWidget.captureEnabled == 1 &&
+        background.cursorWidget.captureSourceSelector == 1 &&
+        background.primaryClipImage == nullptr && background.capturedCompositeImage == nullptr &&
+        background.backgroundImageWidgets[0].ftable == &g_HudUiWidget_FTable &&
+        background.backgroundImageWidgets[19].ftable == &g_HudUiWidget_FTable &&
+        background.backgroundVideoWidgets[0].base.ftable ==
+            reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiBackgroundVideoWidget_FTable) &&
+        background.backgroundVideoWidgets[9].base.ftable ==
+            reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiBackgroundVideoWidget_FTable) &&
+        background.backgroundVideoWidgets[0].stream == nullptr &&
+        background.fontStyles[0].validMarker == 0 && background.fontStyles[0].fontWeight == 500 &&
+        background.fontStyles[19].fontWeight == 500 &&
+        TestFieldAt<const HudUiPanel_FTable *>(&background.backgroundTextPanels[0], 0) ==
+            &g_HudUiTransitionTextPanel_FTable &&
+        background.backgroundTextPanels[0].flashResetValue == 0.349999994f &&
+        background.backgroundTextPanels[0].flashDirectionSign == 1 &&
+        background.loadedRoot == nullptr && background.cfgRoot == nullptr && soundsInitialized &&
+        background.uiOriginX == 0 && background.uiOriginY == 60;
+
+    background.Destructor();
+    g_zGame_Options_OptionListHead = oldOptionsHead;
+    return constructed ? 0 : 1;
+}
+
+extern "C" int zhud_background_free_loaded_tree_roots_smoke(void) {
+    HudUiBackground background{};
+    zReader::Node *const root =
+        static_cast<zReader::Node *>(std::malloc(sizeof(zReader::Node)));
+    if (root == nullptr) {
+        return 1;
+    }
+
+    root->type = zReader::ZRDR_NODE_INT;
+    root->value.i32 = 42;
+    zReader::Node cfgRoot{};
+    background.loadedRoot = root;
+    background.cfgRoot = &cfgRoot;
+
+    background.FreeLoadedTreeRoots(0x1234);
+    const bool cleared = background.loadedRoot == nullptr && background.cfgRoot == nullptr;
+
+    background.FreeLoadedTreeRoots(0);
+    return cleared ? 0 : 1;
+}
+
+extern "C" int zhud_background_bind_widget_by_name_smoke(void) {
+    zReader::Node buttonItems[3] = {};
+    buttonItems[0].type = zReader::ZRDR_NODE_INT;
+    buttonItems[0].value.i32 = 3;
+    buttonItems[1].type = zReader::ZRDR_NODE_STRING;
+    buttonItems[1].value.str = const_cast<char *>("TARGET");
+    buttonItems[2].type = zReader::ZRDR_NODE_INT;
+    buttonItems[2].value.i32 = 99;
+
+    zReader::Node rootItems[3] = {};
+    rootItems[0].type = zReader::ZRDR_NODE_INT;
+    rootItems[0].value.i32 = 3;
+    rootItems[1].type = zReader::ZRDR_NODE_STRING;
+    rootItems[1].value.str = const_cast<char *>("BUTTONS");
+    rootItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[2].value.nodes = buttonItems;
+
+    zReader::Node root{};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = rootItems;
+
+    HudUiWidget_FTable table{};
+    table.slots[0x7c / 4] = MethodAddress(&TestBackgroundBindWidget::LoadFromZrd);
+    table.slots[0x80 / 4] = MethodAddress(&TestBackgroundBindWidget::PostLoadFromZrd);
+
+    HudUiBackground background{};
+    TestBackgroundBindWidget widget{};
+    widget.base.ftable = &table;
+
+    const unsigned char directResult =
+        background.BindButtonsNodeToWidgetByName(&root, &widget.base, "TARGET");
+    const bool directBound = directResult == 0 && widget.loadedNode == &buttonItems[2] &&
+                             widget.owner == &background && widget.postLoadCount == 1;
+
+    TestBackgroundBindWidget wrapperWidget{};
+    wrapperWidget.base.ftable = &table;
+    background.cfgRoot = &root;
+    const int wrapperResult = background.BindWidgetByName(nullptr, &wrapperWidget.base, "TARGET");
+    const bool wrapperBound = wrapperResult == 0 && wrapperWidget.loadedNode == &buttonItems[2] &&
+                              wrapperWidget.owner == &background &&
+                              wrapperWidget.postLoadCount == 1;
+
+    TestBackgroundBindWidget missingWidget{};
+    missingWidget.base.ftable = &table;
+    const unsigned char missingResult =
+        background.BindButtonsNodeToWidgetByName(&root, &missingWidget.base, "MISSING");
+    const bool missingSkipped = missingResult == 0 && missingWidget.loadedNode == nullptr &&
+                                missingWidget.postLoadCount == 0;
+
+    return directBound && wrapperBound && missingSkipped ? 0 : 1;
 }
 
 extern "C" int zhud_background_set_enabled_smoke(void) {

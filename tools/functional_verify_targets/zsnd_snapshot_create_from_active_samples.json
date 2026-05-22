@@ -1,0 +1,16 @@
+{
+  "name": "zsnd_snapshot_create_from_active_samples",
+  "description": "zSndPlayHandleSnapshot::CreateFromActiveSamples captures the global-volume anchor plus active DirectSound and A3D primary and duplicate play handles into the snapshot list.",
+  "address": "0x49fff0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_snapshot_create_from_active_samples_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x49fff0",
+  "known_limits": [
+    "VC5SP3 /O2 /Ob1 /GX /Zp4 COFF byte compare fails with 317 unmasked mismatches after relocation masking; Binary Ninja body is 778 bytes and the VC object body is 784 bytes with 10 trailing VC NOPs trimmed.",
+    "Current profile sweep found vc5_o2_ob1_gx_facs, vc5_o2_ob1_md_gx_facs, vc6_o2_ob1_gx_facs, and vc6_o2_ob1_gx_zp4_facs tied as closest at 317 mismatches; /Ob0 profiles were 675-677 mismatches and /Ob2 profiles were 707-718 mismatches.",
+    "Reviewed drift is control-flow and register scheduling around backend GetStatus and append paths; smoke covers anchor payload, DirectSound and A3D active voice capture, duplicate voice skipping, item count, and circular list links.",
+    "Rejected source-shape attempts: adding the BN-visible payload-pointer guard to the inlined A3D duplicate append worsens to 489 mismatches by perturbing loop register allocation, and spelling the A3D primary GetStatus call with explicit vtable locals triggers a VC5SP3 C1001 internal compiler error."
+  ]
+}

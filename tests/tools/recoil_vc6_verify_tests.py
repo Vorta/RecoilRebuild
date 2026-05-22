@@ -3,16 +3,21 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 
+from recoil_asm_verify import ObjectByteComparison  # noqa: E402
 from recoil_vc6_verify import (  # noqa: E402
+    CompiledTarget,
     SourcePolicyBaseline,
+    VerifyFunction,
     VerifySelection,
     VerifyTarget,
     build_compile_command,
+    compare_compiled_selections,
     covering_targets,
     find_target,
     group_selections_by_compile_key,
@@ -21,6 +26,10 @@ from recoil_vc6_verify import (  # noqa: E402
     manifest_skeleton,
     selected_targets_for_source_from,
 )
+
+
+def replace_function(target: VerifyTarget, address: str, name: str) -> VerifyFunction:
+    return VerifyFunction(address=address, symbol=f"?{name}@@YAHXZ", name=name)
 
 
 def write_manifest(directory: Path, name: str = "sample") -> Path:
@@ -327,6 +336,76 @@ class RecoilVc6VerifyTests(unittest.TestCase):
             matches = selected_targets_for_source_from([manifest], str(source_path.resolve()))
 
         self.assertEqual([manifest.name], [selection.target.name for selection in matches])
+
+    def test_compare_compiled_selections_reuses_one_bridge_for_all_functions(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            diff_path = root / "diff.txt"
+            triage_path = root / "triage.txt"
+            diff_path.write_text("", encoding="utf-8")
+            triage_path.write_text("", encoding="utf-8")
+            target = VerifyTarget(
+                name="sample",
+                description="sample",
+                source_filename="sample.cpp",
+                source_text="",
+                source_from="src/sample.cpp",
+                compare_mode="coff_bytes",
+                trim_trailing_nops=True,
+                compiler_profile="",
+                compiler_env="",
+                compiler_flags=(),
+                include_dirs=(),
+                source_files=(),
+                generated_files=(),
+                functions=(),
+                manifest_path=root / "sample.json",
+            )
+            compiled = CompiledTarget(
+                target=target,
+                build_dir=root,
+                source_path=root / "sample.cpp",
+                cod_path=root / "sample.cod",
+                obj_path=root / "sample.obj",
+                compiler_env=root / "env.cmd",
+                compiler_version="test",
+                compile_command="cl",
+            )
+            first = replace_function(target, "0x401000", "First")
+            second = replace_function(target, "0x401020", "Second")
+            bridge_ids: list[int] = []
+
+            def fake_compare(**kwargs):
+                bridge_ids.append(id(kwargs["bridge"]))
+                return ObjectByteComparison(
+                    address=kwargs["address"],
+                    symbol=kwargs["symbol"],
+                    obj_path=kwargs["obj_path"],
+                    bn_path=root / "bn.bytes",
+                    vc6_path=root / "vc6.bytes",
+                    mask_path=root / "mask.txt",
+                    diff_path=diff_path,
+                    triage_path=triage_path,
+                    text_diff_path=None,
+                    mismatch_count=0,
+                    relocation_masked_bytes=0,
+                    bn_size=1,
+                    vc6_size=1,
+                    trailing_bn_nops_trimmed=0,
+                    trailing_vc6_nops_trimmed=0,
+                )
+
+            with patch("recoil_vc6_verify.compare_bn_to_obj", side_effect=fake_compare):
+                results, rc = compare_compiled_selections(
+                    compiled=compiled,
+                    selections=[VerifySelection(target=target, functions=(first, second))],
+                    bridge_url="http://example.invalid",
+                )
+
+        self.assertEqual(0, rc)
+        self.assertEqual(2, len(results))
+        self.assertEqual(2, len(bridge_ids))
+        self.assertEqual(1, len(set(bridge_ids)))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,15 @@
+{
+  "name": "hud_ui_zrd_widget_constructor",
+  "description": "HudUiZrdWidget::Constructor initializes the base widget, four panel pointer vectors, image/sound state, ftable, visibility flags, and invalidation state.",
+  "address": "0x4b4ee0",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_zrd_widget_constructor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4b4ee0",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob1 /GX /Zp4 COFF byte compare fails with 382 unmasked mismatches after relocation masking; Binary Ninja body is 434 bytes and the VC object body is 352 bytes with 11 trailing VC NOPs trimmed.",
+    "Reviewed drift remains dominated by original MSVC STL vector EH state scaffolding and dead empty-vector copy loops around the HudUiPanelPtrVector members; the current source models allocator proxy initialization, vector clear calls, low-word image state, and ftable invalidation, but VC still optimizes away the dead loops and omits the original EH registration.",
+    "The native smoke covers base constructor effects, ftable identity, mode/flag/image state, invalidation state, zeroed vector begin/end/capacity members, preserved bounds and disabled-sound fields, return-independent object initialization, and initialized rollover/activate scale values."
+  ]
+}

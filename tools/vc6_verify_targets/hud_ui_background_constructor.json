@@ -1,21 +1,9 @@
 {
   "name": "hud_ui_background_constructor",
   "description": "HudUiBackground constructor.",
+  "compiler_profile": "vc5_o2_ob1_gx_facs",
   "source_filename": "zhud_ui.cpp",
   "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
-  "compiler_flags": [
-    "/nologo",
-    "/TP",
-    "/W3",
-    "/G5",
-    "/O2",
-    "/Ob1",
-    "/Zp4",
-    "/GX",
-    "/FAcs",
-    "/I",
-    "."
-  ],
   "include_dirs": [
     "src",
     "src/native/include",

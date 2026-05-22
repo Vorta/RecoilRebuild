@@ -3,7 +3,7 @@
   "final_build": {
     "name": "vc6_final_candidate",
     "description": "Current final VC6-oriented candidate executable build assumptions.",
-    "compiler_env": "${RECOIL_VC6_ROOT}/vc6-env.cmd",
+    "compiler_env": "D:/Recoil Project/Compiler/VC6/vc6-env.cmd",
     "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 12.00.8168",
     "compile_flags": [
       "/nologo",
@@ -33,7 +33,7 @@
     {
       "name": "vc6_o2_ob0_facs",
       "description": "VC6 fallback production-source object-byte verification profile.",
-      "compiler_env": "${RECOIL_VC6_ROOT}/vc6-env.cmd",
+      "compiler_env": "D:/Recoil Project/Compiler/VC6/vc6-env.cmd",
       "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 12.00.8168",
       "compiler_flags": [
         "/nologo",
@@ -51,7 +51,7 @@
     {
       "name": "vc6_o2_ob1_gx_facs",
       "description": "VC6 fallback profile for small MFC/CString code where one-level inlining and EH shape match current evidence.",
-      "compiler_env": "${RECOIL_VC6_ROOT}/vc6-env.cmd",
+      "compiler_env": "D:/Recoil Project/Compiler/VC6/vc6-env.cmd",
       "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 12.00.8168",
       "compiler_flags": [
         "/nologo",
@@ -70,7 +70,7 @@
     {
       "name": "vc6_o2_ob1_gx_zp4_facs",
       "description": "Documented legacy VC6 fallback tuple preserving existing manifest flag order for the active 0x415220 verification target until that claimed manifest is converted to compiler_profile form.",
-      "compiler_env": "${RECOIL_VC6_ROOT}/vc6-env.cmd",
+      "compiler_env": "D:/Recoil Project/Compiler/VC6/vc6-env.cmd",
       "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 12.00.8168",
       "compiler_flags": [
         "/nologo",
@@ -89,7 +89,7 @@
     {
       "name": "vc6_o2_oy_ob0_facs",
       "description": "Documented VC6 fallback profile with frame-pointer omission for existing targets whose manifests already use /Oy; new authored-function targets should still try VC5SP3 first.",
-      "compiler_env": "${RECOIL_VC6_ROOT}/vc6-env.cmd",
+      "compiler_env": "D:/Recoil Project/Compiler/VC6/vc6-env.cmd",
       "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 12.00.8168",
       "compiler_flags": [
         "/nologo",
@@ -108,7 +108,7 @@
     {
       "name": "vc6_o2_ob2_gx_facs",
       "description": "VC6 fallback profile for focused functions whose original evidence requires aggressive inlining with C++ EH enabled.",
-      "compiler_env": "${RECOIL_VC6_ROOT}/vc6-env.cmd",
+      "compiler_env": "D:/Recoil Project/Compiler/VC6/vc6-env.cmd",
       "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 12.00.8168",
       "compiler_flags": [
         "/nologo",
@@ -127,7 +127,7 @@
     {
       "name": "vc6_zsys_cpu_raw_asm",
       "description": "Documented CPU-probe exception that enables the approved zSys raw-assembly inline helpers.",
-      "compiler_env": "${RECOIL_VC6_ROOT}/vc6-env.cmd",
+      "compiler_env": "D:/Recoil Project/Compiler/VC6/vc6-env.cmd",
       "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 12.00.8168",
       "compiler_flags": [
         "/nologo",
@@ -144,7 +144,7 @@
     {
       "name": "vc5_o2_ob0_facs",
       "description": "First-pass VC5SP3 profile for plain non-EH production-source object-byte verification.",
-      "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
       "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
       "compiler_flags": [
         "/nologo",
@@ -162,7 +162,7 @@
     {
       "name": "vc5_o2_ob1_gx_facs",
       "description": "First-pass VC5SP3 profile with one-level inlining and C++ EH enabled.",
-      "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
       "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
       "compiler_flags": [
         "/nologo",
@@ -179,9 +179,29 @@
       ]
     },
     {
+      "name": "vc5_o2_ob1_gx_uintptr_facs",
+      "description": "VC5SP3 one-level inlining profile with the UINT_PTR compatibility define needed by focused full-TU MFC frame targets.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/GX",
+        "/Zp4",
+        "/DUINT_PTR=UINT",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
       "name": "vc5_o2_ob1_md_gx_facs",
       "description": "VC5SP3 profile with one-level inlining, DLL CRT imports, and C++ EH enabled.",
-      "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
       "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
       "compiler_flags": [
         "/nologo",
@@ -201,7 +221,7 @@
     {
       "name": "vc5_o2_ob2_facs",
       "description": "VC5SP3 profile with aggressive inlining and no C++ EH flag.",
-      "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
       "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
       "compiler_flags": [
         "/nologo",
@@ -219,7 +239,7 @@
     {
       "name": "vc5_o2_ob2_gx_facs",
       "description": "VC5SP3 profile with aggressive inlining and C++ EH enabled.",
-      "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
       "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
       "compiler_flags": [
         "/nologo",

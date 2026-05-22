@@ -27,7 +27,7 @@ output.
   to `mov 1; sub`, so the current source keeps the 27-mismatch best profile.
 - Functional-equivalence evidence: `tools/functional_verify_targets/zsnd_snapshot_stop_all_if_playing.json`
   and native smoke `zsnd_snapshot_stop_all_if_playing_smoke` in `tests/native/zsnd_cd_tests.cpp`.
-  `python tools/recoil_functional_verify.py 0x4a0500` passes; `Binary-safe verified` stays `❌`.
+  `python tools/recoil_functional_verify.py 0x4a0500` passes; `Binary-safe` stays `❌`.
 - VC5SP3 full-TU probe (`cl` 11.00.7022, `zsnd_snapshot_stop_all_if_playing_vc5`)
   now fails with **100** unmasked mismatches and **144-byte** object code, worse
   than the VC6 full-TU profile.
@@ -161,6 +161,12 @@ output.
   duplicate backend buffers worsened the target from 317 to 497 mismatches and
   grew the object symbol from 784 to 800 bytes, so the direct field expressions
   were restored.
+- Changing the `CreateFromActiveSamples` status scratch from `int status` to
+  `int status[1]` and passing the array to the inlined backend status helpers
+  was neutral at the 317 mismatch profile, so the scalar scratch was restored.
+- Changing the same status scratch to `volatile int status` and passing
+  `(int *)&status` to the inlined backend helpers was also neutral at the 317
+  mismatch profile, so the non-volatile scalar scratch was restored.
 - Introducing scoped `duplicateVoices` pointer locals inside both duplicate
   loops was neutral at the 317 mismatch profile and did not change the original
   vs. VC register choices for the duplicate array load, so the direct
@@ -175,3 +181,7 @@ output.
   worsened the target from 317 to 346 mismatches and changed the object symbol
   from 784 to 768 bytes, confirming the direct `operator new`/manual splice is
   still the closer source shape for this site.
+- Rewriting the backend dispatch as explicit `if (g_zSnd_ActiveBackend == 0)`
+  / `else if (g_zSnd_ActiveBackend == 1)` source branches worsened the target
+  from 317 to 481 mismatches with the same 784-byte object symbol, so the
+  `switch` spelling remains the closest current source shape.

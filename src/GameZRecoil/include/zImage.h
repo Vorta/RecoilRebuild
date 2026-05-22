@@ -1,3 +1,6 @@
+#ifndef GAMEZRECOIL_INCLUDE_ZIMAGE_H
+#define GAMEZRECOIL_INCLUDE_ZIMAGE_H
+
 #pragma once
 
 #include <stddef.h>
@@ -94,3 +97,5 @@ RECOIL_STATIC_ASSERT(offsetof(zImage_Font, image) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(zImage_Font, spaceWidth) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zImage_Font, glyphRects) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(zImage_Font) == 0x5f8);
+
+#endif // GAMEZRECOIL_INCLUDE_ZIMAGE_H

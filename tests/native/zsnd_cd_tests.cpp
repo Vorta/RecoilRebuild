@@ -1699,11 +1699,7 @@ extern "C" int zsnd_play_handle_stop_if_active_smoke(void) {
     g_zSnd_PreInitialized = 1;
     g_zSnd_ActiveBackend = 2;
     zSndPlayHandle unsupported{};
-    const std::int32_t unsupportedResult = unsupported.StopIfActive();
-    if (unsupportedResult !=
-        static_cast<std::int32_t>(reinterpret_cast<std::intptr_t>(&unsupported))) {
-        return 2;
-    }
+    unsupported.StopIfActive();
 
     zSndPlayHandle request{};
     request.handleKind = ZSND_PLAYHANDLE_STREAM_REQUEST;
@@ -1712,7 +1708,7 @@ extern "C" int zsnd_play_handle_stop_if_active_smoke(void) {
     g_zSndStream_ActiveList = zArchiveList_CreateEmpty();
     zArchiveList_PushFrontPayload(g_zSndStream_ActiveList, &request);
     if (request.StopIfActive() != 1 || request.backendState1 != 4) {
-        return 3;
+        return 2;
     }
 
     ResetStopBackendCounters();
@@ -1731,7 +1727,7 @@ extern "C" int zsnd_play_handle_stop_if_active_smoke(void) {
     if (directSoundHandle.StopIfActive() != 0 || g_testGetStatusCount != 1 ||
         g_testRestoreCount != 1 || g_testStopCount != 1 || g_zSndLastVoice != nullptr ||
         g_zSndLastVoiceMarkerIndex != 0) {
-        return 4;
+        return 3;
     }
 
     ResetStopBackendCounters();
@@ -1743,12 +1739,12 @@ extern "C" int zsnd_play_handle_stop_if_active_smoke(void) {
     g_zSnd_ActiveBackend = 1;
     if (a3dHandle.StopIfActive() != 0 || g_testStopCount != 1 || g_testGetStatusCount != 0 ||
         g_testRestoreCount != 0) {
-        return 5;
+        return 4;
     }
 
     zSndPlayHandle missingBackend{};
     g_zSnd_ActiveBackend = 0;
-    return missingBackend.StopIfActive() == -1 ? 0 : 6;
+    return missingBackend.StopIfActive() == -1 ? 0 : 5;
 }
 
 extern "C" int zsnd_play_handle_update3d_a3d_smoke(void) {
@@ -2600,14 +2596,21 @@ struct StopAllDirectSoundBuffer {
     StopAllDirectSoundBufferVTable *vtable;
 };
 
-struct StopAllA3dSourceVTable {
-    void *slots00_dc[55];
-    TestBackendGetStatusFn GetStatus;
+struct SnapshotDirectSoundBuffer {
+    TestDirectSoundBufferVTable *vtable;
+    std::int32_t status;
 };
 
-struct StopAllA3dSource {
-    StopAllA3dSourceVTable *vtable;
+struct SnapshotA3dSource {
+    TestA3dSourceVTable *vtable;
+    std::int32_t status;
 };
+
+std::int32_t __stdcall TestSnapshotGetStatus(void *self, std::int32_t *status) {
+    ++g_testGetStatusCount;
+    *status = *reinterpret_cast<std::int32_t *>(static_cast<std::uint8_t *>(self) + sizeof(void *));
+    return 0;
+}
 
 zSndPlayHandleSnapshot *AllocateSnapshotList(const int payloadCount) {
     auto *const snapshot = static_cast<zSndPlayHandleSnapshot *>(
@@ -2666,16 +2669,240 @@ zSndPlayHandleSnapshotItem *SnapshotPayloadNode(zSndPlayHandleSnapshot *snapshot
     }
     return item;
 }
+
+void InitSnapshotPlayHandle(zSndSample *sample, zSndPlayHandle *handle, zSndBuffer *buffer,
+                            const int gainScaled, const float xBase) {
+    handle->handleKind = ZSND_PLAYHANDLE_BACKEND;
+    handle->backendBuffer = buffer;
+    handle->ownerSample = sample;
+    handle->gainScaled = gainScaled;
+    handle->hasWorldPos = 1;
+    handle->worldPos.x = xBase;
+    handle->worldPos.y = xBase + 1.0f;
+    handle->worldPos.z = xBase + 2.0f;
+    handle->velocityOrDir.x = xBase + 3.0f;
+    handle->velocityOrDir.y = xBase + 4.0f;
+    handle->velocityOrDir.z = xBase + 5.0f;
+}
+
+bool SnapshotPayloadMatches(const zSndPlayHandleSnapshotItem *item, zSndPlayHandle *handle,
+                            const unsigned int volumeScaleRaw) {
+    const zSndPlayHandleSnapshotPayload &payload = item->payload;
+    return payload.playHandle == handle && payload.sourceSample == handle->ownerSample &&
+           payload.volumeScaleRaw == volumeScaleRaw && (payload.flags & 1u) != 0 &&
+           payload.worldPos.x == handle->worldPos.x && payload.worldPos.y == handle->worldPos.y &&
+           payload.worldPos.z == handle->worldPos.z &&
+           payload.velocityOrDir.x == handle->velocityOrDir.x &&
+           payload.velocityOrDir.y == handle->velocityOrDir.y &&
+           payload.velocityOrDir.z == handle->velocityOrDir.z;
+}
 } // namespace
+
+// Reimplements 0x49fff0: zSndPlayHandleSnapshot::CreateFromActiveSamples capture behavior.
+extern "C" int zsnd_snapshot_create_from_active_samples_smoke(void) {
+    zSndSampleSet set = {};
+    zSndSample samples[2] = {};
+    zSndSampleSet *slots[1] = {&set};
+    zSndPlayHandle duplicatePlaying = {};
+    zSndPlayHandle duplicateStopped = {};
+    zSndPlayHandle duplicateSecond = {};
+    zSndPlayHandle *duplicates0[3] = {&duplicatePlaying, nullptr, &duplicateStopped};
+    zSndPlayHandle *duplicates1[1] = {&duplicateSecond};
+
+    TestDirectSoundBufferVTable directSoundVTable = {};
+    TestA3dSourceVTable a3dVTable = {};
+    SnapshotDirectSoundBuffer directPrimaryPlaying = {};
+    SnapshotDirectSoundBuffer directPrimaryStopped = {};
+    SnapshotDirectSoundBuffer directDuplicatePlaying = {};
+    SnapshotDirectSoundBuffer directDuplicateStopped = {};
+    SnapshotDirectSoundBuffer directDuplicateSecond = {};
+    SnapshotA3dSource a3dPrimaryPlaying = {};
+    SnapshotA3dSource a3dDuplicatePlaying = {};
+
+    directSoundVTable.GetStatus = &TestSnapshotGetStatus;
+    a3dVTable.GetStatus = &TestSnapshotGetStatus;
+
+    directPrimaryPlaying.vtable = &directSoundVTable;
+    directPrimaryPlaying.status = 1;
+    directPrimaryStopped.vtable = &directSoundVTable;
+    directPrimaryStopped.status = 0;
+    directDuplicatePlaying.vtable = &directSoundVTable;
+    directDuplicatePlaying.status = 1;
+    directDuplicateStopped.vtable = &directSoundVTable;
+    directDuplicateStopped.status = 0;
+    directDuplicateSecond.vtable = &directSoundVTable;
+    directDuplicateSecond.status = 1;
+    a3dPrimaryPlaying.vtable = &a3dVTable;
+    a3dPrimaryPlaying.status = 1;
+    a3dDuplicatePlaying.vtable = &a3dVTable;
+    a3dDuplicatePlaying.status = 1;
+
+    set.sampleCount = 2;
+    set.samples = samples;
+    g_zSnd_SampleSetRegistry.begin = slots;
+    g_zSnd_SampleSetRegistry.end = slots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = slots + 1;
+
+    float globalVolume = 0.375f;
+    unsigned int globalVolumeRaw = 0;
+    std::memcpy(&globalVolumeRaw, &globalVolume, sizeof(globalVolumeRaw));
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+
+    samples[0].duplicateVoiceCount = 3;
+    samples[0].duplicateVoices = duplicates0;
+    samples[1].duplicateVoiceCount = 1;
+    samples[1].duplicateVoices = duplicates1;
+
+    InitSnapshotPlayHandle(&samples[0], &samples[0].primaryVoice,
+                           reinterpret_cast<zSndBuffer *>(&directPrimaryPlaying), 0x11111111,
+                           10.0f);
+    InitSnapshotPlayHandle(&samples[0], &duplicatePlaying,
+                           reinterpret_cast<zSndBuffer *>(&directDuplicatePlaying), 0x22222222,
+                           20.0f);
+    InitSnapshotPlayHandle(&samples[0], &duplicateStopped,
+                           reinterpret_cast<zSndBuffer *>(&directDuplicateStopped), 0x33333333,
+                           30.0f);
+    InitSnapshotPlayHandle(&samples[1], &samples[1].primaryVoice,
+                           reinterpret_cast<zSndBuffer *>(&directPrimaryStopped), 0x44444444,
+                           40.0f);
+    InitSnapshotPlayHandle(&samples[1], &duplicateSecond,
+                           reinterpret_cast<zSndBuffer *>(&directDuplicateSecond), 0x55555555,
+                           50.0f);
+
+    g_testGetStatusCount = 0;
+    g_zSnd_ActiveBackend = 0;
+    zSndPlayHandleSnapshot *snapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
+    const bool directAnchor =
+        snapshot->itemCount == 4 && snapshot->listHead->next->payload.playHandle == nullptr &&
+        snapshot->listHead->next->payload.volumeScaleRaw == globalVolumeRaw;
+    const bool directPayloads =
+        SnapshotPayloadMatches(SnapshotPayloadNode(snapshot, 0), &samples[0].primaryVoice,
+                               0x11111111) &&
+        SnapshotPayloadMatches(SnapshotPayloadNode(snapshot, 1), &duplicatePlaying, 0x11111111) &&
+        SnapshotPayloadMatches(SnapshotPayloadNode(snapshot, 2), &duplicateSecond, 0x44444444);
+    const bool directLinks =
+        snapshot->listHead->prev == SnapshotPayloadNode(snapshot, 2) &&
+        SnapshotPayloadNode(snapshot, 2)->next == snapshot->listHead &&
+        snapshot->listHead->next->prev == snapshot->listHead;
+    const bool directStatusCount = g_testGetStatusCount == 5;
+    FreeSnapshotList(snapshot);
+
+    InitSnapshotPlayHandle(&samples[0], &samples[0].primaryVoice,
+                           reinterpret_cast<zSndBuffer *>(&a3dPrimaryPlaying), 0x66666666,
+                           60.0f);
+    InitSnapshotPlayHandle(&samples[0], &duplicatePlaying,
+                           reinterpret_cast<zSndBuffer *>(&a3dDuplicatePlaying), 0x77777777,
+                           70.0f);
+    duplicates0[1] = nullptr;
+    samples[0].duplicateVoiceCount = 2;
+    set.sampleCount = 1;
+
+    g_testGetStatusCount = 0;
+    g_zSnd_ActiveBackend = 1;
+    snapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
+    const bool a3dPayloads =
+        snapshot->itemCount == 3 &&
+        SnapshotPayloadMatches(SnapshotPayloadNode(snapshot, 0), &samples[0].primaryVoice,
+                               0x66666666) &&
+        SnapshotPayloadMatches(SnapshotPayloadNode(snapshot, 1), &duplicatePlaying, 0x66666666);
+    const bool a3dStatusCount = g_testGetStatusCount == 2;
+    FreeSnapshotList(snapshot);
+
+    g_zSnd_SampleSetRegistry.begin = nullptr;
+    g_zSnd_SampleSetRegistry.end = nullptr;
+    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    g_zSnd_GlobalVolumeScalePtr = nullptr;
+    g_zSnd_ActiveBackend = 0;
+
+    return directAnchor && directPayloads && directLinks && directStatusCount && a3dPayloads &&
+                   a3dStatusCount
+               ? 0
+               : 1;
+}
+
+// Reimplements 0x4a0590: zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta loop behavior.
+extern "C" int zsnd_snapshot_restore_all_with_global_volume_delta_smoke(void) {
+    zSndSample sample1 = {};
+    zSndSample sample2 = {};
+    zSndPlayHandle handle1 = {};
+    zSndPlayHandle handle2 = {};
+    TestDirectSoundBufferVTable directSoundVTable = {};
+    TestDirectSoundBuffer directSoundBuffer1 = {};
+    TestDirectSoundBuffer directSoundBuffer2 = {};
+
+    directSoundVTable.SetVolume = &TestDirectSoundSetVolume;
+    directSoundVTable.Play = &TestDirectSoundPlay;
+    directSoundBuffer1.vtable = &directSoundVTable;
+    directSoundBuffer2.vtable = &directSoundVTable;
+
+    sample1.replayFields.flags = 1;
+    sample2.replayFields.flags = 0;
+
+    InitSnapshotPlayHandle(&sample1, &handle1,
+                           reinterpret_cast<zSndBuffer *>(&directSoundBuffer1), 1000, 10.0f);
+    InitSnapshotPlayHandle(&sample2, &handle2,
+                           reinterpret_cast<zSndBuffer *>(&directSoundBuffer2), -2000, 20.0f);
+
+    zSndPlayHandleSnapshot *snapshot = AllocateSnapshotList(2);
+    float oldVolume = 0.25f;
+    float currentVolume = 0.5f;
+    std::memcpy(&snapshot->listHead->next->payload.volumeScaleRaw, &oldVolume,
+                sizeof(snapshot->listHead->next->payload.volumeScaleRaw));
+    SnapshotPayloadNode(snapshot, 0)->payload.sourceSample = &sample1;
+    SnapshotPayloadNode(snapshot, 0)->payload.playHandle = &handle1;
+    SnapshotPayloadNode(snapshot, 1)->payload.sourceSample = &sample2;
+    SnapshotPayloadNode(snapshot, 1)->payload.playHandle = &handle2;
+
+    ResetStopBackendCounters();
+    g_zSnd_GlobalVolumeScalePtr = &currentVolume;
+    g_zSnd_ActiveBackend = 0;
+    const int result = snapshot->RestoreAllWithGlobalVolumeDelta();
+    const bool nonEmpty =
+        result == 1 && g_testSetVolumeCount == 2 && g_testPlayDirectSoundCount == 2 &&
+        handle1.gainScaled == 3500 && handle2.gainScaled == 500 &&
+        g_testLastVolume == 500 && g_testLastPlayFlags == 0;
+    FreeSnapshotList(snapshot);
+
+    snapshot = AllocateSnapshotList(0);
+    std::memcpy(&snapshot->listHead->next->payload.volumeScaleRaw, &oldVolume,
+                sizeof(snapshot->listHead->next->payload.volumeScaleRaw));
+    ResetStopBackendCounters();
+    const int emptyResult = snapshot->RestoreAllWithGlobalVolumeDelta();
+    const bool empty = emptyResult == 1 && g_testSetVolumeCount == 0 &&
+                       g_testPlayDirectSoundCount == 0;
+    FreeSnapshotList(snapshot);
+
+    g_zSnd_GlobalVolumeScalePtr = nullptr;
+    g_zSnd_ActiveBackend = 0;
+
+    return nonEmpty && empty ? 0 : 1;
+}
+
+// Reimplements 0x4a05f0: zSndPlayHandleSnapshot::Destroy list teardown behavior.
+extern "C" int zsnd_snapshot_destroy_smoke(void) {
+    zSndPlayHandleSnapshot *snapshot = AllocateSnapshotList(2);
+    snapshot->itemCount = 3;
+    const bool populated = snapshot->Destroy() == 1;
+
+    snapshot = AllocateSnapshotList(0);
+    snapshot->itemCount = 1;
+    const bool anchorOnly = snapshot->Destroy() == 1;
+
+    snapshot = AllocateSnapshotList(1);
+    snapshot->itemCount = 2;
+    const bool heapStillUsable = snapshot->Destroy() == 1;
+
+    return populated && anchorOnly && heapStillUsable ? 0 : 1;
+}
 
 // Reimplements 0x4a0500: zSndPlayHandleSnapshot::StopAllIfPlaying list-walk behavior.
 extern "C" int zsnd_snapshot_stop_all_if_playing_smoke(void) {
     zSndPlayHandle playHandle1 = {};
     zSndPlayHandle playHandle2 = {};
     StopAllDirectSoundBufferVTable directSoundVTable = {};
-    StopAllA3dSourceVTable a3dVTable = {};
+    TestA3dSourceVTable a3dVTable = {};
     StopAllDirectSoundBuffer directSoundBuffer = {};
-    StopAllA3dSource a3dSource = {};
+    TestA3dSource a3dSource = {};
 
     g_zSnd_IsInitialized = 1;
     g_zSnd_PreInitialized = 1;

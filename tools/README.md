@@ -1,6 +1,8 @@
 # Recoil Agent Tools
 
-These tools support the dependency-driven, binary-safe workflow described in `AGENTS.md`. They produce evidence and reports; they do not replace Binary Ninja inspection or plan marker rules.
+These tools support the dependency-driven reconstruction workflow described in `AGENTS.md`. The default lane is functional equivalence; binary-safe checks are explicit class/source-cluster passes. Tool output is evidence and navigation, not a replacement for Binary Ninja inspection or plan marker rules.
+
+Tools are limited to 10 Binary Ninja bridge calls per top-level invocation. Frontier/status/backlog reports may truncate when that budget is exhausted; binary-safe verification commands fail instead of producing incomplete evidence.
 
 ## Plan Navigation
 
@@ -12,7 +14,7 @@ python tools/recoil_status.py 0x40c370
 python tools/recoil_status.py 0x40c370 --no-frontier
 ```
 
-It combines the active plan entry, claim state, implementation-group context, VC manifest coverage, a depth-1 Binary Ninja frontier summary, and the exact next verification or manifest-scaffold command.
+It combines the active plan entry, claim state, implementation-group context, VC manifest coverage, a depth-1 Binary Ninja frontier summary, and the exact next functional or binary-safe blocker.
 
 Use `recoil_task_packet.py` when launching an agent task and you want the
 preflight, selection, claim, status, coverage, and next commands in one report:
@@ -45,13 +47,14 @@ Use `recoil_plan_cli.py` for normal `.agent/RECOIL_PLAN.md` navigation and one-e
 
 ```powershell
 python tools/recoil_plan_cli.py next
+python tools/recoil_plan_cli.py next --lane binary
 python tools/recoil_plan_cli.py show 0x464810
 python tools/recoil_plan_cli.py find ClipPointList
 python tools/recoil_plan_cli.py milestone M27 --limit 10
 python tools/recoil_plan_cli.py set 0x464810 impl ✅ --name zFoo_Bar --file src/GameZRecoil/zFoo.cpp --evidence "built and source contract checked"
 ```
 
-`recoil_plan_cli.py next` is navigation only; use `recoil_claim.py next --owner <name> --claim` when assigning active work. The plan tool preserves entry shape and refuses `✅` or `☑️` updates without `--evidence`. Durable evidence belongs in Binary Ninja comments, verification output, source comments, README, or narrow subsystem docs.
+`recoil_plan_cli.py next` is navigation only; use `recoil_claim.py next --owner <name> --claim` when assigning active work. The plan tool preserves entry shape, refuses `✅` or `☑️` updates without `--evidence`, and enforces positive marker order. You can downgrade markers to `❌` or `❓` at any time, but new positive updates must move in order from reconstruction to dependencies, implementation, functional equivalence, and then binary safety. Durable evidence belongs in Binary Ninja comments, verification output, source comments, README, or narrow subsystem docs.
 
 ## Dependency Frontier
 
@@ -61,12 +64,12 @@ Use `recoil_frontier.py` before implementing a caller or when choosing the next 
 python tools/recoil_frontier.py 0x4301e0 --depth 1
 python tools/recoil_frontier.py 0x4301e0 --depth 2
 python tools/recoil_frontier.py 0x4301e0 --depth 1 --json
-python tools/recoil_frontier.py 0x4301e0 --depth 1 --lane progress
+python tools/recoil_frontier.py 0x4301e0 --depth 1 --lane binary
 ```
 
-Depth-1 reports can exceed 30 seconds because the tool queries Binary Ninja. Use at least a 120-second timeout for `--depth 1` and longer timeouts for `--depth 2` or broader groups.
+Depth-1 reports can exceed 30 seconds because the tool queries Binary Ninja. Use at least a 120-second timeout for `--depth 1` and longer timeouts for `--depth 2` or broader groups. The tool never makes more than 10 Binary Ninja bridge calls; deeper reports may show `truncated_due_to_bn_call_budget`.
 
-The report lists direct callees visible from Binary Ninja assembly/MLIL, indirect calls, plan status, VC manifest coverage, blockers, and a recommended next item. It does not prove vtable targets, globals, shared layouts, provider contracts, or caller-only ABI requirements; inspect Binary Ninja before source edits or marker updates.
+The report lists direct callees visible from Binary Ninja assembly/MLIL, indirect calls, plan status, verification coverage, blockers, and a recommended next item. Default reports stop at missing `Functional-equivalent`; `--lane binary` also treats `Binary-safe` debt as blocking. It does not prove vtable targets, globals, shared layouts, provider contracts, or caller-only ABI requirements; inspect Binary Ninja before source edits or marker updates.
 
 ## Assembly Evidence
 
@@ -112,20 +115,20 @@ python tools/recoil_vc6_manifest_source_guard.py
 ```
 
 Artifacts are written under `build/vc6-verify/<target>/` for single-target runs and `build/vc6-verify/_batch/` for grouped batch runs, including generated sources, `.cod` listings, COFF objects, relocation masks, byte diffs, byte triage reports, normalized assembly text, and summaries. Review the byte diff and triage report before changing plan markers. Passing single-target runs print a marker-update-ready evidence block; review it, but still update plan markers manually.
-Default manifests use COFF byte comparison. Passing output means unmasked generated bytes match after relocation masking and trailing alignment NOP trimming. A `text` compare mode remains available only for legacy diagnostics.
+Default manifests use COFF byte comparison. Passing output means unmasked generated bytes match after relocation masking and trailing alignment NOP trimming. A `text` compare mode remains available only for legacy diagnostics. BN comparisons share the fixed 10-call bridge budget across the full `recoil_vc6_verify.py` invocation; use a narrower target or `--skip-bn-compare` when a broad batch exhausts that budget.
 
 ## Functional Verification
 
-Use functional verification only for implemented functions with a real, reviewed VC byte-verification failure:
+Use functional verification for implemented functions that need current behavior evidence before they can unblock default caller progress. When a reviewed VC byte-verification failure exists, record that attempt and its known binary-safety limits in the target:
 
 ```powershell
 python tools/recoil_functional_verify.py --list
 python tools/recoil_functional_verify.py 0xNNNNNN
-python tools/recoil_plan_cli.py next --lane progress
-python tools/recoil_status.py --lane progress
+python tools/recoil_plan_cli.py next
+python tools/recoil_status.py
 ```
 
-Functional targets live under `tools/functional_verify_targets/` and list the original address, production source file, required native smoke tests, the VC byte-attempt command, and known binary-safety limits. A passing functional target may justify `Functional-equivalent accepted`, but it does not satisfy `Binary-safe verified`; strict/default tooling still reports that debt.
+Functional targets live under `tools/functional_verify_targets/` and list the original address, production source file, required native smoke tests, the VC byte-attempt command when available, and known binary-safety limits. A passing functional target may justify `Functional-equivalent`, but it does not satisfy `Binary-safe`. Use `--lane binary` when intentionally working that remaining debt.
 
 ## Environment Checks
 
@@ -195,8 +198,11 @@ python tools/recoil_groups_audit.py --recommendation needs-review --details
 python tools/recoil_groups_audit.py --recommendation condense
 python tools/recoil_groups_audit.py --summary --wip-limit 4
 python tools/recoil_verification_backlog.py --limit 30
+python tools/recoil_verification_backlog.py --lane binary --group-by class --limit 30
 python tools/recoil_verification_backlog.py --binja --source-from src/GameZRecoil/zSound/zsnd_play.cpp
 ```
+
+`recoil_groups_audit.py` separates `source_pending`, `functional_pending`, and `binary_pending` so active groups stay open until functional evidence is accepted; groups with only binary-safe debt are candidates for later class/source-cluster condensing. `recoil_verification_backlog.py` lists only actionable entries for the selected lane and skips source-blocked implementations.
 
 Do not prune group notes automatically. Move durable facts to source comments, Binary Ninja comments, tests, README, or narrow subsystem docs first.
 

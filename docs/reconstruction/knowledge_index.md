@@ -11,6 +11,8 @@ for function identity, types, markers, and acceptance state.
   and temporary-state hygiene checks.
 - `compiler_linker_provenance.md` - compiler, linker, and verification-profile
   assumptions guarded by `tools/recoil_provenance_audit.py --strict`.
+- `original_class_candidates.md` - generated candidate map for likely original
+  classes, records, vtables/function tables, and namespace-style subsystems.
 - `provider_abi_notes.md` - repo-local provider assumptions for VC5SP3/VC6, MFC42,
   legacy DirectX, imports, and runtime verification.
 - `source_file_map.md` - generated original-source placement map from
@@ -41,5 +43,8 @@ for function identity, types, markers, and acceptance state.
   `AGENTS.md` for the full workflow rules.
 - For compiler or provider questions, check `provider_abi_notes.md` and
   `compiler_linker_provenance.md` before adding one-off flags or stand-ins.
+- Before introducing or reshaping class, vtable, function-table, record, or
+  namespace/module boundaries, check `original_class_candidates.md` as advisory
+  generated evidence, then confirm against current Binary Ninja facts.
 - For temporary dependency closures, use `.agent/IMPLEMENTATION_GROUPS.md`; move
   durable facts here only when they save future reconstruction time.

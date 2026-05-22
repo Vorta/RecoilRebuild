@@ -27,19 +27,19 @@ PLAN_TEXT = textwrap.dedent(
       - [✅] Reconstructed (Name: Good)
       - [✅] Source dependencies satisfied
       - [✅] Reimplemented (Name: Good File: src/Good.cpp)
-      - [✅] Binary-safe verified
+      - [✅] Binary-safe
 
     - 0x401020:
       - [✅] Reconstructed (Name: ImplBeforeDeps)
       - [❓] Source dependencies satisfied
       - [✅] Reimplemented (Name: ImplBeforeDeps File: src/ImplBeforeDeps.cpp)
-      - [❓] Binary-safe verified
+      - [❓] Binary-safe
 
     - 0x401040:
       - [✅] Reconstructed (Name: VerifyBeforeImpl)
       - [✅] Source dependencies satisfied
       - [❌] Reimplemented (Name: pending File: pending)
-      - [✅] Binary-safe verified
+      - [✅] Binary-safe
     """
 )
 

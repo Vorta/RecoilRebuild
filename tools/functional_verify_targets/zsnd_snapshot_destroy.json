@@ -1,0 +1,15 @@
+{
+  "name": "zsnd_snapshot_destroy",
+  "description": "zSndPlayHandleSnapshot::Destroy walks the circular snapshot list, unlinks and deletes every node, deletes the list head, clears fields, deletes self, and returns 1.",
+  "address": "0x4a05f0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "smoke_tests": [
+    "zsnd_snapshot_destroy_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a05f0",
+  "known_limits": [
+    "VC5SP3 /O2 /Ob1 /GX /Zp4 COFF byte compare fails with 86 unmasked mismatches after relocation masking; Binary Ninja body is 125 bytes and the VC object body is 128 bytes with 13 trailing VC NOPs trimmed.",
+    "Profile sweep found all tested VC5SP3 profiles tied as closest at 86 mismatches; VC6 profiles were materially worse at 102 mismatches.",
+    "Source now uses the recovered byte-mask list-end test shape; remaining drift is branch materialization around the sentinel-list empty and back-edge tests."
+  ]
+}

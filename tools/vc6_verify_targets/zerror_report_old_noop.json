@@ -1,7 +1,7 @@
 {
   "name": "zerror_report_old_noop",
   "description": "zError legacy report no-op stub.",
-  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
   "source_filename": "zerr_old.c",
   "source_from": "src/GameZRecoil/zError/zerr_old.c",
   "compiler_flags": [

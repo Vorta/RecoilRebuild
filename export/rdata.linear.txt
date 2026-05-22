@@ -2405,7 +2405,7 @@
 0x4ce1c4     void (* Update)(struct HudUiElement* self, float dt) = HudUiElement::Update
 0x4ce1c8     void* function_28 = zStub::NoOp1Arg
 0x4ce1cc     struct HudUiRect* (* GetBoundsRectOrNull)(struct HudUiZrdWidget* self) = HudUiZrdWidget::GetBoundsRectOrNull
-0x4ce1d0     void (* OnActivate)(struct HudUiZrdWidget* self) = HudUiOptionsPanel_BackButton::OnActivate
+0x4ce1d0     void (* OnActivate)(struct HudUiZrdWidget* self) = HudUiOptionsPanelBackButton::OnActivate
 0x4ce1d4     void* function_34 = zError::ReportOldNoOp
 0x4ce1d8     void* function_38 = zError::ReportOldNoOp
 0x4ce1dc     void (* ShowPreview)(struct HudUiZrdWidget* self) = HudUiZrdWidget::ShowPreview

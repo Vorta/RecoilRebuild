@@ -1,7 +1,7 @@
 {
   "name": "zsnd_snapshot_restore_all_with_global_volume_delta",
   "description": "zSnd play-handle snapshot restore with global volume delta.",
-  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
   "source_filename": "zsnd_play.cpp",
   "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
   "compiler_flags": [

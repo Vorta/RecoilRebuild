@@ -1,0 +1,15 @@
+{
+  "name": "recoil_app_intro_fmv_state_destructor",
+  "description": "RecoilApp_IntroFmvState::Destructor cleans the embedded intro FMV script and restores the base state vtable.",
+  "address": "0x42df50",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_fmv_state_destructor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x42df50",
+  "known_limits": [
+    "VC6 12.00.8168 /O2 /Ob0 /Zp4 COFF byte compare fails with 57 unmasked mismatches after masking 4 relocation bytes; Binary Ninja body is 62 bytes and the VC object body is 32 bytes with 13 trailing VC NOPs trimmed.",
+    "The strict blocker is destructor/EH cleanup and zFMV_Script::Cleanup call shape; zFMV_Script::Cleanup itself is functional-equivalent accepted but not Binary-safe.",
+    "The native smoke allocates the embedded intro FMV path, calls the destructor, and checks path cleanup plus base vtable restoration."
+  ]
+}

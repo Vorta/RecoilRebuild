@@ -11,7 +11,15 @@ import socket
 import sys
 from typing import Any
 
-from recoil_plan import PlanDocument, PlanEntry, blocker_field, normalize_address
+from recoil_plan import (
+    FUNCTIONAL_LANE,
+    LANE_CHOICES,
+    PlanDocument,
+    PlanEntry,
+    blocker_field,
+    normalize_address,
+    normalize_lane,
+)
 from recoil_tooling import REPO_ROOT, configure_stdio
 
 
@@ -253,11 +261,17 @@ def release_addresses(addresses: list[str], *, token: str, claims_dir: Path) -> 
     return claims
 
 
-def first_unclaimed_unfinished(doc: PlanDocument, claims_dir: Path) -> PlanEntry | None:
+def first_unclaimed_unfinished(
+    doc: PlanDocument,
+    claims_dir: Path,
+    *,
+    lane: str = FUNCTIONAL_LANE,
+) -> PlanEntry | None:
+    lane = normalize_lane(lane)
     prune_stale_claims(claims_dir)
     for address in doc.order:
         entry = doc.entries[address]
-        if blocker_field(entry) and read_claim(claims_dir, address) is None:
+        if blocker_field(entry, lane=lane) and read_claim(claims_dir, address) is None:
             return entry
     return None
 
@@ -293,6 +307,8 @@ def command_release(args: argparse.Namespace) -> int:
 
 def command_status(args: argparse.Namespace) -> int:
     claims_dir = Path(args.claims_dir)
+    if args.address and args.owner:
+        raise ClaimError("status --owner cannot be combined with an address")
     if args.address:
         claim = read_claim(claims_dir, args.address)
         if claim is None:
@@ -302,6 +318,8 @@ def command_status(args: argparse.Namespace) -> int:
         return 0
 
     claims = list_claims(claims_dir)
+    if args.owner:
+        claims = [claim for claim in claims if claim.owner == args.owner]
     if not claims:
         print("no claims")
         return 0
@@ -322,12 +340,13 @@ def command_prune_stale(args: argparse.Namespace) -> int:
 def command_next(args: argparse.Namespace) -> int:
     doc = PlanDocument.load(Path(args.plan))
     claims_dir = Path(args.claims_dir)
-    entry = first_unclaimed_unfinished(doc, claims_dir)
+    lane = normalize_lane(args.lane)
+    entry = first_unclaimed_unfinished(doc, claims_dir, lane=lane)
     if entry is None:
         print("No unclaimed unfinished plan entries found.")
         return 0
     print(
-        f"{entry.address} {entry.milestone} blocker={blocker_field(entry)} "
+        f"{entry.address} {entry.milestone} blocker={blocker_field(entry, lane=lane)} "
         f"name={entry.reimplemented_name or entry.reconstructed_name or 'pending'}"
     )
     print(f"show_command=python tools/recoil_plan_cli.py show {entry.address}")
@@ -364,6 +383,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     status = subparsers.add_parser("status", aliases=["list"], help="Show claim state.")
     status.add_argument("address", nargs="?")
+    status.add_argument("--owner", default="", help="Only show claims owned by this owner.")
     status.set_defaults(func=command_status)
 
     prune = subparsers.add_parser("prune-stale", help="Remove expired claims.")
@@ -375,6 +395,12 @@ def build_parser() -> argparse.ArgumentParser:
     next_entry.add_argument("--owner", default="")
     next_entry.add_argument("--ttl-hours", type=float, default=DEFAULT_TTL_HOURS)
     next_entry.add_argument("--reason", default="")
+    next_entry.add_argument(
+        "--lane",
+        choices=LANE_CHOICES,
+        default=FUNCTIONAL_LANE,
+        help="functional stops at Functional-equivalent; binary also requires Binary-safe.",
+    )
     next_entry.set_defaults(func=command_next)
 
     return parser

@@ -24,7 +24,8 @@ def write_plan(path: Path) -> None:
         "  - [✅] Reconstructed (Name: Sample)\n"
         "  - [✅] Source dependencies satisfied\n"
         "  - [✅] Reimplemented (Name: Sample File: src/sample.cpp)\n"
-        "  - [❌] Binary-safe verified\n",
+        "  - [✅] Functional-equivalent (Target: sample)\n"
+        "  - [❌] Binary-safe\n",
         encoding="utf-8",
     )
 
@@ -58,6 +59,8 @@ class RecoilStatusTests(unittest.TestCase):
                     str(claims_dir),
                     "--vc6-manifest-dir",
                     str(manifest_dir),
+                    "--lane",
+                    "binary",
                     "--no-frontier",
                 ],
                 cwd=REPO_ROOT,

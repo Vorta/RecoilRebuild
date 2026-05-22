@@ -2,7 +2,7 @@
   "name": "zsnd_sample_set_registry_get_count",
   "description": "zSnd sample-set registry count and indexed lookup helpers.",
   "source_filename": "zsnd_sample_set.cpp",
-  "compiler_env": "${RECOIL_VC6_ROOT}/../VC5SP3/vc5sp3-env.cmd",
+  "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
   "compiler_flags": [
     "/nologo",
     "/TP",

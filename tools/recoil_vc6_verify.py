@@ -12,7 +12,7 @@ import sys
 from typing import Any
 
 from recoil_asm_verify import AssemblyComparison, ObjectByteComparison, compare_bn_to_cod, compare_bn_to_obj
-from recoil_binja import BridgeError
+from recoil_binja import BinaryNinjaBridge, BridgeBudgetExceeded, BridgeError
 from recoil_plan import normalize_address
 from recoil_profiles import profiles_by_name
 from recoil_tooling import (
@@ -713,10 +713,12 @@ def compare_compiled_selections(
     compiled: CompiledTarget,
     selections: list[VerifySelection],
     bridge_url: str,
+    bridge: BinaryNinjaBridge | None = None,
 ) -> tuple[list[VerificationResult], int]:
     verify_dir = compiled.build_dir / "verify"
     results: list[VerificationResult] = []
     overall = 0
+    bridge = bridge or BinaryNinjaBridge(bridge_url)
     for selection in selections:
         target = selection.target
         for function in selection.functions:
@@ -728,6 +730,7 @@ def compare_compiled_selections(
                         symbol=function.symbol,
                         out_dir=verify_dir,
                         bridge_url=bridge_url,
+                        bridge=bridge,
                         cod_path=compiled.cod_path,
                         trim_padding_nops=target.trim_trailing_nops,
                         bn_byte_length=function.bn_byte_length,
@@ -754,6 +757,7 @@ def compare_compiled_selections(
                         symbol=function.symbol,
                         out_dir=verify_dir,
                         bridge_url=bridge_url,
+                        bridge=bridge,
                     )
                     summary = read_classified_summary(comparison.classified_path)
                     results.append(
@@ -771,6 +775,14 @@ def compare_compiled_selections(
                             comparison=comparison,
                         )
                     )
+            except BridgeBudgetExceeded as exc:
+                print(f"{function.address} {function.name}: {exc}", file=sys.stderr)
+                print(
+                    "Binary Ninja comparison stopped because the 10-call budget was exhausted; "
+                    "rerun a narrower target or use --skip-bn-compare for compile-only coverage.",
+                    file=sys.stderr,
+                )
+                return results, 1
             except (BridgeError, ValueError) as exc:
                 print(f"{function.address} {function.name}: {exc}", file=sys.stderr)
                 overall = 1
@@ -961,6 +973,7 @@ def run_profile_sweep(
     rows: list[tuple[str, VerificationResult | None, int]] = []
     any_success = False
     overall = 0
+    bridge = None if skip_bn_compare else BinaryNinjaBridge(bridge_url)
     for profile_name in profile_names:
         sweep_target = with_compiler_profile_override(target, profile_name)
         build_subdir = safe_path_component(f"{target.name}__{profile_name}")
@@ -992,6 +1005,7 @@ def run_profile_sweep(
             compiled=compiled,
             selections=[selection],
             bridge_url=bridge_url,
+            bridge=bridge,
         )
         for result in results:
             rows.append((profile_name, result, compare_rc))
@@ -1029,6 +1043,7 @@ def run_batch(
 
     overall = 0
     all_results: list[VerificationResult] = []
+    bridge = None if skip_bn_compare else BinaryNinjaBridge(bridge_url)
     for key, group in grouped:
         representative = group[0].target
         digest = compile_key_digest(key)
@@ -1058,6 +1073,7 @@ def run_batch(
             compiled=compiled,
             selections=group,
             bridge_url=bridge_url,
+            bridge=bridge,
         )
         all_results.extend(results)
         if compare_rc:

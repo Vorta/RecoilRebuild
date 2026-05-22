@@ -125,6 +125,10 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void);
 extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void);
 extern "C" int zhud_message_box_leaf_handlers_smoke(void);
 extern "C" int zhud_background_container_focus_smoke(void);
+extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void);
+extern "C" int zhud_background_constructor_smoke(void);
+extern "C" int zhud_background_bind_widget_by_name_smoke(void);
+extern "C" int zhud_background_free_loaded_tree_roots_smoke(void);
 extern "C" int zhud_background_set_enabled_smoke(void);
 extern "C" int zhud_dialog_controller_blit_owned_surface_smoke(void);
 extern "C" int zhud_font_style_constructor_smoke(void);
@@ -336,6 +340,7 @@ extern "C" int recoil_state_main_menu_transition_destructor_smoke(void);
 extern "C" int recoil_state_main_menu_transition_clear_paused_audio_snapshot_smoke(void);
 extern "C" int recoil_state_main_menu_transition_queue_enter_smoke(void);
 extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke(void);
+extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void);
 extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(void);
 extern "C" int zsnd_set_use_archive_banks_flag_smoke(void);
 extern "C" int zsnd_sample_set_registry_init_shutdown_smoke(void);
@@ -366,6 +371,9 @@ extern "C" int zsnd_group_load_and_queue_smoke(void);
 extern "C" int zsnd_stream_mgr_shutdown_lists_smoke(void);
 extern "C" int zsnd_backend_shutdown_release_smoke(void);
 extern "C" int zsnd_play_handle_stop_if_active_smoke(void);
+extern "C" int zsnd_snapshot_create_from_active_samples_smoke(void);
+extern "C" int zsnd_snapshot_restore_all_with_global_volume_delta_smoke(void);
+extern "C" int zsnd_snapshot_destroy_smoke(void);
 extern "C" int zsnd_snapshot_stop_all_if_playing_smoke(void);
 extern "C" int zsnd_play_handle_update3d_a3d_smoke(void);
 extern "C" int zsnd_update_listener_state_smoke(void);
@@ -794,6 +802,12 @@ int main(int argc, char **argv) {
          zhud_cmd_bind_button_base_constructor_smoke},
         {"zhud_message_box_leaf_handlers_smoke", zhud_message_box_leaf_handlers_smoke},
         {"zhud_background_container_focus_smoke", zhud_background_container_focus_smoke},
+        {"zhud_background_cursor_widget_member_constructor_smoke",
+         zhud_background_cursor_widget_member_constructor_smoke},
+        {"zhud_background_constructor_smoke", zhud_background_constructor_smoke},
+        {"zhud_background_bind_widget_by_name_smoke", zhud_background_bind_widget_by_name_smoke},
+        {"zhud_background_free_loaded_tree_roots_smoke",
+         zhud_background_free_loaded_tree_roots_smoke},
         {"zhud_background_set_enabled_smoke", zhud_background_set_enabled_smoke},
         {"zhud_dialog_controller_blit_owned_surface_smoke",
          zhud_dialog_controller_blit_owned_surface_smoke},
@@ -1041,6 +1055,8 @@ int main(int argc, char **argv) {
          recoil_state_main_menu_transition_queue_enter_smoke},
         {"recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke",
          recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke},
+        {"hud_ui_main_menu_dialog_constructor_smoke",
+         hud_ui_main_menu_dialog_constructor_smoke},
         {"recoil_state_main_menu_transition_on_try_become_current_smoke",
          recoil_state_main_menu_transition_on_try_become_current_smoke},
         {"zsnd_set_use_archive_banks_flag_smoke", zsnd_set_use_archive_banks_flag_smoke},
@@ -1076,6 +1092,11 @@ int main(int argc, char **argv) {
         {"zsnd_stream_mgr_shutdown_lists_smoke", zsnd_stream_mgr_shutdown_lists_smoke},
         {"zsnd_backend_shutdown_release_smoke", zsnd_backend_shutdown_release_smoke},
         {"zsnd_play_handle_stop_if_active_smoke", zsnd_play_handle_stop_if_active_smoke},
+        {"zsnd_snapshot_create_from_active_samples_smoke",
+         zsnd_snapshot_create_from_active_samples_smoke},
+        {"zsnd_snapshot_restore_all_with_global_volume_delta_smoke",
+         zsnd_snapshot_restore_all_with_global_volume_delta_smoke},
+        {"zsnd_snapshot_destroy_smoke", zsnd_snapshot_destroy_smoke},
         {"zsnd_snapshot_stop_all_if_playing_smoke", zsnd_snapshot_stop_all_if_playing_smoke},
         {"zsnd_play_handle_update3d_a3d_smoke", zsnd_play_handle_update3d_a3d_smoke},
         {"zsnd_update_listener_state_smoke", zsnd_update_listener_state_smoke},
