@@ -1,0 +1,14 @@
+{
+  "name": "zvideo_update_cached_client_rect",
+  "description": "zVideo::UpdateCachedClientRectScreenCoords caches the window client rect and converts both corners to screen coordinates.",
+  "address": "0x4a7700",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvid_cached_client_rect_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zvideo_update_cached_client_rect",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?UpdateCachedClientRectScreenCoords@zVideo@@YAHXZ at 0x4a7700 with zero unmasked mismatches after masking 32 relocation bytes; 8 trailing VC NOP bytes trimmed."
+  ]
+}

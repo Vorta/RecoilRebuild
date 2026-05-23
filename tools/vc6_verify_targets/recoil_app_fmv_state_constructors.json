@@ -27,6 +27,11 @@
       "address": "0x42ed30",
       "symbol": "?Constructor@RecoilApp_MissionFmvState@@QAEPAU1@XZ",
       "name": "RecoilApp_MissionFmvState::Constructor"
+    },
+    {
+      "address": "0x42eb00",
+      "symbol": "?OnIdleOrDispatch@RecoilApp_FmvState@@QAEHII@Z",
+      "name": "RecoilApp_FmvState::OnIdleOrDispatch"
     }
   ]
 }

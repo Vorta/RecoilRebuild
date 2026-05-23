@@ -38,6 +38,11 @@
       "address": "0x4a66f0",
       "symbol": "?Init_ApplyModeIndex@zVideo@@YIHH@Z",
       "name": "zVideo::Init_ApplyModeIndex"
+    },
+    {
+      "address": "0x4a7af0",
+      "symbol": "?SetVideoMode@zVideo@@YIHH@Z",
+      "name": "zVideo::SetVideoMode"
     }
   ],
   "source_from": "src/GameZRecoil/zVideo/zVideo.cpp"

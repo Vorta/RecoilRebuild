@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_shield_message_widget_destructor",
+  "description": "HudUiShieldMessageWidget::Destructor resets the meter ftable, destructs the percent text panel, and destructs the widget core.",
+  "address": "0x40fe30",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_shield_message_widget_destructor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x40fe30",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?Destructor@HudUiShieldMessageWidget@@QAEXXZ at 0x40fe30 still fails: 72 unmasked mismatches, 12 relocation bytes masked, 14 trailing VC NOP bytes trimmed, BN size 85 bytes, VC object symbol size 48 bytes.",
+    "The native smoke verifies the destructor-visible ftable and embedded panel/widget cleanup effects."
+  ]
+}

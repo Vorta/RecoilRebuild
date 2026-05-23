@@ -1,0 +1,14 @@
+{
+  "name": "ztag4_clear",
+  "description": "zTag4::Clear tolerates null input and resets a tag to count zero with wildcard tag bytes.",
+  "address": "0x476320",
+  "source_from": "src/Battlesport/zModel/zModel_Display.cpp",
+  "smoke_tests": [
+    "zclass_camera_view_distance_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zmodel_display_init_helpers",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare currently fails for zTag4::Clear: 17 unmasked mismatches with no relocation bytes; Binary Ninja body is 20 bytes and the VC object body is 32 bytes with 13 trailing VC NOPs trimmed.",
+    "The reviewed byte drift is compact null-check/store shape for the four-byte tag payload; the native smoke verifies null tolerance and wildcard reset of count plus tag bytes."
+  ]
+}

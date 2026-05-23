@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_primitive_bind_target_set_segment_endpoints",
+  "description": "HudUiPrimitiveBindTarget::SetSegmentEndpoints dispatches SetPos through the element ftable for the start point, then stores endX and endY in the primitive endpoint fields.",
+  "address": "0x4bffb0",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_primitive_bind_target_set_segment_endpoints_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4bffb0",
+  "known_limits": [
+    "The ftable target is an element SetPos-compatible slot supplied by the concrete primitive object; class-level binary-safe review should keep the slot owner and primitive layout together.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?SetSegmentEndpoints@HudUiPrimitiveBindTarget@@QAEXHHHH@Z at 0x4bffb0 still fails: 25 unmasked mismatches, 0 relocation bytes masked, 8 trailing VC NOP bytes trimmed, Binary Ninja body is 38 bytes and the VC object symbol is 48 bytes."
+  ],
+  "binary_safe_evidence": [
+    "Binary Ninja shows a virtual call through slot 0x0c with startX/startY, followed by direct writes to endX at offset 0x34 and endY at offset 0x38.",
+    "The native primitive-bind smoke installs a test SetPos slot and validates the dispatch receiver, start arguments, base x/y update, and direct endX/endY stores."
+  ]
+}

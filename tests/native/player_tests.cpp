@@ -1,7 +1,10 @@
 #include "Battlesport/GameNet.h"
 #include "Battlesport/player.h"
+#include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/include/zClass.h"
+#include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zUtil/zZbd.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstdlib>
@@ -241,6 +244,271 @@ extern "C" int player_alt_gun_fire_point_selection_smoke(void) {
     return 0;
 }
 
+extern "C" int player_build_mission_save_data_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData modalData = {};
+    zClass_NodePartial cameraNode = {};
+    zClass_CameraDataPartial cameraData = {};
+    OptCatalogEntryDef hitSource = {};
+
+    for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
+        PlayerAltWeaponBank &bank = playerState.altWeaponBanks[bankIndex];
+        bank.selectedSide = bankIndex & 1;
+        bank.controllerA.flags = bankIndex & 1 ? 4 : 0;
+        bank.controllerA.ammoOrCharge = static_cast<float>(10 + bankIndex);
+        bank.controllerA.weaponBankIndex = bankIndex;
+        bank.controllerA.weaponSideIndex = 0;
+        bank.controllerB.flags = bankIndex & 1 ? 0 : 4;
+        bank.controllerB.ammoOrCharge = static_cast<float>(20 + bankIndex);
+        bank.controllerB.weaponBankIndex = bankIndex;
+        bank.controllerB.weaponSideIndex = 1;
+    }
+
+    playerState.activeAltGunController = &playerState.altWeaponBanks[3].controllerB;
+    playerState.activePrimaryGunController = &playerState.altWeaponBanks[4].controllerA;
+    playerState.amphibUnlocked = 1;
+    playerState.hoverUnlocked = 2;
+    playerState.subUnlocked = 3;
+    playerState.aiMode = 4;
+    playerState.nextModeSwitchAllowedTime = 12.5f;
+    playerState.motionInput = 5;
+    playerState.autoTurnSign = -1;
+    playerState.bankInput = 6;
+    playerState.timedHitStatus.runtimeFlags = 1;
+    playerState.timedHitStatus.hitSource = &hitSource;
+    playerState.timedHitStatus.unknown_08 = 8;
+    playerState.timedHitStatus.unknown_0c = 9;
+    playerState.timedHitStatus.lightNode = &cameraNode;
+    playerState.timedHitStatus.nextUpdateTime = 50.0f;
+    playerState.timedHitStatus.unknown_18 = 18;
+    hitSource.ordinalIndex = 77;
+
+    modalData.masterType = 11;
+    modalState.masterModalData = &modalData;
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    cameraData.cameraFlags = 2;
+    cameraData.worldTarget = {31.0f, 32.0f, 33.0f};
+    cameraData.targetOrEuler = {21.0f, 22.0f, 23.0f};
+    cameraData.posOffset = {41.0f, 42.0f, 43.0f};
+
+    zUtil_SaveGameState *const oldLocalSaveState = g_LocalPlayerSaveState;
+    zClass_NodePartial *const oldMainCamera = g_MainCamera;
+    const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
+    const int oldHudCounterValue = g_Player_HudCounterValue;
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+
+    g_LocalPlayerSaveState = &saveState;
+    g_MainCamera = &cameraNode;
+    g_PlayerStatusMeterRatio = 0.625f;
+    g_Player_HudCounterValue = 1234;
+    g_Time_AccumulatedTimeSec = 45.0f;
+
+    PlayerMissionSaveData outData = {};
+    Player::BuildMissionSaveData(&outData);
+
+    bool ok = outData.size == sizeof(PlayerMissionSaveData) &&
+              outData.altWeaponBankIndex == 3 && outData.altWeaponSideIndex == 1 &&
+              outData.primaryWeaponBankIndex == 4 && outData.primaryWeaponSideIndex == 0 &&
+              outData.playerStatusMeterRatio == 0.625f && outData.hudCounterValue == 1234 &&
+              outData.amphibUnlocked == 1 && outData.hoverUnlocked == 2 &&
+              outData.subUnlocked == 3 && outData.aiMode == 4 &&
+              outData.nextModeSwitchAllowedTime == 12.5f && outData.motionInput == 5 &&
+              outData.autoTurnSign == -1 && outData.bankInput == 6 &&
+              outData.playerMasterType == 11 &&
+              Vec3Equals(outData.cameraTarget, cameraData.worldTarget) &&
+              Vec3Equals(outData.cameraPosition, cameraData.posOffset) &&
+              outData.timedHitStatus.runtimeFlags == 1 &&
+              outData.timedHitStatus.savedHitSourceEntryId == 77 &&
+              outData.timedHitStatus.unknown_08 == 8 &&
+              outData.timedHitStatus.unknown_0c == 9 &&
+              outData.timedHitStatus.lightNode == nullptr &&
+              outData.timedHitStatus.nextUpdateTime == 5.0f &&
+              outData.timedHitStatus.unknown_18 == 18;
+
+    for (int bankIndex = 0; ok && bankIndex < 10; ++bankIndex) {
+        const PlayerMissionSaveWeaponBank &savedBank = outData.weaponBank[bankIndex];
+        const PlayerAltWeaponBank &sourceBank = playerState.altWeaponBanks[bankIndex];
+        ok = savedBank.selectedSide == sourceBank.selectedSide &&
+             savedBank.sides[0].enabled == ((sourceBank.controllerA.flags >> 2) & 1) &&
+             savedBank.sides[0].ammoOrCharge == sourceBank.controllerA.ammoOrCharge &&
+             savedBank.sides[1].enabled == ((sourceBank.controllerB.flags >> 2) & 1) &&
+             savedBank.sides[1].ammoOrCharge == sourceBank.controllerB.ammoOrCharge;
+    }
+
+    g_LocalPlayerSaveState = oldLocalSaveState;
+    g_MainCamera = oldMainCamera;
+    g_PlayerStatusMeterRatio = oldStatusMeterRatio;
+    g_Player_HudCounterValue = oldHudCounterValue;
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_set_world_pose_and_restart_anchor_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    playerState.worldPos = {1.0f, 2.0f, 3.0f};
+    playerState.previousTransform.posX = 4.0f;
+    playerState.previousTransform.posY = 5.0f;
+    playerState.previousTransform.posZ = 6.0f;
+    playerState.restartYawRad = 7.0f;
+    playerState.variantTag.count = 3;
+    playerState.variantTag.tags[0] = 10;
+    playerState.variantTag.tags[1] = 11;
+    playerState.variantTag.tags[2] = 12;
+
+    const zTag4Partial oldVariantTagCurrent = g_VariantTag_Current;
+    const zTag4Partial oldVariantCurrent = g_Variant_CurrentTag;
+    g_VariantTag_Current.count = 2;
+    g_VariantTag_Current.tags[0] = 20;
+    g_VariantTag_Current.tags[1] = 21;
+    g_VariantTag_Current.tags[2] = 22;
+    g_Variant_CurrentTag.count = 1;
+    g_Variant_CurrentTag.tags[0] = 30;
+    g_Variant_CurrentTag.tags[1] = 31;
+    g_Variant_CurrentTag.tags[2] = 32;
+
+    Player::SetWorldPoseAndRestartAnchor(nullptr, nullptr, 9.0f);
+    if (!Vec3Equals(playerState.worldPos, {1.0f, 2.0f, 3.0f}) ||
+        playerState.restartYawRad != 7.0f || g_VariantTag_Current.count != 2 ||
+        g_Variant_CurrentTag.count != 1) {
+        g_VariantTag_Current = oldVariantTagCurrent;
+        g_Variant_CurrentTag = oldVariantCurrent;
+        return 1;
+    }
+
+    const zVec3 newPosition = {40.0f, 41.0f, 42.0f};
+    Player::SetWorldPoseAndRestartAnchor(&saveState, &newPosition, 1.25f);
+
+    const bool ok = Vec3Equals(playerState.worldPos, newPosition) &&
+                    playerState.previousTransform.posX == newPosition.x &&
+                    playerState.previousTransform.posY == newPosition.y &&
+                    playerState.previousTransform.posZ == newPosition.z &&
+                    playerState.restartYawRad == 1.25f &&
+                    g_VariantTag_Current.count == 0 &&
+                    g_VariantTag_Current.tags[0] == 0xff &&
+                    g_VariantTag_Current.tags[1] == 0xff &&
+                    g_VariantTag_Current.tags[2] == 0xff &&
+                    g_Variant_CurrentTag.count == 0 &&
+                    g_Variant_CurrentTag.tags[0] == 0xff &&
+                    g_Variant_CurrentTag.tags[1] == 0xff &&
+                    g_Variant_CurrentTag.tags[2] == 0xff &&
+                    playerState.variantTag.count == 0 &&
+                    playerState.variantTag.tags[0] == 0xff &&
+                    playerState.variantTag.tags[1] == 0xff &&
+                    playerState.variantTag.tags[2] == 0xff;
+
+    g_VariantTag_Current = oldVariantTagCurrent;
+    g_Variant_CurrentTag = oldVariantCurrent;
+    return ok ? 0 : 2;
+}
+
+extern "C" int player_zar_write_mission_save_data_section_smoke(void) {
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    GetTempPathA(sizeof(tempPath), tempPath);
+    GetTempFileNameA(tempPath, "pms", 0, tempFile);
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                    FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        return 1;
+    }
+
+    zZbdManager manager = {};
+    manager.indexArchive.hFile = file;
+
+    zZbdSectionHandler handler = {};
+    handler.sectionName = "Player";
+    zZbdSectionCallbackCtx callbackCtx = {};
+    callbackCtx.manager = &manager;
+    callbackCtx.sectionHandler = &handler;
+
+    zClass_NodePartial rootNode = {};
+    std::strcpy(rootNode.name, "local_player");
+    zClass_NodePartial cameraNode = {};
+    zClass_CameraDataPartial cameraData = {};
+    PlayerMasterModalData modalData = {};
+    PlayerModalState modalState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    zUtil_SaveGameState saveState = {};
+    OptCatalogEntryDef hitSource = {};
+
+    playerState.rootNode = &rootNode;
+    playerState.activeAltGunController = &playerState.altWeaponBanks[1].controllerA;
+    playerState.activePrimaryGunController = &playerState.altWeaponBanks[2].controllerB;
+    playerState.altWeaponBanks[1].controllerA.weaponBankIndex = 1;
+    playerState.altWeaponBanks[1].controllerA.weaponSideIndex = 0;
+    playerState.altWeaponBanks[2].controllerB.weaponBankIndex = 2;
+    playerState.altWeaponBanks[2].controllerB.weaponSideIndex = 1;
+    playerState.timedHitStatus.runtimeFlags = 1;
+    playerState.timedHitStatus.hitSource = &hitSource;
+    playerState.timedHitStatus.nextUpdateTime = 100.0f;
+    hitSource.ordinalIndex = 88;
+
+    modalData.masterType = 66;
+    modalState.masterModalData = &modalData;
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    cameraData.targetOrEuler = {1.0f, 2.0f, 3.0f};
+    cameraData.posOffset = {4.0f, 5.0f, 6.0f};
+
+    zUtil_SaveGameState *const oldLocalSaveState = g_LocalPlayerSaveState;
+    zClass_NodePartial *const oldMainCamera = g_MainCamera;
+    const zTag4Partial oldVariantTag = g_Variant_CurrentTag;
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+    g_LocalPlayerSaveState = &saveState;
+    g_MainCamera = &cameraNode;
+    g_Variant_CurrentTag.count = 2;
+    g_Variant_CurrentTag.tags[0] = 7;
+    g_Variant_CurrentTag.tags[1] = 8;
+    g_Variant_CurrentTag.tags[2] = 0xff;
+    g_Time_AccumulatedTimeSec = 90.0f;
+
+    const int result = Player::ZAR_WriteMissionSaveDataSection(&callbackCtx, nullptr);
+
+    PlayerMissionSaveData readBack = {};
+    DWORD read = 0;
+    SetFilePointer(file, 0, nullptr, FILE_BEGIN);
+    ReadFile(file, &readBack, sizeof(readBack), &read, nullptr);
+
+    const bool ok = result == 1 && read == sizeof(readBack) && manager.indexArchive.recordCount == 1 &&
+                    manager.indexArchive.records != nullptr &&
+                    std::strcmp(manager.indexArchive.records[0].name, "Player/local_player") == 0 &&
+                    readBack.size == sizeof(PlayerMissionSaveData) &&
+                    readBack.primaryWeaponBankIndex == 2 &&
+                    readBack.primaryWeaponSideIndex == 1 &&
+                    readBack.playerMasterType == 66 &&
+                    Vec3Equals(readBack.cameraTarget, cameraData.targetOrEuler) &&
+                    Vec3Equals(readBack.cameraPosition, cameraData.posOffset) &&
+                    readBack.lastValidCameraVariantTag.count == 2 &&
+                    readBack.lastValidCameraVariantTag.tags[0] == 7 &&
+                    readBack.lastValidCameraVariantTag.tags[1] == 8 &&
+                    readBack.lastValidCameraVariantTag.tags[2] == 0xff &&
+                    readBack.timedHitStatus.savedHitSourceEntryId == 88 &&
+                    readBack.timedHitStatus.nextUpdateTime == 10.0f;
+
+    g_LocalPlayerSaveState = oldLocalSaveState;
+    g_MainCamera = oldMainCamera;
+    g_Variant_CurrentTag = oldVariantTag;
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    std::free(manager.indexArchive.records);
+    manager.indexArchive.records = nullptr;
+    CloseHandle(file);
+    return ok ? 0 : 2;
+}
+
 extern "C" int zutil_save_game_state_free_owned_resources_smoke(void) {
     zUtil_SaveGameState saveState = {};
     saveState.playerState = AllocZeroedMalloc<zUtil_PlayerStateStorage>();
@@ -266,6 +534,114 @@ extern "C" int zutil_save_game_state_free_owned_resources_smoke(void) {
                    saveState.modalStateListAux == 0
                ? 0
                : 1;
+}
+
+extern "C" int player_zar_write_vehicle_list_section_smoke(void) {
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    GetTempPathA(sizeof(tempPath), tempPath);
+    GetTempFileNameA(tempPath, "pvl", 0, tempFile);
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                    FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        return 1;
+    }
+
+    zZbdManager manager = {};
+    manager.indexArchive.hFile = file;
+
+    zZbdSectionHandler handler = {};
+    handler.sectionName = "VehicleList";
+    zZbdSectionCallbackCtx callbackCtx = {};
+    callbackCtx.manager = &manager;
+    callbackCtx.sectionHandler = &handler;
+
+    zClass_NodePartial rootNode = {};
+    std::strcpy(rootNode.name, "local_vehicle");
+
+    PlayerMasterModalData modalData = {};
+    modalData.masterType = 77;
+    PlayerModalState modalState = {};
+    modalState.masterModalData = &modalData;
+
+    zUtil_PlayerStateStorage playerState = {};
+    playerState.rootNode = &rootNode;
+    playerState.vehicleRotationAngles = {1.0f, 2.0f, 3.0f};
+    playerState.worldPos = {4.0f, 5.0f, 6.0f};
+    playerState.aiNetId = 1001;
+    playerState.aiTopLevelState = 11;
+    playerState.aiSavedTopLevelState = 12;
+    playerState.aiReturnTopLevelState = 13;
+    playerState.aiAttackRadiusSq = 14.0f;
+    playerState.aiRestoreDistanceSq = 15.0f;
+    playerState.aiRestoreTarget = {16.0f, 17.0f, 18.0f};
+    playerState.aiDynamicOffsetDir = {19.0f, 20.0f, 21.0f};
+    playerState.aiActivationRadiusSq = 22.0f;
+    playerState.aiTickSuppressed = 23;
+    playerState.recentHitFlag = 24;
+    playerState.recentHitMarkerHandle = 25;
+    playerState.aiActive = 26;
+    playerState.aiPathCursorAdvanceRequested = 27;
+    playerState.aiCurrentSteeringSubstate = 28;
+    playerState.aiReturnSteeringSubstate = 29;
+    playerState.masterType = 30;
+    playerState.statusMeterScaled = 31.0f;
+    playerState.statusMeterValue = 32.0f;
+    playerState.nanitePanelLevel = 33;
+
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+
+    zUtil_SaveGameState *const oldHead = g_PlayerSaveStateListHead;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    g_PlayerSaveStateListHead = &saveState;
+    g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&saveState;
+
+    const int result = Player::ZAR_WriteVehicleListSection(&callbackCtx, nullptr);
+
+    PlayerVehicleListSaveEntry readBack = {};
+    DWORD read = 0;
+    SetFilePointer(file, 0, nullptr, FILE_BEGIN);
+    ReadFile(file, &readBack, sizeof(readBack), &read, nullptr);
+
+    const bool ok = result == 1 && read == sizeof(readBack) && manager.indexArchive.recordCount == 1 &&
+                    manager.indexArchive.records != nullptr &&
+                    std::strcmp(manager.indexArchive.records[0].name,
+                                "VehicleList/local_vehicle") == 0 &&
+                    readBack.size == 128 &&
+                    Vec3Equals(readBack.vehicleRotationAngles, playerState.vehicleRotationAngles) &&
+                    Vec3Equals(readBack.worldPos, playerState.worldPos) &&
+                    readBack.aiNetId == playerState.aiNetId &&
+                    readBack.aiTopLevelState == playerState.aiTopLevelState &&
+                    readBack.aiSavedTopLevelState == playerState.aiSavedTopLevelState &&
+                    readBack.aiReturnTopLevelState == playerState.aiReturnTopLevelState &&
+                    readBack.aiAttackRadiusSq == playerState.aiAttackRadiusSq &&
+                    readBack.aiRestoreDistanceSq == playerState.aiRestoreDistanceSq &&
+                    Vec3Equals(readBack.aiRestoreTarget, playerState.aiRestoreTarget) &&
+                    Vec3Equals(readBack.aiDynamicOffsetDir, playerState.aiDynamicOffsetDir) &&
+                    readBack.aiActivationRadiusSq == playerState.aiActivationRadiusSq &&
+                    readBack.aiTickSuppressed == playerState.aiTickSuppressed &&
+                    readBack.aiAlertFlag == playerState.recentHitFlag &&
+                    readBack.aiStateMarkerHandle == playerState.recentHitMarkerHandle &&
+                    readBack.aiActive == playerState.aiActive &&
+                    readBack.aiPathCursorAdvanceRequested == playerState.aiPathCursorAdvanceRequested &&
+                    readBack.aiCurrentSteeringSubstate == playerState.aiCurrentSteeringSubstate &&
+                    readBack.aiReturnSteeringSubstate == playerState.aiReturnSteeringSubstate &&
+                    readBack.masterType == playerState.masterType &&
+                    readBack.statusMeterScaled == playerState.statusMeterScaled &&
+                    readBack.statusMeterValue == playerState.statusMeterValue &&
+                    readBack.nanitePanelLevel == playerState.nanitePanelLevel &&
+                    readBack.localMasterType == modalData.masterType;
+
+    g_PlayerSaveStateListHead = oldHead;
+    g_GameStateOrMapTable = oldGameState;
+    std::free(manager.indexArchive.records);
+    manager.indexArchive.records = nullptr;
+    CloseHandle(file);
+    return ok ? 0 : 2;
 }
 
 extern "C" int player_destroy_save_game_state_smoke(void) {

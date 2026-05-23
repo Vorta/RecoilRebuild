@@ -1,0 +1,14 @@
+{
+  "name": "zopt_get_video_stride_value",
+  "description": "zOpt::GetVideoStrideValue reads the persisted video stride option.",
+  "address": "0x4086a0",
+  "source_from": "src/GameZRecoil/zGame/zGame.cpp",
+  "smoke_tests": [
+    "zopt_view_rect_target_side_effects_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zopt_display_option_getters",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?GetVideoStrideValue@zOpt@@YAHXZ at 0x4086a0 with zero unmasked mismatches after masking 4 relocation bytes; 8 trailing VC NOP bytes trimmed."
+  ]
+}

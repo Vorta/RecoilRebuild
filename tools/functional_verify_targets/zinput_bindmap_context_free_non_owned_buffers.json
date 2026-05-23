@@ -1,0 +1,13 @@
+{
+  "name": "zinput_bindmap_context_free_non_owned_buffers",
+  "description": "zInput_BindMapContext::FreeNonOwnedBuffers releases callbacks and label strings while preserving non-owned packed binding storage ownership.",
+  "address": "0x470960",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x470960",
+  "known_limits": [
+    "The smoke exercises non-owned cleanup through command-map option storage and overlay shutdown. Binary-safe verification remains pending for exact ownership-sensitive free shape."
+  ]
+}

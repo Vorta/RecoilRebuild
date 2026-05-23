@@ -1,3 +1,6 @@
+#ifndef BATTLESPORT_PLAYER_H
+#define BATTLESPORT_PLAYER_H
+
 #pragma once
 
 #include "recoil/recoil_types.h"
@@ -9,6 +12,7 @@
 
 struct zInput_GameStateOrMapTablePartial;
 struct zEffectAnimEntry;
+struct zZbdSectionCallbackCtx;
 
 extern "C" {
 extern int g_Player_HudCounterValue;
@@ -107,8 +111,35 @@ struct PlayerMissionSaveData {
     int playerMasterType;
     zVec3 cameraTarget;
     zVec3 cameraPosition;
-    int unknown_120;
+    zTag4Partial lastValidCameraVariantTag;
     PlayerMissionSaveTimedHitStatus timedHitStatus;
+};
+
+struct PlayerVehicleListSaveEntry {
+    int size;
+    zVec3 vehicleRotationAngles;
+    zVec3 worldPos;
+    int aiNetId;
+    int aiTopLevelState;
+    int aiSavedTopLevelState;
+    int aiReturnTopLevelState;
+    float aiAttackRadiusSq;
+    float aiRestoreDistanceSq;
+    zVec3 aiRestoreTarget;
+    zVec3 aiDynamicOffsetDir;
+    float aiActivationRadiusSq;
+    int aiTickSuppressed;
+    int aiAlertFlag;
+    int aiStateMarkerHandle;
+    int aiActive;
+    int aiPathCursorAdvanceRequested;
+    int aiCurrentSteeringSubstate;
+    int aiReturnSteeringSubstate;
+    int masterType;
+    float statusMeterScaled;
+    float statusMeterValue;
+    int nanitePanelLevel;
+    int localMasterType;
 };
 
 extern "C" {
@@ -129,7 +160,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL
 AiDiscardNegativeBranchPathNodes(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL AiRestorePreviousTopLevelState(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_CDECL AiFinalizeMode2State1ForAllPlayers();
+RECOIL_NOINLINE void RECOIL_FASTCALL SetWorldPoseAndRestartAnchor(
+    zUtil_SaveGameState *saveState, const zVec3 *position, float yawRad);
 RECOIL_NOINLINE void RECOIL_FASTCALL BuildMissionSaveData(PlayerMissionSaveData *outData);
+RECOIL_NOINLINE int RECOIL_FASTCALL ZAR_WriteMissionSaveDataSection(
+    zZbdSectionCallbackCtx *writer, void *userData);
+RECOIL_NOINLINE int RECOIL_FASTCALL ZAR_WriteVehicleListSection(
+    zZbdSectionCallbackCtx *writer, void *userData);
 RECOIL_NOINLINE void RECOIL_FASTCALL
 FreeAltWeaponTrailRuntimeStates(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE PlayerGunFireController *RECOIL_FASTCALL
@@ -171,3 +208,15 @@ RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, cameraTarget) == 0x108);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, cameraPosition) == 0x114);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, timedHitStatus) == 0x124);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMissionSaveData) == 0x140);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, worldPos) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiNetId) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiAttackRadiusSq) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiRestoreTarget) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiDynamicOffsetDir) == 0x40);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiActivationRadiusSq) == 0x4c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiActive) == 0x5c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, masterType) == 0x6c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, localMasterType) == 0x7c);
+RECOIL_STATIC_ASSERT(sizeof(PlayerVehicleListSaveEntry) == 0x80);
+
+#endif // BATTLESPORT_PLAYER_H

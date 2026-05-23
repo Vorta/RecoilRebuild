@@ -1,0 +1,14 @@
+{
+  "name": "zzbd_manager_register_section_handler",
+  "description": "zZbdManager::RegisterSectionHandler inserts a unique section handler node and ignores duplicate section names.",
+  "address": "0x4c0280",
+  "source_from": "src/GameZRecoil/zUtil/zZbd.cpp",
+  "smoke_tests": [
+    "zutil_zar_register_section_handler_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zutil_zar_register_section_handler",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare currently fails for zZbdManager::RegisterSectionHandler: 222 unmasked mismatches after masking 4 relocation bytes; Binary Ninja body is 231 bytes and the VC object body is 176 bytes with 9 trailing VC NOPs trimmed.",
+    "The native smoke verifies unique handler insertion, duplicate-name suppression, linked-list sentinel wiring, handler callbacks, sort order, and user data."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "zvideo_pixel_pack_setup_from_masks",
+  "description": "zVideo::PixelPack_SetupFromMasks initializes the RGB pixel-pack masks, bit counts, packed shifts, and 8-bit shifted masks from DirectDraw pixel-format channel widths.",
+  "address": "0x4a6bf0",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_pixel_pack_setup_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a6bf0",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob1 /Zp4 COFF byte compare fails with 115 unmasked mismatches after masking 48 relocation bytes; Binary Ninja body is 166 bytes and the VC object body is 176 bytes with 12 trailing VC NOPs trimmed.",
+    "The reviewed failure is register allocation and instruction scheduling drift in the inline shifted-mask expressions; the source body is leaf fastcall and has no visible direct callees, matching the Binary Ninja dependency frontier.",
+    "The native smoke verifies 5:6:5 RGB masks, bit counts, packed red/green/blue shift state, and shifted 8-bit masks written to the global zVideo pixel-pack state."
+  ]
+}

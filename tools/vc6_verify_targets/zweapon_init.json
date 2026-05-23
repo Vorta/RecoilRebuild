@@ -1,0 +1,26 @@
+{
+  "name": "zweapon_init",
+  "description": "zWeapon initialization and OptCatalog runtime reset.",
+  "source_filename": "zWeapon.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zWeapon",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zWeapon/zWeapon.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4b1090",
+      "symbol": "_zWepInit",
+      "name": "zWeapon::Init"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zWeapon/zWeapon.cpp"
+}

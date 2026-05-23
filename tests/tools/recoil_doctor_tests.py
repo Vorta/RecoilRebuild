@@ -56,6 +56,15 @@ class RecoilDoctorTests(unittest.TestCase):
         self.assertEqual(1, len(verify_commands))
         self.assertNotIn("--skip-bn-compare", verify_commands[0])
 
+    def test_active_provider_steps_skip_vc_compile(self) -> None:
+        args = build_parser().parse_args(["--active", "0x4c5ba0"])
+
+        steps = build_steps(args)
+        labels = [step.label for step in steps]
+
+        self.assertIn("active status 0x4c5ba0", labels)
+        self.assertFalse(any(label.startswith("active VC") for label in labels))
+
     def test_format_command_quotes_paths_with_spaces(self) -> None:
         formatted = format_command(("python", "D:/Recoil Project/tool.py", "--flag"))
 

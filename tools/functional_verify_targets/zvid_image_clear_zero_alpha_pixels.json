@@ -1,0 +1,13 @@
+{
+  "name": "zvid_image_clear_zero_alpha_pixels",
+  "description": "zVid_Image::ClearZeroAlphaPixelsInPlace clears non-paletted image pixels whose alpha entries are zero.",
+  "address": "0x46d870",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_image_alpha_clear_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zvideo_texture_pack_image_helpers",
+  "known_limits": [
+    "Reviewed VC byte comparison from python tools/recoil_vc6_verify.py zvideo_texture_pack_image_helpers failed under VC5SP3 11.00.7022 /O2 /Ob0 /Zp4: 121 unmasked mismatches, 4 relocation-masked bytes, BN size 134, VC object size 144, 4 trailing VC NOPs trimmed; see build/vc6-verify/zvideo_texture_pack_image_helpers/verify/46d870_byte_triage.txt."
+  ]
+}

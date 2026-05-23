@@ -1,0 +1,51 @@
+{
+  "name": "czrecoilframe_constructor",
+  "description": "CZRecoilFrame shell frame constructor.",
+  "source_filename": "CZRecoilFrame.cpp",
+  "compiler_profile": "vc5_o2_ob1_gx_uintptr_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/Battlesport/CZRecoilFrame.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4308c0",
+      "symbol": "?ConfigureModeFeatureFlags@CZRecoilFrame@@QAEXXZ",
+      "name": "CZRecoilFrame::ConfigureModeFeatureFlags"
+    },
+    {
+      "address": "0x430a10",
+      "symbol": "?OnMenuSetVideoMode5@CZRecoilFrame@@QAEXXZ",
+      "name": "CZRecoilFrame::OnMenuSetVideoMode5"
+    },
+    {
+      "address": "0x431610",
+      "symbol": "?SetHwApiAndInitMode@CZRecoilFrame@@QAEXH@Z",
+      "name": "CZRecoilFrame::SetHwApiAndInitMode"
+    },
+    {
+      "address": "0x431680",
+      "symbol": "?InitFallbackMode@CZRecoilFrame@@QAEXXZ",
+      "name": "CZRecoilFrame::InitFallbackMode"
+    },
+    {
+      "address": "0x431730",
+      "symbol": "?InitStartupHwApiFromOptions@CZRecoilFrame@@QAEXXZ",
+      "name": "CZRecoilFrame::InitStartupHwApiFromOptions"
+    },
+    {
+      "address": "0x430250",
+      "symbol": "?Constructor@CZRecoilFrame@@QAEPAU1@XZ",
+      "name": "CZRecoilFrame::Constructor"
+    }
+  ],
+  "source_from": "src/Battlesport/CZRecoilFrame.cpp"
+}

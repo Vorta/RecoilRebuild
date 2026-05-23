@@ -1,0 +1,15 @@
+{
+  "name": "zvid_get_accepted_directdraw_device_count",
+  "description": "zVid::GetAcceptedDirectDrawDeviceCount forwards the cached DirectDraw device count.",
+  "address": "0x4a7480",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvid_option_accessors_smoke",
+    "czrecoil_frame_init_startup_hw_api_from_options_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a7480",
+  "known_limits": [
+    "The smokes verify the public getter and the frame startup branch that uses it.",
+    "Binary-safe verification remains pending for exact wrapper shape."
+  ]
+}

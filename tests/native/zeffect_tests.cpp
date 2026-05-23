@@ -168,6 +168,41 @@ extern "C" int zutil_zbd_init_smoke(void) {
     return ok ? 0 : 2;
 }
 
+extern "C" int zutil_zbd_destroy_global_manager_smoke(void) {
+    g_zUtil_ZbdManager = nullptr;
+    if (zUtil::ZBD_Init() != 0 || g_zUtil_ZbdManager == nullptr) {
+        return 1;
+    }
+
+    zZbdManager *const manager = g_zUtil_ZbdManager;
+    manager->tempBuffer = ::operator new(32);
+    manager->tempBufferSize = 32;
+    manager->indexArchive.records =
+        static_cast<zZarFileRecord *>(std::calloc(1, sizeof(zZarFileRecord)));
+    manager->indexArchive.recordCount = 1;
+    manager->indexArchive.recordCapacity = 1;
+
+    manager->RegisterSectionHandler("Mission", reinterpret_cast<void *>(1),
+                                    reinterpret_cast<void *>(2), 0x20,
+                                    reinterpret_cast<void *>(3));
+    manager->RegisterSectionHandler("MissionLate", reinterpret_cast<void *>(4),
+                                    reinterpret_cast<void *>(5), 0x30,
+                                    reinterpret_cast<void *>(6));
+    if (manager->sectionHandlerCount != 2) {
+        zUtil::ZBD_DestroyGlobalManager();
+        return 2;
+    }
+
+    zUtil::ZBD_DestroyGlobalManager();
+    if (g_zUtil_ZbdManager != nullptr) {
+        zUtil::ZBD_DestroyGlobalManager();
+        return 3;
+    }
+
+    zUtil::ZBD_DestroyGlobalManager();
+    return g_zUtil_ZbdManager == nullptr ? 0 : 4;
+}
+
 extern "C" int hud_sensor_register_mission_sections_smoke(void) {
     zZbdSectionHandlerNode sentinel = {};
     zZbdManager manager = MakeManager(sentinel);
@@ -1970,6 +2005,37 @@ extern "C" int zeffect_anim_init_shutdown_smoke(void) {
     ClearRegisteredHandlers(sentinel);
     g_zUtil_ZbdManager = nullptr;
     return initOk ? 0 : 3;
+}
+
+extern "C" int zeffect_shutdown_all_smoke(void) {
+    g_zEffectAnim_EnableZarRegistration = 0;
+    g_zEffectAnim_EntriesInstantiated = 1;
+    g_zEffectAnim_HeapPtr = std::malloc(4);
+    g_zEffectAnim_EntryCount = 1;
+    g_zEffectAnim_EntryList =
+        static_cast<zEffectAnimEntry *>(std::calloc(1, sizeof(zEffectAnimEntry)));
+    g_zEffectAnim_TextIdEntryCount = 1;
+    g_zEffectAnim_TextIdEntryList = static_cast<zEffectAnimTextIdEntry *>(std::malloc(4));
+    g_zEffectAnim_ActivationRecordTable =
+        static_cast<zEffectAnimActivationRecord *>(std::malloc(4));
+    g_zEffectAnim_ActivationRecordCount = 1;
+    g_zEffect_RuntimeManager.templates = static_cast<zEffect_RuntimeEntry *>(std::malloc(4));
+    g_zEffect_RuntimeManager.freeList = zArchiveList_CreateEmpty();
+    g_zEffect_RuntimeManager.recycleCount = 3;
+
+    if (zEffect::ShutdownAll() != 0) {
+        return 1;
+    }
+
+    return g_zEffect_RuntimeManager.templates == nullptr &&
+                   g_zEffect_RuntimeManager.freeList == nullptr &&
+                   g_zEffect_RuntimeManager.recycleCount == 0 &&
+                   g_zEffectAnim_EntriesInstantiated == 0 &&
+                   g_zEffectAnim_HeapPtr == nullptr && g_zEffectAnim_EntryList == nullptr &&
+                   g_zEffectAnim_TextIdEntryList == nullptr &&
+                   g_zEffectAnim_ActivationRecordTable == nullptr
+               ? 0
+               : 2;
 }
 
 extern "C" int zeffect_find_template_index_by_name_smoke(void) {

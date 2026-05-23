@@ -99,6 +99,7 @@ CZGameFrame::IsWindowValid(CZGameFrameMfcWindow *pWnd) {
     return method(pWnd) == 0 ? 1 : 0;
 }
 
+// Reimplements 0x4437d0: CZGameFrame::Constructor
 RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_THISCALL
 CZGameFrame::Constructor(const char *appId) {
     new (static_cast<CFrameWnd *>(this)) CFrameWnd();

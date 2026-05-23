@@ -1,0 +1,25 @@
+{
+  "name": "zvideo_return_success_stub",
+  "description": "zVideo::ReturnSuccessStub returns success for placeholder initialization hooks.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zVideo.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a75e0",
+      "symbol": "?ReturnSuccessStub@zVideo@@YAHXZ",
+      "name": "zVideo::ReturnSuccessStub"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp"
+}

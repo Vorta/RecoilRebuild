@@ -1,0 +1,14 @@
+{
+  "name": "zimage_fonts_load_from_path",
+  "description": "zImage::FontsLoadFromPath reports failure and returns -1 when the font ZRD cannot be loaded.",
+  "address": "0x46efe0",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_fonts_load_missing_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zimage_init_helpers",
+  "known_limits": [
+    "Reviewed VC byte comparison from python tools/recoil_vc6_verify.py zimage_init_helpers failed under VC5SP3 11.00.7022 /O2 /Ob0 /Zp4: 193 unmasked mismatches, 76 relocation-masked bytes, BN size 324, VC object size 288, 6 trailing VC NOPs trimmed; see build/vc6-verify/zimage_init_helpers/verify/46efe0_byte_triage.txt.",
+    "Current self-contained functional coverage exercises the missing-ZRD failure path; full success-path coverage remains desirable before a binary-safe zImage class/source-cluster pass."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "zutil_zrdr_alloc_node_with_payload",
+  "description": "zUtil_ZRDR::AllocNodeWithPayload pops or grows a free node and stores the requested payload pointer in it.",
+  "address": "0x48ca10",
+  "source_from": "src/GameZRecoil/zReader/zreader_load.cpp",
+  "smoke_tests": [
+    "zreader_prealloc_and_pop_front_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x48ca10",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for @zUtil_ZRDR_AllocNodeWithPayload@4 at 0x48ca10 passed with zero unmasked mismatches after masking 4 relocation bytes; Binary Ninja body is 17 bytes and the VC object symbol is 32 bytes with 15 trailing VC NOP bytes trimmed.",
+    "The native smoke exercises allocation through push-front and push-back paths and checks stored payload identity."
+  ]
+}

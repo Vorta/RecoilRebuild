@@ -1,0 +1,14 @@
+{
+  "name": "zrndr_span_occlusion_shutdown",
+  "description": "zRndr::SpanOcclusionShutdown frees the span-occlusion column-head table and span-node pool, clears those two globals, and returns.",
+  "address": "0x490780",
+  "source_from": "src/GameZRecoil/zRndr/zRndr.cpp",
+  "smoke_tests": [
+    "zrndr_span_occlusion_reset_shutdown_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x490780",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?SpanOcclusionShutdown@zRndr@@YAXXZ at 0x490780 still fails: 29 unmasked mismatches, 24 relocation bytes masked, 7 trailing VC NOP bytes trimmed, BN size 61 bytes, VC object symbol size 64 bytes.",
+    "Reviewed difference is imported free call/source-shape drift: original loads the imported free pointer into esi and reuses it for both frees, while current source emits direct free relocations. Source was narrowed to match the original side effects by clearing only g_spanColumnHeadTable and g_spanPoolBase. The native smoke verifies reset behavior, shutdown frees, global nulling, and repeated null shutdown."
+  ]
+}

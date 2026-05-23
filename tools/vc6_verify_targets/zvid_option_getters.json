@@ -1,0 +1,73 @@
+{
+  "name": "zvid_option_getters",
+  "description": "zVid acceleration and hardware API option accessors.",
+  "source_filename": "zVideo.cpp",
+  "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zVideo.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x408280",
+      "symbol": "?SetAccelerationOption@zVid@@YIXH@Z",
+      "name": "zVid::SetAccelerationOption"
+    },
+    {
+      "address": "0x408290",
+      "symbol": "?SetHwApiOption@zVid@@YIXH@Z",
+      "name": "zVid::SetHwApiOption"
+    },
+    {
+      "address": "0x408310",
+      "symbol": "?GetAccelerationOption@zVid@@YAHXZ",
+      "name": "zVid::GetAccelerationOption"
+    },
+    {
+      "address": "0x408320",
+      "symbol": "?GetHwApiOption@zVid@@YAHXZ",
+      "name": "zVid::GetHwApiOption"
+    },
+    {
+      "address": "0x4a7480",
+      "symbol": "?GetAcceptedDirectDrawDeviceCount@zVid@@YAHXZ",
+      "name": "zVid::GetAcceptedDirectDrawDeviceCount"
+    },
+    {
+      "address": "0x4a8870",
+      "symbol": "?CommitHwApiDeviceSelection@zVideo@@YIXH@Z",
+      "name": "zVideo::CommitHwApiDeviceSelection"
+    },
+    {
+      "address": "0x4a7490",
+      "symbol": "?SelectHwApiDeviceOrFallback@zVideo@@YIHH@Z",
+      "name": "zVideo::SelectHwApiDeviceOrFallback"
+    },
+    {
+      "address": "0x4a9900",
+      "symbol": "?GetAcceptedDirectDrawDeviceCountCached@zVideo_dd@@YAHXZ",
+      "name": "zVideo_dd::GetAcceptedDirectDrawDeviceCountCached"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp"
+}

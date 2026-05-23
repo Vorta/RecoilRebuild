@@ -1,0 +1,14 @@
+{
+  "name": "zsnd_has_mmx_mixer_support",
+  "description": "zSnd::HasMmxMixerSupport returns a normalized boolean from CPUID availability and zCpu::HasMmxSupport.",
+  "address": "0x4b31f0",
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+  "smoke_tests": [
+    "zsnd_options_cpu_and_cached_directsound_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4b31f0",
+  "known_limits": [
+    "The smoke verifies normalized boolean behavior on the runtime CPU.",
+    "Binary-safe verification remains pending for the exact CPUID helper and caller shape."
+  ]
+}

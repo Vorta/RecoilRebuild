@@ -1,0 +1,15 @@
+{
+  "name": "hud_sensor_register_mission_section_handlers",
+  "description": "HudSensorTracker::RegisterMissionSectionHandlers registers the Mission and MissionLate ZBD section handlers with their save/restore callbacks, sort order, and tracker userdata.",
+  "address": "0x417640",
+  "source_from": "src/Battlesport/HudSensorTracker.cpp",
+  "smoke_tests": [
+    "hud_sensor_register_mission_sections_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x417640",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?RegisterMissionSectionHandlers@HudSensorTracker@@QAEXXZ at 0x417640 still fails: 58 unmasked mismatches, 26 relocation bytes masked, 4 trailing VC NOP bytes trimmed, BN size 54 bytes, VC object symbol size 96 bytes.",
+    "Reviewed difference is callback-address coercion: current source routes callback pointers through ZbdCallbackPtr helper calls, while the original emitted direct callback and string addresses into zUtil_ZAR::RegisterSectionHandler.",
+    "The native smoke verifies both registered sections, sort order, callback presence, userdata identity, and list/count insertion."
+  ]
+}

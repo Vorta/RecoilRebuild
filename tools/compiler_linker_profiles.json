@@ -179,6 +179,24 @@
       ]
     },
     {
+      "name": "vc5_o2_ob1_facs",
+      "description": "VC5SP3 profile with one-level inlining and no C++ EH flag for plain leaf/helper code whose local evidence points to /Ob1.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo",
+        "/TP",
+        "/W3",
+        "/G5",
+        "/O2",
+        "/Ob1",
+        "/Zp4",
+        "/FAcs",
+        "/I",
+        "."
+      ]
+    },
+    {
       "name": "vc5_o2_ob1_gx_uintptr_facs",
       "description": "VC5SP3 one-level inlining profile with the UINT_PTR compatibility define needed by focused full-TU MFC frame targets.",
       "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",

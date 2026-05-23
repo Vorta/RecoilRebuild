@@ -28,6 +28,26 @@
   ],
   "functions": [
     {
+      "address": "0x4a59e0",
+      "symbol": "?FindFileOnDriveType@zSys@@YIPADHPBDH@Z",
+      "name": "zSys::FindFileOnDriveType"
+    },
+    {
+      "address": "0x4b3050",
+      "symbol": "?CheckCpuSignatureMask@zSys@@YAHXZ",
+      "name": "zSys::CheckCpuSignatureMask"
+    },
+    {
+      "address": "0x4b2fe0",
+      "symbol": "?HasCpuidSupportRuntimeOptions@zSys@@YAHXZ",
+      "name": "zSys::HasCpuidSupportRuntimeOptions"
+    },
+    {
+      "address": "0x4b3020",
+      "symbol": "?HasMmxSupport@zCpu@@YAHXZ",
+      "name": "zCpu::HasMmxSupport"
+    },
+    {
       "address": "0x4b31b0",
       "symbol": "?GetCpuClass@zSys@@YAHXZ",
       "name": "zSys::GetCpuClass"
@@ -66,6 +86,61 @@
       "address": "0x4b35f0",
       "symbol": "?DetectIs80386ByAcFlag@zSys@@YAHXZ",
       "name": "zSys::DetectIs80386ByAcFlag"
+    },
+    {
+      "address": "0x4b3480",
+      "symbol": "?ReadCpuidFeatureFlags@zSys@@YAIXZ",
+      "name": "zSys::ReadCpuidFeatureFlags"
+    },
+    {
+      "address": "0x4b37f0",
+      "symbol": "?MeasureMhzViaBsfLoop_Qpc@CpuBenchmarkResolver@?%zSys.cpp3242726308@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "name": "CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc"
+    },
+    {
+      "address": "0x4b38e0",
+      "symbol": "?MeasureCpuMhz_RdtscQpc@CpuBenchmarkResolver@?%zSys.cpp3242726308@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "name": "CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc"
+    },
+    {
+      "address": "0x4b3b00",
+      "symbol": "?ReadCmosRtcSecondsBcd@zSys@@YAIXZ",
+      "name": "zSys::ReadCmosRtcSecondsBcd"
+    },
+    {
+      "address": "0x4b3b20",
+      "symbol": "?ReadTsc64@zSys@@YIXPAI0@Z",
+      "name": "zSys::ReadTsc64"
+    },
+    {
+      "address": "0x4b3b50",
+      "symbol": "?MeasureCpuMhz_CmosRtc@CpuBenchmarkResolver@?%zSys.cpp3242726308@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "name": "CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc"
+    },
+    {
+      "address": "0x4b3ca0",
+      "symbol": "?Sub64@zSys@@YIXIIIIPAI0@Z",
+      "name": "zSys::Sub64"
+    },
+    {
+      "address": "0x4b36f0",
+      "symbol": "?ResolveCpuBenchmarkPacket@CpuBenchmarkResolver@?%zSys.cpp3242726308@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "name": "CpuBenchmarkResolver::ResolveCpuBenchmarkPacket"
+    },
+    {
+      "address": "0x4b31c0",
+      "symbol": "?GetCpuMhz@zSys@@YAHXZ",
+      "name": "zSys::GetCpuMhz"
+    },
+    {
+      "address": "0x4b3210",
+      "symbol": "?ReturnZeroStub@zSys@@YAHXZ",
+      "name": "zSys::ReturnZeroStub"
+    },
+    {
+      "address": "0x4b3230",
+      "symbol": "?GetTotalPhysKb@zSys@@YAIXZ",
+      "name": "zSys::GetTotalPhysKb"
     }
   ],
   "source_from": "src/GameZRecoil/zSys/zSys.cpp"

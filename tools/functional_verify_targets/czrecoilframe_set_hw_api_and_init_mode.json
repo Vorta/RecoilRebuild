@@ -1,0 +1,14 @@
+{
+  "name": "czrecoilframe_set_hw_api_and_init_mode",
+  "description": "CZRecoilFrame::SetHwApiAndInitMode selects a hardware API, updates persisted video options, queries video memory, and switches to the hardware video mode.",
+  "address": "0x431610",
+  "source_from": "src/Battlesport/CZRecoilFrame.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_set_hw_api_and_init_mode_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x431610",
+  "known_limits": [
+    "The smoke verifies hardware API, fullscreen, acceleration, hardware-mode, video-mode, replicate, view-section, video-memory, and command UI side effects.",
+    "Binary-safe verification remains pending for exact provider callback and member-call shape."
+  ]
+}

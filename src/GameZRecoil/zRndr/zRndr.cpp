@@ -682,13 +682,6 @@ void RECOIL_FASTCALL TexturedQueuedSpanRoutineUnavailable(int, int, int,
 void RECOIL_FASTCALL FlatImmediateSpanRoutineUnavailable(int, int, int) {
 }
 
-void FillReplicatedWordMask(unsigned short (&mask)[4], unsigned short value) {
-    mask[0] = value;
-    mask[1] = value;
-    mask[2] = value;
-    mask[3] = value;
-}
-
 bool FogParamsDifferFromActive(const FogParamsPartial &params) {
     const float kCommitThreshold = 0.01f;
     return fabs(g_fogParamsActive.colorRgb01[0] - params.colorRgb01[0]) >= kCommitThreshold ||
@@ -852,13 +845,38 @@ RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow565_Scalar(unsigned short *r
 
 // Reimplements 0x49e140: zRndr::SpanMmxSetPixelFormatMasks
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanMmxSetPixelFormatMasks(int greenBits) {
-    const unsigned short greenMask = greenBits == 5 ? 0x03e0U : 0x07e0U;
-    const unsigned short redPacked = greenBits == 5 ? 0xfc00U : 0xf800U;
+    short redPacked;
+    if (greenBits == 5) {
+        g_mmxMaskGreenBits[3] = 0x03e0U;
+        g_mmxMaskGreenBits[2] = 0x03e0U;
+        g_mmxMaskGreenBits[1] = 0x03e0U;
+        g_mmxMaskGreenBits[0] = 0x03e0U;
+        g_mmxMaskBlueBits[3] = 0x001fU;
+        g_mmxMaskBlueBits[2] = 0x001fU;
+        g_mmxMaskBlueBits[1] = 0x001fU;
+        g_mmxMaskBlueBits[0] = 0x001fU;
+        redPacked = static_cast<short>(0xfc00U);
+    } else {
+        g_mmxMaskGreenBits[3] = 0x07e0U;
+        g_mmxMaskGreenBits[2] = 0x07e0U;
+        g_mmxMaskGreenBits[1] = 0x07e0U;
+        g_mmxMaskGreenBits[0] = 0x07e0U;
+        g_mmxMaskBlueBits[3] = 0x001fU;
+        g_mmxMaskBlueBits[2] = 0x001fU;
+        g_mmxMaskBlueBits[1] = 0x001fU;
+        g_mmxMaskBlueBits[0] = 0x001fU;
+        redPacked = static_cast<short>(0xf800U);
+    }
 
-    FillReplicatedWordMask(g_mmxMaskGreenBits, greenMask);
-    FillReplicatedWordMask(g_mmxMaskBlueBits, 0x001fU);
-    FillReplicatedWordMask(g_mmxMaskRedPacked, redPacked);
-    FillReplicatedWordMask(g_mmxMaskGreenPacked, 0xffe0U);
+    g_mmxMaskRedPacked[3] = static_cast<unsigned short>(redPacked);
+    g_mmxMaskRedPacked[2] = static_cast<unsigned short>(redPacked);
+    g_mmxMaskRedPacked[1] = static_cast<unsigned short>(redPacked);
+    g_mmxMaskRedPacked[0] = static_cast<unsigned short>(redPacked);
+    redPacked = -32;
+    g_mmxMaskGreenPacked[3] = redPacked;
+    g_mmxMaskGreenPacked[2] = redPacked;
+    g_mmxMaskGreenPacked[1] = redPacked;
+    g_mmxMaskGreenPacked[0] = redPacked;
 }
 
 // Reimplements 0x48ff80: zRndr::SelectSpanRoutines
@@ -1207,10 +1225,6 @@ RECOIL_NOINLINE void RECOIL_CDECL SpanOcclusionShutdown() {
         free(g_spanPoolBase);
     }
     g_spanPoolBase = 0;
-    g_spanAllocCursor = 0;
-    g_spanIterNode = 0;
-    g_spanIterPrevLink = 0;
-    g_spanLastNode = 0;
 }
 
 // Reimplements 0x49e0e0: zRndr::SpanAlphaBlend565_Mmx_FromPal8

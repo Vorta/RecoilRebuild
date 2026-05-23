@@ -1,0 +1,21 @@
+{
+  "name": "recoil_app_exit_instance",
+  "description": "RecoilApp::ExitInstance unregisters the window class when registered, saves and shuts down game options, tears down ZRDR/ZBD/localization/input state, delegates to the MFC app exit provider, and terminates the process.",
+  "address": "0x42e930",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "zgame_options_save_game_options_smoke",
+    "zgame_options_shutdown_registry_context_smoke",
+    "zreader_zrdr_shutdown_smoke",
+    "zreader_zrdr_free_node_pool_smoke",
+    "zutil_zbd_destroy_global_manager_smoke",
+    "zloc_load_unload_messages_dll_smoke",
+    "zinput_bindmap_context_smoke",
+    "zsys_exit_process_with_cleanup_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x42e930",
+  "known_limits": [
+    "The functional target verifies the accepted direct shutdown dependencies and process-exit behavior that can be isolated in the native harness. A cold full ExitInstance call is not used as the primary smoke because the function intentionally terminates the process and its registered-window branch depends on MFC module/window-class provider state.",
+    "Binary-safe verification remains pending for the RecoilApp shutdown source cluster and MFC/Win32 provider call shape."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "zinput_mouse_set_client_size_and_center",
+  "description": "zInput::Mouse_SetClientSizeAndCenter stores mouse client dimensions, signed half-size centers, and inverse-center scale factors.",
+  "address": "0x4701a0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_mouse_client_size_center_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zinput_mouse_set_client_size_and_center",
+  "known_limits": [
+    "Reviewed VC byte comparison from python tools/recoil_vc6_verify.py zinput_mouse_set_client_size_and_center failed under VC5SP3 11.00.7022 /O2 /Ob0 /Zp4: 38 unmasked mismatches, 38 relocation-masked bytes, BN size 76, VC object size 80, 1 trailing VC NOP trimmed; see build/vc6-verify/zinput_mouse_set_client_size_and_center/verify/4701a0_byte_triage.txt.",
+    "The reviewed byte drift is register allocation and instruction scheduling in the signed-half-size and inverse-center math; the native smoke verifies even and odd dimensions plus inverse-center factors."
+  ]
+}

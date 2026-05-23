@@ -2,18 +2,7 @@
   "name": "hud_ui_mgr_trigger_current_layout_on_activated",
   "description": "HudUiMgr current-layout OnActivated tail dispatch.",
   "source_filename": "zhud_ui.cpp",
-  "compiler_flags": [
-    "/nologo",
-    "/TP",
-    "/W3",
-    "/G5",
-    "/O2",
-    "/Ob0",
-    "/Zp4",
-    "/FAcs",
-    "/I",
-    "."
-  ],
+  "compiler_profile": "vc5_o2_ob0_facs",
   "include_dirs": [
     "src",
     "src/native/include",
@@ -32,6 +21,16 @@
       "address": "0x413630",
       "symbol": "?TriggerCurrentLayoutOnActivated@HudUiMgr@@YAXXZ",
       "name": "HudUiMgr::TriggerCurrentLayoutOnActivated"
+    },
+    {
+      "address": "0x414210",
+      "symbol": "?InitTable@HudUiLoadingCheckpoint@@YAXXZ",
+      "name": "HudUiLoadingCheckpoint::InitTable"
+    },
+    {
+      "address": "0x414180",
+      "symbol": "?AdvanceAndLog@HudUiLoadingCheckpoint@@YIXPBD@Z",
+      "name": "HudUiLoadingCheckpoint::AdvanceAndLog"
     }
   ],
   "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp"

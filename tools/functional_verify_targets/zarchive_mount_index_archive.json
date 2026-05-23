@@ -1,0 +1,15 @@
+{
+  "name": "zarchive_mount_index_archive",
+  "description": "zArchive::MountIndexArchive allocates and resets a zIndexArchive, initializes it from a tail-index archive, optionally installs it as current, appends it to the mounted archive list, and cleans up on failure.",
+  "address": "0x48d210",
+  "source_from": "src/GameZRecoil/zReader/zreader_load.cpp",
+  "smoke_tests": [
+    "zreader_mount_index_archive_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x48d210 --compiler-profile vc5_o2_ob1_gx_facs",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?MountIndexArchive@zArchive@@YIHPBDH@Z at 0x48d210 still fails: 140 unmasked mismatches, 32 relocation bytes masked, 8 trailing VC NOP bytes trimmed, BN size 174 bytes, VC object symbol size 112 bytes.",
+    "Reviewed difference is the original function's SEH/EH allocation wrapper and cleanup-state scaffold around operator new / Reset / Init. Isolated recompilation emits the same source-level allocation, init, cleanup, current-archive assignment, and PushBackPayload flow but omits the original fs:[0] frame and EH state locals.",
+    "The native mount smoke writes a one-record tail-index archive, mounts it, validates current/list payload identity, record lookup, and payload open-by-name behavior, then unloads the archive."
+  ]
+}

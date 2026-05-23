@@ -1,0 +1,39 @@
+{
+  "name": "zrndr_init_globals_helpers",
+  "description": "zRndr global initialization and fog/perspective setup helpers.",
+  "source_filename": "zRndr.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zRndr",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRndr/zRndr.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4904d0",
+      "symbol": "?SetPerspectiveAdaptiveCorrection@zRndr@@YGXM@Z",
+      "name": "zRndr::SetPerspectiveAdaptiveCorrection"
+    },
+    {
+      "address": "0x49b1e0",
+      "symbol": "?FogColor_SetRgb01Clamped@zRndr@@YIXPAUzColorRgb@@@Z",
+      "name": "zRndr::FogColor_SetRgb01Clamped"
+    },
+    {
+      "address": "0x48fd80",
+      "symbol": "?InitGlobals@zRndr@@YAHXZ",
+      "name": "zRndr::InitGlobals"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zRndr/zRndr.cpp"
+}

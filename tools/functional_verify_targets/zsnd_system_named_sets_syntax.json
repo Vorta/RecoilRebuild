@@ -1,0 +1,14 @@
+{
+  "name": "zsnd_system_named_sets_syntax",
+  "description": "zSndSystem_InitNamedSetsSyntax loads named sound-set definitions, sample variants, speed-of-sound, and default playback fields.",
+  "address": "0x4a1870",
+  "source_from": "src/GameZRecoil/zSound/zsnd_system.cpp",
+  "smoke_tests": [
+    "zsnd_system_named_sets_syntax_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zsnd_system_syntax_init",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for @zSndSystem_InitNamedSetsSyntax@4 at 0x4a1870 still fails: 1073 unmasked mismatches, 100 relocation bytes masked, 12 trailing VC NOP bytes trimmed, BN size 1176 bytes, VC object symbol size 240 bytes.",
+    "Reviewed difference is broad source-shape drift: current source factors sound-set/sample/variant parsing into shared helpers while the original body is expanded. The targeted smoke verifies named-set loading, sample fields, variants, ranges, playback defaults, speed-of-sound, and registry insertion."
+  ]
+}

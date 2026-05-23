@@ -1,16 +1,31 @@
 #include "Battlesport/RecoilApp.h"
 
+#include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/HudSensorTracker.h"
+#include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 #include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zEffect/zEffect.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zRndr/zRndr.h"
+#include "GameZRecoil/zUtil/zZbd.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstdlib>
+#include <cstring>
 #include <new>
 
 extern "C" std::int32_t g_zSndCdFlags;
+extern "C" HWND g_RecoilApp_hWndMain;
 extern "C" const char *g_RecoilApp_WndClassNamePtr;
+extern "C" int g_RecoilApp_AttractFmvReloadMode;
+BOOL RECOIL_STDCALL AfxWinInit(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine,
+                               int showCommand);
 
 namespace {
+void AtexitProviderNoOp() {}
+
 int g_stateEnterCount;
 int g_stateExitCount;
 int g_stateIdleCount;
@@ -21,6 +36,61 @@ int g_shutdownEngineCount;
 int g_exitInstanceCount;
 int g_startEngineResult;
 RecoilPtr32 g_lastStartEngineHwnd;
+CZRecoilFrame *g_createMainWndResult;
+int g_playStateLayoutActivatedCount;
+
+zZbdManager MakeTestZbdManager(zZbdSectionHandlerNode &sentinel) {
+    sentinel.next = &sentinel;
+    sentinel.prev = &sentinel;
+    sentinel.sectionHandler = {};
+
+    zZbdManager manager = {};
+    manager.sectionHandlerListSentinel = &sentinel;
+    return manager;
+}
+
+void ClearTestRegisteredHandlers(zZbdSectionHandlerNode &sentinel) {
+    zZbdSectionHandlerNode *node = sentinel.next;
+    while (node != &sentinel) {
+        zZbdSectionHandlerNode *next = node->next;
+        delete node;
+        node = next;
+    }
+    sentinel.next = &sentinel;
+    sentinel.prev = &sentinel;
+}
+
+bool CStringIsEmpty(const CString &value) {
+    return value.m_pchData != nullptr && value.m_pchData[0] == '\0';
+}
+
+bool CStringEquals(const CString &value, const char *text) {
+    return value.m_pchData != nullptr && std::strcmp(value.m_pchData, text) == 0;
+}
+
+bool ReadFilePrefix(const char *path, char *buffer, DWORD bufferSize) {
+    HANDLE file = CreateFileA(
+        path,
+        GENERIC_READ,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        nullptr,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+
+    DWORD bytesRead = 0;
+    const BOOL ok = ReadFile(file, buffer, bufferSize - 1, &bytesRead, nullptr);
+    CloseHandle(file);
+    if (ok == 0) {
+        return false;
+    }
+
+    buffer[bytesRead] = '\0';
+    return true;
+}
 
 struct TestAppState : RecoilApp_IState {
     void RECOIL_THISCALL OnEnter() {
@@ -72,7 +142,15 @@ RecoilApp_IState_Vtbl MakeTestAppStateVtable() {
 
 RecoilApp_IState_Vtbl g_testAppStateVtable = MakeTestAppStateVtable();
 
+void RECOIL_FASTCALL TestPlayStateLayoutOnActivated(HudLayoutBase *) {
+    ++g_playStateLayoutActivatedCount;
+}
+
 struct TestRecoilApp : RecoilApp {
+    CZRecoilFrame *RECOIL_THISCALL CreateMainWnd() {
+        return g_createMainWndResult;
+    }
+
     std::int32_t RECOIL_THISCALL StartEngine(RecoilPtr32 hwnd) {
         ++g_startEngineCount;
         g_lastStartEngineHwnd = hwnd;
@@ -92,6 +170,17 @@ struct TestRecoilApp : RecoilApp {
 RecoilFn32 AppStartMethodToFn(std::int32_t (RECOIL_THISCALL TestRecoilApp::*method)(RecoilPtr32)) {
     union MemberToFunction {
         std::int32_t (RECOIL_THISCALL TestRecoilApp::*member)(RecoilPtr32);
+        RecoilFn32 fn;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = method;
+    return thunk.fn;
+}
+
+RecoilFn32 AppFrameMethodToFn(CZRecoilFrame *(RECOIL_THISCALL TestRecoilApp::*method)()) {
+    union MemberToFunction {
+        CZRecoilFrame *(RECOIL_THISCALL TestRecoilApp::*member)();
         RecoilFn32 fn;
     };
 
@@ -122,12 +211,13 @@ RecoilFn32 AppIntMethodToFn(std::int32_t (RECOIL_THISCALL TestRecoilApp::*method
     return thunk.fn;
 }
 
-RecoilFn32 g_testRecoilAppVtable[0x2d];
+RecoilFn32 g_testRecoilAppVtable[0x30];
 
 void InitTestRecoilAppVtable() {
     g_testRecoilAppVtable[0x70 / 4] = AppIntMethodToFn(&TestRecoilApp::ExitInstance);
     g_testRecoilAppVtable[0xac / 4] = AppStartMethodToFn(&TestRecoilApp::StartEngine);
     g_testRecoilAppVtable[0xb0 / 4] = AppVoidMethodToFn(&TestRecoilApp::ShutdownEngine);
+    g_testRecoilAppVtable[0xb8 / 4] = AppFrameMethodToFn(&TestRecoilApp::CreateMainWnd);
 }
 
 void CleanupSingleQueuedItem(RecoilApp_StateQueue &queue) {
@@ -143,6 +233,10 @@ void CleanupSingleQueuedItem(RecoilApp_StateQueue &queue) {
     ::operator delete(chunkList);
 }
 } // namespace
+
+extern "C" int crt_atexit_import_provider_smoke(void) {
+    return std::atexit(AtexitProviderNoOp) == 0 ? 0 : 1;
+}
 
 extern "C" int recoil_app_get_message_map_smoke(void) {
     const MfcMsgMap *messageMap = g_RecoilApp.GetMessageMap();
@@ -234,6 +328,80 @@ extern "C" int recoil_app_activate_existing_instance_absent_smoke(void) {
     const std::int32_t result = g_RecoilApp.ActivateExistingInstance();
     g_RecoilApp_WndClassNamePtr = oldClassName;
     return result == 1 ? 0 : 1;
+}
+
+extern "C" int recoil_app_pre_translate_message_smoke(void) {
+    static std::int32_t acceleration = 0;
+    ZOPT_VIDEO_ACCELERATION = &acceleration;
+
+    MSG message = {};
+    message.message = WM_SYSKEYDOWN;
+    if (g_RecoilApp.PreTranslateMessage(&message) != 0) {
+        return 1;
+    }
+
+    acceleration = 1;
+    if (g_RecoilApp.PreTranslateMessage(&message) != 1) {
+        return 2;
+    }
+
+    message.message = WM_SYSKEYUP;
+    if (g_RecoilApp.PreTranslateMessage(&message) != 1) {
+        return 3;
+    }
+
+    message.message = WM_KEYDOWN;
+    if (g_RecoilApp.PreTranslateMessage(&message) != 0) {
+        return 4;
+    }
+
+    message.message = WM_SYSKEYUP + 1;
+    return g_RecoilApp.PreTranslateMessage(&message) == 0 ? 0 : 5;
+}
+
+extern "C" int recoil_app_init_std_log_files_smoke(void) {
+    g_RecoilApp_hWndMain = reinterpret_cast<HWND>(0x12345678);
+    RecoilApp::InitStdLogFiles(nullptr);
+    if (g_RecoilApp_hWndMain != nullptr) {
+        return 1;
+    }
+
+    char tempPath[MAX_PATH];
+    if (GetTempPathA(sizeof(tempPath), tempPath) == 0) {
+        return 2;
+    }
+
+    char stem[MAX_PATH];
+    if (GetTempFileNameA(tempPath, "rcl", 0, stem) == 0) {
+        return 3;
+    }
+    DeleteFileA(stem);
+
+    char errPath[MAX_PATH];
+    char outPath[MAX_PATH];
+    lstrcpyA(errPath, stem);
+    lstrcatA(errPath, ".err");
+    lstrcpyA(outPath, stem);
+    lstrcatA(outPath, ".out");
+    DeleteFileA(errPath);
+    DeleteFileA(outPath);
+
+    RecoilApp::InitStdLogFiles(stem);
+    fflush(stderr);
+    fflush(stdout);
+
+    char errHeader[32];
+    char outHeader[32];
+    const bool errOk = ReadFilePrefix(errPath, errHeader, sizeof(errHeader));
+    const bool outOk = ReadFilePrefix(outPath, outHeader, sizeof(outHeader));
+    if (!errOk || !outOk) {
+        return 4;
+    }
+
+    return errHeader[0] == 'F' && errHeader[5] == 's' && outHeader[0] == 'F' &&
+                   outHeader[5] == 's'
+               ? 0
+               : 5;
 }
 
 extern "C" int recoil_app_get_current_state_smoke(void) {
@@ -429,6 +597,164 @@ extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void) {
     return failApp.m_stateQueue_118.m_itemCount == 0 ? 0 : 4;
 }
 
+extern "C" int recoil_app_init_main_window_smoke(void) {
+    InitTestRecoilAppVtable();
+
+    HINSTANCE instance = GetModuleHandleA(nullptr);
+    if (AfxWinInit(instance, nullptr, GetCommandLineA(), SW_HIDE) == 0) {
+        return 1;
+    }
+
+    HWND hwnd = CreateWindowExA(0, "STATIC", "recoil-init-main-window-smoke",
+                                WS_OVERLAPPEDWINDOW, 0, 0, 64, 64, nullptr, nullptr,
+                                instance, nullptr);
+    if (hwnd == nullptr) {
+        return 2;
+    }
+
+    CZRecoilFrame frame{};
+    frame.m_hWnd = hwnd;
+    g_createMainWndResult = &frame;
+
+    TestRecoilApp app{};
+    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+    const int result = app.InitMainWindow();
+    const bool ok = result == 1 && app.m_pMainWnd == reinterpret_cast<std::uintptr_t>(&frame) &&
+                    frame.m_app == reinterpret_cast<std::uintptr_t>(&app) &&
+                    IsWindowVisible(hwnd) != 0;
+
+    DestroyWindow(hwnd);
+    g_createMainWndResult = nullptr;
+    return ok ? 0 : 3;
+}
+
+extern "C" int recoil_app_load_zbd_and_start_engine_smoke(void) {
+    InitTestRecoilAppVtable();
+    g_startEngineCount = 0;
+    g_shutdownEngineCount = 0;
+    g_exitInstanceCount = 0;
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+    g_lastStartEngineHwnd = 0;
+
+    zZbdSectionHandlerNode sentinel = {};
+    zZbdManager manager = MakeTestZbdManager(sentinel);
+    g_zUtil_ZbdManager = &manager;
+
+    const int oldMissionFlags = g_HudSensorTracker.missionFlags;
+    g_HudSensorTracker.missionFlags = 0;
+
+    RecoilPtr32 frameWords[9]{};
+    frameWords[8] = 0x13572468;
+
+    TestRecoilApp app{};
+    TestAppState startupState{};
+    startupState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+    app.m_pMainWnd = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(frameWords));
+    app.m_pendingState_0c4 =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&startupState));
+    app.m_currentStateIndex_0c8 = -1;
+    g_startEngineResult = 1;
+
+    const int result = app.LoadZbdAndStartEngine();
+    const bool ok = result == 1 && g_startEngineCount == 1 &&
+                    g_lastStartEngineHwnd == 0x13572468 && g_stateEnterCount == 1 &&
+                    app.m_skipWait_0d0 == 1 && app.m_reserved0d4 == 0 &&
+                    app.m_stateQueue_118.m_itemCount == 1 &&
+                    manager.sectionHandlerCount == 2 &&
+                    std::strcmp(sentinel.next->sectionHandler.sectionName, "Mission") == 0 &&
+                    std::strcmp(sentinel.prev->sectionHandler.sectionName, "MissionLate") == 0;
+
+    CleanupSingleQueuedItem(app.m_stateQueue_118);
+    ClearTestRegisteredHandlers(sentinel);
+    g_zUtil_ZbdManager = nullptr;
+    g_HudSensorTracker.missionFlags = oldMissionFlags;
+    return ok ? 0 : 1;
+}
+
+extern "C" int recoil_app_load_zbd_and_setup_sensor_tracker_smoke(void) {
+    InitTestRecoilAppVtable();
+    g_startEngineCount = 0;
+    g_shutdownEngineCount = 0;
+    g_exitInstanceCount = 0;
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    zZbdSectionHandlerNode sentinel = {};
+    zZbdManager manager = MakeTestZbdManager(sentinel);
+    g_zUtil_ZbdManager = &manager;
+
+    const int oldMissionId = g_HudSensorTracker.missionId;
+    const int oldMissionFlags = g_HudSensorTracker.missionFlags;
+    const int oldSkipIntroFmv = g_RecoilApp.m_skipIntroFmv;
+    g_HudSensorTracker.missionFlags = 0;
+
+    RecoilPtr32 frameWords[9]{};
+    frameWords[8] = 0x24681357;
+
+    TestRecoilApp app{};
+    TestAppState startupState{};
+    startupState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+    app.m_pMainWnd = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(frameWords));
+    app.m_pendingState_0c4 =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&startupState));
+    app.m_currentStateIndex_0c8 = -1;
+    g_startEngineResult = 1;
+
+    const bool zbdPathOk =
+        app.LoadZbdAndSetupSensorTracker(0, "custom.zbd", 3, 0x44) == 1 &&
+        app.m_skipIntroFmv == 3 && CStringEquals(g_HudSensorTracker.zbdPath, "custom.zbd");
+    CleanupSingleQueuedItem(app.m_stateQueue_118);
+    const bool zbdRegisterOk = manager.sectionHandlerCount == 2;
+    ClearTestRegisteredHandlers(sentinel);
+    manager.sectionHandlerCount = 0;
+
+    g_HudSensorTracker.missionFlags = 0;
+    TestRecoilApp missionApp{};
+    TestAppState missionStartupState{};
+    missionStartupState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    missionApp.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+    missionApp.m_pMainWnd = app.m_pMainWnd;
+    missionApp.m_pendingState_0c4 =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&missionStartupState));
+    missionApp.m_currentStateIndex_0c8 = -1;
+
+    const bool missionOk =
+        missionApp.LoadZbdAndSetupSensorTracker(9, nullptr, 4, 0x66) == 1 &&
+        missionApp.m_skipIntroFmv == 4 && g_HudSensorTracker.missionId == 9 &&
+        g_HudSensorTracker.missionFlags == 0x66 && CStringIsEmpty(g_HudSensorTracker.zbdPath);
+    CleanupSingleQueuedItem(missionApp.m_stateQueue_118);
+    const bool missionRegisterOk = manager.sectionHandlerCount == 2;
+
+    ClearTestRegisteredHandlers(sentinel);
+    g_zUtil_ZbdManager = nullptr;
+    g_HudSensorTracker.missionId = oldMissionId;
+    g_HudSensorTracker.missionFlags = oldMissionFlags;
+    g_RecoilApp.m_skipIntroFmv = oldSkipIntroFmv;
+    if (!zbdPathOk) {
+        return 1;
+    }
+    if (!zbdRegisterOk) {
+        return 2;
+    }
+    if (!missionOk) {
+        return 3;
+    }
+    if (!missionRegisterOk) {
+        return 4;
+    }
+    if (g_startEngineCount != 2) {
+        return 5;
+    }
+    return 0;
+}
+
 extern "C" int recoil_app_initialize_display_failure_smoke(void) {
     static std::int32_t modeIndex = 3;
     static std::int32_t fullscreen = 1;
@@ -444,6 +770,13 @@ extern "C" int recoil_app_initialize_display_failure_smoke(void) {
     const std::int32_t result = RecoilApp::InitializeDisplay(0x12345678);
     g_zVideo_IsInitialized = 0;
     return result == 0 ? 0 : 1;
+}
+
+extern "C" int recoil_app_shutdown_subsystems_smoke(void) {
+    g_zEffectAnim_EnableZarRegistration = 0;
+    g_zInput_hWnd = nullptr;
+
+    return RecoilApp::ShutdownSubsystems() == 0 ? 0 : 1;
 }
 
 extern "C" int recoil_app_on_idle_or_dispatch_smoke(void) {
@@ -543,6 +876,25 @@ extern "C" int recoil_app_play_state_constructor_smoke(void) {
                : 3;
 }
 
+extern "C" int recoil_app_play_state_on_wnd_activate_smoke(void) {
+    HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
+    HudLayoutBase_FTable layoutTable{};
+    layoutTable.OnActivated = TestPlayStateLayoutOnActivated;
+    HudLayoutBase layout{&layoutTable};
+    g_HudUiMgrCurrentLayout = &layout;
+    g_playStateLayoutActivatedCount = 0;
+
+    RecoilApp_PlayState playState{};
+    playState.OnWndActivate(0);
+    const bool inactiveOk = g_playStateLayoutActivatedCount == 0;
+
+    playState.OnWndActivate(1);
+    const bool activeOk = g_playStateLayoutActivatedCount == 1;
+
+    g_HudUiMgrCurrentLayout = oldLayout;
+    return inactiveOk && activeOk ? 0 : 1;
+}
+
 extern "C" int recoil_app_fmv_state_constructor_smoke(void) {
     RecoilApp_AttractFmvState attract{};
     auto *returnedAttract = attract.Constructor();
@@ -572,6 +924,302 @@ extern "C" int recoil_app_fmv_state_constructor_smoke(void) {
     }
 
     return 0;
+}
+
+extern "C" int recoil_app_fmv_state_on_idle_or_dispatch_smoke(void) {
+    RecoilApp_FmvState state{};
+    return state.OnIdleOrDispatch(0x11111111, 0x22222222) == 1 ? 0 : 1;
+}
+
+extern "C" int recoil_app_intro_fmv_on_try_become_current_smoke(void) {
+    const int oldSkipIntro = g_RecoilApp.m_skipIntroFmv;
+    HWND const oldMainHwnd = g_RecoilApp_hWndMain;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    zOpt_ViewRectSection **const oldWindowOption = g_zOpt_WindowSectionOption;
+    int *const oldStrideOption = ZOPT_VIDEO_STRIDE;
+
+    zOpt_ViewRectSection displaySection = {};
+    zOpt_ViewRectSection windowSection = {};
+    displaySection.bitsPerPixel = 16;
+    windowSection.x = 10;
+    windowSection.y = 20;
+    windowSection.rightExclusive = 330;
+    windowSection.bottomExclusive = 220;
+    windowSection.width = 320;
+    windowSection.height = 200;
+    zOpt_ViewRectSection *displayPtr = &displaySection;
+    zOpt_ViewRectSection *windowPtr = &windowSection;
+    int stride = 640;
+    unsigned short pixels[320 * 2] = {};
+
+    g_zOpt_DisplaySectionOption = &displayPtr;
+    g_zOpt_WindowSectionOption = &windowPtr;
+    ZOPT_VIDEO_STRIDE = &stride;
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 320;
+    g_zVideo_PrimarySurfaceState.height = 200;
+    g_zVideo_PrimarySurfaceState.pitch = 640;
+    zRndr::g_frameBuffer = nullptr;
+    zRndr::g_activeRegionWidth = 0;
+    zRndr::g_activeRegionHeight = 0;
+    zRndr::g_bytesPerPixel = 0;
+    zRndr::g_pitchBytes = 0;
+    zRndr::g_videoStrideMirror0 = 0;
+    zRndr::g_videoStrideMirror1 = 0;
+    g_zVideo_FxSurfacePixels16 = nullptr;
+    g_zVideo_FxSurfaceWidth = 0;
+    g_zVideo_FxSurfaceHeight = 0;
+    g_zVideo_FxSurfacePitchBytes = 0;
+    g_zVideo_FxSurfacePitchPixels16 = 0;
+    g_zVid_CachedClientRectUpdateMask = 0;
+    g_RecoilApp.m_skipIntroFmv = 1;
+
+    RecoilApp_IntroFmvState intro{};
+    const int result = intro.OnTryBecomeCurrent();
+
+    const bool ok =
+        result == 1 && zRndr::g_frameBuffer == pixels && zRndr::g_activeRegionWidth == 320 &&
+        zRndr::g_activeRegionHeight == 200 && zRndr::g_activeRegionRect.x == 10 &&
+        zRndr::g_activeRegionRect.y == 20 && zRndr::g_activeRegionRect.right == 330 &&
+        zRndr::g_activeRegionRect.bottom == 220 && zRndr::g_bytesPerPixel == 2 &&
+        zRndr::g_pitchBytes == 640 && zRndr::g_videoStrideMirror0 == 640 &&
+        zRndr::g_videoStrideMirror1 == 640 && g_zVideo_FxSurfacePixels16 == pixels &&
+        g_zVideo_FxSurfaceWidth == 320 && g_zVideo_FxSurfaceHeight == 200 &&
+        g_zVideo_FxSurfacePitchBytes == 640 && g_zVideo_FxSurfacePitchPixels16 == 320 &&
+        g_zVid_CachedClientRectUpdateMask == 1;
+
+    g_RecoilApp.m_skipIntroFmv = oldSkipIntro;
+    g_RecoilApp_hWndMain = oldMainHwnd;
+    g_zOpt_DisplaySectionOption = oldDisplayOption;
+    g_zOpt_WindowSectionOption = oldWindowOption;
+    ZOPT_VIDEO_STRIDE = oldStrideOption;
+    return ok ? 0 : 1;
+}
+
+extern "C" int recoil_app_intro_fmv_on_update_should_quit_smoke(void) {
+    RecoilApp oldApp = g_RecoilApp;
+
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp.m_skipIntroFmv = 1;
+    g_RecoilApp.m_missionFmvState_1d8.base.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    g_RecoilApp.m_mainMenuPrepState_1c8.base.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    RecoilApp_IntroFmvState intro{};
+    if (intro.OnUpdateShouldQuit() != 0 || g_RecoilApp.m_stateQueue_118.m_itemCount != 1) {
+        g_RecoilApp = oldApp;
+        return 1;
+    }
+
+    RecoilApp_StateQueueItem *item = reinterpret_cast<RecoilApp_StateQueueItem *>(
+        static_cast<std::uintptr_t>(*reinterpret_cast<RecoilPtr32 *>(
+            static_cast<std::uintptr_t>(g_RecoilApp.m_stateQueue_118.m_writeBlock.m_cursor - 4))));
+    const bool skipOk =
+        item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent && item->m_param == 0 &&
+        item->m_stateObj ==
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_RecoilApp.m_missionFmvState_1d8.base));
+    CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue_118);
+
+    std::memset(&g_RecoilApp.m_stateQueue_118, 0, sizeof(g_RecoilApp.m_stateQueue_118));
+    g_RecoilApp.m_skipIntroFmv = 0;
+    auto *script = reinterpret_cast<zFMV_Script *>(intro.m_fmv_08);
+    script->m_cur = nullptr;
+
+    if (intro.OnUpdateShouldQuit() != 0 || g_RecoilApp.m_stateQueue_118.m_itemCount != 1) {
+        g_RecoilApp = oldApp;
+        return 2;
+    }
+
+    item = reinterpret_cast<RecoilApp_StateQueueItem *>(
+        static_cast<std::uintptr_t>(*reinterpret_cast<RecoilPtr32 *>(
+            static_cast<std::uintptr_t>(g_RecoilApp.m_stateQueue_118.m_writeBlock.m_cursor - 4))));
+    const bool finishedOk =
+        item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent && item->m_param == 0 &&
+        item->m_stateObj ==
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_RecoilApp.m_mainMenuPrepState_1c8.base));
+    CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue_118);
+    g_RecoilApp = oldApp;
+
+    return skipOk && finishedOk ? 0 : 3;
+}
+
+extern "C" int recoil_app_intro_fmv_on_deactivate_smoke(void) {
+    RecoilApp_IntroFmvState intro{};
+    auto *script = reinterpret_cast<zFMV_Script *>(intro.m_fmv_08);
+    auto *action = new zFMV_Action{};
+    action->vftable = &g_zFMV_ActionBase_Vtable;
+    action->next = nullptr;
+    script->m_head = action;
+    script->m_tail = action;
+    script->m_cur = action;
+
+    intro.OnDeactivate();
+    return script->m_head == nullptr && script->m_tail == nullptr && script->m_cur == nullptr ? 0
+                                                                                              : 1;
+}
+
+extern "C" int recoil_app_main_menu_prep_on_try_become_current_smoke(void) {
+    unsigned short pixels[320 * 2] = {};
+
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 320;
+    g_zVideo_PrimarySurfaceState.height = 200;
+    g_zVideo_PrimarySurfaceState.pitch = 640;
+    g_zVideo_FxSurfacePixels16 = nullptr;
+    g_zVideo_FxSurfaceWidth = 0;
+    g_zVideo_FxSurfaceHeight = 0;
+    g_zVideo_FxSurfacePitchBytes = 0;
+    g_zVideo_FxSurfacePitchPixels16 = 0;
+
+    RecoilApp_MainMenuPrepState state{};
+    state.m_stateData04 = 0x12345678;
+
+    const int result = state.OnTryBecomeCurrent();
+    return result == 1 && state.m_stateData04 == 0 && g_zVideo_FxSurfacePixels16 == pixels &&
+                   g_zVideo_FxSurfaceWidth == 320 && g_zVideo_FxSurfaceHeight == 200 &&
+                   g_zVideo_FxSurfacePitchBytes == 640 && g_zVideo_FxSurfacePitchPixels16 == 320
+               ? 0
+               : 1;
+}
+
+extern "C" int recoil_app_main_menu_prep_on_update_should_quit_smoke(void) {
+    RecoilApp oldApp = g_RecoilApp;
+    RecoilStateMainMenuTransition oldTransition = g_RecoilState_MainMenuTransition;
+
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_stateEnterCount = 0;
+    g_RecoilState_MainMenuTransition.m_entryRoute = static_cast<RecoilMainMenuEntryRoute>(7);
+    g_RecoilState_MainMenuTransition.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    RecoilApp_MainMenuPrepState state{};
+    const int result = state.OnUpdateShouldQuit();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    bool itemOk = false;
+    if (queue.m_itemCount == 1) {
+        RecoilApp_StateQueueItem *const item =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(
+                *reinterpret_cast<RecoilPtr32 *>(
+                    static_cast<std::uintptr_t>(queue.m_writeBlock.m_cursor - 4))));
+        itemOk = item->m_kind == RecoilApp_StateQueueKind_PushState && item->m_param == 0 &&
+                 item->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                                         &g_RecoilState_MainMenuTransition));
+        CleanupSingleQueuedItem(queue);
+    }
+
+    const bool ok =
+        result == 0 &&
+        g_RecoilState_MainMenuTransition.m_entryRoute == RECOIL_MAINMENU_ROUTE_FRONTEND &&
+        g_stateEnterCount == 1 && itemOk;
+
+    g_RecoilApp = oldApp;
+    g_RecoilState_MainMenuTransition = oldTransition;
+    return ok ? 0 : 1;
+}
+
+extern "C" int recoil_app_attract_fmv_on_try_become_current_smoke(void) {
+    HWND const oldMainHwnd = g_RecoilApp_hWndMain;
+    const int oldReloadMode = g_RecoilApp_AttractFmvReloadMode;
+    HINSTANCE const instance = GetModuleHandleA(nullptr);
+    HWND const hwnd = CreateWindowExA(0, "STATIC", "recoil-attract-fmv-on-try-smoke",
+                                      WS_POPUP, 0, 0, 160, 90, nullptr, nullptr, instance,
+                                      nullptr);
+    if (hwnd == nullptr) {
+        return 1;
+    }
+
+    unsigned short pixels[320 * 2] = {};
+    g_RecoilApp_hWndMain = hwnd;
+    g_RecoilApp_AttractFmvReloadMode = 1;
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 320;
+    g_zVideo_PrimarySurfaceState.height = 200;
+    g_zVideo_PrimarySurfaceState.pitch = 640;
+    g_zVideo_FxSurfacePixels16 = nullptr;
+    g_zVideo_FxSurfaceWidth = 0;
+    g_zVideo_FxSurfaceHeight = 0;
+    g_zVideo_FxSurfacePitchBytes = 0;
+    g_zVideo_FxSurfacePitchPixels16 = 0;
+
+    RecoilApp_AttractFmvState state{};
+    state.Constructor();
+    state.m_clientRect_30[0] = -1;
+    state.m_clientRect_30[1] = -1;
+    state.m_clientRect_30[2] = -1;
+    state.m_clientRect_30[3] = -1;
+
+    const int result = state.OnTryBecomeCurrent();
+    auto *const script = reinterpret_cast<zFMV_Script *>(state.m_fmv_10);
+    const bool ok =
+        result == 1 && g_RecoilApp_AttractFmvReloadMode == 0 && script->m_hWnd == hwnd &&
+        state.m_clientRect_30[0] == 0 && state.m_clientRect_30[1] == 0 &&
+        state.m_clientRect_30[2] > 0 && state.m_clientRect_30[3] > 0 &&
+        g_zVideo_FxSurfacePixels16 == pixels && g_zVideo_FxSurfaceWidth == 320 &&
+        g_zVideo_FxSurfaceHeight == 200 && g_zVideo_FxSurfacePitchBytes == 640 &&
+        g_zVideo_FxSurfacePitchPixels16 == 320;
+
+    state.Destructor();
+    DestroyWindow(hwnd);
+    g_RecoilApp_hWndMain = oldMainHwnd;
+    g_RecoilApp_AttractFmvReloadMode = oldReloadMode;
+    return ok ? 0 : 2;
+}
+
+extern "C" int recoil_app_attract_fmv_on_update_should_quit_smoke(void) {
+    RecoilApp oldApp = g_RecoilApp;
+
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp.m_mainMenuPrepState_1c8.base.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    g_stateEnterCount = 0;
+
+    RecoilApp_AttractFmvState state{};
+    auto *const script = reinterpret_cast<zFMV_Script *>(state.m_fmv_10);
+    script->m_cur = nullptr;
+
+    const int result = state.OnUpdateShouldQuit();
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    bool itemOk = false;
+    if (queue.m_itemCount == 1) {
+        auto *const item =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(
+                *reinterpret_cast<RecoilPtr32 *>(
+                    static_cast<std::uintptr_t>(queue.m_writeBlock.m_cursor - 4))));
+        itemOk = item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent && item->m_param == 0 &&
+                 item->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                                         &g_RecoilApp.m_mainMenuPrepState_1c8.base));
+        CleanupSingleQueuedItem(queue);
+    }
+
+    const bool ok = result == 0 && g_stateEnterCount == 1 && itemOk;
+    g_RecoilApp = oldApp;
+    return ok ? 0 : 1;
+}
+
+extern "C" int recoil_app_attract_fmv_on_deactivate_smoke(void) {
+    RecoilApp_AttractFmvState state{};
+    auto *const script = reinterpret_cast<zFMV_Script *>(state.m_fmv_10);
+    zFMV_Action action1{};
+    zFMV_Action action2{};
+
+    action1.next = &action2;
+    action2.next = nullptr;
+    script->m_head = &action1;
+    script->m_tail = &action2;
+    script->m_cur = &action2;
+
+    state.OnDeactivate();
+    return script->m_head == &action1 && script->m_tail == &action2 && script->m_cur == &action1 &&
+                   action1.next == &action2 && action2.next == nullptr
+               ? 0
+               : 1;
 }
 
 extern "C" int recoil_app_constructor_destructor_smoke(void) {

@@ -1,0 +1,14 @@
+{
+  "name": "recoil_app_initialize_display",
+  "description": "RecoilApp::InitializeDisplay opens the selected video mode, initializes software span occlusion when needed, binds renderer framebuffer state, clears/presents startup buffers, and returns success or failure.",
+  "address": "0x42e330",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_initialize_display_failure_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x42e330",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob1 /GX /Zp4 /DUINT_PTR=UINT COFF byte compare fails with 144 unmasked mismatches after masking 108 relocation bytes; the function is a broad runtime setup sequence with provider calls and indirect CRT import paths still pending a class/subsystem binary-safe pass.",
+    "The native smoke covers the early video-open failure path. The full success path requires the real video provider because zVideo::InitVideoSystem binds DirectDraw dispatch internally; direct display/raster/clear callees on that path are separately functionally accepted."
+  ]
+}

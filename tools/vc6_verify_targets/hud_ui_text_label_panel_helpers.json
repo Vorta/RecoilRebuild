@@ -1,0 +1,62 @@
+{
+  "name": "hud_ui_text_label_panel_helpers",
+  "description": "HudUiTextLabel formatting/extents and HudUiPanel constructor/destructor helpers.",
+  "compiler_profile": "vc5_o2_ob1_gx_facs",
+  "source_filename": "zhud_ui.cpp",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zHud/zhud_ui.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4bcd80",
+      "symbol": "?RebuildTextBounds@HudUiTextLabel@@QAEXXZ",
+      "name": "HudUiTextLabel::RebuildTextBounds"
+    },
+    {
+      "address": "0x4bcdc0",
+      "symbol": "?MeasureTextWidth@HudUiTextLabel@@QAEHXZ",
+      "name": "HudUiTextLabel::MeasureTextWidth"
+    },
+    {
+      "address": "0x4bcdf0",
+      "symbol": "?UpdateTextExtents@HudUiTextLabel@@QAEXXZ",
+      "name": "HudUiTextLabel::UpdateTextExtents"
+    },
+    {
+      "address": "0x4bccf0",
+      "symbol": "?SetTextFmt@HudUiTextLabel@@QAAXPBDZZ",
+      "name": "HudUiTextLabel::SetTextFmt"
+    },
+    {
+      "address": "0x4bcb50",
+      "symbol": "?ConstructorWithPosAndFlags@HudUiTextLabel@@QAEPAU1@PBDHHH@Z",
+      "name": "HudUiTextLabel::ConstructorWithPosAndFlags"
+    },
+    {
+      "address": "0x4ba740",
+      "symbol": "?ConstructorDefault@HudUiPanel@@QAEPAU1@PBDHH@Z",
+      "name": "HudUiPanel::ConstructorDefault"
+    },
+    {
+      "address": "0x4bab40",
+      "symbol": "?Destructor@HudUiPanel@@QAEXXZ",
+      "name": "HudUiPanel::Destructor"
+    },
+    {
+      "address": "0x4bb540",
+      "symbol": "?SetTextFmt@HudUiPanel@@QAAXPBDZZ",
+      "name": "HudUiPanel::SetTextFmt"
+    }
+  ]
+}

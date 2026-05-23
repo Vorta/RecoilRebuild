@@ -1,0 +1,18 @@
+{
+  "name": "zsnd_system_init",
+  "description": "zSndSystem_Init gates initialization, dispatches the selected backend, loads sound config, and selects legacy or named syntax parsing.",
+  "address": "0x4a1420",
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+  "smoke_tests": [
+    "zsnd_system_init_gate_and_missing_config_smoke",
+    "zsnd_backend_init_directsound_provider_smoke",
+    "zsnd_backend_init_a3d_provider_smoke",
+    "zsnd_system_legacy_sets_syntax_smoke",
+    "zsnd_system_named_sets_syntax_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zsnd_system_init",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /MD /GX /Zp4 /FAcs COFF byte comparison for @zSndSystem_Init@8 at 0x4a1420 still fails: 116 unmasked mismatches, 72 relocation bytes masked, 10 trailing VC NOP bytes trimmed, BN size 237 bytes, VC object symbol size 272 bytes.",
+    "Functional coverage composes the top-level gate/missing-config path with reviewed backend-provider and syntax-parser smokes. The full successful zSndSystem_Init path still depends on external sound config assets and host audio/A3D provider availability."
+  ]
+}

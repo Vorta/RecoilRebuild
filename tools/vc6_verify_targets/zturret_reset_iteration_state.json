@@ -1,0 +1,24 @@
+{
+  "name": "zturret_reset_iteration_state",
+  "description": "zTurret startup iteration-state reset.",
+  "source_filename": "zTurret.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zTurret",
+    "src/GameZRecoil/include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zTurret/zTurret.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x437aa0",
+      "symbol": "?ResetIterationState@zTurret_System@@YAHXZ",
+      "name": "zTurret_System::ResetIterationState"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zTurret/zTurret.cpp"
+}

@@ -22,6 +22,11 @@
       "address": "0x4b4ee0",
       "symbol": "?Constructor@HudUiZrdWidget@@QAEPAU1@XZ",
       "name": "HudUiZrdWidget::Constructor"
+    },
+    {
+      "address": "0x4b8450",
+      "symbol": "?Constructor@HudUiFillBitmap@@QAEPAU1@XZ",
+      "name": "HudUiFillBitmap::Constructor"
     }
   ]
 }

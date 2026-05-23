@@ -1,0 +1,14 @@
+{
+  "name": "zvideo_primary_surface_width",
+  "description": "zVideo::GetPrimarySurfaceWidth returns the cached primary surface width.",
+  "address": "0x4a6800",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_surface_accessors_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zvideo_primary_surface_dimensions",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?GetPrimarySurfaceWidth@zVideo@@YAHXZ at 0x4a6800 with zero unmasked mismatches after masking 4 relocation bytes; 10 trailing VC NOP bytes trimmed."
+  ]
+}

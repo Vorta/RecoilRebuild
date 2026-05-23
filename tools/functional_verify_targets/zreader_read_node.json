@@ -1,0 +1,13 @@
+{
+  "name": "zreader_read_node",
+  "description": "zReader_ReadNode reads scalar and array zrd nodes from an opened archive-backed file.",
+  "address": "0x48d080",
+  "source_from": "src/GameZRecoil/zReader/zreader_load.cpp",
+  "smoke_tests": [
+    "zreader_load_node_from_archive_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x48d080",
+  "known_limits": [
+    "The smoke verifies ReadNode through LoadNodeFromPath on an archive-backed zrd stream. Binary-safe verification remains pending for exact recursive read codegen."
+  ]
+}

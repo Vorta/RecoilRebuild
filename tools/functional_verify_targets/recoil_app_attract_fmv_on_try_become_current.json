@@ -1,0 +1,16 @@
+{
+  "name": "recoil_app_attract_fmv_on_try_become_current",
+  "description": "RecoilApp_AttractFmvState::OnTryBecomeCurrent refreshes FX surface state, captures the main window client rect, refreshes ATTRACT FMV actions when requested, stores the script HWND, starts loaded actions, and returns 1.",
+  "address": "0x42ebf0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_attract_fmv_on_try_become_current_smoke",
+    "zfmv_script_load_actions_from_zrd_smoke",
+    "zfmv_script_begin_at_time_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py recoil_app_create_main_wnd",
+  "known_limits": [
+    "The caller smoke verifies the surface, client-rect, reload-flag, script HWND, and return-value side effects with a live hidden window. Positive action loading and BeginAtTime behavior are covered by the listed zFMV script functional smokes.",
+    "VC5SP3 compile-only target coverage exists through recoil_app_create_main_wnd; Binary Ninja byte comparison remains pending for the RecoilApp FMV state cluster."
+  ]
+}

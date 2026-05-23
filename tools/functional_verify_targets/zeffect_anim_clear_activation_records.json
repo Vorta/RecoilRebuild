@@ -1,0 +1,14 @@
+{
+  "name": "zeffect_anim_clear_activation_records",
+  "description": "zEffect_Anim::ClearActivationRecords frees the activation record table and resets its count.",
+  "address": "0x4603d0",
+  "source_from": "src/GameZRecoil/zEffect/zEffect.cpp",
+  "smoke_tests": [
+    "zeffect_anim_init_shutdown_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zeffect_init_helpers",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare currently fails for zEffect_Anim::ClearActivationRecords: 11 unmasked mismatches after masking 16 relocation bytes; Binary Ninja body is 40 bytes and the VC object body is 48 bytes with 9 trailing VC NOPs trimmed.",
+    "The native smoke verifies activation record table cleanup through zEffect_Anim::Shutdown."
+  ]
+}

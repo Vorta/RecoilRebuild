@@ -1,0 +1,15 @@
+{
+  "name": "zvideo_module_init",
+  "description": "zVideo::ModuleInit seeds zVideo global defaults, initializes pixel-pack descriptors, binds the software fullscreen renderer dispatch, performs DirectDraw default selection, registers teardown with atexit, and returns success.",
+  "address": "0x4a7530",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_module_init_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a7530",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare fails with 88 unmasked mismatches after masking 68 relocation bytes; Binary Ninja body is 162 bytes and the VC object body is 160 bytes with 7 trailing VC NOPs trimmed.",
+    "The reviewed failure is bulk global-zeroing shape, store ordering, and call setup drift across already accepted pixel-pack, dispatch-binding, DirectDraw enumeration, and CRT atexit dependencies.",
+    "The native smoke verifies success return, key zeroed defaults, palette/fullscreen/dither defaults, texture pixel-pack seed state, default hardware API selection, and cleared selected D3D device pointer."
+  ]
+}

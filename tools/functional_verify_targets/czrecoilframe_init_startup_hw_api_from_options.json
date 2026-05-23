@@ -1,0 +1,14 @@
+{
+  "name": "czrecoilframe_init_startup_hw_api_from_options",
+  "description": "CZRecoilFrame::InitStartupHwApiFromOptions initializes the startup hardware API path from persisted options and available DirectDraw devices, falling back when needed.",
+  "address": "0x431730",
+  "source_from": "src/Battlesport/CZRecoilFrame.cpp",
+  "smoke_tests": [
+    "czrecoil_frame_init_startup_hw_api_from_options_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x431730",
+  "known_limits": [
+    "The smoke verifies a valid hardware option path and a fallback software path with persisted option and frame state side effects.",
+    "Binary-safe verification remains pending for exact branch/member-call shape."
+  ]
+}

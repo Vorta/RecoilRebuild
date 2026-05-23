@@ -1,0 +1,26 @@
+{
+  "name": "zvideo_set_renderer_type_and_active_path",
+  "description": "zVideo renderer-type and active-renderer-path setter.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zVideo.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a6b40",
+      "symbol": "?SetRendererTypeAndActivePath@zVideo@@YIHH@Z",
+      "name": "zVideo::SetRendererTypeAndActivePath"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp"
+}

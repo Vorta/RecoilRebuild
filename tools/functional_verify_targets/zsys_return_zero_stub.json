@@ -1,0 +1,13 @@
+{
+  "name": "zsys_return_zero_stub",
+  "description": "zSys::ReturnZeroStub returns zero.",
+  "address": "0x4b3210",
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+  "smoke_tests": [
+    "zsys_runtime_probe_leaves_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4b3210",
+  "known_limits": [
+    "The smoke verifies the zero return through the public zSys runtime probe."
+  ]
+}

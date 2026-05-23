@@ -7,6 +7,17 @@
 #include <cstring>
 #include <ddraw.h>
 
+extern "C" int directdraw_enumerate_import_provider_smoke(void) {
+    HMODULE ddrawModule = LoadLibraryA("ddraw.dll");
+    if (ddrawModule == 0) {
+        return 1;
+    }
+
+    FARPROC enumerateProc = GetProcAddress(ddrawModule, "DirectDrawEnumerateA");
+    FreeLibrary(ddrawModule);
+    return enumerateProc != 0 ? 0 : 2;
+}
+
 extern "C" int zvid_pack_color_rgb_smoke(void) {
     g_zVideo_PixelPack_RMaskShifted = 0xf8;
     g_zVideo_PixelPack_GMaskShifted = 0xfc;
@@ -456,25 +467,77 @@ extern "C" int zvideo_dd_report_error_smoke(void) {
     return 0;
 }
 
+extern "C" int zvideo_dd_run_device_enumeration_smoke(void) {
+    const int result = zVideo_dd::RunDirectDrawDeviceEnumeration();
+    return result == 0 || result == 1 ? 0 : 1;
+}
+
+extern "C" int zvideo_dd_startup_enumerate_default_select_smoke(void) {
+    g_zVideo_pSelectedHwApiDeviceRecord = nullptr;
+    g_zVideo_pSelectedD3DDeviceInfo = reinterpret_cast<zVidD3DDriverRecordPartial *>(0x1);
+
+    zVideo_dd::StartupEnumerateAndDefaultSelect();
+    return g_zVideo_pSelectedHwApiDeviceRecord == &g_zVideo_HwApiDeviceTable[0] &&
+                   g_zVideo_pSelectedD3DDeviceInfo == nullptr
+               ? 0
+               : 1;
+}
+
+extern "C" int zvideo_module_init_smoke(void) {
+    g_zVideo_RendererType = 7;
+    g_zVideo_ActiveRendererPath = 7;
+    g_zVideo_FrameTick = 9;
+    gVideo_resolutionMenuValid = 1;
+    g_zVideo_PaletteBrightnessLevel = 2;
+    g_zVideo_ClearColorPacked16 = 0xabcd;
+    g_zVideo_pSelectedHwApiDeviceRecord = nullptr;
+    g_zVideo_pSelectedD3DDeviceInfo = reinterpret_cast<zVidD3DDriverRecordPartial *>(0x1);
+
+    if (zVideo::ModuleInit() != 0) {
+        return 1;
+    }
+
+    return g_zVideo_RendererType == 0 && g_zVideo_ActiveRendererPath == 0 &&
+                   g_zVideo_FrameTick == 0 && gVideo_resolutionMenuValid == 0 &&
+                   g_zVideo_PaletteBrightnessLevel == 4 && g_zVideo_ClearColorPacked16 == 0 &&
+                   g_zVideo_FullscreenOption == 1 && g_zVideo_PendingDitherEnable == -1 &&
+                   g_zVideo_TexturePixelPack_ABits == 4 &&
+                   g_zVideo_TexturePixelPack_RMask == 0xf000 &&
+                   g_zVideo_pSelectedHwApiDeviceRecord == &g_zVideo_HwApiDeviceTable[0] &&
+                   g_zVideo_pSelectedD3DDeviceInfo == nullptr
+               ? 0
+               : 2;
+}
+
 extern "C" int zvid_hw_api_accessors_smoke(void) {
     std::strncpy(g_zVideo_HwApiDeviceTable[2].m_driverName, "driver-two",
                  sizeof(g_zVideo_HwApiDeviceTable[2].m_driverName));
     std::strncpy(g_zVideo_HwApiDeviceTable[2].m_driverDescription, "description-two",
                  sizeof(g_zVideo_HwApiDeviceTable[2].m_driverDescription));
+    std::strncpy(g_zVideo_HwApiDeviceTable[2].m_d3dDrivers[1].m_deviceName, "device-one",
+                 sizeof(g_zVideo_HwApiDeviceTable[2].m_d3dDrivers[1].m_deviceName));
 
     g_zVideo_pSelectedHwApiDeviceRecord = nullptr;
     if (std::strcmp(zVid::GetSelectedHwApiDescriptionOrDefault(), "Default") != 0) {
         return 1;
     }
 
+    g_zVideo_pSelectedD3DDeviceInfo = nullptr;
+    if (std::strcmp(zVid::GetSelectedD3DDeviceNameOrDefault(), "GameZ") != 0) {
+        return 2;
+    }
+
     g_zVideo_pSelectedHwApiDeviceRecord = &g_zVideo_HwApiDeviceTable[2];
+    g_zVideo_pSelectedD3DDeviceInfo = &g_zVideo_HwApiDeviceTable[2].m_d3dDrivers[1];
     return zVid::GetHwApiDriverName(2) == g_zVideo_HwApiDeviceTable[2].m_driverName &&
                    zVid::GetHwApiDescription(2) ==
                        g_zVideo_HwApiDeviceTable[2].m_driverDescription &&
                    zVid::GetSelectedHwApiDescriptionOrDefault() ==
-                       g_zVideo_HwApiDeviceTable[2].m_driverDescription
+                       g_zVideo_HwApiDeviceTable[2].m_driverDescription &&
+                   zVid::GetSelectedD3DDeviceNameOrDefault() ==
+                       g_zVideo_HwApiDeviceTable[2].m_d3dDrivers[1].m_deviceName
                ? 0
-               : 2;
+               : 3;
 }
 
 extern "C" int zvid_cached_renderer_and_texture_counts_smoke(void) {
@@ -491,6 +554,16 @@ extern "C" int zvid_cached_renderer_and_texture_counts_smoke(void) {
                    zVid::HasAcceptedHardwareRenderer() == 0 && zVid::GetTexturePackLoadState() == 0
                ? 0
                : 2;
+}
+
+extern "C" int zvid_texture_pack_load_state_getter_smoke(void) {
+    g_zVid_TexturePackLoadState = 0;
+    if (zVid::GetTexturePackLoadState() != 0) {
+        return 1;
+    }
+
+    g_zVid_TexturePackLoadState = 7;
+    return zVid::GetTexturePackLoadState() == 7 ? 0 : 2;
 }
 
 extern "C" int zvid_option_accessors_smoke(void) {

@@ -1,0 +1,26 @@
+{
+  "name": "zinput_joystick_init_device",
+  "description": "zInput joystick device initialization and default axis configuration.",
+  "source_filename": "zInput.cpp",
+  "compiler_profile": "vc5_o2_ob1_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x471e40",
+      "symbol": "?DI_InitJoystickDevice@zInput@@YIHPAX@Z",
+      "name": "zInput::DI_InitJoystickDevice"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp"
+}

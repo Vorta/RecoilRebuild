@@ -1,11 +1,50 @@
 #include "Battlesport/CZGameFrame.h"
 #include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/RecoilApp.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstring>
+
+extern "C" int g_CZRecoilFrame_HasWolApi;
+BOOL RECOIL_STDCALL AfxWinInit(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine,
+                               int showCommand);
+
+class CWnd {
+  public:
+    BOOL CreateEx(DWORD dwExStyle, LPCSTR className, LPCSTR windowName, DWORD style, int x, int y,
+                  int width, int height, HWND parent, HMENU menu, LPVOID param);
+    void SetWindowTextA(LPCSTR text);
+    void CenterWindow(CWnd *alternateOwner);
+
+  private:
+    unsigned char reserved000[0x20];
+    HWND m_hWnd;
+};
+
+BOOL CWnd::CreateEx(DWORD dwExStyle, LPCSTR className, LPCSTR windowName, DWORD style, int x,
+                    int y, int width, int height, HWND parent, HMENU menu, LPVOID param) {
+    m_hWnd = CreateWindowExA(dwExStyle, className, windowName, style, x, y, width, height, parent,
+                             menu, GetModuleHandleA(nullptr), param);
+    return m_hWnd != nullptr ? 1 : 0;
+}
+
+void CWnd::SetWindowTextA(LPCSTR text) {
+    ::SetWindowTextA(m_hWnd, text);
+}
+
+void CWnd::CenterWindow(CWnd *alternateOwner) {
+    (void)alternateOwner;
+}
+
+namespace {
+int HandleFrameConstructorException(EXCEPTION_POINTERS *exceptionInfo) {
+    (void)exceptionInfo;
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+} // namespace
 
 extern "C" int czrecoil_frame_build_window_title_smoke(void) {
     CZRecoilFrame frame{};
@@ -610,6 +649,85 @@ extern "C" int czgame_frame_constructor_smoke(void) {
     }
 
     return 1;
+}
+
+extern "C" int czrecoil_frame_constructor_smoke(void) {
+    g_RecoilApp.Constructor();
+
+    HINSTANCE instance = GetModuleHandleA(nullptr);
+    if (AfxWinInit(instance, nullptr, GetCommandLineA(), SW_HIDE) == 0) {
+        return 1;
+    }
+
+    WNDCLASSA wndClass{};
+    wndClass.lpfnWndProc = DefWindowProcA;
+    wndClass.hInstance = instance;
+    wndClass.lpszClassName = "RecoilClass";
+    RegisterClassA(&wndClass);
+
+    CZRecoilFrame frame{};
+    g_zVid_AcceptedHardwareRendererCount = 5;
+    g_zVid_TexturePackLoadState = 1;
+    g_zSnd_UseArchiveBanksFlag = 0;
+    g_CZRecoilFrame_HasWolApi = 0;
+
+    CZRecoilFrame *returned = nullptr;
+    __try {
+        returned = frame.Constructor();
+    } __except (HandleFrameConstructorException(GetExceptionInformation())) {
+        return 10;
+    }
+
+    const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(&frame);
+    const bool constructed = returned == &frame && constructedFrameVtable != 0 &&
+                             constructedFrameVtable != CZRecoilFrame::GetRuntimeClass();
+    const bool fieldsOk =
+        frame.m_openZbdFilePath[0] == '\0' && frame.m_useArchiveBanks == 1 &&
+        frame.m_cmdlineFlag == 1 && frame.m_campaignsOnlyMode == 0 &&
+        frame.m_acceptedD3DDeviceCount == g_zVid_AcceptedHardwareRendererCount &&
+        frame.m_hwApiCmdUiState[0] == 0 &&
+        frame.m_hwApiCmdUiState[1] == 0 && frame.m_hwApiCmdUiState[2] == 0 &&
+        frame.m_hwApiCmdUiState[3] == 0 && frame.m_hwApiMenuCommandIds[0] == 0x9c83 &&
+        frame.m_hwApiMenuCommandIds[1] == 0x9c72 &&
+        frame.m_hwApiMenuCommandIds[2] == 0x9c75 &&
+        frame.m_hwApiMenuCommandIds[3] == 0x9c76;
+    const bool globalsOk = g_zSnd_UseArchiveBanksFlag == 1;
+
+    return !constructed ? 2 : (!fieldsOk ? 3 : (globalsOk ? 0 : 4));
+}
+
+extern "C" int recoil_app_create_main_wnd_smoke(void) {
+    g_RecoilApp.Constructor();
+
+    HINSTANCE instance = GetModuleHandleA(nullptr);
+    if (AfxWinInit(instance, nullptr, GetCommandLineA(), SW_HIDE) == 0) {
+        return 1;
+    }
+
+    WNDCLASSA wndClass{};
+    wndClass.lpfnWndProc = DefWindowProcA;
+    wndClass.hInstance = instance;
+    wndClass.lpszClassName = "RecoilClass";
+    RegisterClassA(&wndClass);
+
+    g_zVid_AcceptedHardwareRendererCount = 4;
+    g_zVid_TexturePackLoadState = 1;
+    g_zSnd_UseArchiveBanksFlag = 0;
+    g_CZRecoilFrame_HasWolApi = 0;
+
+    CZRecoilFrame *frame = g_RecoilApp.CreateMainWnd();
+    if (frame == nullptr) {
+        return 2;
+    }
+
+    const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
+    return constructedFrameVtable != 0 &&
+                   constructedFrameVtable != CZRecoilFrame::GetRuntimeClass() &&
+                   frame->m_useArchiveBanks == 1 &&
+                   frame->m_acceptedD3DDeviceCount == g_zVid_AcceptedHardwareRendererCount &&
+                   g_zSnd_UseArchiveBanksFlag == 1
+               ? 0
+               : 3;
 }
 
 extern "C" int czrecoil_frame_destructor_smoke(void) {

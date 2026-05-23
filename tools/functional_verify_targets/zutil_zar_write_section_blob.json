@@ -1,0 +1,14 @@
+{
+  "name": "zutil_zar_write_section_blob",
+  "description": "zUtil_ZAR::WriteSectionBlob forwards a section callback context, token, payload pointer, and payload size to the active manager's WriteSectionRecord.",
+  "address": "0x4c0010",
+  "source_from": "src/GameZRecoil/zUtil/zZbd.cpp",
+  "smoke_tests": [
+    "zutil_zar_write_section_blob_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zutil_zar_write_section_blob",
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?WriteSectionBlob@zUtil_ZAR@@YIHPAUzZbdSectionCallbackCtx@@PBDPBXI@Z at 0x4c0010 passed with zero unmasked mismatches after masking 4 relocation bytes; Binary Ninja body is 22 bytes and the VC object symbol is 32 bytes with 10 trailing VC NOP bytes trimmed.",
+    "The native smoke verifies the forwarded write creates one HUD/TimerData record with the expected payload bytes, archive dirty flag, record count/capacity, file offset, and file size."
+  ]
+}

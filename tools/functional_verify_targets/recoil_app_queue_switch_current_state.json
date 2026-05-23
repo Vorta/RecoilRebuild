@@ -1,0 +1,16 @@
+{
+  "name": "recoil_app_queue_switch_current_state",
+  "description": "RecoilApp::QueueSwitchCurrentState allocates a switch-current queue item, grows the state queue as needed, enqueues the item, exits the previous current state, enters the new state, and returns the previous state.",
+  "address": "0x443160",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_queue_switch_current_state_smoke",
+    "recoil_app_start_engine_and_queue_startup_state_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x443160",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /DUINT_PTR=UINT /FAcs COFF byte comparison for ?QueueSwitchCurrentState@RecoilApp@@QAEIPAURecoilApp_IState@@H@Z at 0x443160 still fails: 374 unmasked mismatches, 40 relocation bytes masked, 8 trailing VC NOP bytes trimmed, BN size 431 bytes, VC object symbol size 304 bytes.",
+    "Reviewed difference is broad queue-growth scheduling and stack-slot/register allocation drift. The source still follows the original queue contract: item allocation, chunk allocation/growth, cursor write, item count increment, old-state OnExit, and new-state OnEnter.",
+    "The native smokes validate queued item fields, old/new state callbacks, returned previous state, and use through startup-state queuing."
+  ]
+}

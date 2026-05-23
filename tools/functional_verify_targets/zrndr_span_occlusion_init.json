@@ -1,0 +1,14 @@
+{
+  "name": "zrndr_span_occlusion_init",
+  "description": "zRndr::SpanOcclusionInit allocates span occlusion tables and pools, builds the initial column table, clears saved occluders, and installs span-list callbacks.",
+  "address": "0x490520",
+  "source_from": "src/GameZRecoil/zRndr/zRndr.cpp",
+  "smoke_tests": [
+    "zrndr_span_occlusion_init_build_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zrndr_span_occlusion_init",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?SpanOcclusionInit@zRndr@@YIHH@Z at 0x490520 still fails: 41 unmasked mismatches, 52 relocation bytes masked, 1 trailing VC NOP byte trimmed, BN size 97 bytes, VC object symbol size 96 bytes.",
+    "Reviewed difference is allocation call setup and register scheduling drift around calloc, SpanOcclusionBuildColumnHeadTable, and callback installation. The native smoke verifies visible/padded column counts, allocations, initialized head table, callback pointers, and shutdown cleanup."
+  ]
+}

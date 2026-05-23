@@ -99,11 +99,6 @@ unsigned int AbsDiffFromTripleAverage(unsigned int value, unsigned int previous,
     return delta < 0 ? static_cast<unsigned int>(-delta) : static_cast<unsigned int>(delta);
 }
 
-unsigned int ReadCmosRtcSecondsBcd() {
-    SYSTEMTIME localTime;
-    GetLocalTime(&localTime);
-    return static_cast<unsigned int>(((localTime.wSecond / 10) << 4) | (localTime.wSecond % 10));
-}
 } // namespace
 
 extern "C" unsigned int g_zSys_CpuVendorNonIntelMarker = 0;
@@ -137,6 +132,12 @@ RECOIL_NOINLINE int RECOIL_CDECL zSys::CheckCpuSignatureMask() {
     int cpuInfo[4] = {0};
     __cpuid(cpuInfo, 1);
     return (cpuInfo[0] & 0x630) == 0x630 ? 1 : 0;
+}
+
+// Reimplements 0x4b2fe0: zSys::HasCpuidSupportRuntimeOptions
+// Retail has a second CPUID-support probe for zGame/zSound runtime option setup.
+RECOIL_NOINLINE int RECOIL_CDECL zSys::HasCpuidSupportRuntimeOptions() {
+    return HasCpuidSupport() != 0 ? 1 : 0;
 }
 
 #if !(defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM))
@@ -190,6 +191,43 @@ RECOIL_NOINLINE unsigned int RECOIL_CDECL zSys::ReadCpuidFeatureFlags() {
 
     __cpuid(cpuInfo, 1);
     return static_cast<unsigned int>(cpuInfo[3]);
+}
+
+// Reimplements 0x4b3b00: zSys::ReadCmosRtcSecondsBcd
+RECOIL_NOINLINE unsigned int RECOIL_CDECL zSys::ReadCmosRtcSecondsBcd() {
+    SYSTEMTIME localTime;
+    GetLocalTime(&localTime);
+    return static_cast<unsigned int>(((localTime.wSecond / 10) << 4) | (localTime.wSecond % 10));
+}
+
+// Reimplements 0x4b3b20: zSys::ReadTsc64
+RECOIL_NOINLINE void RECOIL_FASTCALL zSys::ReadTsc64(unsigned int *outHigh,
+                                                     unsigned int *outLow) {
+    const unsigned __int64 counter = RecoilReadTimestampCounter();
+    if (outHigh != 0) {
+        *outHigh = static_cast<unsigned int>(counter >> 32);
+    }
+    if (outLow != 0) {
+        *outLow = static_cast<unsigned int>(counter);
+    }
+}
+
+// Reimplements 0x4b3ca0: zSys::Sub64
+RECOIL_NOINLINE void RECOIL_FASTCALL zSys::Sub64(unsigned int subHigh, unsigned int subLow,
+                                                 unsigned int minuendHigh,
+                                                 unsigned int minuendLow, unsigned int *outHigh,
+                                                 unsigned int *outLow) {
+    const unsigned __int64 subtrahend =
+        (static_cast<unsigned __int64>(subHigh) << 32) | subLow;
+    const unsigned __int64 minuend =
+        (static_cast<unsigned __int64>(minuendHigh) << 32) | minuendLow;
+    const unsigned __int64 result = minuend - subtrahend;
+    if (outHigh != 0) {
+        *outHigh = static_cast<unsigned int>(result >> 32);
+    }
+    if (outLow != 0) {
+        *outLow = static_cast<unsigned int>(result);
+    }
 }
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
@@ -365,19 +403,23 @@ CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(zSys::CpuBenchmarkResult *outBuffer)
         SetThreadPriority(thread, oldPriority + 1);
     }
 
-    unsigned int previousSecond = ReadCmosRtcSecondsBcd();
+    unsigned int previousSecond = zSys::ReadCmosRtcSecondsBcd();
     unsigned int startSecond;
     do {
-        startSecond = ReadCmosRtcSecondsBcd();
+        startSecond = zSys::ReadCmosRtcSecondsBcd();
     } while (startSecond == previousSecond);
 
-    const unsigned __int64 startTsc = RecoilReadTimestampCounter();
+    unsigned int startTscHigh = 0;
+    unsigned int startTscLow = 0;
+    zSys::ReadTsc64(&startTscHigh, &startTscLow);
     unsigned int endSecond;
     do {
-        endSecond = ReadCmosRtcSecondsBcd();
+        endSecond = zSys::ReadCmosRtcSecondsBcd();
     } while (endSecond == startSecond);
 
-    const unsigned __int64 endTsc = RecoilReadTimestampCounter();
+    unsigned int endTscHigh = 0;
+    unsigned int endTscLow = 0;
+    zSys::ReadTsc64(&endTscHigh, &endTscLow);
     if (oldPriority != THREAD_PRIORITY_ERROR_RETURN) {
         SetThreadPriority(thread, oldPriority);
     }
@@ -385,7 +427,10 @@ CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(zSys::CpuBenchmarkResult *outBuffer)
     const unsigned int elapsedSeconds =
         endSecond >= startSecond ? endSecond - startSecond : endSecond - startSecond + 0x0a;
     const unsigned int microseconds = elapsedSeconds * 1000000u;
-    const unsigned int cycles = static_cast<unsigned int>(endTsc - startTsc);
+    unsigned int elapsedHigh = 0;
+    unsigned int elapsedLow = 0;
+    zSys::Sub64(startTscHigh, startTscLow, endTscHigh, endTscLow, &elapsedHigh, &elapsedLow);
+    const unsigned int cycles = elapsedLow;
     const unsigned int cpuMhzRaw = cycles / 1000000u;
     unsigned int cpuMhzRounded = cpuMhzRaw;
     if (cycles / 100000u - cpuMhzRaw * 10u >= 6u) {
@@ -485,7 +530,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSys::ExitProcessWithCleanup(int exitCode) 
     zGame::ReturnOnlyStub();
     _fcloseall();
     ExitProcess(static_cast<UINT>(exitCode));
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && _MSC_VER >= 1300
     __assume(0);
 #endif
 }

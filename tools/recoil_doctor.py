@@ -11,6 +11,7 @@ import subprocess
 import sys
 
 from recoil_binja import BN_CALL_BUDGET_FILE_ENV, create_shared_budget_file, env_with_shared_budget
+from recoil_plan import PlanDocument, normalize_address
 from recoil_tooling import REPO_ROOT, hidden_creation_flags
 
 
@@ -89,13 +90,21 @@ def binja_steps() -> list[DoctorStep]:
 
 def active_steps(address: str, *, bn_compare: bool) -> list[DoctorStep]:
     tools = REPO_ROOT / "tools"
+    normalized = normalize_address(address)
+    steps = [DoctorStep(f"active status {normalized}", py(tools / "recoil_status.py", normalized))]
+
+    plan = PlanDocument.load(REPO_ROOT / ".agent" / "RECOIL_PLAN.md")
+    entry = plan.entries.get(normalized)
+    if entry is not None and entry.is_provider:
+        return steps
+
     verify_args: list[str | Path] = [tools / "recoil_vc6_verify.py", address, "--all-covering"]
     if not bn_compare:
         verify_args.append("--skip-bn-compare")
-    return [
-        DoctorStep(f"active status {address}", py(tools / "recoil_status.py", address)),
-        DoctorStep(f"active VC {'byte verify' if bn_compare else 'compile'} {address}", py(*verify_args)),
-    ]
+    steps.append(
+        DoctorStep(f"active VC {'byte verify' if bn_compare else 'compile'} {normalized}", py(*verify_args))
+    )
+    return steps
 
 
 def build_steps(args: argparse.Namespace) -> list[DoctorStep]:

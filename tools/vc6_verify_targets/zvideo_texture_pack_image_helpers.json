@@ -1,0 +1,35 @@
+{
+  "name": "zvideo_texture_pack_image_helpers",
+  "description": "zVideo texture-pack image lookup and alpha cleanup helpers used by zImage.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zVideo",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zVideo.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x46d870",
+      "symbol": "?ClearZeroAlphaPixelsInPlace@zVid_Image@@YIXPAUzVidImagePartial@@@Z",
+      "name": "zVid_Image::ClearZeroAlphaPixelsInPlace"
+    },
+    {
+      "address": "0x46d940",
+      "symbol": "@zVid_TexturePack_LoadImageByName@4",
+      "name": "zVid_TexturePack::LoadImageByName"
+    },
+    {
+      "address": "0x46dd30",
+      "symbol": "@zVid_TexturePack_LoadBuiltinImageByName@4",
+      "name": "zVid_TexturePack::LoadBuiltinImageByName"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp"
+}

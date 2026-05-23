@@ -1,0 +1,16 @@
+{
+  "name": "zvid_selected_d3d_device_name",
+  "description": "zVid selected D3D device name accessor returns the selected device-name buffer or the default GameZ string when no D3D device is selected.",
+  "address": "0x4a9940",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvid_hw_api_accessors_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zvid_selected_device_name_accessors",
+  "known_limits": [
+    "No known functional limits. The native smoke verifies null-selected fallback and selected-record buffer identity for zVid::GetSelectedD3DDeviceNameOrDefault."
+  ],
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?GetSelectedD3DDeviceNameOrDefault@zVid@@YAPADXZ at 0x4a9940 with zero unmasked mismatches after masking 8 relocation bytes; 1 trailing VC NOP byte trimmed."
+  ]
+}

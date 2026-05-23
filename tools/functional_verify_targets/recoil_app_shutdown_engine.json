@@ -1,0 +1,36 @@
+{
+  "name": "recoil_app_shutdown_engine",
+  "description": "RecoilApp::ShutdownEngine performs the engine teardown fan-out: optional CD stop, turret/DEClient/video/HUD/network/subsystem shutdown, and final video system shutdown.",
+  "address": "0x42e430",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "zsnd_cd_not_ready_playback_smoke",
+    "zturret_shutdown_leaf_smoke",
+    "zdeclient_shutdown_globals_smoke",
+    "zrndr_span_occlusion_reset_shutdown_smoke",
+    "pickup_type_table_free_opt_meta_smoke",
+    "zhud_mgr_shutdown_resources_smoke",
+    "znetwork_shutdown_session_runtime_smoke",
+    "zinput_shutdown_smoke",
+    "zimage_shutdown_texdir_smoke",
+    "zreader_zrdr_shutdown_smoke",
+    "zvideo_frame_scratch_buffers_smoke",
+    "zeffect_shutdown_all_smoke",
+    "zweapon_optcatalog_shutdown_smoke",
+    "zclass_shutdown_core_smoke",
+    "zmodel_display_shutdown_smoke",
+    "zsnd_stream_mgr_shutdown_lists_smoke",
+    "zsnd_backend_shutdown_release_smoke",
+    "zsnd_cd_shutdown_track_list_smoke",
+    "zsnd_sample_set_registry_init_shutdown_smoke",
+    "zsnd_fade_lists_stop_all_shutdown_smoke",
+    "zreader_zrdr_free_node_pool_smoke",
+    "zvideo_shutdown_video_system_smoke",
+    "zvideo_return_success_stub_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x42e430",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /DUINT_PTR=UINT /FAcs COFF byte comparison for ?ShutdownEngine@RecoilApp@@QAEXXZ at 0x42e430 still fails: 30 unmasked mismatches, 52 relocation bytes masked, 3 trailing VC NOP bytes trimmed, BN size 84 bytes, VC object symbol size 80 bytes.",
+    "Cold-calling the aggregate engine shutdown wrapper is not runtime-safe in the native smoke harness because many subsystem globals require initialized provider state. The functional target verifies the direct shutdown dependencies and records the wrapper byte-compare failure."
+  ]
+}

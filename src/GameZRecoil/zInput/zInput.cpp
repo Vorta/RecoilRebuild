@@ -36,7 +36,7 @@ unsigned char g_zInput_JoystickSuspendFlags = 0;
 unsigned char g_zInput_MouseSuspendFlags = 0;
 int g_zInput_JoystickInitialized = 0;
 zInput::DIDevice *g_zInput_JoystickDevice = 0;
-int g_zInputJoystickFlags = 0;
+unsigned char g_zInputJoystickFlags = 0;
 short g_zInputJoystickPollRefCount = 0;
 int g_zInput_JoystickAxisCount = 0;
 zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig = {0};
@@ -841,8 +841,8 @@ const int kDiFalse = 1;
 const int kDiInputLost = static_cast<int>(0x8007001e);
 const unsigned char kSuspendFlag = 2;
 const unsigned int kDirectInputVersion = 0x500;
-const char *kZInputInitSourceFile = "D:\\Proj\\GameZRecoil\\zInput\\zin_init.cpp";
-const char *kZInputKeyboardSourceFile = "D:\\Proj\\GameZRecoil\\zInput\\zin_kbd.cpp";
+const char kZInputInitSourceFile[] = "D:\\Proj\\GameZRecoil\\zInput\\zin_init.cpp";
+const char kZInputKeyboardSourceFile[] = "D:\\Proj\\GameZRecoil\\zInput\\zin_kbd.cpp";
 
 struct DipropDwordInit {
     unsigned int dwSize;
@@ -1998,6 +1998,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Keyboard_InitDevice() {
     return 0;
 }
 
+// Reimplements 0x46f9f0: zInput::Keyboard_ClearKeyCallbackTable
 RECOIL_NOINLINE void RECOIL_CDECL Keyboard_ClearKeyCallbackTable() {
     int entryIndex3;
     for (entryIndex3 = 0;
@@ -2362,14 +2363,15 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_InitJoystickDevice(HWND hwnd) {
     g_zInput_GlobalState->vtbl_00->EnumDevices_10(
         g_zInput_GlobalState, 4, DI_EnumDevicesCallback_SelectFirstJoystick, 0, 1);
 
-    if (g_zInput_JoystickDevice == 0) {
+    DIDevice *joystickDevice = g_zInput_JoystickDevice;
+    if (joystickDevice == 0) {
         return 0;
     }
 
-    DIDeviceCaps caps = {0};
+    DIDeviceCaps caps;
     caps.dwSize = 0x2c;
-    g_zInput_JoystickDevice->vtbl_00->SetDataFormat_2c(g_zInput_JoystickDevice, &c_dfDIJoystick);
-    g_zInput_JoystickDevice->vtbl_00->GetCapabilities_0c(g_zInput_JoystickDevice, &caps);
+    joystickDevice->vtbl_00->SetDataFormat_2c(joystickDevice, &c_dfDIJoystick);
+    joystickDevice->vtbl_00->GetCapabilities_0c(joystickDevice, &caps);
 
     g_zInput_JoystickAxisCount = caps.dwAxes;
     g_zInput_JoystickCaps_ForceFeedback = caps.dwFlags & 0x100;
@@ -2377,10 +2379,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_InitJoystickDevice(HWND hwnd) {
     g_zInput_JoystickCaps_FFFade = caps.dwFlags & 0x400;
 
     const unsigned int coopFlags = g_zInput_JoystickCaps_ForceFeedback != 0 ? 5U : 9U;
-    g_zInput_JoystickDevice->vtbl_00->SetCooperativeLevel_34(g_zInput_JoystickDevice, hwnd,
-                                                             coopFlags);
+    joystickDevice->vtbl_00->SetCooperativeLevel_34(joystickDevice, hwnd, coopFlags);
 
-    JoystickAxisConfig axisCfg = {0};
+    JoystickAxisConfig axisCfg;
+    memset(&axisCfg, 0, sizeof(axisCfg));
     axisCfg.axes[0].lMin = -1000;
     axisCfg.axes[0].lMax = 1000;
     axisCfg.axes[1].lMin = -1000;
@@ -2408,7 +2410,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_SetAxisDeadzone(int axisOffset,
         unsigned int dwObj;
         unsigned int dwHow;
         unsigned int dwData;
-    } prop = {0};
+    } prop;
 
     prop.dwSize = sizeof(prop);
     prop.dwHeaderSize = 0x10;
@@ -2429,7 +2431,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_SetAxisRange(int axisOffset,
         unsigned int dwHow;
         int lMin;
         int lMax;
-    } prop = {0};
+    } prop;
 
     prop.dwSize = sizeof(prop);
     prop.dwHeaderSize = 0x10;
@@ -2451,7 +2453,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_GetAxisRange(int axisOffset,
         unsigned int dwHow;
         int lMin;
         int lMax;
-    } prop = {0};
+    } prop;
 
     prop.dwSize = sizeof(prop);
     prop.dwHeaderSize = 0x10;

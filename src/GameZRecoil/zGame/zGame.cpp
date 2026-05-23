@@ -92,7 +92,7 @@ zGame_OptionsRuntimeConfig::CopyDefault() {
 // Reimplements 0x4b3160: zGame_OptionsRuntimeConfig::LoadCpuVendorString
 RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL
 zGame_OptionsRuntimeConfig::LoadCpuVendorString() {
-    if (zSys::HasCpuidSupport() == 0) {
+    if (zSys::HasCpuidSupportRuntimeOptions() == 0) {
         return;
     }
 

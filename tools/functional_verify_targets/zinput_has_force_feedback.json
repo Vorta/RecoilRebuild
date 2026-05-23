@@ -1,0 +1,14 @@
+{
+  "name": "zinput_has_force_feedback",
+  "description": "zInputDI::HasForceFeedback returns the cached DirectInput joystick force-feedback capability flag.",
+  "address": "0x472480",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_joystick_option_accessors_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zinput_has_force_feedback",
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for _zInput_DI_HasForceFeedback at 0x472480 passed with zero unmasked mismatches after masking 4 relocation bytes; Binary Ninja body is 6 bytes and the VC object symbol is 16 bytes with 10 trailing VC NOP bytes trimmed.",
+    "The native smoke verifies the force-feedback capability flag is returned directly and participates in zInput_DI_IsForceFeedbackEnabled gating."
+  ]
+}

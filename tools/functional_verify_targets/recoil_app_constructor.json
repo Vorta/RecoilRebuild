@@ -1,0 +1,15 @@
+{
+  "name": "recoil_app_constructor",
+  "description": "RecoilApp::Constructor builds the MFC/OLE base, initializes embedded FMV/state objects, installs the RecoilApp vtable, and clears the transition timer.",
+  "address": "0x42dfa0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_constructor_destructor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x42dfa0",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare fails with 164 unmasked mismatches after masking 20 relocation bytes; Binary Ninja body is 194 bytes and the VC object body is 128 bytes.",
+    "The byte drift starts at the function entry because the original emits an EH registration frame and cleanup-state writes for constructor subobject rollback that the current object body does not reproduce under the selected profile.",
+    "The native smoke constructs a RecoilApp and verifies the returned this pointer, top-level app vtable, embedded state vtables, and cleared transition timer before running the destructor smoke."
+  ]
+}

@@ -5,6 +5,7 @@
 #include "GameZRecoil/include/zDi.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zUtil/zZbd.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 #include "HudSensorTracker.h"
 #include "OptCatalog.h"
@@ -99,6 +100,28 @@ RECOIL_NOINLINE void RECOIL_CDECL AiFinalizeMode2State1ForAllPlayers() {
     g_Player_AiMode2State1Finalized = 1;
 }
 
+// Reimplements 0x42be00: Player::SetWorldPoseAndRestartAnchor
+// (D:\Proj\Battlesport\player.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL
+SetWorldPoseAndRestartAnchor(zUtil_SaveGameState *saveState, const zVec3 *position,
+                             float yawRad) {
+    if (saveState == 0) {
+        return;
+    }
+
+    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+    playerState->worldPos.x = position->x;
+    playerState->worldPos.y = position->y;
+    playerState->worldPos.z = position->z;
+    playerState->restartYawRad = yawRad;
+    playerState->previousTransform.posX = position->x;
+    playerState->previousTransform.posY = position->y;
+    playerState->previousTransform.posZ = position->z;
+    zTag4::Clear(&g_VariantTag_Current);
+    g_Variant_CurrentTag = g_VariantTag_Current;
+    playerState->variantTag = g_VariantTag_Current;
+}
+
 // Reimplements 0x41f010: Player::BuildMissionSaveData
 // (D:\Proj\Battlesport\player.cpp)
 RECOIL_NOINLINE void RECOIL_FASTCALL BuildMissionSaveData(PlayerMissionSaveData *outData) {
@@ -156,6 +179,63 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildMissionSaveData(PlayerMissionSaveData 
         outData->timedHitStatus.savedHitSourceEntryId =
             playerState->timedHitStatus.hitSource->ordinalIndex;
     }
+}
+
+// Reimplements 0x41f5f0: Player::ZAR_WriteMissionSaveDataSection
+// (D:\Proj\Battlesport\player.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+ZAR_WriteMissionSaveDataSection(zZbdSectionCallbackCtx *writer, void *) {
+    PlayerMissionSaveData missionData;
+    zUtil_PlayerStateStorage *const playerState = g_LocalPlayerSaveState->playerState;
+
+    BuildMissionSaveData(&missionData);
+    missionData.lastValidCameraVariantTag = g_Variant_CurrentTag;
+    return zUtil_ZAR::WriteSectionBlob(writer, playerState->rootNode->name, &missionData,
+                                       sizeof(missionData));
+}
+
+// Reimplements 0x41f6a0: Player::ZAR_WriteVehicleListSection
+// (D:\Proj\Battlesport\player.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+ZAR_WriteVehicleListSection(zZbdSectionCallbackCtx *writer, void *) {
+    int writeOk = 1;
+    zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
+    while (saveState != 0 && writeOk != 0) {
+        zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+        PlayerVehicleListSaveEntry vehicleRecord;
+        vehicleRecord.size = 128;
+        vehicleRecord.worldPos = playerState->worldPos;
+        vehicleRecord.vehicleRotationAngles = playerState->vehicleRotationAngles;
+        vehicleRecord.aiNetId = playerState->aiNetId;
+        vehicleRecord.aiTopLevelState = playerState->aiTopLevelState;
+        vehicleRecord.aiSavedTopLevelState = playerState->aiSavedTopLevelState;
+        vehicleRecord.aiReturnTopLevelState = playerState->aiReturnTopLevelState;
+        vehicleRecord.aiAttackRadiusSq = playerState->aiAttackRadiusSq;
+        vehicleRecord.aiRestoreDistanceSq = playerState->aiRestoreDistanceSq;
+        vehicleRecord.aiRestoreTarget = playerState->aiRestoreTarget;
+        vehicleRecord.aiDynamicOffsetDir = playerState->aiDynamicOffsetDir;
+        vehicleRecord.aiActivationRadiusSq = playerState->aiActivationRadiusSq;
+        vehicleRecord.aiTickSuppressed = playerState->aiTickSuppressed;
+        vehicleRecord.aiAlertFlag = playerState->recentHitFlag;
+        vehicleRecord.aiStateMarkerHandle = playerState->recentHitMarkerHandle;
+        vehicleRecord.aiActive = playerState->aiActive;
+        vehicleRecord.aiPathCursorAdvanceRequested = playerState->aiPathCursorAdvanceRequested;
+        vehicleRecord.aiCurrentSteeringSubstate = playerState->aiCurrentSteeringSubstate;
+        vehicleRecord.aiReturnSteeringSubstate = playerState->aiReturnSteeringSubstate;
+        vehicleRecord.masterType = playerState->masterType;
+        vehicleRecord.statusMeterScaled = playerState->statusMeterScaled;
+        vehicleRecord.statusMeterValue = playerState->statusMeterValue;
+        vehicleRecord.nanitePanelLevel = playerState->nanitePanelLevel;
+        if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
+            vehicleRecord.localMasterType = saveState->primaryModalState->masterModalData->masterType;
+        }
+
+        writeOk = zUtil_ZAR::WriteSectionBlob(writer, playerState->rootNode->name, &vehicleRecord,
+                                              sizeof(vehicleRecord));
+        saveState = saveState != 0 ? saveState->next : 0;
+    }
+
+    return writeOk;
 }
 
 // Reimplements 0x438b60: Player::FreeAltWeaponTrailRuntimeStates (D:\Proj\Battlesport\player.cpp)

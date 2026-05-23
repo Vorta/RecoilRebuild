@@ -1,0 +1,14 @@
+{
+  "name": "zgame_options_load_cpu_vendor_string",
+  "description": "zGame_OptionsRuntimeConfig::LoadCpuVendorString copies the CPUID vendor string into the runtime options block when CPUID is available.",
+  "address": "0x4b3160",
+  "source_from": "src/GameZRecoil/zGame/zGame.cpp",
+  "smoke_tests": [
+    "zgame_options_init_registry_context_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4b3160",
+  "known_limits": [
+    "The smoke covers this function through zGame::Options_InitRegistryContext and verifies that the runtime config has a nonempty CPU vendor string.",
+    "The source now uses the distinct 0x4b2fe0 runtime-options CPUID-support helper; binary-safe verification remains pending."
+  ]
+}

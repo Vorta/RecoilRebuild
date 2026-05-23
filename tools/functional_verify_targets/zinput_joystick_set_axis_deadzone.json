@@ -1,0 +1,14 @@
+{
+  "name": "zinput_joystick_set_axis_deadzone",
+  "description": "zInput::DI_SetAxisDeadzone sends a DIPROPDWORD deadzone property for a joystick axis offset.",
+  "address": "0x4721a0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_joystick_axis_property_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zinput_joystick_axis_helpers --compiler-profile vc5_o2_ob1_facs",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /Zp4 /FAcs COFF byte comparison passed for ?DI_SetAxisDeadzone@zInput@@YIHHH@Z at 0x4721a0 with zero unmasked mismatches after masking 4 relocation bytes; 7 trailing VC NOP bytes trimmed."
+  ]
+}

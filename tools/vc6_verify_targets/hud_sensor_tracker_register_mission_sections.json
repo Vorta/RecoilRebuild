@@ -1,0 +1,49 @@
+{
+  "name": "hud_sensor_tracker_register_mission_sections",
+  "description": "HudSensorTracker mission ZBD section handler registration.",
+  "source_filename": "HudSensorTracker.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRndr",
+    "src/GameZRecoil/zSound",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/Battlesport/HudSensorTracker.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x417640",
+      "symbol": "?RegisterMissionSectionHandlers@HudSensorTracker@@QAEXXZ",
+      "name": "HudSensorTracker::RegisterMissionSectionHandlers"
+    },
+    {
+      "address": "0x417770",
+      "symbol": "?InitMissionIdAndFlags@HudSensorTracker@@QAEHHH@Z",
+      "name": "HudSensorTracker::InitMissionIdAndFlags"
+    },
+    {
+      "address": "0x4177d0",
+      "symbol": "?SetZbdPath@HudSensorTracker@@QAEHPBD@Z",
+      "name": "HudSensorTracker::SetZbdPath"
+    },
+    {
+      "address": "0x417800",
+      "symbol": "?GetMissionId@HudSensorTracker@@QAEHXZ",
+      "name": "HudSensorTracker::GetMissionId"
+    }
+  ],
+  "source_from": "src/Battlesport/HudSensorTracker.cpp"
+}

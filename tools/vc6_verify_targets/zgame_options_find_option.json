@@ -18,9 +18,29 @@
   ],
   "functions": [
     {
+      "address": "0x4b30b0",
+      "symbol": "?InitFromSystem@zGame_OptionsRuntimeConfig@@QAEHXZ",
+      "name": "zGame_OptionsRuntimeConfig::InitFromSystem"
+    },
+    {
+      "address": "0x4b3160",
+      "symbol": "?LoadCpuVendorString@zGame_OptionsRuntimeConfig@@QAEXXZ",
+      "name": "zGame_OptionsRuntimeConfig::LoadCpuVendorString"
+    },
+    {
+      "address": "0x4b3260",
+      "symbol": "?Options_InitRegistryContext@zGame@@YIXPBD00@Z",
+      "name": "zGame::Options_InitRegistryContext"
+    },
+    {
       "address": "0x4b3380",
       "symbol": "?Options_FindOption@zGame@@YIPAUzOptionEntryPartial@@PBD@Z",
       "name": "zGame::Options_FindOption"
+    },
+    {
+      "address": "0x4b2e80",
+      "symbol": "?Options_GetOrCreateOption@zGame@@YIPAUzOptionEntryPartial@@PBDHHH@Z",
+      "name": "zGame::Options_GetOrCreateOption"
     }
   ]
 }

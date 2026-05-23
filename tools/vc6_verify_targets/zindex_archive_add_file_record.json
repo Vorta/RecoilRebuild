@@ -1,0 +1,25 @@
+{
+  "name": "zindex_archive_add_file_record",
+  "description": "zIndexArchive append-file record writer.",
+  "source_filename": "zreader_load.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zReader/zreader_load.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a64d0",
+      "symbol": "?AddFileRecord@zIndexArchive@@QAEHPBDPBXI0PBUzZarFileTime@@@Z",
+      "name": "zIndexArchive::AddFileRecord"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zReader/zreader_load.cpp"
+}

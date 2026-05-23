@@ -1,0 +1,14 @@
+{
+  "name": "zfmv_script_begin_at_time",
+  "description": "zFMV_Script::BeginAtTime snapshots the Win32 millisecond tick count, converts it to seconds, and forwards to BeginCurrentAction.",
+  "address": "0x4630a0",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_script_begin_at_time_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4630a0",
+  "known_limits": [
+    "The smoke verifies that the time wrapper reaches the current-action begin path, stores a non-negative start time, and initializes the FMV sample set. The exact timeGetTime value is provider/runtime-dependent.",
+    "Binary-safe verification remains pending for the FMV script source cluster and x87 conversion code shape."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_composite_panel_entry_assign_copy",
+  "description": "HudUiCompositePanelEntry::AssignCopy delegates the panel slice to HudUiPanel::ConstructorCopy and copies the seven trailing flash fields without changing the destination vtable.",
+  "address": "0x4bc3a0",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_composite_panel_entry_copy_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4bc3a0",
+  "known_limits": [
+    "Depends on HudUiPanel::ConstructorCopy, which is functionally accepted but still carries inherited copy/font-clone byte-shape drift.",
+    "VC6 cl 12.00.8168 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?AssignCopy@HudUiCompositePanelEntry@@QAEPAU1@PBU1@@Z at 0x4bc3a0 still fails: 188 unmasked mismatches, 28 relocation bytes masked, 15 trailing VC NOP bytes trimmed, Binary Ninja body is 105 bytes and the VC object symbol is 240 bytes. The drift follows the inherited HudUiPanel::ConstructorCopy byte-shape plus trailing flash-field copy scheduling."
+  ],
+  "binary_safe_evidence": [
+    "Binary Ninja shows HudUiPanel::ConstructorCopy, flash field copies at offsets 0x2a4 through 0x2bc, no destination vtable overwrite, and thiscall return of self.",
+    "The native composite-entry smoke validates AssignCopy return value, preserved destination vtable, copied panel fields, and copied flash fields."
+  ]
+}

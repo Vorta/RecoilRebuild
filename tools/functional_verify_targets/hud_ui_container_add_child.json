@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_container_add_child",
+  "description": "HudUiContainer::AddChild appends a child to an empty or non-empty container, clears the child's next pointer, sets its parent, updates head/tail, and returns 1.",
+  "address": "0x4bc7c0",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_container_child_list_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4bc7c0",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?AddChild@HudUiContainer@@QAEHPAUHudUiElement@@@Z at 0x4bc7c0 passed with zero unmasked mismatches, 0 relocation bytes masked, and 10 trailing VC NOP bytes trimmed."
+  ],
+  "binary_safe_evidence": [
+    "Binary Ninja shows append-to-tail when head/tail exist, empty-list initialization otherwise, child next clear, child parent assignment, and return 1.",
+    "The native container child-list smoke validates head/tail linkage, sibling links, child parent pointers, and follow-on child-list operations."
+  ]
+}

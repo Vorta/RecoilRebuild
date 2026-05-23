@@ -1,0 +1,26 @@
+{
+  "name": "zinput_mouse_coop_level_flags",
+  "description": "zInput mouse cooperative-level flag swap helper used by EngineInit.",
+  "source_filename": "zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x470670",
+      "symbol": "?Mouse_SetCooperativeLevelFlags@zInput@@YIHH@Z",
+      "name": "zInput::Mouse_SetCooperativeLevelFlags"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp"
+}

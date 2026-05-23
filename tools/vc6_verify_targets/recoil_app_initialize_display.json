@@ -1,0 +1,28 @@
+{
+  "name": "recoil_app_initialize_display",
+  "description": "RecoilApp display initialization sequence.",
+  "source_filename": "RecoilApp.cpp",
+  "compiler_profile": "vc5_o2_ob1_gx_uintptr_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zRndr",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42e330",
+      "symbol": "?InitializeDisplay@RecoilApp@@SIHI@Z",
+      "name": "RecoilApp::InitializeDisplay"
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

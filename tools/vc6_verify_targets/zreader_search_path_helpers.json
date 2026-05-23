@@ -1,0 +1,45 @@
+{
+  "name": "zreader_search_path_helpers",
+  "description": "ZRDR search-path list creation, mutation, and initialization helpers.",
+  "source_filename": "zreader_load.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zReader/zreader_load.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a5ce0",
+      "symbol": "?ZRDR_AddSearchPaths@zUtil@@YIXPAUzArchiveList@@PBD@Z",
+      "name": "zUtil::ZRDR_AddSearchPaths"
+    },
+    {
+      "address": "0x4a5ca0",
+      "symbol": "@zUtil_ZRDR_CreateSearchPathList@4",
+      "name": "zUtil_ZRDR::CreateSearchPathList"
+    },
+    {
+      "address": "0x4a5e10",
+      "symbol": "@zUtil_ZRDR_FreePathList@4",
+      "name": "zUtil_ZRDR::FreePathList"
+    },
+    {
+      "address": "0x48cca0",
+      "symbol": "@zUtil_ZRDR_SetSearchPath@4",
+      "name": "zUtil_ZRDR::SetSearchPath"
+    },
+    {
+      "address": "0x48cc70",
+      "symbol": "?ZRDR_Init@zUtil@@YIHPBD@Z",
+      "name": "zUtil::ZRDR_Init"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zReader/zreader_load.cpp"
+}

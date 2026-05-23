@@ -1,0 +1,13 @@
+{
+  "name": "zopt_set_graphics_flags_for_current_hw_mode",
+  "description": "zOpt::SetGraphicsFlagsForCurrentHwMode stores graphics flags in the active software or hardware option slot.",
+  "address": "0x4081a0",
+  "source_from": "src/GameZRecoil/zGame/zGame.cpp",
+  "smoke_tests": [
+    "zopt_fullscreen_accessors_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4081a0",
+  "known_limits": [
+    "The smoke verifies software and hardware graphics flag writes through the getter. Binary-safe verification remains pending for exact branch/codegen shape."
+  ]
+}

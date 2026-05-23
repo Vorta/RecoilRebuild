@@ -1,0 +1,14 @@
+{
+  "name": "zinput_keyboard_wait_for_any_key_press",
+  "description": "zInput::Keyboard_WaitForAnyKeyPress reads one buffered keyboard event, updates transition/modifier state, handles input-lost acquisition, and returns the first pressed key code.",
+  "address": "0x46fa10",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_keyboard_wait_for_key_press_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py --explain-missing 0x46fa10",
+  "known_limits": [
+    "No dedicated VC COFF byte target exists yet for this keyboard provider helper; the smoke covers the caller-visible DirectInput event handling and input-lost paths.",
+    "Source dependencies are accepted as limited because exact DirectInput provider vtable call shape and keyboard table initialization remain zInput class-pass debt."
+  ]
+}

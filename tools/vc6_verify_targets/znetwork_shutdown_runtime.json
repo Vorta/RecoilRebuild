@@ -1,0 +1,52 @@
+{
+  "name": "znetwork_shutdown_runtime",
+  "description": "zNetwork DirectPlay/session shutdown cleanup helpers.",
+  "source_filename": "znet_dplay.cpp",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zNetwork",
+    "src/GameZRecoil/zReader",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x489e10",
+      "symbol": "?ShutdownSessionRuntime@zNetwork@@YAHXZ",
+      "name": "zNetwork::ShutdownSessionRuntime"
+    },
+    {
+      "address": "0x48b7f0",
+      "symbol": "?CloseReleaseAndCoUninitialize@zNetwork_DPlay@@YIHPAUzNetwork_DPlay4@@@Z",
+      "name": "zNetwork_DPlay::CloseReleaseAndCoUninitialize"
+    },
+    {
+      "address": "0x48c120",
+      "symbol": "?UnregisterPacketHandler@zNetwork@@YIHHP6IHHPAUzNetworkPacketHeader@@@Z@Z",
+      "name": "zNetwork::UnregisterPacketHandler"
+    },
+    {
+      "address": "0x489f30",
+      "symbol": "?ClearEnumeratedSessionList@zNetwork@@YAXXZ",
+      "name": "zNetwork::ClearEnumeratedSessionList"
+    },
+    {
+      "address": "0x489fa0",
+      "symbol": "?ClearServiceProviderList@zNetwork@@YAXXZ",
+      "name": "zNetwork::ClearServiceProviderList"
+    },
+    {
+      "address": "0x48a030",
+      "symbol": "?ClearPlayerRecordList@zNetwork@@YAXXZ",
+      "name": "zNetwork::ClearPlayerRecordList"
+    }
+  ]
+}

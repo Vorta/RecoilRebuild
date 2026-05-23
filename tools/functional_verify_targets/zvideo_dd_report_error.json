@@ -1,0 +1,15 @@
+{
+  "name": "zvideo_dd_report_error",
+  "description": "zVideo_dd::ReportError maps DirectDraw/Direct3D HRESULTs to report text, reports failures, returns zero for DD_OK, and queries memory counters for DDERR_OUTOFVIDEOMEMORY.",
+  "address": "0x4ad6a0",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_dd_report_error_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4ad6a0",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare fails with 2851 unmasked mismatches after masking 28 relocation bytes; Binary Ninja body is 2889 bytes and the VC object body is 208 bytes with 9 trailing VC NOPs trimmed.",
+    "The reviewed failure is source-organization drift: the current source factors the HRESULT-name decision tree into GetDirectDrawErrorName, while the original inlines the large switch/tree in ReportError.",
+    "The native smoke verifies DD_OK returns zero without memory queries, a named DirectDraw error reports failure, and DDERR_OUTOFVIDEOMEMORY triggers both texture-memory and device-memory query dispatches."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "zvid_set_acceleration_option",
+  "description": "zVid::SetAccelerationOption writes the persisted acceleration option pointer.",
+  "address": "0x408280",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvid_option_accessors_smoke",
+    "czrecoil_frame_init_fallback_mode_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x408280",
+  "known_limits": [
+    "The smokes verify direct option writes and the frame fallback path that clears acceleration.",
+    "Binary-safe verification remains pending for exact helper shape."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "zfmv_script_update",
+  "description": "zFMV_Script::Update advances the current FMV action by relative time, keeps active actions, ends completed actions, and begins the next action at the same relative time.",
+  "address": "0x463000",
+  "source_from": "src/GameZRecoil/zFMV/fmv_script.cpp",
+  "smoke_tests": [
+    "zfmv_script_update_smoke",
+    "zinput_keyboard_wait_for_key_press_smoke",
+    "zinput_poll_active_devices_smoke",
+    "zsnd_snapshot_create_from_active_samples_smoke",
+    "zsnd_snapshot_stop_all_if_playing_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zfmv_script_cleanup_reset",
+  "known_limits": [
+    "VC5SP3 compile-only target coverage exists through zfmv_script_cleanup_reset; Binary Ninja byte comparison is still pending for zFMV_Script::Update.",
+    "Source dependencies are accepted as limited because the optional abort/poll path crosses zInput helpers that remain zInput class-pass binary debt."
+  ]
+}

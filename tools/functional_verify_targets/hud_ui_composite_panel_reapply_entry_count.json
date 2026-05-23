@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_composite_panel_reapply_entry_count",
+  "description": "HudUiCompositePanel::ReapplyEntryCount recomputes the current vector count and delegates ResizeEntryCount(0, currentCount), or ResizeEntryCount(0, 0) for an empty vector.",
+  "address": "0x4bbe90",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_composite_panel_resize_entry_count_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4bbe90",
+  "known_limits": [
+    "Depends on HudUiCompositePanel::ResizeEntryCount, which is functionally accepted but still needs coherent class-level binary-safe verification.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?ReapplyEntryCount@HudUiCompositePanel@@QAEXXZ at 0x4bbe90 still fails: 46 unmasked mismatches, 8 relocation bytes masked, 2 trailing VC NOP bytes trimmed, Binary Ninja body is 54 bytes and the VC object symbol is 32 bytes. The drift is local wrapper/source-shape scheduling around vector count and the ResizeEntryCount call."
+  ],
+  "binary_safe_evidence": [
+    "Binary Ninja shows thiscall, a null-vector fast path pushing 0 and 0, otherwise currentEntryCount from the 0x2c0-byte vector span, then a call to HudUiCompositePanel::ResizeEntryCount with oldCount 0.",
+    "The native composite-panel resize smoke validates ReapplyEntryCount clears and hides all current entries and resets activeEntryCount to 0."
+  ]
+}

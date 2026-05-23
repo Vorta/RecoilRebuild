@@ -45,6 +45,26 @@
       "address": "0x4428b0",
       "symbol": "?MfcOleModuleDestructor@RecoilApp@@QAEXXZ",
       "name": "RecoilApp::MfcOleModuleDestructor"
+    },
+    {
+      "address": "0x442c70",
+      "symbol": "?MfcOleModuleConstructor@RecoilApp@@QAEPAU1@XZ",
+      "name": "RecoilApp::MfcOleModuleConstructor"
+    },
+    {
+      "address": "0x42eea0",
+      "symbol": "?Constructor@RecoilApp_PlayState@@QAEPAU1@XZ",
+      "name": "RecoilApp_PlayState::Constructor"
+    },
+    {
+      "address": "0x42dfa0",
+      "symbol": "?Constructor@RecoilApp@@QAEPAU1@XZ",
+      "name": "RecoilApp::Constructor"
+    },
+    {
+      "address": "0x4a5780",
+      "symbol": "?InitStdLogFiles@RecoilApp@@SIXPBD@Z",
+      "name": "RecoilApp::InitStdLogFiles"
     }
   ],
   "source_from": "src/Battlesport/RecoilApp.cpp"

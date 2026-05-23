@@ -1,0 +1,15 @@
+{
+  "name": "recoil_app_mfc_ole_module_constructor",
+  "description": "RecoilApp::MfcOleModuleConstructor builds the MFC/OLE app base, initializes state-queue runtime fields, installs the MFC/OLE module vtable, and clears the state stack.",
+  "address": "0x442c70",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_mfc_ole_module_constructor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x442c70",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare fails with 113 unmasked mismatches after masking 8 relocation bytes; Binary Ninja body is 138 bytes and the VC object body is 112 bytes with 12 trailing VC NOPs trimmed.",
+    "The byte drift starts at the function entry and constructor-provider call shape: the original calls CWinApp::CWinApp directly with a null name argument, while the current VC object emits different setup around the provider constructor.",
+    "The native smoke verifies the returned this pointer, installed g_RecoilApp_MfcOleModule vtable, pending/current/skip-wait fields, state-queue zeroed tail, preserved ctor tag high byte behavior, and cleared state stack."
+  ]
+}

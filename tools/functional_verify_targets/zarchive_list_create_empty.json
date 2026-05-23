@@ -1,0 +1,15 @@
+{
+  "name": "zarchive_list_create_empty",
+  "description": "zArchiveList::CreateEmpty allocates a zeroed zArchiveList header.",
+  "address": "0x48c950",
+  "source_from": "src/GameZRecoil/zReader/zreader_load.cpp",
+  "smoke_tests": [
+    "zreader_prealloc_and_pop_front_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zreader_zrdr_pool_helpers",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare currently fails for zArchiveList::CreateEmpty: 22 unmasked mismatches after masking 4 relocation bytes; Binary Ninja body is 28 bytes and the VC object body is 32 bytes with 3 trailing VC NOPs trimmed.",
+    "The reviewed byte drift is allocator-zeroing source shape: current source uses malloc plus memset for the 20-byte zArchiveList header, while the original emits explicit zero stores.",
+    "The native smoke verifies that created archive lists start empty and support the recovered push/pop/list accessor behavior."
+  ]
+}

@@ -191,6 +191,7 @@ extern const HudUiCounter_FTable g_HudUiCounter_FTable;
 extern const HudUiMessage_FTable g_HudUiMessage_FTable;
 extern const HudUiPanel_FTable g_HudUiPanel_FTable;
 extern const HudUiPanel_FTable g_HudUiTransitionTextPanel_FTable;
+extern const HudUiCompositePanel_FTable g_HudUiCompositePanel_FTable;
 extern const HudUiListSelectorItem_FTable g_HudUiListSelectorItem_FTable;
 extern const HudUiTextLabel_FTable g_HudUiTextLabel_FTable;
 extern const HudUiPanelSimple_FTable g_HudUiPanelSimple_FTable;

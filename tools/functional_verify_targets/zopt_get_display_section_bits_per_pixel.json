@@ -1,0 +1,14 @@
+{
+  "name": "zopt_get_display_section_bits_per_pixel",
+  "description": "zOpt::GetDisplaySectionBitsPerPixel reads the active display section bit depth.",
+  "address": "0x408690",
+  "source_from": "src/GameZRecoil/zGame/zGame.cpp",
+  "smoke_tests": [
+    "zopt_view_rect_target_side_effects_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zopt_display_option_getters",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?GetDisplaySectionBitsPerPixel@zOpt@@YAHXZ at 0x408690 with zero unmasked mismatches after masking 4 relocation bytes; 5 trailing VC NOP bytes trimmed."
+  ]
+}

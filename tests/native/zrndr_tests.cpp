@@ -3170,6 +3170,20 @@ extern "C" int zrndr_span_routine_selection_smoke(void) {
                : 1;
 }
 
+extern "C" int zrndr_perspective_adaptive_span_params_smoke(void) {
+    zRndr::g_perspectiveAdaptiveMinSpan = 0;
+    zRndr::g_perspectiveAdaptiveMaxSpan = 0;
+    zRndr::g_perspectiveAdaptiveSlope = 0.0f;
+
+    zRndr::SetPerspectiveAdaptiveSpanParams(12, 96, 0.25f);
+
+    return zRndr::g_perspectiveAdaptiveMinSpan == 12 &&
+                   zRndr::g_perspectiveAdaptiveMaxSpan == 96 &&
+                   zRndr::g_perspectiveAdaptiveSlope == 0.25f
+               ? 0
+               : 1;
+}
+
 extern "C" int zrndr_overlay_and_mmx_masks_smoke(void) {
     zRndr::g_swOverlayDstScale5 = 3;
     zRndr::g_swOverlayPremulPacked = 0x00200100;

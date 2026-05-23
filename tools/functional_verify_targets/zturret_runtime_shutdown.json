@@ -1,0 +1,14 @@
+{
+  "name": "zturret_runtime_shutdown",
+  "description": "zTurret_Runtime::Shutdown frees optional trail runtime state, clears the healthy-node damage handler, and returns zero.",
+  "address": "0x436e00",
+  "source_from": "src/GameZRecoil/zTurret/zTurret.cpp",
+  "smoke_tests": [
+    "zturret_shutdown_leaf_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x436e00",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?Shutdown@zTurret_Runtime@@QAEHXZ at 0x436e00 with zero unmasked mismatches after masking 8 relocation bytes; 4 trailing VC NOP bytes trimmed."
+  ]
+}

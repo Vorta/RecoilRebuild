@@ -30,6 +30,7 @@ class FunctionalTarget:
     smoke_tests: tuple[str, ...]
     vc6_attempt: str
     known_limits: tuple[str, ...]
+    binary_safe_evidence: tuple[str, ...]
     path: Path
 
 
@@ -41,6 +42,9 @@ def load_manifest(path: Path) -> FunctionalTarget:
     smoke_tests = tuple(str(item).strip() for item in data.get("smoke_tests", []) if str(item).strip())
     vc6_attempt = str(data.get("vc6_attempt", "")).strip()
     known_limits = tuple(str(item).strip() for item in data.get("known_limits", []) if str(item).strip())
+    binary_safe_evidence = tuple(
+        str(item).strip() for item in data.get("binary_safe_evidence", []) if str(item).strip()
+    )
     description = str(data.get("description", "")).strip()
 
     if not name:
@@ -51,8 +55,10 @@ def load_manifest(path: Path) -> FunctionalTarget:
         raise ValueError(f"{path}: smoke_tests must list at least one native smoke")
     if vc6_attempt and not vc6_attempt.startswith("python tools/recoil_vc6_verify.py"):
         raise ValueError(f"{path}: vc6_attempt must begin with 'python tools/recoil_vc6_verify.py'")
-    if not known_limits:
-        raise ValueError(f"{path}: known_limits must list at least one binary-safety limit")
+    if not known_limits and not binary_safe_evidence:
+        raise ValueError(
+            f"{path}: known_limits or binary_safe_evidence must list the binary-safety state"
+        )
     return FunctionalTarget(
         name=name,
         description=description,
@@ -61,6 +67,7 @@ def load_manifest(path: Path) -> FunctionalTarget:
         smoke_tests=smoke_tests,
         vc6_attempt=vc6_attempt,
         known_limits=known_limits,
+        binary_safe_evidence=binary_safe_evidence,
         path=path,
     )
 
@@ -126,6 +133,10 @@ def run_target(
         print("Known binary-safety limits:")
         for limit in target.known_limits:
             print(f"- {limit}")
+    if target.binary_safe_evidence:
+        print("Binary-safe evidence:")
+        for evidence in target.binary_safe_evidence:
+            print(f"- {evidence}")
     print()
 
     failures: list[str] = []

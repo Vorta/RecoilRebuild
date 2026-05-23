@@ -29,6 +29,7 @@ extern "C" void *g_zSnd_BackendDevice;
 extern "C" void *g_zSnd_BackendListenerHandle;
 extern "C" DSCAPS g_zSnd_BackendAuxHandleOrConfig;
 extern "C" LPDIRECTSOUND g_zSnd_CachedDirectSound;
+extern "C" LPCGUID g_zSnd_CachedDirectSoundGuid;
 extern "C" zSndCdTrackNode *g_zSndCd_TrackListHead;
 extern "C" std::int32_t g_zSndCd_TrackCount;
 extern "C" std::int32_t g_zSnd_UseArchiveBanksFlag;
@@ -628,6 +629,38 @@ void EnsureZrdrFreePool() {
         g_zUtil_ZRDR_FreePool = zArchiveList_CreateEmpty();
     }
 }
+
+void ReleaseProviderObject(void *&object) {
+    if (object != nullptr) {
+        static_cast<IUnknown *>(object)->Release();
+        object = nullptr;
+    }
+}
+
+void ClearBackendCaps() {
+    std::memset(&g_zSnd_BackendAuxHandleOrConfig, 0, sizeof(g_zSnd_BackendAuxHandleOrConfig));
+}
+
+void ClearA3dAuxObject() {
+    void *auxObject = nullptr;
+    std::memcpy(&auxObject, &g_zSnd_BackendAuxHandleOrConfig, sizeof(auxObject));
+    if (auxObject != nullptr) {
+        static_cast<IUnknown *>(auxObject)->Release();
+    }
+    ClearBackendCaps();
+}
+
+void CleanupDirectSoundProviderState() {
+    ReleaseProviderObject(g_zSnd_BackendListenerHandle);
+    ReleaseProviderObject(g_zSnd_BackendDevice);
+    ClearBackendCaps();
+}
+
+void CleanupA3dProviderState() {
+    ClearA3dAuxObject();
+    ReleaseProviderObject(g_zSnd_BackendListenerHandle);
+    ReleaseProviderObject(g_zSnd_BackendDevice);
+}
 } // namespace
 
 extern "C" int zsnd_set_use_archive_banks_flag_smoke(void) {
@@ -782,6 +815,64 @@ extern "C" int zsnd_backend_error_reporters_smoke(void) {
     return 0;
 }
 
+extern "C" int zsnd_backend_init_directsound_provider_smoke(void) {
+    CleanupDirectSoundProviderState();
+    g_zSnd_WindowHandle = static_cast<unsigned int>(
+        reinterpret_cast<std::uintptr_t>(GetDesktopWindow()));
+
+    const int result = zSndBackend_InitDirectSound();
+    if (result != 0 && result != 1) {
+        CleanupDirectSoundProviderState();
+        return 1;
+    }
+
+    if (result == 1 &&
+        (g_zSnd_BackendDevice == nullptr || g_zSnd_BackendListenerHandle == nullptr ||
+         g_zSnd_BackendAuxHandleOrConfig.dwSize != sizeof(DSCAPS))) {
+        CleanupDirectSoundProviderState();
+        return 2;
+    }
+
+    CleanupDirectSoundProviderState();
+    return 0;
+}
+
+extern "C" int zsnd_backend_init_a3d_provider_smoke(void) {
+    CleanupA3dProviderState();
+    g_zSnd_WindowHandle = static_cast<unsigned int>(
+        reinterpret_cast<std::uintptr_t>(GetDesktopWindow()));
+
+    const HRESULT setupResult = CoInitialize(nullptr);
+    const bool setupInitialized = setupResult >= 0;
+    const int result = zSndBackend_InitA3D();
+
+    if (result != 0 && result != 1) {
+        CleanupA3dProviderState();
+        if (setupInitialized) {
+            CoUninitialize();
+            CoUninitialize();
+        }
+        return 1;
+    }
+
+    if (result == 1 &&
+        (g_zSnd_BackendDevice == nullptr || g_zSnd_BackendListenerHandle == nullptr)) {
+        CleanupA3dProviderState();
+        if (setupInitialized) {
+            CoUninitialize();
+            CoUninitialize();
+        }
+        return 2;
+    }
+
+    CleanupA3dProviderState();
+    if (setupInitialized) {
+        CoUninitialize();
+        CoUninitialize();
+    }
+    return 0;
+}
+
 extern "C" int zsnd_cached_directsound_get_caps_smoke(void) {
     TestCachedDirectSoundVTable vtable = {};
     vtable.GetCaps = &TestDirectSoundGetCaps;
@@ -798,6 +889,31 @@ extern "C" int zsnd_cached_directsound_get_caps_smoke(void) {
                    caps.dwSize == sizeof(DSCAPS) && caps.dwFreeHwMemBytes == 0x1234
                ? 0
                : 1;
+}
+
+extern "C" int zsnd_options_cpu_and_cached_directsound_smoke(void) {
+    TestCachedDirectSoundVTable vtable = {};
+    vtable.slots00_0c[2] = reinterpret_cast<void *>(&TestRelease);
+    TestCachedDirectSound device{&vtable};
+    const GUID fakeGuid = {0x12345678, 0x2222, 0x3333, {0x44, 0x55, 0x66, 0x77,
+                                                       0x88, 0x99, 0xaa, 0xbb}};
+
+    g_zSnd_CachedDirectSound = reinterpret_cast<LPDIRECTSOUND>(&device);
+    g_zSnd_CachedDirectSoundGuid = &fakeGuid;
+    g_testReleaseCount = 0;
+
+    const int hasMmx = zSnd::HasMmxMixerSupport();
+    const LPDIRECTSOUND cached = zSnd::AcquireCachedDirectSound(&fakeGuid);
+    zSnd::ReleaseCachedDirectSound();
+
+    const int result =
+        (hasMmx == 0 || hasMmx == 1) && cached == reinterpret_cast<LPDIRECTSOUND>(&device) &&
+                g_testReleaseCount == 1 && g_zSnd_CachedDirectSound == nullptr
+            ? 0
+            : 1;
+    g_zSnd_CachedDirectSound = nullptr;
+    g_zSnd_CachedDirectSoundGuid = nullptr;
+    return result;
 }
 
 extern "C" int zsnd_cd_reset_track_state_smoke(void) {

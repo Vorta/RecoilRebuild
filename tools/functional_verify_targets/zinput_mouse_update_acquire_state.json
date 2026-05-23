@@ -1,0 +1,14 @@
+{
+  "name": "zinput_mouse_update_acquire_state",
+  "description": "zInput::Mouse_UpdateAcquireState acquires or unacquires the DirectInput mouse device and flips active state only on real failures.",
+  "address": "0x470310",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_mouse_update_acquire_state_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zinput_mouse_update_acquire_state",
+  "known_limits": [
+    "Reviewed VC byte comparison from python tools/recoil_vc6_verify.py zinput_mouse_update_acquire_state failed under VC5SP3 11.00.7022 /O2 /Ob0 /Zp4: 54 unmasked mismatches, 16 relocation-masked bytes, BN size 74, VC object size 80, 5 trailing VC NOPs trimmed; see build/vc6-verify/zinput_mouse_update_acquire_state/verify/470310_byte_triage.txt.",
+    "The reviewed byte drift is global-load and branch scheduling shape around g_zInput_MouseActive and g_zInput_MouseDevice; the native smoke covers acquire, unacquire, and failure-triggered active-state flips."
+  ]
+}

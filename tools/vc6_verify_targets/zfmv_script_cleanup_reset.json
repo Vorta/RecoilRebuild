@@ -41,6 +41,31 @@
       "address": "0x462f10",
       "symbol": "?AppendAction@zFMV_Script@@QAEHPAUzFMV_Action@@@Z",
       "name": "zFMV_Script::AppendAction"
+    },
+    {
+      "address": "0x462f90",
+      "symbol": "?BeginCurrentAction@zFMV_Script@@QAEHN@Z",
+      "name": "zFMV_Script::BeginCurrentAction"
+    },
+    {
+      "address": "0x4630a0",
+      "symbol": "?BeginAtTime@zFMV_Script@@QAEHXZ",
+      "name": "zFMV_Script::BeginAtTime"
+    },
+    {
+      "address": "0x463000",
+      "symbol": "?Update@zFMV_Script@@QAEHN@Z",
+      "name": "zFMV_Script::Update"
+    },
+    {
+      "address": "0x4630e0",
+      "symbol": "?UpdateAtTime@zFMV_Script@@QAEHXZ",
+      "name": "zFMV_Script::UpdateAtTime"
+    },
+    {
+      "address": "0x463120",
+      "symbol": "?BeginNow@zFMV_Script@@QAEXH@Z",
+      "name": "zFMV_Script::BeginNow"
     }
   ]
 }

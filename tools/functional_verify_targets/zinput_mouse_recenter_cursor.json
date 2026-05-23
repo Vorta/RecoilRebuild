@@ -1,0 +1,13 @@
+{
+  "name": "zinput_mouse_recenter_cursor",
+  "description": "zInput::Mouse_RecenterCursor moves cached mouse state to the client center, clears normalized coordinates, and applies the OS cursor position.",
+  "address": "0x470150",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_mouse_apply_and_recenter_cursor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zinput_mouse_recenter_cursor",
+  "binary_safe_evidence": [
+    "python tools/recoil_vc6_verify.py zinput_mouse_recenter_cursor passed for 0x470150 with VC5SP3 11.00.7022 /O2 /Ob0 /Zp4: 0 unmasked byte mismatches, 28 relocation-masked bytes, BN size 47, VC object size 48, 1 trailing VC NOP trimmed."
+  ]
+}

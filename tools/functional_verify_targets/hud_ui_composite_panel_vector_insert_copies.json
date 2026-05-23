@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_composite_panel_vector_insert_copies",
+  "description": "HudUiCompositePanelVector::InsertCopies behaves like the recovered MSVC vector insert helper for composite-panel entries, including reallocation, in-place long-tail insertion, and in-place short-tail insertion.",
+  "address": "0x4bbff0",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_composite_panel_vector_insert_copies_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4bbff0",
+  "known_limits": [
+    "Depends on HudUiCompositePanelEntry::ConstructorCopy and AssignCopy, which are functionally accepted but still carry inherited HudUiPanel copy/font-clone byte-shape drift.",
+    "VC6 cl 12.00.8168 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?InsertCopies@HudUiCompositePanelVector@@QAEXPAUHudUiCompositePanelEntry@@IPBU2@@Z at 0x4bbff0 still fails: 747 unmasked mismatches, 44 relocation bytes masked, 15 trailing VC NOP bytes trimmed, Binary Ninja body is 814 bytes and the VC object symbol is 784 bytes. The drift begins at the frame/prologue and follows different vector-insert control-flow and scheduling shape."
+  ],
+  "binary_safe_evidence": [
+    "Binary Ninja shows three std::vector-style insert paths over 0x2c0-byte entries: allocate-and-copy when capacity is insufficient, in-place insertion when the old tail is at least the insertion count, and in-place insertion when the old tail is shorter than the insertion count.",
+    "The native vector-insert smoke validates final ordering, end/capacity cursors, transition-text ftable installation on constructed entries, and the old-entry destructor calls made by the reallocation path."
+  ]
+}

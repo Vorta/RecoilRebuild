@@ -1,4 +1,5 @@
 #include "Battlesport/GameNet.h"
+#include "Battlesport/Briefing.h"
 #include "Battlesport/HudSensorTracker.h"
 #include "Battlesport/HudUiNetExitPanel.h"
 #include "GameZRecoil/Time/Time.h"
@@ -22,6 +23,12 @@
 #include <new>
 
 extern "C" std::uint32_t g_HudUi_InvalidateMask;
+extern float g_HudUiLoadingCheckpointRawProgress[19];
+extern float g_HudUiLoadingCheckpointProgress[19];
+extern float g_HudUiLoadingCheckpointProgressScale;
+extern unsigned int g_HudUiLoadingCheckpointMaxIndex;
+extern unsigned int g_HudUiLoadingCheckpointCurrentIndex;
+extern float g_HudUiLoadingCheckpointCurrentProgress;
 
 namespace {
 template <typename T> T &TestFieldAt(void *base, std::size_t offset) {
@@ -70,6 +77,45 @@ void DeleteListSelectorItemArray(HudUiListSelectorItem *items) {
     }
 
     ::operator delete(header);
+}
+
+void InitCompositePanelEntryForTest(HudUiCompositePanelEntry *entry, int marker) {
+    reinterpret_cast<HudUiTransitionTextPanel *>(entry)->Constructor();
+    entry->panel.flashCountdown = static_cast<float>(marker);
+    entry->panel.flashResetValue = static_cast<float>(marker + 10);
+    entry->panel.flashAltColor0 = marker;
+    entry->panel.flashAltColor1 = marker + 100;
+    entry->panel.flashEnabled = marker + 200;
+    entry->panel.flashMode = marker + 300;
+    entry->panel.flashDirectionSign = -marker;
+}
+
+int CompositePanelEntryMarkerForTest(const HudUiCompositePanelEntry &entry) {
+    return entry.panel.flashAltColor0;
+}
+
+void DestroyCompositePanelEntryForTest(HudUiCompositePanelEntry *entry) {
+    reinterpret_cast<HudUiPanel *>(entry)->Destructor();
+}
+
+HudUiCompositePanelEntry *AllocateCompositePanelEntriesForTest(std::size_t capacity) {
+    return static_cast<HudUiCompositePanelEntry *>(
+        ::operator new(sizeof(HudUiCompositePanelEntry) * capacity));
+}
+
+void DestroyCompositePanelVectorEntriesForTest(HudUiCompositePanelVector *vector) {
+    if (vector->begin == nullptr) {
+        return;
+    }
+
+    for (HudUiCompositePanelEntry *entry = vector->begin; entry != vector->end; ++entry) {
+        DestroyCompositePanelEntryForTest(entry);
+    }
+
+    ::operator delete(vector->begin);
+    vector->begin = nullptr;
+    vector->end = nullptr;
+    vector->capacityEnd = nullptr;
 }
 
 struct TestReticleAttachState {
@@ -217,6 +263,111 @@ struct TestContainerUpdateElement {
     }
 };
 
+void *g_backgroundChildElement = nullptr;
+void *g_backgroundFocusElement = nullptr;
+int g_backgroundHitCount = 0;
+int g_backgroundShouldHandleCount = 0;
+int g_backgroundShouldHandleHovered = -1;
+int g_backgroundHoverEnterCount = 0;
+int g_backgroundHoverRepeatCount = 0;
+int g_backgroundHoverExitCount = 0;
+int g_backgroundCaptureEnterCount = 0;
+int g_backgroundCaptureExitCount = 0;
+int g_backgroundPrimaryReleaseCount = 0;
+int g_backgroundSecondaryReleaseCount = 0;
+int g_backgroundPointerStateCount = 0;
+int g_backgroundActivateCount = 0;
+int g_backgroundAfterInputCount = 0;
+int g_backgroundAfterHovered = -1;
+int g_backgroundDrawBaseCount = 0;
+int g_backgroundChildUpdateCount = 0;
+int g_backgroundFocusUpdateCount = 0;
+int g_backgroundSetPosCount = 0;
+int g_backgroundSetPosX = 0;
+int g_backgroundSetPosY = 0;
+float g_backgroundChildUpdateDelta = 0.0f;
+float g_backgroundFocusUpdateDelta = 0.0f;
+
+struct TestBackgroundInputElement {
+    HudUiElement base;
+    int hitResult;
+    int shouldHandleResult;
+
+    int RECOIL_THISCALL HitTest(int x, int y) {
+        ++g_backgroundHitCount;
+        return x == 123 && y == 456 ? hitResult : 0;
+    }
+
+    int RECOIL_THISCALL ShouldHandleInput(HudUiBackground *, int hovered) {
+        ++g_backgroundShouldHandleCount;
+        g_backgroundShouldHandleHovered = hovered;
+        return shouldHandleResult;
+    }
+
+    void RECOIL_THISCALL DrawBase() {
+        ++g_backgroundDrawBaseCount;
+    }
+
+    void RECOIL_THISCALL SetPos(int x, int y) {
+        ++g_backgroundSetPosCount;
+        g_backgroundSetPosX = x;
+        g_backgroundSetPosY = y;
+        base.x = x;
+        base.y = y;
+    }
+
+    void RECOIL_THISCALL Update(float deltaSeconds) {
+        if (this == g_backgroundChildElement) {
+            ++g_backgroundChildUpdateCount;
+            g_backgroundChildUpdateDelta = deltaSeconds;
+        } else if (this == g_backgroundFocusElement) {
+            ++g_backgroundFocusUpdateCount;
+            g_backgroundFocusUpdateDelta = deltaSeconds;
+        }
+    }
+
+    void RECOIL_THISCALL OnPrimaryButtonReleased() {
+        ++g_backgroundPrimaryReleaseCount;
+    }
+
+    void RECOIL_THISCALL OnSecondaryButtonReleased() {
+        ++g_backgroundSecondaryReleaseCount;
+    }
+
+    void RECOIL_THISCALL OnHoverRepeat() {
+        ++g_backgroundHoverRepeatCount;
+    }
+
+    void RECOIL_THISCALL OnHoverEnter() {
+        ++g_backgroundHoverEnterCount;
+    }
+
+    void RECOIL_THISCALL OnHoverExit() {
+        ++g_backgroundHoverExitCount;
+    }
+
+    void RECOIL_THISCALL OnCaptureEnter() {
+        ++g_backgroundCaptureEnterCount;
+    }
+
+    void RECOIL_THISCALL OnCaptureExit() {
+        ++g_backgroundCaptureExitCount;
+    }
+
+    void RECOIL_THISCALL OnPointerButtonState(int, int) {
+        ++g_backgroundPointerStateCount;
+    }
+
+    void RECOIL_THISCALL OnActivate() {
+        ++g_backgroundActivateCount;
+    }
+
+    void RECOIL_THISCALL AfterInputUpdate(HudUiBackground *, int hovered) {
+        ++g_backgroundAfterInputCount;
+        g_backgroundAfterHovered = hovered;
+    }
+};
+
 struct TestLayoutSetActiveElement {
     const HudLayoutBase_FTable *ftable;
     std::int32_t activeValue;
@@ -315,6 +466,22 @@ int g_slotWidgetDrawCount = 0;
 void RECOIL_FASTCALL TestSlotWidgetDraw(HudUiWidget *) {
     ++g_slotWidgetDrawCount;
 }
+
+int g_primitiveSetPosCount = 0;
+void *g_primitiveSetPosThis = nullptr;
+int g_primitiveSetPosX = 0;
+int g_primitiveSetPosY = 0;
+
+struct TestPrimitiveBindTarget : HudUiPrimitiveBindTarget {
+    void RECOIL_THISCALL SetPos(int x, int y) {
+        ++g_primitiveSetPosCount;
+        g_primitiveSetPosThis = this;
+        g_primitiveSetPosX = x;
+        g_primitiveSetPosY = y;
+        base.x = x;
+        base.y = y;
+    }
+};
 
 template <typename Method> std::uintptr_t MethodAddress(Method method) {
     static_assert(sizeof(method) <= sizeof(std::uintptr_t));
@@ -721,6 +888,238 @@ extern "C" int zhud_composite_panel_vector_clear_smoke(void) {
                : 1;
 }
 
+extern "C" int zhud_composite_panel_vector_insert_copies_smoke(void) {
+    HudUiCommon_FTable destructorTable{};
+    destructorTable.slots[0] = MethodAddress(&TestCompositePanelEntry::ScalarDeletingDestructor);
+
+    HudUiCompositePanelEntry templateEntry{};
+    InitCompositePanelEntryForTest(&templateEntry, 90);
+
+    HudUiCompositePanelVector growVector{};
+    growVector.begin = AllocateCompositePanelEntriesForTest(2);
+    growVector.end = growVector.begin + 2;
+    growVector.capacityEnd = growVector.end;
+    InitCompositePanelEntryForTest(&growVector.begin[0], 1);
+    InitCompositePanelEntryForTest(&growVector.begin[1], 2);
+    TestFieldAt<const HudUiCommon_FTable *>(&growVector.begin[0], 0) = &destructorTable;
+    TestFieldAt<const HudUiCommon_FTable *>(&growVector.begin[1], 0) = &destructorTable;
+    growVector.InsertCopies(growVector.begin + 1, 2, &templateEntry);
+    const bool growOk =
+        growVector.end == growVector.begin + 4 && growVector.capacityEnd == growVector.begin + 4 &&
+        CompositePanelEntryMarkerForTest(growVector.begin[0]) == 1 &&
+        CompositePanelEntryMarkerForTest(growVector.begin[1]) == 90 &&
+        CompositePanelEntryMarkerForTest(growVector.begin[2]) == 90 &&
+        CompositePanelEntryMarkerForTest(growVector.begin[3]) == 2 &&
+        reinterpret_cast<HudUiPanel *>(&growVector.begin[1])->vtbl ==
+            &g_HudUiTransitionTextPanel_FTable;
+    DestroyCompositePanelVectorEntriesForTest(&growVector);
+
+    HudUiCompositePanelVector longTailVector{};
+    longTailVector.begin = AllocateCompositePanelEntriesForTest(5);
+    longTailVector.end = longTailVector.begin + 3;
+    longTailVector.capacityEnd = longTailVector.begin + 5;
+    InitCompositePanelEntryForTest(&longTailVector.begin[0], 10);
+    InitCompositePanelEntryForTest(&longTailVector.begin[1], 11);
+    InitCompositePanelEntryForTest(&longTailVector.begin[2], 12);
+    longTailVector.InsertCopies(longTailVector.begin + 1, 1, &templateEntry);
+    const bool longTailOk =
+        longTailVector.end == longTailVector.begin + 4 &&
+        longTailVector.capacityEnd == longTailVector.begin + 5 &&
+        CompositePanelEntryMarkerForTest(longTailVector.begin[0]) == 10 &&
+        CompositePanelEntryMarkerForTest(longTailVector.begin[1]) == 90 &&
+        CompositePanelEntryMarkerForTest(longTailVector.begin[2]) == 11 &&
+        CompositePanelEntryMarkerForTest(longTailVector.begin[3]) == 12;
+    DestroyCompositePanelVectorEntriesForTest(&longTailVector);
+
+    HudUiCompositePanelVector shortTailVector{};
+    shortTailVector.begin = AllocateCompositePanelEntriesForTest(5);
+    shortTailVector.end = shortTailVector.begin + 2;
+    shortTailVector.capacityEnd = shortTailVector.begin + 5;
+    InitCompositePanelEntryForTest(&shortTailVector.begin[0], 20);
+    InitCompositePanelEntryForTest(&shortTailVector.begin[1], 21);
+    shortTailVector.InsertCopies(shortTailVector.begin + 1, 3, &templateEntry);
+    const bool shortTailOk =
+        shortTailVector.end == shortTailVector.begin + 5 &&
+        shortTailVector.capacityEnd == shortTailVector.begin + 5 &&
+        CompositePanelEntryMarkerForTest(shortTailVector.begin[0]) == 20 &&
+        CompositePanelEntryMarkerForTest(shortTailVector.begin[1]) == 90 &&
+        CompositePanelEntryMarkerForTest(shortTailVector.begin[2]) == 90 &&
+        CompositePanelEntryMarkerForTest(shortTailVector.begin[3]) == 90 &&
+        CompositePanelEntryMarkerForTest(shortTailVector.begin[4]) == 21;
+    DestroyCompositePanelVectorEntriesForTest(&shortTailVector);
+
+    DestroyCompositePanelEntryForTest(&templateEntry);
+    return growOk && longTailOk && shortTailOk ? 0 : 1;
+}
+
+extern "C" int zhud_composite_panel_constructor_with_entry_count_smoke(void) {
+    g_HudUi_InvalidateMask = 1;
+
+    HudUiCompositePanel panel{};
+    HudUiCompositePanel *const result = panel.ConstructorWithEntryCount(2);
+    auto *const panelAsPanel = reinterpret_cast<HudUiPanel *>(&panel);
+
+    const bool panelInitialized =
+        result == &panel && panelAsPanel->vtbl == &g_HudUiCompositePanel_FTable &&
+        panel.activeEntryCount == 0 && panel.entryVector.begin != nullptr &&
+        panel.entryVector.end == panel.entryVector.begin + 2 &&
+        panel.entryVector.capacityEnd == panel.entryVector.begin + 2 &&
+        (TestFieldAt<std::uint32_t>(&panel, 0x0c) & 0x10u) == 0;
+
+    const bool entriesInitialized =
+        reinterpret_cast<HudUiPanel *>(&panel.entryVector.begin[0])->vtbl ==
+            &g_HudUiTransitionTextPanel_FTable &&
+        reinterpret_cast<HudUiPanel *>(&panel.entryVector.begin[1])->vtbl ==
+            &g_HudUiTransitionTextPanel_FTable &&
+        TestFieldAt<char>(&panel.entryVector.begin[0], 0x34) == '\0' &&
+        TestFieldAt<char>(&panel.entryVector.begin[1], 0x34) == '\0' &&
+        TestFieldAt<std::int32_t>(&panel.entryVector.begin[0], 0x14) == 0 &&
+        TestFieldAt<std::int32_t>(&panel.entryVector.begin[0], 0x18) == 0 &&
+        TestFieldAt<std::int32_t>(&panel.entryVector.begin[1], 0x14) == 0 &&
+        TestFieldAt<std::int32_t>(&panel.entryVector.begin[1], 0x18) == 0 &&
+        (TestFieldAt<std::uint32_t>(&panel.entryVector.begin[0], 0x0c) & 0x10u) != 0 &&
+        (TestFieldAt<std::uint32_t>(&panel.entryVector.begin[1], 0x0c) & 0x10u) != 0;
+
+    DestroyCompositePanelVectorEntriesForTest(&panel.entryVector);
+    g_HudUi_InvalidateMask = 0;
+    return panelInitialized && entriesInitialized ? 0 : 1;
+}
+
+extern "C" int zhud_composite_panel_layout_entries_smoke(void) {
+    g_HudUi_InvalidateMask = 1;
+
+    HudUiCompositePanel panel{};
+    auto *const panelAsPanel = reinterpret_cast<HudUiPanel *>(&panel);
+    panelAsPanel->vtbl = &g_HudUiPanel_FTable;
+    TestFieldAt<std::uint32_t>(panelAsPanel, 0x270) = 0;
+    TestFieldAt<std::int32_t>(panelAsPanel, 0x260) = 14;
+    TestFieldAt<std::int32_t>(panelAsPanel, 0x274) = 2;
+
+    HudUiCompositePanelEntry *const entries = AllocateCompositePanelEntriesForTest(2);
+    InitCompositePanelEntryForTest(&entries[0], 30);
+    InitCompositePanelEntryForTest(&entries[1], 31);
+    panel.entryVector.begin = entries;
+    panel.entryVector.end = entries + 2;
+    panel.entryVector.capacityEnd = entries + 2;
+
+    panel.LayoutEntries(40, 50);
+
+    const bool panelPositioned =
+        TestFieldAt<std::int32_t>(&panel, 0x14) == 40 &&
+        TestFieldAt<std::int32_t>(&panel, 0x18) == 50 &&
+        (TestFieldAt<std::uint32_t>(&panel, 0x0c) & 1u) != 0;
+    const bool entriesPositioned =
+        TestFieldAt<std::int32_t>(&entries[0], 0x14) == 40 &&
+        TestFieldAt<std::int32_t>(&entries[0], 0x18) == 50 &&
+        TestFieldAt<std::int32_t>(&entries[1], 0x14) == 40 &&
+        TestFieldAt<std::int32_t>(&entries[1], 0x18) == 62;
+
+    DestroyCompositePanelVectorEntriesForTest(&panel.entryVector);
+    g_HudUi_InvalidateMask = 0;
+    int failure = 0;
+    failure |= panelPositioned ? 0 : 1;
+    failure |= entriesPositioned ? 0 : 2;
+    return failure;
+}
+
+extern "C" int zhud_composite_panel_resize_entry_count_smoke(void) {
+    g_HudUi_InvalidateMask = 1;
+
+    HudUiCompositePanel panel{};
+    HudUiCompositePanelEntry *const entries = AllocateCompositePanelEntriesForTest(3);
+    for (int index = 0; index < 3; ++index) {
+        InitCompositePanelEntryForTest(&entries[index], 40 + index);
+        reinterpret_cast<HudUiPanel *>(&entries[index])->SetText("occupied");
+        TestFieldAt<std::uint32_t>(&entries[index], 0x0c) &= ~0x10u;
+    }
+
+    panel.entryVector.begin = entries;
+    panel.entryVector.end = entries + 3;
+    panel.entryVector.capacityEnd = entries + 3;
+    panel.activeEntryCount = 99;
+    panel.ResizeEntryCount(1, 3);
+
+    const bool clampedAndCleared =
+        panel.activeEntryCount == 1 &&
+        std::strcmp(&TestFieldAt<char>(&entries[0], 0x34), "occupied") == 0 &&
+        TestFieldAt<char>(&entries[1], 0x34) == '\0' &&
+        TestFieldAt<char>(&entries[2], 0x34) == '\0' &&
+        (TestFieldAt<std::uint32_t>(&entries[1], 0x0c) & 0x10u) != 0 &&
+        (TestFieldAt<std::uint32_t>(&entries[2], 0x0c) & 0x10u) != 0;
+
+    reinterpret_cast<HudUiPanel *>(&entries[1])->SetText("again");
+    reinterpret_cast<HudUiPanel *>(&entries[2])->SetText("again");
+    TestFieldAt<std::uint32_t>(&entries[1], 0x0c) &= ~0x10u;
+    TestFieldAt<std::uint32_t>(&entries[2], 0x0c) &= ~0x10u;
+    panel.activeEntryCount = 2;
+    panel.ReapplyEntryCount();
+    const bool reapplied =
+        panel.activeEntryCount == 0 &&
+        TestFieldAt<char>(&entries[0], 0x34) == '\0' &&
+        TestFieldAt<char>(&entries[1], 0x34) == '\0' &&
+        TestFieldAt<char>(&entries[2], 0x34) == '\0' &&
+        (TestFieldAt<std::uint32_t>(&entries[0], 0x0c) & 0x10u) != 0 &&
+        (TestFieldAt<std::uint32_t>(&entries[1], 0x0c) & 0x10u) != 0 &&
+        (TestFieldAt<std::uint32_t>(&entries[2], 0x0c) & 0x10u) != 0;
+
+    DestroyCompositePanelVectorEntriesForTest(&panel.entryVector);
+    g_HudUi_InvalidateMask = 0;
+    return clampedAndCleared && reapplied ? 0 : 1;
+}
+
+extern "C" int zhud_composite_panel_resize_vector_relayout_smoke(void) {
+    g_HudUi_InvalidateMask = 1;
+    g_compositeEntryDestructorCount = 0;
+    std::memset(g_compositeEntryDestructorThis, 0, sizeof(g_compositeEntryDestructorThis));
+    std::memset(g_compositeEntryDestructorFlags, 0xff, sizeof(g_compositeEntryDestructorFlags));
+
+    HudUiCommon_FTable destructorTable{};
+    destructorTable.slots[0] = MethodAddress(&TestCompositePanelEntry::ScalarDeletingDestructor);
+
+    HudUiCompositePanel panel{};
+    auto *const panelAsPanel = reinterpret_cast<HudUiPanel *>(&panel);
+    panelAsPanel->vtbl = &g_HudUiPanel_FTable;
+    TestFieldAt<std::int32_t>(&panel, 0x14) = 10;
+    TestFieldAt<std::int32_t>(&panel, 0x18) = 20;
+    TestFieldAt<std::uint32_t>(panelAsPanel, 0x270) = 0;
+    TestFieldAt<std::int32_t>(panelAsPanel, 0x260) = 15;
+    TestFieldAt<std::int32_t>(panelAsPanel, 0x274) = 3;
+
+    panel.ResizeEntryVectorAndRelayout(2);
+    const bool grown =
+        panel.entryVector.begin != nullptr && panel.entryVector.end == panel.entryVector.begin + 2 &&
+        panel.entryVector.capacityEnd == panel.entryVector.begin + 2 && panel.activeEntryCount == 0 &&
+        TestFieldAt<std::int32_t>(&panel.entryVector.begin[0], 0x14) == 10 &&
+        TestFieldAt<std::int32_t>(&panel.entryVector.begin[0], 0x18) == 20 &&
+        TestFieldAt<std::int32_t>(&panel.entryVector.begin[1], 0x14) == 10 &&
+        TestFieldAt<std::int32_t>(&panel.entryVector.begin[1], 0x18) == 32 &&
+        (TestFieldAt<std::uint32_t>(&panel.entryVector.begin[0], 0x0c) & 0x10u) != 0 &&
+        (TestFieldAt<std::uint32_t>(&panel.entryVector.begin[1], 0x0c) & 0x10u) != 0;
+
+    TestFieldAt<const HudUiCommon_FTable *>(&panel.entryVector.begin[1], 0) = &destructorTable;
+    panel.ResizeEntryVectorAndRelayout(1);
+    const bool shrunk =
+        panel.entryVector.end == panel.entryVector.begin + 1 && panel.activeEntryCount == 1 &&
+        g_compositeEntryDestructorCount == 1 &&
+        g_compositeEntryDestructorThis[0] == &panel.entryVector.begin[1] &&
+        g_compositeEntryDestructorFlags[0] == 0 &&
+        TestFieldAt<std::int32_t>(&panel.entryVector.begin[0], 0x14) == 10 &&
+        TestFieldAt<std::int32_t>(&panel.entryVector.begin[0], 0x18) == 20;
+
+    reinterpret_cast<HudUiPanel *>(&panel.entryVector.begin[0])->SetText("again");
+    TestFieldAt<std::uint32_t>(&panel.entryVector.begin[0], 0x0c) &= ~0x10u;
+    panel.activeEntryCount = 1;
+    panel.ResizeEntryVectorAndRelayout(1);
+    const bool reapplied =
+        panel.entryVector.end == panel.entryVector.begin + 1 && panel.activeEntryCount == 0 &&
+        TestFieldAt<char>(&panel.entryVector.begin[0], 0x34) == '\0' &&
+        (TestFieldAt<std::uint32_t>(&panel.entryVector.begin[0], 0x0c) & 0x10u) != 0;
+
+    DestroyCompositePanelVectorEntriesForTest(&panel.entryVector);
+    g_HudUi_InvalidateMask = 0;
+    return grown && shrunk && reapplied ? 0 : 1;
+}
+
 extern "C" int zhud_composite_panel_entry_copy_smoke(void) {
     HudUiCompositePanelEntry source{};
     auto *sourcePanel = reinterpret_cast<HudUiPanel *>(&source);
@@ -979,6 +1378,121 @@ extern "C" int zhud_element_position_mutators_smoke(void) {
 
     g_HudUi_InvalidateMask = 0;
     return pos && xOnly && yOnly ? 0 : 1;
+}
+
+extern "C" int zhud_primitive_bind_target_set_segment_endpoints_smoke(void) {
+    HudUiCommon_FTable table{};
+    table.slots[0x0c / 4] = MethodAddress(&TestPrimitiveBindTarget::SetPos);
+
+    HudUiPrimitiveBindTarget target{};
+    target.base.ftable = &table;
+    target.endX = -1;
+    target.endY = -1;
+    g_primitiveSetPosCount = 0;
+    g_primitiveSetPosThis = nullptr;
+    g_primitiveSetPosX = 0;
+    g_primitiveSetPosY = 0;
+
+    target.SetSegmentEndpoints(11, 22, 33, 44);
+
+    return g_primitiveSetPosCount == 1 && g_primitiveSetPosThis == &target &&
+                   g_primitiveSetPosX == 11 && g_primitiveSetPosY == 22 &&
+                   target.base.x == 11 && target.base.y == 22 && target.endX == 33 &&
+                   target.endY == 44
+               ? 0
+               : 1;
+}
+
+extern "C" int zhud_background_bind_primitive_node_to_element_smoke(void) {
+    g_zVideo_PixelPack_RMaskShifted = 0xf8;
+    g_zVideo_PixelPack_GMaskShifted = 0xfc;
+    g_zVideo_PixelPack_RShift = 8;
+    g_zVideo_PixelPack_GShift = 3;
+    g_zVideo_PixelPack_BShiftTo8 = 3;
+
+    zReader::Node positionItems[3] = {};
+    positionItems[0].value.i32 = 3;
+    positionItems[1].type = zReader::ZRDR_NODE_INT;
+    positionItems[1].value.i32 = 5;
+    positionItems[2].type = zReader::ZRDR_NODE_INT;
+    positionItems[2].value.i32 = 7;
+
+    zReader::Node colorItems[4] = {};
+    colorItems[0].value.i32 = 4;
+    colorItems[1].type = zReader::ZRDR_NODE_INT;
+    colorItems[1].value.i32 = 0x20;
+    colorItems[2].type = zReader::ZRDR_NODE_INT;
+    colorItems[2].value.i32 = 0x60;
+    colorItems[3].type = zReader::ZRDR_NODE_INT;
+    colorItems[3].value.i32 = 0x40;
+
+    zReader::Node endRelItems[3] = {};
+    endRelItems[0].value.i32 = 3;
+    endRelItems[1].type = zReader::ZRDR_NODE_INT;
+    endRelItems[1].value.i32 = 2;
+    endRelItems[2].type = zReader::ZRDR_NODE_INT;
+    endRelItems[2].value.i32 = 3;
+
+    zReader::Node primitiveItems[7] = {};
+    primitiveItems[0].value.i32 = 7;
+    primitiveItems[1].type = zReader::ZRDR_NODE_STRING;
+    primitiveItems[1].value.str = const_cast<char *>("POSITION");
+    primitiveItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    primitiveItems[2].value.nodes = positionItems;
+    primitiveItems[3].type = zReader::ZRDR_NODE_STRING;
+    primitiveItems[3].value.str = const_cast<char *>("COLOR");
+    primitiveItems[4].type = zReader::ZRDR_NODE_ARRAY;
+    primitiveItems[4].value.nodes = colorItems;
+    primitiveItems[5].type = zReader::ZRDR_NODE_STRING;
+    primitiveItems[5].value.str = const_cast<char *>("ENDP_REL");
+    primitiveItems[6].type = zReader::ZRDR_NODE_ARRAY;
+    primitiveItems[6].value.nodes = endRelItems;
+
+    zReader::Node primitivesItems[3] = {};
+    primitivesItems[0].value.i32 = 3;
+    primitivesItems[1].type = zReader::ZRDR_NODE_STRING;
+    primitivesItems[1].value.str = const_cast<char *>("LINE");
+    primitivesItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    primitivesItems[2].value.nodes = primitiveItems;
+
+    zReader::Node rootItems[3] = {};
+    rootItems[0].value.i32 = 3;
+    rootItems[1].type = zReader::ZRDR_NODE_STRING;
+    rootItems[1].value.str = const_cast<char *>("PRIMITIVES");
+    rootItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[2].value.nodes = primitivesItems;
+
+    zReader::Node root{};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = rootItems;
+
+    alignas(HudUiBackground) std::uint8_t backgroundStorage[0xa94c]{};
+    auto *const background = reinterpret_cast<HudUiBackground *>(backgroundStorage);
+    TestFieldAt<zReader::Node *>(background, 0xa940) = &root;
+    TestFieldAt<std::int32_t>(background, 0xa944) = 10;
+    TestFieldAt<std::int32_t>(background, 0xa948) = 20;
+    TestFieldAt<void *>(background, 0x118) = reinterpret_cast<void *>(0x1234);
+
+    HudUiPrimitiveBindTarget target{};
+    target.base.ftable = &g_HudUiCommon_FTable;
+    const int result = background->BindPrimitiveNodeToElement(nullptr, &target.base, "LINE");
+
+    const bool linked =
+        result == 0 && reinterpret_cast<HudUiContainer *>(background)->childHead == &target.base &&
+        reinterpret_cast<HudUiContainer *>(background)->childTail == &target.base &&
+        target.base.parent == reinterpret_cast<HudUiContainer *>(background);
+    const bool primitive =
+        target.base.x == 15 && target.base.y == 27 && target.endX == 17 && target.endY == 30 &&
+        target.color565 == (zVid_PackColorRGB(0x20, 0x60, 0x40) & 0xffffu) &&
+        target.base.bltSource == reinterpret_cast<void *>(0x1234) &&
+        target.base.clipRect.left == 15 && target.base.clipRect.top == 27 &&
+        target.base.clipRect.right == 15 && target.base.clipRect.bottom == 27 &&
+        (target.base.flags & 0x02) != 0;
+
+    int failure = 0;
+    failure |= linked ? 0 : 1;
+    failure |= primitive ? 0 : 2;
+    return failure;
 }
 
 extern "C" int zhud_container_child_list_smoke(void) {
@@ -2856,6 +3370,96 @@ extern "C" int zhud_background_container_focus_smoke(void) {
     return constructed && focus && destructed ? 0 : 1;
 }
 
+extern "C" int zhud_background_update_input_focus_smoke(void) {
+    HudUiCommon_FTable table{};
+    table.slots[0x08 / 4] = MethodAddress(&TestBackgroundInputElement::DrawBase);
+    table.slots[0x0c / 4] = MethodAddress(&TestBackgroundInputElement::SetPos);
+    table.slots[0x24 / 4] = MethodAddress(&TestBackgroundInputElement::Update);
+    table.slots[0x30 / 4] =
+        MethodAddress(&TestBackgroundInputElement::OnPrimaryButtonReleased);
+    table.slots[0x34 / 4] =
+        MethodAddress(&TestBackgroundInputElement::OnSecondaryButtonReleased);
+    table.slots[0x38 / 4] = MethodAddress(&TestBackgroundInputElement::OnHoverRepeat);
+    table.slots[0x3c / 4] = MethodAddress(&TestBackgroundInputElement::OnHoverEnter);
+    table.slots[0x40 / 4] = MethodAddress(&TestBackgroundInputElement::OnHoverExit);
+    table.slots[0x44 / 4] = MethodAddress(&TestBackgroundInputElement::OnCaptureEnter);
+    table.slots[0x48 / 4] = MethodAddress(&TestBackgroundInputElement::OnCaptureExit);
+    table.slots[0x4c / 4] =
+        MethodAddress(&TestBackgroundInputElement::OnPointerButtonState);
+    table.slots[0x50 / 4] = MethodAddress(&TestBackgroundInputElement::OnActivate);
+    table.slots[0x54 / 4] = MethodAddress(&TestBackgroundInputElement::ShouldHandleInput);
+    table.slots[0x58 / 4] = MethodAddress(&TestBackgroundInputElement::AfterInputUpdate);
+    table.slots[0x5c / 4] = MethodAddress(&TestBackgroundInputElement::HitTest);
+
+    TestBackgroundInputElement child{};
+    TestBackgroundInputElement focus{};
+    child.base.ftable = &table;
+    child.hitResult = 1;
+    child.shouldHandleResult = 1;
+    focus.base.ftable = &table;
+
+    HudUiBackground background{};
+    background.base.base.enabled = 1;
+    background.base.base.childHead = &child.base;
+    background.base.base.childTail = &child.base;
+    background.base.inputFocusElement = &focus.base;
+    background.base.captureTransitionMask = 4;
+
+    g_zInput_MouseStateSnapshot = {};
+    g_zInput_MouseStateSnapshot.cursorClientX = 123;
+    g_zInput_MouseStateSnapshot.cursorClientY = 456;
+    g_zInput_MouseStateSnapshot.button1Transition = 4;
+    g_zInput_MouseStateSnapshot.button2Transition = 0;
+
+    g_backgroundChildElement = &child;
+    g_backgroundFocusElement = &focus;
+    g_backgroundHitCount = 0;
+    g_backgroundShouldHandleCount = 0;
+    g_backgroundShouldHandleHovered = -1;
+    g_backgroundHoverEnterCount = 0;
+    g_backgroundHoverRepeatCount = 0;
+    g_backgroundHoverExitCount = 0;
+    g_backgroundCaptureEnterCount = 0;
+    g_backgroundCaptureExitCount = 0;
+    g_backgroundPrimaryReleaseCount = 0;
+    g_backgroundSecondaryReleaseCount = 0;
+    g_backgroundPointerStateCount = 0;
+    g_backgroundActivateCount = 0;
+    g_backgroundAfterInputCount = 0;
+    g_backgroundAfterHovered = -1;
+    g_backgroundDrawBaseCount = 0;
+    g_backgroundChildUpdateCount = 0;
+    g_backgroundFocusUpdateCount = 0;
+    g_backgroundSetPosCount = 0;
+    g_backgroundSetPosX = 0;
+    g_backgroundSetPosY = 0;
+    g_backgroundChildUpdateDelta = 0.0f;
+    g_backgroundFocusUpdateDelta = 0.0f;
+
+    background.Update(0.25f);
+
+    const bool inputDispatched =
+        g_backgroundHitCount == 1 && g_backgroundShouldHandleCount == 1 &&
+        g_backgroundShouldHandleHovered == 1 && g_backgroundHoverEnterCount == 1 &&
+        g_backgroundHoverRepeatCount == 0 && g_backgroundCaptureEnterCount == 1 &&
+        g_backgroundPrimaryReleaseCount == 1 && g_backgroundActivateCount == 1 &&
+        g_backgroundAfterInputCount == 1 && g_backgroundAfterHovered == 1 &&
+        g_backgroundSecondaryReleaseCount == 0 && g_backgroundPointerStateCount == 0 &&
+        g_backgroundHoverExitCount == 0 && g_backgroundCaptureExitCount == 0 &&
+        child.base.state == 3;
+
+    const bool focusUpdated =
+        g_backgroundDrawBaseCount == 1 && g_backgroundChildUpdateCount == 1 &&
+        g_backgroundChildUpdateDelta == 0.25f && g_backgroundSetPosCount == 1 &&
+        g_backgroundSetPosX == 123 && g_backgroundSetPosY == 456 &&
+        g_backgroundFocusUpdateCount == 1 && g_backgroundFocusUpdateDelta == 0.25f &&
+        focus.base.x == 123 && focus.base.y == 456;
+
+    g_backgroundChildElement = nullptr;
+    g_backgroundFocusElement = nullptr;
+    return inputDispatched && focusUpdated ? 0 : 1;
+}
+
 extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void) {
     HudUiBackgroundCursorWidget cursor{};
     cursor.captureEnabled = -1;
@@ -3300,6 +3904,18 @@ extern "C" int zhud_widget_release_and_destructor_core_smoke(void) {
                               nullPathImage.ownsImage == 1 && (nullPathImage.flags & 0x80) == 0;
     g_HudUi_InvalidateMask = 0;
 
+    HudUiWidget missingPathImage{};
+    missingPathImage.ftable = &g_HudUiWidget_FTable;
+    missingPathImage.image = &zVid_Image::g_zImage_DefaultImage;
+    missingPathImage.ownsImage = 1;
+    g_HudUi_InvalidateMask = 0x80;
+    zVidImagePartial *const missingPathResult =
+        missingPathImage.SetImageByPathOwned("__recoil_missing_widget_image__");
+    const bool missingPathReleased =
+        missingPathResult == nullptr && missingPathImage.image == nullptr &&
+        missingPathImage.ownsImage == 0 && (missingPathImage.flags & 0x80) != 0;
+    g_HudUi_InvalidateMask = 0;
+
     HudUiWidget destructed{};
     destructed.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCounter_FTable);
     destructed.image = &zVid_Image::g_zImage_DefaultImage;
@@ -3319,7 +3935,7 @@ extern "C" int zhud_widget_release_and_destructor_core_smoke(void) {
         TestFieldAt<const void *>(&scalar, 0x00) == &g_HudUiCommon_FTable &&
         scalar.image == nullptr && scalar.ownsImage == 0;
 
-    return borrowedKept && ownedCleared && borrowedImageSet && nullPathKept &&
+    return borrowedKept && ownedCleared && borrowedImageSet && nullPathKept && missingPathReleased &&
                    destructorRestoredBase && scalarDestructed
                ? 0
                : 1;
@@ -5114,6 +5730,64 @@ extern "C" int zhud_text_stack_destructor_core_smoke(void) {
     }
 
     return topDestroyed && chatDestroyed ? 0 : 1;
+}
+
+extern "C" int zhud_loading_checkpoint_init_table_smoke(void) {
+    const float expectedRaw[19] = {
+        0.00100000005f, 0.136999995f, 0.237000003f, 0.340000004f, 0.899999976f,
+        9.30000019f,    12.3999996f,  13.3999996f,  20.0f,        26.0f,
+        26.2999992f,    28.7000008f,  31.5f,        34.0f,        36.2000008f,
+        36.4000015f,    53.2999992f,  53.5999985f,  53.7000008f,
+    };
+
+    g_HudUiLoadingCheckpointMaxIndex = 99;
+    g_HudUiLoadingCheckpointCurrentIndex = 77;
+    for (int index = 0; index < 19; ++index) {
+        g_HudUiLoadingCheckpointRawProgress[index] = -1.0f;
+        g_HudUiLoadingCheckpointProgress[index] = -1.0f;
+    }
+
+    HudUiLoadingCheckpoint::InitTable();
+
+    if (g_HudUiLoadingCheckpointMaxIndex != 18 ||
+        g_HudUiLoadingCheckpointCurrentIndex != 0) {
+        return 1;
+    }
+
+    for (int index = 0; index < 19; ++index) {
+        const float expectedProgress =
+            expectedRaw[index] * g_HudUiLoadingCheckpointProgressScale;
+        if (g_HudUiLoadingCheckpointRawProgress[index] != expectedRaw[index] ||
+            g_HudUiLoadingCheckpointProgress[index] != expectedProgress) {
+            return 2;
+        }
+    }
+
+    return 0;
+}
+
+extern "C" int zhud_loading_checkpoint_advance_and_log_smoke(void) {
+    HudUiBriefingRuntime *const oldRuntime = g_Briefing_Runtime;
+    g_Briefing_Runtime = nullptr;
+    HudUiLoadingCheckpoint::InitTable();
+
+    g_HudUiLoadingCheckpointCurrentIndex = 2;
+    g_HudUiLoadingCheckpointCurrentProgress = -1.0f;
+    HudUiLoadingCheckpoint::AdvanceAndLog(nullptr);
+    const bool normalAdvance =
+        g_HudUiLoadingCheckpointCurrentProgress == g_HudUiLoadingCheckpointProgress[2] &&
+        g_HudUiLoadingCheckpointCurrentIndex == 3;
+
+    g_HudUiLoadingCheckpointCurrentIndex = g_HudUiLoadingCheckpointMaxIndex;
+    g_HudUiLoadingCheckpointCurrentProgress = -1.0f;
+    HudUiLoadingCheckpoint::AdvanceAndLog(nullptr);
+    const bool maxClamped =
+        g_HudUiLoadingCheckpointCurrentProgress ==
+            g_HudUiLoadingCheckpointProgress[g_HudUiLoadingCheckpointMaxIndex] &&
+        g_HudUiLoadingCheckpointCurrentIndex == g_HudUiLoadingCheckpointMaxIndex;
+
+    g_Briefing_Runtime = oldRuntime;
+    return normalAdvance && maxClamped ? 0 : 1;
 }
 
 extern "C" int zhud_sensor_viewport_rect_smoke(void) {

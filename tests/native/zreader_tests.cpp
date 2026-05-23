@@ -373,6 +373,52 @@ extern "C" int zreader_zrdr_init_search_path_smoke(void) {
     return setOk ? 0 : 3;
 }
 
+extern "C" int zreader_zrdr_shutdown_smoke(void) {
+    EnsureZrdrFreePool();
+
+    char tempDir[MAX_PATH] = {};
+    char tempPathA[MAX_PATH] = {};
+    char tempPathB[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "zrs", 0, tempPathA) == 0 ||
+        GetTempFileNameA(tempDir, "zrt", 0, tempPathB) == 0) {
+        return 1;
+    }
+
+    g_zRdr_SearchPathList = zUtil_ZRDR_CreateSearchPathList(tempPathA);
+    g_zRdr_ScratchSearchPathList = zUtil_ZRDR_CreateSearchPathList(tempPathB);
+    g_zArchive_MountedList = zArchiveList_CreateEmpty();
+
+    if (zUtil_ZRDR_ShutdownWildcardPath() != 0 || g_zRdr_ScratchSearchPathList != nullptr) {
+        DeleteFileA(tempPathA);
+        DeleteFileA(tempPathB);
+        return 2;
+    }
+
+    const int shutdownResult = zUtil_ZRDR_Shutdown();
+    DeleteFileA(tempPathA);
+    DeleteFileA(tempPathB);
+    return shutdownResult == 0 && g_zRdr_SearchPathList == nullptr &&
+                   g_zArchive_MountedList == nullptr
+               ? 0
+               : 3;
+}
+
+extern "C" int zreader_zrdr_free_node_pool_smoke(void) {
+    g_zUtil_ZRDR_FreePool = nullptr;
+    g_zUtil_ZRDR_TotalAllocated = 0;
+    g_zUtil_ZRDR_FreeCount = 0;
+    g_zUtil_ZRDR_GrowCount = 0;
+
+    zUtil::ZRDR_PreallocNodePool(3);
+    if (g_zUtil_ZRDR_FreePool == nullptr || g_zUtil_ZRDR_FreePool->count != 3) {
+        return 1;
+    }
+
+    zUtil_ZRDR_FreeNodePool();
+    return g_zUtil_ZRDR_FreePool == nullptr ? 0 : 2;
+}
+
 extern "C" int zreader_mount_index_archive_smoke(void) {
     if (g_zUtil_ZRDR_FreePool == nullptr) {
         g_zUtil_ZRDR_FreePool = zArchiveList_CreateEmpty();
@@ -427,6 +473,72 @@ extern "C" int zreader_mount_index_archive_smoke(void) {
     g_zArchive_Current = nullptr;
     DeleteFileA(tempPath);
     return mountOk && archiveOk ? 0 : 3;
+}
+
+extern "C" int zreader_index_archive_flush_close_smoke(void) {
+    char tempDir[MAX_PATH] = {};
+    char tempPath[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "zif", 0, tempPath) == 0) {
+        return 1;
+    }
+
+    zIndexArchive archive = {};
+    archive.Reset();
+    if (archive.OpenCreateWrite(tempPath) == 0) {
+        DeleteFileA(tempPath);
+        return 2;
+    }
+
+    zZarFileRecord *records =
+        static_cast<zZarFileRecord *>(std::malloc(sizeof(zZarFileRecord)));
+    if (records == nullptr) {
+        archive.CloseAndFreeRecords();
+        DeleteFileA(tempPath);
+        return 3;
+    }
+
+    std::memset(records, 0, sizeof(zZarFileRecord));
+    records[0].fileOffset = 12;
+    records[0].fileSize = 34;
+    std::strcpy(records[0].name, "flush.bin");
+
+    archive.records = records;
+    archive.recordCount = 1;
+    archive.recordCapacity = 1;
+    archive.dirty = 1;
+
+    const bool closeOk = archive.CloseAndFreeRecords() == 1 &&
+                         archive.hFile == INVALID_HANDLE_VALUE && archive.records == nullptr &&
+                         archive.recordCount == 0 && archive.recordCapacity == 0 &&
+                         archive.dirty == 0 && archive.reservedFree == nullptr;
+
+    HANDLE readFile = CreateFileA(tempPath, GENERIC_READ, FILE_SHARE_READ, nullptr,
+                                  OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (readFile == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempPath);
+        return 4;
+    }
+
+    const DWORD fileSize = GetFileSize(readFile, nullptr);
+    SetFilePointer(readFile, -8, nullptr, FILE_END);
+    std::uint32_t footerMagic = 0;
+    std::uint32_t footerCount = 0;
+    DWORD bytesRead = 0;
+    ReadFile(readFile, &footerMagic, sizeof(footerMagic), &bytesRead, nullptr);
+    ReadFile(readFile, &footerCount, sizeof(footerCount), &bytesRead, nullptr);
+    CloseHandle(readFile);
+
+    zIndexArchive partial = {};
+    partial.Reset();
+    partial.reservedFree = std::malloc(4);
+    partial.Destroy();
+
+    DeleteFileA(tempPath);
+    return closeOk && fileSize == sizeof(zZarFileRecord) + 8 && footerMagic == 1 &&
+                   footerCount == 1
+               ? 0
+               : 5;
 }
 
 extern "C" int zreader_free_loaded_tree_smoke(void) {

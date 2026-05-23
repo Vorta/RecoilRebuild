@@ -1,5 +1,6 @@
 #include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zReader/zReader.h"
 
 #include <cstdint>
 #include <cstdio>
@@ -86,13 +87,27 @@ extern "C" int zimage_font_measure_string_smoke(void) {
 
     const bool measured = width == 10 && lineAdvance == 14;
 
+    g_zImage_FontTable[0] = &font;
+    g_zImage_FontTable[2] = nullptr;
+    zImage_Font *const fallback = zImage_Font::GetByIndexOrDefault(2);
+    width = -1;
+    lineAdvance = -1;
+    zImage_Font::MeasureString("B", 2, &width, &lineAdvance);
+    const bool fallbackMeasured = fallback == &font && width == 2 && lineAdvance == 7;
+
     width = 55;
     lineAdvance = 66;
+    g_zImage_FontTable[0] = nullptr;
     g_zImage_FontTable[2] = nullptr;
     zImage_Font::MeasureString("A", 2, &width, &lineAdvance);
 
     g_zImage_FontTable[0] = nullptr;
-    return measured && width == 55 && lineAdvance == 66 ? 0 : 1;
+    return measured && fallbackMeasured && width == 55 && lineAdvance == 66 ? 0 : 1;
+}
+
+extern "C" int zimage_fonts_load_missing_smoke(void) {
+    g_zArchive_MountedList = nullptr;
+    return zImage::FontsLoadFromPath("missing_fonts.zrd") == -1 ? 0 : 1;
 }
 
 extern "C" int zimage_texdir_find_or_create_missing_smoke(void) {
@@ -411,6 +426,51 @@ extern "C" int zimage_init_option_fallback_smoke(void) {
                    g_zImage_TextureMemoryOption == &g_zImage_TextureMemoryDefault
                ? 0
                : 2;
+}
+
+extern "C" int zimage_init_mission_resources_smoke(void) {
+    if (g_zUtil_ZRDR_FreePool == nullptr) {
+        g_zUtil_ZRDR_FreePool = zArchiveList_CreateEmpty();
+    }
+
+    g_zRdr_ScratchSearchPathList = nullptr;
+
+    char tempDir[MAX_PATH] = {};
+    char tempPathA[MAX_PATH] = {};
+    char tempPathB[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "zim", 0, tempPathA) == 0 ||
+        GetTempFileNameA(tempDir, "zin", 0, tempPathB) == 0) {
+        return 1;
+    }
+
+    if (g_zImage_MissionResourcePaths != nullptr) {
+        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionResourcePaths);
+    }
+    g_zImage_MissionResourcePaths = nullptr;
+
+    if (zImage_InitMissionResources(tempPathA) != 0 || g_zImage_MissionResourcePaths == nullptr ||
+        g_zImage_MissionResourcePaths->count != 1 ||
+        std::strcmp(static_cast<const char *>(g_zImage_MissionResourcePaths->head->payload),
+                    tempPathA) != 0) {
+        DeleteFileA(tempPathA);
+        DeleteFileA(tempPathB);
+        return 2;
+    }
+
+    zImage_InitMissionResources(tempPathB);
+    const bool appendOk =
+        g_zImage_MissionResourcePaths->count == 2 &&
+        std::strcmp(static_cast<const char *>(g_zImage_MissionResourcePaths->head->payload),
+                    tempPathB) == 0 &&
+        std::strcmp(static_cast<const char *>(g_zImage_MissionResourcePaths->head->next->payload),
+                    tempPathA) == 0;
+
+    zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionResourcePaths);
+    g_zImage_MissionResourcePaths = nullptr;
+    DeleteFileA(tempPathA);
+    DeleteFileA(tempPathB);
+    return appendOk ? 0 : 3;
 }
 
 extern "C" int zimage_shutdown_texdir_smoke(void) {

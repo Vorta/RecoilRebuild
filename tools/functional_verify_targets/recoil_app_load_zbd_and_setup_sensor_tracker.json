@@ -1,0 +1,15 @@
+{
+  "name": "recoil_app_load_zbd_and_setup_sensor_tracker",
+  "description": "RecoilApp::LoadZbdAndSetupSensorTracker starts the ZBD/engine path, stores skip-intro mode, then either sets an explicit ZBD path or initializes the mission id/flags on the HUD sensor tracker.",
+  "address": "0x42e4d0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_load_zbd_and_setup_sensor_tracker_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x42e4d0",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /DUINT_PTR=UINT /FAcs COFF byte comparison for ?LoadZbdAndSetupSensorTracker@RecoilApp@@QAEHHPBDHH@Z at 0x42e4d0 passed with zero unmasked mismatches after masking 20 relocation bytes; Binary Ninja body is 75 bytes and the VC object symbol is 80 bytes with 5 trailing VC NOP bytes trimmed.",
+    "The native smoke exercises both explicit ZBD path and mission-id/flags branches, validates skip-intro storage, engine startup count, queued startup cleanup, and mission section registration side effects."
+  ]
+}

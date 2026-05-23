@@ -1,0 +1,14 @@
+{
+  "name": "zinput_joystick_acquire_device",
+  "description": "zInput::DI_AcquireJoystickDevice returns zero without a joystick, otherwise returns whether the DirectInput Acquire call succeeded.",
+  "address": "0x471fb0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_joystick_acquire_device_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zinput_joystick_acquire_device",
+  "known_limits": [
+    "Reviewed VC byte comparison from python tools/recoil_vc6_verify.py zinput_joystick_acquire_device failed under VC5SP3 11.00.7022 /O2 /Ob0 /Zp4: 21 unmasked mismatches, 4 relocation-masked bytes, BN size 28, VC object size 32, 10 trailing VC NOPs trimmed; see build/vc6-verify/zinput_joystick_acquire_device/verify/471fb0_byte_triage.txt.",
+    "The reviewed byte drift is boolean return materialization after the DirectInput Acquire call: current VC emits neg/sbb/inc while the original uses xor/test/sete/mov."
+  ]
+}
