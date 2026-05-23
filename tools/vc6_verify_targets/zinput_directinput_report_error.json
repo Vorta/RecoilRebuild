@@ -1,0 +1,26 @@
+{
+  "name": "zinput_directinput_report_error",
+  "description": "zInput::DI_ReportError maps DirectInput HRESULTs to report text and return values.",
+  "source_filename": "zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x472490",
+      "symbol": "?DI_ReportError@zInput@@YIHHPBDH@Z",
+      "name": "zInput::DI_ReportError"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp"
+}

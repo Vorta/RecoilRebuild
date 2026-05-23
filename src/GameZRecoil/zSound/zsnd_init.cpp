@@ -334,7 +334,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReportDirectSoundError(int directSoundError,
 
 // Reimplements 0x4b31f0: zSnd::HasMmxMixerSupport
 RECOIL_NOINLINE int RECOIL_CDECL HasMmxMixerSupport() {
-    if (zSys::HasCpuidSupport() == 0) {
+    if (zSys::HasCpuidSupportRuntimeOptions() == 0) {
         return 0;
     }
 

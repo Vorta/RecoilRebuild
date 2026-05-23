@@ -5,8 +5,10 @@
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
@@ -23,6 +25,40 @@
 #include <limits>
 
 namespace {
+void WriteU32(HANDLE file, std::uint32_t value) {
+    DWORD written = 0;
+    WriteFile(file, &value, sizeof(value), &written, nullptr);
+}
+
+void WriteBytes(HANDLE file, const char *text, std::uint32_t length) {
+    DWORD written = 0;
+    WriteFile(file, text, length, &written, nullptr);
+}
+
+void WriteZrdStringNode(HANDLE file, const char *text) {
+    WriteU32(file, zReader::ZRDR_NODE_STRING);
+    WriteU32(file, static_cast<std::uint32_t>(std::strlen(text)));
+    WriteBytes(file, text, static_cast<std::uint32_t>(std::strlen(text)));
+}
+
+void WriteZrdIntNode(HANDLE file, std::int32_t value) {
+    WriteU32(file, zReader::ZRDR_NODE_INT);
+    WriteU32(file, static_cast<std::uint32_t>(value));
+}
+
+void WriteZrdNamedIntArray(HANDLE file, const char *name, std::int32_t value) {
+    WriteZrdStringNode(file, name);
+    WriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteU32(file, 2);
+    WriteZrdIntNode(file, value);
+}
+
+std::int32_t FloatBitsForTest(float value) {
+    std::int32_t raw = 0;
+    std::memcpy(&raw, &value, sizeof(raw));
+    return raw;
+}
+
 std::int32_t RECOIL_FASTCALL zclass_test_node_type_0x42(zClass_NodePartial *node) {
     return node->nodeType == 0x42 ? 1 : 0;
 }
@@ -1610,6 +1646,290 @@ extern "C" int zgame_options_find_option_smoke() {
     return zGame::Options_FindOption("First") == nullptr ? 0 : 3;
 }
 
+extern "C" int zgame_options_runtime_config_copy_default_smoke() {
+    std::memset(&g_zGame_Options_RuntimeConfigDefaults, 0, sizeof(g_zGame_Options_RuntimeConfigDefaults));
+    std::strcpy(g_zGame_Options_RuntimeConfigDefaults.cpuVendor, "CopyDefault");
+    g_zGame_Options_RuntimeConfigDefaults.cpuClass = 6;
+    g_zGame_Options_RuntimeConfigDefaults.cpuMhz = 450;
+    g_zGame_Options_RuntimeConfigDefaults.defaultFlags = 0x44;
+    g_zGame_Options_RuntimeConfigDefaults.systemRamKb = 65536;
+    g_zGame_Options_RuntimeConfigDefaults.soundHardwareMemKb = 8192;
+
+    zGame_OptionsRuntimeConfig target{};
+    zGame_OptionsRuntimeConfig *const result = target.CopyDefault();
+    return result == &target && std::strcmp(target.cpuVendor, "CopyDefault") == 0 &&
+                   target.cpuClass == 6 && target.cpuMhz == 450 && target.defaultFlags == 0x44 &&
+                   target.systemRamKb == 65536 && target.soundHardwareMemKb == 8192
+               ? 0
+               : 1;
+}
+
+extern "C" int zopt_select_profile_value_for_system_smoke() {
+    zReader::Node defaultRule[3] = {};
+    defaultRule[0].type = zReader::ZRDR_NODE_INT;
+    defaultRule[0].value.i32 = 3;
+    defaultRule[1].type = zReader::ZRDR_NODE_STRING;
+    defaultRule[1].value.str = const_cast<char *>("DEFAULT");
+    defaultRule[2].type = zReader::ZRDR_NODE_INT;
+    defaultRule[2].value.i32 = 9;
+
+    zReader::Node defaultRules[2] = {};
+    defaultRules[0].type = zReader::ZRDR_NODE_INT;
+    defaultRules[0].value.i32 = 2;
+    defaultRules[1].type = zReader::ZRDR_NODE_ARRAY;
+    defaultRules[1].value.nodes = defaultRule;
+
+    zReader::Node cpuCondition[4] = {};
+    cpuCondition[0].type = zReader::ZRDR_NODE_INT;
+    cpuCondition[0].value.i32 = 4;
+    cpuCondition[1].type = zReader::ZRDR_NODE_STRING;
+    cpuCondition[1].value.str = const_cast<char *>("CPU_CLASS");
+    cpuCondition[2].type = zReader::ZRDR_NODE_STRING;
+    cpuCondition[2].value.str = const_cast<char *>(">=");
+    cpuCondition[3].type = zReader::ZRDR_NODE_INT;
+    cpuCondition[3].value.i32 = 5;
+
+    zReader::Node metricRule[3] = {};
+    metricRule[0].type = zReader::ZRDR_NODE_INT;
+    metricRule[0].value.i32 = 3;
+    metricRule[1].type = zReader::ZRDR_NODE_ARRAY;
+    metricRule[1].value.nodes = cpuCondition;
+    metricRule[2].type = zReader::ZRDR_NODE_STRING;
+    metricRule[2].value.str = const_cast<char *>("LOW");
+
+    zReader::Node metricRules[2] = {};
+    metricRules[0].type = zReader::ZRDR_NODE_INT;
+    metricRules[0].value.i32 = 2;
+    metricRules[1].type = zReader::ZRDR_NODE_ARRAY;
+    metricRules[1].value.nodes = metricRule;
+
+    zReader::Node rootChildren[5] = {};
+    rootChildren[0].type = zReader::ZRDR_NODE_INT;
+    rootChildren[0].value.i32 = 5;
+    rootChildren[1].type = zReader::ZRDR_NODE_STRING;
+    rootChildren[1].value.str = const_cast<char *>("EffectsLevel_SW");
+    rootChildren[2].type = zReader::ZRDR_NODE_ARRAY;
+    rootChildren[2].value.nodes = defaultRules;
+    rootChildren[3].type = zReader::ZRDR_NODE_STRING;
+    rootChildren[3].value.str = const_cast<char *>("ObjectLOD_SW");
+    rootChildren[4].type = zReader::ZRDR_NODE_ARRAY;
+    rootChildren[4].value.nodes = metricRules;
+
+    zReader::Node root = {};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = rootChildren;
+    g_zGame_Options_RuntimeConfig.cpuClass = 6;
+
+    if (zOpt::SelectProfileValueForSystem(nullptr, "EffectsLevel_SW", 4) != 4 ||
+        zOpt::SelectProfileValueForSystem(&root, "Missing", 5) != 5 ||
+        zOpt::SelectProfileValueForSystem(&root, "EffectsLevel_SW", 1) != 9 ||
+        zOpt::SelectProfileValueForSystem(&root, "ObjectLOD_SW", 0) != 2) {
+        return 1;
+    }
+
+    g_zGame_Options_RuntimeConfig.cpuClass = 4;
+    return zOpt::SelectProfileValueForSystem(&root, "ObjectLOD_SW", 7) == 7 ? 0 : 2;
+}
+
+extern "C" int zgame_options_load_from_registry_missing_smoke() {
+    char *const oldRoot = g_zGame_Options_RegKeyRoot;
+    char *const oldUser = g_zGame_Options_RegKeyCurrentUser;
+    char *const oldGame = g_zGame_Options_RegKeyGame;
+    g_zGame_Options_RegKeyRoot = const_cast<char *>("RecoilMissingRootForSmoke");
+    g_zGame_Options_RegKeyCurrentUser = const_cast<char *>("MissingUser");
+    g_zGame_Options_RegKeyGame = const_cast<char *>("MissingGame");
+
+    const int result = zGame::Options_LoadFromRegistry();
+
+    g_zGame_Options_RegKeyRoot = oldRoot;
+    g_zGame_Options_RegKeyCurrentUser = oldUser;
+    g_zGame_Options_RegKeyGame = oldGame;
+    return result == 0 ? 0 : 1;
+}
+
+extern "C" int zgame_options_save_game_options_smoke() {
+    const char *const rootName = "RecoilSmokeSave";
+    const char *const userName = "CurrentUser";
+    const char *const gameName = "Game";
+    const char *const leafPath = "SOFTWARE\\RecoilSmokeSave\\CurrentUser\\Game";
+    const char *const userPath = "SOFTWARE\\RecoilSmokeSave\\CurrentUser";
+    const char *const rootPath = "SOFTWARE\\RecoilSmokeSave";
+    RegDeleteKeyA(HKEY_CURRENT_USER, leafPath);
+    RegDeleteKeyA(HKEY_CURRENT_USER, userPath);
+    RegDeleteKeyA(HKEY_CURRENT_USER, rootPath);
+    RegDeleteKeyA(HKEY_LOCAL_MACHINE, leafPath);
+    RegDeleteKeyA(HKEY_LOCAL_MACHINE, userPath);
+    RegDeleteKeyA(HKEY_LOCAL_MACHINE, rootPath);
+
+    char *const oldRoot = g_zGame_Options_RegKeyRoot;
+    char *const oldUser = g_zGame_Options_RegKeyCurrentUser;
+    char *const oldGame = g_zGame_Options_RegKeyGame;
+    zOptionEntryPartial *const oldHead = g_zGame_Options_OptionListHead;
+    int *const oldNetwork = ZOPT_NETWORK_ENABLED;
+    int *const oldModem = g_zOpt_NetworkModemOption;
+
+    g_zGame_Options_RegKeyRoot = const_cast<char *>(rootName);
+    g_zGame_Options_RegKeyCurrentUser = const_cast<char *>(userName);
+    g_zGame_Options_RegKeyGame = const_cast<char *>(gameName);
+
+    zOptionEntryPartial option = {};
+    char optionName[] = "NetworkEnabled";
+    option.name = optionName;
+    option.storageType = 0;
+    option.dataSize = 4;
+    option.registryScope = 1;
+    g_zGame_Options_OptionListHead = &option;
+
+    std::int32_t networkEnabled = 1;
+    std::int32_t networkModem = 1;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zOpt_NetworkModemOption = &networkModem;
+
+    g_zInput_BindGroupInfoList = {};
+    zInput::BindGroupList_AddGroup("Smoke");
+    const bool groupCreated = zInput::BindGroupList_GetCount() == 1;
+
+    const int saveResult = zGame::Options_SaveGameOptions();
+    const bool ok = groupCreated && (saveResult == 0 || saveResult == 1) &&
+                    zInput::BindGroupList_GetCount() == 0 && networkEnabled == 0 &&
+                    networkModem == 0;
+
+    ::operator delete(g_zInput_BindGroupInfoList.begin);
+    g_zInput_BindGroupInfoList = {};
+    ZOPT_NETWORK_ENABLED = oldNetwork;
+    g_zOpt_NetworkModemOption = oldModem;
+    g_zGame_Options_OptionListHead = oldHead;
+    g_zGame_Options_RegKeyRoot = oldRoot;
+    g_zGame_Options_RegKeyCurrentUser = oldUser;
+    g_zGame_Options_RegKeyGame = oldGame;
+    RegDeleteKeyA(HKEY_CURRENT_USER, leafPath);
+    RegDeleteKeyA(HKEY_CURRENT_USER, userPath);
+    RegDeleteKeyA(HKEY_CURRENT_USER, rootPath);
+    RegDeleteKeyA(HKEY_LOCAL_MACHINE, leafPath);
+    RegDeleteKeyA(HKEY_LOCAL_MACHINE, userPath);
+    RegDeleteKeyA(HKEY_LOCAL_MACHINE, rootPath);
+    return ok ? 0 : 1;
+}
+
+extern "C" int zgame_options_shutdown_registry_context_smoke() {
+    zGame::Options_ShutdownRegistryContext();
+
+    zOptionEntryPartial *const first =
+        static_cast<zOptionEntryPartial *>(std::calloc(1, sizeof(zOptionEntryPartial)));
+    zOptionEntryPartial *const second =
+        static_cast<zOptionEntryPartial *>(std::calloc(1, sizeof(zOptionEntryPartial)));
+    if (first == nullptr || second == nullptr) {
+        std::free(first);
+        std::free(second);
+        return 1;
+    }
+
+    first->name = static_cast<char *>(std::malloc(6));
+    second->name = static_cast<char *>(std::malloc(7));
+    void *const payload = std::malloc(16);
+    g_zGame_Options_RegKeyRoot = static_cast<char *>(std::malloc(5));
+    g_zGame_Options_RegKeyCurrentUser = static_cast<char *>(std::malloc(5));
+    g_zGame_Options_RegKeyGame = static_cast<char *>(std::malloc(5));
+    if (first->name == nullptr || second->name == nullptr || payload == nullptr ||
+        g_zGame_Options_RegKeyRoot == nullptr || g_zGame_Options_RegKeyCurrentUser == nullptr ||
+        g_zGame_Options_RegKeyGame == nullptr) {
+        std::free(first->name);
+        std::free(second->name);
+        std::free(payload);
+        std::free(first);
+        std::free(second);
+        std::free(g_zGame_Options_RegKeyRoot);
+        std::free(g_zGame_Options_RegKeyCurrentUser);
+        std::free(g_zGame_Options_RegKeyGame);
+        g_zGame_Options_RegKeyRoot = nullptr;
+        g_zGame_Options_RegKeyCurrentUser = nullptr;
+        g_zGame_Options_RegKeyGame = nullptr;
+        return 2;
+    }
+
+    std::strcpy(first->name, "First");
+    std::strcpy(second->name, "Second");
+    std::strcpy(g_zGame_Options_RegKeyRoot, "Root");
+    std::strcpy(g_zGame_Options_RegKeyCurrentUser, "User");
+    std::strcpy(g_zGame_Options_RegKeyGame, "Game");
+
+    first->storageType = 0;
+    first->next = second;
+    second->storageType = 5;
+    second->payloadOrBuffer = static_cast<int>(reinterpret_cast<std::uintptr_t>(payload));
+    second->next = nullptr;
+    g_zGame_Options_OptionListHead = first;
+    g_zGame_Options_RegContextInitialized = 1;
+
+    zGame::Options_ShutdownRegistryContext();
+
+    return g_zGame_Options_OptionListHead == nullptr && g_zGame_Options_RegKeyRoot == nullptr &&
+                   g_zGame_Options_RegKeyCurrentUser == nullptr &&
+                   g_zGame_Options_RegKeyGame == nullptr &&
+                   g_zGame_Options_RegContextInitialized == 0
+               ? 0
+               : 3;
+}
+
+extern "C" int zgame_options_load_game_options_minimal_smoke() {
+    char tempDir[MAX_PATH] = {};
+    char tempPath[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "zgo", 0, tempPath) == 0) {
+        return 1;
+    }
+
+    HANDLE file = CreateFileA(tempPath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr,
+                              CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempPath);
+        return 2;
+    }
+
+    WriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteU32(file, 1);
+    WriteU32(file, zReader::ZRDR_NODE_INT);
+    WriteU32(file, 1);
+    FlushFileBuffers(file);
+
+    zZarFileRecord record = {};
+    record.fileOffset = 0;
+    record.fileSize = SetFilePointer(file, 0, nullptr, FILE_CURRENT);
+    std::strcpy(record.name, "detail.zrd");
+
+    zIndexArchive archive = {};
+    archive.hFile = file;
+    archive.recordCount = 1;
+    archive.records = &record;
+
+    zArchiveListNode node = {};
+    node.payload = &archive;
+    node.next = &node;
+    node.prev = &node;
+
+    zArchiveList list = {};
+    list.count = 1;
+    list.head = &node;
+    g_zArchive_MountedList = &list;
+
+    zGame::Options_InitRegistryContext("RecoilSmoke", "CurrentUser", "Game");
+    zInput::BindMapSystem_Init(0x30);
+
+    const int result = zGame::Options_LoadGameOptions();
+    const bool ok = result == 1 && ZOPT_VIDEO_ACCELERATION != nullptr &&
+                    zVid::GetAccelerationOption() == 1 && ZOPT_VIDEO_STRIDE != nullptr &&
+                    *ZOPT_VIDEO_STRIDE == 1 && zInput::BindGroupList_GetCount() == 5 &&
+                    ZOPT_NETWORK_ENABLED != nullptr && *ZOPT_NETWORK_ENABLED == 0;
+
+    zInput::BindMapSystem_Shutdown();
+    g_zInput_BindMap_Current = nullptr;
+    zGame::Options_ShutdownRegistryContext();
+    g_zArchive_MountedList = nullptr;
+    CloseHandle(file);
+    DeleteFileA(tempPath);
+    return ok ? 0 : 3;
+}
+
 extern "C" int zopt_eval_int_compare_op_smoke() {
     if (zOpt::EvalIntCompareOp("==", 7, 7) != 1 || zOpt::EvalIntCompareOp("==", 7, 8) != 0 ||
         zOpt::EvalIntCompareOp("<", -2, 3) != 1 || zOpt::EvalIntCompareOp("<", 3, -2) != 0 ||
@@ -1757,7 +2077,7 @@ extern "C" int zopt_fullscreen_accessors_smoke() {
         return 11;
     }
 
-    muteSound = 1;
+    zOpt::SetMuteSoundOption(1);
     if (zOpt::GetMuteSoundOption() != 1) {
         return 12;
     }
@@ -1785,13 +2105,13 @@ extern "C" int zopt_fullscreen_accessors_smoke() {
     }
 
     g_zOpt_HwMode = 0;
-    gfxFlagsSw = 0x11;
+    zOpt::SetGraphicsFlagsForCurrentHwMode(0x11);
     if (zOpt::GetGraphicsFlagsForCurrentHwMode() != 0x11) {
         return 17;
     }
 
     g_zOpt_HwMode = 1;
-    gfxFlagsHw = 0x22;
+    zOpt::SetGraphicsFlagsForCurrentHwMode(0x22);
     if (zOpt::GetGraphicsFlagsForCurrentHwMode() != 0x22) {
         return 18;
     }
@@ -1902,6 +2222,99 @@ extern "C" int hud_sensor_tracker_unload_objectives_smoke() {
     ZOPT_NETWORK_ENABLED = nullptr;
 
     return disabledResult && enabledResult ? 0 : 1;
+}
+
+extern "C" int hud_sensor_tracker_load_objectives_from_path_smoke() {
+    char tempDir[MAX_PATH] = {};
+    char tempPath[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "obj", 0, tempPath) == 0) {
+        return 1;
+    }
+
+    HANDLE file = CreateFileA(tempPath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr,
+                              CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempPath);
+        return 2;
+    }
+
+    WriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteU32(file, 7);
+    WriteZrdNamedIntArray(file, "READ_TIME", 9);
+    WriteZrdNamedIntArray(file, "REVIEW_DELAY", 6);
+    WriteZrdNamedIntArray(file, "FINAL_MISSION", 7);
+    FlushFileBuffers(file);
+
+    zZarFileRecord record = {};
+    record.fileOffset = 0;
+    record.fileSize = SetFilePointer(file, 0, nullptr, FILE_CURRENT);
+    std::strcpy(record.name, "objectives.zrd");
+
+    zIndexArchive archive = {};
+    archive.hFile = file;
+    archive.recordCount = 1;
+    archive.records = &record;
+
+    zArchiveListNode node = {};
+    node.payload = &archive;
+    node.next = &node;
+    node.prev = &node;
+
+    zArchiveList list = {};
+    list.count = 1;
+    list.head = &node;
+
+    zArchiveList *const oldMountedList = g_zArchive_MountedList;
+    zArchiveList *const oldMissionResourcePaths = g_zImage_MissionResourcePaths;
+    int *const oldNetwork = ZOPT_NETWORK_ENABLED;
+    g_zArchive_MountedList = &list;
+    g_zImage_MissionResourcePaths = nullptr;
+
+    std::int32_t networkEnabled = 0;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    HudSensorTracker tracker = {};
+    tracker.missionId = 12;
+    const int loaded = tracker.LoadObjectivesFromPath("objectives.zrd");
+    const bool disabledOk =
+        loaded == 0 && tracker.objectivesRootNode != nullptr &&
+        tracker.objectiveReadTimeSecRaw == FloatBitsForTest(9.0f) &&
+        tracker.objectiveReviewDelaySecRaw == FloatBitsForTest(6.0f) &&
+        tracker.objectiveReadSoundDelaySecRaw == FloatBitsForTest(2.0f) &&
+        tracker.finalMissionFlag == 7 && tracker.currentObjectiveIndex == -1 &&
+        tracker.firstIncompleteObjectiveIndex == 0 && tracker.objectiveCount == 1 &&
+        tracker.completedObjectiveCount == 0;
+
+    if (tracker.objectivesRootNode != nullptr) {
+        zReader::FreeLoadedTree(tracker.objectivesRootNode);
+        tracker.objectivesRootNode = nullptr;
+    }
+
+    networkEnabled = 1;
+    HudSensorTracker networkTracker = {};
+    networkTracker.missionId = 12;
+    networkTracker.finalMissionFlag = 99;
+    const int networkLoaded = networkTracker.LoadObjectivesFromPath("objectives.zrd");
+    const bool networkOk = networkLoaded == 0 && networkTracker.objectivesRootNode != nullptr &&
+                           networkTracker.finalMissionFlag == 99 &&
+                           networkTracker.objectiveCount == 0;
+
+    if (networkTracker.objectivesRootNode != nullptr) {
+        zReader::FreeLoadedTree(networkTracker.objectivesRootNode);
+        networkTracker.objectivesRootNode = nullptr;
+    }
+
+    if (g_zImage_MissionResourcePaths != nullptr) {
+        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionResourcePaths);
+    }
+
+    g_zArchive_MountedList = oldMountedList;
+    g_zImage_MissionResourcePaths = oldMissionResourcePaths;
+    ZOPT_NETWORK_ENABLED = oldNetwork;
+    CloseHandle(file);
+    DeleteFileA(tempPath);
+    return disabledOk && networkOk ? 0 : 3;
 }
 
 extern "C" int zopt_view_rect_target_side_effects_smoke() {

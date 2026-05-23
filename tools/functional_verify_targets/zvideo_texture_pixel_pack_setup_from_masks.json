@@ -1,0 +1,15 @@
+{
+  "name": "zvideo_texture_pixel_pack_setup_from_masks",
+  "description": "zVideo::TexturePixelPack_SetupFromMasks initializes texture RGB/A pixel-pack masks, bit counts, packed shift totals, shifted RGB masks, and the inverse non-RGB shifted mask.",
+  "address": "0x4a6db0",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_pixel_pack_setup_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a6db0",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob1 /Zp4 COFF byte compare fails with 124 unmasked mismatches after masking 64 relocation bytes; Binary Ninja body is 202 bytes and the VC object body is 208 bytes with 5 trailing VC NOPs trimmed.",
+    "The reviewed failure is register allocation and instruction scheduling drift in the inline shifted-mask expressions and final inverse-mask reduction; the source body is leaf fastcall and has no visible direct callees.",
+    "The native smoke verifies 4:4:4:4 texture bit counts, RGB bit totals, blue shift-to-8 state, shifted RGB masks, and non-RGB shifted mask state."
+  ]
+}

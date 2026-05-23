@@ -1,0 +1,14 @@
+{
+  "name": "zutil_zrdr_add_search_paths",
+  "description": "zUtil::ZRDR_AddSearchPaths appends existing semicolon-delimited paths, skips missing paths, and avoids duplicates.",
+  "address": "0x4a5ce0",
+  "source_from": "src/GameZRecoil/zReader/zreader_load.cpp",
+  "smoke_tests": [
+    "zreader_archive_list_and_search_paths_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zreader_search_path_helpers",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare currently fails for zUtil::ZRDR_AddSearchPaths: 132 unmasked mismatches after masking 56 relocation bytes; Binary Ninja body is 188 bytes and the VC object body is 176 bytes with 10 trailing VC NOPs trimmed.",
+    "The reviewed byte drift is broad control-flow/source-shape drift in the search-path tokenization loop; the functional smoke verifies existing-path insertion, missing-path skipping, duplicate suppression, and push-front order."
+  ]
+}

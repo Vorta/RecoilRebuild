@@ -1,0 +1,26 @@
+{
+  "name": "zinput_mouse_set_client_size_and_center",
+  "description": "zInput::Mouse_SetClientSizeAndCenter caches client size, signed centers, and inverse-center scale factors.",
+  "source_filename": "zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4701a0",
+      "symbol": "?Mouse_SetClientSizeAndCenter@zInput@@YIXHH@Z",
+      "name": "zInput::Mouse_SetClientSizeAndCenter"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp"
+}

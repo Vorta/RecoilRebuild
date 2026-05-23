@@ -1,0 +1,31 @@
+{
+  "name": "zinput_init",
+  "description": "zInput DirectInput module bootstrap.",
+  "source_filename": "zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x471b50",
+      "symbol": "?Init@zInput@@YIHPAX0@Z",
+      "name": "zInput::Init"
+    },
+    {
+      "address": "0x471c10",
+      "symbol": "?Shutdown@zInput@@YAHXZ",
+      "name": "zInput::Shutdown"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp"
+}

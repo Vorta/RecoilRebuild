@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_background_bind_primitive_node_to_element",
+  "description": "HudUiBackground::BindPrimitiveNodeToElement resolves a named primitive from cfgRoot->PRIMITIVES, adds the element as a child, applies optional bitmap/position/wordwrap/font/color/endpoints, binds the background blit source and current rect, sets dirty/visibility flags, and returns 0.",
+  "address": "0x4ba0e0",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_background_bind_primitive_node_to_element_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4ba0e0",
+  "known_limits": [
+    "This binder intentionally accepts mixed target layouts: widget fields for BITMAP, panel fields for FONT/WORDWRAP, and primitive endpoint fields for COLOR/ENDP_*; class-level binary-safe review should keep those concrete call sites together.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?BindPrimitiveNodeToElement@HudUiBackground@@QAEHPAUNode@zReader@@PAUHudUiElement@@PBD@Z at 0x4ba0e0 still fails: 705 unmasked mismatches, 136 relocation bytes masked, 15 trailing VC NOP bytes trimmed, Binary Ninja body is 620 bytes and the VC object symbol is 880 bytes."
+  ],
+  "binary_safe_evidence": [
+    "Binary Ninja shows cfgRoot lookup, PRIMITIVES/name lookup, AddChild, optional BITMAP load, origin-relative POSITION, WORDWRAP rect, FONT style application, COLOR packed through zVid_PackColorRGB, ENDP_REL/ENDP_ABS endpoint setup, final SetBltSourceAndClipRect, flag update, and return 0.",
+    "The native background primitive smoke builds a minimal ZRD PRIMITIVES tree and validates child insertion, origin-relative position, packed color, relative endpoint calculation, final blt source/clip rect, and dirty flag update."
+  ]
+}

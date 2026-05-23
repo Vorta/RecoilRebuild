@@ -1,0 +1,13 @@
+{
+  "name": "zinput_mouse_coop_level_flags",
+  "description": "zInput::Mouse_SetCooperativeLevelFlags stores the new mouse cooperative-level flags and returns the previous value.",
+  "address": "0x470670",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_mouse_coop_level_flags_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zinput_mouse_coop_level_flags",
+  "binary_safe_evidence": [
+    "python tools/recoil_vc6_verify.py zinput_mouse_coop_level_flags passed for 0x470670 with VC5SP3 11.00.7022 /O2 /Ob0 /Zp4: 0 unmasked byte mismatches, 8 relocation-masked bytes, BN size 12, VC object size 16, 4 trailing VC NOPs trimmed."
+  ]
+}

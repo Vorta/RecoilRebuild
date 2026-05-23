@@ -1,0 +1,14 @@
+{
+  "name": "zeffect_anim_shutdown",
+  "description": "zEffect_Anim::Shutdown frees animation heap/list/text/activation state and resets animation runtime counters.",
+  "address": "0x45fe50",
+  "source_from": "src/GameZRecoil/zEffect/zEffect.cpp",
+  "smoke_tests": [
+    "zeffect_anim_init_shutdown_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zeffect_init_helpers",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare currently fails for zEffect_Anim::Shutdown: 81 unmasked mismatches after masking 72 relocation bytes; Binary Ninja body is 157 bytes and the VC object body is 160 bytes with 2 trailing VC NOPs trimmed.",
+    "The native smoke verifies heap, entry list, text-id list, activation records, instantiated flag, and count reset behavior."
+  ]
+}

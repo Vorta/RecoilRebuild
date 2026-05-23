@@ -25,6 +25,18 @@ std::uint32_t g_sendExAsyncValue;
 int g_cancelCalls;
 std::uint32_t g_cancelHandle;
 std::uint32_t g_cancelFlags;
+int g_closeCalls;
+int g_releaseCalls;
+
+std::int32_t RECOIL_STDCALL CloseFake(zNetwork_DPlay4 *) {
+    ++g_closeCalls;
+    return 0;
+}
+
+std::int32_t RECOIL_STDCALL ReleaseFake(zNetwork_DPlay4 *) {
+    ++g_releaseCalls;
+    return 7;
+}
 
 std::int32_t RECOIL_STDCALL DestroyPlayerFake(zNetwork_DPlay4 *, std::uint32_t playerKey) {
     ++g_destroyPlayerCalls;
@@ -101,6 +113,8 @@ void ResetNetwork() {
     g_cancelCalls = 0;
     g_cancelHandle = 0;
     g_cancelFlags = 0;
+    g_closeCalls = 0;
+    g_releaseCalls = 0;
     g_zNetwork_pDirectPlay4 = nullptr;
     g_zNetwork_LocalPlayerRecord = nullptr;
     g_zNetwork_IsHostFlag = 0;
@@ -178,6 +192,26 @@ extern "C" int znetwork_dplay_report_error_smoke() {
                    0
                ? 0
                : 2;
+}
+
+extern "C" int znetwork_dplay_close_release_smoke() {
+    ResetNetwork();
+
+    zNetwork_DPlay4Vtable vtable{};
+    vtable.reserved_00[2] = reinterpret_cast<void *>(&ReleaseFake);
+    vtable.reserved_00[4] = reinterpret_cast<void *>(&CloseFake);
+    zNetwork_DPlay4 directPlay{};
+    directPlay.vtbl_00 = &vtable;
+
+    if (zNetwork_DPlay::CloseReleaseAndCoUninitialize(&directPlay) != 7) {
+        return 1;
+    }
+
+    if (g_closeCalls != 1 || g_releaseCalls != 1) {
+        return 2;
+    }
+
+    return zNetwork_DPlay::CloseReleaseAndCoUninitialize(nullptr) == 0 ? 0 : 3;
 }
 
 extern "C" int znetwork_dispatch_handler_list_smoke() {

@@ -121,7 +121,36 @@ void CallCollisionImpactEffect(zInput_FFEffectSet *effectSet, const zVec3 *sourc
 void CallDamageHitEffect(zInput_FFEffectSet *effectSet, const zVec3 *source, float gain) {
     zInput_DI_PlayDamageHitEffect(effectSet, source, gain);
 }
+
+void ResetMouseGlobals();
 } // namespace
+
+extern "C" int directinput_create_import_provider_smoke(void) {
+    HMODULE dinputModule = LoadLibraryA("dinput.dll");
+    if (dinputModule == 0) {
+        return 1;
+    }
+
+    FARPROC createProc = GetProcAddress(dinputModule, "DirectInputCreateA");
+    FreeLibrary(dinputModule);
+    return createProc != 0 ? 0 : 2;
+}
+
+extern "C" int zinput_init_fastpath_smoke(void) {
+    ResetMouseGlobals();
+    g_zInput_hWnd = reinterpret_cast<HWND>(0x1234);
+    g_zInput_GlobalState = nullptr;
+    g_zInput_DeviceRegistry = 3;
+    g_zInputKeyboardPollRefCount = 4;
+
+    const int result = zInput::Init(reinterpret_cast<HWND>(0x5678),
+                                    reinterpret_cast<HINSTANCE>(0x9abc));
+    return result == 1 && g_zInput_hWnd == reinterpret_cast<HWND>(0x1234) &&
+                   g_zInput_GlobalState == nullptr && g_zInput_DeviceRegistry == 3 &&
+                   g_zInputKeyboardPollRefCount == 4
+               ? 0
+               : 1;
+}
 
 extern "C" int zinput_joystick_option_accessors_smoke(void) {
     std::int32_t joystick = 0;
@@ -372,6 +401,20 @@ extern "C" int zinput_mouse_client_size_center_smoke(void) {
         return 2;
     }
 
+    HWND hwnd = CreateWindowExA(0, "STATIC", "recoil", WS_POPUP, 0, 0, 321, 241, nullptr,
+                                nullptr, GetModuleHandleA(nullptr), nullptr);
+    if (hwnd == nullptr) {
+        return 5;
+    }
+
+    g_zInput_hWnd = hwnd;
+    zInput::Mouse_UpdateClientRectAndCenter();
+    DestroyWindow(hwnd);
+    if (g_zInput_MouseClientWidth != 321 || g_zInput_MouseClientHeight != 241 ||
+        g_zInput_MouseClientCenterX != 160 || g_zInput_MouseClientCenterY != 120) {
+        return 6;
+    }
+
     zInput::Mouse_SetClientSizeAndCenter(200, 100);
     zInput::Mouse_SetNormalizedCursorPos(2.0f, -1.5f);
     if (g_zInput_MouseStateSnapshot.cursorNormX != 1.0f ||
@@ -386,6 +429,50 @@ extern "C" int zinput_mouse_client_size_center_smoke(void) {
                    g_zInput_MouseStateSnapshot.cursorClientY == 75
                ? 0
                : 4;
+}
+
+extern "C" int zinput_mouse_apply_and_recenter_cursor_smoke(void) {
+    POINT originalCursor = {};
+    GetCursorPos(&originalCursor);
+
+    HWND hwnd = CreateWindowExA(0, "STATIC", "recoil", WS_POPUP, 30, 40, 200, 120, nullptr,
+                                nullptr, GetModuleHandleA(nullptr), nullptr);
+    if (hwnd == nullptr) {
+        return 1;
+    }
+
+    g_zInput_hWnd = hwnd;
+    g_zInput_MouseStateSnapshot.cursorClientX = 7;
+    g_zInput_MouseStateSnapshot.cursorClientY = 9;
+    POINT expected = {7, 9};
+    ClientToScreen(hwnd, &expected);
+    zInput::Mouse_ApplyClientCursorPosToOS();
+
+    POINT applied = {};
+    if (GetCursorPos(&applied) == 0 || applied.x != expected.x || applied.y != expected.y) {
+        DestroyWindow(hwnd);
+        SetCursorPos(originalCursor.x, originalCursor.y);
+        return 2;
+    }
+
+    g_zInput_MouseClientCenterX = 40;
+    g_zInput_MouseClientCenterY = 30;
+    g_zInput_MouseStateSnapshot.cursorNormX = 0.5f;
+    g_zInput_MouseStateSnapshot.cursorNormY = -0.5f;
+    expected = {40, 30};
+    ClientToScreen(hwnd, &expected);
+    zInput::Mouse_RecenterCursor();
+
+    const bool recentered = g_zInput_MouseStateSnapshot.cursorClientX == 40 &&
+                            g_zInput_MouseStateSnapshot.cursorClientY == 30 &&
+                            g_zInput_MouseStateSnapshot.cursorNormX == 0.0f &&
+                            g_zInput_MouseStateSnapshot.cursorNormY == 0.0f &&
+                            GetCursorPos(&applied) != 0 && applied.x == expected.x &&
+                            applied.y == expected.y;
+
+    DestroyWindow(hwnd);
+    SetCursorPos(originalCursor.x, originalCursor.y);
+    return recentered ? 0 : 3;
 }
 
 extern "C" int zinput_mouse_coop_level_flags_smoke(void) {
@@ -603,6 +690,7 @@ struct DirectInputFake {
 };
 
 int releaseCalls;
+int directInputReleaseCalls;
 int acquireCalls;
 int unacquireCalls;
 int pollCalls;
@@ -626,6 +714,17 @@ int createDeviceResult;
 int setPropertyCalls;
 int getPropertyCalls;
 std::uint32_t lastCooperativeLevelFlags;
+std::uint32_t lastSetPropertyId;
+std::uint32_t lastSetPropertySize;
+std::uint32_t lastSetPropertyObj;
+std::uint32_t lastSetPropertyHow;
+std::int32_t lastSetPropertyMin;
+std::int32_t lastSetPropertyMax;
+std::uint32_t lastSetPropertyData;
+std::uint32_t lastGetPropertyId;
+std::uint32_t lastGetPropertySize;
+std::uint32_t lastGetPropertyObj;
+std::uint32_t lastGetPropertyHow;
 std::uint32_t getDeviceDataCount;
 zInput::MouseDeviceState fakeMouseState;
 zInput::JoystickStatePartial fakeJoystickState;
@@ -655,6 +754,11 @@ std::int32_t RECOIL_STDCALL QueryInterfaceFake(zInput::DIDevice *, const GUID *,
 
 std::int32_t RECOIL_STDCALL ReleaseFake(zInput::DIDevice *) {
     ++releaseCalls;
+    return 1;
+}
+
+std::int32_t RECOIL_STDCALL ReleaseDirectInputFake(zInput::DIDirectInput *) {
+    ++directInputReleaseCalls;
     return 1;
 }
 
@@ -765,8 +869,36 @@ std::int32_t RECOIL_STDCALL SetCooperativeLevelFake(zInput::DIDevice *, HWND, st
     return setCooperativeLevelResult;
 }
 
-std::int32_t RECOIL_STDCALL SetPropertyFake(zInput::DIDevice *, std::uint32_t, void *) {
+std::int32_t RECOIL_STDCALL SetPropertyFake(zInput::DIDevice *, std::uint32_t propertyId,
+                                            void *propHeader) {
     ++setPropertyCalls;
+    struct PropDword {
+        std::uint32_t dwSize;
+        std::uint32_t dwHeaderSize;
+        std::uint32_t dwObj;
+        std::uint32_t dwHow;
+        std::uint32_t dwData;
+    };
+    struct PropRange {
+        std::uint32_t dwSize;
+        std::uint32_t dwHeaderSize;
+        std::uint32_t dwObj;
+        std::uint32_t dwHow;
+        std::int32_t lMin;
+        std::int32_t lMax;
+    };
+    const auto *base = static_cast<const PropDword *>(propHeader);
+    lastSetPropertyId = propertyId;
+    lastSetPropertySize = base->dwSize;
+    lastSetPropertyObj = base->dwObj;
+    lastSetPropertyHow = base->dwHow;
+    if (propertyId == 4) {
+        const auto *range = static_cast<const PropRange *>(propHeader);
+        lastSetPropertyMin = range->lMin;
+        lastSetPropertyMax = range->lMax;
+    } else if (propertyId == 5) {
+        lastSetPropertyData = base->dwData;
+    }
     return 0;
 }
 
@@ -787,7 +919,8 @@ std::int32_t RECOIL_STDCALL EnumDevicesFake(zInput::DIDirectInput *, std::uint32
     return callback(&enumDeviceInstance, ref);
 }
 
-std::int32_t RECOIL_STDCALL GetPropertyFake(zInput::DIDevice *, std::uint32_t, void *propHeader) {
+std::int32_t RECOIL_STDCALL GetPropertyFake(zInput::DIDevice *, std::uint32_t propertyId,
+                                            void *propHeader) {
     ++getPropertyCalls;
     struct RangeProp {
         std::uint32_t dwSize;
@@ -798,6 +931,10 @@ std::int32_t RECOIL_STDCALL GetPropertyFake(zInput::DIDevice *, std::uint32_t, v
         std::int32_t lMax;
     };
     auto *range = static_cast<RangeProp *>(propHeader);
+    lastGetPropertyId = propertyId;
+    lastGetPropertySize = range->dwSize;
+    lastGetPropertyObj = range->dwObj;
+    lastGetPropertyHow = range->dwHow;
     range->lMin = -500;
     range->lMax = 500;
     return 0;
@@ -833,11 +970,12 @@ const zInput::DIDeviceVtable kMouseVtable = {
 };
 
 const zInput::DIDirectInputVtable kDirectInputVtable = {
-    nullptr, nullptr, nullptr, CreateDeviceFake, EnumDevicesFake,
+    nullptr, nullptr, ReleaseDirectInputFake, CreateDeviceFake, EnumDevicesFake,
 };
 
 void ResetMouseGlobals() {
     releaseCalls = 0;
+    directInputReleaseCalls = 0;
     acquireCalls = 0;
     unacquireCalls = 0;
     pollCalls = 0;
@@ -847,6 +985,8 @@ void ResetMouseGlobals() {
     getCapabilitiesCalls = 0;
     setDataFormatCalls = 0;
     setCooperativeLevelCalls = 0;
+    setPropertyCalls = 0;
+    getPropertyCalls = 0;
     createDeviceCalls = 0;
     enumDevicesCalls = 0;
     createEffectCalls = 0;
@@ -862,6 +1002,17 @@ void ResetMouseGlobals() {
     fakeMouseState = {};
     fakeJoystickState = {};
     lastCooperativeLevelFlags = 0;
+    lastSetPropertyId = 0;
+    lastSetPropertySize = 0;
+    lastSetPropertyObj = 0;
+    lastSetPropertyHow = 0;
+    lastSetPropertyMin = 0;
+    lastSetPropertyMax = 0;
+    lastSetPropertyData = 0;
+    lastGetPropertyId = 0;
+    lastGetPropertySize = 0;
+    lastGetPropertyObj = 0;
+    lastGetPropertyHow = 0;
     createDeviceOut = nullptr;
     queryInterfaceOut = nullptr;
     createEffectOut = nullptr;
@@ -1265,6 +1416,48 @@ extern "C" int zinput_keyboard_init_device_smoke(void) {
     return ok ? 0 : 2;
 }
 
+extern "C" int zinput_mouse_init_device_smoke(void) {
+    ResetMouseGlobals();
+    POINT originalCursor = {};
+    GetCursorPos(&originalCursor);
+
+    HWND hwnd = CreateWindowExA(0, "STATIC", "recoil", WS_POPUP, 50, 60, 320, 240, nullptr,
+                                nullptr, GetModuleHandleA(nullptr), nullptr);
+    if (hwnd == nullptr) {
+        return 1;
+    }
+
+    DirectInputFake directInput{};
+    MouseDeviceFake base{};
+    MouseDeviceFake mouse{};
+    directInput.input.vtbl_00 = &kDirectInputVtable;
+    base.device.vtbl_00 = &kMouseVtable;
+    mouse.device.vtbl_00 = &kMouseVtable;
+    g_zInput_GlobalState = &directInput.input;
+    g_zInput_hWnd = hwnd;
+    g_zInput_MouseCoopLevelFlags = 5;
+    g_zInput_MouseClientWidth = 0;
+    createDeviceOut = &base.device;
+    queryInterfaceOut = &mouse.device;
+
+    const int result = zInput::Mouse_InitDevice();
+    const bool ok = result == 1 && createDeviceCalls == 1 && queryInterfaceCalls == 1 &&
+                    releaseCalls == 1 && setDataFormatCalls == 1 &&
+                    setCooperativeLevelCalls == 1 && lastCooperativeLevelFlags == 5 &&
+                    setPropertyCalls == 1 && acquireCalls == 1 &&
+                    g_zInput_MouseInitialized == 1 && g_zInput_MouseActive == 1 &&
+                    g_zInput_MouseDevice == &mouse.device && g_zInput_MouseClientWidth == 320 &&
+                    g_zInput_MouseClientHeight == 240 &&
+                    g_zInput_MouseStateSnapshot.cursorClientX == 160 &&
+                    g_zInput_MouseStateSnapshot.cursorClientY == 120 &&
+                    g_zInput_MouseStateSnapshot.cursorNormX == 0.0f &&
+                    g_zInput_MouseStateSnapshot.cursorNormY == 0.0f;
+
+    DestroyWindow(hwnd);
+    SetCursorPos(originalCursor.x, originalCursor.y);
+    return ok ? 0 : 2;
+}
+
 extern "C" int zinput_joystick_init_device_smoke(void) {
     ResetMouseGlobals();
     DirectInputFake directInput{};
@@ -1319,6 +1512,60 @@ extern "C" int zinput_joystick_acquire_device_smoke(void) {
 
     acquireResult = -1;
     return zInput::DI_AcquireJoystickDevice() == 0 && acquireCalls == 2 ? 0 : 3;
+}
+
+extern "C" int zinput_joystick_axis_property_smoke(void) {
+    ResetMouseGlobals();
+    MouseDeviceFake joystick{};
+    joystick.device.vtbl_00 = &kMouseVtable;
+    g_zInput_JoystickDevice = &joystick.device;
+    g_zInput_JoystickAxisCount = 4;
+
+    if (zInput::DI_SetAxisRange(4, -100, 100) != 0 || lastSetPropertyId != 4 ||
+        lastSetPropertySize != 24 || lastSetPropertyObj != 4 || lastSetPropertyHow != 1 ||
+        lastSetPropertyMin != -100 || lastSetPropertyMax != 100) {
+        return 1;
+    }
+
+    if (zInput::DI_SetAxisDeadzone(8, 2500) != 0 || lastSetPropertyId != 5 ||
+        lastSetPropertySize != 20 || lastSetPropertyObj != 8 || lastSetPropertyHow != 1 ||
+        lastSetPropertyData != 2500) {
+        return 2;
+    }
+
+    std::int32_t outMin = 0;
+    std::int32_t outMax = 0;
+    if (zInput::DI_GetAxisRange(20, &outMin, &outMax) != 0 || outMin != -500 ||
+        outMax != 500 || lastGetPropertyId != 4 || lastGetPropertySize != 24 ||
+        lastGetPropertyObj != 20 || lastGetPropertyHow != 1) {
+        return 3;
+    }
+
+    zInput::JoystickAxisConfig cfg{};
+    cfg.axes[0].lMin = -1000;
+    cfg.axes[0].lMax = 1000;
+    cfg.axes[0].deadzone = 100;
+    cfg.axes[1].lMin = 0;
+    cfg.axes[1].lMax = 10000;
+    cfg.axes[1].deadzone = 200;
+    cfg.axes[2].lMin = -3000;
+    cfg.axes[2].lMax = 3000;
+    cfg.axes[2].deadzone = 300;
+    cfg.axes[3].lMin = -4000;
+    cfg.axes[3].lMax = 4000;
+    cfg.axes[3].deadzone = 400;
+
+    setPropertyCalls = 0;
+    getPropertyCalls = 0;
+    if (zInput::DI_ApplyAxisConfig(&cfg) != 1 || setPropertyCalls != 8 ||
+        getPropertyCalls != 0 || g_zInput_JoystickAxisConfig.axes[3].deadzone != 400 ||
+        cfg.axes[0].midpoint != 0.0f || cfg.axes[0].normScale < 0.000999f ||
+        cfg.axes[0].normScale > 0.001001f || cfg.axes[1].midpoint != 5000.0f ||
+        cfg.axes[1].normScale < 0.000199f || cfg.axes[1].normScale > 0.000201f) {
+        return 4;
+    }
+
+    return zInput::DI_ApplyAxisConfig(nullptr) == 0 ? 0 : 5;
 }
 
 extern "C" int zinput_joystick_ref_and_enable_smoke(void) {
@@ -1451,6 +1698,41 @@ extern "C" int zinput_mouse_shutdown_device_smoke() {
     return g_zInput_MouseActive == 0 ? 0 : 3;
 }
 
+extern "C" int zinput_shutdown_smoke() {
+    ResetMouseGlobals();
+
+    MouseDeviceFake mouse = {{&kMouseVtable}};
+    MouseDeviceFake keyboard = {{&kMouseVtable}};
+    MouseDeviceFake joystick = {{&kMouseVtable}};
+    DirectInputFake directInput = {{&kDirectInputVtable}};
+
+    g_zInput_hWnd = reinterpret_cast<HWND>(1);
+    g_zInput_MouseDevice = &mouse.device;
+    g_zInput_MouseInitialized = 1;
+    g_zInput_MouseActive = 1;
+    g_zInput_KbdDevice = &keyboard.device;
+    g_zInput_KbdSystemReady = 1;
+    g_zInput_KbdEventBuffer = static_cast<zInput::DIDeviceObjectData *>(std::malloc(16));
+    g_zInput_JoystickDevice = &joystick.device;
+    g_zInput_JoystickInitialized = 1;
+    g_zInput_GlobalState = &directInput.input;
+
+    if (zInput::Shutdown() != 0) {
+        return 1;
+    }
+
+    if (g_zInput_hWnd != nullptr || g_zInput_MouseDevice != nullptr ||
+        g_zInput_KbdDevice != &keyboard.device ||
+        g_zInput_KbdEventBuffer == nullptr ||
+        g_zInput_JoystickDevice != nullptr || g_zInput_GlobalState != &directInput.input) {
+        return 2;
+    }
+
+    g_zInput_KbdDevice = nullptr;
+    g_zInput_KbdEventBuffer = nullptr;
+    return releaseCalls == 3 && directInputReleaseCalls == 1 ? 0 : 3;
+}
+
 extern "C" int zinput_mouse_poll_state_smoke() {
     ResetMouseGlobals();
     MouseDeviceFake fake = {{&kMouseVtable}};
@@ -1510,6 +1792,61 @@ extern "C" int zinput_mouse_poll_state_smoke() {
     getDeviceStateResult = static_cast<std::int32_t>(0x8007001e);
     if (zInput::Mouse_PollState(0) != static_cast<std::int32_t>(0x8007001e) || acquireCalls < 2) {
         return 5;
+    }
+
+    return 0;
+}
+
+extern "C" int zinput_poll_active_devices_smoke() {
+    ResetMouseGlobals();
+
+    MouseDeviceFake mouse = {{&kMouseVtable}};
+    MouseDeviceFake joystick{};
+    joystick.device.vtbl_00 = &kMouseVtable;
+    MouseDeviceFake keyboard = {{&kMouseVtable}};
+
+    g_zInput_MouseDevice = &mouse.device;
+    g_zInput_MouseActive = 1;
+    g_zInputMouseFlags = 1;
+    g_zInputMousePollRefCount = 1;
+    g_zInput_MouseClientWidth = 100;
+    g_zInput_MouseClientHeight = 80;
+    g_zInput_MouseClientCenterX = 50;
+    g_zInput_MouseClientCenterY = 40;
+    g_zInput_MouseInvClientCenterX = 0.02f;
+    g_zInput_MouseInvClientCenterY = 0.025f;
+    g_zInput_MouseSensitivityX = 1.0f;
+    g_zInput_MouseSensitivityY = 1.0f;
+    g_zInput_MouseCurrentState = {};
+    g_zInput_MouseStateSnapshot.cursorClientX = 50;
+    g_zInput_MouseStateSnapshot.cursorClientY = 40;
+    fakeMouseState = {2, -3, 0, 0};
+
+    g_zInput_JoystickDevice = &joystick.device;
+    g_zInput_JoystickInitialized = 1;
+    g_zInput_JoystickAxisCount = 2;
+    g_zInputJoystickFlags = 1;
+    g_zInputJoystickPollRefCount = 1;
+    fakeJoystickState = {};
+    fakeJoystickState.lX = 11;
+
+    g_zInput_KbdDevice = &keyboard.device;
+    g_zInput_KbdEventBuffer = keyboardEvents;
+    g_zInput_DeviceRegistry = 1;
+    g_zInputKeyboardPollRefCount = 1;
+    getDeviceDataCount = 1;
+    keyboardEvents[0] = {0x1e, 0x80, 0, 0};
+
+    zInput::PollActiveDevices(0);
+
+    if (g_zInputMouseLastPollResult != 0 || g_zInput_MouseCurrentState.lX != 2 ||
+        g_zInput_JoystickCurrentState.lX != 11 ||
+        g_zInputKbdKeyDispatchTable[0x1e].state != 1) {
+        return 1;
+    }
+
+    if (pollCalls != 2 || getDeviceStateCalls != 2 || getDeviceDataCalls != 1) {
+        return 2;
     }
 
     return 0;
@@ -1619,6 +1956,25 @@ extern "C" int zinput_mouse_reset_and_resume_smoke() {
     g_zInput_MouseSensitivityY = 1.0f;
     g_zInput_MouseWrapModeFlag = 0;
 
+    zInput::Mouse_ResetTransitionState();
+    if (g_zInput_MousePreviousState.lX != 4 || g_zInput_MousePreviousState.lY != 5 ||
+        g_zInput_MousePreviousState.lZ != 6 ||
+        g_zInput_MousePreviousState.rgbButtons != 0x00800080 ||
+        g_zInput_MouseStateSnapshot.deltaX != 0 ||
+        g_zInput_MouseStateSnapshot.deltaY != 0 ||
+        g_zInput_MouseStateSnapshot.button1Transition != 0 ||
+        g_zInput_MouseStateSnapshot.button2Transition != 0 ||
+        g_zInput_MouseStateSnapshot.button3Transition != 0) {
+        return 1;
+    }
+
+    g_zInput_MouseSuspendFlags = 2;
+    g_zInput_MouseStateSnapshot.deltaX = 3;
+    g_zInput_MouseStateSnapshot.deltaY = -4;
+    g_zInput_MouseStateSnapshot.button1Transition = 7;
+    g_zInput_MouseStateSnapshot.button2Transition = 8;
+    g_zInput_MouseStateSnapshot.button3Transition = 9;
+
     zInput::Mouse_ResumeFromSuspend();
 
     return g_zInput_MouseSuspendFlags == 0 && g_zInput_MousePreviousState.lX == 4 &&
@@ -1630,7 +1986,7 @@ extern "C" int zinput_mouse_reset_and_resume_smoke() {
                    g_zInput_MouseStateSnapshot.button2Transition == 0 &&
                    g_zInput_MouseStateSnapshot.button3Transition == 0
                ? 0
-               : 1;
+               : 2;
 }
 
 extern "C" int zinput_directinput_report_error_smoke() {

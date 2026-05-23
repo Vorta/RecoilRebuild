@@ -1,0 +1,16 @@
+{
+  "name": "recoil_app_intro_fmv_on_try_become_current",
+  "description": "RecoilApp_IntroFmvState::OnTryBecomeCurrent sets the render/Fx surfaces from the primary surface, marks the cached client rect dirty, and starts the INTRO FMV script unless intro playback is skipped.",
+  "address": "0x42ea20",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_intro_fmv_on_try_become_current_smoke",
+    "zfmv_script_load_actions_from_zrd_smoke",
+    "zfmv_script_begin_at_time_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x42ea20",
+  "known_limits": [
+    "The caller smoke verifies the skip-intro branch surface, render-region, stride, Fx, and cached-client-rect side effects. The unskipped FMV load and BeginAtTime paths are covered by the listed zFMV script functional smokes because a cold full intro playback setup depends on archive and runtime provider state.",
+    "Binary-safe verification remains pending for the RecoilApp FMV state source cluster."
+  ]
+}

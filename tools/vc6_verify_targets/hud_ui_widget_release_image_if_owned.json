@@ -2,18 +2,7 @@
   "name": "hud_ui_widget_release_image_if_owned",
   "description": "HudUiWidget owned-image release helper.",
   "source_filename": "zhud_ui.cpp",
-  "compiler_flags": [
-    "/nologo",
-    "/TP",
-    "/W3",
-    "/G5",
-    "/O2",
-    "/Ob0",
-    "/Zp4",
-    "/FAcs",
-    "/I",
-    "."
-  ],
+  "compiler_profile": "vc5_o2_ob0_facs",
   "include_dirs": [
     "src",
     "src/native/include",

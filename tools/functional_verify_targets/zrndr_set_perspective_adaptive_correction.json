@@ -1,0 +1,14 @@
+{
+  "name": "zrndr_set_perspective_adaptive_correction",
+  "description": "zRndr::SetPerspectiveAdaptiveCorrection updates the span depth bias, bias-plus-one, and reciprocal guard values.",
+  "address": "0x4904d0",
+  "source_from": "src/GameZRecoil/zRndr/zRndr.cpp",
+  "smoke_tests": [
+    "zrndr_init_globals_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zrndr_init_globals_helpers",
+  "known_limits": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare currently fails for zRndr::SetPerspectiveAdaptiveCorrection: 20 unmasked mismatches after masking 28 relocation bytes; Binary Ninja body is 72 bytes and the VC object body is 80 bytes with 8 trailing VC NOPs trimmed.",
+    "The reviewed byte drift is FPU branch/control-flow shape around the zero/NaN reciprocal guard; the native smoke verifies bias, plus-one, and reciprocal behavior for the zero divisor case."
+  ]
+}

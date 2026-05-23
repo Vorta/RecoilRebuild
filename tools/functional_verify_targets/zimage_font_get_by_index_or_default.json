@@ -1,0 +1,15 @@
+{
+  "name": "zimage_font_get_by_index_or_default",
+  "description": "zImage_Font::GetByIndexOrDefault returns the requested font-table slot when present, otherwise falls back to slot 0.",
+  "address": "0x46efc0",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_font_measure_string_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x46efc0",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "Binary Ninja shows a fastcall table lookup at g_zImage_FontTable[fontIndex], a null check, and fallback load from g_zImage_FontTable[0].",
+    "The native font measurement smoke validates direct fallback through GetByIndexOrDefault and fallback use by MeasureString."
+  ]
+}

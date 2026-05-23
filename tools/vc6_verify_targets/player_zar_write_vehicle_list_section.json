@@ -1,0 +1,35 @@
+{
+  "name": "player_zar_write_vehicle_list_section",
+  "description": "Player VehicleList ZAR write callback.",
+  "source_filename": "player.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zMath",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRndr",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/Battlesport/player.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x41f6a0",
+      "symbol": "?ZAR_WriteVehicleListSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z",
+      "name": "Player::ZAR_WriteVehicleListSection"
+    }
+  ],
+  "source_from": "src/Battlesport/player.cpp"
+}

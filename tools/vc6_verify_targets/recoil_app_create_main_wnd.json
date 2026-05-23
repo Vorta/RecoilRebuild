@@ -1,0 +1,96 @@
+{
+  "name": "recoil_app_create_main_wnd",
+  "description": "RecoilApp main frame allocation and constructor dispatch.",
+  "source_filename": "RecoilApp.cpp",
+  "compiler_profile": "vc5_o2_ob1_gx_uintptr_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42e520",
+      "symbol": "?InitInstance@RecoilApp@@QAEHXZ",
+      "name": "RecoilApp::InitInstance"
+    },
+    {
+      "address": "0x42e930",
+      "symbol": "?ExitInstance@RecoilApp@@QAEHXZ",
+      "name": "RecoilApp::ExitInstance"
+    },
+    {
+      "address": "0x4429d0",
+      "symbol": "?InitMainWindow@RecoilApp@@QAEHXZ",
+      "name": "RecoilApp::InitMainWindow"
+    },
+    {
+      "address": "0x42e990",
+      "symbol": "?ActivateExistingInstance@RecoilApp@@QAEHXZ",
+      "name": "RecoilApp::ActivateExistingInstance"
+    },
+    {
+      "address": "0x42ea20",
+      "symbol": "?OnTryBecomeCurrent@RecoilApp_IntroFmvState@@QAEHXZ",
+      "name": "RecoilApp_IntroFmvState::OnTryBecomeCurrent"
+    },
+    {
+      "address": "0x42eac0",
+      "symbol": "?OnUpdateShouldQuit@RecoilApp_IntroFmvState@@QAEHXZ",
+      "name": "RecoilApp_IntroFmvState::OnUpdateShouldQuit"
+    },
+    {
+      "address": "0x42eb10",
+      "symbol": "?OnDeactivate@RecoilApp_IntroFmvState@@QAEXXZ",
+      "name": "RecoilApp_IntroFmvState::OnDeactivate"
+    },
+    {
+      "address": "0x42eb20",
+      "symbol": "?OnTryBecomeCurrent@RecoilApp_MainMenuPrepState@@QAEHXZ",
+      "name": "RecoilApp_MainMenuPrepState::OnTryBecomeCurrent"
+    },
+    {
+      "address": "0x42eb60",
+      "symbol": "?OnUpdateShouldQuit@RecoilApp_MainMenuPrepState@@QAEHXZ",
+      "name": "RecoilApp_MainMenuPrepState::OnUpdateShouldQuit"
+    },
+    {
+      "address": "0x42ebf0",
+      "symbol": "?OnTryBecomeCurrent@RecoilApp_AttractFmvState@@QAEHXZ",
+      "name": "RecoilApp_AttractFmvState::OnTryBecomeCurrent"
+    },
+    {
+      "address": "0x42ec80",
+      "symbol": "?OnUpdateShouldQuit@RecoilApp_AttractFmvState@@QAEHXZ",
+      "name": "RecoilApp_AttractFmvState::OnUpdateShouldQuit"
+    },
+    {
+      "address": "0x42eca0",
+      "symbol": "?OnDeactivate@RecoilApp_AttractFmvState@@QAEXXZ",
+      "name": "RecoilApp_AttractFmvState::OnDeactivate"
+    },
+    {
+      "address": "0x42eec0",
+      "symbol": "?OnWndActivate@RecoilApp_PlayState@@QAEXH@Z",
+      "name": "RecoilApp_PlayState::OnWndActivate"
+    },
+    {
+      "address": "0x42e9f0",
+      "symbol": "?PreTranslateMessage@RecoilApp@@QAEHPAUtagMSG@@@Z",
+      "name": "RecoilApp::PreTranslateMessage"
+    },
+    {
+      "address": "0x42e110",
+      "symbol": "?CreateMainWnd@RecoilApp@@QAEPAUCZRecoilFrame@@XZ",
+      "name": "RecoilApp::CreateMainWnd"
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

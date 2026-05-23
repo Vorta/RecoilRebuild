@@ -1,0 +1,13 @@
+{
+  "name": "zinput_bindmap_context_rebuild_lookup_indices",
+  "description": "zInput_BindMapContext::RebuildLookupIndices rebuilds primary, secondary, joystick, and mouse reverse lookup arrays from packed bindings.",
+  "address": "0x470820",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x470820",
+  "known_limits": [
+    "The smoke verifies rebuilt reverse lookups for keyboard, joystick, and mouse bindings. Binary-safe verification remains pending for exact loop and memory-fill codegen."
+  ]
+}

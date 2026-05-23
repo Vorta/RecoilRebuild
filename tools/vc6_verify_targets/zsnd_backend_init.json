@@ -1,0 +1,54 @@
+{
+  "name": "zsnd_backend_init",
+  "description": "zSound DirectSound and A3D backend provider initialization.",
+  "source_filename": "zsnd_init.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zSys",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_init.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4b31f0",
+      "symbol": "?HasMmxMixerSupport@zSnd@@YAHXZ",
+      "name": "zSnd::HasMmxMixerSupport"
+    },
+    {
+      "address": "0x4b2f50",
+      "symbol": "?AcquireCachedDirectSound@zSnd@@YIPAUIDirectSound@@PBU_GUID@@@Z",
+      "name": "zSnd::AcquireCachedDirectSound"
+    },
+    {
+      "address": "0x4b2fa0",
+      "symbol": "?ReleaseCachedDirectSound@zSnd@@YAXXZ",
+      "name": "zSnd::ReleaseCachedDirectSound"
+    },
+    {
+      "address": "0x4b2fc0",
+      "symbol": "?CachedDirectSound_GetCaps@zSnd@@YIJPAU_DSCAPS@@@Z",
+      "name": "zSnd::CachedDirectSound_GetCaps"
+    },
+    {
+      "address": "0x4a1d10",
+      "symbol": "_zSndBackend_InitA3D",
+      "name": "zSndBackend_InitA3D"
+    },
+    {
+      "address": "0x4a1e50",
+      "symbol": "_zSndBackend_InitDirectSound",
+      "name": "zSndBackend_InitDirectSound"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp"
+}

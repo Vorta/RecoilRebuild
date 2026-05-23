@@ -1,0 +1,31 @@
+{
+  "name": "recoil_app_init_instance",
+  "description": "RecoilApp::InitInstance performs single-instance gating, registers the main window class, initializes the main frame, localization, archive/reader/options/input setup, loads game options, applies video mode and frame startup hardware API state, and returns startup success.",
+  "address": "0x42e520",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_activate_existing_instance_absent_smoke",
+    "recoil_app_init_main_window_smoke",
+    "zloc_load_unload_messages_dll_smoke",
+    "zloc_message_lookup_failure_smoke",
+    "zvideo_dd_startup_enumerate_default_select_smoke",
+    "zsys_find_file_on_drive_type_negative_smoke",
+    "zgame_return_only_stub_smoke",
+    "zutil_zbd_init_smoke",
+    "zreader_prealloc_and_pop_front_smoke",
+    "zreader_zrdr_init_search_path_smoke",
+    "zgame_options_init_registry_context_smoke",
+    "zinput_bindmap_context_smoke",
+    "zgame_options_load_game_options_minimal_smoke",
+    "zreader_mount_index_archive_smoke",
+    "zvideo_mode_geometry_and_set_video_mode_smoke",
+    "zvid_set_video_mode_index_smoke",
+    "czrecoil_frame_configure_mode_feature_flags_smoke",
+    "czrecoil_frame_init_startup_hw_api_from_options_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x42e520",
+  "known_limits": [
+    "The functional target verifies the accepted direct startup dependencies and provider-bound side effects that can be isolated in the native harness. A cold full InitInstance call remains unsuitable for the smoke harness because success requires MFC/resource/data/runtime state and failure branches call MessageBoxA/ExitProcess.",
+    "Binary-safe verification remains pending for the whole RecoilApp startup source cluster and MFC/Win32 provider call shape."
+  ]
+}

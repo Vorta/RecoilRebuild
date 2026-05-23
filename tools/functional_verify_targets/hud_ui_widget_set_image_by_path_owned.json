@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_widget_set_image_by_path_owned",
+  "description": "HudUiWidget::SetImageByPathOwned returns null without side effects for null paths; otherwise releases any owned image, loads by path, sets ownsImage only on success, invalidates through the widget ftable, and returns the loaded image pointer.",
+  "address": "0x4b3e30",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_widget_release_and_destructor_core_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4b3e30",
+  "known_limits": [
+    "The smoke covers null-path and missing non-null path behavior; successful image lookup is covered through zImage::TexDir_FindOrCreateByPath provider tests and should be revisited with the widget/image provider class pass.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?SetImageByPathOwned@HudUiWidget@@QAEPAUzVidImagePartial@@PBD@Z at 0x4b3e30 still fails: 15 unmasked mismatches, 8 relocation bytes masked, 0 trailing VC NOP bytes trimmed, Binary Ninja body is 62 bytes and the VC object symbol is 64 bytes."
+  ],
+  "binary_safe_evidence": [
+    "Binary Ninja shows null-path early return, ReleaseImageIfOwned, zImage::TexDirFindOrCreateByPath, ownsImage set only when the returned image is non-null, virtual Invalidate dispatch, and return of the image field.",
+    "The native widget release smoke validates null-path no-op behavior and missing-path release/invalidate behavior."
+  ]
+}

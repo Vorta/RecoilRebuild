@@ -29,6 +29,7 @@ add_executable(recoil_native_smoke
     zdeclient_tests.cpp
     time_tests.cpp
     smoke.cpp
+    recoil_test_resources.rc
 )
 
 target_link_libraries(recoil_native_smoke PRIVATE recoil_native)

@@ -1,0 +1,126 @@
+{
+  "name": "zgame_options_load_helpers",
+  "description": "zGame option-load helpers and zOpt option setters used by Options_LoadGameOptions.",
+  "source_filename": "zGame.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zGame/zGame.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x407680",
+      "symbol": "?SelectProfileValueForSystem@zOpt@@YIHPAUNode@zReader@@PBDH@Z",
+      "name": "zOpt::SelectProfileValueForSystem"
+    },
+    {
+      "address": "0x407700",
+      "symbol": "?Options_LoadGameOptions@zGame@@YAHXZ",
+      "name": "zGame::Options_LoadGameOptions"
+    },
+    {
+      "address": "0x407e00",
+      "symbol": "?Options_SaveGameOptions@zGame@@YAHXZ",
+      "name": "zGame::Options_SaveGameOptions"
+    },
+    {
+      "address": "0x407e20",
+      "symbol": "?SetGameControlOptions@zOpt@@YIXH@Z",
+      "name": "zOpt::SetGameControlOptions"
+    },
+    {
+      "address": "0x407f10",
+      "symbol": "?SetGameDifficultyMode@zOpt@@YIXH@Z",
+      "name": "zOpt::SetGameDifficultyMode"
+    },
+    {
+      "address": "0x407f30",
+      "symbol": "?SetEffectsLevelForCurrentHwMode@zOpt@@YIXH@Z",
+      "name": "zOpt::SetEffectsLevelForCurrentHwMode"
+    },
+    {
+      "address": "0x407fa0",
+      "symbol": "?SetObjectLODForCurrentHwMode@zOpt@@YIXH@Z",
+      "name": "zOpt::SetObjectLODForCurrentHwMode"
+    },
+    {
+      "address": "0x408050",
+      "symbol": "?SetMuteSoundOption@zOpt@@YIXH@Z",
+      "name": "zOpt::SetMuteSoundOption"
+    },
+    {
+      "address": "0x408070",
+      "symbol": "?SetSoundVolumeOption@zOpt@@YIXM@Z",
+      "name": "zOpt::SetSoundVolumeOption"
+    },
+    {
+      "address": "0x4080c0",
+      "symbol": "?SetSoundLODOption@zOpt@@YIXH@Z",
+      "name": "zOpt::SetSoundLODOption"
+    },
+    {
+      "address": "0x4080e0",
+      "symbol": "?SetTextureMemoryForCurrentHwMode@zOpt@@YIXH@Z",
+      "name": "zOpt::SetTextureMemoryForCurrentHwMode"
+    },
+    {
+      "address": "0x408120",
+      "symbol": "?SetPlayerName@zOpt@@YIXPBD@Z",
+      "name": "zOpt::SetPlayerName"
+    },
+    {
+      "address": "0x4081a0",
+      "symbol": "?SetGraphicsFlagsForCurrentHwMode@zOpt@@YIXH@Z",
+      "name": "zOpt::SetGraphicsFlagsForCurrentHwMode"
+    },
+    {
+      "address": "0x408230",
+      "symbol": "?SetNetworkEnabled@zOpt@@YIXH@Z",
+      "name": "zOpt::SetNetworkEnabled"
+    },
+    {
+      "address": "0x408240",
+      "symbol": "?SetNetworkModemEnabled@zOpt@@YIXH@Z",
+      "name": "zOpt::SetNetworkModemEnabled"
+    },
+    {
+      "address": "0x408250",
+      "symbol": "?SetNetworkListenEnabled@zOpt@@YIXH@Z",
+      "name": "zOpt::SetNetworkListenEnabled"
+    },
+    {
+      "address": "0x4082b0",
+      "symbol": "?SetHudVisibilityOption@zOpt@@YIXH@Z",
+      "name": "zOpt::SetHudVisibilityOption"
+    },
+    {
+      "address": "0x4b2bf0",
+      "symbol": "?Options_SaveToRegistry@zGame@@YAHXZ",
+      "name": "zGame::Options_SaveToRegistry"
+    },
+    {
+      "address": "0x4b32c0",
+      "symbol": "?Options_ShutdownRegistryContext@zGame@@YAXXZ",
+      "name": "zGame::Options_ShutdownRegistryContext"
+    },
+    {
+      "address": "0x4b2960",
+      "symbol": "?Options_LoadFromRegistry@zGame@@YAHXZ",
+      "name": "zGame::Options_LoadFromRegistry"
+    },
+    {
+      "address": "0x4b3090",
+      "symbol": "?CopyDefault@zGame_OptionsRuntimeConfig@@QAEPAU1@XZ",
+      "name": "zGame_OptionsRuntimeConfig::CopyDefault"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zGame/zGame.cpp"
+}

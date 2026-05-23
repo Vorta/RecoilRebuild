@@ -1,0 +1,13 @@
+{
+  "name": "zzbd_manager_destroy",
+  "description": "zZbdManager::Destroy releases the temp buffer, destroys the index archive, frees registered section-handler nodes and the sentinel, and resets the handler count.",
+  "address": "0x4c01b0",
+  "source_from": "src/GameZRecoil/zUtil/zZbd.cpp",
+  "smoke_tests": [
+    "zutil_zbd_destroy_global_manager_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4c01b0",
+  "known_limits": [
+    "The smoke exercises Destroy through the global manager path with allocated temp buffer, index records, and registered handlers. Binary-safe verification remains pending for exact delete and list-unlink codegen."
+  ]
+}

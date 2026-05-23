@@ -1,0 +1,15 @@
+{
+  "name": "zvideo_set_renderer_type_and_active_path",
+  "description": "zVideo::SetRendererTypeAndActivePath returns the previous renderer type and writes the requested backend to both renderer-selection globals.",
+  "address": "0x4a6b40",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_set_renderer_type_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a6b40",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "VC5SP3 11.00.7022 /O2 /Ob0 /Zp4 COFF byte compare passed with zero unmasked mismatches after masking 12 relocation bytes; Binary Ninja body is 18 bytes and the VC object body is 32 bytes with 14 trailing VC NOPs trimmed.",
+    "The native smoke verifies the previous renderer return value and both g_zVideo_RendererType and g_zVideo_ActiveRendererPath updates."
+  ]
+}

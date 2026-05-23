@@ -1,0 +1,34 @@
+{
+  "name": "zturret_shutdown_helpers",
+  "description": "zTurret runtime and system shutdown helpers.",
+  "source_filename": "zTurret.cpp",
+  "source_from": "src/GameZRecoil/zTurret/zTurret.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zTurret",
+    "src/GameZRecoil/include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zTurret/zTurret.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x436e00",
+      "symbol": "?Shutdown@zTurret_Runtime@@QAEHXZ",
+      "name": "zTurret_Runtime::Shutdown"
+    },
+    {
+      "address": "0x437ab0",
+      "symbol": "?Shutdown@zTurret_System@@YAHXZ",
+      "name": "zTurret_System::Shutdown"
+    },
+    {
+      "address": "0x437dc0",
+      "symbol": "?FreeAllRuntimes@zTurret_System@@YAHXZ",
+      "name": "zTurret_System::FreeAllRuntimes"
+    }
+  ]
+}

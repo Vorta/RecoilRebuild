@@ -1,0 +1,27 @@
+{
+  "name": "zinput_has_force_feedback",
+  "description": "zInput DirectInput force-feedback capability flag accessor.",
+  "source_filename": "zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zMath",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x472480",
+      "symbol": "_zInput_DI_HasForceFeedback",
+      "name": "zInputDI::HasForceFeedback"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp"
+}

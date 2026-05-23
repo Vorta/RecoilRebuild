@@ -4125,11 +4125,11 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::ReapplyEntryCount() {
 
 // Reimplements 0x4bbed0: HudUiCompositePanel::ResizeEntryCount
 RECOIL_NOINLINE void RECOIL_THISCALL
-HudUiCompositePanel::ResizeEntryCount(int, int entryCount) {
+HudUiCompositePanel::ResizeEntryCount(int oldCount, int entryCount) {
     typedef void (RECOIL_CDECL *SetTextFmtFn)(HudUiCompositePanelEntry * self,
                                              const char *format, ...);
 
-    int activeCount = activeEntryCount;
+    int activeCount = oldCount;
     if (activeCount > entryCount) {
         activeCount = entryCount;
     }
@@ -4285,7 +4285,14 @@ HudUiCompositePanelEntry *RECOIL_FASTCALL HudUiCompositePanelEntry::ConstructorC
     HudUiCompositePanelEntry *dest = destBegin;
     for (const HudUiCompositePanelEntry *source = sourceBegin; source != sourceEnd;
          ++source, ++dest) {
-        dest->AssignCopy(source);
+        ((HudUiPanel *)(dest))->ConstructorCopy((const HudUiPanel *)(source));
+        FieldAt<unsigned int>(dest, 0x2a4) = FieldAt<const unsigned int>(source, 0x2a4);
+        FieldAt<unsigned int>(dest, 0x2a8) = FieldAt<const unsigned int>(source, 0x2a8);
+        FieldAt<unsigned int>(dest, 0x2ac) = FieldAt<const unsigned int>(source, 0x2ac);
+        FieldAt<unsigned int>(dest, 0x2b0) = FieldAt<const unsigned int>(source, 0x2b0);
+        FieldAt<unsigned int>(dest, 0x2b4) = FieldAt<const unsigned int>(source, 0x2b4);
+        FieldAt<unsigned int>(dest, 0x2b8) = FieldAt<const unsigned int>(source, 0x2b8);
+        FieldAt<unsigned int>(dest, 0x2bc) = FieldAt<const unsigned int>(source, 0x2bc);
     }
 
     return dest;
@@ -6704,16 +6711,16 @@ HudUiFillBitmap *RECOIL_THISCALL HudUiFillBitmap::Constructor() {
     base.Constructor();
     base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiFillBitmap_FTable);
     normalizedValue = 0.0f;
-    fillImage = 0;
-    fillRect.left = 0;
-    fillRect.top = 0;
-    fillRect.right = 0;
-    fillRect.bottom = 0;
     previewImage = 0;
-    previewRect.left = 0;
-    previewRect.top = 0;
+    fillImage = 0;
     previewRect.right = 0;
+    previewRect.left = 0;
     previewRect.bottom = 0;
+    previewRect.top = 0;
+    fillRect.right = 0;
+    fillRect.left = 0;
+    fillRect.bottom = 0;
+    fillRect.top = 0;
     return this;
 }
 
@@ -7535,7 +7542,11 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiNanitePanel::InitLayout(zReader::Node 
 }
 
 // Reimplements 0x40f3e0: HudUiTripletPanel::ShutdownItems_Stub
-void RECOIL_THISCALL HudUiTripletPanel::ShutdownItems_Stub() {}
+void RECOIL_THISCALL HudUiTripletPanel::ShutdownItems_Stub() {
+    HudUiNoOpMethodStub(&g_HudUiMgrNanitePanel.items[0]);
+    HudUiNoOpMethodStub(&g_HudUiMgrNanitePanel.items[1]);
+    HudUiNoOpMethodStub(&g_HudUiMgrNanitePanel.items[2]);
+}
 
 // Reimplements 0x40d600: HudUiTripletPanel::UnwindDestructFirstItem
 void RECOIL_THISCALL HudUiTripletPanel::UnwindDestructFirstItem() {

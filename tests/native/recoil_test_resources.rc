@@ -1,0 +1,53 @@
+LANGUAGE 9, 1
+
+GAMEBMP BITMAP "../../img/GAMEBMP.bmp"
+
+MYMENU MENU
+BEGIN
+    POPUP "&Game"
+    BEGIN
+        MENUITEM "&Start", 104
+        MENUITEM "Multi Player Start", 40019
+        MENUITEM "Westwood Online...", 40062
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit", 103
+    END
+    POPUP "Campaigns"
+    BEGIN
+        MENUITEM "C1: Island Storm", 40021
+        MENUITEM "C2: Dust and Metal", 40022
+        MENUITEM "C3: Thermal Meltdown", 40023
+        MENUITEM "C4: Poison Valley", 40024
+        MENUITEM "C5: Cold Kill Chaos", 40025
+        MENUITEM "C6: Network Showdown", 40026
+        MENUITEM "Use ZBD Files", 40043, CHECKED
+        MENUITEM "Use ZBD Textures", 40059, CHECKED
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "Software - GameZ", 40067, CHECKED
+        MENUITEM "Card 1", 40050, GRAYED
+        MENUITEM "Card 2", 40053, GRAYED
+        MENUITEM "Card 3", 40054, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "320 x 200", 518
+        MENUITEM "320 x 240", 519, CHECKED
+        MENUITEM "640 x 400", 520
+        MENUITEM "640 x 480", 521
+        MENUITEM "800 x 600", 40049, GRAYED
+        MENUITEM "1024 x 768", 528, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "DirectSound", 40064
+        MENUITEM "A3D", 40066
+        MENUITEM SEPARATOR
+        MENUITEM "&Fullscreen", 40014, CHECKED
+        MENUITEM "Full HUD", 40015, CHECKED
+        MENUITEM "CD Audio", 40060, CHECKED
+        MENUITEM "Joystick", 40061
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "Online Manual", 106
+        MENUITEM "About Recoil", 107
+    END
+END

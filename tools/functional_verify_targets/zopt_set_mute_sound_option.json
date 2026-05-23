@@ -1,0 +1,13 @@
+{
+  "name": "zopt_set_mute_sound_option",
+  "description": "zOpt::SetMuteSoundOption stores the mute-sound flag.",
+  "address": "0x408050",
+  "source_from": "src/GameZRecoil/zGame/zGame.cpp",
+  "smoke_tests": [
+    "zopt_fullscreen_accessors_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x408050",
+  "known_limits": [
+    "The smoke verifies the mute flag write through the getter. Binary-safe verification remains pending for exact null-check and store shape."
+  ]
+}

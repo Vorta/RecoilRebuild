@@ -1,0 +1,45 @@
+{
+  "name": "zsnd_backend_option_helpers",
+  "description": "zSound active backend and audio API option helpers.",
+  "source_filename": "zsnd_cd.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zSound/zsnd_cd.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a1290",
+      "symbol": "?SetActiveBackendPreInit@zSnd@@YIHH@Z",
+      "name": "zSnd::SetActiveBackendPreInit"
+    },
+    {
+      "address": "0x4a12b0",
+      "symbol": "?GetActiveBackend@zSnd@@YAHXZ",
+      "name": "zSnd::GetActiveBackend"
+    },
+    {
+      "address": "0x4080a0",
+      "symbol": "?SetAudioApiOption@zSnd@@YIHH@Z",
+      "name": "zSnd::SetAudioApiOption"
+    },
+    {
+      "address": "0x4080b0",
+      "symbol": "?GetAudioApiOption@zSnd@@YAHXZ",
+      "name": "zSnd::GetAudioApiOption"
+    },
+    {
+      "address": "0x408210",
+      "symbol": "?SetCDAudioOption@zSnd@@YIXH@Z",
+      "name": "zSnd::SetCDAudioOption"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "hud_ui_composite_panel_constructor_with_entry_count",
+  "description": "HudUiCompositePanel::ConstructorWithEntryCount constructs the panel base, initializes the entry vector, installs the composite ftable, builds default transition-text entries, clears and hides entries through the resize/reapply path, lays out at the origin, marks the panel visible, and returns self.",
+  "address": "0x4bb790",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_composite_panel_constructor_with_entry_count_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4bb790",
+  "known_limits": [
+    "Depends on the composite-panel vector/entry helpers and HudUiPanel formatting/layout helpers, which are functionally accepted but remain binary-safe debt.",
+    "Binary Ninja still represents the original MSVC constructor EH state, empty allocator byte storage, and inlined vector resize shape as low-level artifacts; byte-safe shape should be revisited with the full composite-panel class/source-file pass.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?ConstructorWithEntryCount@HudUiCompositePanel@@QAEPAU1@H@Z at 0x4bb790 still fails: 417 unmasked mismatches, 40 relocation bytes masked, 14 trailing VC NOP bytes trimmed, Binary Ninja body is 461 bytes and the VC object symbol is 176 bytes."
+  ],
+  "binary_safe_evidence": [
+    "Binary Ninja shows HudUiPanel::ConstructorDefault, vector begin/end/capacity zeroing, composite ftable install, template transition-text entry construction/destruction, entry vector resize to entryCount, empty text setup, layout, resize/reapply, virtual SetVisible(true), and return of self.",
+    "The native constructor smoke validates return identity, composite ftable installation, entry-vector count/capacity, transition-text entry ftable installation, cleared/hidden entries, origin layout, and final visible panel state."
+  ]
+}

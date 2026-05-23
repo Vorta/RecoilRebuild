@@ -1,0 +1,14 @@
+{
+  "name": "zinput_directinput_report_error",
+  "description": "zInput::DI_ReportError returns success for DI_OK, maps failing DirectInput HRESULTs to report text, and reports failures through zError::ReportOld.",
+  "address": "0x472490",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_directinput_report_error_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zinput_directinput_report_error",
+  "known_limits": [
+    "Reviewed VC byte comparison from python tools/recoil_vc6_verify.py zinput_directinput_report_error failed under VC5SP3 11.00.7022 /O2 /Ob0 /Zp4: 445 unmasked mismatches, 16 relocation-masked bytes, BN size 469, VC object size 96, 1 trailing VC NOP trimmed; see build/vc6-verify/zinput_directinput_report_error/verify/472490_byte_triage.txt.",
+    "The reviewed byte drift is source-organization shape: the current source factors DirectInput HRESULT-name mapping into GetDirectInputErrorName, while the original inlines the ordered compare tree inside zInput::DI_ReportError."
+  ]
+}

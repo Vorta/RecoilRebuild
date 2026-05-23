@@ -1,0 +1,14 @@
+{
+  "name": "recoil_app_main_menu_prep_on_update_should_quit",
+  "description": "RecoilApp_MainMenuPrepState::OnUpdateShouldQuit queues the global main-menu transition state with the frontend route and returns 0.",
+  "address": "0x42eb60",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_main_menu_prep_on_update_should_quit_smoke",
+    "recoil_state_main_menu_transition_queue_enter_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py recoil_app_create_main_wnd",
+  "known_limits": [
+    "VC5SP3 compile-only target coverage exists through recoil_app_create_main_wnd; Binary Ninja byte comparison remains pending for the RecoilApp state cluster."
+  ]
+}

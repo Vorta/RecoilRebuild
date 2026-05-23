@@ -1,0 +1,18 @@
+{
+  "name": "zimage_font_measure_string",
+  "description": "zImage_Font::MeasureString computes the widest line width and total line advance for a NUL-terminated string, including spaces, CR/LF handling, glyph fallback, and null-font no-op.",
+  "address": "0x46f260",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "smoke_tests": [
+    "zimage_font_measure_string_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x46f260",
+  "known_limits": [
+    "Depends on zImage_Font::GetByIndexOrDefault, which is covered by the same smoke and is binary-safe.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?MeasureString@zImage_Font@@SIXPBDHPAH1@Z at 0x46f260 still fails: 133 unmasked mismatches, 4 relocation bytes masked, 14 trailing VC NOP bytes trimmed, Binary Ninja body is 147 bytes and the VC object symbol is 160 bytes. The drift is loop scheduling/register allocation around width and line-advance accumulation."
+  ],
+  "binary_safe_evidence": [
+    "Binary Ninja shows font lookup, null-font early return, image height as line advance, accumulation of space width and glyph widths, CR skip, LF line reset plus total advance, and writes to outWidthPx/outLineAdvance.",
+    "The native font measurement smoke validates space/glyph/newline measurement, table-slot fallback, and no-op behavior when no font is available."
+  ]
+}

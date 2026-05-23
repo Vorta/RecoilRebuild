@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_init_video_system",
+  "description": "zVideo::InitVideoSystem gates reentry, binds renderer dispatch, opens and applies a video mode through the active backend, performs hardware texture defaults, and refreshes cached client coordinates.",
+  "address": "0x4a75f0",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_init_video_system_reentry_guard_smoke",
+    "zvideo_bind_renderer_dispatch_smoke",
+    "zvideo_mode_geometry_and_set_video_mode_smoke",
+    "zvideo_shutdown_video_system_smoke",
+    "zvid_cached_client_rect_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zvideo_init_video_system",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?InitVideoSystem@zVideo@@YIHPAXHHH@Z at 0x4a75f0 still fails: 3 unmasked mismatches, 92 relocation bytes masked, 12 trailing VC NOP bytes trimmed, BN size 260 bytes, VC object symbol size 272 bytes.",
+    "Reviewed byte drift is limited to the final success epilogue after UpdateCachedClientRectScreenCoords: original zeroes eax before popping edi, while VC5SP3 pops edi before zeroing eax. The quad-batch specular loop has been source-shaped to match the original unrolled four-store pattern.",
+    "Functional coverage is dispatch/provider limited: the reentry guard is tested directly, and direct callees plus renderer dispatch state are tested with focused smokes. Full successful zVideo::InitVideoSystem execution reaches DirectDraw OpenVideoMode and host video providers, so deterministic success is deferred to the zVideo_dd backend/provider pass."
+  ]
+}

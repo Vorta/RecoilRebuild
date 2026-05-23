@@ -1,0 +1,38 @@
+{
+  "name": "zrndr_span_occlusion_rasterize",
+  "description": "zRndr span-occlusion polygon rasterizer.",
+  "source_filename": "zRndr.cpp",
+  "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+  "compiler_flags": [
+    "/nologo",
+    "/TP",
+    "/W3",
+    "/G5",
+    "/O2",
+    "/Ob0",
+    "/Zp4",
+    "/FAcs",
+    "/I",
+    "."
+  ],
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zRndr",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zRndr/zRndr.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4927d0",
+      "symbol": "?SpanOcclusionRasterizeOccluderPoly@zRndr@@YIXPAUSpanOccluderPolyPartial@1@H@Z",
+      "name": "zRndr::SpanOcclusionRasterizeOccluderPoly"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zRndr/zRndr.cpp"
+}

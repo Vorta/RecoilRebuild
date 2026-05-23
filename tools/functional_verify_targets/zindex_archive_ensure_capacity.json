@@ -1,0 +1,14 @@
+{
+  "name": "zindex_archive_ensure_capacity",
+  "description": "zIndexArchive::EnsureCapacity grows the records array to max(recordCapacity * 2, requiredCount + 1), stores the new capacity, and reallocates the record buffer.",
+  "address": "0x4a62f0",
+  "source_from": "src/GameZRecoil/zReader/zreader_load.cpp",
+  "smoke_tests": [
+    "zreader_mount_index_archive_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a62f0",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?EnsureCapacity@zIndexArchive@@QAEXI@Z at 0x4a62f0 still fails: 13 unmasked mismatches, 4 relocation bytes masked, 9 trailing VC NOP bytes trimmed, BN size 56 bytes, VC object symbol size 64 bytes.",
+    "Reviewed difference is call/import and branch-label/epilogue shape around realloc; the native archive mount smoke exercises the first-growth path from LoadIndexFromTail and validates record lookup/open behavior after the grow."
+  ]
+}

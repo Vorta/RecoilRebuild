@@ -1,0 +1,126 @@
+{
+  "name": "zinput_bindmap_context",
+  "description": "zInput bind-map context allocation, binding lookup, callback dispatch setup, name-table initialization, and system bootstrap helpers.",
+  "source_filename": "zInput.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zGame",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zInput/zInput.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42a000",
+      "symbol": "?BindGroupInfo_Destroy@zInput@@YIXPAUzInput_BindGroupInfo@@@Z",
+      "name": "zInput::BindGroupInfo_Destroy"
+    },
+    {
+      "address": "0x429f80",
+      "symbol": "?BindGroupList_Clear@zInput@@YAXXZ",
+      "name": "zInput::BindGroupList_Clear"
+    },
+    {
+      "address": "0x4706c0",
+      "symbol": "?InitFromTemplate@zInput_BindMapContext@@QAEPAU1@PBU1@@Z",
+      "name": "zInput_BindMapContext::InitFromTemplate"
+    },
+    {
+      "address": "0x4707a0",
+      "symbol": "?FreeAllBuffers@zInput_BindMapContext@@QAEXXZ",
+      "name": "zInput_BindMapContext::FreeAllBuffers"
+    },
+    {
+      "address": "0x470820",
+      "symbol": "?RebuildLookupIndices@zInput_BindMapContext@@QAEXXZ",
+      "name": "zInput_BindMapContext::RebuildLookupIndices"
+    },
+    {
+      "address": "0x470960",
+      "symbol": "?FreeNonOwnedBuffers@zInput_BindMapContext@@QAEXXZ",
+      "name": "zInput_BindMapContext::FreeNonOwnedBuffers"
+    },
+    {
+      "address": "0x4708f0",
+      "symbol": "?InitCommandMap@zInput_BindMapContext@@QAEXH@Z",
+      "name": "zInput_BindMapContext::InitCommandMap"
+    },
+    {
+      "address": "0x4709d0",
+      "symbol": "?ResetAllBindings@zInput_BindMapContext@@QAEXXZ",
+      "name": "zInput_BindMapContext::ResetAllBindings"
+    },
+    {
+      "address": "0x470a10",
+      "symbol": "?BindMap_PackBindingCode@zInput@@YIHHHHH@Z",
+      "name": "zInput::BindMap_PackBindingCode"
+    },
+    {
+      "address": "0x470a40",
+      "symbol": "?GetPrimaryKeyboardKey@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::GetPrimaryKeyboardKey"
+    },
+    {
+      "address": "0x470a60",
+      "symbol": "?GetSecondaryKeyboardKey@zInput_BindMapContext@@QAEHH@Z",
+      "name": "zInput_BindMapContext::GetSecondaryKeyboardKey"
+    },
+    {
+      "address": "0x470df0",
+      "symbol": "?SetCommandCallback@zInput_BindMapContext@@QAEHHP6AXXZ@Z",
+      "name": "zInput_BindMapContext::SetCommandCallback"
+    },
+    {
+      "address": "0x46f9b0",
+      "symbol": "?Keyboard_RegisterKeyCallback@zInput@@YIHHPAXPBD@Z",
+      "name": "zInput::Keyboard_RegisterKeyCallback"
+    },
+    {
+      "address": "0x42a550",
+      "symbol": "?BindMap_InitDefaultBindings@zInput@@YAHXZ",
+      "name": "zInput::BindMap_InitDefaultBindings"
+    },
+    {
+      "address": "0x4710a0",
+      "symbol": "?BindMapSystem_Init@zInput@@YIXH@Z",
+      "name": "zInput::BindMapSystem_Init"
+    },
+    {
+      "address": "0x471660",
+      "symbol": "?BindMapSystem_Shutdown@zInput@@YAXXZ",
+      "name": "zInput::BindMapSystem_Shutdown"
+    },
+    {
+      "address": "0x471120",
+      "symbol": "?BindMap_InitDikKeyNameTable@zInput@@YAXXZ",
+      "name": "zInput::BindMap_InitDikKeyNameTable"
+    },
+    {
+      "address": "0x4715e0",
+      "symbol": "?BindMap_InitJoystickButtonNameTable@zInput@@YAXXZ",
+      "name": "zInput::BindMap_InitJoystickButtonNameTable"
+    },
+    {
+      "address": "0x471640",
+      "symbol": "?BindMap_InitMouseButtonNameTable@zInput@@YAXXZ",
+      "name": "zInput::BindMap_InitMouseButtonNameTable"
+    },
+    {
+      "address": "0x4716b0",
+      "symbol": "?BindMap_Current_RebuildLookupIndices@zInput@@YAXXZ",
+      "name": "zInput::BindMap_Current_RebuildLookupIndices"
+    },
+    {
+      "address": "0x471950",
+      "symbol": "?BindMapContext_Pop@zInput@@YAXXZ",
+      "name": "zInput::BindMapContext_Pop"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp"
+}

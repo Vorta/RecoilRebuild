@@ -34,6 +34,56 @@
       "symbol": "?Constructor@HudUiElement@@QAEPAU1@HH@Z",
       "name": "HudUiElement::Constructor",
       "bn_byte_length": 66
+    },
+    {
+      "address": "0x4b40c0",
+      "symbol": "?CopyConstructor@HudUiElement@@QAEPAU1@PBU1@@Z",
+      "name": "HudUiElement::CopyConstructor"
+    },
+    {
+      "address": "0x4b4120",
+      "symbol": "?CopyFrom@HudUiElement@@QAEPAU1@PBU1@@Z",
+      "name": "HudUiElement::CopyFrom"
+    },
+    {
+      "address": "0x4bcbe0",
+      "symbol": "?CopyConstructor@HudUiTextLabel@@QAEPAU1@PBU1@@Z",
+      "name": "HudUiTextLabel::CopyConstructor"
+    },
+    {
+      "address": "0x4bcc80",
+      "symbol": "?Constructor@HudUiTextLabel@@QAEPAU1@PBU1@@Z",
+      "name": "HudUiTextLabel::Constructor"
+    },
+    {
+      "address": "0x4ba850",
+      "symbol": "?CopyConstructCore@HudUiPanel@@QAEPAU1@PBU1@@Z",
+      "name": "HudUiPanel::CopyConstructCore"
+    },
+    {
+      "address": "0x4ba9e0",
+      "symbol": "?ConstructorCopy@HudUiPanel@@QAEPAU1@PBU1@@Z",
+      "name": "HudUiPanel::ConstructorCopy"
+    },
+    {
+      "address": "0x4bc3a0",
+      "symbol": "?AssignCopy@HudUiCompositePanelEntry@@QAEPAU1@PBU1@@Z",
+      "name": "HudUiCompositePanelEntry::AssignCopy"
+    },
+    {
+      "address": "0x4bc410",
+      "symbol": "?ConstructorCopy@HudUiCompositePanelEntry@@QAEPAU1@PBU1@@Z",
+      "name": "HudUiCompositePanelEntry::ConstructorCopy"
+    },
+    {
+      "address": "0x4bc320",
+      "symbol": "?ConstructorCopyRange@HudUiCompositePanelEntry@@SIPAU1@PBU1@0PAU1@@Z",
+      "name": "HudUiCompositePanelEntry::ConstructorCopyRange"
+    },
+    {
+      "address": "0x4bbff0",
+      "symbol": "?InsertCopies@HudUiCompositePanelVector@@QAEXPAUHudUiCompositePanelEntry@@IPBU2@@Z",
+      "name": "HudUiCompositePanelVector::InsertCopies"
     }
   ]
 }

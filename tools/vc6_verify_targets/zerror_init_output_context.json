@@ -1,0 +1,25 @@
+{
+  "name": "zerror_init_output_context",
+  "description": "zError output-context initializer.",
+  "source_filename": "zerr_old.c",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zError/zerr_old.c"
+  ],
+  "functions": [
+    {
+      "address": "0x462310",
+      "symbol": "?InitOutputContext@zError@@YIHPAXHPBD@Z",
+      "name": "zError::InitOutputContext"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zError/zerr_old.c"
+}

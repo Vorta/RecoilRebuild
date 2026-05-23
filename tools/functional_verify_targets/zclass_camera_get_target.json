@@ -1,0 +1,14 @@
+{
+  "name": "zclass_camera_get_target",
+  "description": "zClass_Camera::gwCameraGetTarget validates a camera node and copies either targetOrEuler or worldTarget based on the selected target flag.",
+  "address": "0x44a250",
+  "source_from": "src/GameZRecoil/zClass/Camera.c",
+  "smoke_tests": [
+    "zclass_camera_view_distance_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zclass_camera_get_position_target",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?gwCameraGetTarget@zClass_Camera@@YIHPAUzClass_NodePartial@@PAM11@Z at 0x44a250 currently fails with 138 unmasked mismatches, 8 relocation bytes masked, and 9 VC NOP bytes trimmed; Binary Ninja body is 149 bytes and the VC object symbol is 96 bytes.",
+    "The reviewed drift is source-shape/codegen: the original body inlines the camera validation and target-vector selection branch, while the current source calls shared helpers. The native smoke verifies the default target path, the worldTarget flag path, and the null-camera error return."
+  ]
+}

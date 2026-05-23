@@ -1,0 +1,27 @@
+{
+  "name": "recoil_app_shutdown_subsystems",
+  "description": "RecoilApp::ShutdownSubsystems invokes the input, image, ZRDR, video scratch, effects, option catalog, class, model display, sound, and ZRDR node-pool shutdown fan-out, then returns through the final node-pool cleanup tail call.",
+  "address": "0x442bc0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "zinput_shutdown_smoke",
+    "zimage_shutdown_texdir_smoke",
+    "zreader_zrdr_shutdown_smoke",
+    "zvideo_frame_scratch_buffers_smoke",
+    "zeffect_shutdown_all_smoke",
+    "zweapon_optcatalog_shutdown_smoke",
+    "zclass_shutdown_core_smoke",
+    "zmodel_display_shutdown_smoke",
+    "zsnd_stream_mgr_shutdown_lists_smoke",
+    "zsnd_backend_shutdown_release_smoke",
+    "zsnd_cd_shutdown_track_list_smoke",
+    "zsnd_sample_set_registry_init_shutdown_smoke",
+    "zsnd_fade_lists_stop_all_shutdown_smoke",
+    "zreader_zrdr_free_node_pool_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x442bc0",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /DUINT_PTR=UINT /FAcs COFF byte comparison for ?ShutdownSubsystems@RecoilApp@@SAHXZ at 0x442bc0 still fails: 4 unmasked mismatches, 44 relocation bytes masked, 6 trailing VC NOP bytes trimmed, BN size 55 bytes, VC object symbol size 64 bytes.",
+    "Cold-calling the aggregate wrapper is not runtime-safe in the native smoke harness because several subsystem globals require initialized provider state. The functional target verifies every direct shutdown dependency and records the wrapper byte-compare failure."
+  ]
+}

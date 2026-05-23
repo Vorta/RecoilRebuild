@@ -1,0 +1,14 @@
+{
+  "name": "zvideo_pixel_pack_get_rgb_bits",
+  "description": "zVideo::PixelPack_GetRgbBits returns the cached RGB channel bit counts.",
+  "address": "0x4a6b90",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_pixel_pack_getters_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a6b90",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /Zp4 /FAcs COFF byte comparison passed for ?PixelPack_GetRgbBits@zVideo@@YIXPAH00@Z at 0x4a6b90 with zero unmasked mismatches after masking 12 relocation bytes; 3 trailing VC NOP bytes trimmed."
+  ]
+}

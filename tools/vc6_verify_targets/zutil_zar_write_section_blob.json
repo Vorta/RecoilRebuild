@@ -1,0 +1,31 @@
+{
+  "name": "zutil_zar_write_section_blob",
+  "description": "ZBD/ZAR write-section forwarding helpers.",
+  "source_filename": "zZbd.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zReader",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUtil/zZbd.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4c0010",
+      "symbol": "?WriteSectionBlob@zUtil_ZAR@@YIHPAUzZbdSectionCallbackCtx@@PBDPBXI@Z",
+      "name": "zUtil_ZAR::WriteSectionBlob"
+    },
+    {
+      "address": "0x4c0630",
+      "symbol": "?WriteSectionRecord@zZbdManager@@QAEHPAUzZbdSectionCallbackCtx@@PBDPBXI@Z",
+      "name": "zZbdManager::WriteSectionRecord"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zUtil/zZbd.cpp"
+}

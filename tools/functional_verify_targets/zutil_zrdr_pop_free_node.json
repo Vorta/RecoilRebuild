@@ -1,0 +1,15 @@
+{
+  "name": "zutil_zrdr_pop_free_node",
+  "description": "zUtil_ZRDR::PopFreeNode removes the free-pool head node, optionally grows the pool when allowed, maintains the circular list, and updates free/grow counters.",
+  "address": "0x48c8e0",
+  "source_from": "src/GameZRecoil/zReader/zreader_load.cpp",
+  "smoke_tests": [
+    "zreader_prealloc_and_pop_front_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x48c8e0",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for @zUtil_ZRDR_PopFreeNode@4 at 0x48c8e0 still fails: 79 unmasked mismatches, 22 relocation bytes masked, 4 trailing VC NOP bytes trimmed, BN size 105 bytes, VC object symbol size 112 bytes.",
+    "Reviewed difference is local register allocation and counter-update scheduling: VC saves edi and places the null-return block before the grow path, while the original keeps only esi live and branches to the null-return epilogue.",
+    "The native smoke exercises preallocated pop, grow-on-demand through payload pushes, singleton and multi-node removal, null pop, and free-count restoration."
+  ]
+}

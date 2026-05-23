@@ -1,0 +1,26 @@
+{
+  "name": "zvideo_dd_run_directdraw_device_enumeration",
+  "description": "zVideo DirectDraw device enumeration wrapper.",
+  "source_filename": "zVideo.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zVideo/zVideo.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4a9390",
+      "symbol": "?RunDirectDrawDeviceEnumeration@zVideo_dd@@YAHXZ",
+      "name": "zVideo_dd::RunDirectDrawDeviceEnumeration"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp"
+}

@@ -1,0 +1,46 @@
+{
+  "name": "zutil_zar_register_section_handler",
+  "description": "ZBD/ZAR section handler registration helpers.",
+  "source_filename": "zZbd.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zReader",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zUtil/zZbd.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4c0100",
+      "symbol": "?ZBD_Init@zUtil@@YAHXZ",
+      "name": "zUtil::ZBD_Init"
+    },
+    {
+      "address": "0x4c0180",
+      "symbol": "?ZBD_DestroyGlobalManager@zUtil@@YAXXZ",
+      "name": "zUtil::ZBD_DestroyGlobalManager"
+    },
+    {
+      "address": "0x4c01b0",
+      "symbol": "?Destroy@zZbdManager@@QAEXXZ",
+      "name": "zZbdManager::Destroy"
+    },
+    {
+      "address": "0x4c0280",
+      "symbol": "?RegisterSectionHandler@zZbdManager@@QAEXPBDPAX1H1@Z",
+      "name": "zZbdManager::RegisterSectionHandler"
+    },
+    {
+      "address": "0x4bffe0",
+      "symbol": "?RegisterSectionHandler@zUtil_ZAR@@YIXPBDPAX1H1@Z",
+      "name": "zUtil_ZAR::RegisterSectionHandler"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zUtil/zZbd.cpp"
+}

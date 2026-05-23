@@ -1,0 +1,15 @@
+{
+  "name": "briefing_runtime_constructor",
+  "description": "HudUiBriefingRuntime::Constructor initializes the briefing background, action queue, progress widgets, panels, locators, ZRD binding path, and first-frame update side effects.",
+  "address": "0x403930",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "smoke_tests": [
+    "briefing_runtime_constructor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py briefing_runtime_constructor",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /MD /GX /Zp4 /FAcs COFF byte comparison for ?Constructor@HudUiBriefingRuntime@@QAEPAU1@H@Z at 0x403930 still fails: 370 unmasked mismatches, 244 relocation bytes masked, 4 trailing VC NOP bytes trimmed, BN size 736 bytes, VC object symbol size 720 bytes.",
+    "Reviewed triage shows function-entry, size, EH cleanup/prologue, and broad constructor call-shape drift. This remains functional-only until the briefing runtime/HUD class cluster receives a binary-safe pass.",
+    "The native smoke verifies the real constructor through the first-frame update path with video/sound/time globals isolated. Destructor cleanup is intentionally left to the separate HudUiBriefingRuntime::Destructor tracker."
+  ]
+}

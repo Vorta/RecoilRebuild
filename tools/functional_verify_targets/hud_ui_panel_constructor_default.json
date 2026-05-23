@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_panel_constructor_default",
+  "description": "HudUiPanel::ConstructorDefault initializes a panel from the text-label constructor, installs the panel ftable, assigns default colors/font/text metrics/wrap/shadow fields, and returns self.",
+  "address": "0x4ba740",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_panel_constructor_default_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4ba740",
+  "known_limits": [
+    "Depends on HudUiTextLabel::ConstructorWithPosAndFlags, which is functionally accepted but remains binary-safe debt.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /GX /Zp4 /FAcs COFF byte comparison for ?ConstructorDefault@HudUiPanel@@QAEPAU1@PBDHH@Z at 0x4ba740 still fails: 218 unmasked mismatches, 12 relocation bytes masked, 9 trailing VC NOP bytes trimmed, Binary Ninja body is 240 bytes and the VC object symbol is 208 bytes."
+  ],
+  "binary_safe_evidence": [
+    "Binary Ninja shows the text-label constructor call, panel ftable install, textPick null, default white colors, dirty flag, OEM_FIXED_FONT stock object, wrap/metric/shadow field initialization, and return self.",
+    "The native panel constructor smoke validates ftable identity, text, position, null textPick, default colors, stock font handle, cached text state, metric defaults, wrap rect pointer, and shadow/wrap fields."
+  ]
+}

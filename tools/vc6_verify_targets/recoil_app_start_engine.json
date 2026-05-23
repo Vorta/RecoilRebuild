@@ -1,0 +1,58 @@
+{
+  "name": "recoil_app_start_engine",
+  "description": "RecoilApp main engine startup sequence.",
+  "source_filename": "RecoilApp.cpp",
+  "compiler_profile": "vc5_o2_ob1_gx_uintptr_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zRndr",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x42e220",
+      "symbol": "?StartEngine@RecoilApp@@QAEHI@Z",
+      "name": "RecoilApp::StartEngine"
+    },
+    {
+      "address": "0x442bc0",
+      "symbol": "?ShutdownSubsystems@RecoilApp@@SAHXZ",
+      "name": "RecoilApp::ShutdownSubsystems"
+    },
+    {
+      "address": "0x42e430",
+      "symbol": "?ShutdownEngine@RecoilApp@@QAEXXZ",
+      "name": "RecoilApp::ShutdownEngine"
+    },
+    {
+      "address": "0x42e490",
+      "symbol": "?LoadZbdAndStartEngine@RecoilApp@@QAEHXZ",
+      "name": "RecoilApp::LoadZbdAndStartEngine"
+    },
+    {
+      "address": "0x42e4d0",
+      "symbol": "?LoadZbdAndSetupSensorTracker@RecoilApp@@QAEHHPBDHH@Z",
+      "name": "RecoilApp::LoadZbdAndSetupSensorTracker"
+    },
+    {
+      "address": "0x443160",
+      "symbol": "?QueueSwitchCurrentState@RecoilApp@@QAEIPAURecoilApp_IState@@H@Z",
+      "name": "RecoilApp::QueueSwitchCurrentState"
+    },
+    {
+      "address": "0x442c10",
+      "symbol": "?StartEngineAndQueueStartupState@RecoilApp@@QAEHXZ",
+      "name": "RecoilApp::StartEngineAndQueueStartupState"
+    }
+  ],
+  "source_from": "src/Battlesport/RecoilApp.cpp"
+}

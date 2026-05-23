@@ -1,0 +1,13 @@
+{
+  "name": "zgame_options_load_game_options",
+  "description": "zGame::Options_LoadGameOptions creates gameplay/video/audio/input options, applies detail-profile defaults, loads registry overrides, rebuilds bindings, and releases the detail tree.",
+  "address": "0x407700",
+  "source_from": "src/GameZRecoil/zGame/zGame.cpp",
+  "smoke_tests": [
+    "zgame_options_load_game_options_minimal_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x407700",
+  "known_limits": [
+    "The smoke verifies the minimal detail.zrd/default path, option creation, default bind groups, network reset, and cleanup. Binary-safe verification and full retail detail-profile coverage remain pending."
+  ]
+}

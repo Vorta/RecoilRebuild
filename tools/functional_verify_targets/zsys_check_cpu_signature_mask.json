@@ -1,0 +1,14 @@
+{
+  "name": "zsys_check_cpu_signature_mask",
+  "description": "zSys::CheckCpuSignatureMask reads CPUID leaf 1 and returns whether the original CPU signature mask is present.",
+  "address": "0x4b3050",
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+  "smoke_tests": [
+    "zsys_cpuid_mmx_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4b3050",
+  "known_limits": [
+    "VC6 12.00.8168 /O2 /Ob0 /Zp4 raw-CPU manifest COFF byte compare fails with 58 unmasked mismatches because the current portable source uses the compiler __cpuid helper shape, while the original inlines CPUID leaf 1 with explicit EBX/ECX/EDX preservation.",
+    "The native smoke verifies that the function returns a normalized boolean on the runtime CPU."
+  ]
+}

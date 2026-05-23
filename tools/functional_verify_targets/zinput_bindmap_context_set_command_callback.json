@@ -1,0 +1,13 @@
+{
+  "name": "zinput_bindmap_context_set_command_callback",
+  "description": "zInput_BindMapContext::SetCommandCallback stores command callbacks and registers keyboard dispatch callbacks for primary and secondary bindings.",
+  "address": "0x470df0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_bindmap_context_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x470df0",
+  "known_limits": [
+    "The smoke verifies command callback storage, keyboard registration side effects, and dispatch through the active bind-map context. Binary-safe verification remains pending for exact call/register allocation."
+  ]
+}

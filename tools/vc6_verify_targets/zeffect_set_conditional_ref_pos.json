@@ -1,0 +1,29 @@
+{
+  "name": "zeffect_set_conditional_ref_pos",
+  "description": "zEffect conditional reference-position setter.",
+  "source_filename": "zEffect.cpp",
+  "compiler_profile": "vc5_o2_ob0_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zModel",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/GameZRecoil/zEffect/zEffect.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x458af0",
+      "symbol": "?SetConditionalRefPos@zEffect@@YIXPBUzVec3@@@Z",
+      "name": "zEffect::SetConditionalRefPos"
+    }
+  ],
+  "source_from": "src/GameZRecoil/zEffect/zEffect.cpp"
+}

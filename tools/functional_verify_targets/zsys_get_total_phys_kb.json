@@ -1,0 +1,13 @@
+{
+  "name": "zsys_get_total_phys_kb",
+  "description": "zSys::GetTotalPhysKb returns total physical memory in KiB via GlobalMemoryStatus.",
+  "address": "0x4b3230",
+  "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+  "smoke_tests": [
+    "zsys_runtime_probe_leaves_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4b3230",
+  "known_limits": [
+    "The smoke verifies that the returned physical-memory value is nonzero on the test host."
+  ]
+}

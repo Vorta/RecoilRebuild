@@ -1,0 +1,14 @@
+{
+  "name": "hud_ui_loading_checkpoint_init_table",
+  "description": "HudUiLoadingCheckpoint::InitTable initializes the 19 raw checkpoint-second values, resets the current index, stores max index 18, and fills normalized progress as raw * progress scale.",
+  "address": "0x414210",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_loading_checkpoint_init_table_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py hud_ui_mgr_trigger_current_layout_on_activated",
+  "known_limits": [
+    "Binary Ninja reconstruction is limited by the raw/normalized two-array cursor relationship in the x87 normalization loop, but assembly and current smoke evidence agree on the table contract.",
+    "VC5SP3 compile-only target coverage exists through hud_ui_mgr_trigger_current_layout_on_activated; Binary Ninja byte comparison remains pending for the HUD loading-checkpoint cluster."
+  ]
+}

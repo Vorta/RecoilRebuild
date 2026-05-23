@@ -1,0 +1,14 @@
+{
+  "name": "zinput_mouse_addref",
+  "description": "zInput::Mouse_AddRef conditionally resets mouse transition state, increments the mouse poll reference count, and returns the 16-bit count.",
+  "address": "0x471da0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_keyboard_mouse_addref_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zinput_refcount_helpers",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?Mouse_AddRef@zInput@@YAHXZ at 0x471da0 with zero unmasked mismatches after masking 20 relocation bytes; 6 trailing VC NOP bytes trimmed."
+  ]
+}

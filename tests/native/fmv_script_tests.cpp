@@ -1,6 +1,8 @@
 #include "GameZRecoil/zFMV/fmv.h"
+#include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zRndr/zRndr.h"
+#include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstdio>
@@ -15,6 +17,12 @@ extern "C" std::int32_t g_zFMV_ActionImage_BlitRectH;
 namespace {
 int g_deletedCount;
 std::uint32_t g_lastDeleteFlags;
+int g_beginCallCount;
+int g_updateCallCount;
+int g_endCallCount;
+double g_lastBeginTimeSec;
+double g_lastUpdateTimeSec;
+int g_nextUpdateResult;
 
 struct TestAction : zFMV_Action {
     zFMV_Action *RECOIL_THISCALL Delete(std::uint32_t flags) {
@@ -22,20 +30,95 @@ struct TestAction : zFMV_Action {
         g_lastDeleteFlags = flags;
         return this;
     }
+
+    void RECOIL_THISCALL Begin(double timeSec) {
+        ++g_beginCallCount;
+        g_lastBeginTimeSec = timeSec;
+    }
+
+    int RECOIL_THISCALL Update(double timeSec) {
+        ++g_updateCallCount;
+        g_lastUpdateTimeSec = timeSec;
+        return g_nextUpdateResult;
+    }
+
+    void RECOIL_THISCALL End() {
+        ++g_endCallCount;
+    }
 };
 
 zFMV_Action_Vtbl MakeTestActionVtable() {
-    union MemberToFunction {
+    union DeleteMemberToFunction {
         zFMV_Action *(RECOIL_THISCALL TestAction::*member)(std::uint32_t);
         zFMV_Action *(RECOIL_THISCALL *function)(zFMV_Action *, std::uint32_t);
     };
 
-    MemberToFunction thunk{};
-    thunk.member = &TestAction::Delete;
-    return zFMV_Action_Vtbl{thunk.function};
+    union BeginMemberToFunction {
+        void (RECOIL_THISCALL TestAction::*member)(double);
+        void (RECOIL_THISCALL *function)(zFMV_Action *, double);
+    };
+
+    union UpdateMemberToFunction {
+        int (RECOIL_THISCALL TestAction::*member)(double);
+        int (RECOIL_THISCALL *function)(zFMV_Action *, double);
+    };
+
+    union EndMemberToFunction {
+        void (RECOIL_THISCALL TestAction::*member)();
+        void (RECOIL_THISCALL *function)(zFMV_Action *);
+    };
+
+    DeleteMemberToFunction deleteThunk{};
+    deleteThunk.member = &TestAction::Delete;
+    BeginMemberToFunction beginThunk{};
+    beginThunk.member = &TestAction::Begin;
+    UpdateMemberToFunction updateThunk{};
+    updateThunk.member = &TestAction::Update;
+    EndMemberToFunction endThunk{};
+    endThunk.member = &TestAction::End;
+
+    zFMV_Action_Vtbl vtable{};
+    vtable.ScalarDeletingDestructor = deleteThunk.function;
+    vtable.Update = updateThunk.function;
+    vtable.Begin = beginThunk.function;
+    vtable.End = endThunk.function;
+    return vtable;
 }
 
 zFMV_Action_Vtbl g_testActionVtable = MakeTestActionVtable();
+
+void SetupFmvBeginDependencies(zSndSampleSetRegistry &oldRegistry,
+                               zSndSampleSet *(&oldBegin)[1],
+                               zSndSampleSet &fmvSet) {
+    oldRegistry = g_zSnd_SampleSetRegistry;
+    oldBegin[0] = &fmvSet;
+    fmvSet = {};
+    fmvSet.setName = const_cast<char *>("FMV");
+    g_zSnd_SampleSetRegistry.begin = oldBegin;
+    g_zSnd_SampleSetRegistry.end = oldBegin + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = oldBegin + 1;
+    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
+    g_zVideo_PrimarySurfaceState.pixels = reinterpret_cast<void *>(0x12340000);
+    g_zVideo_PrimarySurfaceState.width = 320;
+    g_zVideo_PrimarySurfaceState.height = 200;
+    g_zVideo_PrimarySurfaceState.pitch = 640;
+    g_zVideo_FxSurfacePixels16 = nullptr;
+    g_zVideo_FxSurfaceWidth = 0;
+    g_zVideo_FxSurfaceHeight = 0;
+    g_zVideo_FxSurfacePitchBytes = 0;
+    g_zVideo_FxSurfacePitchPixels16 = 0;
+    g_zInput_KbdSystemReady = 0;
+    g_beginCallCount = 0;
+    g_updateCallCount = 0;
+    g_endCallCount = 0;
+    g_lastBeginTimeSec = -1.0;
+    g_lastUpdateTimeSec = -1.0;
+    g_nextUpdateResult = 1;
+}
+
+void RestoreFmvBeginDependencies(const zSndSampleSetRegistry &oldRegistry) {
+    g_zSnd_SampleSetRegistry = oldRegistry;
+}
 
 void WriteU32(HANDLE file, std::uint32_t value) {
     DWORD written = 0;
@@ -186,6 +269,132 @@ extern "C" int zfmv_script_run_blocking_empty_smoke(void) {
 
     const std::int32_t result = script.RunBlocking(1);
     return result == 1 && script.m_abortOnKey == 1 && script.m_cur == nullptr ? 0 : 1;
+}
+
+extern "C" int zfmv_script_begin_current_action_smoke(void) {
+    zFMV_Script emptyScript{};
+    if (emptyScript.BeginCurrentAction(12.5) != 0) {
+        return 1;
+    }
+
+    zSndSampleSetRegistry oldRegistry{};
+    zSndSampleSet *sampleSetSlots[1] = {};
+    zSndSampleSet fmvSet{};
+    SetupFmvBeginDependencies(oldRegistry, sampleSetSlots, fmvSet);
+
+    TestAction action{{&g_testActionVtable, nullptr}};
+    zFMV_Script script{};
+    script.m_cur = &action;
+    const int result = script.BeginCurrentAction(42.25);
+
+    const bool ok = result == 1 && script.m_startTimeSec == 42.25 && g_beginCallCount == 1 &&
+                    g_lastBeginTimeSec == 0.0 &&
+                    g_zVideo_FxSurfacePixels16 ==
+                        reinterpret_cast<unsigned short *>(0x12340000) &&
+                    g_zVideo_FxSurfaceWidth == 320 && g_zVideo_FxSurfaceHeight == 200 &&
+                    g_zVideo_FxSurfacePitchBytes == 640 &&
+                    g_zVideo_FxSurfacePitchPixels16 == 320 && fmvSet.resourcesLoaded == 1;
+
+    RestoreFmvBeginDependencies(oldRegistry);
+    return ok ? 0 : 2;
+}
+
+extern "C" int zfmv_script_begin_at_time_smoke(void) {
+    zSndSampleSetRegistry oldRegistry{};
+    zSndSampleSet *sampleSetSlots[1] = {};
+    zSndSampleSet fmvSet{};
+    SetupFmvBeginDependencies(oldRegistry, sampleSetSlots, fmvSet);
+
+    TestAction action{{&g_testActionVtable, nullptr}};
+    zFMV_Script script{};
+    script.m_cur = &action;
+    const int result = script.BeginAtTime();
+
+    const bool ok = result == 1 && script.m_startTimeSec >= 0.0 && g_beginCallCount == 1 &&
+                    g_lastBeginTimeSec == 0.0 && fmvSet.resourcesLoaded == 1;
+
+    RestoreFmvBeginDependencies(oldRegistry);
+    return ok ? 0 : 1;
+}
+
+extern "C" int zfmv_script_update_smoke(void) {
+    zFMV_Script emptyScript{};
+    if (emptyScript.Update(12.0) != 0) {
+        return 1;
+    }
+
+    g_updateCallCount = 0;
+    g_endCallCount = 0;
+    g_beginCallCount = 0;
+    g_lastUpdateTimeSec = -1.0;
+    g_lastBeginTimeSec = -1.0;
+    g_nextUpdateResult = 1;
+
+    TestAction action1{{&g_testActionVtable, nullptr}};
+    TestAction action2{{&g_testActionVtable, nullptr}};
+    action1.next = &action2;
+
+    zFMV_Script script{};
+    script.m_startTimeSec = 10.0;
+    script.m_abortOnKey = 0;
+    script.m_cur = &action1;
+
+    if (script.Update(12.5) != 1 || script.m_cur != &action1 || g_updateCallCount != 1 ||
+        g_lastUpdateTimeSec != 2.5 || g_endCallCount != 0 || g_beginCallCount != 0) {
+        return 2;
+    }
+
+    g_nextUpdateResult = 0;
+    if (script.Update(14.0) != 1 || script.m_cur != &action2 || g_updateCallCount != 2 ||
+        g_lastUpdateTimeSec != 4.0 || g_endCallCount != 1 || g_beginCallCount != 1 ||
+        g_lastBeginTimeSec != 4.0) {
+        return 3;
+    }
+
+    return 0;
+}
+
+extern "C" int zfmv_script_update_at_time_smoke(void) {
+    g_updateCallCount = 0;
+    g_endCallCount = 0;
+    g_nextUpdateResult = 1;
+
+    TestAction action{{&g_testActionVtable, nullptr}};
+    zFMV_Script script{};
+    script.m_startTimeSec = 0.0;
+    script.m_abortOnKey = 0;
+    script.m_cur = &action;
+
+    const int result = script.UpdateAtTime();
+    return result == 1 && script.m_cur == &action && g_updateCallCount == 1 &&
+                   g_lastUpdateTimeSec >= 0.0 && g_endCallCount == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int zfmv_script_begin_now_smoke(void) {
+    g_deletedCount = 0;
+
+    TestAction action1{{&g_testActionVtable, nullptr}};
+    TestAction action2{{&g_testActionVtable, nullptr}};
+    action1.next = &action2;
+
+    zFMV_Script script{};
+    script.m_head = &action1;
+    script.m_tail = &action2;
+    script.m_cur = nullptr;
+
+    script.BeginNow(0);
+    if (script.m_head != &action1 || script.m_tail != &action2 || script.m_cur != &action1 ||
+        g_deletedCount != 0) {
+        return 1;
+    }
+
+    script.BeginNow(1);
+    return script.m_head == nullptr && script.m_tail == nullptr && script.m_cur == nullptr &&
+                   g_deletedCount == 2
+               ? 0
+               : 2;
 }
 
 extern "C" int zfmv_action_image_constructor_with_screen_rect_smoke(void) {

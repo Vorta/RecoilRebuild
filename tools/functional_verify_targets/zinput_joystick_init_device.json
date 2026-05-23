@@ -1,0 +1,14 @@
+{
+  "name": "zinput_joystick_init_device",
+  "description": "zInput::DI_InitJoystickDevice enumerates the first joystick, configures DirectInput state, default axes, and acquisition.",
+  "address": "0x471e40",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_joystick_init_device_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zinput_joystick_init_device",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /Zp4 /FAcs COFF byte comparison for ?DI_InitJoystickDevice@zInput@@YIHPAX@Z at 0x471e40 still fails: 8 unmasked mismatches, 48 relocation bytes masked, 5 trailing VC NOP bytes trimmed, BN size 283 bytes, VC object symbol size 288 bytes.",
+    "Reviewed difference is final register-restore scheduling: VC pops edi before storing g_zInput_JoystickInitialized, while Binary Ninja shows the store before pop edi. The targeted smoke verifies enumeration, QueryInterface/Release, data format, capabilities flags, cooperative level, default axis property application, acquisition, and initialized state."
+  ]
+}

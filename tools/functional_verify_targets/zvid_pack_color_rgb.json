@@ -1,0 +1,18 @@
+{
+  "name": "zvid_pack_color_rgb",
+  "description": "zVid_PackColorRGB masks and shifts 8-bit RGB components into the active framebuffer pixel format using the global pixel-pack parameters.",
+  "address": "0x4a6cf0",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvid_pack_color_rgb_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a6cf0",
+  "known_limits": [
+    "Covered as part of the zVideo pixel-pack smoke alongside float packing and clear-color state.",
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for @zVid_PackColorRGB@12 at 0x4a6cf0 still fails: 69 unmasked mismatches, 20 relocation bytes masked, 6 trailing VC NOP bytes trimmed, Binary Ninja body is 71 bytes and the VC object symbol is 96 bytes."
+  ],
+  "binary_safe_evidence": [
+    "Binary Ninja shows red/green masks and shifts from globals plus blue right-shift by the global BShiftTo8 value, returning the ORed packed value.",
+    "The native zVideo pack-color smoke validates 5:6:5 packing from configured masks and shifts."
+  ]
+}

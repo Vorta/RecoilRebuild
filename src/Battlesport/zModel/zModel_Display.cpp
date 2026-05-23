@@ -64,6 +64,7 @@ int g_zModel_OptCatalogAux1 = 0;
 int gModel_DefaultGraphicsFlags = 0;
 void *g_zModel_GraphicsFlagsOption = 0;
 int g_Variant_FilterEnabled = 1;
+zTag4Partial g_VariantTag_Current = {0};
 zTag4Partial g_Variant_CurrentTag = {0};
 zDiPartial *g_zModel_DiPoolBase = 0;
 int g_zModel_DiPoolCapacity = 0;

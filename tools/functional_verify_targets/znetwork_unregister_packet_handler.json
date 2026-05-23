@@ -1,0 +1,14 @@
+{
+  "name": "znetwork_unregister_packet_handler",
+  "description": "zNetwork::UnregisterPacketHandler removes dispatch-handler records matching the packet type and handler while preserving nonmatching entries.",
+  "address": "0x48c120",
+  "source_from": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+  "smoke_tests": [
+    "znetwork_shutdown_session_runtime_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x48c120",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?UnregisterPacketHandler@zNetwork@@YIHHP6IHHPAUzNetworkPacketHeader@@@Z@Z at 0x48c120 still fails: 196 unmasked mismatches, 16 relocation bytes masked, 2 trailing VC NOP bytes trimmed, BN size 214 bytes, VC object symbol size 96 bytes.",
+    "The native shutdown smoke verifies removal of the packet-1 color-assignment handler and dispatch-list count/link updates."
+  ]
+}

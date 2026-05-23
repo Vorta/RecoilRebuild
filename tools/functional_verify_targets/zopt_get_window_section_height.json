@@ -1,0 +1,14 @@
+{
+  "name": "zopt_get_window_section_height",
+  "description": "zOpt::GetWindowSectionHeight reads the active window section height.",
+  "address": "0x4086d0",
+  "source_from": "src/GameZRecoil/zGame/zGame.cpp",
+  "smoke_tests": [
+    "zopt_view_rect_target_side_effects_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zopt_display_option_getters",
+  "known_limits": [],
+  "binary_safe_evidence": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?GetWindowSectionHeight@zOpt@@YAHXZ at 0x4086d0 with zero unmasked mismatches after masking 4 relocation bytes; 5 trailing VC NOP bytes trimmed."
+  ]
+}

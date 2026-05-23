@@ -83,13 +83,29 @@ class RecoilFunctionalVerifyTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "vc6_attempt"):
                 load_manifest(path)
 
-    def test_manifest_requires_known_limits(self) -> None:
+    def test_manifest_requires_binary_safety_state(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "sample_functional.json"
             path.write_text(MANIFEST_TEXT.replace('"known_limits": [\n    "byte comparison still fails in this test fixture"\n  ]', '"known_limits": []'), encoding="utf-8")
 
-            with self.assertRaisesRegex(ValueError, "known_limits"):
+            with self.assertRaisesRegex(ValueError, "known_limits or binary_safe_evidence"):
                 load_manifest(path)
+
+    def test_manifest_allows_binary_safe_evidence_without_known_limits(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "sample_functional.json"
+            path.write_text(
+                MANIFEST_TEXT.replace(
+                    '"known_limits": [\n    "byte comparison still fails in this test fixture"\n  ]',
+                    '"known_limits": [],\n  "binary_safe_evidence": [\n    "COFF byte comparison passed"\n  ]',
+                ),
+                encoding="utf-8",
+            )
+
+            target = load_manifest(path)
+
+        self.assertEqual((), target.known_limits)
+        self.assertEqual(("COFF byte comparison passed",), target.binary_safe_evidence)
 
 
 if __name__ == "__main__":

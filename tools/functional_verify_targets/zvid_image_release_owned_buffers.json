@@ -1,0 +1,14 @@
+{
+  "name": "zvid_image_release_owned_buffers",
+  "description": "zVid_Image::ReleaseOwnedBuffers frees owned pixel, alpha, and palette buffers according to image ownership flags, clears released pointers, and clears ownership bits.",
+  "address": "0x46ecf0",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvid_image_release_owned_buffers_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x46ecf0",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?ReleaseOwnedBuffers@zVid_Image@@YIXPAUzVidImagePartial@@@Z at 0x46ecf0 still fails: 102 unmasked mismatches, 12 relocation bytes masked, 5 trailing VC NOP bytes trimmed, BN size 122 bytes, VC object symbol size 128 bytes.",
+    "Reviewed difference is imported free call/source-shape drift: original loads the imported free pointer into edi and reuses it for each owned buffer, while current source emits direct free relocations. The native smoke verifies owned pixel/alpha/palette releases, ownership-bit clearing, and shared palette retention."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "zinput_joystick_apply_axis_config",
+  "description": "zInput::DI_ApplyAxisConfig applies range/deadzone settings, computes midpoint/normalization for active joystick axes, and caches the axis configuration.",
+  "address": "0x471fd0",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "smoke_tests": [
+    "zinput_joystick_axis_property_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py zinput_joystick_axis_helpers --compiler-profile vc5_o2_ob1_facs",
+  "known_limits": [
+    "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /Zp4 /FAcs COFF byte comparison for ?DI_ApplyAxisConfig@zInput@@YIHPAUJoystickAxisConfig@1@@Z at 0x471fd0 still fails: 420 unmasked mismatches, 28 relocation bytes masked, 11 trailing VC NOP bytes trimmed, BN size 463 bytes, VC object symbol size 144 bytes.",
+    "Reviewed difference is source/codegen shape: current source factors per-axis work through ApplyAxisConfigEntry, while Binary Ninja shows an expanded per-axis body. The targeted smoke verifies caller-visible DirectInput property calls, axis fallback behavior, midpoint/normScale computation, cached config copy, and null-config return."
+  ]
+}

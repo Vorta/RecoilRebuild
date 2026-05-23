@@ -35,10 +35,16 @@ RECOIL_NOINLINE RECOIL_NO_GS char *RECOIL_FASTCALL FindFileOnDriveType(int drive
                                                                        int unused);
 
 RECOIL_NOINLINE int RECOIL_CDECL CheckCpuSignatureMask();
+RECOIL_NOINLINE int RECOIL_CDECL HasCpuidSupportRuntimeOptions();
 RECOIL_NOINLINE int RECOIL_CDECL HasCpuidSupport();
 RECOIL_NOINLINE int RECOIL_CDECL DetectCpuClassAndFeatures();
 RECOIL_NOINLINE int RECOIL_CDECL ReadCpuidVendorAndFamily();
 RECOIL_NOINLINE unsigned int RECOIL_CDECL ReadCpuidFeatureFlags();
+RECOIL_NOINLINE unsigned int RECOIL_CDECL ReadCmosRtcSecondsBcd();
+RECOIL_NOINLINE void RECOIL_FASTCALL ReadTsc64(unsigned int *outHigh, unsigned int *outLow);
+RECOIL_NOINLINE void RECOIL_FASTCALL Sub64(unsigned int subHigh, unsigned int subLow,
+                                           unsigned int minuendHigh, unsigned int minuendLow,
+                                           unsigned int *outHigh, unsigned int *outLow);
 RECOIL_NOINLINE int RECOIL_CDECL GetCpuClass();
 RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL GetCpuMhz();
 RECOIL_NOINLINE int RECOIL_CDECL ReturnZeroStub();

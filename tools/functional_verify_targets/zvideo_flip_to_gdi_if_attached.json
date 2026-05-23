@@ -1,0 +1,14 @@
+{
+  "name": "zvideo_flip_to_gdi_if_attached",
+  "description": "zVideo_dd::FlipToGDIIfAttached skips safely when the DirectDraw2 provider is absent or no attached backbuffer is active.",
+  "address": "0x4a7d70",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_flip_to_gdi_if_attached_null_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a7d70",
+  "known_limits": [
+    "The smoke covers the safe null-provider and no-attached-backbuffer paths used by initialization and FMV callers.",
+    "Binary-safe verification remains pending for the DirectDraw2 FlipToGDISurface provider dispatch path."
+  ]
+}
