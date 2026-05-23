@@ -1382,7 +1382,7 @@ HudSensorTracker::InitMissionIdAndFlags(int newMissionId, int flags) {
     missionFlags = flags;
     missionId = newMissionId;
     if (newMissionId != 0) {
-        ClearZbdPath(this);
+        zbdPath.Empty();
     }
 
     return 1;
@@ -1390,9 +1390,10 @@ HudSensorTracker::InitMissionIdAndFlags(int newMissionId, int flags) {
 
 // Reimplements 0x4177d0: HudSensorTracker::SetZbdPath
 RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetZbdPath(const char *path) {
-    ClearZbdPath(this);
     if (path != 0) {
         zbdPath = path;
+    } else {
+        zbdPath.Empty();
     }
 
     return 1;

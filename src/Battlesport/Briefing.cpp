@@ -42,6 +42,51 @@ template <typename Method> unsigned int MethodAddress(Method method) {
     return address;
 }
 
+void RECOIL_FASTCALL BriefingHudUiCommonInvalidateThunk(HudUiElement *element) {
+    element->Invalidate();
+}
+
+template <typename FTable> FTable MakeBriefingHudUiFTableWithCommonSlots() {
+    FTable table = {0};
+    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 8) {
+        table.slots[8] = (unsigned int)(&BriefingHudUiCommonInvalidateThunk);
+    }
+
+    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 3) {
+        table.slots[3] = MethodAddress(&HudUiElement::SetPos);
+    }
+
+    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 4) {
+        table.slots[4] = MethodAddress(&HudUiElement::SetX);
+    }
+
+    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 5) {
+        table.slots[5] = MethodAddress(&HudUiElement::SetY);
+    }
+
+    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 6) {
+        table.slots[6] = MethodAddress(&HudUiElement::SetBltSourceAndClipRect);
+    }
+
+    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 7) {
+        table.slots[7] = MethodAddress(&HudUiElement::SetClipRect);
+    }
+
+    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 24) {
+        table.slots[24] = MethodAddress(&HudUiElement::SetVisible);
+    }
+
+    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 25) {
+        table.slots[25] = MethodAddress(&HudUiElement::GetX);
+    }
+
+    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 26) {
+        table.slots[26] = MethodAddress(&HudUiElement::GetY);
+    }
+
+    return table;
+}
+
 struct HudUiBriefingLocatorPanel {
     HudUiCircle base;
 
@@ -61,20 +106,23 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiBriefingObjectivePicture, noiseAlpha) ==
               kBriefingObjectivePictureNoiseAlphaOffset);
 
 HudUiCommon_FTable MakeBriefingLocatorPanelFTable() {
-    HudUiCommon_FTable table = g_HudUiCircle_FTable;
+    HudUiCommon_FTable table = MakeBriefingHudUiFTableWithCommonSlots<HudUiCommon_FTable>();
     table.slots[2] = MethodAddress(&HudUiBriefingLocatorPanel::BlitDirtyRect);
     table.slots[9] = MethodAddress(&HudUiBriefingLocatorPanel::Update);
     return table;
 }
 
 HudUiWidget_FTable MakeBriefingObjectivePictureFTable() {
-    HudUiWidget_FTable table = g_HudUiWidget_FTable;
+    HudUiWidget_FTable table = MakeBriefingHudUiFTableWithCommonSlots<HudUiWidget_FTable>();
     table.slots[1] = MethodAddress(&HudUiBriefingObjectivePicture::DrawNoiseOverlay);
+    table.slots[25] = MethodAddress(&HudUiWidget::GetCenterX);
+    table.slots[26] = MethodAddress(&HudUiWidget::GetCenterY);
     return table;
 }
 
 HudUiFillBitmap_FTable MakeBriefingTransportProgressFTable() {
-    HudUiFillBitmap_FTable table = g_HudUiFillBitmap_FTable;
+    HudUiFillBitmap_FTable table =
+        MakeBriefingHudUiFTableWithCommonSlots<HudUiFillBitmap_FTable>();
     table.slots[0x84 / 4] = MethodAddress(&HudUiFillBitmap::SetNormalizedValueAndRebuild);
     return table;
 }

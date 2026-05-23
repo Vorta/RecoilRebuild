@@ -306,11 +306,15 @@ typedef int (RECOIL_THISCALL *RecoilAppNoArgIntMethod)(RecoilApp *);
 typedef void (RECOIL_THISCALL *RecoilAppNoArgVoidMethod)(RecoilApp *);
 typedef int (RECOIL_THISCALL *RecoilAppStartEngineMethod)(RecoilApp *, RecoilPtr32);
 
-const char *kEngineInitPassed = "PASSED";
-const char *kEngineInitFailed = "FAILED";
+const char kEngineInitFailed[] = "FAILED";
+const char kEngineInitPassed[] = "PASSED";
 
-void PrintEngineInitStatus(const char *format, bool passed) {
-    printf(format, passed ? kEngineInitPassed : kEngineInitFailed);
+inline void PrintEngineInitZeroStatus(const char *format, int result) {
+    printf(format, result == 0 ? kEngineInitPassed : kEngineInitFailed);
+}
+
+inline void PrintEngineInitNonzeroStatus(const char *format, int result) {
+    printf(format, result != 0 ? kEngineInitPassed : kEngineInitFailed);
 }
 
 void CallRecoilStateMethod(RecoilPtr32 stateValue, size_t vtableOffset) {
@@ -331,23 +335,23 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::EngineInit(RecoilPtr32 hwnd) {
     zUtil::ZRDR_PreallocNodePool(0);
     zUtil::ZRDR_Init(0);
 
-    PrintEngineInitStatus("gModInit:  %s\n", zModel_Display_Init() == 0);
-    PrintEngineInitStatus("gClsInit:  %s\n", zVideo::ReturnSuccessStub() == 0);
-    PrintEngineInitStatus("zEffInit:  %s\n", zEffect::Init() == 0);
-    PrintEngineInitStatus("zRndrInit: %s\n", zRndr::InitGlobals() == 0);
-    PrintEngineInitStatus("zSndInit:  %s\n", zSnd_PreInitializeRuntimeState(hwnd) != 0);
-    PrintEngineInitStatus("zUtlInit:  %s\n", zVideo::ReturnSuccessStub() == 0);
-    PrintEngineInitStatus("zWepInit:  %s\n", zWepInit() == 0);
-    PrintEngineInitStatus("zImgInit:  %s\n", zImage_Init(0) == 0);
+    PrintEngineInitZeroStatus("gModInit:  %s\n", zModel_Display_Init());
+    PrintEngineInitZeroStatus("gClsInit:  %s\n", zVideo::ReturnSuccessStub());
+    PrintEngineInitZeroStatus("zEffInit:  %s\n", zEffect::Init());
+    PrintEngineInitZeroStatus("zRndrInit: %s\n", zRndr::InitGlobals());
+    PrintEngineInitNonzeroStatus("zSndInit:  %s\n", zSnd_PreInitializeRuntimeState(hwnd));
+    PrintEngineInitZeroStatus("zUtlInit:  %s\n", zVideo::ReturnSuccessStub());
+    PrintEngineInitZeroStatus("zWepInit:  %s\n", zWepInit());
+    PrintEngineInitZeroStatus("zImgInit:  %s\n", zImage_Init(0));
 
     if (g_zVideo_ActiveRendererPath == 2) {
         zInput::Mouse_SetCooperativeLevelFlags(5);
     }
 
-    PrintEngineInitStatus("zInInit:  %s\n",
+    PrintEngineInitZeroStatus("zInInit:  %s\n",
                           zInput::Init((HWND)(static_cast<unsigned int>(hwnd)),
                                        (HINSTANCE)(
-                                           static_cast<unsigned int>(m_hInstance_6c))) == 0);
+                                           static_cast<unsigned int>(m_hInstance_6c))));
     Time::Reset();
     zVid::SetCachedClientRectUpdateMask(1);
     return 1;
@@ -392,7 +396,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL RecoilApp::InitializeDisplay(RecoilPtr32 hwn
 // Reimplements 0x42e220: RecoilApp::StartEngine
 RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL RecoilApp::StartEngine(RecoilPtr32 hwnd) {
     EngineInit(hwnd);
-    PrintEngineInitStatus("turret:    %s\n", zTurret_System::ResetIterationState() != 0);
+    PrintEngineInitZeroStatus("turret:    %s\n", zTurret_System::ResetIterationState());
 
     zSndSystem_Init(hwnd, "sounds.zrd");
     zSnd::SetAudioApiOption(zSnd::GetActiveBackend());

@@ -525,7 +525,7 @@ extern unsigned char g_zInput_JoystickSuspendFlags;
 extern unsigned char g_zInput_MouseSuspendFlags;
 extern int g_zInput_JoystickInitialized;
 extern zInput::DIDevice *g_zInput_JoystickDevice;
-extern int g_zInputJoystickFlags;
+extern unsigned char g_zInputJoystickFlags;
 extern short g_zInputJoystickPollRefCount;
 extern int g_zInput_JoystickAxisCount;
 extern zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig;

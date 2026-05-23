@@ -17,7 +17,6 @@
 #include <string.h>
 
 namespace {
-typedef int (RECOIL_FASTCALL *zVideo_SurfaceStateProc)(zVideo_SurfaceStatePartial *surfaceState);
 typedef void (RECOIL_FASTCALL *zVideo_ClearZBufferRectProc)(zVidRect32 *rect);
 typedef void (RECOIL_FASTCALL *zVideo_ImageProc)(zVidImagePartial *image);
 } // namespace
@@ -1093,9 +1092,9 @@ PixelPack_SetupFromMasks(int redBits, int greenBits, int blueBits,
     g_zVideo_PixelPack_GBits = greenBits;
     g_zVideo_PixelPack_BShiftTo8 = 8 - blueBits;
     g_zVideo_PixelPack_BBits = blueBits;
-    g_zVideo_PixelPack_RMaskShifted = MakeShiftedMask(redBits);
-    g_zVideo_PixelPack_GMaskShifted = MakeShiftedMask(greenBits);
-    g_zVideo_PixelPack_BMaskShifted = MakeShiftedMask(blueBits);
+    g_zVideo_PixelPack_RMaskShifted = ((1 << redBits) - 1) << (8 - redBits);
+    g_zVideo_PixelPack_GMaskShifted = ((1 << greenBits) - 1) << (8 - greenBits);
+    g_zVideo_PixelPack_BMaskShifted = ((1 << blueBits) - 1) << (8 - blueBits);
 }
 
 // Reimplements 0x4a6db0: zVideo::TexturePixelPack_SetupFromMasks
@@ -1117,11 +1116,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TexturePixelPack_SetupFromMasks(
     g_zVideo_TexturePixelPack_GBits = greenBits;
     g_zVideo_TexturePixelPack_BBits = blueBits;
     g_zVideo_TexturePixelPack_BShiftTo8 = 8 - blueBits;
-    const int rMaskShifted = MakeShiftedMask(redBits);
+    const int rMaskShifted = ((1 << redBits) - 1) << (8 - redBits);
     g_zVideo_TexturePixelPack_RMaskShifted = rMaskShifted;
-    const int gMaskShifted = MakeShiftedMask(greenBits);
+    const int gMaskShifted = ((1 << greenBits) - 1) << (8 - greenBits);
     g_zVideo_TexturePixelPack_GMaskShifted = gMaskShifted;
-    const int bMaskShifted = MakeShiftedMask(blueBits);
+    const int bMaskShifted = ((1 << blueBits) - 1) << (8 - blueBits);
     g_zVideo_TexturePixelPack_BMaskShifted = bMaskShifted;
     g_zVideo_TexturePixelPack_NonRgbMaskShifted = ~(rMaskShifted | gMaskShifted | bMaskShifted);
 }
@@ -1284,6 +1283,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Init_ApplyModeIndex(int modeIndex) {
     return g_zVideo_pfnSetVideoMode(modeIndex);
 }
 
+// Reimplements 0x4a7af0: zVideo::SetVideoMode
 RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(int modeIndex) {
     if (g_zVideo_IsInitialized == 0) {
         return 0x5a560000;
@@ -1624,11 +1624,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL InitVideoSystem(HWND hWnd,
         {
         for (int itemIndex = 0; itemIndex < 16; ++itemIndex) {
             zVideo_QuadBatchItemPartial &item = g_zVideo_QuadBatchItemsBase[itemIndex];
-            {
-            for (int vertexIndex = 0; vertexIndex < 4; ++vertexIndex) {
-                item.vertices[vertexIndex].specular = 0xff000000;
-            }
-            }
+            item.vertices[3].specular = 0xff000000;
+            item.vertices[2].specular = 0xff000000;
+            item.vertices[1].specular = 0xff000000;
+            item.vertices[0].specular = 0xff000000;
         }
         }
     }
@@ -1637,6 +1636,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL InitVideoSystem(HWND hWnd,
     return 0;
 }
 
+// Reimplements 0x4a7740: zVideo::ShutdownVideoSystem
 RECOIL_NOINLINE int RECOIL_CDECL ShutdownVideoSystem() {
     if (g_zVideo_IsInitialized == 0) {
         return 0x5a560000;
@@ -1791,9 +1791,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawNoiseRect(zVidRect32 *rectOrNull, doubl
 }
 
 // Reimplements 0x48ff70: zVid::InitFrameScratchBuffers
-RECOIL_NOINLINE void RECOIL_CDECL InitFrameScratchBuffers() {
+RECOIL_NOINLINE int RECOIL_CDECL InitFrameScratchBuffers() {
     Noise_InitBuffers();
     zRndr::SelectSpanRoutines();
+    return 0;
 }
 
 // Reimplements 0x48ff60: zVid::ShutdownFrameScratchBuffers
@@ -1819,7 +1820,7 @@ RECOIL_NOINLINE zVidImagePartial *RECOIL_CDECL Create() {
 // Reimplements 0x46ecc0: zVid_Image::Destroy
 RECOIL_NOINLINE int RECOIL_FASTCALL Destroy(zVidImagePartial *image) {
     if (image != 0) {
-        if (image->surface != 0 && g_zVideo_pfnImageEnsureSurfaceForCurrentDevice != 0) {
+        if (image->surface != 0) {
             ((zVideo_ImageProc)(g_zVideo_pfnImageEnsureSurfaceForCurrentDevice))(
                 image);
         }
@@ -2006,6 +2007,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL QueryPixelDataBytes(zVidImagePartial *image)
     return QueryBytesPerPixel(image) * image->pixelCount;
 }
 
+// Reimplements 0x46d870: zVid_Image::ClearZeroAlphaPixelsInPlace
 RECOIL_NOINLINE void RECOIL_FASTCALL ClearZeroAlphaPixelsInPlace(zVidImagePartial *image) {
     if (image->paletteMetaPacked != 0) {
         return;

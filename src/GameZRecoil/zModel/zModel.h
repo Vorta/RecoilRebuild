@@ -24,6 +24,7 @@ extern int gModel_RenderVertexAlphaEnabled;
 extern float gModel_RenderAlphaScaleCurrent;
 extern void *g_zModel_GraphicsFlagsOption;
 extern int g_Variant_FilterEnabled;
+extern zTag4Partial g_VariantTag_Current;
 extern zTag4Partial g_Variant_CurrentTag;
 extern void *g_OptCatalogDamageMaskHandles[3];
 extern int g_zModel_DisplayClipMode;

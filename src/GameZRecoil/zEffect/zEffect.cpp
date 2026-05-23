@@ -3700,6 +3700,7 @@ RECOIL_NOINLINE int RECOIL_CDECL ShutdownIfLoaded() {
     return 0;
 }
 
+// Reimplements 0x45e100: zEffect_Anim::Init
 RECOIL_NOINLINE int RECOIL_CDECL Init() {
     if (g_zEffectAnim_EntriesInstantiated != 0) {
         Shutdown();
@@ -3748,6 +3749,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Init() {
 } // namespace zEffect_Anim
 
 namespace zEffect {
+// Reimplements 0x460020: zEffect::Init
 RECOIL_NOINLINE int RECOIL_CDECL Init() {
     g_zEffect_RuntimeManager.initialized = 0;
     g_zEffect_RuntimeManager.templateCount = 0;

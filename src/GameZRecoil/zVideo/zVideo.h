@@ -34,6 +34,7 @@ typedef void (RECOIL_FASTCALL *zVideo_ClearSwSurfaceAndZBufferProc)(zVidRect32 *
 typedef void (RECOIL_FASTCALL *zVideo_ClearStateSurfaceAndZBufferProc)(zVidRect32 *rect, zVideo_SurfaceStatePartial *surfaceState);
 typedef int (RECOIL_FASTCALL *zVideo_AdjustSurfacesProc)(zVidRect32 *srcRect, zVidRect32 *dstRect,
                                     int waitForPresent, int blitPrimaryToSwFirst);
+typedef int (RECOIL_FASTCALL *zVideo_SurfaceStateProc)(zVideo_SurfaceStatePartial *surfaceState);
 typedef int (RECOIL_FASTCALL *zVideo_QueryMemoryBytesProc)(int flags,
                                                                     int *totalBytes,
                                                                     int *freeBytes);
@@ -297,6 +298,8 @@ extern zVideo_StatusProc g_zVideo_pfnOpenVideoMode;
 extern zVideo_ShutdownVideoSystemProc g_zVideo_pfnShutdownVideoSystem;
 extern zVideo_StatusProc g_zVideo_pfnSetVideoMode;
 extern zVideo_AdjustSurfacesProc g_zVideo_pfnAdjustSurfaces;
+extern zVideo_SurfaceStateProc g_zVideo_pfnLockSurfaceState;
+extern zVideo_SurfaceStateProc g_zVideo_pfnUnlockSurfaceState;
 extern zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryTextureMemoryBytes;
 extern zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryDeviceVideoMemoryBytes;
 extern zVideo_BltRectDirectProc g_zVideo_pfnBltSwToPrimaryRectDirect;
@@ -410,7 +413,7 @@ RECOIL_NOINLINE char *RECOIL_FASTCALL GetHwApiDriverName(int index);
 RECOIL_NOINLINE void RECOIL_CDECL Noise_InitBuffers();
 RECOIL_NOINLINE void RECOIL_CDECL Noise_ShutdownBuffers();
 RECOIL_NOINLINE void RECOIL_FASTCALL DrawNoiseRect(zVidRect32 *rectOrNull, double intensity);
-RECOIL_NOINLINE void RECOIL_CDECL InitFrameScratchBuffers();
+RECOIL_NOINLINE int RECOIL_CDECL InitFrameScratchBuffers();
 RECOIL_NOINLINE int RECOIL_CDECL ShutdownFrameScratchBuffers();
 } // namespace zVid
 

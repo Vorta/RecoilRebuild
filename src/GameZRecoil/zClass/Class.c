@@ -946,7 +946,9 @@ namespace zClass_Class {
     // Reimplements 0x448330: zClass_Class::gwNodeSetNodeType
     RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetNodeType(zClass_NodePartial * node,
                                                                    int nodeType) {
-        if (ReportNullNode(0x5f9, node)) {
+        if (node == 0) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x5f9,
+                              "Null node pointer.");
             return 5;
         }
 
