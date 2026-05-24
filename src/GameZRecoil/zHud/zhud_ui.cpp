@@ -1095,6 +1095,9 @@ void HudUiPanelVirtualSetTextFmtRequired(HudUiPanel *panel, const char *text) {
     ((SetTextFmtFn)(ftable->slots[0x74 / 4]))(panel, text);
 }
 
+const char kHudUiMessageClearSpecialToken165[] = "\xa5";
+const float kHudUiMessageClearSpecialTokenValue = 123456792.0f;
+
 void HudUiVirtualSetContainerEnabled(HudUiContainer *container, int enabled) {
     (container->*(container->vptr->setEnabled))(enabled);
 }
@@ -8091,6 +8094,26 @@ void RECOIL_FASTCALL HudUiMessage::ClearDisplay(int messageIndex) {
     message.widget.SetImageBorrowedAndInvalidate(0);
 
     ((HudUiPanel *)(&message.panel))->SetText("");
+    ((HudUiElement *)(&message.base))->Invalidate();
+}
+
+// Reimplements 0x412650: HudUiMessage::SetValueIfOwnerMatches
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL
+HudUiMessage::SetValueIfOwnerMatches(int messageIndex, int ownerSideIndex,
+                                     float valueOrClearToken) {
+    HudUiMessage &message = g_HudUiMgrMessages[messageIndex];
+    if (ownerSideIndex != FieldAt<int>(&message.panel, 0x2a4)) {
+        return;
+    }
+
+    HudUiPanel *const panel = (HudUiPanel *)(&message.panel);
+    if (valueOrClearToken == kHudUiMessageClearSpecialTokenValue) {
+        panel->SetText(kHudUiMessageClearSpecialToken165);
+        return;
+    }
+
+    panel->SetTextFmt("%d", static_cast<int>(ceil(valueOrClearToken)));
     ((HudUiElement *)(&message.base))->Invalidate();
 }
 

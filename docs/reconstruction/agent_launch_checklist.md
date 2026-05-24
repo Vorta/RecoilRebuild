@@ -85,6 +85,12 @@ map only when provenance comments in `src/` changed.
 Check `docs/reconstruction/verified_patterns.md` before introducing a new
 destructor, thunk, vtable stub, provider glue, or small-accessor idiom.
 
+Check `docs/reconstruction/inlined_helpers.md` before duplicating a small
+repeated caller body. If Binary Ninja has no standalone function but multiple
+callers show the same helper-like code, restore the likely original inline
+helper or method and verify it through those callers or the smallest affected
+class/source cluster.
+
 Check `docs/reconstruction/original_class_candidates.md` before introducing or
 reshaping classes, inheritance, vtables, function tables, records, or
 namespace/module boundaries. Treat it as advisory generated evidence and confirm

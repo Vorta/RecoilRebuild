@@ -14,6 +14,8 @@ rediscovered by multiple agents, for example:
 - compiler, linker, runtime, SDK, MFC, DirectX, or import-provider contracts
 - shared class layouts, vtables, message maps, globals, ownership, or cleanup
   patterns
+- repeated inlined helper or class-method bodies that should be restored in
+  source even though no standalone executable function exists
 - file formats, resource formats, serialized structures, or asset naming
   conventions
 - repeated Binary Ninja limitations, bridge/toolchain limits, or accepted
@@ -53,6 +55,9 @@ Current durable reconstruction notes:
   for starting reconstruction agents.
 - `compiler_linker_provenance.md` records the compiler/linker/provider evidence
   policy and the audit command that guards it.
+- `inlined_helpers.md` records likely original helpers and methods that were
+  fully inlined by the retail compiler and must be verified through callers or
+  source/class clusters.
 - `original_class_candidates.md` is a generated candidate map for likely
   original class-like systems, records, vtables/function tables, and namespace
   boundaries.

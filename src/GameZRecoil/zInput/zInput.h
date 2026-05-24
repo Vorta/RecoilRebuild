@@ -560,6 +560,8 @@ extern int g_zInput_JoystickCaps_FFAttack;
 extern int g_zInput_JoystickCaps_FFFade;
 extern zInput_GameStateOrMapTablePartial *g_GameStateOrMapTable;
 extern float g_Player_DeltaTime;
+extern float g_Player_InvDeltaTime;
+extern float g_Player_DeltaTimeScaled001;
 extern float g_zInput_DiPitchAngleLowpassRad;
 extern int *ZOPT_INPUT_JOYSTICK;
 extern int *ZOPT_JOYSTICK_NUM_AXES;

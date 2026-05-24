@@ -3,14 +3,41 @@
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/include/zClass.h"
+#include "GameZRecoil/include/zDi.h"
+#include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zUtil/zZbd.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 
 namespace {
+using TestBackendGetStatusFn = std::int32_t(__stdcall *)(void *self, std::int32_t *status);
+using TestBackendPlayDirectSoundFn = std::int32_t(__stdcall *)(void *self,
+                                                               std::uint32_t reserved1,
+                                                               std::uint32_t reserved2,
+                                                               std::uint32_t flags);
+using TestBackendSetIntFn = std::int32_t(__stdcall *)(void *self, std::int32_t value);
+
+struct TestDirectSoundBufferVTable {
+    void *slots00_1c[8];
+    void *GetFrequency;
+    TestBackendGetStatusFn GetStatus;
+    void *slot28;
+    void *slot2c;
+    TestBackendPlayDirectSoundFn Play;
+    TestBackendSetIntFn SetCurrentPosition;
+    void *slot38;
+    TestBackendSetIntFn SetVolume;
+};
+
+struct TestDirectSoundBuffer {
+    TestDirectSoundBufferVTable *vtable;
+};
+
 template <typename T> T *AllocZeroedMalloc() {
     void *const mem = std::calloc(1, sizeof(T));
     return static_cast<T *>(mem);
@@ -36,6 +63,31 @@ bool MatrixEquals(const zMat4x3 &value, const zMat4x3 &expected) {
            value.zx == expected.zx && value.zy == expected.zy && value.zz == expected.zz &&
            value.posX == expected.posX && value.posY == expected.posY &&
            value.posZ == expected.posZ;
+}
+
+bool FloatNear(float actual, float expected) {
+    return std::fabs(actual - expected) < 0.0001f;
+}
+
+float PlayerDampingFactor(float rate, float deltaTime) {
+    const int bits = static_cast<int>(-rate * deltaTime * 12102200.0f) + 0x3f800000;
+    float factor = 0.0f;
+    std::memcpy(&factor, &bits, sizeof(factor));
+    return factor;
+}
+
+std::int32_t __stdcall TestDirectSoundGetStatus(void *, std::int32_t *status) {
+    *status = 0;
+    return 0;
+}
+
+std::int32_t __stdcall TestDirectSoundSetInt(void *, std::int32_t) {
+    return 0;
+}
+
+std::int32_t __stdcall TestDirectSoundPlay(void *, std::uint32_t, std::uint32_t,
+                                           std::uint32_t) {
+    return 0;
 }
 } // namespace
 
@@ -410,6 +462,860 @@ extern "C" int player_set_world_pose_and_restart_anchor_smoke(void) {
     return ok ? 0 : 2;
 }
 
+extern "C" int player_update_bank_velocity_from_steer_input_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData modalData = {};
+
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    modalState.masterModalData = &modalData;
+    modalData.accelRate = 6.0f;
+    g_Player_DeltaTime = 0.25f;
+
+    playerState.restartYawRad = 2.0f;
+    playerState.steeringInput = 1.0f;
+    playerState.steeringInputCopy = 0.5f;
+    playerState.localVel.x = -3.0f;
+    Player::UpdateBankVelocityFromSteerInput(&saveState);
+    if (playerState.restartYawRad != 0.0f || playerState.localVel.x != -3.75f) {
+        return 1;
+    }
+
+    playerState.steeringInputCopy = 0.5f;
+    playerState.localVel.x = 2.0f;
+    Player::UpdateBankVelocityFromSteerInput(&saveState);
+    if (playerState.localVel.x != -0.75f) {
+        return 2;
+    }
+
+    playerState.steeringInputCopy = -0.5f;
+    playerState.localVel.x = -2.0f;
+    Player::UpdateBankVelocityFromSteerInput(&saveState);
+    if (playerState.localVel.x != 0.75f) {
+        return 3;
+    }
+
+    playerState.steeringInput = 0.0f;
+    playerState.steeringInputCopy = -0.5f;
+    playerState.localVel.x = 4.0f;
+    playerState.restartYawRad = 8.0f;
+    Player::UpdateBankVelocityFromSteerInput(&saveState);
+    return playerState.restartYawRad == 0.0f && playerState.localVel.x == 0.0f ? 0 : 4;
+}
+
+extern "C" int player_update_auto_turn_and_steer_from_target_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData modalData = {};
+
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    modalState.masterModalData = &modalData;
+    modalData.yawAccel = 4.0f;
+    modalData.yawDamping = 3.0f;
+    playerState.yawVelocityLimit = 1.25f;
+    g_Player_DeltaTime = 0.5f;
+
+    playerState.steeringInput = 1.0f;
+    playerState.steeringInputCopy = 0.25f;
+    playerState.angVelYaw = -2.0f;
+    Player::UpdateAutoTurnAndSteerFromTarget(&saveState);
+    if (playerState.angVelYaw != 0.5f) {
+        return 1;
+    }
+
+    playerState.steeringInputCopy = 0.25f;
+    playerState.angVelYaw = 1.0f;
+    Player::UpdateAutoTurnAndSteerFromTarget(&saveState);
+    if (playerState.angVelYaw != 1.25f) {
+        return 2;
+    }
+
+    playerState.steeringInputCopy = -0.25f;
+    playerState.angVelYaw = -1.0f;
+    Player::UpdateAutoTurnAndSteerFromTarget(&saveState);
+    if (playerState.angVelYaw != -1.25f) {
+        return 3;
+    }
+
+    playerState.steeringInput = 0.0f;
+    playerState.angVelYaw = 2.0f;
+    g_Player_DeltaTime = 0.0f;
+    Player::UpdateAutoTurnAndSteerFromTarget(&saveState);
+    return playerState.angVelYaw == 2.0f ? 0 : 4;
+}
+
+extern "C" int player_integrate_yaw_and_wrap_from_yaw_velocity_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData modalData = {};
+
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    modalState.masterModalData = &modalData;
+    g_Player_DeltaTime = 1.0f;
+
+    playerState.autoTurnActive = 1;
+    playerState.autoTurnTargetDir.x = -1.0f;
+    playerState.autoTurnTargetDir.z = 0.0f;
+    playerState.steeringInput = 1.0f;
+    playerState.angVelYaw = 3.0f;
+    Player::IntegrateYawAndWrapFromYawVelocity(&saveState);
+    if (playerState.autoTurnActive != 0 || playerState.steeringInput != 0.0f ||
+        playerState.angVelYaw != 0.0f || !FloatNear(playerState.restartYawRad, 0.0f)) {
+        return 1;
+    }
+
+    playerState.restartYawRad = 6.2f;
+    playerState.angVelYaw = 0.2f;
+    playerState.steeringInput = 0.0f;
+    modalData.yawDamping = 0.0f;
+    Player::IntegrateYawAndWrapFromYawVelocity(&saveState);
+    if (!FloatNear(playerState.restartYawRad, 0.1168146f)) {
+        return 2;
+    }
+
+    playerState.restartYawRad = -6.2f;
+    playerState.angVelYaw = -0.2f;
+    Player::IntegrateYawAndWrapFromYawVelocity(&saveState);
+    if (!FloatNear(playerState.restartYawRad, -0.1168146f)) {
+        return 3;
+    }
+
+    playerState.restartYawRad = 1.0f;
+    playerState.angVelYaw = 0.5f;
+    g_Player_DeltaTime = 0.5f;
+    Player::IntegrateYawAndWrapFromYawVelocity(&saveState);
+    return FloatNear(playerState.restartYawRad, 1.25f) ? 0 : 4;
+}
+
+extern "C" int player_rebuild_steer_basis_from_motion_basis_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    playerState.motionBasis.yx = 7.0f;
+    playerState.motionBasis.yy = 8.0f;
+    playerState.motionBasis.yz = 9.0f;
+    playerState.motionBasis.zx = 3.0f;
+    playerState.motionBasis.zy = 4.0f;
+    playerState.motionBasis.zz = 0.0f;
+    playerState.steerBasisNorm.y = 99.0f;
+
+    Player::RebuildSteerBasisFromMotionBasis(&saveState);
+    if (!FloatNear(playerState.steerBasisRaw.x, -3.0f) ||
+        !FloatNear(playerState.steerBasisRaw.y, -4.0f) ||
+        !FloatNear(playerState.steerBasisRaw.z, 0.0f)) {
+        return 1;
+    }
+    if (!FloatNear(playerState.steerBasisRef.x, 7.0f) ||
+        !FloatNear(playerState.steerBasisRef.y, 8.0f) ||
+        !FloatNear(playerState.steerBasisRef.z, 9.0f)) {
+        return 2;
+    }
+
+    return FloatNear(playerState.steerBasisNorm.x, -1.0f) &&
+                   FloatNear(playerState.steerBasisNorm.y, 0.0f) &&
+                   FloatNear(playerState.steerBasisNorm.z, 0.0f)
+               ? 0
+               : 3;
+}
+
+extern "C" int player_start_modal_loop_sfx_handle_smoke(void) {
+    TestDirectSoundBufferVTable vtable = {};
+    vtable.GetStatus = &TestDirectSoundGetStatus;
+    vtable.Play = &TestDirectSoundPlay;
+    vtable.SetCurrentPosition = &TestDirectSoundSetInt;
+    vtable.SetVolume = &TestDirectSoundSetInt;
+    TestDirectSoundBuffer directSoundBuffer = {&vtable};
+
+    float globalVolume = 1.0f;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_Flag10PlaybackEnabled = 1;
+
+    zSndSample sample = {};
+    sample.replayFields.flags = 8;
+    sample.replayFields.gain = 0.5f;
+    sample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+
+    PlayerMasterModalData modalData = {};
+    modalData.sfxEngine[1] = &sample;
+    PlayerModalState modalState = {};
+    modalState.masterModalData = &modalData;
+    zUtil_PlayerStateStorage playerState = {};
+    playerState.worldPos = {2.0f, 3.0f, 4.0f};
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+
+    saveState.StartModalLoopSfxHandle(1, 0.25f);
+
+    g_zSnd_GlobalVolumeScalePtr = nullptr;
+    g_zSnd_IsInitialized = 0;
+    g_zSnd_PreInitialized = 0;
+
+    if (modalState.modalSfxHandle[1] == nullptr) {
+        return 1;
+    }
+    if (modalState.modalSfxHandle[1] != &sample.primaryVoice) {
+        return 2;
+    }
+
+    return sample.primaryVoice.ownerSample == &sample ? 0 : 3;
+}
+
+extern "C" int player_start_master_type_loop_sfx_handle_smoke(void) {
+    TestDirectSoundBufferVTable vtable = {};
+    vtable.GetStatus = &TestDirectSoundGetStatus;
+    vtable.Play = &TestDirectSoundPlay;
+    vtable.SetCurrentPosition = &TestDirectSoundSetInt;
+    vtable.SetVolume = &TestDirectSoundSetInt;
+    TestDirectSoundBuffer directSoundBuffer = {&vtable};
+
+    float globalVolume = 1.0f;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_Flag10PlaybackEnabled = 1;
+
+    zSndSample sample = {};
+    sample.replayFields.flags = 8;
+    sample.replayFields.gain = 0.5f;
+    sample.markerBaseTime = 12.0f;
+    sample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+
+    PlayerMasterCommonData commonData = {};
+    commonData.sfxWeaponUp[3] = &sample;
+    zUtil_PlayerStateStorage playerState = {};
+    playerState.masterCommonData = &commonData;
+    playerState.worldPos = {2.0f, 3.0f, 4.0f};
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+
+    zSndPlayHandle *const handle = saveState.StartMasterTypeLoopSfxHandle(3, 0.25f);
+
+    g_zSnd_GlobalVolumeScalePtr = nullptr;
+    g_zSnd_IsInitialized = 0;
+    g_zSnd_PreInitialized = 0;
+
+    if (handle == nullptr || handle != &sample.primaryVoice) {
+        return 1;
+    }
+    if (playerState.modeLoopSfxHandle[3] != handle || sample.primaryVoice.ownerSample != &sample) {
+        return 2;
+    }
+
+    return sample.markerBaseTime == 0.0f ? 0 : 3;
+}
+
+extern "C" int player_stop_modal_loop_sfx_handle_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    PlayerModalState modalState = {};
+    zSndPlayHandle handle = {};
+    saveState.primaryModalState = &modalState;
+    modalState.modalSfxHandle[2] = &handle;
+
+    saveState.StopModalLoopSfxHandle(2);
+    if (modalState.modalSfxHandle[2] != nullptr) {
+        return 1;
+    }
+
+    saveState.StopModalLoopSfxHandle(1);
+    return modalState.modalSfxHandle[1] == nullptr ? 0 : 2;
+}
+
+extern "C" int player_start_slip_sfx_smoke(void) {
+    TestDirectSoundBufferVTable vtable = {};
+    vtable.GetStatus = &TestDirectSoundGetStatus;
+    vtable.Play = &TestDirectSoundPlay;
+    vtable.SetCurrentPosition = &TestDirectSoundSetInt;
+    vtable.SetVolume = &TestDirectSoundSetInt;
+    TestDirectSoundBuffer directSoundBuffer = {&vtable};
+
+    float globalVolume = 1.0f;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_Flag10PlaybackEnabled = 1;
+
+    zSndSample sample = {};
+    sample.replayFields.flags = 8;
+    sample.replayFields.gain = 1.0f;
+    sample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+
+    PlayerMasterModalData modalData = {};
+    modalData.sfxEngine[3] = &sample;
+    PlayerModalState modalState = {};
+    modalState.masterModalData = &modalData;
+    zUtil_PlayerStateStorage playerState = {};
+    playerState.worldPos = {10.0f, 20.0f, 30.0f};
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+
+    Player::StartSlipSfx(&saveState);
+
+    g_zSnd_GlobalVolumeScalePtr = nullptr;
+    g_zSnd_IsInitialized = 0;
+    g_zSnd_PreInitialized = 0;
+
+    return playerState.slipSfxActive == 1 &&
+                   modalState.modalSfxHandle[3] == &sample.primaryVoice
+               ? 0
+               : 1;
+}
+
+extern "C" int player_stop_slip_sfx_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    zSndPlayHandle handle = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    playerState.slipSfxActive = 1;
+    modalState.modalSfxHandle[3] = &handle;
+
+    Player::StopSlipSfx(&saveState);
+    return playerState.slipSfxActive == 0 && modalState.modalSfxHandle[3] == nullptr ? 0 : 1;
+}
+
+extern "C" int player_float_sign_smoke(void) {
+    if (Player::FloatSign(0.0f) != 0) {
+        return 1;
+    }
+    if (Player::FloatSign(-0.25f) != -1) {
+        return 2;
+    }
+
+    return Player::FloatSign(4.0f) == 1 ? 0 : 3;
+}
+
+extern "C" int player_update_bank_and_turn_dynamics_smoke(void) {
+    const float oldPlayerDeltaTime = g_Player_DeltaTime;
+    const float oldPlayerInvDeltaTime = g_Player_InvDeltaTime;
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData modalData = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    modalState.masterModalData = &modalData;
+
+    g_Player_DeltaTime = 0.0f;
+    if (Player::UpdateBankAndTurnDynamics(&saveState) != 0.0f) {
+        g_Player_DeltaTime = oldPlayerDeltaTime;
+        g_Player_InvDeltaTime = oldPlayerInvDeltaTime;
+        return 1;
+    }
+
+    TestDirectSoundBufferVTable vtable = {};
+    vtable.GetStatus = &TestDirectSoundGetStatus;
+    vtable.Play = &TestDirectSoundPlay;
+    vtable.SetCurrentPosition = &TestDirectSoundSetInt;
+    vtable.SetVolume = &TestDirectSoundSetInt;
+    TestDirectSoundBuffer directSoundBuffer = {&vtable};
+
+    float globalVolume = 1.0f;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_Flag10PlaybackEnabled = 1;
+
+    zSndSample sample = {};
+    sample.replayFields.flags = 8;
+    sample.replayFields.gain = 1.0f;
+    sample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+    modalData.sfxEngine[3] = &sample;
+
+    g_Player_DeltaTime = 0.5f;
+    g_Player_InvDeltaTime = 2.0f;
+    modalData.frictionStatic = 5.0f;
+    playerState.steerBasisNorm = {1.0f, 0.0f, 0.0f};
+    playerState.bankBasis = {0.0f, 0.0f, 2.0f};
+    playerState.localVel = {0.0f, 0.0f, -3.0f};
+    playerState.motionBasis.xy = 0.0f;
+
+    const float staticResidual = Player::UpdateBankAndTurnDynamics(&saveState);
+    if (!FloatNear(staticResidual, 7.0f) || playerState.slipSfxActive != 1 ||
+        modalState.modalSfxHandle[3] != &sample.primaryVoice) {
+        g_zSnd_GlobalVolumeScalePtr = nullptr;
+        g_zSnd_IsInitialized = 0;
+        g_zSnd_PreInitialized = 0;
+        g_Player_DeltaTime = oldPlayerDeltaTime;
+        g_Player_InvDeltaTime = oldPlayerInvDeltaTime;
+        return 2;
+    }
+
+    std::memset(&playerState, 0, sizeof(playerState));
+    std::memset(&modalState, 0, sizeof(modalState));
+    modalState.masterModalData = &modalData;
+    saveState.primaryModalState = &modalState;
+    modalData.frictionStatic = 20.0f;
+    modalData.frictionDynamic = 2.0f;
+    playerState.slipSfxActive = 1;
+    playerState.steerBasisNorm = {1.0f, 0.0f, 0.0f};
+    playerState.bankBasis = {0.0f, 0.0f, 2.0f};
+    playerState.localVel = {1.0f, 0.0f, -1.0f};
+    playerState.motionBasis.xy = 0.0f;
+
+    const float dynamicResidual = Player::UpdateBankAndTurnDynamics(&saveState);
+
+    g_zSnd_GlobalVolumeScalePtr = nullptr;
+    g_zSnd_IsInitialized = 0;
+    g_zSnd_PreInitialized = 0;
+    g_Player_DeltaTime = oldPlayerDeltaTime;
+    g_Player_InvDeltaTime = oldPlayerInvDeltaTime;
+
+    return FloatNear(dynamicResidual, 2.0f) ? 0 : 3;
+}
+
+extern "C" int player_compute_turn_slip_delta_smoke(void) {
+    const float oldPlayerDeltaTime = g_Player_DeltaTime;
+    const float oldPlayerInvDeltaTime = g_Player_InvDeltaTime;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData modalData = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    modalState.masterModalData = &modalData;
+
+    g_Player_DeltaTime = 0.5f;
+    g_Player_InvDeltaTime = 2.0f;
+    playerState.motionBasis.xx = 1.0f;
+    playerState.motionBasis.yy = 1.0f;
+    playerState.motionBasis.zz = 1.0f;
+    playerState.projectileSpawnVel = {2.0f, 0.0f, 6.0f};
+    playerState.axisClampRuntime = 3.0f;
+    playerState.throttleInputCopy = 1.0f;
+    modalData.accelRate = 4.0f;
+    modalData.frictionDynamic = 0.0f;
+    modalData.frictionStatic = 100.0f;
+
+    Player::ComputeTurnSlipDelta(&saveState);
+    if (!FloatNear(playerState.localVel.x, 2.0f) ||
+        !FloatNear(playerState.localVel.z, 3.0f)) {
+        g_Player_DeltaTime = oldPlayerDeltaTime;
+        g_Player_InvDeltaTime = oldPlayerInvDeltaTime;
+        return 1;
+    }
+
+    zSndPlayHandle handle = {};
+    std::memset(&playerState, 0, sizeof(playerState));
+    playerState.motionBasis.xx = 1.0f;
+    playerState.motionBasis.yy = 1.0f;
+    playerState.motionBasis.zz = 1.0f;
+    playerState.projectileSpawnVel = {1.0f, 0.0f, 1.0f};
+    playerState.axisClampRuntime = 10.0f;
+    playerState.slipSfxActive = 1;
+    playerState.steerBasisNorm = {1.0f, 0.0f, 0.0f};
+    playerState.bankBasis = {0.0f, 0.0f, 4.0f};
+    modalState.modalSfxHandle[3] = &handle;
+    modalData.accelRate = 0.0f;
+    modalData.frictionDynamic = 0.0f;
+    modalData.frictionStatic = 100.0f;
+    g_Player_DeltaTime = 0.5f;
+    g_Player_InvDeltaTime = 1.0f;
+
+    Player::ComputeTurnSlipDelta(&saveState);
+
+    g_Player_DeltaTime = oldPlayerDeltaTime;
+    g_Player_InvDeltaTime = oldPlayerInvDeltaTime;
+    return FloatNear(playerState.localVel.x, 0.0f) && playerState.slipSfxActive == 0 &&
+                   modalState.modalSfxHandle[3] == nullptr
+               ? 0
+               : 2;
+}
+
+extern "C" int player_update_yaw_velocity_from_steer_input_smoke(void) {
+    const float oldPlayerDeltaTime = g_Player_DeltaTime;
+    const float oldPlayerInvDeltaTime = g_Player_InvDeltaTime;
+    const float oldPlayerDeltaTimeScaled001 = g_Player_DeltaTimeScaled001;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData modalData = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    modalState.masterModalData = &modalData;
+
+    g_Player_DeltaTime = 0.5f;
+    g_Player_InvDeltaTime = 2.0f;
+    g_Player_DeltaTimeScaled001 = 0.01f;
+    g_GameStateOrMapTable = nullptr;
+
+    playerState.localVel = {0.001f, 0.0f, -0.002f};
+    playerState.axisClampRuntime = 5.0f;
+    Player::UpdateYawVelocityFromSteerInput(&saveState);
+    if (playerState.localVel.x != 0.0f || playerState.localVel.z != 0.0f) {
+        g_Player_DeltaTime = oldPlayerDeltaTime;
+        g_Player_InvDeltaTime = oldPlayerInvDeltaTime;
+        g_Player_DeltaTimeScaled001 = oldPlayerDeltaTimeScaled001;
+        g_GameStateOrMapTable = oldGameStateOrMapTable;
+        return 1;
+    }
+
+    std::memset(&playerState, 0, sizeof(playerState));
+    playerState.localVel = {2.0f, 0.0f, 4.0f};
+    playerState.throttleInput = 1.0f;
+    playerState.axisClampRuntime = 6.0f;
+    modalData.rateDampingAccel = 0.125f;
+    modalData.rateDampingDecel = 0.25f;
+    g_Player_DeltaTimeScaled001 = 0.0f;
+
+    Player::UpdateYawVelocityFromSteerInput(&saveState);
+    if (!FloatNear(playerState.localVel.x, 2.0f * PlayerDampingFactor(0.125f, 0.5f)) ||
+        !FloatNear(playerState.localVel.z, 4.0f * PlayerDampingFactor(0.25f, 0.5f))) {
+        g_Player_DeltaTime = oldPlayerDeltaTime;
+        g_Player_InvDeltaTime = oldPlayerInvDeltaTime;
+        g_Player_DeltaTimeScaled001 = oldPlayerDeltaTimeScaled001;
+        g_GameStateOrMapTable = oldGameStateOrMapTable;
+        return 2;
+    }
+
+    std::memset(&playerState, 0, sizeof(playerState));
+    playerState.localVel = {1.0f, 0.0f, -3.0f};
+    playerState.throttleInput = 1.0f;
+    playerState.axisClampRuntime = 10.0f;
+    playerState.steerBasisNorm = {1.0f, 0.0f, 0.0f};
+    playerState.bankBasis = {0.0f, 0.0f, 2.0f};
+    modalData.rateDampingDecel = 0.0f;
+    modalData.frictionDynamic = 1.0f;
+    modalData.frictionStatic = 100.0f;
+    g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&saveState;
+
+    Player::UpdateYawVelocityFromSteerInput(&saveState);
+
+    g_Player_DeltaTime = oldPlayerDeltaTime;
+    g_Player_InvDeltaTime = oldPlayerInvDeltaTime;
+    g_Player_DeltaTimeScaled001 = oldPlayerDeltaTimeScaled001;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+
+    return FloatNear(playerState.localVel.x, 6.5f) &&
+                   FloatNear(playerState.localVel.z, -3.0f)
+               ? 0
+               : 3;
+}
+
+extern "C" int player_select_probe_sample_height_smoke(void) {
+    PlayerProbeSampleCandidateBuffer emptyBuffer = {};
+    int bestIndex = 99;
+    int selectedImpactSlot = 88;
+    float taggedHeight = 77.0f;
+    float selected = Player::SelectProbeSampleHeightFromCandidates(
+        &emptyBuffer, &bestIndex, 10.0f, 4.0f, 0, &selectedImpactSlot, &taggedHeight);
+    if (selected != 10.0f || bestIndex != 0 || selectedImpactSlot != 0 ||
+        taggedHeight != -300.0f) {
+        return 1;
+    }
+
+    PlayerProbeSampleCandidateBuffer buffer = {};
+    buffer.candidateCount = 3;
+    buffer.entries[0].hitPos.y = 8.0f;
+    buffer.entries[1].hitPos.y = 12.0f;
+    buffer.entries[2].hitPos.y = 15.0f;
+    selected = Player::SelectProbeSampleHeightFromCandidates(
+        &buffer, &bestIndex, 10.0f, 4.0f, 0, &selectedImpactSlot, &taggedHeight);
+    if (selected != 12.0f || bestIndex != 1 || selectedImpactSlot != 0 ||
+        taggedHeight != -300.0f) {
+        return 2;
+    }
+
+    buffer = {};
+    buffer.candidateCount = 1;
+    buffer.entries[0].hitPos.y = 20.0f;
+    selected = Player::SelectProbeSampleHeightFromCandidates(
+        &buffer, &bestIndex, 10.0f, 4.0f, 0, &selectedImpactSlot, &taggedHeight);
+    if (selected != 20.0f || bestIndex != 0 || selectedImpactSlot != 0) {
+        return 3;
+    }
+
+    zModel_MaterialPartial material = {};
+    material.userTag = 1;
+    buffer = {};
+    buffer.candidateCount = 1;
+    buffer.entries[0].hitPos.y = 12.0f;
+    buffer.entries[0].scenePayload = &material;
+    selected = Player::SelectProbeSampleHeightFromCandidates(
+        &buffer, &bestIndex, 10.0f, 4.0f, 1, &selectedImpactSlot, &taggedHeight);
+    if (selected != -250.0f || taggedHeight != 12.0f || selectedImpactSlot != 1) {
+        return 4;
+    }
+
+    material.userTag = 2;
+    buffer.entries[0].hitPos.y = 4.0f;
+    selected = Player::SelectProbeSampleHeightFromCandidates(
+        &buffer, &bestIndex, 10.0f, 4.0f, 0, &selectedImpactSlot, &taggedHeight);
+    return selected == 4.0f && taggedHeight == 4.0f && selectedImpactSlot == 0 ? 0 : 5;
+}
+
+extern "C" int player_probe_modal_sample_heights_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    zClass_NodePartial *const oldRuntimeScene = g_Player_RuntimeDiScene;
+    const float oldPlayerDeltaTime = g_Player_DeltaTime;
+    const zTag4Partial oldVariantCurrent = g_Variant_CurrentTag;
+    const zTag4Partial oldVariantTagCurrent = g_VariantTag_Current;
+
+    static std::int32_t matrixFlags[2];
+    static float *matrixSlots[2];
+    static zMat4x3 identityMatrix;
+    identityMatrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                      0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    matrixFlags[0] = 1;
+    matrixSlots[0] = reinterpret_cast<float *>(&identityMatrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    g_zModel_SharedVec3ScratchB = g_zModel_SharedVec3ScratchBStorage;
+
+    zUtil_PlayerStateStorage playerState = {};
+    zUtil_PlayerStateStorage globalPlayerState = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial globalRootNode = {};
+    zClass_NodePartial attachmentNode = {};
+    playerState.rootNode = &rootNode;
+    globalPlayerState.rootNode = &globalRootNode;
+    playerState.motionBasis.xx = 1.0f;
+    playerState.motionBasis.yy = 1.0f;
+    playerState.motionBasis.zz = 1.0f;
+    playerState.variantTag.count = 1;
+    playerState.variantTag.tags[0] = 0x42;
+    playerState.variantTag.tags[1] = 0xff;
+    playerState.variantTag.tags[2] = 0xff;
+
+    zInput_GameStateOrMapTablePartial gameStateOrMap = {};
+    gameStateOrMap.playerState =
+        static_cast<zInput_PlayerStatePartial *>(static_cast<void *>(&globalPlayerState));
+    g_GameStateOrMapTable = &gameStateOrMap;
+    g_Player_DeltaTime = 0.5f;
+    g_VariantTag_Current.count = 0;
+    g_VariantTag_Current.tags[0] = 0xff;
+    g_VariantTag_Current.tags[1] = 0xff;
+    g_VariantTag_Current.tags[2] = 0xff;
+
+    PlayerMasterModalData masterModalData = {};
+    masterModalData.masterType = 1;
+    masterModalData.probePoints[0] = {0.25f, 0.5f, 0.25f};
+    masterModalData.probePoints[1] = {0.6f, 0.75f, 0.2f};
+    PlayerModalState modalState = {};
+    modalState.masterModalData = &masterModalData;
+    modalState.modalStateCode = 2;
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+
+    zVec3 probeFaceVertices[3] = {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f},
+                                  {1.0f, 0.0f, 0.0f}};
+    std::int32_t faceIndices[3] = {0, 1, 2};
+    zModel_MaterialPartial materialPayload = {};
+    materialPayload.userTag = 4;
+    zModel_PickFaceUvData faceUvData = {};
+    zModel_PickFaceEntry faceEntry = {};
+    faceEntry.flagsAndVertexCount = 3;
+    faceEntry.vertexIndices = faceIndices;
+    faceEntry.faceUvData = &faceUvData;
+    faceEntry.scenePayload =
+        static_cast<zModel_PickFaceScenePayload *>(static_cast<void *>(&materialPayload));
+    faceEntry.variantTag.count = 1;
+    faceEntry.variantTag.tags[0] = 0x42;
+    zModel_PickFaceData faceData = {};
+    faceData.faceCount = 1;
+    faceData.vertexCount = 3;
+    faceData.faces = &faceEntry;
+    faceData.baseVertices = probeFaceVertices;
+
+    zClass_Object3DDataPartial objectData = {};
+    objectData.flags = 8;
+    zClass_NodePartial objectNode = {};
+    objectNode.flags = 0x11c;
+    objectNode.auxFlags = 1;
+    objectNode.nodeType = 0xff;
+    objectNode.classId = 5;
+    objectNode.classData = &objectData;
+    objectNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&faceData);
+    objectNode.callbackContext = &attachmentNode;
+    objectNode.cachedBounds[0] = 0.0f;
+    objectNode.cachedBounds[1] = 0.0f;
+    objectNode.cachedBounds[2] = 0.0f;
+    objectNode.cachedBounds[3] = 1.0f;
+    objectNode.cachedBounds[4] = 1.0f;
+    objectNode.cachedBounds[5] = 1.0f;
+    zClass_NodePartial *areaChildren[1] = {&objectNode};
+    zWorldAreaPartial area = {};
+    area.childCount = 1;
+    area.childList = areaChildren;
+    zWorldAreaPartial *areaRows[1] = {&area};
+    zClass_WorldDataPartial worldData = {};
+    worldData.clampQueriesToBounds = 1;
+    worldData.areaCellSizeX = 1.0f;
+    worldData.areaCellSizeZ = 1.0f;
+    worldData.areaInvSizeX = 1.0f;
+    worldData.areaInvSizeZ = 1.0f;
+    worldData.areaGridColCount = 1;
+    worldData.areaGridRowCount = 1;
+    worldData.areaGridRows = areaRows;
+    zClass_NodePartial world = {};
+    world.classData = &worldData;
+    g_Player_RuntimeDiScene = &world;
+
+    float sampleHeights[2] = {};
+    float bestHeight = -9.0f;
+    PlayerProbeTypeHistogram histogram = {};
+    int attachmentCandidateCount = 0;
+    zClass_NodePartial *attachmentOut = nullptr;
+    Player::ProbeModalSampleHeights(&saveState, sampleHeights, &bestHeight, 0, &histogram,
+                                    &attachmentCandidateCount, &attachmentOut);
+
+    playerState.yawVelocityLimit = -1.0f;
+    playerState.vehiclePitchRad = 3.0f;
+    playerState.vehicleRollRad = 4.0f;
+    playerState.worldPos.y = -5.0f;
+    masterModalData.yawRateMax = 12.5f;
+    masterModalData.modeAltTransitionTime = 10.0f;
+    Player::UpdateMasterTypeBasicOrTrack_FromModalProbe(&saveState);
+    const bool updateModalProbeOk =
+        playerState.yawVelocityLimit == 12.5f && playerState.vehiclePitchRad == 0.0f &&
+        playerState.vehicleRollRad == 0.0f && playerState.worldPos.y == 10.0f;
+
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    g_Player_RuntimeDiScene = oldRuntimeScene;
+    g_Player_DeltaTime = oldPlayerDeltaTime;
+    g_Variant_CurrentTag = oldVariantCurrent;
+    g_VariantTag_Current = oldVariantTagCurrent;
+
+    if (sampleHeights[0] != 0.0f || sampleHeights[1] != 0.0f || bestHeight != 0.0f ||
+        histogram.countByImpactSlot[4] != 2 || playerState.probeImpactSlot4SeenFlag != 1 ||
+        playerState.probeImpactSlot1SeenFlag != 0 || attachmentCandidateCount != 2 ||
+        attachmentOut != &attachmentNode || playerState.selectedProbeSample.node != &objectNode ||
+        playerState.selectedProbeSample.hitPos.x != 0.25f ||
+        playerState.selectedProbeSample.hitPos.y != 0.0f ||
+        playerState.selectedProbeSample.hitPos.z != 0.25f ||
+        playerState.variantTag.tags[0] != 0x42 || g_Variant_CurrentTag.count != 0 ||
+        !updateModalProbeOk) {
+        return 1;
+    }
+
+    return 0;
+}
+
+extern "C" int player_update_master_type_basic_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    zClass_NodePartial *const oldRuntimeScene = g_Player_RuntimeDiScene;
+    const float oldPlayerDeltaTime = g_Player_DeltaTime;
+    const float oldPlayerDeltaTimeScaled001 = g_Player_DeltaTimeScaled001;
+
+    for (int i = 0; i < 16; ++i) {
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+
+    zUtil_PlayerStateStorage playerState = {};
+    zUtil_PlayerStateStorage globalPlayerState = {};
+    PlayerMasterModalData modalData = {};
+    PlayerModalState modalState = {};
+    zUtil_SaveGameState saveState = {};
+    zClass_Object3DDataPartial objectData = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial globalRootNode = {};
+    zClass_WorldDataPartial worldData = {};
+    zClass_NodePartial worldNode = {};
+
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    modalState.masterModalData = &modalData;
+    modalState.modalStateCode = 0;
+
+    rootNode.classId = 5;
+    rootNode.classData = &objectData;
+    playerState.rootNode = &rootNode;
+    globalPlayerState.rootNode = &globalRootNode;
+    zInput_GameStateOrMapTablePartial gameStateOrMap = {};
+    gameStateOrMap.playerState =
+        static_cast<zInput_PlayerStatePartial *>(static_cast<void *>(&globalPlayerState));
+    g_GameStateOrMapTable = &gameStateOrMap;
+    worldNode.classData = &worldData;
+    g_Player_RuntimeDiScene = &worldNode;
+
+    objectData.scale = {1.0f, 1.0f, 1.0f};
+    objectData.localMatrix[0] = 1.0f;
+    objectData.localMatrix[4] = 1.0f;
+    objectData.localMatrix[8] = 1.0f;
+
+    modalData.maxSpeed = 100.0f;
+    modalData.yawRateMax = 12.0f;
+    modalData.accelRate = 0.0f;
+    modalData.yawAccel = 0.0f;
+    modalData.yawDamping = 0.0f;
+    modalData.rateDampingAccel = 0.0f;
+    modalData.rateDampingDecel = 0.0f;
+    modalData.modeAltTransitionTime = 7.0f;
+
+    playerState.worldPos = {10.0f, 5.0f, 20.0f};
+    playerState.localVel = {2.0f, 3.0f, 4.0f};
+    playerState.throttleInputCopy = 1.0f;
+    playerState.fxOffsetLocal = {1.0f, 2.0f, 3.0f};
+    playerState.cameraState = 0;
+    g_Player_DeltaTime = 0.5f;
+    g_Player_DeltaTimeScaled001 = 0.0f;
+
+    Player::UpdateMasterTypeBasic(&saveState);
+
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    g_Player_RuntimeDiScene = oldRuntimeScene;
+    g_Player_DeltaTime = oldPlayerDeltaTime;
+    g_Player_DeltaTimeScaled001 = oldPlayerDeltaTimeScaled001;
+
+    if (!FloatNear(playerState.worldPos.x, 11.0f) ||
+        !FloatNear(playerState.worldPos.y, 7.0f) ||
+        !FloatNear(playerState.worldPos.z, 22.0f) ||
+        !FloatNear(playerState.projectileSpawnVel.x, 2.0f) ||
+        !FloatNear(playerState.projectileSpawnVel.y, 3.0f) ||
+        !FloatNear(playerState.projectileSpawnVel.z, 4.0f) ||
+        playerState.axisClampRuntime != 100.0f || playerState.yawVelocityLimit != 12.0f ||
+        playerState.vehiclePitchRad != 0.0f || playerState.vehicleRollRad != 0.0f) {
+        return 1;
+    }
+
+    if (!FloatNear(playerState.fxOffsetWorld.x, 12.0f) ||
+        !FloatNear(playerState.fxOffsetWorld.y, 9.0f) ||
+        !FloatNear(playerState.fxOffsetWorld.z, 25.0f)) {
+        return 2;
+    }
+    if (!FloatNear(playerState.previousTransform.posX, objectData.localMatrix[9]) ||
+        !FloatNear(playerState.previousTransform.posY, objectData.localMatrix[10]) ||
+        !FloatNear(playerState.previousTransform.posZ, objectData.localMatrix[11])) {
+        return 4;
+    }
+
+    return FloatNear(playerState.bankBasis.x, 0.0f) &&
+                   FloatNear(playerState.bankBasis.y, 0.0f) &&
+                   FloatNear(playerState.bankBasis.z, -1.0f) &&
+                   playerState.cachedPitchRad == playerState.vehiclePitchRad &&
+                   playerState.cachedYawRad == playerState.restartYawRad &&
+                   playerState.cachedRollRad == playerState.vehicleRollRad
+               ? 0
+               : 3;
+}
+
 extern "C" int player_zar_write_mission_save_data_section_smoke(void) {
     char tempPath[MAX_PATH] = {};
     char tempFile[MAX_PATH] = {};
@@ -507,6 +1413,42 @@ extern "C" int player_zar_write_mission_save_data_section_smoke(void) {
     manager.indexArchive.records = nullptr;
     CloseHandle(file);
     return ok ? 0 : 2;
+}
+
+extern "C" int player_restore_recorded_node_flags_smoke(void) {
+    zClass_NodePartial untouched = {};
+    zClass_NodePartial allFlags = {};
+    zClass_NodePartial rayOnly = {};
+    untouched.flags = 0;
+    allFlags.flags = 0;
+    rayOnly.flags = 0x20;
+
+    PlayerNodeFlagRestoreEntry entries[3] = {};
+    entries[0].node = &untouched;
+    entries[1].node = &allFlags;
+    entries[1].wasCellPickable = 1;
+    entries[1].wasRaycastable = 1;
+    entries[1].wasPickable = 1;
+    entries[2].node = &rayOnly;
+    entries[2].wasRaycastable = 1;
+
+    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
+    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
+    PlayerNodeFlagRestoreEntry *const oldCapacity = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+    g_PlayerNodeFlagRestoreEntriesBegin = entries;
+    g_PlayerNodeFlagRestoreEntriesEnd = entries + 3;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = entries + 3;
+
+    Player::RestoreRecordedNodeFlags();
+
+    const bool ok = untouched.flags == 0 && (allFlags.flags & 0x38) == 0x38 &&
+                    (rayOnly.flags & 0x10) != 0 && (rayOnly.flags & 0x20) != 0 &&
+                    (rayOnly.flags & 0x08) == 0;
+
+    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
+    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacity;
+    return ok ? 0 : 1;
 }
 
 extern "C" int zutil_save_game_state_free_owned_resources_smoke(void) {

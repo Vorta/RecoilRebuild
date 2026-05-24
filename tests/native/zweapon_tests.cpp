@@ -349,13 +349,18 @@ extern "C" int light_alloc_from_free_list_and_attach_smoke(void) {
                     worldData.lightNodes[0] == &light && worldData.lightDataList[0] == &lightData &&
                     lightData.attachedWorldCount == 1 && lightData.attachedWorlds[0] == &world;
 
-    zClass_World::RemoveLight(&world, &light);
+    Light::ReturnToFreeList(&light);
+    const bool returnedOk = g_OptCatalogThermalGlowFreeList == &light &&
+                            light.callbackContext == &nextLight && worldData.lightCount == 0 &&
+                            lightData.attachedWorldCount == 0 && lightData.range1 == 0.1f &&
+                            lightData.range2 == 0.2f;
+
     std::free(worldData.lightNodes);
     std::free(worldData.lightDataList);
     std::free(lightData.attachedWorlds);
     g_OptCatalogThermalGlowFreeList = oldThermalGlowFreeList;
     g_OptCatalogRuntimeWorld = oldRuntimeWorld;
-    return ok ? 0 : 2;
+    return ok && returnedOk ? 0 : 2;
 }
 
 extern "C" int zweapon_optcatalog_warning_samples_smoke(void) {

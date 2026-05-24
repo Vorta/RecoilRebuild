@@ -8,6 +8,7 @@
 extern "C" HWND g_RecoilError_OutputHWnd;
 extern "C" std::int32_t g_RecoilError_OutputMaxBytes;
 extern "C" std::int32_t g_RecoilError_OutputByteCount;
+extern "C" char g_zError_DebugMsgBuffer[1024];
 
 extern "C" int zsys_find_file_on_drive_type_negative_smoke(void) {
     char *result =
@@ -121,4 +122,11 @@ extern "C" int zerror_init_output_context_smoke(void) {
                    g_RecoilError_OutputByteCount == 0
                ? 0
                : 1;
+}
+
+extern "C" int zerror_emit_debug_buffer_smoke(void) {
+    g_zError_DebugMsgBuffer[0] = 'x';
+    g_zError_DebugMsgBuffer[1] = '\0';
+    zError::EmitDebugBuffer(5);
+    return g_zError_DebugMsgBuffer[0] == 'x' && g_zError_DebugMsgBuffer[1] == '\0' ? 0 : 1;
 }

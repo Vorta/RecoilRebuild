@@ -980,6 +980,8 @@ struct HudUiMessage {
     static void RECOIL_FASTCALL ApplySideImageSwap(int messageIndex,
                                                    int sideIndex);
     static void RECOIL_FASTCALL ClearDisplay(int messageIndex);
+    RECOIL_NOINLINE static void RECOIL_FASTCALL
+    SetValueIfOwnerMatches(int messageIndex, int ownerSideIndex, float valueOrClearToken);
 };
 
 struct HudUiBarPoint {

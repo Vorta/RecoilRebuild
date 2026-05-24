@@ -1692,6 +1692,167 @@ extern "C" int zsnd_group_load_and_queue_smoke(void) {
     return loadOk && queueOk && stopFound && stopMissing ? 0 : 1;
 }
 
+extern "C" int zsnd_stream_mgr_ensure_init_smoke(void) {
+    g_zSndStream_RootNode = nullptr;
+    g_zSndStream_ActiveList = nullptr;
+    g_zSndStream_FreeList = nullptr;
+    g_zSndStream_PendingList = nullptr;
+    g_zSndStream_MatchedRequest = nullptr;
+    g_zSndStream_MatchedRequestCount = 0;
+
+    for (int i = 0; i < 16; ++i) {
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+        zClass_TypeList::PendingRemovalDirty(i) = 0;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_NodeList_PendingFreeHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+
+    zClass_NodeFreeListSlot slot{};
+    slot.freeTag = 0x00ffffff;
+    g_zClass_NodeArray = &slot;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_DeferredProcessingEnabled = 1;
+    g_zClass_IsInitialized = 1;
+
+    const int firstInit = zSndStreamMgr_EnsureInit();
+    zArchiveList *const pendingList = g_zSndStream_PendingList;
+    zArchiveList *const activeList = g_zSndStream_ActiveList;
+    zArchiveList *const freeList = g_zSndStream_FreeList;
+
+    const bool initOk =
+        firstInit == 1 && g_zSndStream_RootNode == &slot.node && slot.node.classId == 5 &&
+        slot.node.classData != nullptr &&
+        slot.node.actionCallback == reinterpret_cast<void *>(&zSndStreamMgr_RecycleFinishedRequest) &&
+        pendingList != nullptr && pendingList->count == 0 && activeList != nullptr &&
+        activeList->count == 0 && freeList != nullptr && freeList->count == 0 &&
+        g_zClass_NodeFreeHeadIndex == -1 && g_zClass_ActiveNodeCount == 1;
+
+    const bool secondInitOk =
+        zSndStreamMgr_EnsureInit() == 1 && g_zSndStream_RootNode == &slot.node &&
+        g_zSndStream_PendingList == pendingList && g_zSndStream_ActiveList == activeList &&
+        g_zSndStream_FreeList == freeList;
+
+    const bool shutdownOk =
+        zSndStreamMgr::Shutdown() == 1 && g_zSndStream_RootNode == nullptr &&
+        g_zSndStream_PendingList == nullptr && g_zSndStream_ActiveList == nullptr &&
+        g_zSndStream_FreeList == nullptr && g_zClass_ActiveNodeCount == 0;
+
+    zClass_TypeList::FreeAll();
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeFreeHeadIndex = -1;
+    g_zClass_IsInitialized = 0;
+
+    return initOk && secondInitOk && shutdownOk ? 0 : 1;
+}
+
+extern "C" int zsnd_stream_request_queue_smoke(void) {
+    EnsureZrdrFreePool();
+    g_zSndStream_RootNode = reinterpret_cast<zClass_NodePartial *>(0x1);
+    g_zSndStream_ActiveList = zArchiveList_CreateEmpty();
+    g_zSndStream_FreeList = zArchiveList_CreateEmpty();
+    g_zSndStream_PendingList = nullptr;
+    if (g_zSndStream_ActiveList == nullptr || g_zSndStream_FreeList == nullptr) {
+        return 1;
+    }
+
+    zSndGroupConfigBlock disabledBlock{};
+    disabledBlock.maxPlayCount = 0;
+    zSndGroup singleEntryGroup{};
+    singleEntryGroup.configBlockCount = 1;
+    singleEntryGroup.configBlocks = &disabledBlock;
+    if (singleEntryGroup.SelectWeightedEntry() != nullptr) {
+        return 2;
+    }
+
+    zSndGroup emptyGroup{};
+    zSndStreamRequest emptyRequest{};
+    emptyRequest.group = &emptyGroup;
+    emptyRequest.elapsedSec = 3.0f;
+    emptyRequest.playIndex = 4;
+    emptyRequest.streamState = 9;
+    if (emptyRequest.StateBeginGroup() != 1 || emptyRequest.elapsedSec != 0.0f ||
+        emptyRequest.playIndex != 0 || emptyRequest.currentEntry != nullptr ||
+        emptyRequest.streamState != 4) {
+        return 3;
+    }
+
+    zSndGroupConfigBlock blocks[2]{};
+    blocks[0].maxPlayCount = 0;
+    blocks[0].weight = 75.0f;
+    blocks[1].currentPlayCount = 3;
+    blocks[1].maxPlayCount = 3;
+    blocks[1].weight = 25.0f;
+    blocks[1].streamName = "stream_b";
+
+    zSndGroup group{};
+    group.dynamicWeightsEnabled = 1;
+    group.dynamicWeightScale = 0.5f;
+    group.configBlockCount = 2;
+    group.configBlocks = blocks;
+
+    std::srand(1);
+    if (group.SelectWeightedEntry() != &blocks[1] || blocks[1].weight != 100.0f) {
+        return 4;
+    }
+
+    group.dynamicWeightsEnabled = 0;
+    blocks[1].weight = 25.0f;
+    zSndStreamRequest recycled{};
+    recycled.streamState = 99;
+    zArchiveList_PushFrontPayload(g_zSndStream_FreeList, &recycled);
+
+    zVec3 worldPos{10.0f, 20.0f, 30.0f};
+    zVec3 velocity{1.0f, 2.0f, 3.0f};
+    zSndPlayHandle *const worldHandle = group.QueueStreamRequest(1, 0.75f, &worldPos, &velocity);
+    if (worldHandle != reinterpret_cast<zSndPlayHandle *>(&recycled) ||
+        g_zSndStream_FreeList->count != 0 || g_zSndStream_ActiveList->count != 1 ||
+        g_zSndStream_ActiveList->head->payload != &recycled ||
+        recycled.handleKind != ZSND_PLAYHANDLE_STREAM_REQUEST || recycled.hasWorldPos != 1 ||
+        recycled.worldPos.x != 10.0f || recycled.worldPos.y != 20.0f ||
+        recycled.worldPos.z != 30.0f || recycled.velocity.x != 1.0f ||
+        recycled.velocity.y != 2.0f || recycled.velocity.z != 3.0f ||
+        recycled.gain != 0.75f || recycled.elapsedSec != 0.0f || recycled.playIndex != 0 ||
+        recycled.currentEntry != &blocks[1] || recycled.streamState != 1 ||
+        recycled.group != &group) {
+        return 5;
+    }
+
+    group.playSolo = 1;
+    if (group.QueueStreamRequest(0, 1.0f, nullptr, nullptr) != nullptr) {
+        return 6;
+    }
+
+    if (zArchiveList_PopFrontPayload(g_zSndStream_ActiveList) != &recycled) {
+        return 7;
+    }
+
+    group.playSolo = 0;
+    zSndPlayHandle *const simpleHandle = group.QueueStreamRequest(0, 1.25f, nullptr, nullptr);
+    zSndStreamRequest *const simpleRequest = reinterpret_cast<zSndStreamRequest *>(simpleHandle);
+    const bool simpleOk = simpleRequest != nullptr && simpleRequest->hasWorldPos == 0 &&
+                          simpleRequest->gain == 1.25f &&
+                          simpleRequest->currentEntry == &blocks[1] &&
+                          simpleRequest->streamState == 1 &&
+                          g_zSndStream_ActiveList->count == 1 &&
+                          g_zSndStream_ActiveList->head->payload == simpleRequest;
+
+    if (simpleRequest != nullptr &&
+        zArchiveList_PopFrontPayload(g_zSndStream_ActiveList) == simpleRequest) {
+        std::free(simpleRequest);
+    }
+    zArchiveList_Destroy(g_zSndStream_ActiveList);
+    zArchiveList_Destroy(g_zSndStream_FreeList);
+    g_zSndStream_ActiveList = nullptr;
+    g_zSndStream_FreeList = nullptr;
+    g_zSndStream_RootNode = nullptr;
+
+    return simpleOk ? 0 : 8;
+}
+
 extern "C" int zsnd_stream_mgr_shutdown_lists_smoke(void) {
     g_zSndStream_RootNode = nullptr;
     g_zSndStream_MatchedRequest = reinterpret_cast<zSndStreamRequest *>(0x1234);
@@ -2037,6 +2198,22 @@ extern "C" int zsnd_play_handle_update3d_directsound_smoke(void) {
     return handle.Update3DDispatch(nullptr, nullptr, 0) == 0 ? 0 : 6;
 }
 
+extern "C" int zsnd_play_handle_try_disable_managed_smoke(void) {
+    zSndPlayHandle handle{};
+    if (zSndPlayHandle_TryDisableManaged(nullptr) != 0 ||
+        zSndPlayHandle_TryDisableManaged(&handle) != 0 || handle.isActive != 0) {
+        return 1;
+    }
+
+    handle.isActive = 1;
+    if (zSndPlayHandle_TryDisableManaged(&handle) != 1 || handle.isActive != 0 ||
+        zSndPlayHandle_TryDisableManaged(&handle) != 0) {
+        return 2;
+    }
+
+    return 0;
+}
+
 extern "C" int zsnd_sample_play_a3d_simple_direct_smoke(void) {
     ResetStopBackendCounters();
 
@@ -2098,6 +2275,159 @@ extern "C" int zsnd_sample_play_a3d_simple_direct_smoke(void) {
         g_testSetModeCount != 1 || g_testLastMode != 0 || g_testPlayA3dCount != 1 ||
         g_testLastPlayFlags != 1 || g_testCommitDeferredSettingsCount != 1) {
         return 2;
+    }
+
+    g_zSnd_BackendDevice = nullptr;
+    g_zSnd_GlobalVolumeScalePtr = nullptr;
+    return 0;
+}
+
+extern "C" int zsnd_sample_play_a3d_worldpos_smoke(void) {
+    ResetStopBackendCounters();
+
+    TestDirectSoundBufferVTable directSoundVTable = {};
+    directSoundVTable.GetFrequency = &TestDirectSoundGetFrequency;
+    directSoundVTable.GetStatus = &TestDirectSoundGetStatus;
+    directSoundVTable.SetVolume = &TestDirectSoundSetVolume;
+    directSoundVTable.SetPan = &TestDirectSoundSetPan;
+    directSoundVTable.SetFrequency = &TestDirectSoundSetFrequency;
+    directSoundVTable.SetCurrentPosition = &TestDirectSoundSetCurrentPosition;
+    directSoundVTable.Play = &TestDirectSoundPlay;
+    TestDirectSoundBuffer directSoundBuffer{&directSoundVTable};
+
+    float globalVolume = 1.0f;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_Flag10PlaybackEnabled = 1;
+    g_zSnd_ListenerStateValid = 1;
+    g_zSnd_ListenerState.right = {1.0f, 0.0f, 0.0f};
+    g_zSnd_ListenerState.position = {};
+    g_zSnd_ListenerVelocity = {};
+    g_zSndInvSpeedOfSoundMps = 0.0f;
+    g_testStatusValue = 0;
+
+    zSndSample directSample = {};
+    directSample.replayFields.flags = 0x0c;
+    directSample.replayFields.gain = 1.0f;
+    directSample.rangeMin = 10.0f;
+    directSample.rangeMax = 100.0f;
+    directSample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+
+    zVec3 worldPos{20.0f, 0.0f, 0.0f};
+    zVec3 velocity{1.0f, 0.0f, 0.0f};
+    zSndPlayHandle *directResult = directSample.PlayA3D(&worldPos, 1.0f, &velocity);
+    if (directResult != &directSample.primaryVoice || directResult->ownerSample != &directSample ||
+        directResult->handleKind != ZSND_PLAYHANDLE_BACKEND || directResult->hasWorldPos != 1 ||
+        directResult->worldPos.x != 20.0f || directResult->velocityOrDir.x != 1.0f ||
+        directResult->gainScaled != 0) {
+        g_zSnd_GlobalVolumeScalePtr = nullptr;
+        return 1;
+    }
+    if (g_testGetStatusCount != 2 || g_testSetPanCount != 1 || g_testLastPan != 1560) {
+        g_zSnd_GlobalVolumeScalePtr = nullptr;
+        return 2;
+    }
+    if (g_testSetVolumeCount != 1 || g_testLastVolume != -629) {
+        g_zSnd_GlobalVolumeScalePtr = nullptr;
+        return 3;
+    }
+    if (g_testSetCurrentPositionCount != 1 || g_testLastCurrentPosition != 0 ||
+        g_testPlayDirectSoundCount != 1 || g_testLastPlayFlags != 0) {
+        g_zSnd_GlobalVolumeScalePtr = nullptr;
+        return 4;
+    }
+
+    ResetStopBackendCounters();
+    TestA3dSourceVTable a3dVTable = {};
+    a3dVTable.GetStatus = &TestDirectSoundGetStatus;
+    a3dVTable.SetSpatializationEnabled = &TestA3dSetSpatializationEnabled;
+    a3dVTable.SetPosition = &TestA3dSetPosition;
+    a3dVTable.SetVelocity = &TestA3dSetVelocity;
+    a3dVTable.SetGain = &TestA3dSetGain;
+    a3dVTable.SetDopplerScale = &TestA3dSetDopplerScale;
+    a3dVTable.SetMode = &TestA3dSetMode;
+    a3dVTable.Play = &TestA3dPlay;
+    TestA3dSource a3dSource{&a3dVTable};
+
+    TestA3dDeviceVTable a3dDeviceVTable = {};
+    a3dDeviceVTable.CommitDeferredSettings = &TestCommitDeferredSettings;
+    TestA3dDevice a3dDevice{&a3dDeviceVTable};
+    g_zSnd_BackendDevice = &a3dDevice;
+    g_zSnd_ActiveBackend = 1;
+
+    zSndSample a3dSample = {};
+    a3dSample.replayFields.flags = 0x0c;
+    a3dSample.replayFields.gain = 0.25f;
+    a3dSample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&a3dSource);
+
+    worldPos = {3.0f, 4.0f, 5.0f};
+    velocity = {6.0f, 7.0f, 8.0f};
+    zSndPlayHandle *a3dResult = a3dSample.PlayA3D(&worldPos, 2.0f, &velocity);
+    if (a3dResult != &a3dSample.primaryVoice || a3dResult->ownerSample != &a3dSample ||
+        a3dResult->handleKind != ZSND_PLAYHANDLE_BACKEND ||
+        g_testSetSpatializationEnabledCount != 1 || g_testLastSpatializationEnabled != 0 ||
+        g_testSetPositionCount != 1 || g_testLastPosition.x != 3.0f ||
+        g_testLastPosition.y != 4.0f || g_testLastPosition.z != 5.0f ||
+        g_testSetVelocityCount != 1 || g_testLastVelocity.x != 6.0f ||
+        g_testLastVelocity.y != 7.0f || g_testLastVelocity.z != 8.0f ||
+        g_testSetGainCount != 1 || g_testLastGain != 0.5f ||
+        g_testSetDopplerScaleCount != 1 || g_testLastDopplerScale != 0.0f ||
+        g_testSetModeCount != 1 || g_testLastMode != 0 || g_testPlayA3dCount != 1 ||
+        g_testLastPlayFlags != 0 || g_testCommitDeferredSettingsCount != 1) {
+        g_zSnd_BackendDevice = nullptr;
+        g_zSnd_GlobalVolumeScalePtr = nullptr;
+        return 5;
+    }
+
+    EnsureZrdrFreePool();
+    g_zSndStream_RootNode = reinterpret_cast<zClass_NodePartial *>(0x1);
+    g_zSndStream_ActiveList = zArchiveList_CreateEmpty();
+    g_zSndStream_FreeList = zArchiveList_CreateEmpty();
+
+    zSndGroupConfigBlock groupBlocks[1]{};
+    groupBlocks[0].currentPlayCount = 1;
+    groupBlocks[0].maxPlayCount = 1;
+    groupBlocks[0].weight = 100.0f;
+    groupBlocks[0].streamName = "stream_group";
+
+    zSndGroup group{};
+    group.createGuard = 1;
+    group.configBlockCount = 1;
+    group.configBlocks = groupBlocks;
+
+    worldPos = {9.0f, 8.0f, 7.0f};
+    velocity = {6.0f, 5.0f, 4.0f};
+    zSndPlayHandle *const groupHandle =
+        reinterpret_cast<zSndSample *>(&group)->PlayA3D(&worldPos, 0.5f, &velocity);
+    zSndStreamRequest *const groupRequest = reinterpret_cast<zSndStreamRequest *>(groupHandle);
+    const bool groupOk =
+        groupRequest != nullptr && groupRequest->handleKind == ZSND_PLAYHANDLE_STREAM_REQUEST &&
+        groupRequest->group == &group && groupRequest->gain == 0.5f &&
+        groupRequest->hasWorldPos == 1 && groupRequest->worldPos.x == 9.0f &&
+        groupRequest->worldPos.y == 8.0f && groupRequest->worldPos.z == 7.0f &&
+        groupRequest->velocity.x == 6.0f && groupRequest->velocity.y == 5.0f &&
+        groupRequest->velocity.z == 4.0f && groupRequest->currentEntry == groupBlocks &&
+        groupRequest->streamState == 1 && g_zSndStream_ActiveList != nullptr &&
+        g_zSndStream_ActiveList->count == 1 &&
+        g_zSndStream_ActiveList->head->payload == groupRequest;
+
+    if (groupRequest != nullptr && g_zSndStream_ActiveList != nullptr &&
+        zArchiveList_PopFrontPayload(g_zSndStream_ActiveList) == groupRequest) {
+        std::free(groupRequest);
+    }
+    zArchiveList_Destroy(g_zSndStream_ActiveList);
+    zArchiveList_Destroy(g_zSndStream_FreeList);
+    g_zSndStream_ActiveList = nullptr;
+    g_zSndStream_FreeList = nullptr;
+    g_zSndStream_RootNode = nullptr;
+
+    if (!groupOk) {
+        g_zSnd_BackendDevice = nullptr;
+        g_zSnd_GlobalVolumeScalePtr = nullptr;
+        return 6;
     }
 
     g_zSnd_BackendDevice = nullptr;

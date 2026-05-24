@@ -1498,6 +1498,53 @@ extern "C" int zvideo_palette_remap_no_recipes_smoke(void) {
     return zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(palette, 2) == palette ? 0 : 1;
 }
 
+extern "C" int zvideo_palette_remap_recipe_variants_smoke(void) {
+    g_zVideo_PixelPack_RMaskShifted = 0xf8;
+    g_zVideo_PixelPack_GMaskShifted = 0xfc;
+    g_zVideo_PixelPack_RShift = 8;
+    g_zVideo_PixelPack_GShift = 3;
+    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack_RBits = 5;
+    g_zVideo_PixelPack_GBits = 6;
+    g_zVideo_PixelPack_BBits = 5;
+
+    zVidPaletteRemapRecipe recipe{};
+    std::uint16_t source[2] = {0x0000, 0xffff};
+    std::uint16_t directDest[2] = {0x1111, 0x2222};
+    zVid_PaletteRemap::ApplyRecipeToPaletteVariant(&recipe, source, 2, 31, directDest);
+    const bool directOk = directDest[0] == 0x0000 && directDest[1] == 0xffff;
+
+    std::uint16_t *palette = static_cast<std::uint16_t *>(std::malloc(0x200));
+    if (palette == nullptr) {
+        return 1;
+    }
+    std::memset(palette, 0, 0x200);
+    palette[0] = 0x0000;
+    palette[1] = 0xffff;
+
+    g_zVid_PaletteRemapRecipeCount = 1;
+    g_zVid_PaletteRemapRecipes = &recipe;
+    std::uint16_t *expanded = zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(palette, 2);
+    if (expanded == nullptr) {
+        g_zVid_PaletteRemapRecipeCount = 0;
+        g_zVid_PaletteRemapRecipes = nullptr;
+        return 2;
+    }
+
+    const int firstVariant = 0x200 / sizeof(std::uint16_t);
+    const int lastVariant = firstVariant + 31 * (0x200 / sizeof(std::uint16_t));
+    const bool buildOk = expanded[0] == 0x0000 && expanded[1] == 0xffff &&
+                         expanded[firstVariant] == 0x0000 &&
+                         expanded[firstVariant + 1] == 0xffff &&
+                         expanded[lastVariant] == 0x0000 &&
+                         expanded[lastVariant + 1] == 0xffff;
+
+    std::free(expanded);
+    g_zVid_PaletteRemapRecipeCount = 0;
+    g_zVid_PaletteRemapRecipes = nullptr;
+    return directOk && buildOk ? 0 : 3;
+}
+
 extern "C" int zvideo_texture_pack_load_image_smoke(void) {
     char tempDir[MAX_PATH] = {};
     char packPath[MAX_PATH] = {};

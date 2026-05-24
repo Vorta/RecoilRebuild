@@ -1,5 +1,6 @@
 #include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zReader/zReader.h"
 
 #include <cstdint>
@@ -10,6 +11,12 @@
 namespace {
 int g_textureDestroyCount = 0;
 int g_uploadSurfaceReleaseCount = 0;
+int g_textureCreateCount = 0;
+int g_textureFinalizeUploadCount = 0;
+zVideo_TextureRecordPartial g_createdTextureRecord = {};
+zVideo_TextureRecordPartial g_existingTextureRecord = {};
+zVidImagePartial *g_lastCreatedImage = nullptr;
+zVidImagePartial *g_lastFinalizedImage = nullptr;
 
 void RECOIL_FASTCALL TextureRecordDestroyStub(zVideo_TextureRecordPartial *) {
     ++g_textureDestroyCount;
@@ -17,6 +24,26 @@ void RECOIL_FASTCALL TextureRecordDestroyStub(zVideo_TextureRecordPartial *) {
 
 void RECOIL_CDECL TextureRecordReleaseAllUploadSurfacesStub() {
     ++g_uploadSurfaceReleaseCount;
+}
+
+zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecordStub(const char *,
+                                                                     zVidImagePartial *image,
+                                                                     int useAlpha,
+                                                                     int clampU,
+                                                                     int clampV) {
+    ++g_textureCreateCount;
+    g_lastCreatedImage = image;
+    g_createdTextureRecord.m_alphaMode = useAlpha;
+    g_createdTextureRecord.m_uWrapMode = static_cast<D3DTEXTUREADDRESS>(clampU);
+    g_createdTextureRecord.m_vWrapMode = static_cast<D3DTEXTUREADDRESS>(clampV);
+    return &g_createdTextureRecord;
+}
+
+void RECOIL_FASTCALL TextureRecordFinalizeUploadStub(zVideo_TextureRecordPartial *,
+                                                     void *,
+                                                     zVidImagePartial *image) {
+    ++g_textureFinalizeUploadCount;
+    g_lastFinalizedImage = image;
 }
 
 std::int32_t RECOIL_FASTCALL QueryTextureMemoryBytesStub(std::int32_t, std::int32_t *totalBytes,
@@ -245,6 +272,135 @@ extern "C" int zimage_texdir_load_pending_entries_smoke(void) {
     std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
 
     return ok ? 0 : 1;
+}
+
+extern "C" int zimage_texdir_load_pending_entries_renderer_smoke(void) {
+    std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
+    std::free(g_zVid_BuiltinTexturePacks);
+    g_zVid_BuiltinTexturePacks = nullptr;
+    g_zVid_BuiltinTexturePackCount = 0;
+    g_zVid_TexturePackLoadState = 0;
+    g_zVideo_pfnQueryTextureMemoryBytes = QueryTextureMemoryBytesStub;
+    g_zVideo_ActiveRendererPath = 1;
+    std::int32_t textureMemoryOption = 1;
+    g_zImage_TextureMemoryOption = &textureMemoryOption;
+
+    g_fallbackImage = {};
+    g_fallbackImage.width = 16;
+    g_fallbackImage.height = 16;
+    g_fallbackImage.formatFlagsPacked = 2;
+    g_fallbackImage.textureAddressFlagsPacked = 3;
+    g_zImage_pfnCreateFallbackImage = FallbackImageStub;
+
+    g_textureCreateCount = 0;
+    g_textureFinalizeUploadCount = 0;
+    g_lastCreatedImage = nullptr;
+    g_lastFinalizedImage = nullptr;
+    g_createdTextureRecord = {};
+    g_existingTextureRecord = {};
+    g_zVideo_pfnCreateTextureRecord = CreateTextureRecordStub;
+    g_zVideo_pfnTextureRecordFinalizeUpload =
+        reinterpret_cast<std::uint32_t>(&TextureRecordFinalizeUploadStub);
+    g_OptCatalogDamageMaskHandles[0] = nullptr;
+    g_OptCatalogDamageMaskHandles[1] = nullptr;
+    g_OptCatalogDamageMaskHandles[2] = nullptr;
+
+    g_zImage_TexDirEntryCount = 2;
+    zImage_TexDirEntryPartial &createEntry = g_zImage_TexDirEntries[0];
+    std::strcpy(createEntry.baseName, "render_create");
+    createEntry.loadState = 2;
+    zImage_TexDirEntryPartial &finalizeEntry = g_zImage_TexDirEntries[1];
+    std::strcpy(finalizeEntry.baseName, "render_finalize");
+    finalizeEntry.loadState = 3;
+    finalizeEntry.texture = &g_existingTextureRecord;
+
+    zImage::TexDir_LoadPendingEntries();
+    const bool ok = createEntry.loadState == 1 && finalizeEntry.loadState == 1 &&
+                    createEntry.image == &g_fallbackImage &&
+                    finalizeEntry.image == &g_fallbackImage &&
+                    createEntry.texture == &g_createdTextureRecord &&
+                    finalizeEntry.texture == &g_existingTextureRecord &&
+                    g_textureCreateCount == 1 && g_textureFinalizeUploadCount == 1 &&
+                    g_lastCreatedImage == &g_fallbackImage &&
+                    g_lastFinalizedImage == &g_fallbackImage &&
+                    g_createdTextureRecord.m_alphaMode == 2 &&
+                    g_createdTextureRecord.m_uWrapMode == 1 &&
+                    g_createdTextureRecord.m_vWrapMode == 1;
+
+    std::free(g_zVid_BuiltinTexturePacks);
+    g_zVid_BuiltinTexturePacks = nullptr;
+    g_zVid_BuiltinTexturePackCount = 0;
+    g_zVideo_pfnQueryTextureMemoryBytes = nullptr;
+    g_zVideo_pfnCreateTextureRecord = nullptr;
+    g_zVideo_pfnTextureRecordFinalizeUpload = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zImage_TextureMemoryOption = nullptr;
+    g_zImage_pfnCreateFallbackImage = nullptr;
+    g_zImage_TexDirEntryCount = 0;
+    std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
+    return ok ? 0 : 1;
+}
+
+extern "C" int zclass_node_load_flag_bit8_material_images_and_texture_pack_smoke(void) {
+    std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
+    std::free(g_zVid_BuiltinTexturePacks);
+    g_zVid_BuiltinTexturePacks = nullptr;
+    g_zVid_BuiltinTexturePackCount = 0;
+    g_zVid_TexturePackLoadState = 0;
+    g_zVideo_pfnQueryTextureMemoryBytes = QueryTextureMemoryBytesStub;
+    g_zVideo_ActiveRendererPath = 0;
+    std::int32_t textureMemoryOption = 1;
+    g_zImage_TextureMemoryOption = &textureMemoryOption;
+
+    g_fallbackImage = {};
+    g_fallbackImage.width = 32;
+    g_fallbackImage.height = 8;
+    g_zImage_pfnCreateFallbackImage = FallbackImageStub;
+
+    zImage_TexDirEntryPartial materialEntry{};
+    zImage_TexDirEntryPartial frameEntry{};
+    materialEntry.loadState = 1;
+    frameEntry.loadState = 1;
+    zImage_TexDirEntryPartial *frameTable[] = {&frameEntry};
+    zModel_MaterialCyclePartial cycle{};
+    cycle.frameCount = 1;
+    cycle.frameTable = frameTable;
+    zModel_MaterialPartial material{};
+    material.flags = 0x0300;
+    material.currentTextureDirectoryEntry = &materialEntry;
+    material.cycle = &cycle;
+    zDiEntryPartial diEntry{};
+    diEntry.material = &material;
+    zDiPartial di{};
+    di.entryCount = 1;
+    di.entries = &diEntry;
+    zClass_NodePartial root{};
+    root.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&di);
+
+    g_zImage_TexDirEntryCount = 1;
+    zImage_TexDirEntryPartial &pending = g_zImage_TexDirEntries[0];
+    std::strcpy(pending.baseName, "wrapper_pending");
+    pending.loadState = 2;
+
+    zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack(&root);
+    const bool loaded = materialEntry.loadState == 3 && frameEntry.loadState == 3 &&
+                        pending.loadState == 1 && pending.image == &g_fallbackImage;
+
+    pending.loadState = 2;
+    pending.image = nullptr;
+    zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack(nullptr);
+    const bool nullSkipped = pending.loadState == 2 && pending.image == nullptr;
+
+    std::free(g_zVid_BuiltinTexturePacks);
+    g_zVid_BuiltinTexturePacks = nullptr;
+    g_zVid_BuiltinTexturePackCount = 0;
+    g_zVideo_pfnQueryTextureMemoryBytes = nullptr;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zImage_TextureMemoryOption = nullptr;
+    g_zImage_pfnCreateFallbackImage = nullptr;
+    g_zImage_TexDirEntryCount = 0;
+    std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
+    return loaded && nullSkipped ? 0 : 1;
 }
 
 extern "C" int zimage_texdir_base_name_path_smoke(void) {

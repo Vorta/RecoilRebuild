@@ -27,15 +27,21 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 
 ## Active Groups
 
-### Group: Sprint0 M01 anchor verification blockers
+### Group: Player ZAR section registration and read callbacks
 
-- Anchor: 0x415220 RecoilStateMainMenuTransition::OnTryBecomeCurrent
-- Reason: anchor `Binary-safe` depends on snapshot callee byte match still failing VC COFF compare.
+- Anchor: 0x41f5b0 Player::ZAR_RegisterSections
+- Reason: source-readiness closure; registration takes function pointers to mission-save and vehicle-list read/write callbacks, so callback signatures and source behavior must be ready before the registration wrapper can be implemented.
 - Source blockers:
-  - 0x49fff0 zSndPlayHandleSnapshot::CreateFromActiveSamples
+  - 0x41f1d0 Player::ApplyMissionSaveData
+  - 0x45d6b0 zEffect_Anim::NodeActionCallback
+  - 0x4231b0 Player::RefreshHudFromState
+  - 0x4266b0 Player::TickMasterTypeAndForceFeedback
+  - 0x4528a0 zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack
+  - 0x41f640 Player::ZAR_ReadMissionSaveDataSection
+  - 0x41f850 Player::ZAR_ReadVehicleListSection
 - Next action:
-  - `python tools/recoil_vc6_verify.py 0x49fff0`
-  - `python tools/recoil_vc6_verify.py 0x415220`
+  - `python tools/recoil_frontier.py 0x41f640 --depth 1`
+  - `python tools/recoil_frontier.py 0x41f850 --depth 1`
 
 ### Group: Deferred P0 zRndr Span*SwitchVShift cluster
 
@@ -146,28 +152,6 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
   - 0x403930 HudUiBriefingRuntime::Constructor
   - 0x4038a0 HudUiBriefingObjectivePicture::DrawNoiseOverlay
   - 0x48d910 zVid::DrawNoiseRect
-- Next action:
-  - `python tools/recoil_status.py 0x403930`
-
-### Group: Briefing runtime update
-
-- Anchor: 0x403930 HudUiBriefingRuntime::Constructor
-- Reason: active dependency/source-readiness group retained after pruning temporary detail.
-- Source blockers:
-  - 0x403930 HudUiBriefingRuntime::Constructor
-  - 0x404070 HudUiBriefingRuntime::Update
-  - 0x4bc570 HudUiBackground::Update
-- Next action:
-  - `python tools/recoil_status.py 0x403930`
-
-### Group: HUD background ZRD root cleanup
-
-- Anchor: 0x403930 HudUiBriefingRuntime::Constructor
-- Reason: active dependency/source-readiness group retained after pruning temporary detail.
-- Source blockers:
-  - 0x403930 HudUiBriefingRuntime::Constructor
-  - 0x4ba0e0 HudUiBackground::BindPrimitiveNodeToElement
-  - 0x4bffb0 HudUiPrimitiveBindTarget::SetSegmentEndpoints
 - Next action:
   - `python tools/recoil_status.py 0x403930`
 
@@ -532,15 +516,6 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 - Next action:
   - `python tools/recoil_status.py 0x4a0810`
 
-### Group: zSnd DirectSound caps and CPU probes
-
-- Anchor: 0x4b2fc0 zSnd::CachedDirectSound_GetCaps
-- Reason: active dependency/source-readiness group retained after pruning temporary detail.
-- Source blockers:
-  - 0x4b2fe0 zSys::HasCpuidSupport
-- Next action:
-  - `python tools/recoil_status.py 0x4b2fe0`
-
 ### Group: zMath projection batches
 
 - Anchor: 0x476cf0 pending
@@ -804,16 +779,6 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 - Next action:
   - `python tools/recoil_status.py 0x4805e0`
 
-### Group: zImage texture path leaves
-
-- Anchor: 0x46e380 zImage::TexDirSetBaseNameFromPath
-- Reason: active dependency/source-readiness group retained after pruning temporary detail.
-- Source blockers:
-  - 0x46e380 zImage::TexDirSetBaseNameFromPath
-  - 0x46e2c0 zImage::SetPathExtension
-- Next action:
-  - `python tools/recoil_status.py 0x46e380`
-
 ### Group: zDi variant tag leaf
 
 - Anchor: 0x476340 zDi::SetVariantTagIfUnset
@@ -911,23 +876,6 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
   - 0x4c07d0 zZbdManager::SortSectionHandlers
 - Next action:
   - `python tools/recoil_status.py 0x4c0030`
-
-### Group: RecoilApp InitInstance leaves
-
-- Anchor: 0x42e520 RecoilApp::InitInstance
-- Reason: active dependency/source-readiness group retained after pruning temporary detail.
-- Source blockers:
-  - 0x42e520 RecoilApp::InitInstance
-  - 0x4a5b00 zLoc::UnloadMessagesDll
-  - 0x4b30b0 zGame_OptionsRuntimeConfig::InitFromSystem
-  - 0x4b3260 zGame::Options_InitRegistryContext
-  - 0x4b31c0 zSys::GetCpuMhz
-  - 0x4b36f0 CpuBenchmarkResolver::ResolveCpuBenchmarkPacket
-  - 0x4b37f0 CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc
-  - 0x4b38e0 CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc
-  - 0x4b3b50 CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc
-- Next action:
-  - `python tools/recoil_status.py 0x42e520`
 
 ### Group: zSound stream request playback leaves
 
@@ -1973,13 +1921,6 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 
 ## Completed Groups
 
-### Group: zSys CPU feature detection probes
-
-- Anchor: 0x4b3420 zSys::DetectCpuClassAndFeatures
-- Status: completed group retained for short-term traceability.
-- Addresses:
-  - 0x4b3420 zSys::DetectCpuClassAndFeatures
-  - 0x4b3510 zSys::ProbeDivZeroFlagBehavior
-  - 0x4b3550 zSys::DetectIs8086ByEflagsHiBits
-  - 0x4b35a0 zSys::DetectIs80286ByEflagsHiBits
-  - 0x4b35f0 zSys::DetectIs80386ByAcFlag
+No completed groups are currently retained. Use `.agent/RECOIL_PLAN.md`, VC
+verification manifests, and `python tools/recoil_status.py 0xNNNNNN` for
+verification-only binary-safe debt.

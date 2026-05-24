@@ -24,6 +24,91 @@ int g_effectAnimEventCallbackCallCount = 0;
 zEffectAnimEntry *g_effectAnimEventCallbackSelf = nullptr;
 void *g_effectAnimEventCallbackContext = nullptr;
 std::int32_t g_effectAnimEventCallbackValue = 0;
+int g_effectDirectSoundGetFrequencyCount = 0;
+int g_effectDirectSoundGetStatusCount = 0;
+int g_effectDirectSoundSetVolumeCount = 0;
+int g_effectDirectSoundSetPanCount = 0;
+int g_effectDirectSoundSetFrequencyCount = 0;
+int g_effectDirectSoundSetCurrentPositionCount = 0;
+int g_effectDirectSoundPlayCount = 0;
+
+using EffectBackendGetStatusFn = std::int32_t(__stdcall *)(void *self, std::int32_t *status);
+using EffectBackendGetUint32Fn = std::int32_t(__stdcall *)(void *self, std::uint32_t *value);
+using EffectBackendSetIntFn = std::int32_t(__stdcall *)(void *self, std::int32_t value);
+using EffectBackendPlayDirectSoundFn = std::int32_t(__stdcall *)(void *self,
+                                                                 std::uint32_t reserved1,
+                                                                 std::uint32_t reserved2,
+                                                                 std::uint32_t flags);
+using EffectBackendSimpleFn = std::int32_t(__stdcall *)(void *self);
+
+struct EffectDirectSoundBufferVTable {
+    void *slots00_1c[8];
+    EffectBackendGetUint32Fn GetFrequency;
+    EffectBackendGetStatusFn GetStatus;
+    void *slot28;
+    void *slot2c;
+    EffectBackendPlayDirectSoundFn Play;
+    EffectBackendSetIntFn SetCurrentPosition;
+    void *slot38;
+    EffectBackendSetIntFn SetVolume;
+    EffectBackendSetIntFn SetPan;
+    EffectBackendSetIntFn SetFrequency;
+    EffectBackendSimpleFn Stop;
+    void *slot4c;
+    EffectBackendSimpleFn Restore;
+};
+
+struct EffectDirectSoundBuffer {
+    EffectDirectSoundBufferVTable *vtable;
+};
+
+void ResetEffectDirectSoundCounters() {
+    g_effectDirectSoundGetFrequencyCount = 0;
+    g_effectDirectSoundGetStatusCount = 0;
+    g_effectDirectSoundSetVolumeCount = 0;
+    g_effectDirectSoundSetPanCount = 0;
+    g_effectDirectSoundSetFrequencyCount = 0;
+    g_effectDirectSoundSetCurrentPositionCount = 0;
+    g_effectDirectSoundPlayCount = 0;
+}
+
+std::int32_t __stdcall EffectDirectSoundGetFrequency(void *, std::uint32_t *value) {
+    ++g_effectDirectSoundGetFrequencyCount;
+    *value = 22050;
+    return 0;
+}
+
+std::int32_t __stdcall EffectDirectSoundGetStatus(void *, std::int32_t *status) {
+    ++g_effectDirectSoundGetStatusCount;
+    *status = 0;
+    return 0;
+}
+
+std::int32_t __stdcall EffectDirectSoundSetVolume(void *, std::int32_t) {
+    ++g_effectDirectSoundSetVolumeCount;
+    return 0;
+}
+
+std::int32_t __stdcall EffectDirectSoundSetPan(void *, std::int32_t) {
+    ++g_effectDirectSoundSetPanCount;
+    return 0;
+}
+
+std::int32_t __stdcall EffectDirectSoundSetFrequency(void *, std::int32_t) {
+    ++g_effectDirectSoundSetFrequencyCount;
+    return 0;
+}
+
+std::int32_t __stdcall EffectDirectSoundSetCurrentPosition(void *, std::int32_t) {
+    ++g_effectDirectSoundSetCurrentPositionCount;
+    return 0;
+}
+
+std::int32_t __stdcall EffectDirectSoundPlay(void *, std::uint32_t, std::uint32_t,
+                                             std::uint32_t) {
+    ++g_effectDirectSoundPlayCount;
+    return 0;
+}
 
 template <typename Method> std::uintptr_t MethodAddress(Method method) {
     static_assert(sizeof(method) <= sizeof(std::uintptr_t));
@@ -1067,10 +1152,36 @@ extern "C" int zeffect_cleanup_light_sound_refs_smoke(void) {
 extern "C" int zeffect_handle_sample_ref_offset_event_smoke(void) {
     const std::int32_t oldInitialized = g_zSnd_IsInitialized;
     const std::int32_t oldPreInitialized = g_zSnd_PreInitialized;
+    const std::int32_t oldActiveBackend = g_zSnd_ActiveBackend;
+    const std::int32_t oldMuteDepth = g_zSnd_MuteDepth;
+    const std::int32_t oldPlaybackEnabled = g_zSnd_Flag10PlaybackEnabled;
+    void *const oldGlobalVolumePtr = g_zSnd_GlobalVolumeScalePtr;
+    const std::int32_t oldListenerValid = g_zSnd_ListenerStateValid;
+    const zSndListenerState oldListenerState = g_zSnd_ListenerState;
+    const zVec3 oldListenerVelocity = g_zSnd_ListenerVelocity;
+    const float oldInvSpeedOfSound = g_zSndInvSpeedOfSoundMps;
+
+    auto restoreSoundGlobals = [&]() {
+        g_zSnd_IsInitialized = oldInitialized;
+        g_zSnd_PreInitialized = oldPreInitialized;
+        g_zSnd_ActiveBackend = oldActiveBackend;
+        g_zSnd_MuteDepth = oldMuteDepth;
+        g_zSnd_Flag10PlaybackEnabled = oldPlaybackEnabled;
+        g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumePtr;
+        g_zSnd_ListenerStateValid = oldListenerValid;
+        g_zSnd_ListenerState = oldListenerState;
+        g_zSnd_ListenerVelocity = oldListenerVelocity;
+        g_zSndInvSpeedOfSoundMps = oldInvSpeedOfSound;
+    };
+
     g_zSnd_IsInitialized = 0;
     g_zSnd_PreInitialized = 0;
 
     zSndSample sample = {};
+    sample.replayFields.flags = 8;
+    sample.replayFields.gain = 1.0f;
+    sample.rangeMin = 0.0f;
+    sample.rangeMax = 100.0f;
     zEffectAnimSampleRef samples[1] = {};
     samples[0].sample = &sample;
 
@@ -1093,19 +1204,76 @@ extern "C" int zeffect_handle_sample_ref_offset_event_smoke(void) {
     event.refIndex = 0;
     event.nodeRefIndex = 0;
     if (zEffect::HandleSampleRefOffsetEvent(&entry, &event) != 2) {
-        g_zSnd_IsInitialized = oldInitialized;
-        g_zSnd_PreInitialized = oldPreInitialized;
+        restoreSoundGlobals();
         return 1;
     }
 
+    EffectDirectSoundBufferVTable directSoundVTable = {};
+    directSoundVTable.GetFrequency = &EffectDirectSoundGetFrequency;
+    directSoundVTable.GetStatus = &EffectDirectSoundGetStatus;
+    directSoundVTable.SetVolume = &EffectDirectSoundSetVolume;
+    directSoundVTable.SetPan = &EffectDirectSoundSetPan;
+    directSoundVTable.SetFrequency = &EffectDirectSoundSetFrequency;
+    directSoundVTable.SetCurrentPosition = &EffectDirectSoundSetCurrentPosition;
+    directSoundVTable.Play = &EffectDirectSoundPlay;
+    EffectDirectSoundBuffer directSoundBuffer{&directSoundVTable};
+    sample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+
+    float globalVolume = 1.0f;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_Flag10PlaybackEnabled = 1;
+    g_zSnd_ListenerStateValid = 1;
+    g_zSnd_ListenerState.position = {};
+    g_zSnd_ListenerState.right = {1.0f, 0.0f, 0.0f};
+    g_zSnd_ListenerVelocity = {};
+    g_zSndInvSpeedOfSoundMps = 0.0f;
+
+    ResetEffectDirectSoundCounters();
+    event.nodeRefIndex = 0;
+    if (zEffect::HandleSampleRefOffsetEvent(&entry, &event) != 2 ||
+        sample.primaryVoice.ownerSample != &sample || sample.primaryVoice.hasWorldPos != 0 ||
+        g_effectDirectSoundSetVolumeCount != 1 ||
+        g_effectDirectSoundSetCurrentPositionCount != 1 || g_effectDirectSoundPlayCount != 1) {
+        restoreSoundGlobals();
+        return 2;
+    }
+
+    sample.replayFields.flags = 0x0c;
+    ResetEffectDirectSoundCounters();
     event.nodeRefIndex = 1;
     event.offsetX = 4.0f;
     event.offsetY = 5.0f;
     event.offsetZ = 6.0f;
     const std::int32_t result = zEffect::HandleSampleRefOffsetEvent(&entry, &event);
-    g_zSnd_IsInitialized = oldInitialized;
-    g_zSnd_PreInitialized = oldPreInitialized;
-    return result == 2 ? 0 : 2;
+    const bool offsetOk = result == 2 && sample.primaryVoice.hasWorldPos == 1 &&
+                          sample.primaryVoice.worldPos.x == 5.0f &&
+                          sample.primaryVoice.worldPos.y == 7.0f &&
+                          sample.primaryVoice.worldPos.z == 9.0f &&
+                          g_effectDirectSoundSetPanCount == 1 &&
+                          g_effectDirectSoundSetVolumeCount == 1 &&
+                          g_effectDirectSoundSetFrequencyCount == 0 &&
+                          g_effectDirectSoundSetCurrentPositionCount == 1 &&
+                          g_effectDirectSoundPlayCount == 1;
+    if (!offsetOk) {
+        const int code = result != 2 ? 30
+                         : sample.primaryVoice.hasWorldPos != 1 ? 31
+                         : sample.primaryVoice.worldPos.x != 5.0f ? 32
+                         : sample.primaryVoice.worldPos.y != 7.0f ? 33
+                         : sample.primaryVoice.worldPos.z != 9.0f ? 34
+                         : g_effectDirectSoundSetPanCount != 1 ? 35
+                         : g_effectDirectSoundSetVolumeCount != 1 ? 36
+                         : g_effectDirectSoundSetFrequencyCount != 0 ? 37
+                         : g_effectDirectSoundSetCurrentPositionCount != 1 ? 38
+                         : 39;
+        restoreSoundGlobals();
+        return code;
+    }
+    restoreSoundGlobals();
+    return 0;
 }
 
 extern "C" int zeffect_handle_sound_light_events_smoke(void) {

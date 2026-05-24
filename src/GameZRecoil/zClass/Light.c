@@ -119,6 +119,14 @@ namespace Light {
         zClass_World::AddLight(g_OptCatalogRuntimeWorld, light);
         return light;
     }
+
+    // Reimplements 0x4b2570: Light::ReturnToFreeList (D:\Proj\GameZRecoil\zClass\Light.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL ReturnToFreeList(zClass_NodePartial *lightNode) {
+        zClass_Light::gwLightSetRange(lightNode, 0.1f, 0.2f);
+        zClass_World::RemoveLight(g_OptCatalogRuntimeWorld, lightNode);
+        lightNode->callbackContext = g_OptCatalogThermalGlowFreeList;
+        g_OptCatalogThermalGlowFreeList = lightNode;
+    }
 }
 
 namespace zClass_Light {

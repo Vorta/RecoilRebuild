@@ -12,6 +12,7 @@ from recoil_frontier import (  # noqa: E402
     Node,
     build_frontier,
     extract_call_tokens,
+    extract_function_reference_tokens,
     inferred_symbol_kind,
     is_indirect_call_token,
     recommendation,
@@ -35,6 +36,19 @@ class RecoilFrontierTests(unittest.TestCase):
 
     def test_register_call_is_indirect(self) -> None:
         self.assertTrue(is_indirect_call_token("eax"))
+
+    def test_non_call_function_pointer_immediates_are_extracted(self) -> None:
+        tokens = extract_function_reference_tokens(
+            "\n".join(
+                [
+                    "0041f5b4  68 50 f8 41 00   push    0x41f850",
+                    "0041f5b9  ba a0 f6 41 00   mov     edx, 0x41f6a0",
+                    "0041f5cd  e8 0e 0a 0a 00   call    zUtil_ZAR::RegisterSectionHandler",
+                ]
+            )
+        )
+
+        self.assertEqual(["0x41f850", "0x41f6a0"], tokens)
 
     def test_msvc_helper_symbol_is_provider_not_source_blocker(self) -> None:
         node = Node(address="0x4c6000", name="MSVC_EH_ArrayConstructor", kind="compiler")
@@ -132,6 +146,27 @@ class RecoilFrontierTests(unittest.TestCase):
         self.assertEqual(["0x401000"], bridge.assembly_calls)
         self.assertEqual(["0x401000"], bridge.il_calls)
         self.assertEqual([], nodes["0x401020"].callees)
+
+    def test_function_pointer_references_are_frontier_dependencies(self) -> None:
+        class FakeBridge:
+            def symbols(self):
+                root = Symbol(address="0x401000", name="Root", kind="function")
+                callback = Symbol(address="0x401080", name="Callback", kind="function")
+                return (
+                    {root.address: root, callback.address: callback},
+                    {root.name: root, callback.name: callback},
+                )
+
+            def assembly(self, address: str) -> str:
+                return "00401000  68 80 10 40 00 push    0x401080"
+
+            def il(self, address: str, view: str = "mlil") -> str:
+                return ""
+
+        nodes = build_frontier("0x401000", 1, FakeBridge(), {})  # type: ignore[arg-type]
+
+        self.assertEqual(["0x401080"], nodes["0x401000"].function_refs)
+        self.assertIn("0x401080", nodes)
 
 
 if __name__ == "__main__":
