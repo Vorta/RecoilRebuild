@@ -272,6 +272,23 @@ RECOIL_NOINLINE float RECOIL_FASTCALL Vec3Normalize(zVec3 *vec) {
     return length;
 }
 
+// Reimplements 0x4727f0: zMath::Vec3NormalizeXZ
+// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3NormalizeXZ(zVec3 *vec, zVec3 *out) {
+    const float savedY = vec->y;
+    vec->y = 0.0f;
+    const float length = sqrt(vec->x * vec->x + vec->y * vec->y + vec->z * vec->z);
+    vec->y = savedY;
+
+    float scale = length;
+    if (length != 0.0f) {
+        scale = 1.0f / length;
+    }
+
+    out->x = vec->x * scale;
+    out->z = vec->z * scale;
+}
+
 // Reimplements 0x472670: zMath::Vec3DeltaLengthSq (GameZRecoil/zMath.cpp)
 RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLengthSq(const zVec3 *a, const zVec3 *b) {
     g_zMath_Vec3DeltaScratch.x = a->x - b->x;
@@ -507,6 +524,36 @@ RECOIL_NOINLINE void RECOIL_FASTCALL MatApplyLocalTRS(const zVec3 *angles, const
 
     MatMultiply(&local, 1);
     *g_currentMatrixIdentityFlagSlot = 0;
+}
+
+// Reimplements 0x474260: zMath::MatBuildEulerRotation3x3
+// (D:\Proj\GameZRecoil\zMath\zmath_mat.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL MatBuildEulerRotation3x3(zMat4x3 *outBasis,
+                                                              float angleX, float angleY,
+                                                              float angleZ) {
+    const float sx = sin(angleX);
+    const float cx = cos(angleX);
+    const float sy = sin(angleY);
+    const float cy = cos(angleY);
+    const float sz = sin(angleZ);
+    const float cz = cos(angleZ);
+
+    const float sySx = sy * sx;
+    const float szCy = sz * cy;
+    const float czCy = cz * cy;
+
+    outBasis->xx = sySx * sz + cz * cy;
+    outBasis->xy = sz * cx;
+    outBasis->xz = szCy * sx - cz * sy;
+    outBasis->yx = sySx * cz - szCy;
+    outBasis->yy = cz * cx;
+    outBasis->yz = czCy * sx + sz * sy;
+    outBasis->zx = sy * cx;
+    outBasis->zy = -sx;
+    outBasis->zz = cy * cx;
+    outBasis->posX = 0.0f;
+    outBasis->posY = 0.0f;
+    outBasis->posZ = 0.0f;
 }
 
 // Reimplements 0x474d10: zMath::Vec3DirectionAnglesBetweenPoints

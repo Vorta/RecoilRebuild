@@ -10,13 +10,18 @@
 
 struct OptCatalogEntryDef;
 struct PlayerMasterModalData;
+struct zSndPlayHandle;
 struct zUtil_SaveGameState;
 
 struct PlayerModalState {
     PlayerModalState *next;
     PlayerMasterModalData *masterModalData;
-    unsigned char reserved008[0x7c];
+    int modalStateCode;
+    zVec3 transformedProbePointWorldByIndex[4];
+    unsigned char reserved03c[0x48];
     zClass_NodePartial *modalNode;
+    unsigned char reserved088[0x24];
+    zSndPlayHandle *modalSfxHandle[4];
 };
 
 struct GameNetPlayerSaveState {
@@ -182,6 +187,7 @@ extern int g_GameNetSuppressPkt13ActivationEcho;
 
 #if defined(_M_IX86) || defined(__i386__)
 RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, modalNode) == 0x84);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, modalSfxHandle) == 0xac);
 RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, next) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerSaveState, primaryModalState) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, playerColorIndex) == 0x04);

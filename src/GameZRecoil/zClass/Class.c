@@ -1,6 +1,7 @@
 #include "zClass.h"
 
 #include "GameZRecoil/zError/zError.h"
+#include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
 #include "zDi.h"
@@ -1060,7 +1061,7 @@ namespace zClass_Class {
             if (current->listCountA != 1) {
                 zError::ReportOld(
                     0x200, kClassSourceFile, 0xd4e,
-                    "Error getting world child; Multiple parents found.\n  Node: %s\n", current);
+                    "Error getting root node; Multiple parents found.\n  Node: %s\n", current);
                 return 0;
             }
 
@@ -1069,7 +1070,7 @@ namespace zClass_Class {
                 return 0;
             }
             if (parent->classId == 2) {
-                return parent;
+                return current;
             }
             current = parent;
         }
@@ -1706,6 +1707,17 @@ namespace zClass_Node {
         for (int i = 0; i < node->listCountB; ++i) {
             InvalidateFlagBit8MaterialImagesRecursive(node->listB[i]);
         }
+    }
+
+    // Reimplements 0x4528a0: zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack
+    RECOIL_NOINLINE void RECOIL_FASTCALL LoadFlagBit8MaterialImagesAndTexturePack(
+        zClass_NodePartial * node) {
+        if (node == 0) {
+            return;
+        }
+
+        InvalidateFlagBit8MaterialImagesRecursive(node);
+        zImage::TexDir_LoadPendingEntries();
     }
 
     // Reimplements 0x4528e0: zClass_Node::AssignInt32ToDiRecursive

@@ -119,7 +119,7 @@ struct zModel_PickFaceEntry {
     unsigned int unknown_0c;
     zModel_PickFaceUvData *faceUvData;
     zModel_PickFaceScenePayload *scenePayload;
-    unsigned int unknown_18;
+    zTag4Partial variantTag;
 };
 
 struct zModel_PickFaceData {
@@ -127,7 +127,8 @@ struct zModel_PickFaceData {
     unsigned int flags;
     unsigned int unknown_08;
     int faceCount;
-    unsigned char unknown_10[0x08];
+    int vertexCount;
+    unsigned int unknown_14;
     int morphVertexCount;
     unsigned char unknown_1c[0x04];
     float morphWeight;
@@ -185,6 +186,9 @@ extern float g_DiSegmentMinZ;
 extern float g_DiSegmentMaxX;
 extern float g_DiSegmentMaxY;
 extern float g_DiSegmentMaxZ;
+extern zVec3 *g_DiPickPointArray;
+extern int g_DiPickPointCount;
+extern float g_DiPickPointQueryMaxY;
 extern PlayerProbeSampleCandidateBuffer *g_DiPickCandidateBuffer;
 extern zClassDiPickCandidateEntry *g_DiPickCandidateCursor;
 
@@ -198,15 +202,31 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateListBelowPoint(
     float z);
 RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateList(zClass_NodePartial *node,
                                                                     int cullCount);
+RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForPoints(zClass_NodePartial *node,
+                                                                          int depth,
+                                                                          int *hitFlags);
+RECOIL_NOINLINE int RECOIL_FASTCALL
+BuildPickCandidatesForPointsRecursive(zClass_NodePartial *node, int depth, int *hitFlags);
+RECOIL_NOINLINE int RECOIL_FASTCALL
+BuildPickCandidatesForPointsForLight(zClass_NodePartial *node, int depth, int *hitFlags);
+RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForPointBatch(
+    zClass_NodePartial *world, zVec3 *pointArray, int pointCount, float queryMaxY,
+    PlayerProbeSampleCandidateBuffer *outCandidateBuffersByPoint);
 RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesRecursive(zClass_NodePartial *node,
                                                                           int cullCount);
 RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForLight(zClass_NodePartial *node,
                                                                          int cullCount);
 RECOIL_NOINLINE int RECOIL_FASTCALL
 IsPickQueryPointOutsideViewBBoxXZ(zClass_NodePartial *node);
+RECOIL_NOINLINE int RECOIL_FASTCALL PickTestBBox2D(zClass_NodePartial *node,
+                                                            int *hitFlags);
 RECOIL_NOINLINE int RECOIL_FASTCALL
 TryGetPolygonHitAtQueryXZ(zClassDiPickCandidateEntry *candidate, const zVec3 *polygonVertices,
                           float queryX, float queryZ, int vertexCount);
+RECOIL_NOINLINE void RECOIL_FASTCALL PickTestMeshAtQueryXZ(
+    zClass_NodePartial *node, zModel_PickFaceData *faceData, const zVec3 *samplePoints,
+    const int *sampleMaskSeeds, int samplePointCount, float maxProjectedY,
+    PlayerProbeSampleCandidateBuffer *outputBuckets);
 RECOIL_NOINLINE int RECOIL_FASTCALL
 BuildPickCandidatesForSegment(zClass_NodePartial *self);
 RECOIL_NOINLINE int RECOIL_FASTCALL RaycastSelectClosestHitBetweenPoints(
@@ -243,6 +263,13 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AppendPickCandidatesForFace(
     const zModel_PickFaceData *faceData, zClassDiPickCandidateEntry *candidate,
     const zVec3 *segmentStart, const zVec3 *segmentEnd);
 } // namespace zClass_cls_di
+
+namespace zModelConst {
+RECOIL_NOINLINE void RECOIL_FASTCALL AddFaceToPlayerProbeSampleBuckets(
+    zClass_NodePartial *node, PlayerProbeSampleCandidateBuffer *outputBuckets,
+    const zVec3 *samplePoints, const int *sampleMaskSeeds, int samplePointCount,
+    float maxProjectedY, const zVec3 *polygonVertices, const zModel_PickFaceEntry *faceEntry);
+} // namespace zModelConst
 
 RECOIL_NOINLINE int RECOIL_FASTCALL
 zModel_Material_SetFlagBit9(zModel_MaterialPartial *material, int enabled);
@@ -330,9 +357,11 @@ RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceEntry, flagsAndVertexCount) == 0x00
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceEntry, vertexIndices) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceEntry, faceUvData) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceEntry, scenePayload) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceEntry, variantTag) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zModel_PickFaceEntry) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceData, flags) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceData, faceCount) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceData, vertexCount) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceData, morphVertexCount) == 0x18);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceData, morphWeight) == 0x20);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceData, faces) == 0x30);

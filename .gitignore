@@ -138,6 +138,6 @@ Desktop.ini
 *.swp
 *.swo
 
-# Public verification manifests are intentionally tracked.
-!tools/vc6_verify_targets/
-!tools/vc6_verify_targets/*.json
+# Tools are not tracked
+tools/
+temp/
