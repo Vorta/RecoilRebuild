@@ -41,7 +41,7 @@ publishing the executable itself.
 - `tools/vc6_verify_targets` - public VC assembly-verification manifests for
   reconstructed functions and dependency groups. The directory name is
   historical; targets may use VC5SP3 or VC6 profiles.
-- `reconstruction` - durable reconstruction notes. The previous large root
+- `docs/reconstruction` - durable reconstruction notes. The previous large root
   notes file is preserved as `docs/reconstruction/NOTES.md`.
 - `.agent` - long-lived reconstruction plan, implementation group notes, and
   source guard baselines used by coding agents.
@@ -149,11 +149,12 @@ Completion is tracked per function in `.agent/RECOIL_PLAN.md`:
   for implementation.
 - `Reimplemented` means native source exists and compiles with the correct
   source-level behavior.
+- `Functional-equivalent` means source, ABI, and targeted behavior evidence are
+  accepted for default dependency progress.
 - `Binary-safe` means generated 32-bit assembly or provider ABI
-  evidence has been compared against the original and accepted.
-- `Functional-equivalent` is an optional progress-lane marker for
-  byte-verification blockers with reviewed VC failure evidence plus targeted
-  native behavior tests. It does not complete `Binary-safe`.
+  evidence has been compared against the original and accepted. It is the final
+  acceptance gate for class, vtable, source-cluster, and rebuilt-executable
+  confidence.
 
 Useful commands:
 
@@ -161,7 +162,7 @@ Useful commands:
 python tools/recoil_status.py
 python tools/recoil_claim.py next --owner <name> --claim
 python tools/recoil_plan_cli.py next
-python tools/recoil_plan_cli.py next --lane progress
+python tools/recoil_plan_cli.py next --lane binary
 python tools/recoil_frontier.py 0x4301e0 --depth 1
 python tools/recoil_functional_verify.py 0x4301e0
 python tools/recoil_asm_verify.py 0x407170
@@ -172,9 +173,9 @@ python tools/recoil_plan_audit.py --summary
 
 Use `recoil_claim.py` to coordinate active function ownership between agents.
 `recoil_plan_cli.py next` is read-only navigation; it does not reserve work.
-Strict mode is the default for status, plan, and frontier commands. Use
-`--lane progress` only when intentionally allowing functionally accepted
-byte-verification blockers to stop blocking dependency traversal.
+The default lane is functional equivalence. Use `--lane binary` only when
+intentionally working remaining binary-safe debt after functional evidence is
+accepted.
 
 Commands that reference `support/Recoil.exe`, `support/zbd`, `support/sdk`,
 `img/`, or a VC toolchain require local private inputs. They are documented so
@@ -211,14 +212,16 @@ python -m unittest discover -s tests/tools -p *_tests.py
   notes.
 - `docs/reconstruction/compiler_linker_provenance.md` - compiler/linker and
   provider evidence policy.
+- `docs/reconstruction/inlined_helpers.md` - ledger for likely original helpers
+  and methods that were fully inlined by the retail compiler.
 - `docs/reconstruction/original_class_candidates.md` - generated candidate map
   for original class-like systems, records, vtables/function tables, and
   namespace boundaries.
 - `docs/reconstruction/source_file_map.md` - generated original-source to
   current-source placement map.
-- `docs/reconstruction/NOTES.md` - accumulated subsystem reconstruction notes and
-  durable decompiled-source findings; archival source material, not the
-  preferred location for new notes.
+- `docs/reconstruction/NOTES.md` - archival subsystem reconstruction notes and
+  decompiled-source findings; source material, not the preferred location for
+  new notes.
 
 When adding reconstructed source, document durable facts in code where future
 contributors need them: original address provenance, recovered layouts, ABI

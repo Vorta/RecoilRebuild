@@ -60,6 +60,29 @@ class RecoilSourceFileMapTests(unittest.TestCase):
 
         self.assertIn("## Battlesport/Sample.cpp", rendered)
         self.assertIn("`0x401000` `Sample::Known` -> `src/sample.cpp:1`", rendered)
+        self.assertIn("excludes helpers fully inlined by the retail compiler", rendered)
+
+    def test_render_markdown_warns_for_case_insensitive_collisions(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "src"
+            source.mkdir()
+            (source / "sample.cpp").write_text(
+                "\n".join(
+                    [
+                        "// Reimplements 0x401000: Sample::Upper (D:\\Proj\\Battlesport\\HudUi.cpp)",
+                        "// Reimplements 0x401010: Sample::Lower (D:\\Proj\\Battlesport\\hudui.cpp)",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            entries = collect_entries(source, repo_root=root)
+
+        rendered = render_markdown(entries)
+
+        self.assertIn("## Case-insensitive source path collisions", rendered)
+        self.assertIn("`Battlesport/HudUi.cpp`, `Battlesport/hudui.cpp`", rendered)
 
     def test_check_mode_fails_when_output_is_stale(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

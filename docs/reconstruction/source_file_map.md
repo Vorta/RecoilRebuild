@@ -2,8 +2,15 @@
 
 Generated from `Reimplements 0xNNNNNN: Name (original/source/path)` comments in `src/`.
 Binary Ninja remains authoritative; this map is an agent navigation aid.
+It only contains address-backed provenance comments and excludes helpers fully inlined by the retail compiler.
 
 Entries: 2322
+
+## Case-insensitive source path collisions
+
+These original-source labels differ only by case on Windows; confirm placement against Binary Ninja before adding new code.
+
+- `Battlesport/HudUi.cpp`, `Battlesport/hudui.cpp`
 
 ## Battlesport/ai_net.cpp
 

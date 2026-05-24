@@ -11,6 +11,9 @@ for function identity, types, markers, and acceptance state.
   and temporary-state hygiene checks.
 - `compiler_linker_provenance.md` - compiler, linker, and verification-profile
   assumptions guarded by `tools/recoil_provenance_audit.py --strict`.
+- `inlined_helpers.md` - compact ledger for likely original helpers and methods
+  that were fully inlined by the retail compiler, with caller evidence and
+  verification limits.
 - `original_class_candidates.md` - generated candidate map for likely original
   classes, records, vtables/function tables, and namespace-style subsystems.
 - `provider_abi_notes.md` - repo-local provider assumptions for VC5SP3/VC6, MFC42,
@@ -29,9 +32,11 @@ for function identity, types, markers, and acceptance state.
   notes, including the `FindByName` inline-`strcmp` mismatch profile.
 - `README.md` - rules for when to add durable reconstruction notes.
 
-## Human-readable notes
+## Archival Notes
 
-- `docs/reconstruction/NOTES.md` is archival working evidence. Update it with new findings. It should contain an overarching documentation of the entire engine.
+- `docs/reconstruction/NOTES.md` is archival working evidence and source
+  material for narrower durable docs. Do not add routine new findings there
+  unless no narrower document or source comment can carry the fact.
 
 ## Agent Use
 
@@ -44,5 +49,8 @@ for function identity, types, markers, and acceptance state.
 - Before introducing or reshaping class, vtable, function-table, record, or
   namespace/module boundaries, check `original_class_candidates.md` as advisory
   generated evidence, then confirm against current Binary Ninja facts.
+- Before duplicating a small repeated decompiled body across callers, check
+  `inlined_helpers.md` and consider restoring a likely original inline helper or
+  method with caller-based verification evidence.
 - For temporary dependency closures, use `.agent/IMPLEMENTATION_GROUPS.md`; move
   durable facts here only when they save future reconstruction time.
