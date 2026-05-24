@@ -535,6 +535,10 @@ void TestPanelSetTextFmtV(HudUiPanel *panel, const char *format, ...) {
     panel->SetTextFmtV(format, args);
     va_end(args);
 }
+
+int RECOIL_FASTCALL TestVideoSurfaceStateNoOp(zVideo_SurfaceStatePartial *) {
+    return 0;
+}
 } // namespace
 
 extern "C" int hud_ui_net_exit_destroy_global_smoke(void) {
@@ -578,6 +582,113 @@ extern "C" int hud_ui_net_exit_show_tick_smoke(void) {
     g_HudUiNetExitPanel = nullptr;
 
     return g_testNetExitSetEnabled == 1 && g_testNetExitUpdateDelta == 0.25f ? 0 : 1;
+}
+
+extern "C" int hud_ui_net_exit_constructor_smoke(void) {
+    int joystickOption = 0;
+    int *const savedJoystickOption = ZOPT_INPUT_JOYSTICK;
+    ZOPT_INPUT_JOYSTICK = &joystickOption;
+
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 6;
+    vmodeOption.name = vmodeName;
+    zOptionEntryPartial *const savedOptionsHead = g_zGame_Options_OptionListHead;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+
+    std::uint16_t pixels[4] = {};
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial savedPrimarySurface = g_zVideo_PrimarySurfaceState;
+    auto *const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    auto *const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    HudUiElement savedFocus{};
+    g_HudUiNetExitPanel_SavedInputFocus = &savedFocus;
+
+    HudUiNetExitPanel panel{};
+    const bool returnedSelf = panel.Constructor() == &panel;
+    const bool initialized =
+        panel.resumeWidget.previewInputCaptureActive == 0 &&
+        panel.exitWidget.previewInputCaptureActive == 0 &&
+        panel.base.base.inputFocusElement == nullptr &&
+        panel.base.base.base.enabled == 0 &&
+        g_HudUiNetExitPanel_SavedInputFocus == nullptr;
+
+    ZOPT_INPUT_JOYSTICK = savedJoystickOption;
+    g_zGame_Options_OptionListHead = savedOptionsHead;
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+    g_HudUiNetExitPanel_SavedInputFocus = nullptr;
+
+    return returnedSelf && initialized ? 0 : 1;
+}
+
+extern "C" int hud_ui_net_exit_create_global_smoke(void) {
+    int joystickOption = 0;
+    int *const savedJoystickOption = ZOPT_INPUT_JOYSTICK;
+    ZOPT_INPUT_JOYSTICK = &joystickOption;
+
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 6;
+    vmodeOption.name = vmodeName;
+    zOptionEntryPartial *const savedOptionsHead = g_zGame_Options_OptionListHead;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+
+    std::uint16_t pixels[4] = {};
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial savedPrimarySurface = g_zVideo_PrimarySurfaceState;
+    auto *const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    auto *const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    HudUiElement savedFocus{};
+    g_HudUiNetExitPanel = nullptr;
+    g_HudUiNetExitPanel_SavedInputFocus = &savedFocus;
+
+    HudUiNetExitPanel *const panel = HudUiNetExitPanel::CreateGlobal();
+    const bool created =
+        panel != nullptr && g_HudUiNetExitPanel == panel &&
+        panel->resumeWidget.previewInputCaptureActive == 0 &&
+        panel->exitWidget.previewInputCaptureActive == 0 &&
+        panel->base.base.inputFocusElement == nullptr &&
+        panel->base.base.base.enabled == 0 &&
+        g_HudUiNetExitPanel_SavedInputFocus == nullptr;
+
+    g_HudUiNetExitPanel = nullptr;
+
+    ZOPT_INPUT_JOYSTICK = savedJoystickOption;
+    g_zGame_Options_OptionListHead = savedOptionsHead;
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+    g_HudUiNetExitPanel_SavedInputFocus = nullptr;
+
+    return created ? 0 : 1;
 }
 
 extern "C" int hud_ui_aux_overlay_text_lines_smoke(void) {
@@ -4083,6 +4194,34 @@ extern "C" int zhud_message_release_images_smoke(void) {
                : 1;
 }
 
+extern "C" int zhud_message_set_value_if_owner_matches_smoke(void) {
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+    HudUiMessage &message = g_HudUiMgrMessages[3];
+    message = {};
+    HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(&message.panel);
+    panel->SetText("unchanged");
+    TestFieldAt<std::int32_t>(&message.panel, 0x2a4) = 2;
+    g_HudUi_InvalidateMask = 0x80;
+
+    HudUiMessage::SetValueIfOwnerMatches(3, 1, 4.25f);
+    const bool skipped = std::strcmp(&TestFieldAt<char>(&message.panel, 0x34), "unchanged") == 0 &&
+                         (message.base.flags & 0x80) == 0;
+
+    HudUiMessage::SetValueIfOwnerMatches(3, 2, 4.25f);
+    const bool rounded = std::strcmp(&TestFieldAt<char>(&message.panel, 0x34), "5") == 0 &&
+                         (message.base.flags & 0x80) != 0;
+
+    message.base.flags = 0;
+    HudUiMessage::SetValueIfOwnerMatches(3, 2, 123456792.0f);
+    const char *const text = &TestFieldAt<char>(&message.panel, 0x34);
+    const bool special = text[0] == static_cast<char>(0xa5) && text[1] == '\0' &&
+                         (message.base.flags & 0x80) == 0;
+
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    message = {};
+    return skipped && rounded && special ? 0 : 1;
+}
+
 extern "C" int zhud_message_constructor_smoke(void) {
     HudUiMessage message{};
     message.variantImages[0] = &zVid_Image::g_zImage_DefaultImage;
@@ -5706,6 +5845,40 @@ extern "C" int zhud_text_stack_push_line_smoke(void) {
         return 6;
     }
     return showChatPushesWhenEnabled ? 0 : 7;
+}
+
+extern "C" int zhud_text_stack_clear_and_enable_smoke(void) {
+    HudUiTopMessageStack top{};
+    top.Constructor();
+    HudUiChatMessageStack chat{};
+    chat.Constructor();
+    g_HudUiTopMessageStack = &top;
+    g_HudUiChatMessageStack = &chat;
+
+    top.PushLine("top alpha", 2.0f);
+    top.PushLine("top beta", 3.0f);
+    chat.base.enabled = 1;
+    chat.PushLine("chat alpha", 4.0f);
+
+    top.base.enabled = 0;
+    chat.base.enabled = 0;
+    HudUiMgr::EnableTopAndChatStacks();
+
+    bool cleared = top.base.enabled == 1 && chat.base.enabled == 1;
+    for (int index = 0; index < 4; ++index) {
+        HudUiPanel *const topLine = TextStackLineAt(&top, index);
+        HudUiPanel *const chatLine = TextStackLineAt(&chat, index);
+        cleared = cleared && (TestFieldAt<std::uint32_t>(topLine, 0x0c) & 0x10u) != 0 &&
+                  (TestFieldAt<std::uint32_t>(chatLine, 0x0c) & 0x10u) != 0 &&
+                  std::strcmp(topLine->GetLastTextPtr(), "") == 0 &&
+                  std::strcmp(chatLine->GetLastTextPtr(), "") == 0;
+    }
+
+    DeleteTextStackLineFonts(&top);
+    DeleteTextStackLineFonts(&chat);
+    g_HudUiTopMessageStack = nullptr;
+    g_HudUiChatMessageStack = nullptr;
+    return cleared ? 0 : 1;
 }
 
 extern "C" int zhud_text_stack_destructor_core_smoke(void) {

@@ -4,6 +4,7 @@
 #include "recoil/recoil_types.h"
 
 #include "GameZRecoil/include/zClass.h"
+#include "GameZRecoil/include/zDi.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "recoil/recoil_callconv.h"
 
@@ -12,6 +13,7 @@ struct GameNetPlayerRow;
 struct OptCatalogEntryDef;
 struct PlayerMasterCommonData;
 struct PlayerModalState;
+struct zSndPlayHandle;
 
 struct PlayerGunFireController {
     OptCatalogEntryDef *optCatalogEntry;
@@ -49,28 +51,52 @@ struct zUtil_PlayerStateStorage {
         struct {
             unsigned char unknown_0000[0x04];
             PlayerMasterCommonData *masterCommonData;
-            unsigned char unknown_0008[0x1c];
+            unsigned char unknown_0008[0x18];
+            int slipSfxActive;
             int amphibUnlocked;
             int hoverUnlocked;
             int subUnlocked;
             int aiMode;
-            float nextModeSwitchAllowedTime;
+            union {
+                float nextModeSwitchAllowedTime;
+                int probeImpactSlot1SeenFlag;
+            };
             int motionInput;
-            int autoTurnSign;
+            union {
+                int autoTurnSign;
+                int probeImpactSlot4SeenFlag;
+            };
             int bankInput;
             unsigned char unknown_0044[0x1c];
             union {
                 int lifecycleState;
                 int masterType;
             };
-            unsigned char unknown_0064[0x40];
+            unsigned char unknown_0064[0x04];
+            float throttleInput;
+            float steeringInput;
+            unsigned char unknown_0070[0x0c];
+            float throttleInputCopy;
+            float steeringInputCopy;
+            unsigned char unknown_0084[0x10];
+            float angVelYaw;
+            unsigned char unknown_0098[0x0c];
             zVec3 projectileSpawnVel;
-            unsigned char unknown_00b0[0x240];
+            zVec3 localVel;
+            unsigned char unknown_00bc[0x0c];
+            float axisClampRuntime;
+            float yawVelocityLimit;
+            unsigned char unknown_00d0[0x190];
+            zMat4x3 motionBasis;
+            unsigned char unknown_0290[0x60];
             zMat4x3 previousTransform;
             zMat4x3 gunFireTransform;
-            unsigned char unknown_0350[0x3c];
+            unsigned char unknown_0350[0x30];
+            zVec3 steerBasisNorm;
             zVec3 steerBasisRaw;
-            unsigned char unknown_0398[0x24];
+            zVec3 steerBasisRef;
+            zVec3 bankBasis;
+            unsigned char unknown_03b0[0x0c];
             union {
                 zVec3 vehicleRotationAngles;
                 struct {
@@ -79,14 +105,27 @@ struct zUtil_PlayerStateStorage {
                     float vehicleRollRad;
                 };
             };
-            unsigned char unknown_03c8[0x24];
+            unsigned char unknown_03c8[0x0c];
+            union {
+                zVec3 cachedVehicleRotationAngles;
+                struct {
+                    float cachedPitchRad;
+                    float cachedYawRad;
+                    float cachedRollRad;
+                };
+            };
+            unsigned char unknown_03e0[0x0c];
             zVec3 worldPos;
-            unsigned char unknown_03f8[0x18];
+            unsigned char unknown_03f8[0x0c];
+            zVec3 fxOffsetLocal;
             zVec3 fxOffsetWorld;
             unsigned char unknown_041c[0x28];
             zTag4Partial variantTag;
             int spawnStateInitialized;
-            unsigned char unknown_044c[0x158];
+            zClassDiPickCandidateEntry selectedProbeSample;
+            unsigned char unknown_0474[0x118];
+            int cameraState;
+            unsigned char unknown_0590[0x14];
             int altGunDispatchRequested;
             unsigned char unknown_05a8[0x14];
             int altGunFireHeldFlag;
@@ -157,13 +196,16 @@ struct zUtil_PlayerStateStorage {
             int aiPathCursorAdvanceRequested;
             int aiCurrentSteeringSubstate;
             int aiReturnSteeringSubstate;
-            unsigned char unknown_0ff8[0x14];
+            unsigned char unknown_0ff8[0x08];
+            zVec3 autoTurnTargetDir;
             zVec3 autoTurnTargetWorldPos;
-            unsigned char unknown_1018[0x88];
+            int autoTurnActive;
+            unsigned char unknown_101c[0x84];
             float lapTimeSec;
             unsigned char unknown_10a4[0x08];
             int lapCount;
-            unsigned char unknown_10b0[0x14];
+            unsigned char unknown_10b0[0x04];
+            zSndPlayHandle *modeLoopSfxHandle[4];
         };
     };
 };
@@ -200,6 +242,11 @@ struct zUtil_SaveGameState {
     unsigned char unknown_28[0x9c];
 
     RECOIL_NOINLINE void RECOIL_THISCALL FreeOwnedResources();
+    RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL
+    StartMasterTypeLoopSfxHandle(int modeIndex, float sfxVolume);
+    RECOIL_NOINLINE void RECOIL_THISCALL StartModalLoopSfxHandle(int modalSfxIndex,
+                                                                 float sfxVolume);
+    RECOIL_NOINLINE void RECOIL_THISCALL StopModalLoopSfxHandle(int modalSfxIndex);
 };
 
 RECOIL_STATIC_ASSERT(sizeof(PlayerGunFireController) == 0x54);
@@ -221,19 +268,38 @@ RECOIL_STATIC_ASSERT(offsetof(PlayerGunFireSlot, attachNode) == 0x04);
 RECOIL_STATIC_ASSERT(sizeof(zUtil_PlayerStateStorage) == 0x10c4);
 RECOIL_STATIC_ASSERT(sizeof(zUtil_SaveGameState) == 0xc4);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, masterCommonData) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, slipSfxActive) == 0x20);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, amphibUnlocked) == 0x24);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, bankInput) == 0x40);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, probeImpactSlot1SeenFlag) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, probeImpactSlot4SeenFlag) == 0x3c);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, lifecycleState) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, throttleInput) == 0x68);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, steeringInput) == 0x6c);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, throttleInputCopy) == 0x7c);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, steeringInputCopy) == 0x80);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, angVelYaw) == 0x94);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, projectileSpawnVel) == 0xa4);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, localVel) == 0xb0);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, axisClampRuntime) == 0xc8);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, yawVelocityLimit) == 0xcc);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, motionBasis) == 0x260);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, previousTransform) == 0x2f0);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, gunFireTransform) == 0x320);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, steerBasisNorm) == 0x380);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, steerBasisRaw) == 0x38c);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, steerBasisRef) == 0x398);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, bankBasis) == 0x3a4);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, vehicleRotationAngles) == 0x3bc);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, restartYawRad) == 0x3c0);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cachedVehicleRotationAngles) == 0x3d4);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, worldPos) == 0x3ec);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, fxOffsetLocal) == 0x404);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, fxOffsetWorld) == 0x410);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, variantTag) == 0x444);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, spawnStateInitialized) == 0x448);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, selectedProbeSample) == 0x44c);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraState) == 0x58c);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, altGunDispatchRequested) == 0x5a4);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, altGunFireHeldFlag) == 0x5bc);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, timedHitStatus) == 0x5c4);
@@ -278,8 +344,11 @@ RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiActive) == 0xfe8);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiPathCursorAdvanceRequested) == 0xfec);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiCurrentSteeringSubstate) == 0xff0);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiReturnSteeringSubstate) == 0xff4);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, autoTurnTargetDir) == 0x1000);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, autoTurnTargetWorldPos) == 0x100c);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, autoTurnActive) == 0x1018);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, lapTimeSec) == 0x10a0);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, modeLoopSfxHandle) == 0x10b4);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, lapCount) == 0x10ac);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, playerState) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, firstSaveState) == 0x08);

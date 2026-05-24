@@ -33,7 +33,6 @@ Accepted per-target verification profiles are intentionally narrow:
 - `vc5_o2_ob2_facs` and `vc5_o2_ob2_gx_facs`: VC5SP3 profiles for local evidence requiring aggressive inlining.
 - `vc6_o2_ob0_facs`: VC6 fallback object-byte verification profile.
 - `vc6_o2_ob1_gx_facs`: VC6 fallback profile for small MFC/CString code where one-level inlining and C++ EH shape are needed.
-- `vc6_o2_ob1_gx_zp4_facs`: documented legacy VC6 fallback tuple preserving the active `0x415220` manifest's existing flag order until that claimed manifest is converted to `compiler_profile` form.
 - `vc6_o2_oy_ob0_facs`: documented VC6 fallback profile with frame-pointer omission for existing targets whose manifests already use `/Oy`; new authored-function targets should still try VC5SP3 first.
 - `vc6_o2_ob2_gx_facs`: VC6 fallback profile where aggressive inlining with C++ EH matches current evidence.
 - `vc6_zsys_cpu_raw_asm`: documented exception for approved zSys CPU raw-assembly probes.

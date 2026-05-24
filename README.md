@@ -42,7 +42,7 @@ publishing the executable itself.
   reconstructed functions and dependency groups. The directory name is
   historical; targets may use VC5SP3 or VC6 profiles.
 - `reconstruction` - durable reconstruction notes. The previous large root
-  notes file is preserved as `reconstruction/NOTES.md`.
+  notes file is preserved as `docs/reconstruction/NOTES.md`.
 - `.agent` - long-lived reconstruction plan, implementation group notes, and
   source guard baselines used by coding agents.
 
@@ -216,7 +216,7 @@ python -m unittest discover -s tests/tools -p *_tests.py
   namespace boundaries.
 - `docs/reconstruction/source_file_map.md` - generated original-source to
   current-source placement map.
-- `reconstruction/NOTES.md` - accumulated subsystem reconstruction notes and
+- `docs/reconstruction/NOTES.md` - accumulated subsystem reconstruction notes and
   durable decompiled-source findings; archival source material, not the
   preferred location for new notes.
 

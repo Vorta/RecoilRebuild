@@ -28,6 +28,9 @@ extern "C" int zmath_matrix_stack_and_direction_smoke(void) {
         matrix.xy != 0.0f || matrix.posZ != 0.0f) {
         return 2;
     }
+    if (zMath_Mat_GetCurrent() != &matrix || zMath_Mat_IsCurrentIdentity() != 1) {
+        return 12;
+    }
 
     zMat4x3 source{2.0f, 0.0f, 0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 4.0f, 10.0f, 20.0f, 30.0f};
     zMath::MatLoadCurrentFrom(&source);
@@ -111,6 +114,33 @@ extern "C" int zmath_matrix_stack_and_direction_smoke(void) {
 
     zMath::Vec3ArrayProjectToCachedY(points, projectedY, 0);
     return Near(projectedY[0], 25.0f) ? 0 : 10;
+}
+
+extern "C" int zmath_mat_build_euler_rotation3x3_smoke(void) {
+    zMat4x3 matrix{};
+    zMath::MatBuildEulerRotation3x3(&matrix, 0.0f, 0.0f, 0.0f);
+    if (!Near(matrix.xx, 1.0f) || !Near(matrix.yy, 1.0f) || !Near(matrix.zz, 1.0f) ||
+        !Near(matrix.posX, 0.0f) || !Near(matrix.posY, 0.0f) || !Near(matrix.posZ, 0.0f)) {
+        return 1;
+    }
+
+    zMath::MatBuildEulerRotation3x3(&matrix, 0.5f, -0.25f, 0.75f);
+    const float sx = sinf(0.5f);
+    const float cx = cosf(0.5f);
+    const float sy = sinf(-0.25f);
+    const float cy = cosf(-0.25f);
+    const float sz = sinf(0.75f);
+    const float cz = cosf(0.75f);
+
+    return Near(matrix.xx, sy * sx * sz + cz * cy) && Near(matrix.xy, sz * cx) &&
+                   Near(matrix.xz, sz * cy * sx - cz * sy) &&
+                   Near(matrix.yx, sy * sx * cz - sz * cy) && Near(matrix.yy, cz * cx) &&
+                   Near(matrix.yz, cz * cy * sx + sz * sy) && Near(matrix.zx, sy * cx) &&
+                   Near(matrix.zy, -sx) && Near(matrix.zz, cy * cx) &&
+                   Near(matrix.posX, 0.0f) && Near(matrix.posY, 0.0f) &&
+                   Near(matrix.posZ, 0.0f)
+               ? 0
+               : 2;
 }
 
 extern "C" int zmath_projection_batches_smoke(void) {
@@ -227,6 +257,24 @@ extern "C" int zmath_vec3_normalize_and_div_scalar_smoke(void) {
     const float zeroLength = zMath::Vec3Normalize(&zero);
     if (zeroLength != 0.0f || zero.x != 0.0f || zero.y != 0.0f || zero.z != 0.0f) {
         return 2;
+    }
+
+    zVec3 flat{3.0f, 9.0f, 4.0f};
+    zVec3 flatOut{10.0f, 11.0f, 12.0f};
+    zMath::Vec3NormalizeXZ(&flat, &flatOut);
+    if (flat.y != 9.0f || !Near(flatOut.x, 0.6f) || flatOut.y != 11.0f ||
+        !Near(flatOut.z, 0.8f)) {
+        return 8;
+    }
+
+    zVec3 flatZero{0.0f, 7.0f, 0.0f};
+    flatOut.x = 5.0f;
+    flatOut.y = 6.0f;
+    flatOut.z = 8.0f;
+    zMath::Vec3NormalizeXZ(&flatZero, &flatOut);
+    if (flatZero.y != 7.0f || flatOut.x != 0.0f || flatOut.y != 6.0f ||
+        flatOut.z != 0.0f) {
+        return 9;
     }
 
     zVec3 deltaA{5.0f, -1.0f, 7.0f};

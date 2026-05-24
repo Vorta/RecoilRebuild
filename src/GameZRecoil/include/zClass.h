@@ -1015,6 +1015,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL
 SetMaterialFlagBit9ForFlagBit0EntriesRecursive(zClass_NodePartial *node, int enabled);
 RECOIL_NOINLINE void RECOIL_FASTCALL
 InvalidateFlagBit8MaterialImagesRecursive(zClass_NodePartial *node);
+RECOIL_NOINLINE void RECOIL_FASTCALL
+LoadFlagBit8MaterialImagesAndTexturePack(zClass_NodePartial *node);
 RECOIL_NOINLINE void RECOIL_FASTCALL AssignInt32ToDiRecursive(zClass_NodePartial *node,
                                                               int value);
 RECOIL_NOINLINE void RECOIL_FASTCALL AssignDamageHandlerRecursiveIfMissing(
@@ -1282,6 +1284,7 @@ namespace Light {
 RECOIL_NOINLINE int RECOIL_CDECL DestroyThermalGlowPool();
 RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
 AllocFromFreeListAndAttach(zColorRgb *specularColor);
+RECOIL_NOINLINE void RECOIL_FASTCALL ReturnToFreeList(zClass_NodePartial *lightNode);
 } // namespace Light
 
 namespace GameZ {

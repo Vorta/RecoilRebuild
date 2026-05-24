@@ -27,6 +27,22 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 
 ## Active Groups
 
+### Group: Player ZAR section registration and read callbacks
+
+- Anchor: 0x41f5b0 Player::ZAR_RegisterSections
+- Reason: source-readiness closure; registration takes function pointers to mission-save and vehicle-list read/write callbacks, so callback signatures and source behavior must be ready before the registration wrapper can be implemented.
+- Source blockers:
+  - 0x41f1d0 Player::ApplyMissionSaveData
+  - 0x45d6b0 zEffect_Anim::NodeActionCallback
+  - 0x4231b0 Player::RefreshHudFromState
+  - 0x4266b0 Player::TickMasterTypeAndForceFeedback
+  - 0x4528a0 zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack
+  - 0x41f640 Player::ZAR_ReadMissionSaveDataSection
+  - 0x41f850 Player::ZAR_ReadVehicleListSection
+- Next action:
+  - `python tools/recoil_frontier.py 0x41f640 --depth 1`
+  - `python tools/recoil_frontier.py 0x41f850 --depth 1`
+
 ### Group: Sprint0 M01 anchor verification blockers
 
 - Anchor: 0x415220 RecoilStateMainMenuTransition::OnTryBecomeCurrent

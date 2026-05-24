@@ -29,11 +29,9 @@ for function identity, types, markers, and acceptance state.
   notes, including the `FindByName` inline-`strcmp` mismatch profile.
 - `README.md` - rules for when to add durable reconstruction notes.
 
-## Legacy Notes
+## Human-readable notes
 
-- `../../reconstruction/NOTES.md` is archival working evidence. Search it when
-  investigating old Binary Ninja cleanup or naming rationale, but do not add new
-  broad notes there.
+- `docs/reconstruction/NOTES.md` is archival working evidence. Update it with new findings. It should contain an overarching documentation of the entire engine.
 
 ## Agent Use
 

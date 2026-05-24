@@ -115,6 +115,17 @@ void free_zclass_type_lists_for_test() {
     g_zClass_TypeList_LiveLinkCount = 0;
     g_zClass_TypeList_PeakLiveLinkCount = 0;
 }
+
+bool zclass_bucket_has_pending_node_for_test(int bucket, zClass_NodePartial *node) {
+    for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != nullptr;
+         link = link->next) {
+        if (link->node == node && link->pendingRemove != 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
 } // namespace
 
 extern "C" int zgame_return_only_stub_smoke() {
@@ -1624,6 +1635,74 @@ extern "C" int zclass_gwnode_update_smoke(void) {
     return zClass_Class::gwNodeUpdate(&invalidNode) == 3 ? 0 : 4;
 }
 
+extern "C" int zclass_gwnode_update_tree_smoke(void) {
+    reset_zclass_type_lists_for_test();
+    g_zClass_DeferredProcessingEnabled = 0;
+
+    zClass_NodePartial root{};
+    zClass_NodePartial activeChild{};
+    zClass_NodePartial inactiveChild{};
+    zClass_NodePartial *children[] = {&activeChild, &inactiveChild};
+
+    root.classId = 6;
+    root.flags = 0x03;
+    root.listCountB = 2;
+    root.listB = children;
+    activeChild.classId = 6;
+    activeChild.flags = 0x03;
+    inactiveChild.classId = 6;
+    inactiveChild.flags = 0x02;
+
+    zClass_TypeList::Insert(7, &root);
+    zClass_TypeList::Insert(7, &activeChild);
+
+    gwNode::UpdateTree(&root);
+    int result = 0;
+    if ((root.flags & 0x02) != 0 || (activeChild.flags & 0x02) != 0 ||
+        (inactiveChild.flags & 0x02) == 0 ||
+        !zclass_bucket_has_pending_node_for_test(7, &root) ||
+        !zclass_bucket_has_pending_node_for_test(7, &activeChild) ||
+        zClass_TypeList::PendingRemovalDirty(7) == 0) {
+        result = 1;
+    }
+
+    free_zclass_type_lists_for_test();
+
+    reset_zclass_type_lists_for_test();
+    g_zClass_DeferredProcessingEnabled = 0;
+
+    zClass_NodePartial leaf{};
+    zClass_NodePartial parent{};
+    zClass_NodePartial world{};
+    zClass_NodePartial *parents[] = {&parent, &world};
+
+    leaf.classId = 6;
+    leaf.flags = 0x03;
+    leaf.listCountA = 2;
+    leaf.listA = parents;
+    parent.classId = 6;
+    parent.flags = 0x03;
+    world.classId = 2;
+    world.flags = 0x03;
+
+    zClass_TypeList::Insert(7, &leaf);
+    zClass_TypeList::Insert(7, &parent);
+    zClass_TypeList::Insert(7, &world);
+
+    gwNode::UpdateTree(&leaf);
+    if (result == 0 &&
+        ((leaf.flags & 0x02) != 0 || (parent.flags & 0x02) != 0 ||
+         (world.flags & 0x02) == 0 || !zclass_bucket_has_pending_node_for_test(7, &leaf) ||
+         !zclass_bucket_has_pending_node_for_test(7, &parent) ||
+         zclass_bucket_has_pending_node_for_test(7, &world))) {
+        result = 2;
+    }
+
+    free_zclass_type_lists_for_test();
+    g_zClass_DeferredProcessingEnabled = 1;
+    return result;
+}
+
 extern "C" int zgame_options_find_option_smoke() {
     zOptionEntryPartial first{};
     zOptionEntryPartial second{};
@@ -2576,6 +2655,29 @@ extern "C" int zclass_cls_di_set_stop_after_first_hit_smoke() {
         return 10;
     }
 
+    zVec3 pickPoints[3] = {{0.5f, 99.0f, 0.5f}, {1.5f, 0.0f, 0.5f}, {0.25f, 0.0f, 2.0f}};
+    int pickHitFlags[3] = {1, 1, 0};
+    g_DiPickPointArray = pickPoints;
+    g_DiPickPointCount = 3;
+    if (zClass_cls_di::PickTestBBox2D(&filterNode, pickHitFlags) != 0 ||
+        pickHitFlags[0] != 1 || pickHitFlags[1] != 0 || pickHitFlags[2] != 0) {
+        return 90;
+    }
+    pickHitFlags[0] = 0;
+    pickHitFlags[1] = 1;
+    pickHitFlags[2] = 1;
+    if (zClass_cls_di::PickTestBBox2D(&filterNode, pickHitFlags) != 1 ||
+        pickHitFlags[0] != 0 || pickHitFlags[1] != 0 || pickHitFlags[2] != 0) {
+        return 91;
+    }
+    filterNode.flags = 0;
+    pickHitFlags[0] = 1;
+    if (zClass_cls_di::PickTestBBox2D(&filterNode, pickHitFlags) != 1 ||
+        pickHitFlags[0] != 1) {
+        return 92;
+    }
+    filterNode.flags = 0x100;
+
     g_DiSegmentMaxX = 0.0f;
     if (zClass_cls_di::FilterPointsBBox(&filterNode, nullptr) != 1) {
         return 11;
@@ -2714,12 +2816,147 @@ extern "C" int zclass_cls_di_set_stop_after_first_hit_smoke() {
         return 20;
     }
 
+    zVec3 probeFaceVertices[3] = {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f},
+                                  {1.0f, 0.0f, 0.0f}};
+    zVec3 probeSamples[3] = {{0.25f, 99.0f, 0.25f}, {1.25f, 0.0f, 0.25f},
+                             {0.25f, 0.0f, 0.25f}};
+    int probeSampleMask[3] = {1, 1, 0};
+    PlayerProbeSampleCandidateBuffer probeBuckets[3] = {};
+    faceEntry.variantTag.count = 2;
+    faceEntry.variantTag.tags[0] = 0x44;
+    faceEntry.variantTag.tags[1] = 0x55;
+    zModelConst::AddFaceToPlayerProbeSampleBuckets(&filterNode, probeBuckets, probeSamples,
+                                                   probeSampleMask, 3, 0.5f, probeFaceVertices,
+                                                   &faceEntry);
+    if (probeBuckets[0].candidateCount != 1 || probeBuckets[1].candidateCount != 0 ||
+        probeBuckets[2].candidateCount != 0 || probeBuckets[0].entries[0].node != &filterNode ||
+        probeBuckets[0].entries[0].scenePayload != &facePayload ||
+        probeBuckets[0].entries[0].variantTag.count != 2 ||
+        probeBuckets[0].entries[0].variantTag.tags[1] != 0x55 ||
+        probeBuckets[0].entries[0].surfaceNormal.y != 1.0f ||
+        probeBuckets[0].entries[0].hitPos.y != 0.0f) {
+        return 201;
+    }
+
+    g_zModel_SharedVec3ScratchB = g_zModel_SharedVec3ScratchBStorage;
+    faceData.vertexCount = 3;
+    faceData.baseVertices = probeFaceVertices;
+    probeBuckets[0] = {};
+    probeBuckets[1] = {};
+    probeBuckets[2] = {};
+    filterMatrixFlags[0] = 1;
+    zClass_cls_di::PickTestMeshAtQueryXZ(&filterNode, &faceData, probeSamples, probeSampleMask, 3,
+                                         0.5f, probeBuckets);
+    if (probeBuckets[0].candidateCount != 1 || probeBuckets[0].entries[0].node != &filterNode ||
+        probeBuckets[0].entries[0].scenePayload != &facePayload ||
+        probeBuckets[0].entries[0].hitPos.y != 0.0f || probeBuckets[1].candidateCount != 0) {
+        return 202;
+    }
+
+    zClass_Object3DDataPartial batchObjectData{};
+    batchObjectData.flags = 8;
+    zClass_NodePartial batchObjectNode{};
+    batchObjectNode.flags = 0x11c;
+    batchObjectNode.nodeType = 0xff;
+    batchObjectNode.classId = 5;
+    batchObjectNode.classData = &batchObjectData;
+    batchObjectNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&faceData);
+    batchObjectNode.cachedBounds[0] = 0.0f;
+    batchObjectNode.cachedBounds[1] = 0.0f;
+    batchObjectNode.cachedBounds[2] = 0.0f;
+    batchObjectNode.cachedBounds[3] = 1.0f;
+    batchObjectNode.cachedBounds[4] = 1.0f;
+    batchObjectNode.cachedBounds[5] = 1.0f;
+    zClass_NodePartial *batchChildren[] = {&batchObjectNode};
+    zWorldAreaPartial batchArea{};
+    batchArea.childCount = 1;
+    batchArea.childList = batchChildren;
+    zWorldAreaPartial *batchRows[] = {&batchArea};
+    zClass_WorldDataPartial batchWorldData{};
+    batchWorldData.clampQueriesToBounds = 1;
+    batchWorldData.areaCellSizeX = 1.0f;
+    batchWorldData.areaCellSizeZ = 1.0f;
+    batchWorldData.areaInvSizeX = 1.0f;
+    batchWorldData.areaInvSizeZ = 1.0f;
+    batchWorldData.areaGridColCount = 1;
+    batchWorldData.areaGridRowCount = 1;
+    batchWorldData.areaGridRows = batchRows;
+    zClass_NodePartial batchWorld{};
+    batchWorld.classData = &batchWorldData;
+    zVec3 batchPoints[2] = {{0.25f, 99.0f, 0.25f}, {1.25f, 99.0f, 0.25f}};
+    PlayerProbeSampleCandidateBuffer batchBuckets[2] = {};
+    faceData.baseVertices = probeFaceVertices;
+    zClass_cls_di::BuildPickCandidatesForPointBatch(&batchWorld, batchPoints, 2, 0.5f,
+                                                    batchBuckets);
+    if (batchBuckets[0].candidateCount != 1 || batchBuckets[1].candidateCount != 1 ||
+        batchBuckets[0].entries[0].node != &batchObjectNode ||
+        batchBuckets[1].entries[0].node != &batchObjectNode ||
+        batchBuckets[0].entries[0].hitPos.y != 0.0f ||
+        batchBuckets[1].entries[0].hitPos.y != 0.0f || batchPoints[1].x != 1.25f) {
+        return 203;
+    }
+    faceData.baseVertices = triZ;
+
     auto setIdentityMatrix = [](float *matrixValues) {
         std::memset(matrixValues, 0, sizeof(zMat4x3));
         matrixValues[0] = 1.0f;
         matrixValues[4] = 1.0f;
         matrixValues[8] = 1.0f;
     };
+
+    faceData.baseVertices = probeFaceVertices;
+    zVec3 pointBatchSamples[2] = {{0.25f, 99.0f, 0.25f}, {0.6f, 99.0f, 0.2f}};
+    int pointBatchMask[2] = {1, 1};
+    PlayerProbeSampleCandidateBuffer pointBatchBuckets[2] = {};
+    g_DiPickPointArray = pointBatchSamples;
+    g_DiPickPointCount = 2;
+    g_DiPickPointQueryMaxY = 0.5f;
+    g_DiPickCandidateBuffer = pointBatchBuckets;
+    filterMatrixFlags[0] = 1;
+    filterMatrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+
+    zClass_AnimateDataPartial pointAnimateData{};
+    setIdentityMatrix(pointAnimateData.savedParentMatrix);
+    setIdentityMatrix(pointAnimateData.animatedTransform);
+    zClass_NodePartial pointAnimateNode{};
+    pointAnimateNode.flags = 0x14;
+    pointAnimateNode.nodeType = 0xff;
+    pointAnimateNode.classId = 8;
+    pointAnimateNode.classData = &pointAnimateData;
+    pointAnimateNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&faceData);
+    if (zClass_cls_di::BuildPickCandidatesForPointsRecursive(&pointAnimateNode, 1,
+                                                             pointBatchMask) != 0 ||
+        pointBatchBuckets[0].candidateCount != 1 ||
+        pointBatchBuckets[1].candidateCount != 1 ||
+        pointBatchBuckets[0].entries[0].node != &pointAnimateNode ||
+        pointBatchBuckets[1].entries[0].node != &pointAnimateNode ||
+        zMath::g_currentMatrixPtrSlot != &filterMatrixSlots[0]) {
+        return 204;
+    }
+
+    pointBatchBuckets[0] = {};
+    pointBatchBuckets[1] = {};
+    pointBatchMask[0] = 1;
+    pointBatchMask[1] = 1;
+    zClass_LightDataPartial pointLightData{};
+    setIdentityMatrix(pointLightData.savedParentMatrix);
+    zClass_NodePartial pointLightNode{};
+    pointLightNode.flags = 0x14;
+    pointLightNode.nodeType = 0xff;
+    pointLightNode.classId = 9;
+    pointLightNode.classData = &pointLightData;
+    pointLightNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&faceData);
+    if (zClass_cls_di::BuildPickCandidatesForPointsForLight(&pointLightNode, 1,
+                                                            pointBatchMask) != 0 ||
+        pointBatchBuckets[0].candidateCount != 1 ||
+        pointBatchBuckets[1].candidateCount != 1 ||
+        pointBatchBuckets[0].entries[0].node != &pointLightNode ||
+        pointBatchBuckets[1].entries[0].node != &pointLightNode ||
+        zMath::g_currentMatrixPtrSlot != &filterMatrixSlots[0]) {
+        return 205;
+    }
+    faceData.baseVertices = triZ;
 
     PlayerProbeSampleCandidateBuffer pickBuffer{};
     g_DiPickCandidateBuffer = &pickBuffer;
@@ -3415,6 +3652,27 @@ extern "C" int zclass_type_list_alloc_and_insert_smoke() {
     zClass_TypeList::Head(7) = nullptr;
     zClass_TypeList::Tail(7) = nullptr;
 
+    zClass_NodePartial queuedNode{};
+    queuedNode.classId = 6;
+    queuedNode.flags = 0x03;
+    zClass_TypeListLink skippedQueuedLink{};
+    skippedQueuedLink.pendingRemove = 1;
+    zClass_TypeListLink activeQueuedLink{};
+    skippedQueuedLink.next = &activeQueuedLink;
+    activeQueuedLink.prev = &skippedQueuedLink;
+    activeQueuedLink.node = &queuedNode;
+    zClass_TypeList::Head(7) = &skippedQueuedLink;
+    zClass_TypeList::Tail(7) = &activeQueuedLink;
+    g_zClass_DeferredProcessingEnabled = 0;
+    if (zClass_TypeList::UpdateQueuedTrees() != 0 || activeQueuedLink.pendingRemove != 1 ||
+        (queuedNode.flags & 0x02) != 0) {
+        return 12;
+    }
+    zClass_TypeList::Head(7) = nullptr;
+    zClass_TypeList::Tail(7) = nullptr;
+    zClass_TypeList::PendingRemovalDirty(7) = 0;
+    g_zClass_DeferredProcessingEnabled = 1;
+
     zClass_TypeListLink *freeA =
         static_cast<zClass_TypeListLink *>(std::calloc(1, sizeof(zClass_TypeListLink)));
     zClass_TypeListLink *freeB =
@@ -3947,6 +4205,62 @@ extern "C" int zclass_copy_node_unimplemented_stubs_smoke() {
                : 1;
 }
 
+extern "C" int zclass_copy_camera_node_smoke() {
+    reset_zclass_type_lists_for_test();
+
+    zClass_NodeFreeListSlot cameraPool[1] = {};
+    cameraPool[0].freeTag = 0x00ffffff;
+    g_zClass_NodeArray = cameraPool;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+
+    zClass_NodeFreeListSlot sourceCameraSlot = {};
+    zClass_CameraDataPartial sourceCameraData = {};
+    zClass_NodePartial worldNode = {};
+    zClass_NodePartial windowNode = {};
+    int worldData = 0;
+
+    std::strcpy(sourceCameraSlot.node.name, "source_camera");
+    sourceCameraSlot.node.classId = 1;
+    sourceCameraSlot.node.classData = &sourceCameraData;
+    worldNode.classId = 2;
+    worldNode.classData = &worldData;
+    sourceCameraData.worldNode = &worldNode;
+    sourceCameraData.windowNode = &windowNode;
+    sourceCameraData.targetOrEuler = {4.0f, 5.0f, 6.0f};
+    sourceCameraData.posOffset = {1.0f, 2.0f, 3.0f};
+    sourceCameraData.nearClip = 0.25f;
+    sourceCameraData.farClip = 500.0f;
+    sourceCameraData.clipDistance = 10.0f;
+    sourceCameraData.fovX = 1.0f;
+    sourceCameraData.fovY = 0.5f;
+
+    zClass_NodePartial *const cameraCopy =
+        zClass_cls_util::CopyCameraNode(&sourceCameraSlot.node);
+    if (cameraCopy != &cameraPool[0].node || cameraCopy->classId != 1 ||
+        std::strcmp(cameraCopy->name, "source_camera") != 0) {
+        free_zclass_type_lists_for_test();
+        return 1;
+    }
+
+    zClass_CameraDataPartial *const cameraCopyData =
+        static_cast<zClass_CameraDataPartial *>(cameraCopy->classData);
+    const bool cameraOk =
+        cameraCopyData->worldNode == &worldNode && cameraCopyData->windowNode == &windowNode &&
+        cameraCopyData->targetOrEuler.x == 4.0f && cameraCopyData->targetOrEuler.y == 5.0f &&
+        cameraCopyData->targetOrEuler.z == 6.0f && cameraCopyData->posOffset.x == 1.0f &&
+        cameraCopyData->posOffset.y == 2.0f && cameraCopyData->posOffset.z == 3.0f &&
+        cameraCopyData->nearClip == 0.25f && cameraCopyData->farClip == 500.0f &&
+        cameraCopyData->clipDistance == 10.0f &&
+        cameraCopyData->invClipDistanceSq == 0.01f &&
+        cameraCopyData->frustumWidth == 1.0f && cameraCopyData->frustumHeight == 0.5f;
+
+    std::free(cameraCopyData);
+    g_zClass_NodeArray = nullptr;
+    free_zclass_type_lists_for_test();
+    return cameraOk ? 0 : 2;
+}
+
 extern "C" int zclass_copy_object3d_and_lod_smoke() {
     reset_zclass_type_lists_for_test();
 
@@ -4303,7 +4617,7 @@ extern "C" int zclass_node_world_child_smoke() {
     child.listCountA = 1;
     child.listA = childParents;
 
-    if (zClass_Class::gwNodeGetWorldChild(&child) != &world ||
+    if (zClass_Class::gwNodeGetWorldChild(&child) != &mid ||
         zClass_Class::gwNodeGetWorldChild(&world) != nullptr ||
         zClass_Class::gwNodeGetWorldChild(nullptr) != nullptr) {
         return 1;
@@ -4314,6 +4628,58 @@ extern "C" int zclass_node_world_child_smoke() {
     child.listCountA = 2;
     child.listA = multiParents;
     return zClass_Class::gwNodeGetWorldChild(&child) == nullptr ? 0 : 2;
+}
+
+extern "C" int zclass_gwnode_build_node_to_ancestor_matrix_smoke() {
+    int flags[2] = {};
+    float *slots[2] = {};
+    zMat4x3 matrix{};
+    zMath::g_currentMatrixIdentityFlagSlot = &flags[0];
+    zMath::g_currentMatrixPtrSlot = &slots[0];
+    zMath::MatStackPushPtr(reinterpret_cast<float *>(&matrix));
+
+    if (gwNode::BuildNodeToAncestorMatrix(nullptr, 1) != 5) {
+        zMath::MatStackPopPtr();
+        return 1;
+    }
+
+    zClass_Object3DDataPartial data{};
+    zClass_NodePartial node{};
+    node.classId = 5;
+    node.flags = 0x00080000;
+    node.classData = &data;
+    data.cachedWorldMatrix[0] = 1.0f;
+    data.cachedWorldMatrix[4] = 1.0f;
+    data.cachedWorldMatrix[8] = 1.0f;
+    data.cachedWorldMatrix[9] = 3.0f;
+    data.cachedWorldMatrix[10] = 4.0f;
+    data.cachedWorldMatrix[11] = 5.0f;
+
+    zMath::MatLoadIdentity();
+    if (gwNode::BuildNodeToAncestorMatrix(&node, 1) != 0 || matrix.posX != 3.0f ||
+        matrix.posY != 4.0f || matrix.posZ != 5.0f) {
+        zMath::MatStackPopPtr();
+        return 2;
+    }
+
+    data.flags = 0x20;
+    data.localMatrix[0] = 1.0f;
+    data.localMatrix[4] = 1.0f;
+    data.localMatrix[8] = 1.0f;
+    data.localMatrix[9] = 7.0f;
+    data.localMatrix[10] = 8.0f;
+    data.localMatrix[11] = 9.0f;
+    zMath::MatLoadIdentity();
+    if (gwNode::BuildNodeToAncestorMatrix(&node, 1) != 0 || matrix.posX != 7.0f ||
+        matrix.posY != 8.0f || matrix.posZ != 9.0f || data.cachedWorldMatrix[9] != 7.0f ||
+        data.cachedWorldMatrix[10] != 8.0f || data.cachedWorldMatrix[11] != 9.0f ||
+        (data.flags & 0x20) != 0) {
+        zMath::MatStackPopPtr();
+        return 3;
+    }
+
+    zMath::MatStackPopPtr();
+    return 0;
 }
 
 extern "C" int zclass_gwnode_get_world_position_smoke() {
@@ -4717,6 +5083,158 @@ extern "C" int zclass_child_generic_remove_smoke() {
     zClass_TypeList::FreeAll();
     zClass_TypeList::FreeAll();
     return 0;
+}
+
+static void zclass_init_single_child_link(zClass_NodePartial *parent,
+                                          zClass_NodePartial *child,
+                                          zClass_NodePartial **children,
+                                          zClass_NodePartial **parents) {
+    *children = child;
+    *parents = parent;
+    parent->flags = 1;
+    parent->listCountB = 1;
+    parent->listB = children;
+    child->listCountA = 1;
+    child->listA = parents;
+}
+
+static int zclass_link_removed(const zClass_NodePartial *parent,
+                               const zClass_NodePartial *child) {
+    return parent->listCountB == 0 && child->listCountA == 0;
+}
+
+extern "C" int zclass_remove_wrapper_matrix_smoke() {
+    zClass_NodePartial parent{};
+    zClass_NodePartial child{};
+    zClass_NodePartial *children[1]{};
+    zClass_NodePartial *parents[1]{};
+    int classData = 0;
+
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Camera::gwCameraRemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Camera::gwCameraRemoveChild(nullptr, &child) != 5 ||
+        zClass_Camera::gwCameraRemoveChild(&parent, nullptr) != 5) {
+        return 1;
+    }
+
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass::RemoveChildChecked(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass::RemoveChildChecked(nullptr, &child) != 5 ||
+        zClass::RemoveChildChecked(&parent, nullptr) != 5) {
+        return 2;
+    }
+
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Display::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Display::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Display::RemoveChild(&parent, nullptr) != 5) {
+        return 3;
+    }
+
+    parent.classData = &classData;
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Object3D::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Object3D::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Object3D::RemoveChild(&parent, nullptr) != 5) {
+        return 4;
+    }
+    parent.classData = nullptr;
+    if (zClass_Object3D::RemoveChild(&parent, &child) != 5) {
+        return 5;
+    }
+
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Lod::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child)) {
+        return 6;
+    }
+
+    zClass_SequenceDataPartial sequenceData{};
+    parent.classData = &sequenceData;
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Sequence::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Sequence::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Sequence::RemoveChild(&parent, nullptr) != 5) {
+        return 7;
+    }
+    parent.classData = nullptr;
+    if (zClass_Sequence::RemoveChild(&parent, &child) != 5) {
+        return 8;
+    }
+
+    parent.classData = &classData;
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Animate::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Animate::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Animate::RemoveChild(&parent, nullptr) != 5) {
+        return 9;
+    }
+    parent.classData = nullptr;
+    if (zClass_Animate::RemoveChild(&parent, &child) != 5) {
+        return 10;
+    }
+
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Light::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Light::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Light::RemoveChild(&parent, nullptr) != 5) {
+        return 11;
+    }
+
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Sound::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Sound::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Sound::RemoveChild(&parent, nullptr) != 5) {
+        return 12;
+    }
+
+    parent.classData = &classData;
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Class::RemoveChildValidated(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Class::RemoveChildValidated(nullptr, &child) != 5 ||
+        zClass_Class::RemoveChildValidated(&parent, nullptr) != 5) {
+        return 13;
+    }
+    parent.classData = nullptr;
+    if (zClass_Class::RemoveChildValidated(&parent, &child) != 5) {
+        return 14;
+    }
+
+    const int classIds[] = {1, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    for (int i = 0; i < static_cast<int>(sizeof(classIds) / sizeof(classIds[0])); ++i) {
+        zClass_SequenceDataPartial dispatchSequenceData{};
+        parent = {};
+        child = {};
+        parent.classId = classIds[i];
+        if (classIds[i] == 5 || classIds[i] == 8 || classIds[i] == 11) {
+            parent.classData = &classData;
+        } else if (classIds[i] == 7) {
+            parent.classData = &dispatchSequenceData;
+        }
+        zclass_init_single_child_link(&parent, &child, children, parents);
+        if (zClass_Class::RemoveChild(&parent, &child) != 0 ||
+            !zclass_link_removed(&parent, &child)) {
+            return 20 + i;
+        }
+    }
+
+    parent = {};
+    child = {};
+    parent.classId = 99;
+    return zClass_Class::RemoveChild(&parent, &child) == 1 &&
+                   zClass_Class::RemoveChild(nullptr, &child) == 5 &&
+                   zClass_Class::RemoveChild(&parent, nullptr) == 5
+               ? 0
+               : 40;
 }
 
 extern "C" int zclass_object3d_child_wrappers_smoke() {
@@ -6529,16 +7047,70 @@ extern "C" int zclass_sound_leaf_smoke() {
         return 61;
     }
 
+    zSndPlayHandle managedHandle = {};
+    managedHandle.isActive = 1;
+    data.playHandle = &managedHandle;
+    data.runtimeFlags = 0x08;
+    stackNode.flags = 0x04;
+    if (zClass_Sound::gwSoundSetActive(&stackNode, 0) != 0 || data.playHandle != nullptr ||
+        (data.runtimeFlags & 0x08) != 0 || managedHandle.isActive != 0 ||
+        (stackNode.flags & 0x04) != 0) {
+        return 62;
+    }
+    if (zClass_Sound::gwSoundSetActive(&stackNode, 1) != 0 || (stackNode.flags & 0x04) == 0) {
+        return 63;
+    }
+    stackNode.classId = 10;
+    stackNode.flags = 0x04;
+    if (zClass_Class::gwNodeSetActive(&stackNode, 0) != 0 || (stackNode.flags & 0x04) != 0) {
+        return 64;
+    }
+
     stackNode.classData = nullptr;
     if (zClass_Sound::SetSampleSetByName(nullptr, "x") != 5 ||
         zClass_Sound::SetSampleSetByName(&stackNode, "x") != 5 ||
         zClass_Sound::gwSoundSetPosition(nullptr, 1.0f, 2.0f, 3.0f) != 5 ||
-        zClass_Sound::gwSoundSetPosition(&stackNode, 1.0f, 2.0f, 3.0f) != 5) {
+        zClass_Sound::gwSoundSetPosition(&stackNode, 1.0f, 2.0f, 3.0f) != 5 ||
+        zClass_Sound::gwSoundSetActive(nullptr, 0) != 5 ||
+        zClass_Sound::gwSoundSetActive(&stackNode, 0) != 5) {
         return 7;
     }
 
     g_zClass_NodeFreeHeadIndex = -1;
     return zClass_Sound::gwSoundNew() == nullptr ? 0 : 8;
+}
+
+extern "C" int zclass_find_node_recursive_by_name_smoke() {
+    zClass_NodePartial root{};
+    zClass_NodePartial firstChild{};
+    zClass_NodePartial secondChild{};
+    zClass_NodePartial grandchild{};
+    std::strcpy(root.name, "root");
+    std::strcpy(firstChild.name, "shared");
+    std::strcpy(secondChild.name, "shared");
+    std::strcpy(grandchild.name, "deep");
+
+    zClass_NodePartial *rootChildren[2] = {&firstChild, &secondChild};
+    zClass_NodePartial *childChildren[1] = {&grandchild};
+    root.listCountB = 2;
+    root.listB = rootChildren;
+    firstChild.listCountB = 1;
+    firstChild.listB = childChildren;
+
+    if (zClass_Class::FindNodeRecursiveByName(nullptr, "root") != nullptr) {
+        return 1;
+    }
+    if (zClass_Class::FindNodeRecursiveByName(&root, "root") != &root) {
+        return 2;
+    }
+    if (zClass_Class::FindNodeRecursiveByName(&root, "shared") != &firstChild) {
+        return 3;
+    }
+    if (zClass_Class::FindNodeRecursiveByName(&root, "deep") != &grandchild) {
+        return 4;
+    }
+
+    return zClass_Class::FindNodeRecursiveByName(&root, "missing") == nullptr ? 0 : 5;
 }
 
 extern "C" int zclass_object3d_init_smoke() {

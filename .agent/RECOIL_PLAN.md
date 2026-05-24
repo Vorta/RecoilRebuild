@@ -1007,9 +1007,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x46e3e0:
   - [☑️] Reconstructed (Name: zImage_TexDirEntry::BuildMipChain)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage_TexDirEntryPartial::BuildMipChain File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zimage_texdir_entry_build_mip_chain)
   - [❌] Binary-safe
 - 0x476700:
   - [☑️] Reconstructed (Name: zScene::TestProjectedSphereVisible)
@@ -1043,9 +1043,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x482270:
   - [☑️] Reconstructed (Name: zDi::CloneToInstance)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::CloneToInstance File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zdi_clone_to_instance)
   - [❌] Binary-safe
 - 0x4826a0:
   - [✅] Reconstructed (Name: zUtil::StoreInt32)
@@ -1055,10 +1055,10 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4826b0:
   - [✅] Reconstructed (Name: zDi::SetClonedFlag)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::SetClonedFlag File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zdi_set_cloned_flag)
+  - [✅] Binary-safe
 - 0x4826f0:
   - [✅] Reconstructed (Name: zDi::AddRef)
   - [✅] Source dependencies satisfied
@@ -4124,15 +4124,15 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x412650:
   - [☑️] Reconstructed (Name: HudUiMessage::SetValueIfOwnerMatches)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiMessage::SetValueIfOwnerMatches File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_message_set_value_if_owner_matches)
   - [❌] Binary-safe
 - 0x4126e0:
   - [✅] Reconstructed (Name: HudUiMessage::SelectVariantDisplay)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessage::SelectVariantDisplay File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_message_select_variant_display)
   - [❌] Binary-safe
 - 0x412790:
   - [✅] Reconstructed (Name: HudUiMessage::ApplySideImageSwap)
@@ -4142,9 +4142,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4127d0:
   - [✅] Reconstructed (Name: HudUiMessage::ClearDisplay)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessage::ClearDisplay File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_message_clear_display)
   - [❌] Binary-safe
 - 0x412820:
   - [☑️] Reconstructed (Name: HudUiMessage::UpdateSelectedWeaponDisplay)
@@ -4322,9 +4322,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x413910:
   - [✅] Reconstructed (Name: HudUiMgr::EnableTopAndChatStacks)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::EnableTopAndChatStacks File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zhud_mgr_enable_top_and_chat_stacks)
   - [❌] Binary-safe
 - 0x413950:
   - [✅] Reconstructed (Name: HudUiMgr::DisableTopAndChatStacks)
@@ -4510,7 +4510,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: HudUiWidget::SetImageBorrowedAndInvalidate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::SetImageBorrowedAndInvalidate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_widget_set_image_borrowed_and_invalidate)
   - [❌] Binary-safe
 - 0x4b3e90:
   - [☑️] Reconstructed (Name: HudUiWidget::InvalidateRect)
@@ -4924,13 +4924,13 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::SetInputFocus)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundContainer::SetInputFocus File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zhud_background_container_set_input_focus)
   - [❌] Binary-safe
 - 0x4bc560:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::GetInputFocus)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundContainer::GetInputFocus File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zhud_background_container_get_input_focus)
   - [❌] Binary-safe
 - 0x4bc570:
   - [☑️] Reconstructed (Name: HudUiBackground::Update)
@@ -4978,7 +4978,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: HudUiContainer::SetChildFlags)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::SetChildFlags File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zhud_container_set_child_flags)
   - [❌] Binary-safe
 - 0x4bc900:
   - [✅] Reconstructed (Name: HudUiContainer::UpdateAll)
@@ -5114,9 +5114,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4bd2a0:
   - [✅] Reconstructed (Name: HudUiTextStack4::Clear)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextStack4::Clear File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zhud_text_stack_clear)
   - [❌] Binary-safe
 - 0x4bd2d0:
   - [✅] Reconstructed (Name: HudUiChatMessageStack::Constructor)
@@ -5713,7 +5713,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: HudUiNetExitPanel::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNetExitPanel::Constructor File: src/Battlesport/HudUiNetExitPanel.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_net_exit_panel_constructor)
   - [❌] Binary-safe
 - 0x41be70:
   - [✅] Reconstructed (Name: HudUiNetExitPanel_ExitButton::OnActivate)
@@ -5749,7 +5749,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: HudUiNetExitPanel::CreateGlobal)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNetExitPanel::CreateGlobal File: src/Battlesport/HudUiNetExitPanel.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_net_exit_panel_create_global)
   - [❌] Binary-safe
 - 0x41c070:
   - [✅] Reconstructed (Name: HudUiNetExitPanel::Show)
@@ -7778,9 +7778,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x41efa0:
   - [✅] Reconstructed (Name: Player::RestoreRecordedNodeFlags)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::RestoreRecordedNodeFlags File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_restore_recorded_node_flags)
   - [❌] Binary-safe
 - 0x41f010:
   - [☑️] Reconstructed (Name: Player::BuildMissionSaveData)
@@ -7952,40 +7952,40 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x429750:
   - [☑️] Reconstructed (Name: Player::UpdateAutoTurnAndSteerFromTarget)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::UpdateAutoTurnAndSteerFromTarget File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_update_auto_turn_and_steer_from_target)
   - [❌] Binary-safe
 - 0x429870:
   - [☑️] Reconstructed (Name: Player::UpdateYawVelocityFromSteerInput)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::UpdateYawVelocityFromSteerInput File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_update_yaw_velocity_from_steer_input)
   - [❌] Binary-safe
 - 0x429b40:
   - [☑️] Reconstructed (Name: Player::UpdateBankAndTurnDynamics)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::UpdateBankAndTurnDynamics File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_update_bank_and_turn_dynamics)
   - [❌] Binary-safe
 - 0x429d30:
   - [☑️] Reconstructed (Name: Player::ComputeTurnSlipDelta)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::ComputeTurnSlipDelta File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_compute_turn_slip_delta)
   - [❌] Binary-safe
 - 0x429ed0:
   - [✅] Reconstructed (Name: Player::StartSlipSfx)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::StartSlipSfx File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_start_slip_sfx)
+  - [✅] Binary-safe
 - 0x429ef0:
   - [✅] Reconstructed (Name: Player::StopSlipSfx)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::StopSlipSfx File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_stop_slip_sfx)
+  - [✅] Binary-safe
 - 0x42aa40:
   - [✅] Reconstructed (Name: Player::GetSaveStateListHead)
   - [❌] Source dependencies satisfied
@@ -8006,9 +8006,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4385a0:
   - [✅] Reconstructed (Name: Player::StartMasterTypeLoopSfxHandle)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zUtil_SaveGameState::StartMasterTypeLoopSfxHandle File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_start_master_type_loop_sfx_handle)
   - [❌] Binary-safe
 - 0x438b60:
   - [✅] Reconstructed (Name: Player::FreeAltWeaponTrailRuntimeStates)
@@ -8018,10 +8018,10 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4385f0:
   - [✅] Reconstructed (Name: Player::StartModalLoopSfxHandle)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zUtil_SaveGameState::StartModalLoopSfxHandle File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_start_modal_loop_sfx_handle)
+  - [✅] Binary-safe
 - 0x438630:
   - [✅] Reconstructed (Name: Player::EnsureMasterTypeLoopSfxHandle)
   - [❌] Source dependencies satisfied
@@ -8036,10 +8036,10 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x438690:
   - [✅] Reconstructed (Name: Player::StopModalLoopSfxHandle)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zUtil_SaveGameState::StopModalLoopSfxHandle File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_stop_modal_loop_sfx_handle)
+  - [✅] Binary-safe
 - 0x4386c0:
   - [☑️] Reconstructed (Name: Player::UpdateModalLoopSfx)
   - [❌] Source dependencies satisfied
@@ -8225,9 +8225,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x428d60:
   - [☑️] Reconstructed (Name: Player::ProbeModalSampleHeights)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::ProbeModalSampleHeights File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_probe_modal_sample_heights)
   - [❌] Binary-safe
 - 0x429560:
   - [☑️] Reconstructed (Name: Player::RebuildSteerBasisFromMotionAxes)
@@ -8381,9 +8381,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4290f0:
   - [☑️] Reconstructed (Name: Player::SelectProbeSampleHeightFromCandidates)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::SelectProbeSampleHeightFromCandidates File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_select_probe_sample_height)
   - [❌] Binary-safe
 - 0x42d320:
   - [☑️] Reconstructed (Name: Player::FindThirdProbeAndComputeNormal)
@@ -8534,10 +8534,10 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x426350:
   - [☑️] Reconstructed (Name: Player::FloatSign)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::FloatSign File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_float_sign)
+  - [✅] Binary-safe
 - 0x426390:
   - [☑️] Reconstructed (Name: PlayerMgr::TickAllPlayers)
   - [❌] Source dependencies satisfied
@@ -8582,28 +8582,28 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x428120:
   - [☑️] Reconstructed (Name: Player::UpdateMasterTypeBasic)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::UpdateMasterTypeBasic File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_update_master_type_basic)
   - [❌] Binary-safe
 - 0x428350:
   - [☑️] Reconstructed (Name: Player::UpdateMasterTypeBasicOrTrack_FromModalProbe)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::UpdateMasterTypeBasicOrTrack_FromModalProbe File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_update_master_type_basic_or_track_from_modal_probe)
   - [❌] Binary-safe
 - 0x4283f0:
   - [☑️] Reconstructed (Name: Player::UpdateBankVelocityFromSteerInput)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::UpdateBankVelocityFromSteerInput File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_update_bank_velocity_from_steer_input)
   - [❌] Binary-safe
 - 0x428490:
   - [☑️] Reconstructed (Name: Player::IntegrateYawAndWrapFromYawVelocity)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::IntegrateYawAndWrapFromYawVelocity File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_integrate_yaw_and_wrap_from_yaw_velocity)
+  - [✅] Binary-safe
 - 0x428520:
   - [☑️] Reconstructed (Name: Player::UpdateMasterTypeSub)
   - [❌] Source dependencies satisfied
@@ -8705,10 +8705,10 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4294d0:
   - [✅] Reconstructed (Name: Player::RebuildSteerBasisFromMotionBasis)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Player::RebuildSteerBasisFromMotionBasis File: src/Battlesport/player.cpp)
+  - [✅] Functional-equivalent (Target: player_rebuild_steer_basis_from_motion_basis)
+  - [✅] Binary-safe
 - 0x438ba0:
   - [☑️] Reconstructed (Name: Player::LoadWeaponBanksAndSelectDefaults)
   - [❌] Source dependencies satisfied
@@ -9287,9 +9287,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4037c0:
   - [✅] Reconstructed (Name: AINetNode::Free)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: AINetNode::Free File: src/Battlesport/ainet.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: ainet_node_free)
   - [❌] Binary-safe
 - 0x403800:
   - [✅] Reconstructed (Name: AINet::Free)
@@ -9299,9 +9299,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x403830:
   - [☑️] Reconstructed (Name: Player::AiDiscardNegativeBranchPathNodes)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: Player::AiDiscardNegativeBranchPathNodes File: src/Battlesport/player.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: player_ai_discard_negative_branch_path_nodes)
   - [❌] Binary-safe
 - 0x403870:
   - [✅] Reconstructed (Name: AINet::FreeAll)
@@ -9773,33 +9773,33 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x447bc0:
   - [☑️] Reconstructed (Name: zClass_Class::FindNodeRecursiveByName)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::FindNodeRecursiveByName File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_find_node_recursive_by_name)
   - [❌] Binary-safe
 - 0x447c60:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetActive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetActive File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_set_active)
   - [❌] Binary-safe
 - 0x447d20:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetFlag16)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetFlag16 File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_flag16)
   - [❌] Binary-safe
 - 0x447d70:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetFlag17)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetFlag17 File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_flag17)
   - [❌] Binary-safe
 - 0x447dc0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetName)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetName File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_set_name)
   - [❌] Binary-safe
 - 0x447e30:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetName)
@@ -9811,37 +9811,37 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetDisplayInstance)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetDisplayInstance File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_set_display_instance)
   - [❌] Binary-safe
 - 0x447f00:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetUserData)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeGetUserData File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_get_user_data)
   - [❌] Binary-safe
 - 0x447f30:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetActionCallback)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetActionCallback File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_set_action_callback)
   - [❌] Binary-safe
 - 0x447fe0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetActionCallbackTail)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetActionCallbackTail File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_set_action_callback_tail)
   - [❌] Binary-safe
 - 0x448090:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetPriority)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetPriority File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_set_priority)
   - [❌] Binary-safe
 - 0x448100:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetCellPickable)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetCellPickable File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_set_cell_pickable)
   - [❌] Binary-safe
 - 0x448140:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetCellPickable)
@@ -9857,9 +9857,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4481b0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetRaycastable)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetRaycastable File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_set_raycastable)
   - [❌] Binary-safe
 - 0x4481f0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetRaycastable)
@@ -9869,9 +9869,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x448230:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetPickable)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetPickable File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_set_pickable)
   - [❌] Binary-safe
 - 0x448270:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetPickable)
@@ -9883,13 +9883,13 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetHasHitCallback)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetHasHitCallback File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_set_has_hit_callback)
   - [❌] Binary-safe
 - 0x4482f0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetBypassFarClip)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetBypassFarClip File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_set_bypass_far_clip)
   - [❌] Binary-safe
 - 0x448330:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetNodeType)
@@ -9899,33 +9899,33 @@ Each function has these trackers and they should be completed in order:
   - [✅] Binary-safe
 - 0x448360:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeClearVariantGate)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeClearVariantGate File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_clear_variant_gate)
   - [❌] Binary-safe
 - 0x4483a0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetVertexAlphaOverride)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeSetVertexAlphaOverride File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_set_vertex_alpha_override)
   - [❌] Binary-safe
 - 0x4483f0:
   - [✅] Reconstructed (Name: zClass_Class::AddChild)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::AddChild File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_class_add_child)
   - [❌] Binary-safe
 - 0x4484d0:
   - [✅] Reconstructed (Name: zClass_Class::AddChildGeneric)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::AddChildGeneric File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_add_child_generic)
   - [❌] Binary-safe
 - 0x448570:
   - [✅] Reconstructed (Name: zClass_Class::RemoveChild)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::RemoveChild File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_class_remove_child)
   - [❌] Binary-safe
 - 0x448660:
   - [✅] Reconstructed (Name: zClass_Class::RemoveChildGeneric)
@@ -9943,49 +9943,49 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetWorldBBoxCorners)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeGetWorldBBoxCorners File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_get_world_bbox_corners)
   - [❌] Binary-safe
 - 0x448920:
   - [☑️] Reconstructed (Name: zClass_Class::gwNodeGetViewBBoxCorners)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeGetViewBBoxCorners File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_gwnode_get_view_bbox_corners)
   - [❌] Binary-safe
 - 0x448cc0:
   - [☑️] Reconstructed (Name: zClass_Class::gwNodeUpdate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeUpdate File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_gwnode_update)
   - [❌] Binary-safe
 - 0x448e90:
   - [☑️] Reconstructed (Name: zClass_Class::gwNodeRecalcBBox)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeRecalcBBox File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_recalc_bbox)
   - [❌] Binary-safe
 - 0x4491b0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeComputeChildBBox)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeComputeChildBBox File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_compute_child_bbox)
   - [❌] Binary-safe
 - 0x449420:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeUpdateDisplayInstance)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeUpdateDisplayInstance File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_update_display_instance)
   - [❌] Binary-safe
 - 0x449480:
   - [☑️] Reconstructed (Name: gwNode::BuildNodeToAncestorMatrix)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: gwNode::BuildNodeToAncestorMatrix File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_gwnode_build_node_to_ancestor_matrix)
   - [❌] Binary-safe
 - 0x4497b0:
   - [✅] Reconstructed (Name: gwNode::GetWorldPosition)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: gwNode::GetWorldPosition File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_gwnode_get_world_position)
   - [❌] Binary-safe
 - 0x449850:
   - [✅] Reconstructed (Name: gwNode::TransformPoint)
@@ -10007,16 +10007,16 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x449af0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetWorldChild)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::gwNodeGetWorldChild File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_node_get_world_child)
   - [❌] Binary-safe
 - 0x449b40:
   - [✅] Reconstructed (Name: zClass_Class::SetSingleParentFlagRecursive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::SetSingleParentFlagRecursive File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zclass_set_single_parent_flag_recursive)
+  - [✅] Binary-safe
 - 0x44b300:
   - [☑️] Reconstructed (Name: zClass_Object3D::RenderTraverse)
   - [✅] Source dependencies satisfied
@@ -10039,13 +10039,13 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zClass_Object3D::PropagateTransformDirty)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::PropagateTransformDirty File: src/GameZRecoil/zClass/Object3d.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_object3d_propagate_transform_dirty)
   - [❌] Binary-safe
 - 0x44daa0:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DInit)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DInit File: src/GameZRecoil/zClass/Object3d.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_object3d_init)
   - [❌] Binary-safe
 - 0x44db00:
   - [✅] Reconstructed (Name: zClass_Object3D::DeleteNode)
@@ -10055,15 +10055,15 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x44db10:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DAddChild)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DAddChild File: src/GameZRecoil/zClass/Object3d.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_object3d_add_child)
   - [❌] Binary-safe
 - 0x44db60:
   - [✅] Reconstructed (Name: zClass_Object3D::RemoveChild)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::RemoveChild File: src/GameZRecoil/zClass/Object3d.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_object3d_remove_child)
   - [❌] Binary-safe
 - 0x44dbb0:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DSetVisibleFlag)
@@ -10079,9 +10079,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x44dd90:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DSetAlphaScale)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetAlphaScale File: src/GameZRecoil/zClass/Object3d.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_object3d_set_alpha_scale)
   - [❌] Binary-safe
 - 0x44de10:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetAlphaScale)
@@ -10091,15 +10091,15 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x44de80:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DSetLitFlag)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetLitFlag File: src/GameZRecoil/zClass/Object3d.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_object3d_set_lit_flag)
   - [❌] Binary-safe
 - 0x44df00:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DSetScale)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetScale File: src/GameZRecoil/zClass/Object3d.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_object3d_set_scale)
   - [❌] Binary-safe
 - 0x44dfd0:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetScale)
@@ -10109,9 +10109,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x44e030:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DSetRotation)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetRotation File: src/GameZRecoil/zClass/Object3d.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_object3d_set_rotation)
   - [❌] Binary-safe
 - 0x44e110:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetRotation)
@@ -10133,9 +10133,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x44e300:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DSetPosition)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetPosition File: src/GameZRecoil/zClass/Object3d.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_object3d_set_position)
   - [❌] Binary-safe
 - 0x44e3d0:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DTranslatePosition)
@@ -10145,21 +10145,21 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x44e4f0:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DSetMatrix)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DSetMatrix File: src/GameZRecoil/zClass/Object3d.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_object3d_set_matrix)
   - [❌] Binary-safe
 - 0x44e5b0:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetMatrixPtr)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Object3D::gwObject3DGetMatrixPtr File: src/GameZRecoil/zClass/Object3d.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_object3d_get_matrix_ptr)
   - [❌] Binary-safe
 - 0x44e630:
   - [✅] Reconstructed (Name: zClass_TypeList::AllocLink)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::AllocLink File: src/GameZRecoil/zClass/List.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_typelist_alloc_link)
   - [❌] Binary-safe
 - 0x44e690:
   - [✅] Reconstructed (Name: zClass_TypeList::FreeLink)
@@ -10207,13 +10207,13 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: gwNode::UpdateTree)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: gwNode::UpdateTree File: src/GameZRecoil/zClass/List.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_gwnode_update_tree)
   - [❌] Binary-safe
 - 0x44eba0:
   - [✅] Reconstructed (Name: zClass_TypeList::UpdateQueuedTrees)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::UpdateQueuedTrees File: src/GameZRecoil/zClass/List.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_typelist_update_queued_trees)
   - [❌] Binary-safe
 - 0x44ebe0:
   - [✅] Reconstructed (Name: zClass_TypeList::UpdateSequences)
@@ -10249,7 +10249,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zClass::FindByTypeAndName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass::FindByTypeAndName File: src/GameZRecoil/zClass/List.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_find_by_type_and_name)
   - [❌] Binary-safe
 - 0x44ed50:
   - [✅] Reconstructed (Name: zClass_TypeList::GetBucketHead)
@@ -10267,13 +10267,13 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_TypeList::Insert)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::Insert File: src/GameZRecoil/zClass/List.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_typelist_insert)
   - [❌] Binary-safe
 - 0x44ee10:
   - [✅] Reconstructed (Name: zClass_TypeList::InsertChildNodes)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::InsertChildNodes File: src/GameZRecoil/zClass/List.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_typelist_insert_child_nodes)
   - [❌] Binary-safe
 - 0x44eea0:
   - [✅] Reconstructed (Name: zClass_NodeList::ProcessPendingFrees)
@@ -10285,7 +10285,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_TypeList::MarkPendingRemoval)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::MarkPendingRemoval File: src/GameZRecoil/zClass/List.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_typelist_mark_pending_removal)
   - [❌] Binary-safe
 - 0x44f000:
   - [✅] Reconstructed (Name: zClass_List::DeleteNodeFromLists)
@@ -10351,7 +10351,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass::RemoveChildChecked)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass::RemoveChildChecked File: src/GameZRecoil/zClass/List.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_remove_child_checked)
   - [❌] Binary-safe
 - 0x4518b0:
   - [✅] Reconstructed (Name: zClass::SetNodeArraySize)
@@ -10385,9 +10385,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x452770:
   - [☑️] Reconstructed (Name: zClass_Class::FindSubNodeByName)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::FindSubNodeByName File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_find_sub_node_by_name)
   - [❌] Binary-safe
 - 0x4527f0:
   - [✅] Reconstructed (Name: zClass_Node::HasRenderableDiPredicate)
@@ -10409,15 +10409,15 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4528a0:
   - [✅] Reconstructed (Name: zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack File: src/GameZRecoil/zClass/Class.c)
+  - [✅] Functional-equivalent (Target: zclass_node_load_flag_bit8_material_images_and_texture_pack)
   - [❌] Binary-safe
 - 0x4528b0:
   - [✅] Reconstructed (Name: zClass_Node::InvalidateFlagBit8MaterialImagesRecursive)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Node::InvalidateFlagBit8MaterialImagesRecursive File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_invalidate_flag_bit8_material_images_recursive)
   - [❌] Binary-safe
 - 0x4528e0:
   - [✅] Reconstructed (Name: zClass_Node::AssignInt32ToDiRecursive)
@@ -10427,46 +10427,46 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x452920:
   - [✅] Reconstructed (Name: zClass_Class::AddChildValidated)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::AddChildValidated File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_class_add_child_validated)
   - [❌] Binary-safe
 - 0x452970:
   - [✅] Reconstructed (Name: zClass_Class::RemoveChildValidated)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::RemoveChildValidated File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_class_remove_child_validated)
   - [❌] Binary-safe
 - 0x4542a0:
   - [✅] Reconstructed (Name: zClass_Lod::gwLodNew)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Lod::gwLodNew File: src/GameZRecoil/zClass/Lod.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_lod_new)
   - [❌] Binary-safe
 - 0x454310:
   - [✅] Reconstructed (Name: zClass_Lod::gwLodAddChild)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Lod::gwLodAddChild File: src/GameZRecoil/zClass/Lod.c)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zclass_lod_add_child)
+  - [✅] Binary-safe
 - 0x454320:
   - [✅] Reconstructed (Name: zClass_Lod::RemoveChild)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Lod::RemoveChild File: src/GameZRecoil/zClass/Lod.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_lod_remove_child)
   - [❌] Binary-safe
 - 0x454330:
   - [✅] Reconstructed (Name: zClass_Lod::SetComputeOwnDistance)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Lod::SetComputeOwnDistance File: src/GameZRecoil/zClass/Lod.c)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zclass_lod_set_compute_own_distance)
+  - [✅] Binary-safe
 - 0x454340:
   - [✅] Reconstructed (Name: zClass_Lod::SetTargetNodeAndRange)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Lod::SetTargetNodeAndRange File: src/GameZRecoil/zClass/Lod.c)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zclass_lod_set_target_node_and_range)
+  - [✅] Binary-safe
 - 0x4b25a0:
   - [✅] Reconstructed (Name: zClass_Node::SetDamageHitCallback)
   - [❌] Source dependencies satisfied
@@ -10520,21 +10520,21 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x449be0:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraNew)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraNew File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_camera_new)
   - [❌] Binary-safe
 - 0x449c90:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraAddChild)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraAddChild File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_camera_add_child)
   - [❌] Binary-safe
 - 0x449cd0:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraRemoveChild)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraRemoveChild File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_camera_remove_child)
   - [❌] Binary-safe
 - 0x449d20:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetFlagBit0)
@@ -10550,21 +10550,21 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x449db0:
   - [✅] Reconstructed (Name: zClass_Camera::SetActiveCamera)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::SetActiveCamera File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_camera_set_active_camera)
   - [❌] Binary-safe
 - 0x449dc0:
   - [✅] Reconstructed (Name: zClass_Camera::SetObjectHseTestEnabled)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::SetObjectHseTestEnabled File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_camera_set_object_hse_test_enabled)
   - [❌] Binary-safe
 - 0x449dd0:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetWorld)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetWorld File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_camera_set_world)
   - [❌] Binary-safe
 - 0x449e80:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraGetWorld)
@@ -10574,21 +10574,21 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x449e90:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetWindow)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetWindow File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zclass_camera_set_window)
+  - [✅] Binary-safe
 - 0x449ea0:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetPosition)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetPosition File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_camera_set_position)
   - [❌] Binary-safe
 - 0x449f50:
   - [✅] Reconstructed (Name: zClass_Camera::ActivateChildren)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::ActivateChildren File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_camera_activate_children)
   - [❌] Binary-safe
 - 0x449fb0:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraTranslate)
@@ -10604,9 +10604,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x44a0f0:
   - [☑️] Reconstructed (Name: zClass_Camera::gwCameraSetTarget)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetTarget File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_camera_set_target)
   - [❌] Binary-safe
 - 0x44a1a0:
   - [☑️] Reconstructed (Name: zClass_Camera::gwCameraTranslateTarget)
@@ -10622,9 +10622,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x44a2f0:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetNearFarClip)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetNearFarClip File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_camera_set_near_far_clip)
   - [❌] Binary-safe
 - 0x44a380:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraGetNearFarClip)
@@ -10648,7 +10648,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zClass_Camera::gwCameraSetFOV)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetFOV File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_camera_set_fov)
   - [❌] Binary-safe
 - 0x44a760:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraGetFOV)
@@ -10666,7 +10666,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetClipDistance)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Camera::gwCameraSetClipDistance File: src/GameZRecoil/zClass/Camera.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_camera_set_clip_distance)
   - [❌] Binary-safe
 - 0x44a910:
   - [✅] Reconstructed (Name: zClass_Camera::gwCameraSetHorizon)
@@ -10828,7 +10828,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_Display::RemoveChild)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Display::RemoveChild File: src/GameZRecoil/zClass/Display.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_display_remove_child)
   - [❌] Binary-safe
 - 0x44fe90:
   - [✅] Reconstructed (Name: zClass_Display::gwDisplaySetSize)
@@ -10850,9 +10850,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x452fd0:
   - [✅] Reconstructed (Name: zClass_Light::gwLightNew)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightNew File: src/GameZRecoil/zClass/Light.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_light_new)
   - [❌] Binary-safe
 - 0x453110:
   - [✅] Reconstructed (Name: zClass_Light::DeleteNode)
@@ -10864,7 +10864,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_Light::RemoveChild)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::RemoveChild File: src/GameZRecoil/zClass/Light.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_light_remove_child)
   - [❌] Binary-safe
 - 0x453200:
   - [✅] Reconstructed (Name: zClass_Light::gwLightSetIntensity)
@@ -10904,9 +10904,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x453400:
   - [☑️] Reconstructed (Name: zClass_Light::gwLightSetRange)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Light::gwLightSetRange File: src/GameZRecoil/zClass/Light.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_light_set_range)
   - [❌] Binary-safe
 - 0x453500:
   - [✅] Reconstructed (Name: zClass_Light::gwLightGetRange)
@@ -10982,10 +10982,10 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4b2570:
   - [✅] Reconstructed (Name: Light::ReturnToFreeList)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Light::ReturnToFreeList File: src/GameZRecoil/zClass/Light.c)
+  - [✅] Functional-equivalent (Target: light_return_to_free_list)
+  - [✅] Binary-safe
   
 ## M19. zClass world/util helper strip
 
@@ -11039,27 +11039,27 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4444b0:
   - [☑️] Reconstructed (Name: zClass_cls_di::BuildPickCandidatesForPointBatch)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zClass_cls_di::BuildPickCandidatesForPointBatch File: src/GameZRecoil/zClass/cls_di.c)
+  - [✅] Functional-equivalent (Target: zclass_cls_di_build_pick_candidates_for_point_batch)
   - [❌] Binary-safe
 - 0x444890:
   - [☑️] Reconstructed (Name: zClass_cls_di::BuildPickCandidatesForPoints)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zClass_cls_di::BuildPickCandidatesForPoints File: src/GameZRecoil/zClass/cls_di.c)
+  - [✅] Functional-equivalent (Target: zclass_cls_di_build_pick_candidates_for_points)
   - [❌] Binary-safe
 - 0x444c50:
   - [✅] Reconstructed (Name: zClass_cls_di::BuildPickCandidatesForPointsRecursive)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zClass_cls_di::BuildPickCandidatesForPointsRecursive File: src/GameZRecoil/zClass/cls_di.c)
+  - [✅] Functional-equivalent (Target: zclass_cls_di_build_pick_candidates_for_points_recursive)
   - [❌] Binary-safe
 - 0x444d10:
   - [✅] Reconstructed (Name: zClass_cls_di::BuildPickCandidatesForPointsForLight)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zClass_cls_di::BuildPickCandidatesForPointsForLight File: src/GameZRecoil/zClass/cls_di.c)
+  - [✅] Functional-equivalent (Target: zclass_cls_di_build_pick_candidates_for_points_for_light)
   - [❌] Binary-safe
 - 0x444de0:
   - [☑️] Reconstructed (Name: zClass_cls_di::RaycastSelectClosestHitBetweenPoints)
@@ -11159,9 +11159,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4473e0:
   - [☑️] Reconstructed (Name: zClass_cls_di::PickTestBBox2D)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zClass_cls_di::PickTestBBox2D File: src/GameZRecoil/zClass/cls_di.c)
+  - [✅] Functional-equivalent (Target: zclass_cls_di_pick_test_bbox_2d)
   - [❌] Binary-safe
 - 0x447540:
   - [☑️] Reconstructed (Name: zClass_cls_di::FilterPointsBBox)
@@ -11179,7 +11179,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zClass_Class::AllocNodeFromFreeList)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Class::AllocNodeFromFreeList File: src/GameZRecoil/zClass/Class.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_alloc_node_from_free_list)
   - [❌] Binary-safe
 - 0x44af60:
   - [✅] Reconstructed (Name: zClass_Sound::RenderTraverse)
@@ -11245,7 +11245,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_World::ApplyPendingFogSettings)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::ApplyPendingFogSettings File: src/GameZRecoil/zClass/cls_world.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_world_apply_pending_fog_settings)
   - [❌] Binary-safe
 - 0x450650:
   - [☑️] Reconstructed (Name: zClass_World::WorldToGridCoordsClampedEx)
@@ -11263,7 +11263,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zClass_World::WorldRectToGridIndex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::WorldRectToGridIndex File: src/GameZRecoil/zClass/cls_world.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_world_rect_to_grid_index)
   - [❌] Binary-safe
 - 0x450a00:
   - [✅] Reconstructed (Name: zClass_World::GetAreaPartitionAtGrid)
@@ -11377,19 +11377,19 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zClass_World::AddChildToGridCell)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::AddChildToGridCell File: src/GameZRecoil/zClass/cls_world.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_world_add_child_to_grid_cell)
   - [❌] Binary-safe
 - 0x4510e0:
   - [☑️] Reconstructed (Name: zClass_World::AddChildAtGrid)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::AddChildAtGrid File: src/GameZRecoil/zClass/cls_world.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_world_add_child_at_grid)
   - [❌] Binary-safe
 - 0x451240:
   - [✅] Reconstructed (Name: zClass_World::RemoveChildAtGrid)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::RemoveChildAtGrid File: src/GameZRecoil/zClass/cls_world.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_world_remove_child_at_grid)
   - [❌] Binary-safe
 - 0x451360:
   - [☑️] Reconstructed (Name: zClass_World::AddLight)
@@ -11401,7 +11401,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_World::RemoveLight)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::RemoveLight File: src/GameZRecoil/zClass/cls_world.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_world_remove_light)
   - [❌] Binary-safe
 - 0x451540:
   - [✅] Reconstructed (Name: zClass_World::BuildActiveLightList)
@@ -11425,7 +11425,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_World::RemoveSound)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_World::RemoveSound File: src/GameZRecoil/zClass/cls_world.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_world_remove_sound)
   - [❌] Binary-safe
 - 0x451770:
   - [✅] Reconstructed (Name: zClass_World::UpdateAllSounds)
@@ -11453,69 +11453,69 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x451b20:
   - [☑️] Reconstructed (Name: zClass_cls_util::CopyNodeDisplayInstance)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyNodeDisplayInstance File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_copy_node_display_instance)
   - [❌] Binary-safe
 - 0x451bd0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNodeBaseData)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyNodeBaseData File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_copy_node_base_data)
   - [❌] Binary-safe
 - 0x451f70:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyCameraNode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyCameraNode File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_copy_camera_node)
   - [❌] Binary-safe
 - 0x4520c0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyLightNode_Unimplemented)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyLightNode_Unimplemented File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_copy_light_node_unimplemented)
   - [❌] Binary-safe
 - 0x4520e0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopySoundNode_Unimplemented)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopySoundNode_Unimplemented File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_copy_sound_node_unimplemented)
   - [❌] Binary-safe
 - 0x452100:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyObject3DNode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyObject3DNode File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_copy_object3d_node)
   - [❌] Binary-safe
 - 0x452230:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyAnimateNode_Unimplemented)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyAnimateNode_Unimplemented File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_copy_animate_node_unimplemented)
   - [❌] Binary-safe
 - 0x452250:
   - [☑️] Reconstructed (Name: zClass_cls_util::CopyLodNode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyLodNode File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_copy_lod_node)
   - [❌] Binary-safe
 - 0x4523c0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopySequenceNode_Unimplemented)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopySequenceNode_Unimplemented File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_copy_sequence_node_unimplemented)
   - [❌] Binary-safe
 - 0x4523e0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopySwitchNode_Unimplemented)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopySwitchNode_Stub File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_copy_switch_node_stub)
   - [❌] Binary-safe
 - 0x452400:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNodeDispatch)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyNodeDispatch File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_copy_node_dispatch)
   - [❌] Binary-safe
 - 0x452500:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNodeWithCloneOptions)
@@ -11525,15 +11525,15 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x452560:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_cls_util::CopyNode File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_copy_node)
   - [❌] Binary-safe
 - 0x4529c0:
   - [☑️] Reconstructed (Name: zClass_Sound::gwSoundNew)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sound::gwSoundNew File: src/GameZRecoil/zClass/Sound.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_sound_new)
   - [❌] Binary-safe
 - 0x452ab0:
   - [✅] Reconstructed (Name: zClass_Sound::DeleteNode)
@@ -11545,19 +11545,19 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_Sound::RemoveChild)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sound::RemoveChild File: src/GameZRecoil/zClass/Sound.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_sound_remove_child)
   - [❌] Binary-safe
 - 0x452bc0:
   - [✅] Reconstructed (Name: zClass_Sound::SetSampleSetByName)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sound::SetSampleSetByName File: src/GameZRecoil/zClass/Sound.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_sound_set_sample_set_by_name)
   - [❌] Binary-safe
 - 0x452c60:
   - [✅] Reconstructed (Name: zClass_Sound::gwSoundSetActive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sound::gwSoundSetActive File: src/GameZRecoil/zClass/Sound.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_sound_set_active)
   - [❌] Binary-safe
 - 0x452d00:
   - [✅] Reconstructed (Name: zClass_Sound::gwSoundSetPosition)
@@ -11591,15 +11591,15 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x453b40:
   - [✅] Reconstructed (Name: zClass_Animate::AddChild)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Animate::AddChild File: src/GameZRecoil/zClass/Animate.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_animate_add_child)
   - [❌] Binary-safe
 - 0x453b80:
   - [✅] Reconstructed (Name: zClass_Animate::RemoveChild)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Animate::RemoveChild File: src/GameZRecoil/zClass/Animate.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_animate_remove_child)
   - [❌] Binary-safe
 - 0x453bd0:
   - [☑️] Reconstructed (Name: zClass_Animate::UpdateNode)
@@ -11635,7 +11635,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_Sequence::RemoveChild)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Sequence::RemoveChild File: src/GameZRecoil/zClass/Seq.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_sequence_remove_child)
   - [❌] Binary-safe
 - 0x4540c0:
   - [✅] Reconstructed (Name: zClass_Sequence::SetActive)
@@ -11765,9 +11765,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x484e00:
   - [☑️] Reconstructed (Name: zClass_cls_di::PickTestMeshAtQueryXZ)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zClass_cls_di::PickTestMeshAtQueryXZ File: src/GameZRecoil/zClass/cls_di.c)
+  - [✅] Functional-equivalent (Target: zclass_cls_di_pick_test_mesh_at_query_xz)
   - [❌] Binary-safe
 - 0x484fc0:
   - [☑️] Reconstructed (Name: zClass_cls_di::AppendPickCandidatesForFace)
@@ -12176,9 +12176,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x458e10:
   - [✅] Reconstructed (Name: zEffect::HandleSampleRefOffsetEvent)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleSampleRefOffsetEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zeffect_handle_sample_ref_offset_event)
   - [❌] Binary-safe
 - 0x458eb0:
   - [✅] Reconstructed (Name: zEffect::HandleEffectTemplateOffsetEvent)
@@ -12344,15 +12344,15 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x45bf60:
   - [✅] Reconstructed (Name: zEffect::CleanupLightRefs)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::CleanupLightRefs File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zeffect_cleanup_light_refs)
   - [❌] Binary-safe
 - 0x45bfd0:
   - [✅] Reconstructed (Name: zEffect::CleanupSoundRefs)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::CleanupSoundRefs File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zeffect_cleanup_sound_refs)
   - [❌] Binary-safe
 - 0x45c040:
   - [✅] Reconstructed (Name: zEffectAnim::Stop)
@@ -12380,9 +12380,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x45c2f0:
   - [✅] Reconstructed (Name: zEffect::HandleEmitterResetEvent)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::HandleEmitterResetEvent File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zeffect_handle_emitter_reset_event)
   - [❌] Binary-safe
 - 0x45c310:
   - [✅] Reconstructed (Name: zEffect::HandleEmitterLoopEvent)
@@ -12470,9 +12470,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x45d310:
   - [✅] Reconstructed (Name: zEffect_Anim::RestoreNodeStates)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect_Anim::RestoreNodeStates File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zeffect_anim_restore_node_states)
   - [❌] Binary-safe
 - 0x45d3d0:
   - [✅] Reconstructed (Name: zEffectAnim::FinalizeStop)
@@ -12614,15 +12614,15 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x45e280:
   - [✅] Reconstructed (Name: zEffectAnim::FindSoundRefIndexByName)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::FindSoundRefIndexByName File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zeffect_find_sound_ref_index_by_name)
   - [❌] Binary-safe
 - 0x45e300:
   - [✅] Reconstructed (Name: zEffectAnim::FindLightRefIndexByName)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::FindLightRefIndexByName File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zeffect_find_light_ref_index_by_name)
   - [❌] Binary-safe
 - 0x45e380:
   - [✅] Reconstructed (Name: zEffectAnim::FindOrCreateSoundRef)
@@ -12638,16 +12638,16 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x45e5c0:
   - [✅] Reconstructed (Name: zEffectAnim::ResolveNodeByName)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::ResolveNodeByName File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zeffect_resolve_node_by_name)
+  - [✅] Binary-safe
 - 0x45e650:
   - [✅] Reconstructed (Name: zEffectAnim::FindNodeRecursiveByName)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::FindNodeRecursiveByName File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zeffect_find_node_recursive_by_name)
+  - [✅] Binary-safe
 - 0x45e6d0:
   - [✅] Reconstructed (Name: zEffectAnim::EnsureCopiedRootTree)
   - [❌] Source dependencies satisfied
@@ -12656,15 +12656,15 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x45e730:
   - [✅] Reconstructed (Name: zEffectAnim::CloneEntryForNode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::CloneEntryForNode File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zeffect_anim_clone_entry_for_node)
   - [❌] Binary-safe
 - 0x45ed80:
   - [✅] Reconstructed (Name: zEffectAnim::RebindEntryToNode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::RebindEntryToNode File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zeffect_rebind_entry_to_node)
   - [❌] Binary-safe
 - 0x45efb0:
   - [✅] Reconstructed (Name: zEffect_Anim::LoadZbd)
@@ -12916,8 +12916,8 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zError::EmitDebugBuffer)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zError::EmitDebugBuffer File: src/GameZRecoil/zError/zerr_old.c)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zerror_emit_debug_buffer)
+  - [✅] Binary-safe
   
 ## M23. zError legacy error path
 
@@ -13850,9 +13850,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x46d4d0:
   - [☑️] Reconstructed (Name: zImage::FindTexDirEntryByName)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::FindTexDirEntryByName File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zimage_find_tex_dir_entry_by_name)
   - [❌] Binary-safe
 - 0x46d550:
   - [✅] Reconstructed (Name: zImage::InitTextureDirectory)
@@ -13870,7 +13870,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zImage::ShutdownTextureDirectoryRuntime)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::ShutdownTextureDirectoryRuntime File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zimage_shutdown_texture_directory_runtime)
   - [❌] Binary-safe
 - 0x46d900:
   - [✅] Reconstructed (Name: zImage::TexDirFindOrCreateByPath)
@@ -13886,21 +13886,21 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x46e250:
   - [✅] Reconstructed (Name: zImage::InvalidateLoadedVariantChain)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::InvalidateLoadedVariantChain File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zimage_invalidate_loaded_variant_chain)
   - [❌] Binary-safe
 - 0x46e2c0:
   - [✅] Reconstructed (Name: zImage::SetPathExtension)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::SetPathExtension File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zimage_set_path_extension)
   - [❌] Binary-safe
 - 0x46e4e0:
   - [☑️] Reconstructed (Name: zVid_PaletteRemap::ApplyRecipeToPaletteVariant)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_PaletteRemap::ApplyRecipeToPaletteVariant File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvid_palette_remap_apply_recipe_to_palette_variant)
   - [❌] Binary-safe
 - 0x46e680:
   - [☑️] Reconstructed (Name: zVid_PaletteRemap::FindRecipeIndex)
@@ -14042,9 +14042,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4902b0:
   - [✅] Reconstructed (Name: zVid_Image::CalcPow2ScratchFields)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image::CalcPow2ScratchFields File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvid_image_calc_pow2_scratch_fields)
   - [❌] Binary-safe
   
 ## M29. zInput device/bootstrap
@@ -14191,7 +14191,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zInput::ResetAllTransitionState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::ResetAllTransitionState File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_reset_all_transition_state)
   - [❌] Binary-safe
 - 0x471de0:
   - [✅] Reconstructed (Name: zInput::PollActiveDevices)
@@ -14516,9 +14516,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x470190:
   - [✅] Reconstructed (Name: zInput::Mouse_IsInitialized)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_IsInitialized File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_mouse_is_initialized)
   - [❌] Binary-safe
 - 0x4701a0:
   - [✅] Reconstructed (Name: zInput::Mouse_SetClientSizeAndCenter)
@@ -15124,7 +15124,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zInput::DI_ResetTransitionState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::DI_ResetTransitionState File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_di_reset_transition_state)
   - [❌] Binary-safe
 - 0x472450:
   - [☑️] Reconstructed (Name: zInputDI::CreateForceFeedbackEffect)
@@ -15482,9 +15482,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4727f0:
   - [☑️] Reconstructed (Name: zMath::Vec3NormalizeXZ)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zMath::Vec3NormalizeXZ File: src/GameZRecoil/zMath/zMath.cpp)
+  - [✅] Functional-equivalent (Target: zmath_vec3_normalize_xz)
   - [❌] Binary-safe
 - 0x472860:
   - [☑️] Reconstructed (Name: zMath::Vec3Reflect)
@@ -15538,19 +15538,19 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zMath::MatStackPushAndCloneParent)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatStackPushAndCloneParent File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_stack_push_and_clone_parent)
   - [❌] Binary-safe
 - 0x472f30:
   - [✅] Reconstructed (Name: zMath::MatStackPushPtr)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatStackPushPtr File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_stack_push_ptr)
   - [❌] Binary-safe
 - 0x472f60:
   - [☑️] Reconstructed (Name: zMath::MatStackPopPtr)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatStackPopPtr File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_stack_pop_ptr)
   - [❌] Binary-safe
 - 0x472f90:
   - [✅] Reconstructed (Name: zMath::MatLoadCameraScratchB)
@@ -15586,25 +15586,25 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zMath::MatCopyCurrentTo)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatCopyCurrentTo File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_copy_current_to)
   - [❌] Binary-safe
 - 0x473230:
   - [✅] Reconstructed (Name: zMath::MatGetCurrent)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_GetCurrent File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_get_current)
   - [❌] Binary-safe
 - 0x473240:
   - [✅] Reconstructed (Name: zMath::MatIsCurrentIdentity)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_IsCurrentIdentity File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_is_current_identity)
   - [❌] Binary-safe
 - 0x473250:
   - [✅] Reconstructed (Name: zMath::MatLoadCurrentFrom)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatLoadCurrentFrom File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_load_current_from)
   - [❌] Binary-safe
 - 0x473280:
   - [☑️] Reconstructed (Name: zMath::MatLoadRotationFrom3x3)
@@ -15616,13 +15616,13 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zMath::MatLoadIdentity)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatLoadIdentity File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_load_identity)
   - [❌] Binary-safe
 - 0x473370:
   - [☑️] Reconstructed (Name: zMath::MatMultiply)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatMultiply File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_multiply)
   - [❌] Binary-safe
 - 0x473690:
   - [☑️] Reconstructed (Name: zMath::MatScale)
@@ -15634,25 +15634,25 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zMath::MatTranslate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatTranslate File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_translate)
   - [❌] Binary-safe
 - 0x473970:
   - [☑️] Reconstructed (Name: zMath::MatRotateX)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatRotateX File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_rotate_x)
   - [❌] Binary-safe
 - 0x473b10:
   - [☑️] Reconstructed (Name: zMath::MatRotateY)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatRotateY File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_rotate_y)
   - [❌] Binary-safe
 - 0x473cc0:
   - [☑️] Reconstructed (Name: zMath::MatRotateZ)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatRotateZ File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_rotate_z)
   - [❌] Binary-safe
 - 0x473e60:
   - [☑️] Reconstructed (Name: zMath::CameraStageInverseRotation)
@@ -15670,13 +15670,13 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zMath::MatApplyLocalTRS)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath::MatApplyLocalTRS File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_apply_local_trs)
   - [❌] Binary-safe
 - 0x474260:
   - [☑️] Reconstructed (Name: zMath::MatBuildEulerRotation3x3)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zMath::MatBuildEulerRotation3x3 File: src/GameZRecoil/zMath/zMath.cpp)
+  - [✅] Functional-equivalent (Target: zmath_mat_build_euler_rotation3x3)
   - [❌] Binary-safe
 - 0x4743e0:
   - [✅] Reconstructed (Name: zMath::SetScreenSize)
@@ -15694,7 +15694,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zMath::Vec3ArrayAddScaled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Vec3Array_AddScaled File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_vec3_array_add_scaled)
   - [❌] Binary-safe
 - 0x474580:
   - [✅] Reconstructed (Name: zMath::Vec3DirFromYaw)
@@ -15736,7 +15736,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zMath::MatTransformBBoxToCorners)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Mat_TransformBBoxToCorners File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_mat_transform_bbox_to_corners)
   - [❌] Binary-safe
 - 0x474b20:
   - [☑️] Reconstructed (Name: zMath::ProjectPointBatch)
@@ -15808,7 +15808,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zMath::Vec3TriangleNormal)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zMath_Vec3_TriangleNormal File: src/GameZRecoil/zMath/zMath.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmath_vec3_triangle_normal)
   - [❌] Binary-safe
 - 0x475130:
   - [✅] Reconstructed (Name: zMath::SolveLinearGradient2D)
@@ -16045,7 +16045,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: VariantTag::CurrentAllowsId)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: VariantTag::CurrentAllowsId File: src/Battlesport/zModel/zModel_Display.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: variant_tag_current_allows_id)
   - [❌] Binary-safe
 - 0x476460:
   - [✅] Reconstructed (Name: zModel::SetBackfaceEliminationToleranceScalar)
@@ -16139,9 +16139,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x479cc0:
   - [✅] Reconstructed (Name: OptCatalog::IsDamageMaskSlotPtrRegistered)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: OptCatalog_IsDamageMaskSlotPtrRegistered File: src/Battlesport/zModel/zModel_Display.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: optcatalog_is_damage_mask_slot_ptr_registered)
   - [❌] Binary-safe
 - 0x479f90:
   - [✅] Reconstructed (Name: zClipAlt::SetTargetRect)
@@ -16187,9 +16187,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x480c80:
   - [✅] Reconstructed (Name: zModel_Material::HasAuxData)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::HasAuxData File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmodel_material_has_aux_data)
   - [❌] Binary-safe
 - 0x480ca0:
   - [✅] Reconstructed (Name: zModel_Material::FindOrClone)
@@ -16229,9 +16229,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x480f80:
   - [☑️] Reconstructed (Name: zModel_Material::InvalidateImagesIfEligible)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::InvalidateImagesIfEligible File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmodel_material_invalidate_images_if_eligible)
   - [❌] Binary-safe
 - 0x480fd0:
   - [☑️] Reconstructed (Name: zModel_MatlBuffer::ReleaseTextureSurfaces)
@@ -16277,15 +16277,15 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4812b0:
   - [✅] Reconstructed (Name: zModel_Material::Clone)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Material::Clone File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zmodel_material_clone)
+  - [✅] Binary-safe
 - 0x4812c0:
   - [☑️] Reconstructed (Name: zModel_MatlBuffer::CloneToActiveSlot)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_MatlBuffer::CloneToActiveSlot File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zmodel_matlbuffer_clone_to_active_slot)
   - [❌] Binary-safe
 - 0x481420:
   - [☑️] Reconstructed (Name: zModel_Material::FindByTexDirEntry)
@@ -16367,10 +16367,10 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x482080:
   - [☑️] Reconstructed (Name: zModel_DiPool::AllocFromFreeList)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_DiPool::AllocFromFreeList File: src/Battlesport/zModel/zModel_Display.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zmodel_dipool_alloc_from_free_list)
+  - [✅] Binary-safe
 - 0x4820f0:
   - [✅] Reconstructed (Name: zModel_DiPool::FreeIfUnreferenced)
   - [✅] Source dependencies satisfied
@@ -16439,27 +16439,27 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x483a60:
   - [☑️] Reconstructed (Name: zDi::HasSpecialFlagsOrAuxMaterialData)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::HasSpecialFlagsOrAuxMaterialData File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zdi_has_special_flags_or_aux_material_data)
   - [❌] Binary-safe
 - 0x483ad0:
   - [✅] Reconstructed (Name: zDi::RebuildBounds)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::RebuildBounds File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zdi_rebuild_bounds)
   - [❌] Binary-safe
 - 0x483b80:
   - [☑️] Reconstructed (Name: zDi::BuildAabb)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::BuildAabb File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zdi_build_aabb)
   - [❌] Binary-safe
 - 0x483e60:
   - [✅] Reconstructed (Name: zDi::BuildOriginSymmetricAabb)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::BuildOriginSymmetricAabb File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zdi_build_origin_symmetric_aabb)
   - [❌] Binary-safe
 - 0x483f80:
   - [☑️] Reconstructed (Name: zDi::BuildBlendVertsFromConnectivity)
@@ -16487,9 +16487,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4841f0:
   - [☑️] Reconstructed (Name: zDi::InvalidateImagesForFlagBit8Materials)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::InvalidateImagesForFlagBit8Materials File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zdi_invalidate_images_for_flag_bit8_materials)
   - [❌] Binary-safe
 - 0x484230:
   - [✅] Reconstructed (Name: zDi::ResetCurrentVariant)
@@ -16553,9 +16553,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x484b70:
   - [☑️] Reconstructed (Name: zModelConst::AddFaceToPlayerProbeSampleBuckets)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zModelConst::AddFaceToPlayerProbeSampleBuckets File: src/GameZRecoil/zClass/cls_di.c)
+  - [✅] Functional-equivalent (Target: zmodelconst_add_face_to_player_probe_sample_buckets)
   - [❌] Binary-safe
 - 0x487a30:
   - [☑️] Reconstructed (Name: zModel_Light::BuildActiveLightList)
@@ -16652,9 +16652,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x489f80:
   - [✅] Reconstructed (Name: zNetwork::IsHost)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zNetwork::IsHost File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: znetwork_is_host)
   - [❌] Binary-safe
 - 0x489f90:
   - [✅] Reconstructed (Name: zNetwork::SetFatalDisconnectCallback)
@@ -17071,7 +17071,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zReader::FileExists)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader::FileExists File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zreader_file_exists)
   - [❌] Binary-safe
 - 0x4a5c40:
   - [✅] Reconstructed (Name: zReader::FileExistsWrapper)
@@ -17090,9 +17090,9 @@ Each function has these trackers and they should be completed in order:
 
 - 0x46e380:
   - [✅] Reconstructed (Name: zImage::TexDirSetBaseNameFromPath)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::TexDirSetBaseNameFromPath File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zimage_texdir_set_base_name_from_path)
   - [❌] Binary-safe
 - 0x476340:
   - [✅] Reconstructed (Name: zDi::SetVariantTagIfUnset)
@@ -17863,8 +17863,8 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zSnd::FindSampleByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::FindSampleByName File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsnd_find_sample_by_name)
+  - [✅] Binary-safe
 - 0x4a09e0:
   - [☑️] Reconstructed (Name: zSndSampleSetRegistry::AddEntry)
   - [✅] Source dependencies satisfied
@@ -17893,7 +17893,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zSndSampleSet::FindSampleByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSet::FindSampleByName File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_set_find_sample_by_name)
   - [❌] Binary-safe
 - 0x4a0fb0:
   - [☑️] Reconstructed (Name: zSndSampleSet::LoadSamplesFromIndexArchive)
@@ -17977,8 +17977,8 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zSndPendingList::FindByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPendingList_FindByName File: src/GameZRecoil/zSound/zsnd_group.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsnd_pending_list_find_by_name)
+  - [✅] Binary-safe
 - 0x4a44e0:
   - [☑️] Reconstructed (Name: zSndPendingList::MatchNamePredicate)
   - [✅] Source dependencies satisfied
@@ -18010,7 +18010,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zSndSample::AcquirePlayHandleDispatch)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::AcquirePlayHandleDispatch File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_acquire_play_handle_dispatch)
   - [❌] Binary-safe
 - 0x49f6f0:
   - [✅] Reconstructed (Name: zSndSample::AcquireA3dVoice)
@@ -18028,13 +18028,13 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zSndSample::PlayA3DSimple)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::PlayA3DSimple File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_play_a3d_simple)
   - [❌] Binary-safe
 - 0x49f9a0:
   - [☑️] Reconstructed (Name: zSnd::GainScaleToDirectSoundAttenuation)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::GainScaleToDirectSoundAttenuation File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_gain_scale_to_directsound_attenuation)
   - [❌] Binary-safe
 - 0x49fa00:
   - [✅] Reconstructed (Name: zSndSample_PlaySimple)
@@ -18046,25 +18046,25 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zSndSample::PlayOnActiveBackend)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::PlayOnActiveBackend File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_play_on_active_backend)
   - [❌] Binary-safe
 - 0x49fa60:
   - [✅] Reconstructed (Name: zSndSample::PlayOnA3D)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::PlayOnA3D File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_play_on_a3d)
   - [❌] Binary-safe
 - 0x49fbb0:
   - [✅] Reconstructed (Name: zSndSample::PlayOnDirectSound)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::PlayOnDirectSound File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_play_on_directsound)
   - [❌] Binary-safe
 - 0x49fcf0:
   - [✅] Reconstructed (Name: zSndSample::PlayA3D)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::PlayA3D File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_play_a3d)
   - [❌] Binary-safe
 - 0x49fd50:
   - [✅] Reconstructed (Name: zSndSample::PlayDirectSound)
@@ -18142,7 +18142,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zSnd::IsMuted)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::IsMuted File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_is_muted)
   - [❌] Binary-safe
 - 0x4a07c0:
   - [✅] Reconstructed (Name: zSndPlayHandleSnapshot::NewNode)
@@ -18214,8 +18214,8 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zSndPlayHandle::TryDisableManaged)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPlayHandle_TryDisableManaged File: src/GameZRecoil/zSound/zsnd_parm.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsnd_play_handle_try_disable_managed)
+  - [✅] Binary-safe
 - 0x4a1290:
   - [✅] Reconstructed (Name: zSnd::SetActiveBackendPreInit)
   - [✅] Source dependencies satisfied
@@ -18382,13 +18382,13 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zSndStreamRequest::StateBeginGroup)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndStreamRequest::StateBeginGroup File: src/GameZRecoil/zSound/zsnd_group.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_stream_request_state_begin_group)
   - [❌] Binary-safe
 - 0x4a4d10:
   - [☑️] Reconstructed (Name: zSndGroup::SelectWeightedEntry)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndGroup::SelectWeightedEntry File: src/GameZRecoil/zSound/zsnd_group.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_group_select_weighted_entry)
   - [❌] Binary-safe
 - 0x4a4ea0:
   - [☑️] Reconstructed (Name: zSndStreamRequest::StatePlayCurrentEntry)
@@ -18448,19 +18448,19 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zSndGroup::QueueStreamRequest)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndGroup::QueueStreamRequest File: src/GameZRecoil/zSound/zsnd_group.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_group_queue_stream_request)
   - [❌] Binary-safe
 - 0x4a5350:
   - [✅] Reconstructed (Name: zSndStreamMgr::EnsureInit)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndStreamMgr_EnsureInit File: src/GameZRecoil/zSound/zsnd_group.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_stream_mgr_ensure_init)
   - [❌] Binary-safe
 - 0x4a53d0:
   - [✅] Reconstructed (Name: zSndGroup::QueueStreamRequestWithWorldPos)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndGroup::QueueStreamRequestWithWorldPos File: src/GameZRecoil/zSound/zsnd_group.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_group_queue_stream_request_with_world_pos)
   - [❌] Binary-safe
 - 0x4a53f0:
   - [✅] Reconstructed (Name: zSndWaveData::ConstructorFromPath)
@@ -18605,9 +18605,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4a2930:
   - [✅] Reconstructed (Name: zSndCd::GetTrackCount)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::GetTrackCount File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_cd_get_track_count)
   - [❌] Binary-safe
 - 0x4a2950:
   - [✅] Reconstructed (Name: zSnd::UpdateListenerState)
@@ -18619,7 +18619,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zSndPlayHandle::Update3DDispatch)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndPlayHandle::Update3DDispatch File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_play_handle_update3d_dispatch)
   - [❌] Binary-safe
 - 0x4a4330:
   - [✅] Reconstructed (Name: zSnd::ReportDirectSoundError)
@@ -18674,39 +18674,39 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x407e30:
   - [✅] Reconstructed (Name: zOpt::SetThrottleMode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetThrottleMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_set_throttle_mode)
   - [❌] Binary-safe
 - 0x407e50:
   - [✅] Reconstructed (Name: zOpt::GetThrottleMode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetThrottleMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_get_throttle_mode)
   - [❌] Binary-safe
 - 0x407e60:
   - [✅] Reconstructed (Name: zOpt::SetSteeringMode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetSteeringMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_set_steering_mode)
   - [❌] Binary-safe
 - 0x407e80:
   - [✅] Reconstructed (Name: zOpt::GetSteeringMode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetSteeringMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_get_steering_mode)
   - [❌] Binary-safe
 - 0x407e90:
   - [✅] Reconstructed (Name: zOpt::SetCursorMode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetCursorMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_set_cursor_mode)
   - [❌] Binary-safe
 - 0x407eb0:
   - [✅] Reconstructed (Name: zOpt::GetCursorMode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetCursorMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_get_cursor_mode)
   - [❌] Binary-safe
 - 0x407ec0:
   - [✅] Reconstructed (Name: zOpt::SetCameraMode)
@@ -18716,9 +18716,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x407ef0:
   - [☑️] Reconstructed (Name: zOpt::GetCameraModeAsPlayerCameraState)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetCameraModePlayerState File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_get_camera_mode_player_state)
   - [❌] Binary-safe
 - 0x407f10:
   - [✅] Reconstructed (Name: zOpt::SetGameDifficultyMode)
@@ -18742,7 +18742,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zOpt::GetEffectsLevelForCurrentHwMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetEffectsLevelForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_get_effects_level_for_current_hw_mode)
   - [❌] Binary-safe
 - 0x407fa0:
   - [☑️] Reconstructed (Name: zOpt::SetObjectLODForCurrentHwMode)
@@ -18836,9 +18836,9 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4081f0:
   - [✅] Reconstructed (Name: zOpt::GetGraphicsFlagsForCurrentHwMode)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetGraphicsFlagsForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_get_graphics_flags_for_current_hw_mode)
   - [❌] Binary-safe
 - 0x408210:
   - [✅] Reconstructed (Name: zSnd::SetCDAudioOption)
@@ -18982,7 +18982,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zOpt::GetRenderSection)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetRenderSection File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_get_render_section)
   - [❌] Binary-safe
 - 0x4085b0:
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetTargetDisplay)
@@ -19112,10 +19112,10 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4826d0:
   - [✅] Reconstructed (Name: zDi::SetFlagBit0)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::SetFlagBit0 File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zdi_set_flag_bit0)
+  - [✅] Binary-safe
 - 0x48bfa0:
   - [✅] Reconstructed (Name: zNetwork::InitMessageHandlers)
   - [❌] Source dependencies satisfied
@@ -19174,7 +19174,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zArchiveList::PushFrontPayload)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_PushFrontPayload File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zarchive_list_push_front_payload)
   - [❌] Binary-safe
 - 0x48ca10:
   - [✅] Reconstructed (Name: zUtil_ZRDR::AllocNodeWithPayload)
@@ -19198,7 +19198,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zArchiveList::FreeNode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_FreeNode File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zarchive_list_free_node)
   - [❌] Binary-safe
 - 0x48cb00:
   - [✅] Reconstructed (Name: zArchiveList::FindNodeByPayload)
@@ -19216,7 +19216,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zArchiveList::PopFrontPayload)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_PopFrontPayload File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zarchive_list_pop_front_payload)
   - [❌] Binary-safe
 - 0x48cbd0:
   - [✅] Reconstructed (Name: zArchiveList::FindPayloadByPredicate)
@@ -19324,19 +19324,19 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zUtil::ZRDR_ResolvePathInSearchPathList)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_ResolvePathInSearchPathList File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zutil_zrdr_resolve_path_in_search_path_list)
   - [❌] Binary-safe
 - 0x4a5f20:
   - [☑️] Reconstructed (Name: zUtil::ZRDR_SearchPathContainsFilePredicate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_SearchPathContainsFilePredicate File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zutil_zrdr_search_path_contains_file_predicate)
   - [❌] Binary-safe
 - 0x4a5f50:
   - [✅] Reconstructed (Name: zUtil_ZRDR::OpenFileResolved)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_ZRDR_OpenFileResolved File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zutil_zrdr_open_file_resolved)
   - [❌] Binary-safe
 - 0x4a5f90:
   - [✅] Reconstructed (Name: zUtil_ZRDR::InitWildcardPath)
@@ -19765,7 +19765,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zVid_TexturePackEntry::LoadFromFile)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_TexturePackEntry_LoadFromFile File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvid_texture_pack_entry_load_from_file)
   - [❌] Binary-safe
 - 0x46dd30:
   - [✅] Reconstructed (Name: zVid_TexturePack::LoadBuiltinImageByName)
@@ -19775,15 +19775,15 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x46de50:
   - [☑️] Reconstructed (Name: zImage::TexDir_LoadPendingEntries)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage::TexDir_LoadPendingEntries File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zimage_texdir_load_pending_entries)
   - [❌] Binary-safe
 - 0x46df50:
   - [☑️] Reconstructed (Name: zVid_TexturePack::EnsureBuiltinTexturePacksLoaded)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_TexturePack_EnsureBuiltinTexturePacksLoaded File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvid_texture_pack_ensure_builtin_texture_packs_loaded)
   - [❌] Binary-safe
 - 0x46e290:
   - [✅] Reconstructed (Name: zImage_TexDirEntry::GetVariantImageAtIndex)
@@ -19801,7 +19801,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zVid_PaletteRemap::BuildAllRecipeVariantsForPalette)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_PaletteRemap_BuildAllRecipeVariantsForPalette File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvid_palette_remap_build_all_recipe_variants_for_palette)
   - [❌] Binary-safe
 - 0x46e960:
   - [✅] Reconstructed (Name: zVid_PaletteRemap::FindRecipeIndexFromRgb)
@@ -20452,7 +20452,7 @@ Each function has these trackers and they should be completed in order:
   - [✅] Reconstructed (Name: zClass_Node::PropagateTransformDirtyRecursive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_Node::PropagateTransformDirtyRecursive File: src/GameZRecoil/zClass/Object3d.c)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zclass_propagate_transform_dirty_recursive)
   - [❌] Binary-safe
 - 0x4a6710:
   - [✅] Reconstructed (Name: zVideo::GetSwSurfacePixels)
@@ -21139,7 +21139,7 @@ Each function has these trackers and they should be completed in order:
   - [☑️] Reconstructed (Name: zVid::PackColorRgbFloats)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_PackColorRgbFloats File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvid_pack_color_rgb_floats)
   - [❌] Binary-safe
 - 0x4a6db0:
   - [☑️] Reconstructed (Name: zVideo_TexturePixelPack::SetupFromMasks)
@@ -22018,7 +22018,7 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4c9a3b:
   - [✅] Reconstructed (Name: __ehhandler_HudUiNetExitPanel_CreateGlobal)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: __ehhandler_HudUiNetExitPanel_CreateGlobal File: external)
   - [❌] Functional-equivalent
   - [❌] Binary-safe
@@ -23272,7 +23272,7 @@ Each function has these trackers and they should be completed in order:
   - [❌] Binary-safe
 - 0x4c9a04:
   - [✅] Reconstructed (Name: MsvcEh_CxxFrameHandlerThunk_4d5a78)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Provided by compiler-generated glue; Name: MsvcEh_CxxFrameHandlerThunk_4d5a78 File: external)
   - [❌] Functional-equivalent
   - [❌] Binary-safe

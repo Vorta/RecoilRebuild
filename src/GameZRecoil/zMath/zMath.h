@@ -170,6 +170,7 @@ RECOIL_NOINLINE void RECOIL_CDECL MatLoadCameraScratchB();
 RECOIL_NOINLINE void RECOIL_CDECL MatLoadCameraScratchA();
 RECOIL_NOINLINE void RECOIL_CDECL MatLoadIdentity();
 RECOIL_NOINLINE float RECOIL_FASTCALL Vec3Normalize(zVec3 *vec);
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3NormalizeXZ(zVec3 *vec, zVec3 *out);
 RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLengthSq(const zVec3 *a, const zVec3 *b);
 RECOIL_NOINLINE zMat4x3 *RECOIL_STDCALL MatCopyCurrentTo(zMat4x3 *out);
 RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadCurrentFrom(const zMat4x3 *src);
@@ -180,6 +181,9 @@ RECOIL_NOINLINE void RECOIL_STDCALL MatRotateY(float angleRad);
 RECOIL_NOINLINE void RECOIL_STDCALL MatRotateZ(float angleRad);
 RECOIL_NOINLINE void RECOIL_FASTCALL MatApplyLocalTRS(const zVec3 *angles, const zVec3 *position,
                                                       const zVec3 *scale);
+RECOIL_NOINLINE void RECOIL_FASTCALL MatBuildEulerRotation3x3(zMat4x3 *outBasis,
+                                                              float angleX, float angleY,
+                                                              float angleZ);
 RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL Vec3DirectionAnglesBetweenPoints(const zVec3 *pointA,
                                                                         const zVec3 *pointB,
                                                                         zVec3 *outAngles);

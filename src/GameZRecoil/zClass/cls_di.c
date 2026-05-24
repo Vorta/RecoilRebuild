@@ -18,6 +18,9 @@ float g_DiSegmentMinZ = 0.0f;
 float g_DiSegmentMaxX = 0.0f;
 float g_DiSegmentMaxY = 0.0f;
 float g_DiSegmentMaxZ = 0.0f;
+zVec3 *g_DiPickPointArray = 0;
+int g_DiPickPointCount = 0;
+float g_DiPickPointQueryMaxY = 0.0f;
 PlayerProbeSampleCandidateBuffer *g_DiPickCandidateBuffer = 0;
 zClassDiPickCandidateEntry *g_DiPickCandidateCursor = 0;
 
@@ -444,6 +447,16 @@ namespace {
         }
     }
 
+    void RecursePointBatchChildren(zClass_NodePartial * node, int depth, int *hitFlags,
+                                   bool requireQueryFlags) {
+        for (int i = 0; i < node->listCountB; ++i) {
+            zClass_NodePartial *child = node->listB[i];
+            if (!requireQueryFlags || NodePassesQueryFlags(child)) {
+                zClass_cls_di::BuildPickCandidatesForPoints(child, depth, hitFlags);
+            }
+        }
+    }
+
     void TransformVerticesToSharedScratch(const zVec3 *vertices, int vertexCount) {
         if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
             memcpy(g_zModel_SharedVec3ScratchB, vertices,
@@ -585,6 +598,369 @@ namespace zClass_cls_di {
 
         zMath::MatStackPopPtr();
         return outResults->candidateCount <= 0 ? 1 : 0;
+    }
+
+    // Reimplements 0x444890: zClass_cls_di::BuildPickCandidatesForPoints
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForPoints(
+        zClass_NodePartial * node, int depth, int *hitFlags) {
+        int nodeFlags = node->flags;
+        if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
+            return 1;
+        }
+        if ((nodeFlags & 0x08) == 0) {
+            return 1;
+        }
+        if ((nodeFlags & 0x01000000) != 0 && VariantTag::CurrentAllowsId(node->nodeType) == 0) {
+            return 1;
+        }
+
+        const int classId = node->classId;
+        nodeFlags &= ~kNodeFlagClearDuringPick;
+        node->flags = nodeFlags;
+
+        int sampleMask[24];
+        switch (classId) {
+        case kNodeClassCamera: {
+            memcpy(sampleMask, hitFlags,
+                   static_cast<size_t>(g_DiPickPointCount) * sizeof(int));
+
+            zVec3 unitScale = {1.0f, 1.0f, 1.0f};
+            zClass_CameraDataPartial *cameraData =
+                static_cast<zClass_CameraDataPartial *>(node->classData);
+            int pushedMatrix = 0;
+            if ((nodeFlags & kNodeFlagEnabledForPick) != 0) {
+                pushedMatrix = 1;
+                zMath::MatStackPushAndCloneParent(cameraData->worldTransform);
+                zMath::MatApplyLocalTRS(&cameraData->targetOrEuler, &cameraData->posOffset,
+                                        &unitScale);
+            }
+
+            zModel_PickFaceData *faceData =
+                static_cast<zModel_PickFaceData *>(static_cast<void *>(NodeDiRef(node)));
+            if (faceData != 0) {
+                PickTestMeshAtQueryXZ(node, faceData, g_DiPickPointArray, sampleMask,
+                                      g_DiPickPointCount, g_DiPickPointQueryMaxY,
+                                      g_DiPickCandidateBuffer);
+            }
+
+            RecursePointBatchChildren(node, node->listCountB, sampleMask, true);
+
+            if (pushedMatrix != 0) {
+                zMath::MatStackPopPtr();
+            }
+            return 0;
+        }
+
+        case kNodeClassObject3D: {
+            memcpy(sampleMask, hitFlags,
+                   static_cast<size_t>(g_DiPickPointCount) * sizeof(int));
+            if (depth > 1) {
+                const int bboxResult = PickTestBBox2D(node, sampleMask);
+                if (bboxResult != 0) {
+                    return bboxResult;
+                }
+            }
+
+            zClass_Object3DDataPartial *objectData =
+                static_cast<zClass_Object3DDataPartial *>(node->classData);
+            int pushedMatrix = 0;
+            if ((objectData->flags & kObjectFlagNoPickMatrixPush) == 0) {
+                pushedMatrix = 1;
+                if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
+                    zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
+                } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) != 0) {
+                    zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
+                    if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
+                        objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
+                    }
+                } else {
+                    zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
+                }
+            }
+
+            zModel_PickFaceData *faceData =
+                static_cast<zModel_PickFaceData *>(static_cast<void *>(NodeDiRef(node)));
+            if (faceData != 0) {
+                PickTestMeshAtQueryXZ(node, faceData, g_DiPickPointArray, sampleMask,
+                                      g_DiPickPointCount, g_DiPickPointQueryMaxY,
+                                      g_DiPickCandidateBuffer);
+            }
+
+            RecursePointBatchChildren(node, node->listCountB, sampleMask, true);
+
+            if (pushedMatrix != 0) {
+                zMath::MatStackPopPtr();
+            }
+            return 0;
+        }
+
+        case kNodeClassLod: {
+            zClass_LodDataPartial *lodData = static_cast<zClass_LodDataPartial *>(node->classData);
+            if (lodData->nearRangeSq > 5.0f) {
+                return 1;
+            }
+
+            memcpy(sampleMask, hitFlags,
+                   static_cast<size_t>(g_DiPickPointCount) * sizeof(int));
+            if (depth > 1) {
+                const int bboxResult = PickTestBBox2D(node, sampleMask);
+                if (bboxResult != 0) {
+                    return bboxResult;
+                }
+            }
+
+            RecursePointBatchChildren(node, node->listCountB, sampleMask, false);
+            return 0;
+        }
+
+        case kNodeClassSequence: {
+            zClass_SequenceDataPartial *sequenceData =
+                static_cast<zClass_SequenceDataPartial *>(node->classData);
+            if (sequenceData->isActive == 0) {
+                return 1;
+            }
+
+            memcpy(sampleMask, hitFlags,
+                   static_cast<size_t>(g_DiPickPointCount) * sizeof(int));
+            if (depth > 1) {
+                const int bboxResult = PickTestBBox2D(node, sampleMask);
+                if (bboxResult != 0) {
+                    return bboxResult;
+                }
+            }
+
+            return BuildPickCandidatesForPoints(sequenceData->entries[sequenceData->currentIndex].node,
+                                                node->listCountB, sampleMask);
+        }
+
+        case kNodeClassAnimate:
+            return BuildPickCandidatesForPointsRecursive(node, depth, hitFlags);
+
+        case kNodeClassLight:
+            return BuildPickCandidatesForPointsForLight(node, depth, hitFlags);
+
+        case kNodeClassSound:
+            return 1;
+
+        default:
+            zError::ReportOld(0x200, kClsDiSourceFile, 0x587,
+                              "Unrecognized node class type:  node = %s class_type = %d", node,
+                              classId);
+            return 3;
+        }
+    }
+
+    // Reimplements 0x444c50: zClass_cls_di::BuildPickCandidatesForPointsRecursive
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForPointsRecursive(
+        zClass_NodePartial * node, int depth, int *hitFlags) {
+        int sampleMask[24];
+        memcpy(sampleMask, hitFlags,
+               static_cast<size_t>(g_DiPickPointCount) * sizeof(int));
+
+        if (depth > 1) {
+            const int bboxResult = PickTestBBox2D(node, sampleMask);
+            if (bboxResult != 0) {
+                return bboxResult;
+            }
+        }
+
+        zClass_AnimateDataPartial *animateData =
+            static_cast<zClass_AnimateDataPartial *>(node->classData);
+        int pushedMatrix = 0;
+        if ((node->flags & kNodeFlagEnabledForPick) != 0) {
+            pushedMatrix = 1;
+            zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
+            zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform), 1);
+        }
+
+        zModel_PickFaceData *faceData =
+            static_cast<zModel_PickFaceData *>(static_cast<void *>(NodeDiRef(node)));
+        if (faceData != 0) {
+            PickTestMeshAtQueryXZ(node, faceData, g_DiPickPointArray, sampleMask,
+                                  g_DiPickPointCount, g_DiPickPointQueryMaxY,
+                                  g_DiPickCandidateBuffer);
+        }
+
+        RecursePointBatchChildren(node, node->listCountB, sampleMask, false);
+
+        if (pushedMatrix != 0) {
+            zMath::MatStackPopPtr();
+        }
+
+        return 0;
+    }
+
+    // Reimplements 0x444d10: zClass_cls_di::BuildPickCandidatesForPointsForLight
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForPointsForLight(
+        zClass_NodePartial * node, int depth, int *hitFlags) {
+        int sampleMask[24];
+        memcpy(sampleMask, hitFlags,
+               static_cast<size_t>(g_DiPickPointCount) * sizeof(int));
+
+        if (depth > 1) {
+            const int bboxResult = PickTestBBox2D(node, sampleMask);
+            if (bboxResult != 0) {
+                return bboxResult;
+            }
+        }
+
+        zClass_LightDataPartial *lightData =
+            static_cast<zClass_LightDataPartial *>(node->classData);
+        zMath::MatStackPushAndCloneParent(lightData->savedParentMatrix);
+        zMath::MatTranslate(lightData->localPosition.x, lightData->localPosition.y,
+                            lightData->localPosition.z);
+        zMath::MatRotateY(lightData->localRotation.y);
+        zMath::MatRotateX(lightData->localRotation.x);
+        zMath::MatRotateZ(lightData->localRotation.z);
+
+        zModel_PickFaceData *faceData =
+            static_cast<zModel_PickFaceData *>(static_cast<void *>(NodeDiRef(node)));
+        if (faceData != 0) {
+            PickTestMeshAtQueryXZ(node, faceData, g_DiPickPointArray, sampleMask,
+                                  g_DiPickPointCount, g_DiPickPointQueryMaxY,
+                                  g_DiPickCandidateBuffer);
+        }
+
+        RecursePointBatchChildren(node, node->listCountB, sampleMask, false);
+
+        zMath::MatStackPopPtr();
+        return 0;
+    }
+
+    // Reimplements 0x4444b0: zClass_cls_di::BuildPickCandidatesForPointBatch
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForPointBatch(
+        zClass_NodePartial * world, zVec3 * pointArray, int pointCount, float queryMaxY,
+        PlayerProbeSampleCandidateBuffer * outCandidateBuffersByPoint) {
+        if (pointCount > 24) {
+            zError::ReportOld(0x200, kClsDiSourceFile, 0x495,
+                              "More test pnts than space for: %d", pointCount);
+            pointCount = 24;
+        }
+
+        if (zClass_TypeList::Head(0) != 0) {
+            zClass_TypeList::UpdateQueuedTrees();
+        }
+
+        zClass_WorldDataPartial *worldData =
+            static_cast<zClass_WorldDataPartial *>(world->classData);
+        zWorldAreaPartial *gridCellForPoint[24] = {0};
+        zWorldAreaPartial *uniqueGridCells[24] = {0};
+        int pointActive[24] = {0};
+        int pointWasClamped[24] = {0};
+        float clampOffsetX[24] = {0.0f};
+        float clampOffsetZ[24] = {0.0f};
+
+        for (int i = 0; i < pointCount; ++i) {
+            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersByPoint[i];
+            buffer->candidateCount = 0;
+
+            const int gridCol = static_cast<int>(
+                floor((pointArray[i].x - worldData->originX) * worldData->areaInvSizeX));
+            const int gridRow = static_cast<int>(
+                floor((pointArray[i].z - worldData->originZ) * worldData->areaInvSizeZ));
+
+            if (gridCol >= 0 && gridCol < worldData->areaGridColCount &&
+                gridRow >= 0 && gridRow < worldData->areaGridRowCount) {
+                pointActive[i] = 1;
+                gridCellForPoint[i] = &worldData->areaGridRows[gridRow][gridCol];
+                continue;
+            }
+
+            if (worldData->clampQueriesToBounds == 0) {
+                continue;
+            }
+
+            int clampedCol = gridCol;
+            if (clampedCol < 0) {
+                clampedCol = 0;
+            } else if (clampedCol >= worldData->areaGridColCount) {
+                clampedCol = worldData->areaGridColCount - 1;
+            }
+
+            int clampedRow = gridRow;
+            if (clampedRow < 0) {
+                clampedRow = 0;
+            } else if (clampedRow >= worldData->areaGridRowCount) {
+                clampedRow = worldData->areaGridRowCount - 1;
+            }
+
+            pointActive[i] = 1;
+            pointWasClamped[i] = 1;
+            gridCellForPoint[i] = &worldData->areaGridRows[clampedRow][clampedCol];
+            clampOffsetX[i] = static_cast<float>(clampedCol - gridCol) * worldData->areaCellSizeX;
+            clampOffsetZ[i] = static_cast<float>(clampedRow - gridRow) * worldData->areaCellSizeZ;
+            pointArray[i].x += clampOffsetX[i];
+            pointArray[i].z += clampOffsetZ[i];
+        }
+
+        int uniqueGridCellCount = 0;
+        for (int i = 0; i < pointCount; ++i) {
+            zWorldAreaPartial *cell = gridCellForPoint[i];
+            if (cell == 0) {
+                continue;
+            }
+
+            int alreadyAdded = 0;
+            for (int j = 0; j < uniqueGridCellCount; ++j) {
+                if (uniqueGridCells[j] == cell) {
+                    alreadyAdded = 1;
+                    break;
+                }
+            }
+
+            if (alreadyAdded == 0) {
+                uniqueGridCells[uniqueGridCellCount++] = cell;
+            }
+        }
+
+        zMat4x3 slotBuffer = {0};
+        zMath::MatStackPushPtr((float *)(&slotBuffer));
+        zMath::MatLoadIdentity();
+
+        g_DiPickCandidateBuffer = outCandidateBuffersByPoint;
+        g_DiPickCandidateCursor = outCandidateBuffersByPoint->entries;
+        g_DiPickPointQueryMaxY = queryMaxY;
+        g_DiPickPointArray = pointArray;
+        g_DiPickPointCount = pointCount;
+
+        for (int cellIndex = 0; cellIndex < uniqueGridCellCount; ++cellIndex) {
+            zWorldAreaPartial *cell = uniqueGridCells[cellIndex];
+            int hitFlags[24] = {0};
+            for (int pointIndex = 0; pointIndex < pointCount; ++pointIndex) {
+                hitFlags[pointIndex] =
+                    pointActive[pointIndex] != 0 && gridCellForPoint[pointIndex] == cell ? 1 : 0;
+            }
+
+            for (int childIndex = 0; childIndex < cell->childCount; ++childIndex) {
+                zClass_NodePartial *node = cell->childList[childIndex];
+                if (NodePassesQueryFlags(node)) {
+                    BuildPickCandidatesForPoints(node, cell->childCount + 1, hitFlags);
+                }
+            }
+        }
+
+        for (int i = 0; i < pointCount; ++i) {
+            if (pointWasClamped[i] != 0) {
+                pointArray[i].x -= clampOffsetX[i];
+                pointArray[i].z -= clampOffsetZ[i];
+            }
+        }
+
+        for (int i = 0; i < world->listCountB; ++i) {
+            zClass_NodePartial *node = world->listB[i];
+            if (NodePassesQueryFlags(node) && NodePassesQueryVariant(node)) {
+                BuildPickCandidatesForPoints(node, world->listCountB + 1, pointActive);
+            }
+        }
+
+        zMath::MatStackPopPtr();
+        return 0;
     }
 
     // Reimplements 0x443f80: zClass_cls_di::BuildPickCandidateList (GameZRecoil/zClass/cls_di.c)
@@ -800,6 +1176,41 @@ namespace zClass_cls_di {
                        g_DiPickQueryPoint.z >= minZ && g_DiPickQueryPoint.z <= maxZ
                    ? 0
                    : 1;
+    }
+
+    // Reimplements 0x4473e0: zClass_cls_di::PickTestBBox2D
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL PickTestBBox2D(zClass_NodePartial * node,
+                                                                int *hitFlags) {
+        if ((node->flags & 0x100) == 0) {
+            return 1;
+        }
+
+        zBBoxCorners corners = {0};
+        zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
+
+        float minX;
+        float maxX;
+        float minY;
+        float maxY;
+        float minZ;
+        float maxZ;
+        ComputeBBoxExtents(&corners, &minX, &maxX, &minY, &maxY, &minZ, &maxZ);
+
+        int result = 1;
+        for (int i = 0; i < g_DiPickPointCount; ++i) {
+            if (hitFlags[i] != 0) {
+                const zVec3 *point = &g_DiPickPointArray[i];
+                if (point->x >= minX && point->x <= maxX &&
+                    point->z >= minZ && point->z <= maxZ) {
+                    result = 0;
+                } else {
+                    hitFlags[i] = 0;
+                }
+            }
+        }
+
+        return result;
     }
 
     // Reimplements 0x447540: zClass_cls_di::FilterPointsBBox (GameZRecoil/zClass/cls_di.c)
@@ -1027,7 +1438,111 @@ namespace zDi {
     }
 }
 
+namespace zModelConst {
+    // Reimplements 0x484b70: zModelConst::AddFaceToPlayerProbeSampleBuckets
+    // (GameZRecoil/zModel/zmodel.cpp)
+    RECOIL_NOINLINE void RECOIL_FASTCALL AddFaceToPlayerProbeSampleBuckets(
+        zClass_NodePartial * node, PlayerProbeSampleCandidateBuffer *outputBuckets,
+        const zVec3 *samplePoints, const int *sampleMaskSeeds, int samplePointCount,
+        float maxProjectedY, const zVec3 *polygonVertices,
+        const zModel_PickFaceEntry *faceEntry) {
+        zVec3 normal;
+        zMath_Vec3_TriangleNormal(&polygonVertices[0], &polygonVertices[1],
+                                  &polygonVertices[2], &normal);
+        if (normal.y <= 0.0f) {
+            return;
+        }
+
+        int activeFlags[0x20];
+        for (int i = 0; i < samplePointCount; ++i) {
+            activeFlags[i] = sampleMaskSeeds[i];
+        }
+
+        int anyActive = 1;
+        const int vertexCount = static_cast<int>(faceEntry->flagsAndVertexCount & 0xffu);
+        for (int edgeEnd = vertexCount - 1; edgeEnd >= 0 && anyActive != 0; --edgeEnd) {
+            const int edgeStart = edgeEnd == vertexCount - 1 ? 0 : edgeEnd + 1;
+            const zVec3 *start = &polygonVertices[edgeStart];
+            const zVec3 *end = &polygonVertices[edgeEnd];
+            const float dx = end->x - start->x;
+            const float dz = start->z - end->z;
+
+            anyActive = 0;
+            for (int sampleIndex = 0; sampleIndex < samplePointCount; ++sampleIndex) {
+                if (activeFlags[sampleIndex] != 0) {
+                    const zVec3 *point = &samplePoints[sampleIndex];
+                    const float edgeTest =
+                        (point->x - end->x) * dz + (point->z - end->z) * dx;
+                    activeFlags[sampleIndex] = edgeTest > -0.0001f ? 1 : 0;
+                    if (activeFlags[sampleIndex] != 0) {
+                        anyActive = 1;
+                    }
+                }
+            }
+        }
+
+        if (anyActive == 0 || samplePointCount <= 0) {
+            return;
+        }
+
+        const float invNormalY = 1.0f / normal.y;
+        const float xSlope = -normal.x * invNormalY;
+        const float zSlope = -normal.z * invNormalY;
+        for (int sampleIndex = 0; sampleIndex < samplePointCount; ++sampleIndex) {
+            if (activeFlags[sampleIndex] != 0) {
+                PlayerProbeSampleCandidateBuffer *bucket = &outputBuckets[sampleIndex];
+                if (bucket->candidateCount < 0x20) {
+                    zClassDiPickCandidateEntry *entry = &bucket->entries[bucket->candidateCount];
+                    entry->surfaceNormal = normal;
+                    entry->hitPos.y =
+                        (samplePoints[sampleIndex].z - polygonVertices[0].z) * zSlope +
+                        (samplePoints[sampleIndex].x - polygonVertices[0].x) * xSlope +
+                        polygonVertices[0].y;
+                    if (entry->hitPos.y <= maxProjectedY) {
+                        entry->node = node;
+                        entry->variantTag = faceEntry->variantTag;
+                        entry->scenePayload = faceEntry->scenePayload;
+                        ++bucket->candidateCount;
+                    }
+                }
+            }
+        }
+    }
+}
+
 namespace zClass_cls_di {
+
+    // Reimplements 0x484e00: zClass_cls_di::PickTestMeshAtQueryXZ
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL PickTestMeshAtQueryXZ(
+        zClass_NodePartial * node, zModel_PickFaceData *faceData, const zVec3 *samplePoints,
+        const int *sampleMaskSeeds, int samplePointCount, float maxProjectedY,
+        PlayerProbeSampleCandidateBuffer *outputBuckets) {
+        if (faceData == 0 || faceData->faceCount == 0) {
+            return;
+        }
+
+        const zVec3 *vertices = faceData->baseVertices;
+        if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0f &&
+            faceData->morphVertexCount != 0) {
+            zMath_Vec3Array_AddScaled(g_zModel_SharedVec3ScratchA, faceData->baseVertices,
+                                      faceData->morphVertices, faceData->morphVertexCount,
+                                      faceData->morphWeight);
+            vertices = g_zModel_SharedVec3ScratchA;
+        }
+
+        TransformVerticesToSharedScratch(vertices, faceData->vertexCount);
+
+        for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
+            const zModel_PickFaceEntry *face = &faceData->faces[faceIndex];
+            const int vertexCount = static_cast<int>(face->flagsAndVertexCount & 0xffu);
+            CopyFaceVerticesToScratch(g_zModel_SharedVec3ScratchB, face->vertexIndices,
+                                      static_cast<unsigned int>(vertexCount));
+            zModelConst::AddFaceToPlayerProbeSampleBuckets(
+                node, outputBuckets, samplePoints, sampleMaskSeeds, samplePointCount,
+                maxProjectedY, g_zClass_DiFaceVertexScratch4, face);
+        }
+    }
 
     // Reimplements 0x487900: zClass_cls_di::FilterRegionsAgainstMeshFaces
     // (D:\Proj\GameZRecoil\zClass\cls_di.c)
