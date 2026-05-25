@@ -376,6 +376,8 @@ zVidImagePartial *g_HudUiMgrReticleImages[3] = {0};
 zVidImagePartial *g_HudUiMgrSensorTargetMarkerImages[5] = {0};
 HudUiNanitePanel g_HudUiMgrNanitePanel;
 HudUiMessage g_HudUiMgrMessages[10] = {0};
+int g_HudUiMgrActiveWeaponMessageIndex = 0;
+int g_HudUiMgrActiveWeaponSideIndex = 0;
 HudUiCounter g_HudUiMgrModeCounters[4] = {0};
 HudUiSlot g_HudUiMgrWeaponSlots[32] = {0};
 HudUiSlot *g_HudUiMgrSensorTrackedProgressSlot = 0;
@@ -2121,6 +2123,39 @@ UpdateMarkersAndProgressFromVariantTag(const zTag4Partial *requiredVariantTag) {
     HudUiMgrTarget::UpdateSelectedProgressMeter(0);
 }
 
+// Reimplements 0x411f10: HudUiMgrSensor::SetShieldMessageRatio
+// (D:\Proj\Battlesport\hud.cpp)
+void RECOIL_FASTCALL SetShieldMessageRatio(float ratio) {
+    typedef void (RECOIL_CDECL *SetTextFmtFn)(void *self, const char *format, ...);
+
+    if (ratio > 1.0f) {
+        ratio = 1.0f;
+    } else if (ratio < 0.0f) {
+        ratio = 0.0f;
+    }
+
+    HudUiShieldMessageWidget *const shieldMessageWidget = g_HudUiMgrShieldMessageWidget;
+    HudUiMeter *const meter = &shieldMessageWidget->meter;
+    const unsigned char green = ratio < 0.25f ? 0 : 255;
+    meter->color565 = zVid_PackColorRGB(255, green, 0) & 0xffffu;
+
+    const int fillPixels =
+        static_cast<int>(ceil(static_cast<double>(meter->fillPixelsMax) *
+                              static_cast<double>(ratio)));
+    const int top = static_cast<int>(meter->points[1].y) - fillPixels;
+    meter->points[0].y = static_cast<float>(top);
+    meter->points[3].y = static_cast<float>(top);
+    HudUiVirtualInvalidate(meter);
+
+    HudUiPanel *const percentTextPanel =
+        (HudUiPanel *)(&shieldMessageWidget->percentTextPanel);
+    const HudUiCommon_FTable *const panelFTable =
+        *(const HudUiCommon_FTable *const *)(percentTextPanel);
+    const int percent = static_cast<int>(ceil(static_cast<double>(ratio) * 100.0));
+    ((SetTextFmtFn)(panelFTable->slots[0x74 / 4]))(percentTextPanel, "%d", percent);
+    HudUiVirtualInvalidate(percentTextPanel);
+}
+
 // Reimplements 0x410d10: HudUiMgrSensor::SetViewportRect
 void RECOIL_FASTCALL SetViewportRect(int x, int y, int width,
                                      int height) {
@@ -2236,6 +2271,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateSelectedProgressMeter(
 } // namespace HudUiMgrTarget
 
 namespace HudUiMgrObjective {
+// Reimplements 0x412050: HudUiMgrObjective::RefreshCounterText
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL RefreshCounterText(int counterValue) {
+    HudUiPanel *const panel = (HudUiPanel *)(g_HudUiMgrObjectiveCounterTextPanel);
+    panel->SetTextFmt("%d", counterValue);
+    panel->UpdateTextBoundsFromContent();
+}
+
 // Reimplements 0x411760: HudUiMgrObjective::SetVisibleAndResetMeterFill
 // (D:\Proj\Battlesport\hud.cpp)
 void RECOIL_FASTCALL SetVisibleAndResetMeterFill(int visible) {
@@ -2678,6 +2721,41 @@ void HudUiApplyStatsTripletInt3(zReader::Node *payload, int nodeIndex,
 } // namespace
 
 namespace HudUiMgr {
+// Reimplements 0x411170: HudUiMgr::ProjectPointToNormalizedClamped
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointToNormalizedClamped(
+    const zVec3 *srcPoint, zVec3 *projectedPoint) {
+    if (zMath::ProjectPointAndClampToScreenClip(srcPoint, projectedPoint) == 0x10) {
+        return 1;
+    }
+
+    const float halfHudWidth = g_HudUiMgrHudRectW * 0.5f;
+    const float halfHudHeight = g_HudUiMgrHudRectH * 0.5f;
+    if (zOpt::GetReplicateMode() != 0) {
+        projectedPoint->x += projectedPoint->x;
+        projectedPoint->y += projectedPoint->y;
+    }
+
+    projectedPoint->x = (projectedPoint->x - halfHudWidth) / halfHudWidth;
+    projectedPoint->y =
+        (projectedPoint->y - static_cast<float>(g_HudUiMgrHudRect.top) - halfHudHeight) /
+        halfHudHeight;
+
+    if (projectedPoint->x > 1.0f) {
+        projectedPoint->x = 1.0f;
+    } else if (projectedPoint->x < -1.0f) {
+        projectedPoint->x = -1.0f;
+    }
+
+    if (projectedPoint->y > 1.0f) {
+        projectedPoint->y = 1.0f;
+    } else if (projectedPoint->y < -1.0f) {
+        projectedPoint->y = -1.0f;
+    }
+
+    return 0;
+}
+
 // Reimplements 0x413630: HudUiMgr::TriggerCurrentLayoutOnActivated
 void RECOIL_CDECL TriggerCurrentLayoutOnActivated() {
     if (g_HudUiMgrCurrentLayout != 0) {
@@ -3398,6 +3476,21 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetFloatTimerVisible(int visible) {
 
     if (visible == 0) {
         TriggerCurrentLayoutOnActivated();
+    }
+}
+
+// Reimplements 0x412620: HudUiMgr::HideTrackedProgressMeterIfOwnerMatches
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL HideTrackedProgressMeterIfOwnerMatches(void *ownerPayload) {
+    HudUiSlot *const trackedProgressSlot = g_HudUiMgrSensorTrackedProgressSlot;
+    if (trackedProgressSlot == 0) {
+        return;
+    }
+
+    HudUiMgrSensorTrackNode *const trackNode =
+        (HudUiMgrSensorTrackNode *)(trackedProgressSlot->trackNode);
+    if (trackNode->payload == ownerPayload) {
+        HudUiVirtualSetVisibleRequired(&g_HudUiMgrSensorMeter, 0);
     }
 }
 
@@ -8110,6 +8203,44 @@ HudUiMessage::SetValueIfOwnerMatches(int messageIndex, int ownerSideIndex,
     HudUiPanel *const panel = (HudUiPanel *)(&message.panel);
     if (valueOrClearToken == kHudUiMessageClearSpecialTokenValue) {
         panel->SetText(kHudUiMessageClearSpecialToken165);
+        return;
+    }
+
+    panel->SetTextFmt("%d", static_cast<int>(ceil(valueOrClearToken)));
+    ((HudUiElement *)(&message.base))->Invalidate();
+}
+
+// Reimplements 0x412820: HudUiMessage::UpdateSelectedWeaponDisplay
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL
+HudUiMessage::UpdateSelectedWeaponDisplay(int weaponBankIndex, int weaponSideIndex,
+                                          float valueOrClearToken) {
+    int messageIndexForText = weaponBankIndex;
+    if (weaponBankIndex > 1) {
+        SelectVariantDisplay(g_HudUiMgrActiveWeaponMessageIndex,
+                             g_HudUiMgrActiveWeaponSideIndex);
+        g_HudUiMgrActiveWeaponMessageIndex = weaponBankIndex;
+        g_HudUiMgrActiveWeaponSideIndex = weaponSideIndex;
+        if (valueOrClearToken > 0.0f) {
+            SelectVariantDisplay(weaponBankIndex, weaponSideIndex + 3);
+        }
+    } else if (weaponBankIndex == 1) {
+        SelectVariantDisplay(1, weaponSideIndex + 3);
+        messageIndexForText = 1;
+    } else {
+        g_HudUiMgrActiveWeaponMessageIndex = 0;
+        g_HudUiMgrActiveWeaponSideIndex = 0;
+        return;
+    }
+
+    HudUiMessage &message = g_HudUiMgrMessages[messageIndexForText];
+    if (weaponSideIndex != FieldAt<int>(&message.panel, 0x2a4)) {
+        return;
+    }
+
+    HudUiPanel *const panel = (HudUiPanel *)(&message.panel);
+    if (valueOrClearToken == kHudUiMessageClearSpecialTokenValue) {
+        panel->SetTextFmt(kHudUiMessageClearSpecialToken165);
         return;
     }
 

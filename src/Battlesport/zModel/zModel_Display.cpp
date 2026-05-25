@@ -1,8 +1,10 @@
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/include/zClipRect.h"
+#include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
@@ -40,6 +42,7 @@ int g_zModel_FogReserved = 0;
 float g_zModel_FogScale = 0.0f;
 float g_zModel_InverseZTolerance = 0.0f;
 float g_zModel_HardwareInverseZTolerance = 0.0f;
+float g_zModel_BFETolerance = 0.0f;
 zVec3 g_zModel_SharedVec3ScratchAStorage[0x400] = {0};
 zVec3 g_zModel_SharedVec3ScratchBStorage[0x400] = {0};
 zVec3 *g_zModel_TransformedVerts = 0;
@@ -49,6 +52,10 @@ zVec3 *g_zModel_SharedVec3ScratchB = 0;
 zVec3 *g_zModel_PointInPolygonVertices = 0;
 zVec3 *g_zModel_PointInPolygonEdgeNormals = 0;
 int g_zModel_PointInPolygonVertexCount = 0;
+float g_zModel_TextureWorldBaseU = 0.0f;
+float g_zModel_TextureWorldBaseV = 0.0f;
+float g_zModel_TextureWorldPerMeterU = 0.0f;
+float g_zModel_TextureWorldPerMeterV = 0.0f;
 int g_zModel_ScratchCounters[8] = {0};
 float g_zModel_PointInPolyTolX = 0.0f;
 float g_zModel_PointInPolyTolY = 0.0f;
@@ -58,7 +65,7 @@ void *g_OptCatalogDamageMaskHandles[3] = {0};
 float g_OptCatalogDamageMaskPhaseU = 0.0f;
 float g_OptCatalogDamageMaskPhaseV = 0.0f;
 int g_OptCatalogDamageMaskEnabled = 0;
-int g_zModel_OptCatalogSlot = 0;
+int g_OptCatalogDamageMaskSlotIndex = 0;
 int g_zModel_OptCatalogAux0 = 0;
 int g_zModel_OptCatalogAux1 = 0;
 int gModel_DefaultGraphicsFlags = 0;
@@ -92,7 +99,90 @@ bool TestSpanColumnVisible(int columnIndex) {
     zRndr_SpanOcclusion_TestColumnVisibility(columnIndex, &isVisible);
     return isVisible > 0;
 }
+
+void WrapDamageMaskPhase(float *phase) {
+    while (*phase > 1.01f) {
+        *phase -= 1.0f;
+    }
+    while (*phase < -0.01f) {
+        *phase += 1.0f;
+    }
 }
+
+void ClampDamageMaskAxis(int dstCoord, int srcSize, int dstSize, int *srcBegin, int *srcEnd,
+                         int *dstBegin) {
+    if (srcSize > dstSize) {
+        *dstBegin = 0;
+        *srcBegin = (srcSize - dstSize) >> 1;
+        *srcEnd = srcSize - *srcBegin;
+        return;
+    }
+
+    *srcBegin = 0;
+    *srcEnd = srcSize;
+    *dstBegin = dstCoord;
+    if (dstCoord < 0) {
+        *dstBegin = 0;
+        *srcEnd = srcSize;
+    } else if (dstCoord + srcSize > dstSize) {
+        *dstBegin = dstCoord - (dstCoord + srcSize) + dstSize;
+    }
+}
+
+unsigned short BlendDamageMaskPixel565(unsigned short dstPixel, unsigned short srcPixel,
+                                       int alpha) {
+    unsigned int dst = dstPixel;
+    const unsigned int src = srcPixel;
+    dst += ((((src & 0xf800) - (dst & 0xf800)) * alpha) >> 8) & 0xfffff800;
+    const unsigned int green =
+        ((((src & 0x07e0) - (dstPixel & 0x07e0)) * alpha) >> 8) & 0xffffffe0;
+    const unsigned int blue = (((src & 0x001f) - (dst & 0x001f)) * alpha) >> 8;
+    return static_cast<unsigned short>(dst + green + blue);
+}
+
+unsigned short BlendDamageMaskPixel555(unsigned short dstPixel, unsigned short srcPixel,
+                                       int alpha) {
+    const unsigned int dst = dstPixel;
+    const unsigned int src = srcPixel;
+    const unsigned int red = ((((src & 0x7c00) - (dst & 0x7c00)) * alpha) >> 8) & 0xfffffc00;
+    const unsigned int green =
+        ((((src & 0x03e0) - (dst & 0x03e0)) * alpha) >> 8) & 0xffffffe0;
+    const unsigned int blue = (((src & 0x001f) - (dst & 0x001f)) * alpha) >> 8;
+    return static_cast<unsigned short>(dst + red + green + blue);
+}
+
+typedef int(RECOIL_FASTCALL *TextureRecordLockUploadSurfaceProc)(
+    zVideo_TextureRecordPartial *textureRecord, void **outPixels, int *outPitchBytes);
+typedef void(RECOIL_FASTCALL *TextureRecordUnlockUploadSurfaceProc)(
+    zVideo_TextureRecordPartial *textureRecord);
+typedef void(RECOIL_FASTCALL *TextureRecordFinalizeUploadProc)(
+    zVideo_TextureRecordPartial *textureRecord, void *rectOrOffset, void *reserved);
+}
+
+namespace zModel {
+// Reimplements 0x476460: zModel::SetBackfaceEliminationToleranceScalar
+// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+RECOIL_NOINLINE void RECOIL_STDCALL SetBackfaceEliminationToleranceScalar(float scalar) {
+    g_zModel_BFETolerance = scalar;
+}
+
+// Reimplements 0x476470: zModel::GetBackfaceEliminationToleranceScalar
+// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+RECOIL_NOINLINE float RECOIL_CDECL GetBackfaceEliminationToleranceScalar() {
+    return g_zModel_BFETolerance;
+}
+} // namespace zModel
+
+namespace zRndr {
+// Reimplements 0x476300: zRndr::SetInverseZTolerance
+// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+RECOIL_NOINLINE void RECOIL_STDCALL SetInverseZTolerance(float inverseZTolerance) {
+    g_zRndr_InverseZTolerance = inverseZTolerance;
+    if (g_zVideo_ActiveRendererPath != 0) {
+        g_zVideo_InverseZTolerancePending = inverseZTolerance;
+    }
+}
+} // namespace zRndr
 
 namespace zScene {
 // Reimplements 0x476700: zScene::TestProjectedSphereVisible
@@ -270,7 +360,7 @@ RECOIL_NOINLINE int RECOIL_CDECL zModel_Display_Init() {
     g_zModel_PointInPolyTolY = 0.2f;
 
     g_zModel_DamageMaskCurrent = g_zModel_DamageMaskStorage;
-    g_zModel_OptCatalogSlot = 0;
+    g_OptCatalogDamageMaskSlotIndex = 0;
     g_zModel_OptCatalogAux0 = 0;
     g_zModel_OptCatalogAux1 = 0;
     gModel_DefaultGraphicsFlags = -1;
@@ -290,6 +380,142 @@ RECOIL_NOINLINE void RECOIL_STDCALL OptCatalog_SetDamageMaskUv(float u, float v)
     g_OptCatalogDamageMaskPhaseU = u;
     g_OptCatalogDamageMaskPhaseV = v;
 }
+
+// Reimplements 0x479c80: OptCatalog_IsDamageMaskEnabled
+// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL OptCatalog_IsDamageMaskEnabled() {
+    return g_OptCatalogDamageMaskEnabled;
+}
+
+namespace OptCatalog {
+// Reimplements 0x479c50: OptCatalog::SetDamageMaskSlotIndex
+// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL SetDamageMaskSlotIndex(int slotIndex) {
+    g_OptCatalogDamageMaskSlotIndex = slotIndex;
+}
+
+// Reimplements 0x479c60: OptCatalog::RegisterDamageMaskSlotPtr
+// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL RegisterDamageMaskSlotPtr(void *slotPtr) {
+    g_OptCatalogDamageMaskEnabled = 1;
+    g_OptCatalogDamageMaskHandles[g_OptCatalogDamageMaskSlotIndex] = slotPtr;
+}
+
+// Reimplements 0x479660: OptCatalog::ApplyDamageMaskStampOnHit
+// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL ApplyDamageMaskStampOnHit(
+    OptCatalogHitEventPartial *hitEvent) {
+    if (OptCatalog_IsDamageMaskEnabled() == 0) {
+        return;
+    }
+
+    OptCatalogSurfaceMaterialRef *const surfaceRef = hitEvent->surfaceRef;
+    if (surfaceRef == 0) {
+        return;
+    }
+
+    const unsigned int materialFlags = surfaceRef->flags;
+    if ((materialFlags & 0x0100) == 0 || (materialFlags & 0x0200) == 0 ||
+        (materialFlags & 0x0400) != 0) {
+        return;
+    }
+
+    WrapDamageMaskPhase(&g_OptCatalogDamageMaskPhaseU);
+    WrapDamageMaskPhase(&g_OptCatalogDamageMaskPhaseV);
+
+    OptCatalogSurfaceTextureHandle *const srcHandle =
+        (OptCatalogSurfaceTextureHandle *)g_OptCatalogDamageMaskHandles[
+            g_OptCatalogDamageMaskSlotIndex];
+    OptCatalogDamageMaskSurface *const srcSurface = srcHandle != 0 ? srcHandle->surface : 0;
+    OptCatalogSurfaceTextureHandle *const dstHandle = surfaceRef->textureHandle;
+    OptCatalogDamageMaskSurface *const dstSurface = dstHandle != 0 ? dstHandle->surface : 0;
+    if (srcSurface == 0 || dstSurface == 0 || srcSurface->format != 0 ||
+        dstSurface->format != 0) {
+        return;
+    }
+
+    const int dstWidth = dstSurface->width;
+    const int dstHeight = dstSurface->height;
+    const int srcWidth = srcSurface->width;
+    const int srcHeight = srcSurface->height;
+    int dstX = static_cast<int>(dstWidth * g_OptCatalogDamageMaskPhaseU) - (srcWidth >> 1);
+    int dstY = static_cast<int>(dstHeight * g_OptCatalogDamageMaskPhaseV) - (srcHeight >> 1);
+    int srcXBegin = 0;
+    int srcXEnd = 0;
+    int srcYBegin = 0;
+    int srcYEnd = 0;
+    ClampDamageMaskAxis(dstX, srcWidth, dstWidth, &srcXBegin, &srcXEnd, &dstX);
+    ClampDamageMaskAxis(dstY, srcHeight, dstHeight, &srcYBegin, &srcYEnd, &dstY);
+
+    unsigned short *dstPixels = dstSurface->pixels;
+    int dstStride = dstWidth;
+    const bool hasTextureRecord = dstHandle->textureRecord != 0;
+    if (hasTextureRecord) {
+        TextureRecordLockUploadSurfaceProc lockUploadSurface =
+            (TextureRecordLockUploadSurfaceProc)g_zVideo_pfnTextureRecordLockUploadSurface;
+        if (lockUploadSurface(dstHandle->textureRecord, (void **)&dstPixels, &dstStride) == 0) {
+            return;
+        }
+        dstStride >>= 1;
+    }
+
+    if (srcSurface->alpha == 0) {
+        for (int srcY = srcYBegin, outY = dstY; srcY < srcYEnd; ++srcY, ++outY) {
+            unsigned short *dst = dstPixels + outY * dstWidth + dstX;
+            unsigned short *src = srcSurface->pixels + srcY * srcWidth + srcXBegin;
+            for (int srcX = srcXBegin; srcX < srcXEnd; ++srcX, ++src) {
+                if (*src != 0) {
+                    *dst = *src;
+                }
+                ++dst;
+            }
+        }
+    } else if (zRndr::g_pixelPackGreenBits == 6) {
+        for (int srcY = srcYBegin, outY = dstY; srcY < srcYEnd; ++srcY, ++outY) {
+            unsigned short *dst = dstPixels + outY * dstStride + dstX;
+            unsigned short *src = srcSurface->pixels + srcY * srcWidth + srcXBegin;
+            unsigned char *alpha = srcSurface->alpha + srcY * srcWidth + srcXBegin;
+            for (int srcX = srcXBegin; srcX < srcXEnd; ++srcX, ++src, ++alpha, ++dst) {
+                const int alphaValue = *alpha;
+                if (alphaValue == 0 || alphaValue <= 3) {
+                    continue;
+                }
+                if (alphaValue >= 0xfc) {
+                    *dst = *src;
+                } else {
+                    *dst = BlendDamageMaskPixel565(*dst, *src, alphaValue);
+                }
+            }
+        }
+    } else {
+        for (int srcY = srcYBegin, outY = dstY; srcY < srcYEnd; ++srcY, ++outY) {
+            unsigned short *dst = dstPixels + outY * dstStride + dstX;
+            unsigned short *src = srcSurface->pixels + srcY * srcWidth + srcXBegin;
+            unsigned char *alpha = srcSurface->alpha + srcY * srcWidth + srcXBegin;
+            for (int srcX = srcXBegin; srcX < srcXEnd; ++srcX, ++src, ++alpha, ++dst) {
+                const int alphaValue = *alpha;
+                if (alphaValue == 0 || alphaValue <= 7) {
+                    continue;
+                }
+                if (alphaValue >= 0xfc) {
+                    *dst = *src;
+                } else {
+                    *dst = BlendDamageMaskPixel555(*dst, *src, alphaValue);
+                }
+            }
+        }
+    }
+
+    if (hasTextureRecord) {
+        TextureRecordUnlockUploadSurfaceProc unlockUploadSurface =
+            (TextureRecordUnlockUploadSurfaceProc)g_zVideo_pfnTextureRecordUnlockUploadSurface;
+        TextureRecordFinalizeUploadProc finalizeUpload =
+            (TextureRecordFinalizeUploadProc)g_zVideo_pfnTextureRecordFinalizeUpload;
+        unlockUploadSurface(dstHandle->textureRecord);
+        finalizeUpload(dstHandle->textureRecord, &dstX, 0);
+    }
+}
+} // namespace OptCatalog
 
 // Reimplements 0x479cb0: OptCatalog_SetDamageMaskEnabled
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
@@ -322,6 +548,48 @@ RECOIL_NOINLINE void RECOIL_CDECL GlobalStringTable_ReleaseDynamicEntries() {
     g_zRndr_GlobalStringCount = 6;
 }
 } // namespace zRndr
+
+namespace zRndr_GlobalStringTable {
+// Reimplements 0x481460: zRndr_GlobalStringTable::LoadDynamicEntriesFromPath
+// (D:\Proj\GameZRecoil\zRndr\zRndr_GlobalStringTable.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL LoadDynamicEntriesFromPath(char *path) {
+    if (path == 0) {
+        return;
+    }
+
+    zReader::Node *const root = zReader::LoadNodeFromPath(path, 0, 0);
+    if (root == 0) {
+        return;
+    }
+
+    zReader::Node *const stringList = root->value.nodes[1].value.nodes;
+    if (stringList == 0) {
+        return;
+    }
+
+    const int stringCount = stringList[0].value.i32;
+    for (int index = 1; index < stringCount; ++index) {
+        char *const entry = stringList[index].value.str;
+        if (zReader::FindGlobalStringPrefixIndex(entry) != -1) {
+            continue;
+        }
+
+        if (g_zRndr_GlobalStringCount >= 100) {
+            break;
+        }
+
+        const size_t byteCount = strlen(entry) + 1;
+        char *const copy = static_cast<char *>(malloc(byteCount));
+        g_zRndr_GlobalStringTable[g_zRndr_GlobalStringCount] = copy;
+        if (copy != 0) {
+            ++g_zRndr_GlobalStringCount;
+            memcpy(copy, entry, byteCount);
+        }
+    }
+
+    zReader::FreeLoadedTree(root);
+}
+} // namespace zRndr_GlobalStringTable
 
 namespace zDi {
 // Reimplements 0x481570: zDi::PtrToIndexOrMinus1

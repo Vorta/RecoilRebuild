@@ -32,6 +32,7 @@ struct HudUiNewGamePanel;
 struct HudUiOptionsPanel;
 struct HudUiBackgroundConfirmQuit;
 struct HudUiControlsDialog;
+struct zSndSample;
 struct zSndPlayHandleSnapshot;
 
 struct RecoilStateSaveLoadTransition : RecoilApp_IState {
@@ -86,3 +87,11 @@ extern HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 extern HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
 extern RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
 extern RecoilStateControls g_RecoilStateControls;
+extern zSndSample *g_Hud_LowMeterBeepSample;
+extern zSndSample *g_Hud_LowMeterLoopSample;
+extern int g_Hud_LowMeterLoopActive;
+
+namespace HudLowMeterLoopSound {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetLoopActive(int enabled);
+RECOIL_NOINLINE void RECOIL_CDECL Disable();
+}

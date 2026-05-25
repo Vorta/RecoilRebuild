@@ -43,6 +43,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedFloat(Node *parentNode, const char 
                                                             float *outValue);
 RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedInt(Node *parentNode, const char *name,
                                                           int *outValue);
+RECOIL_NOINLINE int RECOIL_FASTCALL FindGlobalStringPrefixIndex(const char *text);
 RECOIL_NOINLINE int RECOIL_FASTCALL FileExists(const char *path);
 RECOIL_NOINLINE const char *RECOIL_FASTCALL TryResolvePath(const char *filename,
                                                            const char *extraSearchPath);
@@ -124,6 +125,8 @@ extern int g_zUtil_ZRDR_GrowCount;
 extern char g_zReader_FileExtBuf[0x100];
 extern char g_zReader_FileNameBuf[0x100];
 extern zClass_NodePartial *g_Mover_LastLoadedNode;
+extern int g_zRndr_GlobalStringCount;
+extern char *g_zRndr_GlobalStringTable[100];
 
 typedef int (RECOIL_FASTCALL *zArchiveListPredicate)(void *, void *);
 
@@ -144,6 +147,7 @@ RECOIL_NOINLINE zArchiveListNode *RECOIL_FASTCALL zArchiveList_FindNodeByPayload
 RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_PopFrontPayload(zArchiveList *list);
 RECOIL_NOINLINE zArchiveListNode *RECOIL_FASTCALL zUtil_ZRDR_AllocNodeWithPayload(void *payload);
 RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_SetSearchPath(const char *pathText);
+RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_AppendSearchPath(const char *pathText);
 RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_FreePathList(zArchiveList *list);
 RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_FreeSearchPathList(zArchiveList *list);
 RECOIL_NOINLINE void RECOIL_CDECL zUtil_ZRDR_FreeScratchSearchPathList();

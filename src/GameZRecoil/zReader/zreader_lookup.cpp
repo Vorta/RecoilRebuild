@@ -1,5 +1,6 @@
 #include "zReader.h"
 
+#include <ctype.h>
 #include <string.h>
 
 // Reimplements 0x48cec0: zReader_FindChildRecursive
@@ -41,6 +42,33 @@ zReader_GetNamedNode(zReader::Node *parentNode, const char *name) {
 }
 
 namespace zReader {
+// Reimplements 0x4804e0: zReader::FindGlobalStringPrefixIndex
+// (Battlesport/zUtil/zrdr_global.c)
+RECOIL_NOINLINE int RECOIL_FASTCALL FindGlobalStringPrefixIndex(const char *text) {
+    if (text == 0) {
+        return -1;
+    }
+
+    for (int index = 0; index < g_zRndr_GlobalStringCount; ++index) {
+        const char *const prefix = g_zRndr_GlobalStringTable[index];
+        const size_t prefixLength = strlen(prefix);
+        if (strlen(text) < prefixLength) {
+            continue;
+        }
+
+        const unsigned char nextChar = static_cast<unsigned char>(text[prefixLength]);
+        if (nextChar != '\0' && _isctype(nextChar, 0x0008) == 0) {
+            continue;
+        }
+
+        if (_strnicmp(text, prefix, prefixLength) == 0) {
+            return index;
+        }
+    }
+
+    return -1;
+}
+
 // Reimplements 0x48cf80: zReader::ReadNamedString
 RECOIL_NOINLINE const char *RECOIL_FASTCALL ReadNamedString(Node *parentNode, const char *name) {
     Node *node = zReader_GetNamedNode(parentNode, name);

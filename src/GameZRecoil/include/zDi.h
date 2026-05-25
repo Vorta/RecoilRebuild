@@ -80,7 +80,7 @@ struct zModel_MaterialCyclePartial {
 
 struct zDiEntryPartial {
     unsigned int flagsAndIndexCount;
-    unsigned int unknown_04;
+    unsigned int drawFlags;
     void *vertexIndices;
     void *normalIndices;
     void *uvPairs;
@@ -102,6 +102,20 @@ struct zClassDiPickCandidateEntry {
 struct PlayerProbeSampleCandidateBuffer {
     int candidateCount;
     zClassDiPickCandidateEntry entries[0x20];
+};
+
+struct zClass_DiSegmentEndpoints {
+    zVec3 start;
+    zVec3 end;
+};
+
+struct zClass_DiSegmentBounds {
+    float minX;
+    float minY;
+    float minZ;
+    float maxX;
+    float maxY;
+    float maxZ;
 };
 
 struct zModel_PickFaceUvData {
@@ -149,6 +163,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL
 AddPolygon(zDiPartial *self, int pointCount, zVec3 *points, zClipUV *uvPairsA,
            zVec3 *normalsA, zVec3 *normalsB, zClipUV *uvPairsB, zModel_MaterialPartial *material,
            unsigned int drawFlags, int flagBit8, const int *userTag);
+RECOIL_NOINLINE void RECOIL_FASTCALL
+AddPolygonSplitByVertexLimit(zDiPartial *self, int totalVertexCount, zVec3 *points,
+                             zVec3 *entryNormals, zClipUV *uvPairsA, zVec3 *normalsA,
+                             zVec3 *normalsBInput, zClipUV *uvPairsBInput,
+                             zModel_MaterialPartial *material, unsigned int drawFlags,
+                             int flagBit8, const int *userTag, int maxChunkVertexCount);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetFlagBit0(zDiPartial *self, int enabled);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetClonedFlag(zDiPartial *self, int isCloned);
 RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL CloneToInstance(zDiPartial *self,
@@ -170,10 +190,31 @@ RECOIL_NOINLINE int RECOIL_FASTCALL GetRefCount(zDiPartial *self);
 RECOIL_NOINLINE int RECOIL_FASTCALL PtrToIndexOrMinus1(zDiPartial *self);
 RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL IndexToPtrOrNull(int index);
 RECOIL_NOINLINE void RECOIL_FASTCALL ResetCurrentVariant(zDiPartial *self);
+RECOIL_NOINLINE int RECOIL_FASTCALL SetCurrentVariantCycleTextureCount(zDiPartial *self,
+                                                                       int textureCount);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetCurrentVariant(zDiPartial *self, int variantIndex);
+RECOIL_NOINLINE int RECOIL_FASTCALL SetCurrentVariantCycleTextureSpeed(zDiPartial *self,
+                                                                       float cycleSpeed);
+RECOIL_NOINLINE void RECOIL_FASTCALL RebuildGeneratedUvPairsForEntry(zDiPartial *self,
+                                                                     int entryIndex);
+RECOIL_NOINLINE void RECOIL_FASTCALL
+BuildBlendVertsFromConnectivity(zDiPartial *self, int *excludedVertexIndices, float blendY,
+                                int excludedVertexCount, int minSharedVertexCount);
+RECOIL_NOINLINE void RECOIL_FASTCALL SetEntryValueForAllEntries(zDiPartial *self,
+                                                                unsigned int entryValue);
+RECOIL_NOINLINE void RECOIL_FASTCALL SetShowBackFaceForAllEntries(zDiPartial *self,
+                                                                  int enabled);
+RECOIL_NOINLINE void RECOIL_FASTCALL SetObject3DColorModeForMaterials(zDiPartial *self,
+                                                                      int colorMode);
 RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateForQueryPoint(
     zDiPartial *self, zClassDiPickCandidateEntry *outCandidate, const zVec3 *queryPoint);
 } // namespace zDi
+
+namespace zModel_Instance {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetCycleTextureLoop(zDiPartial *instance, int loopEnabled);
+RECOIL_NOINLINE int RECOIL_FASTCALL
+AddCycleTexture(zDiPartial *instance, zImage_TexDirEntryPartial *textureDirectoryEntry);
+} // namespace zModel_Instance
 
 extern int g_cls_di_StopAfterFirstHit;
 extern int g_cls_di_BreakOnFirstCandidate;
@@ -186,6 +227,7 @@ extern float g_DiSegmentMinZ;
 extern float g_DiSegmentMaxX;
 extern float g_DiSegmentMaxY;
 extern float g_DiSegmentMaxZ;
+extern zClass_DiSegmentBounds g_DiSegmentBounds[24];
 extern zVec3 *g_DiPickPointArray;
 extern int g_DiPickPointCount;
 extern float g_DiPickPointQueryMaxY;
@@ -200,6 +242,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FindBestPickCandidateBelowPoint(
 RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateListBelowPoint(
     zClass_NodePartial *world, PlayerProbeSampleCandidateBuffer *outResults, float x, float maxY,
     float z);
+RECOIL_NOINLINE int RECOIL_FASTCALL SnapProbePointYToBestCandidate(zVec3 *point);
 RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateList(zClass_NodePartial *node,
                                                                     int cullCount);
 RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForPoints(zClass_NodePartial *node,
@@ -220,6 +263,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL
 IsPickQueryPointOutsideViewBBoxXZ(zClass_NodePartial *node);
 RECOIL_NOINLINE int RECOIL_FASTCALL PickTestBBox2D(zClass_NodePartial *node,
                                                             int *hitFlags);
+RECOIL_NOINLINE int RECOIL_FASTCALL FrustumTestAndPick(zClass_NodePartial *node,
+                                                       int *activeMask);
 RECOIL_NOINLINE int RECOIL_FASTCALL
 TryGetPolygonHitAtQueryXZ(zClassDiPickCandidateEntry *candidate, const zVec3 *polygonVertices,
                           float queryX, float queryZ, int vertexCount);
@@ -243,15 +288,46 @@ RECOIL_NOINLINE int RECOIL_FASTCALL
 BuildPickCandidatesForSegmentForCamera(zClass_NodePartial *node, int depth);
 RECOIL_NOINLINE int RECOIL_FASTCALL
 BuildPickCandidatesForSegmentForLight(zClass_NodePartial *node, int depth);
+RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentsRecursive(
+    zClass_NodePartial *node, int nodeCountHint, int *activeMask);
+RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentsForAnimate(
+    zClass_NodePartial *node, int nodeCountHint, int *activeMask);
+RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentsForLight(
+    zClass_NodePartial *node, int nodeCountHint, int *activeMask);
+RECOIL_NOINLINE void RECOIL_FASTCALL BuildProbeHitBatchesForSegments(
+    zClass_NodePartial *world, zClass_DiSegmentEndpoints *segmentEndpoints, int endpointCount,
+    PlayerProbeSampleCandidateBuffer *hitBatches);
+RECOIL_NOINLINE void RECOIL_FASTCALL BuildPickCandidatesForSegmentsInGridWindow(
+    zClass_NodePartial *world, int *activeMask);
 RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstMeshFaces(
     zVec3 *meshVertices, int faceCount);
 RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstHexahedronFaces(
     zVec3 *center, float radius);
 RECOIL_NOINLINE int RECOIL_FASTCALL FilterPointsBBox(zClass_NodePartial *node,
                                                               void *pointData);
+RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstPolygonWithDamageMaskUv(
+    zClass_NodePartial *candidateOwner,
+    PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment,
+    zClass_DiSegmentEndpoints *segmentEndpointsByBatch, int *activeMask, int segmentCount,
+    const zBBoxCorners *bboxCorners);
+RECOIL_NOINLINE void RECOIL_FASTCALL FilterRegionsAgainstPolygon(
+    zClass_NodePartial *candidateOwner, zModel_PickFaceData *faceData,
+    zClass_DiSegmentEndpoints *segmentEndpointsByBatch, int *activeMask, int segmentCount,
+    PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment);
 RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentVsBBoxFaces(
     const zBBoxCorners *bboxCorners, zClassDiPickCandidateEntry *candidate,
     const zVec3 *segmentStart, const zVec3 *segmentEnd);
+RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentBatchVsPolygon(
+    zClass_NodePartial *candidateOwner,
+    PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment,
+    zClass_DiSegmentEndpoints *segmentEndpointsByBatch, int *activeMask, int segmentCount,
+    zVec3 *polygonVertices, zModel_PickFaceEntry *faceEntry);
+RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
+    zClass_NodePartial *candidateOwner,
+    PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment,
+    zClass_DiSegmentEndpoints *segmentEndpointsByBatch, int *activeMask, int segmentCount,
+    zVec3 *polygonVertices, zModel_PickFaceUvData *faceUvData, zVec2 *scratchUv,
+    zModel_PickFaceEntry *faceEntry);
 RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateForSegmentVsPolygon(
     zClassDiPickCandidateEntry *candidate, const zVec3 *segmentStart, const zVec3 *segmentEnd,
     const zVec3 *polygonVertices, int vertexCount, int cullBackface);
@@ -335,7 +411,7 @@ RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialCyclePartial, frameWriteCount) == 0
 RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialCyclePartial, frameTable) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zModel_MaterialCyclePartial) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(zDiEntryPartial, flagsAndIndexCount) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(zDiEntryPartial, unknown_04) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zDiEntryPartial, drawFlags) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zDiEntryPartial, vertexIndices) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zDiEntryPartial, normalIndices) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(zDiEntryPartial, uvPairs) == 0x10);
@@ -351,6 +427,10 @@ RECOIL_STATIC_ASSERT(offsetof(zClassDiPickCandidateEntry, node) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zClassDiPickCandidateEntry) == 0x28);
 RECOIL_STATIC_ASSERT(offsetof(PlayerProbeSampleCandidateBuffer, entries) == 0x04);
 RECOIL_STATIC_ASSERT(sizeof(PlayerProbeSampleCandidateBuffer) == 0x504);
+RECOIL_STATIC_ASSERT(offsetof(zClass_DiSegmentEndpoints, end) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(zClass_DiSegmentEndpoints) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zClass_DiSegmentBounds, maxX) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(zClass_DiSegmentBounds) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zModel_PickFaceUvData) == 0x18);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceScenePayload, flags) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceEntry, flagsAndVertexCount) == 0x00);

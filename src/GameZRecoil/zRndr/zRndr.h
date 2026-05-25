@@ -66,6 +66,10 @@ extern int g_zRndr_CircleCenterX;
 extern int g_zRndr_CircleCenterY;
 extern int g_zRndr_CircleDrawAuxArg;
 
+namespace zRndr_GlobalStringTable {
+RECOIL_NOINLINE void RECOIL_FASTCALL LoadDynamicEntriesFromPath(char *path);
+} // namespace zRndr_GlobalStringTable
+
 namespace zRndr {
 struct ActiveRegionRectPartial {
     int x;
@@ -293,6 +297,9 @@ extern int g_defaultGraphicsFlags;
 extern int *g_graphicsFlags;
 
 RECOIL_NOINLINE int RECOIL_CDECL InitGlobals();
+RECOIL_NOINLINE void RECOIL_STDCALL SetInverseZTolerance(float inverseZTolerance);
+RECOIL_NOINLINE void RECOIL_FASTCALL SetPerspectiveTextureDeltaX(int deltaX);
+RECOIL_NOINLINE void RECOIL_STDCALL SetPerspectiveTextureFarZ(float farZ);
 RECOIL_NOINLINE void RECOIL_STDCALL
 SetPerspectiveAdaptiveCorrection(float perspectiveAdaptiveCorrection);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetPerspectiveAdaptiveSpanParams(int minSpan,

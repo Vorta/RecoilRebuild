@@ -105,10 +105,12 @@ int *ZOPT_HW_API = 0;
 DDCAPS g_zVideo_DDrawCapsHal = {0};
 DDCAPS g_zVideo_DDrawCapsHel = {0};
 zVideo_TextureRecordPartial *g_zImage_DefaultTextureRecord = 0;
+char g_zVideo_PalettePathBuffer[0x100] = {0};
+PALETTEENTRY g_zVideo_PaletteFileEntries[0x100] = {0};
 PALETTEENTRY g_zVideo_SystemPaletteEntries[0x100] = {0};
 zVideo_StatusProc g_zVideo_pfnOpenVideoMode = 0;
 zVideo_ShutdownVideoSystemProc g_zVideo_pfnShutdownVideoSystem = 0;
-unsigned int g_zVideo_pfnPaletteSetEntries = 0;
+zVideo_PaletteSetEntriesProc g_zVideo_pfnPaletteSetEntries = 0;
 zVideo_StatusProc g_zVideo_pfnSetVideoMode = 0;
 zVideo_AdjustSurfacesProc g_zVideo_pfnAdjustSurfaces = 0;
 zVideo_SurfaceStateProc g_zVideo_pfnLockSurfaceState = 0;
@@ -1212,6 +1214,63 @@ RECOIL_NOINLINE int RECOIL_CDECL GetDisplayModeBpp() {
     return g_zVideo_DisplayModeBpp;
 }
 
+// Reimplements 0x4c7fd0: zVideo::LoadPaletteFileAndApplyBrightness
+// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL LoadPaletteFileAndApplyBrightness(const char *palettePath) {
+    if (palettePath != 0) {
+        strcpy(g_zVideo_PalettePathBuffer, palettePath);
+    }
+
+    FILE *paletteStream = fopen(g_zVideo_PalettePathBuffer, "rb");
+    if (paletteStream == 0) {
+        fprintf(stderr, "ZVID: could not open palette %s\n", g_zVideo_PalettePathBuffer);
+        return 0x800;
+    }
+
+    fread(g_zVideo_PaletteFileEntries, 3, 256, paletteStream);
+    fclose(paletteStream);
+    return ApplyBrightnessToPaletteEntries(g_zVideo_PaletteFileEntries);
+}
+
+// Reimplements 0x4c8070: zVideo::ApplyBrightnessToPaletteEntries
+// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL ApplyBrightnessToPaletteEntries(PALETTEENTRY *paletteEntries) {
+    if (g_zVideo_IsInitialized == 0) {
+        return 0x5a560000;
+    }
+
+    if (paletteEntries != 0) {
+        memcpy(g_zVideo_SystemPaletteEntries, paletteEntries, sizeof(g_zVideo_SystemPaletteEntries));
+    }
+
+    PALETTEENTRY adjustedEntries[256];
+    memcpy(adjustedEntries, g_zVideo_SystemPaletteEntries, sizeof(adjustedEntries));
+
+    const int brightnessDelta =
+        (static_cast<int>(g_zVideo_PaletteBrightnessLevel) << 3) - 32;
+    if (brightnessDelta > 0) {
+        for (int index = 0; index < 256; ++index) {
+            const int red = adjustedEntries[index].peRed + brightnessDelta;
+            const int green = adjustedEntries[index].peGreen + brightnessDelta;
+            const int blue = adjustedEntries[index].peBlue + brightnessDelta;
+            adjustedEntries[index].peRed = static_cast<BYTE>(red > 255 ? 255 : red);
+            adjustedEntries[index].peGreen = static_cast<BYTE>(green > 255 ? 255 : green);
+            adjustedEntries[index].peBlue = static_cast<BYTE>(blue > 255 ? 255 : blue);
+        }
+    } else if (brightnessDelta < 0) {
+        for (int index = 0; index < 256; ++index) {
+            const int red = adjustedEntries[index].peRed + brightnessDelta;
+            const int green = adjustedEntries[index].peGreen + brightnessDelta;
+            const int blue = adjustedEntries[index].peBlue + brightnessDelta;
+            adjustedEntries[index].peRed = static_cast<BYTE>(red < 0 ? 0 : red);
+            adjustedEntries[index].peGreen = static_cast<BYTE>(green < 0 ? 0 : green);
+            adjustedEntries[index].peBlue = static_cast<BYTE>(blue < 0 ? 0 : blue);
+        }
+    }
+
+    return g_zVideo_pfnPaletteSetEntries(0, 256, adjustedEntries);
+}
+
 // Reimplements 0x4a7990: zVideo::Init_SetSurfaceGeometryFromModeIndex
 RECOIL_NOINLINE void RECOIL_FASTCALL Init_SetSurfaceGeometryFromModeIndex(int modeIndex) {
     switch (modeIndex) {
@@ -1490,7 +1549,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(int rendererType,
     g_zVideo_FullscreenOption = fullscreenOption;
     g_zVideo_pfnOpenVideoMode = zVideo_dd::OpenVideoMode;
     g_zVideo_pfnShutdownVideoSystem = (zVideo_ShutdownVideoSystemProc)(0x004a7d40);
-    g_zVideo_pfnPaletteSetEntries = 0x004a9890;
+    g_zVideo_pfnPaletteSetEntries = zVideo_dd::PaletteSetEntries;
     g_zVideo_pfnSetVideoMode = zVideo_dd::SetVideoMode;
     g_zVideo_pfnAdjustSurfaces = zVideo_dd3d::PresentDisplayModeSurface;
     g_zVideo_pfnLockSurfaceState = zVideo_dd::LockSurfaceState;
@@ -2738,6 +2797,11 @@ namespace zVideo_dd3d {
 // Reimplements 0x4a6750: zVideo_dd3d::CallClearZBufferRect
 RECOIL_NOINLINE void RECOIL_FASTCALL CallClearZBufferRect(zVidRect32 *rect) {
     g_zVideo_pfnClearZBufferRect(rect);
+}
+
+// Reimplements 0x4a6b60: zVideo_dd3d::SetPendingWireframeState
+RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingWireframeState(int pendingWireframeState) {
+    g_zVideo_PendingWireframeState = pendingWireframeState;
 }
 
 // Reimplements 0x4a6b70: zVideo_dd3d::SetPendingDitherEnable

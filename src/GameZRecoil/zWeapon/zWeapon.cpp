@@ -1,6 +1,7 @@
 #include "zWeapon.h"
 
 #include "GameZRecoil/zUtil/zZbd.h"
+#include "GameZRecoil/zUtil/zSaveGame.h"
 #include "OptCatalog.h"
 
 extern "C" {
@@ -47,3 +48,62 @@ extern "C" RECOIL_NOINLINE int RECOIL_CDECL zWepInit() {
 
     return 0;
 }
+
+// Reimplements 0x4b21c0: PlayerTimedHitStatus::ResetFields
+// (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL PlayerTimedHitStatus::ResetFields() {
+    runtimeFlags &= ~3u;
+    lightNode = 0;
+    currentLevel = 0.0f;
+    targetLevel = 0.0f;
+    nextUpdateTime = 0.0f;
+}
+
+// Reimplements 0x4b22d0: PlayerTimedHitStatus::ClearLightAndReset
+// (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL PlayerTimedHitStatus::ClearLightAndReset() {
+    if (lightNode != 0) {
+        zClass_Class::RemoveChild(lightParentNode, lightNode);
+        Light::ReturnToFreeList(lightNode);
+        ResetFields();
+    }
+}
+
+namespace HitSource {
+// Reimplements 0x4b2210: HitSource::UpdateTimedStatus
+// (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+UpdateTimedStatus(OptCatalogEntryDef *self, PlayerTimedHitStatus *status, float amount) {
+    status->hitSource = self;
+    status->runtimeFlags |= 3u;
+
+    if ((self->flags & 0x200u) != 0) {
+        status->targetLevel -= amount;
+    } else {
+        status->targetLevel += amount;
+    }
+
+    if (status->targetLevel > 1.0f) {
+        status->targetLevel = 1.0f;
+    } else if (status->targetLevel < -1.0f) {
+        status->targetLevel = -1.0f;
+    }
+
+    if (status->lightNode == 0) {
+        zClass_NodePartial *const light =
+            Light::AllocFromFreeListAndAttach(&self->timedStatusLightSpecularColor);
+        status->lightNode = light;
+        if (light != 0) {
+            zClass_Class::AddChild(status->lightParentNode, light);
+        }
+    }
+
+    if (status->currentLevel < -0.5f) {
+        return 2;
+    }
+    if (status->currentLevel <= 0.0f) {
+        return 1;
+    }
+    return 0;
+}
+} // namespace HitSource

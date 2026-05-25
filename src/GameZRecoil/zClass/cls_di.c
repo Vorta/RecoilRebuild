@@ -1,10 +1,12 @@
 #include "zDi.h"
 
+#include "Battlesport/player.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
 
 #include <math.h>
+#include <malloc.h>
 #include <string.h>
 
 int g_cls_di_BreakOnFirstCandidate = 0;
@@ -18,6 +20,7 @@ float g_DiSegmentMinZ = 0.0f;
 float g_DiSegmentMaxX = 0.0f;
 float g_DiSegmentMaxY = 0.0f;
 float g_DiSegmentMaxZ = 0.0f;
+zClass_DiSegmentBounds g_DiSegmentBounds[24] = {0};
 zVec3 *g_DiPickPointArray = 0;
 int g_DiPickPointCount = 0;
 float g_DiPickPointQueryMaxY = 0.0f;
@@ -43,6 +46,7 @@ namespace {
     const int kObjectFlagUseCachedWorldMatrix = 0x20;
     const int kMaxPickCandidates = 0x20;
     const double kPickEdgeInsideEpsilon = -0.0001;
+    const unsigned short kPickFaceBatchDamageMaskUvFlag = 0x0100;
     const unsigned short kPickFaceTexturedDamageMaskFlag = 0x0200;
 
     float AbsFloat(float value) {
@@ -166,6 +170,45 @@ namespace {
 
         return PointInProjectedPolygon(polygonVertices, vertexCount, &candidate->hitPos,
                                        &candidate->surfaceNormal);
+    }
+
+    bool BuildBatchSegmentPlaneHit(zClassDiPickCandidateEntry *candidate,
+                                   const zClass_DiSegmentEndpoints *segment,
+                                   const zVec3 *polygonVertices, const zVec3 *normal,
+                                   int cullBackface) {
+        const zVec3 endDelta = Delta3(&segment->end, &polygonVertices[0]);
+        const float endSide = Dot3(&endDelta, normal);
+        if (cullBackface == 0 && endSide >= 0.0f) {
+            return false;
+        }
+
+        const zVec3 startDelta = Delta3(&segment->start, &polygonVertices[0]);
+        const float startSide = Dot3(&startDelta, normal);
+        if (((FloatBits(startSide) ^ FloatBits(endSide)) & 0x80000000u) == 0) {
+            return false;
+        }
+
+        const float t = startSide / (startSide - endSide);
+        const zVec3 segmentDelta = Delta3(&segment->end, &segment->start);
+        candidate->hitPos.x = segment->start.x + t * segmentDelta.x;
+        candidate->hitPos.y = segment->start.y + t * segmentDelta.y;
+        candidate->hitPos.z = segment->start.z + t * segmentDelta.z;
+        return true;
+    }
+
+    void AppendBatchPolygonCandidate(zClass_NodePartial *candidateOwner,
+                                     PlayerProbeSampleCandidateBuffer *buffer,
+                                     const zVec3 *normal,
+                                     const zModel_PickFaceEntry *faceEntry) {
+        if (buffer->candidateCount >= kMaxPickCandidates) {
+            return;
+        }
+
+        zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+        entry->surfaceNormal = *normal;
+        entry->node = candidateOwner;
+        entry->scenePayload = faceEntry->scenePayload;
+        ++buffer->candidateCount;
     }
 
     void SolvePickCandidateUvForProjectedPlane(
@@ -412,6 +455,126 @@ namespace {
                    candidate, segmentStart, segmentEnd, g_zClass_DiFaceVertexScratch4, 4, 0) != 0;
     }
 
+    int TestSegmentBatchBBoxFace(zClass_NodePartial *candidateOwner,
+                                 PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment,
+                                 zClass_DiSegmentEndpoints *segmentEndpointsByBatch,
+                                 int *activeMask, int segmentCount,
+                                 const zBBoxCorners *bboxCorners,
+                                 zModel_PickFaceEntry *faceEntry, int corner0,
+                                 int corner1, int corner2, int corner3) {
+        CopyBBoxCornerToScratch(bboxCorners, corner0, 0);
+        CopyBBoxCornerToScratch(bboxCorners, corner1, 1);
+        CopyBBoxCornerToScratch(bboxCorners, corner2, 2);
+        CopyBBoxCornerToScratch(bboxCorners, corner3, 3);
+        return zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygon(
+            candidateOwner, outCandidateBuffersBySegment, segmentEndpointsByBatch, activeMask,
+            segmentCount, g_zClass_DiFaceVertexScratch4, faceEntry);
+    }
+
+    zClass_DiSegmentEndpoints *SegmentEndpointBatchFromPickPointArray() {
+        return static_cast<zClass_DiSegmentEndpoints *>(static_cast<void *>(g_DiPickPointArray));
+    }
+
+    bool SegmentBoundsOverlapBox(const zClass_DiSegmentBounds *bounds, float minX, float maxX,
+                                 float minY, float maxY, float minZ, float maxZ) {
+        return bounds->maxX > minX && bounds->minX < maxX && bounds->maxY > minY &&
+               bounds->minY < maxY && bounds->maxZ > minZ && bounds->minZ < maxZ;
+    }
+
+    void CopySegmentActiveMask(int *dst, const int *src) {
+        memcpy(dst, src, static_cast<size_t>(g_DiPickPointCount) * sizeof(int));
+    }
+
+    int GridCoordFromWorld(float value, float origin, float invCellSize) {
+        return static_cast<int>(floor((value - origin) * invCellSize));
+    }
+
+    int ClampGridCoord(int coord, int count) {
+        if (coord < 0) {
+            return 0;
+        }
+        if (coord >= count) {
+            return count - 1;
+        }
+        return coord;
+    }
+
+    void OffsetSegmentBatchXZ(float offsetX, float offsetZ) {
+        zClass_DiSegmentEndpoints *segments = SegmentEndpointBatchFromPickPointArray();
+        for (int i = 0; i < g_DiPickPointCount; ++i) {
+            segments[i].start.x += offsetX;
+            segments[i].start.z += offsetZ;
+            segments[i].end.x += offsetX;
+            segments[i].end.z += offsetZ;
+
+            g_DiSegmentBounds[i].minX += offsetX;
+            g_DiSegmentBounds[i].maxX += offsetX;
+            g_DiSegmentBounds[i].minZ += offsetZ;
+            g_DiSegmentBounds[i].maxZ += offsetZ;
+        }
+    }
+
+    void SaveSegmentCandidateCounts(int *candidateCounts) {
+        for (int i = 0; i < g_DiPickPointCount; ++i) {
+            candidateCounts[i] = g_DiPickCandidateBuffer[i].candidateCount;
+        }
+    }
+
+    void RestoreClampedSegmentCandidatePositions(const int *firstNewCandidate,
+                                                 float offsetX, float offsetZ) {
+        for (int i = 0; i < g_DiPickPointCount; ++i) {
+            PlayerProbeSampleCandidateBuffer *buffer = &g_DiPickCandidateBuffer[i];
+            for (int j = firstNewCandidate[i]; j < buffer->candidateCount; ++j) {
+                buffer->entries[j].hitPos.x -= offsetX;
+                buffer->entries[j].hitPos.z -= offsetZ;
+            }
+        }
+    }
+
+    void BuildSegmentBoundsFromEndpoints(const zClass_DiSegmentEndpoints *segments,
+                                         zClass_DiSegmentBounds *bounds) {
+        bounds->minX = segments->start.x < segments->end.x ? segments->start.x : segments->end.x;
+        bounds->maxX = segments->start.x < segments->end.x ? segments->end.x : segments->start.x;
+        bounds->minY = segments->start.y < segments->end.y ? segments->start.y : segments->end.y;
+        bounds->maxY = segments->start.y < segments->end.y ? segments->end.y : segments->start.y;
+        bounds->minZ = segments->start.z < segments->end.z ? segments->start.z : segments->end.z;
+        bounds->maxZ = segments->start.z < segments->end.z ? segments->end.z : segments->start.z;
+    }
+
+    bool SegmentBoundsOverlapWorldXZ(const zClass_DiSegmentBounds *bounds,
+                                     const zClass_WorldDataPartial *worldData) {
+        return bounds->minX < worldData->worldMaxX && bounds->maxX >= worldData->originX &&
+               bounds->minZ <= worldData->originZ && bounds->maxZ > worldData->worldMaxZ;
+    }
+
+    zDiPartial *NodeDiRef(zClass_NodePartial * node);
+
+    void FilterCurrentSegmentRegions(zClass_NodePartial *node, int *activeMask) {
+        zModel_PickFaceData *faceData =
+            static_cast<zModel_PickFaceData *>(static_cast<void *>(NodeDiRef(node)));
+        if (faceData != 0) {
+            zClass_cls_di::FilterRegionsAgainstPolygon(
+                node, faceData, SegmentEndpointBatchFromPickPointArray(), activeMask,
+                g_DiPickPointCount, g_DiPickCandidateBuffer);
+        }
+    }
+
+    void RecurseSegmentBatchChildren(zClass_NodePartial *node, int *activeMask,
+                                     bool requirePickFlags) {
+        for (int i = 0; i < node->listCountB; ++i) {
+            zClass_NodePartial *child = node->listB[i];
+            if (!requirePickFlags || ((child->flags & kNodeFlagEnabledForPick) != 0 &&
+                                      (child->flags & kNodeFlagRaycastable) != 0)) {
+                zClass_cls_di::BuildPickCandidatesForSegmentsRecursive(child, node->listCountB,
+                                                                       activeMask);
+            }
+
+            if (BreakOnFirstCandidateHit()) {
+                break;
+            }
+        }
+    }
+
     zDiPartial *NodeDiRef(zClass_NodePartial * node) {
         return (zDiPartial *)(static_cast<unsigned int>(node->userDataOrDiRef));
     }
@@ -598,6 +761,22 @@ namespace zClass_cls_di {
 
         zMath::MatStackPopPtr();
         return outResults->candidateCount <= 0 ? 1 : 0;
+    }
+
+    // Reimplements 0x42ba50: zClass_cls_di::SnapProbePointYToBestCandidate
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL SnapProbePointYToBestCandidate(zVec3 *point) {
+        PlayerProbeSampleCandidateBuffer candidateBuffer;
+        const int result =
+            BuildPickCandidateListBelowPoint(g_Player_RuntimeDiScene, &candidateBuffer, point->x,
+                                             500.0f, point->z);
+        int selectedImpactSlot;
+        int bestCandidateIndex;
+        float taggedHeight;
+        point->y = Player::SelectProbeSampleHeightFromCandidates(
+            &candidateBuffer, &bestCandidateIndex, point->y, 2.0f, 0, &selectedImpactSlot,
+            &taggedHeight);
+        return result;
     }
 
     // Reimplements 0x444890: zClass_cls_di::BuildPickCandidatesForPoints
@@ -1245,6 +1424,49 @@ namespace zClass_cls_di {
         return 0;
     }
 
+    // Reimplements 0x4476f0: zClass_cls_di::FrustumTestAndPick
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL FrustumTestAndPick(zClass_NodePartial * node,
+                                                           int * activeMask) {
+        if ((node->flags & 0x100) == 0) {
+            return 1;
+        }
+
+        zBBoxCorners corners = {0};
+        zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
+
+        float minX;
+        float maxX;
+        float minY;
+        float maxY;
+        float minZ;
+        float maxZ;
+        ComputeBBoxExtents(&corners, &minX, &maxX, &minY, &maxY, &minZ, &maxZ);
+
+        int anyActive = 0;
+        for (int i = 0; i < g_DiPickPointCount; ++i) {
+            if (activeMask[i] == 0) {
+                continue;
+            }
+
+            if (SegmentBoundsOverlapBox(&g_DiSegmentBounds[i], minX, maxX, minY, maxY, minZ,
+                                        maxZ)) {
+                anyActive = 1;
+            } else {
+                activeMask[i] = 0;
+            }
+        }
+
+        if (anyActive != 0 && (node->flags & kNodeFlagPointCandidate) != 0) {
+            const int bboxHit = FilterRegionsAgainstPolygonWithDamageMaskUv(
+                node, g_DiPickCandidateBuffer, SegmentEndpointBatchFromPickPointArray(),
+                activeMask, g_DiPickPointCount, &corners);
+            return bboxHit == 0 ? 1 : 0;
+        }
+
+        return anyActive == 0 ? 1 : 0;
+    }
+
     // Reimplements 0x485380: zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces
     // (GameZRecoil/zClass/cls_di.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentVsBBoxFaces(
@@ -1262,6 +1484,247 @@ namespace zClass_cls_di {
         }
 
         return 0;
+    }
+
+    // Reimplements 0x487540: zClass_cls_di::FilterRegionsAgainstPolygonWithDamageMaskUv
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstPolygonWithDamageMaskUv(
+        zClass_NodePartial * candidateOwner,
+        PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
+        zClass_DiSegmentEndpoints * segmentEndpointsByBatch, int * activeMask, int segmentCount,
+        const zBBoxCorners * bboxCorners) {
+        zModel_PickFaceEntry faceEntry;
+        memset(&faceEntry, 0, sizeof(faceEntry));
+        faceEntry.flagsAndVertexCount = 4;
+
+        int result = 0;
+        if (TestSegmentBatchBBoxFace(candidateOwner, outCandidateBuffersBySegment,
+                                     segmentEndpointsByBatch, activeMask, segmentCount,
+                                     bboxCorners, &faceEntry, 0, 4, 7, 3) != 0) {
+            result = 1;
+        }
+        if (TestSegmentBatchBBoxFace(candidateOwner, outCandidateBuffersBySegment,
+                                     segmentEndpointsByBatch, activeMask, segmentCount,
+                                     bboxCorners, &faceEntry, 0, 1, 5, 4) != 0) {
+            result = 1;
+        }
+        if (TestSegmentBatchBBoxFace(candidateOwner, outCandidateBuffersBySegment,
+                                     segmentEndpointsByBatch, activeMask, segmentCount,
+                                     bboxCorners, &faceEntry, 1, 2, 6, 5) != 0) {
+            result = 1;
+        }
+        if (TestSegmentBatchBBoxFace(candidateOwner, outCandidateBuffersBySegment,
+                                     segmentEndpointsByBatch, activeMask, segmentCount,
+                                     bboxCorners, &faceEntry, 2, 3, 7, 6) != 0) {
+            result = 1;
+        }
+        if (TestSegmentBatchBBoxFace(candidateOwner, outCandidateBuffersBySegment,
+                                     segmentEndpointsByBatch, activeMask, segmentCount,
+                                     bboxCorners, &faceEntry, 0, 3, 2, 1) != 0) {
+            result = 1;
+        }
+        if (TestSegmentBatchBBoxFace(candidateOwner, outCandidateBuffersBySegment,
+                                     segmentEndpointsByBatch, activeMask, segmentCount,
+                                     bboxCorners, &faceEntry, 4, 5, 6, 7) != 0) {
+            result = 1;
+        }
+
+        return result;
+    }
+
+    // Reimplements 0x487350: zClass_cls_di::FilterRegionsAgainstPolygon
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL FilterRegionsAgainstPolygon(
+        zClass_NodePartial * candidateOwner, zModel_PickFaceData * faceData,
+        zClass_DiSegmentEndpoints * segmentEndpointsByBatch, int * activeMask, int segmentCount,
+        PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment) {
+        if (faceData == 0 || faceData->faceCount == 0) {
+            return;
+        }
+
+        const zVec3 *vertices = faceData->baseVertices;
+        if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0f &&
+            faceData->morphVertexCount != 0) {
+            zMath_Vec3Array_AddScaled(g_zModel_SharedVec3ScratchA, faceData->baseVertices,
+                                      faceData->morphVertices, faceData->morphVertexCount,
+                                      faceData->morphWeight);
+            vertices = g_zModel_SharedVec3ScratchA;
+        }
+
+        TransformVerticesToSharedScratch(vertices, faceData->vertexCount);
+
+        zVec2 scratchUv = {0.0f, 0.0f};
+        for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
+            zModel_PickFaceEntry *face = &faceData->faces[faceIndex];
+            const unsigned int vertexCount = face->flagsAndVertexCount & 0xffu;
+            CopyFaceVerticesToScratch(g_zModel_SharedVec3ScratchB, face->vertexIndices,
+                                      vertexCount);
+
+            if ((face->scenePayload->flags & kPickFaceBatchDamageMaskUvFlag) != 0) {
+                BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
+                    candidateOwner, outCandidateBuffersBySegment, segmentEndpointsByBatch,
+                    activeMask, segmentCount, g_zClass_DiFaceVertexScratch4, face->faceUvData,
+                    &scratchUv, face);
+            } else {
+                BuildPickCandidatesForSegmentBatchVsPolygon(
+                    candidateOwner, outCandidateBuffersBySegment, segmentEndpointsByBatch,
+                    activeMask, segmentCount, g_zClass_DiFaceVertexScratch4, face);
+            }
+        }
+    }
+
+    // Reimplements 0x486290: zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygon
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentBatchVsPolygon(
+        zClass_NodePartial * candidateOwner,
+        PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
+        zClass_DiSegmentEndpoints * segmentEndpointsByBatch, int * activeMask, int segmentCount,
+        zVec3 * polygonVertices, zModel_PickFaceEntry * faceEntry) {
+        int *localActive =
+            segmentCount > 0 ? static_cast<int *>(_alloca(sizeof(int) * segmentCount)) : 0;
+        for (int i = 0; i < segmentCount; ++i) {
+            localActive[i] = activeMask[i];
+        }
+
+        zVec3 normal;
+        zMath_Vec3_TriangleNormal(&polygonVertices[0], &polygonVertices[1], &polygonVertices[2],
+                                  &normal);
+
+        const int cullBackface =
+            static_cast<int>((faceEntry->flagsAndVertexCount >> 8) & 1u);
+        int anyActive = 0;
+        for (int i = 0; i < segmentCount; ++i) {
+            if (localActive[i] == 0) {
+                continue;
+            }
+
+            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[i];
+            if (buffer->candidateCount >= kMaxPickCandidates ||
+                !BuildBatchSegmentPlaneHit(&buffer->entries[buffer->candidateCount],
+                                           &segmentEndpointsByBatch[i], polygonVertices, &normal,
+                                           cullBackface)) {
+                localActive[i] = 0;
+                continue;
+            }
+
+            anyActive = 1;
+        }
+
+        if (anyActive == 0) {
+            return 0;
+        }
+
+        const int vertexCount = static_cast<int>(faceEntry->flagsAndVertexCount & 0xffu);
+        for (int i = 0; i < segmentCount; ++i) {
+            if (localActive[i] == 0) {
+                continue;
+            }
+
+            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[i];
+            const zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+            localActive[i] =
+                PointInProjectedPolygon(polygonVertices, vertexCount, &entry->hitPos, &normal)
+                    ? 1
+                    : 0;
+        }
+
+        anyActive = 0;
+        for (int i = 0; i < segmentCount; ++i) {
+            if (localActive[i] != 0) {
+                anyActive = 1;
+                AppendBatchPolygonCandidate(candidateOwner, &outCandidateBuffersBySegment[i],
+                                            &normal, faceEntry);
+            }
+        }
+
+        return anyActive;
+    }
+
+    // Reimplements 0x4869a0:
+    // zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
+        zClass_NodePartial * candidateOwner,
+        PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
+        zClass_DiSegmentEndpoints * segmentEndpointsByBatch, int * activeMask, int segmentCount,
+        zVec3 * polygonVertices, zModel_PickFaceUvData * faceUvData, zVec2 * scratchUv,
+        zModel_PickFaceEntry * faceEntry) {
+        int *localActive =
+            segmentCount > 0 ? static_cast<int *>(_alloca(sizeof(int) * segmentCount)) : 0;
+        for (int i = 0; i < segmentCount; ++i) {
+            localActive[i] = activeMask[i];
+        }
+
+        zVec3 normal;
+        zMath_Vec3_TriangleNormal(&polygonVertices[0], &polygonVertices[1], &polygonVertices[2],
+                                  &normal);
+
+        const int cullBackface =
+            static_cast<int>((faceEntry->flagsAndVertexCount >> 8) & 1u);
+        int anyActive = 0;
+        for (int i = 0; i < segmentCount; ++i) {
+            if (localActive[i] == 0) {
+                continue;
+            }
+
+            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[i];
+            if (buffer->candidateCount >= kMaxPickCandidates ||
+                !BuildBatchSegmentPlaneHit(&buffer->entries[buffer->candidateCount],
+                                           &segmentEndpointsByBatch[i], polygonVertices, &normal,
+                                           cullBackface)) {
+                localActive[i] = 0;
+                continue;
+            }
+
+            anyActive = 1;
+        }
+
+        if (anyActive == 0) {
+            return 0;
+        }
+
+        const int vertexCount = static_cast<int>(faceEntry->flagsAndVertexCount & 0xffu);
+        for (int i = 0; i < segmentCount; ++i) {
+            if (localActive[i] == 0) {
+                continue;
+            }
+
+            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[i];
+            const zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+            localActive[i] =
+                PointInProjectedPolygon(polygonVertices, vertexCount, &entry->hitPos, &normal)
+                    ? 1
+                    : 0;
+        }
+
+        const int damageMaskEnabled = OptCatalog_IsDamageMaskEnabled();
+        const int dominantAxis = DominantAxis(&normal);
+        anyActive = 0;
+        for (int i = 0; i < segmentCount; ++i) {
+            if (localActive[i] == 0) {
+                continue;
+            }
+
+            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[i];
+            if (buffer->candidateCount >= kMaxPickCandidates) {
+                continue;
+            }
+
+            if (damageMaskEnabled != 0) {
+                const zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+                zClassDiPickCandidateEntry uvCandidate = {};
+                uvCandidate.hitPos = entry->hitPos;
+                uvCandidate.surfaceNormal = normal;
+                SolvePickCandidateUvForProjectedPlane(&uvCandidate, polygonVertices, faceUvData,
+                                                      scratchUv, dominantAxis);
+                OptCatalog_SetDamageMaskUv(scratchUv->x, scratchUv->y);
+            }
+
+            anyActive = 1;
+            AppendBatchPolygonCandidate(candidateOwner, buffer, &normal, faceEntry);
+        }
+
+        return anyActive;
     }
 
     // Reimplements 0x4856d0: zClass_cls_di::TryGetPolygonHitAtQueryXZ (GameZRecoil/zClass/cls_di.c)
@@ -1913,6 +2376,387 @@ namespace zClass_cls_di {
 
         zMath::MatStackPopPtr();
         return NoCandidatesReturn();
+    }
+
+    // Reimplements 0x446880: zClass_cls_di::BuildPickCandidatesForSegmentsForAnimate
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentsForAnimate(
+        zClass_NodePartial * node, int nodeCountHint, int * activeMask) {
+        int localActive[24];
+        CopySegmentActiveMask(localActive, activeMask);
+
+        if (nodeCountHint > 1 || (node->flags & kNodeFlagPointCandidate) != 0) {
+            const int result = FrustumTestAndPick(node, localActive);
+            if (result != 0) {
+                return result;
+            }
+            if ((node->flags & kNodeFlagPointCandidate) != 0) {
+                return 0;
+            }
+        }
+
+        zClass_AnimateDataPartial *animateData =
+            static_cast<zClass_AnimateDataPartial *>(node->classData);
+        int pushedMatrix = 0;
+        if ((node->flags & kNodeFlagEnabledForPick) != 0) {
+            pushedMatrix = 1;
+            zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
+            zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform), 1);
+        }
+
+        FilterCurrentSegmentRegions(node, localActive);
+        if (!BreakOnFirstCandidateHit()) {
+            RecurseSegmentBatchChildren(node, localActive, false);
+        }
+
+        if (pushedMatrix != 0) {
+            zMath::MatStackPopPtr();
+        }
+        return 0;
+    }
+
+    // Reimplements 0x446970: zClass_cls_di::BuildPickCandidatesForSegmentsForLight
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentsForLight(
+        zClass_NodePartial * node, int nodeCountHint, int * activeMask) {
+        int localActive[24];
+        CopySegmentActiveMask(localActive, activeMask);
+
+        if (nodeCountHint > 1 || (node->flags & kNodeFlagPointCandidate) != 0) {
+            const int result = FrustumTestAndPick(node, localActive);
+            if (result != 0) {
+                return result;
+            }
+            if ((node->flags & kNodeFlagPointCandidate) != 0) {
+                return 0;
+            }
+        }
+
+        zClass_LightDataPartial *lightData =
+            static_cast<zClass_LightDataPartial *>(node->classData);
+        zMath::MatStackPushAndCloneParent(lightData->savedParentMatrix);
+        zMath::MatTranslate(lightData->localPosition.x, lightData->localPosition.y,
+                            lightData->localPosition.z);
+        zMath::MatRotateY(lightData->localRotation.y);
+        zMath::MatRotateX(lightData->localRotation.x);
+        zMath::MatRotateZ(lightData->localRotation.z);
+
+        FilterCurrentSegmentRegions(node, localActive);
+        if (!BreakOnFirstCandidateHit()) {
+            RecurseSegmentBatchChildren(node, localActive, true);
+        }
+
+        zMath::MatStackPopPtr();
+        return 0;
+    }
+
+    // Reimplements 0x445d40: zClass_cls_di::BuildProbeHitBatchesForSegments
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL BuildProbeHitBatchesForSegments(
+        zClass_NodePartial * world, zClass_DiSegmentEndpoints * segmentEndpoints,
+        int endpointCount, PlayerProbeSampleCandidateBuffer * hitBatches) {
+        if (endpointCount > 24) {
+            zError::ReportOld(0x200, kClsDiSourceFile, 0xba9,
+                              "More test pnts than space for: %d", endpointCount);
+            endpointCount = 24;
+        }
+
+        if (zClass_TypeList::Head(0) != 0) {
+            zClass_TypeList::UpdateQueuedTrees();
+        }
+
+        const int segmentCount = endpointCount >> 1;
+        int segmentActive[24] = {0};
+        for (int i = 0; i < segmentCount; ++i) {
+            segmentActive[i] = 1;
+            hitBatches[i].candidateCount = 0;
+        }
+
+        zClass_WorldDataPartial *worldData =
+            static_cast<zClass_WorldDataPartial *>(world->classData);
+        int anyActive = 0;
+        for (int i = 0; i < segmentCount; ++i) {
+            BuildSegmentBoundsFromEndpoints(&segmentEndpoints[i], &g_DiSegmentBounds[i]);
+            if (worldData->clampQueriesToBounds == 0 &&
+                !SegmentBoundsOverlapWorldXZ(&g_DiSegmentBounds[i], worldData)) {
+                segmentActive[i] = 0;
+            } else {
+                anyActive = 1;
+            }
+        }
+
+        if (anyActive != 0) {
+            zMat4x3 slotBuffer = {0};
+            zMath::MatStackPushPtr((float *)(&slotBuffer));
+            zMath::MatLoadIdentity();
+
+            g_DiPickCandidateBuffer = hitBatches;
+            g_DiPickPointArray = &segmentEndpoints[0].start;
+            g_DiPickPointCount = segmentCount;
+
+            BuildPickCandidatesForSegmentsInGridWindow(world, segmentActive);
+            for (int i = 0; i < world->listCountB; ++i) {
+                zClass_NodePartial *node = world->listB[i];
+                if ((node->flags & kNodeFlagEnabledForPick) != 0 &&
+                    (node->flags & kNodeFlagRaycastable) != 0 &&
+                    VariantTag::CurrentAllowsId(node->nodeType) != 0) {
+                    BuildPickCandidatesForSegmentsRecursive(node, world->listCountB + 1,
+                                                            segmentActive);
+                }
+
+                if (BreakOnFirstCandidateHit()) {
+                    break;
+                }
+            }
+
+            zMath::MatStackPopPtr();
+        }
+
+        g_cls_di_StopAfterFirstHit = 0;
+    }
+
+    // Reimplements 0x445f60: zClass_cls_di::BuildPickCandidatesForSegmentsInGridWindow
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL BuildPickCandidatesForSegmentsInGridWindow(
+        zClass_NodePartial * world, int * activeMask) {
+        const int segmentCount = g_DiPickPointCount;
+        if (segmentCount <= 0) {
+            return;
+        }
+
+        zClass_WorldDataPartial *worldData =
+            static_cast<zClass_WorldDataPartial *>(world->classData);
+
+        int segmentMinCol[24] = {0};
+        int segmentMaxCol[24] = {0};
+        int segmentMinRow[24] = {0};
+        int segmentMaxRow[24] = {0};
+
+        for (int i = 0; i < segmentCount; ++i) {
+            const zClass_DiSegmentBounds *bounds = &g_DiSegmentBounds[i];
+            segmentMinCol[i] =
+                GridCoordFromWorld(bounds->minX, worldData->originX, worldData->areaInvSizeX);
+            segmentMaxCol[i] =
+                GridCoordFromWorld(bounds->maxX, worldData->originX, worldData->areaInvSizeX);
+            segmentMinRow[i] =
+                GridCoordFromWorld(bounds->minZ, worldData->originZ, worldData->areaInvSizeZ);
+            segmentMaxRow[i] =
+                GridCoordFromWorld(bounds->maxZ, worldData->originZ, worldData->areaInvSizeZ);
+        }
+
+        int windowMinCol = segmentMinCol[0];
+        int windowMaxCol = segmentMaxCol[0];
+        int windowMinRow = segmentMinRow[0];
+        int windowMaxRow = segmentMaxRow[0];
+        for (int i = 1; i < segmentCount; ++i) {
+            if (segmentMinCol[i] < windowMinCol) {
+                windowMinCol = segmentMinCol[i];
+            }
+            if (segmentMaxCol[i] > windowMaxCol) {
+                windowMaxCol = segmentMaxCol[i];
+            }
+            if (segmentMinRow[i] < windowMinRow) {
+                windowMinRow = segmentMinRow[i];
+            }
+            if (segmentMaxRow[i] > windowMaxRow) {
+                windowMaxRow = segmentMaxRow[i];
+            }
+        }
+
+        for (int row = windowMinRow; row <= windowMaxRow; ++row) {
+            for (int col = windowMinCol; col <= windowMaxCol; ++col) {
+                int cellCol = col;
+                int cellRow = row;
+                int usedClampedCell = 0;
+                int firstNewCandidate[24] = {0};
+                float offsetX = 0.0f;
+                float offsetZ = 0.0f;
+
+                const int insideGrid = col >= 0 && col < worldData->areaGridColCount &&
+                                       row >= 0 && row < worldData->areaGridRowCount;
+                if (insideGrid == 0) {
+                    if (worldData->clampQueriesToBounds == 0) {
+                        continue;
+                    }
+
+                    usedClampedCell = 1;
+                    SaveSegmentCandidateCounts(firstNewCandidate);
+                    cellCol = ClampGridCoord(cellCol, worldData->areaGridColCount);
+                    cellRow = ClampGridCoord(cellRow, worldData->areaGridRowCount);
+                    offsetX = static_cast<float>(cellCol - col) * worldData->areaCellSizeX;
+                    offsetZ = static_cast<float>(cellRow - row) * worldData->areaCellSizeZ;
+                    OffsetSegmentBatchXZ(offsetX, offsetZ);
+                }
+
+                zWorldAreaPartial *area = &worldData->areaGridRows[cellRow][cellCol];
+                for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
+                    zClass_NodePartial *child = area->childList[childIndex];
+                    if ((child->flags & kNodeFlagEnabledForPick) != 0 &&
+                        (child->flags & kNodeFlagRaycastable) != 0) {
+                        BuildPickCandidatesForSegmentsRecursive(child, area->childCount + 1,
+                                                                activeMask);
+                    }
+
+                    if (BreakOnFirstCandidateHit()) {
+                        break;
+                    }
+                }
+
+                if (usedClampedCell != 0) {
+                    OffsetSegmentBatchXZ(-offsetX, -offsetZ);
+                    RestoreClampedSegmentCandidatePositions(firstNewCandidate, offsetX, offsetZ);
+                }
+            }
+        }
+    }
+
+    // Reimplements 0x446440: zClass_cls_di::BuildPickCandidatesForSegmentsRecursive
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentsRecursive(
+        zClass_NodePartial * node, int nodeCountHint, int * activeMask) {
+        int nodeFlags = node->flags;
+        if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
+            return 1;
+        }
+        if ((nodeFlags & kNodeFlagRaycastable) == 0) {
+            return 1;
+        }
+        if ((g_cls_di_StopAfterFirstHit & nodeFlags) != 0) {
+            return 1;
+        }
+        if (VariantTag::CurrentAllowsId(node->nodeType) == 0) {
+            return 1;
+        }
+
+        nodeFlags &= ~kNodeFlagClearDuringPick;
+        node->flags = nodeFlags;
+
+        switch (node->classId) {
+        case kNodeClassCamera: {
+            zVec3 unitScale = {1.0f, 1.0f, 1.0f};
+            zClass_CameraDataPartial *cameraData =
+                static_cast<zClass_CameraDataPartial *>(node->classData);
+            int pushedMatrix = 0;
+            if ((nodeFlags & kNodeFlagEnabledForPick) != 0) {
+                pushedMatrix = 1;
+                zMath::MatStackPushAndCloneParent(cameraData->worldTransform);
+                zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler,
+                                        &unitScale);
+            }
+
+            FilterCurrentSegmentRegions(node, activeMask);
+            if (!BreakOnFirstCandidateHit()) {
+                RecurseSegmentBatchChildren(node, activeMask, false);
+            }
+            if (pushedMatrix != 0) {
+                zMath::MatStackPopPtr();
+            }
+            return 0;
+        }
+
+        case kNodeClassObject3D: {
+            int localActive[24];
+            CopySegmentActiveMask(localActive, activeMask);
+            if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
+                const int result = FrustumTestAndPick(node, localActive);
+                if (result != 0) {
+                    return result;
+                }
+                if ((node->flags & kNodeFlagPointCandidate) != 0) {
+                    return 0;
+                }
+            }
+
+            zClass_Object3DDataPartial *objectData =
+                static_cast<zClass_Object3DDataPartial *>(node->classData);
+            int pushedMatrix = 0;
+            if ((objectData->flags & kObjectFlagNoPickMatrixPush) == 0) {
+                pushedMatrix = 1;
+                if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
+                    zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 3);
+                } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) != 0) {
+                    zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
+                    if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
+                        objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
+                    }
+                } else {
+                    zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
+                }
+            }
+
+            FilterCurrentSegmentRegions(node, localActive);
+            if (!BreakOnFirstCandidateHit()) {
+                RecurseSegmentBatchChildren(node, localActive, true);
+            }
+            if (pushedMatrix != 0) {
+                zMath::MatStackPopPtr();
+            }
+            return 0;
+        }
+
+        case kNodeClassLod: {
+            zClass_LodDataPartial *lodData = static_cast<zClass_LodDataPartial *>(node->classData);
+            if (lodData->nearRangeSq > 5.0f) {
+                return 1;
+            }
+
+            int localActive[24];
+            CopySegmentActiveMask(localActive, activeMask);
+            if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
+                const int result = FrustumTestAndPick(node, localActive);
+                if (result != 0) {
+                    return result;
+                }
+                if ((node->flags & kNodeFlagPointCandidate) != 0) {
+                    return 0;
+                }
+            }
+
+            RecurseSegmentBatchChildren(node, localActive, false);
+            return 0;
+        }
+
+        case kNodeClassSequence: {
+            zClass_SequenceDataPartial *sequenceData =
+                static_cast<zClass_SequenceDataPartial *>(node->classData);
+            if (sequenceData->isActive == 0) {
+                return 1;
+            }
+
+            int localActive[24];
+            CopySegmentActiveMask(localActive, activeMask);
+            if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
+                const int result = FrustumTestAndPick(node, localActive);
+                if (result != 0) {
+                    return result;
+                }
+                if ((node->flags & kNodeFlagPointCandidate) != 0) {
+                    return 0;
+                }
+            }
+
+            return BuildPickCandidatesForSegmentsRecursive(
+                sequenceData->entries[sequenceData->currentIndex].node, node->listCountB,
+                localActive);
+        }
+
+        case kNodeClassAnimate:
+            return BuildPickCandidatesForSegmentsForAnimate(node, nodeCountHint, activeMask);
+
+        case kNodeClassLight:
+            return BuildPickCandidatesForSegmentsForLight(node, nodeCountHint, activeMask);
+
+        case kNodeClassSound:
+            return static_cast<int>((unsigned int)(activeMask));
+
+        default:
+            zError::ReportOld(0x200, kClsDiSourceFile, 0xd41,
+                              "Unrecognized node class type:  node = %s class_type = %d", node,
+                              node->classId);
+            return 3;
+        }
     }
 
     // Reimplements 0x445650: zClass_cls_di::BuildPickCandidatesForSegmentChildFallback
