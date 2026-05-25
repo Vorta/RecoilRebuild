@@ -696,6 +696,36 @@ void CommitFogParamsIfChanged(const FogParamsPartial &params) {
 }
 } // namespace
 
+// Reimplements 0x490430: zRndr::SetPerspectiveTextureDeltaX
+// (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL SetPerspectiveTextureDeltaX(int deltaX) {
+    g_perspectiveTextureDeltaXInput = deltaX;
+
+    int clampedDeltaX = deltaX;
+    if (clampedDeltaX < 8) {
+        clampedDeltaX = 8;
+    }
+
+    int shift = -1;
+    do {
+        ++shift;
+        clampedDeltaX >>= 1;
+    } while (clampedDeltaX != 0);
+
+    g_perspectiveTextureDeltaXShift = shift;
+    g_perspectiveTextureDeltaXPow2 = 1 << shift;
+    g_perspectiveTextureDeltaXPow2F = static_cast<float>(g_perspectiveTextureDeltaXPow2);
+    g_perspectiveTextureDeltaXBytes = g_perspectiveTextureDeltaXPow2 * g_bytesPerPixel;
+}
+
+// Reimplements 0x4904a0: zRndr::SetPerspectiveTextureFarZ
+// (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
+RECOIL_NOINLINE void RECOIL_STDCALL SetPerspectiveTextureFarZ(float farZ) {
+    if (farZ != 0.0f) {
+        g_perspectiveTextureFarZInv = 1.0f / farZ;
+    }
+}
+
 // Reimplements 0x4904d0: zRndr::SetPerspectiveAdaptiveCorrection
 RECOIL_NOINLINE void RECOIL_STDCALL
 SetPerspectiveAdaptiveCorrection(float perspectiveAdaptiveCorrection) {

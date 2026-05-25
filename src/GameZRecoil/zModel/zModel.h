@@ -7,6 +7,8 @@
 #include "GameZRecoil/include/zDi.h"
 #include "recoil/recoil_callconv.h"
 
+struct zGeometry_PlaneEquationPartial;
+
 extern int gModel_FogEnabled;
 extern int gModel_FogLinearModeEnabled;
 extern float gModel_FogDistanceStart;
@@ -17,8 +19,12 @@ extern float gModel_FogHeightLow;
 extern float gModel_FogHeightInvRange;
 extern float gModel_FogDensity;
 extern zColorRgb gModel_FogColorRgb01;
+extern float gModel_SmallPolyRejectArea2x;
+extern float gModel_SmallPolyRejectArea20x;
 extern float g_OptCatalogDamageMaskPhaseU;
 extern float g_OptCatalogDamageMaskPhaseV;
+extern int g_OptCatalogDamageMaskEnabled;
+extern int g_OptCatalogDamageMaskSlotIndex;
 extern int gModel_DefaultGraphicsFlags;
 extern int gModel_RenderVertexAlphaEnabled;
 extern float gModel_RenderAlphaScaleCurrent;
@@ -32,7 +38,17 @@ extern int g_zModel_DisplayClipX;
 extern int g_zModel_DisplayClipY;
 extern float g_zModel_InverseZTolerance;
 extern float g_zModel_HardwareInverseZTolerance;
+extern float g_zModel_BFETolerance;
+extern int g_zModel_VertexShadingEnabled;
 extern float g_zModel_ConstVertexMergeEpsilon;
+extern int g_zModel_MaxPolygonVertexCountBeforeSplit;
+extern double g_zModel_ConstVertexWarnThreshold;
+extern double g_zModel_NormalMergeEpsilon;
+extern double g_zModel_CoplanarTolerance;
+extern double g_zModel_ColinearTolerance;
+extern float g_zModel_UvQuantizeBias;
+extern float g_zModel_UvQuantizeScale;
+extern float g_zModel_UvQuantizeInvScale;
 extern zDiPartial *g_zModel_DiPoolBase;
 extern int g_zModel_DiPoolCapacity;
 extern int g_zModel_DiPoolInUseCount;
@@ -122,6 +138,10 @@ extern zVec3 *g_zModel_SharedVec3ScratchB;
 extern zVec3 *g_zModel_PointInPolygonVertices;
 extern zVec3 *g_zModel_PointInPolygonEdgeNormals;
 extern int g_zModel_PointInPolygonVertexCount;
+extern float g_zModel_TextureWorldBaseU;
+extern float g_zModel_TextureWorldBaseV;
+extern float g_zModel_TextureWorldPerMeterU;
+extern float g_zModel_TextureWorldPerMeterV;
 
 struct zModel_Uv {
     float u;
@@ -190,8 +210,26 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Light_PointInPolygonInitXZ(
     zClass_LightDataPartial **lightDataList, zModel_LightStatePartial **lightNodeStates,
     int lightCount);
 
+namespace zModel {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetVertexShadingEnabled(int enabled);
+RECOIL_NOINLINE void RECOIL_FASTCALL SetDisplayInstancePoolCapacity(int capacity);
+RECOIL_NOINLINE void RECOIL_FASTCALL SetSoftwarePathActive(int active);
+RECOIL_NOINLINE void RECOIL_STDCALL SetTextureWorldPerMeter(float worldPerMeterU,
+                                                            float worldPerMeterV);
+RECOIL_NOINLINE void RECOIL_STDCALL SetTextureWorldBase(float worldBaseU,
+                                                        float worldBaseV);
+RECOIL_NOINLINE int RECOIL_FASTCALL SetDiTextureWorldPerMeter(zDiPartial *di,
+                                                              int worldSpaceEnabled,
+                                                              float textureWorldPerMeter,
+                                                              int textureWorldAxis);
+RECOIL_NOINLINE void RECOIL_STDCALL SetBackfaceEliminationToleranceScalar(float scalar);
+RECOIL_NOINLINE float RECOIL_CDECL GetBackfaceEliminationToleranceScalar();
+RECOIL_NOINLINE void RECOIL_STDCALL UpdateSmallPolyRejectThresholds(float baseRejectArea);
+} // namespace zModel
+
 RECOIL_NOINLINE int RECOIL_CDECL zModel_Display_Init();
 RECOIL_NOINLINE void RECOIL_STDCALL OptCatalog_SetDamageMaskUv(float u, float v);
+RECOIL_NOINLINE int RECOIL_CDECL OptCatalog_IsDamageMaskEnabled();
 RECOIL_NOINLINE void RECOIL_FASTCALL OptCatalog_SetDamageMaskEnabled(int enabled);
 RECOIL_NOINLINE int RECOIL_FASTCALL
 OptCatalog_IsDamageMaskSlotPtrRegistered(void *slotPtr);
@@ -236,9 +274,39 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FreeIfUnreferenced(zDiPartial *di);
 namespace zModel_Const {
 RECOIL_NOINLINE float RECOIL_CDECL GetVertexMergeEpsilon();
 RECOIL_NOINLINE void RECOIL_STDCALL SetVertexMergeEpsilon(float epsilon);
+RECOIL_NOINLINE void RECOIL_STDCALL SetCoplanarTolerance(float tolerance);
+RECOIL_NOINLINE void RECOIL_STDCALL SetColinearTolerance(float tolerance);
+RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL
+SetNormalizedCrossFromVertexTriplet(zVec3 *vertex0, zVec3 *vertex1,
+                                    zVec3 *outNormal, zVec3 *vertex2);
+RECOIL_NOINLINE int RECOIL_FASTCALL
+RemoveColinearVerticesInPlace(int *vertexCount, zVec3 *points, zClipUV *uvPairsA,
+                              zVec3 *normalsB, zClipUV *uvPairsB);
+RECOIL_NOINLINE zGeometry_PlaneEquationPartial *RECOIL_FASTCALL
+ComputePolygonPlaneEquation(int vertexCount, zVec3 *vertices,
+                            zGeometry_PlaneEquationPartial *outPlane);
+RECOIL_NOINLINE int RECOIL_FASTCALL IsPolygonCoplanar(int vertexCount, zVec3 *vertices);
+RECOIL_NOINLINE int RECOIL_FASTCALL AddOrMergeVertex(zDiPartial *self, zVec3 *point);
+RECOIL_NOINLINE int RECOIL_FASTCALL
+AddOrMergeVertexAndNormal(zDiPartial *self, zVec3 *point, zVec3 *normal);
+RECOIL_NOINLINE int RECOIL_FASTCALL FindOrAppendNormalIndex(zDiPartial *self,
+                                                            zVec3 *normal);
+RECOIL_NOINLINE zClipUV RECOIL_STDCALL
+SolveTriScalarGradient2D(float vertex0A, float vertex0B, float vertex1A,
+                         float vertex1B, float vertex2A, float vertex2B,
+                         float value0, float value1, float value2);
+RECOIL_NOINLINE void RECOIL_FASTCALL QuantizeAndNormalizeUvPairs(int vertexCount,
+                                                                 zClipUV *uvPairs);
+RECOIL_NOINLINE void RECOIL_FASTCALL
+SplitPolygonChunkedByVertexLimit(zDiPartial *self, int totalVertexCount, zVec3 *points,
+                                 zVec3 *entryNormals, zClipUV *uvPairsA, zVec3 *normalsA,
+                                 zVec3 *normalsBInput, zClipUV *uvPairsBInput,
+                                 zModel_MaterialPartial *material, unsigned int drawFlags,
+                                 int flagBit8, const int *userTag);
 } // namespace zModel_Const
 
 namespace zModel_MatlBuffer {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetArraySize(int count);
 RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_FASTCALL
 CloneToActiveSlot(zModel_MaterialPartial *material);
 RECOIL_NOINLINE int RECOIL_FASTCALL WriteGameZ(void *stream);

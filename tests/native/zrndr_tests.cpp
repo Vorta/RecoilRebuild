@@ -3184,6 +3184,92 @@ extern "C" int zrndr_perspective_adaptive_span_params_smoke(void) {
                : 1;
 }
 
+extern "C" int zrndr_perspective_texture_delta_x_smoke(void) {
+    zRndr::g_bytesPerPixel = 2;
+
+    zRndr::SetPerspectiveTextureDeltaX(7);
+    if (zRndr::g_perspectiveTextureDeltaXInput != 7 ||
+        zRndr::g_perspectiveTextureDeltaXShift != 3 ||
+        zRndr::g_perspectiveTextureDeltaXPow2 != 8 ||
+        zRndr::g_perspectiveTextureDeltaXPow2F != 8.0f ||
+        zRndr::g_perspectiveTextureDeltaXBytes != 16) {
+        return 1;
+    }
+
+    zRndr::g_bytesPerPixel = 4;
+    zRndr::SetPerspectiveTextureDeltaX(31);
+    if (zRndr::g_perspectiveTextureDeltaXInput != 31 ||
+        zRndr::g_perspectiveTextureDeltaXShift != 4 ||
+        zRndr::g_perspectiveTextureDeltaXPow2 != 16 ||
+        zRndr::g_perspectiveTextureDeltaXPow2F != 16.0f ||
+        zRndr::g_perspectiveTextureDeltaXBytes != 64) {
+        return 2;
+    }
+
+    zRndr::g_bytesPerPixel = 3;
+    zRndr::SetPerspectiveTextureDeltaX(32);
+    if (zRndr::g_perspectiveTextureDeltaXInput != 32 ||
+        zRndr::g_perspectiveTextureDeltaXShift != 5 ||
+        zRndr::g_perspectiveTextureDeltaXPow2 != 32 ||
+        zRndr::g_perspectiveTextureDeltaXBytes != 96) {
+        return 3;
+    }
+
+    zRndr::SetPerspectiveTextureDeltaX(-12);
+    return zRndr::g_perspectiveTextureDeltaXInput == -12 &&
+                   zRndr::g_perspectiveTextureDeltaXShift == 3 &&
+                   zRndr::g_perspectiveTextureDeltaXPow2 == 8 &&
+                   zRndr::g_perspectiveTextureDeltaXBytes == 24
+               ? 0
+               : 4;
+}
+
+extern "C" int zrndr_perspective_texture_far_z_smoke(void) {
+    const float savedFarZInv = zRndr::g_perspectiveTextureFarZInv;
+
+    zRndr::g_perspectiveTextureFarZInv = 123.0f;
+    zRndr::SetPerspectiveTextureFarZ(0.0f);
+    if (zRndr::g_perspectiveTextureFarZInv != 123.0f) {
+        zRndr::g_perspectiveTextureFarZInv = savedFarZInv;
+        return 1;
+    }
+
+    zRndr::SetPerspectiveTextureFarZ(400.0f);
+    if (zRndr::g_perspectiveTextureFarZInv != 0.0025f) {
+        zRndr::g_perspectiveTextureFarZInv = savedFarZInv;
+        return 2;
+    }
+
+    zRndr::SetPerspectiveTextureFarZ(-2.0f);
+    const bool negativeOk = zRndr::g_perspectiveTextureFarZInv == -0.5f;
+
+    zRndr::g_perspectiveTextureFarZInv = savedFarZInv;
+    return negativeOk ? 0 : 3;
+}
+
+extern "C" int zrndr_set_inverse_z_tolerance_smoke(void) {
+    const int savedRendererPath = g_zVideo_ActiveRendererPath;
+    const float savedInverseZTolerance = g_zRndr_InverseZTolerance;
+    const float savedPendingTolerance = g_zVideo_InverseZTolerancePending;
+
+    g_zVideo_ActiveRendererPath = 0;
+    g_zRndr_InverseZTolerance = 0.0f;
+    g_zVideo_InverseZTolerancePending = 11.0f;
+    zRndr::SetInverseZTolerance(0.125f);
+    const bool softwareOk =
+        g_zRndr_InverseZTolerance == 0.125f && g_zVideo_InverseZTolerancePending == 11.0f;
+
+    g_zVideo_ActiveRendererPath = 1;
+    zRndr::SetInverseZTolerance(-2.5f);
+    const bool hardwareOk =
+        g_zRndr_InverseZTolerance == -2.5f && g_zVideo_InverseZTolerancePending == -2.5f;
+
+    g_zVideo_ActiveRendererPath = savedRendererPath;
+    g_zRndr_InverseZTolerance = savedInverseZTolerance;
+    g_zVideo_InverseZTolerancePending = savedPendingTolerance;
+    return softwareOk && hardwareOk ? 0 : 1;
+}
+
 extern "C" int zrndr_overlay_and_mmx_masks_smoke(void) {
     zRndr::g_swOverlayDstScale5 = 3;
     zRndr::g_swOverlayPremulPacked = 0x00200100;

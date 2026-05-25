@@ -1,9 +1,13 @@
 #include "Battlesport/Briefing.h"
+#include "Battlesport/HudSensorTracker.h"
 #include "GameZRecoil/Time/Time.h"
+#include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 
 namespace {
@@ -16,6 +20,9 @@ void *g_setProgressThis;
 int g_invalidateCount;
 void *g_invalidateThis[8];
 unsigned short g_constructorSurfacePixel;
+int g_briefingSetVisibleCount;
+void *g_briefingSetVisibleThis[16];
+int g_briefingSetVisibleValue[16];
 
 int RECOIL_FASTCALL TestVideoSurfaceDispatch(zVideo_SurfaceStatePartial *) {
     return 0;
@@ -42,6 +49,19 @@ struct TestBriefingInvalidatedElement {
         }
 
         ++g_invalidateCount;
+    }
+};
+
+struct TestBriefingVisibleElement {
+    unsigned int *vptr;
+
+    void RECOIL_THISCALL SetVisible(int visible) {
+        if (g_briefingSetVisibleCount < 16) {
+            g_briefingSetVisibleThis[g_briefingSetVisibleCount] = this;
+            g_briefingSetVisibleValue[g_briefingSetVisibleCount] = visible;
+        }
+
+        ++g_briefingSetVisibleCount;
     }
 };
 
@@ -84,6 +104,17 @@ unsigned int MakeBriefingInvalidateThunk() {
 
     MemberToFunction thunk{};
     thunk.member = &TestBriefingInvalidatedElement::Invalidate;
+    return thunk.fn;
+}
+
+unsigned int MakeBriefingSetVisibleThunk() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL TestBriefingVisibleElement::*member)(int);
+        unsigned int fn;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &TestBriefingVisibleElement::SetVisible;
     return thunk.fn;
 }
 
@@ -368,4 +399,230 @@ extern "C" int briefing_runtime_update_smoke(void) {
     }
 
     return g_Briefing_AllowAdvanceFlag == 0 && invalidatedInOrder ? 0 : 1;
+}
+
+extern "C" int briefing_build_objective_actions_smoke(void) {
+    constexpr std::size_t kRuntimeSize = 0xba70;
+    constexpr std::size_t kActionQueueHeadOffset = 0xa950;
+    constexpr std::size_t kActionQueueCountOffset = 0xa954;
+    constexpr std::size_t kActionQueueCurrentOffset = 0xa958;
+    constexpr std::size_t kActionQueueActiveOffset = 0xa95c;
+    constexpr std::size_t kMissionNameOffset = 0xaae8;
+    constexpr std::size_t kObjectiveSummaryOffset = 0xad8c;
+    constexpr std::size_t kObjectiveDescOffset = 0xb030;
+    constexpr std::size_t kObjectivePictureOffset = 0xb2d4;
+    constexpr std::size_t kLocatorPanelsOffset = 0xb8f0;
+    constexpr std::size_t kLocatorPanelStride = 0x40;
+
+    struct ActionNode {
+        ActionNode *prev;
+        ActionNode *next;
+        void *action;
+    };
+    struct PlayAction {
+        void *vptr;
+        char sampleName[0x50];
+        float gain;
+        int useVariant;
+        int variantIndex;
+    };
+    struct DelayAction {
+        void *vptr;
+        float requiredProgress;
+    };
+    struct PanelTextAction {
+        void *vptr;
+        char text[0x100];
+        void *target;
+    };
+    struct ImageTimedAction {
+        void *vptr;
+        zVidImagePartial *imageRef;
+        void *target;
+        float timer;
+    };
+    struct ElementAction {
+        void *vptr;
+        void *target;
+    };
+    struct FadeAction {
+        void *vptr;
+        void *target;
+        float alpha;
+    };
+
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    const int oldMissionId = g_HudSensorTracker.missionId;
+    const int oldObjectiveCount = g_HudSensorTracker.objectiveCount;
+    HudSensorObjectiveSlot oldSlots[3] = {};
+    for (int index = 0; index < 3; ++index) {
+        oldSlots[index] = g_HudSensorTracker.objectiveSlots[index];
+    }
+    HMODULE const oldMessagesDll = g_zLoc_MessagesDllHandle;
+
+    HMODULE messagesDll = LoadLibraryA("support\\messages.dll");
+    if (messagesDll == nullptr) {
+        messagesDll = LoadLibraryA("..\\..\\..\\..\\support\\messages.dll");
+    }
+    if (messagesDll == nullptr) {
+        return 3;
+    }
+
+    int networkEnabled = 0;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zLoc_MessagesDllHandle = messagesDll;
+    g_HudSensorTracker.missionId = 5;
+    g_HudSensorTracker.objectiveCount = 3;
+
+    zVidImagePartial image1 = {};
+    zVidImagePartial image2 = {};
+    std::strcpy(g_HudSensorTracker.objectiveSlots[1].objectiveTitle, "summary one");
+    std::strcpy(g_HudSensorTracker.objectiveSlots[1].objectiveDesc, "description one");
+    g_HudSensorTracker.objectiveSlots[1].objectiveImage = &image1;
+    std::strcpy(g_HudSensorTracker.objectiveSlots[2].objectiveTitle, "summary two");
+    std::strcpy(g_HudSensorTracker.objectiveSlots[2].objectiveDesc, "description two");
+    g_HudSensorTracker.objectiveSlots[2].objectiveImage = &image2;
+
+    char expectedTitle1[0x20] = {};
+    char expectedTitle2[0x20] = {};
+    if (zLoc::FormatMessage(expectedTitle1, sizeof(expectedTitle1), 0x244, 2) == 0 ||
+        zLoc::FormatMessage(expectedTitle2, sizeof(expectedTitle2), 0x244, 3) == 0) {
+        ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+        g_HudSensorTracker.missionId = oldMissionId;
+        g_HudSensorTracker.objectiveCount = oldObjectiveCount;
+        for (int index = 0; index < 3; ++index) {
+            g_HudSensorTracker.objectiveSlots[index] = oldSlots[index];
+        }
+        g_zLoc_MessagesDllHandle = oldMessagesDll;
+        FreeLibrary(messagesDll);
+        return 4;
+    }
+
+    alignas(4) unsigned char storage[kRuntimeSize] = {};
+    HudUiBriefingRuntime *const runtime = reinterpret_cast<HudUiBriefingRuntime *>(storage);
+    ActionNode sentinel = {};
+    sentinel.prev = &sentinel;
+    sentinel.next = &sentinel;
+    *reinterpret_cast<ActionNode **>(storage + kActionQueueHeadOffset) = &sentinel;
+    *reinterpret_cast<int *>(storage + kActionQueueCountOffset) = 0;
+    *reinterpret_cast<int *>(storage + kActionQueueActiveOffset) = 0;
+
+    static unsigned int visibleTable[25];
+    std::memset(visibleTable, 0, sizeof(visibleTable));
+    visibleTable[0x60 / 4] = MakeBriefingSetVisibleThunk();
+    *reinterpret_cast<unsigned int **>(storage + kMissionNameOffset) = visibleTable;
+    *reinterpret_cast<unsigned int **>(storage + kObjectiveSummaryOffset) = visibleTable;
+    *reinterpret_cast<unsigned int **>(storage + kObjectiveDescOffset) = visibleTable;
+    *reinterpret_cast<unsigned int **>(storage + kObjectivePictureOffset) = visibleTable;
+
+    g_briefingSetVisibleCount = 0;
+    std::memset(g_briefingSetVisibleThis, 0, sizeof(g_briefingSetVisibleThis));
+    std::memset(g_briefingSetVisibleValue, 0, sizeof(g_briefingSetVisibleValue));
+    g_Briefing_SequenceActiveFlag = 0;
+
+    const int result = runtime->BuildObjectiveActionsFromIndex(1);
+
+    void *actions[25] = {};
+    ActionNode *cursor = sentinel.prev;
+    int actionCount = 0;
+    while (cursor != &sentinel && actionCount < 25) {
+        actions[actionCount++] = cursor->action;
+        cursor = cursor->prev;
+    }
+
+    const unsigned char *const missionName = storage + kMissionNameOffset;
+    const unsigned char *const summaryPanel = storage + kObjectiveSummaryOffset;
+    const unsigned char *const descPanel = storage + kObjectiveDescOffset;
+    const unsigned char *const picture = storage + kObjectivePictureOffset;
+    const unsigned char *const locator1 = storage + kLocatorPanelsOffset + kLocatorPanelStride;
+    const unsigned char *const locator2 =
+        storage + kLocatorPanelsOffset + kLocatorPanelStride * 2;
+
+    bool ok = result == 1 && actionCount == 25 &&
+              *reinterpret_cast<int *>(storage + kActionQueueCountOffset) == 25 &&
+              *reinterpret_cast<int *>(storage + kActionQueueActiveOffset) == 1 &&
+              g_Briefing_SequenceActiveFlag == 1 &&
+              *reinterpret_cast<ActionNode **>(storage + kActionQueueCurrentOffset) ==
+                  sentinel.prev &&
+              g_briefingSetVisibleCount == 8;
+
+    const PlayAction *const play = static_cast<const PlayAction *>(actions[0]);
+    ok = ok && std::strcmp(play->sampleName, "snd_briefing_c5") == 0 && play->gain == 1.0f &&
+         play->useVariant == 1 && play->variantIndex == 2;
+
+    const DelayAction *const delay0 = static_cast<const DelayAction *>(actions[1]);
+    const PanelTextAction *const title1 = static_cast<const PanelTextAction *>(actions[2]);
+    const PanelTextAction *const summary1 = static_cast<const PanelTextAction *>(actions[3]);
+    const ImageTimedAction *const imageAction1 = static_cast<const ImageTimedAction *>(actions[4]);
+    const ElementAction *const show1 = static_cast<const ElementAction *>(actions[5]);
+    const PanelTextAction *const desc1 = static_cast<const PanelTextAction *>(actions[6]);
+    const DelayAction *const delay1 = static_cast<const DelayAction *>(actions[7]);
+    const ElementAction *const hideLocator1 = static_cast<const ElementAction *>(actions[8]);
+    const ElementAction *const hideMission1 = static_cast<const ElementAction *>(actions[9]);
+    const ElementAction *const hideSummary1 = static_cast<const ElementAction *>(actions[10]);
+    const FadeAction *const fade1 = static_cast<const FadeAction *>(actions[11]);
+    const ElementAction *const hideDesc1 = static_cast<const ElementAction *>(actions[12]);
+
+    ok = ok && delay0->requiredProgress == 2.0f && title1->target == missionName &&
+         std::strcmp(title1->text, expectedTitle1) == 0 && summary1->target == summaryPanel &&
+         std::strcmp(summary1->text, "summary one") == 0 &&
+         imageAction1->imageRef == &image1 && imageAction1->target == picture &&
+         imageAction1->timer == 1.0f && show1->target == locator1 && desc1->target == descPanel &&
+         std::strcmp(desc1->text, "description one") == 0 &&
+         delay1->requiredProgress == 3.0f && hideLocator1->target == locator1 &&
+         hideMission1->target == missionName && hideSummary1->target == summaryPanel &&
+         fade1->target == picture && fade1->alpha == 0.0f && hideDesc1->target == descPanel;
+
+    const DelayAction *const delay2 = static_cast<const DelayAction *>(actions[13]);
+    const PanelTextAction *const title2 = static_cast<const PanelTextAction *>(actions[14]);
+    const PanelTextAction *const summary2 = static_cast<const PanelTextAction *>(actions[15]);
+    const ImageTimedAction *const imageAction2 = static_cast<const ImageTimedAction *>(actions[16]);
+    const ElementAction *const show2 = static_cast<const ElementAction *>(actions[17]);
+    const PanelTextAction *const desc2 = static_cast<const PanelTextAction *>(actions[18]);
+    const DelayAction *const delay3 = static_cast<const DelayAction *>(actions[19]);
+    const ElementAction *const hideLocator2 = static_cast<const ElementAction *>(actions[20]);
+    const ElementAction *const hideMission2 = static_cast<const ElementAction *>(actions[21]);
+    const ElementAction *const hideSummary2 = static_cast<const ElementAction *>(actions[22]);
+    const FadeAction *const fade2 = static_cast<const FadeAction *>(actions[23]);
+    const ElementAction *const hideDesc2 = static_cast<const ElementAction *>(actions[24]);
+
+    ok = ok && delay2->requiredProgress == 4.0f && title2->target == missionName &&
+         std::strcmp(title2->text, expectedTitle2) == 0 && summary2->target == summaryPanel &&
+         std::strcmp(summary2->text, "summary two") == 0 &&
+         imageAction2->imageRef == &image2 && imageAction2->target == picture &&
+         imageAction2->timer == 1.0f && show2->target == locator2 && desc2->target == descPanel &&
+         std::strcmp(desc2->text, "description two") == 0 &&
+         delay3->requiredProgress == 5.0f && hideLocator2->target == locator2 &&
+         hideMission2->target == missionName && hideSummary2->target == summaryPanel &&
+         fade2->target == picture && fade2->alpha == 0.0f && hideDesc2->target == descPanel;
+
+    networkEnabled = 1;
+    alignas(4) unsigned char networkStorage[kRuntimeSize] = {};
+    HudUiBriefingRuntime *const networkRuntime =
+        reinterpret_cast<HudUiBriefingRuntime *>(networkStorage);
+    ActionNode networkSentinel = {};
+    networkSentinel.prev = &networkSentinel;
+    networkSentinel.next = &networkSentinel;
+    *reinterpret_cast<ActionNode **>(networkStorage + kActionQueueHeadOffset) = &networkSentinel;
+    ok = ok && networkRuntime->BuildObjectiveActionsFromIndex(1) == 0 &&
+         *reinterpret_cast<int *>(networkStorage + kActionQueueCountOffset) == 0;
+
+    cursor = sentinel.next;
+    while (cursor != &sentinel) {
+        ActionNode *const next = cursor->next;
+        ::operator delete(cursor->action);
+        ::operator delete(cursor);
+        cursor = next;
+    }
+
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_HudSensorTracker.missionId = oldMissionId;
+    g_HudSensorTracker.objectiveCount = oldObjectiveCount;
+    for (int index = 0; index < 3; ++index) {
+        g_HudSensorTracker.objectiveSlots[index] = oldSlots[index];
+    }
+    g_zLoc_MessagesDllHandle = oldMessagesDll;
+    FreeLibrary(messagesDll);
+
+    return ok ? 0 : 1;
 }

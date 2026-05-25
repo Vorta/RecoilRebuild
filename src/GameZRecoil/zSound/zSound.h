@@ -47,6 +47,8 @@ struct zSndPlayHandle {
     int backendState2;
 
     RECOIL_NOINLINE int RECOIL_THISCALL StopIfActive();
+    RECOIL_NOINLINE int RECOIL_THISCALL SetFreqScaled(float scale);
+    RECOIL_NOINLINE void RECOIL_THISCALL SetEnableScale(float scale);
     RECOIL_NOINLINE int RECOIL_FASTCALL Update3DDispatch(zVec3 *worldPos, zVec3 *velocity,
                                                                   int velocityScaleMode);
     RECOIL_NOINLINE int RECOIL_FASTCALL Update3D(zVec3 *worldPos, zVec3 *velocity,

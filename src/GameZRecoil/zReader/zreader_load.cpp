@@ -597,6 +597,18 @@ zUtil_ZRDR_SetSearchPath(const char *pathText) {
     return 0;
 }
 
+// Reimplements 0x48cce0: zUtil_ZRDR_AppendSearchPath
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
+zUtil_ZRDR_AppendSearchPath(const char *pathText) {
+    if (g_zRdr_SearchPathList == 0) {
+        g_zRdr_SearchPathList = zUtil_ZRDR_CreateSearchPathList(pathText);
+        return 0;
+    }
+
+    zUtil::ZRDR_AddSearchPaths(g_zRdr_SearchPathList, pathText);
+    return 0;
+}
+
 namespace zUtil {
 // Reimplements 0x48cc70: zUtil::ZRDR_Init
 RECOIL_NOINLINE int RECOIL_FASTCALL ZRDR_Init(const char *pathText) {

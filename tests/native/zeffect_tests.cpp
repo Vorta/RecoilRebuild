@@ -1,19 +1,39 @@
 #include "Battlesport/HudSensorTracker.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zEffect/zEffect.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zUtil/zZbd.h"
+#include "GameZRecoil/zVideo/zVideo.h"
 #include "zDi.h"
 
 #include <windows.h>
 
+#include <cmath>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <new>
 
+extern "C" unsigned int g_HudUi_InvalidateMask;
+
 namespace {
+constexpr std::size_t kEffectFxPass3ConfigSize = 0x1f0;
+constexpr std::size_t kEffectFxPass3RootElementOffset = 0x28;
+constexpr std::size_t kEffectFxPass3RootPackedColorOffset = 0x60;
+constexpr std::size_t kEffectFxPass3RootAlphaOffset = 0x68;
+constexpr std::size_t kEffectFxPass3SlotsOffset = 0x70;
+constexpr std::size_t kEffectFxPass3SlotSize = 0x4c;
+constexpr std::size_t kEffectFxPass3SlotCurrentRadiusOffset = 0x38;
+constexpr std::size_t kEffectFxPass3SlotMaxRadiusOffset = 0x3c;
+constexpr std::size_t kEffectFxPass3SlotExtentOffset = 0x40;
+constexpr std::size_t kEffectFxPass3SlotSinFreqOffset = 0x44;
+constexpr std::size_t kEffectFxPass3SlotSinPhaseOffset = 0x48;
+constexpr std::size_t kEffectFxPass3SlotWriteIndexOffset = 0x1ec;
+
 int g_hudSensorVisibleCallCount = 0;
 int g_hudSensorLastVisible = -1;
 int g_hudSensorDeleteCallCount = 0;
@@ -72,6 +92,30 @@ void ResetEffectDirectSoundCounters() {
     g_effectDirectSoundPlayCount = 0;
 }
 
+template <typename T> T &EffectTestFieldAt(void *base, std::size_t offset) {
+    return *reinterpret_cast<T *>(static_cast<std::uint8_t *>(base) + offset);
+}
+
+std::uint8_t *EffectFxPass3ConfigBytes() {
+    return reinterpret_cast<std::uint8_t *>(&g_zVideo_FxPass3ConfigLocal);
+}
+
+template <typename T> T &EffectFxPass3FieldAt(std::size_t offset) {
+    return *reinterpret_cast<T *>(EffectFxPass3ConfigBytes() + offset);
+}
+
+HudUiPanel *EffectTextStackLineAt(HudUiTextStack4 *stack, int index) {
+    return reinterpret_cast<HudUiPanel *>(&stack->lines[index][0]);
+}
+
+void EffectDeleteTextStackLineFonts(HudUiTextStack4 *stack) {
+    for (int index = 0; index < 4; ++index) {
+        HudUiPanel *const panel = EffectTextStackLineAt(stack, index);
+        DeleteObject(panel->hFont);
+        panel->hFont = nullptr;
+    }
+}
+
 std::int32_t __stdcall EffectDirectSoundGetFrequency(void *, std::uint32_t *value) {
     ++g_effectDirectSoundGetFrequencyCount;
     *value = 22050;
@@ -117,6 +161,10 @@ template <typename Method> std::uintptr_t MethodAddress(Method method) {
     return address;
 }
 
+bool FloatNear(float lhs, float rhs) {
+    return std::fabs(lhs - rhs) < 0.0001f;
+}
+
 struct HudSensorTestElement : HudUiElement {
     HudSensorTestElement *RECOIL_THISCALL ScalarDeletingDestructor(std::uint32_t flags) {
         ++g_hudSensorDeleteCallCount;
@@ -157,6 +205,28 @@ void ResetZClassRuntimeForZEffectTest() {
     }
     g_zClass_TypeList_FreeLinkHead = nullptr;
     g_zClass_NodeList_PendingFreeHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+}
+
+void FreeZClassRuntimeForZEffectTest() {
+    for (int i = 0; i < 16; ++i) {
+        for (zClass_TypeListLink *link = zClass_TypeList::Head(i); link != nullptr;) {
+            zClass_TypeListLink *next = link->next;
+            std::free(link);
+            link = next;
+        }
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+        zClass_TypeList::PendingRemovalDirty(i) = 0;
+    }
+
+    for (zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead; link != nullptr;) {
+        zClass_TypeListLink *next = link->next;
+        std::free(link);
+        link = next;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
     g_zClass_TypeList_LiveLinkCount = 0;
     g_zClass_TypeList_PeakLiveLinkCount = 0;
 }
@@ -1399,6 +1469,1339 @@ extern "C" int zeffect_handle_sound_light_events_smoke(void) {
     return 0;
 }
 
+extern "C" int zeffect_handle_light_anim_event_smoke(void) {
+    g_zVideo_RendererType = 0;
+    g_zVideo_PixelPack_RShift = 8;
+    g_zVideo_PixelPack_GShift = 3;
+    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack_RMask = 0xf800;
+    g_zVideo_PixelPack_GMask = 0x07e0;
+
+    zClass_LightDataPartial lightData{};
+    lightData.range1 = 8.0f;
+    lightData.range2 = 16.0f;
+    lightData.specularColor = {0.25f, 0.5f, 0.75f};
+
+    zClass_NodePartial lightNode{};
+    lightNode.classId = 9;
+    lightNode.classData = &lightData;
+
+    zEffectAnimRuntimeNodeRef lightRefs[2] = {};
+    lightRefs[1].runtimeNode = &lightNode;
+
+    zEffectAnimEntry entry = {};
+    entry.lightRefList = lightRefs;
+
+    zEffectAnimSurfaceRuntime runtime = {};
+    runtime.runState = 0;
+    runtime.eventElapsedSec = 0.5f;
+
+    zEffectLightRangeSpecularAnimEvent event = {};
+    event.lightRefIndex = 1;
+    event.initialRangeInner = 4.0f;
+    event.initialRangeOuter = 8.0f;
+    event.rangeInnerDelta = 4.0f;
+    event.rangeOuterDelta = -4.0f;
+    event.initialSpecularR = 0.5f;
+    event.initialSpecularG = -1.0f;
+    event.initialSpecularB = 1.0f;
+    event.specularRDelta = 0.5f;
+    event.specularGDelta = 0.25f;
+    event.specularBDelta = -0.5f;
+    event.durationSec = 1.0f;
+
+    g_zEffect_FrameDeltaRemainingSec = 0.25f;
+    if (zEffect::HandleLightAnimEvent(&entry, &runtime, &event) != 1 ||
+        g_zEffect_FrameDeltaRemainingSec != 0.0f || lightData.range1 != 9.0f ||
+        lightData.range2 != 18.0f || event.currentRangeInner != 5.0f ||
+        event.currentRangeOuter != 7.0f || lightData.specularColor.red != 0.375f ||
+        lightData.specularColor.green != 0.25f || lightData.specularColor.blue != 1.0f ||
+        event.currentSpecularR != 0.625f || event.currentSpecularG != -0.9375f ||
+        event.currentSpecularB != 0.875f) {
+        return 1;
+    }
+
+    runtime.runState = 1;
+    runtime.eventElapsedSec = 1.25f;
+    event.currentRangeInner = -40.0f;
+    event.currentRangeOuter = -100.0f;
+    event.rangeInnerDelta = 0.0f;
+    event.rangeOuterDelta = 0.0f;
+    event.currentSpecularR = 4.0f;
+    event.currentSpecularG = -4.0f;
+    event.currentSpecularB = 0.0f;
+    event.specularRDelta = 0.0f;
+    event.specularGDelta = 0.0f;
+    event.specularBDelta = 0.0f;
+    g_zEffect_FrameDeltaRemainingSec = 0.5f;
+
+    return zEffect::HandleLightAnimEvent(&entry, &runtime, &event) == 2 &&
+                   g_zEffect_FrameDeltaRemainingSec == 0.25f && lightData.range1 == 1.0f &&
+                   lightData.range2 == 2.0f && lightData.specularColor.red == 1.0f &&
+                   lightData.specularColor.green == 0.0f && lightData.specularColor.blue == 1.0f
+               ? 0
+               : 2;
+}
+
+extern "C" int zeffect_handle_fog_event_smoke(void) {
+    zClass_WorldDataPartial worldData{};
+    zClass_NodePartial world{};
+    world.classData = &worldData;
+    g_zEffect_World = &world;
+
+    zEffectAnimEntry entry{};
+    zEffectFogEvent event{};
+    event.flags = 0x0f;
+    event.fogState = 2;
+    event.fogColorR = 0.2f;
+    event.fogColorG = 0.4f;
+    event.fogColorB = 0.6f;
+    event.fogAltitudeMin = -3.0f;
+    event.fogAltitudeMax = 9.0f;
+    event.fogRangeStart = 12.0f;
+    event.fogRangeEnd = 48.0f;
+
+    if (zEffect::HandleFogEvent(&entry, &event) != 2 || worldData.flags != 0x27 ||
+        worldData.fogState != 2 || worldData.ambientColor.red != 0.2f ||
+        worldData.ambientColor.green != 0.4f || worldData.ambientColor.blue != 0.6f ||
+        worldData.fogHeightLow != -3.0f || worldData.fogHeightHigh != 9.0f ||
+        worldData.fogDistanceStart != 12.0f || worldData.fogDistanceEnd != 48.0f) {
+        g_zEffect_World = nullptr;
+        return 1;
+    }
+
+    worldData = {};
+    event.flags = 0;
+    const int result = zEffect::HandleFogEvent(&entry, &event);
+    g_zEffect_World = nullptr;
+    return result == 2 && worldData.flags == 0 ? 0 : 2;
+}
+
+extern "C" int zeffect_handle_camera_params_event_smoke(void) {
+    zClass_CameraDataPartial cameraData{};
+    cameraData.nearClip = 0.25f;
+    cameraData.farClip = 500.0f;
+    cameraData.clipDistance = 16.0f;
+    cameraData.invClipDistanceSq = 1.0f / 256.0f;
+    cameraData.viewportWidth = 320.0f;
+    cameraData.viewportHeight = 200.0f;
+    cameraData.frustumWidth = 640.0f;
+    cameraData.frustumHeight = 480.0f;
+
+    zClass_NodePartial cameraNode{};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+
+    zEffectAnimNodeRef28 nodeRefs[1] = {};
+    nodeRefs[0].node = &cameraNode;
+
+    zEffectAnimEntry entry{};
+    entry.nodeRefList = nodeRefs;
+
+    zEffectAnimSurfaceRuntime runtime{};
+    zEffectCameraEvent event{};
+    event.flags = 0x7f;
+    event.targetNodeRefIndex = 0;
+    event.nearClip = 0.5f;
+    event.farClip = 250.0f;
+    event.clipDistance = 4.0f;
+    event.fovPrimary = 1.0f;
+    event.fovSecondary = 0.5f;
+    event.viewportPrimary = 400.0f;
+    event.viewportSecondary = 300.0f;
+
+    if (zEffect::HandleCameraParamsEvent(&entry, &runtime, &event) != 2 ||
+        cameraData.nearClip != 0.5f || cameraData.farClip != 250.0f ||
+        cameraData.clipDistance != 4.0f || cameraData.invClipDistanceSq != 0.0625f ||
+        cameraData.frustumWidth != 1.0f || cameraData.frustumHeight != 0.5f ||
+        cameraData.viewportWidth != 400.0f || cameraData.viewportHeight != 300.0f ||
+        !FloatNear(cameraData.fovX, 1.0f / 400.0f) ||
+        !FloatNear(cameraData.fovY, 0.5f / 300.0f) ||
+        !FloatNear(cameraData.frustumYaw, (1.0f / 400.0f) * 0.5f) ||
+        !FloatNear(cameraData.frustumPitch, (0.5f / 300.0f) * 0.5f) ||
+        cameraData.localFrustumNormalsDirty != 1 || cameraData.frustumVectorsDirty != 1) {
+        return 1;
+    }
+
+    event.targetNodeRefIndex = -1;
+    cameraData.nearClip = 0.75f;
+    if (zEffect::HandleCameraParamsEvent(&entry, &runtime, &event) != 2 ||
+        cameraData.nearClip != 0.75f) {
+        return 2;
+    }
+
+    event.targetNodeRefIndex = 0;
+    if (zEffect::HandleCameraParamsEvent(nullptr, &runtime, &event) != 2 ||
+        zEffect::HandleCameraParamsEvent(&entry, nullptr, &event) != 2 ||
+        zEffect::HandleCameraParamsEvent(&entry, &runtime, nullptr) != 2) {
+        return 3;
+    }
+
+    return 0;
+}
+
+extern "C" int zeffect_animate_camera_params_over_time_smoke(void) {
+    zClass_CameraDataPartial cameraData{};
+    cameraData.nearClip = 0.25f;
+    cameraData.farClip = 500.0f;
+    cameraData.clipDistance = 16.0f;
+    cameraData.invClipDistanceSq = 1.0f / 256.0f;
+    cameraData.viewportWidth = 320.0f;
+    cameraData.viewportHeight = 200.0f;
+    cameraData.frustumWidth = 640.0f;
+    cameraData.frustumHeight = 480.0f;
+
+    zClass_NodePartial cameraNode{};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+
+    zEffectAnimNodeRef28 nodeRefs[1] = {};
+    nodeRefs[0].node = &cameraNode;
+
+    zEffectAnimEntry entry{};
+    entry.nodeRefList = nodeRefs;
+
+    zEffectAnimSurfaceRuntime runtime{};
+    runtime.runState = 0;
+    runtime.eventElapsedSec = 0.25f;
+
+    zEffectCameraAnimEvent event{};
+    event.flags = 0x7f;
+    event.targetNodeRefIndex = 0;
+    event.nearClipStart = 1.0f;
+    event.nearClipEnd = 3.0f;
+    event.nearClipRate = 4.0f;
+    event.farClipStart = 100.0f;
+    event.farClipEnd = 120.0f;
+    event.farClipRate = 8.0f;
+    event.clipDistanceStart = 10.0f;
+    event.clipDistanceEnd = 12.0f;
+    event.clipDistanceRate = 4.0f;
+    event.fovPrimaryStart = 2.0f;
+    event.fovPrimaryEnd = 2.5f;
+    event.fovPrimaryRate = 0.4f;
+    event.fovSecondaryStart = 1.0f;
+    event.fovSecondaryEnd = 1.5f;
+    event.fovSecondaryRate = 0.8f;
+    event.viewportPrimaryStart = 400.0f;
+    event.viewportPrimaryEnd = 420.0f;
+    event.viewportPrimaryRate = 40.0f;
+    event.viewportSecondaryStart = 200.0f;
+    event.viewportSecondaryEnd = 240.0f;
+    event.viewportSecondaryRate = 80.0f;
+    event.endTime = 1.0f;
+
+    g_zEffect_FrameDeltaRemainingSec = 0.25f;
+    if (zEffect::AnimateCameraParamsOverTime(&entry, &runtime, &event) != 1 ||
+        g_zEffect_FrameDeltaRemainingSec != 0.0f || !FloatNear(cameraData.nearClip, 2.0f) ||
+        !FloatNear(cameraData.farClip, 102.0f) ||
+        !FloatNear(cameraData.clipDistance, 11.0f) ||
+        !FloatNear(cameraData.invClipDistanceSq, 1.0f / 121.0f) ||
+        !FloatNear(cameraData.frustumWidth, 2.1f) ||
+        !FloatNear(cameraData.frustumHeight, 1.2f) ||
+        !FloatNear(cameraData.viewportWidth, 410.0f) ||
+        !FloatNear(cameraData.viewportHeight, 220.0f) ||
+        !FloatNear(cameraData.fovX, 2.1f / 410.0f) ||
+        !FloatNear(cameraData.fovY, 1.2f / 220.0f)) {
+        return 1;
+    }
+
+    runtime.runState = 1;
+    runtime.eventElapsedSec = 1.25f;
+    g_zEffect_FrameDeltaRemainingSec = 0.5f;
+    cameraData.nearClip = 2.0f;
+    cameraData.farClip = 102.0f;
+    cameraData.clipDistance = 11.0f;
+    cameraData.viewportWidth = 410.0f;
+    cameraData.viewportHeight = 220.0f;
+    cameraData.frustumWidth = 2.1f;
+    cameraData.frustumHeight = 1.2f;
+
+    if (zEffect::AnimateCameraParamsOverTime(&entry, &runtime, &event) != 2 ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.25f) ||
+        !FloatNear(cameraData.nearClip, 3.0f) ||
+        !FloatNear(cameraData.farClip, 120.0f) ||
+        !FloatNear(cameraData.clipDistance, 12.0f) ||
+        !FloatNear(cameraData.invClipDistanceSq, 1.0f / 144.0f) ||
+        !FloatNear(cameraData.frustumWidth, 2.5f) ||
+        !FloatNear(cameraData.frustumHeight, 1.5f) ||
+        !FloatNear(cameraData.viewportWidth, 420.0f) ||
+        !FloatNear(cameraData.viewportHeight, 240.0f) ||
+        !FloatNear(cameraData.fovX, 2.5f / 420.0f) ||
+        !FloatNear(cameraData.fovY, 1.5f / 240.0f)) {
+        return 2;
+    }
+
+    event.targetNodeRefIndex = -1;
+    if (zEffect::AnimateCameraParamsOverTime(&entry, &runtime, &event) != 2 ||
+        zEffect::AnimateCameraParamsOverTime(nullptr, &runtime, &event) != 2 ||
+        zEffect::AnimateCameraParamsOverTime(&entry, nullptr, &event) != 2 ||
+        zEffect::AnimateCameraParamsOverTime(&entry, &runtime, nullptr) != 2) {
+        return 3;
+    }
+
+    return 0;
+}
+
+extern "C" int zeffect_handle_rotation_event_smoke(void) {
+    for (int i = 0; i < 16; ++i) {
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.posOffset = {1.0f, 2.0f, 3.0f};
+    zClass_NodePartial cameraNode{};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+
+    zClass_Object3DDataPartial targetData{};
+    zClass_NodePartial targetNode{};
+    targetNode.classId = 5;
+    targetNode.classData = &targetData;
+
+    zClass_Object3DDataPartial basisData{};
+    basisData.rotation = {10.0f, 20.0f, 30.0f};
+    basisData.localMatrix[0] = 1.0f;
+    basisData.localMatrix[4] = 1.0f;
+    basisData.localMatrix[8] = 1.0f;
+    zClass_NodePartial basisNode{};
+    basisNode.classId = 5;
+    basisNode.classData = &basisData;
+
+    zEffectAnimNodeRef28 nodeRefs[2] = {};
+    zEffectAnimEntry entry{};
+    entry.nodeRefList = nodeRefs;
+
+    zEffectTransformEvent event{};
+    event.targetNodeRefIndex = 0;
+    event.vecX = 0.5f;
+    event.vecY = -1.0f;
+    event.vecZ = 4.0f;
+    nodeRefs[0].node = &cameraNode;
+
+    event.flags = 1;
+    if (zEffect::HandleRotationEvent(&entry, &event) != 2 ||
+        !FloatNear(cameraData.posOffset.x, 1.5f) ||
+        !FloatNear(cameraData.posOffset.y, 1.0f) ||
+        !FloatNear(cameraData.posOffset.z, 7.0f) || cameraData.transformDirty != 1) {
+        return 1;
+    }
+
+    event.flags = 0;
+    event.vecX = 8.0f;
+    event.vecY = 9.0f;
+    event.vecZ = 10.0f;
+    if (zEffect::HandleRotationEvent(&entry, &event) != 2 ||
+        !FloatNear(cameraData.posOffset.x, 8.0f) ||
+        !FloatNear(cameraData.posOffset.y, 9.0f) ||
+        !FloatNear(cameraData.posOffset.z, 10.0f)) {
+        return 2;
+    }
+
+    nodeRefs[0].node = &targetNode;
+    event.flags = 1;
+    event.vecX = 0.25f;
+    event.vecY = 0.5f;
+    event.vecZ = 0.75f;
+    targetData.rotation = {1.0f, 2.0f, 3.0f};
+    targetData.flags = 0x18;
+    if (zEffect::HandleRotationEvent(&entry, &event) != 2 ||
+        !FloatNear(targetData.rotation.x, 1.25f) ||
+        !FloatNear(targetData.rotation.y, 2.5f) ||
+        !FloatNear(targetData.rotation.z, 3.75f) || (targetData.flags & 0x08) != 0) {
+        return 3;
+    }
+
+    event.flags = 0;
+    event.vecX = 4.0f;
+    event.vecY = 5.0f;
+    event.vecZ = 6.0f;
+    if (zEffect::HandleRotationEvent(&entry, &event) != 2 ||
+        !FloatNear(targetData.rotation.x, 4.0f) ||
+        !FloatNear(targetData.rotation.y, 5.0f) ||
+        !FloatNear(targetData.rotation.z, 6.0f)) {
+        return 4;
+    }
+
+    nodeRefs[1].node = &basisNode;
+    event.flags = 2;
+    event.basisNodeRefIndex = 1;
+    event.vecX = 1.0f;
+    event.vecY = 2.0f;
+    event.vecZ = 3.0f;
+    if (zEffect::HandleRotationEvent(&entry, &event) != 2 ||
+        !FloatNear(targetData.rotation.x, 11.0f) ||
+        !FloatNear(targetData.rotation.y, 22.0f) ||
+        !FloatNear(targetData.rotation.z, 33.0f)) {
+        return 5;
+    }
+
+    int matrixIdentityFlags[3] = {};
+    float *matrixSlots[3] = {};
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    event.flags = 4;
+    event.vecX = 7.0f;
+    event.vecY = 8.0f;
+    event.vecZ = 9.0f;
+    if (zEffect::HandleRotationEvent(&entry, &event) != 2 ||
+        !FloatNear(targetData.rotation.x, 7.0f) ||
+        !FloatNear(targetData.rotation.y, 8.0f) ||
+        !FloatNear(targetData.rotation.z, 9.0f)) {
+        zMath::g_currentMatrixIdentityFlagSlot = nullptr;
+        zMath::g_currentMatrixPtrSlot = nullptr;
+        return 6;
+    }
+
+    zMath::g_currentMatrixIdentityFlagSlot = nullptr;
+    zMath::g_currentMatrixPtrSlot = nullptr;
+    for (zClass_TypeListLink *link = zClass_TypeList::Head(7); link != nullptr;) {
+        zClass_TypeListLink *next = link->next;
+        std::free(link);
+        link = next;
+    }
+    zClass_TypeList::Head(7) = nullptr;
+    zClass_TypeList::Tail(7) = nullptr;
+    return 0;
+}
+
+extern "C" int zeffect_handle_position_event_smoke(void) {
+    ResetZClassRuntimeForZEffectTest();
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.targetOrEuler = {1.0f, 2.0f, 3.0f};
+    zClass_NodePartial cameraNode{};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+
+    zClass_Object3DDataPartial objectData{};
+    objectData.localMatrix[0] = 1.0f;
+    objectData.localMatrix[4] = 1.0f;
+    objectData.localMatrix[8] = 1.0f;
+    objectData.localMatrix[9] = 1.0f;
+    objectData.localMatrix[10] = 2.0f;
+    objectData.localMatrix[11] = 3.0f;
+    zClass_NodePartial objectNode{};
+    objectNode.classId = 5;
+    objectNode.classData = &objectData;
+
+    zClass_Object3DDataPartial basisData{};
+    basisData.localMatrix[0] = 1.0f;
+    basisData.localMatrix[4] = 1.0f;
+    basisData.localMatrix[8] = 1.0f;
+    basisData.localMatrix[9] = 10.0f;
+    basisData.localMatrix[10] = 20.0f;
+    basisData.localMatrix[11] = 30.0f;
+    zClass_NodePartial basisNode{};
+    basisNode.classId = 5;
+    basisNode.classData = &basisData;
+
+    zEffectAnimNodeRef28 nodeRefs[2] = {};
+    zEffectAnimEntry entry{};
+    entry.nodeRefList = nodeRefs;
+
+    zEffectTransformEvent event{};
+    event.targetNodeRefIndex = 0;
+    event.vecX = 4.0f;
+    event.vecY = 5.0f;
+    event.vecZ = 6.0f;
+    nodeRefs[0].node = &cameraNode;
+
+    event.flags = 0;
+    if (zEffect::HandlePositionEvent(&entry, &event) != 2 ||
+        !FloatNear(cameraData.targetOrEuler.x, 4.0f) ||
+        !FloatNear(cameraData.targetOrEuler.y, 5.0f) ||
+        !FloatNear(cameraData.targetOrEuler.z, 6.0f)) {
+        return 1;
+    }
+
+    cameraData.targetOrEuler = {1.0f, 2.0f, 3.0f};
+    event.flags = 1;
+    if (zEffect::HandlePositionEvent(&entry, &event) != 2 ||
+        !FloatNear(cameraData.targetOrEuler.x, 5.0f) ||
+        !FloatNear(cameraData.targetOrEuler.y, 7.0f) ||
+        !FloatNear(cameraData.targetOrEuler.z, 9.0f)) {
+        return 2;
+    }
+
+    nodeRefs[0].node = &objectNode;
+    event.flags = 0;
+    event.vecX = 7.0f;
+    event.vecY = 8.0f;
+    event.vecZ = 9.0f;
+    if (zEffect::HandlePositionEvent(&entry, &event) != 2 ||
+        !FloatNear(objectData.localMatrix[9], 7.0f) ||
+        !FloatNear(objectData.localMatrix[10], 8.0f) ||
+        !FloatNear(objectData.localMatrix[11], 9.0f)) {
+        return 3;
+    }
+
+    objectData.localMatrix[9] = 1.0f;
+    objectData.localMatrix[10] = 2.0f;
+    objectData.localMatrix[11] = 3.0f;
+    objectData.flags = 0x18;
+    objectNode.flags = 0;
+    event.flags = 1;
+    event.vecX = 2.0f;
+    event.vecY = 3.0f;
+    event.vecZ = 4.0f;
+    if (zEffect::HandlePositionEvent(&entry, &event) != 2 ||
+        !FloatNear(objectData.localMatrix[9], 3.0f) ||
+        !FloatNear(objectData.localMatrix[10], 5.0f) ||
+        !FloatNear(objectData.localMatrix[11], 7.0f) || (objectData.flags & 0x08) != 0 ||
+        zClass_TypeList::Head(7) == nullptr || zClass_TypeList::Head(7)->node != &objectNode) {
+        return 4;
+    }
+
+    for (zClass_TypeListLink *link = zClass_TypeList::Head(7); link != nullptr;) {
+        zClass_TypeListLink *next = link->next;
+        std::free(link);
+        link = next;
+    }
+    zClass_TypeList::Head(7) = nullptr;
+    zClass_TypeList::Tail(7) = nullptr;
+    objectNode.flags = 0;
+
+    nodeRefs[1].node = &basisNode;
+    event.flags = 0;
+    event.basisNodeRefIndex = 1;
+    event.vecX = 1.0f;
+    event.vecY = 2.0f;
+    event.vecZ = 3.0f;
+    if (zEffect::HandlePositionEvent(&entry, &event) != 2 ||
+        !FloatNear(objectData.localMatrix[9], 11.0f) ||
+        !FloatNear(objectData.localMatrix[10], 22.0f) ||
+        !FloatNear(objectData.localMatrix[11], 33.0f)) {
+        return 5;
+    }
+
+    nodeRefs[0].node = &cameraNode;
+    entry.resetScratch[0] = 0;
+    StoreFloatBits(entry.resetScratch[1], 1.0f);
+    StoreFloatBits(entry.resetScratch[2], 2.0f);
+    StoreFloatBits(entry.resetScratch[3], 3.0f);
+    event.basisNodeRefIndex = -200;
+    event.vecX = 4.0f;
+    event.vecY = 5.0f;
+    event.vecZ = 6.0f;
+    if (zEffect::HandlePositionEvent(&entry, &event) != 2 ||
+        !FloatNear(cameraData.targetOrEuler.x, 5.0f) ||
+        !FloatNear(cameraData.targetOrEuler.y, 7.0f) ||
+        !FloatNear(cameraData.targetOrEuler.z, 9.0f)) {
+        return 6;
+    }
+
+    return 0;
+}
+
+extern "C" int zeffect_handle_activate_event_smoke(void) {
+    zClass_NodePartial targetNode{};
+    targetNode.classId = 5;
+    targetNode.flags = 0;
+
+    zClass_NodePartial boundNode{};
+    boundNode.classId = 1;
+    boundNode.flags = 0x04;
+
+    zEffectAnimNodeRef28 nodeRefs[1] = {};
+    nodeRefs[0].node = &targetNode;
+
+    zEffectAnimEntry entry{};
+    entry.nodeRefList = nodeRefs;
+    entry.boundNode = &boundNode;
+
+    zEffectActivateEvent event{};
+    event.targetNodeRefIndex = 0;
+    event.activeValue = 1;
+    if (zEffect::HandleActivateEvent(&entry, &event) != 2 || (targetNode.flags & 0x04) == 0 ||
+        (boundNode.flags & 0x04) == 0) {
+        return 1;
+    }
+
+    event.targetNodeRefIndex = -100;
+    event.activeValue = 0;
+    if (zEffect::HandleActivateEvent(&entry, &event) != 2 || (boundNode.flags & 0x04) != 0) {
+        return 2;
+    }
+
+    targetNode.flags = 0;
+    boundNode.flags = 0;
+    event.targetNodeRefIndex = -1;
+    event.activeValue = 1;
+    if (zEffect::HandleActivateEvent(&entry, &event) != 2 || (targetNode.flags & 0x04) != 0 ||
+        (boundNode.flags & 0x04) != 0) {
+        return 3;
+    }
+
+    return 0;
+}
+
+extern "C" int zeffect_handle_node_anim_event_smoke(void) {
+    ResetZClassRuntimeForZEffectTest();
+
+    zClass_Object3DDataPartial objectData{};
+    objectData.localMatrix[0] = 1.0f;
+    objectData.localMatrix[4] = 1.0f;
+    objectData.localMatrix[8] = 1.0f;
+    objectData.scale = {1.0f, 1.0f, 1.0f};
+    zClass_NodePartial objectNode{};
+    objectNode.classId = 5;
+    objectNode.classData = &objectData;
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.targetOrEuler = {10.0f, 20.0f, 30.0f};
+    zClass_NodePartial cameraNode{};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+
+    zEffectAnimNodeRef28 nodeRefs[1] = {};
+    zEffectAnimEntry entry{};
+    entry.nodeRefList = nodeRefs;
+    zEffectAnimSurfaceRuntime runtime{};
+    runtime.runState = 0;
+
+    zEffectNodeAnimEvent event{};
+    event.targetNodeRefIndex = 0;
+    if (zEffect::HandleNodeAnimEvent(nullptr, &runtime, &event) != 1 ||
+        zEffect::HandleNodeAnimEvent(&entry, nullptr, &event) != 1 ||
+        zEffect::HandleNodeAnimEvent(&entry, &runtime, nullptr) != 1) {
+        return 1;
+    }
+
+    event.targetNodeRefIndex = -1;
+    if (zEffect::HandleNodeAnimEvent(&entry, &runtime, &event) != 1) {
+        return 2;
+    }
+
+    nodeRefs[0].node = &objectNode;
+    event = {};
+    event.targetNodeRefIndex = 0;
+    event.flags = 0x04;
+    event.positionOrTargetRate.z = 2.0f;
+    event.rotationOrCameraPosStart = {3.0f, 4.0f, 5.0f};
+    event.rotationOrCameraPosEnd = {6.0f, 7.0f, 99.0f};
+    g_zEffect_FrameDeltaRemainingSec = 0.5f;
+    if (zEffect::HandleNodeAnimEvent(&entry, &runtime, &event) != 1 ||
+        !FloatNear(objectData.localMatrix[9], 1.0f) ||
+        !FloatNear(objectData.localMatrix[10], 1.5f) ||
+        !FloatNear(objectData.localMatrix[11], 2.0f) ||
+        !FloatNear(event.rotationOrCameraPosEnd.z, 4.5f) ||
+        !FloatNear(event.rotationOrCameraPosRate.x, 6.0f) ||
+        !FloatNear(event.rotationOrCameraPosRate.y, 7.5f) ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.0f)) {
+        FreeZClassRuntimeForZEffectTest();
+        return 3;
+    }
+
+    nodeRefs[0].node = &cameraNode;
+    event = {};
+    event.targetNodeRefIndex = 0;
+    event.flags = 0x04;
+    event.positionOrTargetRate.z = 2.0f;
+    event.rotationOrCameraPosStart = {3.0f, 4.0f, 0.0f};
+    g_zEffect_FrameDeltaRemainingSec = 0.5f;
+    if (zEffect::HandleNodeAnimEvent(&entry, &runtime, &event) != 1 ||
+        !FloatNear(cameraData.targetOrEuler.x, 11.0f) ||
+        !FloatNear(cameraData.targetOrEuler.y, 21.5f) ||
+        !FloatNear(cameraData.targetOrEuler.z, 32.0f)) {
+        FreeZClassRuntimeForZEffectTest();
+        return 4;
+    }
+
+    nodeRefs[0].node = &objectNode;
+    objectData.rotation = {0.0f, 0.0f, 0.0f};
+    event = {};
+    event.targetNodeRefIndex = 0;
+    event.flags = 0x20;
+    event.scaleRate.z = 2.0f;
+    event.endTimeSec = 3.0f;
+    const float unknownRuntimeVecBZ = 4.0f;
+    std::memcpy(event.unknown_90, &unknownRuntimeVecBZ, sizeof(unknownRuntimeVecBZ));
+    event.runtimeVecA = {0.2f, 0.4f, 0.6f};
+    g_zEffect_FrameDeltaRemainingSec = 0.5f;
+    if (zEffect::HandleNodeAnimEvent(&entry, &runtime, &event) != 1 ||
+        !FloatNear(objectData.rotation.x, 1.0f) ||
+        !FloatNear(objectData.rotation.y, 1.5f) ||
+        !FloatNear(objectData.rotation.z, 2.0f) ||
+        !FloatNear(event.runtimeVecB.x, 2.1f) ||
+        !FloatNear(event.runtimeVecB.y, 3.2f) ||
+        !FloatNear(event.runtimeVecB.z, 4.3f)) {
+        FreeZClassRuntimeForZEffectTest();
+        return 5;
+    }
+
+    objectData.scale = {1.0f, 1.0f, 1.0f};
+    event = {};
+    event.targetNodeRefIndex = 0;
+    event.flags = 0x0100;
+    event.runtimeVecC = {-3.0f, 2.0f, 4.0f};
+    event.runtimeVecD = {2.0f, 4.0f, 6.0f};
+    g_zEffect_FrameDeltaRemainingSec = 0.5f;
+    if (zEffect::HandleNodeAnimEvent(&entry, &runtime, &event) != 1 ||
+        !FloatNear(objectData.scale.x, 0.001f) ||
+        !FloatNear(objectData.scale.y, 2.0f) ||
+        !FloatNear(objectData.scale.z, 3.0f) ||
+        !FloatNear(event.runtimeVecE.x, -3.0f) ||
+        !FloatNear(event.runtimeVecD.x, 3.0f) ||
+        !FloatNear(event.runtimeVecD.y, 6.0f) ||
+        !FloatNear(event.runtimeVecD.z, 9.0f)) {
+        FreeZClassRuntimeForZEffectTest();
+        return 6;
+    }
+
+    g_zEffect_FrameDeltaRemainingSec = 0.0f;
+    FreeZClassRuntimeForZEffectTest();
+    return 0;
+}
+
+extern "C" int zeffect_animate_node_over_time_smoke(void) {
+    ResetZClassRuntimeForZEffectTest();
+
+    zClass_Object3DDataPartial objectData{};
+    objectData.localMatrix[0] = 1.0f;
+    objectData.localMatrix[4] = 1.0f;
+    objectData.localMatrix[8] = 1.0f;
+    objectData.localMatrix[9] = 1.0f;
+    objectData.localMatrix[10] = 2.0f;
+    objectData.localMatrix[11] = 3.0f;
+    objectData.rotation = {1.0f, 2.0f, 3.0f};
+    objectData.scale = {1.0f, 1.0f, 1.0f};
+    zDiPartial objectDi{};
+    zClass_NodePartial objectNode{};
+    objectNode.classId = 5;
+    objectNode.classData = &objectData;
+    objectNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&objectDi);
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.targetOrEuler = {1.0f, 2.0f, 3.0f};
+    cameraData.posOffset = {4.0f, 5.0f, 6.0f};
+    zClass_NodePartial cameraNode{};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+
+    zEffectAnimNodeRef28 nodeRefs[1] = {};
+    zEffectAnimEntry entry{};
+    entry.nodeRefList = nodeRefs;
+    zEffectAnimSurfaceRuntime runtime{};
+    zEffectNodeAnimEvent event{};
+    event.targetNodeRefIndex = 0;
+
+    if (zEffect::AnimateNodeOverTime(nullptr, &runtime, &event) != 2 ||
+        zEffect::AnimateNodeOverTime(&entry, nullptr, &event) != 2 ||
+        zEffect::AnimateNodeOverTime(&entry, &runtime, nullptr) != 2) {
+        FreeZClassRuntimeForZEffectTest();
+        return 1;
+    }
+
+    event.targetNodeRefIndex = -1;
+    if (zEffect::AnimateNodeOverTime(&entry, &runtime, &event) != 2) {
+        FreeZClassRuntimeForZEffectTest();
+        return 2;
+    }
+
+    nodeRefs[0].node = &objectNode;
+    runtime = {};
+    runtime.runState = 0;
+    runtime.eventElapsedSec = 1.0f;
+    event = {};
+    event.targetNodeRefIndex = 0;
+    event.flags = 0x0f;
+    event.nodeAlphaStart = 0.5f;
+    event.nodeAlphaRate = 0.2f;
+    event.positionOrTargetStart = {10.0f, 20.0f, 30.0f};
+    event.positionOrTargetRate = {4.0f, 8.0f, 12.0f};
+    event.rotationOrCameraPosStart = {1.0f, 2.0f, 3.0f};
+    event.rotationOrCameraPosRate = {4.0f, 8.0f, 12.0f};
+    event.scaleStart = {2.0f, 3.0f, 4.0f};
+    event.scaleRate = {-20.0f, 4.0f, 8.0f};
+    event.endTimeSec = 2.0f;
+    g_zEffect_FrameDeltaRemainingSec = 0.25f;
+    if (zEffect::AnimateNodeOverTime(&entry, &runtime, &event) != 1 ||
+        !FloatNear(objectData.localMatrix[9], 11.0f) ||
+        !FloatNear(objectData.localMatrix[10], 22.0f) ||
+        !FloatNear(objectData.localMatrix[11], 33.0f) ||
+        !FloatNear(objectData.rotation.x, 2.0f) ||
+        !FloatNear(objectData.rotation.y, 4.0f) ||
+        !FloatNear(objectData.rotation.z, 6.0f) ||
+        !FloatNear(objectData.scale.x, 0.001f) ||
+        !FloatNear(objectData.scale.y, 4.0f) ||
+        !FloatNear(objectData.scale.z, 6.0f) ||
+        !FloatNear(objectDi.blendScale, 0.55f) || (objectDi.flags & 0x08) == 0 ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.0f)) {
+        FreeZClassRuntimeForZEffectTest();
+        return 3;
+    }
+
+    runtime.runState = 1;
+    runtime.eventElapsedSec = 3.0f;
+    objectData.scale = {1.0f, 1.0f, 1.0f};
+    objectData.rotation = {0.0f, 0.0f, 0.0f};
+    objectData.localMatrix[9] = 1.0f;
+    objectData.localMatrix[10] = 2.0f;
+    objectData.localMatrix[11] = 3.0f;
+    objectDi.flags = 0x08;
+    objectDi.blendScale = 0.5f;
+    event = {};
+    event.targetNodeRefIndex = 0;
+    event.flags = 0x0f;
+    event.nodeAlphaEnd = 0.0f;
+    event.positionOrTargetEnd = {70.0f, 80.0f, 90.0f};
+    event.positionOrTargetRate = {2.0f, 4.0f, 6.0f};
+    event.rotationOrCameraPosEnd = {7.0f, 8.0f, 9.0f};
+    event.rotationOrCameraPosRate = {2.0f, 4.0f, 6.0f};
+    event.scaleEnd = {1.5f, 1.6f, 1.7f};
+    event.scaleRate = {2.0f, 4.0f, 6.0f};
+    event.endTimeSec = 2.5f;
+    g_zEffect_FrameDeltaRemainingSec = 1.0f;
+    if (zEffect::AnimateNodeOverTime(&entry, &runtime, &event) != 2 ||
+        !FloatNear(objectData.localMatrix[9], 70.0f) ||
+        !FloatNear(objectData.localMatrix[10], 80.0f) ||
+        !FloatNear(objectData.localMatrix[11], 90.0f) ||
+        !FloatNear(objectData.rotation.x, 7.0f) ||
+        !FloatNear(objectData.rotation.y, 8.0f) ||
+        !FloatNear(objectData.rotation.z, 9.0f) ||
+        !FloatNear(objectData.scale.x, 1.5f) ||
+        !FloatNear(objectData.scale.y, 1.6f) ||
+        !FloatNear(objectData.scale.z, 1.7f) ||
+        !FloatNear(objectDi.blendScale, 0.0f) || (objectDi.flags & 0x08) != 0 ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.5f)) {
+        FreeZClassRuntimeForZEffectTest();
+        return 4;
+    }
+
+    nodeRefs[0].node = &cameraNode;
+    runtime = {};
+    runtime.runState = 0;
+    runtime.eventElapsedSec = 0.5f;
+    event = {};
+    event.targetNodeRefIndex = 0;
+    event.flags = 0x03;
+    event.positionOrTargetStart = {10.0f, 20.0f, 30.0f};
+    event.positionOrTargetRate = {0.4f, 0.8f, 1.2f};
+    event.rotationOrCameraPosStart = {1.0f, 2.0f, 3.0f};
+    event.rotationOrCameraPosRate = {4.0f, 8.0f, 12.0f};
+    event.endTimeSec = 1.0f;
+    g_zEffect_FrameDeltaRemainingSec = 0.25f;
+    if (zEffect::AnimateNodeOverTime(&entry, &runtime, &event) != 1 ||
+        !FloatNear(cameraData.targetOrEuler.x, 10.1f) ||
+        !FloatNear(cameraData.targetOrEuler.y, 20.2f) ||
+        !FloatNear(cameraData.targetOrEuler.z, 30.3f) ||
+        !FloatNear(cameraData.posOffset.x, 2.0f) ||
+        !FloatNear(cameraData.posOffset.y, 4.0f) ||
+        !FloatNear(cameraData.posOffset.z, 6.0f) ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.0f)) {
+        FreeZClassRuntimeForZEffectTest();
+        return 5;
+    }
+
+    g_zEffect_FrameDeltaRemainingSec = 0.0f;
+    FreeZClassRuntimeForZEffectTest();
+    return 0;
+}
+
+extern "C" int zeffect_handle_node_scale_event_smoke(void) {
+    for (int i = 0; i < 16; ++i) {
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+
+    zClass_Object3DDataPartial data{};
+    data.flags = 0x18;
+    zClass_NodePartial node{};
+    node.classId = 5;
+    node.classData = &data;
+
+    zEffectAnimNodeRef28 nodeRefs[1] = {};
+    nodeRefs[0].node = &node;
+
+    zEffectAnimEntry entry{};
+    entry.nodeRefList = nodeRefs;
+
+    zEffectNodeScaleEvent event{};
+    event.targetNodeRefIndex = 0;
+    event.scaleX = 2.0f;
+    event.scaleY = 3.0f;
+    event.scaleZ = 4.0f;
+
+    if (zEffect::HandleNodeScaleEvent(&entry, &event) != 2 ||
+        !FloatNear(data.scale.x, 2.0f) || !FloatNear(data.scale.y, 3.0f) ||
+        !FloatNear(data.scale.z, 4.0f) || (data.flags & 0x18) != 0 ||
+        (data.flags & 0x21) != 0x21 || (node.flags & 0x02000003) != 0x02000003 ||
+        zClass_TypeList::Head(7) == nullptr || zClass_TypeList::Head(7)->node != &node) {
+        return 1;
+    }
+
+    for (zClass_TypeListLink *link = zClass_TypeList::Head(7); link != nullptr;) {
+        zClass_TypeListLink *next = link->next;
+        std::free(link);
+        link = next;
+    }
+    zClass_TypeList::Head(7) = nullptr;
+    zClass_TypeList::Tail(7) = nullptr;
+    return 0;
+}
+
+extern "C" int zeffect_anim_keyframe_sample_smoke(void) {
+    struct KeyframeBlock {
+        zEffectKeyframeEvent event;
+        zEffectKeyframeSampleHeader sample;
+        zEffectKeyframeSampleChannel channels[3];
+    };
+
+    KeyframeBlock block = {};
+    zEffectAnimSurfaceRuntime runtime = {};
+    runtime.currentEvent = &block.event.header;
+    runtime.eventElapsedSec = 0.5f;
+
+    block.event.header.recordSize = sizeof(block);
+    block.event.currentKeyframeOffset = sizeof(zEffectKeyframeEvent);
+    block.event.keyframeLocalTime = 12.0f;
+    block.event.lookaheadAdvanceCount = 2;
+    block.sample.channelFlags = 7;
+
+    if (zEffect_Anim::AdvanceKeyframeSample(&runtime, &block.event, &block.sample) != 0 ||
+        block.event.currentKeyframeOffset != sizeof(block) ||
+        block.event.keyframeLocalTime != 0.0f || block.event.lookaheadAdvanceCount != 3) {
+        return 1;
+    }
+
+    for (int i = 0; i < 16; ++i) {
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+
+    KeyframeBlock runBlock = {};
+    zClass_Object3DDataPartial data = {};
+    zClass_NodePartial node = {};
+    node.classData = &data;
+    node.classId = 5;
+
+    zEffectAnimSurfaceRuntime runRuntime = {};
+    runRuntime.currentEvent = &runBlock.event.header;
+    runRuntime.eventElapsedSec = 0.5f;
+
+    runBlock.event.header.recordSize = sizeof(runBlock);
+    runBlock.event.targetNodeRefIndex = 0;
+    runBlock.event.currentKeyframeOffset = sizeof(zEffectKeyframeEvent);
+    runBlock.sample.channelFlags = 7;
+    runBlock.sample.startTimeSec = 0.0f;
+    runBlock.sample.endTimeSec = 1.0f;
+
+    runBlock.channels[0].baseQuat = {1.0f, 2.0f, 3.0f, 0.0f};
+    runBlock.channels[0].rate = {10.0f, 20.0f, 30.0f};
+    runBlock.channels[1].baseQuat = {1.0f, 0.0f, 0.0f, 0.0f};
+    runBlock.channels[1].rate = {0.0f, 0.0f, 0.0f};
+    runBlock.channels[2].baseQuat = {2.0f, 3.0f, 4.0f, 0.0f};
+    runBlock.channels[2].rate = {2.0f, 4.0f, 6.0f};
+
+    float deltaTime = 0.0f;
+    const float consumed = zEffect_Anim::AnimateKeyframeSample(
+        &runRuntime, &runBlock.event, &node, &runBlock.sample, &deltaTime);
+    if (!FloatNear(consumed, 0.5f) || !FloatNear(deltaTime, 0.5f) ||
+        !FloatNear(runBlock.event.keyframeLocalTime, 0.5f) ||
+        !FloatNear(data.localMatrix[9], 6.0f) || !FloatNear(data.localMatrix[10], 12.0f) ||
+        !FloatNear(data.localMatrix[11], 18.0f) || !FloatNear(data.rotation.x, 0.0f) ||
+        !FloatNear(data.rotation.y, 0.0f) || !FloatNear(data.rotation.z, 0.0f) ||
+        !FloatNear(data.scale.x, 3.0f) || !FloatNear(data.scale.y, 5.0f) ||
+        !FloatNear(data.scale.z, 7.0f)) {
+        return 2;
+    }
+
+    zEffectAnimEntry entry = {};
+    zEffectAnimNodeRef28 nodeRefs[1] = {};
+    nodeRefs[0].node = &node;
+    entry.nodeRefList = nodeRefs;
+    runBlock.event.currentKeyframeOffset = sizeof(zEffectKeyframeEvent);
+    runBlock.event.keyframeLocalTime = 0.0f;
+    runBlock.event.lookaheadAdvanceCount = 0;
+    runRuntime.runState = 0;
+    g_zEffect_FrameDeltaRemainingSec = 0.5f;
+    if (zEffect_Anim::AdvanceKeyframe(&entry, &runRuntime, &runBlock.event) != 1 ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.0f)) {
+        return 3;
+    }
+
+    zEffectEvaluateKeyframeEvent evaluateEvent = {};
+    evaluateEvent.targetNodeRefIndex = 0;
+    evaluateEvent.litFlag = 1;
+    evaluateEvent.hasAlphaScale = 1;
+    evaluateEvent.alphaScale = 0.25f;
+    data.flags = 0;
+    data.alphaScale = 0.0f;
+    if (zEffect_Anim::EvaluateKeyframe(&entry, &evaluateEvent) != 2 ||
+        (data.flags & 0x02) == 0 || !FloatNear(data.alphaScale, 0.25f)) {
+        return 4;
+    }
+
+    zEffectRunKeyframeEvent runEvent = {};
+    runEvent.targetNodeRefIndex = 0;
+    runEvent.startLitFlag = 1;
+    runEvent.endLitFlag = 0;
+    runEvent.startAlphaScale = 0.2f;
+    runEvent.endAlphaScale = 0.8f;
+    runEvent.alphaScaleRate = 0.5f;
+    runEvent.endTimeSec = 1.0f;
+    runRuntime.runState = 0;
+    runRuntime.eventElapsedSec = 0.25f;
+    g_zEffect_FrameDeltaRemainingSec = 0.25f;
+    data.flags = 0;
+    data.alphaScale = 0.0f;
+    if (zEffect_Anim::RunKeyframes(&entry, &runRuntime, &runEvent) != 1 ||
+        (data.flags & 0x02) == 0 || !FloatNear(data.alphaScale, 0.325f) ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.0f)) {
+        return 5;
+    }
+
+    runRuntime.runState = 1;
+    runRuntime.eventElapsedSec = 1.5f;
+    g_zEffect_FrameDeltaRemainingSec = 0.75f;
+    data.flags = 0x02;
+    data.alphaScale = 0.5f;
+    if (zEffect_Anim::RunKeyframes(&entry, &runRuntime, &runEvent) != 2 ||
+        (data.flags & 0x02) != 0 || !FloatNear(data.alphaScale, 0.8f) ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.5f)) {
+        return 6;
+    }
+
+    for (zClass_TypeListLink *link = zClass_TypeList::Head(7); link != nullptr;) {
+        zClass_TypeListLink *next = link->next;
+        std::free(link);
+        link = next;
+    }
+    zClass_TypeList::Head(7) = nullptr;
+    zClass_TypeList::Tail(7) = nullptr;
+    return 0;
+}
+
+extern "C" int zeffect_parent_attach_detach_events_smoke(void) {
+    ResetZClassRuntimeForZEffectTest();
+
+    zClass_NodePartial parentNode = {};
+    zClass_NodePartial childNode = {};
+    zClass_NodePartial beamNode = {};
+    zClass_Object3DDataPartial beamData = {};
+    zClass_NodePartial attachNode = {};
+    zDiPartial attachDi = {};
+    zDiEntryPartial attachEntry = {};
+    zModel_MaterialPartial attachMaterial = {};
+    zModel_MaterialCyclePartial attachCycle = {};
+    zImage_TexDirEntryPartial frameA = {};
+    zImage_TexDirEntryPartial frameB = {};
+    zImage_TexDirEntryPartial *frames[2] = {&frameA, &frameB};
+
+    parentNode.classId = 3;
+    childNode.classId = 3;
+    beamNode.classId = 5;
+    beamNode.classData = &beamData;
+    beamData.scale = {1.0f, 1.5f, 1.0f};
+
+    attachDi.entries = &attachEntry;
+    attachEntry.material = &attachMaterial;
+    attachMaterial.cycle = &attachCycle;
+    attachMaterial.currentTextureDirectoryEntry = &frameB;
+    attachCycle.currentFrame = 1.0f;
+    attachCycle.frameCount = 2;
+    attachCycle.frameTable = frames;
+    attachNode.userDataOrDiRef =
+        static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(&attachDi));
+
+    zEffectAnimNodeRef28 nodeRefs[4] = {};
+    nodeRefs[1].node = &parentNode;
+    nodeRefs[2].node = &childNode;
+    nodeRefs[3].node = &beamNode;
+
+    zEffectAnimEntry entry = {};
+    entry.nodeRefList = nodeRefs;
+
+    zEffectParentChildEvent parentEvent = {};
+    parentEvent.parentNodeRefIndex = 1;
+    parentEvent.childNodeRefIndex = 2;
+    if (zEffect::HandleAddChildEvent(&entry, &parentEvent) != 2 ||
+        parentNode.listCountB != 1 || parentNode.listB[0] != &childNode ||
+        childNode.listCountA != 1 || childNode.listA[0] != &parentNode) {
+        FreeZClassRuntimeForZEffectTest();
+        std::free(parentNode.listB);
+        std::free(childNode.listA);
+        return 1;
+    }
+
+    if (zEffect::HandleAddChildEvent(&entry, &parentEvent) != 2 ||
+        parentNode.listCountB != 1 || childNode.listCountA != 1) {
+        FreeZClassRuntimeForZEffectTest();
+        std::free(parentNode.listB);
+        std::free(childNode.listA);
+        return 2;
+    }
+
+    if (zEffect::HandleRemoveChildEvent(&entry, &parentEvent) != 2 ||
+        parentNode.listCountB != 0 || childNode.listCountA != 0) {
+        FreeZClassRuntimeForZEffectTest();
+        std::free(parentNode.listB);
+        std::free(childNode.listA);
+        return 3;
+    }
+
+    zEffectAnimNodeRef28 attachRefs[1] = {};
+    attachRefs[0].node = &attachNode;
+    entry.nodeRefList = attachRefs;
+
+    zEffectAnimSurfaceRuntime runtime = {};
+    zEffectAttachEvent attachEvent = {};
+    attachEvent.flags = 1;
+    attachEvent.targetNodeRefIndex = 0;
+    attachEvent.variantIndex = 0;
+    if (zEffect::HandleAttachEvent(&entry, &runtime, &attachEvent) != 2 ||
+        attachCycle.currentFrame != 0.0f || attachMaterial.currentTextureDirectoryEntry != &frameA) {
+        FreeZClassRuntimeForZEffectTest();
+        std::free(parentNode.listB);
+        std::free(childNode.listA);
+        return 4;
+    }
+
+    const zVec3 src{0.0f, 0.0f, 0.0f};
+    const zVec3 dest{0.0f, 0.0f, -2.0f};
+    const float beamLength = zEffect::UpdateBeamNodeBetweenPoints(&beamNode, &src, &dest);
+    if (!FloatNear(beamLength, 2.0f) || !FloatNear(beamData.localMatrix[9], 0.0f) ||
+        !FloatNear(beamData.localMatrix[10], 0.0f) ||
+        !FloatNear(beamData.localMatrix[11], 0.0f) || !FloatNear(beamData.rotation.x, 0.0f) ||
+        !FloatNear(beamData.rotation.y, 0.0f) || !FloatNear(beamData.rotation.z, 0.0f) ||
+        !FloatNear(beamData.scale.x, 1.0f) || !FloatNear(beamData.scale.y, 1.5f) ||
+        !FloatNear(beamData.scale.z, 2.0f)) {
+        FreeZClassRuntimeForZEffectTest();
+        std::free(parentNode.listB);
+        std::free(childNode.listA);
+        return 5;
+    }
+
+    const zVec3 fracDest{0.0f, 0.0f, -4.0f};
+    beamData.scale = {2.0f, 2.5f, 1.0f};
+    const float fracLength =
+        zEffect::UpdateBeamNodeBetweenFractions(&beamNode, &src, 0.25f, &fracDest, 0.75f);
+    if (!FloatNear(fracLength, 2.0f) || !FloatNear(beamData.localMatrix[9], 0.0f) ||
+        !FloatNear(beamData.localMatrix[10], 0.0f) ||
+        !FloatNear(beamData.localMatrix[11], -1.0f) || !FloatNear(beamData.scale.x, 2.0f) ||
+        !FloatNear(beamData.scale.y, 2.5f) || !FloatNear(beamData.scale.z, 2.0f)) {
+        FreeZClassRuntimeForZEffectTest();
+        std::free(parentNode.listB);
+        std::free(childNode.listA);
+        return 6;
+    }
+
+    zEffectAnimNodeRef28 detachRefs[4] = {};
+    detachRefs[3].node = &beamNode;
+    entry.nodeRefList = detachRefs;
+    runtime.runState = 1;
+    runtime.eventElapsedSec = 0.25f;
+    g_zEffect_FrameDeltaRemainingSec = 0.25f;
+
+    zEffectBeamDetachEvent detachEvent = {};
+    detachEvent.flags = 0x0108;
+    detachEvent.beamNodeRefIndex = 3;
+    detachEvent.pointA = {0.0f, 0.0f, 0.0f};
+    detachEvent.pointB = {0.0f, 0.0f, -2.0f};
+    detachEvent.endTimeSec = 1.0f;
+    if (zEffect::HandleDetachEvent(&entry, &runtime, &detachEvent) != 1 ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.0f) ||
+        !FloatNear(beamData.localMatrix[11], 0.0f) || !FloatNear(beamData.scale.z, 2.0f)) {
+        FreeZClassRuntimeForZEffectTest();
+        std::free(parentNode.listB);
+        std::free(childNode.listA);
+        return 7;
+    }
+
+    FreeZClassRuntimeForZEffectTest();
+    std::free(parentNode.listB);
+    std::free(childNode.listA);
+    return 0;
+}
+
+extern "C" int zeffect_handle_screen_fx_events_smoke(void) {
+    const zVideo_SurfaceStatePartial oldSwSurface = g_zVideo_SwSurfaceState;
+    const float oldScaleX = g_zMath_ProjScaleX;
+    const float oldScaleY = g_zMath_ProjScaleY;
+    const float oldFrameDelta = g_zEffect_FrameDeltaRemainingSec;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    std::uint8_t savedConfig[kEffectFxPass3ConfigSize] = {};
+    std::memcpy(savedConfig, EffectFxPass3ConfigBytes(), sizeof(savedConfig));
+
+    std::memset(EffectFxPass3ConfigBytes(), 0, kEffectFxPass3ConfigSize);
+    EffectFxPass3FieldAt<const HudUiCommon_FTable *>(kEffectFxPass3RootElementOffset) =
+        &g_HudUiCommon_FTable;
+    g_HudUi_InvalidateMask = 0;
+    g_zVideo_PixelPack_RMaskShifted = 0xf8;
+    g_zVideo_PixelPack_GMaskShifted = 0xfc;
+    g_zVideo_PixelPack_RShift = 8;
+    g_zVideo_PixelPack_GShift = 3;
+    g_zVideo_PixelPack_BShiftTo8 = 3;
+
+    zEffectAnimEntry entry = {};
+    zEffectAnimSurfaceRuntime runtime = {};
+    zEffectScreenColorFxEvent colorEvent = {};
+    runtime.eventElapsedSec = 0.5f;
+    colorEvent.redBase = 0.75f;
+    colorEvent.redSlope = 1.0f;
+    colorEvent.greenBase = 0.25f;
+    colorEvent.greenSlope = -1.0f;
+    colorEvent.alphaBase = 0.25f;
+    colorEvent.alphaSlope = 0.5f;
+    colorEvent.blueBase = 0.25f;
+    colorEvent.blueSlope = 0.5f;
+    colorEvent.endTimeSec = 1.0f;
+    g_zEffect_FrameDeltaRemainingSec = 0.25f;
+
+    if (zEffect::HandleScreenColorFxEvent(&entry, &runtime, &colorEvent) != 1 ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.0f) ||
+        EffectFxPass3FieldAt<unsigned short>(kEffectFxPass3RootPackedColorOffset) != 0xf810u ||
+        !FloatNear(static_cast<float>(
+                       EffectFxPass3FieldAt<double>(kEffectFxPass3RootAlphaOffset)),
+                   0.5f)) {
+        std::memcpy(EffectFxPass3ConfigBytes(), savedConfig, sizeof(savedConfig));
+        g_zVideo_SwSurfaceState = oldSwSurface;
+        g_zMath_ProjScaleX = oldScaleX;
+        g_zMath_ProjScaleY = oldScaleY;
+        g_zEffect_FrameDeltaRemainingSec = oldFrameDelta;
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 1;
+    }
+
+    colorEvent.redEnd = 0.0f;
+    colorEvent.greenEnd = 1.0f;
+    colorEvent.alphaEnd = 1.0f;
+    colorEvent.blueEnd = 0.0f;
+    runtime.eventElapsedSec = 1.25f;
+    g_zEffect_FrameDeltaRemainingSec = 0.5f;
+    if (zEffect::HandleScreenColorFxEvent(&entry, &runtime, &colorEvent) != 2 ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.25f) ||
+        EffectFxPass3FieldAt<unsigned short>(kEffectFxPass3RootPackedColorOffset) != 0x07e0u ||
+        !FloatNear(static_cast<float>(
+                       EffectFxPass3FieldAt<double>(kEffectFxPass3RootAlphaOffset)),
+                   1.0f)) {
+        std::memcpy(EffectFxPass3ConfigBytes(), savedConfig, sizeof(savedConfig));
+        g_zVideo_SwSurfaceState = oldSwSurface;
+        g_zMath_ProjScaleX = oldScaleX;
+        g_zMath_ProjScaleY = oldScaleY;
+        g_zEffect_FrameDeltaRemainingSec = oldFrameDelta;
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 2;
+    }
+
+    std::memset(EffectFxPass3ConfigBytes(), 0, kEffectFxPass3ConfigSize);
+    EffectFxPass3FieldAt<const HudUiCommon_FTable *>(kEffectFxPass3RootElementOffset) =
+        &g_HudUiCommon_FTable;
+    HudUiElement *const slot0 =
+        reinterpret_cast<HudUiElement *>(EffectFxPass3ConfigBytes() + kEffectFxPass3SlotsOffset);
+    HudUiElement *const slot1 = reinterpret_cast<HudUiElement *>(
+        EffectFxPass3ConfigBytes() + kEffectFxPass3SlotsOffset + kEffectFxPass3SlotSize);
+    slot0->ftable = &g_HudUiCommon_FTable;
+    slot1->ftable = &g_HudUiCommon_FTable;
+
+    zClass_NodePartial callbackNode = {};
+    entry.callbackNode = &callbackNode;
+    g_zEffect_ConditionalRefPosX = -8.0f;
+    g_zEffect_ConditionalRefPosY = 0.0f;
+    g_zEffect_ConditionalRefPosZ = 0.0f;
+    g_zMath_ProjScaleX = 80.0f;
+    g_zMath_ProjScaleY = -60.0f;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 320;
+    g_zVideo_SwSurfaceState.height = 240;
+
+    zEffectScreenOverlayFxEvent overlayEvent = {};
+    overlayEvent.flagsAndAnchorNodePacked = 0x09;
+    overlayEvent.centerXBase = 100.0f;
+    overlayEvent.centerXSlope = 20.0f;
+    overlayEvent.centerYBase = 200.0f;
+    overlayEvent.centerYSlope = -40.0f;
+    overlayEvent.maxRadiusNearWorld = 4.0f;
+    overlayEvent.maxRadiusFarWorld = 8.0f;
+    overlayEvent.extentBase = 10.0f;
+    overlayEvent.extentSlope = 8.0f;
+    overlayEvent.sinFreqBase = 5.0f;
+    overlayEvent.sinFreqSlope = 2.0f;
+    overlayEvent.sinPhaseBase = 9.0f;
+    overlayEvent.sinPhaseSlope = 4.0f;
+    overlayEvent.endTimeSec = 2.0f;
+    runtime.runState = 0;
+    runtime.eventElapsedSec = 0.5f;
+    g_zEffect_FrameDeltaRemainingSec = 0.5f;
+
+    if (zEffect::HandleScreenOverlayFxEvent(&entry, &runtime, &overlayEvent) != 1 ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.0f) ||
+        !FloatNear(overlayEvent.maxRadiusNearPixels, 40.0f) ||
+        !FloatNear(overlayEvent.maxRadiusFarPixels, 80.0f) ||
+        !FloatNear(overlayEvent.maxRadiusPixelsSlope, 20.0f) ||
+        EffectFxPass3FieldAt<int>(kEffectFxPass3SlotWriteIndexOffset) != 1 ||
+        slot0->x != 110 || slot0->y != 180 ||
+        !FloatNear(EffectFxPass3FieldAt<float>(kEffectFxPass3SlotsOffset +
+                                               kEffectFxPass3SlotMaxRadiusOffset),
+                   50.0f) ||
+        !FloatNear(EffectFxPass3FieldAt<float>(kEffectFxPass3SlotsOffset +
+                                               kEffectFxPass3SlotExtentOffset),
+                   14.0f) ||
+        !FloatNear(EffectFxPass3FieldAt<float>(kEffectFxPass3SlotsOffset +
+                                               kEffectFxPass3SlotSinFreqOffset),
+                   6.0f) ||
+        !FloatNear(EffectFxPass3FieldAt<float>(kEffectFxPass3SlotsOffset +
+                                               kEffectFxPass3SlotSinPhaseOffset),
+                   11.0f)) {
+        std::memcpy(EffectFxPass3ConfigBytes(), savedConfig, sizeof(savedConfig));
+        g_zVideo_SwSurfaceState = oldSwSurface;
+        g_zMath_ProjScaleX = oldScaleX;
+        g_zMath_ProjScaleY = oldScaleY;
+        g_zEffect_FrameDeltaRemainingSec = oldFrameDelta;
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 3;
+    }
+
+    overlayEvent.centerXEnd = 150.0f;
+    overlayEvent.centerYEnd = 175.0f;
+    overlayEvent.extentEnd = 44.0f;
+    overlayEvent.sinFreqEnd = 7.0f;
+    overlayEvent.sinPhaseEnd = 13.0f;
+    runtime.runState = 1;
+    runtime.eventElapsedSec = 2.25f;
+    g_zEffect_FrameDeltaRemainingSec = 0.5f;
+    const std::size_t slot1Offset = kEffectFxPass3SlotsOffset + kEffectFxPass3SlotSize;
+    if (zEffect::HandleScreenOverlayFxEvent(&entry, &runtime, &overlayEvent) != 2 ||
+        !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.25f) ||
+        EffectFxPass3FieldAt<int>(kEffectFxPass3SlotWriteIndexOffset) != 2 ||
+        slot1->x != 150 || slot1->y != 175 ||
+        !FloatNear(EffectFxPass3FieldAt<float>(slot1Offset + kEffectFxPass3SlotMaxRadiusOffset),
+                   80.0f) ||
+        !FloatNear(EffectFxPass3FieldAt<float>(slot1Offset + kEffectFxPass3SlotExtentOffset),
+                   44.0f) ||
+        !FloatNear(EffectFxPass3FieldAt<float>(slot1Offset + kEffectFxPass3SlotSinFreqOffset),
+                   7.0f) ||
+        !FloatNear(EffectFxPass3FieldAt<float>(slot1Offset + kEffectFxPass3SlotSinPhaseOffset),
+                   13.0f)) {
+        std::memcpy(EffectFxPass3ConfigBytes(), savedConfig, sizeof(savedConfig));
+        g_zVideo_SwSurfaceState = oldSwSurface;
+        g_zMath_ProjScaleX = oldScaleX;
+        g_zMath_ProjScaleY = oldScaleY;
+        g_zEffect_FrameDeltaRemainingSec = oldFrameDelta;
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 4;
+    }
+
+    std::memcpy(EffectFxPass3ConfigBytes(), savedConfig, sizeof(savedConfig));
+    g_zVideo_SwSurfaceState = oldSwSurface;
+    g_zMath_ProjScaleX = oldScaleX;
+    g_zMath_ProjScaleY = oldScaleY;
+    g_zEffect_FrameDeltaRemainingSec = oldFrameDelta;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    return 0;
+}
+
 extern "C" int zeffect_anim_activation_prereqs_smoke(void) {
     zEffectAnimEntry entry = {};
     entry.activationPrereqCount = 7;
@@ -1756,6 +3159,42 @@ extern "C" int zeffect_handle_emitter_stop_event_smoke(void) {
     return runningStopOk && frozenOk && zeroIndexOk ? 0 : 3;
 }
 
+extern "C" int zeffect_surface_control_events_smoke(void) {
+    zEffectAnimSurfaceRuntime runtimes[2] = {};
+    std::strcpy(runtimes[0].sequenceName, "idle");
+    std::strcpy(runtimes[1].sequenceName, "burst");
+    runtimes[0].runState = 3;
+    runtimes[1].runState = 3;
+
+    zEffectAnimEntry entry = {};
+    entry.runtimeList = runtimes;
+    entry.runtimeSequenceCount = 2;
+
+    zEffectSurfaceControlEvent event = {};
+    event.surfaceSlotIndex = -1;
+    std::strcpy(event.sequenceName, "burst");
+    if (zEffect::HandleSurfaceStopEvent(&entry, &event) != 2 || event.surfaceSlotIndex != 1 ||
+        runtimes[0].runState != 3 || runtimes[1].runState != 0) {
+        return 1;
+    }
+
+    event.surfaceSlotIndex = 0;
+    if (zEffect::HandleSurfacePlayEvent(&entry, &event) != 2 || runtimes[0].runState != 2) {
+        return 2;
+    }
+
+    event.surfaceSlotIndex = -1;
+    std::strcpy(event.sequenceName, "missing");
+    runtimes[0].runState = 0;
+    runtimes[1].runState = 0;
+    if (zEffect::HandleSurfacePlayEvent(&entry, &event) != 2 || event.surfaceSlotIndex != -1 ||
+        runtimes[0].runState != 0 || runtimes[1].runState != 0) {
+        return 3;
+    }
+
+    return 0;
+}
+
 extern "C" int zeffect_conditional_ref_pos_smoke(void) {
     g_zEffect_ConditionalRefPosEnabled = 0;
     zVec3 refPosition{1.0f, 2.0f, 3.0f};
@@ -1804,6 +3243,126 @@ extern "C" int zeffect_skip_conditional_chain_smoke(void) {
                : 1;
 }
 
+extern "C" int zeffect_trace_upward_hit_smoke(void) {
+    zClass_NodePartial *const oldWorld = g_zEffect_World;
+    const int oldBreakOnFirst = g_cls_di_BreakOnFirstCandidate;
+    const int oldStopAfterFirst = g_cls_di_StopAfterFirstHit;
+
+    zClass_WorldDataPartial worldData = {};
+    zClass_NodePartial world = {};
+    world.classData = &worldData;
+    g_zEffect_World = &world;
+
+    zClass_Object3DDataPartial nodeData = {};
+    nodeData.cachedWorldMatrix[9] = 1.0f;
+    nodeData.cachedWorldMatrix[10] = 2.0f;
+    nodeData.cachedWorldMatrix[11] = 3.0f;
+
+    zClass_NodePartial node = {};
+    node.flags = 0x10;
+    node.classId = 5;
+    node.classData = &nodeData;
+
+    int hit = -1;
+    const float rayHeight = 12.0f;
+    const int nodeResult = zEffect::TraceUpwardHitFromNodeOrPos(&node, nullptr, &rayHeight, &hit);
+    if (nodeResult != 1 || hit != 0 || (node.flags & 0x10) == 0 ||
+        g_cls_di_BreakOnFirstCandidate != 0 || g_cls_di_StopAfterFirstHit != 0) {
+        g_zEffect_World = oldWorld;
+        g_cls_di_BreakOnFirstCandidate = oldBreakOnFirst;
+        g_cls_di_StopAfterFirstHit = oldStopAfterFirst;
+        return 1;
+    }
+
+    zVec3 position = {4.0f, 5.0f, 6.0f};
+    hit = -1;
+    const int posResult = zEffect::TraceUpwardHitFromNodeOrPos(nullptr, &position, nullptr, &hit);
+    if (posResult != 1 || hit != 0 || g_DiPickQueryPoint.x != 4.0f ||
+        g_DiPickQueryPoint.y != 5.0f || g_DiPickQueryPoint.z != 6.0f ||
+        g_DiSegmentEnd.y != 55.0f || g_cls_di_BreakOnFirstCandidate != 0 ||
+        g_cls_di_StopAfterFirstHit != 0) {
+        g_zEffect_World = oldWorld;
+        g_cls_di_BreakOnFirstCandidate = oldBreakOnFirst;
+        g_cls_di_StopAfterFirstHit = oldStopAfterFirst;
+        return 2;
+    }
+
+    hit = 99;
+    if (zEffect::TraceUpwardHitFromNodeOrPos(nullptr, nullptr, &rayHeight, &hit) != 1 ||
+        hit != 99) {
+        g_zEffect_World = oldWorld;
+        g_cls_di_BreakOnFirstCandidate = oldBreakOnFirst;
+        g_cls_di_StopAfterFirstHit = oldStopAfterFirst;
+        return 3;
+    }
+
+    g_zEffect_World = oldWorld;
+    g_cls_di_BreakOnFirstCandidate = oldBreakOnFirst;
+    g_cls_di_StopAfterFirstHit = oldStopAfterFirst;
+    return 0;
+}
+
+extern "C" int zeffect_handle_conditional_chain_event_smoke(void) {
+    const int oldEffectLevel = g_zEffect_ConditionalEffectLevel;
+    const int oldRandIndex = g_zEffect_RandTableIndex;
+    const float oldRandValue = g_zEffect_RandUnitTable[5];
+
+    zEffectConditionalEvent events[3] = {};
+    events[0].header.typeAndStartMode = 0x20;
+    events[0].header.byteSize = sizeof(zEffectConditionalEvent);
+    events[0].conditionMask = 0x04;
+    events[0].conditionThreshold.i32 = 2;
+    events[1].header.typeAndStartMode = 0x21;
+    events[1].header.byteSize = sizeof(zEffectConditionalEvent);
+    events[1].conditionMask = 0x01;
+    events[1].conditionThreshold.f32 = 1.0f;
+    events[2].header.typeAndStartMode = 0x22;
+    events[2].header.byteSize = sizeof(zEffectConditionalEvent);
+
+    zEffectAnimEntry entry = {};
+    zEffectAnimSurfaceRuntime runtime = {};
+    runtime.eventStream = events;
+    runtime.eventStreamSize = sizeof(events);
+    runtime.currentEvent = &events[0];
+
+    g_zEffect_ConditionalEffectLevel = 3;
+    if (zEffect::HandleConditionalChainEvent(&entry, &runtime, &events[0]) != 2 ||
+        runtime.currentEvent != &events[0]) {
+        g_zEffect_ConditionalEffectLevel = oldEffectLevel;
+        g_zEffect_RandTableIndex = oldRandIndex;
+        g_zEffect_RandUnitTable[5] = oldRandValue;
+        return 1;
+    }
+
+    runtime.currentEvent = &events[0];
+    g_zEffect_ConditionalEffectLevel = 1;
+    g_zEffect_RandTableIndex = 5;
+    g_zEffect_RandUnitTable[5] = 0.25f;
+    if (zEffect::HandleConditionalChainEvent(&entry, &runtime, &events[0]) != 2 ||
+        runtime.currentEvent != &events[1] || g_zEffect_RandTableIndex != 6) {
+        g_zEffect_ConditionalEffectLevel = oldEffectLevel;
+        g_zEffect_RandTableIndex = oldRandIndex;
+        g_zEffect_RandUnitTable[5] = oldRandValue;
+        return 2;
+    }
+
+    runtime.currentEvent = &events[0];
+    events[1].conditionMask = 0x04;
+    events[1].conditionThreshold.i32 = 2;
+    if (zEffect::HandleConditionalChainEvent(&entry, &runtime, &events[0]) != 2 ||
+        runtime.currentEvent != &events[2]) {
+        g_zEffect_ConditionalEffectLevel = oldEffectLevel;
+        g_zEffect_RandTableIndex = oldRandIndex;
+        g_zEffect_RandUnitTable[5] = oldRandValue;
+        return 3;
+    }
+
+    g_zEffect_ConditionalEffectLevel = oldEffectLevel;
+    g_zEffect_RandTableIndex = oldRandIndex;
+    g_zEffect_RandUnitTable[5] = oldRandValue;
+    return 0;
+}
+
 extern "C" int zeffect_marker_and_callback_event_smoke(void) {
     zEffectAnimEntry entry = {};
     zEffectAnimSurfaceRuntime runtime = {};
@@ -1832,6 +3391,43 @@ extern "C" int zeffect_marker_and_callback_event_smoke(void) {
                    g_effectAnimEventCallbackValue == 77
                ? 0
                : 4;
+}
+
+extern "C" int zeffect_handle_top_message_event_smoke(void) {
+    HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
+    zEffectAnimTextIdEntry *const oldTextEntries = g_zEffectAnim_TextIdEntryList;
+    const int oldTextEntryCount = g_zEffectAnim_TextIdEntryCount;
+
+    HudUiTopMessageStack top{};
+    top.Constructor();
+    g_HudUiTopMessageStack = &top;
+
+    zEffectAnimTextIdEntry textEntries[1] = {};
+    std::strcpy(textEntries[0].messageKey, "fallback");
+    textEntries[0].messageId = 0;
+    g_zEffectAnim_TextIdEntryList = textEntries;
+    g_zEffectAnim_TextIdEntryCount = 1;
+
+    zEffectTopMessageEvent event = {};
+    event.textIdIndex = -1;
+    const int negativeResult = zEffect::HandleTopMessageEvent(nullptr, &event);
+    HudUiPanel *const line0 = EffectTextStackLineAt(&top, 0);
+    const bool negativeSkipped =
+        negativeResult == 2 && (EffectTestFieldAt<std::uint32_t>(line0, 0x0c) & 0x10u) != 0;
+
+    event.textIdIndex = 0;
+    const int fallbackResult = zEffect::HandleTopMessageEvent(nullptr, &event);
+    const bool fallbackPushed = fallbackResult == 2 &&
+                                std::strcmp(line0->GetLastTextPtr(), "fallback") == 0 &&
+                                EffectTestFieldAt<float>(line0, 0x10) == 3.0f &&
+                                (EffectTestFieldAt<std::uint32_t>(line0, 0x0c) & 0x10u) == 0;
+
+    EffectDeleteTextStackLineFonts(&top);
+    g_HudUiTopMessageStack = oldTopStack;
+    g_zEffectAnim_TextIdEntryList = oldTextEntries;
+    g_zEffectAnim_TextIdEntryCount = oldTextEntryCount;
+
+    return negativeSkipped && fallbackPushed ? 0 : 1;
 }
 
 extern "C" int zeffect_anim_set_on_state_done_callback_smoke(void) {
@@ -1886,6 +3482,20 @@ extern "C" int zeffect_world_and_zbd_setters_smoke(void) {
     g_zEffect_ResourceNode = oldResourceNode;
     g_zEffectAnim_ZbdFilename[0] = '\0';
     return longNameSkipped ? 0 : 4;
+}
+
+extern "C" int zeffect_anim_debug_frame_tag_smoke(void) {
+    const int oldFrameTick = g_zVideo_FrameTick;
+    const int oldDebugFrameTag = g_zEffect_Anim_DebugFrameTag;
+
+    g_zVideo_FrameTick = 123;
+    g_zEffect_Anim_DebugFrameTag = 0;
+    const int result = zEffect::SetAnimDebugFrameTag();
+    const bool ok = result == 124 && g_zEffect_Anim_DebugFrameTag == 124;
+
+    g_zVideo_FrameTick = oldFrameTick;
+    g_zEffect_Anim_DebugFrameTag = oldDebugFrameTag;
+    return ok ? 0 : 1;
 }
 
 extern "C" int zeffect_anim_find_next_async_entry_smoke(void) {
@@ -2129,6 +3739,258 @@ extern "C" int zeffect_anim_reset_for_node_smoke(void) {
     return 0;
 }
 
+extern "C" int zeffect_anim_runtime_sequence_group_smoke(void) {
+    zClass_NodePartial *const oldWorld = g_zEffect_World;
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+    const int oldQueueEnabled = g_zEffectAnim_RecordQueueEnabled;
+    const int oldDispatchEnabled = g_zEffectAnim_DispatchEnabled;
+    const unsigned int oldDispatchTag = g_zEffectAnim_ActivationDispatchTagHigh;
+    const auto oldDispatchCallback = g_zEffectAnim_ActivationDispatchCallback;
+    const int oldSkipStopDelay = g_zEffect_SkipStopDelay;
+    const float oldFrameDelta = g_FrameDeltaTimeSec;
+    const float oldEffectDelta = g_zEffect_FrameDeltaRemainingSec;
+
+    auto cleanup = [&]() {
+        zEffect_Anim::ClearActivationRecords();
+        g_zEffectAnim_RecordQueueEnabled = oldQueueEnabled;
+        g_zEffectAnim_DispatchEnabled = oldDispatchEnabled;
+        g_zEffectAnim_ActivationDispatchCallback = oldDispatchCallback;
+        g_zEffectAnim_ActivationDispatchTagHigh = oldDispatchTag;
+        g_zEffectAnim_EntryList = oldEntryList;
+        g_zEffectAnim_EntryCount = oldEntryCount;
+        g_zEffect_SkipStopDelay = oldSkipStopDelay;
+        g_FrameDeltaTimeSec = oldFrameDelta;
+        g_zEffect_FrameDeltaRemainingSec = oldEffectDelta;
+        g_zEffect_World = oldWorld;
+        FreeZClassRuntimeForZEffectTest();
+    };
+
+    ResetZClassRuntimeForZEffectTest();
+    zEffect_Anim::ClearActivationRecords();
+    g_zEffectAnim_RecordQueueEnabled = 1;
+    g_zEffectAnim_DispatchEnabled = 0;
+    g_zEffectAnim_ActivationDispatchCallback = nullptr;
+    g_zEffectAnim_ActivationDispatchTagHigh = 0;
+    g_zEffect_SkipStopDelay = 0;
+    g_zEffect_World = nullptr;
+
+    zClass_NodePartial boundNode = {};
+    boundNode.classId = 2;
+    zClass_NodePartial runtimeNode = {};
+    runtimeNode.callbackPriority = 1;
+
+    zEffectAnimEntry entry = {};
+    std::strcpy(entry.name, "group_entry");
+    entry.boundNode = &boundNode;
+    entry.callbackNode = &boundNode;
+    entry.runtimeNode = &runtimeNode;
+    entry.priority = 3;
+
+    if (zEffectAnim::ActivateRuntime(&entry, nullptr) != &entry || entry.activationState != 2 ||
+        runtimeNode.callbackContext != reinterpret_cast<zClass_NodePartial *>(&entry) ||
+        runtimeNode.actionCallback == nullptr) {
+        cleanup();
+        return 1;
+    }
+
+    entry.activationState = 0;
+    if (zEffectAnim::SetVelocity(&entry, nullptr, 1.0f, 0.0f, 0.0f) != &entry ||
+        (entry.flags & 0x80u) == 0 || entry.velocityX != 1.0f || entry.velocityY != 0.0f ||
+        entry.velocityZ != 0.0f || g_zEffectAnim_ActivationRecordCount != 1 ||
+        g_zEffectAnim_ActivationRecordTable[0].commandType != 2 ||
+        g_zEffectAnim_ActivationRecordTable[0].params[0].f32 != 1.0f) {
+        cleanup();
+        return 2;
+    }
+
+    zClass_NodePartial refNode = {};
+    zVec3 refVec = {2.0f, 3.0f, 4.0f};
+    zVec3 velocityVec = {0.0f, 5.0f, 0.0f};
+    entry.activationState = 0;
+    zEffect_Anim::ClearActivationRecords();
+    if (zEffectAnim::SetPositionRefAndVelocity(&entry, nullptr, &refNode, &refVec,
+                                                &velocityVec) != &entry) {
+        cleanup();
+        return 31;
+    }
+    if ((entry.flags & 0x80u) == 0 || entry.velocityY != 5.0f) {
+        cleanup();
+        return 32;
+    }
+    if (entry.resetScratch[0] !=
+            static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(&refNode)) ||
+        entry.resetScratch[1] != 0x40000000u || entry.resetScratch[2] != 0x40400000u ||
+        entry.resetScratch[3] != 0x40800000u) {
+        cleanup();
+        return 33;
+    }
+
+    zVec3 refVecB = {6.0f, 7.0f, 8.0f};
+    entry.activationState = 0;
+    zEffect_Anim::ClearActivationRecords();
+    if (zEffectAnim::SetTransformRefs(&entry, nullptr, &refNode, &refVec, &boundNode, &refVecB) !=
+            &entry ||
+        entry.resetScratch[0] !=
+            static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(&refNode)) ||
+        entry.resetScratch[4] !=
+            static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(&boundNode)) ||
+        entry.resetScratch[5] != 0x40c00000u || entry.resetScratch[7] != 0x41000000u) {
+        cleanup();
+        return 4;
+    }
+
+    entry.activationState = 0;
+    zEffect_Anim::ClearActivationRecords();
+    if (zEffectAnim::SetTransformRotAndVelocity(&entry, nullptr, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f,
+                                                 6.0f, 7.0f, 8.0f, 9.0f) != &entry ||
+        entry.velocityX != 7.0f || entry.velocityY != 8.0f || entry.velocityZ != 9.0f ||
+        g_zEffectAnim_ActivationRecordCount != 1 ||
+        g_zEffectAnim_ActivationRecordTable[0].commandType != 1 ||
+        g_zEffectAnim_ActivationRecordTable[0].params[8].f32 != 9.0f) {
+        cleanup();
+        return 5;
+    }
+
+    zEffectAnimEventHeader noOpEvent = {};
+    noOpEvent.eventType = 0x22;
+    noOpEvent.startMode = 2;
+    noOpEvent.recordSize = sizeof(noOpEvent);
+    zEffectAnimSurfaceRuntime runtime = {};
+    runtime.eventStream = &noOpEvent;
+    runtime.eventStreamSize = sizeof(noOpEvent);
+    runtime.currentEvent = &noOpEvent;
+    runtime.runState = 0;
+    g_zEffect_FrameDeltaRemainingSec = 0.25f;
+    if (zEffect_Anim::RunSequenceEvents(&entry, &runtime) != 0 || runtime.runState != 2 ||
+        runtime.currentEvent !=
+            static_cast<void *>(reinterpret_cast<unsigned char *>(&noOpEvent) +
+                                sizeof(noOpEvent)) ||
+        runtime.eventElapsedSec != 0.0f) {
+        cleanup();
+        return 6;
+    }
+
+    zEffectAnimEventHeader sequenceEvent = {};
+    sequenceEvent.eventType = 0x22;
+    sequenceEvent.startMode = 2;
+    sequenceEvent.recordSize = sizeof(sequenceEvent);
+    runtime = {};
+    runtime.eventStream = &sequenceEvent;
+    runtime.eventStreamSize = sizeof(sequenceEvent);
+    runtime.currentEvent = &sequenceEvent;
+    runtime.runState = 0;
+    entry.activationState = 2;
+    entry.runtimeList = &runtime;
+    entry.runtimeSequenceCount = 1;
+    entry.triggerBaseValue = -1.0f;
+    entry.triggerCurrentValue = 0.0f;
+    entry.eventCallback = EffectAnimEventCallback;
+    entry.eventCallbackContext = &entry;
+    g_effectAnimEventCallbackCallCount = 0;
+    g_FrameDeltaTimeSec = 0.25f;
+    runtimeNode.callbackContext = reinterpret_cast<zClass_NodePartial *>(&entry);
+    if (zEffect_Anim::RunSequence(&runtimeNode) != 0 || runtime.runState != 2 ||
+        entry.triggerCurrentValue != 0.25f || g_effectAnimEventCallbackCallCount != 1 ||
+        entry.activationState != 3) {
+        cleanup();
+        return 61;
+    }
+
+    zEffectAnimEntry entries[2] = {};
+    zClass_NodePartial childBound = {};
+    childBound.classId = 2;
+    zClass_NodePartial childRuntime = {};
+    childRuntime.callbackPriority = 1;
+    std::strcpy(entries[1].name, "child");
+    entries[1].boundNode = &childBound;
+    entries[1].callbackNode = &childBound;
+    entries[1].runtimeNode = &childRuntime;
+    entries[1].priority = 2;
+    g_zEffectAnim_EntryList = entries;
+    g_zEffectAnim_EntryCount = 2;
+
+    zEffectAnimRuntimeRef runtimeRefs[1] = {};
+    entry.runtimeRefList = runtimeRefs;
+    entry.runtimeRefCount = 1;
+    entry.velocityX = 10.0f;
+    entry.velocityY = 11.0f;
+    entry.velocityZ = 12.0f;
+
+    zEffectSurfaceRefEvent surfaceRef = {};
+    std::strcpy(surfaceRef.sequenceName, "child");
+    surfaceRef.animEntryIndex = 1;
+    surfaceRef.runtimeRefIndex = 0;
+    runtime = {};
+    if (zEffect::HandleSurfaceRefEvent(&entry, &runtime, &surfaceRef) != 2 ||
+        runtime.runState != 2 || runtimeRefs[0].cachedChildEntry != &entries[1] ||
+        entries[1].activationState != 2 || entries[1].velocityZ != 12.0f) {
+        cleanup();
+        return 7;
+    }
+
+    entries[1].activationState = 0;
+    runtimeRefs[0].cachedChildEntry = nullptr;
+    zEffectTransformRefsEvent transformRefs = {};
+    std::strcpy(transformRefs.animName, "child");
+    transformRefs.animEntryIndex = 1;
+    transformRefs.runtimeRefIndex = 0;
+    transformRefs.flags = 0x10 | 0x0400;
+    transformRefs.refPointA = {13.0f, 14.0f, 15.0f};
+    transformRefs.refPointB = {16.0f, 17.0f, 18.0f};
+    if (zEffect::HandleTransformRefsEvent(&entry, &transformRefs) != 2 ||
+        runtimeRefs[0].cachedChildEntry != &entries[1] || entries[1].activationState != 2 ||
+        entries[1].resetScratch[1] != 0x41500000u ||
+        entries[1].resetScratch[7] != 0x41900000u) {
+        cleanup();
+        return 8;
+    }
+
+    zEffectAnimEmitterEvent emitterEvent = {};
+    std::strcpy(emitterEvent.animName, "child");
+    emitterEvent.cachedEntryIndex = 1;
+    entries[1].activationState = 2;
+    entries[1].triggerBaseValue = -1.0f;
+    if (zEffect::HandleNamedAnimStopEvent(&entry, &emitterEvent) != 2 ||
+        entries[1].activationState != 3 || childRuntime.actionCallback != nullptr) {
+        cleanup();
+        return 9;
+    }
+
+    entries[1].activationState = 2;
+    entries[1].triggerBaseValue = -1.0f;
+    if (zEffect::HandleEmitterPlayEvent(&entry, &emitterEvent) != 2 ||
+        entries[1].activationState != 1 || (entries[1].flags & 0x40u) == 0) {
+        cleanup();
+        return 10;
+    }
+
+    zEffectAnimEntry stopEntry = {};
+    zClass_NodePartial stopRuntime = {};
+    stopRuntime.callbackPriority = 1;
+    stopEntry.activationState = 2;
+    stopEntry.runtimeNode = &stopRuntime;
+    stopEntry.triggerBaseValue = 1.0f;
+    stopEntry.triggerCurrentValue = 0.5f;
+    if (zEffectAnim::Stop(&stopEntry) != 0 || stopRuntime.actionCallback == nullptr ||
+        stopEntry.triggerCurrentValue != 0.0f) {
+        cleanup();
+        return 11;
+    }
+
+    g_FrameDeltaTimeSec = 1.1f;
+    stopRuntime.callbackContext = reinterpret_cast<zClass_NodePartial *>(&stopEntry);
+    if (zEffectAnim::RunStopDelayCallback(&stopRuntime) != 0 ||
+        stopEntry.activationState != 1 || stopRuntime.actionCallback != nullptr ||
+        (stopEntry.flags & 0x40u) == 0) {
+        cleanup();
+        return 12;
+    }
+
+    cleanup();
+    return 0;
+}
+
 extern "C" int zeffect_anim_init_shutdown_smoke(void) {
     g_zEffectAnim_EntriesInstantiated = 0;
     g_zEffectAnim_HeapPtr = std::malloc(4);
@@ -2228,6 +4090,329 @@ extern "C" int zeffect_find_template_index_by_name_smoke(void) {
 
     g_zEffect_RuntimeManager = oldManager;
     return found && emptyTable ? 0 : 1;
+}
+
+extern "C" int zeffect_find_node_user_data_recursive_smoke(void) {
+    zClass_NodePartial root = {};
+    zClass_NodePartial firstChild = {};
+    zClass_NodePartial secondChild = {};
+    zClass_NodePartial grandchild = {};
+    zClass_NodePartial *rootChildren[2] = {&firstChild, &secondChild};
+    zClass_NodePartial *firstChildren[1] = {&grandchild};
+    int rootDi = 1;
+    int secondDi = 2;
+    int grandchildDi = 3;
+
+    root.listCountB = 2;
+    root.listB = rootChildren;
+    firstChild.listCountB = 1;
+    firstChild.listB = firstChildren;
+    secondChild.userDataOrDiRef =
+        static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&secondDi));
+    grandchild.userDataOrDiRef =
+        static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&grandchildDi));
+
+    if (zEffect::FindNodeUserDataRecursive(&root) != &grandchildDi) {
+        return 1;
+    }
+
+    grandchild.userDataOrDiRef = 0;
+    if (zEffect::FindNodeUserDataRecursive(&root) != &secondDi) {
+        return 2;
+    }
+
+    root.userDataOrDiRef = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&rootDi));
+    if (zEffect::FindNodeUserDataRecursive(&root) != &rootDi) {
+        return 3;
+    }
+
+    root.userDataOrDiRef = 0;
+    secondChild.userDataOrDiRef = 0;
+    if (zEffect::FindNodeUserDataRecursive(&root) != nullptr) {
+        return 4;
+    }
+
+    return 0;
+}
+
+extern "C" int zeffect_clone_runtime_entry_from_template_smoke(void) {
+    const zEffect_RuntimeManager oldManager = g_zEffect_RuntimeManager;
+    const int oldCloneMode = g_zEffect_CloneCopyMode;
+    const int oldCloneChildrenMode = g_zEffect_CloneCopyChildrenMode;
+
+    zEffect_RuntimeEntry templates[2] = {};
+    zClass_NodePartial effectNode = {};
+    int displayInstance = 1;
+
+    effectNode.flags = 0x04000000;
+    effectNode.userDataOrDiRef =
+        static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&displayInstance));
+    templates[1].effectIndex = 7;
+    templates[1].effectNode = &effectNode;
+    templates[1].currentScale = 3.0f;
+    g_zEffect_RuntimeManager.templates = templates;
+    g_zEffect_CloneCopyMode = 4;
+    g_zEffect_CloneCopyChildrenMode = 5;
+
+    if (zEffect::CloneRuntimeEntryFromTemplate(-1) != nullptr ||
+        zEffect::CloneRuntimeEntryFromTemplate(0) != nullptr) {
+        g_zEffect_RuntimeManager = oldManager;
+        g_zEffect_CloneCopyMode = oldCloneMode;
+        g_zEffect_CloneCopyChildrenMode = oldCloneChildrenMode;
+        return 1;
+    }
+
+    zEffect_RuntimeEntry *const clone = zEffect::CloneRuntimeEntryFromTemplate(1);
+    const bool cloneOk = clone != nullptr && clone != &templates[1] && clone->effectIndex == 7 &&
+                         clone->effectNode == &effectNode &&
+                         clone->effectGfxData == &displayInstance && clone->currentScale == 3.0f;
+    std::free(clone);
+
+    g_zEffect_RuntimeManager = oldManager;
+    g_zEffect_CloneCopyMode = oldCloneMode;
+    g_zEffect_CloneCopyChildrenMode = oldCloneChildrenMode;
+    return cloneOk ? 0 : 2;
+}
+
+extern "C" int zeffect_acquire_runtime_entry_by_index_smoke(void) {
+    const zEffect_RuntimeManager oldManager = g_zEffect_RuntimeManager;
+    EnsureZrdrFreePool();
+
+    zArchiveList *freeList = zArchiveList_CreateEmpty();
+    zEffect_RuntimeEntry templates[2] = {};
+    zClass_NodePartial effectNode = {};
+    int displayInstance = 1;
+
+    effectNode.flags = 0x04000000;
+    effectNode.userDataOrDiRef =
+        static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&displayInstance));
+    templates[1].effectIndex = 1;
+    templates[1].effectNode = &effectNode;
+    templates[1].currentScale = 2.0f;
+    g_zEffect_RuntimeManager.freeList = freeList;
+    g_zEffect_RuntimeManager.templates = templates;
+    g_zEffect_RuntimeManager.freshAllocCount = 0;
+    g_zEffect_RuntimeManager.recycleCount = 0;
+
+    if (zEffect::AcquireRuntimeEntryByIndex(-1) != nullptr ||
+        g_zEffect_RuntimeManager.freshAllocCount != 0 ||
+        g_zEffect_RuntimeManager.recycleCount != 0) {
+        std::free(freeList);
+        g_zEffect_RuntimeManager = oldManager;
+        return 1;
+    }
+
+    zEffect_RuntimeEntry *const fresh = zEffect::AcquireRuntimeEntryByIndex(1);
+    if (fresh == nullptr || fresh->effectIndex != 1 || fresh->effectGfxData != &displayInstance ||
+        g_zEffect_RuntimeManager.freshAllocCount != 1 ||
+        g_zEffect_RuntimeManager.recycleCount != 0) {
+        std::free(fresh);
+        std::free(freeList);
+        g_zEffect_RuntimeManager = oldManager;
+        return 2;
+    }
+
+    zArchiveList_PushBackPayload(freeList, fresh);
+    zEffect_RuntimeEntry *const reused = zEffect::AcquireRuntimeEntryByIndex(1);
+    const bool reusedOk = reused == fresh && freeList->count == 0 &&
+                          g_zEffect_RuntimeManager.freshAllocCount == 1 &&
+                          g_zEffect_RuntimeManager.recycleCount == 1;
+
+    std::free(reused);
+    std::free(freeList);
+    g_zEffect_RuntimeManager = oldManager;
+    return reusedOk ? 0 : 3;
+}
+
+extern "C" int zeffect_compute_distance_sq_to_listener_smoke(void) {
+    const zEffect_RuntimeManager oldManager = g_zEffect_RuntimeManager;
+    zClass_NodePartial listenerNode = {};
+    zClass_Object3DDataPartial listenerData = {};
+    zVec3 worldPos{1.0f, 2.0f, 3.0f};
+
+    listenerNode.classId = 5;
+    listenerNode.flags = 0x00080000;
+    listenerNode.classData = &listenerData;
+    listenerData.cachedWorldMatrix[9] = 4.0f;
+    listenerData.cachedWorldMatrix[10] = 6.0f;
+    listenerData.cachedWorldMatrix[11] = 8.0f;
+    g_zEffect_RuntimeManager.listenerNode = &listenerNode;
+
+    const float distanceSq = zEffect::ComputeDistanceSqToListener(&worldPos);
+    g_zEffect_RuntimeManager = oldManager;
+    return distanceSq == 50.0f ? 0 : 1;
+}
+
+extern "C" int zeffect_activate_runtime_entry_at_position_smoke(void) {
+    const zEffect_RuntimeManager oldManager = g_zEffect_RuntimeManager;
+    zClass_NodePartial parentNode = {};
+    zClass_NodePartial listenerNode = {};
+    zClass_NodePartial effectNode = {};
+    zClass_Object3DDataPartial listenerData = {};
+    zClass_Object3DDataPartial effectData = {};
+    zDiPartial effectDi = {};
+    zDiEntryPartial effectDiEntry = {};
+    zModel_MaterialPartial effectMaterial = {};
+    zModel_MaterialCyclePartial effectCycle = {};
+    zImage_TexDirEntryPartial frameA = {};
+    zImage_TexDirEntryPartial frameB = {};
+    zImage_TexDirEntryPartial *frameTable[1] = {&frameA};
+    zEffect_RuntimeEntry entry = {};
+
+    parentNode.classId = 3;
+    listenerNode.classId = 5;
+    listenerNode.flags = 0x00080000;
+    listenerNode.classData = &listenerData;
+    effectNode.classId = 5;
+    effectNode.flags = 0x00080000;
+    effectNode.classData = &effectData;
+    effectDi.entries = &effectDiEntry;
+    effectDiEntry.material = &effectMaterial;
+    effectMaterial.cycle = &effectCycle;
+    effectMaterial.currentTextureDirectoryEntry = &frameB;
+    effectCycle.currentFrame = 4.0f;
+    effectCycle.frameTable = frameTable;
+    entry.effectNode = &effectNode;
+    entry.effectGfxData = &effectDi;
+    g_zEffect_RuntimeManager.parentNode = &parentNode;
+    g_zEffect_RuntimeManager.listenerNode = &listenerNode;
+    g_zEffect_RuntimeManager.activatedCount = 0;
+
+    zVec3 nearPos{1.0f, 2.0f, 2.0f};
+    if (zEffect::ActivateRuntimeEntryAtPosition(&entry, &nearPos) != 0 ||
+        entry.currentScale != 0.0f || entry.fadeInTimeSec != 0.0f ||
+        entry.fadeOutStartTimeSec != 0.0f || g_zEffect_RuntimeManager.activatedCount != 0 ||
+        parentNode.listCountB != 0) {
+        g_zEffect_RuntimeManager = oldManager;
+        return 1;
+    }
+
+    zVec3 farFadePos{20.0f, 0.0f, 0.0f};
+    effectMaterial.currentTextureDirectoryEntry = &frameB;
+    effectCycle.currentFrame = 4.0f;
+    if (zEffect::ActivateRuntimeEntryAtPosition(&entry, &farFadePos) != 1 ||
+        entry.currentScale != 1.25f || entry.fadeInScaleRate != 1.5f ||
+        effectData.scale.x != 1.25f || effectData.scale.y != 1.25f ||
+        effectData.scale.z != 1.25f || effectData.localMatrix[9] != 20.0f ||
+        effectData.localMatrix[10] != 0.0f || effectData.localMatrix[11] != 0.0f ||
+        effectMaterial.currentTextureDirectoryEntry != &frameA || effectCycle.currentFrame != 0.0f ||
+        parentNode.listCountB != 1 || parentNode.listB[0] != &effectNode ||
+        g_zEffect_RuntimeManager.activatedCount != 1) {
+        std::free(parentNode.listB);
+        std::free(effectNode.listA);
+        g_zEffect_RuntimeManager = oldManager;
+        return 2;
+    }
+
+    std::free(parentNode.listB);
+    std::free(effectNode.listA);
+    g_zEffect_RuntimeManager = oldManager;
+    return 0;
+}
+
+extern "C" int zeffect_runtime_node_action_callback_smoke(void) {
+    const zEffect_RuntimeManager oldManager = g_zEffect_RuntimeManager;
+    const float oldDelta = g_FrameDeltaTimeSec;
+    EnsureZrdrFreePool();
+
+    zArchiveList *freeList = zArchiveList_CreateEmpty();
+    zClass_NodePartial parentNode = {};
+    zClass_NodePartial effectNode = {};
+    zClass_Object3DDataPartial effectData = {};
+    zEffect_RuntimeEntry entry = {};
+
+    effectNode.classId = 5;
+    effectNode.classData = &effectData;
+    effectNode.callbackContext = reinterpret_cast<zClass_NodePartial *>(&entry);
+    g_zEffect_RuntimeManager.freeList = freeList;
+    g_zEffect_RuntimeManager.parentNode = &parentNode;
+
+    if (zEffect::RuntimeNodeActionCallback(&effectNode) != 0 || entry.elapsedSec != 0.0f) {
+        std::free(freeList);
+        g_zEffect_RuntimeManager = oldManager;
+        g_FrameDeltaTimeSec = oldDelta;
+        return 1;
+    }
+
+    effectNode.flags = 0x04;
+    entry.elapsedSec = 0.0f;
+    entry.fadeInTimeSec = 2.0f;
+    entry.currentScale = 1.0f;
+    entry.fadeInScaleRate = 3.0f;
+    g_FrameDeltaTimeSec = 0.5f;
+    if (zEffect::RuntimeNodeActionCallback(&effectNode) != 0 || entry.elapsedSec != 0.5f ||
+        entry.currentScale != 2.5f || effectData.scale.x != 2.5f ||
+        effectData.scale.y != 2.5f || effectData.scale.z != 2.5f) {
+        std::free(freeList);
+        g_zEffect_RuntimeManager = oldManager;
+        g_FrameDeltaTimeSec = oldDelta;
+        return 2;
+    }
+
+    entry.elapsedSec = 2.0f;
+    entry.fadeInTimeSec = 1.0f;
+    entry.fadeOutStartTimeSec = 5.0f;
+    entry.currentScale = 1.0f;
+    entry.fadeOutScaleRate = 10.0f;
+    g_FrameDeltaTimeSec = 0.2f;
+    if (zEffect::RuntimeNodeActionCallback(&effectNode) != 0 || entry.elapsedSec != 2.2f ||
+        entry.currentScale != 0.01f || effectData.scale.x != 0.01f ||
+        effectData.scale.y != 0.01f || effectData.scale.z != 0.01f) {
+        std::free(freeList);
+        g_zEffect_RuntimeManager = oldManager;
+        g_FrameDeltaTimeSec = oldDelta;
+        return 3;
+    }
+
+    zClass_Class::AddChild(&parentNode, &effectNode);
+    effectNode.callbackContext = reinterpret_cast<zClass_NodePartial *>(&entry);
+    effectNode.actionCallback = &entry;
+    entry.elapsedSec = 5.0f;
+    entry.fadeInTimeSec = 1.0f;
+    entry.fadeOutStartTimeSec = 5.0f;
+    g_FrameDeltaTimeSec = 0.1f;
+    if (zEffect::RuntimeNodeActionCallback(&effectNode) != 0 ||
+        effectNode.callbackContext != nullptr || effectNode.actionCallback != nullptr ||
+        (effectNode.flags & 0x04) != 0 || freeList->count != 1 ||
+        freeList->head->payload != &entry || parentNode.listCountB != 0 ||
+        effectNode.listCountA != 0) {
+        std::free(parentNode.listB);
+        std::free(effectNode.listA);
+        std::free(freeList);
+        g_zEffect_RuntimeManager = oldManager;
+        g_FrameDeltaTimeSec = oldDelta;
+        return 4;
+    }
+
+    std::free(parentNode.listB);
+    std::free(effectNode.listA);
+    std::free(freeList);
+    g_zEffect_RuntimeManager = oldManager;
+    g_FrameDeltaTimeSec = oldDelta;
+    return 0;
+}
+
+extern "C" int zeffect_spawn_runtime_instance_at_smoke(void) {
+    const zEffect_RuntimeManager oldManager = g_zEffect_RuntimeManager;
+    zVec3 pos{1.0f, 2.0f, 3.0f};
+
+    g_zEffect_RuntimeManager = {};
+    if (zEffect::SpawnRuntimeInstanceAt(0, &pos) != 0 ||
+        g_zEffect_RuntimeManager.freshAllocCount != 0) {
+        g_zEffect_RuntimeManager = oldManager;
+        return 1;
+    }
+
+    g_zEffect_RuntimeManager.initialized = 1;
+    if (zEffect::SpawnRuntimeInstanceAt(-1, &pos) != 1 ||
+        g_zEffect_RuntimeManager.freshAllocCount != 0 ||
+        g_zEffect_RuntimeManager.activatedCount != 0) {
+        g_zEffect_RuntimeManager = oldManager;
+        return 2;
+    }
+
+    g_zEffect_RuntimeManager = oldManager;
+    return 0;
 }
 
 extern "C" int zeffect_init_smoke(void) {

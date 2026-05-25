@@ -49,6 +49,26 @@ namespace zModel_MatlSlot {
 }
 
 namespace zModel_MatlBuffer {
+    // Reimplements 0x480bf0: zModel_MatlBuffer::SetArraySize
+    // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL SetArraySize(int count) {
+        if (g_zModel_MatlPoolCapacity != 0) {
+            zError::ReportOld(0x200, kGmodMatlSourceFile, 0x368,
+                              "Error setting material array size; size already set to %d.",
+                              g_zModel_MatlPoolCapacity);
+            return;
+        }
+
+        if (count > 32767) {
+            zError::ReportOld(0x200, kGmodMatlSourceFile, 0x371,
+                              "Error setting material array size to %d; limit is 32767.",
+                              count);
+            return;
+        }
+
+        g_zModel_MatlPoolCapacity = count;
+    }
+
     // Reimplements 0x480600: zModel_MatlBuffer::WriteGameZ
     // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL WriteGameZ(void *stream) {

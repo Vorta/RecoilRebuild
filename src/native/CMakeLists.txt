@@ -15,6 +15,7 @@ add_library(recoil_native STATIC
     ../Battlesport/pickup.cpp
     ../Battlesport/zUtil/zutil.cpp
     ../Battlesport/zModel/gdi.c
+    ../Battlesport/zModel/gmod_scene.c
     ../Battlesport/zModel/zModel_Display.cpp
     ../Battlesport/CZGameFrame.cpp
     ../Battlesport/CZRecoilFrame.cpp
@@ -47,6 +48,7 @@ add_library(recoil_native STATIC
     ../GameZRecoil/zGeometry/zgeo_weiler.cpp
     ../GameZRecoil/zHud/zhud_ui.cpp
     ../GameZRecoil/zImage/zimg_texture.cpp
+    ../GameZRecoil/zInterp/zinterp_parse.cpp
     ../GameZRecoil/zLoc/zLoc.cpp
     ../GameZRecoil/zMath/zMath.cpp
     ../GameZRecoil/zDEClient/zdec_init.cpp
@@ -91,6 +93,7 @@ add_library(recoil_native STATIC
 
 set_source_files_properties(
     ../Battlesport/zModel/gdi.c
+    ../Battlesport/zModel/gmod_scene.c
     ../GameZRecoil/zModel/gmod_const.c
     ../GameZRecoil/zModel/gmod_light.c
     ../GameZRecoil/zModel/gmod_matl.c

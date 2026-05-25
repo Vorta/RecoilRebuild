@@ -10,6 +10,21 @@
 namespace {
 void RECOIL_CDECL BindMapContextDummyCallback() {}
 
+bool CursorCanRoundTripTo(const POINT &target, const POINT &restore) {
+    if (SetCursorPos(target.x, target.y) == 0) {
+        return false;
+    }
+
+    POINT observed = {};
+    if (GetCursorPos(&observed) == 0) {
+        return false;
+    }
+
+    const bool ok = observed.x == target.x && observed.y == target.y;
+    SetCursorPos(restore.x, restore.y);
+    return ok;
+}
+
 int g_bindMapDispatchCallbackCount = 0;
 int g_keyboardComboCallbackCount = 0;
 int g_keyboardLastCombo = 0;
@@ -446,10 +461,12 @@ extern "C" int zinput_mouse_apply_and_recenter_cursor_smoke(void) {
     g_zInput_MouseStateSnapshot.cursorClientY = 9;
     POINT expected = {7, 9};
     ClientToScreen(hwnd, &expected);
+    const bool osCursorObservable = CursorCanRoundTripTo(expected, originalCursor);
     zInput::Mouse_ApplyClientCursorPosToOS();
 
     POINT applied = {};
-    if (GetCursorPos(&applied) == 0 || applied.x != expected.x || applied.y != expected.y) {
+    if (osCursorObservable &&
+        (GetCursorPos(&applied) == 0 || applied.x != expected.x || applied.y != expected.y)) {
         DestroyWindow(hwnd);
         SetCursorPos(originalCursor.x, originalCursor.y);
         return 2;
@@ -467,12 +484,28 @@ extern "C" int zinput_mouse_apply_and_recenter_cursor_smoke(void) {
                             g_zInput_MouseStateSnapshot.cursorClientY == 30 &&
                             g_zInput_MouseStateSnapshot.cursorNormX == 0.0f &&
                             g_zInput_MouseStateSnapshot.cursorNormY == 0.0f &&
-                            GetCursorPos(&applied) != 0 && applied.x == expected.x &&
-                            applied.y == expected.y;
+                            (!osCursorObservable ||
+                             (GetCursorPos(&applied) != 0 && applied.x == expected.x &&
+                              applied.y == expected.y));
+
+    g_zInput_MouseStateSnapshot.cursorClientX = 12;
+    g_zInput_MouseStateSnapshot.cursorClientY = 17;
+    g_zInput_MouseStateSnapshot.cursorNormX = 0.75f;
+    g_zInput_MouseStateSnapshot.cursorNormY = -0.25f;
+    expected = {40, 17};
+    ClientToScreen(hwnd, &expected);
+    zInput::Mouse_RecenterCursorX();
+    const bool recenteredX = g_zInput_MouseStateSnapshot.cursorClientX == 40 &&
+                             g_zInput_MouseStateSnapshot.cursorClientY == 17 &&
+                             g_zInput_MouseStateSnapshot.cursorNormX == 0.75f &&
+                             g_zInput_MouseStateSnapshot.cursorNormY == -0.25f &&
+                             (!osCursorObservable ||
+                              (GetCursorPos(&applied) != 0 && applied.x == expected.x &&
+                               applied.y == expected.y));
 
     DestroyWindow(hwnd);
     SetCursorPos(originalCursor.x, originalCursor.y);
-    return recentered ? 0 : 3;
+    return recentered && recenteredX ? 0 : 3;
 }
 
 extern "C" int zinput_mouse_coop_level_flags_smoke(void) {

@@ -23,7 +23,15 @@ namespace {
     }
 }
 
-float g_zModel_ConstVertexMergeEpsilon = 0.0f;
+float g_zModel_ConstVertexMergeEpsilon = 0.001f;
+int g_zModel_MaxPolygonVertexCountBeforeSplit = 48;
+double g_zModel_ConstVertexWarnThreshold = 920.0;
+double g_zModel_NormalMergeEpsilon = 0.0001;
+double g_zModel_CoplanarTolerance = 0.001;
+double g_zModel_ColinearTolerance = 0.001;
+float g_zModel_UvQuantizeBias = -0.001953125f;
+float g_zModel_UvQuantizeScale = 256.0f;
+float g_zModel_UvQuantizeInvScale = 0.00390625f;
 
 namespace zModel_Const {
     // Reimplements 0x481530: zModel_Const::GetVertexMergeEpsilon
@@ -38,6 +46,18 @@ namespace zModel_Const {
         unsigned int bits;
         memcpy(&bits, &epsilon, sizeof(bits));
         memcpy(&g_zModel_ConstVertexMergeEpsilon, &bits, sizeof(bits));
+    }
+
+    // Reimplements 0x481550: zModel_Const::SetCoplanarTolerance
+    // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+    RECOIL_NOINLINE void RECOIL_STDCALL SetCoplanarTolerance(float tolerance) {
+        g_zModel_CoplanarTolerance = tolerance;
+    }
+
+    // Reimplements 0x481560: zModel_Const::SetColinearTolerance
+    // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+    RECOIL_NOINLINE void RECOIL_STDCALL SetColinearTolerance(float tolerance) {
+        g_zModel_ColinearTolerance = tolerance;
     }
 }
 

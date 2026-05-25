@@ -22,7 +22,7 @@ zUtil_SaveGameStateList_Init(zUtil_SaveGameState *self) {
 
     self->unknown_0c = 0;
     self->unknown_24 = 0;
-    self->unknown_20 = 0;
+    self->modeLoopBlend = 0.0f;
     return self;
 }
 

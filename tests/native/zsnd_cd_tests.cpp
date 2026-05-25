@@ -159,7 +159,9 @@ struct TestA3dSourceVTable {
     TestBackendSetVecFn SetVelocity;
     void *slots84_9c[7];
     TestBackendSetFloatFn SetGain;
-    void *slotsa4_ac[3];
+    void *slota4;
+    TestBackendSetFloatFn SetPitchScaled;
+    void *slotac;
     TestBackendSetFloatFn SetDopplerScale;
     void *slotsb4_cc[7];
     TestBackendSetIntFn SetSpatializationEnabled;
@@ -203,6 +205,7 @@ int g_testStopCount = 0;
 int g_testSetPositionCount = 0;
 int g_testSetVelocityCount = 0;
 int g_testSetGainCount = 0;
+int g_testSetPitchScaledCount = 0;
 int g_testSetDopplerScaleCount = 0;
 int g_testSetPanCount = 0;
 int g_testSetVolumeCount = 0;
@@ -313,6 +316,7 @@ std::int32_t g_testLastMode = 0;
 std::int32_t g_testLastSpatializationEnabled = 0;
 std::uint32_t g_testLastPlayFlags = 0;
 float g_testLastGain = -1.0f;
+float g_testLastPitchScale = -1.0f;
 float g_testLastDopplerScale = -1.0f;
 float g_testLastRangeMin = -1.0f;
 float g_testLastRangeMax = -1.0f;
@@ -530,6 +534,12 @@ std::int32_t __stdcall TestA3dSetGain(void *, float value) {
     return 0;
 }
 
+std::int32_t __stdcall TestA3dSetPitchScaled(void *, float value) {
+    ++g_testSetPitchScaledCount;
+    g_testLastPitchScale = value;
+    return 0;
+}
+
 std::int32_t __stdcall TestA3dSetDopplerScale(void *, float value) {
     ++g_testSetDopplerScaleCount;
     g_testLastDopplerScale = value;
@@ -576,6 +586,7 @@ void ResetStopBackendCounters() {
     g_testSetPositionCount = 0;
     g_testSetVelocityCount = 0;
     g_testSetGainCount = 0;
+    g_testSetPitchScaledCount = 0;
     g_testSetDopplerScaleCount = 0;
     g_testSetPanCount = 0;
     g_testSetVolumeCount = 0;
@@ -618,6 +629,7 @@ void ResetStopBackendCounters() {
     g_testLastSpatializationEnabled = 0;
     g_testLastPlayFlags = 0;
     g_testLastGain = -1.0f;
+    g_testLastPitchScale = -1.0f;
     g_testLastDopplerScale = -1.0f;
     g_testLastRangeMin = -1.0f;
     g_testLastRangeMax = -1.0f;
@@ -2024,6 +2036,62 @@ extern "C" int zsnd_play_handle_stop_if_active_smoke(void) {
     return missingBackend.StopIfActive() == -1 ? 0 : 5;
 }
 
+extern "C" int zsnd_sample_stop_active_voices_if_playing_smoke(void) {
+    zSndSample guarded{};
+    guarded.createGuard = 1;
+    if (guarded.StopActiveVoicesIfPlaying() != 0) {
+        return 1;
+    }
+
+    zSndSample missingPrimary{};
+    g_zSnd_ActiveBackend = 0;
+    if (missingPrimary.StopActiveVoicesIfPlaying() != 0) {
+        return 2;
+    }
+
+    ResetStopBackendCounters();
+    TestDirectSoundBufferVTable directSoundVTable = {};
+    directSoundVTable.Stop = &TestStop;
+    TestDirectSoundBuffer primaryDirectSound{&directSoundVTable};
+    TestDirectSoundBuffer duplicateDirectSound{&directSoundVTable};
+    zSndPlayHandle duplicateDirectSoundHandle{};
+    duplicateDirectSoundHandle.backendBuffer =
+        reinterpret_cast<zSndBuffer *>(&duplicateDirectSound);
+    zSndPlayHandle *directSoundDuplicates[2] = {&duplicateDirectSoundHandle, nullptr};
+    zSndSample directSoundSample{};
+    directSoundSample.primaryVoice.backendBuffer =
+        reinterpret_cast<zSndBuffer *>(&primaryDirectSound);
+    directSoundSample.duplicateVoiceCount = 2;
+    directSoundSample.duplicateVoices = directSoundDuplicates;
+    g_zSnd_ActiveBackend = 0;
+    if (directSoundSample.StopActiveVoicesIfPlaying() != 1 || g_testStopCount != 2) {
+        return 3;
+    }
+
+    ResetStopBackendCounters();
+    TestA3dSourceVTable a3dVTable = {};
+    a3dVTable.Stop = &TestStop;
+    TestA3dSource primaryA3d{&a3dVTable};
+    TestA3dSource duplicateA3d{&a3dVTable};
+    zSndPlayHandle duplicateA3dHandle{};
+    duplicateA3dHandle.backendBuffer = reinterpret_cast<zSndBuffer *>(&duplicateA3d);
+    zSndPlayHandle *a3dDuplicates[1] = {&duplicateA3dHandle};
+    zSndSample a3dSample{};
+    a3dSample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&primaryA3d);
+    a3dSample.duplicateVoiceCount = 1;
+    a3dSample.duplicateVoices = a3dDuplicates;
+    g_zSnd_ActiveBackend = 1;
+    if (a3dSample.StopActiveVoicesIfPlaying() != 1 || g_testStopCount != 2) {
+        return 4;
+    }
+
+    ResetStopBackendCounters();
+    zSndSample unsupported{};
+    unsupported.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&primaryA3d);
+    g_zSnd_ActiveBackend = 2;
+    return unsupported.StopActiveVoicesIfPlaying() == 1 && g_testStopCount == 0 ? 0 : 5;
+}
+
 extern "C" int zsnd_play_handle_update3d_a3d_smoke(void) {
     ResetStopBackendCounters();
 
@@ -2196,6 +2264,114 @@ extern "C" int zsnd_play_handle_update3d_directsound_smoke(void) {
 
     g_zSnd_ActiveBackend = 2;
     return handle.Update3DDispatch(nullptr, nullptr, 0) == 0 ? 0 : 6;
+}
+
+extern "C" int zsnd_play_handle_set_freq_scaled_smoke(void) {
+    const int oldBackend = g_zSnd_ActiveBackend;
+    ResetStopBackendCounters();
+
+    TestDirectSoundBufferVTable directSoundVTable = {};
+    directSoundVTable.SetFrequency = &TestDirectSoundSetFrequency;
+    TestDirectSoundBuffer directSoundBuffer{&directSoundVTable};
+
+    zSndSample directSample = {};
+    directSample.playbackParam2 = 22050.0f;
+    directSample.playbackParam3 = 11025.0f;
+    directSample.sampleRate = 22050.0f;
+
+    zSndPlayHandle directHandle = {};
+    directHandle.handleKind = ZSND_PLAYHANDLE_BACKEND;
+    directHandle.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+    directHandle.ownerSample = &directSample;
+
+    g_zSnd_ActiveBackend = 0;
+    if (directHandle.SetFreqScaled(2.0f) != 1 || g_testSetFrequencyCount != 1 ||
+        g_testLastFrequency != 22050) {
+        g_zSnd_ActiveBackend = oldBackend;
+        return 1;
+    }
+    if (directHandle.SetFreqScaled(-1.0f) != 1 || g_testSetFrequencyCount != 2 ||
+        g_testLastFrequency != 11025) {
+        g_zSnd_ActiveBackend = oldBackend;
+        return 2;
+    }
+
+    directSample.createGuard = 1;
+    if (directHandle.SetFreqScaled(0.5f) != -1) {
+        g_zSnd_ActiveBackend = oldBackend;
+        return 3;
+    }
+    directSample.createGuard = 0;
+
+    ResetStopBackendCounters();
+    TestA3dSourceVTable a3dVTable = {};
+    a3dVTable.SetPitchScaled = &TestA3dSetPitchScaled;
+    TestA3dSource a3dSource{&a3dVTable};
+    zSndSample a3dSample = {};
+    a3dSample.playbackParam2 = 44100.0f;
+    a3dSample.playbackParam3 = 22050.0f;
+    a3dSample.sampleRate = 44100.0f;
+    zSndPlayHandle a3dHandle = {};
+    a3dHandle.handleKind = ZSND_PLAYHANDLE_BACKEND;
+    a3dHandle.backendBuffer = reinterpret_cast<zSndBuffer *>(&a3dSource);
+    a3dHandle.ownerSample = &a3dSample;
+    g_zSnd_ActiveBackend = 1;
+    const bool a3dOk = a3dHandle.SetFreqScaled(0.5f) == 1 &&
+                       g_testSetPitchScaledCount == 1 && g_testLastPitchScale == 0.75f;
+
+    g_zSnd_ActiveBackend = oldBackend;
+    return a3dOk ? 0 : 4;
+}
+
+extern "C" int zsnd_play_handle_set_enable_scale_smoke(void) {
+    const int oldBackend = g_zSnd_ActiveBackend;
+    void *const oldGlobalVolume = g_zSnd_GlobalVolumeScalePtr;
+    const int oldMuteDepth = g_zSnd_MuteDepth;
+    const int oldListenerValid = g_zSnd_ListenerStateValid;
+    ResetStopBackendCounters();
+
+    float globalScale = 0.5f;
+    g_zSnd_GlobalVolumeScalePtr = &globalScale;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_ListenerStateValid = 0;
+
+    TestDirectSoundBufferVTable directSoundVTable = {};
+    directSoundVTable.SetPan = &TestDirectSoundSetPan;
+    directSoundVTable.SetVolume = &TestDirectSoundSetVolume;
+    TestDirectSoundBuffer directSoundBuffer{&directSoundVTable};
+    zSndSample directSample = {};
+    zSndPlayHandle directHandle = {};
+    directHandle.handleKind = ZSND_PLAYHANDLE_BACKEND;
+    directHandle.ownerSample = &directSample;
+    directHandle.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+
+    g_zSnd_ActiveBackend = 0;
+    directHandle.SetEnableScale(0.5f);
+    const bool directOk = directHandle.gainScaled == -1204 && g_testSetPanCount == 1 &&
+                          g_testSetVolumeCount == 1 && g_testLastVolume == -1204;
+
+    ResetStopBackendCounters();
+    TestA3dSourceVTable a3dVTable = {};
+    a3dVTable.SetGain = &TestA3dSetGain;
+    a3dVTable.SetDopplerScale = &TestA3dSetDopplerScale;
+    TestA3dSource a3dSource{&a3dVTable};
+    zSndPlayHandle a3dHandle = {};
+    a3dHandle.handleKind = ZSND_PLAYHANDLE_BACKEND;
+    a3dHandle.backendBuffer = reinterpret_cast<zSndBuffer *>(&a3dSource);
+
+    g_zSnd_ActiveBackend = 1;
+    a3dHandle.SetEnableScale(0.5f);
+    float a3dGain = 0.0f;
+    std::memcpy(&a3dGain, &a3dHandle.gainScaled, sizeof(a3dGain));
+    const bool a3dOk = a3dGain == 0.25f && g_testSetGainCount == 1 &&
+                       g_testLastGain == 0.25f && g_testSetDopplerScaleCount == 1 &&
+                       g_testLastDopplerScale == 0.0f;
+
+    g_zSnd_ActiveBackend = oldBackend;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolume;
+    g_zSnd_MuteDepth = oldMuteDepth;
+    g_zSnd_ListenerStateValid = oldListenerValid;
+    return directOk && a3dOk ? 0 : 1;
 }
 
 extern "C" int zsnd_play_handle_try_disable_managed_smoke(void) {

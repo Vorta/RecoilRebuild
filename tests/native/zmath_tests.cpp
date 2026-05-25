@@ -1,4 +1,6 @@
 #include "GameZRecoil/zMath/zMath.h"
+#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/include/zClipRect.h"
 #include "zClass.h"
 
 #include <cmath>
@@ -45,6 +47,21 @@ extern "C" int zmath_matrix_stack_and_direction_smoke(void) {
     if (!Near(matrix.xx, 2.0f) || !Near(matrix.yy, 3.0f) || !Near(matrix.zz, 4.0f) ||
         !Near(matrix.posX, 12.0f) || !Near(matrix.posY, 26.0f) || !Near(matrix.posZ, 42.0f)) {
         return 4;
+    }
+
+    zMat4x3 rotationSource{11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f,
+                           17.0f, 18.0f, 19.0f, 110.0f, 120.0f, 130.0f};
+    matrix.posX = 201.0f;
+    matrix.posY = 202.0f;
+    matrix.posZ = 203.0f;
+    flags[1] = 1;
+    zMath::MatLoadRotationFrom3x3(&rotationSource);
+    if (flags[1] != 0 || matrix.xx != 11.0f || matrix.xy != 12.0f ||
+        matrix.xz != 13.0f || matrix.yx != 14.0f || matrix.yy != 15.0f ||
+        matrix.yz != 16.0f || matrix.zx != 17.0f || matrix.zy != 18.0f ||
+        matrix.zz != 19.0f || matrix.posX != 201.0f || matrix.posY != 202.0f ||
+        matrix.posZ != 203.0f) {
+        return 14;
     }
 
     zVec3 angles{0.0f, 0.0f, 0.0f};
@@ -100,6 +117,12 @@ extern "C" int zmath_matrix_stack_and_direction_smoke(void) {
         return 7;
     }
 
+    zVec3 elevationA{1.0f, 2.0f, 3.0f};
+    zVec3 elevationB{4.0f, 7.0f, -1.0f};
+    if (!Near(zMath_Vec3_ElevationAngleBetweenPoints(&elevationA, &elevationB), 0.785398185f)) {
+        return 13;
+    }
+
     zMath::g_zMath_CameraScratchA = {};
     zMath::g_zMath_CameraScratchA.xy = 2.0f;
     zMath::g_zMath_CameraScratchA.yy = 3.0f;
@@ -114,6 +137,40 @@ extern "C" int zmath_matrix_stack_and_direction_smoke(void) {
 
     zMath::Vec3ArrayProjectToCachedY(points, projectedY, 0);
     return Near(projectedY[0], 25.0f) ? 0 : 10;
+}
+
+extern "C" int zmath_vec3_array_transform_direction_smoke(void) {
+    std::int32_t flags[1] = {1};
+    float *slots[1] = {};
+    zMat4x3 matrix{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f,
+                   100.0f, 200.0f, 300.0f};
+    slots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &flags[0];
+    zMath::g_currentMatrixPtrSlot = &slots[0];
+
+    zVec3 vectors[2] = {{1.0f, 2.0f, 3.0f}, {-1.0f, 0.5f, 2.0f}};
+    zMath::Vec3ArrayTransformDirection(vectors, 2);
+    if (vectors[0].x != 1.0f || vectors[0].y != 2.0f || vectors[0].z != 3.0f ||
+        vectors[1].x != -1.0f || vectors[1].y != 0.5f || vectors[1].z != 2.0f) {
+        return 1;
+    }
+
+    flags[0] = 0;
+    zMath::Vec3ArrayTransformDirection(vectors, 1);
+    if (!Near(vectors[0].x, 30.0f) || !Near(vectors[0].y, 36.0f) ||
+        !Near(vectors[0].z, 42.0f) || vectors[1].x != -1.0f || vectors[1].y != 0.5f ||
+        vectors[1].z != 2.0f) {
+        return 2;
+    }
+
+    vectors[0] = {4.0f, 5.0f, 6.0f};
+    zMath::Vec3ArrayTransformDirection(vectors, 0);
+    if (vectors[0].x != 4.0f || vectors[0].y != 5.0f || vectors[0].z != 6.0f) {
+        return 3;
+    }
+
+    zMath::Vec3ArrayTransformDirection(vectors, -1);
+    return vectors[0].x == 4.0f && vectors[0].y == 5.0f && vectors[0].z == 6.0f ? 0 : 4;
 }
 
 extern "C" int zmath_mat_build_euler_rotation3x3_smoke(void) {
@@ -143,6 +200,37 @@ extern "C" int zmath_mat_build_euler_rotation3x3_smoke(void) {
                : 2;
 }
 
+extern "C" int zmath_extract_euler_smoke(void) {
+    zMat4x3 matrix{};
+    if (zMath_Mat_ExtractYaw(&matrix) != 0.0f) {
+        return 1;
+    }
+
+    matrix.zx = 1.0f;
+    matrix.zz = 0.0f;
+    if (!Near(zMath_Mat_ExtractYaw(&matrix), 1.57079637f)) {
+        return 2;
+    }
+
+    zVec3 inVec{1.0f, 2.0f, 3.0f};
+    zVec3 outVec{};
+    zMath_Vec3_RotateX(&outVec, &inVec, 1.57079637f);
+    if (!Near(outVec.x, 1.0f) || !Near(outVec.y, -3.0f) || !Near(outVec.z, 2.0f)) {
+        return 3;
+    }
+
+    zMath::MatBuildEulerRotation3x3(&matrix, 0.0f, 0.0f, 0.0f);
+    zVec3 euler{};
+    zMath_Mat_ExtractEulerAngles(&matrix, &euler);
+    if (!Near(euler.x, 0.0f) || !Near(euler.y, 0.0f) || !Near(euler.z, 0.0f)) {
+        return 4;
+    }
+
+    zMath::MatBuildEulerRotation3x3(&matrix, 0.5f, -0.25f, 0.75f);
+    zMath_Mat_ExtractEulerAngles(&matrix, &euler);
+    return Near(euler.x, 0.5f) && Near(euler.y, -0.25f) && Near(euler.z, 0.75f) ? 0 : 5;
+}
+
 extern "C" int zmath_projection_batches_smoke(void) {
     g_zMath_ProjScaleX = 100.0f;
     g_zMath_ProjScaleY = -50.0f;
@@ -151,6 +239,11 @@ extern "C" int zmath_projection_batches_smoke(void) {
     g_zMath_InvProjScaleX = 0.01f;
     g_zMath_InvProjScaleY = -0.02f;
     g_zMath_ProjSphereRadiusScale = 25.0f;
+
+    const zVec2 lastScale = zMath_Project_GetLastScreenScaleXY();
+    if (!Near(lastScale.x, 100.0f) || !Near(lastScale.y, -50.0f)) {
+        return 6;
+    }
 
     zVec3 viewPoints[2] = {{2.0f, 4.0f, 10.0f}, {-3.0f, 6.0f, 5.0f}};
     zProjectedPoint projectedPoints[2] = {};
@@ -190,6 +283,99 @@ extern "C" int zmath_projection_batches_smoke(void) {
     return Near(unprojected.x, 6.0f) && Near(unprojected.y, 13.0f) && Near(unprojected.z, 36.0f)
                ? 0
                : 5;
+}
+
+extern "C" int zmath_project_point_and_clamp_to_screen_clip_smoke(void) {
+    int matrixIdentityFlags[2] = {};
+    float *matrixSlots[2] = {};
+    zMat4x3 baseMatrix{};
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    matrixSlots[0] = reinterpret_cast<float *>(&baseMatrix);
+
+    zMath::g_zMath_CameraScratchB = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                                     0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    g_zMath_ProjScaleX = 100.0f;
+    g_zMath_ProjScaleY = -50.0f;
+    g_zMath_ProjOffsetX = 320.0f;
+    g_zMath_ProjOffsetY = 240.0f;
+    gClipRect_Primary.zMin = 1.0f;
+    gClipRect_Primary.xMaxAlt = 640.0f;
+    g_zVideo_ProjectClipLeft = 0.0f;
+    g_zVideo_ProjectClipTop = 0.0f;
+    g_zVideo_ProjectClipRight = 640.0f;
+    g_zVideo_ProjectClipBottom = 480.0f;
+
+    zVec3 point{1.0f, 2.0f, 10.0f};
+    zVec3 projected{};
+    if (zMath::ProjectPointAndClampToScreenClip(&point, &projected) != 0 ||
+        !Near(projected.x, 330.0f) || !Near(projected.y, 230.0f) ||
+        !Near(projected.z, 0.1f)) {
+        return 1;
+    }
+
+    point = {-100.0f, 0.0f, 10.0f};
+    if (zMath::ProjectPointAndClampToScreenClip(&point, &projected) != 1 ||
+        projected.x != 0.0f || !Near(projected.y, 240.0f)) {
+        return 2;
+    }
+
+    point = {0.0f, 100.0f, 10.0f};
+    if (zMath::ProjectPointAndClampToScreenClip(&point, &projected) != 4 ||
+        projected.y != 0.0f) {
+        return 3;
+    }
+
+    point = {0.0f, -100.0f, 10.0f};
+    if (zMath::ProjectPointAndClampToScreenClip(&point, &projected) != 8 ||
+        projected.y != 479.0f) {
+        return 4;
+    }
+
+    point = {0.0f, 0.0f, -2.0f};
+    const int result = zMath::ProjectPointAndClampToScreenClip(&point, &projected);
+    return result == 8 && projected.y == 480.0f && Near(projected.x, 340.48f) ? 0 : 5;
+}
+
+extern "C" int zmath_vec3_lerp_smoke(void) {
+    zVec3 inOut = {10.0f, -4.0f, 8.0f};
+    zVec3 other = {2.0f, 20.0f, -2.0f};
+    zMath::Vec3Lerp(&inOut, &other, 0.25f);
+
+    return Near(inOut.x, 4.0f) && Near(inOut.y, 14.0f) && Near(inOut.z, 0.5f) &&
+                   other.x == 2.0f && other.y == 20.0f && other.z == -2.0f
+               ? 0
+               : 1;
+}
+
+extern "C" int zmath_vec3_lerp_normalize_smoke(void) {
+    zVec3 inOut = {1.0f, 0.0f, 0.0f};
+    zVec3 other = {0.0f, 1.0f, 0.0f};
+    zMath::Vec3LerpNormalize(&inOut, &other, 0.25f);
+
+    const float expectedScale = 1.0f / sqrt(0.625f);
+    if (!Near(inOut.x, 0.25f * expectedScale) ||
+        !Near(inOut.y, 0.75f * expectedScale) || !Near(inOut.z, 0.0f)) {
+        return 1;
+    }
+
+    zVec3 zeroA = {1.0f, 0.0f, 0.0f};
+    zVec3 zeroB = {-1.0f, 0.0f, 0.0f};
+    zMath::Vec3LerpNormalize(&zeroA, &zeroB, 0.5f);
+
+    return zeroA.x == 0.0f && zeroA.y == 0.0f && zeroA.z == 0.0f ? 0 : 2;
+}
+
+extern "C" int zmath_vec3_midpoint_smoke(void) {
+    zVec3 a = {10.0f, -4.0f, 8.0f};
+    zVec3 b = {2.0f, 20.0f, -2.0f};
+    zVec3 out = {};
+    zVec3 *returned = zMath::Vec3Midpoint(&a, &b, &out);
+
+    return returned == &out && Near(out.x, 6.0f) && Near(out.y, 8.0f) &&
+                   Near(out.z, 3.0f) && a.x == 10.0f && b.y == 20.0f
+               ? 0
+               : 1;
 }
 
 extern "C" int zmath_perspective_texture_interpolants_smoke(void) {
@@ -275,6 +461,23 @@ extern "C" int zmath_vec3_normalize_and_div_scalar_smoke(void) {
     if (flatZero.y != 7.0f || flatOut.x != 0.0f || flatOut.y != 6.0f ||
         flatOut.z != 0.0f) {
         return 9;
+    }
+
+    zVec3 reflectNormal{0.0f, 1.0f, 0.0f};
+    zVec3 incident{2.0f, -3.0f, 4.0f};
+    zVec3 reflected{};
+    zMath::Vec3Reflect(&reflectNormal, &incident, &reflected);
+    if (!Near(reflected.x, 2.0f) || !Near(reflected.y, 3.0f) ||
+        !Near(reflected.z, 4.0f)) {
+        return 10;
+    }
+
+    zVec3 perpendicularNormal{0.0f, 1.0f, 0.0f};
+    zVec3 perpendicularIncident{3.0f, 0.0f, -2.0f};
+    zMath::Vec3Reflect(&perpendicularNormal, &perpendicularIncident, &reflected);
+    if (!Near(reflected.x, -3.0f) || !Near(reflected.y, 0.0f) ||
+        !Near(reflected.z, 2.0f)) {
+        return 11;
     }
 
     zVec3 deltaA{5.0f, -1.0f, 7.0f};
@@ -477,6 +680,14 @@ extern "C" int zmath_array_add_scaled_and_transform_smoke(void) {
     if (!Near(rotated.x, 3.0f) || !Near(rotated.y, 2.0f) || !Near(rotated.z, -1.0f)) {
         return 14;
     }
+    zMath_Vec3_DirFromYaw(&rotated, 0.0f);
+    if (!Near(rotated.x, 0.0f) || !Near(rotated.y, 0.0f) || !Near(rotated.z, -1.0f)) {
+        return 23;
+    }
+    zMath_Vec3_DirFromYaw(&rotated, 1.57079632679f);
+    if (!Near(rotated.x, -1.0f) || !Near(rotated.y, 0.0f) || !Near(rotated.z, 0.0f)) {
+        return 24;
+    }
 
     zVec3 euler{};
     zMat4x3 identityMatrix{};
@@ -604,6 +815,27 @@ extern "C" int zmath_quaternion_helpers_smoke(void) {
         return 3;
     }
 
+    const zQuat identityProductQuat{1.0f, 0.0f, 0.0f, 0.0f};
+    zMath_Quat_Multiply(&identityProductQuat, &quatB, &product);
+    if (!Near(product.w, 0.5f) || !Near(product.x, -0.5f) || !Near(product.y, 0.5f) ||
+        !Near(product.z, -0.5f)) {
+        return 4;
+    }
+
+    const zVec3 zeroRotation{0.0f, 0.0f, 0.0f};
+    zMath_Quat_FromRotationVector(&zeroRotation, &quat);
+    if (!Near(quat.w, 1.0f) || !Near(quat.x, 0.0f) || !Near(quat.y, 0.0f) ||
+        !Near(quat.z, 0.0f)) {
+        return 5;
+    }
+
+    const zVec3 zQuarterRotation{0.0f, 0.0f, 1.57079632679f};
+    zMath_Quat_FromRotationVector(&zQuarterRotation, &quat);
+    if (!Near(quat.w, 0.0f) || !Near(quat.x, 0.0f) || !Near(quat.y, 0.0f) ||
+        !Near(quat.z, 1.0f)) {
+        return 6;
+    }
+
     zMat4x3 matrix{};
     matrix.posX = 7.0f;
     matrix.posY = 8.0f;
@@ -613,7 +845,7 @@ extern "C" int zmath_quaternion_helpers_smoke(void) {
     if (!Near(matrix.xx, 1.0f) || !Near(matrix.yy, 1.0f) || !Near(matrix.zz, 1.0f) ||
         !Near(matrix.xy, 0.0f) || !Near(matrix.posX, 7.0f) || !Near(matrix.posY, 8.0f) ||
         !Near(matrix.posZ, 9.0f)) {
-        return 4;
+        return 7;
     }
 
     const float halfSqrt2 = 0.70710678118f;
@@ -621,7 +853,7 @@ extern "C" int zmath_quaternion_helpers_smoke(void) {
     zMath_Quat_ToMatrix(&yQuarterTurn, &matrix);
     if (!Near(matrix.xx, 0.0f) || !Near(matrix.yy, 1.0f) || !Near(matrix.zz, 0.0f) ||
         !Near(matrix.xz, -1.0f) || !Near(matrix.zx, 1.0f)) {
-        return 5;
+        return 8;
     }
 
     return 0;

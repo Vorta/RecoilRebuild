@@ -27,6 +27,32 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 
 ## Active Groups
 
+### Group: zClass DI single-segment dispatch cycle
+
+- Anchor: 0x445650 zClass_cls_di::BuildPickCandidatesForSegmentChildFallback
+- Reason: recursive cycle; the child-fallback dispatcher calls the object/camera/light single-segment helpers, and those helpers can recurse through the child-fallback dispatcher.
+- Source blockers:
+  - 0x445650 zClass_cls_di::BuildPickCandidatesForSegmentChildFallback
+  - 0x445a00 zClass_cls_di::BuildPickCandidatesForSegmentRecursive
+  - 0x445b20 zClass_cls_di::BuildPickCandidatesForSegmentForCamera
+  - 0x445c20 zClass_cls_di::BuildPickCandidatesForSegmentForLight
+- Next action:
+  - `python tools/recoil_frontier.py 0x445650 --depth 1`
+
+### Group: zClass DI segment batch picking
+
+- Anchor: 0x445d40 zClass_cls_di::BuildProbeHitBatchesForSegments
+- Reason: source-readiness closure for the Player pending-contact segment probe batch; the root depends on the plural segment grid walker, frustum/polygon filters, and the shared batch segment-vs-polygon helper.
+- Source blockers:
+  - 0x445d40 zClass_cls_di::BuildProbeHitBatchesForSegments
+  - 0x445f60 zClass_cls_di::BuildPickCandidatesForSegmentsInGridWindow
+  - 0x446440 zClass_cls_di::BuildPickCandidatesForSegmentsRecursive
+  - 0x4476f0 zClass_cls_di::FrustumTestAndPick
+  - 0x487540 zClass_cls_di::FilterRegionsAgainstPolygonWithDamageMaskUv
+  - 0x486290 zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygon
+- Next action:
+  - `python tools/recoil_status.py 0x486290`
+
 ### Group: Player ZAR section registration and read callbacks
 
 - Anchor: 0x41f5b0 Player::ZAR_RegisterSections
@@ -40,8 +66,8 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
   - 0x41f640 Player::ZAR_ReadMissionSaveDataSection
   - 0x41f850 Player::ZAR_ReadVehicleListSection
 - Next action:
-  - `python tools/recoil_frontier.py 0x41f640 --depth 1`
-  - `python tools/recoil_frontier.py 0x41f850 --depth 1`
+  - `python tools/recoil_frontier.py 0x439540 --depth 1`
+  - `0x4b21c0`, `0x4b22d0`, `0x4b2210`, and `0x4b2520` were cleared in this pass; `0x41f1d0` is now visibly blocked by `0x439540` and `0x42b520`.
 
 ### Group: Deferred P0 zRndr Span*SwitchVShift cluster
 
@@ -203,67 +229,15 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 ### Group: zEffectAnim stop and activation closure
 
 - Anchor: 0x45d7b0 zEffectAnim::SetTransformRotAndVelocity
-- Reason: active dependency/source-readiness group retained after pruning temporary detail.
+- Reason: active dependency/source-readiness group retained as binary-safe debt; the functional-lane stop/activation/event-dispatch closure is now accepted.
 - Source blockers:
-  - 0x45d7b0 zEffectAnim::SetTransformRotAndVelocity
-  - 0x459280 zEffect::HandleLightAnimEvent
-  - 0x459510 zEffect::HandleFogEvent
-  - 0x459580 zEffect::HandleCameraParamsEvent
-  - 0x4596c0 zEffect::AnimateCameraParamsOverTime
-  - 0x459ae0 zEffect::HandleRotationEvent
-  - 0x459cb0 zEffect::HandleNodeScaleEvent
-  - 0x459ce0 zEffect::HandlePositionEvent
-  - 0x459e30 zEffect::HandleActivateEvent
-  - 0x458c10 zEffect::UpdateBeamNodeBetweenPoints
-  - 0x458ce0 zEffect::UpdateBeamNodeBetweenFractions
-  - 0x443c50 zClass_cls_di::SetBreakOnFirstCandidate
-  - 0x45c040 zEffectAnim::Stop
-  - 0x45c100 zEffect::HandleNamedAnimStopEvent
-  - 0x45c1a0 zEffect::HandleEmitterPlayEvent
-  - 0x45c3c0 zEffect::HandleConditionalChainEvent
-  - 0x45c530 zEffect::TraceUpwardHitFromNodeOrPos
-  - 0x45cbc0 zEffect::HandleTopMessageEvent
-  - 0x45ae30 zEffect_Anim::AdvanceKeyframeSample
-  - 0x45ae90 zEffect_Anim::AnimateKeyframeSample
-  - 0x45b120 zEffect_Anim::AdvanceKeyframe
-  - 0x45b210 zEffect_Anim::EvaluateKeyframe
-  - 0x45b280 zEffect_Anim::RunKeyframes
-  - 0x45b4a0 zEffect::HandleDetachEvent
-  - 0x45c710 zEffect::HandleScreenColorFxEvent
-  - 0x45c920 zEffect::HandleScreenOverlayFxEvent
-  - 0x45b8b0 zEffect::HandleTransformRefsEvent
-  - 0x45bc60 zEffect::HandleSurfaceRefEvent
-  - 0x476480 zMath::ProjectPointAndClampToScreenClip
-  - 0x4bdc00 zVideoFxPass3Slot::SetRectAndPayload
-  - 0x4bed90 zVideo_FxPass3Config_QueueElementLocal
-  - 0x4bed50 zVideo_FxPass3Config_SetPrimaryElementParamsLocal
-  - 0x4beee0 zVideo_FxPass3_SetPrimaryElementParamsLocal
-  - 0x4bef10 zVideo_FxPass3_QueueElementLocal
-  - 0x4498e0 gwNode::GetWorldPosAndOrientation
-  - 0x474d90 zMath_Vec3_ElevationAngleBetweenPoints
-  - 0x475910 zMath_Quat_Multiply
-  - 0x475b80 zMath_Quat_FromRotationVector
-  - 0x45cc00 zEffect_Anim::RunSequenceEvents
-  - 0x45d010 zEffect_Anim::RunSequence
-  - 0x45d3d0 zEffectAnim::FinalizeStop
-  - 0x45d4c0 zEffectAnim::RunStopSequenceCallback
-  - 0x45d570 zEffectAnim::StopAndCleanup
-  - 0x45d6b0 zEffect_Anim::NodeActionCallback
-  - 0x45d770 zEffectAnim::RunStopDelayCallback
-  - 0x45dcb0 zEffectAnim::SetVelocity
-  - 0x45dde0 zEffectAnim::SetVelocity_Thunk
-  - 0x45de00 zEffectAnim::SetPositionRefAndVelocity
-  - 0x45df70 zEffectAnim::SetPositionRefAndVelocity_Thunk
-  - 0x45df90 zEffectAnim::SetTransformRefs
-  - 0x45e0b0 zEffectAnim::SetTransformRefs_Thunk
-  - 0x45d930 zEffectAnim::ActivateRuntime
-  - 0x45dc70 zEffectAnim::SetTransformRotAndVelocity_Thunk
-  - 0x45a9d0 zEffect::AnimateNodeOverTime
-  - 0x474580 zMath_Vec3_DirFromYaw
-  - 0x45a920 zEffect::FindNearestPickCandidateBelowPoint
-  - 0x459e70 zEffect::HandleNodeAnimEvent
-- Next action:
-  - `python tools/recoil_status.py 0x45d7b0`
+  - none visible for `0x45cc00 zEffect_Anim::RunSequenceEvents`, `0x45d930 zEffectAnim::ActivateRuntime`, `0x45df90 zEffectAnim::SetTransformRefs`, or `0x45b8b0 zEffect::HandleTransformRefsEvent` at depth 1.
+- Functional evidence:
+  - `zeffect_anim_runtime_sequence_group_smoke` covers activation callback installation, set-velocity/position-ref/transform-ref/transform-rot entry activation, no-op sequence dispatch, `RunSequence` completion, child event dispatch, named stop, emitter play, delayed stop, and final cleanup.
+  - Functional targets added under `tools/functional_verify_targets/` for the runtime sequence group and per-address event/activation/stop entries.
+- Remaining work:
+  - Binary-safe verification for this cluster remains deferred to a coherent zEffect animation source-cluster pass.
+  - Re-run `python tools/recoil_frontier.py 0x45d930 --depth 1` or `python tools/recoil_status.py 0x45d930` before reopening source work.
 
 ### Group: OptCatalog runtime instance free-list leaves
 
@@ -1918,6 +1892,39 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
   - 0x44f630 pending
 - Next action:
   - `python tools/recoil_status.py 0x42f280`
+
+### Group: Player camera-state transition cluster
+
+- Anchor: 0x405c90 Player::ApplyCameraState
+- Reason: `ApplyCameraState`, `UpdateThirdPersonCamera`, and `zOpt::SetCameraMode`
+  form a small source dependency cycle; implement and verify them as one
+  functional-equivalence cluster before using them as caller dependencies.
+- Source blockers:
+  - 0x405650 Player::UpdateThirdPersonCamera
+  - 0x405c90 Player::ApplyCameraState
+  - 0x407ec0 zOpt::SetCameraMode
+- Next action:
+  - `python tools/recoil_status.py 0x405c90`
+
+### Group: Player master-type transition cluster
+
+- Anchor: 0x42b520 Player::ApplyMasterTypeTransition
+- Reason: the master-type switch fans out through transition helpers that share
+  cooldown state, modal selection, effect handles, and class-layout fields.
+  Source-ready leaf helpers should be completed before returning upward to
+  `ApplyMissionSaveData`, `ZAR_ReadMissionSaveDataSection`, and
+  `ZAR_RegisterSections`.
+- Source-ready current slice:
+  - 0x42b4a0 Player::StopBftBubbleFxHandle
+  - 0x42b4c0 Player::TransitionToMasterTypeFly
+- Source blockers:
+  - 0x42ac90 Player::TransitionToMasterTypeTrack
+  - 0x42aeb0 Player::TransitionToMasterTypeAmphib
+  - 0x42b0f0 Player::TransitionToMasterTypeHover
+  - 0x42b2a0 Player::TransitionToMasterTypeSub
+  - 0x42b520 Player::ApplyMasterTypeTransition
+- Next action:
+  - `python tools/recoil_status.py 0x42b4a0`
 
 ## Completed Groups
 

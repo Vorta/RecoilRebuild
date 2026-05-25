@@ -21,6 +21,7 @@ int g_zImage_FontTransparentColor = 2;
 int g_zImage_Unknown5617f4 = 0;
 zVidImagePartial *g_zImage_DefaultImagePtr = &zVid_Image::g_zImage_DefaultImage;
 zImage_CreateFallbackImageProc g_zImage_pfnCreateFallbackImage = 0;
+char g_zImage_DefaultTextureName[0x10] = "DEFAULT_TEXTURE";
 }
 
 namespace zImage {
@@ -29,7 +30,30 @@ namespace zImage {
 RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_CDECL GetDefaultImageRefPtr() {
     return (zImage_TexDirEntryPartial *)(&g_zImage_DefaultImagePtr);
 }
+
+// Reimplements 0x46d550: zImage::InitTextureDirectory
+// (GameZRecoil/zImage/zimg_texture.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL InitTextureDirectory() {
+    g_zImage_TexDirEntryCount = 0;
+    memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
+
+    if (g_zVideo_ActiveRendererPath != 0) {
+        g_zImage_DefaultTextureRecord = g_zVideo_pfnCreateTextureRecord(
+            g_zImage_DefaultTextureName, &zVid_Image::g_zImage_DefaultImage, 0, 0, 0);
+    }
+
+    return 1;
+}
 } // namespace zImage
+
+namespace zImg {
+// Reimplements 0x46eba0: zImg::Init
+// (GameZRecoil/zImage/zimg_texture.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL Init() {
+    zImage::InitTextureDirectory();
+    return 1;
+}
+} // namespace zImg
 
 // Reimplements 0x46e290: zImage_TexDirEntryPartial::GetVariantImageAtIndex
 RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL

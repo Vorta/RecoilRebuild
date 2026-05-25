@@ -1,8 +1,10 @@
 #include "Battlesport/GameNet.h"
 #include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/player.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 
@@ -26,6 +28,15 @@ struct ScoreboardPacket2 {
 
 template <typename T> T &FieldAt(void *object, std::size_t offset) {
     return *reinterpret_cast<T *>(static_cast<unsigned char *>(object) + offset);
+}
+
+bool FloatNear(float actual, float expected) {
+    return actual >= expected - 0.0001f && actual <= expected + 0.0001f;
+}
+
+bool Vec3Equals(const zVec3 &value, const zVec3 &expected) {
+    return FloatNear(value.x, expected.x) && FloatNear(value.y, expected.y) &&
+           FloatNear(value.z, expected.z);
 }
 
 void DeleteTopMessageStackFonts(HudUiTopMessageStack &stack) {
@@ -136,6 +147,200 @@ extern "C" int gamenet_find_player_row_and_status_bits_smoke(void) {
     g_GameNetPlayerRowHead = nullptr;
     return rowLookup && lapsReached && lapsBlocked && emptyListReached && bothSet && bothClear ? 0
                                                                                                : 1;
+}
+
+extern "C" int gamenet_get_local_player_color_index_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+
+    g_GameStateOrMapTable = nullptr;
+    const bool nullStateOk = GameNet::GetLocalPlayerColorIndexOrZero() == 0;
+
+    zUtil_SaveGameState saveState{};
+    g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)(&saveState);
+    const bool nullRowOk = GameNet::GetLocalPlayerColorIndexOrZero() == 0;
+
+    GameNetPlayerRow row{};
+    row.playerColorIndex = 6;
+    saveState.netPlayerRow = &row;
+    const bool colorOk = GameNet::GetLocalPlayerColorIndexOrZero() == 6;
+
+    g_GameStateOrMapTable = oldGameState;
+    return nullStateOk && nullRowOk && colorOk ? 0 : 1;
+}
+
+extern "C" int gamenet_get_nearest_other_player_distance_to_spawn_point_smoke(void) {
+    GameNetPlayerRow *const oldHead = g_GameNetPlayerRowHead;
+    GameNetPlayerRow *const oldTail = g_GameNetPlayerRowTail;
+    const unsigned int oldCount = g_GameNetPlayerRowCount;
+    zUtil_SaveGameState *const oldLocalSaveState = g_LocalPlayerSaveState;
+
+    GameNetSpawnPoint spawnPoint = {};
+    spawnPoint.position.x = 0.0f;
+    spawnPoint.position.y = 0.0f;
+    spawnPoint.position.z = 0.0f;
+
+    zUtil_PlayerStateStorage localPlayerState = {};
+    zUtil_PlayerStateStorage farPlayerState = {};
+    zUtil_PlayerStateStorage nearPlayerState = {};
+    localPlayerState.worldPos.x = 1.0f;
+    farPlayerState.worldPos.x = 5.0f;
+    nearPlayerState.worldPos.x = 2.0f;
+
+    GameNetPlayerSaveState localSave = {};
+    GameNetPlayerSaveState farSave = {};
+    GameNetPlayerSaveState nearSave = {};
+    localSave.playerState = &localPlayerState;
+    farSave.playerState = &farPlayerState;
+    nearSave.playerState = &nearPlayerState;
+
+    GameNetPlayerRow localRow = {};
+    GameNetPlayerRow farRow = {};
+    GameNetPlayerRow nearRow = {};
+    localRow.saveState = &localSave;
+    localRow.next = &farRow;
+    farRow.saveState = &farSave;
+    farRow.next = &nearRow;
+    nearRow.saveState = &nearSave;
+
+    g_GameNetPlayerRowHead = &localRow;
+    g_GameNetPlayerRowTail = &nearRow;
+    g_GameNetPlayerRowCount = 3;
+    g_LocalPlayerSaveState = reinterpret_cast<zUtil_SaveGameState *>(&localSave);
+
+    GameNetPlayerSaveState *nearest = &localSave;
+    const float nearestDistance =
+        GameNet::GetNearestOtherPlayerDistanceToSpawnPoint(&spawnPoint, &nearest);
+    const bool nearestOk = nearestDistance == 4.0f && nearest == &nearSave;
+
+    g_GameNetPlayerRowHead = nullptr;
+    nearest = &localSave;
+    const float emptyDistance =
+        GameNet::GetNearestOtherPlayerDistanceToSpawnPoint(&spawnPoint, &nearest);
+    const bool emptyOk = emptyDistance > 9.0e22f && nearest == &localSave;
+
+    g_GameNetPlayerRowHead = oldHead;
+    g_GameNetPlayerRowTail = oldTail;
+    g_GameNetPlayerRowCount = oldCount;
+    g_LocalPlayerSaveState = oldLocalSaveState;
+
+    return nearestOk && emptyOk ? 0 : 1;
+}
+
+extern "C" int gamenet_respawn_player_color_indexed_spawn_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    GameNetSpawnPoint *const oldSpawnHead = g_GameNetSpawnPointHead;
+    GameNetSpawnPoint *const oldSpawnTail = g_GameNetSpawnPointTail;
+    const std::uint32_t oldSpawnCount = g_GameNetSpawnPointCount;
+    const std::int32_t oldAllowMaps = g_GameNetStatus_AllowMaps;
+    const std::int32_t oldMissionId = g_HudSensorTracker.missionId;
+    const zTag4Partial oldVariantTagCurrent = g_VariantTag_Current;
+    const zTag4Partial oldVariantCurrent = g_Variant_CurrentTag;
+    HWND const oldWindow = g_zInput_hWnd;
+    const int oldCenterX = g_zInput_MouseClientCenterX;
+    const int oldCenterY = g_zInput_MouseClientCenterY;
+    const zInput::MouseStateSnapshot oldMouseState = g_zInput_MouseStateSnapshot;
+    POINT originalCursor = {};
+    GetCursorPos(&originalCursor);
+
+    HWND const hwnd = CreateWindowExA(0, "STATIC", "recoil", WS_POPUP, 20, 30, 160, 120,
+                                      nullptr, nullptr, GetModuleHandleA(nullptr), nullptr);
+    if (hwnd == nullptr) {
+        return 1;
+    }
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData modalData = {};
+    GameNetPlayerRow localRow = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    saveState.netPlayerRow = &localRow;
+    modalState.masterModalData = &modalData;
+    modalData.masterType = 3;
+    localRow.playerColorIndex = 2;
+
+    GameNetSpawnPoint firstSpawn = {};
+    GameNetSpawnPoint secondSpawn = {};
+    firstSpawn.position = {1.0f, 2.0f, 3.0f};
+    firstSpawn.yawDegrees = 10.0f;
+    firstSpawn.next = &secondSpawn;
+    secondSpawn.position = {4.0f, 5.0f, 6.0f};
+    secondSpawn.yawDegrees = 90.0f;
+    g_GameNetSpawnPointHead = &firstSpawn;
+    g_GameNetSpawnPointTail = &secondSpawn;
+    g_GameNetSpawnPointCount = 2;
+    g_GameNetStatus_AllowMaps = 0;
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
+    g_HudSensorTracker.missionId = 11;
+
+    playerState.throttleInput = 1.0f;
+    playerState.steeringInput = 2.0f;
+    playerState.subVerticalInput = 3.0f;
+    playerState.throttleInputCopy = 4.0f;
+    playerState.steeringInputCopy = 5.0f;
+    playerState.subVerticalInputCopy = 6.0f;
+    playerState.localVel = {7.0f, 8.0f, 9.0f};
+    playerState.projectileSpawnVel = {10.0f, 11.0f, 12.0f};
+    playerState.yawRotatedLocalVel = {13.0f, 14.0f, 15.0f};
+    playerState.angVelPitch = 16.0f;
+    playerState.angVelYaw = 17.0f;
+    playerState.angVelRoll = 18.0f;
+    playerState.thirdPersonYawOffset = 19.0f;
+    playerState.cameraElevationOffset = 20.0f;
+    playerState.amphibUnlocked = 0;
+    playerState.hoverUnlocked = 1;
+    playerState.subUnlocked = 1;
+
+    g_zInput_hWnd = hwnd;
+    g_zInput_MouseClientCenterX = 32;
+    g_zInput_MouseClientCenterY = 24;
+    g_zInput_MouseStateSnapshot.cursorClientX = 4;
+    g_zInput_MouseStateSnapshot.cursorClientY = 5;
+    g_zInput_MouseStateSnapshot.cursorNormX = 0.25f;
+    g_zInput_MouseStateSnapshot.cursorNormY = -0.5f;
+
+    GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed(&saveState, 1);
+
+    const bool spawnOk = Vec3Equals(playerState.worldPos, secondSpawn.position) &&
+                         FloatNear(playerState.restartYawRad, 1.5707964f) &&
+                         FloatNear(playerState.previousTransform.posX, 4.0f) &&
+                         FloatNear(playerState.previousTransform.posY, 5.0f) &&
+                         FloatNear(playerState.previousTransform.posZ, 6.0f);
+    const bool resetOk =
+        playerState.thirdPersonYawOffset == 0.0f && playerState.cameraElevationOffset == 0.0f &&
+        Vec3Equals(playerState.localVel, {0.0f, 0.0f, 0.0f}) &&
+        Vec3Equals(playerState.projectileSpawnVel, {0.0f, 0.0f, 0.0f}) &&
+        Vec3Equals(playerState.yawRotatedLocalVel, {0.0f, 0.0f, 0.0f}) &&
+        playerState.angVelPitch == 0.0f && playerState.angVelYaw == 0.0f &&
+        playerState.angVelRoll == 0.0f && playerState.throttleInput == 0.0f &&
+        playerState.steeringInput == 0.0f && playerState.subVerticalInput == 0.0f &&
+        playerState.throttleInputCopy == 0.0f && playerState.steeringInputCopy == 0.0f &&
+        playerState.subVerticalInputCopy == 0.0f &&
+        g_zInput_MouseStateSnapshot.cursorClientX == 32 &&
+        g_zInput_MouseStateSnapshot.cursorClientY == 24 &&
+        g_zInput_MouseStateSnapshot.cursorNormX == 0.0f &&
+        g_zInput_MouseStateSnapshot.cursorNormY == 0.0f;
+    const bool unlockOk =
+        playerState.amphibUnlocked == 1 && playerState.hoverUnlocked == 0 &&
+        playerState.subUnlocked == 0;
+
+    DestroyWindow(hwnd);
+    SetCursorPos(originalCursor.x, originalCursor.y);
+    g_GameStateOrMapTable = oldGameState;
+    g_GameNetSpawnPointHead = oldSpawnHead;
+    g_GameNetSpawnPointTail = oldSpawnTail;
+    g_GameNetSpawnPointCount = oldSpawnCount;
+    g_GameNetStatus_AllowMaps = oldAllowMaps;
+    g_HudSensorTracker.missionId = oldMissionId;
+    g_VariantTag_Current = oldVariantTagCurrent;
+    g_Variant_CurrentTag = oldVariantCurrent;
+    g_zInput_hWnd = oldWindow;
+    g_zInput_MouseClientCenterX = oldCenterX;
+    g_zInput_MouseClientCenterY = oldCenterY;
+    g_zInput_MouseStateSnapshot = oldMouseState;
+
+    return spawnOk && resetOk && unlockOk ? 0 : 2;
 }
 
 extern "C" int gamenet_reset_hud_timer_panel_net_state_smoke(void) {
@@ -285,6 +490,77 @@ extern "C" int gamenet_timer_status_packet_smoke(void) {
     return sent && applied && directApply ? 0 : 1;
 }
 
+extern "C" int gamenet_timer_panel_state_packet_smoke(void) {
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const std::int32_t oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const std::int32_t oldIsHost = g_zNetwork_IsHostFlag;
+    const HudTimerPanelNetState oldTimerState = g_HudTimerPanelNetState;
+
+    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_PlayerRecord localPlayer{};
+    localPlayer.playerKey = 0x4321;
+    g_zNetwork_pDirectPlay4 = &dplay;
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x8765;
+    g_zNetwork_IsHostFlag = 1;
+    g_sendCalls = 0;
+    g_sendFlags = 0;
+    g_sendPacket = nullptr;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+    std::memset(g_sendPacketBytes, 0, sizeof(g_sendPacketBytes));
+
+    HudUiTimerPanel timer{};
+    HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(&timer);
+    panel->ConstructorDefault("", 0, 0);
+    g_HudUiMgrTimerPanel = &timer;
+    HudUiTimerPanel::SetSeconds(88.0f, -1.0f);
+
+    HudTimerPanelNetState state{};
+    state.timerDirectionNeg = 1;
+    state.startGateTriggered = 1;
+    state.raceFinishCountdownTriggered = 1;
+    GameNet::SendPkt0D_HudTimerPanelState(&state);
+
+    const NetPkt0D_HudTimerPanelState *const sentPacket =
+        reinterpret_cast<const NetPkt0D_HudTimerPanelState *>(g_sendPacketBytes);
+    const bool sent = g_sendCalls == 1 && g_sendFlags == 1 &&
+                      g_sendPacketSize == sizeof(NetPkt0D_HudTimerPanelState) &&
+                      sentPacket->header.packetType == 0x0d &&
+                      sentPacket->header.packetSizeBytes ==
+                          sizeof(NetPkt0D_HudTimerPanelState) &&
+                      sentPacket->header.payloadDword0 == 0x8765 &&
+                      sentPacket->seconds == 88.0f &&
+                      sentPacket->hudTimerFlagsPacked == 0x19;
+
+    const bool localApply = g_HudTimerPanelNetState.timerSeconds == 88.0f &&
+                            g_HudTimerPanelNetState.timerDirectionNeg == 1 &&
+                            g_HudTimerPanelNetState.startGateTriggered == 1 &&
+                            g_HudTimerPanelNetState.raceFinishCountdownTriggered == 1 &&
+                            FieldAt<float>(&timer, 0x2a4) == 88.0f &&
+                            FieldAt<std::int32_t>(&timer, 0x2ac) == -1;
+
+    NetPkt0D_HudTimerPanelState packet{};
+    packet.seconds = 12.0f;
+    packet.hudTimerFlagsPacked = 0;
+    const bool handled = GameNet::HandlePkt0D_HudTimerPanelState(0, &packet) == 1 &&
+                         g_HudTimerPanelNetState.timerSeconds == 12.0f &&
+                         g_HudTimerPanelNetState.timerDirectionNeg == 0 &&
+                         FieldAt<float>(&timer, 0x2a4) == 12.0f &&
+                         FieldAt<std::int32_t>(&timer, 0x2ac) == 1;
+
+    DeleteObject(panel->hFont);
+    panel->hFont = nullptr;
+    g_HudUiMgrTimerPanel = nullptr;
+    g_HudTimerPanelNetState = oldTimerState;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_IsHostFlag = oldIsHost;
+    return sent && localApply && handled ? 0 : 1;
+}
+
 extern "C" int gamenet_scoreboard_snapshot_packet_smoke(void) {
     HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
     const std::int32_t oldRaceMode = g_HudSensorTracker.raceCheckpointMode;
@@ -393,6 +669,91 @@ extern "C" int gamenet_scoreboard_snapshot_packet_smoke(void) {
     triplet.DestructorCore();
 
     return applied && sent ? 0 : 1;
+}
+
+extern "C" int gamenet_lap_progress_packet_smoke(void) {
+    HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
+    const std::int32_t oldGoalValue = g_HudSensorTracker.runtimeGoalValue;
+    GameNetPlayerRow *const oldHead = g_GameNetPlayerRowHead;
+    GameNetPlayerRow *const oldTail = g_GameNetPlayerRowTail;
+    const std::uint32_t oldCount = g_GameNetPlayerRowCount;
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const std::int32_t oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const std::int32_t oldIsHost = g_zNetwork_IsHostFlag;
+    const std::int32_t oldTcpIpAsync = g_zNetwork_TcpIpAsyncSendEnabled;
+
+    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_PlayerRecord localPlayer{};
+    localPlayer.playerKey = 0x1111;
+    g_zNetwork_pDirectPlay4 = &dplay;
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x2222;
+    g_zNetwork_IsHostFlag = 0;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_sendCalls = 0;
+    g_sendFlags = 0;
+    g_sendPacket = nullptr;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+    std::memset(g_sendPacketBytes, 0, sizeof(g_sendPacketBytes));
+
+    zUtil_PlayerStateStorage playerState{};
+    playerState.lapCount = 4;
+    playerState.lapTimeSec = 65.0f;
+    zUtil_SaveGameState saveState{};
+    GameNetPlayerRow localRow{};
+    saveState.playerState = &playerState;
+    saveState.netPlayerRow = &localRow;
+
+    GameNet::SendPkt0E_PlayerLapProgress(&saveState);
+    const NetPkt0E_PlayerLapProgress *const sentPacket =
+        reinterpret_cast<const NetPkt0E_PlayerLapProgress *>(g_sendPacketBytes);
+    const bool clientSend =
+        g_sendCalls == 1 && g_sendFlags == 1 &&
+        g_sendPacketSize == sizeof(NetPkt0E_PlayerLapProgress) &&
+        sentPacket->header.packetType == 0x0e &&
+        sentPacket->header.packetSizeBytes == sizeof(NetPkt0E_PlayerLapProgress) &&
+        sentPacket->header.payloadDword0 == 0x2222 && sentPacket->lapCountPacked == 4 &&
+        sentPacket->lapTimeSec == 65.0f && localRow.lapCount == 0;
+
+    HudUiTriplet triplet{};
+    triplet.Constructor();
+    HudUiStatsListElement statsList{};
+    statsList.triplet = &triplet;
+    g_HudUiMgrStatsList = &statsList;
+
+    GameNetPlayerRow remoteRow{};
+    remoteRow.playerKey = 0x3333;
+    remoteRow.playerColorPackedRgb = 0x00123456;
+    std::strcpy(remoteRow.displayName, "Remote");
+    g_GameNetPlayerRowHead = &remoteRow;
+    g_GameNetPlayerRowTail = &remoteRow;
+    g_GameNetPlayerRowCount = 1;
+    g_HudSensorTracker.runtimeGoalValue = 3;
+    GameNet::RefreshPlayerListMenu(&remoteRow);
+
+    g_zNetwork_IsHostFlag = 1;
+    g_sendCalls = 0;
+    NetPkt0E_PlayerLapProgress packet{};
+    packet.lapCountPacked = 2;
+    packet.lapTimeSec = 44.0f;
+    const bool hostHandle = GameNet::HandlePkt0E_PlayerLapProgress(0x3333, &packet) == 1 &&
+                            remoteRow.lapCount == 2 && remoteRow.lapTimeSec == 44.0f &&
+                            g_sendCalls == 1;
+
+    g_HudUiMgrStatsList = oldStatsList;
+    g_HudSensorTracker.runtimeGoalValue = oldGoalValue;
+    g_GameNetPlayerRowHead = oldHead;
+    g_GameNetPlayerRowTail = oldTail;
+    g_GameNetPlayerRowCount = oldCount;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_IsHostFlag = oldIsHost;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldTcpIpAsync;
+    triplet.DestructorCore();
+    return clientSend && hostHandle ? 0 : 1;
 }
 
 extern "C" int gamenet_chat_message_packet_smoke(void) {

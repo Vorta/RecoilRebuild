@@ -16,6 +16,7 @@ int g_textureFinalizeUploadCount = 0;
 zVideo_TextureRecordPartial g_createdTextureRecord = {};
 zVideo_TextureRecordPartial g_existingTextureRecord = {};
 zVidImagePartial *g_lastCreatedImage = nullptr;
+const char *g_lastCreatedTextureName = nullptr;
 zVidImagePartial *g_lastFinalizedImage = nullptr;
 
 void RECOIL_FASTCALL TextureRecordDestroyStub(zVideo_TextureRecordPartial *) {
@@ -26,12 +27,13 @@ void RECOIL_CDECL TextureRecordReleaseAllUploadSurfacesStub() {
     ++g_uploadSurfaceReleaseCount;
 }
 
-zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecordStub(const char *,
+zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecordStub(const char *textureName,
                                                                      zVidImagePartial *image,
                                                                      int useAlpha,
                                                                      int clampU,
                                                                      int clampV) {
     ++g_textureCreateCount;
+    g_lastCreatedTextureName = textureName;
     g_lastCreatedImage = image;
     g_createdTextureRecord.m_alphaMode = useAlpha;
     g_createdTextureRecord.m_uWrapMode = static_cast<D3DTEXTUREADDRESS>(clampU);
@@ -582,6 +584,78 @@ extern "C" int zimage_init_option_fallback_smoke(void) {
                    g_zImage_TextureMemoryOption == &g_zImage_TextureMemoryDefault
                ? 0
                : 2;
+}
+
+extern "C" int zimage_init_texture_directory_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    zVideo_CreateTextureRecordProc const oldCreateTextureRecord = g_zVideo_pfnCreateTextureRecord;
+    zVideo_TextureRecordPartial *const oldDefaultTextureRecord = g_zImage_DefaultTextureRecord;
+
+    g_zImage_TexDirEntryCount = 3;
+    std::memset(g_zImage_TexDirEntries, 0x5a, sizeof(g_zImage_TexDirEntries));
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_pfnCreateTextureRecord = CreateTextureRecordStub;
+    g_textureCreateCount = 0;
+    g_lastCreatedTextureName = nullptr;
+    g_lastCreatedImage = nullptr;
+
+    const int softwareResult = zImage::InitTextureDirectory();
+    const bool softwareOk = softwareResult == 1 && g_zImage_TexDirEntryCount == 0 &&
+                            g_zImage_TexDirEntries[0].image == nullptr &&
+                            g_zImage_TexDirEntries[0].loadState == 0 &&
+                            g_textureCreateCount == 0;
+
+    g_zImage_TexDirEntryCount = 2;
+    std::memset(g_zImage_TexDirEntries, 0x7b, sizeof(g_zImage_TexDirEntries));
+    g_zVideo_ActiveRendererPath = 1;
+    g_zImage_DefaultTextureRecord = nullptr;
+    g_textureCreateCount = 0;
+    g_lastCreatedTextureName = nullptr;
+    g_lastCreatedImage = nullptr;
+
+    const int hardwareResult = zImage::InitTextureDirectory();
+    const bool hardwareOk =
+        hardwareResult == 1 && g_zImage_TexDirEntryCount == 0 &&
+        g_zImage_TexDirEntries[0].image == nullptr && g_zImage_TexDirEntries[0].loadState == 0 &&
+        g_textureCreateCount == 1 && g_lastCreatedTextureName == g_zImage_DefaultTextureName &&
+        g_lastCreatedImage == &zVid_Image::g_zImage_DefaultImage &&
+        g_zImage_DefaultTextureRecord == &g_createdTextureRecord;
+
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_pfnCreateTextureRecord = oldCreateTextureRecord;
+    g_zImage_DefaultTextureRecord = oldDefaultTextureRecord;
+    g_zImage_TexDirEntryCount = 0;
+    std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
+    return softwareOk && hardwareOk ? 0 : 1;
+}
+
+extern "C" int zimg_init_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    zVideo_CreateTextureRecordProc const oldCreateTextureRecord = g_zVideo_pfnCreateTextureRecord;
+    zVideo_TextureRecordPartial *const oldDefaultTextureRecord = g_zImage_DefaultTextureRecord;
+
+    g_zImage_TexDirEntryCount = 1;
+    std::memset(g_zImage_TexDirEntries, 0x33, sizeof(g_zImage_TexDirEntries));
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_pfnCreateTextureRecord = CreateTextureRecordStub;
+    g_zImage_DefaultTextureRecord = nullptr;
+    g_textureCreateCount = 0;
+    g_lastCreatedTextureName = nullptr;
+    g_lastCreatedImage = nullptr;
+
+    const int result = zImg::Init();
+    const bool ok = result == 1 && g_zImage_TexDirEntryCount == 0 &&
+                    g_zImage_TexDirEntries[0].image == nullptr && g_textureCreateCount == 1 &&
+                    g_lastCreatedTextureName == g_zImage_DefaultTextureName &&
+                    g_lastCreatedImage == &zVid_Image::g_zImage_DefaultImage &&
+                    g_zImage_DefaultTextureRecord == &g_createdTextureRecord;
+
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_pfnCreateTextureRecord = oldCreateTextureRecord;
+    g_zImage_DefaultTextureRecord = oldDefaultTextureRecord;
+    g_zImage_TexDirEntryCount = 0;
+    std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
+    return ok ? 0 : 1;
 }
 
 extern "C" int zimage_init_mission_resources_smoke(void) {

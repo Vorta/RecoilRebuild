@@ -267,6 +267,8 @@ struct HudSensorTracker {
     RECOIL_NOINLINE static void RECOIL_FASTCALL
     DrawDiamondMarker(int centerX, int centerY, int halfWidth,
                       int halfHeight, int markerColor, HudSensorTracker *tracker);
+    RECOIL_NOINLINE static int RECOIL_FASTCALL
+    ParseCheckpointNumberFromNode(zClass_NodePartial *node);
 };
 
 RECOIL_STATIC_ASSERT(sizeof(HudSensorMapPoint) == 0x0c);

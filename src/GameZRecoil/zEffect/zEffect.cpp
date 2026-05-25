@@ -4561,7 +4561,7 @@ AnimateCameraParamsOverTime(zEffectAnimEntry *self, zEffectAnimSurfaceRuntime *s
                             zEffectCameraAnimEvent *animEvent) {
     if (self == 0 || sequenceRuntime == 0 || animEvent == 0 ||
         animEvent->targetNodeRefIndex < 0) {
-        return 1;
+        return 2;
     }
 
     zClass_NodePartial *const node = self->nodeRefList[animEvent->targetNodeRefIndex].node;
@@ -5958,11 +5958,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleTopMessageEvent(zEffectAnimEntry * /*s
                                                                    zEffectTopMessageEvent *event) {
     const int textIdIndex = event->textIdIndex;
     if (textIdIndex >= 0) {
-        const int messageId = g_zEffectAnim_TextIdEntryList[textIdIndex].messageId;
+        zEffectAnimTextIdEntry *const textEntry = &g_zEffectAnim_TextIdEntryList[textIdIndex];
+        const int messageId = textEntry->messageId;
+        const char *message = textEntry->messageKey;
         if (messageId != 0) {
-            HudUi::PushTopMessageLine(zLoc::GetMessageString(static_cast<unsigned int>(messageId)),
-                                      3.0f);
+            message = zLoc::GetMessageString(static_cast<unsigned int>(messageId));
         }
+
+        HudUi::PushTopMessageLine(message, 3.0f);
     }
 
     return 2;

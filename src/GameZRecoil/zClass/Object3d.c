@@ -618,6 +618,50 @@ zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState = {0};
 }
 
 namespace zClass_Object3D_ModelRefLerpQueue {
+    // Reimplements 0x438020: zClass_Object3D_ModelRefLerpQueue::Add
+    RECOIL_NOINLINE void RECOIL_FASTCALL Add(zClass_NodePartial *node, void *callbackCtx,
+                                                      void *onComplete, float startModelRef,
+                                                      float targetModelRef, float durationSec) {
+        zClass_Object3D_ModelRefLerpTask *task = new zClass_Object3D_ModelRefLerpTask;
+        memset(task, 0, sizeof(*task));
+
+        if (task != 0) {
+            task->next = 0;
+            if (g_ModelRefLerpQueueState.count == 0) {
+                g_ModelRefLerpQueueState.head = task;
+            } else {
+                g_ModelRefLerpQueueState.tail->next = task;
+            }
+
+            g_ModelRefLerpQueueState.tail = task;
+            task->next = 0;
+            ++g_ModelRefLerpQueueState.count;
+        }
+
+        task->node = node;
+        task->onComplete = onComplete;
+        task->callbackCtx = callbackCtx;
+
+        targetModelRef = ClampUnit(targetModelRef);
+        task->targetModelRef = targetModelRef;
+        startModelRef = ClampUnit(startModelRef);
+        task->currentModelRef = startModelRef;
+
+        const float delta = targetModelRef - startModelRef;
+        task->modelRefDeltaPerSec =
+            durationSec == 0.0f ? 99999997952.0f : delta / durationSec;
+        if (delta < 0.0f) {
+            task->targetModelRef = 1.0f - targetModelRef;
+            task->invertModelRef = 1;
+            task->currentModelRef = 1.0f - startModelRef;
+            task->modelRefDeltaPerSec = -task->modelRefDeltaPerSec;
+        } else {
+            task->invertModelRef = 0;
+        }
+
+        zClass_Object3D::gwObject3DSetLitFlag(node, 1);
+    }
+
     // Reimplements 0x438180: zClass_Object3D_ModelRefLerpQueue::Reset
     RECOIL_NOINLINE void RECOIL_CDECL Reset() {
         zClass_Object3D_ModelRefLerpTask *task = g_ModelRefLerpQueueState.head;

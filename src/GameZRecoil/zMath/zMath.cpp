@@ -289,6 +289,61 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3NormalizeXZ(zVec3 *vec, zVec3 *out) {
     out->z = vec->z * scale;
 }
 
+// Reimplements 0x472860: zMath::Vec3Reflect
+// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Reflect(zVec3 *normal, zVec3 *incident,
+                                                 zVec3 *reflected) {
+    const float dot =
+        normal->x * incident->x + normal->y * incident->y + normal->z * incident->z;
+    if (dot == 0.0f) {
+        reflected->x = incident->x * -1.0f;
+        reflected->y = incident->y * -1.0f;
+        reflected->z = incident->z * -1.0f;
+        return;
+    }
+
+    zVec3 scaledNormal;
+    scaledNormal.x = -dot * normal->x;
+    scaledNormal.y = normal->y * -dot;
+    scaledNormal.z = normal->z * -dot;
+
+    zVec3 halfReflected;
+    halfReflected.x = incident->x + scaledNormal.x;
+    halfReflected.y = incident->y + scaledNormal.y;
+    halfReflected.z = incident->z + scaledNormal.z;
+
+    reflected->x = scaledNormal.x + halfReflected.x;
+    reflected->y = scaledNormal.y + halfReflected.y;
+    reflected->z = scaledNormal.z + halfReflected.z;
+}
+
+// Reimplements 0x472960: zMath::Vec3Lerp
+// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Lerp(zVec3 *inOut, const zVec3 *other, float t) {
+    const float otherScale = 1.0f - t;
+    inOut->x = inOut->x * t + other->x * otherScale;
+    inOut->y = inOut->y * t + other->y * otherScale;
+    inOut->z = inOut->z * t + other->z * otherScale;
+}
+
+// Reimplements 0x4729f0: zMath::Vec3LerpNormalize
+// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3LerpNormalize(zVec3 *inOut, const zVec3 *other,
+                                                       float t) {
+    Vec3Lerp(inOut, other, t);
+    Vec3Normalize(inOut);
+}
+
+// Reimplements 0x42d560: zMath::Vec3Midpoint
+// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL Vec3Midpoint(const zVec3 *a, const zVec3 *b,
+                                                    zVec3 *outMidpoint) {
+    outMidpoint->x = (a->x + b->x) * 0.5f;
+    outMidpoint->y = (a->y + b->y) * 0.5f;
+    outMidpoint->z = (a->z + b->z) * 0.5f;
+    return outMidpoint;
+}
+
 // Reimplements 0x472670: zMath::Vec3DeltaLengthSq (GameZRecoil/zMath.cpp)
 RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLengthSq(const zVec3 *a, const zVec3 *b) {
     g_zMath_Vec3DeltaScratch.x = a->x - b->x;
@@ -309,6 +364,22 @@ RECOIL_NOINLINE zMat4x3 *RECOIL_STDCALL MatCopyCurrentTo(zMat4x3 *out) {
 // Reimplements 0x473250: zMath::MatLoadCurrentFrom
 RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadCurrentFrom(const zMat4x3 *src) {
     memcpy(*g_currentMatrixPtrSlot, src, sizeof(zMat4x3));
+    *g_currentMatrixIdentityFlagSlot = 0;
+}
+
+// Reimplements 0x473280: zMath::MatLoadRotationFrom3x3
+// (D:\Proj\GameZRecoil\zMath\zmath_matload.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadRotationFrom3x3(const zMat4x3 *src) {
+    zMat4x3 *const matrix = (zMat4x3 *)(*g_currentMatrixPtrSlot);
+    matrix->xx = src->xx;
+    matrix->xy = src->xy;
+    matrix->xz = src->xz;
+    matrix->yx = src->yx;
+    matrix->yy = src->yy;
+    matrix->yz = src->yz;
+    matrix->zx = src->zx;
+    matrix->zy = src->zy;
+    matrix->zz = src->zz;
     *g_currentMatrixIdentityFlagSlot = 0;
 }
 
@@ -588,6 +659,23 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3RotateY(zVec3 *outVec, const zVec3 *inV
     outVec->x = sinAngle * inVec->z + cosAngle * inVec->x;
     outVec->y = inVec->y;
     outVec->z = cosAngle * inVec->z - sinAngle * inVec->x;
+}
+
+// Reimplements 0x474670: zMath::Vec3ArrayTransformDirection
+// (D:\Proj\GameZRecoil\zMath\zmath_vec.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ArrayTransformDirection(zVec3 *vectors,
+                                                                 int count) {
+    if (*g_currentMatrixIdentityFlagSlot != 0 || count <= 0) {
+        return;
+    }
+
+    const zMat4x3 *const matrix = (const zMat4x3 *)(*g_currentMatrixPtrSlot);
+    for (int i = 0; i < count; ++i) {
+        const zVec3 vec = vectors[i];
+        vectors[i].x = vec.x * matrix->xx + vec.y * matrix->yx + vec.z * matrix->zx;
+        vectors[i].y = vec.x * matrix->xy + vec.y * matrix->yy + vec.z * matrix->zy;
+        vectors[i].z = vec.x * matrix->xz + vec.y * matrix->yz + vec.z * matrix->zz;
+    }
 }
 
 // Reimplements 0x4747d0: zMath::MatTransformPointBatchInPlace

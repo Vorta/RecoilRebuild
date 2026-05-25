@@ -32,6 +32,9 @@ typedef void (RECOIL_FASTCALL *zVideo_BltRectDirectProc)(zVidRect32 *srcRect, zV
 typedef void (RECOIL_FASTCALL *zVideo_ClearSwSurfaceAndZBufferProc)(zVidRect32 *surfaceRect,
                                                                     zVidRect32 *zRect);
 typedef void (RECOIL_FASTCALL *zVideo_ClearStateSurfaceAndZBufferProc)(zVidRect32 *rect, zVideo_SurfaceStatePartial *surfaceState);
+typedef int (RECOIL_FASTCALL *zVideo_PaletteSetEntriesProc)(unsigned short firstEntry,
+                                                            unsigned short entryCount,
+                                                            PALETTEENTRY *entries);
 typedef int (RECOIL_FASTCALL *zVideo_AdjustSurfacesProc)(zVidRect32 *srcRect, zVidRect32 *dstRect,
                                     int waitForPresent, int blitPrimaryToSwFirst);
 typedef int (RECOIL_FASTCALL *zVideo_SurfaceStateProc)(zVideo_SurfaceStatePartial *surfaceState);
@@ -293,9 +296,12 @@ extern int *ZOPT_HW_API;
 extern DDCAPS g_zVideo_DDrawCapsHal;
 extern DDCAPS g_zVideo_DDrawCapsHel;
 extern zVideo_TextureRecordPartial *g_zImage_DefaultTextureRecord;
+extern char g_zVideo_PalettePathBuffer[0x100];
+extern PALETTEENTRY g_zVideo_PaletteFileEntries[0x100];
 extern PALETTEENTRY g_zVideo_SystemPaletteEntries[0x100];
 extern zVideo_StatusProc g_zVideo_pfnOpenVideoMode;
 extern zVideo_ShutdownVideoSystemProc g_zVideo_pfnShutdownVideoSystem;
+extern zVideo_PaletteSetEntriesProc g_zVideo_pfnPaletteSetEntries;
 extern zVideo_StatusProc g_zVideo_pfnSetVideoMode;
 extern zVideo_AdjustSurfacesProc g_zVideo_pfnAdjustSurfaces;
 extern zVideo_SurfaceStateProc g_zVideo_pfnLockSurfaceState;
@@ -307,6 +313,8 @@ extern zVideo_BltRectDirectProc g_zVideo_pfnBltPrimaryToSwRectDirect;
 extern zVideo_ClearSwSurfaceAndZBufferProc g_zVideo_pfnClearSwSurfaceAndZBuffer;
 extern zVideo_ClearStateSurfaceAndZBufferProc g_zVideo_pfnClearStateSurfaceAndZBuffer;
 extern zVideo_CreateTextureRecordProc g_zVideo_pfnCreateTextureRecord;
+extern unsigned int g_zVideo_pfnTextureRecordLockUploadSurface;
+extern unsigned int g_zVideo_pfnTextureRecordUnlockUploadSurface;
 extern unsigned int g_zVideo_pfnTextureRecordFinalizeUpload;
 extern unsigned int g_zVideo_pfnTextureRecordDestroy;
 extern unsigned int g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces;
@@ -463,6 +471,8 @@ RECOIL_NOINLINE int RECOIL_CDECL GetPrimarySurfaceWidth();
 RECOIL_NOINLINE int RECOIL_CDECL GetPrimarySurfaceHeight();
 RECOIL_NOINLINE int RECOIL_CDECL GetPrimarySurfacePitch();
 RECOIL_NOINLINE int RECOIL_CDECL GetDisplayModeBpp();
+RECOIL_NOINLINE int RECOIL_FASTCALL LoadPaletteFileAndApplyBrightness(const char *palettePath);
+RECOIL_NOINLINE int RECOIL_FASTCALL ApplyBrightnessToPaletteEntries(PALETTEENTRY *paletteEntries);
 RECOIL_NOINLINE int RECOIL_FASTCALL Init_ApplyModeIndex(int modeIndex);
 RECOIL_NOINLINE void RECOIL_FASTCALL Init_SetSurfaceGeometryFromModeIndex(int modeIndex);
 RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(int modeIndex);
@@ -655,6 +665,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PaletteSetEntries(unsigned short firstEntry,
 
 namespace zVideo_dd3d {
 RECOIL_NOINLINE void RECOIL_FASTCALL CallClearZBufferRect(zVidRect32 *rect);
+RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingWireframeState(int pendingWireframeState);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingDitherEnable(int enabled);
 RECOIL_NOINLINE int RECOIL_FASTCALL
 PresentDisplayModeSurface(zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForPresent,

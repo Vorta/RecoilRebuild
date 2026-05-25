@@ -3,13 +3,17 @@
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/zClipRect.h"
 #include "GameZRecoil/zError/zError.h"
+#include "GameZRecoil/zGeometry/zGeometry.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+int g_zModel_VertexShadingEnabled = 0;
 
 namespace {
 const double kVisibleContributionThreshold = 1.0 / 255.0;
@@ -116,7 +120,7 @@ namespace zDi {
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL
 AddPolygonEx(zDiPartial *self, int vertexCount, zVec3 *points, zVec3 *entryNormals,
-             zClipUV *uvPairsA, zVec3 *normalsA, zVec3 *normalsB, zClipUV *,
+             zClipUV *uvPairsA, zVec3 *normalsA, zVec3 *normalsB, zClipUV *uvPairsB,
              zModel_MaterialPartial *material, unsigned int drawFlags, int flagBit8,
              const int *userTag) {
     if (vertexCount < 3) {
@@ -132,6 +136,33 @@ AddPolygonEx(zDiPartial *self, int vertexCount, zVec3 *points, zVec3 *entryNorma
         return 1;
     }
 
+    const int originalVertexCount = vertexCount;
+    if (zModel_Const::RemoveColinearVerticesInPlace(&vertexCount, points, uvPairsA, normalsB,
+                                                    uvPairsB) != 0 &&
+        vertexCount < 3) {
+        zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c", 0xb0d,
+                          "Discarding Polygon: (%d of %d) verts after 'check_colinearity()'",
+                          vertexCount, originalVertexCount);
+        return 1;
+    }
+
+    if (vertexCount > 3 && zModel_Const::IsPolygonCoplanar(vertexCount, points) == 0) {
+        zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c", 0xb19,
+                          "Attempting to add non-planar polygon (%d verts), triangulating...",
+                          vertexCount);
+        zModel_Const::SplitPolygonChunkedByVertexLimit(
+            self, originalVertexCount, points, entryNormals, uvPairsA, normalsA, normalsB,
+            uvPairsB, material, drawFlags, flagBit8, userTag);
+        return 2;
+    }
+
+    if (vertexCount > g_zModel_MaxPolygonVertexCountBeforeSplit) {
+        AddPolygonSplitByVertexLimit(self, originalVertexCount, points, entryNormals, uvPairsA,
+                                     normalsA, normalsB, uvPairsB, material, drawFlags, flagBit8,
+                                     userTag, g_zModel_MaxPolygonVertexCountBeforeSplit);
+        return 2;
+    }
+
     zDiEntryPartial *entries = static_cast<zDiEntryPartial *>(realloc(
         self->entries, static_cast<size_t>(self->entryCount + 1) * sizeof(zDiEntryPartial)));
     self->entries = entries;
@@ -143,7 +174,7 @@ AddPolygonEx(zDiPartial *self, int vertexCount, zVec3 *points, zVec3 *entryNorma
     if (entryNormals != 0) {
         entry->flagsAndIndexCount |= 0x200;
     }
-    entry->unknown_04 = drawFlags;
+    entry->drawFlags = drawFlags;
     entry->vertexIndices =
         malloc(static_cast<size_t>(vertexCount) * sizeof(int));
     if (entryNormals != 0) {
@@ -153,37 +184,41 @@ AddPolygonEx(zDiPartial *self, int vertexCount, zVec3 *points, zVec3 *entryNorma
 
     int *vertexIndices = static_cast<int *>(entry->vertexIndices);
     int *normalIndices = static_cast<int *>(entry->normalIndices);
+    zVec3 *pointCursor = points;
+    zVec3 *normalBCursor = normalsB;
+    zVec3 *entryNormalCursor = entryNormals;
     for (int i = 0; i < vertexCount; ++i) {
-        vertexIndices[i] = AppendDiVertex(self, &points[i]);
-        if (normalsA != 0 && normalsB != 0) {
-            const int vertexIndex = vertexIndices[i];
-            self->blendVerts = static_cast<zVec3 *>(realloc(
-                self->blendVerts, static_cast<size_t>(vertexIndex + 1) * sizeof(zVec3)));
-            self->blendVerts[vertexIndex] = normalsB[i];
-            if (self->blendVertCount <= vertexIndex) {
-                self->blendVertCount = vertexIndex + 1;
-            }
+        if (normalsA != 0) {
+            vertexIndices[i] = zModel_Const::AddOrMergeVertexAndNormal(self, pointCursor,
+                                                                       normalBCursor);
+            ++normalBCursor;
+        } else {
+            vertexIndices[i] = zModel_Const::AddOrMergeVertex(self, pointCursor);
         }
+        if (vertexIndices[i] < 0) {
+            return 1;
+        }
+
         if (entryNormals != 0) {
-            normalIndices[i] = AppendDiNormal(self, &entryNormals[i]);
+            normalIndices[i] = zModel_Const::FindOrAppendNormalIndex(self, entryNormalCursor);
+            ++entryNormalCursor;
         }
+        ++pointCursor;
     }
 
-    if (material != 0 && (material->flags & 1) != 0) {
+    if ((material->flags & 0x0100) != 0) {
         entry->uvPairs = malloc(static_cast<size_t>(vertexCount) * sizeof(zClipUV));
-        if (uvPairsA != 0) {
-            memcpy(entry->uvPairs, uvPairsA,
-                        static_cast<size_t>(vertexCount) * sizeof(zClipUV));
-        } else {
-            memset(entry->uvPairs, 0, static_cast<size_t>(vertexCount) * sizeof(zClipUV));
-        }
+        memcpy(entry->uvPairs, uvPairsA, static_cast<size_t>(vertexCount) * sizeof(zClipUV));
         NormalizeUvTileOrigin(static_cast<zClipUV *>(entry->uvPairs), vertexCount);
     }
 
     entry->material = material;
-    if (userTag != 0) {
-        memcpy(&entry->variantTagInitialized, userTag, sizeof(*userTag));
+    RebuildGeneratedUvPairsForEntry(self, self->entryCount);
+    if ((material->flags & 0x0100) != 0) {
+        zModel_Const::QuantizeAndNormalizeUvPairs(vertexCount,
+                                                  static_cast<zClipUV *>(entry->uvPairs));
     }
+    memcpy(&entry->variantTagInitialized, userTag, sizeof(*userTag));
 
     ++self->entryCount;
     return 0;
@@ -198,7 +233,546 @@ AddPolygon(zDiPartial *self, int pointCount, zVec3 *points, zClipUV *uvPairsA,
     return AddPolygonEx(self, pointCount, points, 0, uvPairsA, normalsA, normalsB, uvPairsB,
                         material, drawFlags, flagBit8, userTag);
 }
+
+// Reimplements 0x483240: zDi::AddPolygonSplitByVertexLimit
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL
+AddPolygonSplitByVertexLimit(zDiPartial *self, int totalVertexCount, zVec3 *points,
+                             zVec3 *entryNormals, zClipUV *uvPairsA, zVec3 *normalsA,
+                             zVec3 *normalsBInput, zClipUV *uvPairsBInput,
+                             zModel_MaterialPartial *material, unsigned int drawFlags,
+                             int flagBit8, const int *userTag, int maxChunkVertexCount) {
+    zVec3 chunkPoints[4];
+    zVec3 chunkEntryNormals[4];
+    zClipUV chunkUvPairsA[4];
+    zVec3 chunkNormalsB[4];
+    zClipUV chunkUvPairsB[4];
+
+    int clampedChunkVertexCount = maxChunkVertexCount;
+    if (clampedChunkVertexCount > 4) {
+        clampedChunkVertexCount = 4;
+    }
+
+    chunkPoints[0] = points[0];
+    if (entryNormals != 0) {
+        chunkEntryNormals[0] = entryNormals[0];
+    }
+
+    const int hasSecondaryUvSet = (material->flags & 0x0100) != 0;
+    if (hasSecondaryUvSet) {
+        chunkUvPairsA[0] = uvPairsA[0];
+    }
+
+    if (normalsA != 0) {
+        chunkNormalsB[0] = normalsBInput[0];
+        if (hasSecondaryUvSet) {
+            chunkUvPairsB[0] = uvPairsBInput[0];
+        }
+    }
+
+    int chunkStartVertexIndex = 1;
+    if (totalVertexCount - 1 <= 1) {
+        return;
+    }
+
+    do {
+        int vertexCount = clampedChunkVertexCount;
+        if (chunkStartVertexIndex + vertexCount > totalVertexCount + 1) {
+            vertexCount = totalVertexCount - chunkStartVertexIndex + 1;
+        }
+
+        if (vertexCount > 1) {
+            for (int chunkVertexIndex = 1; chunkVertexIndex < vertexCount; ++chunkVertexIndex) {
+                const int sourceIndex = chunkStartVertexIndex + chunkVertexIndex - 1;
+                chunkPoints[chunkVertexIndex] = points[sourceIndex];
+                if (entryNormals != 0) {
+                    chunkEntryNormals[chunkVertexIndex] = entryNormals[sourceIndex];
+                }
+                if (hasSecondaryUvSet) {
+                    chunkUvPairsA[chunkVertexIndex] = uvPairsA[sourceIndex];
+                }
+                if (normalsA != 0) {
+                    chunkNormalsB[chunkVertexIndex] = normalsBInput[sourceIndex];
+                    if (hasSecondaryUvSet) {
+                        chunkUvPairsB[chunkVertexIndex] = uvPairsBInput[sourceIndex];
+                    }
+                }
+            }
+        }
+
+        if (vertexCount < 3) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c", 0xa16,
+                              "Attempting to add polygon with only %d verts", vertexCount);
+        }
+
+        AddPolygonEx(self, vertexCount, chunkPoints, entryNormals != 0 ? chunkEntryNormals : 0,
+                     chunkUvPairsA, normalsA, chunkNormalsB, chunkUvPairsB, material, drawFlags,
+                     flagBit8, userTag);
+        chunkStartVertexIndex += vertexCount - 2;
+    } while (chunkStartVertexIndex < totalVertexCount - 1);
+}
+
+// Reimplements 0x4843b0: zDi::RebuildGeneratedUvPairsForEntry
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL RebuildGeneratedUvPairsForEntry(zDiPartial *self,
+                                                                     int entryIndex) {
+    zDiEntryPartial *const entry = &self->entries[entryIndex];
+    const int vertexCount = static_cast<int>(entry->flagsAndIndexCount & 0xff);
+    if (entry->material == 0 || (entry->material->flags & 0x0100) == 0 || vertexCount <= 3) {
+        return;
+    }
+
+    int *const vertexIndices = static_cast<int *>(entry->vertexIndices);
+    zClipUV *const uvPairs = static_cast<zClipUV *>(entry->uvPairs);
+    const zVec3 *const vertex0 = &self->verts[vertexIndices[0]];
+    const zVec3 *const vertex1 = &self->verts[vertexIndices[1]];
+    const zVec3 *const vertex2 = &self->verts[vertexIndices[2]];
+
+    zVec3 triangleNormal;
+    zMath_Vec3_TriangleNormal(vertex0, vertex1, vertex2, &triangleNormal);
+    zMath::Vec3Normalize(&triangleNormal);
+
+    const float absX = static_cast<float>(fabs(triangleNormal.x));
+    const float absY = static_cast<float>(fabs(triangleNormal.y));
+    const float absZ = static_cast<float>(fabs(triangleNormal.z));
+
+    float vertex0A;
+    float vertex0B;
+    float vertex1A;
+    float vertex1B;
+    float vertex2A;
+    float vertex2B;
+
+    if (absX >= absY && absX >= absZ) {
+        vertex0A = vertex0->y;
+        vertex0B = vertex0->z;
+        vertex1A = vertex1->y;
+        vertex1B = vertex1->z;
+        vertex2A = vertex2->y;
+        vertex2B = vertex2->z;
+    } else if (absY >= absX && absY >= absZ) {
+        vertex0A = vertex0->z;
+        vertex0B = vertex0->x;
+        vertex1A = vertex1->z;
+        vertex1B = vertex1->x;
+        vertex2A = vertex2->z;
+        vertex2B = vertex2->x;
+    } else {
+        vertex0A = vertex0->x;
+        vertex0B = vertex0->y;
+        vertex1A = vertex1->x;
+        vertex1B = vertex1->y;
+        vertex2A = vertex2->x;
+        vertex2B = vertex2->y;
+    }
+
+    const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
+        vertex0A, vertex0B, vertex1A, vertex1B, vertex2A, vertex2B,
+        uvPairs[0].u, uvPairs[1].u, uvPairs[2].u);
+    const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
+        vertex0A, vertex0B, vertex1A, vertex1B, vertex2A, vertex2B,
+        uvPairs[0].v, uvPairs[1].v, uvPairs[2].v);
+
+    for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
+        const zVec3 *const vertex = &self->verts[vertexIndices[vertexIndex]];
+        float deltaA;
+        float deltaB;
+        if (absX >= absY && absX >= absZ) {
+            deltaA = vertex->y - vertex0->y;
+            deltaB = vertex->z - vertex0->z;
+        } else if (absY >= absX && absY >= absZ) {
+            deltaA = vertex->z - vertex0->z;
+            deltaB = vertex->x - vertex0->x;
+        } else {
+            deltaA = vertex->x - vertex0->x;
+            deltaB = vertex->y - vertex0->y;
+        }
+
+        uvPairs[vertexIndex].u = uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
+        uvPairs[vertexIndex].v = uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
+    }
+}
 } // namespace zDi
+
+namespace zModel_Const {
+// Reimplements 0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL
+SetNormalizedCrossFromVertexTriplet(zVec3 *vertex0, zVec3 *vertex1,
+                                    zVec3 *outNormal, zVec3 *vertex2) {
+    const float edge0X = vertex0->x - vertex1->x;
+    const float edge0Y = vertex0->y - vertex1->y;
+    const float edge0Z = vertex0->z - vertex1->z;
+    const float edge2X = vertex2->x - vertex1->x;
+    const float edge2Y = vertex2->y - vertex1->y;
+    const float edge2Z = vertex2->z - vertex1->z;
+
+    const float normalX = edge0Z * edge2Y - edge0Y * edge2Z;
+    const float normalY = edge0X * edge2Z - edge0Z * edge2X;
+    const float normalZ = edge0Y * edge2X - edge0X * edge2Y;
+
+    double length = 0.0;
+    if (fabs(normalX) > g_zModel_ColinearTolerance ||
+        fabs(normalY) > g_zModel_ColinearTolerance ||
+        fabs(normalZ) > g_zModel_ColinearTolerance) {
+        length = sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
+    }
+
+    double scale = 0.0;
+    if (fabs(length) > g_zModel_ColinearTolerance) {
+        scale = 1.0 / length;
+    }
+
+    outNormal->x = static_cast<float>(normalX * scale);
+    outNormal->y = static_cast<float>(normalY * scale);
+    outNormal->z = static_cast<float>(normalZ * scale);
+    return outNormal;
+}
+
+// Reimplements 0x482b40: zModel_Const::RemoveColinearVerticesInPlace
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+RemoveColinearVerticesInPlace(int *vertexCount, zVec3 *points, zClipUV *,
+                              zVec3 *, zClipUV *) {
+    int removedAnyVertices = 0;
+    int removedVertexThisPass;
+
+    do {
+        removedVertexThisPass = 0;
+
+        if (*vertexCount >= 2) {
+            int nextIndex = 2;
+            int vertexIndex = 1;
+            int scannedVertexCount = 2;
+            zVec3 *currentVertex = &points[1];
+
+            do {
+                zVec3 outNormal;
+                zVec3 *const normal = SetNormalizedCrossFromVertexTriplet(
+                    currentVertex - 1, currentVertex, &outNormal, &points[nextIndex]);
+
+                if (fabs(normal->x) < g_zModel_ColinearTolerance &&
+                    fabs(normal->y) < g_zModel_ColinearTolerance &&
+                    fabs(normal->z) < g_zModel_ColinearTolerance) {
+                    removedAnyVertices = 1;
+                    removedVertexThisPass = 1;
+
+                    if (vertexIndex < *vertexCount - 1) {
+                        zVec3 *write = &points[vertexIndex];
+                        do {
+                            *write = write[1];
+                            ++write;
+                            ++vertexIndex;
+                        } while (vertexIndex < *vertexCount - 1);
+                    }
+
+                    --*vertexCount;
+                    break;
+                }
+
+                ++vertexIndex;
+                ++currentVertex;
+                ++scannedVertexCount;
+                nextIndex = (nextIndex + 1) % *vertexCount;
+            } while (scannedVertexCount <= *vertexCount);
+        }
+    } while (removedVertexThisPass != 0);
+
+    return removedAnyVertices;
+}
+
+// Reimplements 0x482e30: zModel_Const::ComputePolygonPlaneEquation
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE zGeometry_PlaneEquationPartial *RECOIL_FASTCALL
+ComputePolygonPlaneEquation(int vertexCount, zVec3 *vertices,
+                            zGeometry_PlaneEquationPartial *outPlane) {
+    float normalX = 0.0f;
+    float normalY = 0.0f;
+    float normalZ = 0.0f;
+    float sumX = 0.0f;
+    float sumY = 0.0f;
+    float sumZ = 0.0f;
+
+    for (int i = 0; i < vertexCount; ++i) {
+        zVec3 *const vertex = &vertices[i];
+        zVec3 *const next = &vertices[(i + 1) % vertexCount];
+
+        normalX += (vertex->y - next->y) * (vertex->z + next->z);
+        normalY += (vertex->z - next->z) * (vertex->x + next->x);
+        normalZ += (vertex->x - next->x) * (vertex->y + next->y);
+
+        sumX += vertex->x;
+        sumY += vertex->y;
+        sumZ += vertex->z;
+    }
+
+    float normalLength = 0.0f;
+    if (normalX != 0.0f || normalY != 0.0f || normalZ != 0.0f) {
+        normalLength = static_cast<float>(
+            sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ));
+    }
+
+    float inverseNormalLength = 0.0f;
+    if (normalLength != 0.0f) {
+        inverseNormalLength = 1.0f / normalLength;
+    }
+
+    outPlane->a = normalX * inverseNormalLength;
+    outPlane->b = normalY * inverseNormalLength;
+    outPlane->c = normalZ * inverseNormalLength;
+    outPlane->d = -((sumX * normalX + sumY * normalY + sumZ * normalZ) /
+                    (static_cast<float>(vertexCount) * normalLength));
+    return outPlane;
+}
+
+// Reimplements 0x482db0: zModel_Const::IsPolygonCoplanar
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL IsPolygonCoplanar(int vertexCount, zVec3 *vertices) {
+    zGeometry_PlaneEquationPartial plane;
+    ComputePolygonPlaneEquation(vertexCount, vertices, &plane);
+
+    if (vertexCount <= 0) {
+        return 1;
+    }
+
+    for (int i = 0; i < vertexCount; ++i) {
+        const zVec3 *const vertex = &vertices[i];
+        const double distance =
+            vertex->x * plane.a + vertex->y * plane.b + vertex->z * plane.c + plane.d;
+        if (fabs(distance) > g_zModel_CoplanarTolerance) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+// Reimplements 0x482720: zModel_Const::AddOrMergeVertex
+// (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+RECOIL_NOINLINE int RECOIL_FASTCALL AddOrMergeVertex(zDiPartial *self, zVec3 *point) {
+    for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
+        const zVec3 *const existingPoint = &self->verts[vertexIndex];
+        if (fabs(existingPoint->x - point->x) <= g_zModel_ConstVertexMergeEpsilon &&
+            fabs(existingPoint->y - point->y) <= g_zModel_ConstVertexMergeEpsilon &&
+            fabs(existingPoint->z - point->z) <= g_zModel_ConstVertexMergeEpsilon) {
+            return vertexIndex;
+        }
+    }
+
+    if (static_cast<double>(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
+        sprintf(g_zError_DebugMsgBuffer,
+                "%s: Line %d: WARNING: Model vertex count = %d\n",
+                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c", 1783, self->vertCount);
+        sprintf(g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
+                "         Approaching max allowable: %d\n", 1024);
+        zError::EmitDebugBuffer(1);
+        return -1;
+    }
+
+    const int vertexIndex = self->vertCount;
+    self->verts = static_cast<zVec3 *>(realloc(
+        self->verts, static_cast<size_t>(vertexIndex + 1) * sizeof(zVec3)));
+    self->verts[vertexIndex] = *point;
+    self->vertCount = vertexIndex + 1;
+    return vertexIndex;
+}
+
+// Reimplements 0x482860: zModel_Const::AddOrMergeVertexAndNormal
+// (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+AddOrMergeVertexAndNormal(zDiPartial *self, zVec3 *point, zVec3 *normal) {
+    zVec3 blendNormalDelta;
+    blendNormalDelta.x = normal->x - point->x;
+    blendNormalDelta.y = normal->y - point->y;
+    blendNormalDelta.z = normal->z - point->z;
+
+    for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
+        const zVec3 *const existingPoint = &self->verts[vertexIndex];
+        const zVec3 *const existingBlend = &self->blendVerts[vertexIndex];
+        if (existingPoint->x == point->x && existingPoint->y == point->y &&
+            existingPoint->z == point->z && existingBlend->x == blendNormalDelta.x &&
+            existingBlend->y == blendNormalDelta.y &&
+            existingBlend->z == blendNormalDelta.z) {
+            return vertexIndex;
+        }
+    }
+
+    const int vertexIndex = self->vertCount;
+    self->verts = static_cast<zVec3 *>(realloc(
+        self->verts, static_cast<size_t>(vertexIndex + 1) * sizeof(zVec3)));
+    self->verts[vertexIndex] = *point;
+
+    self->blendVerts = static_cast<zVec3 *>(realloc(
+        self->blendVerts, static_cast<size_t>(vertexIndex + 1) * sizeof(zVec3)));
+    self->blendVerts[vertexIndex] = blendNormalDelta;
+
+    self->vertCount = vertexIndex + 1;
+    self->blendVertCount = self->vertCount;
+    if (static_cast<double>(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
+        sprintf(g_zError_DebugMsgBuffer,
+                "%s: Line %d: WARNING: Model vertex count = %d\n",
+                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c", 1896, self->vertCount);
+        sprintf(g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
+                "         Approaching max allowable: %d\n", 1024);
+        zError::EmitDebugBuffer(1);
+        return -1;
+    }
+
+    return vertexIndex;
+}
+
+// Reimplements 0x482a10: zModel_Const::FindOrAppendNormalIndex
+// (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+RECOIL_NOINLINE int RECOIL_FASTCALL FindOrAppendNormalIndex(zDiPartial *self,
+                                                            zVec3 *normal) {
+    for (int normalIndex = 0; normalIndex < self->normalCount; ++normalIndex) {
+        const zVec3 *const existingNormal = &self->normals[normalIndex];
+        if (fabs(existingNormal->x - normal->x) < g_zModel_NormalMergeEpsilon &&
+            fabs(existingNormal->y - normal->y) < g_zModel_NormalMergeEpsilon &&
+            fabs(existingNormal->z - normal->z) < g_zModel_NormalMergeEpsilon) {
+            return normalIndex;
+        }
+    }
+
+    const int normalIndex = self->normalCount;
+    self->normals = static_cast<zVec3 *>(realloc(
+        self->normals, static_cast<size_t>(normalIndex + 1) * sizeof(zVec3)));
+    self->normals[normalIndex] = *normal;
+    self->normalCount = normalIndex + 1;
+    if (static_cast<double>(self->normalCount) > g_zModel_ConstVertexWarnThreshold) {
+        sprintf(g_zError_DebugMsgBuffer,
+                "%s: Line %d: WARNING: Model normal count = %d\n",
+                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c", 1972, self->normalCount);
+        sprintf(g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
+                "         Approaching max allowable: %d\n", 1024);
+        zError::EmitDebugBuffer(1);
+        return -1;
+    }
+
+    return normalIndex;
+}
+
+// Reimplements 0x484860: zModel_Const::SolveTriScalarGradient2D
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE zClipUV RECOIL_STDCALL
+SolveTriScalarGradient2D(float vertex0A, float vertex0B, float vertex1A,
+                         float vertex1B, float vertex2A, float vertex2B,
+                         float value0, float value1, float value2) {
+    const float edge20A = vertex2A - vertex1A;
+    const float edge20B = vertex2B - vertex1B;
+    const float edge10A = vertex0A - vertex1A;
+    const float edge10B = vertex0B - vertex1B;
+    const float value20 = value2 - value1;
+    const float value10 = value0 - value1;
+    const float determinant = edge20B * edge10A - edge20A * edge10B;
+
+    zClipUV gradient = {};
+    if (determinant == 0.0f) {
+        return gradient;
+    }
+
+    const float inverseDeterminant = 1.0f / determinant;
+    gradient.u = -((value20 * edge10B - edge20B * value10) * inverseDeterminant);
+    gradient.v = -((edge20A * value10 - value20 * edge10A) * inverseDeterminant);
+    return gradient;
+}
+
+// Reimplements 0x483510: zModel_Const::QuantizeAndNormalizeUvPairs
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL QuantizeAndNormalizeUvPairs(int vertexCount,
+                                                                 zClipUV *uvPairs) {
+    if (vertexCount > 0) {
+        for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
+            zClipUV *const uv = &uvPairs[vertexIndex];
+            const int uFixed = static_cast<int>(
+                (uv->u - g_zModel_UvQuantizeBias) * g_zModel_UvQuantizeScale);
+            uv->u = static_cast<float>(uFixed) * g_zModel_UvQuantizeInvScale;
+
+            const int vFixed = static_cast<int>(
+                (uv->v - g_zModel_UvQuantizeBias) * g_zModel_UvQuantizeScale);
+            uv->v = static_cast<float>(vFixed) * g_zModel_UvQuantizeInvScale;
+        }
+    }
+
+    float minU = uvPairs[0].u;
+    float minV = uvPairs[0].v;
+    for (int vertexIndex = 1; vertexIndex < vertexCount; ++vertexIndex) {
+        if (uvPairs[vertexIndex].u < minU) {
+            minU = uvPairs[vertexIndex].u;
+        }
+        if (uvPairs[vertexIndex].v < minV) {
+            minV = uvPairs[vertexIndex].v;
+        }
+    }
+
+    const float baseU = static_cast<float>(floor(minU));
+    const float baseV = static_cast<float>(floor(minV));
+    for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
+        uvPairs[vertexIndex].u -= baseU;
+        uvPairs[vertexIndex].v -= baseV;
+    }
+}
+
+// Reimplements 0x482fe0: zModel_Const::SplitPolygonChunkedByVertexLimit
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL
+SplitPolygonChunkedByVertexLimit(zDiPartial *self, int totalVertexCount, zVec3 *points,
+                                 zVec3 *entryNormals, zClipUV *uvPairsA, zVec3 *normalsA,
+                                 zVec3 *normalsBInput, zClipUV *uvPairsBInput,
+                                 zModel_MaterialPartial *material, unsigned int drawFlags,
+                                 int flagBit8, const int *userTag) {
+    zVec3 trianglePoints[3];
+    zVec3 triangleEntryNormals[3];
+    zClipUV triangleUvPairsA[3];
+    zVec3 triangleNormalsB[3];
+    zClipUV triangleUvPairsB[3];
+
+    trianglePoints[0] = points[0];
+    if (entryNormals != 0) {
+        triangleEntryNormals[0] = entryNormals[0];
+    }
+
+    const int hasSecondaryUvSet = (material->flags & 0x0100) != 0;
+    if (hasSecondaryUvSet) {
+        triangleUvPairsA[0] = uvPairsA[0];
+    }
+
+    if (normalsA != 0) {
+        triangleNormalsB[0] = normalsBInput[0];
+        if (hasSecondaryUvSet) {
+            triangleUvPairsB[0] = uvPairsBInput[0];
+        }
+    }
+
+    if (totalVertexCount <= 2) {
+        return;
+    }
+
+    for (int vertexIndex = 2; vertexIndex < totalVertexCount; ++vertexIndex) {
+        for (int triangleIndex = 1; triangleIndex < 3; ++triangleIndex) {
+            const int sourceIndex = vertexIndex - 2 + triangleIndex;
+            trianglePoints[triangleIndex] = points[sourceIndex];
+            if (entryNormals != 0) {
+                triangleEntryNormals[triangleIndex] = entryNormals[sourceIndex];
+            }
+            if (hasSecondaryUvSet) {
+                triangleUvPairsA[triangleIndex] = uvPairsA[sourceIndex];
+            }
+            if (normalsA != 0) {
+                triangleNormalsB[triangleIndex] = normalsBInput[sourceIndex];
+                if (hasSecondaryUvSet) {
+                    triangleUvPairsB[triangleIndex] = uvPairsBInput[sourceIndex];
+                }
+            }
+        }
+
+        zDi::AddPolygonEx(self, 3, trianglePoints,
+                          entryNormals != 0 ? triangleEntryNormals : 0,
+                          triangleUvPairsA, normalsA, triangleNormalsB, triangleUvPairsB,
+                          material, drawFlags, flagBit8, userTag);
+    }
+}
+} // namespace zModel_Const
 
 // Reimplements 0x4791c0: zModel_Instance_UpdateScrollingTextures
 RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Instance_UpdateScrollingTextures(
@@ -288,6 +862,69 @@ zModel_Instance_UpdateScrollingTexturesIfNeeded(zModel_InstancePartial *instance
     return 0;
 }
 
+namespace zModel {
+// Reimplements 0x476030: zModel::SetVertexShadingEnabled
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL SetVertexShadingEnabled(int enabled) {
+    g_zModel_VertexShadingEnabled = enabled;
+}
+
+// Reimplements 0x475ff0: zModel::SetDisplayInstancePoolCapacity
+// (D:\Proj\GameZRecoil\zModel\gmod_init.c)
+RECOIL_NOINLINE void RECOIL_FASTCALL SetDisplayInstancePoolCapacity(int capacity) {
+    if (g_zModel_DiPoolCapacity != 0) {
+        zError::ReportOld(0x200, "D:\\Proj\\GameZRecoil\\zModel\\gmod_init.c", 0x1be,
+                          "Error setting model3d array size; size already set to %d.",
+                          g_zModel_DiPoolCapacity);
+        return;
+    }
+
+    g_zModel_DiPoolCapacity = capacity;
+}
+
+// Reimplements 0x476020: zModel::SetSoftwarePathActive
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL SetSoftwarePathActive(int active) {
+    if (g_zVideo_ActiveRendererPath == 0) {
+        g_zModel_SoftwarePathActive = active;
+    }
+}
+
+// Reimplements 0x476090: zModel::SetTextureWorldPerMeter
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_STDCALL SetTextureWorldPerMeter(float worldPerMeterU,
+                                                            float worldPerMeterV) {
+    g_zModel_TextureWorldPerMeterU = worldPerMeterU;
+    g_zModel_TextureWorldPerMeterV = worldPerMeterV;
+}
+
+// Reimplements 0x4760b0: zModel::SetTextureWorldBase
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_STDCALL SetTextureWorldBase(float worldBaseU,
+                                                        float worldBaseV) {
+    g_zModel_TextureWorldBaseU = worldBaseU;
+    g_zModel_TextureWorldBaseV = worldBaseV;
+}
+
+// Reimplements 0x4760d0: zModel::SetDiTextureWorldPerMeter
+// (D:\Proj\GameZRecoil\zModel\gmod_init.c)
+RECOIL_NOINLINE int RECOIL_FASTCALL SetDiTextureWorldPerMeter(zDiPartial *di,
+                                                              int worldSpaceEnabled,
+                                                              float textureWorldPerMeter,
+                                                              int textureWorldAxis) {
+    if (di == 0) {
+        zError::ReportOld(0x200, "D:\\Proj\\GameZRecoil\\zModel\\gmod_init.c", 0x285,
+                          "ERROR setting model texture scroll data; Null ptr.");
+        return 1;
+    }
+
+    di->flags = (di->flags & ~0x20) | ((worldSpaceEnabled & 1) << 5);
+    di->textureWorldPerMeter = textureWorldPerMeter;
+    di->textureWorldAxis = textureWorldAxis;
+    return 0;
+}
+} // namespace zModel
+
 // Reimplements 0x479020: zModel_RenderPointQueueEntry
 RECOIL_NOINLINE void RECOIL_FASTCALL zModel_RenderPointQueueEntry(
     const zVec3 *pointPos, int packedColor16, zModel_PointEntryPartial *pointEntry) {
@@ -332,6 +969,30 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_RenderPointQueueEntry(
 }
 
 namespace zDi {
+// Reimplements 0x484140: zDi::SetEntryValueForAllEntries
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL SetEntryValueForAllEntries(zDiPartial *self,
+                                                                unsigned int entryValue) {
+    if (self == 0) {
+        return;
+    }
+
+    for (int i = 0; i < self->entryCount; ++i) {
+        self->entries[i].drawFlags = entryValue;
+    }
+}
+
+// Reimplements 0x484170: zDi::SetShowBackFaceForAllEntries
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL SetShowBackFaceForAllEntries(zDiPartial *self,
+                                                                  int enabled) {
+    const unsigned int showBackFaceBit = (enabled & 1) << 8;
+    for (int i = 0; i < self->entryCount; ++i) {
+        self->entries[i].flagsAndIndexCount =
+            (self->entries[i].flagsAndIndexCount & ~0x0100u) | showBackFaceBit;
+    }
+}
+
 // Reimplements 0x484230: zDi::ResetCurrentVariant
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
 RECOIL_NOINLINE void RECOIL_FASTCALL ResetCurrentVariant(zDiPartial *self) {
@@ -341,6 +1002,30 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResetCurrentVariant(zDiPartial *self) {
         cycle->currentFrame = 0.0f;
         material->currentTextureDirectoryEntry = cycle->frameTable[0];
     }
+}
+
+// Reimplements 0x484250: zDi::SetCurrentVariantCycleTextureCount
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL SetCurrentVariantCycleTextureCount(zDiPartial *self,
+                                                                       int textureCount) {
+    if (self == 0) {
+        sprintf(g_zError_DebugMsgBuffer,
+                "%s(%d): ERROR setting model cycle texture. Model 3D pointer is NULL.\n",
+                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c", 0xf3f);
+        fprintf(stderr, g_zError_DebugMsgBuffer);
+        return -1;
+    }
+
+    zModel_MaterialPartial *const material = self->entries->material;
+    if (material != 0) {
+        zModel_Material::SetCycleTextureCount(material, textureCount);
+        return 0;
+    }
+
+    // Original code reaches this only for a null material pointer and then
+    // dereferences it while clearing the cycle-texture flag.
+    material->flags = static_cast<unsigned short>(material->flags & 0xfbff);
+    return 0;
 }
 
 // Reimplements 0x4842b0: zDi::SetCurrentVariant
@@ -363,6 +1048,134 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetCurrentVariant(zDiPartial *self,
     material->currentTextureDirectoryEntry = cycle->frameTable[variantIndex];
     cycle->currentFrame = static_cast<float>(variantIndex);
 }
+
+// Reimplements 0x484310: zDi::SetCurrentVariantCycleTextureSpeed
+// (D:\Proj\GameZRecoil\zDi\zdi.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL SetCurrentVariantCycleTextureSpeed(zDiPartial *self,
+                                                                       float cycleSpeed) {
+    if (self == 0) {
+        return 0;
+    }
+
+    return zModel_Material::SetCycleTextureSpeed(self->entries->material, cycleSpeed);
+}
+
+// Reimplements 0x483f80: zDi::BuildBlendVertsFromConnectivity
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL
+BuildBlendVertsFromConnectivity(zDiPartial *self, int *excludedVertexIndices, float blendY,
+                                int excludedVertexCount, int minSharedVertexCount) {
+    const int vertCount = self->vertCount;
+    self->blendVerts = static_cast<zVec3 *>(
+        realloc(self->blendVerts, static_cast<size_t>(vertCount) * sizeof(zVec3)));
+
+    int *const blendDisabledMask =
+        static_cast<int *>(malloc(static_cast<size_t>(vertCount) * sizeof(int)));
+    int *const vertexReferenceCounts =
+        static_cast<int *>(malloc(static_cast<size_t>(vertCount) * sizeof(int)));
+
+    for (int vertexIndex = 0; vertexIndex < vertCount; ++vertexIndex) {
+        blendDisabledMask[vertexIndex] = 0;
+        vertexReferenceCounts[vertexIndex] = 0;
+    }
+
+    for (int excludeIndex = 0; excludeIndex < excludedVertexCount; ++excludeIndex) {
+        blendDisabledMask[excludedVertexIndices[excludeIndex]] = 1;
+    }
+
+    for (int entryIndex = 0; entryIndex < self->entryCount; ++entryIndex) {
+        zDiEntryPartial *const entry = &self->entries[entryIndex];
+        const unsigned int entryVertexCount = entry->flagsAndIndexCount & 0xff;
+        int *const vertexIndices = static_cast<int *>(entry->vertexIndices);
+        for (unsigned int entryVertexIndex = 0; entryVertexIndex < entryVertexCount;
+             ++entryVertexIndex) {
+            ++vertexReferenceCounts[vertexIndices[entryVertexIndex]];
+        }
+    }
+
+    if (minSharedVertexCount > 0) {
+        for (int vertexIndex = 0; vertexIndex < vertCount; ++vertexIndex) {
+            if (vertexReferenceCounts[vertexIndex] < minSharedVertexCount) {
+                blendDisabledMask[vertexIndex] = 1;
+            }
+        }
+    }
+
+    for (int vertexIndex = 0; vertexIndex < vertCount; ++vertexIndex) {
+        int enableBlendY = 1;
+        for (int excludeIndex = 0; enableBlendY != 0 && excludeIndex < excludedVertexCount;
+             ++excludeIndex) {
+            if (excludedVertexIndices[excludeIndex] == vertexIndex) {
+                enableBlendY = 0;
+            }
+        }
+        if (blendDisabledMask[vertexIndex] == 1) {
+            enableBlendY = 0;
+        }
+
+        self->blendVerts[vertexIndex].x = 0.0f;
+        self->blendVerts[vertexIndex].y = enableBlendY != 0 ? blendY : 0.0f;
+        self->blendVerts[vertexIndex].z = 0.0f;
+    }
+
+    if (blendDisabledMask != 0) {
+        free(blendDisabledMask);
+    }
+    if (vertexReferenceCounts != 0) {
+        free(vertexReferenceCounts);
+    }
+
+    self->flags |= 0x08;
+    self->blendScale = 1.0f;
+    self->blendVertCount = self->vertCount;
+}
+
+// Reimplements 0x484350: zDi::SetObject3DColorModeForMaterials
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL SetObject3DColorModeForMaterials(zDiPartial *self,
+                                                                      int colorMode) {
+    zDiEntryPartial *entry = self->entries;
+    for (int i = 0; i < self->entryCount; ++i, ++entry) {
+        zModel_MaterialPartial *material = entry->material;
+        if ((material->flags & 0x0100) != 0) {
+            continue;
+        }
+
+        material->colorRgb.red = static_cast<float>(colorMode);
+        material->colorRgb.green = 0.0f;
+        material->colorRgb.blue = 0.0f;
+        material->packedColor = static_cast<unsigned short>(
+            (material->packedColor & 0x00ff) |
+            ((static_cast<unsigned int>(colorMode) & 0xff) << 8));
+        material->colorScalar = 1.0f;
+    }
+}
+} // namespace zDi
+
+namespace zModel_Instance {
+// Reimplements 0x4842f0: zModel_Instance::SetCycleTextureLoop
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL SetCycleTextureLoop(zDiPartial *instance, int loopEnabled) {
+    if (instance == 0) {
+        return 0;
+    }
+
+    return zModel_Material::SetCycleTextureLoop(instance->entries->material, loopEnabled);
+}
+
+// Reimplements 0x484330: zModel_Instance::AddCycleTexture
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+AddCycleTexture(zDiPartial *instance, zImage_TexDirEntryPartial *textureDirectoryEntry) {
+    if (instance == 0) {
+        return 0;
+    }
+
+    return zModel_Material::AddCycleTexture(instance->entries->material, textureDirectoryEntry);
+}
+} // namespace zModel_Instance
+
+namespace zDi {
 
 // Reimplements 0x476a50: zDi::EvalBoundingSphereLightingFlags
 RECOIL_NOINLINE void RECOIL_FASTCALL EvalBoundingSphereLightingFlags(

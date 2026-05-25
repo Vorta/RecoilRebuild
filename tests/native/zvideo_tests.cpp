@@ -1,4 +1,5 @@
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
@@ -6,6 +7,47 @@
 #include <cstdlib>
 #include <cstring>
 #include <ddraw.h>
+
+extern "C" unsigned int g_HudUi_InvalidateMask;
+
+namespace {
+constexpr std::size_t kFxPass3ConfigSize = 0x1f0;
+constexpr std::size_t kFxPass3RootElementOffset = 0x28;
+constexpr std::size_t kFxPass3RootPackedColorOffset = 0x60;
+constexpr std::size_t kFxPass3RootAlphaOffset = 0x68;
+constexpr std::size_t kFxPass3SlotsOffset = 0x70;
+constexpr std::size_t kFxPass3SlotSize = 0x4c;
+constexpr std::size_t kFxPass3SlotCurrentRadiusOffset = 0x38;
+constexpr std::size_t kFxPass3SlotMaxRadiusOffset = 0x3c;
+constexpr std::size_t kFxPass3SlotExtentOffset = 0x40;
+constexpr std::size_t kFxPass3SlotSinFreqOffset = 0x44;
+constexpr std::size_t kFxPass3SlotSinPhaseOffset = 0x48;
+constexpr std::size_t kFxPass3SlotWriteIndexOffset = 0x1ec;
+
+unsigned char *FxPass3ConfigBytes() {
+    return reinterpret_cast<unsigned char *>(&g_zVideo_FxPass3ConfigLocal);
+}
+
+template <typename T> T &FxPass3FieldAt(std::size_t offset) {
+    return *reinterpret_cast<T *>(FxPass3ConfigBytes() + offset);
+}
+
+int g_zVideoPaletteCaptureCallCount;
+unsigned short g_zVideoPaletteCaptureFirstEntry;
+unsigned short g_zVideoPaletteCaptureEntryCount;
+PALETTEENTRY g_zVideoPaletteCaptureEntries[256];
+int g_zVideoPaletteCaptureReturnValue;
+
+int RECOIL_FASTCALL CapturePaletteSetEntries(unsigned short firstEntry,
+                                             unsigned short entryCount,
+                                             PALETTEENTRY *entries) {
+    ++g_zVideoPaletteCaptureCallCount;
+    g_zVideoPaletteCaptureFirstEntry = firstEntry;
+    g_zVideoPaletteCaptureEntryCount = entryCount;
+    std::memcpy(g_zVideoPaletteCaptureEntries, entries, sizeof(g_zVideoPaletteCaptureEntries));
+    return g_zVideoPaletteCaptureReturnValue;
+}
+} // namespace
 
 extern "C" int directdraw_enumerate_import_provider_smoke(void) {
     HMODULE ddrawModule = LoadLibraryA("ddraw.dll");
@@ -122,6 +164,22 @@ extern "C" int zvideo_pending_dither_enable_smoke(void) {
     return g_zVideo_PendingDitherEnable == 1 ? 0 : 2;
 }
 
+extern "C" int zvideo_pending_wireframe_state_smoke(void) {
+    const int savedPendingWireframeState = g_zVideo_PendingWireframeState;
+
+    zVideo_dd3d::SetPendingWireframeState(0);
+    if (g_zVideo_PendingWireframeState != 0) {
+        g_zVideo_PendingWireframeState = savedPendingWireframeState;
+        return 1;
+    }
+
+    zVideo_dd3d::SetPendingWireframeState(-3);
+    const bool signedValueOk = g_zVideo_PendingWireframeState == -3;
+
+    g_zVideo_PendingWireframeState = savedPendingWireframeState;
+    return signedValueOk ? 0 : 2;
+}
+
 extern "C" int zvideo_surface_accessors_smoke(void) {
     int swPixels = 0x1234;
     int primaryPixels = 0x5678;
@@ -144,6 +202,71 @@ extern "C" int zvideo_surface_accessors_smoke(void) {
                    zVideo::GetPrimarySurfacePitch() == 1600
                ? 0
                : 1;
+}
+
+extern "C" int zvideo_fxpass3_local_queue_smoke(void) {
+    unsigned char savedConfig[kFxPass3ConfigSize] = {};
+    std::memcpy(savedConfig, FxPass3ConfigBytes(), sizeof(savedConfig));
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    g_HudUi_InvalidateMask = 0;
+
+    std::memset(FxPass3ConfigBytes(), 0, kFxPass3ConfigSize);
+
+    HudUiElement *const rootElement =
+        reinterpret_cast<HudUiElement *>(FxPass3ConfigBytes() + kFxPass3RootElementOffset);
+    rootElement->ftable = &g_HudUiCommon_FTable;
+    rootElement->flags = 0x10;
+    rootElement->timer = 9.0f;
+
+    zVideo::FxPass3_SetPrimaryElementParamsLocal(0x12345678u, 0.625);
+    const bool rootWrapperOk =
+        FxPass3FieldAt<unsigned short>(kFxPass3RootPackedColorOffset) == 0x5678u &&
+        FxPass3FieldAt<double>(kFxPass3RootAlphaOffset) == 0.625 &&
+        (rootElement->flags & 0x11u) == 0x01u && rootElement->timer == 0.0f;
+
+    std::memset(FxPass3ConfigBytes(), 0, kFxPass3ConfigSize);
+    zVideo::FxPass3Config_SetPrimaryElementParamsLocal(&g_zVideo_FxPass3ConfigLocal,
+                                                       0x0000abcdu, 1.25);
+    const bool rootConfigOk =
+        FxPass3FieldAt<unsigned short>(kFxPass3RootPackedColorOffset) == 0xabcdu &&
+        FxPass3FieldAt<double>(kFxPass3RootAlphaOffset) == 1.25 &&
+        (FxPass3FieldAt<unsigned int>(kFxPass3RootElementOffset + offsetof(HudUiElement, flags)) &
+         0x01u) != 0;
+
+    std::memset(FxPass3ConfigBytes(), 0, kFxPass3ConfigSize);
+    unsigned char *const slot0Bytes = FxPass3ConfigBytes() + kFxPass3SlotsOffset;
+    HudUiElement *const slot0Element = reinterpret_cast<HudUiElement *>(slot0Bytes);
+    slot0Element->ftable = &g_HudUiCommon_FTable;
+    slot0Element->timer = 4.0f;
+
+    zVideo::FxPass3_QueueElementLocal(11, 22, 33, 44, 55, 1.5f, 2.5f);
+    const bool queueWrapperOk =
+        FxPass3FieldAt<int>(kFxPass3SlotWriteIndexOffset) == 1 && slot0Element->x == 11 &&
+        slot0Element->y == 22 && slot0Element->timer == 0.0f &&
+        (slot0Element->flags & 0x01u) != 0 &&
+        FxPass3FieldAt<float>(kFxPass3SlotsOffset + kFxPass3SlotCurrentRadiusOffset) == 33.0f &&
+        FxPass3FieldAt<float>(kFxPass3SlotsOffset + kFxPass3SlotMaxRadiusOffset) == 44.0f &&
+        FxPass3FieldAt<float>(kFxPass3SlotsOffset + kFxPass3SlotExtentOffset) == 55.0f &&
+        FxPass3FieldAt<float>(kFxPass3SlotsOffset + kFxPass3SlotSinFreqOffset) == 1.5f &&
+        FxPass3FieldAt<float>(kFxPass3SlotsOffset + kFxPass3SlotSinPhaseOffset) == 2.5f;
+
+    std::memset(FxPass3ConfigBytes(), 0, kFxPass3ConfigSize);
+    FxPass3FieldAt<int>(kFxPass3SlotWriteIndexOffset) = 4;
+    const std::size_t slot4Offset = kFxPass3SlotsOffset + kFxPass3SlotSize * 4;
+    HudUiElement *const slot4Element =
+        reinterpret_cast<HudUiElement *>(FxPass3ConfigBytes() + slot4Offset);
+    slot4Element->ftable = &g_HudUiCommon_FTable;
+    zVideo::FxPass3Config_QueueElementLocal(&g_zVideo_FxPass3ConfigLocal, 1, 2, 3, 4, 5, 6.0f,
+                                            7.0f);
+    const bool queueCapOk = FxPass3FieldAt<int>(kFxPass3SlotWriteIndexOffset) == 4 &&
+                            slot4Element->x == 1 && slot4Element->y == 2 &&
+                            FxPass3FieldAt<float>(slot4Offset + kFxPass3SlotSinPhaseOffset) ==
+                                7.0f;
+
+    std::memcpy(FxPass3ConfigBytes(), savedConfig, sizeof(savedConfig));
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+
+    return rootWrapperOk && rootConfigOk && queueWrapperOk && queueCapOk ? 0 : 1;
 }
 
 extern "C" int zvideo_primary_surface_rect_scratch_smoke(void) {
@@ -784,6 +907,170 @@ extern "C" int zvideo_palette_set_entries_non8bpp_smoke(void) {
     const std::int32_t result = zVideo_dd::PaletteSetEntries(1, 2, entries);
     g_zVideo_pDDPalette = nullptr;
     return result;
+}
+
+extern "C" int zvideo_apply_brightness_to_palette_entries_smoke(void) {
+    const zVideo_PaletteSetEntriesProc savedPaletteSetEntries = g_zVideo_pfnPaletteSetEntries;
+    const int savedInitialized = g_zVideo_IsInitialized;
+    const unsigned char savedBrightness = g_zVideo_PaletteBrightnessLevel;
+    PALETTEENTRY savedSystemPalette[256];
+    std::memcpy(savedSystemPalette, g_zVideo_SystemPaletteEntries, sizeof(savedSystemPalette));
+
+    g_zVideo_pfnPaletteSetEntries = CapturePaletteSetEntries;
+    g_zVideoPaletteCaptureCallCount = 0;
+    g_zVideoPaletteCaptureReturnValue = 37;
+    g_zVideo_IsInitialized = 0;
+    if (zVideo::ApplyBrightnessToPaletteEntries(0) != 0x5a560000 ||
+        g_zVideoPaletteCaptureCallCount != 0) {
+        std::memcpy(g_zVideo_SystemPaletteEntries, savedSystemPalette, sizeof(savedSystemPalette));
+        g_zVideo_pfnPaletteSetEntries = savedPaletteSetEntries;
+        g_zVideo_IsInitialized = savedInitialized;
+        g_zVideo_PaletteBrightnessLevel = savedBrightness;
+        return 1;
+    }
+
+    PALETTEENTRY sourceEntries[256] = {};
+    sourceEntries[0].peRed = 250;
+    sourceEntries[0].peGreen = 10;
+    sourceEntries[0].peBlue = 0;
+    sourceEntries[0].peFlags = 7;
+    sourceEntries[1].peRed = 20;
+    sourceEntries[1].peGreen = 239;
+    sourceEntries[1].peBlue = 240;
+    sourceEntries[1].peFlags = 9;
+
+    g_zVideoPaletteCaptureCallCount = 0;
+    g_zVideoPaletteCaptureReturnValue = 38;
+    g_zVideo_IsInitialized = 1;
+    g_zVideo_PaletteBrightnessLevel = 6;
+    if (zVideo::ApplyBrightnessToPaletteEntries(sourceEntries) != 38 ||
+        g_zVideoPaletteCaptureCallCount != 1 || g_zVideoPaletteCaptureFirstEntry != 0 ||
+        g_zVideoPaletteCaptureEntryCount != 256) {
+        std::memcpy(g_zVideo_SystemPaletteEntries, savedSystemPalette, sizeof(savedSystemPalette));
+        g_zVideo_pfnPaletteSetEntries = savedPaletteSetEntries;
+        g_zVideo_IsInitialized = savedInitialized;
+        g_zVideo_PaletteBrightnessLevel = savedBrightness;
+        return 2;
+    }
+
+    if (g_zVideo_SystemPaletteEntries[0].peRed != 250 ||
+        g_zVideoPaletteCaptureEntries[0].peRed != 255 ||
+        g_zVideoPaletteCaptureEntries[0].peGreen != 26 ||
+        g_zVideoPaletteCaptureEntries[0].peBlue != 16 ||
+        g_zVideoPaletteCaptureEntries[0].peFlags != 7 ||
+        g_zVideoPaletteCaptureEntries[1].peRed != 36 ||
+        g_zVideoPaletteCaptureEntries[1].peGreen != 255 ||
+        g_zVideoPaletteCaptureEntries[1].peBlue != 255 ||
+        g_zVideoPaletteCaptureEntries[1].peFlags != 9) {
+        std::memcpy(g_zVideo_SystemPaletteEntries, savedSystemPalette, sizeof(savedSystemPalette));
+        g_zVideo_pfnPaletteSetEntries = savedPaletteSetEntries;
+        g_zVideo_IsInitialized = savedInitialized;
+        g_zVideo_PaletteBrightnessLevel = savedBrightness;
+        return 3;
+    }
+
+    g_zVideo_SystemPaletteEntries[0].peRed = 12;
+    g_zVideo_SystemPaletteEntries[0].peGreen = 16;
+    g_zVideo_SystemPaletteEntries[0].peBlue = 220;
+    g_zVideo_SystemPaletteEntries[0].peFlags = 11;
+    g_zVideoPaletteCaptureCallCount = 0;
+    g_zVideoPaletteCaptureReturnValue = 39;
+    g_zVideo_PaletteBrightnessLevel = 2;
+    if (zVideo::ApplyBrightnessToPaletteEntries(0) != 39 ||
+        g_zVideoPaletteCaptureEntries[0].peRed != 0 ||
+        g_zVideoPaletteCaptureEntries[0].peGreen != 0 ||
+        g_zVideoPaletteCaptureEntries[0].peBlue != 204 ||
+        g_zVideoPaletteCaptureEntries[0].peFlags != 11) {
+        std::memcpy(g_zVideo_SystemPaletteEntries, savedSystemPalette, sizeof(savedSystemPalette));
+        g_zVideo_pfnPaletteSetEntries = savedPaletteSetEntries;
+        g_zVideo_IsInitialized = savedInitialized;
+        g_zVideo_PaletteBrightnessLevel = savedBrightness;
+        return 4;
+    }
+
+    std::memcpy(g_zVideo_SystemPaletteEntries, savedSystemPalette, sizeof(savedSystemPalette));
+    g_zVideo_pfnPaletteSetEntries = savedPaletteSetEntries;
+    g_zVideo_IsInitialized = savedInitialized;
+    g_zVideo_PaletteBrightnessLevel = savedBrightness;
+    return 0;
+}
+
+extern "C" int zvideo_load_palette_file_and_apply_brightness_smoke(void) {
+    const zVideo_PaletteSetEntriesProc savedPaletteSetEntries = g_zVideo_pfnPaletteSetEntries;
+    const int savedInitialized = g_zVideo_IsInitialized;
+    const unsigned char savedBrightness = g_zVideo_PaletteBrightnessLevel;
+    char savedPath[256];
+    PALETTEENTRY savedFileEntries[256];
+    PALETTEENTRY savedSystemPalette[256];
+    std::memcpy(savedPath, g_zVideo_PalettePathBuffer, sizeof(savedPath));
+    std::memcpy(savedFileEntries, g_zVideo_PaletteFileEntries, sizeof(savedFileEntries));
+    std::memcpy(savedSystemPalette, g_zVideo_SystemPaletteEntries, sizeof(savedSystemPalette));
+
+    char tempDirectory[MAX_PATH];
+    char tempPath[MAX_PATH];
+    if (GetTempPathA(MAX_PATH, tempDirectory) == 0 ||
+        GetTempFileNameA(tempDirectory, "zvp", 0, tempPath) == 0) {
+        return 1;
+    }
+
+    unsigned char payload[3 * 256];
+    for (int index = 0; index < static_cast<int>(sizeof(payload)); ++index) {
+        payload[index] = static_cast<unsigned char>((index * 7) & 0xff);
+    }
+
+    FILE *file = std::fopen(tempPath, "wb");
+    if (file == nullptr) {
+        std::remove(tempPath);
+        return 2;
+    }
+    const std::size_t written = std::fwrite(payload, 1, sizeof(payload), file);
+    std::fclose(file);
+    if (written != sizeof(payload)) {
+        std::remove(tempPath);
+        return 3;
+    }
+
+    std::memset(g_zVideo_PaletteFileEntries, 0xcc, sizeof(g_zVideo_PaletteFileEntries));
+    g_zVideo_pfnPaletteSetEntries = CapturePaletteSetEntries;
+    g_zVideoPaletteCaptureCallCount = 0;
+    g_zVideoPaletteCaptureReturnValue = 44;
+    g_zVideo_IsInitialized = 1;
+    g_zVideo_PaletteBrightnessLevel = 4;
+
+    const int result = zVideo::LoadPaletteFileAndApplyBrightness(tempPath);
+    const unsigned char *fileEntryBytes =
+        reinterpret_cast<const unsigned char *>(g_zVideo_PaletteFileEntries);
+    const unsigned char *capturedBytes =
+        reinterpret_cast<const unsigned char *>(g_zVideoPaletteCaptureEntries);
+
+    int status = 0;
+    if (result != 44 || g_zVideoPaletteCaptureCallCount != 1 ||
+        g_zVideoPaletteCaptureFirstEntry != 0 || g_zVideoPaletteCaptureEntryCount != 256) {
+        status = 4;
+    } else if (std::strcmp(g_zVideo_PalettePathBuffer, tempPath) != 0) {
+        status = 5;
+    } else if (std::memcmp(fileEntryBytes, payload, sizeof(payload)) != 0 ||
+               std::memcmp(capturedBytes, payload, sizeof(payload)) != 0 ||
+               fileEntryBytes[sizeof(payload)] != 0xcc ||
+               capturedBytes[sizeof(payload)] != 0xcc) {
+        status = 6;
+    } else {
+        g_zVideoPaletteCaptureCallCount = 0;
+        g_zVideoPaletteCaptureReturnValue = 45;
+        status = zVideo::LoadPaletteFileAndApplyBrightness(0) == 45 &&
+                         g_zVideoPaletteCaptureCallCount == 1
+                     ? 0
+                     : 7;
+    }
+
+    std::remove(tempPath);
+    std::memcpy(g_zVideo_PalettePathBuffer, savedPath, sizeof(savedPath));
+    std::memcpy(g_zVideo_PaletteFileEntries, savedFileEntries, sizeof(savedFileEntries));
+    std::memcpy(g_zVideo_SystemPaletteEntries, savedSystemPalette, sizeof(savedSystemPalette));
+    g_zVideo_pfnPaletteSetEntries = savedPaletteSetEntries;
+    g_zVideo_IsInitialized = savedInitialized;
+    g_zVideo_PaletteBrightnessLevel = savedBrightness;
+    return status;
 }
 
 extern "C" int zvideo_quad_batch_depth_and_rhw_smoke(void) {

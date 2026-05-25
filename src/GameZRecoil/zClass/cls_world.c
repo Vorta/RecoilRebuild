@@ -55,6 +55,32 @@ namespace {
 }
 
 namespace zClass_World {
+    // Reimplements 0x4501c0: zClass_World::gwWorldNew
+    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwWorldNew() {
+        zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
+        node->classId = 2;
+
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(
+            calloc(1, sizeof(zClass_WorldDataPartial)));
+        node->classData = data;
+        data->fogState = 0;
+        data->lightCount = 0;
+        data->lightNodes = 0;
+        data->lightDataList = 0;
+        data->soundCount = 0;
+        data->soundNodes = 0;
+        data->soundDataList = 0;
+        data->scaleX = 1.0f;
+        data->scaleY = 1.0f;
+        data->scaleZ = 1.0f;
+        data->clampQueriesToBounds = 0;
+        data->flags = 1;
+        data->partitionMaxDecFeatureCount = 16;
+        zClass_TypeList::Insert(13, node);
+        return node;
+    }
+
     // Reimplements 0x450ae0: zClass_World::SetPendingFogState
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogState(zClass_NodePartial * world,
@@ -106,6 +132,57 @@ namespace zClass_World {
         zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
         data->fogDensity = density;
         data->flags |= 0x08;
+        return 0;
+    }
+
+    // Reimplements 0x450c00: zClass_World::gwWorldSetOrigin
+    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetOrigin(zClass_NodePartial * world,
+                                                                 float originX, float originZ) {
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        data->originX = originX;
+        data->originZ = originZ;
+        data->worldMaxX = data->worldSizeX + originX;
+        data->worldMaxZ = data->worldSizeZ + originZ;
+        return 0;
+    }
+
+    // Reimplements 0x450c30: zClass_World::gwWorldSetSize
+    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetSize(zClass_NodePartial * world,
+                                                               float sizeX, float sizeZ) {
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        data->worldSizeX = sizeX;
+        data->worldSizeZ = sizeZ;
+        data->worldMaxX = data->originX + sizeX;
+        data->worldMaxZ = data->originZ + sizeZ;
+        return 0;
+    }
+
+    // Reimplements 0x450f00: zClass_World::gwWorldSetPartitionInclusionTolerance
+    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetPartitionInclusionTolerance(
+        zClass_NodePartial * world, float toleranceX, float toleranceZ) {
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        data->partitionInclusionTolX = toleranceX;
+        data->partitionInclusionTolZ = toleranceZ;
+        return 0;
+    }
+
+    // Reimplements 0x450f20: zClass_World::gwWorldSetMaxDecFeatures
+    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetMaxDecFeatures(zClass_NodePartial * world,
+                                                                          int maxFeatures) {
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        if (maxFeatures > 255) {
+            zError::ReportOld(
+                0x200, kWorldSourceFile, 0xc01,
+                "ERROR setting Partition Max DEC Feature count to %d:\noverflow limit at 255.\n",
+                maxFeatures);
+            maxFeatures = 255;
+        }
+
+        data->partitionMaxDecFeatureCount = static_cast<unsigned char>(maxFeatures);
         return 0;
     }
 

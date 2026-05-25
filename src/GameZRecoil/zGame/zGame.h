@@ -162,6 +162,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetSteeringMode(int enable);
 RECOIL_NOINLINE int RECOIL_CDECL GetSteeringMode();
 RECOIL_NOINLINE void RECOIL_FASTCALL SetCursorMode(int enable);
 RECOIL_NOINLINE int RECOIL_CDECL GetCursorMode();
+RECOIL_NOINLINE void RECOIL_FASTCALL SetCameraMode(int enableThirdPerson);
 RECOIL_NOINLINE int RECOIL_CDECL GetCameraModePlayerState();
 RECOIL_NOINLINE void RECOIL_FASTCALL SetGameDifficultyMode(int value);
 RECOIL_NOINLINE int RECOIL_CDECL GetGameDifficultyMode();

@@ -92,7 +92,7 @@ namespace zClass_Window {
                     data->fbWidth, data->fbHeight, data->fbBpp);
 
         if (zClass_TypeList::Insert(14, node) != 0) {
-            zClass_Object3D::DeleteNode(node);
+            zClass_Class::DeleteNodeByType(node);
             return 0;
         }
 

@@ -1,3 +1,4 @@
+#include "Battlesport/pickup.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zReader/zReader.h"
 
@@ -14,6 +15,7 @@ std::uint32_t g_sendFromPlayer;
 std::uint32_t g_sendFlags;
 void *g_sendPacket;
 std::uint32_t g_sendPacketSize;
+unsigned char g_sendPacketBytes[512];
 std::int32_t g_sendResult;
 int g_setSessionDescCalls;
 zNetworkDPlaySessionDesc *g_setSessionDescPtr;
@@ -52,6 +54,9 @@ std::int32_t RECOIL_STDCALL SendFake(zNetwork_DPlay4 *, std::uint32_t fromPlayer
     g_sendFlags = flags;
     g_sendPacket = packet;
     g_sendPacketSize = packetSizeBytes;
+    if (packet != nullptr && packetSizeBytes <= sizeof(g_sendPacketBytes)) {
+        std::memcpy(g_sendPacketBytes, packet, packetSizeBytes);
+    }
     return g_sendResult;
 }
 
@@ -73,6 +78,9 @@ std::int32_t RECOIL_STDCALL SendExFake(zNetwork_DPlay4 *, std::uint32_t fromPlay
     g_sendExFlags = flags;
     g_sendPacket = packet;
     g_sendPacketSize = packetSizeBytes;
+    if (packet != nullptr && packetSizeBytes <= sizeof(g_sendPacketBytes)) {
+        std::memcpy(g_sendPacketBytes, packet, packetSizeBytes);
+    }
     if (asyncHandle != nullptr) {
         *asyncHandle = g_sendExAsyncValue;
     }
@@ -102,6 +110,7 @@ void ResetNetwork() {
     g_sendFlags = 0;
     g_sendPacket = nullptr;
     g_sendPacketSize = 0;
+    std::memset(g_sendPacketBytes, 0, sizeof(g_sendPacketBytes));
     g_sendResult = 0;
     g_setSessionDescCalls = 0;
     g_setSessionDescPtr = nullptr;
@@ -289,6 +298,7 @@ extern "C" int znetwork_packet_send_wrappers_smoke() {
     localPlayer.playerKey = 0x10203040;
     g_zNetwork_pDirectPlay4 = &dplay;
     g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x10203040;
 
     zNetworkPacketHeader packet{};
     packet.packetType = 6;
@@ -330,6 +340,114 @@ extern "C" int znetwork_packet_send_wrappers_smoke() {
 
     g_sendResult = static_cast<std::int32_t>(0x8000000a);
     return zNetwork_SendPacketReliable(&packet) == 0 ? 0 : 6;
+}
+
+extern "C" int pickup_send_pkt11_delta_smoke() {
+    struct PickupDeltaPacket {
+        zNetworkPacketHeader header;
+        unsigned short flags;
+        unsigned short reserved;
+        int pickupId;
+    };
+
+    ResetNetwork();
+    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_PlayerRecord localPlayer{};
+    localPlayer.playerKey = 0x10203040;
+    g_zNetwork_pDirectPlay4 = &dplay;
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x10203040;
+
+    PickupSpawnDef spawn = {};
+    spawn.pickupId = 77;
+    if (Pickup::SendPkt11_Flag2Delta(&spawn) != 0 || g_sendCalls != 1 ||
+        g_sendPacketSize != sizeof(PickupDeltaPacket)) {
+        return 1;
+    }
+
+    auto *packet = static_cast<PickupDeltaPacket *>(g_sendPacket);
+    const bool flag2Ok = packet->header.packetType == 0x11 &&
+                         packet->header.packetSizeBytes == sizeof(PickupDeltaPacket) &&
+                         packet->header.payloadDword0 == 0x10203040 &&
+                         packet->flags == 2 && packet->pickupId == 77;
+    if (!flag2Ok) {
+        return 2;
+    }
+
+    g_sendCalls = 0;
+    spawn.pickupId = 91;
+    if (Pickup::SendPkt11_Flag8Delta(&spawn) != 0 || g_sendCalls != 1 ||
+        g_sendPacketSize != sizeof(PickupDeltaPacket)) {
+        return 3;
+    }
+
+    packet = static_cast<PickupDeltaPacket *>(g_sendPacket);
+    const bool flag8Ok = packet->header.packetType == 0x11 &&
+                         packet->header.packetSizeBytes == sizeof(PickupDeltaPacket) &&
+                         packet->header.payloadDword0 == 0x10203040 &&
+                         packet->flags == 8 && packet->pickupId == 91;
+    return flag8Ok ? 0 : 4;
+}
+
+extern "C" int pickup_send_pkt11_create_delta_smoke() {
+    struct PickupCreatePacket {
+        zNetworkPacketHeader header;
+        unsigned short flags;
+        unsigned short reserved_0a;
+        int pickupId;
+        unsigned short typeKeyIndex;
+        unsigned short reserved_12;
+        int amount;
+        zVec3 position;
+        zVec3 rotation;
+        float respawnDelay;
+    };
+
+    static_assert(sizeof(PickupCreatePacket) == 0x34);
+
+    ResetNetwork();
+    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_PlayerRecord localPlayer{};
+    localPlayer.playerKey = 0x10203040;
+    g_zNetwork_pDirectPlay4 = &dplay;
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x10203040;
+
+    const PickupType oldType = g_PickupTypes[4];
+    g_PickupTypes[4] = {};
+    g_PickupTypes[4].logicalName = "create-type";
+
+    PickupSpawnDef spawn = {};
+    spawn.pickupId = 123;
+    spawn.pickupType = &g_PickupTypes[4];
+    spawn.amount = 17;
+    spawn.position.x = 1.0f;
+    spawn.position.y = 2.0f;
+    spawn.position.z = 3.0f;
+    spawn.rotation.x = 4.0f;
+    spawn.rotation.y = 5.0f;
+    spawn.rotation.z = 6.0f;
+    spawn.respawnDelay = 7.5f;
+
+    Pickup::SendPkt11_CreateDelta(&spawn);
+    if (g_sendCalls != 1 || g_sendPacketSize != sizeof(PickupCreatePacket)) {
+        g_PickupTypes[4] = oldType;
+        return 1;
+    }
+
+    const auto *const packet = reinterpret_cast<const PickupCreatePacket *>(g_sendPacketBytes);
+    const bool packetOk =
+        packet->header.packetType == 0x11 &&
+        packet->header.packetSizeBytes == sizeof(PickupCreatePacket) &&
+        packet->header.payloadDword0 == 0x10203040 && packet->flags == 1 &&
+        packet->reserved_0a == 0 && packet->pickupId == 123 && packet->typeKeyIndex == 4 &&
+        packet->reserved_12 == 0 && packet->amount == 17 && packet->position.x == 1.0f &&
+        packet->position.y == 2.0f && packet->position.z == 3.0f &&
+        packet->rotation.x == 4.0f && packet->rotation.y == 5.0f &&
+        packet->rotation.z == 6.0f && packet->respawnDelay == 7.5f;
+
+    g_PickupTypes[4] = oldType;
+    return packetOk ? 0 : 2;
 }
 
 extern "C" int znetwork_session_status_fields_smoke() {
