@@ -226,6 +226,8 @@ extern zVidImagePartial *g_HudUiMgrReticleImages[3];
 extern zVidImagePartial *g_HudUiMgrSensorTargetMarkerImages[5];
 extern HudUiNanitePanel g_HudUiMgrNanitePanel;
 extern HudUiMessage g_HudUiMgrMessages[10];
+extern int g_HudUiMgrActiveWeaponMessageIndex;
+extern int g_HudUiMgrActiveWeaponSideIndex;
 extern HudUiCounter g_HudUiMgrModeCounters[4];
 extern HudUiSlot g_HudUiMgrWeaponSlots[32];
 extern HudUiSlot *g_HudUiMgrSensorTrackedProgressSlot;
@@ -372,12 +374,15 @@ RECOIL_NOINLINE int RECOIL_FASTCALL
 PlaceTrackMarker(int markerMode, PlayerProgressTargetSlotRuntime *outputSlots);
 RECOIL_NOINLINE void RECOIL_FASTCALL
 UpdateMarkersAndProgressFromVariantTag(const zTag4Partial *requiredVariantTag);
+void RECOIL_FASTCALL SetShieldMessageRatio(float ratio);
 void RECOIL_FASTCALL SetViewportRect(int x, int y, int width,
                                      int height);
 RECOIL_NOINLINE void RECOIL_FASTCALL GetFxRect(HudUiRect *outRect);
 }
 
 namespace HudUiMgr {
+RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointToNormalizedClamped(
+    const zVec3 *srcPoint, zVec3 *projectedPoint);
 void RECOIL_FASTCALL ScreenToWorld(float *pointXY);
 void RECOIL_CDECL TriggerCurrentLayoutOnActivated();
 int RECOIL_CDECL TickLayoutDelay();
@@ -401,6 +406,7 @@ RECOIL_NOINLINE void RECOIL_CDECL UpdateFrame();
 RECOIL_NOINLINE void RECOIL_FASTCALL SwitchActiveDialog(HudLayoutBase *newDialog);
 RECOIL_NOINLINE int RECOIL_FASTCALL ApplyHudModeSwitch(int hudType);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetFloatTimerVisible(int visible);
+RECOIL_NOINLINE void RECOIL_FASTCALL HideTrackedProgressMeterIfOwnerMatches(void *ownerPayload);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetAuxOverlayVisible(int visible);
 void RECOIL_CDECL EnableTopAndChatStacks();
 void RECOIL_CDECL DisableTopAndChatStacks();
@@ -452,6 +458,7 @@ extern HudUiPanel *g_HudUiMgrObjectiveLabelTextPanel;
 extern HudUiCounterTextPanel *g_HudUiMgrObjectiveCounterTextPanel;
 
 namespace HudUiMgrObjective {
+RECOIL_NOINLINE void RECOIL_FASTCALL RefreshCounterText(int counterValue);
 void RECOIL_FASTCALL SetVisibleAndResetMeterFill(int visible);
 RECOIL_NOINLINE void RECOIL_CDECL TickMeterFillAnimation();
 RECOIL_NOINLINE void RECOIL_CDECL UpdateMeterXPoints();
@@ -982,6 +989,9 @@ struct HudUiMessage {
     static void RECOIL_FASTCALL ClearDisplay(int messageIndex);
     RECOIL_NOINLINE static void RECOIL_FASTCALL
     SetValueIfOwnerMatches(int messageIndex, int ownerSideIndex, float valueOrClearToken);
+    RECOIL_NOINLINE static void RECOIL_FASTCALL
+    UpdateSelectedWeaponDisplay(int weaponBankIndex, int weaponSideIndex,
+                                float valueOrClearToken);
 };
 
 struct HudUiBarPoint {

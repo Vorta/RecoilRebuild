@@ -138,6 +138,11 @@ struct zInput_FFEffectSet {
     zInput_DiEffect *DamageHit;
     zInput_DiEffect *SteerForce;
     zInput_DiEffect *PitchForce;
+
+    RECOIL_NOINLINE void RECOIL_THISCALL PlayCollisionImpactEffect(
+        const zVec3 *impactWorldPosXZ, float gain);
+    RECOIL_NOINLINE void RECOIL_THISCALL PlayDamageHitEffect(
+        const zVec3 *damageSourceWorldPosXZ, float gain);
 };
 RECOIL_STATIC_ASSERT(offsetof(zInput_FFEffectSet, PrimaryFire) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(zInput_FFEffectSet, AltFire) == 0x04);
@@ -556,6 +561,7 @@ extern void *g_zInput_KbdRawEventCallbackCtx;
 extern int g_zInput_KbdDikToAsciiTable[0x100];
 extern int g_zInput_KbdDikToAsciiTableReady;
 extern int g_zInput_JoystickCaps_ForceFeedback;
+extern zInput_FFEffectSet *g_zInputFfEffectSet;
 extern int g_zInput_JoystickCaps_FFAttack;
 extern int g_zInput_JoystickCaps_FFFade;
 extern zInput_GameStateOrMapTablePartial *g_GameStateOrMapTable;

@@ -1,12 +1,15 @@
 #include "Battlesport/GameNet.h"
 
 #include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/pickup.h"
+#include "Battlesport/player.h"
 #include "Battlesport/RecoilApp.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zLoc/zLoc.h"
+#include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 
@@ -107,6 +110,46 @@ RECOIL_NOINLINE GameNetPlayerRow *RECOIL_FASTCALL FindPlayerRowByKey(int playerK
     return 0;
 }
 
+// Reimplements 0x4336f0: GameNet::GetLocalPlayerColorIndexOrZero
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL GetLocalPlayerColorIndexOrZero() {
+    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
+    if (saveState == 0) {
+        return 0;
+    }
+
+    GameNetPlayerRow *const netPlayerRow = saveState->netPlayerRow;
+    if (netPlayerRow == 0) {
+        return 0;
+    }
+
+    return netPlayerRow->playerColorIndex;
+}
+
+// Reimplements 0x4339d0: GameNet::GetNearestOtherPlayerDistanceToSpawnPoint
+// (D:\Proj\Battlesport\net.cpp)
+RECOIL_NOINLINE float RECOIL_FASTCALL
+GetNearestOtherPlayerDistanceToSpawnPoint(GameNetSpawnPoint *spawnPoint,
+                                          GameNetPlayerSaveState **outSaveState) {
+    float nearestDistanceSq = 1.0e23f;
+    GameNetPlayerRow *row = g_GameNetPlayerRowHead;
+    while (row != 0) {
+        GameNetPlayerSaveState *const saveState = row->saveState;
+        if (saveState != (GameNetPlayerSaveState *)g_LocalPlayerSaveState) {
+            const float distanceSq =
+                zMath::Vec3DeltaLengthSq(&saveState->playerState->worldPos, &spawnPoint->position);
+            if (distanceSq < nearestDistanceSq) {
+                nearestDistanceSq = distanceSq;
+                *outSaveState = saveState;
+            }
+        }
+
+        row = row->next;
+    }
+
+    return nearestDistanceSq;
+}
+
 // Reimplements 0x433200: GameNet::AreAllPlayersAtLapTarget
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
 RECOIL_NOINLINE int RECOIL_CDECL AreAllPlayersAtLapTarget() {
@@ -124,6 +167,72 @@ RECOIL_NOINLINE int RECOIL_CDECL AreAllPlayersAtLapTarget() {
     }
 
     return 1;
+}
+
+// Reimplements 0x433840: GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL
+RespawnPlayerAndDropWeaponPickupIfAllowed(zUtil_SaveGameState *saveState,
+                                          int useColorIndexedSpawn) {
+    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+    const int localColorIndex = GetLocalPlayerColorIndexOrZero();
+    GameNetSpawnPoint *spawnPoint = g_GameNetSpawnPointHead;
+    GameNetSpawnPoint *selectedSpawn = spawnPoint;
+
+    if (useColorIndexedSpawn != 0) {
+        if (localColorIndex > 1) {
+            int colorIndex = 1;
+            while (spawnPoint != 0 && colorIndex < localColorIndex) {
+                spawnPoint = spawnPoint->next;
+                ++colorIndex;
+            }
+        }
+        selectedSpawn = spawnPoint;
+    } else if (g_GameNetStatus_AllowMaps != 0) {
+        selectedSpawn = 0;
+    } else {
+        PickupType *const pickupType = Pickup::FindDroppableTypeForPlayerCurrentWeapon(saveState);
+        PickupParsedZrdEntry entry = {};
+        entry.typeDesc = pickupType;
+        entry.amount = pickupType->defaultAmount;
+        entry.position = playerState->worldPos;
+        entry.rotation = playerState->vehicleRotationAngles;
+        PickupSpawnDef *const pickupSpawn = Pickup::SpawnFromParsedZrdEntry(&entry);
+        if (pickupSpawn != 0) {
+            Pickup::SendPkt11_CreateDelta(pickupSpawn);
+        }
+
+        selectedSpawn = 0;
+        float bestNearestDistanceSq = 0.0f;
+        GameNetPlayerSaveState *nearestSaveState = 0;
+        while (spawnPoint != 0) {
+            const float nearestDistanceSq =
+                GetNearestOtherPlayerDistanceToSpawnPoint(spawnPoint, &nearestSaveState);
+            if (nearestDistanceSq > bestNearestDistanceSq) {
+                bestNearestDistanceSq = nearestDistanceSq;
+                selectedSpawn = spawnPoint;
+            }
+            spawnPoint = spawnPoint->next;
+        }
+    }
+
+    if (selectedSpawn != 0) {
+        const double kDegreesToRadians = 0.017453292519943295;
+        const float yawRad = static_cast<float>(selectedSpawn->yawDegrees * kDegreesToRadians);
+        Player::SetWorldPoseAndRestartAnchor(saveState, &selectedSpawn->position, yawRad);
+    }
+
+    if (saveState->primaryModalState->masterModalData->masterType != 3 &&
+        g_GameNetStatus_AllowMaps == 0) {
+        Player::TransitionToMasterTypeTrack(saveState, 1);
+    }
+
+    Player::ResetMouseControlStateAndRecenterCursor(saveState);
+    Player::ResetMotionTransientState(saveState);
+    playerState->amphibUnlocked =
+        Player::IsMissionProbeType1EnabledById(g_HudSensorTracker.GetMissionId());
+    playerState->hoverUnlocked = 0;
+    playerState->subUnlocked = 0;
 }
 
 // Reimplements 0x4320f0: GameNet::ResetRemotePlayersAndSpawnLists

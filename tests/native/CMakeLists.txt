@@ -5,12 +5,14 @@ add_executable(recoil_native_smoke
     czrecoil_frame_tests.cpp
     pickup_tests.cpp
     gamenet_tests.cpp
+    hud_tests.cpp
     player_tests.cpp
     fmv_script_tests.cpp
     zgame_tests.cpp
     zhud_ui_tests.cpp
     zinput_tests.cpp
     zimage_tests.cpp
+    zinterp_tests.cpp
     zloc_tests.cpp
     znetwork_tests.cpp
     zreader_tests.cpp

@@ -15,6 +15,7 @@ from recoil_frontier import (  # noqa: E402
     extract_function_reference_tokens,
     inferred_symbol_kind,
     is_indirect_call_token,
+    load_metadata_node,
     recommendation,
 )
 from recoil_plan import PlanEntry  # noqa: E402
@@ -61,6 +62,15 @@ class RecoilFrontierTests(unittest.TestCase):
         symbol = Symbol(
             address="0x4c6000",
             name="MSVC_EH_ArrayConstructor",
+            kind="function",
+        )
+
+        self.assertEqual("compiler", inferred_symbol_kind(symbol.address, symbol))
+
+    def test_alloca_probe_symbol_kind_is_inferred_as_compiler_helper(self) -> None:
+        symbol = Symbol(
+            address="0x4c6100",
+            name="__alloca_probe",
             kind="function",
         )
 
@@ -167,6 +177,36 @@ class RecoilFrontierTests(unittest.TestCase):
 
         self.assertEqual(["0x401080"], nodes["0x401000"].function_refs)
         self.assertIn("0x401080", nodes)
+
+    def test_not_in_plan_forwarder_to_accepted_entry_does_not_block_functional_lane(self) -> None:
+        target = PlanEntry(
+            address="0x401020",
+            reconstructed_status="✅",
+            reconstructed_name="Sample::Target",
+            source_dependencies_status="✅",
+            reimplemented_status="✅",
+            reimplemented_name="Sample::Target",
+            binary_verified_status="❌",
+            functional_equivalent_status="✅",
+        )
+        symbol = Symbol(
+            address="0x401000",
+            name="Sample::Target_Forwarder",
+            kind="function",
+        )
+
+        node = load_metadata_node(
+            "0x401000",
+            {target.address: target},
+            {symbol.address: symbol},
+            {target.reconstructed_name: target},
+        )
+
+        self.assertEqual("forwarder", node.kind)
+        self.assertEqual("0x401020", node.forwarded_to)
+        self.assertFalse(node.blocks_source())
+        self.assertFalse(node.blocks_verification(lane="functional"))
+        self.assertTrue(node.blocks_verification(lane="binary"))
 
 
 if __name__ == "__main__":

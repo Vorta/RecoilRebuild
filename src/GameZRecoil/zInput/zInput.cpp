@@ -67,6 +67,7 @@ void *g_zInput_KbdRawEventCallbackCtx = 0;
 int g_zInput_KbdDikToAsciiTable[0x100] = {0};
 int g_zInput_KbdDikToAsciiTableReady = 0;
 int g_zInput_JoystickCaps_ForceFeedback = 0;
+zInput_FFEffectSet *g_zInputFfEffectSet = 0;
 int g_zInput_JoystickCaps_FFAttack = 0;
 int g_zInput_JoystickCaps_FFFade = 0;
 zInput_GameStateOrMapTablePartial *g_GameStateOrMapTable = 0;
@@ -759,9 +760,11 @@ zInput_DI_InitForceFeedbackEffectSet(zInput_FFEffectSet *effectSet) {
     return effectSet;
 }
 
-RECOIL_NOINLINE void RECOIL_CDECL zInput_DI_PlayCollisionImpactEffect_Impl(
-    zInput_FFEffectSet *effectSet, const zVec3 *impactWorldPosXZ, float gain) {
-    zInput_DiEffect *const effect = effectSet->CollisionImpact;
+// Reimplements 0x42fb50: zInputDI::PlayCollisionImpactEffect
+// (src/zin_ff.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL zInput_FFEffectSet::PlayCollisionImpactEffect(
+    const zVec3 *impactWorldPosXZ, float gain) {
+    zInput_DiEffect *const effect = CollisionImpact;
     if (effect == 0) {
         return;
     }
@@ -772,9 +775,11 @@ RECOIL_NOINLINE void RECOIL_CDECL zInput_DI_PlayCollisionImpactEffect_Impl(
     SetAndStartDirectionalForceFeedbackEffect(effect, direction, gain);
 }
 
-RECOIL_NOINLINE void RECOIL_CDECL zInput_DI_PlayDamageHitEffect_Impl(
-    zInput_FFEffectSet *effectSet, const zVec3 *damageSourceWorldPosXZ, float gain) {
-    zInput_DiEffect *const effect = effectSet->DamageHit;
+// Reimplements 0x42fc90: zInputDI::PlayDamageHitEffect
+// (src/zin_ff.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL zInput_FFEffectSet::PlayDamageHitEffect(
+    const zVec3 *damageSourceWorldPosXZ, float gain) {
+    zInput_DiEffect *const effect = DamageHit;
     if (effect == 0) {
         return;
     }
@@ -788,13 +793,13 @@ RECOIL_NOINLINE void RECOIL_CDECL zInput_DI_PlayDamageHitEffect_Impl(
 RECOIL_NOINLINE void RECOIL_CDECL zInput_DI_PlayCollisionImpactEffect(zInput_FFEffectSet *effectSet,
                                                                       const zVec3 *impactWorldPosXZ,
                                                                       float gain) {
-    zInput_DI_PlayCollisionImpactEffect_Impl(effectSet, impactWorldPosXZ, gain);
+    effectSet->PlayCollisionImpactEffect(impactWorldPosXZ, gain);
 }
 
 RECOIL_NOINLINE void RECOIL_CDECL zInput_DI_PlayDamageHitEffect(zInput_FFEffectSet *effectSet,
                                                                 const zVec3 *damageSourceWorldPosXZ,
                                                                 float gain) {
-    zInput_DI_PlayDamageHitEffect_Impl(effectSet, damageSourceWorldPosXZ, gain);
+    effectSet->PlayDamageHitEffect(damageSourceWorldPosXZ, gain);
 }
 
 // Reimplements 0x42fdc0: zInput_DI_UpdateSteerAndPitchForceEffects

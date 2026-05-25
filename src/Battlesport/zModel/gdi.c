@@ -214,7 +214,7 @@ namespace zDi {
             const zDiEntryPartial &sourceEntry = self->entries[i];
             zDiEntryPartial &destEntry = clone->entries[i];
 
-            destEntry.unknown_04 = sourceEntry.unknown_04;
+            destEntry.drawFlags = sourceEntry.drawFlags;
             destEntry.flagsAndIndexCount = sourceEntry.flagsAndIndexCount & 0x00000300;
             memcpy(&destEntry.variantTagInitialized, &sourceEntry.variantTagInitialized, 4);
 

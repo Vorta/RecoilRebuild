@@ -35,7 +35,7 @@ struct zClass_NodePartial {
     zClass_NodePartial **listA;
     int listCountB;
     zClass_NodePartial **listB;
-    unsigned char unknown_64[0x10];
+    float cachedSphereCenter[4];
     float cachedBounds[6];
 };
 
@@ -162,7 +162,9 @@ struct zClass_WorldDataPartial {
     int areaGridColCount;
     int areaGridRowCount;
     zWorldAreaPartial **areaGridRows;
-    unsigned char unknown_84[0x0c];
+    float scaleX;
+    float scaleY;
+    float scaleZ;
     int lightCount;
     zClass_NodePartial **lightNodes;
     zClass_LightDataPartial **lightDataList;
@@ -515,6 +517,9 @@ RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, partitionInclusionTolZ) =
 RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, areaGridColCount) == 0x78);
 RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, areaGridRowCount) == 0x7c);
 RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, areaGridRows) == 0x80);
+RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, scaleX) == 0x84);
+RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, scaleY) == 0x88);
+RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, scaleZ) == 0x8c);
 RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, lightCount) == 0x90);
 RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, lightNodes) == 0x94);
 RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, lightDataList) == 0x98);
@@ -742,6 +747,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL gwDisplaySetBackgroundColor(zClass_NodeParti
 } // namespace zClass_Display
 
 namespace zClass_World {
+RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwWorldNew();
 RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial *world);
 RECOIL_NOINLINE int RECOIL_FASTCALL FreeVirtualAreaPartitions(zClass_NodePartial *world);
 RECOIL_NOINLINE int RECOIL_FASTCALL QueueAreaUpdate(zClass_NodePartial *world,
@@ -761,6 +767,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogRange(zClass_NodePartial *world
                                                                 float nearRange, float farRange);
 RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogDensity(zClass_NodePartial *world,
                                                                   float density);
+RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetOrigin(zClass_NodePartial *world,
+                                                              float originX, float originZ);
+RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetSize(zClass_NodePartial *world,
+                                                            float sizeX, float sizeZ);
+RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetPartitionInclusionTolerance(
+    zClass_NodePartial *world, float toleranceX, float toleranceZ);
+RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetMaxDecFeatures(zClass_NodePartial *world,
+                                                                      int maxFeatures);
 RECOIL_NOINLINE int RECOIL_FASTCALL WorldRectToGridIndex(zClass_NodePartial *world,
                                                                   int *outGridCol,
                                                                   float minX, float maxX,
@@ -848,10 +862,23 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial *node);
 } // namespace zClass_Object3D
 
 struct zClass_Object3D_ModelRefLerpTask {
-    unsigned char unknown_00[0x1c];
+    zClass_NodePartial *node;
+    void *callbackCtx;
+    void *onComplete;
+    int invertModelRef;
+    float targetModelRef;
+    float currentModelRef;
+    float modelRefDeltaPerSec;
     zClass_Object3D_ModelRefLerpTask *next;
 };
+RECOIL_STATIC_ASSERT(offsetof(zClass_Object3D_ModelRefLerpTask, callbackCtx) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zClass_Object3D_ModelRefLerpTask, onComplete) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zClass_Object3D_ModelRefLerpTask, invertModelRef) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zClass_Object3D_ModelRefLerpTask, targetModelRef) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zClass_Object3D_ModelRefLerpTask, currentModelRef) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zClass_Object3D_ModelRefLerpTask, modelRefDeltaPerSec) == 0x18);
 RECOIL_STATIC_ASSERT(offsetof(zClass_Object3D_ModelRefLerpTask, next) == 0x1c);
+RECOIL_STATIC_ASSERT(sizeof(zClass_Object3D_ModelRefLerpTask) == 0x20);
 
 struct zClass_Object3D_ModelRefLerpQueueState {
     unsigned int listAux;
@@ -866,6 +893,9 @@ extern zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState;
 }
 
 namespace zClass_Object3D_ModelRefLerpQueue {
+RECOIL_NOINLINE void RECOIL_FASTCALL Add(zClass_NodePartial *node, void *callbackCtx,
+                                                  void *onComplete, float startModelRef,
+                                                  float targetModelRef, float durationSec);
 RECOIL_NOINLINE void RECOIL_CDECL Reset();
 }
 
@@ -1010,6 +1040,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PropagateExtraFlagsRecursive(zClass_NodePar
 RECOIL_NOINLINE void RECOIL_FASTCALL SetContextRecursive(zClass_NodePartial *self,
                                                          zClass_NodePartial *context,
                                                          int flagMask);
+RECOIL_NOINLINE void RECOIL_FASTCALL SetDiFlagBit0Recursive(zClass_NodePartial *node,
+                                                            int enabled);
 RECOIL_NOINLINE int RECOIL_FASTCALL HasRenderableDiPredicate(zClass_NodePartial *node);
 RECOIL_NOINLINE void RECOIL_FASTCALL
 SetMaterialFlagBit9ForFlagBit0EntriesRecursive(zClass_NodePartial *node, int enabled);

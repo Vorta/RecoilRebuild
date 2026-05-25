@@ -17,6 +17,10 @@
 #include <intrin.h>
 #include <malloc.h>
 
+namespace Player {
+RECOIL_NOINLINE void RECOIL_FASTCALL ApplyCameraState(int newState);
+}
+
 extern "C" {
 zOptionEntryPartial *g_zGame_Options_OptionListHead = 0;
 char *g_zGame_Options_RegKeyRoot = 0;
@@ -994,6 +998,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetCursorMode(int enable) {
 // Reimplements 0x407eb0: zOpt::GetCursorMode
 RECOIL_NOINLINE int RECOIL_CDECL GetCursorMode() {
     return (*ZOPT_GAME_CONTROL_OPTIONS >> 2) & 1;
+}
+
+// Reimplements 0x407ec0: zOpt::SetCameraMode
+RECOIL_NOINLINE void RECOIL_FASTCALL SetCameraMode(int enableThirdPerson) {
+    if (enableThirdPerson != 0) {
+        *ZOPT_GAME_CONTROL_OPTIONS |= ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON;
+        Player::ApplyCameraState(1);
+    } else {
+        *ZOPT_GAME_CONTROL_OPTIONS &= ~ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON;
+        Player::ApplyCameraState(3);
+    }
 }
 
 // Reimplements 0x407ef0: zOpt::GetCameraModePlayerState

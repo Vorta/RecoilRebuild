@@ -1,4 +1,5 @@
 #include "GameZRecoil/zReader/zReader.h"
+#include "GameZRecoil/zRndr/zRndr.h"
 #include "zClass.h"
 
 #include <windows.h>
@@ -132,6 +133,142 @@ extern "C" int zreader_named_string_float_lookup_smoke(void) {
     }
 
     return zReader::ReadNamedFloat(&root, "missingFloat", &value) == 0 ? 0 : 4;
+}
+
+extern "C" int zreader_global_string_prefix_index_smoke(void) {
+    char *savedTable[8] = {};
+    for (int index = 0; index < 8; ++index) {
+        savedTable[index] = g_zRndr_GlobalStringTable[index];
+    }
+    const int savedCount = g_zRndr_GlobalStringCount;
+
+    g_zRndr_GlobalStringTable[0] = const_cast<char *>("ALPHA");
+    g_zRndr_GlobalStringTable[1] = const_cast<char *>("BETA");
+    g_zRndr_GlobalStringTable[2] = const_cast<char *>("LONG");
+    g_zRndr_GlobalStringTable[3] = const_cast<char *>("door");
+    g_zRndr_GlobalStringCount = 4;
+
+    int result = 0;
+    if (zReader::FindGlobalStringPrefixIndex(nullptr) != -1) {
+        result = 1;
+    }
+    else if (zReader::FindGlobalStringPrefixIndex("ALPHA") != 0) {
+        result = 2;
+    }
+    else if (zReader::FindGlobalStringPrefixIndex("alpha value") != 0) {
+        result = 3;
+    }
+    else if (zReader::FindGlobalStringPrefixIndex("BETA\tvalue") != 1) {
+        result = 4;
+    }
+    else if (zReader::FindGlobalStringPrefixIndex("alphabet") != -1) {
+        result = 5;
+    }
+    else if (zReader::FindGlobalStringPrefixIndex("LON") != -1) {
+        result = 6;
+    }
+    else if (zReader::FindGlobalStringPrefixIndex("DOOR") != 3) {
+        result = 7;
+    }
+    else if (zReader::FindGlobalStringPrefixIndex("door-frame") != -1) {
+        result = 8;
+    }
+
+    g_zRndr_GlobalStringCount = 0;
+    if (result == 0 && zReader::FindGlobalStringPrefixIndex("ALPHA") != -1) {
+        result = 9;
+    }
+
+    g_zRndr_GlobalStringCount = savedCount;
+    for (int index = 0; index < 8; ++index) {
+        g_zRndr_GlobalStringTable[index] = savedTable[index];
+    }
+
+    return result;
+}
+
+extern "C" int zrndr_global_string_table_load_dynamic_entries_smoke(void) {
+    char *savedTable[100] = {};
+    for (int index = 0; index < 100; ++index) {
+        savedTable[index] = g_zRndr_GlobalStringTable[index];
+    }
+    const int savedCount = g_zRndr_GlobalStringCount;
+    zArchiveList *const savedMountedList = g_zArchive_MountedList;
+
+    char tempDir[MAX_PATH] = {};
+    char tempPath[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "zgs", 0, tempPath) == 0) {
+        return 1;
+    }
+
+    HANDLE file = CreateFileA(tempPath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr,
+                              CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempPath);
+        return 2;
+    }
+
+    WriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteU32(file, 2);
+    WriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteU32(file, 6);
+
+    const char *strings[] = {"alpha child", "gamma", "delta", "delta more", "epsilon"};
+    for (int index = 0; index < 5; ++index) {
+        WriteU32(file, zReader::ZRDR_NODE_STRING);
+        WriteU32(file, static_cast<std::uint32_t>(std::strlen(strings[index])));
+        WriteBytes(file, strings[index], static_cast<std::uint32_t>(std::strlen(strings[index])));
+    }
+    FlushFileBuffers(file);
+
+    zZarFileRecord record = {};
+    record.fileOffset = 0;
+    record.fileSize = SetFilePointer(file, 0, nullptr, FILE_CURRENT);
+    std::strcpy(record.name, "globals.zrd");
+
+    zIndexArchive archive = {};
+    archive.hFile = file;
+    archive.recordCount = 1;
+    archive.records = &record;
+
+    zArchiveListNode archiveNode = {};
+    archiveNode.payload = &archive;
+    archiveNode.next = &archiveNode;
+    archiveNode.prev = &archiveNode;
+    zArchiveList mountedList = {};
+    mountedList.count = 1;
+    mountedList.head = &archiveNode;
+    g_zArchive_MountedList = &mountedList;
+
+    g_zRndr_GlobalStringTable[0] = const_cast<char *>("ALPHA");
+    g_zRndr_GlobalStringTable[1] = const_cast<char *>("BETA");
+    g_zRndr_GlobalStringTable[2] = const_cast<char *>("BASE2");
+    g_zRndr_GlobalStringTable[3] = const_cast<char *>("BASE3");
+    g_zRndr_GlobalStringTable[4] = const_cast<char *>("BASE4");
+    g_zRndr_GlobalStringTable[5] = const_cast<char *>("BASE5");
+    g_zRndr_GlobalStringCount = 6;
+
+    char zrdPath[] = "globals.zrd";
+    zRndr_GlobalStringTable::LoadDynamicEntriesFromPath(zrdPath);
+
+    const bool ok = g_zRndr_GlobalStringCount == 9 &&
+                    std::strcmp(g_zRndr_GlobalStringTable[6], "gamma") == 0 &&
+                    std::strcmp(g_zRndr_GlobalStringTable[7], "delta") == 0 &&
+                    std::strcmp(g_zRndr_GlobalStringTable[8], "epsilon") == 0;
+
+    for (int index = 6; index < g_zRndr_GlobalStringCount; ++index) {
+        std::free(g_zRndr_GlobalStringTable[index]);
+    }
+    for (int index = 0; index < 100; ++index) {
+        g_zRndr_GlobalStringTable[index] = savedTable[index];
+    }
+    g_zRndr_GlobalStringCount = savedCount;
+    g_zArchive_MountedList = savedMountedList;
+
+    CloseHandle(file);
+    DeleteFileA(tempPath);
+    return ok ? 0 : 3;
 }
 
 extern "C" int zreader_load_node_from_archive_smoke(void) {
@@ -270,6 +407,40 @@ extern "C" int zreader_archive_list_and_search_paths_smoke(void) {
     return listOk && createdOk ? 0 : 2;
 }
 
+extern "C" int zreader_zrdr_free_search_path_list_smoke(void) {
+    EnsureZrdrFreePool();
+
+    char tempDir[MAX_PATH] = {};
+    char tempPathA[MAX_PATH] = {};
+    char tempPathB[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "zfl", 0, tempPathA) == 0 ||
+        GetTempFileNameA(tempDir, "zfm", 0, tempPathB) == 0) {
+        return 1;
+    }
+
+    char searchText[MAX_PATH * 3] = {};
+    std::strcpy(searchText, tempPathA);
+    std::strcat(searchText, ";");
+    std::strcat(searchText, tempPathB);
+
+    const int oldFreeCount = g_zUtil_ZRDR_FreePool->count;
+    zArchiveList *const list = zUtil_ZRDR_CreateSearchPathList(searchText);
+    if (list == nullptr || list->count != 2) {
+        DeleteFileA(tempPathA);
+        DeleteFileA(tempPathB);
+        return 2;
+    }
+
+    const int result = zUtil_ZRDR_FreeSearchPathList(list);
+    const bool ok = result == 0 && g_zUtil_ZRDR_FreePool != nullptr &&
+                    g_zUtil_ZRDR_FreePool->count >= oldFreeCount + 2;
+
+    DeleteFileA(tempPathA);
+    DeleteFileA(tempPathB);
+    return ok ? 0 : 3;
+}
+
 extern "C" int zreader_prealloc_and_pop_front_smoke(void) {
     g_zUtil_ZRDR_FreePool = nullptr;
     g_zUtil_ZRDR_TotalAllocated = 0;
@@ -342,6 +513,12 @@ extern "C" int zreader_zrdr_init_search_path_smoke(void) {
     g_zArchive_Current = reinterpret_cast<zArchiveList *>(0x12345678);
     g_zRdr_SearchPathList = nullptr;
 
+    zUtil_ZRDR_AppendSearchPath(tempPathA);
+    const bool appendCreateOk =
+        g_zRdr_SearchPathList != nullptr && g_zRdr_SearchPathList->count == 1 &&
+        std::strcmp(static_cast<const char *>(g_zRdr_SearchPathList->head->payload), tempPathA) ==
+            0;
+
     if (zUtil::ZRDR_Init(tempPathA) != 0 || g_zArchive_MountedList == nullptr ||
         g_zArchive_Current != nullptr || g_zRdr_SearchPathList == nullptr ||
         g_zRdr_SearchPathList->count != 1 ||
@@ -357,6 +534,14 @@ extern "C" int zreader_zrdr_init_search_path_smoke(void) {
                        std::strcmp(static_cast<const char *>(g_zRdr_SearchPathList->head->payload),
                                    tempPathB) == 0;
 
+    zUtil_ZRDR_AppendSearchPath(tempPathA);
+    const bool appendOk =
+        g_zRdr_SearchPathList->count == 2 &&
+        std::strcmp(static_cast<const char *>(g_zRdr_SearchPathList->head->payload), tempPathA) ==
+            0 &&
+        std::strcmp(static_cast<const char *>(g_zRdr_SearchPathList->head->next->payload),
+                    tempPathB) == 0;
+
     zUtil_ZRDR_FreePathList(g_zRdr_SearchPathList);
     std::free(g_zRdr_SearchPathList);
     g_zRdr_SearchPathList = nullptr;
@@ -370,7 +555,7 @@ extern "C" int zreader_zrdr_init_search_path_smoke(void) {
 
     DeleteFileA(tempPathA);
     DeleteFileA(tempPathB);
-    return setOk ? 0 : 3;
+    return appendCreateOk && setOk && appendOk ? 0 : 3;
 }
 
 extern "C" int zreader_zrdr_shutdown_smoke(void) {

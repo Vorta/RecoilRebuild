@@ -1681,6 +1681,22 @@ namespace zClass_Node {
         }
     }
 
+    // Reimplements 0x437ea0: zClass_Node::SetDiFlagBit0Recursive
+    // (GameZRecoil/zClass/Class.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL SetDiFlagBit0Recursive(zClass_NodePartial * node,
+                                                                int enabled) {
+        unsigned int userData;
+        zClass_Class::gwNodeGetUserData(node, &userData);
+        zDiPartial *di = (zDiPartial *)(userData);
+        if (di != 0) {
+            zDi::SetFlagBit0(di, enabled);
+        }
+
+        for (int i = 0; i < node->listCountB; ++i) {
+            SetDiFlagBit0Recursive(node->listB[i], enabled);
+        }
+    }
+
     // Reimplements 0x452860: zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive
     RECOIL_NOINLINE void RECOIL_FASTCALL SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
         zClass_NodePartial * node, int enabled) {

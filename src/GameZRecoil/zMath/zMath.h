@@ -171,9 +171,18 @@ RECOIL_NOINLINE void RECOIL_CDECL MatLoadCameraScratchA();
 RECOIL_NOINLINE void RECOIL_CDECL MatLoadIdentity();
 RECOIL_NOINLINE float RECOIL_FASTCALL Vec3Normalize(zVec3 *vec);
 RECOIL_NOINLINE void RECOIL_FASTCALL Vec3NormalizeXZ(zVec3 *vec, zVec3 *out);
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Reflect(zVec3 *normal, zVec3 *incident,
+                                                 zVec3 *reflected);
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Lerp(zVec3 *inOut, const zVec3 *other,
+                                              float t);
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3LerpNormalize(zVec3 *inOut, const zVec3 *other,
+                                                       float t);
+RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL Vec3Midpoint(const zVec3 *a, const zVec3 *b,
+                                                    zVec3 *outMidpoint);
 RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLengthSq(const zVec3 *a, const zVec3 *b);
 RECOIL_NOINLINE zMat4x3 *RECOIL_STDCALL MatCopyCurrentTo(zMat4x3 *out);
 RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadCurrentFrom(const zMat4x3 *src);
+RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadRotationFrom3x3(const zMat4x3 *src);
 RECOIL_NOINLINE void RECOIL_FASTCALL MatMultiply(const zMat4x3 *src, int mode);
 RECOIL_NOINLINE void RECOIL_STDCALL MatTranslate(float tx, float ty, float tz);
 RECOIL_NOINLINE void RECOIL_STDCALL MatRotateX(float angleRad);
@@ -191,6 +200,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ArrayProjectToCachedY(const zVec3 *poin
                                                                float *outValues,
                                                                int count);
 RECOIL_NOINLINE void RECOIL_FASTCALL Vec3RotateY(zVec3 *outVec, const zVec3 *inVec, float yawAngle);
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ArrayTransformDirection(zVec3 *vectors,
+                                                                 int count);
 RECOIL_NOINLINE void RECOIL_FASTCALL MatTransformPointBatchInPlace(zVec3 *points,
                                                                    int count);
 RECOIL_NOINLINE void RECOIL_FASTCALL ProjectPointBatch(const zVec3 *viewPoints,

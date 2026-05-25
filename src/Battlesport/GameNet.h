@@ -11,6 +11,7 @@
 struct OptCatalogEntryDef;
 struct PlayerMasterModalData;
 struct zSndPlayHandle;
+struct zUtil_PlayerStateStorage;
 struct zUtil_SaveGameState;
 
 struct PlayerModalState {
@@ -18,14 +19,44 @@ struct PlayerModalState {
     PlayerMasterModalData *masterModalData;
     int modalStateCode;
     zVec3 transformedProbePointWorldByIndex[4];
-    unsigned char reserved03c[0x48];
+    unsigned char reserved03c[0x30];
+    float chassisPitchAngleRad;
+    float chassisPitchFilterState;
+    float chassisRollAngleRad;
+    float chassisRollFilterState;
+    unsigned char reserved07c[0x08];
     zClass_NodePartial *modalNode;
-    unsigned char reserved088[0x24];
+    zClass_NodePartial *nodeRTracks;
+    zClass_NodePartial *nodeLTracks;
+    zClass_NodePartial *nodeProps;
+    zClass_NodePartial *nodeCaustic1;
+    zClass_NodePartial *nodeWake;
+    zClass_NodePartial *nodeSplashL;
+    zClass_NodePartial *nodeSplashR;
+    zClass_NodePartial *nodeDustL;
+    zClass_NodePartial *nodeDustR;
     zSndPlayHandle *modalSfxHandle[4];
 };
 
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisPitchAngleRad) == 0x6c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisPitchFilterState) == 0x70);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisRollAngleRad) == 0x74);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisRollFilterState) == 0x78);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, modalNode) == 0x84);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeRTracks) == 0x88);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeLTracks) == 0x8c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeProps) == 0x90);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeCaustic1) == 0x94);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeWake) == 0x98);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeSplashL) == 0x9c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeSplashR) == 0xa0);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeDustL) == 0xa4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeDustR) == 0xa8);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, modalSfxHandle) == 0xac);
+
 struct GameNetPlayerSaveState {
-    unsigned char reserved000[0x08];
+    unsigned char reserved000[0x04];
+    zUtil_PlayerStateStorage *playerState;
     PlayerModalState *primaryModalState;
 };
 
@@ -48,7 +79,8 @@ struct GameNetPlayerRow {
 };
 
 struct GameNetSpawnPoint {
-    unsigned char reserved000[0x10];
+    zVec3 position;
+    float yawDegrees;
     GameNetSpawnPoint *next;
 };
 
@@ -118,6 +150,10 @@ struct NetPkt09_PlayerScoreboardSnapshot {
 
 namespace GameNet {
 RECOIL_NOINLINE GameNetPlayerRow *RECOIL_FASTCALL FindPlayerRowByKey(int playerKey);
+RECOIL_NOINLINE int RECOIL_CDECL GetLocalPlayerColorIndexOrZero();
+RECOIL_NOINLINE float RECOIL_FASTCALL
+GetNearestOtherPlayerDistanceToSpawnPoint(GameNetSpawnPoint *spawnPoint,
+                                          GameNetPlayerSaveState **outSaveState);
 RECOIL_NOINLINE int RECOIL_CDECL AreAllPlayersAtLapTarget();
 RECOIL_NOINLINE void RECOIL_CDECL ResetRemotePlayersAndSpawnLists();
 RECOIL_NOINLINE void RECOIL_CDECL ResetHudTimerPanelNetStateLongCountdown();
@@ -144,6 +180,9 @@ RECOIL_NOINLINE void RECOIL_CDECL SendPkt09_PlayerScoreboardSnapshot();
 RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt0E_PlayerLapProgress(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt09_PlayerScoreboardSnapshot(
     int senderPlayerId, NetPkt09_PlayerScoreboardSnapshot *packet);
+RECOIL_NOINLINE void RECOIL_FASTCALL
+RespawnPlayerAndDropWeaponPickupIfAllowed(zUtil_SaveGameState *saveState,
+                                          int useColorIndexedSpawn);
 RECOIL_NOINLINE void RECOIL_FASTCALL
 SendPkt0D_HudTimerPanelState(HudTimerPanelNetState *timerState);
 RECOIL_NOINLINE int RECOIL_FASTCALL
@@ -187,6 +226,7 @@ extern int g_GameNetSuppressPkt13ActivationEcho;
 
 #if defined(_M_IX86) || defined(__i386__)
 RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, modalNode) == 0x84);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeCaustic1) == 0x94);
 RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, modalSfxHandle) == 0xac);
 RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, next) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerSaveState, primaryModalState) == 0x08);
@@ -199,6 +239,7 @@ RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, displayName) == 0x24);
 RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, hudWidget) == 0x64);
 RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, saveState) == 0x308);
 RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, next) == 0x30c);
+RECOIL_STATIC_ASSERT(offsetof(GameNetSpawnPoint, yawDegrees) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(GameNetSpawnPoint, next) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(HudTimerPanelNetState, timerDirectionNeg) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(HudTimerPanelNetState, timeWarningShown) == 0x18);
