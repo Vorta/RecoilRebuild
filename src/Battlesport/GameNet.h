@@ -24,7 +24,8 @@ struct PlayerModalState {
     float chassisPitchFilterState;
     float chassisRollAngleRad;
     float chassisRollFilterState;
-    unsigned char reserved07c[0x08];
+    zClass_NodePartial *nodeRightMorphs;
+    zClass_NodePartial *nodeLeftMorphs;
     zClass_NodePartial *modalNode;
     zClass_NodePartial *nodeRTracks;
     zClass_NodePartial *nodeLTracks;
@@ -42,6 +43,8 @@ RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisPitchAngleRad) == 0x6c);
 RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisPitchFilterState) == 0x70);
 RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisRollAngleRad) == 0x74);
 RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisRollFilterState) == 0x78);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeRightMorphs) == 0x7c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeLeftMorphs) == 0x80);
 RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, modalNode) == 0x84);
 RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeRTracks) == 0x88);
 RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeLTracks) == 0x8c);
@@ -194,6 +197,10 @@ HandlePkt13_EffectAnimActivationRecord(int senderPlayerId, zNetworkPacketHeader 
 RECOIL_NOINLINE int RECOIL_FASTCALL
 HostUpdateSessionDescStatusFields(int eventCode, int auxParam,
                                   int valueOrTime, int statusFlags);
+RECOIL_NOINLINE int RECOIL_FASTCALL
+UpdateRemotePlayerHudWidgetScreenPos(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL ChatComposeKeyCallback(int dikCodeWithMods);
+RECOIL_NOINLINE void RECOIL_CDECL BeginChatCompose();
 } // namespace GameNet
 
 namespace GameNetSpawnPointList {

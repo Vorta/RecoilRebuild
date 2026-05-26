@@ -70,6 +70,46 @@ zDEClient_MapTreeNode *TreeMaximum(zDEClient_MapTreeNode *node) {
     return node;
 }
 
+void RotateTreeLeft(zDEClient_MapTreeState *tree, zDEClient_MapTreeNode *node) {
+    zDEClient_MapTreeNode *const pivot = node->right;
+    node->right = pivot->left;
+    if (!IsNil(pivot->left)) {
+        pivot->left->parent = node;
+    }
+
+    pivot->parent = node->parent;
+    if (node == tree->header->parent) {
+        tree->header->parent = pivot;
+    } else if (node == node->parent->left) {
+        node->parent->left = pivot;
+    } else {
+        node->parent->right = pivot;
+    }
+
+    pivot->left = node;
+    node->parent = pivot;
+}
+
+void RotateTreeRight(zDEClient_MapTreeState *tree, zDEClient_MapTreeNode *node) {
+    zDEClient_MapTreeNode *const pivot = node->left;
+    node->left = pivot->right;
+    if (!IsNil(pivot->right)) {
+        pivot->right->parent = node;
+    }
+
+    pivot->parent = node->parent;
+    if (node == tree->header->parent) {
+        tree->header->parent = pivot;
+    } else if (node == node->parent->right) {
+        node->parent->right = pivot;
+    } else {
+        node->parent->left = pivot;
+    }
+
+    pivot->right = node;
+    node->parent = pivot;
+}
+
 void ResetHeader(zDEClient_MapTreeState *tree) {
     if (tree->header == 0) {
         return;
@@ -125,7 +165,7 @@ void EnsureFeatureMapTreeInitialized(zDEClient_MapTreeState *tree) {
         tree->header->parent = g_zDEClient_FeatureMapTreeNil;
         tree->header->right = tree->header;
         tree->header->key = 0;
-        tree->header->colorOrNil = 1;
+        tree->header->colorOrNil = 0;
         tree->allowInsert = 0;
         tree->nodeCount = 0;
     }
@@ -1115,6 +1155,106 @@ zDEClient_MapTreeState::IterNextNodeRef(zDEClient_MapTreeNode **nodeRef) {
     return nodeRef;
 }
 
+// Reimplements 0x458970: zDEClient_MapTreeState::IterPrevNodeRef
+RECOIL_NOINLINE void RECOIL_THISCALL
+zDEClient_MapTreeState::IterPrevNodeRef(zDEClient_MapTreeNode **nodeRef) {
+    zDEClient_MapTreeNode *node = *nodeRef;
+    if (node->colorOrNil == 0 && node->parent->parent == node) {
+        *nodeRef = node->right;
+        return;
+    }
+
+    if (!IsNil(node->left)) {
+        *nodeRef = TreeMaximum(node->left);
+        return;
+    }
+
+    zDEClient_MapTreeNode *parent = node->parent;
+    while (node == parent->left) {
+        node = parent;
+        parent = parent->parent;
+    }
+
+    *nodeRef = parent;
+}
+
+// Reimplements 0x4585a0: zDEClient_MapTreeState::InsertAt
+// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::InsertAt(
+    zDEClient_MapTreeNode **outNode, zDEClient_MapTreeNode *where,
+    zDEClient_MapTreeNode *parent, zGeometry_ClipPatchNodeDiPair *key) {
+    zDEClient_MapTreeNode *inserted =
+        static_cast<zDEClient_MapTreeNode *>(::operator new(sizeof(zDEClient_MapTreeNode)));
+    inserted->left = g_zDEClient_FeatureMapTreeNil;
+    inserted->parent = parent;
+    inserted->right = g_zDEClient_FeatureMapTreeNil;
+    inserted->key = key->node;
+    inserted->colorOrNil = 0;
+
+    ++nodeCount;
+
+    if (parent != header && where == g_zDEClient_FeatureMapTreeNil &&
+        !(key->node < parent->key)) {
+        parent->right = inserted;
+        if (parent == header->right) {
+            header->right = inserted;
+        }
+    } else {
+        parent->left = inserted;
+        if (parent == header) {
+            header->parent = inserted;
+            header->right = inserted;
+        } else if (parent == header->left) {
+            header->left = inserted;
+        }
+    }
+
+    zDEClient_MapTreeNode *fixup = inserted;
+    while (fixup != header->parent && fixup->parent->colorOrNil == 0) {
+        zDEClient_MapTreeNode *const parentNode = fixup->parent;
+        zDEClient_MapTreeNode *const grandParent = parentNode->parent;
+        if (parentNode == grandParent->left) {
+            zDEClient_MapTreeNode *const uncle = grandParent->right;
+            if (uncle->colorOrNil == 0) {
+                parentNode->colorOrNil = 1;
+                uncle->colorOrNil = 1;
+                grandParent->colorOrNil = 0;
+                fixup = grandParent;
+            } else {
+                if (fixup == parentNode->right) {
+                    fixup = parentNode;
+                    RotateTreeLeft(this, fixup);
+                }
+
+                fixup->parent->colorOrNil = 1;
+                fixup->parent->parent->colorOrNil = 0;
+                RotateTreeRight(this, fixup->parent->parent);
+            }
+        } else {
+            zDEClient_MapTreeNode *const uncle = grandParent->left;
+            if (uncle->colorOrNil == 0) {
+                parentNode->colorOrNil = 1;
+                uncle->colorOrNil = 1;
+                grandParent->colorOrNil = 0;
+                fixup = grandParent;
+            } else {
+                if (fixup == parentNode->left) {
+                    fixup = parentNode;
+                    RotateTreeRight(this, fixup);
+                }
+
+                fixup->parent->colorOrNil = 1;
+                fixup->parent->parent->colorOrNil = 0;
+                RotateTreeLeft(this, fixup->parent->parent);
+            }
+        }
+    }
+
+    header->parent->colorOrNil = 1;
+    *outNode = inserted;
+    return outNode;
+}
+
 // Reimplements 0x458510: zDEClient_MapTreeState::DestroySubtree
 RECOIL_NOINLINE void RECOIL_THISCALL
 zDEClient_MapTreeState::DestroySubtree(zDEClient_MapTreeNode *node) {
@@ -1189,51 +1329,63 @@ zDEClient_MapTreeState::FindOrInsertKey(zDEClient_MapTreeLocateResult *outResult
     zGeometry_ClipPatchNodeView *const nodeKey = key->node;
     zDEClient_MapTreeNode *parent = header;
     zDEClient_MapTreeNode *cursor = header->parent;
+    unsigned char insertLeft = 1;
 
     while (!IsNil(cursor)) {
         parent = cursor;
         if (nodeKey < cursor->key) {
+            insertLeft = 1;
             cursor = cursor->left;
-        } else if (cursor->key < nodeKey) {
-            cursor = cursor->right;
         } else {
-            outResult->node = cursor;
-            outResult->inserted = 0;
+            insertLeft = 0;
+            cursor = cursor->right;
+        }
+    }
+
+    if (allowInsert != 0) {
+        zDEClient_MapTreeNode *inserted = 0;
+        InsertAt(&inserted, cursor, parent, key);
+        outResult->node = inserted;
+        outResult->inserted = 1;
+        return outResult;
+    }
+
+    zDEClient_MapTreeNode *candidate = parent;
+    if (insertLeft != 0) {
+        if (parent == header->left) {
+            zDEClient_MapTreeNode *inserted = 0;
+            InsertAt(&inserted, cursor, parent, key);
+            outResult->node = inserted;
+            outResult->inserted = 1;
             return outResult;
         }
+
+        candidate = parent;
+        IterPrevNodeRef(&candidate);
     }
 
-    zDEClient_MapTreeNode *const inserted =
-        static_cast<zDEClient_MapTreeNode *>(::operator new(sizeof(zDEClient_MapTreeNode)));
-    inserted->left = g_zDEClient_FeatureMapTreeNil;
-    inserted->parent = parent;
-    inserted->right = g_zDEClient_FeatureMapTreeNil;
-    inserted->key = nodeKey;
-    inserted->colorOrNil = 1;
-
-    if (parent == header) {
-        header->parent = inserted;
-        header->left = inserted;
-        header->right = inserted;
-    } else if (nodeKey < parent->key) {
-        parent->left = inserted;
-        if (header->left == parent) {
-            header->left = inserted;
-        }
-    } else {
-        parent->right = inserted;
-        if (header->right == parent) {
-            header->right = inserted;
-        }
+    if (candidate->key < nodeKey) {
+        zDEClient_MapTreeNode *inserted = 0;
+        InsertAt(&inserted, cursor, parent, key);
+        outResult->node = inserted;
+        outResult->inserted = 1;
+        return outResult;
     }
 
-    ++nodeCount;
-    outResult->node = inserted;
-    outResult->inserted = 1;
+    outResult->node = candidate;
+    outResult->inserted = 0;
     return outResult;
 }
 
 namespace zDEClient {
+// Reimplements 0x455ed0: zDEClient::CopyQSandEventTemplateDefaults
+// (D:\Proj\GameZRecoil\zDEClient\zdec_init.c)
+RECOIL_NOINLINE void RECOIL_FASTCALL
+CopyQSandEventTemplateDefaults(zDEClient_QSandEventTemplate *eventTemplate) {
+    memcpy(eventTemplate, &g_zDEClient_QuickSandEventTemplateDefaults,
+           sizeof(zDEClient_QSandEventTemplate));
+}
+
 // Reimplements 0x4558f0: zDEClient::LoadConfigResources
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worldNode) {
@@ -1481,6 +1633,38 @@ RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL GetCameraNode() {
     return g_zDEClient_CameraNode;
 }
 
+// Reimplements 0x458a30: zDEClient::CopyFeatureEntriesForward
+// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+RECOIL_NOINLINE zDEClient_FeatureEntry *RECOIL_STDCALL
+CopyFeatureEntriesForward(zDEClient_FeatureEntry *first, zDEClient_FeatureEntry *last,
+                          zDEClient_FeatureEntry *dest) {
+    while (first != last) {
+        if (dest != 0) {
+            *dest = *first;
+        }
+
+        ++first;
+        ++dest;
+    }
+
+    return dest;
+}
+
+// Reimplements 0x458a70: zDEClient::FillFeatureEntries
+// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+RECOIL_NOINLINE void RECOIL_STDCALL FillFeatureEntries(zDEClient_FeatureEntry *dest,
+                                                       unsigned int count,
+                                                       const zDEClient_FeatureEntry *value) {
+    while (count != 0) {
+        if (dest != 0) {
+            *dest = *value;
+        }
+
+        ++dest;
+        --count;
+    }
+}
+
 // Reimplements 0x457840: zDEClient::AppendFeatureEntry
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL AppendFeatureEntry(int featureType,
@@ -1511,9 +1695,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AppendFeatureEntry(int featureType,
         zDEClient_FeatureEntry *const newEntries = static_cast<zDEClient_FeatureEntry *>(
             ::operator new(static_cast<size_t>(newCapacity) * sizeof(zDEClient_FeatureEntry)));
 
-        for (ptrdiff_t i = 0; i < oldCount; ++i) {
-            newEntries[i] = g_zDEClient_FeatureListBegin[i];
-        }
+        CopyFeatureEntriesForward(g_zDEClient_FeatureListBegin, g_zDEClient_FeatureListEnd,
+                                  newEntries);
 
         ::operator delete(g_zDEClient_FeatureListBegin);
         g_zDEClient_FeatureListBegin = newEntries;
@@ -1521,7 +1704,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AppendFeatureEntry(int featureType,
         g_zDEClient_FeatureListCapacityEnd = newEntries + newCapacity;
     }
 
-    *g_zDEClient_FeatureListEnd = featureEntry;
+    FillFeatureEntries(g_zDEClient_FeatureListEnd, 1, &featureEntry);
     ++g_zDEClient_FeatureListEnd;
     return 0;
 }

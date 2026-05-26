@@ -58,6 +58,31 @@ class RecoilFrontierTests(unittest.TestCase):
         self.assertFalse(node.blocks_source())
         self.assertFalse(node.blocks_binary_verification())
 
+    def test_plan_compiler_provider_does_not_block_functional_lane(self) -> None:
+        entry = PlanEntry(
+            address="0x4c83db",
+            reconstructed_status="✅",
+            reconstructed_name="__ehhandler_Briefing_StartForMission",
+            source_dependencies_status="❌",
+            reimplemented_status="✅",
+            reimplemented_name="__ehhandler_Briefing_StartForMission",
+            reimplemented_file="external",
+            provider="compiler-generated glue",
+            binary_verified_status="❌",
+            functional_equivalent_status="❌",
+        )
+        node = Node(
+            address="0x4c83db",
+            name="__ehhandler_Briefing_StartForMission",
+            kind="function",
+            plan=entry,
+        )
+
+        self.assertFalse(node.blocks_source())
+        self.assertFalse(node.blocks_verification(lane="functional"))
+        self.assertTrue(node.blocks_verification(lane="binary"))
+        self.assertEqual("provider Binary-safe=❌", node.verification_block_reason(lane="binary"))
+
     def test_msvc_helper_symbol_kind_is_inferred_from_name(self) -> None:
         symbol = Symbol(
             address="0x4c6000",

@@ -90,6 +90,20 @@ namespace {
 }
 
 namespace Light {
+    // Reimplements 0x4b2160: Light::InitThermalGlowPool (D:\Proj\GameZRecoil\zClass\Light.c)
+    RECOIL_NOINLINE int RECOIL_CDECL InitThermalGlowPool() {
+        for (int i = 0; i < 8; ++i) {
+            zClass_NodePartial *const light = zClass_Light::gwLightNew();
+            zClass_Class::gwNodeSetName(light, "Thermal glow");
+            zClass_Light::gwLightSetPosition(light, 0.0f, 0.0f, 0.0f);
+            zClass_Light::gwLightSetRange(light, 0.1f, 0.2f);
+            light->callbackContext = g_OptCatalogThermalGlowFreeList;
+            g_OptCatalogThermalGlowFreeList = light;
+        }
+
+        return 1;
+    }
+
     // Reimplements 0x4b21e0: Light::DestroyThermalGlowPool (D:\Proj\GameZRecoil\zClass\Light.c)
     RECOIL_NOINLINE int RECOIL_CDECL DestroyThermalGlowPool() {
         zClass_NodePartial *node = g_OptCatalogThermalGlowFreeList;

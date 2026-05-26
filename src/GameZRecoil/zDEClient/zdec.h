@@ -144,6 +144,10 @@ struct zDEClient_MapTreeState {
     RECOIL_NOINLINE void RECOIL_THISCALL DestroySubtree(zDEClient_MapTreeNode *node);
     RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL
     IterNextNodeRef(zDEClient_MapTreeNode **nodeRef);
+    RECOIL_NOINLINE void RECOIL_THISCALL IterPrevNodeRef(zDEClient_MapTreeNode **nodeRef);
+    RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL
+    InsertAt(zDEClient_MapTreeNode **outNode, zDEClient_MapTreeNode *where,
+             zDEClient_MapTreeNode *parent, zGeometry_ClipPatchNodeDiPair *key);
     RECOIL_NOINLINE zDEClient_MapTreeLocateResult *RECOIL_THISCALL
     FindOrInsertKey(zDEClient_MapTreeLocateResult *outResult, zGeometry_ClipPatchNodeDiPair *key);
 };
@@ -214,12 +218,20 @@ RECOIL_NOINLINE void RECOIL_CDECL ClearFeatureDisplayNodes();
 RECOIL_NOINLINE void RECOIL_FASTCALL SetCameraNode(zClass_NodePartial *cameraNode);
 RECOIL_NOINLINE int RECOIL_FASTCALL
 WriteFeatureSectionsToZAR(zZbdSectionCallbackCtx *callbackCtx);
+RECOIL_NOINLINE void RECOIL_FASTCALL
+CopyQSandEventTemplateDefaults(zDEClient_QSandEventTemplate *eventTemplate);
 RECOIL_NOINLINE zDEClient_FeatureGridCell *RECOIL_FASTCALL GetFeatureGridCell(int gridCol,
                                                                               int gridRow);
 RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL GetCameraNode();
 RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL CreateFeatureNodeAndDiFromClipPatchPartition(
     zGeometry_ClipPatchPartitionOutput *partitionOutput, zClass_NodePartial *parentNode,
     zClass_NodePartial **outNode);
+RECOIL_NOINLINE zDEClient_FeatureEntry *RECOIL_STDCALL
+CopyFeatureEntriesForward(zDEClient_FeatureEntry *first, zDEClient_FeatureEntry *last,
+                          zDEClient_FeatureEntry *dest);
+RECOIL_NOINLINE void RECOIL_STDCALL FillFeatureEntries(zDEClient_FeatureEntry *dest,
+                                                       unsigned int count,
+                                                       const zDEClient_FeatureEntry *value);
 RECOIL_NOINLINE int RECOIL_FASTCALL AppendFeatureEntry(int featureType,
                                                                 const void *featureEventData);
 RECOIL_NOINLINE void RECOIL_FASTCALL

@@ -19,6 +19,7 @@
 #include <new>
 
 extern "C" unsigned int g_HudUi_InvalidateMask;
+extern "C" int g_Hud_MapOverlayRefCount;
 
 namespace {
 constexpr std::size_t kEffectFxPass3ConfigSize = 0x1f0;
@@ -43,6 +44,72 @@ zEffectAnimActivationRecord *g_effectAnimDispatchRecord = nullptr;
 int g_effectAnimEventCallbackCallCount = 0;
 zEffectAnimEntry *g_effectAnimEventCallbackSelf = nullptr;
 void *g_effectAnimEventCallbackContext = nullptr;
+
+bool WriteHudSensorTestMap(const char *path,
+                           const HudSensorMapBounds &fileBounds,
+                           const unsigned char (&rgb)[3],
+                           const HudSensorMapPoint *points,
+                           int pointCount,
+                           int objectiveIndex) {
+    std::FILE *stream = std::fopen(path, "wb");
+    if (stream == nullptr) {
+        return false;
+    }
+
+    const std::int32_t version = 5;
+    const std::int32_t header = 0x13572468;
+    const bool ok = std::fwrite(&version, sizeof(version), 1, stream) == 1 &&
+                    std::fwrite(&header, sizeof(header), 1, stream) == 1 &&
+                    std::fwrite(&fileBounds, sizeof(fileBounds), 1, stream) == 1 &&
+                    std::fwrite(rgb, 3, 1, stream) == 1 &&
+                    std::fwrite(&pointCount, sizeof(pointCount), 1, stream) == 1 &&
+                    std::fwrite(points, sizeof(points[0]), static_cast<std::size_t>(pointCount),
+                                stream) == static_cast<std::size_t>(pointCount) &&
+                    std::fwrite(&objectiveIndex, sizeof(objectiveIndex), 1, stream) == 1;
+
+    std::fclose(stream);
+    return ok;
+}
+
+struct EffectAnimLoadZbdHeaderBlock {
+    int entriesInstantiated;
+    void *heapPtr;
+    short countsPackedLoWord;
+    short entryCount;
+    zEffectAnimEntry *entryList;
+    int textIdEntryCount;
+    zEffectAnimTextIdEntry *textIdEntryList;
+    zClass_NodePartial *worldNode;
+    float defaultGravity;
+    int conditionalRefPosEnabled;
+    int variantOverrideEnabled;
+    float conditionalRefPosX;
+    float conditionalRefPosY;
+    float conditionalRefPosZ;
+    unsigned int variantOverridePackedIds;
+    float frameDeltaRemainingSec;
+};
+
+static_assert(sizeof(EffectAnimLoadZbdHeaderBlock) == 0x3c,
+              "LoadZbd smoke header mirror must match the saved ZBD header block");
+
+bool WriteEffectAnimLoadZbdMinimalFile(const char *path,
+                                       const EffectAnimLoadZbdHeaderBlock &header) {
+    std::FILE *stream = std::fopen(path, "wb");
+    if (stream == nullptr) {
+        return false;
+    }
+
+    const int signature = 0x08170616;
+    const int stampRecordSize = sizeof(zEffectAnimSourceFileStamp);
+    const int stampCount = 0;
+    const bool ok = std::fwrite(&signature, sizeof(signature), 1, stream) == 1 &&
+                    std::fwrite(&stampRecordSize, sizeof(stampRecordSize), 1, stream) == 1 &&
+                    std::fwrite(&stampCount, sizeof(stampCount), 1, stream) == 1 &&
+                    std::fwrite(&header, sizeof(header), 1, stream) == 1;
+    std::fclose(stream);
+    return ok;
+}
 std::int32_t g_effectAnimEventCallbackValue = 0;
 int g_effectDirectSoundGetFrequencyCount = 0;
 int g_effectDirectSoundGetStatusCount = 0;
@@ -235,6 +302,33 @@ void EnsureZrdrFreePool() {
     if (g_zUtil_ZRDR_FreePool == nullptr) {
         g_zUtil_ZRDR_FreePool = zArchiveList_CreateEmpty();
     }
+}
+
+void WriteEffectTestU32(HANDLE file, std::uint32_t value) {
+    DWORD written = 0;
+    WriteFile(file, &value, sizeof(value), &written, nullptr);
+}
+
+void WriteEffectTestBytes(HANDLE file, const void *data, std::uint32_t size) {
+    DWORD written = 0;
+    WriteFile(file, data, size, &written, nullptr);
+}
+
+void WriteEffectTestZrdArray(HANDLE file, std::uint32_t count) {
+    WriteEffectTestU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteEffectTestU32(file, count);
+}
+
+void WriteEffectTestZrdString(HANDLE file, const char *text) {
+    const std::uint32_t length = static_cast<std::uint32_t>(std::strlen(text));
+    WriteEffectTestU32(file, zReader::ZRDR_NODE_STRING);
+    WriteEffectTestU32(file, length);
+    WriteEffectTestBytes(file, text, length);
+}
+
+void WriteEffectTestZrdFloat(HANDLE file, float value) {
+    WriteEffectTestU32(file, zReader::ZRDR_NODE_FLOAT);
+    WriteEffectTestBytes(file, &value, sizeof(value));
 }
 
 void RECOIL_FASTCALL EffectAnimDispatchCallback(zEffectAnimActivationRecord *record) {
@@ -588,6 +682,151 @@ extern "C" int hud_sensor_map_remove_and_shutdown_smoke(void) {
                    tracker.mapScaleStart.y == 3.0f && tracker.mapScaleStart.z == 4.0f
                ? 0
                : 2;
+}
+
+extern "C" int hud_sensor_map_overlay_toggle_smoke(void) {
+    const int oldRefCount = g_Hud_MapOverlayRefCount;
+
+    HudSensorTracker tracker = {};
+    tracker.outerRect.left = 0;
+    tracker.outerRect.top = 0;
+    tracker.outerRect.right = 100;
+    tracker.outerRect.bottom = 80;
+    tracker.mapBoundsMinX = -10.0f;
+    tracker.mapBoundsMaxX = 10.0f;
+    tracker.mapBoundsMinZ = -20.0f;
+    tracker.mapBoundsMaxZ = 20.0f;
+    tracker.mapScaleCurrent = {1.0f, 2.0f, 3.0f};
+    tracker.mapLoadedFlag = 0;
+    g_Hud_MapOverlayRefCount = 0;
+
+    const int beginResult = tracker.MapOverlayBeginShow();
+    const bool beginOk =
+        beginResult == 1 && tracker.mapScaleLerpActive == 1 &&
+        tracker.mapScaleLerpT == 0.0f && tracker.mapScaleStart.x == 1.0f &&
+        tracker.mapScaleStart.y == 2.0f && tracker.mapScaleStart.z == 3.0f &&
+        tracker.mapScaleGoal.x == 4.0f && tracker.mapScaleGoal.z == 2.0f &&
+        tracker.mapScaleLerpRunning == 0 && tracker.MapOverlayBeginShow() == 0;
+
+    tracker.MapOverlayEndShow();
+    const bool endOk = tracker.mapScaleLerpActive == 0 && tracker.mapScaleLerpT == 0.0f &&
+                       tracker.mapScaleStart.x == 1.0f &&
+                       tracker.mapScaleStart.y == 2.0f &&
+                       tracker.mapScaleStart.z == 3.0f &&
+                       tracker.mapScaleGoal.x == 0.0f &&
+                       tracker.mapScaleGoal.z == 0.0f &&
+                       tracker.mapScaleLerpRunning == 0;
+
+    tracker.mapScaleCurrent = {5.0f, 6.0f, 7.0f};
+    const int toggleOnA = tracker.MapOverlayRefToggle(1);
+    const int toggleOnB = tracker.MapOverlayRefToggle(1);
+    const bool toggleOnOk = toggleOnA == 1 && toggleOnB == 1 &&
+                            g_Hud_MapOverlayRefCount == 2 &&
+                            tracker.mapScaleLerpActive == 1 &&
+                            tracker.mapScaleStart.x == 5.0f &&
+                            tracker.mapScaleStart.y == 6.0f &&
+                            tracker.mapScaleStart.z == 7.0f;
+
+    const int toggleOffA = tracker.MapOverlayRefToggle(0);
+    const bool stillShown = toggleOffA == 1 && g_Hud_MapOverlayRefCount == 1 &&
+                            tracker.mapScaleLerpActive == 1;
+    const int toggleOffB = tracker.MapOverlayRefToggle(0);
+    const bool toggleOffOk = toggleOffB == 1 && g_Hud_MapOverlayRefCount == 0 &&
+                             tracker.mapScaleLerpActive == 0 &&
+                             tracker.mapScaleGoal.x == 0.0f &&
+                             tracker.mapScaleGoal.z == 0.0f;
+
+    g_Hud_MapOverlayRefCount = oldRefCount;
+    return beginOk && endOk && toggleOnOk && stillShown && toggleOffOk ? 0 : 1;
+}
+
+extern "C" int hud_sensor_tracker_load_map_paths_smoke(void) {
+    g_zVideo_PixelPack_RMaskShifted = 0xf8;
+    g_zVideo_PixelPack_GMaskShifted = 0xfc;
+    g_zVideo_PixelPack_RShift = 8;
+    g_zVideo_PixelPack_GShift = 3;
+    g_zVideo_PixelPack_BShiftTo8 = 3;
+
+    const HudSensorMapBounds fileBounds = {-1.0f, 0.0f, -2.0f, 1.0f, 0.0f, 2.0f};
+    const unsigned char rgb[3] = {0x30, 0x50, 0x70};
+    const HudSensorMapPoint points[2] = {
+        {-3.0f, 4.0f, 8.0f},
+        {5.0f, 6.0f, -7.0f},
+    };
+
+    const char *path = "hud_sensor_tracker_load_map_paths.zmap";
+    if (!WriteHudSensorTestMap(path, fileBounds, rgb, points, 2, 21)) {
+        return 1;
+    }
+
+    HudSensorTracker tracker = {};
+    const int loadResult = tracker.LoadMapFromPath(path);
+    std::remove(path);
+
+    HudSensorMapNode *const loadedNode = tracker.mapNodeListHead;
+    const bool pathOk = loadResult == 1 && tracker.mapLoadedFlag == 1 &&
+                        tracker.loadedMapPath != nullptr &&
+                        std::strcmp(tracker.loadedMapPath, path) == 0 &&
+                        tracker.mapFileVersion == 5 && tracker.mapHeaderDword == 0x13572468 &&
+                        tracker.mapBoundsMinX == -3.0f && tracker.mapBoundsMinZ == -7.0f &&
+                        tracker.mapBoundsMaxX == 5.0f && tracker.mapBoundsMaxZ == 8.0f &&
+                        loadedNode != nullptr && loadedNode->next == nullptr &&
+                        loadedNode->pointCount == 2 && loadedNode->objectiveIndex == 21 &&
+                        loadedNode->points != nullptr && loadedNode->points[1].x == 5.0f &&
+                        loadedNode->points[1].z == -7.0f;
+    tracker.MapShutdownAndReset();
+    if (!pathOk) {
+        return 2;
+    }
+
+    CreateDirectoryA("maps", nullptr);
+    const char *missionPath = ".\\maps\\m9.zmap";
+    if (!WriteHudSensorTestMap(missionPath, fileBounds, rgb, points, 2, 22)) {
+        return 3;
+    }
+
+    const int oldInitialized = g_zSnd_IsInitialized;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const zSndSampleSetRegistry oldRegistry = g_zSnd_SampleSetRegistry;
+
+    zSndSample samples[3] = {};
+    samples[0].replayFields.sampleId = "snd_mapOn";
+    samples[1].replayFields.sampleId = "snd_mapOff";
+    samples[2].replayFields.sampleId = "snd_mapClick";
+    samples[0].primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&samples[0]);
+    samples[1].primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&samples[1]);
+    samples[2].primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&samples[2]);
+
+    zSndSampleSet sampleSet = {};
+    sampleSet.sampleCount = 3;
+    sampleSet.samples = samples;
+    zSndSampleSet *sampleSets[1] = {&sampleSet};
+
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_SampleSetRegistry.begin = sampleSets;
+    g_zSnd_SampleSetRegistry.end = sampleSets + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSets + 1;
+
+    HudSensorTracker missionTracker = {};
+    const int missionResult = missionTracker.LoadMissionMapAndSfx(9);
+    DeleteFileA(missionPath);
+
+    const bool missionOk = missionResult == 1 &&
+                           missionTracker.loadedMapPath != nullptr &&
+                           std::strcmp(missionTracker.loadedMapPath, missionPath) == 0 &&
+                           missionTracker.mapSndOn == &samples[0] &&
+                           missionTracker.mapSndOff == &samples[1] &&
+                           missionTracker.mapSndClick == &samples[2] &&
+                           missionTracker.mapNodeListHead != nullptr &&
+                           missionTracker.mapNodeListHead->objectiveIndex == 22;
+    missionTracker.MapShutdownAndReset();
+
+    g_zSnd_SampleSetRegistry = oldRegistry;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSnd_IsInitialized = oldInitialized;
+
+    return missionOk ? 0 : 4;
 }
 
 extern "C" int hud_sensor_reset_mission_state_smoke(void) {
@@ -3220,6 +3459,49 @@ extern "C" int zeffect_conditional_ref_pos_smoke(void) {
     return zEffect::GetConditionalRefPosDistanceSq(&node) == 50.0f ? 0 : 3;
 }
 
+extern "C" int zeffect_set_variant_override_packed_ids_if_complete_smoke(void) {
+    const int oldEnabled = g_zEffect_VariantOverrideEnabled;
+    const unsigned int oldPackedIds = g_zEffect_VariantOverridePackedIds;
+
+    zTag4Partial complete = {};
+    complete.count = 2;
+    complete.tags[0] = 7;
+    complete.tags[1] = 8;
+    complete.tags[2] = 0xff;
+    unsigned int expectedPacked = 0;
+    std::memcpy(&expectedPacked, &complete, sizeof(expectedPacked));
+
+    g_zEffect_VariantOverrideEnabled = 0;
+    g_zEffect_VariantOverridePackedIds = 0;
+    zEffect::SetVariantOverridePackedIdsIfComplete(&complete);
+    const bool completeOk = g_zEffect_VariantOverrideEnabled == 1 &&
+                            g_zEffect_VariantOverridePackedIds == expectedPacked;
+
+    zTag4Partial empty = {};
+    empty.count = 0;
+    empty.tags[0] = 1;
+    g_zEffect_VariantOverrideEnabled = 3;
+    g_zEffect_VariantOverridePackedIds = 0x12345678;
+    zEffect::SetVariantOverridePackedIdsIfComplete(&empty);
+    const bool emptyOk = g_zEffect_VariantOverrideEnabled == 3 &&
+                         g_zEffect_VariantOverridePackedIds == 0x12345678;
+
+    zTag4Partial incomplete = {};
+    incomplete.count = 2;
+    incomplete.tags[0] = 9;
+    incomplete.tags[1] = 0xff;
+    g_zEffect_VariantOverrideEnabled = 4;
+    g_zEffect_VariantOverridePackedIds = 0x87654321;
+    zEffect::SetVariantOverridePackedIdsIfComplete(&incomplete);
+    const bool incompleteOk = g_zEffect_VariantOverrideEnabled == 4 &&
+                              g_zEffect_VariantOverridePackedIds == 0x87654321;
+
+    g_zEffect_VariantOverrideEnabled = oldEnabled;
+    g_zEffect_VariantOverridePackedIds = oldPackedIds;
+
+    return completeOk && emptyOk && incompleteOk ? 0 : 1;
+}
+
 extern "C" int zeffect_skip_conditional_chain_smoke(void) {
     alignas(4) unsigned char events[24] = {};
     auto *event0 = reinterpret_cast<zEffectAnimEventHeader *>(&events[0]);
@@ -3482,6 +3764,252 @@ extern "C" int zeffect_world_and_zbd_setters_smoke(void) {
     g_zEffect_ResourceNode = oldResourceNode;
     g_zEffectAnim_ZbdFilename[0] = '\0';
     return longNameSkipped ? 0 : 4;
+}
+
+extern "C" int zeffect_anim_load_zbd_minimal_smoke(void) {
+    zClass_NodePartial *const oldWorld = g_zEffect_World;
+    zClass_NodePartial *const oldResourceNode = g_zEffect_ResourceNode;
+    const int oldEntriesInstantiated = g_zEffectAnim_EntriesInstantiated;
+    void *const oldHeapPtr = g_zEffectAnim_HeapPtr;
+    const short oldCountsPackedLoWord = g_zEffectAnim_CountsPackedLoWord;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const int oldTextIdEntryCount = g_zEffectAnim_TextIdEntryCount;
+    zEffectAnimTextIdEntry *const oldTextIdEntryList = g_zEffectAnim_TextIdEntryList;
+    const int oldSourceFileStampCount = g_zEffectAnim_SourceFileStampCount;
+    zEffectAnimSourceFileStamp *const oldSourceFileStampList = g_zEffectAnim_SourceFileStampList;
+    const float oldDefaultGravity = g_zEffect_DefaultGravity;
+    const int oldConditionalRefPosEnabled = g_zEffect_ConditionalRefPosEnabled;
+    const int oldVariantOverrideEnabled = g_zEffect_VariantOverrideEnabled;
+    const float oldConditionalRefPosX = g_zEffect_ConditionalRefPosX;
+    const float oldConditionalRefPosY = g_zEffect_ConditionalRefPosY;
+    const float oldConditionalRefPosZ = g_zEffect_ConditionalRefPosZ;
+    const unsigned int oldVariantOverridePackedIds = g_zEffect_VariantOverridePackedIds;
+    const float oldFrameDeltaRemainingSec = g_zEffect_FrameDeltaRemainingSec;
+    char oldFilename[sizeof(g_zEffectAnim_ZbdFilename)] = {};
+    std::memcpy(oldFilename, g_zEffectAnim_ZbdFilename, sizeof(oldFilename));
+
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempPath), tempPath) == 0 ||
+        GetTempFileNameA(tempPath, "zld", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    zClass_NodePartial world = {};
+    zClass_NodePartial resource = {};
+    EffectAnimLoadZbdHeaderBlock header = {};
+    header.entriesInstantiated = 3;
+    header.heapPtr = &resource;
+    header.countsPackedLoWord = 5;
+    header.entryCount = 0;
+    header.textIdEntryCount = 0;
+    header.worldNode = &resource;
+    header.defaultGravity = 9.75f;
+    header.conditionalRefPosEnabled = 1;
+    header.variantOverrideEnabled = 1;
+    header.conditionalRefPosX = 1.25f;
+    header.conditionalRefPosY = 2.5f;
+    header.conditionalRefPosZ = 3.75f;
+    header.variantOverridePackedIds = 0x00120034;
+    header.frameDeltaRemainingSec = 0.5f;
+
+    if (!WriteEffectAnimLoadZbdMinimalFile(tempFile, header)) {
+        DeleteFileA(tempFile);
+        return 2;
+    }
+
+    g_zEffect_World = &world;
+    g_zEffect_ResourceNode = &resource;
+    zEffect_Anim::SetZbdFilename(tempFile);
+    const int result = zEffect_Anim::LoadZbd();
+    zEffectAnimEntry *const loadedEntryList = g_zEffectAnim_EntryList;
+
+    const bool globalsLoaded =
+        result == 0 && g_zEffect_World == &world &&
+        g_zEffectAnim_EntriesInstantiated == header.entriesInstantiated &&
+        g_zEffectAnim_HeapPtr == header.heapPtr &&
+        g_zEffectAnim_CountsPackedLoWord == header.countsPackedLoWord &&
+        g_zEffectAnim_EntryCount == 0 && g_zEffectAnim_TextIdEntryCount == 0 &&
+        g_zEffectAnim_TextIdEntryList == nullptr && g_zEffectAnim_SourceFileStampCount == 0 &&
+        g_zEffectAnim_SourceFileStampList == nullptr &&
+        g_zEffect_DefaultGravity == header.defaultGravity &&
+        g_zEffect_ConditionalRefPosEnabled == header.conditionalRefPosEnabled &&
+        g_zEffect_VariantOverrideEnabled == header.variantOverrideEnabled &&
+        g_zEffect_ConditionalRefPosX == header.conditionalRefPosX &&
+        g_zEffect_ConditionalRefPosY == header.conditionalRefPosY &&
+        g_zEffect_ConditionalRefPosZ == header.conditionalRefPosZ &&
+        g_zEffect_VariantOverridePackedIds == header.variantOverridePackedIds &&
+        g_zEffect_FrameDeltaRemainingSec == header.frameDeltaRemainingSec;
+
+    if (loadedEntryList != nullptr && loadedEntryList != oldEntryList) {
+        std::free(loadedEntryList);
+    }
+    g_zEffect_World = oldWorld;
+    g_zEffect_ResourceNode = oldResourceNode;
+    g_zEffectAnim_EntriesInstantiated = oldEntriesInstantiated;
+    g_zEffectAnim_HeapPtr = oldHeapPtr;
+    g_zEffectAnim_CountsPackedLoWord = oldCountsPackedLoWord;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_TextIdEntryCount = oldTextIdEntryCount;
+    g_zEffectAnim_TextIdEntryList = oldTextIdEntryList;
+    g_zEffectAnim_SourceFileStampCount = oldSourceFileStampCount;
+    g_zEffectAnim_SourceFileStampList = oldSourceFileStampList;
+    g_zEffect_DefaultGravity = oldDefaultGravity;
+    g_zEffect_ConditionalRefPosEnabled = oldConditionalRefPosEnabled;
+    g_zEffect_VariantOverrideEnabled = oldVariantOverrideEnabled;
+    g_zEffect_ConditionalRefPosX = oldConditionalRefPosX;
+    g_zEffect_ConditionalRefPosY = oldConditionalRefPosY;
+    g_zEffect_ConditionalRefPosZ = oldConditionalRefPosZ;
+    g_zEffect_VariantOverridePackedIds = oldVariantOverridePackedIds;
+    g_zEffect_FrameDeltaRemainingSec = oldFrameDeltaRemainingSec;
+    std::memcpy(g_zEffectAnim_ZbdFilename, oldFilename, sizeof(oldFilename));
+    DeleteFileA(tempFile);
+
+    return globalsLoaded ? 0 : 3;
+}
+
+extern "C" int zeffect_anim_load_and_instantiate_minimal_smoke(void) {
+    zClass_NodePartial *const oldWorld = g_zEffect_World;
+    zClass_NodePartial *const oldResourceNode = g_zEffect_ResourceNode;
+    const int oldEntriesInstantiated = g_zEffectAnim_EntriesInstantiated;
+    void *const oldHeapPtr = g_zEffectAnim_HeapPtr;
+    const short oldCountsPackedLoWord = g_zEffectAnim_CountsPackedLoWord;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const int oldTextIdEntryCount = g_zEffectAnim_TextIdEntryCount;
+    zEffectAnimTextIdEntry *const oldTextIdEntryList = g_zEffectAnim_TextIdEntryList;
+    const int oldSourceFileStampCount = g_zEffectAnim_SourceFileStampCount;
+    zEffectAnimSourceFileStamp *const oldSourceFileStampList = g_zEffectAnim_SourceFileStampList;
+    const float oldDefaultGravity = g_zEffect_DefaultGravity;
+    const int oldConditionalRefPosEnabled = g_zEffect_ConditionalRefPosEnabled;
+    const int oldVariantOverrideEnabled = g_zEffect_VariantOverrideEnabled;
+    const float oldConditionalRefPosX = g_zEffect_ConditionalRefPosX;
+    const float oldConditionalRefPosY = g_zEffect_ConditionalRefPosY;
+    const float oldConditionalRefPosZ = g_zEffect_ConditionalRefPosZ;
+    const unsigned int oldVariantOverridePackedIds = g_zEffect_VariantOverridePackedIds;
+    const float oldFrameDeltaRemainingSec = g_zEffect_FrameDeltaRemainingSec;
+    char oldFilename[sizeof(g_zEffectAnim_ZbdFilename)] = {};
+    std::memcpy(oldFilename, g_zEffectAnim_ZbdFilename, sizeof(oldFilename));
+
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempPath), tempPath) == 0 ||
+        GetTempFileNameA(tempPath, "zli", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    zClass_NodePartial world = {};
+    zClass_NodePartial resource = {};
+    EffectAnimLoadZbdHeaderBlock header = {};
+    header.entriesInstantiated = 0;
+    header.heapPtr = &resource;
+    header.countsPackedLoWord = 7;
+    header.entryCount = 0;
+    header.textIdEntryCount = 0;
+    header.worldNode = &resource;
+    header.defaultGravity = 8.5f;
+
+    if (!WriteEffectAnimLoadZbdMinimalFile(tempFile, header)) {
+        DeleteFileA(tempFile);
+        return 2;
+    }
+
+    g_zEffect_World = &world;
+    g_zEffect_ResourceNode = &resource;
+    g_zEffectAnim_EntriesInstantiated = 0;
+    zEffect_Anim::SetZbdFilename(tempFile);
+    const int result = zEffect_Anim::LoadAndInstantiate();
+    zEffectAnimEntry *const loadedEntryList = g_zEffectAnim_EntryList;
+
+    const bool ok = result == 0 && g_zEffect_World == &world &&
+                    g_zEffectAnim_EntriesInstantiated == 1 &&
+                    g_zEffectAnim_EntryCount == 0 && g_zEffectAnim_TextIdEntryCount == 0 &&
+                    g_zEffectAnim_SourceFileStampCount == 0 &&
+                    g_zEffect_DefaultGravity == header.defaultGravity;
+
+    if (loadedEntryList != nullptr && loadedEntryList != oldEntryList) {
+        std::free(loadedEntryList);
+    }
+    g_zEffect_World = oldWorld;
+    g_zEffect_ResourceNode = oldResourceNode;
+    g_zEffectAnim_EntriesInstantiated = oldEntriesInstantiated;
+    g_zEffectAnim_HeapPtr = oldHeapPtr;
+    g_zEffectAnim_CountsPackedLoWord = oldCountsPackedLoWord;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_TextIdEntryCount = oldTextIdEntryCount;
+    g_zEffectAnim_TextIdEntryList = oldTextIdEntryList;
+    g_zEffectAnim_SourceFileStampCount = oldSourceFileStampCount;
+    g_zEffectAnim_SourceFileStampList = oldSourceFileStampList;
+    g_zEffect_DefaultGravity = oldDefaultGravity;
+    g_zEffect_ConditionalRefPosEnabled = oldConditionalRefPosEnabled;
+    g_zEffect_VariantOverrideEnabled = oldVariantOverrideEnabled;
+    g_zEffect_ConditionalRefPosX = oldConditionalRefPosX;
+    g_zEffect_ConditionalRefPosY = oldConditionalRefPosY;
+    g_zEffect_ConditionalRefPosZ = oldConditionalRefPosZ;
+    g_zEffect_VariantOverridePackedIds = oldVariantOverridePackedIds;
+    g_zEffect_FrameDeltaRemainingSec = oldFrameDeltaRemainingSec;
+    std::memcpy(g_zEffectAnim_ZbdFilename, oldFilename, sizeof(oldFilename));
+    DeleteFileA(tempFile);
+
+    return ok ? 0 : 3;
+}
+
+extern "C" int zeffect_tick_reset_delay_callbacks_smoke(void) {
+    zEffectAnimEntry timerEntry = {};
+    timerEntry.activationState = 5;
+    timerEntry.activationMode = 1;
+    timerEntry.activationCountdown = 1.5f;
+    if (zEffect::TickResetDelayOnTimer(&timerEntry, 0.25f) != 1.25f ||
+        timerEntry.activationCountdown != 1.25f) {
+        return 1;
+    }
+
+    timerEntry.activationCountdown = 0.25f;
+    if (zEffect::TickResetDelayOnTimer(&timerEntry, 0.5f) != -0.25f ||
+        timerEntry.activationCountdown != -0.25f) {
+        return 2;
+    }
+
+    timerEntry.activationMode = 0;
+    timerEntry.activationCountdown = 3.0f;
+    if (zEffect::TickResetDelayOnTimer(&timerEntry, 1.0f) != 3.0f ||
+        timerEntry.activationCountdown != 3.0f) {
+        return 3;
+    }
+
+    zEffectAnimEntry hitEntry = {};
+    zClass_NodePartial hitNode = {};
+    hitEntry.activationState = 5;
+    hitEntry.activationMode = 0;
+    hitEntry.activationCountdown = 2.0f;
+    if (zEffect::TickResetDelayOnHit(&hitEntry, &hitNode, 0, 0.75f) != 0 ||
+        hitEntry.activationCountdown != 1.25f) {
+        return 4;
+    }
+
+    hitNode.listCountA = 0x200;
+    if (zEffect::TickResetDelayOnHit(&hitEntry, &hitNode, 0, 0.75f) != 0 ||
+        hitEntry.activationCountdown != 1.25f) {
+        return 5;
+    }
+
+    hitNode.listCountA = 0;
+    hitEntry.activationMode = 1;
+    if (zEffect::TickResetDelayOnHit(&hitEntry, &hitNode, 0, 0.75f) != 0 ||
+        hitEntry.activationCountdown != 1.25f) {
+        return 6;
+    }
+
+    hitEntry.activationMode = 2;
+    if (zEffect::TickResetDelayOnHit(&hitEntry, &hitNode, 0, 1.5f) != 0 ||
+        hitEntry.activationCountdown != -0.25f) {
+        return 7;
+    }
+
+    return 0;
 }
 
 extern "C" int zeffect_anim_debug_frame_tag_smoke(void) {
@@ -4568,4 +5096,136 @@ extern "C" int zeffect_init_smoke(void) {
     zClass_TypeList::FreeAll();
     zClass_TypeList::FreeAll();
     return 0;
+}
+
+extern "C" int zeffect_init_from_path_smoke(void) {
+    const zEffect_RuntimeManager oldManager = g_zEffect_RuntimeManager;
+    zArchiveList *const oldMountedList = g_zArchive_MountedList;
+    zClass_TypeListLink *const oldHead = zClass_TypeList::Head(6);
+    zClass_TypeListLink *const oldTail = zClass_TypeList::Tail(6);
+    const int oldTexDirEntryCount = g_zImage_TexDirEntryCount;
+    zVidTexturePackEntry *const oldBuiltinPacks = g_zVid_BuiltinTexturePacks;
+    const int oldBuiltinPackCount = g_zVid_BuiltinTexturePackCount;
+
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempPath), tempPath) == 0 ||
+        GetTempFileNameA(tempPath, "zfx", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr,
+                    CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempFile);
+        return 2;
+    }
+
+    WriteEffectTestU32(file, 0xaaaaaaaa);
+    const std::uint32_t zrdOffset = SetFilePointer(file, 0, nullptr, FILE_CURRENT);
+    WriteEffectTestZrdArray(file, 3);
+    WriteEffectTestZrdString(file, "EFFECTS");
+    WriteEffectTestZrdArray(file, 2);
+    WriteEffectTestZrdArray(file, 10);
+    WriteEffectTestZrdString(file, "fx_model");
+    WriteEffectTestZrdString(file, "NAME");
+    WriteEffectTestZrdString(file, "spark");
+    WriteEffectTestZrdString(file, "MAPS");
+    WriteEffectTestZrdArray(file, 1);
+    WriteEffectTestZrdString(file, "SPEED");
+    WriteEffectTestZrdFloat(file, 2.5f);
+    WriteEffectTestZrdString(file, "LOOPING");
+    WriteEffectTestZrdString(file, "ON");
+    FlushFileBuffers(file);
+
+    zZarFileRecord record = {};
+    record.fileOffset = zrdOffset;
+    record.fileSize = SetFilePointer(file, 0, nullptr, FILE_CURRENT) - zrdOffset;
+    std::strcpy(record.name, "effect.zrd");
+    zIndexArchive archive = {};
+    archive.hFile = file;
+    archive.recordCount = 1;
+    archive.records = &record;
+    zArchiveListNode archiveNode = {};
+    archiveNode.payload = &archive;
+    archiveNode.next = &archiveNode;
+    archiveNode.prev = &archiveNode;
+    zArchiveList mountedList = {};
+    mountedList.count = 1;
+    mountedList.head = &archiveNode;
+    g_zArchive_MountedList = &mountedList;
+
+    zClass_NodePartial worldNode = {};
+    zClass_NodePartial cameraNode = {};
+    zClass_NodePartial templateNode = {};
+    zDiEntryPartial entry = {};
+    zDiPartial di = {};
+    zModel_MaterialPartial material = {};
+    std::strcpy(templateNode.name, "fx_model");
+    templateNode.userDataOrDiRef = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&material));
+    di.entryCount = 1;
+    di.entries = &entry;
+    entry.material = &material;
+
+    zClass_TypeListLink link = {&templateNode, nullptr, nullptr, 0};
+    zClass_TypeList::Head(6) = &link;
+    zClass_TypeList::Tail(6) = &link;
+    g_zEffect_RuntimeManager = {};
+    g_zImage_TexDirEntryCount = 0;
+    std::FILE *const dummyBuiltinFile = std::tmpfile();
+    if (dummyBuiltinFile == nullptr) {
+        g_zEffect_RuntimeManager = oldManager;
+        g_zArchive_MountedList = oldMountedList;
+        zClass_TypeList::Head(6) = oldHead;
+        zClass_TypeList::Tail(6) = oldTail;
+        g_zImage_TexDirEntryCount = oldTexDirEntryCount;
+        CloseHandle(file);
+        return 3;
+    }
+    zVidTexturePackEntry builtinPack = {};
+    builtinPack.fileHandle = dummyBuiltinFile;
+    g_zVid_BuiltinTexturePacks = &builtinPack;
+    g_zVid_BuiltinTexturePackCount = 1;
+
+    const int result = zEffect::InitFromPath(&worldNode, &cameraNode, "C:\\dummy\\effect.zrd");
+    zEffect_RuntimeEntry *const runtimeEntry = g_zEffect_RuntimeManager.templates;
+    const bool ok =
+        result == 0 && g_zEffect_RuntimeManager.initialized == 1 &&
+        g_zEffect_RuntimeManager.templateCount == 1 &&
+        g_zEffect_RuntimeManager.parentNode == &worldNode &&
+        g_zEffect_RuntimeManager.listenerNode == &cameraNode &&
+        g_zEffect_RuntimeManager.loadedTemplateTree != nullptr &&
+        g_zEffect_RuntimeManager.freeList != nullptr && runtimeEntry != nullptr &&
+        runtimeEntry[0].effectIndex == 0 && runtimeEntry[0].effectNode == &templateNode &&
+        runtimeEntry[0].effectGfxData == &material &&
+        std::strcmp(runtimeEntry[0].modelNodeName, "fx_model") == 0 &&
+        std::strcmp(runtimeEntry[0].effectName, "spark") == 0 &&
+        material.cycle != nullptr && material.cycle->frameCount == 0 &&
+        material.cycle->framesPerSecond == 2.5f && material.cycle->loopEnabled == 1;
+
+    if (g_zEffect_RuntimeManager.loadedTemplateTree != nullptr) {
+        zReader::FreeLoadedTree(
+            reinterpret_cast<zReader::Node *>(g_zEffect_RuntimeManager.loadedTemplateTree));
+    }
+    if (g_zEffect_RuntimeManager.templates != nullptr) {
+        std::free(g_zEffect_RuntimeManager.templates);
+    }
+    if (g_zEffect_RuntimeManager.freeList != nullptr) {
+        zArchiveList_Destroy(g_zEffect_RuntimeManager.freeList);
+    }
+    if (material.cycle != nullptr) {
+        std::free(material.cycle->frameTable);
+        std::free(material.cycle);
+    }
+
+    g_zEffect_RuntimeManager = oldManager;
+    g_zArchive_MountedList = oldMountedList;
+    zClass_TypeList::Head(6) = oldHead;
+    zClass_TypeList::Tail(6) = oldTail;
+    g_zImage_TexDirEntryCount = oldTexDirEntryCount;
+    g_zVid_BuiltinTexturePacks = oldBuiltinPacks;
+    g_zVid_BuiltinTexturePackCount = oldBuiltinPackCount;
+    CloseHandle(file);
+    return ok ? 0 : 3;
 }

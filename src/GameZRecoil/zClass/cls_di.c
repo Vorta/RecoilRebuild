@@ -26,6 +26,12 @@ int g_DiPickPointCount = 0;
 float g_DiPickPointQueryMaxY = 0.0f;
 PlayerProbeSampleCandidateBuffer *g_DiPickCandidateBuffer = 0;
 zClassDiPickCandidateEntry *g_DiPickCandidateCursor = 0;
+const char *g_zClass_cls_di_FilterRegions_NodeNamePrefix = 0;
+zVec3 *g_zClass_cls_di_FilterRegions_Center = 0;
+float g_zClass_cls_di_FilterRegions_RadiusSq = 0.0f;
+int g_zClass_cls_di_FilterRegions_EnableClearanceCheck = 0;
+zClass_NodePartial *g_zClass_cls_di_FilterRegions_LineOfSightWorld = 0;
+OptCatalogRaycastHitList *g_zClass_cls_di_FilterRegions_OutHitList = 0;
 
 namespace {
     const char *kClsDiSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_di.c";
@@ -39,6 +45,9 @@ namespace {
     const int kNodeFlagEnabledForPick = 0x04;
     const int kNodeFlagRaycastable = 0x10;
     const int kNodeFlagPointCandidate = 0x20;
+    const int kNodeFlagFilterRegionCandidate = 0x40;
+    const int kNodeFlagCachedBoundsValid = 0x100;
+    const int kNodeFlagRequiresLineOfSight = 1 << 22;
     const int kNodeFlagUseLocalMatrixMode3 = 0x80000;
     const int kNodeFlagClearDuringPick = 0x02000000;
     const int kObjectFlagTransformDirty = 0x01;
@@ -337,6 +346,95 @@ namespace {
         return a > b ? a : b;
     }
 
+    void CopyBBoxToCornersLocal(const zBBox3f *bbox, zBBoxCorners *outCorners) {
+        const float minX = bbox->minX;
+        const float minY = bbox->minY;
+        const float minZ = bbox->minZ;
+        const float maxX = bbox->maxX;
+        const float maxY = bbox->maxY;
+        const float maxZ = bbox->maxZ;
+
+        float *values = outCorners->values;
+        values[0] = minX;
+        values[1] = minY;
+        values[2] = maxZ;
+        values[3] = maxX;
+        values[4] = minY;
+        values[5] = maxZ;
+        values[6] = maxX;
+        values[7] = minY;
+        values[8] = minZ;
+        values[9] = minX;
+        values[10] = minY;
+        values[11] = minZ;
+        values[12] = minX;
+        values[13] = maxY;
+        values[14] = maxZ;
+        values[15] = maxX;
+        values[16] = maxY;
+        values[17] = maxZ;
+        values[18] = maxX;
+        values[19] = maxY;
+        values[20] = minZ;
+        values[21] = minX;
+        values[22] = maxY;
+        values[23] = minZ;
+    }
+
+    int FilterRegionNodeNameAllowed(zClass_NodePartial *node) {
+        const char *prefix = g_zClass_cls_di_FilterRegions_NodeNamePrefix;
+        if (prefix == 0) {
+            return 1;
+        }
+
+        return strncmp(node->name, prefix, strlen(prefix)) == 0 ? 1 : 0;
+    }
+
+    float FilterRegionClearanceDistanceSq(const zVec3 *boundsCenter, float boundsRadius) {
+        if (g_zClass_cls_di_FilterRegions_EnableClearanceCheck == 0) {
+            return 0.0f;
+        }
+
+        float clearance =
+            zMath::Vec3DeltaLength(g_zClass_cls_di_FilterRegions_Center, boundsCenter) -
+            boundsRadius;
+        if (clearance < 0.0f) {
+            return 0.0f;
+        }
+
+        return clearance * clearance;
+    }
+
+    int FilterRegionLineOfSightBlocked(zClass_NodePartial *node, const zVec3 *boundsCenter) {
+        zClass_NodePartial *world = g_zClass_cls_di_FilterRegions_LineOfSightWorld;
+        if (world == 0 || (node->flags & kNodeFlagRequiresLineOfSight) == 0) {
+            return 0;
+        }
+
+        PlayerProbeSampleCandidateBuffer rayData = {};
+        zClass_cls_di::SetBreakOnFirstCandidate(1);
+        zClass_cls_di::SetStopAfterFirstHit(0x40000);
+        zClass_Class::gwNodeSetRaycastable(node, 0);
+        zVec3 *center = g_zClass_cls_di_FilterRegions_Center;
+        const int result = zClass_cls_di::RaycastFindClosest(
+            world, &rayData, center->x, center->y, center->z, boundsCenter->x, boundsCenter->y,
+            boundsCenter->z);
+        zClass_Class::gwNodeSetRaycastable(node, 1);
+        zClass_cls_di::SetBreakOnFirstCandidate(0);
+
+        return result == 0 && rayData.candidateCount != 0 ? 1 : 0;
+    }
+
+    void AppendFilterRegionHit(zClass_NodePartial *node, const zVec3 *hitPos, float distanceSq) {
+        OptCatalogRaycastHitList *hitList = g_zClass_cls_di_FilterRegions_OutHitList;
+        OptCatalogRaycastHitEntry *entry = &hitList->hits[hitList->hitCount];
+        entry->hitNode = node;
+        entry->pos = *hitPos;
+        entry->surfaceRef = 0;
+        entry->distance = distanceSq;
+        ++hitList->hitCount;
+    }
+
     int RayGridStep(float delta) {
         if (delta > 0.0f) {
             return 1;
@@ -630,6 +728,39 @@ namespace {
         for (int i = 0; i < vertexCount; ++i) {
             g_zModel_SharedVec3ScratchB[i] = TransformModelPointToWorld(&vertices[i]);
         }
+    }
+}
+
+namespace BBox {
+    // Reimplements 0x446ed0: BBox::ExpandToCorners
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL ExpandToCorners(const zBBox3f * bbox,
+                                                         zBBoxCorners *outCorners) {
+        float *values = outCorners->values;
+        values[0] = bbox->minX;
+        values[1] = bbox->minY;
+        values[2] = bbox->maxZ;
+        values[3] = bbox->maxX;
+        values[4] = bbox->minY;
+        values[5] = bbox->maxZ;
+        values[6] = bbox->maxX;
+        values[7] = bbox->minY;
+        values[8] = bbox->minZ;
+        values[9] = bbox->minX;
+        values[10] = bbox->minY;
+        values[11] = bbox->minZ;
+        values[12] = bbox->minX;
+        values[13] = bbox->maxY;
+        values[14] = bbox->maxZ;
+        values[15] = bbox->maxX;
+        values[16] = bbox->maxY;
+        values[17] = bbox->maxZ;
+        values[18] = bbox->maxX;
+        values[19] = bbox->maxY;
+        values[20] = bbox->minZ;
+        values[21] = bbox->minX;
+        values[22] = bbox->maxY;
+        values[23] = bbox->minZ;
     }
 }
 
@@ -2056,6 +2187,137 @@ namespace zClass_cls_di {
         }
 
         return 1;
+    }
+
+    // Reimplements 0x446f60: zClass_cls_di::FilterRegions_TryAppendNode
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegions_TryAppendNode(
+        zClass_NodePartial * node) {
+        if (g_zClass_cls_di_FilterRegions_OutHitList->hitCount >= kMaxPickCandidates) {
+            zError::ReportOld(0x200, kClsDiSourceFile, 0xff3,
+                              "Database intersections array is full");
+            return 1;
+        }
+
+        int nodeFlags = node->flags;
+        if ((nodeFlags & kNodeFlagEnabledForPick) == 0 ||
+            (nodeFlags & kNodeFlagFilterRegionCandidate) == 0 ||
+            VariantTag::CurrentAllowsId(node->nodeType) == 0 ||
+            FilterRegionNodeNameAllowed(node) == 0) {
+            return 1;
+        }
+
+        nodeFlags = node->flags;
+        if ((nodeFlags & kNodeFlagFilterRegionCandidate) == 0) {
+            int result = 1;
+            for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
+                if (FilterRegions_TryAppendNode(node->listB[childIndex]) == 0) {
+                    result = 0;
+                }
+            }
+            return result;
+        }
+
+        if ((nodeFlags & kNodeFlagCachedBoundsValid) == 0) {
+            return 1;
+        }
+
+        zBBox3f bbox;
+        zClass_Class::gwNodeGetBBox(node, &bbox);
+
+        zBBoxCorners corners;
+        CopyBBoxToCornersLocal(&bbox, &corners);
+
+        zMat4x3 slotBuffer = {0};
+        zMath::MatStackPushPtr((float *)(&slotBuffer));
+        zMath::MatLoadIdentity();
+        const int matrixResult = gwNode::BuildNodeToAncestorMatrix(node, 1);
+        if (matrixResult != 0) {
+            zMath::MatStackPopPtr();
+            return matrixResult;
+        }
+
+        zMath::MatTransformPointBatchInPlace((zVec3 *)(corners.values), 8);
+        zMath::MatStackPopPtr();
+
+        zVec3 boundsCenter;
+        float boundsRadius = 0.0f;
+        BBox::CornersToBoundingSphere(&corners, &boundsCenter, &boundsRadius);
+
+        const float distanceSq = FilterRegionClearanceDistanceSq(&boundsCenter, boundsRadius);
+        if (distanceSq > g_zClass_cls_di_FilterRegions_RadiusSq) {
+            return 1;
+        }
+
+        if (FilterRegionLineOfSightBlocked(node, &boundsCenter) != 0) {
+            return 1;
+        }
+
+        AppendFilterRegionHit(node, &boundsCenter, distanceSq);
+        return 0;
+    }
+
+    // Reimplements 0x446a80: zClass_cls_di::FilterRegionsAgainstSphere
+    // (GameZRecoil/zClass/cls_di.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstSphere(
+        zClass_NodePartial * world, zVec3 *center, const char *nodeNamePrefix, float radius,
+        int enableDistanceCull, int requireLineOfSight, OptCatalogRaycastHitList *outHitList) {
+        if (world == 0) {
+            zError::ReportOld(0x400, kClsDiSourceFile, 0xf8a, "Null node pointer.");
+            return 5;
+        }
+
+        if (world->classData == 0) {
+            zError::ReportOld(0x400, kClsDiSourceFile, 0xf8b, "Null class data pointer");
+            return 5;
+        }
+
+        if (zClass_TypeList::Head(0) != 0) {
+            zClass_TypeList::UpdateQueuedTrees();
+        }
+
+        outHitList->hitCount = 0;
+        zClass_WorldDataPartial *worldData =
+            static_cast<zClass_WorldDataPartial *>(world->classData);
+
+        int minCol = 0;
+        int startRow = 0;
+        int maxCol = 0;
+        int endRow = 0;
+        int result = zClass_World::WorldToGridCoordsClamped(
+            world, &minCol, center->x - radius, center->z + radius, &startRow);
+        if (result != 0) {
+            return result;
+        }
+
+        result = zClass_World::WorldToGridCoordsClamped(
+            world, &maxCol, center->x + radius, center->z - radius, &endRow);
+        if (result != 0) {
+            return result;
+        }
+
+        g_zClass_cls_di_FilterRegions_NodeNamePrefix = nodeNamePrefix;
+        g_zClass_cls_di_FilterRegions_Center = center;
+        g_zClass_cls_di_FilterRegions_RadiusSq = radius * radius;
+        g_zClass_cls_di_FilterRegions_EnableClearanceCheck = enableDistanceCull;
+        g_zClass_cls_di_FilterRegions_LineOfSightWorld =
+            requireLineOfSight != 0 ? world : 0;
+        g_zClass_cls_di_FilterRegions_OutHitList = outHitList;
+
+        for (int row = startRow; row <= endRow; ++row) {
+            for (int col = minCol; col <= maxCol; ++col) {
+                zWorldAreaPartial *area = &worldData->areaGridRows[row][col];
+                for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
+                    FilterRegions_TryAppendNode(area->childList[childIndex]);
+                }
+            }
+        }
+
+        for (int childIndex = 0; childIndex < world->listCountB; ++childIndex) {
+            FilterRegions_TryAppendNode(world->listB[childIndex]);
+        }
+
+        return outHitList->hitCount <= 0 ? 1 : 0;
     }
 
     // Reimplements 0x4455f0: zClass_cls_di::BuildPickCandidatesForSegment

@@ -4,16 +4,27 @@
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zRndr/zRndr.h"
+#include "GameZRecoil/zUtil/zZbd.h"
 
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 namespace {
     const char *kWorldSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c";
 
     int TruncateToInt(float value) {
         return static_cast<int>(value);
+    }
+
+    float ApproximateSqrtFromRangeSq(float rangeSq) {
+        int bits = 0;
+        memcpy(&bits, &rangeSq, sizeof(bits));
+        bits = (bits >> 1) + 0x1fc00000;
+        float range = 0.0f;
+        memcpy(&range, &bits, sizeof(range));
+        return range;
     }
 
     void InvalidateGrid(int *outGridCol, int *outGridRow) {
@@ -52,9 +63,82 @@ namespace {
             }
         }
     }
+
+    // Restores likely inlined VAP edge-cell helper observed four times in
+    // 0x4502b0; no standalone function exists in the retail executable.
+    RECOIL_FORCEINLINE void MoveAreaChildrenToVapStatics(zClass_NodePartial * world,
+                                                         zWorldAreaPartial *area) {
+        if (area->childCount <= 0) {
+            return;
+        }
+
+        zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
+        zClass_Class::gwNodeSetName(statics, "VAP_statics");
+        while (area->childCount > 0) {
+            zClass_NodePartial *child = area->childList[0];
+            zClass_Object3D::gwObject3DAddChild(statics, child);
+            zClass_World::RemoveChildAtGrid(world, child);
+        }
+
+        zClass_TypeList::UpdateQueuedTrees();
+        zClass_World::AddChildAtGrid(world, statics);
+    }
 }
 
 namespace zClass_World {
+    // Reimplements 0x4517a0: zClass_World::WriteSettingsSection
+    // (GameZRecoil/zClass/cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL WriteSettingsSection(zZbdSectionCallbackCtx *callbackCtx,
+                                                                      void *userData) {
+        (void)userData;
+
+        int result = 1;
+        zClass_TypeListLink *link = zClass_TypeList::Head(13);
+        while (link != 0 && result != 0) {
+            zClass_NodePartial *world = link->node;
+            zClass_WorldSettingsSectionRecord settings;
+            GetPendingFogDensity(world, &settings.fogDensity);
+            GetPendingFogState(world, &settings.fogState);
+            GetPendingFogColorRgb01(world, &settings.fogColorRgb01.red,
+                                    &settings.fogColorRgb01.green,
+                                    &settings.fogColorRgb01.blue);
+            GetPendingFogRange(world, &settings.fogRangeNear, &settings.fogRangeFar);
+            GetPendingFogAltitudeRange(world, &settings.fogAltitudeLow,
+                                       &settings.fogAltitudeHigh);
+            GetPendingFogDensity(world, &settings.fogDensity);
+            result = zUtil_ZAR::WriteSectionBlob(callbackCtx, world->name, &settings,
+                                                 sizeof(settings));
+            link = link->next;
+        }
+
+        return result;
+    }
+
+    // Reimplements 0x451840: zClass_World::ReadSettingsSection
+    // (GameZRecoil/zClass/cls_world.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL ReadSettingsSection(
+        zZbdSectionCallbackCtx *callbackCtx, const char *worldName,
+        zClass_WorldSettingsSectionRecord *settings, unsigned int size, void *userData) {
+        (void)callbackCtx;
+        (void)size;
+        (void)userData;
+
+        zClass_NodePartial *world = zClass::FindByTypeAndName(13, worldName);
+        if (world == 0) {
+            return;
+        }
+
+        SetPendingFogDensity(world, settings->fogDensity);
+        SetPendingFogState(world, settings->fogState);
+        SetPendingFogColorRgb01(world, settings->fogColorRgb01.red,
+                                settings->fogColorRgb01.green,
+                                settings->fogColorRgb01.blue);
+        SetPendingFogRange(world, settings->fogRangeNear, settings->fogRangeFar);
+        SetPendingFogAltitudeRange(world, settings->fogAltitudeLow,
+                                   settings->fogAltitudeHigh);
+        SetPendingFogDensity(world, settings->fogDensity);
+    }
+
     // Reimplements 0x4501c0: zClass_World::gwWorldNew
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwWorldNew() {
@@ -125,6 +209,57 @@ namespace zClass_World {
         return 0;
     }
 
+    // Reimplements 0x450b80: zClass_World::GetPendingFogDensity
+    // (GameZRecoil/zClass/cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogDensity(zClass_NodePartial * world,
+                                                                      float *outDensity) {
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        *outDensity = data->fogDensity;
+        return 0;
+    }
+
+    // Reimplements 0x450b90: zClass_World::GetPendingFogState
+    // (GameZRecoil/zClass/cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogState(zClass_NodePartial * world,
+                                                                    int *outState) {
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        *outState = data->fogState;
+        return 0;
+    }
+
+    // Reimplements 0x450ba0: zClass_World::GetPendingFogColorRgb01
+    // (GameZRecoil/zClass/cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogColorRgb01(zClass_NodePartial * world,
+                                                                         float *outRed,
+                                                                         float *outGreen,
+                                                                         float *outBlue) {
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        *outRed = data->ambientColor.red;
+        *outGreen = data->ambientColor.green;
+        *outBlue = data->ambientColor.blue;
+        return 0;
+    }
+
+    // Reimplements 0x450bc0: zClass_World::GetPendingFogRange
+    // (GameZRecoil/zClass/cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogRange(
+        zClass_NodePartial * world, float *outNearRange, float *outFarRange) {
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        *outNearRange = data->fogDistanceStart;
+        *outFarRange = data->fogDistanceEnd;
+        return 0;
+    }
+
+    // Reimplements 0x450be0: zClass_World::GetPendingFogAltitudeRange
+    // (GameZRecoil/zClass/cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogAltitudeRange(
+        zClass_NodePartial * world, float *outMinAlt, float *outMaxAlt) {
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        *outMaxAlt = data->fogHeightHigh;
+        *outMinAlt = data->fogHeightLow;
+        return 0;
+    }
+
     // Reimplements 0x450b60: zClass_World::SetPendingFogDensity
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogDensity(zClass_NodePartial * world,
@@ -172,7 +307,7 @@ namespace zClass_World {
     // Reimplements 0x450f20: zClass_World::gwWorldSetMaxDecFeatures
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetMaxDecFeatures(zClass_NodePartial * world,
-                                                                          int maxFeatures) {
+                                                                           int maxFeatures) {
         zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
         if (maxFeatures > 255) {
             zError::ReportOld(
@@ -183,6 +318,116 @@ namespace zClass_World {
         }
 
         data->partitionMaxDecFeatureCount = static_cast<unsigned char>(maxFeatures);
+        return 0;
+    }
+
+    // Reimplements 0x450c60: zClass_World::gwWorldSetVirtualAreaPartition
+    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetVirtualAreaPartition(
+        zClass_NodePartial * world, float cellSizeX, float cellSizeZ) {
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        if (data->areaGridRows != 0) {
+            FreeVirtualAreaPartitions(world);
+        }
+
+        data->areaCellSizeX = cellSizeX;
+        data->areaCellSizeZ = cellSizeZ;
+        data->partitionInclusionTolX = cellSizeX * 0.125f;
+        data->partitionInclusionTolZ = cellSizeZ * -0.125f;
+        data->areaHalfSizeX = cellSizeX * 0.5f;
+        data->areaHalfSizeZ = cellSizeZ * 0.5f;
+        data->areaInvSizeX = 1.0f / cellSizeX;
+        data->areaInvSizeZ = 1.0f / cellSizeZ;
+        data->areaCellRadiusBias =
+            ApproximateSqrtFromRangeSq(cellSizeX * cellSizeX + cellSizeZ * cellSizeZ) * -0.5f;
+
+        int gridColCount = TruncateToInt(data->worldSizeX / data->areaCellSizeX);
+        data->areaGridColCount = gridColCount;
+        if (static_cast<float>(gridColCount) * data->areaCellSizeX < data->worldSizeX) {
+            ++gridColCount;
+            data->areaGridColCount = gridColCount;
+        }
+
+        int gridRowCount = TruncateToInt(data->worldSizeZ / data->areaCellSizeZ);
+        data->areaGridRowCount = gridRowCount;
+        if (static_cast<float>(gridRowCount) * data->areaCellSizeZ > data->worldSizeZ) {
+            ++gridRowCount;
+            data->areaGridRowCount = gridRowCount;
+        }
+
+        data->areaGridRows =
+            static_cast<zWorldAreaPartial **>(calloc(data->areaGridRowCount,
+                                                     sizeof(zWorldAreaPartial *)));
+        for (int row = 0; row < data->areaGridRowCount; ++row) {
+            data->areaGridRows[row] =
+                static_cast<zWorldAreaPartial *>(calloc(data->areaGridColCount,
+                                                        sizeof(zWorldAreaPartial)));
+        }
+
+        for (int row = 0; row < data->areaGridRowCount; ++row) {
+            const float rowAsFloat = static_cast<float>(row);
+            for (int col = 0; col < data->areaGridColCount; ++col) {
+                zWorldAreaPartial *area = &data->areaGridRows[row][col];
+                area->areaFlags |= 0x100;
+                area->cellMinX = static_cast<float>(col) * data->areaCellSizeX + data->originX;
+                area->cellMinZ = rowAsFloat * data->areaCellSizeZ + data->originZ;
+                area->bbox[0] = area->cellMinX;
+                area->bbox[3] = area->cellMinX + data->areaCellSizeX;
+                area->bbox[5] = area->cellMinZ;
+                area->bbox[2] = area->cellMinZ + data->areaCellSizeZ;
+                BBox::MinMaxToBoundingSphere((const zBBox3f *)(area->bbox),
+                                             &area->bboxCenter, &area->bboxRadius);
+                area->areaIndex = -1;
+            }
+        }
+
+        return 0;
+    }
+
+    // Reimplements 0x4502b0: zClass_World::InitVirtualAreaPartitions
+    // (GameZRecoil/zClass/cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL InitVirtualAreaPartitions(zClass_NodePartial * world) {
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        if (data->areaGridRows == 0) {
+            sprintf(g_zError_DebugMsgBuffer,
+                    "%s: Line %d: ERROR initializing virtual area partition; NULL area partitions encountered.\n",
+                    kWorldSourceFile, 0x245);
+            zError::EmitDebugBuffer(5);
+            return 5;
+        }
+
+        zClass_TypeList::UpdateQueuedTrees();
+
+        for (int col = 0; col < data->areaGridColCount; ++col) {
+            MoveAreaChildrenToVapStatics(world, &data->areaGridRows[0][col]);
+        }
+
+        zWorldAreaPartial *lastRow = data->areaGridRows[data->areaGridRowCount - 1];
+        for (int col = 0; col < data->areaGridColCount; ++col) {
+            MoveAreaChildrenToVapStatics(world, &lastRow[col]);
+        }
+
+        for (int row = 1; row < data->areaGridRowCount - 1; ++row) {
+            MoveAreaChildrenToVapStatics(world, &data->areaGridRows[row][0]);
+        }
+
+        for (int row = 1; row < data->areaGridRowCount - 1; ++row) {
+            MoveAreaChildrenToVapStatics(world,
+                                         &data->areaGridRows[row][data->areaGridColCount - 1]);
+        }
+
+        return 0;
+    }
+
+    // Reimplements 0x450510: zClass_World::SetVirtualPartition
+    // (GameZRecoil/zClass/cls_world.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL SetVirtualPartition(zClass_NodePartial * world,
+                                                            int enabled) {
+        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        data->clampQueriesToBounds = enabled;
+        if (enabled != 0) {
+            InitVirtualAreaPartitions(world);
+        }
         return 0;
     }
 
@@ -322,8 +567,8 @@ namespace zClass_World {
             ExpandAreaYBounds(area, corners);
         }
 
-        BBox_MinMaxToBoundingSphere((const zBBox3f *)(area->bbox),
-                                    &area->bboxCenter, &area->bboxRadius);
+        BBox::MinMaxToBoundingSphere((const zBBox3f *)(area->bbox),
+                                     &area->bboxCenter, &area->bboxRadius);
         return 0;
     }
 

@@ -3,6 +3,7 @@
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zUtil/zZbd.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -13,10 +14,24 @@ int g_zClass_IsInitialized = 0;
 int g_zClass_CopyNodeCloneDiMode = 0;
 int g_zClass_CopyNodeDiArg0 = 0;
 int g_zClass_CopyNodeDiArg1 = 0;
+int g_zClass_RebuildGwWorldBltRectOnShutdown = 1;
+char g_zClass_GWWorldNodeName[8] = "GWWorld";
 }
 
 namespace {
     const char *kClsUtilSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_util.c";
+    const int kDefaultNodeArraySize = 8250;
+    const unsigned int kNodeFreeTagIndexMask = 0x00ffffff;
+
+    template <typename T> zZbdSectionCallback ZbdCallbackPtr(T callback) {
+        RECOIL_STATIC_ASSERT(sizeof(T) == sizeof(zZbdSectionCallback));
+        union {
+            T callback;
+            zZbdSectionCallback raw;
+        } value = {0};
+        value.callback = callback;
+        return value.raw;
+    }
 
     float ApproximateRangeFromRangeSq(float rangeSq) {
         int bits = 0;
@@ -86,6 +101,41 @@ namespace zClass {
     // Reimplements 0x4518f0: zClass::IsInitialized
     RECOIL_NOINLINE int RECOIL_CDECL IsInitialized() {
         return g_zClass_IsInitialized;
+    }
+
+    // Reimplements 0x451900: zClass::Init
+    // (GameZRecoil/zClass/cls_util.c)
+    RECOIL_NOINLINE int RECOIL_CDECL Init() {
+        if (g_zClass_NodeArraySize == 0) {
+            g_zClass_NodeArraySize = kDefaultNodeArraySize;
+        }
+
+        const size_t nodeArrayBytes =
+            static_cast<size_t>(g_zClass_NodeArraySize) * sizeof(zClass_NodeFreeListSlot);
+        g_zClass_NodeArray =
+            static_cast<zClass_NodeFreeListSlot *>(malloc(nodeArrayBytes));
+        memset(g_zClass_NodeArray, 0, nodeArrayBytes);
+
+        g_zClass_ActiveNodeCount = 0;
+        g_zClass_NodeFreeHeadIndex = 0;
+        if (g_zClass_NodeArraySize > 0) {
+            for (int i = 0; i < g_zClass_NodeArraySize - 1; ++i) {
+                unsigned int freeTag = g_zClass_NodeArray[i].freeTag;
+                freeTag = (freeTag & ~kNodeFreeTagIndexMask) |
+                          (static_cast<unsigned int>(i + 1) & kNodeFreeTagIndexMask);
+                g_zClass_NodeArray[i].freeTag = freeTag;
+            }
+            g_zClass_NodeArray[g_zClass_NodeArraySize - 1].freeTag |= kNodeFreeTagIndexMask;
+        }
+
+        if (g_zClass_RebuildGwWorldBltRectOnShutdown != 0) {
+            zUtil_ZAR::RegisterSectionHandler(
+                g_zClass_GWWorldNodeName, ZbdCallbackPtr(&zClass_World::WriteSettingsSection),
+                ZbdCallbackPtr(&zClass_World::ReadSettingsSection), 1000, 0);
+        }
+
+        g_zClass_IsInitialized = 1;
+        return 0;
     }
 
     // Reimplements 0x454360: zClass::ResetCurrentZbdPath
@@ -662,20 +712,20 @@ namespace zClass_cls_util {
     }
 }
 
-RECOIL_NOINLINE float *RECOIL_FASTCALL BBox_MinMaxToBoundingSphere(const zBBox3f *bbox,
-                                                                   zVec3 *outCenter,
-                                                                   float *outRadius) {
-    const float halfX = (bbox->maxX - bbox->minX) * 0.5f;
-    const float halfY = (bbox->maxY - bbox->minY) * 0.5f;
-    const float halfZ = (bbox->maxZ - bbox->minZ) * 0.5f;
-    outCenter->x = bbox->minX + halfX;
-    outCenter->y = bbox->minY + halfY;
-    outCenter->z = bbox->minZ + halfZ;
+namespace BBox {
+    // Reimplements 0x4525d0: BBox::MinMaxToBoundingSphere
+    // (GameZRecoil/zClass/cls_util.c)
+    RECOIL_NOINLINE float *RECOIL_FASTCALL MinMaxToBoundingSphere(const zBBox3f * bbox,
+                                                                  zVec3 *outCenter,
+                                                                  float *outRadius) {
+        const float halfX = (bbox->maxX - bbox->minX) * 0.5f;
+        const float halfY = (bbox->maxY - bbox->minY) * 0.5f;
+        const float halfZ = (bbox->maxZ - bbox->minZ) * 0.5f;
+        outCenter->x = bbox->minX + halfX;
+        outCenter->y = bbox->minY + halfY;
+        outCenter->z = bbox->minZ + halfZ;
 
-    float radiusSq = halfX * halfX + halfY * halfY + halfZ * halfZ;
-    int bits = 0;
-    memcpy(&bits, &radiusSq, sizeof(bits));
-    bits = (bits >> 1) + 0x1fc00000;
-    memcpy(outRadius, &bits, sizeof(bits));
-    return outRadius;
+        *outRadius = ApproximateRangeFromRangeSq(halfX * halfX + halfY * halfY + halfZ * halfZ);
+        return outRadius;
+    }
 }

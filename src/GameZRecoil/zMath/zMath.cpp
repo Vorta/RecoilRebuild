@@ -27,6 +27,9 @@ float g_zMath_HalfViewHeight = 0.0f;
 float g_zMath_ViewportOriginX = 0.0f;
 float g_zMath_ViewportOriginY = 0.0f;
 float g_zMath_ProjDepth = 0.0f;
+float g_zMath_ApproxExpNegTable[256] = {0};
+float g_zMath_ApproxExpNegScale = 0.0f;
+int g_zMath_ApproxExpNegDirty = 1;
 
 namespace {
 int g_matrixIdentityFlagSlots[32] = {0};
@@ -51,6 +54,14 @@ float NegateFloatSignBit(float value) {
     unsigned int bits = 0;
     memcpy(&bits, &value, sizeof(bits));
     bits ^= 0x80000000u;
+    memcpy(&value, &bits, sizeof(value));
+    return value;
+}
+
+float FastSqrtEstimate(float value) {
+    unsigned int bits = 0;
+    memcpy(&bits, &value, sizeof(bits));
+    bits = (bits >> 1) + 0x1fc00000u;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
@@ -289,6 +300,39 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3NormalizeXZ(zVec3 *vec, zVec3 *out) {
     out->z = vec->z * scale;
 }
 
+// Reimplements 0x472cc0: zMath::Vec3Perp2D
+// (D:\Proj\GameZRecoil\zMath\zmath_vec2.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Perp2D(const zVec3 *in, zVec3 *out) {
+    out->z = 0.0f;
+    if (in->x == 0.0f) {
+        out->x = 1.0f;
+        out->y = 0.0f;
+        return;
+    }
+
+    const float lengthSq = in->x * in->x + in->y * in->y;
+    const float invLength = 1.0f / FastSqrtEstimate(lengthSq);
+    out->x = in->y * invLength;
+    out->y = -(in->x * invLength);
+}
+
+// Reimplements 0x4745c0: zMath::Vec3PerpXZ
+// (D:\Proj\GameZRecoil\zMath\zmath_vec.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3PerpXZ(const zVec3 *in, zVec3 *out) {
+    out->x = -in->z;
+    out->y = 0.0f;
+    out->z = in->x;
+}
+
+// Reimplements 0x472770: zMath::Vec3ScaleAdd
+// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ScaleAdd(const zVec3 *vec, const zVec3 *delta,
+                                                  float scale, zVec3 *out) {
+    out->x = vec->x + delta->x * scale;
+    out->y = vec->y + delta->y * scale;
+    out->z = vec->z + delta->z * scale;
+}
+
 // Reimplements 0x472860: zMath::Vec3Reflect
 // (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
 RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Reflect(zVec3 *normal, zVec3 *incident,
@@ -334,6 +378,127 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3LerpNormalize(zVec3 *inOut, const zVec3
     Vec3Normalize(inOut);
 }
 
+// Reimplements 0x4729b0: zMath::Vec3DirectionTo
+// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DirectionTo(const zVec3 *from, const zVec3 *to,
+                                                      zVec3 *outDir) {
+    outDir->x = to->x - from->x;
+    outDir->y = to->y - from->y;
+    outDir->z = to->z - from->z;
+    return Vec3Normalize(outDir);
+}
+
+// Reimplements 0x472a10: zMath::Vec3Slerp
+// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Slerp(const zVec3 *a, const zVec3 *b, float t,
+                                               zVec3 *out) {
+    if (t == 0.0f) {
+        *out = *a;
+        return;
+    }
+
+    if (t == 1.0f) {
+        *out = *b;
+        return;
+    }
+
+    const float dot = Dot(*a, *b);
+    if (dot < -0.95f) {
+        zVec3 perpendicular;
+        Vec3Perp2D(a, &perpendicular);
+
+        const float angle = 3.14159274f * t;
+        const float sinAngle = sin(angle);
+        const float cosAngle = cos(angle);
+        out->x = a->x * cosAngle + perpendicular.x * sinAngle;
+        out->y = a->y * cosAngle + perpendicular.y * sinAngle;
+        out->z = a->z * cosAngle + perpendicular.z * sinAngle;
+        return;
+    }
+
+    if (dot > 0.95f) {
+        const float aScale = 1.0f - t;
+        out->x = a->x * aScale + b->x * t;
+        out->y = a->y * aScale + b->y * t;
+        out->z = a->z * aScale + b->z * t;
+        return;
+    }
+
+    const float sinOmegaSq = 1.0f - dot * dot;
+    const float sinOmega = sinOmegaSq <= 0.0f ? 0.0f : FastSqrtEstimate(sinOmegaSq);
+    const float omega = atan2(sinOmega, dot);
+    const float aScale = sin((1.0f - t) * omega);
+    const float bScale = sin(t * omega);
+
+    out->x = a->x * aScale + b->x * bScale;
+    out->y = a->y * aScale + b->y * bScale;
+    out->z = a->z * aScale + b->z * bScale;
+
+    const float invSinOmega = 1.0f / sinOmega;
+    out->x *= invSinOmega;
+    out->y *= invSinOmega;
+    out->z *= invSinOmega;
+}
+
+// Reimplements 0x475210: zMath::LineVsSphereHit
+// (D:\Proj\GameZRecoil\zMath\zMathGeom.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL LineVsSphereHit(const zVec3 *segA, const zVec3 *segB,
+                                                    float radius,
+                                                    const zVec3 *sphereCenterRelSegB,
+                                                    zVec3 *outInwardNormal) {
+    zVec3 lineDelta = {segA->x - segB->x, segA->y - segB->y, segA->z - segB->z};
+
+    const float lineLengthSq = Dot(lineDelta, lineDelta);
+    if (lineLengthSq == 0.0f) {
+        return 0;
+    }
+
+    const float centerDotLine = Dot(*sphereCenterRelSegB, lineDelta);
+    float centerDistMinusRadius =
+        Dot(*sphereCenterRelSegB, *sphereCenterRelSegB) - radius * radius;
+
+    float hitScale = 0.0f;
+    if (centerDistMinusRadius == 0.0f) {
+        if (centerDotLine <= 0.0f) {
+            return 0;
+        }
+        hitScale = (centerDotLine + centerDotLine) / lineLengthSq;
+    } else {
+        const float discriminant =
+            centerDotLine * centerDotLine - lineLengthSq * centerDistMinusRadius;
+        if (discriminant < 0.0f) {
+            return 0;
+        }
+
+        const float discriminantRoot = FastSqrtEstimate(discriminant);
+        float rootNumerator = centerDotLine;
+        if (centerDistMinusRadius < 0.0f) {
+            centerDistMinusRadius = -centerDistMinusRadius;
+            rootNumerator = -centerDotLine;
+        }
+
+        float denominator = rootNumerator - discriminantRoot;
+        if (rootNumerator <= discriminantRoot) {
+            denominator = rootNumerator + discriminantRoot;
+            if (denominator <= 0.0f) {
+                return 0;
+            }
+        }
+
+        hitScale = centerDistMinusRadius / denominator;
+    }
+
+    lineDelta.x *= hitScale;
+    lineDelta.y *= hitScale;
+    lineDelta.z *= hitScale;
+
+    outInwardNormal->x = sphereCenterRelSegB->x - lineDelta.x;
+    outInwardNormal->y = sphereCenterRelSegB->y - lineDelta.y;
+    outInwardNormal->z = sphereCenterRelSegB->z - lineDelta.z;
+    Vec3Normalize(outInwardNormal);
+    return 1;
+}
+
 // Reimplements 0x42d560: zMath::Vec3Midpoint
 // (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
 RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL Vec3Midpoint(const zVec3 *a, const zVec3 *b,
@@ -344,6 +509,20 @@ RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL Vec3Midpoint(const zVec3 *a, const zVec3 
     return outMidpoint;
 }
 
+// Reimplements 0x4726d0: zMath::Vec3DeltaLength
+// (D:\Proj\GameZRecoil\zMath.cpp)
+RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLength(const zVec3 *a, const zVec3 *b) {
+    g_zMath_Vec3DeltaScratch.x = a->x - b->x;
+    g_zMath_Vec3DeltaScratch.y = a->y - b->y;
+    g_zMath_Vec3DeltaScratch.z = a->z - b->z;
+
+    const float lengthSq =
+        g_zMath_Vec3DeltaScratch.x * g_zMath_Vec3DeltaScratch.x +
+        g_zMath_Vec3DeltaScratch.y * g_zMath_Vec3DeltaScratch.y +
+        g_zMath_Vec3DeltaScratch.z * g_zMath_Vec3DeltaScratch.z;
+    return sqrt(lengthSq);
+}
+
 // Reimplements 0x472670: zMath::Vec3DeltaLengthSq (GameZRecoil/zMath.cpp)
 RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLengthSq(const zVec3 *a, const zVec3 *b) {
     g_zMath_Vec3DeltaScratch.x = a->x - b->x;
@@ -352,6 +531,16 @@ RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLengthSq(const zVec3 *a, const zV
 
     return g_zMath_Vec3DeltaScratch.x * g_zMath_Vec3DeltaScratch.x +
            g_zMath_Vec3DeltaScratch.y * g_zMath_Vec3DeltaScratch.y +
+           g_zMath_Vec3DeltaScratch.z * g_zMath_Vec3DeltaScratch.z;
+}
+
+// Reimplements 0x472730: zMath::Vec3DistSqXZ
+// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DistSqXZ(const zVec3 *a, const zVec3 *b) {
+    g_zMath_Vec3DeltaScratch.x = a->x - b->x;
+    g_zMath_Vec3DeltaScratch.z = a->z - b->z;
+
+    return g_zMath_Vec3DeltaScratch.x * g_zMath_Vec3DeltaScratch.x +
            g_zMath_Vec3DeltaScratch.z * g_zMath_Vec3DeltaScratch.z;
 }
 
@@ -814,6 +1003,28 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointAndClampToScreenClip(const zVec3
     }
 
     return result;
+}
+
+// Reimplements 0x474fc0: zMath::ApproxExpNeg
+// (D:\Proj\GameZRecoil\zMath\zmath.cpp)
+RECOIL_NOINLINE float RECOIL_STDCALL ApproxExpNeg(float x) {
+    if (g_zMath_ApproxExpNegDirty != 0) {
+        g_zMath_ApproxExpNegScale = 51.0f;
+        for (int i = 0; i < 256; ++i) {
+            g_zMath_ApproxExpNegTable[i] = expf(-static_cast<float>(i) * 0.0196078438f);
+        }
+        g_zMath_ApproxExpNegDirty = 0;
+    }
+
+    if (x > 5.0f) {
+        return 0.0f;
+    }
+    if (x < 0.0f) {
+        return 1.0f;
+    }
+
+    const int tableIndex = static_cast<int>(g_zMath_ApproxExpNegScale * x);
+    return g_zMath_ApproxExpNegTable[tableIndex];
 }
 } // namespace zMath
 

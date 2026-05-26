@@ -19,6 +19,7 @@ struct HudUiBackgroundContainer_FTable;
 struct HudUiTriplet_FTable;
 struct HudUiTextStack4_FTable;
 struct HudUiStringMenu_FTable;
+struct HudUiTextInput;
 
 struct HudUiCommon_FTable {
     unsigned int slots[29];
@@ -368,6 +369,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyViewportRect(HudUiRect *activeRect);
 }
 
 namespace HudUiMgrSensor {
+RECOIL_NOINLINE HudUiMgrSensorTrackNode *RECOIL_FASTCALL TrackList_Add(int trackKind,
+                                                                        void *payload);
 RECOIL_NOINLINE int RECOIL_FASTCALL PlaceTrackCounterWidget(
     HudUiMgrSensorTrackNode *trackNode, const zVec3 *worldPoint);
 RECOIL_NOINLINE int RECOIL_FASTCALL
@@ -402,6 +405,7 @@ void RECOIL_FASTCALL ActivateHud(const HudUiRect *hudRectOrNull, const HudUiRect
 RECOIL_NOINLINE void RECOIL_CDECL DestroySensorWindow();
 RECOIL_NOINLINE int RECOIL_CDECL EnableHud();
 RECOIL_NOINLINE int RECOIL_CDECL DisableHud();
+RECOIL_NOINLINE int RECOIL_CDECL ToggleHud();
 RECOIL_NOINLINE void RECOIL_CDECL UpdateFrame();
 RECOIL_NOINLINE void RECOIL_FASTCALL SwitchActiveDialog(HudLayoutBase *newDialog);
 RECOIL_NOINLINE int RECOIL_FASTCALL ApplyHudModeSwitch(int hudType);
@@ -428,6 +432,7 @@ void RECOIL_CDECL InitTable();
 
 namespace HudUi {
 RECOIL_NOINLINE void RECOIL_FASTCALL SetInvalidateMode(int mode);
+RECOIL_NOINLINE void RECOIL_FASTCALL HandleHotkeyCommand(int commandId);
 void RECOIL_FASTCALL ShowTopMessageLine(const char *message, float duration);
 void RECOIL_FASTCALL ShowChatLine(const char *message, float duration);
 void RECOIL_FASTCALL PushTopMessageLine(const char *message, float duration);
@@ -456,6 +461,8 @@ extern HudUiPanel *g_HudUiMgrObjectiveSummaryTextPanel;
 extern HudUiPanel *g_HudUiMgrObjectiveDescTextPanel;
 extern HudUiPanel *g_HudUiMgrObjectiveLabelTextPanel;
 extern HudUiCounterTextPanel *g_HudUiMgrObjectiveCounterTextPanel;
+extern HudUiTextInput g_HudUiMgrObjectiveChatComposeTextInput;
+extern int g_HudUi_AuxOverlayEnabled;
 
 namespace HudUiMgrObjective {
 RECOIL_NOINLINE void RECOIL_FASTCALL RefreshCounterText(int counterValue);

@@ -3907,6 +3907,27 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetConditionalEffectLevel(int level) {
     g_zEffect_ConditionalEffectLevel = level;
 }
 
+// Reimplements 0x458b20: zEffect::SetVariantOverridePackedIdsIfComplete
+// (D:\Proj\GameZRecoil\zEffect\zeffect.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL
+SetVariantOverridePackedIdsIfComplete(const zTag4Partial *packedIds) {
+    const unsigned char count = packedIds->count;
+    if (count == 0) {
+        return;
+    }
+
+    for (int i = 0; i < count; ++i) {
+        if (packedIds->tags[i] == 0xff) {
+            return;
+        }
+    }
+
+    unsigned int packedValue = 0;
+    memcpy(&packedValue, packedIds, sizeof(packedValue));
+    g_zEffect_VariantOverrideEnabled = 1;
+    g_zEffect_VariantOverridePackedIds = packedValue;
+}
+
 // Reimplements 0x45d000: zEffect::SetAnimDebugFrameTag
 // (zeff_anim_run.c)
 RECOIL_NOINLINE int RECOIL_CDECL SetAnimDebugFrameTag() {

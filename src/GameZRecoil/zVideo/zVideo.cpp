@@ -72,6 +72,7 @@ int g_zVideo_FullscreenOption = 0;
 int g_zVideo_PrimaryHasAttachedBackbuffer = 0;
 int g_zVideo_UseHalfResBackbuffer = 0;
 int g_zVideo_HalfResAdjustMode = 0;
+int g_zVideo_SoftwareModeHotkeyEnabled = 0;
 int g_zVideo_CachedFogModeLightState = 0;
 int g_zVideo_CachedFogEnableRenderState = 0;
 float g_zVideo_CachedFogStartLightStateValue = 0.0f;
@@ -118,7 +119,7 @@ zVideo_SurfaceStateProc g_zVideo_pfnUnlockSurfaceState = 0;
 zVideo_ClearZBufferRectProc g_zVideo_pfnClearZBufferRect = 0;
 zVideo_ClearSwSurfaceAndZBufferProc g_zVideo_pfnClearSwSurfaceAndZBuffer = 0;
 zVideo_ClearStateSurfaceAndZBufferProc g_zVideo_pfnClearStateSurfaceAndZBuffer = 0;
-unsigned int g_zVideo_pfnUpdateFogColor = 0;
+zVideo_UpdateFogColorProc g_zVideo_pfnUpdateFogColor = 0;
 zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryTextureMemoryBytes = 0;
 zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryDeviceVideoMemoryBytes = 0;
 zVideo_BltRectDirectProc g_zVideo_pfnBltSwToPrimaryRectDirect = 0;
@@ -1157,6 +1158,48 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetHalfResAdjustMode(int mode) {
     return previousMode;
 }
 
+// Reimplements 0x437ef0: zVideo::HandleSoftwareModeHotkeyCommand
+// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL HandleSoftwareModeHotkeyCommand(int) {
+    if (g_zVideo_SoftwareModeHotkeyEnabled == 0) {
+        return;
+    }
+
+    const int previousHudType = zOpt::SetHudTypeForCurrentHwMode(1);
+    const int currentModeIndex = zVid::GetVideoModeIndexFromOptions();
+    int nextModeIndex = currentModeIndex;
+    int halfResAdjustMode = 1;
+
+    switch (currentModeIndex) {
+    case 2:
+        nextModeIndex = 4;
+        break;
+    case 3:
+        nextModeIndex = 2;
+        halfResAdjustMode = 0;
+        break;
+    case 4:
+        nextModeIndex = 5;
+        break;
+    case 5:
+        nextModeIndex = 3;
+        halfResAdjustMode = 0;
+        break;
+    default:
+        zOpt::SetHudTypeForCurrentHwMode(previousHudType);
+        return;
+    }
+
+    if (Init_ApplyModeIndex(nextModeIndex) == 0) {
+        zVid::SetVideoModeIndex(nextModeIndex);
+        if (zVid::GetAccelerationOption() == 0) {
+            SetHalfResAdjustMode(halfResAdjustMode);
+        }
+    }
+
+    zOpt::SetHudTypeForCurrentHwMode(previousHudType);
+}
+
 // Reimplements 0x4a7200: zVideo::GetPrimarySurfaceRectScratch
 RECOIL_NOINLINE zVidRect32 *RECOIL_CDECL GetPrimarySurfaceRectScratch() {
     g_zVideo_PrimarySurfaceRectScratch.right = g_zVideo_PrimarySurfaceState.width;
@@ -1559,7 +1602,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(int rendererType,
         (zVideo_ClearSwSurfaceAndZBufferProc)(0x004a82f0);
     g_zVideo_pfnClearStateSurfaceAndZBuffer =
         (zVideo_ClearStateSurfaceAndZBufferProc)(0x004a8220);
-    g_zVideo_pfnUpdateFogColor = 0x004aab30;
+    g_zVideo_pfnUpdateFogColor = (zVideo_UpdateFogColorProc)(0x004aab30);
     g_zVideo_pfnQueryTextureMemoryBytes = zVid::QueryTextureMemoryBytes;
     g_zVideo_pfnQueryDeviceVideoMemoryBytes = zVid::QueryDeviceVideoMemoryBytes;
     g_zVideo_pfnBltSwToPrimaryRectDirect = (zVideo_BltRectDirectProc)(0x004a7d90);
@@ -1735,6 +1778,34 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetFogTargetColorFromRgb01(zVideo_ColorRgbF
     g_zVideo_FogTargetColorR255 = color->r * 255.0f;
     g_zVideo_FogTargetColorG255 = color->g * 255.0f;
     g_zVideo_FogTargetColorB255 = color->b * 255.0f;
+}
+
+// Reimplements 0x4a7330: zVideo::CommitFogColorIfChanged
+RECOIL_NOINLINE void RECOIL_CDECL CommitFogColorIfChanged() {
+    if (g_zVideo_FogColorAppliedR255 == g_zVideo_FogColorPendingR255 &&
+        g_zVideo_FogColorAppliedG255 == g_zVideo_FogColorPendingG255 &&
+        g_zVideo_FogColorAppliedB255 == g_zVideo_FogColorPendingB255) {
+        return;
+    }
+
+    g_zVideo_FogColorAppliedR255 = g_zVideo_FogColorPendingR255;
+    g_zVideo_FogColorAppliedG255 = g_zVideo_FogColorPendingG255;
+    g_zVideo_FogColorAppliedB255 = g_zVideo_FogColorPendingB255;
+    g_zVideo_pfnUpdateFogColor();
+}
+
+// Reimplements 0x4a73a0: zVideo::CommitFogTargetColorIfChanged
+RECOIL_NOINLINE void RECOIL_CDECL CommitFogTargetColorIfChanged() {
+    if (g_zVideo_FogColorAppliedR255 == g_zVideo_FogTargetColorR255 &&
+        g_zVideo_FogColorAppliedG255 == g_zVideo_FogTargetColorG255 &&
+        g_zVideo_FogColorAppliedB255 == g_zVideo_FogTargetColorB255) {
+        return;
+    }
+
+    g_zVideo_FogColorAppliedR255 = g_zVideo_FogTargetColorR255;
+    g_zVideo_FogColorAppliedG255 = g_zVideo_FogTargetColorG255;
+    g_zVideo_FogColorAppliedB255 = g_zVideo_FogTargetColorB255;
+    g_zVideo_pfnUpdateFogColor();
 }
 
 // Reimplements 0x4a6b90: zVideo::PixelPack_GetRgbBits

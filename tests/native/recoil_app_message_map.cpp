@@ -2,6 +2,7 @@
 
 #include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/hud.h"
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 #include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/zGame/zGame.h"
@@ -514,6 +515,81 @@ extern "C" int recoil_app_queue_switch_current_state_smoke(void) {
     ::operator delete(chunkList);
 
     return itemOk ? 0 : 3;
+}
+
+extern "C" int recoil_app_queue_push_state_smoke(void) {
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    RecoilApp app{};
+    TestAppState oldState{};
+    TestAppState newState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    newState.vftable = oldState.vftable;
+    app.m_currentStateIndex_0c8 = 0;
+    app.m_stateStack_0d8[0] = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+
+    const RecoilPtr32 returned = app.QueuePushState(&newState, 23);
+    if (returned != app.m_stateStack_0d8[0] || g_stateExitCount != 0 || g_stateEnterCount != 1) {
+        return 1;
+    }
+
+    RecoilApp_StateQueue &queue = app.m_stateQueue_118;
+    if (queue.m_itemCount != 1 || queue.m_chunkPtrCapacity != 2) {
+        return 2;
+    }
+
+    const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+    auto *const slot = reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
+    auto *const item =
+        reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+    const bool itemOk =
+        item->m_type == 0 && item->m_kind == RecoilApp_StateQueueKind_PushState &&
+        item->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&newState)) &&
+        item->m_param == 23;
+    CleanupSingleQueuedItem(queue);
+
+    return itemOk ? 0 : 3;
+}
+
+extern "C" int hud_ui_callback_queue_cheat_code_state_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    const RecoilStateCheatCode oldCheatState = g_RecoilStateCheatCode;
+    g_RecoilApp = RecoilApp{};
+    g_RecoilStateCheatCode = RecoilStateCheatCode{};
+    g_RecoilStateCheatCode.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    const int returned = HudUiCallback::QueueCheatCodeState();
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    int result = 0;
+    if (returned != 1 || g_stateEnterCount != 1 || g_stateExitCount != 0) {
+        result = 1;
+    } else if (queue.m_itemCount != 1 || queue.m_chunkPtrCapacity != 2) {
+        result = 2;
+    } else {
+        const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+        auto *const slot = reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
+        auto *const item =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+        if (item->m_type != 0 || item->m_kind != RecoilApp_StateQueueKind_PushState ||
+            item->m_stateObj !=
+                static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                    &g_RecoilStateCheatCode)) ||
+            item->m_param != 0) {
+            result = 3;
+        }
+    }
+
+    if (queue.m_itemCount == 1) {
+        CleanupSingleQueuedItem(queue);
+    }
+    g_RecoilStateCheatCode = oldCheatState;
+    g_RecoilApp = oldApp;
+    return result;
 }
 
 extern "C" int recoil_app_queue_exit_current_state_smoke(void) {

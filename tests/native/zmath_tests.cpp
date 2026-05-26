@@ -366,6 +366,133 @@ extern "C" int zmath_vec3_lerp_normalize_smoke(void) {
     return zeroA.x == 0.0f && zeroA.y == 0.0f && zeroA.z == 0.0f ? 0 : 2;
 }
 
+extern "C" int zmath_vec3_direction_to_smoke(void) {
+    const zVec3 from = {1.0f, 2.0f, 3.0f};
+    const zVec3 to = {4.0f, 6.0f, 3.0f};
+    zVec3 dir = {};
+
+    const float distance = zMath::Vec3DirectionTo(&from, &to, &dir);
+    if (!Near(distance, 5.0f) || !Near(dir.x, 0.6f) || !Near(dir.y, 0.8f) ||
+        !Near(dir.z, 0.0f)) {
+        return 1;
+    }
+
+    zVec3 zeroDir = {7.0f, 8.0f, 9.0f};
+    const float zeroDistance = zMath::Vec3DirectionTo(&from, &from, &zeroDir);
+    return zeroDistance == 0.0f && zeroDir.x == 0.0f && zeroDir.y == 0.0f &&
+                   zeroDir.z == 0.0f
+               ? 0
+               : 2;
+}
+
+extern "C" int zmath_line_vs_sphere_hit_smoke(void) {
+    const zVec3 rayStart = {10.0f, 0.0f, 0.0f};
+    const zVec3 rayOrigin = {0.0f, 0.0f, 0.0f};
+    zVec3 inwardNormal = {};
+
+    const zVec3 sphereAhead = {5.0f, 0.0f, 0.0f};
+    if (zMath::LineVsSphereHit(&rayStart, &rayOrigin, 1.0f, &sphereAhead, &inwardNormal) != 1 ||
+        !Near(inwardNormal.x, -1.0f) || !Near(inwardNormal.y, 0.0f) ||
+        !Near(inwardNormal.z, 0.0f)) {
+        return 1;
+    }
+
+    const zVec3 sphereAtOriginSurface = {1.0f, 0.0f, 0.0f};
+    inwardNormal = {};
+    if (zMath::LineVsSphereHit(&rayStart, &rayOrigin, 1.0f, &sphereAtOriginSurface,
+                               &inwardNormal) != 1 ||
+        !Near(inwardNormal.x, -1.0f) || !Near(inwardNormal.y, 0.0f) ||
+        !Near(inwardNormal.z, 0.0f)) {
+        return 2;
+    }
+
+    const zVec3 sphereBehind = {-5.0f, 0.0f, 0.0f};
+    inwardNormal = {7.0f, 8.0f, 9.0f};
+    if (zMath::LineVsSphereHit(&rayStart, &rayOrigin, 1.0f, &sphereBehind, &inwardNormal) != 0 ||
+        inwardNormal.x != 7.0f || inwardNormal.y != 8.0f || inwardNormal.z != 9.0f) {
+        return 3;
+    }
+
+    const zVec3 zeroLine = {};
+    if (zMath::LineVsSphereHit(&zeroLine, &zeroLine, 1.0f, &sphereAhead, &inwardNormal) != 0) {
+        return 4;
+    }
+
+    const zVec3 sphereBeside = {5.0f, 2.0f, 0.0f};
+    return zMath::LineVsSphereHit(&rayStart, &rayOrigin, 1.0f, &sphereBeside, &inwardNormal) == 0
+               ? 0
+               : 5;
+}
+
+extern "C" int zmath_vec3_perp2d_smoke(void) {
+    zVec3 in = {0.0f, 7.0f, 9.0f};
+    zVec3 out = {3.0f, 4.0f, 5.0f};
+    zMath::Vec3Perp2D(&in, &out);
+    if (out.x != 1.0f || out.y != 0.0f || out.z != 0.0f) {
+        return 1;
+    }
+
+    in = {3.0f, 4.0f, 9.0f};
+    out = {};
+    zMath::Vec3Perp2D(&in, &out);
+    return Near(out.x, 0.7804878f) && Near(out.y, -0.5853658f) && out.z == 0.0f ? 0 : 2;
+}
+
+extern "C" int zmath_vec3_perp_xz_smoke(void) {
+    const zVec3 in = {3.0f, 7.0f, -5.0f};
+    zVec3 out = {1.0f, 2.0f, 3.0f};
+
+    zMath::Vec3PerpXZ(&in, &out);
+
+    return out.x == 5.0f && out.y == 0.0f && out.z == 3.0f ? 0 : 1;
+}
+
+extern "C" int zmath_vec3_scale_add_smoke(void) {
+    const zVec3 vec = {10.0f, -4.0f, 8.0f};
+    const zVec3 delta = {2.0f, 20.0f, -2.0f};
+    zVec3 out = {};
+
+    zMath::Vec3ScaleAdd(&vec, &delta, 0.25f, &out);
+    if (!Near(out.x, 10.5f) || !Near(out.y, 1.0f) || !Near(out.z, 7.5f)) {
+        return 1;
+    }
+
+    out = {};
+    zMath::Vec3ScaleAdd(&vec, &delta, -2.0f, &out);
+    return Near(out.x, 6.0f) && Near(out.y, -44.0f) && Near(out.z, 12.0f) ? 0 : 2;
+}
+
+extern "C" int zmath_vec3_slerp_smoke(void) {
+    const zVec3 a = {1.0f, 0.0f, 0.0f};
+    const zVec3 b = {0.0f, 1.0f, 0.0f};
+    zVec3 out = {};
+
+    zMath::Vec3Slerp(&a, &b, 0.0f, &out);
+    if (out.x != 1.0f || out.y != 0.0f || out.z != 0.0f) {
+        return 1;
+    }
+
+    zMath::Vec3Slerp(&a, &b, 1.0f, &out);
+    if (out.x != 0.0f || out.y != 1.0f || out.z != 0.0f) {
+        return 2;
+    }
+
+    zMath::Vec3Slerp(&a, &b, 0.5f, &out);
+    if (!Near(out.x, 0.70710677f) || !Near(out.y, 0.70710677f) || !Near(out.z, 0.0f)) {
+        return 3;
+    }
+
+    const zVec3 nearB = {0.98f, 0.1f, 0.0f};
+    zMath::Vec3Slerp(&a, &nearB, 0.25f, &out);
+    if (!Near(out.x, 0.995f) || !Near(out.y, 0.025f) || !Near(out.z, 0.0f)) {
+        return 4;
+    }
+
+    const zVec3 opposite = {-1.0f, 0.0f, 0.0f};
+    zMath::Vec3Slerp(&a, &opposite, 0.5f, &out);
+    return Near(out.x, 0.0f) && Near(out.y, -1.0f) && Near(out.z, 0.0f) ? 0 : 5;
+}
+
 extern "C" int zmath_vec3_midpoint_smoke(void) {
     zVec3 a = {10.0f, -4.0f, 8.0f};
     zVec3 b = {2.0f, 20.0f, -2.0f};
@@ -486,6 +613,19 @@ extern "C" int zmath_vec3_normalize_and_div_scalar_smoke(void) {
     if (!Near(deltaLengthSq, 89.0f) || zMath::g_zMath_Vec3DeltaScratch.x != 3.0f ||
         zMath::g_zMath_Vec3DeltaScratch.y != -4.0f || zMath::g_zMath_Vec3DeltaScratch.z != 8.0f) {
         return 7;
+    }
+    const float deltaLength = zMath::Vec3DeltaLength(&deltaA, &deltaB);
+    if (!Near(deltaLength, sqrt(89.0f)) || zMath::g_zMath_Vec3DeltaScratch.x != 3.0f ||
+        zMath::g_zMath_Vec3DeltaScratch.y != -4.0f || zMath::g_zMath_Vec3DeltaScratch.z != 8.0f) {
+        return 12;
+    }
+
+    zMath::g_zMath_Vec3DeltaScratch.y = 123.0f;
+    const float distSqXZ = zMath::Vec3DistSqXZ(&deltaA, &deltaB);
+    if (!Near(distSqXZ, 73.0f) || zMath::g_zMath_Vec3DeltaScratch.x != 3.0f ||
+        zMath::g_zMath_Vec3DeltaScratch.y != 123.0f ||
+        zMath::g_zMath_Vec3DeltaScratch.z != 8.0f) {
+        return 13;
     }
 
     zVec3 source{8.0f, -4.0f, 2.0f};
@@ -854,6 +994,38 @@ extern "C" int zmath_quaternion_helpers_smoke(void) {
     if (!Near(matrix.xx, 0.0f) || !Near(matrix.yy, 1.0f) || !Near(matrix.zz, 0.0f) ||
         !Near(matrix.xz, -1.0f) || !Near(matrix.zx, 1.0f)) {
         return 8;
+    }
+
+    return 0;
+}
+
+extern "C" int zmath_approx_exp_neg_smoke(void) {
+    g_zMath_ApproxExpNegDirty = 1;
+    g_zMath_ApproxExpNegScale = 0.0f;
+    for (int i = 0; i < 256; ++i) {
+        g_zMath_ApproxExpNegTable[i] = -1.0f;
+    }
+
+    const float value = zMath::ApproxExpNeg(2.0f);
+    if (g_zMath_ApproxExpNegDirty != 0 || g_zMath_ApproxExpNegScale != 51.0f ||
+        !Near(g_zMath_ApproxExpNegTable[0], 1.0f) ||
+        !Near(g_zMath_ApproxExpNegTable[102], expf(-2.0f)) ||
+        !Near(value, g_zMath_ApproxExpNegTable[102])) {
+        return 1;
+    }
+
+    const float tableSlot25 = g_zMath_ApproxExpNegTable[25];
+    if (!Near(zMath::ApproxExpNeg(0.5f), tableSlot25)) {
+        return 2;
+    }
+    if (zMath::ApproxExpNeg(-0.25f) != 1.0f) {
+        return 3;
+    }
+    if (zMath::ApproxExpNeg(5.25f) != 0.0f) {
+        return 4;
+    }
+    if (!Near(zMath::ApproxExpNeg(5.0f), g_zMath_ApproxExpNegTable[255])) {
+        return 5;
     }
 
     return 0;
