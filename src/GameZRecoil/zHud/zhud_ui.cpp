@@ -4,6 +4,9 @@
 #include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/GameNet.h"
 #include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/hud.h"
+#include "Battlesport/player.h"
+#include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/include/zDi.h"
@@ -124,6 +127,20 @@ template <typename FTable> FTable MakeHudUiFTableWithCommonInvalidate() {
         table.slots[26] = MethodAddress(&HudUiElement::GetY);
     }
 
+    return table;
+}
+
+HudUiTextInput_FTable MakeHudUiTextInputFTable() {
+    HudUiTextInput_FTable table = {0};
+    table.slots[0] = MethodAddress(&HudUiTextInput::InsertCharAtCursor);
+    table.slots[1] = MethodAddress(&HudUiTextInput::InsertCharAtCursor);
+    table.slots[2] = MethodAddress(&HudUiTextInput::MoveCursorRight);
+    table.slots[3] = MethodAddress(&HudUiTextInput::MoveCursorLeft);
+    table.slots[4] = MethodAddress(&HudUiTextInput::BackspaceDeleteChar);
+    table.slots[5] = MethodAddress(&HudUiTextInput::DeleteCharForward);
+    table.slots[6] = MethodAddress(&HudUiTextInput::MoveCursorLeft);
+    table.slots[7] = MethodAddress(&HudUiTextInput::MoveCursorRight);
+    table.slots[8] = MethodAddress(&HudUiTextInput::MoveCursorRight);
     return table;
 }
 
@@ -358,9 +375,9 @@ const HudUiStatsListElement_FTable g_HudUiStatsListElement_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiStatsListElement_FTable>();
 const HudUiTripletPanel_FTable g_HudUiTripletPanel_FTable = MakeHudUiTripletPanelFTable();
 const HudUiTextInput_FTable g_HudUiTextInput_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiTextInput_FTable>();
+    MakeHudUiTextInputFTable();
 const HudUiTextInput_FTable g_HudUiNumericTextInput_TextInputFTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiTextInput_FTable>();
+    MakeHudUiTextInputFTable();
 const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_Base_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiNumericTextInput_Base_FTable>();
 const HudUiSlot_FTable g_HudUiSlot_FTable = MakeHudUiFTableWithCommonInvalidate<HudUiSlot_FTable>();
@@ -450,6 +467,8 @@ HudUiPanel *g_HudUiMgrObjectiveSummaryTextPanel = 0;
 HudUiPanel *g_HudUiMgrObjectiveDescTextPanel = 0;
 HudUiPanel *g_HudUiMgrObjectiveLabelTextPanel = 0;
 HudUiCounterTextPanel *g_HudUiMgrObjectiveCounterTextPanel = 0;
+HudUiTextInput g_HudUiMgrObjectiveChatComposeTextInput = {0};
+int g_HudUi_AuxOverlayEnabled = 0;
 CString g_HudUiTripletWndClassName("");
 
 // Reimplements 0x40ec90: HudLayoutBase::Shutdown_Stub
@@ -1813,6 +1832,34 @@ void DestroyTextStackLines(HudUiTextStack4 *stack) {
 } // namespace
 
 namespace HudUiMgrSensor {
+// Reimplements 0x438920: HudUiMgrSensor::TrackList_Add
+// (D:\Proj\Battlesport\HudUiMgrSensor.cpp)
+RECOIL_NOINLINE HudUiMgrSensorTrackNode *RECOIL_FASTCALL TrackList_Add(int trackKind,
+                                                                        void *payload) {
+    HudUiMgrSensorTrackNode *const trackNode =
+        static_cast<HudUiMgrSensorTrackNode *>(malloc(sizeof(HudUiMgrSensorTrackNode)));
+    trackNode->trackKind = 0;
+    trackNode->payload = 0;
+    trackNode->next = 0;
+
+    if (trackNode != 0) {
+        trackNode->next = 0;
+        if (g_HudUiMgrSensor_TrackList.count == 0) {
+            g_HudUiMgrSensor_TrackList.head = trackNode;
+        } else {
+            g_HudUiMgrSensor_TrackList.tail->next = trackNode;
+        }
+
+        g_HudUiMgrSensor_TrackList.tail = trackNode;
+        trackNode->next = 0;
+        ++g_HudUiMgrSensor_TrackList.count;
+    }
+
+    trackNode->trackKind = trackKind;
+    trackNode->payload = payload;
+    return trackNode;
+}
+
 // Reimplements 0x412070: HudUiMgrSensor::PlaceTrackCounterWidget
 // (D:\Proj\Battlesport\HudUiMgrSensor.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL
@@ -3374,6 +3421,17 @@ RECOIL_NOINLINE int RECOIL_CDECL DisableHud() {
 
     HudUiVirtualSetVisibleRequired(g_HudUiMgrTimerPanel, 1);
     return previouslyEnabled;
+}
+
+// Reimplements 0x413640: HudUiMgr::ToggleHud
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL ToggleHud() {
+    if (g_HudUiMgr.enabled != 0) {
+        DisableHud();
+    } else {
+        EnableHud();
+    }
+    return 1;
 }
 
 // Reimplements 0x410fe0: HudUiMgr::UpdateFrame (D:\Proj\Battlesport\hud.cpp)
@@ -9954,6 +10012,77 @@ namespace HudUi {
 // Reimplements 0x4bc760: HudUi::SetInvalidateMode (D:\Proj\Battlesport\hudui.cpp)
 RECOIL_NOINLINE void RECOIL_FASTCALL SetInvalidateMode(int mode) {
     g_HudUi_InvalidateMask = mode != 0 ? 0x0c : 0x04;
+}
+
+// Reimplements 0x426150: HudUi::HandleHotkeyCommand (D:\Proj\Battlesport\hudui.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL HandleHotkeyCommand(int commandId) {
+    switch (commandId) {
+    case 9:
+        Player::ToggleSteeringModeAndResetMouseLook();
+        return;
+    case 30:
+        Player::ApplyCameraState(0);
+        return;
+    case 31:
+        Player::ApplyCameraState(2);
+        return;
+    case 32:
+        HudUiMgr::ToggleHud();
+        return;
+    case 33:
+        zOpt::ToggleHudTypeForCurrentHwMode();
+        return;
+    case 35:
+        if (zOpt::GetNetworkEnabled() == 0) {
+            HudUiCallback::QueueCheatCodeState();
+        }
+        zInput::Keyboard_ResetTransitionState();
+        return;
+    case 36:
+        if (g_HudUi_AuxOverlayEnabled == 0) {
+            g_HudUi_AuxOverlayEnabled = 1;
+            HudUiMgr::SetFloatTimerVisible(1);
+            HudUiMgr::SetAuxOverlayVisible(1);
+        } else {
+            g_HudUi_AuxOverlayEnabled = 0;
+            HudUiMgr::SetFloatTimerVisible(0);
+            HudUiMgr::SetAuxOverlayVisible(0);
+        }
+        return;
+    case 42:
+        GameNet::BeginChatCompose();
+        return;
+    case 43:
+        if (zOpt::GetThrottleMode() == 0) {
+            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x24c), 5.0f);
+            zOpt::SetThrottleMode(1);
+        } else {
+            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x24d), 5.0f);
+            zOpt::SetThrottleMode(0);
+        }
+        return;
+    case 44:
+        if (zOpt::GetNetworkEnabled() != 0) {
+            HudUiMgrObjective::Show(0, "Message", zLoc::GetMessageString(0x86), 2.0f);
+        } else if (HudUiMainMenuDialog::CanLoadGame() != 0) {
+            RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RECOIL_SAVELOAD_MODE_QUICKLOAD);
+        } else {
+            HudUiMgrObjective::Show(0, "Message", zLoc::GetMessageString(0x87), 2.0f);
+        }
+        return;
+    case 45:
+        if (zOpt::GetNetworkEnabled() != 0) {
+            HudUiMgrObjective::Show(0, "Message", zLoc::GetMessageString(0x85), 2.0f);
+        } else if (HudUiMainMenuDialog::CanSaveGame() != 0) {
+            RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
+                RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED);
+        } else {
+            HudUiMgrObjective::Show(0, "Message", zLoc::GetMessageString(0x82), 2.0f);
+        }
+        return;
+    default:
+        return;
+    }
 }
 
 // Reimplements 0x42bf40: HudUi::PlayPowerupSfx

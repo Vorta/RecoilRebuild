@@ -32,6 +32,8 @@ int g_zModel_SoftwarePathActive = 0;
 float g_Clip_PolyAttr0[0x40] = {0};
 float g_Clip_PolyAttr1[0x40] = {0};
 float g_Clip_PolyAttr2[0x40] = {0};
+zVec3 *g_zModel_CurrentPolyNormals = 0;
+zVec3 g_zModel_CurrentPolyNormalsStorage[0x40] = {0};
 zModel_FogTargetColorOverride g_zModel_FogTargetColorOverride = {0};
 zColorRgb gModel_FogBaseColorRgb01 = {0};
 float gModel_AmbientScale = 0.0f;
@@ -98,6 +100,23 @@ namespace {
     zVec3 SubtractVec3(const zVec3 &a, const zVec3 &b) {
         zVec3 result = {a.x - b.x, a.y - b.y, a.z - b.z};
         return result;
+    }
+
+    bool IsVisibleWeight(float weight) {
+        return weight > (1.0f / 255.0f);
+    }
+
+    float ClampWeightInPlace(float *weight) {
+        *weight = ClampWeight(*weight);
+        return *weight;
+    }
+
+    zColorRgb *SelectActiveLightColor(int lightIndex) {
+        if (lightIndex < 0) {
+            return &g_zModel_FogTargetColorOverride.colorRgb01;
+        }
+
+        return &gModel_ActiveLights[lightIndex].light->specularColor;
     }
 }
 
@@ -310,6 +329,78 @@ namespace zModel_Light {
         return result;
     }
 
+    // Reimplements 0x489a90: zModel_Light::BuildAttr1Falloff
+    RECOIL_NOINLINE int RECOIL_FASTCALL BuildAttr1Falloff(int vertexCount,
+                                                          int *pLightingFlags) {
+        const float kVisibleAttrThreshold = 1.0f / 255.0f;
+
+        float radialDistance[0x40] = {0};
+        for (int i = 0; i < vertexCount; ++i) {
+            const zClipVert &vert = g_Clip_PolyVertsScratch[i];
+            radialDistance[i] = ApproximateSqrtFromBits(vert.x * vert.x + vert.z * vert.z);
+        }
+
+        int hasFogContribution = 0;
+        for (int i = 0; i < vertexCount; ++i) {
+            const float distance = radialDistance[i];
+            if (distance <= gModel_FogDistanceStart) {
+                g_Clip_PolyAttr2[i] = 0.0f;
+                continue;
+            }
+
+            float fade = 1.0f;
+            if (distance < gModel_FogDistanceEnd) {
+                fade = (distance - gModel_FogDistanceStart) * gModel_FogDistanceInvRange;
+            }
+
+            float projectedHeight = 0.0f;
+            zMath::Vec3ArrayProjectToCachedY((const zVec3 *)(&g_Clip_PolyVertsScratch[i]),
+                                             &projectedHeight, 1);
+
+            if (projectedHeight >= gModel_FogHeightHigh) {
+                fade = 0.0f;
+            } else if (projectedHeight > gModel_FogHeightLow) {
+                fade *= (gModel_FogHeightHigh - projectedHeight) * gModel_FogHeightInvRange;
+            }
+
+            g_Clip_PolyAttr2[i] = fade;
+            hasFogContribution = 1;
+        }
+
+        if (hasFogContribution == 0) {
+            *pLightingFlags &= ~2;
+            return 0;
+        }
+
+        for (int i = 0; i < vertexCount; ++i) {
+            g_Clip_PolyAttr2[i] = ClampWeight(g_Clip_PolyAttr2[i]);
+        }
+
+        int hasVisibleFog = 0;
+        for (int i = 0; i < vertexCount; ++i) {
+            if (g_Clip_PolyAttr2[i] > kVisibleAttrThreshold) {
+                hasVisibleFog = 1;
+                break;
+            }
+        }
+
+        if (hasVisibleFog == 0) {
+            *pLightingFlags &= ~2;
+            return 0;
+        }
+
+        for (int i = 1; i < vertexCount; ++i) {
+            if (fabs(g_Clip_PolyAttr2[i] - g_Clip_PolyAttr2[0]) > kVisibleAttrThreshold) {
+                *pLightingFlags |= 2;
+                break;
+            }
+        }
+
+        zVideo::SetFogColorFromRgb01((zVideo_ColorRgbFloat *)(&gModel_FogColorRgb01));
+        zVideo::CommitFogColorIfChanged();
+        return hasVisibleFog;
+    }
+
     // Reimplements 0x489920: zModel_Light::EvalBatchSphereFade
     RECOIL_NOINLINE int RECOIL_FASTCALL EvalBatchSphereFade(float *outFade) {
         const zClipVert &vert = g_Clip_PolyVertsScratch[0];
@@ -344,6 +435,7 @@ namespace zModel_Light {
     }
 }
 
+// Reimplements 0x488d60: zModel_Light::BuildLightWeights
 RECOIL_NOINLINE int RECOIL_FASTCALL
 zModel_Light_BuildLightWeights(zVec3 *surfaceNormal, int vertexCount,
                                int *outPackedFogColor, float fogBlendScale) {
@@ -578,6 +670,322 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Light_PointInPolygonInitXZ(
 }
 
 namespace zModel_Light {
+    // Reimplements 0x487f10: zModel_Light::SetActiveLights
+    // (D:\Proj\GameZRecoil\zModel\gmod_light.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL SetActiveLights(zVec3 *surfaceNormal, int vertexCount,
+                                                        int *lightFlags, int *lightingMode,
+                                                        int usePaletteRemap) {
+        const float kVisibleWeight = 1.0f / 255.0f;
+        const float kMinPointNormalWeight = 0.00402156916f;
+        const float kMinIntensity = 9.99999975e-6f;
+
+        const int initialLightingMode = *lightingMode;
+        *lightingMode = 0;
+
+        float scale255 = 0.0f;
+        zFloat::Set255f(&scale255);
+
+        bool hasAnyCandidate = false;
+        bool valid[0x40][0x40] = {0};
+        float distances[0x40][0x40] = {0};
+        zVec3 lightToVertex[0x40][0x40] = {0};
+
+        for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
+            const zVec3 vertex = {g_Clip_PolyVertsScratch[vertexIndex].x,
+                                  g_Clip_PolyVertsScratch[vertexIndex].y,
+                                  g_Clip_PolyVertsScratch[vertexIndex].z};
+
+            for (int lightIndex = 0; lightIndex < gModel_ActiveLightCount; ++lightIndex) {
+                zModel_ActiveLightEntryLive &entry = gModel_ActiveLights[lightIndex];
+                zClass_LightDataPartial *light = entry.light;
+
+                if (*lightFlags == 1 && light->lightParam != 0 && light->isPointMode == 0) {
+                    continue;
+                }
+
+                if (entry.contributesToLighting == 0) {
+                    continue;
+                }
+
+                if (entry.useFullWeight != 0) {
+                    valid[lightIndex][vertexIndex] = true;
+                    hasAnyCandidate = true;
+                    continue;
+                }
+
+                if (light->isPointMode != 0) {
+                    distances[lightIndex][vertexIndex] = vertex.z;
+                    if (vertex.z < light->range2) {
+                        lightToVertex[lightIndex][vertexIndex] = vertex;
+                        if (vertex.z != 0.0f) {
+                            zMath_Vec3_DivScalar(&lightToVertex[lightIndex][vertexIndex],
+                                                  &lightToVertex[lightIndex][vertexIndex],
+                                                  vertex.z);
+                        }
+                        valid[lightIndex][vertexIndex] = true;
+                        hasAnyCandidate = true;
+                    }
+                    continue;
+                }
+
+                zVec3 delta = SubtractVec3(light->viewPos, vertex);
+                float distanceSq = DotVec3(delta, delta);
+                distances[lightIndex][vertexIndex] = distanceSq;
+                if (distanceSq >= light->range2Sq) {
+                    continue;
+                }
+
+                if (distanceSq != 0.0f) {
+                    distances[lightIndex][vertexIndex] = ApproximateSqrtFromBits(distanceSq);
+                    zMath_Vec3_DivScalar(&delta, &delta, distances[lightIndex][vertexIndex]);
+                }
+
+                lightToVertex[lightIndex][vertexIndex] = delta;
+                valid[lightIndex][vertexIndex] = true;
+                hasAnyCandidate = true;
+            }
+        }
+
+        if (!hasAnyCandidate && !IsVisibleWeight(g_zModel_FogTargetColorOverride.weight)) {
+            return 0;
+        }
+
+        zMath::Vec3Normalize(surfaceNormal);
+
+        float fogWeights[0x40] = {0};
+        memset(g_Clip_PolyAttr1, 0, static_cast<size_t>(vertexCount) * sizeof(float));
+        if (g_zVideo_ActiveRendererPath != 0 && (*lightFlags & 1) == 0) {
+            memset(g_Clip_PolyAttr2, 0, static_cast<size_t>(vertexCount) * sizeof(float));
+        }
+
+        int fogContributorCount = 0;
+        int pointContributorCount = 0;
+        int selectedFogLightIndex = -1;
+        int selectedPointLightIndex = -1;
+        int hasAttr2Contribution = 0;
+
+        for (int lightIndex = 0; lightIndex < gModel_ActiveLightCount; ++lightIndex) {
+            zModel_ActiveLightEntryLive &entry = gModel_ActiveLights[lightIndex];
+            if (entry.contributesToLighting == 0) {
+                continue;
+            }
+
+            zClass_LightDataPartial *light = entry.light;
+            float pointSum = 0.0f;
+            float attr2Sum = 0.0f;
+            float fogSum = 0.0f;
+
+            for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
+                if (!valid[lightIndex][vertexIndex]) {
+                    continue;
+                }
+
+                float angularWeight = 1.0f;
+                if (light->coneAngle != 0 || light->isPointMode != 0) {
+                    if (light->isPointMode != 0 && g_zModel_CurrentPolyNormals != 0) {
+                        angularWeight = DotVec3(g_zModel_CurrentPolyNormals[vertexIndex],
+                                                light->viewDir);
+                    } else if (light->isPointMode != 0) {
+                        angularWeight = DotVec3(*surfaceNormal,
+                                                lightToVertex[lightIndex][vertexIndex]);
+                    } else {
+                        angularWeight = DotVec3(*surfaceNormal, light->viewDir);
+                    }
+
+                    if (light->isPointMode != 0 && angularWeight < kMinPointNormalWeight) {
+                        angularWeight = kMinPointNormalWeight;
+                    }
+
+                    if (light->coneAngle != 0) {
+                        float coneWeight = DotVec3(lightToVertex[lightIndex][vertexIndex],
+                                                   light->viewDir);
+                        if (light->isPointMode != 0 && g_zModel_CurrentPolyNormals != 0) {
+                            coneWeight = DotVec3(g_zModel_CurrentPolyNormals[vertexIndex],
+                                                 light->viewDir);
+                            if (coneWeight < kMinPointNormalWeight) {
+                                coneWeight = kMinPointNormalWeight;
+                            }
+                        }
+                        angularWeight = coneWeight < kVisibleWeight ? 0.0f : coneWeight;
+                    }
+                }
+
+                if (angularWeight <= kVisibleWeight && light->intensityScale <= kMinIntensity) {
+                    continue;
+                }
+
+                float intensity = light->falloff * angularWeight + light->intensityScale;
+                if (intensity > 1.0f) {
+                    intensity = 1.0f;
+                } else if (intensity < light->intensityScale) {
+                    intensity = light->intensityScale;
+                }
+
+                float weight = light->isPointMode != 0 ? 1.0f - intensity : intensity;
+                if (entry.useFullWeight == 0) {
+                    const float distanceWeight =
+                        EvalDistanceWeight(light, distances[lightIndex][vertexIndex]);
+                    if (light->isPointMode != 0) {
+                        const float farWeight = 1.0f - light->intensityScale;
+                        weight = (1.0f - distanceWeight) * (farWeight - weight) + weight;
+                        if (weight > farWeight) {
+                            weight = farWeight;
+                        }
+                    } else {
+                        weight *= distanceWeight;
+                    }
+                }
+
+                if (light->isPointMode != 0) {
+                    g_Clip_PolyAttr1[vertexIndex] += weight;
+                    pointSum += weight;
+                } else if (g_zVideo_ActiveRendererPath != 0 && light->lightParam != 0) {
+                    g_Clip_PolyAttr2[vertexIndex] += weight;
+                    attr2Sum += weight;
+                    hasAttr2Contribution = 1;
+                } else {
+                    fogWeights[vertexIndex] += weight;
+                    fogSum += weight;
+                }
+            }
+
+            if (attr2Sum + fogSum > kVisibleWeight) {
+                selectedFogLightIndex = lightIndex;
+                ++fogContributorCount;
+            }
+
+            if (pointSum > kVisibleWeight) {
+                selectedPointLightIndex = lightIndex;
+                ++pointContributorCount;
+            }
+        }
+
+        if (IsVisibleWeight(g_zModel_FogTargetColorOverride.weight)) {
+            ++fogContributorCount;
+            selectedFogLightIndex = -1;
+            if (g_zVideo_ActiveRendererPath == 0) {
+                for (int i = 0; i < vertexCount; ++i) {
+                    fogWeights[i] += g_zModel_FogTargetColorOverride.weight;
+                }
+            } else {
+                for (int i = 0; i < vertexCount; ++i) {
+                    g_Clip_PolyAttr2[i] += g_zModel_FogTargetColorOverride.weight;
+                }
+                hasAttr2Contribution = 1;
+            }
+        }
+
+        if (fogContributorCount == 0 && pointContributorCount == 0) {
+            return 0;
+        }
+
+        int pointAttrsVisible = 0;
+        if (pointContributorCount > 0 || selectedPointLightIndex >= 0) {
+            ClampWeightInPlace(&g_Clip_PolyAttr1[0]);
+            pointAttrsVisible = IsVisibleWeight(g_Clip_PolyAttr1[0]) ? 1 : 0;
+            int attr1Varies = 0;
+            for (int i = 1; i < vertexCount; ++i) {
+                ClampWeightInPlace(&g_Clip_PolyAttr1[i]);
+                if (fabs(g_Clip_PolyAttr1[i] - g_Clip_PolyAttr1[0]) >= kVisibleWeight) {
+                    attr1Varies = 1;
+                }
+                if (IsVisibleWeight(g_Clip_PolyAttr1[i])) {
+                    pointAttrsVisible = 1;
+                }
+            }
+
+            if (g_zVideo_ActiveRendererPath == 0 && g_zModel_SoftwarePathActive != 0 &&
+                usePaletteRemap != 0) {
+                if (attr1Varies != 0 && initialLightingMode != 0) {
+                    for (int i = 0; i < vertexCount; ++i) {
+                        g_Clip_PolyAttr0[i] = g_Clip_PolyAttr1[i] * scale255;
+                    }
+                    zRndr_SetPaletteShadeRecipeIndex(
+                        (zVidPaletteRemapRecipe *)(&gModel_SpecialLightPaletteRemapRecipe));
+                    *lightingMode |= 1;
+                    return 1;
+                }
+
+                if (pointAttrsVisible != 0) {
+                    g_Clip_PolyAttr1[0] *= scale255;
+                    zRndr_SetPaletteRemapKey(
+                        (zVidPaletteRemapRecipe *)(&gModel_SpecialLightPaletteRemapRecipe),
+                        g_Clip_PolyAttr1[0]);
+                } else if (IsVisibleWeight(g_zModel_FogTargetColorOverride.weight)) {
+                    zRndr_SetPaletteRemapKeyFromRgb01(0, 0.0f);
+                }
+            } else if (pointAttrsVisible != 0) {
+                *lightingMode |= 1;
+            }
+        }
+
+        int resultFlags = 0;
+        for (int i = 0; i < vertexCount; ++i) {
+            ClampWeightInPlace(&fogWeights[i]);
+            if (IsVisibleWeight(fogWeights[i])) {
+                resultFlags = 1;
+                g_Clip_PolyAttr0[i] +=
+                    g_zVideo_ActiveRendererPath == 0 ? fogWeights[i] * scale255 : fogWeights[i];
+            }
+        }
+
+        if (g_zVideo_ActiveRendererPath == 0) {
+            if (resultFlags != 0) {
+                if ((*lightFlags & 1) != 0 && fogContributorCount > 0) {
+                    zRndr::CommitDirectFogParamsIfChanged();
+                } else if (fogContributorCount > 1) {
+                    zRndr::CommitDirectFogParamsIfChanged();
+                } else if (fogContributorCount == 1) {
+                    zRndr_FogTargetColorStaged_SetRgb01Clamped(
+                        SelectActiveLightColor(selectedFogLightIndex));
+                    zRndr::CommitStagedFogParamsIfChanged();
+                }
+            }
+            return resultFlags;
+        }
+
+        if (hasAttr2Contribution != 0) {
+            int attr2Visible = 0;
+            for (int i = 0; i < vertexCount; ++i) {
+                ClampWeightInPlace(&g_Clip_PolyAttr2[i]);
+                if (IsVisibleWeight(g_Clip_PolyAttr2[i])) {
+                    attr2Visible = 1;
+                }
+            }
+
+            if (vertexCount > 1) {
+                for (int i = 1; i < vertexCount && *lightingMode == 0; ++i) {
+                    if (fabs(g_Clip_PolyAttr2[i] - g_Clip_PolyAttr2[0]) >= kVisibleWeight) {
+                        *lightingMode = 2;
+                    }
+                }
+            }
+
+            if (attr2Visible != 0) {
+                const int previousFlags = *lightFlags;
+                resultFlags |= 8;
+                *lightFlags |= 9;
+                zColorRgb *color = SelectActiveLightColor(selectedFogLightIndex);
+                if ((previousFlags & 1) != 0) {
+                    zVideo_SetPendingFogTargetColorFromRgb01((zVideo_ColorRgbFloat *)(color));
+                    zVideo::CommitFogTargetColorIfChanged();
+                } else {
+                    zVideo::SetFogColorFromRgb01((zVideo_ColorRgbFloat *)(color));
+                    zVideo::CommitFogColorIfChanged();
+                }
+            }
+        }
+
+        if (selectedFogLightIndex >= 0 && resultFlags != 0) {
+            *lightFlags |= 4;
+            zVideo_SetPendingFogTargetColorFromRgb01(
+                (zVideo_ColorRgbFloat *)(&gModel_ActiveLights[selectedFogLightIndex]
+                                              .light->specularColor));
+        }
+
+        return resultFlags | pointAttrsVisible;
+    }
+
     // Reimplements 0x487c50: zModel_Light::PointInPolygonTestRadiusXZ
     RECOIL_NOINLINE int RECOIL_FASTCALL PointInPolygonTestRadiusXZ(
         const zVec3 *sphereCenter, float radius) {

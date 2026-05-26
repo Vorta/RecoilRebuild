@@ -324,6 +324,7 @@ namespace {
 int g_clearSwCalls;
 int g_clearPrimaryCalls;
 int g_setVideoModeCalls;
+std::int32_t g_setVideoModeResult = 0x1234;
 zVidRect32 *g_lastClearSwSurfaceRect;
 zVidRect32 *g_lastClearSwZRect;
 zVidRect32 *g_lastClearPrimaryRect;
@@ -343,7 +344,7 @@ void RECOIL_FASTCALL ClearStateFake(zVidRect32 *rect, zVideo_SurfaceStatePartial
 
 std::int32_t RECOIL_FASTCALL SetVideoModeFake(std::int32_t) {
     ++g_setVideoModeCalls;
-    return 0x1234;
+    return g_setVideoModeResult;
 }
 } // namespace
 
@@ -537,6 +538,118 @@ extern "C" int zvideo_set_half_res_adjust_mode_smoke(void) {
                    g_bltPrimaryToSwDirectCalls == 1
                ? 0
                : 4;
+}
+
+extern "C" int zvideo_handle_software_mode_hotkey_smoke(void) {
+    int videoMode = 2;
+    int acceleration = 0;
+    int hudTypeSw = 2;
+    int hudTypeHw = 9;
+    int replicate = 0;
+    zOpt_ViewRectSection render{};
+    zOpt_ViewRectSection display{};
+    zOpt_ViewRectSection window{};
+    zOpt_ViewRectSection *renderPtr = &render;
+    zOpt_ViewRectSection *displayPtr = &display;
+    zOpt_ViewRectSection *windowPtr = &window;
+
+    int *const oldVideoMode = ZOPT_VIDEO_MODE;
+    int *const oldAcceleration = ZOPT_VIDEO_ACCELERATION;
+    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
+    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
+    int *const oldReplicate = ZOPT_REPLICATE;
+    zOpt_ViewRectSection **const oldRenderSection = g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection **const oldDisplaySection = g_zOpt_DisplaySectionOption;
+    zOpt_ViewRectSection **const oldWindowSection = g_zOpt_WindowSectionOption;
+    const int oldHwMode = g_zOpt_HwMode;
+    const int oldLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
+    zVideo_StatusProc oldSetVideoMode = g_zVideo_pfnSetVideoMode;
+    const int oldHotkeyEnabled = g_zVideo_SoftwareModeHotkeyEnabled;
+    const int oldHalfRes = g_zVideo_HalfResAdjustMode;
+    const int oldUseHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const int oldRendererType = g_zVideo_RendererType;
+    zVideo_BltRectDirectProc oldBltPrimaryToSw = g_zVideo_pfnBltPrimaryToSwRectDirect;
+
+    ZOPT_VIDEO_MODE = &videoMode;
+    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    ZOPT_HUD_TYPE_HW = &hudTypeHw;
+    ZOPT_REPLICATE = &replicate;
+    g_zOpt_RenderSectionOption = &renderPtr;
+    g_zOpt_DisplaySectionOption = &displayPtr;
+    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zOpt_HwMode = 0;
+    g_HudUiMgrHudLayoutsInitialized = 0;
+    g_zVideo_pfnSetVideoMode = SetVideoModeFake;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_RendererType = 0;
+    g_zVideo_pfnBltPrimaryToSwRectDirect = BltPrimaryToSwDirectFake;
+
+    g_zVideo_SoftwareModeHotkeyEnabled = 0;
+    g_setVideoModeCalls = 0;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const bool disabledOk = g_setVideoModeCalls == 0 && videoMode == 2 && hudTypeSw == 2;
+
+    g_zVideo_SoftwareModeHotkeyEnabled = 1;
+    g_setVideoModeResult = 0;
+    g_setVideoModeCalls = 0;
+    g_zVideo_HalfResAdjustMode = 0;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const bool fullResOk = g_setVideoModeCalls == 1 && videoMode == 4 &&
+                           g_zVideo_HalfResAdjustMode == 1 && hudTypeSw == 2 &&
+                           render.width == 640 && render.height == 400 && replicate == 0;
+
+    videoMode = 3;
+    g_setVideoModeCalls = 0;
+    g_zVideo_HalfResAdjustMode = 1;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const bool halfResOk = g_setVideoModeCalls == 1 && videoMode == 2 &&
+                           g_zVideo_HalfResAdjustMode == 1 &&
+                           g_zVideo_UseHalfResBackbuffer == 1 && hudTypeSw == 2 &&
+                           render.width == 320 && render.height == 200 && replicate == 1;
+
+    videoMode = 4;
+    g_setVideoModeResult = 7;
+    g_setVideoModeCalls = 0;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const bool failureOk = g_setVideoModeCalls == 1 && videoMode == 4 && hudTypeSw == 2;
+
+    videoMode = 6;
+    g_setVideoModeCalls = 0;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const bool unsupportedOk = g_setVideoModeCalls == 0 && videoMode == 6 && hudTypeSw == 2;
+
+    ZOPT_VIDEO_MODE = oldVideoMode;
+    ZOPT_VIDEO_ACCELERATION = oldAcceleration;
+    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
+    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
+    ZOPT_REPLICATE = oldReplicate;
+    g_zOpt_RenderSectionOption = oldRenderSection;
+    g_zOpt_DisplaySectionOption = oldDisplaySection;
+    g_zOpt_WindowSectionOption = oldWindowSection;
+    g_zOpt_HwMode = oldHwMode;
+    g_HudUiMgrHudLayoutsInitialized = oldLayoutsInitialized;
+    g_zVideo_pfnSetVideoMode = oldSetVideoMode;
+    g_zVideo_SoftwareModeHotkeyEnabled = oldHotkeyEnabled;
+    g_zVideo_HalfResAdjustMode = oldHalfRes;
+    g_zVideo_UseHalfResBackbuffer = oldUseHalfResBackbuffer;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_pfnBltPrimaryToSwRectDirect = oldBltPrimaryToSw;
+    g_setVideoModeResult = 0x1234;
+
+    if (!disabledOk) {
+        return 1;
+    }
+    if (!fullResOk) {
+        return 2;
+    }
+    if (!halfResOk) {
+        return 3;
+    }
+    if (!failureOk) {
+        return 4;
+    }
+    return unsupportedOk ? 0 : 5;
 }
 
 extern "C" int zvideo_adjust_surfaces_if_enabled_smoke(void) {

@@ -1,5 +1,7 @@
 #include "GameZRecoil/zError/zError.h"
+#include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zVideo/zVideo.h"
 #include "zDi.h"
 
 #include <math.h>
@@ -561,6 +563,40 @@ namespace zModel_Material {
         cycle = material->cycle;
         ++cycle->frameWriteCount;
         return 1;
+    }
+
+    // Reimplements 0x481140: zModel_Material::UpdateCycleIfNeeded
+    // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCycleIfNeeded(
+        zModel_MaterialPartial * material) {
+        zModel_MaterialCyclePartial *cycle = material->cycle;
+        if (cycle == 0) {
+            zError::ReportOld(0x200, "D:\\Proj\\GameZRecoil\\zModel\\gmod_matl.c", 0x5ca,
+                              "Material Cycle Pointer is NULL: flag is (%s)",
+                              (material->flags & 0x0400) != 0 ? "TRUE" : "FALSE");
+            return;
+        }
+
+        if (cycle->lastUpdateFrameTick == g_zVideo_FrameTick) {
+            return;
+        }
+
+        const int frameIndex = static_cast<int>(cycle->currentFrame) % cycle->frameCount;
+        material->currentTextureDirectoryEntry = cycle->frameTable[frameIndex];
+        cycle->currentFrame += cycle->framesPerSecond * g_FrameDeltaTimeSec;
+
+        cycle = material->cycle;
+        if (cycle->loopEnabled == 0 && static_cast<float>(cycle->frameCount) <= cycle->currentFrame) {
+            cycle->currentFrame = static_cast<float>(cycle->frameCount - 1);
+        }
+
+        cycle = material->cycle;
+        if (cycle->currentFrame < 0.0f) {
+            cycle->currentFrame +=
+                static_cast<float>(static_cast<int>(fabs(cycle->framesPerSecond)) * cycle->frameCount);
+        }
+
+        material->cycle->lastUpdateFrameTick = g_zVideo_FrameTick;
     }
 
     // Reimplements 0x481220: zModel_Material::SetCycleTextureLoop

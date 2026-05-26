@@ -25,6 +25,27 @@ void EnsureZrdrFreePool() {
         g_zUtil_ZRDR_FreePool = zArchiveList_CreateEmpty();
     }
 }
+
+bool EnterSupportDirectoryForRetailZbdTest(char *oldDir, DWORD oldDirSize) {
+    if (GetCurrentDirectoryA(oldDirSize, oldDir) == 0) {
+        return false;
+    }
+
+    const char *candidates[] = {
+        "support",
+        "..\\..\\..\\..\\support",
+    };
+    for (int i = 0; i < static_cast<int>(sizeof(candidates) / sizeof(candidates[0])); ++i) {
+        const DWORD attributes = GetFileAttributesA(candidates[i]);
+        if (attributes != INVALID_FILE_ATTRIBUTES &&
+            (attributes & FILE_ATTRIBUTE_DIRECTORY) != 0 &&
+            SetCurrentDirectoryA(candidates[i]) != 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
 } // namespace
 
 extern "C" int zreader_named_int_lookup_smoke(void) {
@@ -86,15 +107,21 @@ extern "C" int zreader_named_string_float_lookup_smoke(void) {
     stringArray[1].type = zReader::ZRDR_NODE_STRING;
     stringArray[1].value.str = const_cast<char *>("wrapped");
 
-    zReader::Node floatArray[2] = {};
-    floatArray[0].type = zReader::ZRDR_NODE_INT;
-    floatArray[0].value.i32 = 2;
-    floatArray[1].type = zReader::ZRDR_NODE_INT;
-    floatArray[1].value.i32 = 9;
+    zReader::Node intFloatArray[2] = {};
+    intFloatArray[0].type = zReader::ZRDR_NODE_INT;
+    intFloatArray[0].value.i32 = 2;
+    intFloatArray[1].type = zReader::ZRDR_NODE_INT;
+    intFloatArray[1].value.i32 = 9;
 
-    zReader::Node rootChildren[9] = {};
+    zReader::Node directFloatArray[2] = {};
+    directFloatArray[0].type = zReader::ZRDR_NODE_INT;
+    directFloatArray[0].value.i32 = 2;
+    directFloatArray[1].type = zReader::ZRDR_NODE_FLOAT;
+    directFloatArray[1].value.f32 = 2.25f;
+
+    zReader::Node rootChildren[13] = {};
     rootChildren[0].type = zReader::ZRDR_NODE_INT;
-    rootChildren[0].value.i32 = 9;
+    rootChildren[0].value.i32 = 13;
     rootChildren[1].type = zReader::ZRDR_NODE_STRING;
     rootChildren[1].value.str = const_cast<char *>("directString");
     rootChildren[2].type = zReader::ZRDR_NODE_STRING;
@@ -110,7 +137,15 @@ extern "C" int zreader_named_string_float_lookup_smoke(void) {
     rootChildren[7].type = zReader::ZRDR_NODE_STRING;
     rootChildren[7].value.str = const_cast<char *>("arrayFloat");
     rootChildren[8].type = zReader::ZRDR_NODE_ARRAY;
-    rootChildren[8].value.nodes = floatArray;
+    rootChildren[8].value.nodes = intFloatArray;
+    rootChildren[9].type = zReader::ZRDR_NODE_STRING;
+    rootChildren[9].value.str = const_cast<char *>("directIntFloat");
+    rootChildren[10].type = zReader::ZRDR_NODE_INT;
+    rootChildren[10].value.i32 = 4;
+    rootChildren[11].type = zReader::ZRDR_NODE_STRING;
+    rootChildren[11].value.str = const_cast<char *>("arrayDirectFloat");
+    rootChildren[12].type = zReader::ZRDR_NODE_ARRAY;
+    rootChildren[12].value.nodes = directFloatArray;
 
     zReader::Node root = {};
     root.type = zReader::ZRDR_NODE_ARRAY;
@@ -128,11 +163,26 @@ extern "C" int zreader_named_string_float_lookup_smoke(void) {
     }
 
     value = 0.0f;
-    if (zReader::ReadNamedFloat(&root, "arrayFloat", &value) != 1 || value != 9.0f) {
+    if (zReader::ReadNamedFloat(&root, "directIntFloat", &value) != 1 || value != 4.0f) {
         return 3;
     }
 
-    return zReader::ReadNamedFloat(&root, "missingFloat", &value) == 0 ? 0 : 4;
+    value = 0.0f;
+    if (zReader::ReadNamedFloat(&root, "arrayFloat", &value) != 1 || value != 9.0f) {
+        return 4;
+    }
+
+    value = 0.0f;
+    if (zReader::ReadNamedFloat(&root, "arrayDirectFloat", &value) != 1 ||
+        value != 2.25f) {
+        return 5;
+    }
+
+    value = 123.0f;
+    return zReader::ReadNamedFloat(&root, "missingFloat", &value) == 0 &&
+                   value == 123.0f
+               ? 0
+               : 6;
 }
 
 extern "C" int zreader_global_string_prefix_index_smoke(void) {
@@ -589,6 +639,61 @@ extern "C" int zreader_zrdr_shutdown_smoke(void) {
                : 3;
 }
 
+extern "C" int zreader_zrdr_wildcard_path_smoke(void) {
+    if (zUtil_ZRDR_InitWildcardPath(nullptr) != nullptr) {
+        return 1;
+    }
+
+    char noWildcard[] = "Turret";
+    if (zUtil_ZRDR_InitWildcardPath(noWildcard) != nullptr ||
+        g_zUtil_ZRDR_WildcardStarCount != 0 ||
+        zUtil_ZRDR_NextWildcardPath() != noWildcard) {
+        return 2;
+    }
+
+    char oneWildcard[] = "Turret_*";
+    if (zUtil_ZRDR_InitWildcardPath(oneWildcard) != oneWildcard ||
+        std::strcmp(oneWildcard, "Turret_0") != 0 ||
+        g_zUtil_ZRDR_WildcardStarCount != 1 ||
+        zUtil_ZRDR_NextWildcardPath() != oneWildcard ||
+        std::strcmp(oneWildcard, "Turret_1") != 0) {
+        return 3;
+    }
+
+    for (int i = 0; i < 8; ++i) {
+        zUtil_ZRDR_NextWildcardPath();
+    }
+    if (std::strcmp(oneWildcard, "Turret_9") != 0 ||
+        zUtil_ZRDR_NextWildcardPath() != nullptr) {
+        return 4;
+    }
+
+    char twoWildcards[] = "T**";
+    if (zUtil_ZRDR_InitWildcardPath(twoWildcards) != twoWildcards ||
+        std::strcmp(twoWildcards, "T00") != 0 ||
+        zUtil_ZRDR_NextWildcardPath() != twoWildcards ||
+        std::strcmp(twoWildcards, "T01") != 0) {
+        return 5;
+    }
+    for (int i = 0; i < 8; ++i) {
+        zUtil_ZRDR_NextWildcardPath();
+    }
+    if (std::strcmp(twoWildcards, "T09") != 0 ||
+        zUtil_ZRDR_NextWildcardPath() != twoWildcards ||
+        std::strcmp(twoWildcards, "T10") != 0) {
+        return 6;
+    }
+
+    char sixWildcards[] = "******";
+    if (zUtil_ZRDR_InitWildcardPath(sixWildcards) != sixWildcards ||
+        std::strcmp(sixWildcards, "*00000") != 0 ||
+        g_zUtil_ZRDR_WildcardStarPtrs[4] != &sixWildcards[1]) {
+        return 7;
+    }
+
+    return 0;
+}
+
 extern "C" int zreader_zrdr_free_node_pool_smoke(void) {
     g_zUtil_ZRDR_FreePool = nullptr;
     g_zUtil_ZRDR_TotalAllocated = 0;
@@ -658,6 +763,120 @@ extern "C" int zreader_mount_index_archive_smoke(void) {
     g_zArchive_Current = nullptr;
     DeleteFileA(tempPath);
     return mountOk && archiveOk ? 0 : 3;
+}
+
+extern "C" int zreader_retail_zrdr_archives_smoke(void) {
+    char oldDir[MAX_PATH] = {};
+    if (!EnterSupportDirectoryForRetailZbdTest(oldDir, sizeof(oldDir))) {
+        return 1;
+    }
+
+    EnsureZrdrFreePool();
+    g_zArchive_MountedList = zArchiveList_CreateEmpty();
+    g_zArchive_Current = nullptr;
+    if (g_zArchive_MountedList == nullptr) {
+        SetCurrentDirectoryA(oldDir);
+        return 2;
+    }
+
+    int result = 0;
+    zReader::Node *soundsRoot = nullptr;
+    zReader::Node *fontsRoot = nullptr;
+    zReader::Node *objectivesRoot = nullptr;
+
+    if (zArchive::MountIndexArchive("zbd\\zrdr.zbd", 1) != 1 ||
+        zArchive::MountIndexArchive("zbd\\m1\\zrdr.zbd", 0) != 1 ||
+        g_zArchive_MountedList->count != 2 || g_zArchive_Current == nullptr) {
+        result = 3;
+        goto cleanup;
+    }
+
+    {
+        zIndexArchive *const commonArchive = reinterpret_cast<zIndexArchive *>(g_zArchive_Current);
+        zIndexArchive *const missionArchive =
+            static_cast<zIndexArchive *>(zArchiveList_GetAt(g_zArchive_MountedList, 1));
+        if (commonArchive == nullptr || missionArchive == nullptr ||
+            commonArchive->recordCount != 127 || missionArchive->recordCount != 149) {
+            result = 4;
+            goto cleanup;
+        }
+
+        zZarFileRecord *const soundsRecord = commonArchive->FindRecordByNameCI("SOUNDS.ZRD");
+        zZarFileRecord *const fontsRecord = commonArchive->FindRecordByNameCI("fonts.zrd");
+        zZarFileRecord *const objectivesRecord =
+            missionArchive->FindRecordByNameCI("objectives.zrd");
+        if (soundsRecord == nullptr || soundsRecord->fileSize != 59910 ||
+            fontsRecord == nullptr || fontsRecord->fileSize != 86 ||
+            objectivesRecord == nullptr || objectivesRecord->fileSize != 1139) {
+            result = 5;
+            goto cleanup;
+        }
+
+        char fontsBuffer[128] = {};
+        unsigned int fontsBufferSize = sizeof(fontsBuffer);
+        if (commonArchive->ReadFileByName("FONTS.ZRD", fontsBuffer, &fontsBufferSize) != 0 ||
+            fontsBufferSize != 86) {
+            result = 6;
+            goto cleanup;
+        }
+
+        char smallBuffer[16] = {};
+        unsigned int smallBufferSize = sizeof(smallBuffer);
+        if (commonArchive->ReadFileByName("sounds.zrd", smallBuffer, &smallBufferSize) !=
+                0x10002 ||
+            smallBufferSize != 59910) {
+            result = 7;
+            goto cleanup;
+        }
+    }
+
+    soundsRoot = zReader::LoadNodeFromPath("C:\\retail\\sounds.zrd");
+    {
+        int syntax = 0;
+        const char *const soundPath =
+            soundsRoot != nullptr ? zReader::ReadNamedString(soundsRoot, "SOUND_PATH") : nullptr;
+        if (soundsRoot == nullptr || zReader::ReadNamedInt(soundsRoot, "SYNTAX", &syntax) != 1 ||
+            syntax != 2 || soundPath == nullptr ||
+            std::strcmp(soundPath, "..\\data\\common\\sounds") != 0) {
+            result = 8;
+            goto cleanup;
+        }
+    }
+
+    fontsRoot = zReader::LoadNodeFromPath("fonts.zrd");
+    {
+        const char *const fonts =
+            fontsRoot != nullptr ? zReader::ReadNamedString(fontsRoot, "FONTS") : nullptr;
+        if (fontsRoot == nullptr || fonts == nullptr ||
+            std::strcmp(fonts, "lucida_console_8") != 0) {
+            result = 9;
+            goto cleanup;
+        }
+    }
+
+    objectivesRoot = zReader::LoadNodeFromPath("objectives.zrd");
+    {
+        int readTime = 0;
+        if (objectivesRoot == nullptr ||
+            zReader::ReadNamedInt(objectivesRoot, "READ_TIME", &readTime) != 1 ||
+            readTime != 8) {
+            result = 10;
+            goto cleanup;
+        }
+    }
+
+cleanup:
+    zReader::FreeLoadedTree(objectivesRoot);
+    zReader::FreeLoadedTree(fontsRoot);
+    zReader::FreeLoadedTree(soundsRoot);
+    if (g_zArchive_MountedList != nullptr) {
+        zUtil_ZRDR_UnloadMountedArchives(1);
+        zArchiveList_Destroy(g_zArchive_MountedList);
+    }
+    g_zArchive_MountedList = nullptr;
+    g_zArchive_Current = nullptr;
+    SetCurrentDirectoryA(oldDir);
+    return result;
 }
 
 extern "C" int zreader_index_archive_flush_close_smoke(void) {

@@ -656,7 +656,16 @@ extern "C" int zinput_bindmap_context_smoke(void) {
     }
 
     g_bindMapDispatchCallbackCount = 0;
-    context.m_commandCallbacks[1] = BindMapContextCountingCallback;
+    if (zInput::BindMap_Current_SetCommandCallback(1, BindMapContextCountingCallback) != 1 ||
+        context.m_commandCallbacks[1] != BindMapContextCountingCallback ||
+        g_zInputKbdKeyDispatchTable[0x20].callback == nullptr ||
+        g_zInputKbdKeyDispatchTable[0x21].callback == nullptr) {
+        g_zInput_BindMap_Current = nullptr;
+        context.FreeNonOwnedBuffers();
+        FreeOptionList();
+        return 8;
+    }
+
     context.m_commandCallbacks[2] = BindMapContextCountingCallback;
     g_zInput_MouseStateSnapshot.button1Transition = 1;
     g_zInput_MouseStateSnapshot.button2Transition = 1;
@@ -1197,6 +1206,11 @@ extern "C" int zinput_keyboard_wait_for_key_press_smoke(void) {
     if (zInput_WaitForAnyKeyPressWithTimeoutMs(0) != 0 ||
         zInput_WaitForAnyKeyPressWithTimeoutMs(1000) != 1) {
         return 8;
+    }
+
+    getDeviceDataCount = 0;
+    if (zInput_WaitForAnyKeyPressWithTimeoutMs(100) != 0) {
+        return 9;
     }
 
     return 0;

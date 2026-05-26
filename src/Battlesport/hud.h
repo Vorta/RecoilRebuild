@@ -32,6 +32,7 @@ struct HudUiNewGamePanel;
 struct HudUiOptionsPanel;
 struct HudUiBackgroundConfirmQuit;
 struct HudUiControlsDialog;
+struct HudUiCheatCodeDialog;
 struct zSndSample;
 struct zSndPlayHandleSnapshot;
 
@@ -83,13 +84,29 @@ struct RecoilStateControls : RecoilApp_IState {
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateControls) == 0x08);
 
+struct RecoilStateCheatCode : RecoilApp_IState {
+    RecoilPtr32 m_dialog; // HudUiCheatCodeDialog*
+    zVideoHalfResAdjustMode m_prevHalfResAdjustMode;
+    RecoilPtr32 m_audioSnapshot; // zSndPlayHandleSnapshot*
+};
+RECOIL_STATIC_ASSERT(sizeof(RecoilStateCheatCode) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateCheatCode, m_prevHalfResAdjustMode) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateCheatCode, m_audioSnapshot) == 0x0c);
+
 extern HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 extern HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
 extern RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
 extern RecoilStateControls g_RecoilStateControls;
+extern RecoilStateCheatCode g_RecoilStateCheatCode;
 extern zSndSample *g_Hud_LowMeterBeepSample;
 extern zSndSample *g_Hud_LowMeterLoopSample;
 extern int g_Hud_LowMeterLoopActive;
+extern float g_Hud_LowMeterBeepInterval;
+extern float g_Hud_LowMeterNextBeepTime;
+
+namespace HudUiCallback {
+int RECOIL_CDECL QueueCheatCodeState();
+}
 
 namespace HudLowMeterLoopSound {
 RECOIL_NOINLINE void RECOIL_FASTCALL SetLoopActive(int enabled);

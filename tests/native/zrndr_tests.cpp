@@ -35,6 +35,7 @@ int g_texturedQueuedLastTexU = 0;
 int g_texturedQueuedLastTexV = 0;
 int g_texturedQueuedLastPixelCount = 0;
 int g_texturedQueuedLastVShift = 0;
+int g_testFogColorUpdateCount = 0;
 
 void RECOIL_FASTCALL TestImmediateRaster4(void *frameBuffer, int x0, int y0, int x1, int y1,
                                           int color16) {
@@ -45,6 +46,10 @@ void RECOIL_FASTCALL TestImmediateRaster4(void *frameBuffer, int x0, int y0, int
     g_lineArgs[2] = x1;
     g_lineArgs[3] = y1;
     g_lineArgs[4] = color16;
+}
+
+void RECOIL_CDECL TestUpdateFogColor(void) {
+    ++g_testFogColorUpdateCount;
 }
 
 void RECOIL_FASTCALL TestImmediateRaster5(void *frameBuffer, const void *clipRect, int x0, int y0,
@@ -517,6 +522,66 @@ extern "C" int zrndr_lens_flare_stage_helpers_smoke(void) {
                    zRndr::g_lensFlareVisibleSampleStages[2] == nullptr
                ? 0
                : 8;
+}
+
+extern "C" int zvideo_fog_color_commit_smoke(void) {
+    g_testFogColorUpdateCount = 0;
+    g_zVideo_pfnUpdateFogColor = TestUpdateFogColor;
+    g_zVideo_FogColorAppliedR255 = 10.0f;
+    g_zVideo_FogColorAppliedG255 = 20.0f;
+    g_zVideo_FogColorAppliedB255 = 30.0f;
+
+    zVideo_ColorRgbFloat color{10.0f / 255.0f, 20.0f / 255.0f, 30.0f / 255.0f};
+    zVideo::SetFogColorFromRgb01(&color);
+    zVideo::CommitFogColorIfChanged();
+    if (g_testFogColorUpdateCount != 0) {
+        return 1;
+    }
+
+    color = {0.5f, 0.25f, 1.0f};
+    zVideo::SetFogColorFromRgb01(&color);
+    zVideo::CommitFogColorIfChanged();
+    if (g_testFogColorUpdateCount != 1 || g_zVideo_FogColorPendingR255 != 127.5f ||
+        g_zVideo_FogColorPendingG255 != 63.75f || g_zVideo_FogColorPendingB255 != 255.0f ||
+        g_zVideo_FogColorAppliedR255 != 127.5f ||
+        g_zVideo_FogColorAppliedG255 != 63.75f ||
+        g_zVideo_FogColorAppliedB255 != 255.0f) {
+        return 2;
+    }
+
+    zVideo::CommitFogColorIfChanged();
+    return g_testFogColorUpdateCount == 1 ? 0 : 3;
+}
+
+extern "C" int zvideo_fog_target_color_commit_smoke(void) {
+    g_testFogColorUpdateCount = 0;
+    g_zVideo_pfnUpdateFogColor = TestUpdateFogColor;
+    g_zVideo_FogColorAppliedR255 = 10.0f;
+    g_zVideo_FogColorAppliedG255 = 20.0f;
+    g_zVideo_FogColorAppliedB255 = 30.0f;
+    g_zVideo_FogTargetColorR255 = 10.0f;
+    g_zVideo_FogTargetColorG255 = 20.0f;
+    g_zVideo_FogTargetColorB255 = 30.0f;
+
+    zVideo::CommitFogTargetColorIfChanged();
+    if (g_testFogColorUpdateCount != 0) {
+        return 1;
+    }
+
+    zVideo_ColorRgbFloat color{0.25f, 0.5f, 1.0f};
+    zVideo::SetFogTargetColorFromRgb01(&color);
+    zVideo::CommitFogTargetColorIfChanged();
+    if (g_testFogColorUpdateCount != 1 || g_zVideo_FogTargetColorR255 != 63.75f ||
+        g_zVideo_FogTargetColorG255 != 127.5f ||
+        g_zVideo_FogTargetColorB255 != 255.0f ||
+        g_zVideo_FogColorAppliedR255 != 63.75f ||
+        g_zVideo_FogColorAppliedG255 != 127.5f ||
+        g_zVideo_FogColorAppliedB255 != 255.0f) {
+        return 2;
+    }
+
+    zVideo::CommitFogTargetColorIfChanged();
+    return g_testFogColorUpdateCount == 1 ? 0 : 3;
 }
 
 extern "C" int zrndr_span_occlusion_filter_sample_list_smoke(void) {

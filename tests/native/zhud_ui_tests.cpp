@@ -1104,6 +1104,123 @@ extern "C" int zhud_mgr_enable_hud_smoke(void) {
     return dispatch && objectiveVisible && clipState ? 0 : 1;
 }
 
+extern "C" int zhud_mgr_toggle_hud_smoke(void) {
+    HudUiCommon_FTable visibleTable{};
+    visibleTable.slots[24] = MethodAddress(&TestDisableVisibleReceiver::SetVisible);
+
+    HudUiContainer_FTable containerTable{};
+    AssignMethodSlot(containerTable.setEnabled, &TestDisableContainer::SetEnabled);
+
+    HudLayoutBase_FTable layoutTable{};
+    layoutTable.slots[4] = MethodAddress(&TestEnableLayout::Enable);
+    layoutTable.slots[5] = MethodAddress(&TestDisableLayout::Disable);
+    HudLayoutBase layout{};
+    layout.ftable = &layoutTable;
+
+    HudUiPanel_FTable panelTable{};
+    panelTable.slots[24] = MethodAddress(&TestDisableVisibleReceiver::SetVisible);
+    HudUiPanel descPanel{};
+    HudUiPanel summaryPanel{};
+    HudUiPanel labelPanel{};
+    descPanel.vtbl = &panelTable;
+    summaryPanel.vtbl = &panelTable;
+    labelPanel.vtbl = &panelTable;
+
+    HudUiTimerPanel timerPanel{};
+    *reinterpret_cast<const HudUiCommon_FTable **>(&timerPanel) = &visibleTable;
+
+    for (HudUiSlot &slot : g_HudUiMgrWeaponSlots) {
+        slot.slotWidget.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&visibleTable);
+        slot.trackMarkerWidget.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&visibleTable);
+    }
+
+    std::memset(g_disableVisibleThis, 0, sizeof(g_disableVisibleThis));
+    std::memset(g_disableVisibleValue, 0, sizeof(g_disableVisibleValue));
+    g_disableVisibleCount = 0;
+    g_disableSetEnabledCount = 0;
+    g_disableSetEnabledValue = -1;
+    g_disableLayoutDisableCount = 0;
+    g_enableLayoutEnableCount = 0;
+
+    g_HudUiMgr = {};
+    g_HudUiMgr.vptr = &containerTable;
+    g_HudUiMgr.enabled = 1;
+    g_HudUiMgrCurrentLayout = &layout;
+    g_HudUiMgrObjectiveWidget.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&visibleTable);
+    g_HudUiMgrObjectiveBar.ftable = reinterpret_cast<const HudUiBar_FTable *>(&visibleTable);
+    g_HudUiMgrObjectiveSensorRect.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&visibleTable);
+    g_HudUiMgrObjectiveMeter.ftable = reinterpret_cast<const HudUiMeter_FTable *>(&visibleTable);
+    g_HudUiMgrObjectiveDescTextPanel = &descPanel;
+    g_HudUiMgrObjectiveSummaryTextPanel = &summaryPanel;
+    g_HudUiMgrObjectiveLabelTextPanel = &labelPanel;
+    g_HudUiMgrTimerPanel = &timerPanel;
+    gAltClipPassEnabled = 5;
+    std::int32_t accelerationOption = 1;
+    std::int32_t hudTypeSw = 2;
+    ZOPT_VIDEO_ACCELERATION = &accelerationOption;
+    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    g_zOpt_HwMode = 0;
+
+    const int disabledReturn = HudUiMgr::ToggleHud();
+    const bool disabledPath = disabledReturn == 1 && g_disableLayoutDisableCount == 1 &&
+                              g_enableLayoutEnableCount == 0 && g_disableSetEnabledCount == 1 &&
+                              g_disableSetEnabledValue == 0 &&
+                              g_HudUiMgrLayoutDelayFrames == 2 && gAltClipPassEnabled == 0;
+
+    g_disableVisibleCount = 0;
+    g_disableSetEnabledCount = 0;
+    g_disableSetEnabledValue = -1;
+    g_disableLayoutDisableCount = 0;
+    g_enableLayoutEnableCount = 0;
+    g_HudUiMgr = {};
+    g_HudUiMgr.vptr = &containerTable;
+    g_HudUiMgr.enabled = 0;
+    g_HudUiMgrCurrentLayout = &layout;
+    g_HudUiMgrObjectiveWidget.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&visibleTable);
+    g_HudUiMgrObjectivePhase = 0;
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect.left = 2.0f;
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect.top = 3.0f;
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect.right = 22.0f;
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect.bottom = 33.0f;
+    gAltClipPassEnabled = 0;
+    gAltClipSourceRectValid = 0;
+
+    const int enabledReturn = HudUiMgr::ToggleHud();
+    int enabledFailure = 0;
+    if (enabledReturn != 1) {
+        enabledFailure = 20;
+    } else if (g_enableLayoutEnableCount != 1) {
+        enabledFailure = 21;
+    } else if (g_disableLayoutDisableCount != 0) {
+        enabledFailure = 22;
+    } else if (g_disableSetEnabledCount != 0) {
+        enabledFailure = 23;
+    } else if (g_HudUiMgr.enabled != 1) {
+        enabledFailure = 25;
+    } else if (gAltClipPassEnabled != 1) {
+        enabledFailure = 26;
+    } else if (gAltClipSourceRectValid != 1) {
+        enabledFailure = 27;
+    }
+
+    g_HudUiMgrCurrentLayout = nullptr;
+    g_HudUiMgrObjectiveDescTextPanel = nullptr;
+    g_HudUiMgrObjectiveSummaryTextPanel = nullptr;
+    g_HudUiMgrObjectiveLabelTextPanel = nullptr;
+    g_HudUiMgrTimerPanel = nullptr;
+    ZOPT_VIDEO_ACCELERATION = nullptr;
+    ZOPT_HUD_TYPE_SW = nullptr;
+    g_HudUiMgrObjectivePhase = 0;
+    gAltClipPassEnabled = 0;
+    gAltClipSourceRectValid = 0;
+
+    if (!disabledPath) {
+        return 1;
+    }
+    return enabledFailure == 0 ? 0 : enabledFailure;
+}
+
 extern "C" int zhud_mgr_switch_active_dialog_smoke(void) {
     HudLayoutBase_FTable disabledOldTable{};
     disabledOldTable.slots[2] = MethodAddress(&TestLayoutSetActiveElement::SetActive);
@@ -8891,4 +9008,32 @@ extern "C" int zhud_mgr_shutdown_resources_smoke(void) {
     }
 
     return cleared ? 0 : 1;
+}
+
+extern "C" int zhud_sensor_track_list_add_smoke(void) {
+    g_HudUiMgrSensor_TrackList = {};
+    g_HudUiMgrSensor_TrackList.trackListAux = 77;
+    int payloadA = 11;
+    int payloadB = 22;
+
+    HudUiMgrSensorTrackNode *const nodeA =
+        HudUiMgrSensor::TrackList_Add(HUD_SENSOR_TRACK_KIND_PLAYER, &payloadA);
+    const bool first =
+        nodeA != nullptr && nodeA->trackKind == HUD_SENSOR_TRACK_KIND_PLAYER &&
+        nodeA->payload == &payloadA && nodeA->next == nullptr &&
+        g_HudUiMgrSensor_TrackList.head == nodeA && g_HudUiMgrSensor_TrackList.tail == nodeA &&
+        g_HudUiMgrSensor_TrackList.count == 1 && g_HudUiMgrSensor_TrackList.trackListAux == 77;
+
+    HudUiMgrSensorTrackNode *const nodeB =
+        HudUiMgrSensor::TrackList_Add(HUD_SENSOR_TRACK_KIND_TURRET, &payloadB);
+    const bool second =
+        nodeB != nullptr && nodeB->trackKind == HUD_SENSOR_TRACK_KIND_TURRET &&
+        nodeB->payload == &payloadB && nodeB->next == nullptr && nodeA->next == nodeB &&
+        g_HudUiMgrSensor_TrackList.head == nodeA && g_HudUiMgrSensor_TrackList.tail == nodeB &&
+        g_HudUiMgrSensor_TrackList.count == 2 && g_HudUiMgrSensor_TrackList.trackListAux == 77;
+
+    std::free(nodeA);
+    std::free(nodeB);
+    g_HudUiMgrSensor_TrackList = {};
+    return first && second ? 0 : 1;
 }

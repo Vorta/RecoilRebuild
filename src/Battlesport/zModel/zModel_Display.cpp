@@ -738,6 +738,34 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
 } // namespace zModel_MatlBuffer
 
 namespace zModel_Matl {
+// Reimplements 0x480ae0: zModel_Matl::InitGlobals
+// (GameZRecoil/zModel/zModel_Matl.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL InitGlobals() {
+    if (g_zModel_MatlPoolCapacity == 0) {
+        g_zModel_MatlPoolCapacity = 2500;
+    }
+
+    const size_t poolBytes =
+        static_cast<size_t>(g_zModel_MatlPoolCapacity) * sizeof(zModel_MaterialSlot);
+    g_zModel_MatlPool = static_cast<zModel_MaterialSlot *>(malloc(poolBytes));
+    memset(g_zModel_MatlPool, 0, poolBytes);
+
+    g_zModel_MatlFreeHeadIndex = 0;
+    if (g_zModel_MatlPoolCapacity > 0) {
+        for (int i = 0; i < g_zModel_MatlPoolCapacity; ++i) {
+            g_zModel_MatlPool[i].prevPoolIndex =
+                static_cast<short>(i == 0 ? -1 : i - 1);
+            g_zModel_MatlPool[i].nextPoolIndex =
+                static_cast<short>(i == g_zModel_MatlPoolCapacity - 1 ? -1 : i + 1);
+        }
+    }
+
+    g_zModel_MatlActiveHeadIndex = -1;
+    g_zModel_MatlPoolInUseCount = 0;
+    zModel_Material::ResetDefaults(&g_zModel_DefaultMaterial);
+    return 0;
+}
+
 // Reimplements 0x4805e0: zModel_Matl::GetPoolEntry
 RECOIL_NOINLINE zModel_MaterialSlot *RECOIL_FASTCALL GetPoolEntry(int index) {
     if (index < 0) {

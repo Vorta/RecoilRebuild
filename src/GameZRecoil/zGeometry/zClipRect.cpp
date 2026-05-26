@@ -6,7 +6,8 @@
 
 zClipVert g_Clip_PolyVerts[0x40] = {0};
 zClipVert g_Clip_PolyVertsScratch[0x40] = {0};
-zClipUV *g_Clip_PolyUvs = 0;
+zClipUV g_Clip_PolyUvsStorage[0x40] = {0};
+zClipUV *g_Clip_PolyUvs = g_Clip_PolyUvsStorage;
 zClipRectPartial gClipRect_Primary = {0};
 
 namespace {

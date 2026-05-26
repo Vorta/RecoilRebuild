@@ -124,6 +124,10 @@ extern int g_zUtil_ZRDR_FreeCount;
 extern int g_zUtil_ZRDR_GrowCount;
 extern char g_zReader_FileExtBuf[0x100];
 extern char g_zReader_FileNameBuf[0x100];
+extern char *g_zUtil_ZRDR_WildcardPath;
+extern int g_zUtil_ZRDR_WildcardDigits[5];
+extern int g_zUtil_ZRDR_WildcardStarCount;
+extern char *g_zUtil_ZRDR_WildcardStarPtrs[5];
 extern zClass_NodePartial *g_Mover_LastLoadedNode;
 extern int g_zRndr_GlobalStringCount;
 extern char *g_zRndr_GlobalStringTable[100];
@@ -173,6 +177,8 @@ zUtil_ZRDR_ResolvePathInSearchPathList(zArchiveList *searchPathList, const char 
 RECOIL_NOINLINE FILE *RECOIL_FASTCALL zUtil_ZRDR_OpenFileResolved(zArchiveList *searchPathList,
                                                                        const char *filename,
                                                                        const char *mode);
+RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_InitWildcardPath(char *pattern);
+RECOIL_NOINLINE char *RECOIL_CDECL zUtil_ZRDR_NextWildcardPath();
 RECOIL_NOINLINE zArchiveList *RECOIL_FASTCALL zUtil_ZRDR_CreateSearchPathList(const char *pathText);
 RECOIL_NOINLINE int RECOIL_FASTCALL zReader_FileExists_Wrapper(const char *path);
 RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_FindChildRecursive(zReader::Node *node,

@@ -1016,6 +1016,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TickResetDelayOnHit(zEffectAnimEntry *self,
                                                                  float damageAmount);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetConditionalRefPos(const zVec3 *position);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetConditionalEffectLevel(int level);
+RECOIL_NOINLINE void RECOIL_FASTCALL
+SetVariantOverridePackedIdsIfComplete(const zTag4Partial *packedIds);
 RECOIL_NOINLINE int RECOIL_CDECL SetAnimDebugFrameTag();
 RECOIL_NOINLINE float RECOIL_FASTCALL GetConditionalRefPosDistanceSq(zClass_NodePartial *node);
 RECOIL_NOINLINE int RECOIL_FASTCALL

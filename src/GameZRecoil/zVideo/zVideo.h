@@ -45,6 +45,7 @@ typedef zVideo_TextureRecordPartial * (RECOIL_FASTCALL *zVideo_CreateTextureReco
                        int clampU, int clampV);
 typedef void (RECOIL_FASTCALL *zVideo_DestroyTextureRecordProc)(zVideo_TextureRecordPartial *texture);
 typedef void (RECOIL_CDECL *zVideo_ReleaseAllTextureUploadSurfacesProc)();
+typedef void (RECOIL_CDECL *zVideo_UpdateFogColorProc)();
 
 struct zVidD3DDriverRecordPartial {
     char m_deviceName[0x20];
@@ -263,6 +264,7 @@ extern int g_zVideo_FullscreenOption;
 extern int g_zVideo_PrimaryHasAttachedBackbuffer;
 extern int g_zVideo_UseHalfResBackbuffer;
 extern int g_zVideo_HalfResAdjustMode;
+extern int g_zVideo_SoftwareModeHotkeyEnabled;
 extern int g_zVideo_CachedFogModeLightState;
 extern int g_zVideo_CachedFogEnableRenderState;
 extern float g_zVideo_CachedFogStartLightStateValue;
@@ -312,6 +314,7 @@ extern zVideo_BltRectDirectProc g_zVideo_pfnBltSwToPrimaryRectDirect;
 extern zVideo_BltRectDirectProc g_zVideo_pfnBltPrimaryToSwRectDirect;
 extern zVideo_ClearSwSurfaceAndZBufferProc g_zVideo_pfnClearSwSurfaceAndZBuffer;
 extern zVideo_ClearStateSurfaceAndZBufferProc g_zVideo_pfnClearStateSurfaceAndZBuffer;
+extern zVideo_UpdateFogColorProc g_zVideo_pfnUpdateFogColor;
 extern zVideo_CreateTextureRecordProc g_zVideo_pfnCreateTextureRecord;
 extern unsigned int g_zVideo_pfnTextureRecordLockUploadSurface;
 extern unsigned int g_zVideo_pfnTextureRecordUnlockUploadSurface;
@@ -319,7 +322,11 @@ extern unsigned int g_zVideo_pfnTextureRecordFinalizeUpload;
 extern unsigned int g_zVideo_pfnTextureRecordDestroy;
 extern unsigned int g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces;
 extern unsigned int g_zVideo_pfnImageEnsureSurfaceForCurrentDevice;
+extern unsigned int g_zVideo_pfnSubmitPolyFlatColor16;
+extern unsigned int g_zVideo_pfnSubmitPolyColorAttr;
 extern unsigned int g_zVideo_pfnSubmitPolyRenderClass;
+extern unsigned int g_zVideo_pfnSubmitPolygon;
+extern unsigned int g_zVideo_pfnSubmitPolygonLit;
 extern unsigned int g_zVideo_pfnDrawPointColor16;
 extern zVidHwApiDeviceRecordPartial g_zVideo_HwApiDeviceTable[4];
 extern zVidHwApiDeviceRecordPartial *g_zVideo_pSelectedHwApiDeviceRecord;
@@ -441,6 +448,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSourceToPrimaryClipped(zVidImagePartial 
 namespace zVideo {
 RECOIL_NOINLINE void RECOIL_FASTCALL SetFogColorFromRgb01(zVideo_ColorRgbFloat *color);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetFogTargetColorFromRgb01(zVideo_ColorRgbFloat *color);
+RECOIL_NOINLINE void RECOIL_CDECL CommitFogColorIfChanged();
+RECOIL_NOINLINE void RECOIL_CDECL CommitFogTargetColorIfChanged();
 RECOIL_NOINLINE void RECOIL_FASTCALL
 PixelPack_SetupFromMasks(int redBits, int greenBits, int blueBits,
                          unsigned int redMask, unsigned int greenMask, unsigned int blueMask);
@@ -460,6 +469,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetPackingParams(int *outPackedBa
 RECOIL_NOINLINE int RECOIL_FASTCALL
 SetRendererTypeAndActivePath(int rendererType);
 RECOIL_NOINLINE int RECOIL_FASTCALL SetHalfResAdjustMode(int mode);
+RECOIL_NOINLINE void RECOIL_FASTCALL HandleSoftwareModeHotkeyCommand(int commandId);
 RECOIL_NOINLINE zVidRect32 *RECOIL_CDECL GetPrimarySurfaceRectScratch();
 RECOIL_NOINLINE void *RECOIL_CDECL GetSwSurfacePixels();
 RECOIL_NOINLINE int RECOIL_CDECL GetSwSurfaceWidth();

@@ -27,6 +27,22 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 
 ## Active Groups
 
+### Group: OptCatalog runtime processing loop
+
+- Anchor: 0x4af060 OptCatalog::ProcessRuntimeInstances
+- Reason: source-file cluster; the runtime loop shares `OptCatalogEntryDef`, projectile runtime, trail runtime, queued impact, DI/raycast, sound, light, and timing state, and the source dependency gate is now clear.
+- Source blockers:
+  - none visible at depth 1; `0x4af060` now has native source and is blocked at the `Functional-equivalent` gate.
+- Next action:
+  - `python tools/recoil_status.py 0x4af060`
+  - Tighten and verify the remaining runtime/trail behavior against Binary Ninja: non-trail projectile movement/expiry, reflected trail segment updates, impact/audio side effects, and final lock-on warning timing.
+- Current recovered shared facts:
+  - `0x56bca8` is `g_OptCatalogRuntimeDeltaTime`, copied from `g_Time_UnscaledDeltaTimeSec`.
+  - `0x56bcac` is `g_OptCatalogRuntimeNowSec`, copied from `g_Time_UnscaledAccumulatedTimeSec`.
+  - `0x779a74` is `g_OptCatalogSndLockOnWarning`; `0x779a78` is `g_OptCatalogLockOnWarningGateTimeSec`.
+  - `OptCatalogTrailRuntimeState+0x2c` is `trailDistance`; `+0x30` is `volumeFadeTimer`; `+0x34` is `alphaPulsePhase`.
+  - `0x4af060` currently has focused smoke coverage for queued impact flushing, runtime time globals, update callbacks, non-trail movement/list preservation, and variant-tag restoration.
+
 ### Group: zClass DI single-segment dispatch cycle
 
 - Anchor: 0x445650 zClass_cls_di::BuildPickCandidatesForSegmentChildFallback

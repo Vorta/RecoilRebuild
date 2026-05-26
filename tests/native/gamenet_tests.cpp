@@ -3,10 +3,14 @@
 #include "Battlesport/player.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/OptCatalog.h"
+#include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
+#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/include/zClipRect.h"
 
 #include <cstring>
 
@@ -19,6 +23,15 @@ void *g_sendPacket;
 std::uint32_t g_sendPacketSize;
 std::uint32_t g_sendPacketBytesSize;
 unsigned char g_sendPacketBytes[0x200];
+int g_chatComposeSetTextFmtCalls;
+HudUiPanel *g_chatComposeSetTextFmtThis;
+char g_chatComposeSetTextFmtText[32];
+int g_remoteHudSetVisibleCount;
+int g_remoteHudLastVisible;
+int g_remoteHudSetPosCount;
+HudUiPanel *g_remoteHudSetPosThis;
+int g_remoteHudLastX;
+int g_remoteHudLastY;
 
 struct ScoreboardPacket2 {
     zNetworkPacketHeader header;
@@ -28,6 +41,14 @@ struct ScoreboardPacket2 {
 
 template <typename T> T &FieldAt(void *object, std::size_t offset) {
     return *reinterpret_cast<T *>(static_cast<unsigned char *>(object) + offset);
+}
+
+template <typename Method> unsigned int MethodAddress(Method method) {
+    union {
+        Method method;
+        unsigned int address;
+    } value = {method};
+    return value.address;
 }
 
 bool FloatNear(float actual, float expected) {
@@ -67,6 +88,27 @@ std::int32_t RECOIL_STDCALL SendFake(zNetwork_DPlay4 *, std::uint32_t, std::uint
     return 0;
 }
 
+void RECOIL_CDECL ChatComposeSetTextFmtFake(HudUiPanel *self, const char *format, ...) {
+    ++g_chatComposeSetTextFmtCalls;
+    g_chatComposeSetTextFmtThis = self;
+    std::strncpy(g_chatComposeSetTextFmtText, format != nullptr ? format : "", sizeof(g_chatComposeSetTextFmtText));
+    g_chatComposeSetTextFmtText[sizeof(g_chatComposeSetTextFmtText) - 1] = '\0';
+}
+
+struct TestRemoteHudPanelOps {
+    void RECOIL_THISCALL SetPos(int x, int y) {
+        ++g_remoteHudSetPosCount;
+        g_remoteHudSetPosThis = reinterpret_cast<HudUiPanel *>(this);
+        g_remoteHudLastX = x;
+        g_remoteHudLastY = y;
+    }
+
+    void RECOIL_THISCALL SetVisible(int visible) {
+        ++g_remoteHudSetVisibleCount;
+        g_remoteHudLastVisible = visible;
+    }
+};
+
 const zNetwork_DPlay4Vtable kDPlayVtable = {
     {}, nullptr, {}, SendFake, {}, SetSessionDescFake, {}, nullptr, {}, nullptr,
 };
@@ -92,6 +134,191 @@ extern "C" int gamenet_list_reset_smoke(void) {
                    g_GameNetPlayerRowTail == nullptr && g_GameNetPlayerRowCount == 0
                ? 0
                : 2;
+}
+
+extern "C" int gamenet_chat_compose_key_callback_smoke(void) {
+    HudUiTextInput oldInput = g_HudUiMgrObjectiveChatComposeTextInput;
+    HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
+    const int oldTableReady = g_zInput_KbdDikToAsciiTableReady;
+
+    HudUiPanel_FTable panelTable{};
+    panelTable.slots[0x74 / 4] = reinterpret_cast<unsigned int>(&ChatComposeSetTextFmtFake);
+    HudUiPanel descPanel{};
+    descPanel.vtbl = &panelTable;
+    g_HudUiMgrObjectiveDescTextPanel = &descPanel;
+
+    g_HudUiMgrObjectiveChatComposeTextInput = {};
+    g_HudUiMgrObjectiveChatComposeTextInput.Constructor(8);
+    g_HudUiMgrObjectiveChatComposeTextInput.buffer[0] = '\0';
+    g_chatComposeSetTextFmtCalls = 0;
+    g_chatComposeSetTextFmtThis = nullptr;
+    g_chatComposeSetTextFmtText[0] = '\0';
+    g_zInput_KbdDikToAsciiTableReady = 0;
+    std::memset(g_zInput_KbdDikToAsciiTable, 0, sizeof(g_zInput_KbdDikToAsciiTable));
+
+    GameNet::ChatComposeKeyCallback(0x41e);
+    const bool inserted =
+        std::strcmp(g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer(), "A") == 0 &&
+        g_HudUiMgrObjectiveChatComposeTextInput.cursor == 1 &&
+        g_chatComposeSetTextFmtCalls == 1 &&
+        g_chatComposeSetTextFmtThis == &descPanel &&
+        std::strcmp(g_chatComposeSetTextFmtText, "A") == 0;
+
+    GameNet::ChatComposeKeyCallback(0);
+    const bool zeroIgnored = g_chatComposeSetTextFmtCalls == 1 &&
+                             std::strcmp(g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer(), "A") == 0;
+
+    g_HudUiMgrObjectiveChatComposeTextInput.DestructorCore();
+    g_HudUiMgrObjectiveChatComposeTextInput = oldInput;
+    g_HudUiMgrObjectiveDescTextPanel = oldDescPanel;
+    g_zInput_KbdDikToAsciiTableReady = oldTableReady;
+
+    return inserted && zeroIgnored ? 0 : 1;
+}
+
+extern "C" int gamenet_begin_chat_compose_smoke(void) {
+    int networkEnabled = 0;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    const int oldChatComposeActive = g_HudUiMgrObjectiveChatComposeActive;
+    g_HudUiMgrObjectiveChatComposeActive = 77;
+    GameNet::BeginChatCompose();
+    const bool disabledOk = g_HudUiMgrObjectiveChatComposeActive == 77;
+
+    HudUiTextInput oldInput = g_HudUiMgrObjectiveChatComposeTextInput;
+    HudUiPanel *const oldSummaryPanel = g_HudUiMgrObjectiveSummaryTextPanel;
+    HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
+    const int oldPhase = g_HudUiMgrObjectivePhase;
+    const int oldState = g_HudUiMgrObjectiveState;
+    const int oldShowReset = g_HudUiMgrObjectiveShowResetUnused;
+    const float oldAutoHide = g_HudUiMgrObjectiveAutoHideDelaySec;
+    zInput::KbdKeyDispatchEntry oldDispatch[0x7de];
+    std::memcpy(oldDispatch, g_zInputKbdKeyDispatchTable, sizeof(oldDispatch));
+
+    HudUiPanel_FTable panelTable{};
+    panelTable.slots[0x74 / 4] = reinterpret_cast<unsigned int>(&ChatComposeSetTextFmtFake);
+    HudUiPanel summaryPanel{};
+    HudUiPanel descPanel{};
+    summaryPanel.vtbl = &panelTable;
+    descPanel.vtbl = &panelTable;
+    g_HudUiMgrObjectiveSummaryTextPanel = &summaryPanel;
+    g_HudUiMgrObjectiveDescTextPanel = &descPanel;
+    g_HudUiMgrObjectiveWidget.ftable = &g_HudUiWidget_FTable;
+    g_HudUiMgrObjectiveSensorRect.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiWidget_FTable);
+    g_HudUiMgrSensorOverlay.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiWidget_FTable);
+    g_HudUiMgrObjectiveBar.ftable = &g_HudUiBar_FTable;
+    g_HudUiMgrObjectivePhase = 0;
+    g_HudUiMgrObjectiveState = 0;
+    g_HudUiMgrObjectiveChatComposeActive = 0;
+    g_chatComposeSetTextFmtCalls = 0;
+
+    g_HudUiMgrObjectiveChatComposeTextInput = {};
+    g_HudUiMgrObjectiveChatComposeTextInput.Constructor(8);
+    char *const initialBuffer = g_HudUiMgrObjectiveChatComposeTextInput.buffer;
+    zInput::BindMapSystem_Init(1);
+
+    networkEnabled = 1;
+    GameNet::BeginChatCompose();
+    const bool stateOk = g_HudUiMgrObjectiveChatComposeActive == 1 &&
+                         g_HudUiMgrObjectiveState == 1 &&
+                         g_HudUiMgrObjectivePhase == 1 &&
+                         g_HudUiMgrObjectiveChatComposeTextInput.capacity == 32 &&
+                         std::strcmp(g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer(), "") == 0 &&
+                         g_zInput_BindMapOverlayDepth == 1;
+    const void *const callback = reinterpret_cast<void *>(&GameNet::ChatComposeKeyCallback);
+    const bool keyOk =
+        g_zInputKbdKeyDispatchTable[0x02].callback == callback &&
+        g_zInputKbdKeyDispatchTable[0x402].callback == callback &&
+        g_zInputKbdKeyDispatchTable[0x0e].callback == callback &&
+        g_zInputKbdKeyDispatchTable[0x10].callback == callback &&
+        g_zInputKbdKeyDispatchTable[0x42b].callback == callback &&
+        g_zInputKbdKeyDispatchTable[0x1e].callback == callback &&
+        g_zInputKbdKeyDispatchTable[0x428].callback == callback &&
+        g_zInputKbdKeyDispatchTable[0x2c].callback == callback &&
+        g_zInputKbdKeyDispatchTable[0x435].callback == callback &&
+        g_zInputKbdKeyDispatchTable[0x39].callback == callback;
+
+    ::operator delete(initialBuffer);
+    g_HudUiMgrObjectiveChatComposeTextInput.DestructorCore();
+    zInput::BindMapContext_Pop();
+    zInput::BindMapSystem_Shutdown();
+
+    g_HudUiMgrObjectiveChatComposeTextInput = oldInput;
+    g_HudUiMgrObjectiveSummaryTextPanel = oldSummaryPanel;
+    g_HudUiMgrObjectiveDescTextPanel = oldDescPanel;
+    g_HudUiMgrObjectivePhase = oldPhase;
+    g_HudUiMgrObjectiveState = oldState;
+    g_HudUiMgrObjectiveChatComposeActive = oldChatComposeActive;
+    g_HudUiMgrObjectiveShowResetUnused = oldShowReset;
+    g_HudUiMgrObjectiveAutoHideDelaySec = oldAutoHide;
+    std::memcpy(g_zInputKbdKeyDispatchTable, oldDispatch, sizeof(oldDispatch));
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+
+    return disabledOk && stateOk && keyOk ? 0 : 1;
+}
+
+extern "C" int hud_ui_handle_hotkey_command_begin_chat_smoke(void) {
+    int networkEnabled = 1;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    HudUiTextInput oldInput = g_HudUiMgrObjectiveChatComposeTextInput;
+    HudUiPanel *const oldSummaryPanel = g_HudUiMgrObjectiveSummaryTextPanel;
+    HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
+    const int oldChatComposeActive = g_HudUiMgrObjectiveChatComposeActive;
+    const int oldPhase = g_HudUiMgrObjectivePhase;
+    const int oldState = g_HudUiMgrObjectiveState;
+    zInput::KbdKeyDispatchEntry oldDispatch[0x7de];
+    std::memcpy(oldDispatch, g_zInputKbdKeyDispatchTable, sizeof(oldDispatch));
+
+    HudUiPanel_FTable panelTable{};
+    panelTable.slots[0x74 / 4] = reinterpret_cast<unsigned int>(&ChatComposeSetTextFmtFake);
+    HudUiPanel summaryPanel{};
+    HudUiPanel descPanel{};
+    summaryPanel.vtbl = &panelTable;
+    descPanel.vtbl = &panelTable;
+    g_HudUiMgrObjectiveSummaryTextPanel = &summaryPanel;
+    g_HudUiMgrObjectiveDescTextPanel = &descPanel;
+    g_HudUiMgrObjectiveWidget.ftable = &g_HudUiWidget_FTable;
+    g_HudUiMgrObjectiveSensorRect.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiWidget_FTable);
+    g_HudUiMgrSensorOverlay.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiWidget_FTable);
+    g_HudUiMgrObjectiveBar.ftable = &g_HudUiBar_FTable;
+    g_HudUiMgrObjectivePhase = 0;
+    g_HudUiMgrObjectiveState = 0;
+    g_HudUiMgrObjectiveChatComposeActive = 0;
+
+    g_HudUiMgrObjectiveChatComposeTextInput = {};
+    g_HudUiMgrObjectiveChatComposeTextInput.Constructor(8);
+    char *const initialBuffer = g_HudUiMgrObjectiveChatComposeTextInput.buffer;
+    zInput::BindMapSystem_Init(1);
+
+    HudUi::HandleHotkeyCommand(42);
+    const void *const callback = reinterpret_cast<void *>(&GameNet::ChatComposeKeyCallback);
+    const bool hotkeyOk = g_HudUiMgrObjectiveChatComposeActive == 1 &&
+                          g_HudUiMgrObjectiveChatComposeTextInput.capacity == 32 &&
+                          g_zInput_BindMapOverlayDepth == 1 &&
+                          g_zInputKbdKeyDispatchTable[0x39].callback == callback &&
+                          g_zInputKbdKeyDispatchTable[0x42b].callback == callback;
+
+    ::operator delete(initialBuffer);
+    g_HudUiMgrObjectiveChatComposeTextInput.DestructorCore();
+    zInput::BindMapContext_Pop();
+    zInput::BindMapSystem_Shutdown();
+
+    g_HudUiMgrObjectiveChatComposeTextInput = oldInput;
+    g_HudUiMgrObjectiveSummaryTextPanel = oldSummaryPanel;
+    g_HudUiMgrObjectiveDescTextPanel = oldDescPanel;
+    g_HudUiMgrObjectiveChatComposeActive = oldChatComposeActive;
+    g_HudUiMgrObjectivePhase = oldPhase;
+    g_HudUiMgrObjectiveState = oldState;
+    std::memcpy(g_zInputKbdKeyDispatchTable, oldDispatch, sizeof(oldDispatch));
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+
+    return hotkeyOk ? 0 : 1;
 }
 
 extern "C" int hud_timer_panel_net_state_clear_tail_flags_smoke(void) {
@@ -147,6 +374,106 @@ extern "C" int gamenet_find_player_row_and_status_bits_smoke(void) {
     g_GameNetPlayerRowHead = nullptr;
     return rowLookup && lapsReached && lapsBlocked && emptyListReached && bothSet && bothClear ? 0
                                                                                                : 1;
+}
+
+extern "C" int gamenet_update_remote_player_hud_widget_screen_pos_smoke(void) {
+    const int oldNameTags = g_GameNetStatus_NameTags;
+    int *const oldReplicateOption = ZOPT_REPLICATE;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    zClass_NodePartial *const oldRuntimeDiScene = g_Player_RuntimeDiScene;
+    int *const oldMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
+    float **const oldMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
+
+    int replicateMode = 0;
+    ZOPT_REPLICATE = &replicateMode;
+
+    int matrixIdentityFlags[2] = {};
+    float *matrixSlots[2] = {};
+    zMat4x3 baseMatrix = {};
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    matrixSlots[0] = reinterpret_cast<float *>(&baseMatrix);
+    zMath::g_zMath_CameraScratchB = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                                     0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    g_zMath_ProjScaleX = 100.0f;
+    g_zMath_ProjScaleY = -50.0f;
+    g_zMath_ProjOffsetX = 320.0f;
+    g_zMath_ProjOffsetY = 240.0f;
+    gClipRect_Primary.zMin = 1.0f;
+    gClipRect_Primary.xMaxAlt = 640.0f;
+    g_zVideo_ProjectClipLeft = 0.0f;
+    g_zVideo_ProjectClipTop = 0.0f;
+    g_zVideo_ProjectClipRight = 640.0f;
+    g_zVideo_ProjectClipBottom = 480.0f;
+
+    HudUiPanel_FTable panelTable = {};
+    panelTable.slots[0x0c / 4] = MethodAddress(&TestRemoteHudPanelOps::SetPos);
+    panelTable.slots[0x60 / 4] = MethodAddress(&TestRemoteHudPanelOps::SetVisible);
+
+    zClass_NodePartial localRoot = {};
+    zClass_NodePartial remoteRoot = {};
+    zUtil_PlayerStateStorage localPlayer = {};
+    localPlayer.rootNode = &localRoot;
+    zUtil_SaveGameState localSave = {};
+    localSave.playerState = &localPlayer;
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&localSave);
+    g_Player_RuntimeDiScene = nullptr;
+
+    zUtil_PlayerStateStorage remotePlayer = {};
+    remotePlayer.rootNode = &remoteRoot;
+    remotePlayer.worldPos = {1.0f, 2.0f, 10.0f};
+    zUtil_SaveGameState remoteSave = {};
+    remoteSave.playerState = &remotePlayer;
+    GameNetPlayerRow row = {};
+    row.hudWidget.vtbl = &panelTable;
+    FieldAt<int>(&row.hudWidget, 0x260) = 14;
+    FieldAt<int>(&row.hudWidget, 0x270) = 0;
+    FieldAt<int>(&row.hudWidget, 0x274) = 0;
+    remoteSave.netPlayerRow = &row;
+
+    g_remoteHudSetVisibleCount = 0;
+    g_remoteHudSetPosCount = 0;
+    g_GameNetStatus_NameTags = 0;
+    const bool disabledOk = GameNet::UpdateRemotePlayerHudWidgetScreenPos(&remoteSave) == 0 &&
+                            g_remoteHudSetVisibleCount == 0 && g_remoteHudSetPosCount == 0;
+
+    g_GameNetStatus_NameTags = 1;
+    const int visibleResult = GameNet::UpdateRemotePlayerHudWidgetScreenPos(&remoteSave);
+    const bool visibleOk =
+        visibleResult == 1 && g_remoteHudSetPosCount == 1 && g_remoteHudSetPosThis == &row.hudWidget &&
+        g_remoteHudLastX == 330 && g_remoteHudLastY == 205 &&
+        g_remoteHudSetVisibleCount == 1 && g_remoteHudLastVisible == 1;
+
+    replicateMode = 1;
+    g_remoteHudSetVisibleCount = 0;
+    g_remoteHudSetPosCount = 0;
+    const int replicateResult = GameNet::UpdateRemotePlayerHudWidgetScreenPos(&remoteSave);
+    const bool replicateOk = replicateResult == 1 && g_remoteHudLastX == 660 &&
+                             g_remoteHudLastY == 420 && g_remoteHudLastVisible == 1;
+
+    replicateMode = 0;
+    remotePlayer.worldPos = {1.0f, 38.0f, 10.0f};
+    g_remoteHudSetVisibleCount = 0;
+    g_remoteHudSetPosCount = 0;
+    const bool marginHideOk = GameNet::UpdateRemotePlayerHudWidgetScreenPos(&remoteSave) == 0 &&
+                              g_remoteHudSetVisibleCount == 1 &&
+                              g_remoteHudLastVisible == 0 && g_remoteHudSetPosCount == 0;
+
+    remotePlayer.worldPos = {-100.0f, 2.0f, 10.0f};
+    g_remoteHudSetVisibleCount = 0;
+    g_remoteHudSetPosCount = 0;
+    const bool clippedHideOk = GameNet::UpdateRemotePlayerHudWidgetScreenPos(&remoteSave) == 0 &&
+                               g_remoteHudSetVisibleCount == 1 &&
+                               g_remoteHudLastVisible == 0 && g_remoteHudSetPosCount == 0;
+
+    g_GameNetStatus_NameTags = oldNameTags;
+    ZOPT_REPLICATE = oldReplicateOption;
+    g_GameStateOrMapTable = oldGameState;
+    g_Player_RuntimeDiScene = oldRuntimeDiScene;
+    zMath::g_currentMatrixIdentityFlagSlot = oldMatrixIdentitySlot;
+    zMath::g_currentMatrixPtrSlot = oldMatrixPtrSlot;
+
+    return disabledOk && visibleOk && replicateOk && marginHideOk && clippedHideOk ? 0 : 1;
 }
 
 extern "C" int gamenet_get_local_player_color_index_smoke(void) {

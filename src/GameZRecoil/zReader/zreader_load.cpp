@@ -26,6 +26,10 @@ extern "C" char g_zRdr_SplitFileNameBuf[0x100] = {0};
 extern "C" char g_zRdr_SplitExtBuf[0x100] = {0};
 extern "C" char g_zRdr_PathJoinBuf[0x100] = {0};
 extern "C" char g_zRdr_ResolvedPathBuf[0x100] = {0};
+extern "C" char *g_zUtil_ZRDR_WildcardPath = 0;
+extern "C" int g_zUtil_ZRDR_WildcardDigits[5] = {0};
+extern "C" int g_zUtil_ZRDR_WildcardStarCount = 0;
+extern "C" char *g_zUtil_ZRDR_WildcardStarPtrs[5] = {0};
 extern "C" zClass_NodePartial *g_Mover_LastLoadedNode = 0;
 
 // Reimplements 0x48c9a0: zArchiveList_LinkNodeBetween
@@ -431,6 +435,77 @@ extern "C" RECOIL_NOINLINE FILE *RECOIL_FASTCALL
 zUtil_ZRDR_OpenFileResolved(zArchiveList *searchPathList, const char *filename, const char *mode) {
     char *resolvedPath = zUtil_ZRDR_ResolvePathInSearchPathList(searchPathList, filename);
     return fopen(resolvedPath != 0 ? resolvedPath : filename, mode);
+}
+
+namespace {
+void zUtil_ZRDR_WriteWildcardDigits() {
+    for (int i = g_zUtil_ZRDR_WildcardStarCount - 1; i >= 0; --i) {
+        char digitText[16];
+        sprintf(digitText, "%d", g_zUtil_ZRDR_WildcardDigits[i]);
+        *g_zUtil_ZRDR_WildcardStarPtrs[i] = digitText[0];
+    }
+}
+} // namespace
+
+// Reimplements 0x4a5f90: zUtil_ZRDR::InitWildcardPath
+// (D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp)
+extern "C" RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_InitWildcardPath(char *pattern) {
+    if (pattern == 0) {
+        return 0;
+    }
+
+    for (int i = 0; i < 5; ++i) {
+        g_zUtil_ZRDR_WildcardStarPtrs[i] = 0;
+        g_zUtil_ZRDR_WildcardDigits[i] = 0;
+    }
+
+    g_zUtil_ZRDR_WildcardPath = pattern;
+    g_zUtil_ZRDR_WildcardStarCount = 0;
+
+    const int patternLength = static_cast<int>(strlen(pattern));
+    for (int i = patternLength - 1; i >= 0; --i) {
+        if (pattern[i] == '*') {
+            g_zUtil_ZRDR_WildcardStarPtrs[g_zUtil_ZRDR_WildcardStarCount] = &pattern[i];
+            ++g_zUtil_ZRDR_WildcardStarCount;
+            if (g_zUtil_ZRDR_WildcardStarCount == 5) {
+                break;
+            }
+        }
+    }
+
+    if (g_zUtil_ZRDR_WildcardStarCount == 0) {
+        return 0;
+    }
+
+    zUtil_ZRDR_WriteWildcardDigits();
+    return g_zUtil_ZRDR_WildcardPath;
+}
+
+// Reimplements 0x4a6070: zUtil_ZRDR::NextWildcardPath
+// (D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp)
+extern "C" RECOIL_NOINLINE char *RECOIL_CDECL zUtil_ZRDR_NextWildcardPath() {
+    int carryOut = 0;
+    int digitIndex = 0;
+    if (g_zUtil_ZRDR_WildcardStarCount > 0) {
+        while (digitIndex < g_zUtil_ZRDR_WildcardStarCount) {
+            if (g_zUtil_ZRDR_WildcardDigits[digitIndex] < 9) {
+                ++g_zUtil_ZRDR_WildcardDigits[digitIndex];
+                carryOut = 0;
+                break;
+            }
+
+            g_zUtil_ZRDR_WildcardDigits[digitIndex] = 0;
+            ++digitIndex;
+            carryOut = 1;
+        }
+    }
+
+    if (carryOut != 0) {
+        return 0;
+    }
+
+    zUtil_ZRDR_WriteWildcardDigits();
+    return g_zUtil_ZRDR_WildcardPath;
 }
 
 namespace zUtil {

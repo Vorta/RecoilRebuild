@@ -406,6 +406,25 @@ namespace zClass_Class {
         return 0;
     }
 
+    // Reimplements 0x448760: zClass_Class::gwNodeGetBBox
+    // (D:\Proj\GameZRecoil\zClass\Class.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetBBox(zClass_NodePartial *node,
+                                                      zBBox3f *outBBox) {
+        if (ReportNullNode(0x7f9, node)) {
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(0x400, kClassSourceFile, 0x7fa, "Null class data pointer");
+            return 5;
+        }
+        if ((node->flags & 0x100) == 0) {
+            return 1;
+        }
+
+        memcpy(outBBox, CachedBBox(node), sizeof(*outBBox));
+        return 0;
+    }
+
     // Reimplements 0x4487c0: zClass_Class::gwNodeGetWorldBBoxCorners
     RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetWorldBBoxCorners(
         zClass_NodePartial * node, zBBoxCorners * outCorners) {
@@ -1660,6 +1679,17 @@ namespace zClass_Node {
         }
     }
 
+    // Reimplements 0x421d60: zClass_Node::MaskExtraFlagsRecursive
+    // (GameZRecoil/zClass/Class.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL MaskExtraFlagsRecursive(zClass_NodePartial * self,
+                                                                 int mask) {
+        self->auxFlags &= mask;
+
+        for (int i = 0; i < self->listCountB; ++i) {
+            MaskExtraFlagsRecursive(self->listB[i], mask);
+        }
+    }
+
     // Reimplements 0x421da0: zClass_Node::PropagateExtraFlagsRecursive
     RECOIL_NOINLINE void RECOIL_FASTCALL PropagateExtraFlagsRecursive(zClass_NodePartial * self,
                                                                       int flags) {
@@ -1667,6 +1697,17 @@ namespace zClass_Node {
 
         for (int i = 0; i < self->listCountB; ++i) {
             PropagateExtraFlagsRecursive(self->listB[i], flags);
+        }
+    }
+
+    // Reimplements 0x421de0: zClass_Node::PropagateFlagsRecursive
+    // (GameZRecoil/zClass/Class.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL PropagateFlagsRecursive(zClass_NodePartial * self,
+                                                                 int flags) {
+        self->flags |= flags;
+
+        for (int i = 0; i < self->listCountB; ++i) {
+            PropagateFlagsRecursive(self->listB[i], flags);
         }
     }
 

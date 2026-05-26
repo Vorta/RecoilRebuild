@@ -18,6 +18,10 @@ struct PickupAirdropSpawnRef {
     zClass_NodePartial *dropAttachNode;
     unsigned char unknown_08[0x0c];
 
+    RECOIL_NOINLINE PickupAirdropSpawnRef *RECOIL_THISCALL
+    InitNodesFromCarrierNodeName(const char *carrierNodeName);
+    RECOIL_NOINLINE static void RECOIL_FASTCALL
+    InitGlobalFromCarrierNodeName(const char *carrierNodeName);
     RECOIL_NOINLINE static void RECOIL_CDECL ShutdownGlobal();
 };
 RECOIL_STATIC_ASSERT(sizeof(PickupAirdropSpawnRef) == 0x14);
@@ -109,6 +113,8 @@ struct PickupType {
     RECOIL_NOINLINE static PickupType *RECOIL_FASTCALL
     GetByIndex_Pure(int pickupTypeIndex);
     RECOIL_NOINLINE static PickupType *RECOIL_FASTCALL GetByIndex(int pickupTypeIndex);
+    RECOIL_NOINLINE static int RECOIL_FASTCALL FindByLogicalName(const char *logicalName,
+                                                                 int *outTypeIndex);
 };
 
 RECOIL_STATIC_ASSERT(offsetof(PickupType, optMetaImage) == 0x20);
@@ -131,7 +137,14 @@ extern PickupAirdropSpawnRef *g_Pickup_GlobalAirdropSpawnRef;
 }
 
 namespace Pickup {
+RECOIL_NOINLINE int RECOIL_FASTCALL Init(zClass_NodePartial *sceneNode,
+                                         const char *pickupsCfgPath);
 RECOIL_NOINLINE void RECOIL_CDECL Shutdown();
+RECOIL_NOINLINE int RECOIL_FASTCALL ArchiveWriteAll(zZbdSectionCallbackCtx *callbackCtx,
+                                                    void *userData);
+RECOIL_NOINLINE void RECOIL_FASTCALL ArchiveReadRecord(zZbdSectionCallbackCtx *callbackCtx,
+                                                       const char *sectionToken, void *buffer,
+                                                       unsigned int size, void *userData);
 RECOIL_NOINLINE int RECOIL_FASTCALL ResolveOwnerFromBvolHit(zClass_NodePartial **nodeInOut);
 RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL FindSpawnByPickupId(int pickupId,
                                                                     PickupSpawnList *list);

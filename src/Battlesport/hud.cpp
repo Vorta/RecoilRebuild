@@ -1,14 +1,18 @@
 #include "Battlesport/hud.h"
 
+#include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zSound/zSound.h"
 
 HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
 RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
 RecoilStateControls g_RecoilStateControls;
+RecoilStateCheatCode g_RecoilStateCheatCode;
 zSndSample *g_Hud_LowMeterBeepSample = 0;
 zSndSample *g_Hud_LowMeterLoopSample = 0;
 int g_Hud_LowMeterLoopActive = 0;
+float g_Hud_LowMeterBeepInterval = 0.0f;
+float g_Hud_LowMeterNextBeepTime = 0.0f;
 
 // Reimplements 0x41c6c0: HudUiNewGamePanelOverlayOwner::QueueEnter
 // (D:\Proj\Battlesport\hud.cpp)
@@ -37,6 +41,34 @@ void RECOIL_CDECL RecoilStateControls::QueueEnter()
 {
     g_RecoilApp.QueuePushState(&g_RecoilStateControls, 0);
 }
+
+// Reimplements 0x407110: HudUiCallback::QueueCheatCodeState
+// (D:\Proj\Battlesport\hud.cpp)
+int RECOIL_CDECL HudUiCallback::QueueCheatCodeState()
+{
+    g_RecoilApp.QueuePushState(&g_RecoilStateCheatCode, 0);
+    return 1;
+}
+
+namespace zOpt {
+
+// Reimplements 0x413600: zOpt::ToggleHudTypeForCurrentHwMode
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL ToggleHudTypeForCurrentHwMode()
+{
+    const int currentHudType = GetHudTypeForCurrentHwMode();
+    if (currentHudType == ZOPT_HUD_TYPE_STANDARD)
+    {
+        return SetHudTypeForCurrentHwMode(ZOPT_HUD_TYPE_PERSPECTIVE);
+    }
+    if (currentHudType == ZOPT_HUD_TYPE_PERSPECTIVE)
+    {
+        return SetHudTypeForCurrentHwMode(ZOPT_HUD_TYPE_STANDARD);
+    }
+    return GetHudTypeForCurrentHwMode();
+}
+
+} // namespace zOpt
 
 namespace HudLowMeterLoopSound {
 

@@ -10,6 +10,10 @@
 #include <cstdio>
 #include <cstring>
 
+extern zSndPlayHandle *g_Briefing_CurrentSndHandle;
+extern char g_Briefing_SndSetName[0x40];
+extern "C" unsigned int g_HudUi_InvalidateMask;
+
 namespace {
 int g_deleteCount;
 std::uint32_t g_deleteFlags;
@@ -23,12 +27,36 @@ unsigned short g_constructorSurfacePixel;
 int g_briefingSetVisibleCount;
 void *g_briefingSetVisibleThis[16];
 int g_briefingSetVisibleValue[16];
+int g_briefingAdjustSurfaceCalls;
+int g_briefingStopAfterAdjustCalls = 1;
+int g_briefingStopRequested;
 
 int RECOIL_FASTCALL TestVideoSurfaceDispatch(zVideo_SurfaceStatePartial *) {
     return 0;
 }
 
+int RECOIL_FASTCALL TestVideoSurfaceDispatchDisableBriefingRuntime(
+    zVideo_SurfaceStatePartial *) {
+    if (g_Briefing_Runtime != nullptr) {
+        *reinterpret_cast<int *>(reinterpret_cast<unsigned char *>(g_Briefing_Runtime) + 4) =
+            0;
+    }
+
+    return 0;
+}
+
 int RECOIL_FASTCALL TestAdjustSurfaces(zVidRect32 *, zVidRect32 *, int, int) {
+    return 0;
+}
+
+int RECOIL_FASTCALL TestAdjustSurfacesStopBriefingThread(zVidRect32 *, zVidRect32 *, int,
+                                                         int) {
+    ++g_briefingAdjustSurfaceCalls;
+    if (g_briefingStopRequested != 0 ||
+        (g_briefingStopAfterAdjustCalls > 0 &&
+         g_briefingAdjustSurfaceCalls >= g_briefingStopAfterAdjustCalls)) {
+        g_Briefing_ThreadRunFlag = 0;
+    }
     return 0;
 }
 
@@ -128,6 +156,7 @@ struct ConstructorGlobalState {
     int adjustDisableGate;
     int rendererType;
     int useHalfResBackbuffer;
+    int halfResAdjustMode;
     int frameTick;
     int sndActiveBackend;
     zSndSample *lastVoice;
@@ -154,6 +183,7 @@ void PrepareConstructorGlobals(ConstructorGlobalState &state) {
     state.adjustDisableGate = g_zVideo_AdjustSurfacesDisableGate;
     state.rendererType = g_zVideo_RendererType;
     state.useHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    state.halfResAdjustMode = g_zVideo_HalfResAdjustMode;
     state.frameTick = g_zVideo_FrameTick;
     state.sndActiveBackend = g_zSnd_ActiveBackend;
     state.lastVoice = g_zSndLastVoice;
@@ -184,6 +214,7 @@ void PrepareConstructorGlobals(ConstructorGlobalState &state) {
     g_zVideo_AdjustSurfacesDisableGate = 0;
     g_zVideo_RendererType = 0;
     g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_HalfResAdjustMode = 0;
     g_zSnd_ActiveBackend = 0;
     g_zSndLastVoice = 0;
     g_zSndLastVoiceHandle = 0;
@@ -203,6 +234,7 @@ void RestoreConstructorGlobals(const ConstructorGlobalState &state) {
     g_zVideo_AdjustSurfacesDisableGate = state.adjustDisableGate;
     g_zVideo_RendererType = state.rendererType;
     g_zVideo_UseHalfResBackbuffer = state.useHalfResBackbuffer;
+    g_zVideo_HalfResAdjustMode = state.halfResAdjustMode;
     g_zVideo_FrameTick = state.frameTick;
     g_zSnd_ActiveBackend = state.sndActiveBackend;
     g_zSndLastVoice = state.lastVoice;
@@ -255,6 +287,158 @@ extern "C" int briefing_stop_and_shutdown_thread_smoke(void) {
                    g_Briefing_Runtime == nullptr && g_deleteCount == 1
                ? 0
                : 2;
+}
+
+extern "C" int briefing_thread_main_one_iteration_smoke(void) {
+    HudUiBriefingRuntime *const oldRuntime = g_Briefing_Runtime;
+    zSndPlayHandle *const oldHandle = g_Briefing_CurrentSndHandle;
+    const int oldThreadRunFlag = g_Briefing_ThreadRunFlag;
+    const int oldThreadExitedFlag = g_Briefing_ThreadExitedFlag;
+    const int oldAllowAdvanceFlag = g_Briefing_AllowAdvanceFlag;
+    const int oldSequenceActiveFlag = g_Briefing_SequenceActiveFlag;
+    const int oldSystemActiveFlag = g_Briefing_SystemActiveFlag;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    const zSndSampleSetRegistry oldSampleSetRegistry = g_zSnd_SampleSetRegistry;
+    char oldSndSetName[sizeof(g_Briefing_SndSetName)];
+    std::memcpy(oldSndSetName, g_Briefing_SndSetName, sizeof(oldSndSetName));
+
+    ConstructorGlobalState constructorState = {};
+    PrepareConstructorGlobals(constructorState);
+
+    alignas(4) static unsigned char runtimeStorage[0xba70];
+    std::memset(runtimeStorage, 0, sizeof(runtimeStorage));
+    HudUiBriefingRuntime *const runtime =
+        reinterpret_cast<HudUiBriefingRuntime *>(runtimeStorage);
+
+    char setName[] = "BRIEFING7";
+    zSndSampleSet sampleSet = {};
+    sampleSet.setName = setName;
+    sampleSet.resourcesLoaded = 1;
+    zSndSampleSet *sampleSetSlots[1] = {&sampleSet};
+
+    int networkEnabled = 1;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    std::strcpy(g_Briefing_SndSetName, setName);
+    g_Briefing_Runtime = runtime;
+    g_Briefing_CurrentSndHandle = nullptr;
+    g_Briefing_ThreadRunFlag = 0;
+    g_Briefing_ThreadExitedFlag = 0;
+    g_Briefing_AllowAdvanceFlag = 0;
+    g_Briefing_SequenceActiveFlag = 1;
+    g_Briefing_SystemActiveFlag = 1;
+    g_HudUi_InvalidateMask = 0;
+    g_briefingAdjustSurfaceCalls = 0;
+    g_briefingStopAfterAdjustCalls = 1;
+    g_briefingStopRequested = 0;
+    g_zVideo_pfnAdjustSurfaces = TestAdjustSurfacesStopBriefingThread;
+
+    Briefing::ThreadMain(nullptr);
+
+    const bool ok = g_Briefing_ThreadRunFlag == 0 && g_Briefing_ThreadExitedFlag == 1 &&
+                    g_Briefing_AllowAdvanceFlag == 1 && g_Briefing_SequenceActiveFlag == 1 &&
+                    g_briefingAdjustSurfaceCalls == 1 && sampleSet.resourcesLoaded == 0 &&
+                    g_HudUi_InvalidateMask == 0x04u && g_zVideo_FrameTick == 1;
+
+    RestoreConstructorGlobals(constructorState);
+    g_Briefing_Runtime = oldRuntime;
+    g_Briefing_CurrentSndHandle = oldHandle;
+    g_Briefing_ThreadRunFlag = oldThreadRunFlag;
+    g_Briefing_ThreadExitedFlag = oldThreadExitedFlag;
+    g_Briefing_AllowAdvanceFlag = oldAllowAdvanceFlag;
+    g_Briefing_SequenceActiveFlag = oldSequenceActiveFlag;
+    g_Briefing_SystemActiveFlag = oldSystemActiveFlag;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zSnd_SampleSetRegistry = oldSampleSetRegistry;
+    std::memcpy(g_Briefing_SndSetName, oldSndSetName, sizeof(g_Briefing_SndSetName));
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int briefing_start_for_mission_smoke(void) {
+    HudUiBriefingRuntime *const oldRuntime = g_Briefing_Runtime;
+    zSndPlayHandle *const oldHandle = g_Briefing_CurrentSndHandle;
+    const int oldThreadRunFlag = g_Briefing_ThreadRunFlag;
+    const int oldThreadExitedFlag = g_Briefing_ThreadExitedFlag;
+    const int oldAllowAdvanceFlag = g_Briefing_AllowAdvanceFlag;
+    const int oldSequenceActiveFlag = g_Briefing_SequenceActiveFlag;
+    const int oldSystemActiveFlag = g_Briefing_SystemActiveFlag;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    const zSndSampleSetRegistry oldSampleSetRegistry = g_zSnd_SampleSetRegistry;
+    char oldSndSetName[sizeof(g_Briefing_SndSetName)];
+    std::memcpy(oldSndSetName, g_Briefing_SndSetName, sizeof(oldSndSetName));
+
+    ConstructorGlobalState constructorState = {};
+    PrepareConstructorGlobals(constructorState);
+
+    char setName[] = "BRIEFING7";
+    zSndSampleSet sampleSet = {};
+    sampleSet.setName = setName;
+    sampleSet.resourcesLoaded = 0;
+    zSndSampleSet *sampleSetSlots[1] = {&sampleSet};
+
+    int networkEnabled = 1;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zVideo_RendererType = 1;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceDispatchDisableBriefingRuntime;
+    g_zVideo_pfnAdjustSurfaces = TestAdjustSurfacesStopBriefingThread;
+    g_Briefing_Runtime = nullptr;
+    g_Briefing_CurrentSndHandle = nullptr;
+    g_Briefing_ThreadRunFlag = 0;
+    g_Briefing_ThreadExitedFlag = 1;
+    g_Briefing_AllowAdvanceFlag = 0;
+    g_Briefing_SequenceActiveFlag = 0;
+    g_Briefing_SystemActiveFlag = 0;
+    g_HudUi_InvalidateMask = 0;
+    g_briefingAdjustSurfaceCalls = 0;
+    g_briefingStopAfterAdjustCalls = 0;
+    g_briefingStopRequested = 0;
+    std::memset(g_Briefing_SndSetName, 0, sizeof(g_Briefing_SndSetName));
+
+    const int result = Briefing::StartForMission(7);
+    g_briefingStopRequested = 1;
+    for (int attempt = 0; attempt < 100 && g_Briefing_ThreadExitedFlag == 0; ++attempt) {
+        Sleep(10);
+    }
+
+    const bool started =
+        result == 1 && std::strcmp(g_Briefing_SndSetName, setName) == 0 &&
+        g_Briefing_Runtime != nullptr && g_Briefing_ThreadRunFlag == 0 &&
+        g_Briefing_ThreadExitedFlag == 1 && g_Briefing_AllowAdvanceFlag == 1 &&
+        g_briefingAdjustSurfaceCalls >= 1 && sampleSet.resourcesLoaded == 0 &&
+        g_HudUi_InvalidateMask == 0x04u;
+
+    HudUiBriefingRuntime *const allocatedRuntime = g_Briefing_Runtime;
+    if (allocatedRuntime != nullptr && g_Briefing_ThreadExitedFlag != 0) {
+        ::operator delete(allocatedRuntime);
+        g_Briefing_Runtime = nullptr;
+        g_Briefing_SystemActiveFlag = 0;
+    }
+
+    const bool stopped = g_Briefing_Runtime == nullptr && g_Briefing_SystemActiveFlag == 0;
+
+    RestoreConstructorGlobals(constructorState);
+    g_Briefing_Runtime = oldRuntime;
+    g_Briefing_CurrentSndHandle = oldHandle;
+    g_Briefing_ThreadRunFlag = oldThreadRunFlag;
+    g_Briefing_ThreadExitedFlag = oldThreadExitedFlag;
+    g_Briefing_AllowAdvanceFlag = oldAllowAdvanceFlag;
+    g_Briefing_SequenceActiveFlag = oldSequenceActiveFlag;
+    g_Briefing_SystemActiveFlag = oldSystemActiveFlag;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zSnd_SampleSetRegistry = oldSampleSetRegistry;
+    std::memcpy(g_Briefing_SndSetName, oldSndSetName, sizeof(g_Briefing_SndSetName));
+
+    return started && stopped ? 0 : 1;
 }
 
 extern "C" int briefing_set_progress_and_sleep_smoke(void) {

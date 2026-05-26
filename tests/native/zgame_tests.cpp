@@ -5,8 +5,10 @@
 #include "GameZRecoil/include/zClipRect.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zError/zError.h"
+#include "GameZRecoil/zDEClient/zdec.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zGeometry/zGeometry.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
@@ -14,6 +16,7 @@
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
+#include "GameZRecoil/zUtil/zZbd.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 #include "OptCatalog.h"
 #include "zClass.h"
@@ -41,6 +44,15 @@ int g_damageMaskUploadFinalizeCount = 0;
 unsigned short *g_damageMaskUploadPixels = nullptr;
 int g_damageMaskUploadPitchBytes = 0;
 zVideo_TextureRecordPartial *g_damageMaskLastTextureRecord = nullptr;
+int g_zgameFogColorUpdateCount = 0;
+
+void RECOIL_CDECL TestZGameUpdateFogColor(void) {
+    ++g_zgameFogColorUpdateCount;
+}
+
+int RECOIL_FASTCALL TextureMemoryQueryMissingStub(int, int *, int *) {
+    return 0;
+}
 
 int RECOIL_FASTCALL DamageMaskLockUploadStub(zVideo_TextureRecordPartial *textureRecord,
                                              void **outPixels, int *outPitchBytes) {
@@ -90,6 +102,27 @@ void WriteZrdNamedIntArray(HANDLE file, const char *name, std::int32_t value) {
     WriteZrdIntNode(file, value);
 }
 
+bool EnterSupportDirectoryForRetailZbdTest(char *oldDir, DWORD oldDirSize) {
+    if (GetCurrentDirectoryA(oldDirSize, oldDir) == 0) {
+        return false;
+    }
+
+    const char *candidates[] = {
+        "support",
+        "..\\..\\..\\..\\support",
+    };
+    for (int i = 0; i < static_cast<int>(sizeof(candidates) / sizeof(candidates[0])); ++i) {
+        const DWORD attributes = GetFileAttributesA(candidates[i]);
+        if (attributes != INVALID_FILE_ATTRIBUTES &&
+            (attributes & FILE_ATTRIBUTE_DIRECTORY) != 0 &&
+            SetCurrentDirectoryA(candidates[i]) != 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 std::int32_t FloatBitsForTest(float value) {
     std::int32_t raw = 0;
     std::memcpy(&raw, &value, sizeof(raw));
@@ -109,6 +142,13 @@ zProjectedPoint g_drawPointLastPoint{};
 std::uint32_t g_drawPointLastColor = 0;
 std::int32_t g_drawPointLastCount = 0;
 std::int32_t g_drawPointCallCount = 0;
+std::int32_t g_submitFlatCallCount = 0;
+std::int32_t g_submitFlatLastVertexCount = 0;
+std::int32_t g_submitFlatLastAlpha = 0;
+std::uint32_t g_submitFlatLastColor = 0;
+std::uint32_t g_submitFlatLastRenderParam = 0;
+std::int32_t g_submitFlatLastQueueMode = 0;
+zVideo_XyzVertex g_submitFlatLastVerts[0x40]{};
 
 void RECOIL_FASTCALL zmodel_draw_point_color16_stub(zProjectedPoint *point,
                                                     std::uint32_t packedColor16,
@@ -117,6 +157,23 @@ void RECOIL_FASTCALL zmodel_draw_point_color16_stub(zProjectedPoint *point,
     g_drawPointLastColor = packedColor16;
     g_drawPointLastCount = pointCount;
     ++g_drawPointCallCount;
+}
+
+void RECOIL_FASTCALL zmodel_submit_poly_flat_stub(zVideo_XyzVertex *vertices,
+                                                  std::uint32_t packedColor16,
+                                                  std::int32_t alpha,
+                                                  std::int32_t renderParam,
+                                                  std::int32_t vertexCount,
+                                                  std::int32_t queueMode) {
+    ++g_submitFlatCallCount;
+    g_submitFlatLastVertexCount = vertexCount;
+    g_submitFlatLastAlpha = alpha;
+    g_submitFlatLastColor = packedColor16;
+    g_submitFlatLastRenderParam = static_cast<std::uint32_t>(renderParam);
+    g_submitFlatLastQueueMode = queueMode;
+    for (int i = 0; i < vertexCount && i < 0x40; ++i) {
+        g_submitFlatLastVerts[i] = vertices[i];
+    }
 }
 
 void reset_zclass_type_lists_for_test() {
@@ -510,6 +567,11 @@ extern "C" int zmodel_const_tolerances_and_cross_smoke() {
     std::free(mergeDi.blendVerts);
     if (!secondMergeOk) {
         return 13;
+    }
+
+    zModel_Const::SetVertexMergeEpsilon(0.25f);
+    if (zModel_Const::GetVertexMergeEpsilon() != 0.25f) {
+        return 99;
     }
 
     zModel_Const::SetVertexMergeEpsilon(0.001f);
@@ -997,6 +1059,52 @@ extern "C" int zmodel_material_pool_entry_smoke() {
     return ok ? 0 : 1;
 }
 
+extern "C" int zmodel_matl_init_globals_smoke() {
+    if (g_zModel_MatlPool != nullptr) {
+        std::free(g_zModel_MatlPool);
+    }
+    g_zModel_MatlPool = nullptr;
+    g_zModel_MatlPoolCapacity = 3;
+    g_zModel_MatlPoolInUseCount = 77;
+    g_zModel_MatlFreeHeadIndex = 88;
+    g_zModel_MatlActiveHeadIndex = 99;
+    g_zModel_DefaultMaterial.flags = 0xffff;
+    g_zModel_DefaultMaterial.colorRgb.red = -1.0f;
+
+    if (zModel_Matl::InitGlobals() != 0) {
+        return 1;
+    }
+
+    const bool poolOk = g_zModel_MatlPool != nullptr && g_zModel_MatlPoolCapacity == 3 &&
+                        g_zModel_MatlFreeHeadIndex == 0 &&
+                        g_zModel_MatlActiveHeadIndex == -1 &&
+                        g_zModel_MatlPoolInUseCount == 0 &&
+                        g_zModel_MatlPool[0].prevPoolIndex == -1 &&
+                        g_zModel_MatlPool[0].nextPoolIndex == 1 &&
+                        g_zModel_MatlPool[1].prevPoolIndex == 0 &&
+                        g_zModel_MatlPool[1].nextPoolIndex == 2 &&
+                        g_zModel_MatlPool[2].prevPoolIndex == 1 &&
+                        g_zModel_MatlPool[2].nextPoolIndex == -1;
+
+    const bool defaultsOk = g_zModel_DefaultMaterial.flags == 0xf8ff &&
+                            g_zModel_DefaultMaterial.packedColor == 0x7fff &&
+                            g_zModel_DefaultMaterial.colorRgb.red == 255.0f &&
+                            g_zModel_DefaultMaterial.colorRgb.green == 255.0f &&
+                            g_zModel_DefaultMaterial.colorRgb.blue == 255.0f &&
+                            g_zModel_DefaultMaterial.colorScalar == 0.5f &&
+                            g_zModel_DefaultMaterial.unknown_1c == 0.5f &&
+                            g_zModel_DefaultMaterial.currentTextureDirectoryEntry == nullptr &&
+                            g_zModel_DefaultMaterial.cycle == nullptr;
+
+    std::free(g_zModel_MatlPool);
+    g_zModel_MatlPool = nullptr;
+    g_zModel_MatlPoolCapacity = 0;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlFreeHeadIndex = -1;
+    g_zModel_MatlActiveHeadIndex = -1;
+    return poolOk && defaultsOk ? 0 : 2;
+}
+
 extern "C" int zmodel_matlbuffer_set_array_size_smoke() {
     g_zModel_MatlPoolCapacity = 0;
     zModel_MatlBuffer::SetArraySize(12);
@@ -1141,6 +1249,28 @@ extern "C" int zmodel_material_defaults_and_find_smoke() {
         g_zModel_MatlPoolInUseCount == 1 &&
         clonedMaterial->currentTextureDirectoryEntry == &texMissing;
 
+    zModel_MaterialSlot debugSlots[1] = {};
+    debugSlots[0].prevPoolIndex = -1;
+    debugSlots[0].nextPoolIndex = -1;
+    g_zModel_MatlPool = debugSlots;
+    g_zModel_MatlActiveHeadIndex = -1;
+    g_zModel_MatlFreeHeadIndex = 0;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlReuseCache = nullptr;
+    std::srand(1);
+    zModel_MaterialPartial *const debugMaterial =
+        zGeometry_Model::FindOrCreateRandomDebugMaterial();
+    const int debugRed = static_cast<int>(debugMaterial->colorRgb.red);
+    const int debugGreen = static_cast<int>(debugMaterial->colorRgb.green);
+    const int debugBlue = static_cast<int>(debugMaterial->colorRgb.blue);
+    const unsigned short debugPackedColor = static_cast<unsigned short>(
+        ((debugRed & 0x1f) << 11) | ((debugGreen & 0x3f) << 5) | (debugBlue & 0x1f));
+    const bool randomDebugMaterialOk =
+        debugMaterial == &debugSlots[0].material &&
+        g_zModel_MatlReuseCache == debugMaterial && g_zModel_MatlActiveHeadIndex == 0 &&
+        g_zModel_MatlFreeHeadIndex == -1 && g_zModel_MatlPoolInUseCount == 1 &&
+        debugMaterial->packedColor == debugPackedColor;
+
     const bool setTagOk = zModel_Material::SetUserTag(nullptr, 7) == 0 &&
                           zModel_Material::SetUserTag(&compareA, 88) == 1 && compareA.userTag == 88;
 
@@ -1181,10 +1311,2250 @@ extern "C" int zmodel_material_defaults_and_find_smoke() {
     g_zModel_MatlReuseCache = nullptr;
     return defaultsOk && findOk && tagPromoteLeft && tagPromoteRight && tagConflict &&
                    textureMismatch && bytesMismatch && findOrCloneActive && findOrCloneCache &&
-                   findOrCloneMiss && setTagOk && cycleCountDefaultReject && cycleCountOk && cycleNoResize &&
-                   cycleAddOk && cycleLoopSpeedOk && cycleRejects
+                   findOrCloneMiss && randomDebugMaterialOk && setTagOk &&
+                   cycleCountDefaultReject && cycleCountOk && cycleNoResize && cycleAddOk &&
+                   cycleLoopSpeedOk && cycleRejects
                ? 0
                : 1;
+}
+
+extern "C" int zgeometry_model_add_polygon_to_di_smoke() {
+    g_zModel_MaxPolygonVertexCountBeforeSplit = 64;
+    g_zModel_CoplanarTolerance = 0.01;
+
+    zDiPartial di{};
+    zModel_MaterialPartial material{};
+    zVec3 points[3] = {
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+    };
+
+    if (zGeometry_Model::AddPolygonToDi(&di, 2, points, &material, nullptr) != -1) {
+        return 1;
+    }
+
+    if (zGeometry_Model::AddPolygonToDi(&di, 3, points, &material, nullptr) != 0 ||
+        di.entryCount != 1 || di.vertCount != 3 || di.entries == nullptr ||
+        di.entries[0].material != &material ||
+        static_cast<int>(di.entries[0].flagsAndIndexCount & 0xff) != 3) {
+        zDi::FreeContents(&di);
+        return 2;
+    }
+
+    zDi::FreeContents(&di);
+    return di.entryCount == 0 && di.entries == nullptr && di.verts == nullptr ? 0 : 3;
+}
+
+extern "C" int zgeometry_model_polygon_uv_and_di_helpers_smoke() {
+    auto nearFloat = [](float lhs, float rhs) { return std::fabs(lhs - rhs) <= 0.00001f; };
+
+    zVec3 basisPoints[3] = {
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {1.0f, 1.0f, 2.0f},
+    };
+
+    zVec2 coefficients{};
+    zGeometry_Polygon::SolveUvAxisCoefficientsXZ(
+        &basisPoints[0], &basisPoints[1], &basisPoints[2], 0.0f, 10.0f, 14.0f,
+        &coefficients);
+    if (!nearFloat(coefficients.x, 10.0f) || !nearFloat(coefficients.y, 2.0f)) {
+        return 1;
+    }
+
+    zVec3 degeneratePoint{1.0f, 0.0f, 0.0f};
+    zGeometry_Polygon::SolveUvAxisCoefficientsXZ(
+        &degeneratePoint, &degeneratePoint, &degeneratePoint, 1.0f, 2.0f, 3.0f,
+        &coefficients);
+    if (coefficients.x != 0.0f || coefficients.y != 0.0f) {
+        return 2;
+    }
+
+    int indices[3] = {0, 1, 2};
+    zModel_PolygonUvBasis uvBasis{};
+    uvBasis.uv0.u = 0.0f;
+    uvBasis.uv0.v = 5.0f;
+    uvBasis.uv1.u = 10.0f;
+    uvBasis.uv1.v = 7.0f;
+    uvBasis.uv2.u = 14.0f;
+    uvBasis.uv2.v = 15.0f;
+
+    zModel_MaterialPartial material{};
+    zModel_PolygonPartial polygon{};
+    polygon.vertexCountAndFlags = 0x100 | 3;
+    polygon.drawFlags = 0x40;
+    polygon.vertexIndices = indices;
+    polygon.uvBasis = &uvBasis;
+    polygon.material = &material;
+    polygon.userTag = 0x12345678;
+
+    zModel_DrawBatchBasePartial model{};
+    model.verts = basisPoints;
+
+    zVec3 polygonPoints[3] = {
+        {2.0f, 1.0f, 3.0f},
+        {1.0f, 0.0f, 0.0f},
+        {1.0f, 1.0f, 2.0f},
+    };
+    zClipUV *uvList =
+        zGeometry_Model::BuildPolygonUvList(3, polygonPoints, &model, &polygon);
+    if (uvList == nullptr || !nearFloat(uvList[0].u, 26.0f) ||
+        !nearFloat(uvList[0].v, 21.0f) || !nearFloat(uvList[1].u, 10.0f) ||
+        !nearFloat(uvList[1].v, 7.0f) || !nearFloat(uvList[2].u, 14.0f) ||
+        !nearFloat(uvList[2].v, 15.0f)) {
+        std::free(uvList);
+        return 3;
+    }
+    std::free(uvList);
+
+    g_zModel_MaxPolygonVertexCountBeforeSplit = 64;
+    g_zModel_CoplanarTolerance = 0.01;
+
+    zDiPartial di{};
+    if (zGeometry_Model::AddPointListPolygonToDi(&di, 2, polygonPoints, &model, &polygon) !=
+        -1) {
+        zDi::FreeContents(&di);
+        return 4;
+    }
+    if (zGeometry_Model::AddPointListPolygonToDi(&di, 3, polygonPoints, &model, &polygon) !=
+            0 ||
+        di.entryCount != 1 || di.vertCount != 3 || di.entries == nullptr ||
+        di.entries[0].material != &material ||
+        static_cast<int>(di.entries[0].flagsAndIndexCount & 0xff) != 3) {
+        zDi::FreeContents(&di);
+        return 5;
+    }
+    zDi::FreeContents(&di);
+
+    zDiPartial indexedDi{};
+    if (zGeometry_Model::AddIndexedPolygonToDi(&indexedDi, &model, &polygon) != 0 ||
+        indexedDi.entryCount != 1 || indexedDi.vertCount != 3 || indexedDi.entries == nullptr ||
+        indexedDi.entries[0].material != &material ||
+        static_cast<int>(indexedDi.entries[0].flagsAndIndexCount & 0xff) != 3) {
+        zDi::FreeContents(&indexedDi);
+        return 6;
+    }
+    zDi::FreeContents(&indexedDi);
+
+    return indexedDi.entryCount == 0 && indexedDi.entries == nullptr && indexedDi.verts == nullptr
+               ? 0
+               : 7;
+}
+
+extern "C" int zgeometry_vec3array_clip_leaf_helpers_smoke() {
+    zVec3 points[3] = {
+        {2.0f, 3.0f, 4.0f},
+        {-1.0f, 5.0f, -6.0f},
+        {7.0f, -8.0f, 9.0f},
+    };
+
+    zGeometry_Vec3Array::RotatePos90AroundX(3, points);
+    if (points[0].x != 2.0f || points[0].y != -4.0f || points[0].z != 3.0f ||
+        points[1].x != -1.0f || points[1].y != 6.0f || points[1].z != 5.0f ||
+        points[2].x != 7.0f || points[2].y != -9.0f || points[2].z != -8.0f) {
+        return 1;
+    }
+
+    zGeometry_Vec3Array::RotateNeg90AroundX(3, points);
+    if (points[0].x != 2.0f || points[0].y != 3.0f || points[0].z != 4.0f ||
+        points[1].x != -1.0f || points[1].y != 5.0f || points[1].z != -6.0f ||
+        points[2].x != 7.0f || points[2].y != -8.0f || points[2].z != 9.0f) {
+        return 2;
+    }
+
+    zGeometry_BoundsXY bounds{};
+    zGeometry_Vec3Array::ComputeBoundsXY(&bounds, points, 3);
+    if (bounds.minX != -1.0f || bounds.maxX != 7.0f || bounds.maxY != 5.0f ||
+        bounds.minY != -8.0f) {
+        return 3;
+    }
+
+    zVec3 duplicateMiddle[4] = {
+        {0.0f, 0.0f, 1.0f},
+        {0.005f, 0.005f, 2.0f},
+        {1.0f, 0.0f, 3.0f},
+        {2.0f, 0.0f, 4.0f},
+    };
+    if (zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY(duplicateMiddle, 4) != 3 ||
+        duplicateMiddle[0].x != 0.005f || duplicateMiddle[0].y != 0.005f ||
+        duplicateMiddle[1].x != 1.0f || duplicateMiddle[2].x != 2.0f) {
+        return 4;
+    }
+
+    zVec3 duplicateClosing[3] = {
+        {0.0f, 0.0f, 1.0f},
+        {1.0f, 0.0f, 2.0f},
+        {0.005f, 0.005f, 3.0f},
+    };
+    if (zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY(duplicateClosing, 3) != 2) {
+        return 5;
+    }
+
+    zGeometry_WeilerBufferPartial buffer{};
+    zGeometry_WeilerBuffer::Init(&buffer, 2, sizeof(zVec3));
+    if (buffer.elementSize != sizeof(zVec3) || buffer.capacity != 2 || buffer.count != 0 ||
+        buffer.base == nullptr || buffer.appendPtr != buffer.base) {
+        zGeometry_WeilerBuffer::Destroy(&buffer);
+        return 6;
+    }
+
+    zGeometry_WeilerBuffer::Destroy(&buffer);
+    if (buffer.elementSize != 0 || buffer.capacity != 0 || buffer.count != 0 ||
+        buffer.base != nullptr || buffer.appendPtr != nullptr) {
+        return 7;
+    }
+
+    zGeometry_WeilerBuffer::Init(&buffer, 1, sizeof(zVec3));
+    void *outBase = nullptr;
+    void *append0 = zGeometry_WeilerBuffer::GetAppendSpace(&buffer, 1, &outBase);
+    if (append0 == nullptr || outBase != buffer.base || append0 != buffer.base ||
+        buffer.capacity != 18 || buffer.count != 1 ||
+        buffer.appendPtr != static_cast<void *>(static_cast<unsigned char *>(buffer.base) +
+                                                sizeof(zVec3))) {
+        zGeometry_WeilerBuffer::Destroy(&buffer);
+        return 8;
+    }
+    void *append1 = zGeometry_WeilerBuffer::GetAppendSpace(&buffer, 2, nullptr);
+    if (append1 != static_cast<void *>(static_cast<unsigned char *>(buffer.base) + sizeof(zVec3)) ||
+        buffer.count != 3 ||
+        buffer.appendPtr != static_cast<void *>(static_cast<unsigned char *>(buffer.base) +
+                                                sizeof(zVec3) * 3)) {
+        zGeometry_WeilerBuffer::Destroy(&buffer);
+        return 9;
+    }
+    zGeometry_WeilerBuffer::Destroy(&buffer);
+
+    zGeometry_WeilerBuffer::Init(&buffer, 4, sizeof(zVec3));
+    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&buffer, 3);
+    if (buffer.count != 3 ||
+        buffer.appendPtr != static_cast<void *>(static_cast<unsigned char *>(buffer.base) +
+                                                sizeof(zVec3) * 3)) {
+        zGeometry_WeilerBuffer::Destroy(&buffer);
+        return 10;
+    }
+    zGeometry_WeilerBuffer::Destroy(&buffer);
+
+    zVec3 segmentPoints[3] = {
+        {5.0f, -2.0f, 0.0f},
+        {-1.0f, 4.0f, 0.0f},
+        {2.0f, 1.0f, 0.0f},
+    };
+    zGeometry_WeilerContourSegmentPartial segment{};
+    segment.startPoint = &segmentPoints[0];
+    segment.endPoint = &segmentPoints[1];
+    segment.boundsDirty = 1;
+    zGeometry_WeilerContourSegment::UpdateBounds(&segment);
+    if (segment.minX != -1.0f || segment.maxX != 5.0f || segment.minY != -2.0f ||
+        segment.maxY != 4.0f || segment.boundsDirty != 0) {
+        return 11;
+    }
+
+    zGeometry_WeilerContourSegmentPartial segments[3]{};
+    zGeometry_WeilerContourSegmentArray::InitFromPointList(segments, segmentPoints, 3, 4);
+    if (segments[0].prev != &segments[2] || segments[0].next != &segments[1] ||
+        segments[1].prev != &segments[0] || segments[1].next != &segments[2] ||
+        segments[2].prev != &segments[1] || segments[2].next != &segments[0] ||
+        segments[0].startPoint != &segmentPoints[0] ||
+        segments[0].endPoint != &segmentPoints[1] ||
+        segments[2].startPoint != &segmentPoints[2] ||
+        segments[2].endPoint != &segmentPoints[0] || segments[0].contourType != 4 ||
+        segments[1].contourType != 4 || segments[2].contourType != 4 ||
+        segments[0].startXing != nullptr || segments[0].endXing != nullptr ||
+        segments[0].contourOutput != nullptr) {
+        return 12;
+    }
+
+    zGeometry_WeilerContourSegmentArray::UpdateBounds(segments, 3);
+    if (segments[0].minX != -1.0f || segments[0].maxX != 5.0f ||
+        segments[1].minX != -1.0f || segments[1].maxY != 4.0f ||
+        segments[2].minX != 2.0f || segments[2].maxX != 5.0f) {
+        return 13;
+    }
+
+    zGeometry_WeilerStatePartial outputState{};
+    zGeometry_WeilerBuffer::Init(&outputState.contourBuffer, 1,
+                                 sizeof(zGeometry_WeilerContourOutputPartial));
+    segments[0].contourType = 6;
+    if (zGeometry_Weiler::EnsureContourOutput(&outputState, &segments[0]) != 1 ||
+        outputState.contourBuffer.count != 1 || segments[0].contourOutput == nullptr ||
+        segments[0].contourOutput->firstSegment != &segments[0] ||
+        segments[0].contourOutput->contourType != 6) {
+        zGeometry_WeilerBuffer::Destroy(&outputState.contourBuffer);
+        return 14;
+    }
+    if (zGeometry_Weiler::EnsureContourOutput(&outputState, &segments[0]) != 1 ||
+        outputState.contourBuffer.count != 1) {
+        zGeometry_WeilerBuffer::Destroy(&outputState.contourBuffer);
+        return 15;
+    }
+    zGeometry_WeilerBuffer::Destroy(&outputState.contourBuffer);
+
+    zGeometry_WeilerStatePartial pairState{};
+    zGeometry_WeilerBuffer::Init(&pairState.segmentBuffer, 1,
+                                 sizeof(zGeometry_WeilerContourSegmentPartial));
+    zGeometry_WeilerBuffer::Init(&pairState.contourBuffer, 1,
+                                 sizeof(zGeometry_WeilerContourOutputPartial));
+    if (zGeometry_Weiler::InitInputContourPair(&pairState, segmentPoints, 3, 1) != 1 ||
+        pairState.segmentBuffer.count != 6 || pairState.contourBuffer.count != 2) {
+        zGeometry_WeilerBuffer::Destroy(&pairState.segmentBuffer);
+        zGeometry_WeilerBuffer::Destroy(&pairState.contourBuffer);
+        return 16;
+    }
+    zGeometry_WeilerContourSegmentPartial *pairSegments =
+        static_cast<zGeometry_WeilerContourSegmentPartial *>(pairState.segmentBuffer.base);
+    zGeometry_WeilerContourSegmentPartial *reversePairSegments = &pairSegments[3];
+    if (pairSegments[0].contourType != 1 || reversePairSegments[0].contourType != 4 ||
+        pairSegments[0].contourOutput == nullptr ||
+        pairSegments[0].contourOutput->firstSegment != &pairSegments[0] ||
+        pairSegments[0].contourOutput->contourType != 1 ||
+        reversePairSegments[0].contourOutput == nullptr ||
+        reversePairSegments[0].contourOutput->firstSegment != &reversePairSegments[0] ||
+        reversePairSegments[0].contourOutput->contourType != 4 ||
+        pairSegments[0].minX != -1.0f || pairSegments[0].maxX != 5.0f ||
+        pairSegments[0].minY != -2.0f || pairSegments[0].maxY != 4.0f ||
+        pairSegments[2].next != &pairSegments[0] ||
+        reversePairSegments[2].next != &reversePairSegments[0]) {
+        zGeometry_WeilerBuffer::Destroy(&pairState.segmentBuffer);
+        zGeometry_WeilerBuffer::Destroy(&pairState.contourBuffer);
+        return 17;
+    }
+    zGeometry_WeilerBuffer::Destroy(&pairState.segmentBuffer);
+    zGeometry_WeilerBuffer::Destroy(&pairState.contourBuffer);
+
+    zVec3 initPoints[4] = {
+        {0.0f, 0.0f, 1.0f},
+        {0.005f, 0.005f, 2.0f},
+        {1.0f, 0.0f, 3.0f},
+        {0.0f, 1.0f, 4.0f},
+    };
+    zGeometry_WeilerStatePartial *initState = zGeometry_Weiler::Init(initPoints, 4, 0);
+    if (initState == nullptr || initState->inputContourABuffer.count != 3 ||
+        initState->inputContourBBuffer.base != nullptr || initState->inputContourBBuffer.count != 0 ||
+        initState->segmentBuffer.count != 6 || initState->contourBuffer.count != 2 ||
+        initState->xingBuffer.count != 0 || initState->contourSource != 0) {
+        zGeometry_Weiler::DestroyState(initState);
+        return 18;
+    }
+    zVec3 *initContourA = static_cast<zVec3 *>(initState->inputContourABuffer.base);
+    zGeometry_WeilerContourSegmentPartial *initSegments =
+        static_cast<zGeometry_WeilerContourSegmentPartial *>(initState->segmentBuffer.base);
+    if (initContourA[0].x != 0.005f || initContourA[0].y != 0.005f ||
+        initContourA[0].z != 2.0f || initContourA[1].x != 1.0f ||
+        initContourA[2].x != 0.0f || initSegments[0].contourType != 1 ||
+        initSegments[3].contourType != 4 || initSegments[0].contourOutput == nullptr ||
+        initSegments[3].contourOutput == nullptr) {
+        zGeometry_Weiler::DestroyState(initState);
+        return 19;
+    }
+
+    zVec3 *inputContourPoints = nullptr;
+    if (zGeometry_Weiler::GetInputContourAPointList(initState, &inputContourPoints) != 3 ||
+        inputContourPoints != initContourA ||
+        zGeometry_Weiler::GetInputContourAPointList(nullptr, &inputContourPoints) != 0) {
+        zGeometry_Weiler::DestroyState(initState);
+        return 20;
+    }
+
+    zGeometry_Weiler::DestroyState(initState);
+
+    zGeometry_WeilerClipOutputPartial clipOutput{};
+    clipOutput.pointList.points = static_cast<zVec3 *>(std::malloc(sizeof(zVec3)));
+    clipOutput.polygonSetA.polygons = static_cast<zGeometry_PolygonPointSpanPartial *>(
+        std::malloc(sizeof(zGeometry_PolygonPointSpanPartial)));
+    clipOutput.polygonSetB.polygons = static_cast<zGeometry_PolygonPointSpanPartial *>(
+        std::malloc(sizeof(zGeometry_PolygonPointSpanPartial)));
+    clipOutput.polygonSetC.polygons = static_cast<zGeometry_PolygonPointSpanPartial *>(
+        std::malloc(sizeof(zGeometry_PolygonPointSpanPartial)));
+    if (clipOutput.pointList.points == nullptr || clipOutput.polygonSetA.polygons == nullptr ||
+        clipOutput.polygonSetB.polygons == nullptr || clipOutput.polygonSetC.polygons == nullptr) {
+        zGeometry_WeilerClipOutput::Destroy(&clipOutput);
+        return 21;
+    }
+    zGeometry_WeilerClipOutput::Destroy(&clipOutput);
+    zGeometry_WeilerClipOutput::Destroy(nullptr);
+    if (clipOutput.pointList.points != nullptr || clipOutput.polygonSetA.polygons != nullptr ||
+        clipOutput.polygonSetB.polygons != nullptr || clipOutput.polygonSetC.polygons != nullptr) {
+        return 22;
+    }
+
+    zGeometry_ClipPolygonPartial resetClipPolygon{};
+    zVec3 resetInitial[3] = {
+        {10.0f, 20.0f, 30.0f},
+        {20.0f, 20.0f, 40.0f},
+        {10.0f, 30.0f, 50.0f},
+    };
+    resetClipPolygon.weilerState = zGeometry_Weiler::Init(resetInitial, 3, 2);
+    if (resetClipPolygon.weilerState == nullptr) {
+        return 23;
+    }
+    zGeometry_WeilerStatePartial *oldResetState = resetClipPolygon.weilerState;
+    if (zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints(&resetClipPolygon, nullptr, 3) !=
+            0 ||
+        resetClipPolygon.weilerState != oldResetState) {
+        zGeometry_Weiler::DestroyState(resetClipPolygon.weilerState);
+        return 24;
+    }
+    zVec3 resetReplacement[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f},
+    };
+    if (zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints(&resetClipPolygon,
+                                                                 resetReplacement, 3) != 1 ||
+        resetClipPolygon.weilerState == nullptr || resetClipPolygon.weilerState == oldResetState ||
+        resetClipPolygon.weilerState->contourSource != 2 ||
+        resetClipPolygon.weilerState->inputContourABuffer.count != 3) {
+        zGeometry_Weiler::DestroyState(resetClipPolygon.weilerState);
+        return 25;
+    }
+    zGeometry_Weiler::DestroyState(resetClipPolygon.weilerState);
+
+    zVec3 square[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {0.0f, 10.0f, 0.0f},
+    };
+    zVec3 insidePoint{5.0f, 5.0f, 0.0f};
+    zVec3 edgePoint{0.0f, 5.0f, 0.0f};
+    zVec3 outsidePoint{12.0f, 5.0f, 0.0f};
+    if (zGeometry_Weiler::ClassifyPointInContourPointListXY(&insidePoint, 4, square) != 1 ||
+        zGeometry_Weiler::ClassifyPointInContourPointListXY(&edgePoint, 4, square) != 0 ||
+        zGeometry_Weiler::ClassifyPointInContourPointListXY(&outsidePoint, 4, square) != -1 ||
+        zGeometry_Weiler::ClassifyPointInContourPointListXY(&insidePoint, 0, square) != -1) {
+        return 25;
+    }
+
+    zVec3 biggerSquare[4] = {
+        {-1.0f, -1.0f, 0.0f},
+        {11.0f, -1.0f, 0.0f},
+        {11.0f, 11.0f, 0.0f},
+        {-1.0f, 11.0f, 0.0f},
+    };
+    zVec3 smallerSquare[4] = {
+        {2.0f, 2.0f, 0.0f},
+        {8.0f, 2.0f, 0.0f},
+        {8.0f, 8.0f, 0.0f},
+        {2.0f, 8.0f, 0.0f},
+    };
+    zVec3 shiftedSquare[4] = {
+        {20.0f, 20.0f, 0.0f},
+        {30.0f, 20.0f, 0.0f},
+        {30.0f, 30.0f, 0.0f},
+        {20.0f, 30.0f, 0.0f},
+    };
+    zVec3 overlappingSquare[4] = {
+        {5.0f, 5.0f, 0.0f},
+        {15.0f, 5.0f, 0.0f},
+        {15.0f, 15.0f, 0.0f},
+        {5.0f, 15.0f, 0.0f},
+    };
+    if (zGeometry_Weiler::OutputPreclassifiedContourPairResult(4, square, 4, square, 2) != 4 ||
+        zGeometry_Weiler::OutputPreclassifiedContourPairResult(4, smallerSquare, 4, square, 2) !=
+            2 ||
+        zGeometry_Weiler::OutputPreclassifiedContourPairResult(4, shiftedSquare, 4, square, 2) !=
+            0) {
+        return 26;
+    }
+
+    zGeometry_WeilerStatePartial boundsState{};
+    boundsState.inputContourABuffer.base = square;
+    boundsState.inputContourABuffer.count = 4;
+    boundsState.inputContourBBuffer.base = shiftedSquare;
+    boundsState.inputContourBBuffer.count = 4;
+    if (zGeometry_Weiler::ClassifyInputContourPairBounds(&boundsState) != 1) {
+        return 27;
+    }
+
+    boundsState.inputContourBBuffer.base = biggerSquare;
+    if (zGeometry_Weiler::ClassifyInputContourPairBounds(&boundsState) != 2) {
+        return 28;
+    }
+
+    boundsState.inputContourBBuffer.base = smallerSquare;
+    if (zGeometry_Weiler::ClassifyInputContourPairBounds(&boundsState) != 3) {
+        return 29;
+    }
+
+    boundsState.inputContourBBuffer.base = square;
+    if (zGeometry_Weiler::ClassifyInputContourPairBounds(&boundsState) != 4) {
+        return 30;
+    }
+
+    boundsState.inputContourBBuffer.base = overlappingSquare;
+    if (zGeometry_Weiler::ClassifyInputContourPairBounds(&boundsState) != 0) {
+        return 31;
+    }
+
+    zGeometry_WeilerStatePartial containedState{};
+    zGeometry_WeilerContourOutputPartial containedPacket[4]{};
+    zGeometry_WeilerContourSegmentPartial containedSegments[4]{};
+    zVec3 containedPoints[8] = {
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {11.0f, 10.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {11.0f, 10.0f, 0.0f},
+    };
+    for (int i = 0; i < 4; ++i) {
+        containedSegments[i].prev = &containedSegments[i];
+        containedSegments[i].next = &containedSegments[i];
+        containedSegments[i].startPoint = &containedPoints[i * 2];
+        containedSegments[i].endPoint = &containedPoints[i * 2 + 1];
+        containedSegments[i].boundsDirty = 1;
+        zGeometry_WeilerContourSegment::UpdateBounds(&containedSegments[i]);
+        containedPacket[i].firstSegment = &containedSegments[i];
+    }
+    containedState.contourBuffer.base = containedPacket;
+    if (zGeometry_Weiler::ClassifyContainedContour(&containedState) != 0 ||
+        containedState.xingBuffer.count != 0) {
+        return 136;
+    }
+
+    zGeometry_WeilerClipOutputPartial clipPointOutput{};
+    if (zGeometry_Weiler::ClipPointList(nullptr, 1, square, 4, &clipPointOutput) != 0) {
+        return 137;
+    }
+
+    zGeometry_WeilerStatePartial *clipPointState =
+        zGeometry_Weiler::Init(square, 4, 0);
+    if (clipPointState == nullptr) {
+        return 138;
+    }
+    if (zGeometry_Weiler::ClipPointList(clipPointState, 7, shiftedSquare, 4,
+                                        &clipPointOutput) != 1 ||
+        clipPointState->inputContourBBuffer.base != shiftedSquare ||
+        clipPointState->inputContourBBuffer.count != 4 ||
+        clipPointState->clipMode != 7 ||
+        clipPointOutput.polygonSetA.polygonCount != 0 ||
+        clipPointOutput.polygonSetB.polygonCount != 0 ||
+        clipPointOutput.polygonSetC.polygonCount != 0 ||
+        clipPointOutput.pointList.pointCount != 0) {
+        zGeometry_WeilerClipOutput::Destroy(&clipPointOutput);
+        zGeometry_Weiler::DestroyState(clipPointState);
+        return 139;
+    }
+    zGeometry_WeilerClipOutput::Destroy(&clipPointOutput);
+    zGeometry_Weiler::DestroyState(clipPointState);
+
+    clipPointOutput = {};
+    clipPointState = zGeometry_Weiler::Init(square, 4, 0);
+    if (clipPointState == nullptr) {
+        return 140;
+    }
+    if (zGeometry_Weiler::ClipPointList(clipPointState, 1, square, 4,
+                                        &clipPointOutput) != 3 ||
+        clipPointOutput.polygonSetA.polygonCount != 1 ||
+        clipPointOutput.polygonSetA.polygons->pointCount != 4 ||
+        clipPointOutput.polygonSetA.polygons->pointDwordOffset != 0 ||
+        clipPointOutput.pointList.pointCount != 4 ||
+        clipPointOutput.pointList.points[0].x != square[0].x ||
+        clipPointOutput.pointList.points[3].y != square[3].y) {
+        zGeometry_WeilerClipOutput::Destroy(&clipPointOutput);
+        zGeometry_Weiler::DestroyState(clipPointState);
+        return 141;
+    }
+    zGeometry_WeilerClipOutput::Destroy(&clipPointOutput);
+    zGeometry_Weiler::DestroyState(clipPointState);
+
+    clipPointOutput = {};
+    clipPointState = zGeometry_Weiler::Init(smallerSquare, 4, 0);
+    if (clipPointState == nullptr) {
+        return 142;
+    }
+    if (zGeometry_Weiler::ClipPointList(clipPointState, 3, biggerSquare, 4,
+                                        &clipPointOutput) != 4 ||
+        clipPointOutput.polygonSetA.polygonCount != 1 ||
+        clipPointOutput.polygonSetB.polygonCount != 1 ||
+        clipPointOutput.polygonSetA.polygons->pointCount != 4 ||
+        clipPointOutput.polygonSetA.polygons->pointDwordOffset != 30 ||
+        clipPointOutput.polygonSetB.polygons->pointCount != 10 ||
+        clipPointOutput.polygonSetB.polygons->pointDwordOffset != 0 ||
+        clipPointOutput.pointList.pointCount != 14 ||
+        clipPointOutput.pointList.points[0].x != biggerSquare[1].x ||
+        clipPointOutput.pointList.points[10].x != smallerSquare[0].x) {
+        zGeometry_WeilerClipOutput::Destroy(&clipPointOutput);
+        zGeometry_Weiler::DestroyState(clipPointState);
+        return 143;
+    }
+    zGeometry_WeilerClipOutput::Destroy(&clipPointOutput);
+    zGeometry_Weiler::DestroyState(clipPointState);
+
+    zGeometry_WeilerStatePartial selectedState{};
+    zGeometry_WeilerClipOutputPartial selectedOutput{};
+    zGeometry_PolygonPointSpanPartial selectedSpan{};
+    zVec3 selectedPoints[4] = {
+        {-5.0f, -5.0f, 0.0f},
+    };
+    selectedOutput.polygonSetA.polygons = &selectedSpan;
+    selectedOutput.pointList.points = selectedPoints;
+    selectedOutput.pointList.pointCount = 1;
+    selectedState.outClip = &selectedOutput;
+    selectedState.inputContourABuffer.base = smallerSquare;
+    selectedState.inputContourABuffer.count = 2;
+    selectedState.inputContourBBuffer.base = square;
+    selectedState.inputContourBBuffer.count = 3;
+    if (zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA(&selectedState, 2) != 1 ||
+        selectedOutput.polygonSetA.polygonCount != 0 || selectedOutput.pointList.pointCount != 1) {
+        return 38;
+    }
+    selectedState.clipMode = 1;
+    if (zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA(&selectedState, 2) != 1 ||
+        selectedOutput.polygonSetA.polygonCount != 1 || selectedSpan.pointCount != 2 ||
+        selectedSpan.pointDwordOffset != 3 || selectedOutput.pointList.pointCount != 3 ||
+        selectedPoints[1].x != smallerSquare[0].x || selectedPoints[2].x != smallerSquare[1].x) {
+        return 39;
+    }
+
+    zVec3 restoreInputB[2] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+    };
+    zVec3 restoreOutputPoints[2] = {
+        {7.0f, 8.0f, 9.0f},
+        {10.0f, 11.0f, 12.0f},
+    };
+    zGeometry_WeilerClipOutputPartial restoreOutput{};
+    zGeometry_WeilerStatePartial restoreState{};
+    restoreState.pointTranslationX = 100.0f;
+    restoreState.pointTranslationY = -50.0f;
+    restoreState.inputContourBBuffer.base = restoreInputB;
+    restoreState.inputContourBBuffer.count = 2;
+    restoreOutput.pointList.points = restoreOutputPoints;
+    restoreOutput.pointList.pointCount = 2;
+    restoreState.outClip = &restoreOutput;
+    zGeometry_Weiler::RestorePointTranslation(&restoreState);
+    if (restoreInputB[0].x != 101.0f || restoreInputB[0].y != -48.0f ||
+        restoreInputB[1].x != 104.0f || restoreInputB[1].y != -45.0f ||
+        restoreOutputPoints[0].x != 107.0f || restoreOutputPoints[0].y != -42.0f ||
+        restoreOutputPoints[1].x != 110.0f || restoreOutputPoints[1].y != -39.0f) {
+        return 40;
+    }
+
+    zGeometry_WeilerStatePartial tableState{};
+    zVec3 sideA[2] = {
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+    };
+    zVec3 sideB[2] = {
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+    };
+    tableState.inputContourABuffer.base = sideA;
+    tableState.inputContourABuffer.count = 2;
+    tableState.inputContourBBuffer.base = sideB;
+    tableState.inputContourBBuffer.count = 2;
+    zGeometry_Weiler::BuildPointSideTablesForContourPair(&tableState);
+    if (tableState.contourAPointSideByContourBEdge[0] != 0.0f ||
+        tableState.contourAPointSideByContourBEdge[1] != 1.0f ||
+        tableState.contourAPointSideByContourBEdge[2] != 0.0f ||
+        tableState.contourAPointSideByContourBEdge[3] != 0.0f ||
+        tableState.contourAPointSideByContourBEdge[4] != -1.0f ||
+        tableState.contourAPointSideByContourBEdge[5] != 0.0f ||
+        tableState.contourBPointSideByContourAEdge[0] != 0.0f ||
+        tableState.contourBPointSideByContourAEdge[1] != -1.0f ||
+        tableState.contourBPointSideByContourAEdge[2] != 0.0f ||
+        tableState.contourBPointSideByContourAEdge[3] != 0.0f ||
+        tableState.contourBPointSideByContourAEdge[4] != 1.0f ||
+        tableState.contourBPointSideByContourAEdge[5] != 0.0f) {
+        return 41;
+    }
+
+    zVec3 verticalStart{2.0f, 1.0f, 0.0f};
+    zVec3 verticalEnd{2.0f, 5.0f, 0.0f};
+    zVec3 verticalInside{100.0f, 3.0f, 0.0f};
+    zVec3 verticalOutside{100.0f, 6.0f, 0.0f};
+    zVec3 horizontalStart{1.0f, 2.0f, 0.0f};
+    zVec3 horizontalEnd{5.0f, 2.0f, 0.0f};
+    zVec3 horizontalInside{3.0f, 100.0f, 0.0f};
+    zVec3 horizontalOutside{6.0f, 100.0f, 0.0f};
+    if (zGeometry_Vec3::IsBetweenEndpointsXY(&verticalInside, &verticalStart, &verticalEnd) != 1 ||
+        zGeometry_Vec3::IsBetweenEndpointsXY(&verticalOutside, &verticalStart, &verticalEnd) !=
+            0 ||
+        zGeometry_Vec3::IsBetweenEndpointsXY(&horizontalInside, &horizontalStart,
+                                             &horizontalEnd) != 1 ||
+        zGeometry_Vec3::IsBetweenEndpointsXY(&horizontalOutside, &horizontalStart,
+                                             &horizontalEnd) != 0) {
+        return 43;
+    }
+
+    zGeometry_WeilerStatePartial preclassState{};
+    zGeometry_WeilerBuffer::Init(&preclassState.segmentBuffer, 8,
+                                 sizeof(zGeometry_WeilerContourSegmentPartial));
+    zGeometry_WeilerBuffer::Init(&preclassState.contourBuffer, 4,
+                                 sizeof(zGeometry_WeilerContourOutputPartial));
+    zGeometry_WeilerBuffer::Init(&preclassState.xingBuffer, 2, sizeof(zGeometry_WeilerXingPartial));
+    zGeometry_WeilerBuffer::Init(&preclassState.polygonSetABuffer, 2,
+                                 sizeof(zGeometry_PolygonPointSpanPartial));
+    zGeometry_WeilerBuffer::Init(&preclassState.polygonSetBBuffer, 2,
+                                 sizeof(zGeometry_PolygonPointSpanPartial));
+    zGeometry_WeilerBuffer::Init(&preclassState.polygonSetCBuffer, 2,
+                                 sizeof(zGeometry_PolygonPointSpanPartial));
+    zGeometry_WeilerBuffer::Init(&preclassState.pointListBuffer, 8, sizeof(zVec3));
+    preclassState.inputContourABuffer.base = square;
+    preclassState.inputContourABuffer.count = 4;
+    zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs(&preclassState);
+    zGeometry_WeilerContourSegmentPartial *preclassSegments =
+        static_cast<zGeometry_WeilerContourSegmentPartial *>(preclassState.segmentBuffer.base);
+    zGeometry_WeilerContourOutputPartial *preclassContours =
+        static_cast<zGeometry_WeilerContourOutputPartial *>(preclassState.contourBuffer.base);
+    if (preclassState.segmentBuffer.count != 8 || preclassState.contourBuffer.count != 2 ||
+        preclassState.xingBuffer.count != 0 || preclassState.polygonSetABuffer.count != 0 ||
+        preclassState.pointListBuffer.count != 0 || preclassSegments[0].contourType != 1 ||
+        preclassSegments[4].contourType != 4 ||
+        preclassSegments[0].contourOutput != &preclassContours[0] ||
+        preclassSegments[4].contourOutput != &preclassContours[1] ||
+        preclassContours[0].firstSegment != &preclassSegments[0] ||
+        preclassContours[1].firstSegment != &preclassSegments[4]) {
+        zGeometry_WeilerBuffer::Destroy(&preclassState.segmentBuffer);
+        zGeometry_WeilerBuffer::Destroy(&preclassState.contourBuffer);
+        zGeometry_WeilerBuffer::Destroy(&preclassState.xingBuffer);
+        zGeometry_WeilerBuffer::Destroy(&preclassState.polygonSetABuffer);
+        zGeometry_WeilerBuffer::Destroy(&preclassState.polygonSetBBuffer);
+        zGeometry_WeilerBuffer::Destroy(&preclassState.polygonSetCBuffer);
+        zGeometry_WeilerBuffer::Destroy(&preclassState.pointListBuffer);
+        return 42;
+    }
+    zGeometry_WeilerBuffer::Destroy(&preclassState.segmentBuffer);
+    zGeometry_WeilerBuffer::Destroy(&preclassState.contourBuffer);
+    zGeometry_WeilerBuffer::Destroy(&preclassState.xingBuffer);
+    zGeometry_WeilerBuffer::Destroy(&preclassState.polygonSetABuffer);
+    zGeometry_WeilerBuffer::Destroy(&preclassState.polygonSetBBuffer);
+    zGeometry_WeilerBuffer::Destroy(&preclassState.polygonSetCBuffer);
+    zGeometry_WeilerBuffer::Destroy(&preclassState.pointListBuffer);
+
+    zGeometry_WeilerStatePartial splitState{};
+    zGeometry_WeilerBuffer::Init(&splitState.segmentBuffer, 4,
+                                 sizeof(zGeometry_WeilerContourSegmentPartial));
+    zVec3 splitPoint{3.0f, 0.0f, 0.0f};
+    zVec3 firstEnd{6.0f, 0.0f, 0.0f};
+    zVec3 secondEnd{3.0f, 6.0f, 0.0f};
+    zGeometry_WeilerContourSegmentPartial firstSegment{};
+    zGeometry_WeilerContourSegmentPartial firstNext{};
+    zGeometry_WeilerContourSegmentPartial secondSegment{};
+    zGeometry_WeilerContourSegmentPartial secondNext{};
+    zGeometry_WeilerXingPartial xing{};
+    firstSegment.next = &firstNext;
+    firstNext.prev = &firstSegment;
+    firstSegment.contourType = 1;
+    firstSegment.endPoint = &firstEnd;
+    firstSegment.endXing = &xing;
+    secondSegment.next = &secondNext;
+    secondNext.prev = &secondSegment;
+    secondSegment.contourType = 4;
+    secondSegment.endPoint = &secondEnd;
+    if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(&splitState, &firstSegment,
+                                                          &secondSegment, &splitPoint, 8,
+                                                          16) != 1 ||
+        splitState.segmentBuffer.count != 2) {
+        zGeometry_WeilerBuffer::Destroy(&splitState.segmentBuffer);
+        return 44;
+    }
+    zGeometry_WeilerContourSegmentPartial *splitSegments =
+        static_cast<zGeometry_WeilerContourSegmentPartial *>(splitState.segmentBuffer.base);
+    if (firstSegment.next != &splitSegments[0] || firstNext.prev != &splitSegments[0] ||
+        splitSegments[0].prev != &firstSegment || splitSegments[0].next != &firstNext ||
+        splitSegments[0].contourType != 9 || splitSegments[0].startPoint != &splitPoint ||
+        splitSegments[0].endPoint != &firstEnd || splitSegments[0].endXing != &xing ||
+        splitSegments[0].contourOutput != nullptr || secondSegment.next != &splitSegments[1] ||
+        secondNext.prev != &splitSegments[1] || splitSegments[1].contourType != 20 ||
+        splitSegments[1].startPoint != &splitPoint || splitSegments[1].endPoint != &secondEnd) {
+        zGeometry_WeilerBuffer::Destroy(&splitState.segmentBuffer);
+        return 45;
+    }
+    zGeometry_WeilerBuffer::Destroy(&splitState.segmentBuffer);
+
+    zGeometry_WeilerStatePartial divideState{};
+    zGeometry_WeilerBuffer::Init(&divideState.segmentBuffer, 4,
+                                 sizeof(zGeometry_WeilerContourSegmentPartial));
+    zVec3 divideStart{0.0f, 0.0f, 0.0f};
+    zVec3 divideEnd{10.0f, 0.0f, 0.0f};
+    zGeometry_WeilerXingPartial divideXing{};
+    divideXing.point.x = 4.0f;
+    divideXing.point.y = 0.0f;
+    divideXing.point.z = 2.0f;
+    zGeometry_WeilerContourSegmentPartial divideSegment{};
+    zGeometry_WeilerContourSegmentPartial divideOldNext{};
+    divideSegment.prev = &divideOldNext;
+    divideSegment.next = &divideOldNext;
+    divideSegment.contourType = 3;
+    divideSegment.startPoint = &divideStart;
+    divideSegment.endPoint = &divideEnd;
+    divideSegment.endXing = &xing;
+    divideOldNext.prev = &divideSegment;
+    divideOldNext.next = &divideSegment;
+    if (zGeometry_Weiler::DivideContourSegmentAtPoint(&divideState, &divideXing.point,
+                                                      &divideSegment, 1) != 1 ||
+        divideState.segmentBuffer.count != 1) {
+        zGeometry_WeilerBuffer::Destroy(&divideState.segmentBuffer);
+        return 51;
+    }
+    zGeometry_WeilerContourSegmentPartial *divideInserted =
+        static_cast<zGeometry_WeilerContourSegmentPartial *>(divideState.segmentBuffer.base);
+    if (divideSegment.endPoint != &divideXing.point || divideSegment.next != divideInserted ||
+        divideSegment.endXing != &divideXing || divideSegment.boundsDirty != 1 ||
+        divideInserted->prev != &divideSegment || divideInserted->next != &divideOldNext ||
+        divideInserted->startPoint != &divideXing.point || divideInserted->endPoint != &divideEnd ||
+        divideInserted->contourType != 3 || divideInserted->contourOutput != nullptr ||
+        divideInserted->endXing != &xing || divideInserted->startXing != &divideXing ||
+        divideInserted->boundsDirty != 1 || divideOldNext.prev != divideInserted) {
+        zGeometry_WeilerBuffer::Destroy(&divideState.segmentBuffer);
+        return 52;
+    }
+    zGeometry_WeilerBuffer::Destroy(&divideState.segmentBuffer);
+
+    zGeometry_WeilerStatePartial preclassPairState{};
+    zGeometry_WeilerBuffer::Init(&preclassPairState.segmentBuffer, 8,
+                                 sizeof(zGeometry_WeilerContourSegmentPartial));
+    zGeometry_WeilerBuffer::Init(&preclassPairState.contourBuffer, 4,
+                                 sizeof(zGeometry_WeilerContourOutputPartial));
+    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&preclassPairState.segmentBuffer, 4);
+    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&preclassPairState.contourBuffer, 4);
+    zGeometry_WeilerContourSegmentPartial *pairPreclassSegments =
+        static_cast<zGeometry_WeilerContourSegmentPartial *>(preclassPairState.segmentBuffer.base);
+    zGeometry_WeilerContourOutputPartial *pairPreclassContours =
+        static_cast<zGeometry_WeilerContourOutputPartial *>(preclassPairState.contourBuffer.base);
+    zVec3 pairAStart{0.0f, 0.0f, 0.0f};
+    zVec3 pairAEnd{10.0f, 0.0f, 0.0f};
+    zVec3 pairCStart{3.0f, 0.0f, 0.0f};
+    zVec3 pairCEnd{7.0f, 0.0f, 0.0f};
+    pairPreclassSegments[0].prev = &pairPreclassSegments[0];
+    pairPreclassSegments[0].next = &pairPreclassSegments[0];
+    pairPreclassSegments[0].contourType = 1;
+    pairPreclassSegments[0].startPoint = &pairAStart;
+    pairPreclassSegments[0].endPoint = &pairAEnd;
+    pairPreclassSegments[1].prev = &pairPreclassSegments[1];
+    pairPreclassSegments[1].next = &pairPreclassSegments[1];
+    pairPreclassSegments[1].contourType = 4;
+    pairPreclassSegments[1].startPoint = &pairAEnd;
+    pairPreclassSegments[1].endPoint = &pairAStart;
+    pairPreclassSegments[2].prev = &pairPreclassSegments[2];
+    pairPreclassSegments[2].next = &pairPreclassSegments[2];
+    pairPreclassSegments[2].contourType = 2;
+    pairPreclassSegments[2].startPoint = &pairCStart;
+    pairPreclassSegments[2].endPoint = &pairCEnd;
+    pairPreclassSegments[3].prev = &pairPreclassSegments[3];
+    pairPreclassSegments[3].next = &pairPreclassSegments[3];
+    pairPreclassSegments[3].contourType = 8;
+    pairPreclassSegments[3].startPoint = &pairCEnd;
+    pairPreclassSegments[3].endPoint = &pairCStart;
+    pairPreclassContours[0].firstSegment = &pairPreclassSegments[0];
+    pairPreclassContours[1].firstSegment = &pairPreclassSegments[1];
+    pairPreclassContours[2].firstSegment = &pairPreclassSegments[2];
+    pairPreclassContours[3].firstSegment = &pairPreclassSegments[3];
+    preclassPairState.inputContourABuffer.count = 1;
+    preclassPairState.inputContourBBuffer.count = 1;
+    if (zGeometry_Weiler::PreclassifyInputContourPair(&preclassPairState) != 1 ||
+        preclassPairState.segmentBuffer.count != 6) {
+        zGeometry_WeilerBuffer::Destroy(&preclassPairState.segmentBuffer);
+        zGeometry_WeilerBuffer::Destroy(&preclassPairState.contourBuffer);
+        return 46;
+    }
+    pairPreclassSegments =
+        static_cast<zGeometry_WeilerContourSegmentPartial *>(preclassPairState.segmentBuffer.base);
+    if (pairPreclassSegments[0].endPoint != &pairCStart ||
+        pairPreclassSegments[1].endPoint != &pairCStart ||
+        pairPreclassSegments[2].contourType != 3 ||
+        pairPreclassSegments[3].contourType != 12 ||
+        pairPreclassSegments[0].next != &pairPreclassSegments[4] ||
+        pairPreclassSegments[4].prev != &pairPreclassSegments[0] ||
+        pairPreclassSegments[4].next != &pairPreclassSegments[0] ||
+        pairPreclassSegments[4].startPoint != &pairCEnd ||
+        pairPreclassSegments[4].endPoint != &pairAEnd ||
+        pairPreclassSegments[1].next != &pairPreclassSegments[5] ||
+        pairPreclassSegments[5].prev != &pairPreclassSegments[1] ||
+        pairPreclassSegments[5].next != &pairPreclassSegments[1] ||
+        pairPreclassSegments[5].startPoint != &pairCEnd ||
+        pairPreclassSegments[5].endPoint != &pairAStart) {
+        zGeometry_WeilerBuffer::Destroy(&preclassPairState.segmentBuffer);
+        zGeometry_WeilerBuffer::Destroy(&preclassPairState.contourBuffer);
+        return 47;
+    }
+    zGeometry_WeilerBuffer::Destroy(&preclassPairState.segmentBuffer);
+    zGeometry_WeilerBuffer::Destroy(&preclassPairState.contourBuffer);
+
+    zGeometry_WeilerStatePartial intersectState{};
+    zVec3 intersectEdge0Start{0.0f, 0.0f, 0.0f};
+    zVec3 intersectEdge0End{10.0f, 0.0f, 0.0f};
+    zVec3 intersectEdge1Start{5.0f, -5.0f, 2.0f};
+    zVec3 intersectEdge1End{5.0f, 5.0f, 8.0f};
+    zVec3 disjointEdge1Start{15.0f, -5.0f, 0.0f};
+    zVec3 disjointEdge1End{15.0f, 5.0f, 0.0f};
+    if (zGeometry_Weiler::ClassifyIntersect2d(&intersectEdge0Start, &intersectEdge0End,
+                                              &intersectEdge1Start, &intersectEdge1End,
+                                              &intersectState) != 5 ||
+        zGeometry_Weiler::ClassifyIntersect2d(&intersectEdge0Start, &intersectEdge0End,
+                                              &disjointEdge1Start, &disjointEdge1End,
+                                              &intersectState) != 0) {
+        return 48;
+    }
+
+    zGeometry_WeilerBuffer::Init(&intersectState.xingBuffer, 2, sizeof(zGeometry_WeilerXingPartial));
+    zGeometry_WeilerXingPartial *createdXing = nullptr;
+    if (zGeometry_Weiler::Intersect2d(&intersectState, &createdXing, intersectEdge0Start,
+                                      intersectEdge0End, intersectEdge1Start,
+                                      intersectEdge1End) != 5 ||
+        createdXing == nullptr || intersectState.xingBuffer.count != 1 ||
+        createdXing->xingType != 5 || createdXing->point.x != 5.0f ||
+        createdXing->point.y != 0.0f || createdXing->point.z != 5.0f) {
+        zGeometry_WeilerBuffer::Destroy(&intersectState.xingBuffer);
+        return 49;
+    }
+
+    createdXing = reinterpret_cast<zGeometry_WeilerXingPartial *>(1);
+    if (zGeometry_Weiler::Intersect2d(&intersectState, &createdXing, intersectEdge0Start,
+                                      intersectEdge0End, disjointEdge1Start,
+                                      disjointEdge1End) != 0 ||
+        createdXing != nullptr || intersectState.xingBuffer.count != 1) {
+        zGeometry_WeilerBuffer::Destroy(&intersectState.xingBuffer);
+        return 50;
+    }
+    zGeometry_WeilerBuffer::Destroy(&intersectState.xingBuffer);
+
+    zVec3 adjacentCorner{1.0f, 0.0f, 0.0f};
+    zVec3 adjacentFirstStart{0.0f, -1.0f, 0.0f};
+    zVec3 adjacentSecondEnd{2.0f, 1.0f, 0.0f};
+    zGeometry_WeilerContourSegmentPartial adjacentFirst{};
+    zGeometry_WeilerContourSegmentPartial adjacentSecond{};
+    zGeometry_WeilerContourSegmentPartial contourSegment{};
+    adjacentFirst.startPoint = &adjacentFirstStart;
+    adjacentFirst.endPoint = &adjacentCorner;
+    adjacentSecond.startPoint = &adjacentCorner;
+    adjacentSecond.endPoint = &adjacentSecondEnd;
+    contourSegment.startPoint = &intersectEdge0Start;
+    contourSegment.endPoint = &intersectEdge0End;
+    if (zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment(
+            &adjacentFirst, &adjacentSecond, &contourSegment) != 7) {
+        return 53;
+    }
+    adjacentSecondEnd.y = -1.0f;
+    if (zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment(
+            &adjacentFirst, &adjacentSecond, &contourSegment) != 1) {
+        return 54;
+    }
+    adjacentFirstStart.y = 1.0f;
+    adjacentSecondEnd.y = 1.0f;
+    if (zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment(
+            &adjacentFirst, &adjacentSecond, &contourSegment) != 2) {
+        return 55;
+    }
+
+    zVec3 pairCornerA{1.0f, 0.0f, 0.0f};
+    zVec3 pairStartA{0.0f, 0.0f, 0.0f};
+    zVec3 pairEndA{1.0f, 1.0f, 0.0f};
+    zGeometry_WeilerContourSegmentPartial pairAFirst{};
+    zGeometry_WeilerContourSegmentPartial pairASecond{};
+    zGeometry_WeilerContourSegmentPartial pairBFirst{};
+    zGeometry_WeilerContourSegmentPartial pairBSecond{};
+    pairAFirst.startPoint = &pairStartA;
+    pairAFirst.endPoint = &pairCornerA;
+    pairASecond.startPoint = &pairCornerA;
+    pairASecond.endPoint = &pairEndA;
+    pairBFirst.startPoint = &pairStartA;
+    pairBFirst.endPoint = &pairCornerA;
+    pairBSecond.startPoint = &pairCornerA;
+    pairBSecond.endPoint = &pairEndA;
+    if (zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
+            &pairAFirst, &pairASecond, &pairBFirst, &pairBSecond, &intersectState) != 5) {
+        return 56;
+    }
+    pairBSecond.startPoint = &pairStartA;
+    if (zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
+            &pairAFirst, &pairASecond, &pairBFirst, &pairBSecond, &intersectState) != 0) {
+        return 57;
+    }
+
+    zGeometry_WeilerContourSegmentPartial validateSegments[8]{};
+    zGeometry_WeilerXingPartial validateXings[2]{};
+    validateXings[0].xingType = 4;
+    validateXings[0].segment0 = &validateSegments[0];
+    validateXings[0].segment1 = &validateSegments[1];
+    validateXings[0].segment2 = &validateSegments[2];
+    validateXings[0].segment3 = &validateSegments[3];
+    validateXings[0].segment4 = &validateSegments[4];
+    validateXings[0].segment5 = &validateSegments[5];
+    validateXings[0].segment6 = &validateSegments[6];
+    validateXings[0].segment7 = &validateSegments[7];
+    validateXings[1].xingType = 4;
+    validateXings[1].segment0 = &validateSegments[0];
+    validateXings[1].segment1 = &validateSegments[1];
+    validateXings[1].segment2 = &validateSegments[2];
+    validateXings[1].segment3 = &validateSegments[3];
+    validateXings[1].segment4 = &validateSegments[4];
+    validateXings[1].segment5 = &validateSegments[5];
+    validateXings[1].segment6 = &validateSegments[6];
+    int failedXingIndex = -1;
+    if (zGeometry_Weiler::ValidateXings(1, validateXings, &failedXingIndex) != 1 ||
+        failedXingIndex != -1 ||
+        zGeometry_Weiler::ValidateXings(2, validateXings, &failedXingIndex) != 0 ||
+        failedXingIndex != 1) {
+        return 58;
+    }
+
+    zGeometry_WeilerStatePartial mergeState{};
+    zGeometry_WeilerBuffer::Init(&mergeState.xingBuffer, 1, sizeof(zGeometry_WeilerXingPartial));
+    zGeometry_WeilerBuffer::Init(&mergeState.contourBuffer, 4,
+                                 sizeof(zGeometry_WeilerContourOutputPartial));
+    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&mergeState.xingBuffer, 1);
+    zGeometry_WeilerXingPartial *mergeXing =
+        static_cast<zGeometry_WeilerXingPartial *>(mergeState.xingBuffer.base);
+    zGeometry_WeilerContourSegmentPartial mergeSegments[8]{};
+    for (int i = 0; i < 8; ++i) {
+        mergeSegments[i].contourType = i + 1;
+    }
+    mergeXing->xingType = 4;
+    mergeXing->segment0 = &mergeSegments[0];
+    mergeXing->segment1 = &mergeSegments[1];
+    mergeXing->segment2 = &mergeSegments[2];
+    mergeXing->segment3 = &mergeSegments[3];
+    mergeXing->segment4 = &mergeSegments[4];
+    mergeXing->segment5 = &mergeSegments[5];
+    mergeXing->segment6 = &mergeSegments[6];
+    mergeXing->segment7 = &mergeSegments[7];
+    if (zGeometry_Weiler::MergeContours(&mergeState) != 1 ||
+        mergeState.contourBuffer.count != 2 || mergeSegments[0].next != &mergeSegments[5] ||
+        mergeSegments[1].next != &mergeSegments[7] ||
+        mergeSegments[2].prev != &mergeSegments[4] ||
+        mergeSegments[3].prev != &mergeSegments[6] ||
+        mergeSegments[4].next != &mergeSegments[2] ||
+        mergeSegments[5].next != &mergeSegments[0] ||
+        mergeSegments[6].prev != &mergeSegments[3] ||
+        mergeSegments[7].prev != &mergeSegments[1]) {
+        zGeometry_WeilerBuffer::Destroy(&mergeState.xingBuffer);
+        zGeometry_WeilerBuffer::Destroy(&mergeState.contourBuffer);
+        return 59;
+    }
+    zGeometry_WeilerContourOutputPartial *mergeContours =
+        static_cast<zGeometry_WeilerContourOutputPartial *>(mergeState.contourBuffer.base);
+    if (mergeSegments[4].contourOutput != &mergeContours[0] ||
+        mergeSegments[6].contourOutput != &mergeContours[1] ||
+        mergeContours[0].firstSegment != &mergeSegments[4] ||
+        mergeContours[1].firstSegment != &mergeSegments[6] ||
+        mergeContours[0].contourType != 5 || mergeContours[1].contourType != 7) {
+        zGeometry_WeilerBuffer::Destroy(&mergeState.xingBuffer);
+        zGeometry_WeilerBuffer::Destroy(&mergeState.contourBuffer);
+        return 60;
+    }
+    zGeometry_WeilerBuffer::Destroy(&mergeState.xingBuffer);
+    zGeometry_WeilerBuffer::Destroy(&mergeState.contourBuffer);
+
+    zVec3 contourA[2] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+    };
+    zGeometry_WeilerStatePartial axisState{};
+    axisState.inputContourABuffer.base = contourA;
+    axisState.inputContourABuffer.count = 2;
+    axisState.contourSource = 2;
+    zGeometry_Weiler::TogglePointAxesForContourSource(&axisState);
+    if (contourA[0].x != 1.0f || contourA[0].y != 3.0f || contourA[0].z != 2.0f ||
+        contourA[1].x != 4.0f || contourA[1].y != 6.0f || contourA[1].z != 5.0f) {
+        return 32;
+    }
+
+    zVec3 contourB[1] = {
+        {7.0f, 8.0f, 9.0f},
+    };
+    axisState.inputContourBBuffer.base = contourB;
+    axisState.inputContourBBuffer.count = 1;
+    axisState.contourSource = 1;
+    zGeometry_Weiler::TogglePointAxesForContourSource(&axisState);
+    if (contourB[0].x != 9.0f || contourB[0].y != 8.0f || contourB[0].z != 7.0f ||
+        contourA[0].x != 1.0f) {
+        return 33;
+    }
+
+    zGeometry_WeilerStatePartial recenterState{};
+    zVec3 centered[1] = {
+        {100.0f, -100.0f, 3.0f},
+    };
+    recenterState.inputContourABuffer.base = centered;
+    recenterState.inputContourABuffer.count = 1;
+    recenterState.pointsRecentered = true;
+    zGeometry_Weiler::RecenterPointSetsIfOutOfRange(&recenterState);
+    if (recenterState.pointsRecentered || centered[0].x != 100.0f || centered[0].y != -100.0f) {
+        return 34;
+    }
+
+    zVec3 outOfRange[2] = {
+        {70000.0f, -80000.0f, 1.0f},
+        {70003.0f, -79996.0f, 2.0f},
+    };
+    recenterState = {};
+    recenterState.inputContourABuffer.base = outOfRange;
+    recenterState.inputContourABuffer.count = 2;
+    zGeometry_Weiler::RecenterPointSetsIfOutOfRange(&recenterState);
+    if (!recenterState.pointsRecentered || recenterState.pointTranslationX != 70000.0f ||
+        recenterState.pointTranslationY != -80000.0f || outOfRange[0].x != 0.0f ||
+        outOfRange[0].y != 0.0f || outOfRange[1].x != 3.0f || outOfRange[1].y != 4.0f) {
+        return 35;
+    }
+
+    zVec3 contourBRecentering[1] = {
+        {70005.0f, -79995.0f, 9.0f},
+    };
+    recenterState.inputContourBBuffer.base = contourBRecentering;
+    recenterState.inputContourBBuffer.count = 1;
+    zGeometry_Weiler::RecenterPointSetsIfOutOfRange(&recenterState);
+    if (contourBRecentering[0].x != 5.0f || contourBRecentering[0].y != 5.0f ||
+        contourBRecentering[0].z != 9.0f) {
+        return 36;
+    }
+
+    zVec3 traversalPoints[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {2.0f, 0.0f, 0.0f},
+        {3.0f, 0.0f, 0.0f},
+    };
+    zGeometry_WeilerContourSegmentPartial traversalSegments[4]{};
+    traversalSegments[0].next = &traversalSegments[1];
+    traversalSegments[1].next = &traversalSegments[0];
+    traversalSegments[1].prev = &traversalSegments[2];
+    traversalSegments[1].startPoint = &traversalPoints[0];
+    traversalSegments[1].endPoint = &traversalPoints[1];
+    if (zGeometry_Weiler::GetNextContourSegmentForTraversal(&traversalSegments[0]) !=
+            &traversalSegments[1] ||
+        traversalSegments[1].prev != &traversalSegments[0] ||
+        traversalSegments[1].next != &traversalSegments[2] ||
+        traversalSegments[1].startPoint != &traversalPoints[1] ||
+        traversalSegments[1].endPoint != &traversalPoints[0]) {
+        return 120;
+    }
+
+    traversalSegments[2].next = &traversalSegments[3];
+    traversalSegments[2].prev = &traversalSegments[0];
+    traversalSegments[2].startPoint = &traversalPoints[2];
+    traversalSegments[2].endPoint = &traversalPoints[3];
+    traversalSegments[0].next = &traversalSegments[2];
+    if (zGeometry_Weiler::GetNextContourSegmentForTraversal(&traversalSegments[0]) !=
+            &traversalSegments[2] ||
+        traversalSegments[2].prev != &traversalSegments[0] ||
+        traversalSegments[2].next != &traversalSegments[3] ||
+        traversalSegments[2].startPoint != &traversalPoints[2] ||
+        traversalSegments[2].endPoint != &traversalPoints[3]) {
+        return 121;
+    }
+
+    zGeometry_WeilerStatePartial newContourEmptyState{};
+    zGeometry_Weiler::NewContour(&newContourEmptyState);
+    if (!newContourEmptyState.allContoursSingleSided) {
+        return 122;
+    }
+
+    zGeometry_WeilerStatePartial newContourState{};
+    zGeometry_WeilerContourOutputPartial newContourOutputs[2]{};
+    zGeometry_WeilerContourOutputPartial staleOwner{};
+    zGeometry_WeilerContourSegmentPartial newContourSegments[6]{};
+    newContourState.contourBuffer.base = newContourOutputs;
+    newContourState.contourBuffer.count = 2;
+
+    newContourOutputs[0].firstSegment = &newContourSegments[0];
+    newContourSegments[0].prev = &newContourSegments[2];
+    newContourSegments[0].next = &newContourSegments[1];
+    newContourSegments[0].contourType = 1;
+    newContourSegments[1].prev = &newContourSegments[0];
+    newContourSegments[1].next = &newContourSegments[2];
+    newContourSegments[1].contourType = 2;
+    newContourSegments[1].contourOutput = &staleOwner;
+    staleOwner.firstSegment = &newContourSegments[1];
+    newContourSegments[2].prev = &newContourSegments[1];
+    newContourSegments[2].next = &newContourSegments[0];
+    newContourSegments[2].contourType = 4;
+
+    newContourOutputs[1].firstSegment = &newContourSegments[3];
+    newContourSegments[3].prev = &newContourSegments[4];
+    newContourSegments[3].next = &newContourSegments[5];
+    newContourSegments[3].contourType = 6;
+    newContourSegments[4].prev = &newContourSegments[3];
+    newContourSegments[4].next = &newContourSegments[5];
+    newContourSegments[4].contourType = 4;
+    newContourSegments[5].prev = &newContourSegments[4];
+    newContourSegments[5].next = &newContourSegments[3];
+    newContourSegments[5].contourType = 4;
+
+    zGeometry_Weiler::NewContour(&newContourState);
+    if (newContourOutputs[0].contourType != 7 || newContourOutputs[0].pointCount != 3 ||
+        staleOwner.firstSegment != nullptr ||
+        newContourSegments[1].contourOutput != nullptr ||
+        newContourOutputs[1].contourType != 6 || newContourOutputs[1].pointCount != 3 ||
+        newContourSegments[3].prev != &newContourSegments[5] ||
+        newContourSegments[3].next != &newContourSegments[4] ||
+        newContourState.allContoursSingleSided) {
+        return 123;
+    }
+
+    zGeometry_WeilerStatePartial selectState{};
+    zVec3 selectContourA[3] = {
+        {10.0f, 0.0f, 0.0f},
+        {4.0f, 2.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f},
+    };
+    zVec3 selectPoint = {5.0f, 1.0f, 0.0f};
+    zVec3 selectCandidate = {5.0f, -1.0f, 0.0f};
+    zVec3 *selectedPoint = &selectCandidate;
+    zGeometry_Weiler::SelectForwardStartPointInContourA(&selectPoint, &selectedPoint,
+                                                        &selectState);
+    if (selectedPoint != &selectCandidate) {
+        return 124;
+    }
+
+    selectState.inputContourABuffer.base = selectContourA;
+    selectState.inputContourABuffer.count = 3;
+    zGeometry_Weiler::SelectForwardStartPointInContourA(&selectPoint, &selectedPoint,
+                                                        &selectState);
+    if (selectedPoint != &selectContourA[0]) {
+        return 125;
+    }
+
+    selectedPoint = &selectCandidate;
+    selectPoint.x = 11.0f;
+    zGeometry_Weiler::SelectForwardStartPointInContourA(&selectPoint, &selectedPoint,
+                                                        &selectState);
+    if (selectedPoint != &selectContourA[2]) {
+        return 126;
+    }
+
+    zGeometry_WeilerStatePartial outsideDisabledState{};
+    if (zGeometry_Weiler::GenerateOutsideResults(&outsideDisabledState) != 1) {
+        return 127;
+    }
+
+    zGeometry_WeilerStatePartial outsideState{};
+    zGeometry_WeilerClipOutputPartial outsideOutput{};
+    zVec3 outsideContourA[1] = {
+        {1.0f, 2.0f, 3.0f},
+    };
+    zVec3 outsideContourB[2] = {
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f},
+    };
+    outsideState.clipMode = 2;
+    outsideState.outClip = &outsideOutput;
+    outsideState.inputContourABuffer.base = outsideContourA;
+    outsideState.inputContourABuffer.count = 1;
+    outsideState.inputContourBBuffer.base = outsideContourB;
+    outsideState.inputContourBBuffer.count = 2;
+    outsideOutput.pointList.pointCount = 2;
+    outsideOutput.polygonSetB.polygonCount = 3;
+    zGeometry_WeilerBuffer::Init(&outsideState.polygonSetBBuffer, 1,
+                                 sizeof(zGeometry_PolygonPointSpanPartial));
+    zGeometry_WeilerBuffer::Init(&outsideState.pointListBuffer, 1, sizeof(zVec3));
+    if (zGeometry_Weiler::GenerateOutsideResults(&outsideState) != 1 ||
+        outsideOutput.polygonSetB.polygonCount != 4 ||
+        outsideOutput.pointList.pointCount != 7 ||
+        outsideState.polygonSetBBuffer.count != 1 ||
+        outsideState.pointListBuffer.count != 5) {
+        zGeometry_WeilerBuffer::Destroy(&outsideState.polygonSetBBuffer);
+        zGeometry_WeilerBuffer::Destroy(&outsideState.pointListBuffer);
+        return 128;
+    }
+    zGeometry_PolygonPointSpanPartial *outsidePolygons =
+        static_cast<zGeometry_PolygonPointSpanPartial *>(outsideState.polygonSetBBuffer.base);
+    zVec3 *outsidePoints = static_cast<zVec3 *>(outsideState.pointListBuffer.base);
+    if (outsideOutput.polygonSetB.polygons != outsidePolygons ||
+        outsideOutput.pointList.points != outsidePoints ||
+        outsidePolygons[0].pointDwordOffset != 6 ||
+        outsidePolygons[0].pointCount != 5 ||
+        outsidePoints[0].x != 7.0f || outsidePoints[1].x != 4.0f ||
+        outsidePoints[2].x != 7.0f || outsidePoints[3].x != 1.0f ||
+        outsidePoints[4].x != 1.0f || outsidePoints[0].z != 9.0f ||
+        outsidePoints[4].z != 3.0f) {
+        zGeometry_WeilerBuffer::Destroy(&outsideState.polygonSetBBuffer);
+        zGeometry_WeilerBuffer::Destroy(&outsideState.pointListBuffer);
+        return 129;
+    }
+    zGeometry_WeilerBuffer::Destroy(&outsideState.polygonSetBBuffer);
+    zGeometry_WeilerBuffer::Destroy(&outsideState.pointListBuffer);
+
+    zGeometry_WeilerStatePartial restoreZState{};
+    zGeometry_WeilerClipOutputPartial restoreZOutput{};
+    zVec3 restoreZPlane[3] = {
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 1.0f},
+        {0.0f, 1.0f, 1.0f},
+    };
+    zVec3 restoreZPoints[2] = {
+        {2.0f, 3.0f, 99.0f},
+        {-1.0f, 4.0f, 99.0f},
+    };
+    restoreZState.inputContourBBuffer.base = restoreZPlane;
+    restoreZState.outClip = &restoreZOutput;
+    restoreZOutput.pointList.points = restoreZPoints;
+    restoreZOutput.pointList.pointCount = 2;
+    zGeometry_Weiler::RestoreOutputZFromInputPlane(&restoreZState);
+    if (restoreZPoints[0].z != 5.0f || restoreZPoints[1].z != 3.0f) {
+        return 130;
+    }
+
+    zVec3 restoreZDegeneratePlane[3] = {
+        {0.0f, 0.0f, 1.0f},
+        {1.0f, 0.0f, 1.0f},
+        {2.0f, 0.0f, 1.0f},
+    };
+    restoreZPoints[0].z = 77.0f;
+    restoreZState.inputContourBBuffer.base = restoreZDegeneratePlane;
+    zGeometry_Weiler::RestoreOutputZFromInputPlane(&restoreZState);
+    if (restoreZPoints[0].z != 77.0f) {
+        return 131;
+    }
+
+    zGeometry_WeilerStatePartial outputContourState{};
+    zGeometry_WeilerClipOutputPartial outputContourClip{};
+    zGeometry_PolygonSpanArrayPartial outputContourPolygonSet{};
+    zGeometry_WeilerBufferPartial outputContourPolygonBuffer{};
+    zGeometry_WeilerContourOutputPartial outputContour{};
+    zVec3 outputContourPoints[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f},
+    };
+    zGeometry_WeilerContourSegmentPartial outputContourSegments[3]{};
+    outputContourSegments[0].prev = &outputContourSegments[2];
+    outputContourSegments[0].next = &outputContourSegments[1];
+    outputContourSegments[0].startPoint = &outputContourPoints[0];
+    outputContourSegments[0].endPoint = &outputContourPoints[1];
+    outputContourSegments[1].prev = &outputContourSegments[0];
+    outputContourSegments[1].next = &outputContourSegments[2];
+    outputContourSegments[1].startPoint = &outputContourPoints[1];
+    outputContourSegments[1].endPoint = &outputContourPoints[2];
+    outputContourSegments[2].prev = &outputContourSegments[1];
+    outputContourSegments[2].next = &outputContourSegments[0];
+    outputContourSegments[2].startPoint = &outputContourPoints[2];
+    outputContourSegments[2].endPoint = &outputContourPoints[0];
+    outputContour.firstSegment = &outputContourSegments[0];
+    outputContour.pointCount = 3;
+    outputContourClip.pointList.pointCount = 4;
+    outputContourState.outClip = &outputContourClip;
+    zGeometry_WeilerBuffer::Init(&outputContourPolygonBuffer, 1,
+                                 sizeof(zGeometry_PolygonPointSpanPartial));
+    zGeometry_WeilerBuffer::Init(&outputContourState.pointListBuffer, 1, sizeof(zVec3));
+    if (zGeometry_Weiler::OutputContourToPolygonSet(&outputContourState, &outputContour,
+                                                    &outputContourPolygonBuffer,
+                                                    &outputContourPolygonSet) != 1 ||
+        outputContourPolygonSet.polygonCount != 1 ||
+        outputContourClip.pointList.pointCount != 7 ||
+        outputContourPolygonBuffer.count != 1 ||
+        outputContourState.pointListBuffer.count != 3) {
+        zGeometry_WeilerBuffer::Destroy(&outputContourPolygonBuffer);
+        zGeometry_WeilerBuffer::Destroy(&outputContourState.pointListBuffer);
+        return 132;
+    }
+    zGeometry_PolygonPointSpanPartial *outputContourPolygons =
+        static_cast<zGeometry_PolygonPointSpanPartial *>(outputContourPolygonBuffer.base);
+    zVec3 *outputContourWrittenPoints =
+        static_cast<zVec3 *>(outputContourState.pointListBuffer.base);
+    if (outputContourPolygonSet.polygons != outputContourPolygons ||
+        outputContourClip.pointList.points != outputContourWrittenPoints ||
+        outputContourPolygons[0].pointDwordOffset != 12 ||
+        outputContourPolygons[0].pointCount != 3 ||
+        outputContourWrittenPoints[0].x != 1.0f ||
+        outputContourWrittenPoints[1].x != 4.0f ||
+        outputContourWrittenPoints[2].x != 7.0f ||
+        outputContourWrittenPoints[2].z != 9.0f) {
+        zGeometry_WeilerBuffer::Destroy(&outputContourPolygonBuffer);
+        zGeometry_WeilerBuffer::Destroy(&outputContourState.pointListBuffer);
+        return 133;
+    }
+    zGeometry_WeilerBuffer::Destroy(&outputContourPolygonBuffer);
+    zGeometry_WeilerBuffer::Destroy(&outputContourState.pointListBuffer);
+
+    zGeometry_WeilerStatePartial outputModeState{};
+    zGeometry_WeilerClipOutputPartial outputModeClip{};
+    zGeometry_WeilerContourOutputPartial outputModeContours[4]{};
+    zVec3 outputModePoints[3] = {
+        {10.0f, 20.0f, 30.0f},
+        {40.0f, 50.0f, 60.0f},
+        {70.0f, 80.0f, 90.0f},
+    };
+    zGeometry_WeilerContourSegmentPartial outputModeSegments[3]{};
+    outputModeSegments[0].prev = &outputModeSegments[2];
+    outputModeSegments[0].next = &outputModeSegments[1];
+    outputModeSegments[0].startPoint = &outputModePoints[0];
+    outputModeSegments[0].endPoint = &outputModePoints[1];
+    outputModeSegments[1].prev = &outputModeSegments[0];
+    outputModeSegments[1].next = &outputModeSegments[2];
+    outputModeSegments[1].startPoint = &outputModePoints[1];
+    outputModeSegments[1].endPoint = &outputModePoints[2];
+    outputModeSegments[2].prev = &outputModeSegments[1];
+    outputModeSegments[2].next = &outputModeSegments[0];
+    outputModeSegments[2].startPoint = &outputModePoints[2];
+    outputModeSegments[2].endPoint = &outputModePoints[0];
+    outputModeContours[0].contourType = 3;
+    outputModeContours[0].firstSegment = &outputModeSegments[0];
+    outputModeContours[0].pointCount = 3;
+    outputModeContours[1].contourType = 2;
+    outputModeContours[1].firstSegment = &outputModeSegments[0];
+    outputModeContours[1].pointCount = 3;
+    outputModeContours[2].contourType = 5;
+    outputModeContours[2].firstSegment = &outputModeSegments[0];
+    outputModeContours[2].pointCount = 3;
+    outputModeContours[3].contourType = 3;
+    outputModeState.clipMode = 7;
+    outputModeState.outClip = &outputModeClip;
+    outputModeState.contourBuffer.base = outputModeContours;
+    outputModeState.contourBuffer.count = 4;
+    zGeometry_WeilerBuffer::Init(&outputModeState.polygonSetABuffer, 1,
+                                 sizeof(zGeometry_PolygonPointSpanPartial));
+    zGeometry_WeilerBuffer::Init(&outputModeState.polygonSetBBuffer, 1,
+                                 sizeof(zGeometry_PolygonPointSpanPartial));
+    zGeometry_WeilerBuffer::Init(&outputModeState.polygonSetCBuffer, 1,
+                                 sizeof(zGeometry_PolygonPointSpanPartial));
+    zGeometry_WeilerBuffer::Init(&outputModeState.pointListBuffer, 1, sizeof(zVec3));
+    if (zGeometry_Weiler::OutputContoursForClipMode(&outputModeState) != 1 ||
+        outputModeClip.polygonSetA.polygonCount != 1 ||
+        outputModeClip.polygonSetB.polygonCount != 1 ||
+        outputModeClip.polygonSetC.polygonCount != 1 ||
+        outputModeClip.pointList.pointCount != 9 ||
+        outputModeState.polygonSetABuffer.count != 1 ||
+        outputModeState.polygonSetBBuffer.count != 1 ||
+        outputModeState.polygonSetCBuffer.count != 1 ||
+        outputModeState.pointListBuffer.count != 9) {
+        zGeometry_WeilerBuffer::Destroy(&outputModeState.polygonSetABuffer);
+        zGeometry_WeilerBuffer::Destroy(&outputModeState.polygonSetBBuffer);
+        zGeometry_WeilerBuffer::Destroy(&outputModeState.polygonSetCBuffer);
+        zGeometry_WeilerBuffer::Destroy(&outputModeState.pointListBuffer);
+        return 134;
+    }
+    zGeometry_PolygonPointSpanPartial *outputModePolygonsA =
+        static_cast<zGeometry_PolygonPointSpanPartial *>(outputModeState.polygonSetABuffer.base);
+    zGeometry_PolygonPointSpanPartial *outputModePolygonsB =
+        static_cast<zGeometry_PolygonPointSpanPartial *>(outputModeState.polygonSetBBuffer.base);
+    zGeometry_PolygonPointSpanPartial *outputModePolygonsC =
+        static_cast<zGeometry_PolygonPointSpanPartial *>(outputModeState.polygonSetCBuffer.base);
+    if (outputModePolygonsA[0].pointDwordOffset != 0 ||
+        outputModePolygonsB[0].pointDwordOffset != 9 ||
+        outputModePolygonsC[0].pointDwordOffset != 18 ||
+        outputModePolygonsA[0].pointCount != 3 ||
+        outputModePolygonsB[0].pointCount != 3 ||
+        outputModePolygonsC[0].pointCount != 3) {
+        zGeometry_WeilerBuffer::Destroy(&outputModeState.polygonSetABuffer);
+        zGeometry_WeilerBuffer::Destroy(&outputModeState.polygonSetBBuffer);
+        zGeometry_WeilerBuffer::Destroy(&outputModeState.polygonSetCBuffer);
+        zGeometry_WeilerBuffer::Destroy(&outputModeState.pointListBuffer);
+        return 135;
+    }
+    zGeometry_WeilerBuffer::Destroy(&outputModeState.polygonSetABuffer);
+    zGeometry_WeilerBuffer::Destroy(&outputModeState.polygonSetBBuffer);
+    zGeometry_WeilerBuffer::Destroy(&outputModeState.polygonSetCBuffer);
+    zGeometry_WeilerBuffer::Destroy(&outputModeState.pointListBuffer);
+
+    zGeometry_WeilerStatePartial *state = static_cast<zGeometry_WeilerStatePartial *>(
+        std::calloc(1, sizeof(zGeometry_WeilerStatePartial)));
+    if (state == nullptr) {
+        return 37;
+    }
+
+    zGeometry_WeilerBuffer::Init(&state->segmentBuffer, 1,
+                                 sizeof(zGeometry_WeilerContourSegmentPartial));
+    zGeometry_WeilerBuffer::Init(&state->contourBuffer, 1,
+                                 sizeof(zGeometry_WeilerContourOutputPartial));
+    zGeometry_WeilerBuffer::Init(&state->xingBuffer, 1, sizeof(zGeometry_WeilerXingPartial));
+    zGeometry_WeilerBuffer::Init(&state->inputContourABuffer, 1, sizeof(zVec3));
+    zGeometry_Weiler::DestroyState(state);
+    zGeometry_Weiler::DestroyState(nullptr);
+    return 0;
+}
+
+extern "C" int zgeometry_clip_polygon_create_copy_finalize_smoke() {
+    zVec3 input[3] = {
+        {0.0f, 1.0f, 2.0f},
+        {3.0f, -4.0f, 5.0f},
+        {-6.0f, 7.0f, -8.0f},
+    };
+
+    zGeometry_ClipPolygonPartial *clipPolygon =
+        zGeometry_ClipPolygon::CreateFromPointList(3, input);
+    if (clipPolygon == nullptr || clipPolygon->pointCount != 3 ||
+        clipPolygon->points == nullptr || clipPolygon->points == input ||
+        clipPolygon->points[0].x != 0.0f || clipPolygon->points[0].y != -2.0f ||
+        clipPolygon->points[0].z != 1.0f || clipPolygon->points[1].x != 3.0f ||
+        clipPolygon->points[1].y != -5.0f || clipPolygon->points[1].z != -4.0f ||
+        clipPolygon->points[2].x != -6.0f || clipPolygon->points[2].y != 8.0f ||
+        clipPolygon->points[2].z != 7.0f || clipPolygon->bounds.minX != -6.0f ||
+        clipPolygon->bounds.maxX != 3.0f || clipPolygon->bounds.maxY != 8.0f ||
+        clipPolygon->bounds.minY != -5.0f) {
+        if (clipPolygon != nullptr) {
+            zGeometry_ClipPolygon::FinalizeAndDestroy(clipPolygon);
+        }
+        return 1;
+    }
+
+    int outPointCount = 0;
+    zVec3 *outPoints = nullptr;
+    if (zGeometry_ClipPolygon::CopyPointsOutRotatedBack(clipPolygon, &outPointCount,
+                                                        &outPoints) != 0 ||
+        outPointCount != 3 || outPoints == nullptr || outPoints[0].x != input[0].x ||
+        outPoints[0].y != input[0].y || outPoints[0].z != input[0].z ||
+        outPoints[1].x != input[1].x || outPoints[1].y != input[1].y ||
+        outPoints[1].z != input[1].z || outPoints[2].x != input[2].x ||
+        outPoints[2].y != input[2].y || outPoints[2].z != input[2].z) {
+        std::free(outPoints);
+        zGeometry_ClipPolygon::FinalizeAndDestroy(clipPolygon);
+        return 2;
+    }
+
+    std::free(outPoints);
+    zGeometry_ClipPolygon::FinalizeAndDestroy(clipPolygon);
+
+    clipPolygon = static_cast<zGeometry_ClipPolygonPartial *>(
+        std::calloc(1, sizeof(zGeometry_ClipPolygonPartial)));
+    if (clipPolygon == nullptr) {
+        return 3;
+    }
+
+    zGeometry_ClipPolygon::FinalizeAndDestroy(clipPolygon);
+    return 0;
+}
+
+extern "C" int zgeometry_clip_polygon_upsert_point_list_xy_smoke() {
+    zGeometry_ClipPolygonPartial clipPolygon{};
+    clipPolygon.pointCount = 4;
+    clipPolygon.points = static_cast<zVec3 *>(std::malloc(sizeof(zVec3) * 4));
+    if (clipPolygon.points == nullptr) {
+        return 1;
+    }
+
+    clipPolygon.points[0] = {0.0f, 0.0f, 1.0f};
+    clipPolygon.points[1] = {10.0f, 0.0f, 2.0f};
+    clipPolygon.points[2] = {10.0f, 10.0f, 3.0f};
+    clipPolygon.points[3] = {0.0f, 10.0f, 4.0f};
+
+    zVec3 nearExisting{10.005f, 0.004f, 20.0f};
+    zVec3 missingPoint{3.0f, 4.0f, 30.0f};
+    if (zGeometry_ClipPolygon::FindPointIndexXY(&clipPolygon, &nearExisting) != 1 ||
+        zGeometry_ClipPolygon::FindPointIndexXY(&clipPolygon, &missingPoint) != -1) {
+        std::free(clipPolygon.points);
+        return 2;
+    }
+
+    zVec3 topEdgeMidpoint{5.0f, 10.0f, 40.0f};
+    if (zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex(&clipPolygon,
+                                                             &topEdgeMidpoint) != 2 ||
+        zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex(&clipPolygon,
+                                                             &missingPoint) != -1) {
+        std::free(clipPolygon.points);
+        return 3;
+    }
+
+    zVec3 diagonalPoints[3] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {20.0f, 0.0f, 0.0f},
+    };
+    zGeometry_ClipPolygonPartial diagonalPolygon{};
+    diagonalPolygon.pointCount = 3;
+    diagonalPolygon.points = diagonalPoints;
+    zVec3 diagonalMidpoint{5.0f, 5.0f, 0.0f};
+    if (zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex(&diagonalPolygon,
+                                                             &diagonalMidpoint) != 0) {
+        std::free(clipPolygon.points);
+        return 4;
+    }
+
+    zVec3 upsertPoints[2] = {
+        nearExisting,
+        topEdgeMidpoint,
+    };
+    if (zGeometry_ClipPolygon::UpsertPointListXY(&clipPolygon, 2, upsertPoints) != 1 ||
+        clipPolygon.pointCount != 5 || clipPolygon.points[1].z != 20.0f ||
+        clipPolygon.points[3].x != 5.0f || clipPolygon.points[3].y != 10.0f ||
+        clipPolygon.points[3].z != 40.0f || clipPolygon.points[4].x != 0.0f ||
+        clipPolygon.points[4].y != 10.0f) {
+        std::free(clipPolygon.points);
+        return 5;
+    }
+
+    if (zGeometry_ClipPolygon::UpsertPointListXY(&clipPolygon, 1, &missingPoint) != 0 ||
+        zGeometry_ClipPolygon::UpsertPointListXY(&clipPolygon, 0, &missingPoint) != 0) {
+        std::free(clipPolygon.points);
+        return 6;
+    }
+
+    std::free(clipPolygon.points);
+    return 0;
+}
+
+extern "C" int zgeometry_model_linear_buffer_and_bounds_overlap_smoke() {
+    zVec3 verts[4] = {
+        {10.0f, 20.0f, 30.0f},
+        {-1.0f, -2.0f, -3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f},
+    };
+    int indices[3] = {2, 0, 3};
+    zModel_PolygonPartial polygon{};
+    polygon.vertexCountAndFlags = 3;
+    polygon.vertexIndices = indices;
+
+    zModel_DrawBatchBasePartial model{};
+    model.verts = verts;
+
+    zVec3 *buffer = zGeometry_Model::GetLinearBufferOfPolygonVertices(&model, &polygon, nullptr);
+    if (buffer == nullptr || buffer[0].x != 4.0f || buffer[0].y != 5.0f ||
+        buffer[0].z != 6.0f || buffer[1].x != 10.0f || buffer[1].y != 20.0f ||
+        buffer[1].z != 30.0f || buffer[2].x != 7.0f || buffer[2].y != 8.0f ||
+        buffer[2].z != 9.0f) {
+        std::free(buffer);
+        return 1;
+    }
+
+    int resizedIndices[2] = {1, 2};
+    polygon.vertexCountAndFlags = 2;
+    polygon.vertexIndices = resizedIndices;
+    buffer = zGeometry_Model::GetLinearBufferOfPolygonVertices(&model, &polygon, buffer);
+    if (buffer == nullptr || buffer[0].x != -1.0f || buffer[0].y != -2.0f ||
+        buffer[0].z != -3.0f || buffer[1].x != 4.0f || buffer[1].y != 5.0f ||
+        buffer[1].z != 6.0f) {
+        std::free(buffer);
+        return 2;
+    }
+    std::free(buffer);
+
+    zGeometry_BoundsXY boundsA{};
+    boundsA.minX = 0.0f;
+    boundsA.maxY = 10.0f;
+    boundsA.maxX = 10.0f;
+    boundsA.minY = 0.0f;
+
+    zGeometry_BoundsXY boundsB{};
+    boundsB.minX = 10.5f;
+    boundsB.maxY = 5.0f;
+    boundsB.maxX = 12.0f;
+    boundsB.minY = 1.0f;
+    if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&boundsA, &boundsB) != 1) {
+        return 3;
+    }
+
+    boundsB.minX = 11.5f;
+    boundsB.maxX = 12.5f;
+    if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&boundsA, &boundsB) != 0) {
+        return 4;
+    }
+
+    boundsB.minX = 1.0f;
+    boundsB.maxX = 2.0f;
+    boundsB.maxY = -1.5f;
+    boundsB.minY = -2.5f;
+    return zGeometry_Bounds2D::OverlapsWithUnitMargin(&boundsA, &boundsB) == 0 ? 0 : 5;
+}
+
+extern "C" int zgeometry_model_is_fully_inside_clip_polygon_xy_smoke() {
+    zVec3 clipPoints[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {0.0f, 10.0f, 0.0f},
+    };
+
+    zGeometry_ClipPolygonPartial clipPolygon{};
+    clipPolygon.points = clipPoints;
+    clipPolygon.pointCount = 4;
+    clipPolygon.bounds.minX = 0.0f;
+    clipPolygon.bounds.maxX = 10.0f;
+    clipPolygon.bounds.maxY = 10.0f;
+    clipPolygon.bounds.minY = 0.0f;
+    clipPolygon.weilerState = zGeometry_Weiler::Init(clipPoints, 4, 0);
+    if (clipPolygon.weilerState == nullptr) {
+        return 1;
+    }
+
+    if (zGeometry_Model::IsFullyInsideClipPolygonXY(nullptr, nullptr) != 0 ||
+        zGeometry_Model::IsFullyInsideClipPolygonXY(&clipPolygon, nullptr) != 0) {
+        zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+        return 2;
+    }
+
+    int faceIndices[3] = {0, 1, 2};
+    zModel_PolygonPartial face{};
+    face.vertexCountAndFlags = 3;
+    face.vertexIndices = faceIndices;
+
+    zModel_DrawBatchBasePartial model{};
+    model.faceCount = 1;
+    model.faceList = &face;
+
+    zVec3 disjointVerts[3] = {
+        {20.0f, 0.0f, -20.0f},
+        {30.0f, 0.0f, -20.0f},
+        {20.0f, 0.0f, -30.0f},
+    };
+    model.verts = disjointVerts;
+    if (zGeometry_Model::IsFullyInsideClipPolygonXY(&clipPolygon, &model) != 1) {
+        zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+        return 3;
+    }
+
+    zVec3 containedVerts[3] = {
+        {2.0f, 0.0f, -2.0f},
+        {8.0f, 0.0f, -2.0f},
+        {2.0f, 0.0f, -8.0f},
+    };
+    model.verts = containedVerts;
+    if (zGeometry_Model::IsFullyInsideClipPolygonXY(&clipPolygon, &model) != 0) {
+        zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+        return 4;
+    }
+
+    zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+    return 0;
+}
+
+extern "C" int zgeometry_model_process_clip_patch_node_smoke() {
+    if (zGeometry_Model::ProcessClipPatchNode(nullptr, nullptr, nullptr) != 1) {
+        return 1;
+    }
+
+    zVec3 clipPoints[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {0.0f, 10.0f, 0.0f},
+    };
+    zGeometry_ClipPolygonPartial clipPolygon{};
+    clipPolygon.points = clipPoints;
+    clipPolygon.pointCount = 4;
+    clipPolygon.bounds.minX = 0.0f;
+    clipPolygon.bounds.maxX = 10.0f;
+    clipPolygon.bounds.maxY = 10.0f;
+    clipPolygon.bounds.minY = 0.0f;
+    clipPolygon.weilerState = zGeometry_Weiler::Init(clipPoints, 4, 0);
+    if (clipPolygon.weilerState == nullptr) {
+        return 2;
+    }
+
+    zVec3 verts[3] = {
+        {20.0f, 0.0f, -20.0f},
+        {30.0f, 0.0f, -20.0f},
+        {20.0f, 1.0f, -30.0f},
+    };
+    int indices[3] = {0, 1, 2};
+    zModel_MaterialPartial material{};
+    zModel_PolygonPartial face{};
+    face.vertexCountAndFlags = 3;
+    face.vertexIndices = indices;
+    face.material = &material;
+
+    zModel_DrawBatchBasePartial model{};
+    model.faceCount = 1;
+    model.faceList = &face;
+    model.verts = verts;
+
+    zDiPartial *outDi = reinterpret_cast<zDiPartial *>(0x1);
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolCapacity = 0;
+    g_zModel_DiPoolInUseCount = 0;
+    g_zModel_DiPoolFreeHeadIndex = -1;
+    if (zGeometry_Model::ProcessClipPatchNode(&clipPolygon, &model, &outDi) != 0 ||
+        outDi != reinterpret_cast<zDiPartial *>(0x1)) {
+        zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+        return 3;
+    }
+
+    zDiPartial diPool[1] = {};
+    diPool[0].nextFreeIndex = -1;
+    g_zModel_DiPoolBase = diPool;
+    g_zModel_DiPoolCapacity = 1;
+    g_zModel_DiPoolInUseCount = 0;
+    g_zModel_DiPoolFreeHeadIndex = 0;
+    g_zModel_MaxPolygonVertexCountBeforeSplit = 64;
+    g_zModel_CoplanarTolerance = 0.01;
+
+    outDi = reinterpret_cast<zDiPartial *>(0x1);
+    if (zGeometry_Model::ProcessClipPatchNode(&clipPolygon, &model, &outDi) != 1 ||
+        outDi != nullptr || g_zModel_DiPoolInUseCount != 0 ||
+        g_zModel_DiPoolFreeHeadIndex != 0 || diPool[0].entryCount != 0 ||
+        diPool[0].entries != nullptr || diPool[0].verts != nullptr) {
+        zDi::FreeContents(&diPool[0]);
+        zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+        g_zModel_DiPoolBase = nullptr;
+        g_zModel_DiPoolCapacity = 0;
+        g_zModel_DiPoolInUseCount = 0;
+        g_zModel_DiPoolFreeHeadIndex = -1;
+        return 4;
+    }
+
+    zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolCapacity = 0;
+    g_zModel_DiPoolInUseCount = 0;
+    g_zModel_DiPoolFreeHeadIndex = -1;
+    return 0;
+}
+
+extern "C" int zgeometry_clip_polygon_process_node_polygon_set_xy_smoke() {
+    zDiPartial *outDi = reinterpret_cast<zDiPartial *>(0x1);
+    if (zGeometry_ClipPolygon::ProcessNodePolygonSetXY(nullptr, nullptr, &outDi) != 1 ||
+        outDi != reinterpret_cast<zDiPartial *>(0x1)) {
+        return 1;
+    }
+
+    zGeometry_ClipPolygonPartial clipPolygon{};
+    zClass_NodePartial emptyNode{};
+    if (zGeometry_ClipPolygon::ProcessNodePolygonSetXY(&clipPolygon, &emptyNode, &outDi) != 1) {
+        return 2;
+    }
+
+    zVec3 clipPoints[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {0.0f, 10.0f, 0.0f},
+    };
+    clipPolygon.points = clipPoints;
+    clipPolygon.pointCount = 4;
+    clipPolygon.bounds.minX = 0.0f;
+    clipPolygon.bounds.maxX = 10.0f;
+    clipPolygon.bounds.maxY = 10.0f;
+    clipPolygon.bounds.minY = 0.0f;
+    clipPolygon.weilerState = zGeometry_Weiler::Init(clipPoints, 4, 0);
+    if (clipPolygon.weilerState == nullptr) {
+        return 3;
+    }
+
+    zVec3 verts[3] = {
+        {20.0f, 0.0f, -20.0f},
+        {30.0f, 0.0f, -20.0f},
+        {20.0f, 1.0f, -30.0f},
+    };
+    int indices[3] = {0, 1, 2};
+    zModel_PolygonPartial face{};
+    face.vertexCountAndFlags = 3;
+    face.vertexIndices = indices;
+
+    zModel_DrawBatchBasePartial model{};
+    model.faceCount = 1;
+    model.faceList = &face;
+    model.verts = verts;
+
+    zClass_NodePartial node{};
+    node.flags = 0x20000;
+    node.userDataOrDiRef = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&model));
+
+    outDi = reinterpret_cast<zDiPartial *>(0x1);
+    if (zGeometry_ClipPolygon::ProcessNodePolygonSetXY(&clipPolygon, &node, &outDi) != 1 ||
+        outDi != nullptr) {
+        zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+        return 4;
+    }
+
+    zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+    return 0;
+}
+
+extern "C" int zgeometry_model_clip_patch_smoke() {
+    zGeometry_ClipPatchOutputPartial output{};
+    if (zGeometry_Model::ClipPatch(0, nullptr, nullptr, &output) != -1) {
+        return 1;
+    }
+
+    zClass_NodePartial cameraNode{};
+    cameraNode.listCountB = 0;
+    cameraNode.listB = nullptr;
+    g_zDEClient_CameraNode = &cameraNode;
+
+    zDEClient_FeatureGridCell cell{};
+    cell.nodeCount = 0;
+    cell.nodes = nullptr;
+
+    zVec3 outline[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, -10.0f},
+        {0.0f, 0.0f, -10.0f},
+    };
+    if (zGeometry_Model::ClipPatch(4, outline, &cell, &output) != 0 ||
+        output.partitionCount != 0 || output.partitions != nullptr ||
+        output.pointCount != 0 || output.points != nullptr) {
+        zGeometry_ClipPatchOutput::Destroy(&output);
+        g_zDEClient_CameraNode = nullptr;
+        return 2;
+    }
+
+    g_zDEClient_CameraNode = nullptr;
+    return 0;
+}
+
+extern "C" int zdeclient_qsand_build_smoke() {
+    zDEClient_QSandFeature feature{};
+    zGeometry_ClipPatchOutputPartial output{};
+    feature.clipPatchOutput = &output;
+    if (zDEClient_QSand::Build(&feature) != 0) {
+        return 1;
+    }
+
+    zClass_NodePartial cameraNode{};
+    g_zDEClient_CameraNode = &cameraNode;
+
+    zDEClient_FeatureGridCell cell{};
+    feature.featureGridCell = &cell;
+    feature.clipPatchOutput = &output;
+
+    zVec3 outline[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, -10.0f},
+        {0.0f, 0.0f, -10.0f},
+    };
+    feature.points = outline;
+    feature.eventTemplate.pointCount = 4;
+    if (zDEClient_QSand::Build(&feature) != 0 || feature.points != outline ||
+        feature.eventTemplate.pointCount != 4 || output.partitionCount != 0 ||
+        output.partitions != nullptr || output.points != nullptr) {
+        zGeometry_ClipPatchOutput::Destroy(&output);
+        g_zDEClient_CameraNode = nullptr;
+        return 2;
+    }
+
+    g_zDEClient_CameraNode = nullptr;
+    return 0;
+}
+
+extern "C" int zgeometry_polygon_convexify_and_triangulate_smoke() {
+    zVec3 square[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 1.0f},
+        {10.0f, 10.0f, 2.0f},
+        {0.0f, 10.0f, 3.0f},
+    };
+    int squareOffsets[12] = {};
+    for (int i = 0; i < 12; ++i) {
+        squareOffsets[i] = i;
+    }
+
+    const int splitOffsetCapacity = 18;
+    void *splitStorage = std::malloc(sizeof(zGeometry_PolygonSplitDwordOffsetListPair) +
+                                     sizeof(int) * (splitOffsetCapacity - 1));
+    if (splitStorage == nullptr) {
+        return 1;
+    }
+    zGeometry_PolygonSplitDwordOffsetListPair *split =
+        static_cast<zGeometry_PolygonSplitDwordOffsetListPair *>(splitStorage);
+    if (zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal(
+            4, reinterpret_cast<float *>(square), squareOffsets, split, 3) != 1 ||
+        split->pointCount0 != 3 || split->pointCount1 != 3 ||
+        split->pointDwordOffsets[0] != 9 || split->pointDwordOffsets[3] != 0 ||
+        split->pointDwordOffsets[6] != 3 || split->pointDwordOffsets[9] != 3 ||
+        split->pointDwordOffsets[12] != 6 || split->pointDwordOffsets[15] != 9) {
+        std::free(splitStorage);
+        return 2;
+    }
+    std::free(splitStorage);
+
+    zGeometry_TriangleDwordOffsetList *triangles =
+        zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive(
+            4, reinterpret_cast<float *>(square), nullptr, 0);
+    if (triangles == nullptr || triangles->triangleCount != 2 ||
+        triangles->triangleDwordOffsets[0] != 9 ||
+        triangles->triangleDwordOffsets[3] != 0 ||
+        triangles->triangleDwordOffsets[6] != 3 ||
+        triangles->triangleDwordOffsets[9] != 3 ||
+        triangles->triangleDwordOffsets[12] != 6 ||
+        triangles->triangleDwordOffsets[15] != 9) {
+        std::free(triangles);
+        return 3;
+    }
+    std::free(triangles);
+
+    zVec3 points[7] = {
+        {0.0f, 0.0f, 10.0f},
+        {4.0f, 0.0f, 11.0f},
+        {0.0f, 4.0f, 12.0f},
+        {10.0f, 0.0f, 20.0f},
+        {14.0f, 0.0f, 21.0f},
+        {14.0f, 4.0f, 22.0f},
+        {10.0f, 4.0f, 23.0f},
+    };
+    zGeometry_PolygonPointSpanPartial spans[2] = {
+        {0, 3},
+        {9, 4},
+    };
+    zGeometry_PolygonSpanArrayPartial spanArray{};
+    spanArray.polygonCount = 2;
+    spanArray.polygons = spans;
+
+    zGeometry_ConvexPolygonSetPartial *convex =
+        zGeometry_Polygon::Convexify(&spanArray, 7, points);
+    if (convex == nullptr || convex->polygonCount != 2 || convex->totalPointCount != 7 ||
+        convex->polygons[0].pointDwordOffset != 0 || convex->polygons[0].pointCount != 3 ||
+        convex->polygons[1].pointDwordOffset != 9 || convex->polygons[1].pointCount != 4 ||
+        convex->points[0].z != 10.0f || convex->points[3].x != 10.0f ||
+        convex->points[6].z != 23.0f) {
+        zGeometry_ConvexPolygonSet::Destroy(convex);
+        return 4;
+    }
+    zGeometry_ConvexPolygonSet::Destroy(convex);
+    zGeometry_ConvexPolygonSet::Destroy(nullptr);
+
+    return zGeometry_Polygon::Convexify(nullptr, 0, nullptr) == nullptr ? 0 : 5;
+}
+
+extern "C" int zgeometry_triangulate_hole_and_orientation_smoke() {
+    auto nearFloat = [](float lhs, float rhs) { return std::fabs(lhs - rhs) <= 0.0001f; };
+
+    zVec3 pointsToReverse[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {2.0f, 0.0f, 0.0f},
+        {3.0f, 0.0f, 0.0f},
+    };
+    zGeometry_Vec3Array::ReversePoints(4, pointsToReverse);
+    if (pointsToReverse[0].x != 0.0f || pointsToReverse[1].x != 3.0f ||
+        pointsToReverse[2].x != 2.0f || pointsToReverse[3].x != 1.0f) {
+        return 1;
+    }
+
+    zVec3 clockwiseTriangle[3] = {
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+    };
+    if (zGeometry_Vec3Array::EnsurePositiveCrossZ(3, clockwiseTriangle, 0) != 0 ||
+        zGeometry_Vec3Array::EnsurePositiveCrossZ(3, clockwiseTriangle, 1) != 1 ||
+        clockwiseTriangle[1].x != 1.0f || clockwiseTriangle[2].y != 1.0f) {
+        return 2;
+    }
+
+    zVec3 counterClockwiseTriangle[3] = {
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+    };
+    if (zGeometry_Vec3Array::EnsurePositiveCrossZ(3, counterClockwiseTriangle, 1) != 1 ||
+        counterClockwiseTriangle[1].x != 1.0f || counterClockwiseTriangle[2].y != 1.0f) {
+        return 3;
+    }
+
+    zVec3 segmentA0{0.0f, 0.0f, 0.0f};
+    zVec3 segmentA1{10.0f, 10.0f, 0.0f};
+    zVec3 segmentB0{0.0f, 10.0f, 0.0f};
+    zVec3 segmentB1{10.0f, 0.0f, 0.0f};
+    zVec3 segmentC0{20.0f, 0.0f, 0.0f};
+    zVec3 segmentC1{30.0f, 0.0f, 0.0f};
+    if (zGeometry_Segment::IntersectsSegmentXY(&segmentA0, &segmentA1, &segmentB0,
+                                               &segmentB1) != 1 ||
+        zGeometry_Segment::IntersectsSegmentXY(&segmentA0, &segmentA1, &segmentC0,
+                                               &segmentC1) != 0) {
+        return 4;
+    }
+
+    zGeometry_TriangulateHole_EdgeState edges[5] = {
+        {0, 1, 1},
+        {1, 2, 0},
+        {2, 3, 2},
+        {3, 0, 1},
+        {0, 2, 1},
+    };
+    if (zGeometry_TriangulateHole::FindActiveEdgeState(1, 0, 5, edges) != &edges[0] ||
+        zGeometry_TriangulateHole::FindActiveEdgeState(1, 2, 5, edges) != nullptr ||
+        zGeometry_TriangulateHole::FindActiveEdgeState(0, 4, 5, edges) != nullptr) {
+        return 5;
+    }
+
+    int edgeIndices[4] = {};
+    if (zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex(0, 5, edges,
+                                                                     edgeIndices) != 3 ||
+        edgeIndices[0] != 0 || edgeIndices[1] != 3 || edgeIndices[2] != 4) {
+        return 6;
+    }
+
+    zVec3 planePoints[4] = {
+        {0.0f, 0.0f, 2.0f},
+        {10.0f, 0.0f, 2.0f},
+        {10.0f, 10.0f, 2.0f},
+        {0.0f, 10.0f, 2.0f},
+    };
+    zGeometry_PlaneEquationPartial plane{};
+    zGeometry_Vec3Array::ComputeNewellPlane(4, planePoints, &plane);
+    if (!nearFloat(plane.a, 0.0f) || !nearFloat(plane.b, 0.0f) || !(plane.c > 0.9f) ||
+        !nearFloat(-(plane.d / plane.c), 2.0f)) {
+        return 7;
+    }
+
+    zGeometry_TriangulateHole::CacheCombinedPlane(4, planePoints);
+    zVec3 innerProjection[3] = {
+        {2.0f, 2.0f, 10.0f},
+        {4.0f, 2.0f, -3.0f},
+        {3.0f, 4.0f, 7.0f},
+    };
+    zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane(3, innerProjection);
+    if (!nearFloat(innerProjection[0].z, 2.0f) ||
+        !nearFloat(innerProjection[1].z, 2.0f) ||
+        !nearFloat(innerProjection[2].z, 2.0f)) {
+        return 8;
+    }
+
+    zVec3 outer[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {0.0f, 10.0f, 0.0f},
+    };
+    zVec3 inner[3] = {
+        {3.0f, 3.0f, 5.0f},
+        {7.0f, 3.0f, 5.0f},
+        {5.0f, 7.0f, 5.0f},
+    };
+    zGeometry_TriangleSoup *soup =
+        zGeometry::TriangulatePolygonWithHole(4, outer, 3, inner);
+    if (soup == nullptr || soup->triangleCount <= 0 || soup->triangleVerts[0].z != 0.0f ||
+        !nearFloat(inner[0].z, 0.0f) || !nearFloat(inner[1].z, 0.0f) ||
+        !nearFloat(inner[2].z, 0.0f)) {
+        std::free(soup);
+        return 9;
+    }
+    std::free(soup);
+
+    return 0;
+}
+
+extern "C" int zgeometry_polygon_snap_points_xy_if_near_smoke() {
+    auto nearFloat = [](float lhs, float rhs) { return std::fabs(lhs - rhs) <= 0.00001f; };
+
+    zVec3 a{1.0f, 2.0f, 3.0f};
+    zVec3 b{1.05f, 1.95f, -5.0f};
+    if (zGeometry_Vec3::IsNearEqualXY(&a, &b, 0.1f) != 1 ||
+        zGeometry_Vec3::IsNearEqualXY(&a, &b, 0.01f) != 0) {
+        return 1;
+    }
+
+    zVec3 verticalStart{2.0f, 0.0f, 0.0f};
+    zVec3 verticalEnd{2.0f, 10.0f, 0.0f};
+    zVec3 verticalTest{2.02f, 4.0f, 7.0f};
+    if (zGeometry_Vec3::SnapPointToSegmentXYIfNear(&verticalStart, &verticalEnd, &verticalTest,
+                                                   0.05f) != 1 ||
+        verticalTest.x != 2.0f || verticalTest.y != 4.0f || verticalTest.z != 7.0f) {
+        return 2;
+    }
+
+    zVec3 horizontalStart{0.0f, 3.0f, 0.0f};
+    zVec3 horizontalEnd{10.0f, 3.0f, 0.0f};
+    zVec3 horizontalTest{7.0f, 3.03f, 5.0f};
+    if (zGeometry_Vec3::SnapPointToSegmentXYIfNear(&horizontalStart, &horizontalEnd,
+                                                   &horizontalTest, 0.05f) != 1 ||
+        horizontalTest.x != 7.0f || horizontalTest.y != 3.0f || horizontalTest.z != 5.0f) {
+        return 3;
+    }
+
+    zVec3 diagonalStart{0.0f, 0.0f, 0.0f};
+    zVec3 diagonalEnd{10.0f, 10.0f, 0.0f};
+    zVec3 diagonalTest{5.02f, 5.01f, 9.0f};
+    if (zGeometry_Vec3::SnapPointToSegmentXYIfNear(&diagonalStart, &diagonalEnd, &diagonalTest,
+                                                   0.05f) != 1 ||
+        !nearFloat(diagonalTest.x, 5.02f) || !nearFloat(diagonalTest.y, 5.01f) ||
+        diagonalTest.z != 9.0f) {
+        return 4;
+    }
+
+    zVec3 outsideTest{12.0f, 12.0f, 0.0f};
+    if (zGeometry_Vec3::SnapPointToSegmentXYIfNear(&diagonalStart, &diagonalEnd, &outsideTest,
+                                                   0.1f) != 0 ||
+        outsideTest.x != 12.0f || outsideTest.y != 12.0f) {
+        return 5;
+    }
+
+    zVec3 polygon[3] = {
+        {0.0f, 0.0f, 1.0f},
+        {10.0f, 0.0f, 2.0f},
+        {0.0f, 10.0f, 3.0f},
+    };
+    zVec3 targets[3] = {
+        {0.04f, -0.03f, 40.0f},
+        {4.0f, 0.02f, 50.0f},
+        {20.0f, 20.0f, 60.0f},
+    };
+
+    if (zGeometry_Polygon::SnapPointsXYIfNear(polygon, 3, targets, 3, 0.1f, 0.05f) != 1 ||
+        targets[0].x != 0.0f || targets[0].y != 0.0f || targets[0].z != 1.0f ||
+        targets[1].x != 4.0f || targets[1].y != 0.0f || targets[1].z != 50.0f ||
+        targets[2].x != 20.0f || targets[2].y != 20.0f || targets[2].z != 60.0f) {
+        return 6;
+    }
+
+    return zGeometry_Polygon::SnapPointsXYIfNear(polygon, 3, targets, 0, 0.1f, 0.05f) == 0
+               ? 0
+               : 7;
+}
+
+extern "C" int zgeometry_clip_polygon_snap_points_near_node_model_xy_smoke() {
+    zVec3 modelVerts[3] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, -10.0f},
+    };
+    int invalidIndices[2] = {0, 1};
+    int validIndices[3] = {0, 1, 2};
+    zModel_PolygonPartial faces[2]{};
+    faces[0].vertexCountAndFlags = 2;
+    faces[0].vertexIndices = invalidIndices;
+    faces[1].vertexCountAndFlags = 3;
+    faces[1].vertexIndices = validIndices;
+
+    zModel_DrawBatchBasePartial batch{};
+    batch.faceCount = 2;
+    batch.faceList = faces;
+    batch.verts = modelVerts;
+
+    zVec3 clipPoints[3] = {
+        {0.04f, -0.03f, 100.0f},
+        {4.0f, 0.02f, 200.0f},
+        {20.0f, 20.0f, 300.0f},
+    };
+    zGeometry_ClipPolygonPartial clipPolygon{};
+    clipPolygon.points = clipPoints;
+    clipPolygon.pointCount = 3;
+    clipPolygon.bounds.minX = 0.0f;
+    clipPolygon.bounds.maxX = 20.0f;
+    clipPolygon.bounds.maxY = 20.0f;
+    clipPolygon.bounds.minY = 0.0f;
+
+    zClass_NodePartial node{};
+    node.userDataOrDiRef = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&batch));
+
+    if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(nullptr, &node) != 0 ||
+        zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(&clipPolygon, nullptr) != 0) {
+        return 1;
+    }
+
+    zClass_NodePartial emptyNode{};
+    if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(&clipPolygon, &emptyNode) != 0) {
+        return 2;
+    }
+
+    struct TestBoundedNode {
+        zClass_NodePartial node;
+        float boundsMinX;
+        std::uint32_t unknown90;
+        float boundsNegMaxY;
+        float boundsMaxX;
+        std::uint32_t unknown9c;
+        float boundsNegMinY;
+    };
+    TestBoundedNode boundedNode{};
+    boundedNode.node.flags = 0x200;
+    boundedNode.node.userDataOrDiRef =
+        static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&batch));
+    boundedNode.boundsMinX = 30.0f;
+    boundedNode.boundsMaxX = 40.0f;
+    boundedNode.boundsNegMaxY = -40.0f;
+    boundedNode.boundsNegMinY = -30.0f;
+    if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(
+            &clipPolygon, reinterpret_cast<zGeometry_ClipPatchNodeView *>(&boundedNode)) != 0) {
+        return 3;
+    }
+
+    if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(&clipPolygon, &node) != 1 ||
+        clipPoints[0].x != 0.0f || clipPoints[0].y != 0.0f || clipPoints[0].z != 0.0f ||
+        clipPoints[1].x != 4.0f || clipPoints[1].y != 0.0f || clipPoints[1].z != 200.0f ||
+        clipPoints[2].x != 20.0f || clipPoints[2].y != 20.0f || clipPoints[2].z != 300.0f) {
+        return 4;
+    }
+
+    return 0;
 }
 
 extern "C" int zmodel_material_write_gamez_smoke() {
@@ -1891,6 +4261,60 @@ extern "C" int zmodel_scrolling_texture_update_smoke(void) {
     return zModel_Instance_UpdateScrollingTexturesIfNeeded(nullptr) == -1 ? 0 : 5;
 }
 
+extern "C" int zmodel_material_update_cycle_if_needed_smoke(void) {
+    zImage_TexDirEntryPartial frameA{};
+    zImage_TexDirEntryPartial frameB{};
+    zImage_TexDirEntryPartial frameC{};
+    zImage_TexDirEntryPartial *frames[3] = {&frameA, &frameB, &frameC};
+    zModel_MaterialCyclePartial cycle{};
+    zModel_MaterialPartial material{};
+
+    material.flags = 0x0400;
+    material.cycle = &cycle;
+    material.currentTextureDirectoryEntry = &frameA;
+    cycle.loopEnabled = 1;
+    cycle.lastUpdateFrameTick = 99;
+    cycle.currentFrame = 1.0f;
+    cycle.framesPerSecond = 2.0f;
+    cycle.frameCount = 3;
+    cycle.frameTable = frames;
+    g_zVideo_FrameTick = 100;
+    g_FrameDeltaTimeSec = 0.5f;
+
+    zModel_Material::UpdateCycleIfNeeded(&material);
+    if (material.currentTextureDirectoryEntry != &frameB || cycle.currentFrame != 2.0f ||
+        cycle.lastUpdateFrameTick != 100) {
+        return 1;
+    }
+
+    material.currentTextureDirectoryEntry = &frameA;
+    zModel_Material::UpdateCycleIfNeeded(&material);
+    if (material.currentTextureDirectoryEntry != &frameA || cycle.currentFrame != 2.0f) {
+        return 2;
+    }
+
+    cycle.loopEnabled = 0;
+    cycle.lastUpdateFrameTick = 100;
+    cycle.currentFrame = 2.5f;
+    cycle.framesPerSecond = 2.0f;
+    material.currentTextureDirectoryEntry = &frameA;
+    g_zVideo_FrameTick = 101;
+    zModel_Material::UpdateCycleIfNeeded(&material);
+    if (material.currentTextureDirectoryEntry != &frameC || cycle.currentFrame != 2.0f) {
+        return 3;
+    }
+
+    cycle.loopEnabled = 1;
+    cycle.lastUpdateFrameTick = 101;
+    cycle.currentFrame = 0.0f;
+    cycle.framesPerSecond = -2.0f;
+    material.currentTextureDirectoryEntry = &frameC;
+    g_zVideo_FrameTick = 102;
+    g_FrameDeltaTimeSec = 1.0f;
+    zModel_Material::UpdateCycleIfNeeded(&material);
+    return material.currentTextureDirectoryEntry == &frameA && cycle.currentFrame == 4.0f ? 0 : 4;
+}
+
 extern "C" int zmodel_render_point_queue_entry_smoke(void) {
     static std::int32_t matrixFlags[1] = {1};
     static float *matrixSlots[1] = {};
@@ -1951,6 +4375,157 @@ extern "C" int zmodel_render_point_queue_entry_smoke(void) {
 
     g_zVideo_pfnDrawPointColor16 = 0;
     g_zVideo_ActiveRendererPath = 0;
+    return 0;
+}
+
+extern "C" int zmodel_init_smoke(void) {
+    const int savedRendererPath = g_zVideo_ActiveRendererPath;
+    zDiPartial *const savedPool = g_zModel_DiPoolBase;
+    const int savedCapacity = g_zModel_DiPoolCapacity;
+    const int savedInUse = g_zModel_DiPoolInUseCount;
+    const int savedFreeHead = g_zModel_DiPoolFreeHeadIndex;
+    zClass_RenderFn const savedRenderFn = gModel_RenderFn;
+    int *const savedClipStackTop = gModel_ClipMaskStackTop;
+    const int savedSoftwarePathActive = g_zModel_SoftwarePathActive;
+
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolCapacity = 3;
+    g_zModel_DiPoolInUseCount = 99;
+    g_zModel_DiPoolFreeHeadIndex = 99;
+    gModel_RenderFn = nullptr;
+    gModel_ClipMaskStackTop = nullptr;
+    g_zModel_SoftwarePathActive = 1;
+    g_zVideo_ActiveRendererPath = 1;
+
+    const int initResult = zModel::Init();
+    zDiPartial *const allocatedPool = g_zModel_DiPoolBase;
+    const bool hardwareOk =
+        initResult == 0 && allocatedPool != nullptr && gModel_RenderFn == zModel::RenderNodeHardware &&
+        g_zModel_SoftwarePathActive == 0 && gModel_ClipMaskStackTop == gModel_ClipMaskStack &&
+        g_zModel_DiPoolCapacity == 3 && g_zModel_DiPoolInUseCount == 0 &&
+        g_zModel_DiPoolFreeHeadIndex == 0 && allocatedPool[0].nextFreeIndex == 1 &&
+        allocatedPool[1].nextFreeIndex == 2 && allocatedPool[2].nextFreeIndex == -1;
+    std::free(allocatedPool);
+
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolCapacity = 0;
+    gModel_RenderFn = savedRenderFn;
+    g_zModel_SoftwarePathActive = 0;
+    g_zVideo_ActiveRendererPath = 0;
+
+    const int softwareResult = zModel::Init();
+    zDiPartial *const defaultPool = g_zModel_DiPoolBase;
+    const bool softwareOk = softwareResult == 0 && defaultPool != nullptr &&
+                            g_zModel_DiPoolCapacity == 1750 &&
+                            g_zModel_SoftwarePathActive == 1 &&
+                            defaultPool[1749].nextFreeIndex == -1;
+    std::free(defaultPool);
+
+    g_zModel_DiPoolBase = savedPool;
+    g_zModel_DiPoolCapacity = savedCapacity;
+    g_zModel_DiPoolInUseCount = savedInUse;
+    g_zModel_DiPoolFreeHeadIndex = savedFreeHead;
+    gModel_RenderFn = savedRenderFn;
+    gModel_ClipMaskStackTop = savedClipStackTop;
+    g_zModel_SoftwarePathActive = savedSoftwarePathActive;
+    g_zVideo_ActiveRendererPath = savedRendererPath;
+
+    if (!hardwareOk) {
+        return 1;
+    }
+    return softwareOk ? 0 : 2;
+}
+
+extern "C" int zmodel_render_node_hardware_flat_smoke(void) {
+    static std::int32_t matrixFlags[1] = {1};
+    static float *matrixSlots[1] = {};
+    zMat4x3 matrix{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                   0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    zMath::g_zMath_CameraScratchA = matrix;
+    zMath::g_zMath_CameraScratchB = matrix;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    g_zModel_TransformedVerts = g_zModel_SharedVec3ScratchAStorage;
+    g_zModel_TransformedNormals = g_zModel_SharedVec3ScratchBStorage;
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_pfnSubmitPolyFlatColor16 = static_cast<std::uint32_t>(
+        reinterpret_cast<std::uintptr_t>(&zmodel_submit_poly_flat_stub));
+    g_zVideo_pfnSubmitPolyColorAttr = 0;
+    g_zVideo_pfnSubmitPolygon = 0;
+    g_zVideo_pfnSubmitPolygonLit = 0;
+    g_zVideo_pfnSubmitPolyRenderClass = 0;
+    g_zMath_ProjScaleX = 10.0f;
+    g_zMath_ProjScaleY = 10.0f;
+    g_zMath_ProjOffsetX = 0.0f;
+    g_zMath_ProjOffsetY = 0.0f;
+    g_zMath_ProjSphereRadiusScale = 10.0f;
+    g_zRndr_InverseZTolerance = 0.25f;
+    g_zModel_BFETolerance = 0.0f;
+    gModel_FogEnabled = 0;
+    gModel_HasActiveLights = 0;
+    gModel_RenderAlphaScaleCurrent = 1.0f;
+    gModel_RenderVertexAlphaEnabled = 7;
+    gAltClipPassEnabled = 0;
+    g_submitFlatCallCount = 0;
+
+    gClipRect_Primary.xMin = -100.0f;
+    gClipRect_Primary.yMin = -100.0f;
+    gClipRect_Primary.zMin = 1.0f;
+    gClipRect_Primary.xMax = 100.0f;
+    gClipRect_Primary.yMax = 100.0f;
+    gClipRect_Primary.zMax = 1000.0f;
+    gClipRect_Primary.xMaxAlt = 100.0f;
+    gClipRect_Primary.yMaxAlt = 100.0f;
+
+    zVec3 verts[3] = {
+        {-1.0f, 0.0f, 10.0f},
+        {0.0f, 1.0f, 10.0f},
+        {1.0f, 0.0f, 10.0f},
+    };
+    int indices[3] = {0, 2, 1};
+    zModel_MaterialPartial material{};
+    material.flags = 0xff;
+    material.packedColor = 0x1234;
+    zDiEntryPartial entry{};
+    entry.flagsAndIndexCount = 3;
+    entry.drawFlags = 2;
+    entry.vertexIndices = indices;
+    entry.material = &material;
+    zDiPartial di{};
+    di.entryCount = 1;
+    di.vertCount = 3;
+    di.entries = &entry;
+    di.verts = verts;
+    zClass_NodePartial node{};
+    node.userDataOrDiRef = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&di));
+
+    zModel::RenderNodeHardware(&node, 0x3f);
+
+    g_zVideo_pfnSubmitPolyFlatColor16 = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    if (g_submitFlatCallCount != 1) {
+        return 1;
+    }
+    if (g_submitFlatLastVertexCount != 3) {
+        return 3;
+    }
+    if (g_submitFlatLastAlpha != 255 || g_submitFlatLastColor != 0x1234) {
+        return 4;
+    }
+    if (g_submitFlatLastRenderParam != 2 || g_submitFlatLastQueueMode != 7) {
+        return 5;
+    }
+
+    const float expectedDepth = 1.5f;
+    for (int i = 0; i < 3; ++i) {
+        if (g_submitFlatLastVerts[i].z < expectedDepth - 0.001f ||
+            g_submitFlatLastVerts[i].z > expectedDepth + 0.001f) {
+            return 2;
+        }
+    }
+
     return 0;
 }
 
@@ -2234,6 +4809,114 @@ extern "C" int zmodel_light_point_in_polygon_init_smoke(void) {
                : 2;
 }
 
+extern "C" int zmodel_light_set_active_lights_smoke(void) {
+    std::memset(gModel_ActiveLights, 0, sizeof(gModel_ActiveLights));
+    std::memset(g_Clip_PolyAttr0, 0, sizeof(g_Clip_PolyAttr0));
+    std::memset(g_Clip_PolyAttr1, 0, sizeof(g_Clip_PolyAttr1));
+    std::memset(g_Clip_PolyAttr2, 0, sizeof(g_Clip_PolyAttr2));
+    g_zModel_FogTargetColorOverride = {};
+    g_zModel_CurrentPolyNormals = nullptr;
+
+    zModel_LightStatePartial state{};
+    state.flags = 4;
+    zClass_LightDataPartial light{};
+    light.enabled = 1;
+    light.lightSubMode = 1;
+    light.range1 = 0.0f;
+    light.range2 = 100.0f;
+    light.range2Sq = 10000.0f;
+    light.invRangeDelta = 0.01f;
+    light.falloff = 1.0f;
+    light.intensityScale = 0.0f;
+    light.viewPos = {0.0f, 0.0f, 10.0f};
+    light.viewDir = {0.0f, 0.0f, 1.0f};
+    light.specularColor = {0.25f, 0.5f, 0.75f};
+    light.lightParam = 1;
+
+    gModel_ActiveLightCount = 1;
+    gModel_ActiveLights[0].light = &light;
+    gModel_ActiveLights[0].lightState = &state;
+    gModel_ActiveLights[0].useFullWeight = 1;
+    gModel_ActiveLights[0].contributesToLighting = 1;
+
+    g_Clip_PolyVertsScratch[0] = {0.0f, 0.0f, 5.0f};
+    g_Clip_PolyVertsScratch[1] = {1.0f, 0.0f, 5.0f};
+    g_Clip_PolyVertsScratch[2] = {0.0f, 1.0f, 5.0f};
+
+    g_zVideo_ActiveRendererPath = 1;
+    g_zModel_SoftwarePathActive = 0;
+    g_zgameFogColorUpdateCount = 0;
+    g_zVideo_pfnUpdateFogColor = TestZGameUpdateFogColor;
+    g_zVideo_FogColorAppliedR255 = 0.0f;
+    g_zVideo_FogColorAppliedG255 = 0.0f;
+    g_zVideo_FogColorAppliedB255 = 0.0f;
+    g_zVideo_FogColorPendingR255 = 0.0f;
+    g_zVideo_FogColorPendingG255 = 0.0f;
+    g_zVideo_FogColorPendingB255 = 0.0f;
+    zVec3 normal{0.0f, 0.0f, 1.0f};
+    std::int32_t lightFlags = 0;
+    std::int32_t lightingMode = 0;
+    const int hardwareResult =
+        zModel_Light::SetActiveLights(&normal, 3, &lightFlags, &lightingMode, 0);
+    if ((hardwareResult & 8) == 0 || (lightFlags & 9) != 9 ||
+        g_Clip_PolyAttr2[0] != 1.0f || g_Clip_PolyAttr2[1] != 1.0f ||
+        g_Clip_PolyAttr2[2] != 1.0f) {
+        return 1;
+    }
+    if (g_zgameFogColorUpdateCount != 1 ||
+        g_zVideo_FogColorAppliedR255 != 63.75f ||
+        g_zVideo_FogColorAppliedG255 != 127.5f ||
+        g_zVideo_FogColorAppliedB255 != 191.25f) {
+        return 5;
+    }
+
+    std::memset(g_Clip_PolyAttr0, 0, sizeof(g_Clip_PolyAttr0));
+    std::memset(g_Clip_PolyAttr1, 0, sizeof(g_Clip_PolyAttr1));
+    std::memset(g_Clip_PolyAttr2, 0, sizeof(g_Clip_PolyAttr2));
+    light.lightParam = 0;
+    light.intensityScale = 0.5f;
+    light.falloff = 0.0f;
+    light.isPointMode = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    lightFlags = 0;
+    lightingMode = 0;
+    normal = {0.0f, 0.0f, 2.0f};
+    if (zModel_Light::SetActiveLights(&normal, 3, &lightFlags, &lightingMode, 0) != 1 ||
+        g_Clip_PolyAttr0[0] < 127.4f || g_Clip_PolyAttr0[0] > 127.6f ||
+        g_Clip_PolyAttr0[1] < 127.4f || g_Clip_PolyAttr0[1] > 127.6f) {
+        return 2;
+    }
+
+    std::memset(g_Clip_PolyAttr0, 0, sizeof(g_Clip_PolyAttr0));
+    std::memset(g_Clip_PolyAttr1, 0, sizeof(g_Clip_PolyAttr1));
+    light.isPointMode = 1;
+    light.lightParam = 0;
+    light.intensityScale = 0.5f;
+    light.falloff = 0.0f;
+    g_zModel_CurrentPolyNormalsStorage[0] = {0.0f, 0.0f, 1.0f};
+    g_zModel_CurrentPolyNormalsStorage[1] = {0.0f, 0.0f, 1.0f};
+    g_zModel_CurrentPolyNormalsStorage[2] = {0.0f, 0.0f, 1.0f};
+    g_zModel_CurrentPolyNormals = g_zModel_CurrentPolyNormalsStorage;
+    g_zVideo_ActiveRendererPath = 1;
+    lightFlags = 0;
+    lightingMode = 0;
+    if (zModel_Light::SetActiveLights(&normal, 3, &lightFlags, &lightingMode, 0) != 1 ||
+        (lightingMode & 1) == 0 || g_Clip_PolyAttr1[0] < 0.499f ||
+        g_Clip_PolyAttr1[0] > 0.501f) {
+        return 3;
+    }
+
+    gModel_ActiveLightCount = 0;
+    g_zModel_CurrentPolyNormals = nullptr;
+    g_zModel_FogTargetColorOverride = {};
+    lightFlags = 0;
+    lightingMode = 7;
+    return zModel_Light::SetActiveLights(&normal, 3, &lightFlags, &lightingMode, 0) == 0 &&
+                   lightingMode == 0
+               ? 0
+               : 4;
+}
+
 extern "C" int zmodel_light_build_attr0_depth_fade_smoke(void) {
     zMath::g_zMath_CameraScratchA = {};
     zMath::g_zMath_CameraScratchA.yy = 1.0f;
@@ -2291,6 +4974,64 @@ extern "C" int zmodel_light_build_attr0_depth_fade_smoke(void) {
     return 0;
 }
 
+extern "C" int zmodel_light_build_attr1_falloff_smoke(void) {
+    zMath::g_zMath_CameraScratchA = {};
+    zMath::g_zMath_CameraScratchA.yy = 1.0f;
+
+    gModel_FogDistanceStart = 10.0f;
+    gModel_FogDistanceEnd = 20.0f;
+    gModel_FogDistanceInvRange = 0.1f;
+    gModel_FogHeightHigh = 10.0f;
+    gModel_FogHeightLow = 0.0f;
+    gModel_FogHeightInvRange = 0.1f;
+    gModel_FogColorRgb01 = {0.25f, 0.5f, 1.0f};
+    g_zVideo_FogColorAppliedR255 = 0.0f;
+    g_zVideo_FogColorAppliedG255 = 0.0f;
+    g_zVideo_FogColorAppliedB255 = 0.0f;
+    g_zgameFogColorUpdateCount = 0;
+    g_zVideo_pfnUpdateFogColor = TestZGameUpdateFogColor;
+
+    std::memset(g_Clip_PolyAttr2, 0, sizeof(g_Clip_PolyAttr2));
+    g_Clip_PolyVertsScratch[0] = {16.0f, 0.0f, 0.0f};
+    g_Clip_PolyVertsScratch[1] = {32.0f, 5.0f, 0.0f};
+    g_Clip_PolyVertsScratch[2] = {8.0f, 0.0f, 0.0f};
+
+    std::int32_t lightingFlags = 0;
+    if (zModel_Light::BuildAttr1Falloff(3, &lightingFlags) != 1 ||
+        lightingFlags != 2 || g_Clip_PolyAttr2[0] < 0.599f ||
+        g_Clip_PolyAttr2[0] > 0.601f || g_Clip_PolyAttr2[1] < 0.499f ||
+        g_Clip_PolyAttr2[1] > 0.501f || g_Clip_PolyAttr2[2] != 0.0f ||
+        g_zVideo_FogColorPendingR255 != 63.75f ||
+        g_zVideo_FogColorPendingG255 != 127.5f ||
+        g_zVideo_FogColorPendingB255 != 255.0f ||
+        g_zgameFogColorUpdateCount != 1) {
+        return 1;
+    }
+
+    g_Clip_PolyVertsScratch[0] = {4.0f, 0.0f, 0.0f};
+    lightingFlags = 2;
+    if (zModel_Light::BuildAttr1Falloff(1, &lightingFlags) != 0 || lightingFlags != 0) {
+        return 2;
+    }
+
+    g_Clip_PolyVertsScratch[0] = {16.0f, 20.0f, 0.0f};
+    lightingFlags = 2;
+    if (zModel_Light::BuildAttr1Falloff(1, &lightingFlags) != 0 || lightingFlags != 0 ||
+        g_Clip_PolyAttr2[0] != 0.0f) {
+        return 3;
+    }
+
+    g_Clip_PolyVertsScratch[0] = {20.0f, 0.0f, 0.0f};
+    g_Clip_PolyVertsScratch[1] = {20.0f, 0.0f, 0.0f};
+    lightingFlags = 2;
+    if (zModel_Light::BuildAttr1Falloff(2, &lightingFlags) != 1 || lightingFlags != 2 ||
+        g_Clip_PolyAttr2[0] != 1.0f || g_Clip_PolyAttr2[1] != 1.0f) {
+        return 4;
+    }
+
+    return 0;
+}
+
 extern "C" int zclass_world_apply_pending_fog_settings_smoke(void) {
     zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
     g_zVideo_ActiveRendererPath = 1;
@@ -2307,6 +5048,31 @@ extern "C" int zclass_world_apply_pending_fog_settings_smoke(void) {
         zClass_World::SetPendingFogAltitudeRange(&worldNode, 2.0f, 10.0f) != 0 ||
         zClass_World::SetPendingFogDensity(&worldNode, 0.75f) != 0 || worldData.flags != 0x2f) {
         return 1;
+    }
+
+    float fogStart = 0.0f;
+    float fogEnd = 0.0f;
+    float fogDensity = 0.0f;
+    int fogState = 0;
+    float fogRed = 0.0f;
+    float fogGreen = 0.0f;
+    float fogBlue = 0.0f;
+    float fogAltitudeLow = 0.0f;
+    float fogAltitudeHigh = 0.0f;
+    if (zClass_World::GetPendingFogDensity(&worldNode, &fogDensity) != 0 ||
+        fogDensity != 0.75f ||
+        zClass_World::GetPendingFogState(&worldNode, &fogState) != 0 || fogState != 1 ||
+        zClass_World::GetPendingFogColorRgb01(&worldNode, &fogRed, &fogGreen, &fogBlue) != 0 ||
+        fogRed != 1.2f || fogGreen != -0.5f || fogBlue != 0.5f ||
+        zClass_World::GetPendingFogAltitudeRange(&worldNode, &fogAltitudeLow,
+                                                 &fogAltitudeHigh) != 0 ||
+        fogAltitudeLow != 2.0f || fogAltitudeHigh != 10.0f) {
+        return 6;
+    }
+
+    if (zClass_World::GetPendingFogRange(&worldNode, &fogStart, &fogEnd) != 0 ||
+        fogStart != 5.0f || fogEnd != 20.0f) {
+        return 5;
     }
 
     std::int32_t childClassData = 0;
@@ -2355,6 +5121,92 @@ extern "C" int zclass_world_apply_pending_fog_settings_smoke(void) {
                    pendingArea.bboxCenter.y == 2.0f && pendingArea.bboxRadius > 0.0f
                ? 0
                : 4;
+}
+
+extern "C" int zclass_world_settings_section_callbacks_smoke(void) {
+    reset_zclass_type_lists_for_test();
+
+    zClass_WorldDataPartial worldData{};
+    zClass_NodePartial worldNode{};
+    std::strcpy(worldNode.name, "arena");
+    worldNode.classData = &worldData;
+    if (zClass_TypeList::Insert(13, &worldNode) != 0) {
+        free_zclass_type_lists_for_test();
+        return 1;
+    }
+
+    zClass_WorldSettingsSectionRecord settings{};
+    settings.fogState = 1;
+    settings.fogColorRgb01 = {0.25f, 0.5f, 0.75f};
+    settings.fogRangeNear = 3.0f;
+    settings.fogRangeFar = 33.0f;
+    settings.fogAltitudeHigh = 12.0f;
+    settings.fogAltitudeLow = -2.0f;
+    settings.fogDensity = 0.625f;
+
+    zClass_World::ReadSettingsSection(nullptr, "missing", &settings, sizeof(settings), nullptr);
+    if (worldData.flags != 0) {
+        free_zclass_type_lists_for_test();
+        return 2;
+    }
+
+    zClass_World::ReadSettingsSection(nullptr, "arena", &settings, sizeof(settings), nullptr);
+    if (worldData.flags != 0x2f || worldData.fogState != 1 ||
+        worldData.ambientColor.red != 0.25f || worldData.ambientColor.green != 0.5f ||
+        worldData.ambientColor.blue != 0.75f || worldData.fogDistanceStart != 3.0f ||
+        worldData.fogDistanceEnd != 33.0f || worldData.fogHeightHigh != 12.0f ||
+        worldData.fogHeightLow != -2.0f || worldData.fogDensity != 0.625f) {
+        free_zclass_type_lists_for_test();
+        return 3;
+    }
+
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    GetTempPathA(sizeof(tempPath), tempPath);
+    GetTempFileNameA(tempPath, "zws", 0, tempFile);
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                    FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        free_zclass_type_lists_for_test();
+        return 4;
+    }
+
+    zZbdManager manager = {};
+    manager.indexArchive.hFile = file;
+
+    zZbdSectionHandler handler = {};
+    handler.sectionName = "WorldSettings";
+    zZbdSectionCallbackCtx callbackCtx = {};
+    callbackCtx.manager = &manager;
+    callbackCtx.sectionHandler = &handler;
+
+    const int result = zClass_World::WriteSettingsSection(&callbackCtx, nullptr);
+
+    SetFilePointer(file, 0, nullptr, FILE_BEGIN);
+    zClass_WorldSettingsSectionRecord readBack{};
+    DWORD read = 0;
+    ReadFile(file, &readBack, sizeof(readBack), &read, nullptr);
+
+    const bool ok = result == 1 && read == sizeof(readBack) &&
+                    manager.indexArchive.recordCount == 1 &&
+                    manager.indexArchive.records != nullptr &&
+                    manager.indexArchive.records[0].fileSize == sizeof(readBack) &&
+                    std::strcmp(manager.indexArchive.records[0].name,
+                                "WorldSettings/arena") == 0 &&
+                    readBack.fogState == 1 && readBack.fogColorRgb01.red == 0.25f &&
+                    readBack.fogColorRgb01.green == 0.5f &&
+                    readBack.fogColorRgb01.blue == 0.75f &&
+                    readBack.fogRangeNear == 3.0f && readBack.fogRangeFar == 33.0f &&
+                    readBack.fogAltitudeHigh == 12.0f &&
+                    readBack.fogAltitudeLow == -2.0f && readBack.fogDensity == 0.625f;
+
+    std::free(manager.indexArchive.records);
+    manager.indexArchive.records = nullptr;
+    CloseHandle(file);
+    free_zclass_type_lists_for_test();
+    return ok ? 0 : 5;
 }
 
 extern "C" int zclass_shutdown_core_smoke(void) {
@@ -3023,6 +5875,44 @@ extern "C" int zopt_fullscreen_accessors_smoke() {
     return 0;
 }
 
+extern "C" int zopt_toggle_hud_type_for_current_hw_mode_smoke() {
+    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
+    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+    const int oldLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
+
+    int hudTypeSw = ZOPT_HUD_TYPE_STANDARD;
+    int hudTypeHw = 7;
+    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    ZOPT_HUD_TYPE_HW = &hudTypeHw;
+    g_HudUiMgrHudLayoutsInitialized = 0;
+
+    g_zOpt_HwMode = 0;
+    int returned = zOpt::ToggleHudTypeForCurrentHwMode();
+    bool ok = returned == ZOPT_HUD_TYPE_STANDARD &&
+              hudTypeSw == ZOPT_HUD_TYPE_PERSPECTIVE && hudTypeHw == 7;
+
+    returned = zOpt::ToggleHudTypeForCurrentHwMode();
+    ok = ok && returned == ZOPT_HUD_TYPE_PERSPECTIVE &&
+         hudTypeSw == ZOPT_HUD_TYPE_STANDARD && hudTypeHw == 7;
+
+    hudTypeSw = 9;
+    returned = zOpt::ToggleHudTypeForCurrentHwMode();
+    ok = ok && returned == 9 && hudTypeSw == 9 && hudTypeHw == 7;
+
+    g_zOpt_HwMode = 1;
+    hudTypeHw = ZOPT_HUD_TYPE_PERSPECTIVE;
+    returned = zOpt::ToggleHudTypeForCurrentHwMode();
+    ok = ok && returned == ZOPT_HUD_TYPE_PERSPECTIVE &&
+         hudTypeHw == ZOPT_HUD_TYPE_STANDARD && hudTypeSw == 9;
+
+    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
+    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
+    g_zOpt_HwMode = oldHwMode;
+    g_HudUiMgrHudLayoutsInitialized = oldLayoutsInitialized;
+    return ok ? 0 : 1;
+}
+
 extern "C" int zopt_network_enabled_accessor_smoke() {
     std::int32_t networkEnabled = 0;
     std::int32_t networkModem = 0;
@@ -3187,6 +6077,92 @@ extern "C" int hud_sensor_tracker_load_race_checkpoint_meta_smoke() {
     return missingOk && loadedOk ? 0 : 3;
 }
 
+extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
+    zArchiveList *const oldMountedList = g_zArchive_MountedList;
+    zOpt_ViewRectSection **const oldRender = g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection **const oldDisplay = g_zOpt_DisplaySectionOption;
+    zOpt_CameraSection **const oldCamera = g_zOpt_CameraSectionOption;
+    zVideo_QueryMemoryBytesProc oldQueryTextureMemory = g_zVideo_pfnQueryTextureMemoryBytes;
+    int *const oldTextureMemoryOption = g_zImage_TextureMemoryOption;
+
+    zOpt_ViewRectSection render{};
+    zOpt_ViewRectSection display{};
+    zOpt_CameraSection camera{};
+    int textureMemoryOption = 0;
+    zOpt_ViewRectSection *renderPtr = &render;
+    zOpt_ViewRectSection *displayPtr = &display;
+    zOpt_CameraSection *cameraPtr = &camera;
+    g_zArchive_MountedList = nullptr;
+    g_zOpt_RenderSectionOption = &renderPtr;
+    g_zOpt_DisplaySectionOption = &displayPtr;
+    g_zOpt_CameraSectionOption = &cameraPtr;
+    g_zVideo_pfnQueryTextureMemoryBytes = TextureMemoryQueryMissingStub;
+    g_zImage_TextureMemoryOption = &textureMemoryOption;
+
+    CreateDirectoryA("support", nullptr);
+
+    const char *paths[] = {
+        "support\\initm1.gw",
+        "support\\initm3.gw",
+        "m1.gs",
+        "custom_mission.gs",
+    };
+
+    for (int index = 0; index < 4; ++index) {
+        FILE *const file = std::fopen(paths[index], "wb");
+        if (file == nullptr) {
+            g_zArchive_MountedList = oldMountedList;
+            g_zOpt_RenderSectionOption = oldRender;
+            g_zOpt_DisplaySectionOption = oldDisplay;
+            g_zOpt_CameraSectionOption = oldCamera;
+            g_zVideo_pfnQueryTextureMemoryBytes = oldQueryTextureMemory;
+            g_zImage_TextureMemoryOption = oldTextureMemoryOption;
+            return 1;
+        }
+        std::fclose(file);
+    }
+
+    HudSensorTracker defaultTracker = {};
+    defaultTracker.Constructor();
+    defaultTracker.missionFlags = 0;
+    const int defaultResult = defaultTracker.LoadMissionCoreResources();
+    const bool defaultOk =
+        defaultResult == 1 && defaultTracker.missionId == 1 &&
+        std::strcmp(defaultTracker.zbdPath.m_pchData, "m1.gs") == 0 &&
+        defaultTracker.missionLoaded == 1 && defaultTracker.raceCheckpointMode == 0 &&
+        std::strcmp(g_HudSensor_MissionSoundSetName, "M1") == 0 &&
+        defaultTracker.worldNode == nullptr && defaultTracker.cameraNode == nullptr &&
+        defaultTracker.windowNode == nullptr && defaultTracker.displayNode == nullptr &&
+        render.target == nullptr && display.target == nullptr && camera.m_pCamera == nullptr;
+
+    HudSensorTracker customTracker = {};
+    customTracker.Constructor();
+    customTracker.missionId = 3;
+    customTracker.SetZbdPath("custom_mission.gs");
+    const int customResult = customTracker.LoadMissionCoreResources();
+    const bool customOk =
+        customResult == 1 && customTracker.missionId == 3 &&
+        std::strcmp(customTracker.zbdPath.m_pchData, "custom_mission.gs") == 0 &&
+        customTracker.missionLoaded == 1 &&
+        std::strcmp(g_HudSensor_MissionSoundSetName, "M3") == 0;
+
+    for (int index = 0; index < 4; ++index) {
+        DeleteFileA(paths[index]);
+    }
+    RemoveDirectoryA("support");
+
+    defaultTracker.Shutdown();
+    customTracker.Shutdown();
+    g_zArchive_MountedList = oldMountedList;
+    g_zOpt_RenderSectionOption = oldRender;
+    g_zOpt_DisplaySectionOption = oldDisplay;
+    g_zOpt_CameraSectionOption = oldCamera;
+    g_zVideo_pfnQueryTextureMemoryBytes = oldQueryTextureMemory;
+    g_zImage_TextureMemoryOption = oldTextureMemoryOption;
+
+    return defaultOk && customOk ? 0 : 2;
+}
+
 extern "C" int hud_sensor_tracker_load_objectives_from_path_smoke() {
     char tempDir[MAX_PATH] = {};
     char tempPath[MAX_PATH] = {};
@@ -3283,20 +6259,27 @@ extern "C" int hud_sensor_tracker_load_objectives_from_path_smoke() {
 extern "C" int zopt_view_rect_target_side_effects_smoke() {
     zOpt_ViewRectSection render{};
     zOpt_ViewRectSection display{};
+    zOpt_CameraSection cameraSection{};
     zClass_WindowDataPartial windowData{};
     zClass_DisplayDataPartial displayData{};
+    zClass_CameraDataPartial cameraData{};
     zClass_NodePartial windowNode{};
     zClass_NodePartial displayNode{};
+    zClass_NodePartial cameraNode{};
     windowNode.classId = 3;
     windowNode.classData = &windowData;
     displayNode.classId = 4;
     displayNode.classData = &displayData;
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
     render.target = &windowNode;
     display.target = &displayNode;
     zOpt_ViewRectSection *renderPtr = &render;
     zOpt_ViewRectSection *displayPtr = &display;
+    zOpt_CameraSection *cameraSectionPtr = &cameraSection;
     g_zOpt_RenderSectionOption = &renderPtr;
     g_zOpt_DisplaySectionOption = &displayPtr;
+    g_zOpt_CameraSectionOption = &cameraSectionPtr;
 
     render.x = 5;
     render.y = 6;
@@ -3330,10 +6313,31 @@ extern "C" int zopt_view_rect_target_side_effects_smoke() {
 
     zOpt::DisplaySection_SetSize(800, 600);
     zOpt::DisplaySection_SetPosition(30, 40);
-    return displayData.width == 800 && displayData.height == 600 && displayData.x == 30 &&
-                   displayData.y == 40
-               ? 0
-               : 2;
+    if (displayData.width != 800 || displayData.height != 600 || displayData.x != 30 ||
+        displayData.y != 40) {
+        return 2;
+    }
+
+    int objectLodSw = 2;
+    int objectLodHw = 1;
+    ZOPT_OBJECT_LOD_SW = &objectLodSw;
+    ZOPT_OBJECT_LOD_HW = &objectLodHw;
+    g_zOpt_HwMode = 0;
+    render.width = 800;
+    render.height = 400;
+    cameraData.viewportWidth = 400.0f;
+    cameraData.viewportHeight = 200.0f;
+    cameraData.frustumWidth = 0.25f;
+    cameraData.frustumHeight = 0.5f;
+    zOpt::CameraSection_SetActiveCamera(&cameraNode);
+    if (cameraSection.m_pCamera != &cameraNode || cameraData.frustumWidth != 1.0f ||
+        cameraData.frustumHeight != 0.5f || cameraData.fovX != 1.0f / 400.0f ||
+        cameraData.fovY != 0.5f / 200.0f || cameraData.clipDistance != 0.5f) {
+        return 5;
+    }
+
+    zOpt::CameraSection_SetActiveCamera(nullptr);
+    return cameraSection.m_pCamera == nullptr ? 0 : 6;
 }
 
 extern "C" int zopt_section_accessor_smoke() {
@@ -3966,6 +6970,47 @@ extern "C" int zclass_cls_di_point_query_chain_smoke() {
         return 14;
     }
 
+    zVec3 highVertices[3] = {{0.0f, 0.25f, 0.0f}, {0.0f, 0.25f, 1.0f},
+                             {1.0f, 0.25f, 0.0f}};
+    zModel_MaterialPartial highMaterial{};
+    zDiEntryPartial highEntry = entry;
+    highEntry.material = &highMaterial;
+    highEntry.variantTagInitialized = 1;
+    highEntry.variantTag = 0x66;
+    zDiPartial highDi = di;
+    highDi.entries = &highEntry;
+    highDi.verts = highVertices;
+    zClass_NodePartial highNode = objectNode;
+    highNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&highDi);
+    highNode.cachedBounds[1] = 0.25f;
+    highNode.cachedBounds[4] = 0.25f;
+    zClass_NodePartial *bestChildren[2] = {&objectNode, &highNode};
+    area.childCount = 2;
+    area.childList = bestChildren;
+
+    zVec3 bestPoint{0.25f, 0.5f, 0.25f};
+    PlayerProbeSampleCandidateBuffer bestBuffer{};
+    zClass_cls_di::FindBestPickCandidateBelowPoint(&world, &bestPoint, &bestBuffer);
+    if (bestBuffer.candidateCount != 1 || bestBuffer.entries[0].node != &highNode ||
+        bestBuffer.entries[0].hitPos.y != 0.25f ||
+        bestBuffer.entries[0].variantTag.count != 1 ||
+        bestBuffer.entries[0].variantTag.tags[0] != 0x66) {
+        free_zclass_type_lists_for_test();
+        return 16;
+    }
+
+    bestBuffer.entries[0].variantTag.count = 3;
+    bestBuffer.entries[0].variantTag.tags[0] = 0x11;
+    bestPoint.x = 2.0f;
+    zClass_cls_di::FindBestPickCandidateBelowPoint(&world, &bestPoint, &bestBuffer);
+    if (bestBuffer.candidateCount != 0 || bestBuffer.entries[0].variantTag.count != 0 ||
+        bestBuffer.entries[0].variantTag.tags[0] != 0xff) {
+        free_zclass_type_lists_for_test();
+        return 17;
+    }
+    area.childCount = 1;
+    area.childList = areaChildren;
+
     zClassDiPickCandidateEntry nearest{};
     g_zEffect_World = &world;
     const zVec3 nearestPoint{0.25f, 0.5f, 0.25f};
@@ -3973,7 +7018,7 @@ extern "C" int zclass_cls_di_point_query_chain_smoke() {
         nearest.node != &objectNode || nearest.hitPos.y != 0.0f) {
         g_zEffect_World = nullptr;
         free_zclass_type_lists_for_test();
-        return 15;
+        return 18;
     }
 
     g_zEffect_World = nullptr;
@@ -4572,6 +7617,63 @@ extern "C" int zclass_cls_di_set_stop_after_first_hit_smoke() {
         return 10;
     }
 
+    std::strcpy(filterNode.name, "regionTarget");
+    filterNode.flags = 0x144;
+    filterNode.nodeType = 0xff;
+    OptCatalogRaycastHitList regionHits{};
+    zVec3 regionCenter{0.5f, 0.5f, 0.5f};
+    g_zClass_cls_di_FilterRegions_OutHitList = &regionHits;
+    g_zClass_cls_di_FilterRegions_NodeNamePrefix = "region";
+    g_zClass_cls_di_FilterRegions_Center = &regionCenter;
+    g_zClass_cls_di_FilterRegions_RadiusSq = 1.0f;
+    g_zClass_cls_di_FilterRegions_EnableClearanceCheck = 1;
+    g_zClass_cls_di_FilterRegions_LineOfSightWorld = nullptr;
+    if (zClass_cls_di::FilterRegions_TryAppendNode(&filterNode) != 0 ||
+        regionHits.hitCount != 1 || regionHits.hits[0].hitNode != &filterNode ||
+        regionHits.hits[0].pos.x != 0.5f || regionHits.hits[0].pos.y != 0.5f ||
+        regionHits.hits[0].pos.z != 0.5f || regionHits.hits[0].distance != 0.0f ||
+        regionHits.hits[0].surfaceRef != nullptr) {
+        return 93;
+    }
+    g_zClass_cls_di_FilterRegions_NodeNamePrefix = "other";
+    if (zClass_cls_di::FilterRegions_TryAppendNode(&filterNode) != 1 ||
+        regionHits.hitCount != 1) {
+        return 94;
+    }
+
+    zClass_NodePartial *regionChildren[1] = {&filterNode};
+    zWorldAreaPartial regionArea{};
+    regionArea.childCount = 1;
+    regionArea.childList = regionChildren;
+    zWorldAreaPartial *regionRows[1] = {&regionArea};
+    zClass_WorldDataPartial regionWorldData{};
+    regionWorldData.originX = 0.0f;
+    regionWorldData.originZ = -2.0f;
+    regionWorldData.worldMaxX = 2.0f;
+    regionWorldData.worldMaxZ = 2.0f;
+    regionWorldData.areaInvSizeX = 0.5f;
+    regionWorldData.areaInvSizeZ = 0.25f;
+    regionWorldData.areaGridColCount = 1;
+    regionWorldData.areaGridRowCount = 1;
+    regionWorldData.areaGridRows = regionRows;
+    zClass_NodePartial regionWorld{};
+    regionWorld.classData = &regionWorldData;
+    regionHits = {};
+    regionCenter = {0.5f, 0.5f, -3.0f};
+    if (zClass_cls_di::FilterRegionsAgainstSphere(&regionWorld, &regionCenter, "region", 0.5f, 0,
+                                                  0, &regionHits) != 0 ||
+        regionHits.hitCount != 1 || regionHits.hits[0].hitNode != &filterNode ||
+        regionHits.hits[0].pos.x != 0.5f || regionHits.hits[0].pos.y != 0.5f ||
+        regionHits.hits[0].pos.z != 0.5f || regionHits.hits[0].distance != 0.0f) {
+        return 95;
+    }
+
+    g_zClass_cls_di_FilterRegions_OutHitList = nullptr;
+    g_zClass_cls_di_FilterRegions_NodeNamePrefix = nullptr;
+    g_zClass_cls_di_FilterRegions_Center = nullptr;
+    g_zClass_cls_di_FilterRegions_EnableClearanceCheck = 0;
+
+    filterNode.flags = 0x100;
     zVec3 pickPoints[3] = {{0.5f, 99.0f, 0.5f}, {1.5f, 0.0f, 0.5f}, {0.25f, 0.0f, 2.0f}};
     int pickHitFlags[3] = {1, 1, 0};
     g_DiPickPointArray = pickPoints;
@@ -6810,6 +9912,19 @@ extern "C" int zclass_node_extra_flag_setters_smoke() {
         return 7;
     }
 
+    child.auxFlags = 0x3f;
+    grandchild.auxFlags = 0x15;
+    zClass_Node::MaskExtraFlagsRecursive(&node, 0x14);
+    if (node.auxFlags != 0x00 || child.auxFlags != 0x14 || grandchild.auxFlags != 0x14) {
+        return 10;
+    }
+
+    zClass_Node::PropagateFlagsRecursive(&node, 0x400);
+    if ((node.flags & 0x400) == 0 || (child.flags & 0x400) == 0 ||
+        (grandchild.flags & 0x400) == 0) {
+        return 11;
+    }
+
     zClass_Node::SetContextRecursive(&node, &node, 0x200000);
     if ((node.flags & 0x200000) == 0 || (child.flags & 0x200000) == 0 ||
         (grandchild.flags & 0x200000) == 0 || node.callbackContext != &node ||
@@ -7109,6 +10224,96 @@ extern "C" int zclass_world_max_dec_features_smoke() {
     }
 
     return 0;
+}
+
+extern "C" int zclass_world_virtual_partition_statics_smoke() {
+    reset_zclass_type_lists_for_test();
+    g_zClass_NodeList_PendingFreeHead = nullptr;
+
+    zClass_NodeFreeListSlot staticsSlot{};
+    staticsSlot.freeTag = 0x00ffffff;
+    g_zClass_NodeArray = &staticsSlot;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    world.classId = 2;
+    world.classData = &worldData;
+    if (zClass_World::InitVirtualAreaPartitions(&world) != 5) {
+        free_zclass_type_lists_for_test();
+        return 1;
+    }
+    if (zClass_World::SetVirtualPartition(&world, 0) != 0 ||
+        worldData.clampQueriesToBounds != 0) {
+        free_zclass_type_lists_for_test();
+        return 2;
+    }
+
+    zWorldAreaPartial row0[2]{};
+    zWorldAreaPartial row1[2]{};
+    zWorldAreaPartial *rows[] = {row0, row1};
+    worldData.areaGridRows = rows;
+    worldData.areaGridColCount = 2;
+    worldData.areaGridRowCount = 2;
+    worldData.areaGridExternalOwnership = 1;
+    worldData.originX = 0.0f;
+    worldData.originZ = 100.0f;
+    worldData.worldSizeX = 100.0f;
+    worldData.worldSizeZ = -100.0f;
+    worldData.worldMaxX = 100.0f;
+    worldData.worldMaxZ = 0.0f;
+    worldData.areaInvSizeX = 0.02f;
+    worldData.areaInvSizeZ = -0.02f;
+    worldData.partitionInclusionTolX = 2.0f;
+    worldData.partitionInclusionTolZ = 2.0f;
+
+    zClass_NodePartial edgeChild{};
+    edgeChild.gridCol = 0;
+    edgeChild.gridRow = 0;
+    edgeChild.listA = static_cast<zClass_NodePartial **>(
+        std::calloc(1, sizeof(zClass_NodePartial *)));
+    row0[0].childList = static_cast<zClass_NodePartial **>(
+        std::calloc(1, sizeof(zClass_NodePartial *)));
+    if (edgeChild.listA == nullptr || row0[0].childList == nullptr) {
+        std::free(edgeChild.listA);
+        std::free(row0[0].childList);
+        free_zclass_type_lists_for_test();
+        return 3;
+    }
+    edgeChild.listA[0] = &world;
+    edgeChild.listCountA = 1;
+    row0[0].childList[0] = &edgeChild;
+    row0[0].childCount = 1;
+
+    if (zClass_World::SetVirtualPartition(&world, 1) != 0 ||
+        worldData.clampQueriesToBounds != 1 || row0[0].childCount != 0 ||
+        world.listCountB != 1) {
+        zClass_World::FreeVirtualAreaPartitions(&world);
+        std::free(edgeChild.listA);
+        free_zclass_type_lists_for_test();
+        return 4;
+    }
+
+    zClass_NodePartial *statics = world.listB[0];
+    const bool movedToStatics =
+        statics == &staticsSlot.node && std::strcmp(statics->name, "VAP_statics") == 0 &&
+        statics->listCountB == 1 && statics->listB[0] == &edgeChild &&
+        edgeChild.listCountA == 1 && edgeChild.listA[0] == statics;
+
+    zClass_World::FreeVirtualAreaPartitions(&world);
+    std::free(world.listB);
+    std::free(statics->listA);
+    std::free(statics->listB);
+    std::free(statics->classData);
+    std::free(edgeChild.listA);
+    world.listB = nullptr;
+    statics->listA = nullptr;
+    statics->listB = nullptr;
+    statics->classData = nullptr;
+    edgeChild.listA = nullptr;
+    free_zclass_type_lists_for_test();
+    return movedToStatics ? 0 : 5;
 }
 
 extern "C" int zclass_world_add_child_at_grid_smoke() {
@@ -7804,6 +11009,50 @@ extern "C" int zclass_find_by_name_and_filtered_iter_smoke() {
 }
 
 extern "C" int zclass_node_predicate_helpers_smoke() {
+    zBBox3f bbox{-2.0f, 4.0f, 1.0f, 6.0f, 10.0f, 9.0f};
+    zVec3 center{};
+    float radius = 0.0f;
+    if (BBox::MinMaxToBoundingSphere(&bbox, &center, &radius) != &radius ||
+        center.x != 2.0f || center.y != 7.0f || center.z != 5.0f) {
+        return 7;
+    }
+    const float radiusSq = 4.0f * 4.0f + 3.0f * 3.0f + 4.0f * 4.0f;
+    std::int32_t expectedRadiusBits = FloatBitsForTest(radiusSq);
+    expectedRadiusBits = (expectedRadiusBits >> 1) + 0x1fc00000;
+    if (FloatBitsForTest(radius) != expectedRadiusBits) {
+        return 8;
+    }
+
+    const zVec3 cornerValues[8] = {{6.0f, 4.0f, 9.0f},  {-2.0f, 10.0f, 1.0f},
+                                   {6.0f, 10.0f, 9.0f}, {-2.0f, 4.0f, 1.0f},
+                                   {6.0f, 4.0f, 1.0f},  {-2.0f, 10.0f, 9.0f},
+                                   {6.0f, 10.0f, 1.0f}, {-2.0f, 4.0f, 9.0f}};
+    zBBoxCorners minMaxCorners{};
+    for (std::int32_t i = 0; i < 8; ++i) {
+        minMaxCorners.values[i * 3 + 0] = cornerValues[i].x;
+        minMaxCorners.values[i * 3 + 1] = cornerValues[i].y;
+        minMaxCorners.values[i * 3 + 2] = cornerValues[i].z;
+    }
+    center = {};
+    radius = 0.0f;
+    BBox::CornersToBoundingSphere(&minMaxCorners, &center, &radius);
+    if (center.x != 2.0f || center.y != 7.0f || center.z != 5.0f) {
+        return 680;
+    }
+    if (FloatBitsForTest(radius) != expectedRadiusBits) {
+        return 681;
+    }
+
+    zBBoxCorners expandedCorners{};
+    BBox::ExpandToCorners(&bbox, &expandedCorners);
+    if (expandedCorners.values[0] != -2.0f || expandedCorners.values[1] != 4.0f ||
+        expandedCorners.values[2] != 9.0f || expandedCorners.values[6] != 6.0f ||
+        expandedCorners.values[7] != 4.0f || expandedCorners.values[8] != 1.0f ||
+        expandedCorners.values[21] != -2.0f || expandedCorners.values[22] != 10.0f ||
+        expandedCorners.values[23] != 1.0f) {
+        return 682;
+    }
+
     zDiPartial di{1, 0};
     zClass_NodePartial node{};
     node.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&di);
@@ -7889,6 +11138,42 @@ extern "C" int zclass_node_predicate_helpers_smoke() {
         return 34;
     }
 
+    zTag4Partial overlapA = {};
+    zTag4Partial overlapB = {};
+    overlapA.count = 2;
+    overlapA.tags[0] = 0x12;
+    overlapA.tags[1] = 0x34;
+    overlapB.count = 2;
+    overlapB.tags[0] = 0x56;
+    overlapB.tags[1] = 0x34;
+    if (VariantTag::TagsOverlap(&overlapA, &overlapB) != 1) {
+        return 35;
+    }
+    overlapB.tags[1] = 0x78;
+    if (VariantTag::TagsOverlap(&overlapA, &overlapB) != 0) {
+        return 36;
+    }
+    overlapA.tags[1] = 0xff;
+    if (VariantTag::TagsOverlap(&overlapA, &overlapB) != 1) {
+        return 37;
+    }
+    overlapA.tags[1] = 0x34;
+    overlapB.tags[0] = 0xff;
+    if (VariantTag::TagsOverlap(&overlapA, &overlapB) != 1) {
+        return 38;
+    }
+    overlapB.count = 0;
+    if (VariantTag::TagsOverlap(&overlapA, &overlapB) != 1) {
+        return 39;
+    }
+    g_Variant_FilterEnabled = 0;
+    overlapB.count = 2;
+    overlapB.tags[0] = 0x56;
+    if (VariantTag::TagsOverlap(&overlapA, &overlapB) != 1) {
+        return 40;
+    }
+    g_Variant_FilterEnabled = 1;
+
     zVec3 boundsVerts[2] = {{-1.0f, 2.0f, -3.0f}, {5.0f, -6.0f, 7.0f}};
     zDiPartial boundsDi{};
     boundsDi.mode = 0;
@@ -7931,6 +11216,12 @@ extern "C" int zclass_node_predicate_helpers_smoke() {
     bboxNode.cachedBounds[3] = 4.0f;
     bboxNode.cachedBounds[4] = 5.0f;
     bboxNode.cachedBounds[5] = 6.0f;
+    zBBox3f bboxOut{};
+    if (zClass_Class::gwNodeGetBBox(&bboxNode, &bboxOut) != 0 || bboxOut.minX != 1.0f ||
+        bboxOut.minY != 2.0f || bboxOut.minZ != 3.0f || bboxOut.maxX != 4.0f ||
+        bboxOut.maxY != 5.0f || bboxOut.maxZ != 6.0f) {
+        return 650;
+    }
     zBBoxCorners bboxCorners{};
     if (zClass_Class::gwNodeGetWorldBBoxCorners(&bboxNode, &bboxCorners) != 0 ||
         bboxCorners.values[0] != 1.0f || bboxCorners.values[1] != 2.0f ||
@@ -7941,12 +11232,15 @@ extern "C" int zclass_node_predicate_helpers_smoke() {
         return 65;
     }
     bboxNode.flags = 0;
-    if (zClass_Class::gwNodeGetWorldBBoxCorners(&bboxNode, &bboxCorners) != 1) {
+    if (zClass_Class::gwNodeGetBBox(&bboxNode, &bboxOut) != 1 ||
+        zClass_Class::gwNodeGetWorldBBoxCorners(&bboxNode, &bboxCorners) != 1) {
         return 66;
     }
     bboxNode.classData = nullptr;
     bboxNode.flags = 0x100;
-    if (zClass_Class::gwNodeGetWorldBBoxCorners(&bboxNode, &bboxCorners) != 5 ||
+    if (zClass_Class::gwNodeGetBBox(&bboxNode, &bboxOut) != 5 ||
+        zClass_Class::gwNodeGetBBox(nullptr, &bboxOut) != 5 ||
+        zClass_Class::gwNodeGetWorldBBoxCorners(&bboxNode, &bboxCorners) != 5 ||
         zClass_Class::gwNodeGetWorldBBoxCorners(nullptr, &bboxCorners) != 5) {
         return 67;
     }
@@ -8349,6 +11643,57 @@ extern "C" int zclass_lifecycle_leaf_smoke() {
 
     g_zClass_IsInitialized = 1;
     return zClass::IsInitialized() == 1 ? 0 : 3;
+}
+
+extern "C" int zclass_init_smoke() {
+    if (g_zClass_NodeArray != nullptr) {
+        std::free(g_zClass_NodeArray);
+    }
+
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 3;
+    g_zClass_ActiveNodeCount = 9;
+    g_zClass_NodeFreeHeadIndex = 99;
+    g_zClass_IsInitialized = 0;
+    g_zClass_RebuildGwWorldBltRectOnShutdown = 1;
+
+    zZbdSectionHandlerNode sentinel{};
+    sentinel.next = &sentinel;
+    sentinel.prev = &sentinel;
+    zZbdManager manager{};
+    manager.sectionHandlerListSentinel = &sentinel;
+    g_zUtil_ZbdManager = &manager;
+
+    if (zClass::Init() != 0) {
+        g_zUtil_ZbdManager = nullptr;
+        return 1;
+    }
+
+    const bool nodeArrayOk =
+        g_zClass_NodeArray != nullptr && g_zClass_NodeArraySize == 3 &&
+        g_zClass_ActiveNodeCount == 0 && g_zClass_NodeFreeHeadIndex == 0 &&
+        g_zClass_IsInitialized == 1 && g_zClass_NodeArray[0].freeTag == 1 &&
+        g_zClass_NodeArray[1].freeTag == 2 &&
+        (g_zClass_NodeArray[2].freeTag & 0x00ffffff) == 0x00ffffff;
+
+    const bool handlerOk =
+        manager.sectionHandlerCount == 1 && sentinel.next != &sentinel &&
+        sentinel.next->sectionHandler.sectionName == g_zClass_GWWorldNodeName &&
+        std::strcmp(sentinel.next->sectionHandler.sectionName, "GWWorld") == 0 &&
+        sentinel.next->sectionHandler.onPreLoad != nullptr &&
+        sentinel.next->sectionHandler.onDataReady != nullptr &&
+        sentinel.next->sectionHandler.sortOrder == 1000 &&
+        sentinel.next->sectionHandler.userData == nullptr;
+
+    zClass::ShutdownCore();
+    if (sentinel.next != &sentinel) {
+        zZbdSectionHandlerNode *node = sentinel.next;
+        sentinel.next = &sentinel;
+        sentinel.prev = &sentinel;
+        delete node;
+    }
+    g_zUtil_ZbdManager = nullptr;
+    return nodeArrayOk && handlerOk ? 0 : 2;
 }
 
 extern "C" int zclass_zbd_leaf_helpers_smoke() {
@@ -9109,6 +12454,84 @@ extern "C" int gamez_open_and_read_zbd_header_smoke() {
     return 0;
 }
 
+extern "C" int gamez_read_retail_m1_zbd_smoke() {
+    char oldDir[MAX_PATH] = {};
+    if (!EnterSupportDirectoryForRetailZbdTest(oldDir, sizeof(oldDir))) {
+        return 1;
+    }
+
+    int result = 0;
+    const char *const path = "zbd\\m1\\gamez.zbd";
+    zClass_ZbdHeader header = {};
+    std::FILE *file = GameZ::OpenAndReadZBDHeader(path, &header);
+    if (file == nullptr) {
+        result = 2;
+        goto cleanup;
+    }
+
+    if (header.magic != 0x02971222 || header.version != 15 || header.texDirArg != 471 ||
+        header.texDirOffset != 36 || header.matlOffset != 16992 ||
+        header.model3dOffset != 237008 || header.nodeCount != 16000 ||
+        header.nodeFreeHead != 4199 || header.nodeTableOffset != 1785172) {
+        std::fclose(file);
+        file = nullptr;
+        result = 3;
+        goto cleanup;
+    }
+    std::fclose(file);
+    file = nullptr;
+
+    reset_zclass_type_lists_for_test();
+    std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
+    g_zImage_TexDirEntryCount = 0;
+    g_zModel_MatlPool = nullptr;
+    g_zModel_MatlPoolCapacity = 0;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlFreeHeadIndex = -1;
+    g_zModel_MatlActiveHeadIndex = -1;
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolCapacity = 0;
+    g_zModel_DiPoolInUseCount = 0;
+    g_zModel_DiPoolFreeHeadIndex = -1;
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_NodeFreeHeadIndex = -1;
+    g_zClass_CurrentZbdPath[0] = '\0';
+
+    if (GameZ::ReadZBDFile(path) != 0) {
+        result = 4;
+        goto cleanup;
+    }
+
+    if (std::strcmp(g_zClass_CurrentZbdPath, path) != 0 || g_zClass_NodeArray == nullptr ||
+        g_zClass_NodeArraySize != 16000 || g_zClass_ActiveNodeCount != 4199 ||
+        g_zClass_NodeFreeHeadIndex != 4199 || g_zImage_TexDirEntryCount != 471 ||
+        g_zModel_MatlPool == nullptr || g_zModel_MatlPoolCapacity <= 0 ||
+        g_zModel_MatlPoolInUseCount <= 0 || g_zModel_DiPoolBase == nullptr ||
+        g_zModel_DiPoolCapacity <= 0 || g_zModel_DiPoolInUseCount <= 0) {
+        result = 5;
+        goto cleanup;
+    }
+
+cleanup:
+    if (file != nullptr) {
+        std::fclose(file);
+    }
+    zModel_Display::Shutdown();
+    if (g_zClass_NodeArray != nullptr) {
+        std::free(g_zClass_NodeArray);
+    }
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_NodeFreeHeadIndex = -1;
+    g_zClass_CurrentZbdPath[0] = '\0';
+    free_zclass_type_lists_for_test();
+    SetCurrentDirectoryA(oldDir);
+    return result;
+}
+
 extern "C" int gamez_reload_display_instances_smoke() {
     reset_zclass_type_lists_for_test();
 
@@ -9682,6 +13105,157 @@ extern "C" int zclass_world_new_smoke() {
     return defaultsOk ? 0 : 2;
 }
 
+extern "C" int zclass_world_free_virtual_area_partitions_smoke() {
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    world.classId = 2;
+    world.classData = &worldData;
+
+    zWorldAreaPartial row0[2]{};
+    zWorldAreaPartial row1[2]{};
+    zWorldAreaPartial *rows[] = {row0, row1};
+    row0[0].childList =
+        static_cast<zClass_NodePartial **>(std::calloc(1, sizeof(zClass_NodePartial *)));
+    row1[1].childList =
+        static_cast<zClass_NodePartial **>(std::calloc(1, sizeof(zClass_NodePartial *)));
+    if (row0[0].childList == nullptr || row1[1].childList == nullptr) {
+        std::free(row0[0].childList);
+        std::free(row1[1].childList);
+        return 1;
+    }
+
+    worldData.areaGridRows = rows;
+    worldData.areaGridColCount = 2;
+    worldData.areaGridRowCount = 2;
+    worldData.areaCellSizeX = 8.0f;
+    worldData.areaCellSizeZ = 4.0f;
+    worldData.areaGridExternalOwnership = 1;
+
+    if (zClass_World::FreeVirtualAreaPartitions(&world) != 0 ||
+        worldData.areaGridRows != nullptr || worldData.areaGridColCount != 0 ||
+        worldData.areaGridRowCount != 0 || worldData.areaCellSizeX != 0.0f ||
+        worldData.areaCellSizeZ != 0.0f || row0[0].childList != nullptr ||
+        row1[1].childList != nullptr) {
+        return 2;
+    }
+
+    return zClass_World::FreeVirtualAreaPartitions(&world) == 0 ? 0 : 3;
+}
+
+extern "C" int zclass_world_set_virtual_area_partition_smoke() {
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    world.classId = 2;
+    world.classData = &worldData;
+    worldData.originX = 10.0f;
+    worldData.originZ = 100.0f;
+    worldData.worldSizeX = 65.0f;
+    worldData.worldSizeZ = -45.0f;
+
+    if (zClass_World::gwWorldSetVirtualAreaPartition(&world, 20.0f, -20.0f) != 0) {
+        return 1;
+    }
+    if (worldData.areaCellSizeX != 20.0f || worldData.areaCellSizeZ != -20.0f ||
+        worldData.partitionInclusionTolX != 2.5f || worldData.partitionInclusionTolZ != 2.5f ||
+        worldData.areaHalfSizeX != 10.0f || worldData.areaHalfSizeZ != -10.0f ||
+        worldData.areaInvSizeX != 0.05f || worldData.areaInvSizeZ != -0.05f ||
+        worldData.areaGridColCount != 4 || worldData.areaGridRowCount != 3 ||
+        worldData.areaGridRows == nullptr) {
+        zClass_World::FreeVirtualAreaPartitions(&world);
+        return 2;
+    }
+
+    std::int32_t expectedBiasBits = FloatBitsForTest(20.0f * 20.0f + -20.0f * -20.0f);
+    expectedBiasBits = (expectedBiasBits >> 1) + 0x1fc00000;
+    float expectedBias = 0.0f;
+    std::memcpy(&expectedBias, &expectedBiasBits, sizeof(expectedBias));
+    expectedBias *= -0.5f;
+    if (FloatBitsForTest(worldData.areaCellRadiusBias) != FloatBitsForTest(expectedBias)) {
+        zClass_World::FreeVirtualAreaPartitions(&world);
+        return 3;
+    }
+
+    zWorldAreaPartial *area = &worldData.areaGridRows[2][3];
+    if ((area->areaFlags & 0x100) == 0 || area->areaIndex != -1 || area->cellMinX != 70.0f ||
+        area->cellMinZ != 60.0f || area->bbox[0] != 70.0f || area->bbox[2] != 40.0f ||
+        area->bbox[3] != 90.0f || area->bbox[5] != 60.0f || area->bboxCenter.x != 80.0f ||
+        area->bboxCenter.y != 0.0f || area->bboxCenter.z != 50.0f ||
+        area->bboxRadius <= 0.0f) {
+        zClass_World::FreeVirtualAreaPartitions(&world);
+        return 4;
+    }
+
+    return zClass_World::FreeVirtualAreaPartitions(&world) == 0 &&
+                   worldData.areaGridRows == nullptr &&
+                   worldData.areaGridColCount == 0 &&
+                   worldData.areaGridRowCount == 0
+               ? 0
+               : 5;
+}
+
+extern "C" int zclass_world_get_area_partition_at_grid_smoke() {
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    zWorldAreaPartial row0[3]{};
+    zWorldAreaPartial row1[3]{};
+    zWorldAreaPartial *rows[2] = {row0, row1};
+
+    world.classData = &worldData;
+    worldData.areaGridRows = rows;
+    row1[2].areaIndex = 37;
+    row1[2].displayRefreshQueued = 1;
+
+    if (zClass_World::GetAreaPartitionAtGrid(nullptr, 0, 0) != nullptr) {
+        return 1;
+    }
+
+    world.classData = nullptr;
+    if (zClass_World::GetAreaPartitionAtGrid(&world, 0, 0) != nullptr) {
+        return 2;
+    }
+
+    world.classData = &worldData;
+    return zClass_World::GetAreaPartitionAtGrid(&world, 2, 1) == &row1[2] &&
+                   row1[2].areaIndex == 37 && row1[2].displayRefreshQueued == 1
+               ? 0
+               : 3;
+}
+
+extern "C" int zclass_world_to_grid_coords_clamped_smoke() {
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    world.classData = &worldData;
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.worldMaxX = 10.0f;
+    worldData.worldMaxZ = 10.0f;
+    worldData.areaInvSizeX = 1.0f;
+    worldData.areaInvSizeZ = 1.0f;
+
+    int col = -1;
+    int row = -1;
+    if (zClass_World::WorldToGridCoordsClamped(&world, &col, 4.0f, -5.0f, &row) != 0 ||
+        col != 4 || row != 0) {
+        return 1;
+    }
+
+    col = -1;
+    row = -1;
+    if (zClass_World::WorldToGridCoordsClamped(&world, &col, -5.0f, 12.0f, &row) != 0 ||
+        col != 0 || row != 12) {
+        return 2;
+    }
+
+    col = -1;
+    row = -1;
+    if (zClass_World::WorldToGridCoordsClamped(&world, &col, 12.0f, 4.0f, &row) != 0 ||
+        col != 9 || row != 10) {
+        return 3;
+    }
+
+    return 0;
+}
+
 extern "C" int zclass_world_animate_delete_node_smoke() {
     for (int i = 0; i < 16; ++i) {
         zClass_TypeList::Head(i) = nullptr;
@@ -10057,47 +13631,59 @@ extern "C" int zclass_window_new_smoke() {
     wrongClass.classData = data;
     zClass_NodePartial nullData{};
     nullData.classId = 3;
+    if (zClass_Window::gwWindowSetResolution(nullptr, 1, 2) != 5 ||
+        zClass_Window::gwWindowSetResolution(&nullData, 1, 2) != 5 ||
+        zClass_Window::gwWindowSetResolution(&wrongClass, 1, 2) != 3) {
+        return 14;
+    }
+
+    if (zClass_Window::gwWindowSetSize(nullptr, 1, 2) != 5 ||
+        zClass_Window::gwWindowSetSize(&nullData, 1, 2) != 5 ||
+        zClass_Window::gwWindowSetSize(&wrongClass, 1, 2) != 3) {
+        return 15;
+    }
+
     if (zClass_Window::gwWindowGetResolution(nullptr, &width, &height) != 5 ||
         zClass_Window::gwWindowGetResolution(&nullData, &width, &height) != 5 ||
         zClass_Window::gwWindowGetResolution(&wrongClass, &width, &height) != 3) {
-        return 14;
+        return 16;
     }
 
     if (zClass_Window::gwWindowGetSize(nullptr, &width, &height) != 5 ||
         zClass_Window::gwWindowGetSize(&nullData, &width, &height) != 5 ||
         zClass_Window::gwWindowGetSize(&wrongClass, &width, &height) != 3) {
-        return 15;
+        return 17;
     }
 
     if (zClass_Window::gwWindowSetBuffer(nullptr, 1) != 5 ||
         zClass_Window::gwWindowSetBuffer(&nullData, 1) != 5 ||
         zClass_Window::gwWindowSetBuffer(&wrongClass, 1) != 3) {
-        return 16;
+        return 18;
     }
 
     if (zClass_Window::gwWindowSetClearPolygon(nullptr, 1) != 5 ||
         zClass_Window::gwWindowSetClearPolygon(&nullData, 1) != 5 ||
         zClass_Window::gwWindowSetClearPolygon(&wrongClass, 1) != 3) {
-        return 17;
+        return 19;
     }
 
     if (zClass_Window::gwWindowAddClearPolygonVertex(nullptr, &point) != 5 ||
         zClass_Window::gwWindowAddClearPolygonVertex(&nullData, &point) != 5 ||
         zClass_Window::gwWindowAddClearPolygonVertex(&wrongClass, &point) != 3) {
-        return 18;
+        return 20;
     }
 
     if (zClass_Window::gwWindowCloseClearPolygon(nullptr) != 5 ||
         zClass_Window::gwWindowCloseClearPolygon(&nullData) != 5 ||
         zClass_Window::gwWindowCloseClearPolygon(&wrongClass) != 3) {
-        return 19;
+        return 21;
     }
 
     zClass_Object3D::DeleteNode(node);
     zClass_TypeList::FreeAll();
 
     g_zClass_NodeFreeHeadIndex = -1;
-    return zClass_Window::gwWindowNew() == nullptr ? 0 : 20;
+    return zClass_Window::gwWindowNew() == nullptr ? 0 : 22;
 }
 
 extern "C" int zclass_display_init_smoke() {
@@ -10157,6 +13743,16 @@ extern "C" int zclass_display_init_smoke() {
         return 4;
     }
 
+    if (zClass_Display::gwDisplaySetSize(node, 640, 480) != 0 || data->width != 640 ||
+        data->height != 480) {
+        return 5;
+    }
+
+    if (zClass_Display::gwDisplaySetPosition(node, 12, 34) != 0 || data->x != 12 ||
+        data->y != 34) {
+        return 6;
+    }
+
     zClass_NodePartial nullData{};
     nullData.classId = 4;
     zClass_NodePartial wrongClass{};
@@ -10164,15 +13760,21 @@ extern "C" int zclass_display_init_smoke() {
     wrongClass.classData = data;
     if (zClass_Display::gwDisplaySetBackgroundColor(nullptr, 1.0f, 2.0f, 3.0f) != 5 ||
         zClass_Display::gwDisplaySetBackgroundColor(&nullData, 1.0f, 2.0f, 3.0f) != 5 ||
-        zClass_Display::gwDisplaySetBackgroundColor(&wrongClass, 1.0f, 2.0f, 3.0f) != 3) {
-        return 5;
+        zClass_Display::gwDisplaySetBackgroundColor(&wrongClass, 1.0f, 2.0f, 3.0f) != 3 ||
+        zClass_Display::gwDisplaySetSize(nullptr, 1, 2) != 5 ||
+        zClass_Display::gwDisplaySetSize(&nullData, 1, 2) != 5 ||
+        zClass_Display::gwDisplaySetSize(&wrongClass, 1, 2) != 3 ||
+        zClass_Display::gwDisplaySetPosition(nullptr, 1, 2) != 5 ||
+        zClass_Display::gwDisplaySetPosition(&nullData, 1, 2) != 5 ||
+        zClass_Display::gwDisplaySetPosition(&wrongClass, 1, 2) != 3) {
+        return 7;
     }
 
     zClass_Object3D::DeleteNode(node);
     zClass_TypeList::FreeAll();
 
     g_zClass_NodeFreeHeadIndex = -1;
-    return zClass_Display::gwDisplayInit() == nullptr ? 0 : 6;
+    return zClass_Display::gwDisplayInit() == nullptr ? 0 : 8;
 }
 
 extern "C" int zclass_lod_leaf_smoke() {
@@ -10716,6 +14318,35 @@ extern "C" int zclass_camera_view_distance_smoke() {
     zTag4::Clear(&tag);
     if (tag.count != 0 || tag.tags[0] != 0xff || tag.tags[1] != 0xff || tag.tags[2] != 0xff) {
         return 24;
+    }
+
+    tag.count = 2;
+    tag.tags[0] = 11;
+    tag.tags[1] = 12;
+    tag.tags[2] = 0xff;
+    data->variantOverrideEnabled = 0;
+    if (zClass_Camera::gwCameraSetVariantTagOverride(camera, &tag) != 0 ||
+        data->variantOverrideEnabled != 1 || data->variantTag.count != 2 ||
+        data->variantTag.tags[0] != 11 || data->variantTag.tags[1] != 12 ||
+        data->variantTag.tags[2] != 0xff) {
+        return 25;
+    }
+
+    tag.count = 2;
+    tag.tags[0] = 13;
+    tag.tags[1] = 0xff;
+    tag.tags[2] = 14;
+    data->variantOverrideEnabled = 0;
+    if (zClass_Camera::gwCameraSetVariantTagOverride(camera, &tag) != 0 ||
+        data->variantOverrideEnabled != 0) {
+        return 26;
+    }
+
+    tag.count = 0;
+    tag.tags[0] = 15;
+    if (zClass_Camera::gwCameraSetVariantTagOverride(camera, &tag) != 0 ||
+        data->variantOverrideEnabled != 0) {
+        return 27;
     }
 
     zClass_Object3D::DeleteNode(camera);

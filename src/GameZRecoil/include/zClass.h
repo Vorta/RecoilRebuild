@@ -10,11 +10,13 @@
 #include "recoil/recoil_callconv.h"
 
 struct zBBoxCorners;
+struct zBBox3f;
 struct zDiPartial;
 struct zClass_LightDataPartial;
 struct zClass_SoundDataPartial;
 struct zSndPlayHandle;
 struct zSndSample;
+struct zZbdSectionCallbackCtx;
 
 struct zClass_NodePartial {
     char name[0x24];
@@ -172,6 +174,16 @@ struct zClass_WorldDataPartial {
     zClass_NodePartial **soundNodes;
     zClass_SoundDataPartial **soundDataList;
     int areaGridExternalOwnership;
+};
+
+struct zClass_WorldSettingsSectionRecord {
+    int fogState;
+    zColorRgb fogColorRgb01;
+    float fogRangeNear;
+    float fogRangeFar;
+    float fogAltitudeHigh;
+    float fogAltitudeLow;
+    float fogDensity;
 };
 
 struct zClass_SoundDataPartial {
@@ -528,6 +540,14 @@ RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, soundNodes) == 0xa0);
 RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, soundDataList) == 0xa4);
 RECOIL_STATIC_ASSERT(offsetof(zClass_WorldDataPartial, areaGridExternalOwnership) == 0xa8);
 RECOIL_STATIC_ASSERT(sizeof(zClass_WorldDataPartial) == 0xac);
+RECOIL_STATIC_ASSERT(offsetof(zClass_WorldSettingsSectionRecord, fogState) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(zClass_WorldSettingsSectionRecord, fogColorRgb01) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zClass_WorldSettingsSectionRecord, fogRangeNear) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zClass_WorldSettingsSectionRecord, fogRangeFar) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zClass_WorldSettingsSectionRecord, fogAltitudeHigh) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zClass_WorldSettingsSectionRecord, fogAltitudeLow) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zClass_WorldSettingsSectionRecord, fogDensity) == 0x20);
+RECOIL_STATIC_ASSERT(sizeof(zClass_WorldSettingsSectionRecord) == 0x24);
 RECOIL_STATIC_ASSERT(offsetof(zClass_SoundDataPartial, sample) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(zClass_SoundDataPartial, playHandle) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zClass_SoundDataPartial, sampleSetName) == 0x08);
@@ -701,6 +721,11 @@ RECOIL_FORCEINLINE const float *zClass_NodeViewSphereRadius(const zClass_NodePar
 }
 
 namespace BBox {
+RECOIL_NOINLINE void RECOIL_FASTCALL ExpandToCorners(const zBBox3f *bbox,
+                                                     zBBoxCorners *outCorners);
+RECOIL_NOINLINE float *RECOIL_FASTCALL MinMaxToBoundingSphere(const zBBox3f *bbox,
+                                                              zVec3 *outCenter,
+                                                              float *outRadius);
 RECOIL_NOINLINE void RECOIL_FASTCALL CornersToBoundingSphere(zBBoxCorners *corners,
                                                             zVec3 *outCenter, float *outRadius);
 }
@@ -747,6 +772,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL gwDisplaySetBackgroundColor(zClass_NodeParti
 } // namespace zClass_Display
 
 namespace zClass_World {
+RECOIL_NOINLINE int RECOIL_FASTCALL WriteSettingsSection(zZbdSectionCallbackCtx *callbackCtx,
+                                                                  void *userData);
+RECOIL_NOINLINE void RECOIL_FASTCALL ReadSettingsSection(
+    zZbdSectionCallbackCtx *callbackCtx, const char *worldName,
+    zClass_WorldSettingsSectionRecord *settings, unsigned int size, void *userData);
 RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwWorldNew();
 RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial *world);
 RECOIL_NOINLINE int RECOIL_FASTCALL FreeVirtualAreaPartitions(zClass_NodePartial *world);
@@ -765,6 +795,20 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogAltitudeRange(zClass_NodePartia
                                                                         float minAlt, float maxAlt);
 RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogRange(zClass_NodePartial *world,
                                                                 float nearRange, float farRange);
+RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogDensity(zClass_NodePartial *world,
+                                                                 float *outDensity);
+RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogState(zClass_NodePartial *world,
+                                                               int *outState);
+RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogColorRgb01(zClass_NodePartial *world,
+                                                                    float *outRed,
+                                                                    float *outGreen,
+                                                                    float *outBlue);
+RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogRange(zClass_NodePartial *world,
+                                                                float *outNearRange,
+                                                                float *outFarRange);
+RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogAltitudeRange(zClass_NodePartial *world,
+                                                                       float *outMinAlt,
+                                                                       float *outMaxAlt);
 RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogDensity(zClass_NodePartial *world,
                                                                   float density);
 RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetOrigin(zClass_NodePartial *world,
@@ -775,6 +819,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetPartitionInclusionTolerance(
     zClass_NodePartial *world, float toleranceX, float toleranceZ);
 RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetMaxDecFeatures(zClass_NodePartial *world,
                                                                       int maxFeatures);
+RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetVirtualAreaPartition(
+    zClass_NodePartial *world, float cellSizeX, float cellSizeZ);
+RECOIL_NOINLINE int RECOIL_FASTCALL InitVirtualAreaPartitions(zClass_NodePartial *world);
+RECOIL_NOINLINE int RECOIL_FASTCALL SetVirtualPartition(zClass_NodePartial *world, int enabled);
 RECOIL_NOINLINE int RECOIL_FASTCALL WorldRectToGridIndex(zClass_NodePartial *world,
                                                                   int *outGridCol,
                                                                   float minX, float maxX,
@@ -1035,8 +1083,12 @@ RECOIL_NOINLINE void RECOIL_CDECL SyncViewContextPositions();
 namespace zClass_Node {
 RECOIL_NOINLINE int RECOIL_FASTCALL ClearPickupFlagsRecursive(zClass_NodePartial *node);
 RECOIL_NOINLINE void RECOIL_FASTCALL PropagateTransformDirtyRecursive(zClass_NodePartial *self);
+RECOIL_NOINLINE void RECOIL_FASTCALL MaskExtraFlagsRecursive(zClass_NodePartial *self,
+                                                             int mask);
 RECOIL_NOINLINE void RECOIL_FASTCALL PropagateExtraFlagsRecursive(zClass_NodePartial *self,
                                                                   int flags);
+RECOIL_NOINLINE void RECOIL_FASTCALL PropagateFlagsRecursive(zClass_NodePartial *self,
+                                                             int flags);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetContextRecursive(zClass_NodePartial *self,
                                                          zClass_NodePartial *context,
                                                          int flagMask);
@@ -1114,6 +1166,7 @@ IterateBucketFiltered(const char *filterText, int bucket, zClass_NodePredicate p
 namespace zClass {
 RECOIL_NOINLINE void RECOIL_FASTCALL SetNodeArraySize(int size);
 RECOIL_NOINLINE int RECOIL_CDECL IsInitialized();
+RECOIL_NOINLINE int RECOIL_CDECL Init();
 RECOIL_NOINLINE int RECOIL_CDECL ResetCurrentZbdPath();
 RECOIL_NOINLINE int RECOIL_CDECL ShutdownCore();
 RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
@@ -1137,6 +1190,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNodeByType(zClass_NodePartial *node);
 RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeUpdate(zClass_NodePartial *node);
 RECOIL_NOINLINE int RECOIL_CDECL gwNodeUpdateAll();
 RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeUpdateDisplayInstance(zClass_NodePartial *node);
+RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetBBox(zClass_NodePartial *node,
+                                                  zBBox3f *outBBox);
 RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetWorldBBoxCorners(zClass_NodePartial *node,
                                                                        zBBoxCorners *outCorners);
 RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetViewBBoxCorners(zClass_NodePartial *node,
@@ -1313,6 +1368,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Update(zClass_NodePartial *node);
 } // namespace zClass_Sequence
 
 namespace Light {
+RECOIL_NOINLINE int RECOIL_CDECL InitThermalGlowPool();
 RECOIL_NOINLINE int RECOIL_CDECL DestroyThermalGlowPool();
 RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
 AllocFromFreeListAndAttach(zColorRgb *specularColor);
@@ -1381,6 +1437,8 @@ extern zClass_NodePartial *g_Player_RuntimeDiScene;
 extern int g_zClass_CopyNodeCloneDiMode;
 extern int g_zClass_CopyNodeDiArg0;
 extern int g_zClass_CopyNodeDiArg1;
+extern int g_zClass_RebuildGwWorldBltRectOnShutdown;
+extern char g_zClass_GWWorldNodeName[8];
 }
 
 namespace zClass_TypeList {
