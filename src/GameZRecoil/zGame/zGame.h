@@ -95,6 +95,11 @@ extern int g_zOpt_HwMode;
 extern int *ZOPT_GAME_CONTROL_OPTIONS;
 }
 
+enum zOptHudTypeOption {
+    ZOPT_HUD_TYPE_STANDARD = 1,
+    ZOPT_HUD_TYPE_PERSPECTIVE = 2,
+};
+
 namespace zGame {
 void RECOIL_CDECL ReturnOnlyStub();
 zOptionEntryPartial *RECOIL_FASTCALL Options_FindOption(const char *name);
@@ -132,6 +137,7 @@ RECOIL_NOINLINE int RECOIL_CDECL GetFullscreenOption();
 RECOIL_NOINLINE void RECOIL_FASTCALL SetHudVisibilityOption(int hudVisibility);
 RECOIL_NOINLINE int RECOIL_CDECL GetHudVisibilityOption();
 RECOIL_NOINLINE int RECOIL_CDECL GetHudTypeForCurrentHwMode();
+RECOIL_NOINLINE int RECOIL_CDECL ToggleHudTypeForCurrentHwMode();
 RECOIL_NOINLINE void RECOIL_FASTCALL SetReplicateMode(int replicateMode);
 RECOIL_NOINLINE int RECOIL_CDECL GetReplicateMode();
 RECOIL_NOINLINE int RECOIL_CDECL GetNetworkEnabled();

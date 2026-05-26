@@ -24,10 +24,6 @@ enum zVideoHalfResAdjustMode {
     ZVIDEO_HALFRES_ADJUST_ENABLED = 1,
 };
 
-enum zOptHudTypeOption {
-    ZOPT_HUD_TYPE_STANDARD = 1,
-};
-
 enum zSndCdAudioOption {
     ZSND_CDAUDIO_DISABLED = 0,
 };

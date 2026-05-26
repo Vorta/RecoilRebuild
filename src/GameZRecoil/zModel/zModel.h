@@ -91,6 +91,8 @@ extern int g_zModel_SoftwarePathActive;
 extern float g_Clip_PolyAttr0[0x40];
 extern float g_Clip_PolyAttr1[0x40];
 extern float g_Clip_PolyAttr2[0x40];
+extern zVec3 *g_zModel_CurrentPolyNormals;
+extern zVec3 g_zModel_CurrentPolyNormalsStorage[0x40];
 extern zModel_FogTargetColorOverride g_zModel_FogTargetColorOverride;
 extern zColorRgb gModel_FogBaseColorRgb01;
 extern float gModel_AmbientScale;
@@ -211,6 +213,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Light_PointInPolygonInitXZ(
     int lightCount);
 
 namespace zModel {
+RECOIL_NOINLINE int RECOIL_CDECL Init();
 RECOIL_NOINLINE void RECOIL_FASTCALL SetVertexShadingEnabled(int enabled);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetDisplayInstancePoolCapacity(int capacity);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetSoftwarePathActive(int active);
@@ -222,6 +225,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetDiTextureWorldPerMeter(zDiPartial *di,
                                                               int worldSpaceEnabled,
                                                               float textureWorldPerMeter,
                                                               int textureWorldAxis);
+RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeHardware(zClass_NodePartial *node, int clipMask);
 RECOIL_NOINLINE void RECOIL_STDCALL SetBackfaceEliminationToleranceScalar(float scalar);
 RECOIL_NOINLINE float RECOIL_CDECL GetBackfaceEliminationToleranceScalar();
 RECOIL_NOINLINE void RECOIL_STDCALL UpdateSmallPolyRejectThresholds(float baseRejectArea);
@@ -251,9 +255,14 @@ RECOIL_NOINLINE float RECOIL_FASTCALL EvalDistanceWeight(const zClass_LightDataP
 RECOIL_NOINLINE float RECOIL_FASTCALL EvalSphereFogFade(const zVec3 *point, float radius);
 RECOIL_NOINLINE int RECOIL_FASTCALL BuildAttr0DepthFade(int vertexCount,
                                                                  int *outHasVariation);
+RECOIL_NOINLINE int RECOIL_FASTCALL BuildAttr1Falloff(int vertexCount,
+                                                      int *pLightingFlags);
 RECOIL_NOINLINE int RECOIL_FASTCALL EvalBatchSphereFade(float *outFade);
 RECOIL_NOINLINE int RECOIL_FASTCALL PointInPolygonTestRadiusXZ(const zVec3 *sphereCenter,
                                                                         float radius);
+RECOIL_NOINLINE int RECOIL_FASTCALL SetActiveLights(zVec3 *surfaceNormal, int vertexCount,
+                                                    int *lightFlags, int *lightingMode,
+                                                    int usePaletteRemap);
 } // namespace zModel_Light
 
 namespace zModel_DiPool {
@@ -316,6 +325,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
 } // namespace zModel_MatlBuffer
 
 namespace zModel_Matl {
+RECOIL_NOINLINE int RECOIL_CDECL InitGlobals();
 RECOIL_NOINLINE zModel_MaterialSlot *RECOIL_FASTCALL GetPoolEntry(int index);
 }
 

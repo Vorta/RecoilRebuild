@@ -11,6 +11,7 @@
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zInterp/zInterp.h"
 #include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
@@ -26,6 +27,7 @@
 extern "C" int g_HudSensorTracker_ObjectiveCommandLocked = 0;
 extern "C" int g_Hud_MapOverlayRefCount = 0;
 extern "C" int g_RecoilApp_QuitAfterCredits = 0;
+extern "C" char g_HudSensor_MissionSoundSetName[0x20] = {0};
 extern "C" zVec3 g_HudSensor_ProjectScratch[0x400] = {0};
 extern "C" zVec3 g_HudSensor_ClipSegmentStart = {0};
 extern "C" zVec3 g_HudSensor_ClipSegmentEnd = {0};
@@ -1413,6 +1415,57 @@ HudSensorTracker::SetMissionId(int newMissionId) {
 // Reimplements 0x417800: HudSensorTracker::GetMissionId
 RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::GetMissionId() {
     return missionId;
+}
+
+// Reimplements 0x417810: HudSensorTracker::LoadMissionCoreResources
+// (D:\Proj\Battlesport\map.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadMissionCoreResources() {
+    CString scriptPath;
+    zImg::Init();
+
+    if (missionId == 0) {
+        missionId = 1;
+    }
+
+    raceCheckpointMode = LoadRaceCheckpointMeta();
+    scriptPath.Format("support\\initm%d.gw", missionId);
+    g_zInterp_GlobalContext.RunScriptFile(scriptPath);
+
+    zClass::Init();
+    zModel::Init();
+
+    if (zbdPath.m_pchData[0] == '\0') {
+        if (missionFlags != 0) {
+            zbdPath.Format("m%d_zbd.gs", missionId);
+        } else {
+            zbdPath.Format("m%d.gs", missionId);
+        }
+    }
+
+    HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x102));
+    g_zInterp_GlobalContext.RunScriptFile(zbdPath);
+
+    HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x10e));
+    sprintf(g_HudSensor_MissionSoundSetName, "M%d", missionId);
+    zSndSampleSet_InitByName(g_HudSensor_MissionSoundSetName);
+
+    HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x103));
+    zImage::TexDir_LoadPendingEntries();
+
+    HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x104));
+    worldNode = zClass::FindByTypeAndName(13, "world1");
+    cameraNode = zClass::FindByTypeAndName(8, "camera1");
+    windowNode = zClass::FindByTypeAndName(14, "window1");
+    displayNode = zClass::FindByTypeAndName(15, "display");
+
+    zClass_Class::gwNodeUpdateAll();
+    zClass::ProcessDeferredWork();
+    zOpt::RenderSection_SetTargetWindow(windowNode);
+    zOpt::DisplaySection_SetTargetDisplay(displayNode);
+    zOpt::CameraSection_SetActiveCamera(cameraNode);
+
+    missionLoaded = 1;
+    return 1;
 }
 
 // Reimplements 0x417ee0: HudSensorTracker::UnloadObjectives

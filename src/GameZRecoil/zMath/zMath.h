@@ -89,6 +89,9 @@ extern float g_zMath_HalfViewHeight;
 extern float g_zMath_ViewportOriginX;
 extern float g_zMath_ViewportOriginY;
 extern float g_zMath_ProjDepth;
+extern float g_zMath_ApproxExpNegTable[256];
+extern float g_zMath_ApproxExpNegScale;
+extern int g_zMath_ApproxExpNegDirty;
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Mat_TransformBBoxToCorners(const zMat4x3 *matrix,
                                                                       const zBBox3f *bbox,
@@ -151,9 +154,6 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_FromRotationVector(const zVec3 *
                                                                    zQuat *outQuat);
 RECOIL_NOINLINE zVec2 RECOIL_CDECL zMath_Project_GetLastScreenScaleXY();
 
-RECOIL_NOINLINE float *RECOIL_FASTCALL BBox_MinMaxToBoundingSphere(const zBBox3f *bbox,
-                                                                   zVec3 *outCenter,
-                                                                   float *outRadius);
 RECOIL_NOINLINE void RECOIL_CDECL zMath_Mat_Scale(float sx, float sy, float sz);
 
 namespace zMath {
@@ -171,15 +171,29 @@ RECOIL_NOINLINE void RECOIL_CDECL MatLoadCameraScratchA();
 RECOIL_NOINLINE void RECOIL_CDECL MatLoadIdentity();
 RECOIL_NOINLINE float RECOIL_FASTCALL Vec3Normalize(zVec3 *vec);
 RECOIL_NOINLINE void RECOIL_FASTCALL Vec3NormalizeXZ(zVec3 *vec, zVec3 *out);
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Perp2D(const zVec3 *in, zVec3 *out);
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3PerpXZ(const zVec3 *in, zVec3 *out);
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ScaleAdd(const zVec3 *vec, const zVec3 *delta,
+                                                  float scale, zVec3 *out);
 RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Reflect(zVec3 *normal, zVec3 *incident,
                                                  zVec3 *reflected);
 RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Lerp(zVec3 *inOut, const zVec3 *other,
                                               float t);
 RECOIL_NOINLINE void RECOIL_FASTCALL Vec3LerpNormalize(zVec3 *inOut, const zVec3 *other,
                                                        float t);
+RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DirectionTo(const zVec3 *from, const zVec3 *to,
+                                                      zVec3 *outDir);
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Slerp(const zVec3 *a, const zVec3 *b, float t,
+                                               zVec3 *out);
+RECOIL_NOINLINE int RECOIL_FASTCALL LineVsSphereHit(const zVec3 *segA, const zVec3 *segB,
+                                                    float radius,
+                                                    const zVec3 *sphereCenterRelSegB,
+                                                    zVec3 *outInwardNormal);
 RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL Vec3Midpoint(const zVec3 *a, const zVec3 *b,
                                                     zVec3 *outMidpoint);
+RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLength(const zVec3 *a, const zVec3 *b);
 RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLengthSq(const zVec3 *a, const zVec3 *b);
+RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DistSqXZ(const zVec3 *a, const zVec3 *b);
 RECOIL_NOINLINE zMat4x3 *RECOIL_STDCALL MatCopyCurrentTo(zMat4x3 *out);
 RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadCurrentFrom(const zMat4x3 *src);
 RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadRotationFrom3x3(const zMat4x3 *src);
@@ -212,6 +226,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClipLineSegmentPointToZ(zVec3 *pointToClip,
                                                              const zVec3 *otherPoint, float clipZ);
 RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointAndClampToScreenClip(const zVec3 *srcPoint,
                                                                               zVec3 *dstPoint);
+RECOIL_NOINLINE float RECOIL_STDCALL ApproxExpNeg(float x);
 } // namespace zMath
 
 namespace zFloat {

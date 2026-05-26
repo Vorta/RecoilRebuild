@@ -7,6 +7,7 @@
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/zEffect/zEffect.h"
+#include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zMath/zMath.h"
@@ -65,6 +66,30 @@ void SetEmbeddedHudPanelColor(GameNetPlayerRow *row, unsigned int color) {
     EmbeddedHudPanelField<unsigned int>(row->hudWidget, 0x150) = color;
     EmbeddedHudPanelField<int>(row->hudWidget, 0x270) = 1;
 }
+
+void RegisterChatComposeKey(int comboIdx) {
+    zInput::Keyboard_UnregisterKeyCallback(comboIdx);
+    zInput::Keyboard_RegisterKeyCallback(comboIdx, (void *)(&GameNet::ChatComposeKeyCallback), "");
+}
+
+void RegisterChatComposeKeyRange(int firstComboIdx, int lastComboIdx) {
+    for (int comboIdx = firstComboIdx; comboIdx <= lastComboIdx; ++comboIdx) {
+        RegisterChatComposeKey(comboIdx);
+        RegisterChatComposeKey(comboIdx | 0x400);
+    }
+}
+
+void GameNetSetRemoteHudVisible(HudUiPanel *panel, int visible) {
+    typedef void (RECOIL_THISCALL *SetVisibleFn)(HudUiPanel * self, int visible);
+    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
+    ((SetVisibleFn)(ftable->slots[0x60 / 4]))(panel, visible);
+}
+
+void GameNetSetRemoteHudPos(HudUiPanel *panel, int x, int y) {
+    typedef void (RECOIL_THISCALL *SetPosFn)(HudUiPanel * self, int x, int y);
+    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
+    ((SetPosFn)(ftable->slots[0x0c / 4]))(panel, x, y);
+}
 } // namespace
 
 // Reimplements 0x433a50: GameNetPlayerRow::ApplyPlayerColorTint
@@ -96,6 +121,42 @@ void RECOIL_THISCALL HudTimerPanelNetState::ClearTailFlagsLocal() {
 }
 
 namespace GameNet {
+// Reimplements 0x414550: GameNet::ChatComposeKeyCallback (D:\Proj\Battlesport\ai_net.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL ChatComposeKeyCallback(int dikCodeWithMods) {
+    const int key = zInput::Keyboard_TranslateDikToAscii(dikCodeWithMods);
+    if (key == 0) {
+        return;
+    }
+
+    g_HudUiMgrObjectiveChatComposeTextInput.DispatchKeyAction(key);
+
+    typedef void (RECOIL_CDECL *SetTextFmtFn)(HudUiPanel * self, const char *format, ...);
+    const HudUiPanel_FTable *const descFTable =
+        (const HudUiPanel_FTable *)(g_HudUiMgrObjectiveDescTextPanel->vtbl);
+    ((SetTextFmtFn)(descFTable->slots[0x74 / 4]))(
+        g_HudUiMgrObjectiveDescTextPanel,
+        g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer());
+}
+
+// Reimplements 0x4143d0: GameNet::BeginChatCompose (D:\Proj\Battlesport\ai_net.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL BeginChatCompose() {
+    if (zOpt::GetNetworkEnabled() == 0) {
+        return;
+    }
+
+    HudUiMgrObjective::Show(0, "Message", "", 0.0f);
+    g_HudUiMgrObjectiveChatComposeActive = 1;
+    g_HudUiMgrObjectiveChatComposeTextInput.AllocTextBuffer(0x20);
+    g_HudUiMgrObjectiveChatComposeTextInput.SetContents("");
+    zInput::BindMapContext_Push(0);
+
+    RegisterChatComposeKeyRange(0x02, 0x0e);
+    RegisterChatComposeKeyRange(0x10, 0x2b);
+    RegisterChatComposeKeyRange(0x1e, 0x28);
+    RegisterChatComposeKeyRange(0x2c, 0x35);
+    RegisterChatComposeKey(0x39);
+}
+
 // Reimplements 0x432830: GameNet::FindPlayerRowByKey (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
 RECOIL_NOINLINE GameNetPlayerRow *RECOIL_FASTCALL FindPlayerRowByKey(int playerKey) {
     GameNetPlayerRow *row = g_GameNetPlayerRowHead;
@@ -300,6 +361,46 @@ RECOIL_NOINLINE int RECOIL_CDECL GetStatusBitAllowMaps() {
 // Reimplements 0x433740: GameNet::GetStatusBitNameTags (src/Battlesport/gamenet.cpp)
 RECOIL_NOINLINE int RECOIL_CDECL GetStatusBitNameTags() {
     return g_GameNetStatus_NameTags;
+}
+
+// Reimplements 0x432d60: GameNet::UpdateRemotePlayerHudWidgetScreenPos
+// (src/Battlesport/gamenet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+UpdateRemotePlayerHudWidgetScreenPos(zUtil_SaveGameState *saveState) {
+    if (GetStatusBitNameTags() == 0) {
+        return 0;
+    }
+
+    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+    HudUiPanel *const hudWidget = &saveState->netPlayerRow->hudWidget;
+    zVec3 labelWorldPos = playerState->worldPos;
+    labelWorldPos.y += 3.0f;
+
+    if (Player::HasLineOfSightFromLocalPlayerFxOffset(playerState->rootNode, &labelWorldPos, 1) ==
+        0) {
+        GameNetSetRemoteHudVisible(hudWidget, 0);
+        return 0;
+    }
+
+    zVec3 projectedPoint = {0};
+    const int clipped = zMath::ProjectPointAndClampToScreenClip(&labelWorldPos, &projectedPoint);
+    const float replicateScale = zOpt::GetReplicateMode() != 0 ? 2.0f : 1.0f;
+    const int screenX = static_cast<int>(projectedPoint.x * replicateScale);
+    const int screenY = static_cast<int>(projectedPoint.y * replicateScale) - 10;
+
+    if (screenY <= hudWidget->QueryTextHeight() + 26) {
+        GameNetSetRemoteHudVisible(hudWidget, 0);
+        return 0;
+    }
+
+    if (clipped != 0) {
+        GameNetSetRemoteHudVisible(hudWidget, 0);
+        return 0;
+    }
+
+    GameNetSetRemoteHudPos(hudWidget, screenX, screenY);
+    GameNetSetRemoteHudVisible(hudWidget, 1);
+    return 1;
 }
 
 // Reimplements 0x414330: GameNet::ShowPlayerKillMessage (D:\Proj\Battlesport\HudUi.cpp)

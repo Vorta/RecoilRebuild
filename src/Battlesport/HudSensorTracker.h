@@ -215,6 +215,7 @@ struct HudSensorTracker {
     RECOIL_NOINLINE int RECOIL_THISCALL SetZbdPath(const char *path);
     RECOIL_NOINLINE int RECOIL_THISCALL SetMissionId(int missionId);
     RECOIL_NOINLINE int RECOIL_THISCALL GetMissionId();
+    RECOIL_NOINLINE int RECOIL_THISCALL LoadMissionCoreResources();
     RECOIL_NOINLINE int RECOIL_THISCALL UnloadObjectives();
     RECOIL_NOINLINE int RECOIL_THISCALL LoadObjectivesFromPath(const char *path);
     RECOIL_NOINLINE int RECOIL_THISCALL
@@ -325,6 +326,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudSensorTracker) == 0x25d0);
 
 extern "C" {
 extern HudSensorTracker g_HudSensorTracker;
+extern char g_HudSensor_MissionSoundSetName[0x20];
 
 extern "C" {
 extern int g_RecoilApp_QuitAfterCredits;

@@ -10,6 +10,8 @@
 #include "zClass.h"
 #include "zImage.h"
 
+struct OptCatalogSurfaceMaterialRef;
+
 struct zBoundsMinMaxPartial {
     zVec3 min;
     zVec3 max;
@@ -70,7 +72,7 @@ struct zModel_MaterialPartial {
 
 struct zModel_MaterialCyclePartial {
     int loopEnabled;
-    unsigned char unknown_04[0x04];
+    int lastUpdateFrameTick;
     float currentFrame;
     float framesPerSecond;
     int frameCount;
@@ -102,6 +104,20 @@ struct zClassDiPickCandidateEntry {
 struct PlayerProbeSampleCandidateBuffer {
     int candidateCount;
     zClassDiPickCandidateEntry entries[0x20];
+};
+
+struct OptCatalogRaycastHitEntry {
+    unsigned char unknown_00[0x0c];
+    zVec3 pos;
+    float unknown_18;
+    float distance;
+    OptCatalogSurfaceMaterialRef *surfaceRef;
+    zClass_NodePartial *hitNode;
+};
+
+struct OptCatalogRaycastHitList {
+    int hitCount;
+    OptCatalogRaycastHitEntry hits[0x20];
 };
 
 struct zClass_DiSegmentEndpoints {
@@ -233,6 +249,12 @@ extern int g_DiPickPointCount;
 extern float g_DiPickPointQueryMaxY;
 extern PlayerProbeSampleCandidateBuffer *g_DiPickCandidateBuffer;
 extern zClassDiPickCandidateEntry *g_DiPickCandidateCursor;
+extern const char *g_zClass_cls_di_FilterRegions_NodeNamePrefix;
+extern zVec3 *g_zClass_cls_di_FilterRegions_Center;
+extern float g_zClass_cls_di_FilterRegions_RadiusSq;
+extern int g_zClass_cls_di_FilterRegions_EnableClearanceCheck;
+extern zClass_NodePartial *g_zClass_cls_di_FilterRegions_LineOfSightWorld;
+extern OptCatalogRaycastHitList *g_zClass_cls_di_FilterRegions_OutHitList;
 
 namespace zClass_cls_di {
 void RECOIL_FASTCALL SetBreakOnFirstCandidate(int enabled);
@@ -303,6 +325,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstMeshFaces(
     zVec3 *meshVertices, int faceCount);
 RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstHexahedronFaces(
     zVec3 *center, float radius);
+RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstSphere(
+    zClass_NodePartial *world, zVec3 *center, const char *nodeNamePrefix, float radius,
+    int enableDistanceCull, int requireLineOfSight, OptCatalogRaycastHitList *outHitList);
+RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegions_TryAppendNode(zClass_NodePartial *node);
 RECOIL_NOINLINE int RECOIL_FASTCALL FilterPointsBBox(zClass_NodePartial *node,
                                                               void *pointData);
 RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstPolygonWithDamageMaskUv(
@@ -368,6 +394,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetCycleTextureLoop(zModel_MaterialPartial *
                                                                  int loopEnabled);
 RECOIL_NOINLINE int RECOIL_FASTCALL SetCycleTextureSpeed(zModel_MaterialPartial *material,
                                                                   float cycleSpeed);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCycleIfNeeded(zModel_MaterialPartial *material);
 RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_FASTCALL Clone(zModel_MaterialPartial *material);
 RECOIL_NOINLINE void RECOIL_FASTCALL InvalidateImagesIfEligible(zModel_MaterialPartial *material);
 } // namespace zModel_Material
@@ -404,6 +431,7 @@ RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialPartial, userTag) == 0x20);
 RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialPartial, cycle) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zModel_MaterialPartial) == 0x28);
 RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialCyclePartial, loopEnabled) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialCyclePartial, lastUpdateFrameTick) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialCyclePartial, currentFrame) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialCyclePartial, framesPerSecond) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialCyclePartial, frameCount) == 0x10);
@@ -427,6 +455,12 @@ RECOIL_STATIC_ASSERT(offsetof(zClassDiPickCandidateEntry, node) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zClassDiPickCandidateEntry) == 0x28);
 RECOIL_STATIC_ASSERT(offsetof(PlayerProbeSampleCandidateBuffer, entries) == 0x04);
 RECOIL_STATIC_ASSERT(sizeof(PlayerProbeSampleCandidateBuffer) == 0x504);
+RECOIL_STATIC_ASSERT(offsetof(OptCatalogRaycastHitEntry, pos) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(OptCatalogRaycastHitEntry, distance) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(OptCatalogRaycastHitEntry, surfaceRef) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(OptCatalogRaycastHitEntry, hitNode) == 0x24);
+RECOIL_STATIC_ASSERT(sizeof(OptCatalogRaycastHitEntry) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(OptCatalogRaycastHitList, hits) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zClass_DiSegmentEndpoints, end) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zClass_DiSegmentEndpoints) == 0x18);
 RECOIL_STATIC_ASSERT(offsetof(zClass_DiSegmentBounds, maxX) == 0x0c);
