@@ -5,13 +5,14 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 SCRIPT = REPO_ROOT / "tools" / "recoil_functional_verify.py"
 
-from recoil_functional_verify import find_target, load_manifest, load_manifests  # noqa: E402
+from recoil_functional_verify import default_executable, find_target, load_manifest, load_manifests  # noqa: E402
 
 
 MANIFEST_TEXT = """\
@@ -106,6 +107,22 @@ class RecoilFunctionalVerifyTests(unittest.TestCase):
 
         self.assertEqual((), target.known_limits)
         self.assertEqual(("COFF byte comparison passed",), target.binary_safe_evidence)
+
+    def test_default_executable_checks_visual_studio_smoke_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            vs_smoke = root / "build" / "vs-x86" / "tests" / "native" / "Debug" / "recoil_native_smoke.exe"
+            vs_smoke.parent.mkdir(parents=True)
+            vs_smoke.write_text("", encoding="utf-8")
+
+            with mock.patch(
+                "recoil_functional_verify.DEFAULT_NATIVE_SMOKE_EXES",
+                (
+                    root / "build" / "ninja-x86-debug" / "tests" / "native" / "recoil_native_smoke.exe",
+                    vs_smoke,
+                ),
+            ):
+                self.assertEqual(vs_smoke, default_executable())
 
 
 if __name__ == "__main__":

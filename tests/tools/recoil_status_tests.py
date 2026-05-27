@@ -11,8 +11,6 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 SCRIPT = REPO_ROOT / "tools" / "recoil_status.py"
 
-from recoil_claim import claim_addresses  # noqa: E402
-
 
 def write_plan(path: Path) -> None:
     path.write_text(
@@ -36,16 +34,8 @@ class RecoilStatusTests(unittest.TestCase):
             root = Path(tmp)
             plan = root / "RECOIL_PLAN.md"
             manifest_dir = root / "vc6"
-            claims_dir = root / "claims"
             manifest_dir.mkdir()
             write_plan(plan)
-            claim_addresses(
-                ["0x401000"],
-                owner="agent-a",
-                ttl_hours=1,
-                reason="status test",
-                claims_dir=claims_dir,
-            )
 
             result = subprocess.run(
                 [
@@ -55,8 +45,6 @@ class RecoilStatusTests(unittest.TestCase):
                     str(plan),
                     "--groups",
                     str(root / "missing_groups.md"),
-                    "--claims-dir",
-                    str(claims_dir),
                     "--vc6-manifest-dir",
                     str(manifest_dir),
                     "--lane",
@@ -71,7 +59,6 @@ class RecoilStatusTests(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Address: 0x401000", result.stdout)
-        self.assertIn("owner=agent-a", result.stdout)
         self.assertIn("Next blocker: verify", result.stdout)
         self.assertIn("--explain-missing 0x401000", result.stdout)
 

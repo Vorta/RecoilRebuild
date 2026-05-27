@@ -7,13 +7,16 @@
 #include "GameZRecoil/include/zDi.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zUtil/zZbd.h"
 
 #include <windows.h>
 
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
@@ -68,9 +71,28 @@ void WriteZrdString(HANDLE file, const char *text) {
     WriteBytes(file, text, length);
 }
 
+void WriteZrdInt(HANDLE file, std::int32_t value) {
+    WriteU32(file, zReader::ZRDR_NODE_INT);
+    WriteU32(file, static_cast<std::uint32_t>(value));
+}
+
+void WriteZrdFloat(HANDLE file, float value) {
+    std::uint32_t bits = 0;
+    std::memcpy(&bits, &value, sizeof(bits));
+    WriteU32(file, zReader::ZRDR_NODE_FLOAT);
+    WriteU32(file, bits);
+}
+
 void WriteZrdArrayHeader(HANDLE file, std::uint32_t count) {
     WriteU32(file, zReader::ZRDR_NODE_ARRAY);
     WriteU32(file, count);
+}
+
+void WriteZrdVec3(HANDLE file, float x, float y, float z) {
+    WriteZrdArrayHeader(file, 4);
+    WriteZrdFloat(file, x);
+    WriteZrdFloat(file, y);
+    WriteZrdFloat(file, z);
 }
 
 void ResetPickupTestTypeListBucket(int bucket) {
@@ -177,6 +199,711 @@ extern "C" int pickup_airdrop_spawn_ref_init_global_smoke(void) {
     PickupAirdropSpawnRef::ShutdownGlobal();
     ResetPickupTestTypeListBucket(6);
     return initialized && g_Pickup_GlobalAirdropSpawnRef == nullptr ? 0 : 2;
+}
+
+extern "C" int pickup_airdrop_spawn_ref_get_world_pos_smoke(void) {
+    zClass_Object3DDataPartial objectData = {};
+    objectData.cachedWorldMatrix[9] = 11.0f;
+    objectData.cachedWorldMatrix[10] = 22.0f;
+    objectData.cachedWorldMatrix[11] = 33.0f;
+
+    zClass_NodePartial carrier = {};
+    carrier.classId = 5;
+    carrier.flags = 0x80000;
+    carrier.classData = &objectData;
+
+    PickupAirdropSpawnRef spawnRef = {};
+    spawnRef.carrierNode = &carrier;
+    spawnRef.worldPos.x = -1.0f;
+    spawnRef.worldPos.y = -2.0f;
+    spawnRef.worldPos.z = -3.0f;
+
+    zVec3 *const result = spawnRef.GetWorldPos();
+    const bool copied = result == &spawnRef.worldPos && spawnRef.worldPos.x == 11.0f &&
+                        spawnRef.worldPos.y == 22.0f && spawnRef.worldPos.z == 33.0f;
+
+    return copied ? 0 : 1;
+}
+
+extern "C" int pickup_airdrop_spawn_ref_can_spawn_with_clearance_smoke(void) {
+    const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+
+    zClass_Object3DDataPartial objectData = {};
+    objectData.cachedWorldMatrix[9] = 10.0f;
+    objectData.cachedWorldMatrix[10] = 0.0f;
+    objectData.cachedWorldMatrix[11] = 30.0f;
+
+    zClass_NodePartial carrier = {};
+    carrier.classId = 5;
+    carrier.flags = 0x80000;
+    carrier.classData = &objectData;
+
+    zClass_NodePartial dropAttach = {};
+    dropAttach.flags = 4;
+
+    PlayerGunFireController controller = {};
+    controller.ammoOrCharge = 2.0f;
+
+    zUtil_PlayerStateStorage playerState = {};
+    playerState.activeAltGunController = &controller;
+
+    zInput_GameStateOrMapTablePartial gameState = {};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    g_GameStateOrMapTable = &gameState;
+
+    PickupSpawnDef occupied = {};
+    occupied.position = {12.0f, 0.0f, 33.0f};
+    g_PickupSpawnList_Primary.head = nullptr;
+
+    PickupAirdropSpawnRef spawnRef = {};
+    spawnRef.carrierNode = &carrier;
+    spawnRef.dropAttachNode = &dropAttach;
+
+    const int clear = spawnRef.CanSpawnWithClearance(5.0f);
+
+    g_PickupSpawnList_Primary.head = &occupied;
+    const int occupiedBlocked = spawnRef.CanSpawnWithClearance(5.0f);
+
+    controller.ammoOrCharge = 123456792.0f;
+    g_PickupSpawnList_Primary.head = nullptr;
+    const int disabledBlocked = spawnRef.CanSpawnWithClearance(5.0f);
+
+    controller.ammoOrCharge = 2.0f;
+    dropAttach.flags = 0;
+    const int inactiveBlocked = spawnRef.CanSpawnWithClearance(5.0f);
+
+    g_PickupSpawnList_Primary = oldPrimary;
+    g_GameStateOrMapTable = oldGameState;
+    return clear == 1 && occupiedBlocked == 0 && disabledBlocked == 0 && inactiveBlocked == 0 ? 0
+                                                                                              : 1;
+}
+
+extern "C" int pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay_gates_smoke(void) {
+    int *const oldNetworkEnabledOption = ZOPT_NETWORK_ENABLED;
+    const int oldHostFlag = g_zNetwork_IsHostFlag;
+    int networkEnabled = 0;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    zClass_NodePartial dropAttach = {};
+    PickupAirdropSpawnRef spawnRef = {};
+    spawnRef.dropAttachNode = &dropAttach;
+    spawnRef.worldPos = {1.0f, 2.0f, 3.0f};
+
+    const int inactiveBlocked = spawnRef.SpawnPickupTypeAndRelay(7);
+
+    dropAttach.flags = 4;
+    networkEnabled = 1;
+    g_zNetwork_IsHostFlag = 0;
+    const int nonHostBlocked = spawnRef.SpawnPickupTypeAndRelay(7);
+
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabledOption;
+    g_zNetwork_IsHostFlag = oldHostFlag;
+    return inactiveBlocked == 0 && nonHostBlocked == 0 ? 0 : 1;
+}
+
+extern "C" int pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global_blocked_smoke(void) {
+    int *const oldNetworkEnabledOption = ZOPT_NETWORK_ENABLED;
+    PickupAirdropSpawnRef *const oldGlobalSpawnRef = g_Pickup_GlobalAirdropSpawnRef;
+    int networkEnabled = 0;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    zClass_NodePartial dropAttach = {};
+    PickupAirdropSpawnRef spawnRef = {};
+    spawnRef.dropAttachNode = &dropAttach;
+    g_Pickup_GlobalAirdropSpawnRef = &spawnRef;
+
+    const int result = PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal();
+
+    g_Pickup_GlobalAirdropSpawnRef = oldGlobalSpawnRef;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabledOption;
+    return result == 0 ? 0 : 1;
+}
+
+extern "C" int pickup_spawn_list_has_entry_near_xz_smoke(void) {
+    const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
+
+    g_PickupSpawnList_Primary.head = nullptr;
+    zVec3 probe = {10.0f, 20.0f, 30.0f};
+    if (Pickup::SpawnListHasEntryNearXZ(&probe, 5.0f) != 0) {
+        g_PickupSpawnList_Primary = oldPrimary;
+        return 1;
+    }
+
+    PickupSpawnDef first = {};
+    PickupSpawnDef second = {};
+    PickupSpawnDef third = {};
+    first.position = {1.0f, 0.0f, 1.0f};
+    first.next = &second;
+    second.position = {13.0f, 0.0f, 34.0f};
+    second.next = &third;
+    third.position = {15.0f, 0.0f, 30.0f};
+    g_PickupSpawnList_Primary.head = &first;
+
+    const int nearHit = Pickup::SpawnListHasEntryNearXZ(&probe, 5.0f);
+
+    second.position.z = 36.0f;
+    const int boundaryMiss = Pickup::SpawnListHasEntryNearXZ(&probe, 5.0f);
+
+    probe.x = -100.0f;
+    probe.z = -100.0f;
+    const int farMiss = Pickup::SpawnListHasEntryNearXZ(&probe, 5.0f);
+
+    g_PickupSpawnList_Primary = oldPrimary;
+    return nearHit == 1 && boundaryMiss == 0 && farMiss == 0 ? 0 : 2;
+}
+
+extern "C" int pickup_map_vtol_drop_group_variant_to_type_index_smoke(void) {
+    if (Pickup::MapVTOLDropGroupVariantToTypeIndex(0, 0) != 0 ||
+        Pickup::MapVTOLDropGroupVariantToTypeIndex(1, 1) != 0 ||
+        Pickup::MapVTOLDropGroupVariantToTypeIndex(10, 0) != 0) {
+        return 1;
+    }
+
+    for (int group = 2; group <= 9; ++group) {
+        const int baseType = (group - 2) * 2 + 1;
+        if (Pickup::MapVTOLDropGroupVariantToTypeIndex(group, 0) != baseType ||
+            Pickup::MapVTOLDropGroupVariantToTypeIndex(group, 3) != baseType + 1) {
+            return 2;
+        }
+    }
+
+    return 0;
+}
+
+extern "C" int pickup_select_next_vtol_spawn_type_index_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    const int oldLastDropIndex = g_Pickup_LastVTOLDropIndex;
+    int *const oldNetworkEnabledOption = ZOPT_NETWORK_ENABLED;
+    int networkEnabled = 0;
+    int oldPresenceCounts[40] = {};
+    for (int i = 0; i < 40; ++i) {
+        oldPresenceCounts[i] = g_PickupTypes[i].weaponPresenceCount;
+        g_PickupTypes[i].weaponPresenceCount = 0;
+    }
+
+    zUtil_PlayerStateStorage playerState = {};
+    zInput_GameStateOrMapTablePartial gameState = {};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    g_GameStateOrMapTable = &gameState;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    networkEnabled = 0;
+    g_Pickup_LastVTOLDropIndex = 3;
+    playerState.altWeaponBanks[2].controllerA.flags = 4;
+    const int localFirst = Pickup::SelectNextVTOLSpawnTypeIndex();
+
+    playerState.altWeaponBanks[2].controllerA.flags = 0;
+    playerState.altWeaponBanks[2].controllerB.flags = 4;
+    const int localSecond = Pickup::SelectNextVTOLSpawnTypeIndex();
+
+    networkEnabled = 1;
+    g_Pickup_LastVTOLDropIndex = 15;
+    g_PickupTypes[30].weaponPresenceCount = 7;
+    const int networkType = Pickup::SelectNextVTOLSpawnTypeIndex();
+
+    networkEnabled = 0;
+    g_Pickup_LastVTOLDropIndex = 19;
+    playerState.altWeaponBanks[2].controllerB.flags = 0;
+    const int fallbackType = Pickup::SelectNextVTOLSpawnTypeIndex();
+    const int fallbackLast = g_Pickup_LastVTOLDropIndex;
+
+    for (int i = 0; i < 40; ++i) {
+        g_PickupTypes[i].weaponPresenceCount = oldPresenceCounts[i];
+    }
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabledOption;
+    g_Pickup_LastVTOLDropIndex = oldLastDropIndex;
+    g_GameStateOrMapTable = oldGameState;
+
+    return localFirst == 1 && localSecond == 2 && networkType == 13 && fallbackType == 0 &&
+                   fallbackLast == 3
+               ? 0
+               : 1;
+}
+
+extern "C" int pickup_select_puppies_zrd_by_difficulty_smoke(void) {
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    int difficulty = 1;
+    g_zOpt_GameDifficultyOption = &difficulty;
+    if (g_zUtil_ZRDR_FreePool == nullptr) {
+        zUtil::ZRDR_PreallocNodePool(2);
+    }
+
+    const char *const dir = "pickup_select_puppies_zrd_by_difficulty_smoke_dir";
+    CreateDirectoryA(dir, nullptr);
+
+    char easyPath[MAX_PATH] = {};
+    char hardPath[MAX_PATH] = {};
+    std::sprintf(easyPath, "%s\\puppies_easy.zrd", dir);
+    std::sprintf(hardPath, "%s\\puppies_hard.zrd", dir);
+    std::remove(easyPath);
+    std::remove(hardPath);
+
+    std::FILE *file = std::fopen(easyPath, "wb");
+    if (file == nullptr) {
+        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        RemoveDirectoryA(dir);
+        return 1;
+    }
+    std::fclose(file);
+
+    difficulty = 0;
+    const bool easyOk =
+        std::strcmp(Pickup::SelectPuppiesZrdByDifficulty(dir), "puppies_easy.zrd") == 0;
+
+    difficulty = 2;
+    const bool missingHardFallsBack =
+        std::strcmp(Pickup::SelectPuppiesZrdByDifficulty(dir), "puppies.zrd") == 0;
+
+    file = std::fopen(hardPath, "wb");
+    if (file == nullptr) {
+        std::remove(easyPath);
+        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        RemoveDirectoryA(dir);
+        return 2;
+    }
+    std::fclose(file);
+
+    const bool hardOk =
+        std::strcmp(Pickup::SelectPuppiesZrdByDifficulty(dir), "puppies_hard.zrd") == 0;
+
+    difficulty = 1;
+    const bool defaultOk =
+        std::strcmp(Pickup::SelectPuppiesZrdByDifficulty(dir), "puppies.zrd") == 0;
+
+    std::remove(easyPath);
+    std::remove(hardPath);
+    RemoveDirectoryA(dir);
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    return easyOk && missingHardFallsBack && hardOk && defaultOk ? 0 : 3;
+}
+
+extern "C" int net_is_opt_entry_active_in_any_slot_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    zUtil_PlayerStateStorage playerState = {};
+    zInput_GameStateOrMapTablePartial gameState = {};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    g_GameStateOrMapTable = &gameState;
+
+    OptCatalogEntryDef target = {};
+    OptCatalogEntryDef other = {};
+    const bool emptyOk = Net::IsOptEntryActiveInAnySlot(&target) == 0;
+
+    playerState.altWeaponBanks[3].controllerA.optCatalogEntry = &target;
+    playerState.altWeaponBanks[3].controllerA.flags = 0;
+    const bool disabledAOk = Net::IsOptEntryActiveInAnySlot(&target) == 0;
+
+    playerState.altWeaponBanks[3].controllerA.flags = 4;
+    const bool activeAOk = Net::IsOptEntryActiveInAnySlot(&target) == 1;
+
+    playerState.altWeaponBanks[3].controllerA.flags = 0;
+    playerState.altWeaponBanks[9].controllerB.optCatalogEntry = &other;
+    playerState.altWeaponBanks[9].controllerB.flags = 4;
+    const bool otherEntryOk = Net::IsOptEntryActiveInAnySlot(&target) == 0;
+
+    playerState.altWeaponBanks[9].controllerB.optCatalogEntry = &target;
+    const bool activeBOk = Net::IsOptEntryActiveInAnySlot(&target) == 1;
+
+    g_GameStateOrMapTable = oldGameState;
+    return emptyOk && disabledAOk && activeAOk && otherEntryOk && activeBOk ? 0 : 1;
+}
+
+extern "C" int pickup_init_and_load_puppy_spawns_smoke(void) {
+    PickupType oldTypes[40] = {};
+    for (int index = 0; index < 40; ++index) {
+        oldTypes[index] = g_PickupTypes[index];
+        g_PickupTypes[index] = {};
+    }
+    const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
+    const PickupSpawnList oldNetworkCopy = g_PickupSpawnList_NetworkCopy;
+    zClass_NodePartial *const oldSceneNode = g_Pickup_SceneNode;
+    const int oldNextPickupId = g_NextPickupId;
+    const int oldWeaponsFoundMask = g_HudSensorTracker.weaponsFoundMask;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    zArchiveList *const oldMountedList = g_zArchive_MountedList;
+    zClass_TypeListLink *const oldClassHead = zClass_TypeList::Head(6);
+    zClass_TypeListLink *const oldClassTail = zClass_TypeList::Tail(6);
+
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempPath), tempPath) == 0 ||
+        GetTempFileNameA(tempPath, "pkp", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr,
+                    CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempFile);
+        return 1;
+    }
+
+    WriteZrdArrayHeader(file, 2);
+    WriteZrdArrayHeader(file, 2);
+    WriteZrdArrayHeader(file, 6);
+    WriteZrdString(file, "puppy");
+    WriteZrdInt(file, 13);
+    WriteZrdVec3(file, 1.0f, 2.0f, 3.0f);
+    WriteZrdVec3(file, 0.4f, 0.5f, 0.6f);
+    WriteZrdFloat(file, 12.5f);
+    FlushFileBuffers(file);
+
+    zZarFileRecord record = {};
+    record.fileOffset = 0;
+    record.fileSize = SetFilePointer(file, 0, nullptr, FILE_CURRENT);
+    std::strcpy(record.name, "puppies.zrd");
+    zIndexArchive archive = {};
+    archive.hFile = file;
+    archive.recordCount = 1;
+    archive.records = &record;
+    zArchiveListNode archiveNode = {};
+    archiveNode.payload = &archive;
+    archiveNode.next = &archiveNode;
+    archiveNode.prev = &archiveNode;
+    zArchiveList mountedList = {};
+    mountedList.count = 1;
+    mountedList.head = &archiveNode;
+    g_zArchive_MountedList = &mountedList;
+
+    ResetPickupTestTypeListBucket(6);
+    int networkEnabled = 1;
+    int difficulty = 1;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zOpt_GameDifficultyOption = &difficulty;
+
+    zUtil_PlayerStateStorage playerState = {};
+    zInput_GameStateOrMapTablePartial gameState = {};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    g_GameStateOrMapTable = &gameState;
+
+    PickupSpawnList::Primary_Init();
+    PickupSpawnList::NetCopy_Init();
+    zClass_NodePartial world = {};
+    zClass_Object3DDataPartial templateData = {};
+    zClass_NodePartial templateRoot = {};
+    zClass_NodePartial templateBvol = {};
+    zClass_NodePartial *templateChildren[1] = {&templateBvol};
+    std::strcpy(templateRoot.name, "puppy-template");
+    std::strcpy(templateBvol.name, "bvol");
+    templateRoot.classId = 5;
+    templateRoot.flags = 0x04000081;
+    templateRoot.classData = &templateData;
+    templateRoot.listCountB = 1;
+    templateRoot.listB = templateChildren;
+    templateBvol.classId = 3;
+    templateBvol.flags = 0x04;
+
+    static std::int32_t matrixFlags[8];
+    static float *matrixSlots[8];
+    static zMat4x3 matrix;
+    matrixFlags[0] = 1;
+    matrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+              0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    g_zModel_SharedVec3ScratchA = g_zModel_SharedVec3ScratchAStorage;
+    g_zModel_SharedVec3ScratchB = g_zModel_SharedVec3ScratchBStorage;
+
+    zVec3 terrainVertices[3] = {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f},
+                                {1.0f, 0.0f, 0.0f}};
+    std::int32_t terrainIndices[3] = {0, 1, 2};
+    zModel_MaterialPartial terrainMaterial = {};
+    zDiEntryPartial terrainEntry = {};
+    terrainEntry.flagsAndIndexCount = 3;
+    terrainEntry.vertexIndices = terrainIndices;
+    terrainEntry.material = &terrainMaterial;
+    terrainEntry.variantTagInitialized = 1;
+    terrainEntry.variantTag = 0x33;
+    zDiPartial terrainDi = {};
+    terrainDi.entryCount = 1;
+    terrainDi.vertCount = 3;
+    terrainDi.entries = &terrainEntry;
+    terrainDi.verts = terrainVertices;
+    zClass_Object3DDataPartial terrainObjectData = {};
+    terrainObjectData.flags = 8;
+    zClass_NodePartial terrainNode = {};
+    terrainNode.flags = 0x11c;
+    terrainNode.nodeType = 0x44;
+    terrainNode.classId = 5;
+    terrainNode.classData = &terrainObjectData;
+    terrainNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&terrainDi);
+    terrainNode.cachedBounds[0] = 0.0f;
+    terrainNode.cachedBounds[1] = 0.0f;
+    terrainNode.cachedBounds[2] = 0.0f;
+    terrainNode.cachedBounds[3] = 1.0f;
+    terrainNode.cachedBounds[4] = 1.0f;
+    terrainNode.cachedBounds[5] = 1.0f;
+    zClass_NodePartial *areaChildren[1] = {&terrainNode};
+    zWorldAreaPartial area = {};
+    area.childCount = 1;
+    area.childList = areaChildren;
+    zWorldAreaPartial *rows[1] = {&area};
+    zClass_WorldDataPartial worldData = {};
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.areaCellSizeX = 1.0f;
+    worldData.areaCellSizeZ = 1.0f;
+    worldData.areaInvSizeX = 1.0f;
+    worldData.areaInvSizeZ = 1.0f;
+    worldData.areaGridColCount = 1;
+    worldData.areaGridRowCount = 1;
+    worldData.areaGridRows = rows;
+    world.classId = 2;
+    world.classData = &worldData;
+
+    g_PickupTypes[17].typeIndex = 17;
+    g_PickupTypes[17].defaultAmount = 5;
+    g_PickupTypes[17].logicalName = "puppy";
+    g_PickupTypes[17].templateNode = &templateRoot;
+    g_Pickup_SceneNode = &world;
+    g_NextPickupId = 700;
+    g_HudSensorTracker.weaponsFoundMask = 0;
+
+    const int result = Pickup::InitAndLoadPuppySpawns();
+    PickupSpawnDef *const primary = g_PickupSpawnList_Primary.head;
+    PickupSpawnDef *const networkCopy = g_PickupSpawnList_NetworkCopy.head;
+    int failure = 0;
+    if (result != 1) {
+        failure = 2;
+    } else if (primary == nullptr) {
+        failure = 3;
+    } else if (networkCopy == nullptr) {
+        failure = 4;
+    } else if (g_PickupSpawnList_Primary.count != 1 || g_PickupSpawnList_NetworkCopy.count != 1) {
+        failure = 5;
+    } else if (primary->pickupType != &g_PickupTypes[17] || primary->amount != 13 ||
+               primary->spawnParam != 1 || primary->respawnDelay != 12.5f) {
+        failure = 6;
+    } else if (primary->position.x != 1.0f || primary->position.y != 2.0f ||
+               primary->position.z != 3.0f || primary->rotation.x != 0.4f ||
+               primary->rotation.y != 0.5f || primary->rotation.z != 0.6f) {
+        failure = 7;
+    } else if (networkCopy->pickupType != primary->pickupType ||
+               networkCopy->pickupObj != primary->pickupObj || networkCopy->next != nullptr) {
+        failure = 8;
+    }
+
+    if (primary != nullptr && primary->pickupObj != nullptr) {
+        std::free(primary->pickupObj->listA);
+    }
+    if (primary != nullptr) {
+        std::free(primary);
+    }
+    PickupSpawnDef *copyCursor = networkCopy;
+    while (copyCursor != nullptr) {
+        PickupSpawnDef *const next = copyCursor->next;
+        std::free(copyCursor);
+        copyCursor = next;
+    }
+    std::free(world.listB);
+    CloseHandle(file);
+
+    for (int index = 0; index < 40; ++index) {
+        g_PickupTypes[index] = oldTypes[index];
+    }
+    g_PickupSpawnList_Primary = oldPrimary;
+    g_PickupSpawnList_NetworkCopy = oldNetworkCopy;
+    g_Pickup_SceneNode = oldSceneNode;
+    g_NextPickupId = oldNextPickupId;
+    g_HudSensorTracker.weaponsFoundMask = oldWeaponsFoundMask;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_GameStateOrMapTable = oldGameState;
+    g_zArchive_MountedList = oldMountedList;
+    zClass_TypeList::Head(6) = oldClassHead;
+    zClass_TypeList::Tail(6) = oldClassTail;
+
+    return failure;
+}
+
+extern "C" int pickup_register_existing_object_smoke(void) {
+    const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
+    zClass_NodePartial *const oldScene = g_Pickup_SceneNode;
+    const PickupType oldType = g_PickupTypes[6];
+
+    g_PickupSpawnList_Primary = {};
+    g_PickupTypes[6] = {};
+    g_PickupTypes[6].typeIndex = 654;
+
+    zClass_Object3DDataPartial objectData = {};
+    objectData.cachedWorldMatrix[9] = 4.0f;
+    objectData.cachedWorldMatrix[10] = 5.0f;
+    objectData.cachedWorldMatrix[11] = 6.0f;
+
+    zClass_NodePartial oldParent = {};
+    zClass_NodePartial scene = {};
+    zClass_NodePartial pickupObj = {};
+    zClass_NodePartial **oldParentList =
+        static_cast<zClass_NodePartial **>(std::malloc(sizeof(zClass_NodePartial *)));
+    zClass_NodePartial **oldChildList =
+        static_cast<zClass_NodePartial **>(std::malloc(sizeof(zClass_NodePartial *)));
+    oldParentList[0] = &oldParent;
+    oldChildList[0] = &pickupObj;
+    oldParent.classId = 3;
+    oldParent.flags = 1;
+    oldParent.listCountB = 1;
+    oldParent.listB = oldChildList;
+    scene.classId = 3;
+    scene.flags = 1;
+    pickupObj.classId = 5;
+    pickupObj.flags = 0x80000;
+    pickupObj.classData = &objectData;
+    pickupObj.listCountA = 1;
+    pickupObj.listA = oldParentList;
+    TestFieldAt<int>(pickupObj.name, 0x18) = 777;
+    TestFieldAt<int>(pickupObj.name, 0x1c) = 654;
+    TestFieldAt<int>(pickupObj.name, 0x20) = 12;
+    g_Pickup_SceneNode = &scene;
+
+    Pickup::RegisterExistingObject(0, &pickupObj, 0);
+
+    PickupSpawnDef *const spawn = g_PickupSpawnList_Primary.head;
+    int failure = 0;
+    if (spawn == nullptr || g_PickupSpawnList_Primary.tail != spawn ||
+        g_PickupSpawnList_Primary.count != 1) {
+        failure = 2;
+    } else if (spawn->pickupId != 777 || spawn->pickupType != &g_PickupTypes[6] ||
+               spawn->amount != 12) {
+        failure = 3;
+    } else if (spawn->position.x != 4.0f || spawn->position.y != 5.0f ||
+               spawn->position.z != 6.0f || spawn->rotation.x != 0.0f ||
+               spawn->rotation.y != 0.0f || spawn->rotation.z != 0.0f) {
+        failure = 4;
+    } else if (spawn->pickupObj != &pickupObj || spawn->spawnParam != 0 ||
+               oldParent.listCountB != 0 || scene.listCountB != 1 ||
+               scene.listB[0] != &pickupObj || pickupObj.listCountA != 1 ||
+               pickupObj.listA[0] != &scene) {
+        failure = 5;
+    } else if ((pickupObj.flags & 0x04) == 0 || objectData.localMatrix[9] != 4.0f ||
+               objectData.localMatrix[10] != 5.0f || objectData.localMatrix[11] != 6.0f) {
+        failure = 6;
+    }
+
+    std::free(scene.listB);
+    std::free(pickupObj.listA);
+    std::free(oldParent.listB);
+    std::free(spawn);
+    g_PickupSpawnList_Primary = oldPrimary;
+    g_PickupTypes[6] = oldType;
+    g_Pickup_SceneNode = oldScene;
+    return failure;
+}
+
+extern "C" int pickup_spawn_with_airdrop_chute_smoke(void) {
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+    zClass_NodePartial *const oldScene = g_Pickup_SceneNode;
+    const int oldQueueEnabled = g_zEffectAnim_RecordQueueEnabled;
+    const int oldDispatchEnabled = g_zEffectAnim_DispatchEnabled;
+    const auto oldDispatchCallback = g_zEffectAnim_ActivationDispatchCallback;
+    const PickupType oldType = g_PickupTypes[9];
+
+    zClass_NodePartial templateRoot = {};
+    zClass_NodePartial templateBvol = {};
+    zClass_NodePartial *templateChildren[1] = {&templateBvol};
+    std::strcpy(templateRoot.name, "template");
+    std::strcpy(templateBvol.name, "bvol");
+    templateRoot.classId = 5;
+    templateRoot.flags = 0x0400000c;
+    templateRoot.listCountB = 1;
+    templateRoot.listB = templateChildren;
+    templateBvol.classId = 5;
+    templateBvol.flags = 0x04;
+    g_PickupTypes[9] = {};
+    g_PickupTypes[9].typeIndex = 9;
+    g_PickupTypes[9].defaultAmount = 3;
+    g_PickupTypes[9].templateNode = &templateRoot;
+
+    static std::int32_t matrixFlags[8];
+    static float *matrixSlots[8];
+    static zMat4x3 matrix;
+    matrixFlags[0] = 1;
+    matrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+              0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    g_zModel_SharedVec3ScratchA = g_zModel_SharedVec3ScratchAStorage;
+    g_zModel_SharedVec3ScratchB = g_zModel_SharedVec3ScratchBStorage;
+
+    zClass_NodePartial effectRoot = {};
+    zClass_NodePartial attachNode = {};
+    zClass_NodePartial world = {};
+    zClass_WorldDataPartial worldData = {};
+    zClass_WorldDataPartial effectWorldData = {};
+    zClass_NodePartial *effectChildren[1] = {&attachNode};
+    std::strcpy(attachNode.name, "airdroppup");
+    effectRoot.classId = 2;
+    effectRoot.flags = 1;
+    effectRoot.classData = &effectWorldData;
+    effectRoot.listCountB = 1;
+    effectRoot.listB = effectChildren;
+    attachNode.classId = 3;
+    attachNode.flags = 1;
+    worldData.areaInvSizeX = 1.0f;
+    worldData.areaInvSizeZ = 1.0f;
+    world.classId = 2;
+    world.classData = &worldData;
+    g_Pickup_SceneNode = &world;
+
+    zClass_NodePartial runtimeNode = {};
+    runtimeNode.callbackPriority = 1;
+    zEffectAnimEntry entry = {};
+    std::strcpy(entry.name, "chutes");
+    entry.boundNode = &effectRoot;
+    entry.callbackNode = &effectRoot;
+    entry.runtimeNode = &runtimeNode;
+    entry.priority = 3;
+    g_zEffectAnim_EntryList = &entry;
+    g_zEffectAnim_EntryCount = 1;
+    zEffect_Anim::ClearActivationRecords();
+    g_zEffectAnim_RecordQueueEnabled = 1;
+    g_zEffectAnim_DispatchEnabled = 0;
+    g_zEffectAnim_ActivationDispatchCallback = nullptr;
+
+    zVec3 position = {7.0f, 8.0f, 9.0f};
+    const int result = Pickup::SpawnWithAirdropChute(9, &position);
+    zClass_NodePartial *const spawned = attachNode.listCountB == 1 ? attachNode.listB[0] : nullptr;
+    int failure = 0;
+    if (result != 1 || spawned == nullptr) {
+        failure = 2;
+    } else if (std::strcmp(spawned->name, "pu00900") != 0 || (spawned->flags & 0x04) != 0) {
+        failure = 3;
+    } else if (spawned->listCountA != 1 || spawned->listA[0] != &attachNode) {
+        failure = 4;
+    } else if (entry.eventCallbackContext != spawned ||
+               entry.eventCallback !=
+                   reinterpret_cast<zEffectAnimEventCallback>(&Pickup::RegisterExistingObject)) {
+        failure = 5;
+    } else if (entry.activationState != 2 || g_zEffectAnim_ActivationRecordCount != 1 ||
+               g_zEffectAnim_ActivationRecordTable[0].commandType != 1 ||
+               g_zEffectAnim_ActivationRecordTable[0].params[0].f32 != 7.0f ||
+               g_zEffectAnim_ActivationRecordTable[0].params[1].f32 != 8.0f ||
+               g_zEffectAnim_ActivationRecordTable[0].params[2].f32 != 9.0f) {
+        failure = 6;
+    }
+
+    if (spawned != nullptr) {
+        std::free(spawned->listA);
+        spawned->listA = nullptr;
+        spawned->listCountA = 0;
+    }
+    std::free(attachNode.listB);
+    attachNode.listB = nullptr;
+    attachNode.listCountB = 0;
+    zEffect_Anim::ClearActivationRecords();
+    g_zEffectAnim_RecordQueueEnabled = oldQueueEnabled;
+    g_zEffectAnim_DispatchEnabled = oldDispatchEnabled;
+    g_zEffectAnim_ActivationDispatchCallback = oldDispatchCallback;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    g_Pickup_SceneNode = oldScene;
+    g_PickupTypes[9] = oldType;
+    return failure;
 }
 
 extern "C" int pickup_spawn_list_clear_smoke(void) {
@@ -826,6 +1553,41 @@ extern "C" int pickup_leaf_helpers_smoke(void) {
         return 1;
     }
 
+    PickupSpawnDef sortedFirst = {};
+    PickupSpawnDef sortedSecond = {};
+    PickupSpawnDef sortedThird = {};
+    sortedFirst.pickupId = 10;
+    sortedFirst.next = &sortedSecond;
+    sortedSecond.pickupId = 20;
+    sortedSecond.next = &sortedThird;
+    sortedThird.pickupId = 40;
+    PickupSpawnList sortedList = {};
+    sortedList.head = &sortedFirst;
+    sortedList.tail = &sortedThird;
+    sortedList.count = 3;
+
+    PickupSpawnDef query = {};
+    query.pickupId = 20;
+    if (Pickup::SpawnListContainsPickupId(&query, &sortedList) != 1) {
+        return 10;
+    }
+    query.pickupId = 5;
+    if (Pickup::SpawnListContainsPickupId(&query, &sortedList) != 0) {
+        return 11;
+    }
+    query.pickupId = 30;
+    if (Pickup::SpawnListContainsPickupId(&query, &sortedList) != 0) {
+        return 12;
+    }
+    query.pickupId = 50;
+    if (Pickup::SpawnListContainsPickupId(&query, &sortedList) != 0) {
+        return 13;
+    }
+    sortedList.head = nullptr;
+    if (Pickup::SpawnListContainsPickupId(&query, &sortedList) != 0) {
+        return 14;
+    }
+
     if (PickupType::GetByIndex(0) != &g_PickupTypes[0] ||
         PickupType::GetByIndex(39) != &g_PickupTypes[39] || PickupType::GetByIndex(-1) != nullptr ||
         PickupType::GetByIndex(40) != nullptr ||
@@ -1159,6 +1921,86 @@ extern "C" int pickup_leaf_helpers_smoke(void) {
         return 13;
     }
 
+    PickupSpawnList::Primary_Init();
+    ResetPickupTestTypeListBucket(6);
+
+    zClass_Object3DDataPartial carrierData = {};
+    carrierData.rotation = {0.4f, 0.5f, 0.6f};
+    carrierData.cachedWorldMatrix[9] = 8.0f;
+    carrierData.cachedWorldMatrix[10] = 9.0f;
+    carrierData.cachedWorldMatrix[11] = 10.0f;
+    zClass_NodePartial carrierNode = {};
+    std::strcpy(carrierNode.name, "carrier02");
+    carrierNode.classId = 5;
+    carrierNode.flags = 0x00080000;
+    carrierNode.classData = &carrierData;
+    zClass_TypeList::Insert(6, &carrierNode);
+
+    zClass_Object3DDataPartial carrierSpawnTemplateData = {};
+    zClass_NodePartial carrierSpawnTemplateRoot = {};
+    zClass_NodePartial carrierSpawnTemplateBvol = {};
+    zClass_NodePartial *carrierSpawnTemplateChildren[1] = {&carrierSpawnTemplateBvol};
+    std::strcpy(carrierSpawnTemplateRoot.name, "carrier-spawn-template");
+    std::strcpy(carrierSpawnTemplateBvol.name, "bvol");
+    carrierSpawnTemplateRoot.classId = 5;
+    carrierSpawnTemplateRoot.flags = 0x04000081;
+    carrierSpawnTemplateRoot.classData = &carrierSpawnTemplateData;
+    carrierSpawnTemplateRoot.listCountB = 1;
+    carrierSpawnTemplateRoot.listB = carrierSpawnTemplateChildren;
+    carrierSpawnTemplateBvol.classId = 3;
+    carrierSpawnTemplateBvol.flags = 0x04;
+    g_PickupTypes[7] = {};
+    g_PickupTypes[7].typeIndex = 7;
+    g_PickupTypes[7].defaultAmount = 5;
+    g_PickupTypes[7].nameSuffixMax = 2;
+    g_PickupTypes[7].templateNode = &carrierSpawnTemplateRoot;
+    g_Pickup_SceneNode = &world;
+    g_NextPickupId = 500;
+
+    Pickup::SpawnAtCarrierNodeByName("missing-carrier", 7, 12);
+    const bool missingCarrierOk =
+        g_PickupSpawnList_Primary.head == nullptr && g_PickupSpawnList_Primary.count == 0 &&
+        g_NextPickupId == 500;
+
+    Pickup::SpawnAtCarrierNodeByName("carrier02", 7, 12);
+    PickupSpawnDef *const carrierSpawn = g_PickupSpawnList_Primary.head;
+    zClass_Object3DDataPartial *const carrierSpawnObjectData =
+        carrierSpawn != nullptr
+            ? static_cast<zClass_Object3DDataPartial *>(carrierSpawn->pickupObj->classData)
+            : nullptr;
+    const bool carrierSpawnOk =
+        missingCarrierOk && carrierSpawn != nullptr && carrierSpawn->pickupId == 500 &&
+        carrierSpawn->pickupType == &g_PickupTypes[7] && carrierSpawn->amount == 12 &&
+        carrierSpawn->spawnParam == 0 && carrierSpawn->position.x == 8.0f &&
+        carrierSpawn->position.y == 9.0f && carrierSpawn->position.z == 10.0f &&
+        carrierSpawn->rotation.x == 0.4f && carrierSpawn->rotation.y == 0.5f &&
+        carrierSpawn->rotation.z == 0.6f && g_NextPickupId == 501 &&
+        g_PickupTypes[7].nameSuffixMax == 3 && world.listCountB == 1 &&
+        world.listB[0] == carrierSpawn->pickupObj &&
+        carrierSpawnObjectData != nullptr && carrierSpawnObjectData->localMatrix[9] == 8.0f &&
+        carrierSpawnObjectData->localMatrix[10] == 9.0f &&
+        carrierSpawnObjectData->localMatrix[11] == 10.0f &&
+        carrierSpawnObjectData->rotation.x == 0.4f &&
+        carrierSpawnObjectData->rotation.y == 0.5f &&
+        carrierSpawnObjectData->rotation.z == 0.6f;
+
+    if (carrierSpawn != nullptr) {
+        std::free(carrierSpawn->pickupObj->listA);
+        std::free(carrierSpawn);
+    }
+    std::free(world.listB);
+    world.listB = nullptr;
+    world.listCountB = 0;
+    g_PickupSpawnList_Primary.head = nullptr;
+    g_PickupSpawnList_Primary.tail = nullptr;
+    g_PickupSpawnList_Primary.count = 0;
+    g_PickupTypes[7] = {};
+    g_Pickup_SceneNode = nullptr;
+    ResetPickupTestTypeListBucket(6);
+    if (!carrierSpawnOk) {
+        return 15;
+    }
+
     zClass_NodePartial childA = {};
     zClass_NodePartial childB = {};
     zClass_NodePartial *children[] = {&childA, &childB};
@@ -1174,6 +2016,14 @@ extern "C" int pickup_leaf_helpers_smoke(void) {
         return 14;
     }
 
+    root.flags = 0x40018 | 0x82;
+    childA.flags = 0x08 | 0x20;
+    childB.flags = 0x40;
+    if (zClass_Node::SetPickupFlagsRecursive(&root) != 1 || root.flags != 0x40092 ||
+        childA.flags != 0x40030 || childB.flags != 0x40050) {
+        return 16;
+    }
+
     zClass_NodePartial pickupNode = {};
     pickupNode.callbackContext = reinterpret_cast<zClass_NodePartial *>(&second);
     if (Pickup::GetSpawnDefFromNode(&pickupNode) != &second) {
@@ -1181,6 +2031,153 @@ extern "C" int pickup_leaf_helpers_smoke(void) {
     }
 
     return 0;
+}
+
+extern "C" int pickup_respawn_spawn_def_smoke(void) {
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+
+    zClass_Object3DDataPartial objectData = {};
+    zClass_NodePartial child = {};
+    zClass_NodePartial *children[] = {&child};
+    zClass_NodePartial pickupObj = {};
+    pickupObj.classId = 5;
+    pickupObj.classData = &objectData;
+    pickupObj.flags = 0x08;
+    pickupObj.listCountB = 1;
+    pickupObj.listB = children;
+    child.flags = 0x88;
+
+    PickupSpawnDef spawn = {};
+    spawn.pickupObj = &pickupObj;
+    spawn.position = zVec3_Make(1.25f, 2.5f, 3.75f);
+    spawn.rotation = zVec3_Make(0.1f, 0.2f, 0.3f);
+    std::strcpy(spawn.name, "pu00511");
+
+    Pickup::RespawnSpawnDef(&spawn);
+
+    zClass_Object3D_ModelRefLerpTask *const task = g_ModelRefLerpQueueState.head;
+    if (std::strcmp(pickupObj.name, "pu00511") != 0) {
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 1;
+    }
+    if (pickupObj.flags != 0x2040037 || child.flags != 0x2040090) {
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 2;
+    }
+    if (objectData.localMatrix[9] != 1.25f || objectData.localMatrix[10] != 2.5f ||
+        objectData.localMatrix[11] != 3.75f || objectData.rotation.x != 0.1f ||
+        objectData.rotation.y != 0.2f || objectData.rotation.z != 0.3f ||
+        objectData.scale.x != 1.0f || objectData.scale.y != 1.0f ||
+        objectData.scale.z != 1.0f) {
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 3;
+    }
+    if ((objectData.flags & 0x02) == 0 || objectData.alphaScale != 0.0f) {
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 4;
+    }
+    if (g_ModelRefLerpQueueState.count != 1 || task == nullptr ||
+        g_ModelRefLerpQueueState.tail != task || task->node != &pickupObj ||
+        task->callbackCtx != nullptr || task->onComplete != nullptr) {
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 5;
+    }
+    if (task->invertModelRef != 0 || task->targetModelRef != 1.0f ||
+        task->currentModelRef != 0.0f || task->modelRefDeltaPerSec <= 0.14f ||
+        task->modelRefDeltaPerSec >= 0.15f || task->next != nullptr) {
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 6;
+    }
+
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+    return 0;
+}
+
+extern "C" int pickup_respawn_queue_update_smoke(void) {
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+    PickupRespawnQueue::Init();
+
+    zClass_Object3DDataPartial firstData = {};
+    zClass_NodePartial firstNode = {};
+    firstNode.classId = 5;
+    firstNode.classData = &firstData;
+    firstNode.flags = 0x08;
+
+    zClass_Object3DDataPartial futureData = {};
+    zClass_NodePartial futureNode = {};
+    futureNode.classId = 5;
+    futureNode.classData = &futureData;
+    futureNode.flags = 0x08;
+
+    zClass_Object3DDataPartial thirdData = {};
+    zClass_NodePartial thirdNode = {};
+    thirdNode.classId = 5;
+    thirdNode.classData = &thirdData;
+    thirdNode.flags = 0x08;
+
+    PickupSpawnDef firstSpawn = {};
+    firstSpawn.pickupObj = &firstNode;
+    firstSpawn.position = zVec3_Make(1.0f, 2.0f, 3.0f);
+    std::strcpy(firstSpawn.name, "pu00100");
+
+    PickupSpawnDef futureSpawn = {};
+    futureSpawn.pickupObj = &futureNode;
+    futureSpawn.position = zVec3_Make(4.0f, 5.0f, 6.0f);
+    std::strcpy(futureSpawn.name, "pu00200");
+
+    PickupSpawnDef thirdSpawn = {};
+    thirdSpawn.pickupObj = &thirdNode;
+    thirdSpawn.position = zVec3_Make(7.0f, 8.0f, 9.0f);
+    std::strcpy(thirdSpawn.name, "pu00300");
+
+    PickupRespawnEntry *const firstEntry = NewRespawnEntry();
+    PickupRespawnEntry *const futureEntry = NewRespawnEntry();
+    PickupRespawnEntry *const thirdEntry = NewRespawnEntry();
+    if (firstEntry == nullptr || futureEntry == nullptr || thirdEntry == nullptr) {
+        ::operator delete(firstEntry);
+        ::operator delete(futureEntry);
+        ::operator delete(thirdEntry);
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 1;
+    }
+
+    firstEntry->spawn = &firstSpawn;
+    firstEntry->when = 9.0f;
+    firstEntry->next = futureEntry;
+    futureEntry->spawn = &futureSpawn;
+    futureEntry->when = 12.0f;
+    futureEntry->next = thirdEntry;
+    thirdEntry->spawn = &thirdSpawn;
+    thirdEntry->when = 1.0f;
+    thirdEntry->next = nullptr;
+
+    g_PickupRespawnQueue.unused = &g_PickupRespawnQueue;
+    g_PickupRespawnQueue.head = firstEntry;
+    g_PickupRespawnQueue.tail = thirdEntry;
+    g_PickupRespawnQueue.count = 3;
+    g_Time_UnscaledAccumulatedTimeSec = 10.0f;
+
+    PickupRespawnQueue::Update();
+
+    zClass_Object3D_ModelRefLerpTask *const firstTask = g_ModelRefLerpQueueState.head;
+    zClass_Object3D_ModelRefLerpTask *const secondTask =
+        firstTask != nullptr ? firstTask->next : nullptr;
+    const bool ok =
+        g_PickupRespawnQueue.count == 1 && g_PickupRespawnQueue.head == futureEntry &&
+        g_PickupRespawnQueue.tail == futureEntry && futureEntry->next == nullptr &&
+        firstNode.flags == 0x2040037 && thirdNode.flags == 0x2040037 &&
+        futureNode.flags == 0x08 && firstData.localMatrix[9] == 1.0f &&
+        firstData.localMatrix[10] == 2.0f && firstData.localMatrix[11] == 3.0f &&
+        thirdData.localMatrix[9] == 7.0f && thirdData.localMatrix[10] == 8.0f &&
+        thirdData.localMatrix[11] == 9.0f && futureData.localMatrix[9] == 0.0f &&
+        g_ModelRefLerpQueueState.count == 2 && firstTask != nullptr &&
+        secondTask != nullptr && firstTask->node == &firstNode &&
+        secondTask->node == &thirdNode && g_ModelRefLerpQueueState.tail == secondTask;
+
+    ::operator delete(futureEntry);
+    PickupRespawnQueue::Init();
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+    return ok ? 0 : 2;
 }
 
 extern "C" int pickup_find_droppable_type_for_current_weapon_smoke(void) {
@@ -1255,6 +2252,29 @@ extern "C" int pickup_type_key_table_find_index_smoke(void) {
 
     return firstOk && nullSkipOk && lastOk && missOk && findByNameOk && findByNameMissOk ? 0
                                                                                          : 1;
+}
+
+extern "C" int pickup_type_meta_find_by_name_smoke(void) {
+    PickupType oldTypes[40] = {};
+    for (int index = 0; index < 40; ++index) {
+        oldTypes[index] = g_PickupTypes[index];
+        g_PickupTypes[index] = {};
+    }
+
+    g_PickupTypes[0].logicalName = "first";
+    g_PickupTypes[7].logicalName = "mid";
+    g_PickupTypes[39].logicalName = "last";
+
+    const bool firstOk = PickupTypeMeta::FindByName("first") == &g_PickupTypes[0];
+    const bool midOk = PickupTypeMeta::FindByName("mid") == &g_PickupTypes[7];
+    const bool lastOk = PickupTypeMeta::FindByName("last") == &g_PickupTypes[39];
+    const bool missOk = PickupTypeMeta::FindByName("missing") == nullptr;
+
+    for (int index = 0; index < 40; ++index) {
+        g_PickupTypes[index] = oldTypes[index];
+    }
+
+    return firstOk && midOk && lastOk && missOk ? 0 : 1;
 }
 
 extern "C" int pickup_spawn_from_parsed_zrd_entry_smoke(void) {
@@ -1401,6 +2421,177 @@ extern "C" int pickup_spawn_from_parsed_zrd_entry_smoke(void) {
     g_NextPickupId = oldNextPickupId;
 
     return failure;
+}
+
+extern "C" int pickup_handle_pkt11_spawn_delta_smoke(void) {
+    const PickupType oldType = g_PickupTypes[7];
+    const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
+    zClass_NodePartial *const oldSceneNode = g_Pickup_SceneNode;
+    const int oldNextPickupId = g_NextPickupId;
+
+    PickupSpawnDef *removeFirst = NewSpawnDef();
+    PickupSpawnDef *keepSecond = NewSpawnDef();
+    if (removeFirst == nullptr || keepSecond == nullptr) {
+        std::free(removeFirst);
+        std::free(keepSecond);
+        return 1;
+    }
+
+    removeFirst->pickupId = 10;
+    removeFirst->next = keepSecond;
+    keepSecond->pickupId = 20;
+    g_PickupSpawnList_Primary = {};
+    g_PickupSpawnList_Primary.head = removeFirst;
+    g_PickupSpawnList_Primary.tail = keepSecond;
+    g_PickupSpawnList_Primary.count = 2;
+
+    PickupPkt11CreateDelta removePacket = {{0x11, sizeof(PickupPkt11CreateDelta), 0},
+                                           2,
+                                           0,
+                                           10,
+                                           0,
+                                           0,
+                                           0,
+                                           {0.0f, 0.0f, 0.0f},
+                                           {0.0f, 0.0f, 0.0f},
+                                           0.0f};
+    const int removeResult = Pickup::HandlePkt11_SpawnDelta(0, &removePacket);
+    const bool removeOk = removeResult == 1 && g_PickupSpawnList_Primary.head == keepSecond &&
+                          g_PickupSpawnList_Primary.tail == keepSecond &&
+                          g_PickupSpawnList_Primary.count == 1 && keepSecond->next == nullptr;
+    PickupSpawnList::RemoveAndFreeNode(keepSecond, &g_PickupSpawnList_Primary);
+
+    PickupSpawnList::Primary_Init();
+    zClass_NodePartial world = {};
+    zClass_Object3DDataPartial templateData = {};
+    zClass_NodePartial templateRoot = {};
+    zClass_NodePartial templateBvol = {};
+    zClass_NodePartial *templateChildren[1] = {&templateBvol};
+    std::strcpy(templateRoot.name, "pkt-template");
+    std::strcpy(templateBvol.name, "bvol");
+    templateRoot.classId = 5;
+    templateRoot.flags = 0x04000081;
+    templateRoot.classData = &templateData;
+    templateRoot.listCountB = 1;
+    templateRoot.listB = templateChildren;
+    templateBvol.classId = 3;
+    templateBvol.flags = 0x04;
+
+    static std::int32_t matrixFlags[8];
+    static float *matrixSlots[8];
+    static zMat4x3 matrix;
+    matrixFlags[0] = 1;
+    matrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+              0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    g_zModel_SharedVec3ScratchA = g_zModel_SharedVec3ScratchAStorage;
+    g_zModel_SharedVec3ScratchB = g_zModel_SharedVec3ScratchBStorage;
+
+    zVec3 terrainVertices[3] = {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f},
+                                {1.0f, 0.0f, 0.0f}};
+    std::int32_t terrainIndices[3] = {0, 1, 2};
+    zModel_MaterialPartial terrainMaterial = {};
+    zDiEntryPartial terrainEntry = {};
+    terrainEntry.flagsAndIndexCount = 3;
+    terrainEntry.vertexIndices = terrainIndices;
+    terrainEntry.material = &terrainMaterial;
+    terrainEntry.variantTagInitialized = 1;
+    terrainEntry.variantTag = 0x33;
+    zDiPartial terrainDi = {};
+    terrainDi.entryCount = 1;
+    terrainDi.vertCount = 3;
+    terrainDi.entries = &terrainEntry;
+    terrainDi.verts = terrainVertices;
+    zClass_Object3DDataPartial terrainObjectData = {};
+    terrainObjectData.flags = 8;
+    zClass_NodePartial terrainNode = {};
+    terrainNode.flags = 0x11c;
+    terrainNode.nodeType = 0x44;
+    terrainNode.classId = 5;
+    terrainNode.classData = &terrainObjectData;
+    terrainNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&terrainDi);
+    terrainNode.cachedBounds[0] = 0.0f;
+    terrainNode.cachedBounds[1] = 0.0f;
+    terrainNode.cachedBounds[2] = 0.0f;
+    terrainNode.cachedBounds[3] = 1.0f;
+    terrainNode.cachedBounds[4] = 1.0f;
+    terrainNode.cachedBounds[5] = 1.0f;
+    zClass_NodePartial *areaChildren[1] = {&terrainNode};
+    zWorldAreaPartial area = {};
+    area.childCount = 1;
+    area.childList = areaChildren;
+    zWorldAreaPartial *rows[1] = {&area};
+    zClass_WorldDataPartial worldData = {};
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.areaCellSizeX = 1.0f;
+    worldData.areaCellSizeZ = 1.0f;
+    worldData.areaInvSizeX = 1.0f;
+    worldData.areaInvSizeZ = 1.0f;
+    worldData.areaGridColCount = 1;
+    worldData.areaGridRowCount = 1;
+    worldData.areaGridRows = rows;
+    world.classId = 2;
+    world.classData = &worldData;
+
+    g_PickupTypes[7] = {};
+    g_PickupTypes[7].typeIndex = 7;
+    g_PickupTypes[7].defaultAmount = 5;
+    g_PickupTypes[7].nameSuffixMax = 2;
+    g_PickupTypes[7].templateNode = &templateRoot;
+    g_Pickup_SceneNode = &world;
+    g_NextPickupId = 500;
+
+    PickupPkt11CreateDelta createPacket = {{0x11, sizeof(PickupPkt11CreateDelta), 0},
+                                           1,
+                                           0,
+                                           700,
+                                           7,
+                                           0,
+                                           13,
+                                           {1.0f, 2.0f, 3.0f},
+                                           {0.4f, 0.5f, 0.6f},
+                                           12.5f};
+    const int createResult = Pickup::HandlePkt11_SpawnDelta(0, &createPacket);
+    PickupSpawnDef *const created = g_PickupSpawnList_Primary.head;
+    const bool createOk =
+        createResult == 1 && created != nullptr && created->pickupId == 700 &&
+        created->pickupType == &g_PickupTypes[7] && created->amount == 13 &&
+        created->spawnParam == 0 && created->respawnDelay == 12.5f &&
+        created->position.x == 1.0f && created->rotation.z == 0.6f && g_NextPickupId == 701;
+
+    if (created != nullptr) {
+        std::free(created->pickupObj->listA);
+        std::free(created);
+    }
+    std::free(world.listB);
+    g_PickupTypes[7] = oldType;
+    g_PickupSpawnList_Primary = oldPrimary;
+    g_Pickup_SceneNode = oldSceneNode;
+    g_NextPickupId = oldNextPickupId;
+
+    return removeOk && createOk ? 0 : 2;
+}
+
+extern "C" int pickup_handle_pkt12_airdrop_spawn_chute_relay_smoke(void) {
+    const int oldNextPickupId = g_NextPickupId;
+
+    g_NextPickupId = 100;
+    PickupPkt12AirdropSpawnChuteRelay packet = {
+        {0x12, sizeof(PickupPkt12AirdropSpawnChuteRelay), 0},
+        {1.0f, 2.0f, 3.0f},
+        99,
+        0,
+        456,
+    };
+
+    const int result = Pickup::HandlePkt12_AirdropSpawnChuteRelay(0, &packet);
+    const bool ok = result == 1 && g_NextPickupId == 456;
+
+    g_NextPickupId = oldNextPickupId;
+    return ok ? 0 : 1;
 }
 
 extern "C" int pickup_remove_other_spawns_same_opt_entry_smoke(void) {

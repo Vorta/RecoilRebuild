@@ -169,6 +169,25 @@ extern "C" int zturret_runtime_init_defaults_smoke(void) {
     return failed != 0 ? 2 : 0;
 }
 
+extern "C" int zturret_runtime_has_active_node_smoke(void) {
+    zClass_NodePartial turretNode{};
+    zTurret_Runtime runtime{};
+    runtime.turretNode = &turretNode;
+
+    runtime.flags = 0;
+    turretNode.flags = 4;
+    const bool inactiveRuntime = runtime.HasActiveNode() == 0;
+
+    runtime.flags = 1;
+    turretNode.flags = 0;
+    const bool inactiveNode = runtime.HasActiveNode() == 0;
+
+    turretNode.flags = 4;
+    const bool activeNode = runtime.HasActiveNode() == 1;
+
+    return inactiveRuntime && inactiveNode && activeNode ? 0 : 1;
+}
+
 extern "C" int zturret_runtime_init_from_reader_node_smoke(void) {
     const int oldEntryCount = g_OptCatalog_EntryCount;
     OptCatalogEntryDef *const oldEntryTable = g_OptCatalog_EntryTable;
@@ -675,6 +694,38 @@ extern "C" int zturret_tick_all_runtimes_round_robin_smoke(void) {
     g_GameStateOrMapTable = oldGameStateOrMapTable;
 
     return subSkipped && roundRobinAdvanced ? 0 : 1;
+}
+
+extern "C" int zturret_disable_tick_callback_smoke(void) {
+    zClass_NodePartial callbackNode{};
+    callbackNode.callbackPriority = 2;
+    callbackNode.actionCallback = reinterpret_cast<void *>(&zturret_disable_tick_callback_smoke);
+
+    zClass_NodePartial *const oldCallbackNode = g_zTurret_CallbackNode;
+    g_zTurret_CallbackNode = &callbackNode;
+
+    const int result = zTurret_System::DisableTickCallback();
+    const bool cleared = result == 0 && callbackNode.actionCallback == nullptr;
+
+    g_zTurret_CallbackNode = oldCallbackNode;
+    return cleared ? 0 : 1;
+}
+
+extern "C" int zturret_enable_tick_callback_smoke(void) {
+    zClass_NodePartial callbackNode{};
+    callbackNode.callbackPriority = 2;
+    callbackNode.actionCallback = reinterpret_cast<void *>(&zturret_enable_tick_callback_smoke);
+
+    zClass_NodePartial *const oldCallbackNode = g_zTurret_CallbackNode;
+    g_zTurret_CallbackNode = &callbackNode;
+
+    const int result = zTurret_System::EnableTickCallback();
+    const bool enabled = result == 0 &&
+                         callbackNode.actionCallback ==
+                             reinterpret_cast<void *>(zTurret_System::TickAllRuntimesRoundRobin);
+
+    g_zTurret_CallbackNode = oldCallbackNode;
+    return enabled ? 0 : 1;
 }
 
 extern "C" int zturret_load_definitions_from_path_smoke(void) {

@@ -1,7 +1,10 @@
 #include "GameZRecoil/zDEClient/zdec.h"
 
+#include "Battlesport/GameNet.h"
+#include "Battlesport/player.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zUtil/zZbd.h"
 #include "GameZRecoil/zVideo/zVideo.h"
@@ -70,6 +73,27 @@ void ResetZClassTypeLists() {
 
 bool NearlyEqual(float lhs, float rhs) {
     return std::fabs(lhs - rhs) < 0.001f;
+}
+
+int g_dispatchCraterCallCount = 0;
+int g_dispatchQSandCallCount = 0;
+float g_dispatchCraterRadius[2] = {};
+float g_dispatchQSandRadius = 0.0f;
+
+int RECOIL_FASTCALL DispatchCraterCallback(zDEClient_CraterEventTemplate *eventTemplate) {
+    if (g_dispatchCraterCallCount < 2) {
+        g_dispatchCraterRadius[g_dispatchCraterCallCount] = eventTemplate->radius;
+    }
+    ++g_dispatchCraterCallCount;
+    eventTemplate->radius = -100.0f;
+    return 123;
+}
+
+int RECOIL_FASTCALL DispatchQSandCallback(zDEClient_QSandEventTemplate *eventTemplate) {
+    g_dispatchQSandRadius = eventTemplate->radius;
+    ++g_dispatchQSandCallCount;
+    eventTemplate->radius = -200.0f;
+    return 456;
 }
 
 void WriteZdeclientTestU32(HANDLE file, std::uint32_t value) {
@@ -184,16 +208,35 @@ int g_qsandRelayCallCount = 0;
 int g_qsandRelayResult = 0;
 int g_craterRelayCallCount = 0;
 int g_craterRelayResult = 0;
+int g_craterNetRelaySendCalls = 0;
+std::uint32_t g_craterNetRelaySendFlags = 0;
+void *g_craterNetRelaySendPacket = nullptr;
+std::uint32_t g_craterNetRelaySendPacketSize = 0;
 
-int RECOIL_CDECL TestQSandRelayCallback() {
+int RECOIL_FASTCALL TestQSandRelayCallback(void *) {
     ++g_qsandRelayCallCount;
     return g_qsandRelayResult;
 }
 
-int RECOIL_CDECL TestCraterRelayCallback() {
+int RECOIL_FASTCALL TestCraterRelayCallback(void *) {
     ++g_craterRelayCallCount;
     return g_craterRelayResult;
 }
+
+std::int32_t RECOIL_STDCALL CraterNetRelaySendFake(zNetwork_DPlay4 *, std::uint32_t,
+                                                   std::uint32_t, std::uint32_t flags,
+                                                   void *packet,
+                                                   std::uint32_t packetSizeBytes) {
+    ++g_craterNetRelaySendCalls;
+    g_craterNetRelaySendFlags = flags;
+    g_craterNetRelaySendPacket = packet;
+    g_craterNetRelaySendPacketSize = packetSizeBytes;
+    return 0;
+}
+
+const zNetwork_DPlay4Vtable kCraterNetRelayDPlayVtable = {
+    {}, nullptr, {}, nullptr, {}, nullptr, CraterNetRelaySendFake, {}, nullptr, {}, nullptr, {}, nullptr,
+};
 } // namespace
 
 extern "C" int zdeclient_set_camera_node_smoke(void) {
@@ -1653,6 +1696,274 @@ extern "C" int zdeclient_crater_instance_event_maybe_relay_smoke(void) {
     return 0;
 }
 
+extern "C" int zdeclient_crater_net_relay_callback_smoke(void) {
+    const int oldIsHost = g_zNetwork_IsHostFlag;
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const int oldAsyncSend = g_zNetwork_TcpIpAsyncSendEnabled;
+    zModel_MaterialSlot *const oldMatlPool = g_zModel_MatlPool;
+    const int oldMatlCapacity = g_zModel_MatlPoolCapacity;
+    const int oldMatlInUse = g_zModel_MatlPoolInUseCount;
+    const zDEClient_CraterEventTemplate oldDefaults = g_zDEClient_CraterEventTemplateDefaults;
+    zDEClient_NetRelayCallback const oldRelayCallback = g_zDEClientCraterNetRelayCallback;
+
+    zModel_MaterialSlot materialSlots[4] = {};
+    g_zModel_MatlPool = materialSlots;
+    g_zModel_MatlPoolCapacity = 4;
+    g_zModel_MatlPoolInUseCount = 4;
+    g_zDEClient_CraterEventTemplateDefaults = {};
+    g_zDEClient_CraterEventTemplateDefaults.featureFlags = 0x1008;
+    g_zDEClient_CraterEventTemplateDefaults.pointCount = 4;
+    g_zDEClient_CraterEventTemplateDefaults.depth = 1.0f;
+
+    zNetwork_DPlay4 dplay = {&kCraterNetRelayDPlayVtable};
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x34567890;
+    g_zNetwork_pDirectPlay4 = &dplay;
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x34567890;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_zDEClientCraterNetRelayCallback = TestCraterRelayCallback;
+
+    NetPkt0F_CraterEvent packet = {
+        {0x0f, sizeof(NetPkt0F_CraterEvent), 0x1234}, 0, 2, {1.0f, 2.0f, 3.0f}, 4.5f,
+    };
+
+    g_zNetwork_IsHostFlag = 0;
+    g_craterRelayCallCount = 0;
+    g_craterRelayResult = 0;
+    g_craterNetRelaySendCalls = 0;
+    const int nonHostNoRelayResult = zDEClient_Crater::NetRelayCallback(0x77, &packet);
+    const bool nonHostNoRelayOk =
+        nonHostNoRelayResult == 1 && g_craterRelayCallCount == 0 &&
+        g_craterNetRelaySendCalls == 0 && packet.header.payloadDword0 == 0x1234 &&
+        packet.eventFlags == 0;
+
+    packet.eventFlags = 0x80u;
+    g_craterRelayCallCount = 0;
+    const int nonHostRelayResult = zDEClient_Crater::NetRelayCallback(0x77, &packet);
+    const bool nonHostRelayOk =
+        nonHostRelayResult == 1 && g_craterRelayCallCount == 1 &&
+        g_craterNetRelaySendCalls == 0 && packet.header.payloadDword0 == 0x1234 &&
+        packet.eventFlags == 0x80u;
+
+    packet.eventFlags = 0;
+    g_zNetwork_IsHostFlag = 1;
+    g_craterRelayCallCount = 0;
+    const int hostRejectedResult = zDEClient_Crater::NetRelayCallback(0x77, &packet);
+    const bool hostRejectedOk =
+        hostRejectedResult == 1 && g_craterRelayCallCount == 1 &&
+        g_craterNetRelaySendCalls == 0 && packet.header.payloadDword0 == 0x1234 &&
+        packet.eventFlags == 0;
+
+    g_zNetwork_IsHostFlag = oldIsHost;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldAsyncSend;
+    g_zModel_MatlPool = oldMatlPool;
+    g_zModel_MatlPoolCapacity = oldMatlCapacity;
+    g_zModel_MatlPoolInUseCount = oldMatlInUse;
+    g_zDEClient_CraterEventTemplateDefaults = oldDefaults;
+    g_zDEClientCraterNetRelayCallback = oldRelayCallback;
+    g_craterNetRelaySendCalls = 0;
+    g_craterNetRelaySendFlags = 0;
+    g_craterNetRelaySendPacket = nullptr;
+    g_craterNetRelaySendPacketSize = 0;
+
+    return nonHostNoRelayOk && nonHostRelayOk && hostRejectedOk ? 0 : 1;
+}
+
+extern "C" int zdeclient_crater_execute_smoke(void) {
+    const NetPkt0F_CraterEvent oldPacket = g_NetPkt0F_CraterEventSendBuf;
+    const int oldIsHost = g_zNetwork_IsHostFlag;
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const int oldAsyncSend = g_zNetwork_TcpIpAsyncSendEnabled;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    zModel_MaterialSlot *const oldMatlPool = g_zModel_MatlPool;
+    const int oldMatlCapacity = g_zModel_MatlPoolCapacity;
+    const int oldMatlInUse = g_zModel_MatlPoolInUseCount;
+    const zDEClient_CraterEventTemplate oldDefaults = g_zDEClient_CraterEventTemplateDefaults;
+    zDEClient_NetRelayCallback const oldRelayCallback = g_zDEClientCraterNetRelayCallback;
+
+    zClass_NodePartial ownerRoot = {};
+    zClass_NodePartial otherRoot = {};
+    zUtil_PlayerStateStorage playerState = {};
+    playerState.rootNode = &ownerRoot;
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+    g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&saveState;
+
+    zModel_MaterialSlot materialSlots[4] = {};
+    g_zModel_MatlPool = materialSlots;
+    g_zModel_MatlPoolCapacity = 4;
+    g_zModel_MatlPoolInUseCount = 4;
+
+    zNetwork_DPlay4 dplay = {&kCraterNetRelayDPlayVtable};
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x24681357;
+    g_zNetwork_pDirectPlay4 = &dplay;
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = localPlayer.playerKey;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_zNetwork_IsHostFlag = 0;
+    g_zDEClientCraterNetRelayCallback = TestCraterRelayCallback;
+    g_zDEClient_CraterEventTemplateDefaults = {};
+    g_zDEClient_CraterEventTemplateDefaults.pointCount = 4;
+
+    zDEClient_CraterEventTemplate negativeEvent = {};
+    negativeEvent.radius = -3.5f;
+    const int negativeResult = zDEClient_Crater::Execute(&negativeEvent);
+    const bool negativeOk = negativeResult == 1 && NearlyEqual(negativeEvent.radius, 3.5f);
+
+    g_NetPkt0F_CraterEventSendBuf = {{0x0f, sizeof(NetPkt0F_CraterEvent), 0}, 0x20u, -1,
+                                     {0.0f, 0.0f, 0.0f}, 0.0f};
+    g_craterNetRelaySendCalls = 0;
+    zDEClient_CraterEventTemplate otherOwnerEvent = {};
+    otherOwnerEvent.craterMaterialSlot = &materialSlots[1];
+    otherOwnerEvent.radius = 6.0f;
+    otherOwnerEvent.center = {1.0f, 2.0f, 3.0f};
+    otherOwnerEvent.damageOwnerNode = &otherRoot;
+    const int otherOwnerResult = zDEClient_Crater::Execute(&otherOwnerEvent);
+    const bool otherOwnerOk = otherOwnerResult == 0 && g_craterNetRelaySendCalls == 0 &&
+                              g_NetPkt0F_CraterEventSendBuf.craterTypeId == -1 &&
+                              g_NetPkt0F_CraterEventSendBuf.header.payloadDword0 == 0;
+
+    zDEClient_CraterEventTemplate nonHostEvent = {};
+    nonHostEvent.craterMaterialSlot = &materialSlots[2];
+    nonHostEvent.radius = 7.25f;
+    nonHostEvent.center = {4.0f, 5.0f, 6.0f};
+    nonHostEvent.damageOwnerNode = &ownerRoot;
+    g_NetPkt0F_CraterEventSendBuf = {{0x0f, sizeof(NetPkt0F_CraterEvent), 0}, 0x20u, -1,
+                                     {0.0f, 0.0f, 0.0f}, 0.0f};
+    g_craterNetRelaySendCalls = 0;
+    const int nonHostResult = zDEClient_Crater::Execute(&nonHostEvent);
+    const NetPkt0F_CraterEvent *const sentPacket =
+        reinterpret_cast<const NetPkt0F_CraterEvent *>(g_craterNetRelaySendPacket);
+    const bool nonHostOk =
+        nonHostResult == 0 && g_craterNetRelaySendCalls == 1 &&
+        g_craterNetRelaySendFlags == 1 && g_craterNetRelaySendPacketSize == sizeof(NetPkt0F_CraterEvent) &&
+        sentPacket != nullptr && sentPacket->header.payloadDword0 == localPlayer.playerKey &&
+        sentPacket->eventFlags == 0x20u && sentPacket->craterTypeId == 2 &&
+        NearlyEqual(sentPacket->center.x, 4.0f) && NearlyEqual(sentPacket->center.y, 5.0f) &&
+        NearlyEqual(sentPacket->center.z, 6.0f) && NearlyEqual(sentPacket->radius, 7.25f);
+
+    g_zNetwork_IsHostFlag = 1;
+    g_craterRelayCallCount = 0;
+    g_craterRelayResult = 0;
+    g_craterNetRelaySendCalls = 0;
+    zDEClient_CraterEventTemplate hostEvent = nonHostEvent;
+    hostEvent.radius = 8.5f;
+    g_NetPkt0F_CraterEventSendBuf = {{0x0f, sizeof(NetPkt0F_CraterEvent), 0x1111}, 0x10u, -1,
+                                     {0.0f, 0.0f, 0.0f}, 0.0f};
+    const int hostResult = zDEClient_Crater::Execute(&hostEvent);
+    const bool hostOk =
+        hostResult == 0 && g_craterRelayCallCount == 1 && g_craterNetRelaySendCalls == 0 &&
+        g_NetPkt0F_CraterEventSendBuf.header.payloadDword0 == localPlayer.playerKey &&
+        g_NetPkt0F_CraterEventSendBuf.eventFlags == 0x10u &&
+        g_NetPkt0F_CraterEventSendBuf.craterTypeId == 2 &&
+        NearlyEqual(g_NetPkt0F_CraterEventSendBuf.radius, 8.5f);
+
+    g_NetPkt0F_CraterEventSendBuf = oldPacket;
+    g_zNetwork_IsHostFlag = oldIsHost;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldAsyncSend;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    g_zModel_MatlPool = oldMatlPool;
+    g_zModel_MatlPoolCapacity = oldMatlCapacity;
+    g_zModel_MatlPoolInUseCount = oldMatlInUse;
+    g_zDEClient_CraterEventTemplateDefaults = oldDefaults;
+    g_zDEClientCraterNetRelayCallback = oldRelayCallback;
+    g_craterNetRelaySendCalls = 0;
+    g_craterNetRelaySendFlags = 0;
+    g_craterNetRelaySendPacket = nullptr;
+    g_craterNetRelaySendPacketSize = 0;
+
+    if (!negativeOk) {
+        return 1;
+    }
+    if (!otherOwnerOk) {
+        return 2;
+    }
+    if (!nonHostOk) {
+        return 3;
+    }
+    return hostOk ? 0 : 4;
+}
+
+extern "C" int zdeclient_qsand_net_relay_callback_smoke(void) {
+    const int oldIsHost = g_zNetwork_IsHostFlag;
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const int oldAsyncSend = g_zNetwork_TcpIpAsyncSendEnabled;
+    const zDEClient_QSandEventTemplate oldDefaults = g_zDEClient_QuickSandEventTemplateDefaults;
+    zDEClient_NetRelayCallback const oldRelayCallback = g_zDEClientQSandNetRelayCallback;
+
+    g_zDEClient_QuickSandEventTemplateDefaults = {};
+    g_zDEClient_QuickSandEventTemplateDefaults.pointCount = 4;
+    g_zDEClient_QuickSandEventTemplateDefaults.depth = 1.0f;
+
+    zNetwork_DPlay4 dplay = {&kCraterNetRelayDPlayVtable};
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x45678901;
+    g_zNetwork_pDirectPlay4 = &dplay;
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x45678901;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_zDEClientQSandNetRelayCallback = TestQSandRelayCallback;
+
+    NetPkt10_QSandEvent packet = {
+        {0x10, sizeof(NetPkt10_QSandEvent), 0x2345}, 0, 0, {2.0f, 3.0f, 4.0f}, 6.5f,
+    };
+
+    g_zNetwork_IsHostFlag = 0;
+    g_qsandRelayCallCount = 0;
+    g_qsandRelayResult = 0;
+    g_craterNetRelaySendCalls = 0;
+    const int nonHostNoRelayResult = zDEClient_QSand::NetRelayCallback(0x77, &packet);
+    const bool nonHostNoRelayOk =
+        nonHostNoRelayResult == 1 && g_qsandRelayCallCount == 0 &&
+        g_craterNetRelaySendCalls == 0 && packet.header.payloadDword0 == 0x2345 &&
+        packet.eventFlags == 0;
+
+    packet.eventFlags = 0x80u;
+    g_qsandRelayCallCount = 0;
+    const int nonHostRelayResult = zDEClient_QSand::NetRelayCallback(0x77, &packet);
+    const bool nonHostRelayOk =
+        nonHostRelayResult == 1 && g_qsandRelayCallCount == 1 &&
+        g_craterNetRelaySendCalls == 0 && packet.header.payloadDword0 == 0x2345 &&
+        packet.eventFlags == 0x80u;
+
+    packet.eventFlags = 0;
+    g_zNetwork_IsHostFlag = 1;
+    g_qsandRelayCallCount = 0;
+    const int hostRejectedResult = zDEClient_QSand::NetRelayCallback(0x77, &packet);
+    const bool hostRejectedOk =
+        hostRejectedResult == 1 && g_qsandRelayCallCount == 1 &&
+        g_craterNetRelaySendCalls == 0 && packet.header.payloadDword0 == 0x2345 &&
+        packet.eventFlags == 0;
+
+    g_zNetwork_IsHostFlag = oldIsHost;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldAsyncSend;
+    g_zDEClient_QuickSandEventTemplateDefaults = oldDefaults;
+    g_zDEClientQSandNetRelayCallback = oldRelayCallback;
+    g_craterNetRelaySendCalls = 0;
+    g_craterNetRelaySendFlags = 0;
+    g_craterNetRelaySendPacket = nullptr;
+    g_craterNetRelaySendPacketSize = 0;
+
+    return nonHostNoRelayOk && nonHostRelayOk && hostRejectedOk ? 0 : 1;
+}
+
 extern "C" int zdeclient_apply_feature_entry_reload_smoke(void) {
     SetupSingleNodeFeatureTree();
     auto *entries =
@@ -1683,6 +1994,57 @@ extern "C" int zdeclient_apply_feature_entry_reload_smoke(void) {
     g_zDEClient_FeatureListEnd = nullptr;
     g_zDEClient_FeatureListCapacityEnd = nullptr;
     return ok ? 0 : 2;
+}
+
+extern "C" int zdeclient_dispatch_feature_event_templates_smoke(void) {
+    zDEClient_FeatureEntry *const oldBegin = g_zDEClient_FeatureListBegin;
+    zDEClient_FeatureEntry *const oldEnd = g_zDEClient_FeatureListEnd;
+    zDEClient_FeatureEntry *const oldCapacityEnd = g_zDEClient_FeatureListCapacityEnd;
+
+    zDEClient_FeatureEntry entries[4] = {};
+    entries[0].featureType = 1;
+    entries[0].eventData.crater.radius = 3.0f;
+    entries[1].featureType = 3;
+    entries[1].eventData.quickSand.radius = 4.0f;
+    entries[2].featureType = 2;
+    entries[2].eventData.crater.radius = 99.0f;
+    entries[3].featureType = 1;
+    entries[3].eventData.crater.radius = 5.0f;
+
+    g_zDEClient_FeatureListBegin = entries;
+    g_zDEClient_FeatureListEnd = entries + 4;
+    g_zDEClient_FeatureListCapacityEnd = entries + 4;
+
+    g_dispatchCraterCallCount = 0;
+    g_dispatchQSandCallCount = 0;
+    g_dispatchCraterRadius[0] = 0.0f;
+    g_dispatchCraterRadius[1] = 0.0f;
+    g_dispatchQSandRadius = 0.0f;
+    zDEClient::DispatchFeatureEventTemplates(DispatchCraterCallback, DispatchQSandCallback);
+
+    const bool callbacksOk =
+        g_dispatchCraterCallCount == 2 && g_dispatchQSandCallCount == 1 &&
+        g_dispatchCraterRadius[0] == 3.0f && g_dispatchCraterRadius[1] == 5.0f &&
+        g_dispatchQSandRadius == 4.0f;
+    const bool copiedEntryOk = entries[0].eventData.crater.radius == 3.0f &&
+                               entries[1].eventData.quickSand.radius == 4.0f &&
+                               entries[3].eventData.crater.radius == 5.0f;
+
+    g_dispatchCraterCallCount = 0;
+    g_dispatchQSandCallCount = 0;
+    zDEClient::DispatchFeatureEventTemplates(0, DispatchQSandCallback);
+    const bool nullCraterOk = g_dispatchCraterCallCount == 0 && g_dispatchQSandCallCount == 1;
+
+    g_zDEClient_FeatureListEnd = g_zDEClient_FeatureListBegin;
+    g_dispatchQSandCallCount = 0;
+    zDEClient::DispatchFeatureEventTemplates(DispatchCraterCallback, DispatchQSandCallback);
+    const bool emptyOk = g_dispatchQSandCallCount == 0;
+
+    g_zDEClient_FeatureListBegin = oldBegin;
+    g_zDEClient_FeatureListEnd = oldEnd;
+    g_zDEClient_FeatureListCapacityEnd = oldCapacityEnd;
+
+    return callbacksOk && copiedEntryOk && nullCraterOk && emptyOk ? 0 : 1;
 }
 
 extern "C" int zdeclient_qsand_instance_event_maybe_relay_smoke(void) {

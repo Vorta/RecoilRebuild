@@ -9,9 +9,6 @@ RECOIL_NOINLINE int RECOIL_FASTCALL RenderScene(zClass_NodePartial *camera,
                                                          int updateFxPass3Local);
 }
 
-RECOIL_NOINLINE int RECOIL_FASTCALL
-zVideo_sw_RenderFrame(zClass_NodePartial *camera, int updateFxPass3Local);
-
 namespace zClass_List {
 
 // Reimplements 0x44f630: zClass_List::RenderActiveCameras (GameZRecoil/zClass/List.c)

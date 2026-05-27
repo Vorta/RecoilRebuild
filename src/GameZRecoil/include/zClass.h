@@ -940,10 +940,13 @@ extern "C" {
 extern zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState;
 }
 
+typedef void (RECOIL_FASTCALL *zClass_Object3D_ModelRefLerpCallback)(void *callbackCtx);
+
 namespace zClass_Object3D_ModelRefLerpQueue {
 RECOIL_NOINLINE void RECOIL_FASTCALL Add(zClass_NodePartial *node, void *callbackCtx,
                                                   void *onComplete, float startModelRef,
                                                   float targetModelRef, float durationSec);
+RECOIL_NOINLINE void RECOIL_CDECL Update();
 RECOIL_NOINLINE void RECOIL_CDECL Reset();
 }
 
@@ -1082,6 +1085,7 @@ RECOIL_NOINLINE void RECOIL_CDECL SyncViewContextPositions();
 
 namespace zClass_Node {
 RECOIL_NOINLINE int RECOIL_FASTCALL ClearPickupFlagsRecursive(zClass_NodePartial *node);
+RECOIL_NOINLINE int RECOIL_FASTCALL SetPickupFlagsRecursive(zClass_NodePartial *node);
 RECOIL_NOINLINE void RECOIL_FASTCALL PropagateTransformDirtyRecursive(zClass_NodePartial *self);
 RECOIL_NOINLINE void RECOIL_FASTCALL MaskExtraFlagsRecursive(zClass_NodePartial *self,
                                                              int mask);

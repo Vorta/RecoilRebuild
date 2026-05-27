@@ -321,6 +321,7 @@ CloneToActiveSlot(zModel_MaterialPartial *material);
 RECOIL_NOINLINE int RECOIL_FASTCALL WriteGameZ(void *stream);
 RECOIL_NOINLINE int RECOIL_FASTCALL ReadGameZ(void *stream);
 RECOIL_NOINLINE int RECOIL_CDECL ReleaseAllActive();
+RECOIL_NOINLINE void RECOIL_CDECL ReleaseTextureSurfaces();
 RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
 } // namespace zModel_MatlBuffer
 

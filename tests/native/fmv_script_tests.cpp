@@ -268,7 +268,31 @@ extern "C" int zfmv_script_run_blocking_empty_smoke(void) {
     script.m_abortOnKey = 0;
 
     const std::int32_t result = script.RunBlocking(1);
-    return result == 1 && script.m_abortOnKey == 1 && script.m_cur == nullptr ? 0 : 1;
+    const bool emptyOk = result == 1 && script.m_abortOnKey == 1 && script.m_cur == nullptr;
+
+    zSndSampleSetRegistry oldRegistry{};
+    zSndSampleSet *sampleSetSlots[1] = {};
+    zSndSampleSet fmvSet{};
+    SetupFmvBeginDependencies(oldRegistry, sampleSetSlots, fmvSet);
+
+    TestAction action{{&g_testActionVtable, nullptr}};
+    script = {};
+    script.m_head = &action;
+    script.m_tail = &action;
+    script.m_cur = &action;
+    g_nextUpdateResult = 0;
+
+    const int actionResult = script.RunBlocking(0);
+    const bool actionOk =
+        actionResult == 1 && script.m_abortOnKey == 0 && script.m_cur == &action &&
+        g_beginCallCount == 1 && g_updateCallCount == 1 && g_endCallCount == 1 &&
+        fmvSet.resourcesLoaded == 1;
+
+    RestoreFmvBeginDependencies(oldRegistry);
+    if (!emptyOk) {
+        return 1;
+    }
+    return actionOk ? 0 : 2;
 }
 
 extern "C" int zfmv_script_begin_current_action_smoke(void) {

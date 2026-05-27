@@ -17,10 +17,6 @@ extern "C" void __cdecl __cpuid(int cpuInfo[4], int) {
 }
 #endif
 
-int __fastcall zVideo_sw_RenderFrame(zClass_NodePartial *, int) {
-    return 0;
-}
-
 extern "C" int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     return 0;
 }

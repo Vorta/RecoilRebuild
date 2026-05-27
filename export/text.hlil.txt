@@ -1436,7 +1436,7 @@
 
 // Original file: src/Battlesport/player.cpp
 // Final cleanup for AI Mode2 State1. Restores the saved top-level state for AI-controlled players still left in the steering top-level state, then marks the global finalized flag.
-0x402f10 void Player::AiFinalizeMode2AttackPursuitForAllPlayers()
+0x402f10 void Player::AiFinalizeMode2State1ForAllPlayers()
 {
     struct zUtil_SaveGameState* saveState = g_PlayerSaveStateListHead
 
@@ -4739,10 +4739,10 @@
             return Pickup::ApplyEffect(0x387, 0, g_GameStateOrMapTable)
 
         if (zStr::ContainsCaseInsensitive(haystack, zLoc::GetMessageString(0x1005)) != 0)
-            zInputBindMap::SetCurrentCommandCallback(0x1f, HudUi::HandleHotkeyCommand)
+            zInput::BindMapCurrent_SetCommandCallback(0x1f, HudUi::HandleHotkeyCommand)
 
         if (zStr::ContainsCaseInsensitive(haystack, zLoc::GetMessageString(0x1004)) != 0)
-            zInputBindMap::SetCurrentCommandCallback(0x24, HudUi::HandleHotkeyCommand)
+            zInput::BindMapCurrent_SetCommandCallback(0x24, HudUi::HandleHotkeyCommand)
 
     return 0
 
@@ -6568,7 +6568,7 @@
 }
 
 // Original file: GameZRecoil/zopt.cpp
-0x408400 void __fastcall zOpt::ViewRectSection_SetSize(struct zOpt_ViewRectSection* self, int32_t width, int32_t height)
+0x408400 void __fastcall zOpt_ViewRectSection::SetSize(struct zOpt_ViewRectSection* self, int32_t width, int32_t height)
 {
     int32_t x = self->x
     self->width = width
@@ -6654,7 +6654,7 @@
 0x408500 void __fastcall zOpt::RenderSection_SetSize(int32_t width, int32_t height)
 {
     struct zOpt_ViewRectSection* value = g_zOpt_RenderSectionOption->value
-    zOpt::ViewRectSection_SetSize(value, width, height)
+    zOpt_ViewRectSection::SetSize(value, width, height)
     struct zClass_Node* m_targetHandle = value->m_targetHandle
 
     if (m_targetHandle != 0)
@@ -6719,7 +6719,7 @@
 0x408620 void __fastcall zOpt::DisplaySection_SetSize(int32_t width, int32_t height)
 {
     struct zOpt_ViewRectSection* value = g_zOpt_DisplaySectionOption->value
-    zOpt::ViewRectSection_SetSize(value, width, height)
+    zOpt_ViewRectSection::SetSize(value, width, height)
     struct zClass_Node* m_targetHandle = value->m_targetHandle
 
     if (m_targetHandle != 0)
@@ -6789,7 +6789,7 @@
 // Original file: GameZRecoil/zopt.cpp
 0x4086e0 void __fastcall zOpt::WindowSection_SetSize(int32_t width, int32_t height)
 {
-    zOpt::ViewRectSection_SetSize(g_zOpt_WindowSectionOption->value, width, height)
+    zOpt_ViewRectSection::SetSize(g_zOpt_WindowSectionOption->value, width, height)
 }
 
 // Original file: GameZRecoil/zopt.cpp
@@ -19051,15 +19051,15 @@
     self->menuTransitionDelaySec = -1f
     HudSensorTracker::LoadMissionMapAndSfx(self, missionId)
     self->outerRectCenterY = self->worldNode
-    zInputBindMap::SetCurrentCommandCallback(0x1b, HudSensorTracker::OnObjectiveCommand)
+    zInput::BindMapCurrent_SetCommandCallback(0x1b, HudSensorTracker::OnObjectiveCommand)
 
     if (zOpt::GetNetworkEnabled() == ZOPT_NETWORK_OPTION_DISABLED)
-        zInputBindMap::SetCurrentCommandCallback(0x1c, HudSensorTracker::OnObjectiveCommand)
-        zInputBindMap::SetCurrentCommandCallback(0x1d, HudSensorTracker::OnObjectiveCommand)
-        zInputBindMap::SetCurrentCommandCallback(0x18, HudSensorTracker::OnObjectiveCommand)
-        zInputBindMap::SetCurrentCommandCallback(0x19, HudSensorTracker::OnObjectiveCommand)
+        zInput::BindMapCurrent_SetCommandCallback(0x1c, HudSensorTracker::OnObjectiveCommand)
+        zInput::BindMapCurrent_SetCommandCallback(0x1d, HudSensorTracker::OnObjectiveCommand)
+        zInput::BindMapCurrent_SetCommandCallback(0x18, HudSensorTracker::OnObjectiveCommand)
+        zInput::BindMapCurrent_SetCommandCallback(0x19, HudSensorTracker::OnObjectiveCommand)
 
-    zInputBindMap::SetCurrentCommandCallback(0x1a, HudSensorTracker::OnObjectiveCommand)
+    zInput::BindMapCurrent_SetCommandCallback(0x1a, HudSensorTracker::OnObjectiveCommand)
     Pickup::Init(self->worldNode, "pickup.zrd")
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x106))
     zEffect::InitFromPath(self->worldNode, self->cameraNode, "effects.zrd")
@@ -19967,7 +19967,7 @@
 
                         if (self->finalMissionFlag != 0 && self->completedObjectiveCount == 5)
                             g_HudSensorTracker_ObjectiveCommandLocked = 1
-                            Player::AiFinalizeMode2AttackPursuitForAllPlayers()
+                            Player::AiFinalizeMode2State1ForAllPlayers()
                             zTurret_System::DisableTickCallback()
                             HudUiMgrObjective::SetVisibleAndResetMeterFill(0)
                             HudSensorTracker::SetObjectivePanelVisible(self, 1)
@@ -22159,7 +22159,7 @@
     HudUiZrdWidget::OnActivate(self)
 }
 
-// Source: D:\Proj\Battlesport\GameNet.cpp -- HudUiNetExitPanel resume widget show-preview callback claims preview input capture, restores saved focus, and shows the base ZRD preview.
+// Source: D:\Proj\Battlesport\GameNet.cpp -- HudUiNetExitPanel resume widget show-preview callback takes preview input capture, restores saved focus, and shows the base ZRD preview.
 0x41bf40 void __thiscall HudUiNetExitPanel_ResumeWidget::OnShowPreview(struct HudUiZrdWidgetEx150* self)
 {
     if (self->previewInputCaptureActive == 0)
@@ -26045,15 +26045,15 @@
     ebx_4->rollAngleRad = (edx_51 - 0x3bc)->rollAngleRad
     zClass_Object3D::gwObject3DSetRotation(ebx_4->rootNode, ebx_4->pitchAngleRad, ebx_4->restartYawRad, ebx_4->rollAngleRad)
     Player::BuildAiPeerRingsByAiNetId()
-    zInputBindMap::SetCurrentCommandCallback(0xf, Player::HandlePrimaryWeaponVariantToggleInput)
-    zInputBindMap::SetCurrentCommandCallback(0x10, Player::HandleAltWeaponBankSelectInput)
-    zInputBindMap::SetCurrentCommandCallback(0x11, Player::HandleAltWeaponBankSelectInput)
-    zInputBindMap::SetCurrentCommandCallback(0x12, Player::HandleAltWeaponBankSelectInput)
-    zInputBindMap::SetCurrentCommandCallback(0x13, Player::HandleAltWeaponBankSelectInput)
-    zInputBindMap::SetCurrentCommandCallback(0x14, Player::HandleAltWeaponBankSelectInput)
-    zInputBindMap::SetCurrentCommandCallback(0x15, Player::HandleAltWeaponBankSelectInput)
-    zInputBindMap::SetCurrentCommandCallback(0x16, Player::HandleAltWeaponBankSelectInput)
-    zInputBindMap::SetCurrentCommandCallback(0x17, Player::HandleAltWeaponBankSelectInput)
+    zInput::BindMapCurrent_SetCommandCallback(0xf, Player::HandlePrimaryWeaponVariantToggleInput)
+    zInput::BindMapCurrent_SetCommandCallback(0x10, Player::HandleAltWeaponBankSelectInput)
+    zInput::BindMapCurrent_SetCommandCallback(0x11, Player::HandleAltWeaponBankSelectInput)
+    zInput::BindMapCurrent_SetCommandCallback(0x12, Player::HandleAltWeaponBankSelectInput)
+    zInput::BindMapCurrent_SetCommandCallback(0x13, Player::HandleAltWeaponBankSelectInput)
+    zInput::BindMapCurrent_SetCommandCallback(0x14, Player::HandleAltWeaponBankSelectInput)
+    zInput::BindMapCurrent_SetCommandCallback(0x15, Player::HandleAltWeaponBankSelectInput)
+    zInput::BindMapCurrent_SetCommandCallback(0x16, Player::HandleAltWeaponBankSelectInput)
+    zInput::BindMapCurrent_SetCommandCallback(0x17, Player::HandleAltWeaponBankSelectInput)
     Player::RegisterGameplayCommandCallbacksAndCreateFfEffects()
     zClass_Node::MaskExtraFlagsRecursive(g_Player_RuntimeDiScene, 0)
     zReader::LoadMoversFromZrd()
@@ -29348,14 +29348,14 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CString __saved_esi
-    struct CString* esp = &__saved_esi
+    int32_t __saved_esi
+    int32_t* esp = &__saved_esi
 
     if ((node->flags & 0x200000) != 0)
-        struct CString callbackContext = node->callbackContext
+        char* callbackContext = node->callbackContext
 
-        if ((*(callbackContext + 0x28) & 2) != 0)
-            struct CString callbackContext_1 = callbackContext
+        if ((callbackContext[0x28] & 2) != 0)
+            char* callbackContext_1 = callbackContext
             struct CString _String_1
             CString::CString(&_String_1, callbackContext_1)
             int32_t var_4_1 = 0
@@ -29385,8 +29385,8 @@
             int32_t var_8_1 = 0xffffffff
             CString::~CString(&__saved_esi)
 
-    fsbase->NtTib.ExceptionList = esp->__offset(0xc).d
-    esp->m_pchData
+    fsbase->NtTib.ExceptionList = esp[3]
+    *esp
     return 0
 
     // [comments not attached to rendered lines]
@@ -29667,19 +29667,19 @@
     fsbase->NtTib.ExceptionList = &ExceptionList
     struct zUtil_SaveGameState* saveState
     struct zUtil_SaveGameState* saveState_1 = saveState
-    zInputBindMap::SetCurrentCommandCallback(0x1e, HudUi::HandleHotkeyCommand)
-    zInputBindMap::SetCurrentCommandCallback(9, HudUi::HandleHotkeyCommand)
-    zInputBindMap::SetCurrentCommandCallback(0x20, HudUi::HandleHotkeyCommand)
-    zInputBindMap::SetCurrentCommandCallback(0x21, HudUi::HandleHotkeyCommand)
+    zInput::BindMapCurrent_SetCommandCallback(0x1e, HudUi::HandleHotkeyCommand)
+    zInput::BindMapCurrent_SetCommandCallback(9, HudUi::HandleHotkeyCommand)
+    zInput::BindMapCurrent_SetCommandCallback(0x20, HudUi::HandleHotkeyCommand)
+    zInput::BindMapCurrent_SetCommandCallback(0x21, HudUi::HandleHotkeyCommand)
 
     if (zVid::GetAccelerationOption() == ZVID_HW_MODE_SOFTWARE)
-        zInputBindMap::SetCurrentCommandCallback(0x22, zVideo::HandleSoftwareModeHotkeyCommand)
+        zInput::BindMapCurrent_SetCommandCallback(0x22, zVideo::HandleSoftwareModeHotkeyCommand)
 
-    zInputBindMap::SetCurrentCommandCallback(0x23, HudUi::HandleHotkeyCommand)
-    zInputBindMap::SetCurrentCommandCallback(0x2a, HudUi::HandleHotkeyCommand)
-    zInputBindMap::SetCurrentCommandCallback(0x2b, HudUi::HandleHotkeyCommand)
-    zInputBindMap::SetCurrentCommandCallback(0x2c, HudUi::HandleHotkeyCommand)
-    zInputBindMap::SetCurrentCommandCallback(0x2d, HudUi::HandleHotkeyCommand)
+    zInput::BindMapCurrent_SetCommandCallback(0x23, HudUi::HandleHotkeyCommand)
+    zInput::BindMapCurrent_SetCommandCallback(0x2a, HudUi::HandleHotkeyCommand)
+    zInput::BindMapCurrent_SetCommandCallback(0x2b, HudUi::HandleHotkeyCommand)
+    zInput::BindMapCurrent_SetCommandCallback(0x2c, HudUi::HandleHotkeyCommand)
+    zInput::BindMapCurrent_SetCommandCallback(0x2d, HudUi::HandleHotkeyCommand)
     struct zInput_FFEffectSet* ffEffectSet = operator new(0x1c)
     struct zInput_FFEffectSet* ffEffectSet_1 = ffEffectSet
     int32_t var_4 = 0
@@ -29731,8 +29731,8 @@
         playerState->cursorNormX = x87_r6_2
         playerState->cursorNormY = x87_r7_2
 
-    if ((zInputBindMap::ReadCurrentCommandInputState(4) & 3) == 0)
-        if ((zInputBindMap::ReadCurrentCommandInputState(1) & 3) == 0)
+    if ((zInput::BindMapCurrent_ReadCommandInputState(4) & 3) == 0)
+        if ((zInput::BindMapCurrent_ReadCommandInputState(1) & 3) == 0)
             if (zOpt::GetThrottleMode() == 0 && zInp::GetJoystickOption() == 0)
                 playerState->throttleInput = 0f
         else if (zOpt::GetThrottleMode() == 0)
@@ -29744,8 +29744,8 @@
     else
         playerState->throttleInput = g_FrameDeltaTimeSec + playerState->throttleInput
 
-    if ((zInputBindMap::ReadCurrentCommandInputState(2) & 3) == 0)
-        if ((zInputBindMap::ReadCurrentCommandInputState(3) & 3) == 0)
+    if ((zInput::BindMapCurrent_ReadCommandInputState(2) & 3) == 0)
+        if ((zInput::BindMapCurrent_ReadCommandInputState(3) & 3) == 0)
             if (zInp::GetJoystickOption() == 0)
                 playerState->steeringInput = 0f
         else
@@ -29792,8 +29792,8 @@
                     if (deltaX != 0)
                         playerState->steeringInput = neg.d(deltaX) * g_Player_GameplayInputStepScale
 
-    if ((zInputBindMap::ReadCurrentCommandInputState(5) & 3) == 0)
-        if ((zInputBindMap::ReadCurrentCommandInputState(6) & 3) == 0)
+    if ((zInput::BindMapCurrent_ReadCommandInputState(5) & 3) == 0)
+        if ((zInput::BindMapCurrent_ReadCommandInputState(6) & 3) == 0)
             playerState->subVerticalInput = 0f
         else
             playerState->subVerticalInput = -1f
@@ -29902,7 +29902,7 @@
     float cursorNormX = playerState->cursorNormX
     playerState->steeringInputCopy = steeringInput
     HudUiMgr::UpdateTargetReticleFromCursor(2, &playerState->storedTargetPos, cursorNormX, cursorNormY)
-    enum zInputButtonTransitionState eax_26 = zInputBindMap::ReadCurrentCommandInputState(0xc)
+    enum zInputButtonTransitionState eax_26 = zInput::BindMapCurrent_ReadCommandInputState(0xc)
 
     if ((eax_26.b & 3) == 0)
         playerState->altGunDispatchRequested = 0
@@ -29932,7 +29932,7 @@
         else if ((eax_26.b & 1) != 0)
             playerState->pendingAltCameraToggle = 1
 
-    bool cond:2_1 = (zInputBindMap::ReadCurrentCommandInputState(0xb) & 3) == 0
+    bool cond:2_1 = (zInput::BindMapCurrent_ReadCommandInputState(0xb) & 3) == 0
     playerState->usePresetGunFireDir = 0
 
     if (cond:2_1)
@@ -29959,7 +29959,7 @@
         else
             playerState->usePresetGunFireDir = 1
 
-    if (zInputBindMap::ReadCurrentCommandInputState(0xd) != ZINPUT_BUTTON_PRESSED)
+    if (zInput::BindMapCurrent_ReadCommandInputState(0xd) != ZINPUT_BUTTON_PRESSED)
         playerState->altGunTriggerProcessFlag = 0
     else
         playerState->altGunTriggerProcessFlag = 1
@@ -29967,25 +29967,25 @@
         if (zOpt::GetNetworkEnabled() != ZOPT_NETWORK_OPTION_DISABLED && g_HudSensorTracker.raceCheckpointMode != 0)
             g_HudTimerPanelNetState.tenSecondWarningsEnabled = 1
 
-    if (zInputBindMap::ReadCurrentCommandInputState(7) == ZINPUT_BUTTON_PRESSED)
+    if (zInput::BindMapCurrent_ReadCommandInputState(7) == ZINPUT_BUTTON_PRESSED)
         Player::ResetMouseControlStateAndRecenterCursor(saveState)
 
-    if ((zInputBindMap::ReadCurrentCommandInputState(0x25) & 3) != 0 && masterModalData->masterType == PLAYER_MASTER_TYPE_HOVER && playerState->autoTurnSign == 0)
+    if ((zInput::BindMapCurrent_ReadCommandInputState(0x25) & 3) != 0 && masterModalData->masterType == PLAYER_MASTER_TYPE_HOVER && playerState->autoTurnSign == 0)
         Player::TransitionToMasterTypeTrack(g_LocalPlayerSaveState, 0)
 
-    if ((zInputBindMap::ReadCurrentCommandInputState(0x26) & 3) != 0 && masterModalData->masterType == PLAYER_MASTER_TYPE_HOVER && playerState->nextModeSwitchAllowedTime != 0)
+    if ((zInput::BindMapCurrent_ReadCommandInputState(0x26) & 3) != 0 && masterModalData->masterType == PLAYER_MASTER_TYPE_HOVER && playerState->nextModeSwitchAllowedTime != 0)
         Player::TransitionToMasterTypeAmphib(g_LocalPlayerSaveState, 1, 0)
 
-    if ((zInputBindMap::ReadCurrentCommandInputState(0x27) & 3) != 0)
+    if ((zInput::BindMapCurrent_ReadCommandInputState(0x27) & 3) != 0)
         enum PlayerMasterType masterType = masterModalData->masterType
 
         if (masterType == PLAYER_MASTER_TYPE_TRACK || masterType == PLAYER_MASTER_TYPE_AMPHIB)
             Player::TransitionToMasterTypeHover(g_LocalPlayerSaveState, 0)
 
-    if ((zInputBindMap::ReadCurrentCommandInputState(0x28) & 3) != 0 && masterModalData->masterType == PLAYER_MASTER_TYPE_AMPHIB)
+    if ((zInput::BindMapCurrent_ReadCommandInputState(0x28) & 3) != 0 && masterModalData->masterType == PLAYER_MASTER_TYPE_AMPHIB)
         Player::TransitionToMasterTypeSub(g_LocalPlayerSaveState, 0)
 
-    if (zInputBindMap::ReadCurrentCommandInputState(8) != ZINPUT_BUTTON_PRESSED)
+    if (zInput::BindMapCurrent_ReadCommandInputState(8) != ZINPUT_BUTTON_PRESSED)
         return
 
     playerState->autoTurnTargetWorldPos.x = playerState->storedTargetPos.x
@@ -32657,7 +32657,7 @@
             struct zInput_BindGroupInfo* edi_1 = *begin_1
 
             if (edi_1 != 0)
-                zInput::BindGroupInfo_Destroy(edi_1)
+                zInput_BindGroupInfo::Destroy(edi_1)
                 operator delete(edi_1)
 
     // Compiler clear-loop form: ebp is begin - cursor (zero on this path), so [esi+ebp] is the current vector slot being nulled after destroying/deleting *cursor.
@@ -32687,7 +32687,7 @@
 
 // Source: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp
 // Destroys one zInput_BindGroupInfo: empties the title CString, deletes the commandIds vector storage, clears begin/end/cap, then runs the CString destructor. BN limitation: HLIL keeps MSVC EH registration/state locals around this destructor body.
-0x42a000 void __thiscall zInput::BindGroupInfo_Destroy(struct zInput_BindGroupInfo* self)
+0x42a000 void __thiscall zInput_BindGroupInfo::Destroy(struct zInput_BindGroupInfo* self)
 {
     int32_t var_4_2 = 0xffffffff
     int32_t (* var_8)() = __ehhandler_zInput_BindGroupInfo_Destroy
@@ -37727,28 +37727,6 @@
     ShellExecuteA(g_RecoilApp_hWndMain, "open", "Docs\Index.html", nullptr, nullptr, SW_HIDE)
 }
 
-// Inline help-doc dispatch data: FindExecutableA failure codes <= 0x1f index this 0x20-byte remap table, then dispatch through g_CZRecoilFrame_HelpDocsErrorJumpTable at 0x430bf0.
-0x430c04 void __thiscall g_CZRecoilFrame_HelpDocsFindExecutableErrorRemapTable(void* self)
-{
-    int32_t entry_eax
-    *(self + entry_eax) += entry_eax.b
-    *(&__return_addr + entry_eax) += entry_eax
-    entry_eax.b += 4
-    entry_eax.b += 4
-    entry_eax.b += 2
-    entry_eax.b += 4
-    entry_eax.b += 4
-    entry_eax.b += 4
-    entry_eax.b += 4
-    entry_eax.b += 4
-    entry_eax.b += 4
-    entry_eax.b += 4
-    entry_eax.b += 4
-    entry_eax.b += 4
-    entry_eax.b += 3
-    return CZRecoilFrame::OnMenuAbout(self) __tailcall
-}
-
 // Likely original file: D:\Proj\Battlesport\CZRecoilFrame.cpp
 // Menu command handler for the About dialog: constructs a stack CAboutDlg, runs it modally, then destroys the CDialog base during unwind.
 // BN limitation: HLIL exposes MSVC SEH registration and unwind-state locals around the stack dialog lifetime.
@@ -40318,7 +40296,7 @@
     playerState->storedTargetPos.z = packet->targetPos.z
     playerState->activeAltGunController = Player::FindAltGunFireControllerForWeaponId(saveState, packet->weaponId)
     OptCatalog::SetPendingSpawnTargetOverrides(&playerState->progressTargetCount, &playerState->progressTargetSlots)
-    Player::ProcessAltGunFireDispatchRequest(saveState)
+    Player::ProcessAltGunDispatchRequest(saveState)
     playerState->altGunDispatchFlags = 0
     playerState->activeAltGunController = activeAltGunController
     OptCatalog::SetPendingSpawnTargetOverrides(nullptr, nullptr)
@@ -44900,7 +44878,7 @@
 
         if (playerState->altGunDispatchRequested != 0)
     // BN limitation: Player::ProcessAltGunDispatchRequest has no return registers and x87 adjustment 0, but HLIL still materializes phantom eax/st0 results at this call.
-            eax, st0_1 = Player::ProcessAltGunFireDispatchRequest(saveState)
+            eax, st0_1 = Player::ProcessAltGunDispatchRequest(saveState)
         else if (playerState->altGunFireHeldFlag != 0)
             playerState->altGunFireHeldFlag = 0
             OptCatalog::DeactivateTrailRuntimeState(activeAltGunController->trailRuntimeState)
@@ -45164,7 +45142,7 @@
                 Player::DecayAndApplyAltFireSlotOffsetToNode(&playerState->altFireSlotCenter, playerState->altFireSlotCenter.attachNode, playerState->gunFireDir.y, 0)
 
         if (playerState->activePrimaryGunController != 0)
-            Player::ProcessPrimaryGunDispatchRequest(saveState)
+            Player::ProcessPrimaryGunDispatchTick(saveState)
     else
     // Post-fire ammo tick: only when altGunFireHeldFlag set and ammo != infinite-sentinel (0x4CEB79A3). Decrement ammo by dt / fireRateInterval; update trailRuntimeState mirror; on ammo<=0 trigger auto-switch if not OPT_ENTRY_RELOAD.
         int32_t eax_19
@@ -45229,7 +45207,7 @@
 //   9. Ammo-exhausted bank-1 fallback: re-fcomp ammoOrCharge_34 vs 0.0; if exactly zero (C3 set), call Player::HandlePrimaryWeaponVariantToggleInput(0x31). 0x31 is the ASCII '1' keystroke, the same selection lane used for explicit weapon-bank-1 selection.
 //
 // No return value. Stack cleanup: pushes ecx as frame (retn without N).
-0x43a400 void __fastcall Player::ProcessPrimaryGunDispatchRequest(struct zUtil_SaveGameState* saveState)
+0x43a400 void __fastcall Player::ProcessPrimaryGunDispatchTick(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerGunFireSlot* outActiveFireSlotPtr = saveState
     struct PlayerState* playerState = saveState->playerState
@@ -45248,7 +45226,7 @@
         return
 
     // BN limitation: SelectPrimaryGunFirePointAndSlot has no return registers and writes only *outActiveFireSlotPtr, but HLIL still materializes phantom eax/st0 results at this call.
-    Player::SelectPrimaryGunFireOriginAndSlot(saveState, &outActiveFireSlotPtr)
+    Player::SelectPrimaryGunFirePointAndSlot(saveState, &outActiveFireSlotPtr)
     playerState->primaryGunDispatchRequested = 0
     long double x87_r7_1 = activePrimaryGunController->ammoOrCharge
     // BN-artifact: fcomp vs 0.0 + test ah, 0x41 renders as flag-bit unpacking in HLIL. Semantics: skip the decrement block (branch to 0x43a4c9) when ammoOrCharge_34 <= 0 (C0||C3 set).
@@ -45270,7 +45248,7 @@
             if ((eax_1:1.b & 0x41) == 0)
                 activePrimaryGunController->ammoOrCharge = 0f
 
-        Player::AltGunEnsureAuxEffectActive(saveState, activePrimaryGunController, &playerState->primaryFireOrigin)
+        Player::EnsureGunAuxEffectActive(saveState, activePrimaryGunController, &playerState->primaryFireOrigin)
 
         if ((activePrimaryGunController->flags.b & 1) != 0 && activePrimaryGunController->attachNodePrimary != 0 && saveState->primaryModalState->masterModalData->masterType != PLAYER_MASTER_TYPE_SUB)
     // Writes 1.5f into the slot-data pointer returned by Player::SelectPrimaryGunFirePointAndSlot (one of playerState->altFireSlot{Left,Right,Center}). BN keeps the stack slot's initial saveState alias, but the semantics are *outActiveFireSlotPtr = 1.5f (bit-pattern 0x3fc00000).
@@ -45519,7 +45497,7 @@
 // The fire-slot arrays at +0xF08/+0xF10/+0xF18 are shared between primary and alt paths -- only one selector runs per tick per hardpoint. State 0 is sticky; states 1 and 2 oscillate to alternate right/left hardpoints shot-by-shot.
 //
 // Prototype: __fastcall ecx=saveState, edx=outActiveFireSlotPtr (PlayerGunFireSlot**). No return value.
-0x43aa30 void __fastcall Player::SelectAltGunFireOriginAndSlot(struct zUtil_SaveGameState* saveState, struct PlayerGunFireSlot** outActiveFireSlotPtr)
+0x43aa30 void __fastcall Player::SelectAltGunFirePointAndSlot(struct zUtil_SaveGameState* saveState, struct PlayerGunFireSlot** outActiveFireSlotPtr)
 {
     struct PlayerState* playerState = saveState->playerState
     struct PlayerGunFireController* activeAltGunController = playerState->activeAltGunController
@@ -45605,7 +45583,7 @@
 // The fire-slot arrays at +0xF08/+0xF10/+0xF18 are named altFireSlot* in PlayerState but are a shared slot pool used by both primary and alt dispatch paths.
 //
 // Prototype: __fastcall ecx=saveState, edx=outActiveFireSlotPtr (PlayerGunFireSlot**). No return value.
-0x43acf0 void __fastcall Player::SelectPrimaryGunFireOriginAndSlot(struct zUtil_SaveGameState* saveState, struct PlayerGunFireSlot** outActiveFireSlotPtr)
+0x43acf0 void __fastcall Player::SelectPrimaryGunFirePointAndSlot(struct zUtil_SaveGameState* saveState, struct PlayerGunFireSlot** outActiveFireSlotPtr)
 {
     struct PlayerState* playerState = saveState->playerState
     struct PlayerGunFireController* activePrimaryGunController = playerState->activePrimaryGunController
@@ -46358,13 +46336,13 @@
 //
 // One-tick alt-gun dispatch handler. Selects the active alt fire point/PlayerGunFireSlot, exits early if altGunFireHeldFlag is already latched, consumes altGunDispatchRequested, gates on ammo, then dispatches one of three paths: bank-1 aux effect, continuous/beam update, or discrete projectile launch/simple fire. Successful fire paths may write activeFireSlotPtr->recoilStrength_00 = 1.5f, decrement ammo unless it is the infinite-ammo sentinel, clamp ammo to zero, increment the local HudSensorTracker dispatch counter, and play the local force-feedback pulse scaled from OptCatalog damage.
 // BN limitations are local: the activeFireSlotPtr stack slot keeps its initial saveState alias, zInput_DI_PlayAltFireEffect materializes phantom eax/st0 at 0x43c255 despite no return registers, and the ammo decrement tail has an x87 c1-lowering limitation at 0x43c28f.
-0x43c190 void __fastcall Player::ProcessAltGunFireDispatchRequest(struct zUtil_SaveGameState* saveState)
+0x43c190 void __fastcall Player::ProcessAltGunDispatchRequest(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerGunFireSlot* activeFireSlotPtr = saveState
     struct PlayerState* playerState = saveState->playerState
     struct PlayerGunFireController* ctrl = playerState->activeAltGunController
     // SelectAltGunFirePointAndSlot(saveState, &outActiveFireSlotPtr) — populates altFireOrigin/gunFireDir/firePoint{Center,Right,Left} and emits the active altFireSlot pointer into [esp+0xC].
-    Player::SelectAltGunFireOriginAndSlot(saveState, &activeFireSlotPtr)
+    Player::SelectAltGunFirePointAndSlot(saveState, &activeFireSlotPtr)
 
     if (playerState->altGunFireHeldFlag != 0)
     label_43c2a0:
@@ -46415,7 +46393,7 @@
 
                 goto label_43c25a
         else
-            activeFireSlotPtr_1 = Player::AltGunEnsureAuxEffectActive(saveState, ctrl, &playerState->altFireOrigin)
+            activeFireSlotPtr_1 = Player::EnsureGunAuxEffectActive(saveState, ctrl, &playerState->altFireOrigin)
         label_43c25a:
 
             if (activeFireSlotPtr_1 != 0)
@@ -46492,7 +46470,7 @@
 //       zInput_DI_RestartPrimaryFireEffect(g_zInputFfEffectSet [0x4f36b4]).
 //
 // Returns: 1 on successful runtime-instance allocation, 0 on allocation failure.
-0x43c330 int32_t __fastcall Player::AltGunEnsureAuxEffectActive(struct zUtil_SaveGameState* saveState, struct PlayerGunFireController* gunController, struct zVec3* effectPos)
+0x43c330 int32_t __fastcall Player::EnsureGunAuxEffectActive(struct zUtil_SaveGameState* saveState, struct PlayerGunFireController* gunController, struct zVec3* effectPos)
 {
     struct PlayerState* playerState = saveState->playerState
     struct zVec3 spawnDir
@@ -50108,7 +50086,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    struct CString __saved_esi
+    int32_t __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -50175,7 +50153,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    struct CString __saved_esi
+    int32_t __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -50904,7 +50882,7 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CString var_13c = 0
+    struct CWnd* var_13c = nullptr
     struct WestwoodOnlineUpgradeConfigDialog configDialog
     WestwoodOnlineUpgradeConfigDialog::Constructor(&configDialog, var_13c)
     int32_t var_4 = 0
@@ -50940,17 +50918,17 @@
     // GetSelectedProfileValues returns void and fills outPlayerName/outConnectString/selectedProfileConnectStringMode by pointer. HLIL's ecx_3 return capture is a stack-temp artifact.
     char* outPlayerName
     char* outConnectString
-    struct CString ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
+    struct CWnd* ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
     char* outPlayerName_1 = outPlayerName
     // BN models the stack CString temporary slot as var_13c/ecx_*; assembly is reserving and constructing CString temporaries for the two selected-profile setter calls.
     var_13c = ecx_3
-    struct CString* var_130 = &var_13c
+    struct CWnd** var_130 = &var_13c
     // Constructs a temporary CString from outPlayerName for SetSelectedProfilePlayerName; this is not a CWnd* var_13c semantic local.
     CString::CString(&var_13c, outPlayerName_1)
-    struct CString ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
+    struct CWnd* ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
     char* outConnectString_1 = outConnectString
     var_13c = ecx_6
-    struct CString* var_130_1 = &var_13c
+    struct CWnd** var_130_1 = &var_13c
     // Constructs a temporary CString from outConnectString for SetSelectedProfileConnectString; this reuses the caller's transient stack argument slot.
     CString::CString(&var_13c, outConnectString_1)
     WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString(g_pWestwoodOnlineUpgradeDialog, var_13c)
@@ -51488,6 +51466,7 @@
     return 1
 }
 
+// Source: D:\Proj\Battlesport\RecoilApp.cpp -- RecoilApp::TakeSkipWaitMessage. Returns the current skip-wait message flag at +0xd0, clears it to RECOILAPP_WAITMESSAGE_ALLOWED/0, and has no callees.
 0x442a10 enum RecoilAppWaitMessageMode __thiscall RecoilApp::TakeSkipWaitMessage(struct RecoilApp* self)
 {
     enum RecoilAppWaitMessageMode m_skipWaitMessage = self->m_skipWaitMessage
@@ -51495,7 +51474,7 @@
     return m_skipWaitMessage
 }
 
-// Source: D:\Proj\Battlesport\RecoilApp.cpp
+// Source: D:\Proj\Battlesport\RecoilApp.cpp -- RecoilApp::MarkSkipWaitMessage. Returns the current skip-wait message flag at +0xd0, sets it to RECOILAPP_WAITMESSAGE_SKIPPED/1, and has no callees.
 0x442a30 enum RecoilAppWaitMessageMode __thiscall RecoilApp::MarkSkipWaitMessage(struct RecoilApp* self)
 {
     enum RecoilAppWaitMessageMode m_skipWaitMessage = self->m_skipWaitMessage
@@ -93202,7 +93181,7 @@
         zInputCommandCallbackFn callback = self->m_commandCallbacks[commandId]
 
         if (callback != 0)
-            zInput::BindMapContext_SetCommandCallback(self, commandId, callback)
+            zInput_BindMapContext::SetCommandCallback(self, commandId, callback)
 
         commandId += 1
     while (commandId s< self->m_commandCount)
@@ -93317,7 +93296,7 @@
 }
 
 // Source: D:\Proj\GameZRecoil\zInput\zinput.cpp -- zInput_BindMapContext_GetCommandBySecondaryKey. Returns m_secondaryKeyToCommand[keyboardKey].
-0x470ad0 int32_t __thiscall zInput::BindMapContext_GetCommandBySecondaryKey(struct zInput_BindMapContext* self, int32_t keyboardKey)
+0x470ad0 int32_t __thiscall zInput_BindMapContext::GetCommandBySecondaryKey(struct zInput_BindMapContext* self, int32_t keyboardKey)
 {
     return self->m_secondaryKeyToCommand[keyboardKey]
 }
@@ -93330,7 +93309,7 @@
     if (result != 0)
         return result
 
-    return zInput::BindMapContext_GetCommandBySecondaryKey(self, keyboardKey)
+    return zInput_BindMapContext::GetCommandBySecondaryKey(self, keyboardKey)
 }
 
 // Source: D:\Proj\GameZRecoil\zInput\zinput.cpp
@@ -93342,7 +93321,7 @@
 }
 
 // Source: zinput.cpp
-0x470b10 int32_t __thiscall zInput::BindMapContext_GetCommandByMouseSlot(struct zInput_BindMapContext* self, int32_t mouseSlot)
+0x470b10 int32_t __thiscall zInput_BindMapContext::GetCommandByMouseSlot(struct zInput_BindMapContext* self, int32_t mouseSlot)
 {
     return self->m_mouseToCommand[mouseSlot]
 }
@@ -93429,13 +93408,13 @@
 0x470d40 void __thiscall zInput_BindMapContext::DispatchMouseButtonCallbacks(struct zInput_BindMapContext* self)
 {
     if (g_zInput_MouseStateSnapshot.button1Transition == ZINPUT_BUTTON_PRESSED)
-        int32_t edx_1 = self->m_commandCallbacks[zInput::BindMapContext_GetCommandByMouseSlot(self, 1)]
+        int32_t edx_1 = self->m_commandCallbacks[zInput_BindMapContext::GetCommandByMouseSlot(self, 1)]
 
         if (edx_1 != 0)
             edx_1()
 
     if (g_zInput_MouseStateSnapshot.button2Transition == ZINPUT_BUTTON_PRESSED)
-        int32_t edx_3 = self->m_commandCallbacks[zInput::BindMapContext_GetCommandByMouseSlot(self, 2)]
+        int32_t edx_3 = self->m_commandCallbacks[zInput_BindMapContext::GetCommandByMouseSlot(self, 2)]
 
         if (edx_3 != 0)
             edx_3()
@@ -93443,7 +93422,7 @@
     if (g_zInput_MouseStateSnapshot.button3Transition != ZINPUT_BUTTON_PRESSED)
         return
 
-    int32_t commandId = zInput::BindMapContext_GetCommandByMouseSlot(self, 3)
+    int32_t commandId = zInput_BindMapContext::GetCommandByMouseSlot(self, 3)
     zInputCommandCallbackFn edx_4 = self->m_commandCallbacks[commandId]
 
     if (edx_4 != 0)
@@ -93465,7 +93444,7 @@
 }
 
 // Source: zInput/zinput.cpp - Stores a command callback and registers the keyboard bridge for the command's primary and secondary key bindings.
-0x470df0 int32_t __thiscall zInput::BindMapContext_SetCommandCallback(struct zInput_BindMapContext* self, int32_t commandId, zInputCommandCallbackFn callback)
+0x470df0 int32_t __thiscall zInput_BindMapContext::SetCommandCallback(struct zInput_BindMapContext* self, int32_t commandId, zInputCommandCallbackFn callback)
 {
     struct zInput_BindMapContext* self_1 = self
     int32_t comboIdx = zInput_BindMapContext::GetPrimaryKeyboardKey(self, commandId)
@@ -93500,7 +93479,7 @@
 }
 
 // Original file: zinput.cpp. Aggregates transition-state bits across the primary key, secondary key, joystick button, and mouse button bound to commandIndex.
-0x470eb0 enum zInputButtonTransitionState __thiscall zInputBindMapContext::ReadCommandInputState(struct zInput_BindMapContext* self, int32_t commandIndex)
+0x470eb0 enum zInputButtonTransitionState __thiscall zInput_BindMapContext::ReadCommandInputState(struct zInput_BindMapContext* self, int32_t commandIndex)
 {
     int32_t result = 0
     int32_t keyIndex = zInput_BindMapContext::GetPrimaryKeyboardKey(self, commandIndex)
@@ -93534,7 +93513,7 @@
 // Copies the UI label for commandId into destBuf (up to maxBytes) using strncpy. If the slot has no label (m_commandLabels[commandId] == NULL) returns 0; otherwise returns strncpy's destBuf return value. Used by the rebind dialog to fetch the display name for each configurable command.
 //
 // Likely source: zinput.cpp
-0x470f50 char* __thiscall zInput::BindMapContext_CopyCommandLabel(struct zInput_BindMapContext* self, int32_t commandId, char* destBuf, int32_t maxBytes)
+0x470f50 char* __thiscall zInput_BindMapContext::CopyCommandLabel(struct zInput_BindMapContext* self, int32_t commandId, char* destBuf, int32_t maxBytes)
 {
     char* _Source = self->m_commandLabels[commandId]
 
@@ -93930,7 +93909,7 @@
 // Likely source: zinput.cpp
 0x471720 int32_t __fastcall zInput::BindMapCurrent_GetCommandBySecondaryKey(int32_t keyboardKey)
 {
-    return zInput::BindMapContext_GetCommandBySecondaryKey(g_zInput_BindMap_Current, keyboardKey)
+    return zInput_BindMapContext::GetCommandBySecondaryKey(g_zInput_BindMap_Current, keyboardKey)
 }
 
 // Source: D:\Proj\GameZRecoil\zInput\zinput.cpp
@@ -93944,7 +93923,7 @@
 // Source: zinput.cpp
 0x471740 int32_t __fastcall zInput::BindMapCurrent_GetCommandByMouseSlot(int32_t mouseSlot)
 {
-    return zInput::BindMapContext_GetCommandByMouseSlot(g_zInput_BindMap_Current, mouseSlot)
+    return zInput_BindMapContext::GetCommandByMouseSlot(g_zInput_BindMap_Current, mouseSlot)
 }
 
 // Static forwarder: g_zInput_BindMap_Current->SetPrimaryKeyBinding(commandId, keyCode). Bidirectional bind: updates m_primaryKeyToCommand and bits 0..10 of the packed binding for commandId. Tears down any previous binding on either side.
@@ -93983,15 +93962,15 @@
 }
 
 // Source: D:\Proj\GameZRecoil\zInput\zinput.cpp -- zInput_BindMap_Current_SetCommandCallback. Forwards to g_zInput_BindMap_Current->SetCommandCallback(commandId, callback).
-0x4717c0 int32_t __fastcall zInputBindMap::SetCurrentCommandCallback(int32_t commandId, zInputCommandCallbackFn callback)
+0x4717c0 int32_t __fastcall zInput::BindMapCurrent_SetCommandCallback(int32_t commandId, zInputCommandCallbackFn callback)
 {
-    return zInput::BindMapContext_SetCommandCallback(g_zInput_BindMap_Current, commandId, callback)
+    return zInput_BindMapContext::SetCommandCallback(g_zInput_BindMap_Current, commandId, callback)
 }
 
 // Original file: zinput.cpp. Static forwarder to zInput_BindMapContext_ReadCommandInputState(g_zInput_BindMap_Current, commandIndex).
-0x4717d0 enum zInputButtonTransitionState __fastcall zInputBindMap::ReadCurrentCommandInputState(int32_t commandIndex)
+0x4717d0 enum zInputButtonTransitionState __fastcall zInput::BindMapCurrent_ReadCommandInputState(int32_t commandIndex)
 {
-    return zInputBindMapContext::ReadCommandInputState(g_zInput_BindMap_Current, commandIndex)
+    return zInput_BindMapContext::ReadCommandInputState(g_zInput_BindMap_Current, commandIndex)
 }
 
 // Static forwarder: g_zInput_BindMap_Current->CopyCommandLabel(commandId, destBuf, maxBytes). Copies the command's display label into destBuf (returns NULL if commandId has no label).
@@ -94001,7 +93980,7 @@
 // Likely source: zinput.cpp
 0x4717e0 char* __fastcall zInput::BindMapCurrent_CopyCommandLabel(int32_t commandId, char* destBuf, int32_t maxBytes)
 {
-    return zInput::BindMapContext_CopyCommandLabel(g_zInput_BindMap_Current, commandId, destBuf, maxBytes)
+    return zInput_BindMapContext::CopyCommandLabel(g_zInput_BindMap_Current, commandId, destBuf, maxBytes)
 }
 
 // Likely original file: D:\Proj\GameZRecoil\zInput\zinput.cpp. Static forwarder for zInput_BindMap_FormatKeyComboName(packedKey, destBuf, maxBytes): ECX=packedKey, EDX=destBuf, and the one stack arg is maxBytes. The mov ecx, g_zInput_BindMap_Current before the stdcall callee is assembly-visible but unused by the accepted callee contract, so BN leaves it as a standalone global-read statement.
@@ -94477,7 +94456,7 @@
 
     struct DIDEVCAPS outCaps
     outCaps.dwSize = 0x2c
-    zInput_JoystickDevice_1->vtbl->SetDataFormat(zInput_JoystickDevice_1, &(*CRT_Data_MisidentifiedBytes_4c7eca)[0x16])
+    zInput_JoystickDevice_1->vtbl->SetDataFormat(zInput_JoystickDevice_1, &CRT_Data_MisidentifiedBytes_4c7eca[0x16])
     zInput_JoystickDevice_1->vtbl->GetCapabilities(zInput_JoystickDevice_1, &outCaps)
     enum zInput_DIDeviceCapsFlags dwFlags = outCaps.dwFlags
     g_zInput_JoystickAxisCount = outCaps.dwAxes
@@ -146450,12 +146429,12 @@
 0x4af060 void __fastcall OptCatalog::ProcessRuntimeInstances(struct zClass_Node* actionNode)
 {
     __alloca_probe()
-    int32_t entry_impactSlot
-    int32_t impactSlot = entry_impactSlot
-    int32_t* entry_runtimeState
-    int32_t* runtimeState_4 = entry_runtimeState
-    int32_t runtimeState_3
-    int32_t runtimeState = runtimeState_3
+    int32_t impactSlot_1
+    int32_t impactSlot = impactSlot_1
+    int32_t* runtimeState_6
+    int32_t* runtimeState_4 = runtimeState_6
+    struct OptCatalogRuntimeImpactState* runtimeState_3
+    struct OptCatalogRuntimeImpactState* runtimeState = runtimeState_3
     void* edi = &g_OptCatalog_EntryTable[g_OptCatalog_EntryCount]
     struct zTag4 ecx_4 = g_Variant_CurrentTag.count.d
     float runtimeState_5 = *_HUGE
@@ -146493,7 +146472,7 @@
                 for (struct OptCatalogTrailRuntimeState* j = OptCatalog_EntryTable_1->runtimeListHead.activeList; j != 0; j = j->next)
                     struct zTag4* variantTagPtr_10 = j->variantTagPtr
                     struct OptCatalogTrailSegment* segment_1 = &j->segments
-                    runtimeState = 0
+                    runtimeState = nullptr
                     struct OptCatalogTrailSegment* segment_3 = segment_1
 
                     if (variantTagPtr_10 == 0)
@@ -146552,7 +146531,7 @@
                         top = top
 
                         do
-                            runtimeState += 1
+                            runtimeState = &runtimeState->next + 1
                             impactSlot = 0
                             zClass_Class::gwNodeSetActive(segment_1->node, 1)
                             float z_3 = 0f
@@ -146600,12 +146579,12 @@
                                 zClass_Class::gwNodeSetRaycastable(j->projectileNode, 0)
 
                             struct PlayerProbeSampleCandidateBuffer rayData
-                            int32_t eax_92 = zClass_cls_di::RaycastSelectClosestHitBetweenPoints(g_OptCatalogRuntimeWorld, var_1c_18, var_1c_18, &rayData)
+                            int32_t eax_93 = zClass_cls_di::RaycastSelectClosestHitBetweenPoints(g_OptCatalogRuntimeWorld, var_1c_18, var_1c_18, &rayData)
 
                             if (runtimeState == 1)
                                 zClass_Class::gwNodeSetRaycastable(j->projectileNode, 1)
 
-                            if (eax_92 == 0)
+                            if (eax_93 == 0)
                                 int32_t candidateCount = rayData.candidateCount
                                 struct zVec3 var_a8
                                 struct zVec3* reflectedDirOut = &var_a8
@@ -146614,16 +146593,16 @@
                                 float x = &scale
                                 forwardVec = reflectedDirOut
                                 float y = &(&__saved_ebp)[candidateCount * 0xa - 0x558]
-                                int32_t eax_96
+                                int32_t eax_97
                                 int32_t ecx_127
-                                eax_96, ecx_127 = OptCatalog::CanSpawnThroughRay(OptCatalog_EntryTable_1, &(&__saved_ebp)[candidateCount * 0xa - 0x558], forwardVec, var_1c_18, x, y, reflectedDirOut)
+                                eax_97, ecx_127 = OptCatalog::CanSpawnThroughRay(OptCatalog_EntryTable_1, &(&__saved_ebp)[candidateCount * 0xa - 0x558], forwardVec, var_1c_18, x, y, reflectedDirOut)
                                 unimplemented  {fld st0, dword [ebp-0x44]}
                                 unimplemented  {fadd dword [ebp-0x48]}
                                 int16_t flags_2 = (OptCatalog_EntryTable_1->flags).w
                                 float var_48_2 = unimplemented  {fstp dword [ebp-0x44], st0}
                                 unimplemented  {fstp dword [ebp-0x44], st0}
 
-                                if (eax_96 != 0)
+                                if (eax_97 != 0)
                                     if ((flags_2:1.b & 8) != 0)
                                         unimplemented  {fld st0, dword [ebx+0x30]}
                                         unimplemented  {fsub st0, dword [0x56bca8]}
@@ -146719,7 +146698,7 @@
                                         x = hitEvent->pos.x
                                         zClass_Light::gwLightSetPosition(j->attachNode, x, y, hitEvent->pos.z)
 
-                                if (eax_96 != 1)
+                                if (eax_97 != 1)
                                     *x = *(y i+ 0xc)
                                     *(x i+ 4) = *(y i+ 0x10)
                                     *(x i+ 8) = *(y i+ 0x14)
@@ -146748,11 +146727,11 @@
                                 break
                         while (runtimeState s< j->segmentCount)
                     else
-                        int32_t* targetCountPtr = j->targetCountPtr
-                        int32_t var_1c_13 = 0
+                        void** targetCountPtr = j->targetCountPtr
+                        void* const var_1c_13 = nullptr
 
                         if (targetCountPtr != 0)
-                            int32_t eax_44 = *targetCountPtr
+                            void* eax_44 = *targetCountPtr
                             var_1c_13 = eax_44
 
                             if (eax_44 s> 8)
@@ -146774,7 +146753,7 @@
                             struct zVec3 var_9c
                             OptCatalog::ReflectAndSortImpactTraceList(j, &targetProjectionScratch, &var_9c)
                             unimplemented  {call 0x4b0ca0}
-                            int32_t ecx_72 = var_1c_13
+                            void* const ecx_72 = var_1c_13
 
                             if (ecx_72 s> 4)
                                 ecx_72 = 4
@@ -146799,31 +146778,30 @@
                                 while (k != 1)
 
                             struct zVec3* originPos_1 = j->originPos
-                            int32_t var_20_4 = 0
+                            void* const var_20_4 = nullptr
                             targetPos_1.x = originPos_1->x
                             targetPos_1.y = originPos_1->y
                             targetPos_1.z = originPos_1->z
 
                             if (ecx_72 s> 0)
                                 struct zVec3* vec_1 = &j->segments[0].pos
-                                float (* var_8)[0x8] = &targetProjectionScratch
-                                int32_t var_18_22 = ecx_72
+                                float* var_8 = &targetProjectionScratch
+                                void* const var_18_22 = ecx_72
                                 var_20_4 = ecx_72
                                 struct zVec3* out_1
                                 float scale_4
 
                                 do
                                     float y_2 = targetPos_1.y
-                                    float* vec_2 = vec_1
-                                    *vec_2 = targetPos_1.x
+                                    vec_1->x = targetPos_1.x
                                     float z = targetPos_1.z
-                                    vec_2[1] = y_2
+                                    vec_1->y = y_2
                                     out_1 = &targetPos_1
-                                    vec_2[2] = z
+                                    vec_1->z = z
                                     scale_4 = *var_8
                                     zMath::Vec3ScaleAdd(vec_1, &var_9c, scale_4, out_1)
                                     vec_1 += 0x20
-                                    var_8 = &(*var_8)[1]
+                                    var_8 = &var_8[1]
                                     int32_t var_18_24 = scale_4 i- 1
                                 while (scale_4 != 1)
                                 out_3 = out_1
@@ -146874,12 +146852,12 @@
                                     unimplemented  {call 0x4729b0}
                                     (to - 0x14)->__offset(0xfffffffffffffff8).d = unimplemented  {fstp dword [eax-0x8], st0}
                                     unimplemented  {fstp dword [eax-0x8], st0}
-                                    int32_t eax_63 = OptCatalog::ComputeTrailImpactResponse(OptCatalog_EntryTable_1, j, segment, to - 0x14)
+                                    int32_t eax_64 = OptCatalog::ComputeTrailImpactResponse(OptCatalog_EntryTable_1, j, segment, to - 0x14)
                                     unimplemented  {call 0x4b0e20}
-                                    var_24_1 = eax_63
+                                    var_24_1 = eax_64
                                     OptCatalog::UpdateTrailSegmentVisual(segment)
                                     unimplemented  {call 0x4b0f70}
-                                    runtimeState += 1
+                                    runtimeState = &runtimeState->next + 1
 
                                     if (var_24_1 != 0)
                                         break
@@ -146900,7 +146878,7 @@
                                     unimplemented  {call 0x4b0e20}
                                     OptCatalog::UpdateTrailSegmentVisual(&edi_8[-1])
                                     unimplemented  {call 0x4b0f70}
-                                    runtimeState += 1
+                                    runtimeState = &runtimeState->next + 1
                                     edi_8 = &edi_8[8]
                                     segment = &edi_8[7]
                                     to = targetPos + 0x20
@@ -146910,7 +146888,7 @@
                                 segment_2 = segment
 
                             if (var_24_1 == 0)
-                                zMath::Vec3DirectionTo(&segment_2->pos, j->targetList[impactSlot * 2], &segment_2->dir)
+                                zMath::Vec3DirectionTo(&segment_2->pos, j->targetList[impactSlot].targetPos, &segment_2->dir)
                                 unimplemented  {call 0x4729b0}
                                 segment_2->scale = unimplemented  {fstp dword [edi+0x1c], st0}
                                 unimplemented  {fstp dword [edi+0x1c], st0}
@@ -146918,7 +146896,7 @@
                                 unimplemented  {call 0x4b0e20}
                                 OptCatalog::UpdateTrailSegmentVisual(segment_2)
                                 unimplemented  {call 0x4b0f70}
-                                runtimeState += 1
+                                runtimeState = &runtimeState->next + 1
                         else if (var_1c_13 != 1)
                             unimplemented  {fld st0, dword [esi+0x1c]}
                             float scale_3 = unimplemented  {fst dword [ebp-0x8], st0}
@@ -146963,13 +146941,13 @@
                             unimplemented  {call 0x4729b0}
                             segment_1->scale = unimplemented  {fstp dword [edi+0x1c], st0}
                             unimplemented  {fstp dword [edi+0x1c], st0}
-                            int32_t eax_83 = OptCatalog::ComputeTrailImpactResponse(OptCatalog_EntryTable_1, j, segment_1, impactSlot)
+                            int32_t eax_84 = OptCatalog::ComputeTrailImpactResponse(OptCatalog_EntryTable_1, j, segment_1, impactSlot)
                             unimplemented  {call 0x4b0e20}
                             OptCatalog::UpdateTrailSegmentVisual(segment_1)
                             unimplemented  {call 0x4b0f70}
                             runtimeState = 1
 
-                            if (eax_83 == 0)
+                            if (eax_84 == 0)
                                 zMath::Vec3DirectionTo(impactSlot, *j->targetList, segment_1 + 0x30)
                                 unimplemented  {call 0x4729b0}
                                 segment_1[1].scale = unimplemented  {fstp dword [edi+0x1c], st0}
@@ -146980,7 +146958,7 @@
                                 unimplemented  {call 0x4b0f70}
                                 runtimeState = 2
 
-                    int32_t runtimeState_2 = runtimeState
+                    struct OptCatalogRuntimeImpactState* runtimeState_2 = runtimeState
                     runtimeState_4 = runtimeState_2
 
                     if (runtimeState_2 s< j->activeSegmentCount)
@@ -147008,7 +146986,7 @@
                     runtimeState = 1
 
                     if (updateCallback != 0)
-                        updateCallback(runtimeState, runtimeState_4, impactSlot)
+                        updateCallback(runtimeState)
 
                     if (j_1->variantTag.b == 4)
                         struct zTag4 ecx_10
@@ -147054,7 +147032,7 @@
                                     unimplemented  {call 0x4729b0}
                                     runtimeState_4 = unimplemented  {fstp dword [ebp-0x8], st0}
                                     unimplemented  {fstp dword [ebp-0x8], st0}
-                                    int32_t pendingTargetB
+                                    enum OptCatalogEntryFlags pendingTargetB
 
                                     if ((OptCatalog_EntryTable_1->flags:1.b & 0x80) != 0)
                                         pendingTargetB = j_1->pendingTargetB
@@ -147555,7 +147533,7 @@
                                     if ((flags_1:1.b & 0x40) != 0 && (flags_1.b & 0x40) == 0)
                                         OptCatalog::HandleImpactEventFromRuntimeState(OptCatalog_EntryTable_1, j_1)
 
-                                    runtimeState = 0
+                                    runtimeState = nullptr
                                 else if ((flags_1:1.b & 0x40) != 0)
                                     struct zVec3* pendingTargetA_1 = j_1->pendingTargetA
 
@@ -147580,7 +147558,7 @@
 
                                             if ((((c0_26 ? 1 : 0) << 8 | (c2_26 ? 1 : 0) << 0xa | (c3_26 ? 1 : 0) << 0xe | (top & 7) << 0xb):1.b & 0x41) != 0)
                                                 struct zClass_Node* ownerNode = nullptr
-                                                runtimeState = 0
+                                                runtimeState = nullptr
                                                 g_OptCatalog_FallbackImpactProbeEnabled = 0
                                                 OptCatalog::RemoveRuntimeInstance(OptCatalog_EntryTable_1, &j_1->impactPos, ownerNode)
                                                 g_OptCatalog_FallbackImpactProbeEnabled = 1
@@ -147637,15 +147615,15 @@
                                 unimplemented  {call 0x44e170}
                             else
                                 OptCatalog::HandleImpactFromRuntimeProbe(OptCatalog_EntryTable_1, j_1, &var_b60, nullptr)
-                                runtimeState = 0
+                                runtimeState = nullptr
                                 g_OptCatalog_FallbackImpactProbeEnabled = 0
                                 OptCatalog::ProcessRuntimeInstance(OptCatalog_EntryTable_1, j_1)
                                 g_OptCatalog_FallbackImpactProbeEnabled = 1
                     else
                         OptCatalog::HandleImpactEventFromRuntimeState(OptCatalog_EntryTable_1, j_1)
-                        runtimeState = 0
+                        runtimeState = nullptr
 
-                    int32_t runtimeState_1 = runtimeState
+                    struct OptCatalogRuntimeImpactState* runtimeState_1 = runtimeState
                     struct zVec3 var_34
 
                     if (runtimeState_1 == 1)
@@ -147695,7 +147673,7 @@
                                     float var_28
 
                                     if (OptCatalog::CanSpawnThroughRay(OptCatalog_EntryTable_1, ebx_4, rayStart, &var_34, &rayLengthOut, &var_28, &j_1->direction) == 0)
-                                        runtimeState = 0
+                                        runtimeState = nullptr
                                         OptCatalog::HandleImpactEvent(OptCatalog_EntryTable_1, ebx_4, j_1)
                                         break
 
@@ -147801,7 +147779,7 @@
                                     g_OptCatalog_CapturedDamageHitPos.z = ebx_4->pos.z
 
                                 j_1->impactPos.x = ebx_4->pos.x
-                                runtimeState = 0
+                                runtimeState = nullptr
                                 j_1->impactPos.y = ebx_4->pos.y
                                 j_1->impactPos.z = ebx_4->pos.z
                                 g_OptCatalog_CaptureHitSnapshotEnabled = 0
@@ -147829,7 +147807,7 @@
                     enum OptCatalogEntryFlags flags_4 = OptCatalog_EntryTable_1->flags
 
                     if ((flags_4:1.b & 4) != 0)
-                        runtimeState_1 = 0
+                        runtimeState_1 = nullptr
 
                     if (runtimeState_1 == 0)
                         struct OptCatalogRuntimeImpactState* next = j_1->next
@@ -147974,12 +147952,12 @@
             g_OptCatalogLockOnWarningGateTimeSec = unimplemented  {fstp dword [0x779a78], st0}
             unimplemented  {fstp dword [0x779a78], st0}
 
-    struct zTag4 eax_113
-    eax_113.count = var_58.count
-    eax_113.tags[0] = var_58.tags[0]
-    eax_113.tags[1] = var_58.tags[1]
-    eax_113.tags[2] = var_58.tags[2]
-    g_Variant_CurrentTag.count.d = eax_113
+    struct zTag4 eax_114
+    eax_114.count = var_58.count
+    eax_114.tags[0] = var_58.tags[0]
+    eax_114.tags[1] = var_58.tags[1]
+    eax_114.tags[2] = var_58.tags[2]
+    g_Variant_CurrentTag.count.d = eax_114
 }
 
 // Source: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp -- OptCatalog_ComputeAimPitchForTarget.
@@ -151982,7 +151960,7 @@
         self->ftable->OnBufferFull(self)
         return
 
-    HudUiTextBuffer::ShiftTextRight(self, 1, self->cursor)
+    HudUiTextInput::ShiftTextRight(self, 1, self->cursor)
     self->buffer[self->cursor] = ch.b
     self->cursor += 1
 }
@@ -151994,17 +151972,17 @@
 
     if (cursor s> 0)
         self->cursor = cursor - 1
-        HudUiTextBuffer::ShiftTextLeft(self, 1, cursor - 1)
+        HudUiTextInput::ShiftTextLeft(self, 1, cursor - 1)
 }
 
 // Source: HudUiTextInput.cpp
-0x4b4550 void __thiscall HudUiTextBuffer::DeleteCharForward(struct HudUiTextInput* self)
+0x4b4550 void __thiscall HudUiTextInput::DeleteCharForward(struct HudUiTextInput* self)
 {
-    HudUiTextBuffer::ShiftTextLeft(self, 1, self->cursor)
+    HudUiTextInput::ShiftTextLeft(self, 1, self->cursor)
 }
 
 // Source: HudUiTextInput.cpp
-0x4b4560 void __thiscall HudUiTextBuffer::MoveCursorLeft(struct HudUiTextInput* self)
+0x4b4560 void __thiscall HudUiTextInput::MoveCursorLeft(struct HudUiTextInput* self)
 {
     uint32_t cursor = self->cursor
 
@@ -152013,7 +151991,7 @@
 }
 
 // Source: HudUiTextInput.cpp
-0x4b4570 void __thiscall HudUiTextBuffer::MoveCursorRight(struct HudUiTextInput* self)
+0x4b4570 void __thiscall HudUiTextInput::MoveCursorRight(struct HudUiTextInput* self)
 {
     int32_t i = 0xffffffff
     char* buffer = self->buffer
@@ -152033,7 +152011,7 @@
 }
 
 // Source: HudUiTextInput.cpp
-0x4b4590 int32_t __thiscall HudUiTextBuffer::ShiftTextRight(struct HudUiTextInput* self, int32_t count, int32_t startPos)
+0x4b4590 int32_t __thiscall HudUiTextInput::ShiftTextRight(struct HudUiTextInput* self, int32_t count, int32_t startPos)
 {
     int32_t i = 0xffffffff
     char* buffer_1 = self->buffer
@@ -152063,7 +152041,7 @@
 }
 
 // Source: HudUiTextInput.cpp
-0x4b45e0 int32_t __thiscall HudUiTextBuffer::ShiftTextLeft(struct HudUiTextInput* self, int32_t count, int32_t startPos)
+0x4b45e0 int32_t __thiscall HudUiTextInput::ShiftTextLeft(struct HudUiTextInput* self, int32_t count, int32_t startPos)
 {
     int32_t i = 0xffffffff
     char* buffer = self->buffer
@@ -160804,7 +160782,7 @@
 }
 
 // Source: D:\Proj\GameZRecoil\zVideo\zVideo.cpp -- updates all pass-3 child elements for the local config and clears the queued slot count.
-0x4bed30 void __thiscall zVideo::FxPass3Config_UpdateLocal(struct zVideoFxPass3Config* self, float deltaTime)
+0x4bed30 void __thiscall zVideoFxPass3Config::UpdateLocal(struct zVideoFxPass3Config* self, float deltaTime)
 {
     HudUiContainer::UpdateAll(self, deltaTime)
     self->slotWriteIndex = 0
@@ -160813,7 +160791,7 @@
 // Source: D:\Proj\GameZRecoil\zVideo\zVideo.cpp -- zVideo_FxPass3Config_SetPrimaryElementParamsLocal.
 // Writes the primary pass-3 root element color parameters (low 16 bits of packedColor and primaryAlpha), marks the root element visible through HudUiElement::SetVisible(1), resets its timer, and sets the visible/dirty bit on the element flags.
 // BN limitation: HLIL renders the packed-color word store and the two dword stores that make up colorScalar as lane writes (`.w` / `:4.d`) even though the zVideoFxPass3Config and zVideoFxPass3RootElement fields are typed correctly.
-0x4bed50 void __thiscall zVideo_FxPass3Config::SetPrimaryElementParamsLocal(struct zVideoFxPass3Config* self, int32_t packedColor, double primaryAlpha)
+0x4bed50 void __thiscall zVideoFxPass3Config::SetPrimaryElementParamsLocal(struct zVideoFxPass3Config* self, int32_t packedColor, double primaryAlpha)
 {
     self->rootElement.packedColor16.w = packedColor.w
     self->rootElement.alpha.d = primaryAlpha.d
@@ -160827,7 +160805,7 @@
 
 // Source: D:\Proj\GameZRecoil\zVideo\zVideo.cpp
 // Queues one local FxPass3 radial-warp slot. Uses slotWriteIndex, caps the advancing count at four active queued slots, writes the slot position and warp payload, marks the slot visible, clears its timer, and sets the active flag.
-0x4bed90 void __thiscall zVideo_FxPass3Config::QueueElementLocal(struct zVideoFxPass3Config* self, int32_t rectLeftPixels, int32_t rectTopPixels, int32_t currentRadius, int32_t maxRadius, int32_t extent, float sinFreq, float sinPhase)
+0x4bed90 void __thiscall zVideoFxPass3Config::QueueElementLocal(struct zVideoFxPass3Config* self, int32_t rectLeftPixels, int32_t rectTopPixels, int32_t currentRadius, int32_t maxRadius, int32_t extent, float sinFreq, float sinPhase)
 {
     int32_t queuedElementIndex = self->slotWriteIndex
 
@@ -160856,7 +160834,7 @@
 //   +0x24 queuedPitchBytes(int32_t)
 // Pure setter -- no allocation, no validation, no notifier fired. Caller (zVideo_FxPass3_QueuePrimitive) targets the global g_zVideo_FxPass3ConfigLocal @ 0x56bd58. retn 0x10 (4 stack args).
 // Source: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
-0x4bee20 void __thiscall zVideo::FxPass3Config_QueuePrimitiveRaw(struct zVideoFxPass3Config* self, void* primitive, int32_t width, int32_t height, int32_t pitchBytes)
+0x4bee20 void __thiscall zVideoFxPass3Config::QueuePrimitiveRaw(struct zVideoFxPass3Config* self, void* primitive, int32_t width, int32_t height, int32_t pitchBytes)
 {
     self->surfacePixels = primitive
     self->surfaceWidth = width
@@ -160913,14 +160891,14 @@
     int32_t packedColor_1 = packedColor
     packedColor_1.w = packedColor.w
     int32_t var_8 = primaryAlpha:4.d
-    zVideo_FxPass3Config::SetPrimaryElementParamsLocal(&g_zVideoFxPass3ConfigLocal, packedColor_1, primaryAlpha.d)
+    zVideoFxPass3Config::SetPrimaryElementParamsLocal(&g_zVideoFxPass3ConfigLocal, packedColor_1, primaryAlpha.d)
 }
 
 // Source: D:\Proj\GameZRecoil\zVideo\zVideo.cpp
 // Public local wrapper for zVideo_FxPass3Config_QueueElementLocal(&g_zVideoFxPass3ConfigLocal, ...). Queues one radial-warp slot with screen position, current/max radius, extent, and sine parameters.
 0x4bef10 void __fastcall zVideo_FxPass3::QueueElementLocal(int32_t rectLeftPixels, int32_t rectTopPixels, int32_t currentRadius, int32_t maxRadius, int32_t extent, float sinFreq, float sinPhase)
 {
-    zVideo_FxPass3Config::QueueElementLocal(&g_zVideoFxPass3ConfigLocal, rectLeftPixels, rectTopPixels, currentRadius, maxRadius, extent, sinFreq, sinPhase)
+    zVideoFxPass3Config::QueueElementLocal(&g_zVideoFxPass3ConfigLocal, rectLeftPixels, rectTopPixels, currentRadius, maxRadius, extent, sinFreq, sinPhase)
 }
 
 // Source: D:\Proj\GameZRecoil\zVideo\zVideo.cpp -- zVideo::FxPass3_SetInputRectByIndex. Thin wrapper for the shared local FxPass3 config.
@@ -160933,20 +160911,20 @@
 // Calling convention: __fastcall + 2 stack args (retn 8). ECX=primitive, EDX=width, [esp+4]=height, [esp+8]=pitchBytes.
 0x4bef50 void __fastcall zVideo::FxPass3_QueuePrimitive(void* primitive, int32_t width, int32_t height, int32_t pitchBytes)
 {
-    zVideo::FxPass3Config_QueuePrimitiveRaw(&g_zVideoFxPass3ConfigLocal, primitive, width, height, pitchBytes)
+    zVideoFxPass3Config::QueuePrimitiveRaw(&g_zVideoFxPass3ConfigLocal, primitive, width, height, pitchBytes)
 }
 
 // Source: D:\Proj\GameZRecoil\zVideo\zVideo.cpp -- public local pass-3 update wrapper for g_zVideoFxPass3ConfigLocal.
 0x4bef70 void __stdcall zVideo::FxPass3_UpdateLocal(float deltaTime)
 {
-    zVideo::FxPass3Config_UpdateLocal(&g_zVideoFxPass3ConfigLocal, deltaTime)
+    zVideoFxPass3Config::UpdateLocal(&g_zVideoFxPass3ConfigLocal, deltaTime)
 }
 
 // Original file: GameZRecoil/zVideo/zVideo.cpp. Constructs zVideoFxPass3Config: initializes the HudUiContainer base, constructs the root pass3 element and five zVideoFxPass3Slot children, clears input surface/rect state, links the children, hides them initially, enables the container, and returns self. BN limitation: MSVC SEH constructor scaffolding and the EH array-constructor state byte remain visible around the authored constructor body.
 0x4bef90 struct zVideoFxPass3Config* __thiscall zVideoFxPass3Config::Constructor(struct zVideoFxPass3Config* self)
 {
     int32_t var_4_1 = 0xffffffff
-    int32_t (* var_8)() = __ehhandler_zVideo_FxPass3Config_CtorLocal
+    int32_t (* var_8)() = __ehhandler_zVideoFxPass3Config_CtorLocal
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
@@ -168420,45 +168398,10 @@
     return Ordinal_DPLAYX_4() __tailcall
 }
 
-// BN misidentified data/code stub. No code or data xrefs in the current database and bytes do not decode as a meaningful DirectDraw factory thunk.
-0x4c7405 void __convention("regparm") CRT_Data_MisidentifiedBytes_4c7405(int32_t arg1, int32_t, uint16_t arg3) __noreturn
-{
-    int32_t eflags
-    int16_t temp0
-    temp0, eflags = __arpl_memw_gpr16(*(arg1 * 2 - 0x34), arg3)
-    *(arg1 * 2 - 0x34) = temp0
-    breakpoint
-}
-
 // Non-authored: DINPUT DirectInputCreateA import thunk.
 0x4c7498 HRESULT __stdcall DINPUT_DirectInputCreateA_ImportThunk(struct HINSTANCE__* hinst, uint32_t dwVersion, struct zInput_DirectInput** ppDI, struct IUnknown* punkOuter)
 {
     return DirectInputCreateA(hinst, dwVersion, ppDI, punkOuter) __tailcall
-}
-
-// BN misidentified data/code stub. Bytes form structured data records and there are no live code or data xrefs in the current database.
-0x4c7eca void __convention("regparm") CRT_Data_MisidentifiedBytes_4c7eca(char* arg1, int32_t, char* arg3, int32_t arg4 @ ebp, char* arg5 @ esi, char* arg6 @ edi) __noreturn
-{
-    *(arg1 + 0x400) += 1
-    *arg6 <<= 1
-    char entry_ebx
-    *(arg1 * 2) += entry_ebx
-    *arg1 += arg1.b
-    *(arg1 + 0x400) += 1
-    *arg1 = sbb.b(*arg1, arg1.b, arg6 * 2 u< arg6)
-    char temp2 = *arg1
-    *arg1 += arg1.b
-    *arg1 = adc.b(*arg1, arg1.b, temp2 + arg1.b u< temp2)
-    *arg1 += arg1.b
-    *arg1 = &arg1[*arg1]
-    char temp3 = *arg1
-    *arg1 += arg1.b
-    *arg3 = adc.b(*arg3, arg1.b, temp3 + arg1.b u< temp3)
-    *arg1 += arg1.b
-    *(arg6 * 2) = *arg5
-    *arg1 += arg1.b
-    arg1[0xcc004c74] += arg1:1.b
-    breakpoint
 }
 
 // Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp
@@ -174073,7 +174016,7 @@
 }
 
 // Non-authored: compiler-generated SEH dispatcher thunk for zVideo_FxPass3Config_CtorLocal. Loads scope table in eax, tail-jumps to __CxxFrameHandler.
-0x4cb7e9 int32_t __ehhandler_zVideo_FxPass3Config_CtorLocal()
+0x4cb7e9 int32_t __ehhandler_zVideoFxPass3Config_CtorLocal()
 {
     return __CxxFrameHandler_iat_thunk() __tailcall
 }
@@ -174267,7 +174210,13 @@
 // Source: D:\Proj\Battlesport\GameNet.cpp -- NetSessionBrowserDialog::OnHelpDocs switch classifier. Maps FindExecutableA error codes 0..31 to help-document message classes used by g_NetSessionBrowserDialog_HelpDocsErrorJumpTable. BN limitation: these bytes are an embedded uint8_t[0x20] table in .text; the bridge exposes the data object, but BN still keeps a spurious function/decompilation at this address.
 // [comment @ 0x430bf0]
 // Jump table for CZRecoilFrame::OnMenuOpenHelpDocs: remapped FindExecutableA result -> one of four localized MessageBox cases or the ShellExecuteA success path.
+// [comment @ 0x430c04]
+// Inline help-doc dispatch data: FindExecutableA failure codes <= 0x1f index this 0x20-byte remap table, then dispatch through g_CZRecoilFrame_HelpDocsErrorJumpTable at 0x430bf0.
 // [comment @ 0x4c62a2]
 // MSVC _except_handler3 filter landing pad for _start scope table g_CRT_StartupSEHScopeTable. Not a standalone function: _except_handler3 enters it with _start's establisher frame; it saves the exception code and returns the _XcptFilter result.
 // [comment @ 0x4c62b7]
 // MSVC _except_handler3 handler landing pad for _start scope table g_CRT_StartupSEHScopeTable. Not a standalone function: _except_handler3 enters it with _start's establisher frame; it restores the saved stack, passes the saved exception code to _exit, and has no normal source-level calling convention.
+// [comment @ 0x4c7405]
+// BN misidentified data/code stub. No code or data xrefs in the current database and bytes do not decode as a meaningful DirectDraw factory thunk.
+// [comment @ 0x4c7eca]
+// BN misidentified data/code stub. Bytes form structured data records and there are no live code or data xrefs in the current database.

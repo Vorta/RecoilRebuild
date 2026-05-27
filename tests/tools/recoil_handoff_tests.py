@@ -12,7 +12,7 @@ import unittest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 
-from recoil_handoff import print_address_report  # noqa: E402
+from recoil_handoff import build_parser, print_address_report  # noqa: E402
 from recoil_plan import PlanDocument  # noqa: E402
 
 
@@ -32,20 +32,26 @@ PLAN_TEXT = textwrap.dedent(
 
 
 class RecoilHandoffTests(unittest.TestCase):
+    def test_vc6_manifest_dir_alias_matches_legacy_option(self) -> None:
+        parser = build_parser()
+
+        legacy_args = parser.parse_args(["0x401000", "--vc-manifest-dir", "legacy-vc"])
+        alias_args = parser.parse_args(["0x401000", "--vc6-manifest-dir", "vc6"])
+
+        self.assertEqual(legacy_args.vc_manifest_dir, "legacy-vc")
+        self.assertEqual(alias_args.vc_manifest_dir, "vc6")
+
     def test_print_address_report_handles_missing_coverage(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             manifest_dir = root / "vc"
             functional_dir = root / "functional"
-            claims_dir = root / "claims"
             manifest_dir.mkdir()
             functional_dir.mkdir()
-            claims_dir.mkdir()
             args = type(
                 "Args",
                 (),
                 {
-                    "claims_dir": str(claims_dir),
                     "groups": str(root / "missing_groups.md"),
                     "vc_manifest_dir": str(manifest_dir),
                     "functional_manifest_dir": str(functional_dir),
@@ -65,4 +71,3 @@ class RecoilHandoffTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

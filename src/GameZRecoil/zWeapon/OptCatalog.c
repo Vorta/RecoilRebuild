@@ -1,6 +1,8 @@
 #include "OptCatalog.h"
 #include "zWeapon.h"
 
+#include "Battlesport/GameNet.h"
+#include "Battlesport/player.h"
 #include "GameZRecoil/zDEClient/zdec.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/Time/Time.h"
@@ -54,6 +56,8 @@ zSndSample *g_OptCatalogSndLockOnWarning = 0;
 OptCatalogRemoveRuntimeRelayCallback g_OptCatalog_RemoveRuntimeRelayCallback = 0;
 int g_OptCatalogNetworkOptionState = 0;
 OptCatalogAllocRuntimeGateCallback g_OptCatalog_AllocRuntimeGateCallback = 0;
+OptCatalogAllocRuntimeGateCallback g_OptCatalog_AltGunDispatchNoOpCallback = 0;
+int g_OptCatalogProcessRuntimeRelayEnabled = 1;
 }
 
 namespace {
@@ -107,7 +111,7 @@ namespace {
 
     RECOIL_STATIC_ASSERT(sizeof(OptCatalogQueuedImpactRecord) == 68);
 
-    OptCatalogQueuedImpactRecord g_OptCatalogQueuedImpacts[kMaxQueuedImpacts] = {};
+    OptCatalogQueuedImpactRecord g_OptCatalogQueuedImpacts[kMaxQueuedImpacts] = {0};
 
     typedef void (RECOIL_THISCALL *OptCatalogRuntimeUpdateCallback)(
         OptCatalogRuntimeInstanceStorage *runtimeInstance);
@@ -350,6 +354,26 @@ namespace {
         } else {
             SetCurrentVariantTagFromPacked(packedRuntimeTag);
         }
+    }
+}
+
+namespace zWeapon_OptCatalog {
+    // Reimplements 0x43ca20: zWeapon_OptCatalog::LoadKillVerbString
+    // (D:\Proj\GameZRecoil\zWeapon\zwep_init.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL LoadKillVerbString(zReader::Node *entryNode,
+                                                            OptCatalogEntryDef *entry) {
+        char *const killVerbString = static_cast<char *>(calloc(1, 20));
+        entry->killVerbString = killVerbString;
+
+        zReader::Node *const killVerbNode = zReader_GetNamedNode(entryNode, "KILL_VERB");
+        const char *sourceText = 0;
+        if (killVerbNode != 0) {
+            sourceText = zLoc::ResolveMessageKeyOrFallback(zReaderArrayString(killVerbNode, 1));
+        } else {
+            sourceText = zLoc::GetMessageString(0x250);
+        }
+
+        strncpy(killVerbString, sourceText, 19);
     }
 }
 
@@ -760,6 +784,99 @@ namespace OptCatalog {
         g_OptCatalogPendingSpawnTargetListPtr = pendingSpawnTargetListPtr;
     }
 
+    // Reimplements 0x4340c0: OptCatalog::AltGunDispatchAllocRuntimeGateCallback
+    // (D:\Proj\Battlesport\ai_net.cpp)
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    AltGunDispatchAllocRuntimeGateCallback(OptCatalogEntryDef *self, void **saveStateSlot) {
+        const int ordinalIndex = self->ordinalIndex;
+        if (ordinalIndex == 0 || ordinalIndex == 1) {
+            return 1;
+        }
+
+        zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(*saveStateSlot);
+        if (saveState == 0) {
+            return 0;
+        }
+
+        if (saveState == (zUtil_SaveGameState *)(g_GameStateOrMapTable)) {
+            *saveStateSlot = (void *)(zVideo::ReturnSuccessStub());
+            GameNet::SendPkt07_AltGunDispatch(static_cast<short>(ordinalIndex),
+                                              (unsigned int)(*saveStateSlot));
+            *saveStateSlot = (void *)((unsigned int)(*saveStateSlot) | 0x01000000u);
+            return 1;
+        }
+
+        const unsigned int dispatchFlags =
+            static_cast<unsigned int>(saveState->playerState->altGunDispatchFlags);
+        if ((dispatchFlags & 0x02000000u) == 0) {
+            return 0;
+        }
+
+        *saveStateSlot = (void *)(dispatchFlags);
+        return 1;
+    }
+
+    // Reimplements 0x434240: OptCatalog::SendPkt0A_RemoveRuntimeRelay
+    // (D:\Proj\GameZRecoil\GameNet.cpp)
+    RECOIL_NOINLINE void RECOIL_FASTCALL
+    SendPkt0A_RemoveRuntimeRelay(OptCatalogEntryDef *self, zVec3 *pointOrVec3,
+                                 zClass_NodePartial *ownerNode) {
+        if (g_OptCatalogProcessRuntimeRelayEnabled == 0 || ownerNode == 0) {
+            return;
+        }
+
+        HudUiMgrSensorTrackNode *const ownerTrackContext =
+            (HudUiMgrSensorTrackNode *)(ownerNode->callbackContext);
+        if (ownerTrackContext == 0) {
+            return;
+        }
+
+        zUtil_SaveGameState *const ownerSaveState =
+            (zUtil_SaveGameState *)(ownerTrackContext->payload);
+        g_NetPkt0A_RemoveRuntimeRelayBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+        g_NetPkt0A_RemoveRuntimeRelayBuf.optCatalogEntryId =
+            static_cast<short>(self->ordinalIndex);
+        if (pointOrVec3 != 0) {
+            g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3 = *pointOrVec3;
+        } else {
+            g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3.x = 0.0f;
+            g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3.y = 0.0f;
+            g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3.z = 0.0f;
+        }
+        g_NetPkt0A_RemoveRuntimeRelayBuf.ownerPlayerKey = ownerSaveState->netPlayerRow->playerKey;
+        zNetwork_SendPacketReliable(&g_NetPkt0A_RemoveRuntimeRelayBuf.header);
+    }
+
+    // Reimplements 0x4342d0: OptCatalog::HandlePkt0A_RemoveRuntimeRelay
+    // (D:\Proj\GameZRecoil\GameNet.cpp)
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    HandlePkt0A_RemoveRuntimeRelay(int, NetPkt0A_RemoveRuntimeRelay *packet) {
+        OptCatalogEntryDef *const entry =
+            OptCatalog::FindEntryById(static_cast<int>(packet->optCatalogEntryId));
+
+        zVec3 relayPointScratch;
+        zVec3 *pointOrVec3 = &relayPointScratch;
+        if (packet->pointOrVec3.x == 0.0f && packet->pointOrVec3.y == 0.0f &&
+            packet->pointOrVec3.z == 0.0f) {
+            pointOrVec3 = 0;
+        }
+
+        GameNetPlayerRow *const row = GameNet::FindPlayerRowByKey(packet->ownerPlayerKey);
+        if (row == 0) {
+            return 0;
+        }
+
+        zUtil_SaveGameState *const ownerSaveState = (zUtil_SaveGameState *)row->saveState;
+        if (entry != 0 && ownerSaveState != 0) {
+            g_OptCatalogProcessRuntimeRelayEnabled = 0;
+            OptCatalog::RemoveRuntimeInstance(entry, pointOrVec3,
+                                              ownerSaveState->playerState->rootNode);
+            g_OptCatalogProcessRuntimeRelayEnabled = 1;
+        }
+
+        return 1;
+    }
+
     // Reimplements 0x4b1fa0: OptCatalog::LoadFxSpecFromReaderNode
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
     RECOIL_NOINLINE void RECOIL_FASTCALL
@@ -1132,7 +1249,7 @@ namespace OptCatalog {
         int result = 0;
 
         if (pointOrVec3 != 0) {
-            OptCatalogRuntimeInstanceStorage runtimeInstance = {};
+            OptCatalogRuntimeInstanceStorage runtimeInstance = {0};
             runtimeInstance.ownerNode = ownerNode;
             runtimeInstance.pos = *pointOrVec3;
             runtimeInstance.spawnScale = 1.0f;
@@ -1713,8 +1830,8 @@ namespace OptCatalog {
     RECOIL_NOINLINE void RECOIL_FASTCALL
     HandleImpactEventFromRuntimeState(OptCatalogEntryDef *self,
                                       OptCatalogRuntimeInstanceStorage *runtimeInstance) {
-        OptCatalogHitEventPartial hitEvent = {};
-        OptCatalogSurfaceMaterialRef surfaceRef = {};
+        OptCatalogHitEventPartial hitEvent = {0};
+        OptCatalogSurfaceMaterialRef surfaceRef = {0};
 
         surfaceRef.flags &= 0xfeff;
         surfaceRef.impactSlot = 0;
@@ -1817,7 +1934,7 @@ namespace OptCatalog {
             zClass_Class::gwNodeSetActive(projectileNode, 0);
         }
 
-        PlayerProbeSampleCandidateBuffer rayData = {};
+        PlayerProbeSampleCandidateBuffer rayData = {0};
         if (zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
                 g_OptCatalogRuntimeWorld, &startPoint, &endPoint, &rayData) == 0) {
             OptCatalogHitEventPartial *const hitEvent =
@@ -1831,7 +1948,7 @@ namespace OptCatalog {
         }
 
         if (g_OptCatalog_FallbackImpactProbeEnabled != 0 && self->impactProximity > 0.0f) {
-            OptCatalogRaycastHitList fallbackHits = {};
+            OptCatalogRaycastHitList fallbackHits = {0};
             if (BuildImpactHitList(self, runtimeInstance, 1, &fallbackHits) != 0) {
                 runtimeInstance->pos = startPoint;
                 HandleImpactFromRuntimeProbe(self, runtimeInstance, &fallbackHits, 0);
@@ -1890,8 +2007,8 @@ namespace OptCatalog {
                         if (trailRuntime->pendingSpawnTargetCountPtr != 0 &&
                             trailRuntime->pendingSpawnTargetListPtr != 0 &&
                             *trailRuntime->pendingSpawnTargetCountPtr > 1) {
-                            float targetProjectionScratch[8] = {};
-                            zVec3 sortedDirection = {};
+                            float targetProjectionScratch[8] = {0};
+                            zVec3 sortedDirection = {0};
                             ReflectAndSortImpactTraceList(trailRuntime, targetProjectionScratch,
                                                           &sortedDirection);
 
@@ -2082,8 +2199,10 @@ namespace OptCatalog {
                                   float *targetProjectionScratch, zVec3 *directionOut) {
         zVec3 *farthestTarget = directionOut;
         float farthestDistance = 0.0f;
-        for (int i = 0; i < *runtime->pendingSpawnTargetCountPtr; ++i) {
-            zVec3 *const targetPos = runtime->pendingSpawnTargetListPtr[i].targetPos;
+        for (int projectionIndex = 0; projectionIndex < *runtime->pendingSpawnTargetCountPtr;
+             ++projectionIndex) {
+            zVec3 *const targetPos =
+                runtime->pendingSpawnTargetListPtr[projectionIndex].targetPos;
             const float distance = zMath::Vec3DeltaLength(runtime->spawnPos, targetPos);
             if (distance > farthestDistance) {
                 farthestDistance = distance;
@@ -2093,14 +2212,18 @@ namespace OptCatalog {
 
         zMath::Vec3DirectionTo(runtime->spawnPos, farthestTarget, directionOut);
 
-        for (int i = 0; i < *runtime->pendingSpawnTargetCountPtr; ++i) {
-            zVec3 *const targetPos = runtime->pendingSpawnTargetListPtr[i].targetPos;
+        for (int targetProjectionIndex = 0;
+             targetProjectionIndex < *runtime->pendingSpawnTargetCountPtr;
+             ++targetProjectionIndex) {
+            zVec3 *const targetPos =
+                runtime->pendingSpawnTargetListPtr[targetProjectionIndex].targetPos;
             zVec3 delta;
             delta.x = targetPos->x - runtime->spawnPos->x;
             delta.y = targetPos->y - runtime->spawnPos->y;
             delta.z = targetPos->z - runtime->spawnPos->z;
-            targetProjectionScratch[i] = directionOut->x * delta.x + directionOut->y * delta.y +
-                                         directionOut->z * delta.z;
+            targetProjectionScratch[targetProjectionIndex] =
+                directionOut->x * delta.x + directionOut->y * delta.y +
+                directionOut->z * delta.z;
         }
 
         int swapped;
@@ -2130,7 +2253,7 @@ namespace OptCatalog {
         zClass_cls_di::SetStopAfterFirstHit(0x40000);
         zClass_Class::gwNodeSetRaycastable(trailRuntime->projectileNode, 0);
 
-        PlayerProbeSampleCandidateBuffer rayData = {};
+        PlayerProbeSampleCandidateBuffer rayData = {0};
         const int raycastResult = zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
             g_OptCatalogRuntimeWorld, &segment->pos, targetPos, &rayData);
 

@@ -51,3 +51,8 @@ BEGIN
         MENUITEM "About Recoil", 107
     END
 END
+
+STRINGTABLE
+BEGIN
+    200 "Game File (*.gs)|*.gs|Text File (*.txt)|*.txt|All Files (*.*)|*.*|"
+END

@@ -40,21 +40,19 @@ PLAN_TEXT = textwrap.dedent(
 class RecoilTaskPacketTests(unittest.TestCase):
     def test_select_entry_uses_specific_address(self) -> None:
         doc = PlanDocument.load_from_lines(Path("test"), PLAN_TEXT.splitlines())
-        args = SimpleNamespace(address="0x401000", claim_next=False, lane="functional", claims_dir="")
+        args = SimpleNamespace(address="0x401000", lane="functional")
 
-        entry, should_claim = select_entry(args, doc)
+        entry = select_entry(args, doc)
 
         self.assertEqual("0x401000", entry.address)
-        self.assertFalse(should_claim)
 
     def test_select_entry_defaults_to_first_unfinished(self) -> None:
         doc = PlanDocument.load_from_lines(Path("test"), PLAN_TEXT.splitlines())
-        args = SimpleNamespace(address="", claim_next=False, lane="functional", claims_dir="")
+        args = SimpleNamespace(address="", lane="functional")
 
-        entry, should_claim = select_entry(args, doc)
+        entry = select_entry(args, doc)
 
         self.assertEqual("0x401020", entry.address)
-        self.assertFalse(should_claim)
 
 
 if __name__ == "__main__":

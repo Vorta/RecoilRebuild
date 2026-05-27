@@ -1,5 +1,6 @@
 #include "zClass.h"
 
+#include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/include/zClipAlt.h"
 #include "GameZRecoil/include/zDi.h"
@@ -660,6 +661,83 @@ namespace zClass_Object3D_ModelRefLerpQueue {
         }
 
         zClass_Object3D::gwObject3DSetLitFlag(node, 1);
+    }
+
+    // Reimplements 0x4381d0: zClass_Object3D_ModelRefLerpQueue::Update
+    // (D:\Proj\GameZRecoil\zClass\Object3d.c)
+    RECOIL_NOINLINE void RECOIL_CDECL Update() {
+        if (g_ModelRefLerpQueueState.count == 0) {
+            return;
+        }
+
+        zClass_Object3D_ModelRefLerpTask *task = g_ModelRefLerpQueueState.head;
+        if (task == 0) {
+            return;
+        }
+
+        while (task != 0) {
+            task->currentModelRef += task->modelRefDeltaPerSec * g_FrameDeltaTimeSec;
+            if (task->currentModelRef > 1.0f) {
+                task->currentModelRef = 1.0f;
+            } else if (task->currentModelRef < 0.0f) {
+                task->currentModelRef = 0.0f;
+            }
+
+            float alphaScale = task->currentModelRef;
+            if (task->invertModelRef == 1) {
+                alphaScale = 1.0f - alphaScale;
+            }
+
+            zClass_Object3D::gwObject3DSetAlphaScale(task->node, alphaScale);
+
+            if (task->currentModelRef >= task->targetModelRef) {
+                union {
+                    void *raw;
+                    zClass_Object3D_ModelRefLerpCallback callback;
+                } onComplete = {0};
+                onComplete.raw = task->onComplete;
+                if (onComplete.callback != 0) {
+                    onComplete.callback(task->callbackCtx);
+                }
+
+                if (alphaScale == 1.0f) {
+                    zClass_Object3D::gwObject3DSetLitFlag(task->node, 0);
+                }
+
+                zClass_Object3D_ModelRefLerpTask *const nextTask = task->next;
+                if (g_ModelRefLerpQueueState.count != 0) {
+                    zClass_Object3D_ModelRefLerpTask *prevTask =
+                        g_ModelRefLerpQueueState.head;
+                    if (task == prevTask) {
+                        --g_ModelRefLerpQueueState.count;
+                        g_ModelRefLerpQueueState.head = task->next;
+                        if (g_ModelRefLerpQueueState.head == 0) {
+                            g_ModelRefLerpQueueState.listAux = 0;
+                            g_ModelRefLerpQueueState.tail = 0;
+                        }
+                        ::operator delete(task);
+                    } else if (prevTask != 0) {
+                        while (prevTask != 0) {
+                            zClass_Object3D_ModelRefLerpTask *const prevNext =
+                                prevTask->next;
+                            if (prevNext == task) {
+                                --g_ModelRefLerpQueueState.count;
+                                prevTask->next = task->next;
+                                if (g_ModelRefLerpQueueState.tail == task) {
+                                    g_ModelRefLerpQueueState.tail = prevTask;
+                                }
+                                ::operator delete(task);
+                                break;
+                            }
+                            prevTask = prevNext;
+                        }
+                    }
+                }
+                task = nextTask;
+            } else {
+                task = task->next;
+            }
+        }
     }
 
     // Reimplements 0x438180: zClass_Object3D_ModelRefLerpQueue::Reset

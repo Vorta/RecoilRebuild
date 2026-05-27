@@ -21,11 +21,27 @@ class RecoilMsvcX86RunTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             normalize_command(["--"])
 
-    def test_candidate_paths_honor_explicit_environment(self) -> None:
-        with mock.patch.dict(os.environ, {"RECOIL_VCVARSALL": r"C:\VS\vcvarsall.bat"}, clear=True):
+    def test_candidate_paths_prefer_compiler_local_modern_msvc(self) -> None:
+        with mock.patch.dict(os.environ, {"RECOIL_COMPILER_ROOT": r"D:\Recoil Project\Compiler"}, clear=True):
             candidates = candidate_vcvarsall_paths()
 
-        self.assertEqual(Path(r"C:\VS\vcvarsall.bat"), candidates[0])
+        self.assertEqual(
+            Path(r"D:\Recoil Project\Compiler\VS2022BuildTools\VC\Auxiliary\Build\vcvarsall.bat"),
+            candidates[0],
+        )
+
+    def test_candidate_paths_honor_explicit_environment_after_local_candidates(self) -> None:
+        with mock.patch.dict(
+            os.environ,
+            {
+                "RECOIL_COMPILER_ROOT": r"D:\Recoil Project\Compiler",
+                "RECOIL_VCVARSALL": r"C:\VS\vcvarsall.bat",
+            },
+            clear=True,
+        ):
+            candidates = candidate_vcvarsall_paths()
+
+        self.assertIn(Path(r"C:\VS\vcvarsall.bat"), candidates)
 
     def test_build_script_calls_vcvarsall_x86_then_command(self) -> None:
         script = build_script(Path(r"C:\VS Tools\vcvarsall.bat"), ["cmake", "--preset", "ninja-x86-debug"])

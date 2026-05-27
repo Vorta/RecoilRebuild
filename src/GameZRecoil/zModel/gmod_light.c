@@ -341,10 +341,10 @@ namespace zModel_Light {
         }
 
         int hasFogContribution = 0;
-        for (int i = 0; i < vertexCount; ++i) {
-            const float distance = radialDistance[i];
+        for (int fogIndex = 0; fogIndex < vertexCount; ++fogIndex) {
+            const float distance = radialDistance[fogIndex];
             if (distance <= gModel_FogDistanceStart) {
-                g_Clip_PolyAttr2[i] = 0.0f;
+                g_Clip_PolyAttr2[fogIndex] = 0.0f;
                 continue;
             }
 
@@ -354,7 +354,8 @@ namespace zModel_Light {
             }
 
             float projectedHeight = 0.0f;
-            zMath::Vec3ArrayProjectToCachedY((const zVec3 *)(&g_Clip_PolyVertsScratch[i]),
+            zMath::Vec3ArrayProjectToCachedY(
+                (const zVec3 *)(&g_Clip_PolyVertsScratch[fogIndex]),
                                              &projectedHeight, 1);
 
             if (projectedHeight >= gModel_FogHeightHigh) {
@@ -363,7 +364,7 @@ namespace zModel_Light {
                 fade *= (gModel_FogHeightHigh - projectedHeight) * gModel_FogHeightInvRange;
             }
 
-            g_Clip_PolyAttr2[i] = fade;
+            g_Clip_PolyAttr2[fogIndex] = fade;
             hasFogContribution = 1;
         }
 
@@ -372,13 +373,13 @@ namespace zModel_Light {
             return 0;
         }
 
-        for (int i = 0; i < vertexCount; ++i) {
-            g_Clip_PolyAttr2[i] = ClampWeight(g_Clip_PolyAttr2[i]);
+        for (int clampIndex = 0; clampIndex < vertexCount; ++clampIndex) {
+            g_Clip_PolyAttr2[clampIndex] = ClampWeight(g_Clip_PolyAttr2[clampIndex]);
         }
 
         int hasVisibleFog = 0;
-        for (int i = 0; i < vertexCount; ++i) {
-            if (g_Clip_PolyAttr2[i] > kVisibleAttrThreshold) {
+        for (int visibleIndex = 0; visibleIndex < vertexCount; ++visibleIndex) {
+            if (g_Clip_PolyAttr2[visibleIndex] > kVisibleAttrThreshold) {
                 hasVisibleFog = 1;
                 break;
             }
@@ -389,8 +390,9 @@ namespace zModel_Light {
             return 0;
         }
 
-        for (int i = 1; i < vertexCount; ++i) {
-            if (fabs(g_Clip_PolyAttr2[i] - g_Clip_PolyAttr2[0]) > kVisibleAttrThreshold) {
+        for (int varianceIndex = 1; varianceIndex < vertexCount; ++varianceIndex) {
+            if (fabs(g_Clip_PolyAttr2[varianceIndex] - g_Clip_PolyAttr2[0]) >
+                kVisibleAttrThreshold) {
                 *pLightingFlags |= 2;
                 break;
             }

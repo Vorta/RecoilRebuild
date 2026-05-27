@@ -1,6 +1,7 @@
 #include "Battlesport/HudSensorTracker.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zEffect/zEffect.h"
+#include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zReader/zReader.h"
@@ -44,6 +45,46 @@ zEffectAnimActivationRecord *g_effectAnimDispatchRecord = nullptr;
 int g_effectAnimEventCallbackCallCount = 0;
 zEffectAnimEntry *g_effectAnimEventCallbackSelf = nullptr;
 void *g_effectAnimEventCallbackContext = nullptr;
+int g_zbdDataReadyCallCount = 0;
+zZbdSectionCallbackCtx *g_zbdDataReadyCtx = nullptr;
+const char *g_zbdDataReadyToken = nullptr;
+void *g_zbdDataReadyBuffer = nullptr;
+unsigned int g_zbdDataReadySize = 0;
+void *g_zbdDataReadyUserData = nullptr;
+int g_zbdLoadCallCount = 0;
+int g_zbdPreLoadCallCount = 0;
+zZbdSectionCallbackCtx *g_zbdPreLoadCtx = nullptr;
+void *g_zbdPreLoadUserData = nullptr;
+
+struct ZbdLoadDataReadyCall {
+    zZbdManager *manager;
+    zZbdSectionHandler *sectionHandler;
+    void *userData;
+    char sectionToken[32];
+    unsigned int size;
+    unsigned char bytes[16];
+};
+
+ZbdLoadDataReadyCall g_zbdLoadCalls[4] = {};
+
+struct ZbdLoadDataReadyControl {
+    bool stopOnFirstCall;
+};
+
+struct ZbdPreLoadCall {
+    zZbdManager *manager;
+    zZbdSectionHandler *sectionHandler;
+    void *userData;
+    char sectionName[32];
+};
+
+ZbdPreLoadCall g_zbdPreLoadCalls[4] = {};
+
+struct ZbdPreLoadControl {
+    int result;
+    int failAtCall;
+    bool writeRecord;
+};
 
 bool WriteHudSensorTestMap(const char *path,
                            const HudSensorMapBounds &fileBounds,
@@ -368,6 +409,102 @@ void ClearRegisteredHandlers(zZbdSectionHandlerNode &sentinel) {
 void StoreFloatBits(std::uint32_t &target, float value) {
     std::memcpy(&target, &value, sizeof(value));
 }
+
+void RECOIL_FASTCALL TestZbdDataReadyCallback(zZbdSectionCallbackCtx *callbackCtx,
+                                              const char *sectionToken, void *buffer,
+                                              unsigned int size, void *userData) {
+    ++g_zbdDataReadyCallCount;
+    g_zbdDataReadyCtx = callbackCtx;
+    g_zbdDataReadyToken = sectionToken;
+    g_zbdDataReadyBuffer = buffer;
+    g_zbdDataReadySize = size;
+    g_zbdDataReadyUserData = userData;
+}
+
+void ResetZbdLoadCalls() {
+    g_zbdLoadCallCount = 0;
+    std::memset(g_zbdLoadCalls, 0, sizeof(g_zbdLoadCalls));
+}
+
+void ResetZbdPreLoadCalls() {
+    g_zbdPreLoadCallCount = 0;
+    g_zbdPreLoadCtx = nullptr;
+    g_zbdPreLoadUserData = nullptr;
+    std::memset(g_zbdPreLoadCalls, 0, sizeof(g_zbdPreLoadCalls));
+}
+
+int RECOIL_FASTCALL TestZbdPreLoadCallback(zZbdSectionCallbackCtx *callbackCtx,
+                                           void *userData) {
+    g_zbdPreLoadCtx = callbackCtx;
+    g_zbdPreLoadUserData = userData;
+
+    const int index = g_zbdPreLoadCallCount++;
+    if (index < static_cast<int>(sizeof(g_zbdPreLoadCalls) / sizeof(g_zbdPreLoadCalls[0]))) {
+        ZbdPreLoadCall &call = g_zbdPreLoadCalls[index];
+        call.manager = callbackCtx->manager;
+        call.sectionHandler = callbackCtx->sectionHandler;
+        call.userData = userData;
+        if (callbackCtx->sectionHandler != nullptr &&
+            callbackCtx->sectionHandler->sectionName != nullptr) {
+            std::strncpy(call.sectionName, callbackCtx->sectionHandler->sectionName,
+                         sizeof(call.sectionName) - 1);
+        }
+    }
+
+    ZbdPreLoadControl *const control = static_cast<ZbdPreLoadControl *>(userData);
+    if (control == nullptr) {
+        return 1;
+    }
+
+    if (control->writeRecord) {
+        const std::uint32_t payload = static_cast<std::uint32_t>(index + 1);
+        if (callbackCtx->manager->WriteSectionRecord(callbackCtx, "PreLoad", &payload,
+                                                     sizeof(payload)) == 0) {
+            return 0;
+        }
+    }
+
+    if (control->failAtCall == index) {
+        return 0;
+    }
+
+    return control->result;
+}
+
+void RECOIL_FASTCALL TestZbdLoadDataReadyCallback(zZbdSectionCallbackCtx *callbackCtx,
+                                                  const char *sectionToken, void *buffer,
+                                                  unsigned int size, void *userData) {
+    const int index = g_zbdLoadCallCount++;
+    if (index < static_cast<int>(sizeof(g_zbdLoadCalls) / sizeof(g_zbdLoadCalls[0]))) {
+        ZbdLoadDataReadyCall &call = g_zbdLoadCalls[index];
+        call.manager = callbackCtx->manager;
+        call.sectionHandler = callbackCtx->sectionHandler;
+        call.userData = userData;
+        std::strncpy(call.sectionToken, sectionToken, sizeof(call.sectionToken) - 1);
+        call.size = size;
+
+        const unsigned int copySize =
+            size < sizeof(call.bytes) ? size : static_cast<unsigned int>(sizeof(call.bytes));
+        std::memcpy(call.bytes, buffer, copySize);
+    }
+
+    ZbdLoadDataReadyControl *const control =
+        static_cast<ZbdLoadDataReadyControl *>(userData);
+    if (control != nullptr && control->stopOnFirstCall) {
+        callbackCtx->manager->RequestStop();
+    }
+}
+
+template <typename T>
+zZbdSectionCallback TestZbdCallbackPtr(T callback) {
+    static_assert(sizeof(T) == sizeof(zZbdSectionCallback));
+    union {
+        T callback;
+        zZbdSectionCallback raw;
+    } value = {};
+    value.callback = callback;
+    return value.raw;
+}
 } // namespace
 
 extern "C" int zutil_zar_register_section_handler_smoke(void) {
@@ -608,6 +745,115 @@ extern "C" int hud_sensor_map_node_basics_smoke(void) {
     return 0;
 }
 
+extern "C" int hud_sensor_objective_marker_enable_color_smoke(void) {
+    g_zVideo_PixelPack_RMaskShifted = 0xf8;
+    g_zVideo_PixelPack_GMaskShifted = 0xfc;
+    g_zVideo_PixelPack_RShift = 8;
+    g_zVideo_PixelPack_GShift = 3;
+    g_zVideo_PixelPack_BShiftTo8 = 3;
+
+    HudSensorTracker tracker = {};
+    HudSensorMapPoint matchedPoints[1] = {{1.0f, 2.0f, 3.0f}};
+    HudSensorMapNode first = {};
+    first.Init();
+    first.objectiveIndex = 2;
+    first.points = matchedPoints;
+    first.pointCount = 1;
+    first.selectedPointIndex = 0;
+
+    HudSensorMapNode second = {};
+    second.Init();
+    second.objectiveIndex = 5;
+    second.isEnabled = 1;
+
+    HudSensorMapNode third = {};
+    third.Init();
+    third.objectiveIndex = 2;
+    third.selectedPointIndex = 7;
+
+    first.next = &second;
+    second.next = &third;
+    tracker.mapNodeListHead = &first;
+
+    const std::uint8_t rgb[3] = {0x10, 0x30, 0x50};
+    const std::uint16_t fullColor = static_cast<std::uint16_t>(zVid_PackColorRGB(0x10, 0x50, 0x30));
+
+    const int result = tracker.SetObjectiveMarkerEnabledAndColor(2, 1, rgb);
+    const bool firstOk = first.isEnabled == 1 && first.selectedPointIndex == -1 &&
+                         static_cast<std::uint8_t>(first.colorRgb[0]) == 0x10 &&
+                         static_cast<std::uint8_t>(first.colorRgb[1]) == 0x30 &&
+                         static_cast<std::uint8_t>(first.colorRgb[2]) == 0x50 &&
+                         (first.packedColor565Pair & 0xffff) == fullColor;
+    const bool secondOk = second.isEnabled == 1 &&
+                          static_cast<std::uint8_t>(second.colorRgb[0]) == 0xff &&
+                          second.selectedPointIndex == -1;
+    const bool thirdOk = third.isEnabled == 1 && third.selectedPointIndex == -1 &&
+                         static_cast<std::uint8_t>(third.colorRgb[0]) == 0x10;
+
+    const std::int32_t secondPackedColor = second.packedColor565Pair;
+    const std::uint8_t blinkRgb[3] = {0x20, 0x40, 0x60};
+    const std::uint16_t blinkFullColor =
+        static_cast<std::uint16_t>(zVid_PackColorRGB(0x20, 0x60, 0x40));
+    const std::uint16_t blinkHalfColor =
+        static_cast<std::uint16_t>(zVid_PackColorRGB(0x10, 0x30, 0x20));
+    const std::uint32_t expectedBlinkPair =
+        (static_cast<std::uint32_t>(blinkFullColor) << 16) | blinkHalfColor;
+
+    const int blinkResult = tracker.SetObjectiveMarkerColorBlink(2, blinkRgb);
+    const bool firstBlinkOk =
+        static_cast<std::uint8_t>(first.colorRgb[0]) == 0x20 &&
+        static_cast<std::uint8_t>(first.colorRgb[1]) == 0x40 &&
+        static_cast<std::uint8_t>(first.colorRgb[2]) == 0x60 &&
+        static_cast<std::uint32_t>(first.packedColor565Pair) == expectedBlinkPair;
+    const bool secondBlinkOk = second.packedColor565Pair == secondPackedColor &&
+                               static_cast<std::uint8_t>(second.colorRgb[0]) == 0xff;
+    const bool thirdBlinkOk =
+        static_cast<std::uint8_t>(third.colorRgb[0]) == 0x20 &&
+        static_cast<std::uint32_t>(third.packedColor565Pair) == expectedBlinkPair;
+
+    return result == 1 && firstOk && secondOk && thirdOk && blinkResult == 1 && firstBlinkOk &&
+                   secondBlinkOk && thirdBlinkOk
+               ? 0
+               : 1;
+}
+
+extern "C" int hud_sensor_find_first_incomplete_objective_smoke(void) {
+    g_zVideo_PixelPack_RMaskShifted = 0xf8;
+    g_zVideo_PixelPack_GMaskShifted = 0xfc;
+    g_zVideo_PixelPack_RShift = 8;
+    g_zVideo_PixelPack_GShift = 3;
+    g_zVideo_PixelPack_BShiftTo8 = 3;
+
+    HudSensorTracker tracker = {};
+    tracker.objectiveCount = 3;
+    tracker.objectiveSlots[0].completedFlag = 1;
+    tracker.objectiveSlots[1].completedFlag = 0;
+    tracker.objectiveSlots[2].completedFlag = 0;
+
+    HudSensorMapNode first = {};
+    first.Init();
+    first.objectiveIndex = 1;
+    HudSensorMapNode second = {};
+    second.Init();
+    second.objectiveIndex = 2;
+    first.next = &second;
+    tracker.mapNodeListHead = &first;
+
+    const int firstIncomplete = tracker.FindAndHighlightFirstIncompleteObjective();
+    const bool highlightOk =
+        firstIncomplete == 1 && first.isEnabled == 1 &&
+        static_cast<std::uint8_t>(first.colorRgb[0]) == 0x00 &&
+        static_cast<std::uint8_t>(first.colorRgb[1]) == 0x00 &&
+        static_cast<std::uint8_t>(first.colorRgb[2]) == 0xff && second.isEnabled == 0;
+
+    tracker.objectiveSlots[1].completedFlag = 1;
+    tracker.objectiveSlots[2].completedFlag = 1;
+    first.isEnabled = 0;
+    const int allComplete = tracker.FindAndHighlightFirstIncompleteObjective();
+
+    return highlightOk && allComplete == 3 && first.isEnabled == 0 ? 0 : 1;
+}
+
 extern "C" int hud_sensor_map_bounds_and_save_state_smoke(void) {
     HudSensorTracker tracker = {};
     const HudUiRect outer{10, 20, 30, 50};
@@ -736,8 +982,24 @@ extern "C" int hud_sensor_map_overlay_toggle_smoke(void) {
                              tracker.mapScaleGoal.x == 0.0f &&
                              tracker.mapScaleGoal.z == 0.0f;
 
+    tracker.mapScaleLerpActive = 0;
+    tracker.mapZoom = 2.0f;
+    tracker.MapZoomIn();
+    tracker.MapZoomOut();
+    const bool zoomInactiveOk = tracker.mapZoom == 2.0f;
+
+    tracker.mapScaleLerpActive = 1;
+    tracker.mapSndClick = nullptr;
+    tracker.MapZoomIn();
+    const bool zoomInOk = tracker.mapZoom > 2.199f && tracker.mapZoom < 2.201f;
+    tracker.MapZoomOut();
+    const bool zoomOutOk = tracker.mapZoom > 1.979f && tracker.mapZoom < 1.981f;
+
     g_Hud_MapOverlayRefCount = oldRefCount;
-    return beginOk && endOk && toggleOnOk && stillShown && toggleOffOk ? 0 : 1;
+    return beginOk && endOk && toggleOnOk && stillShown && toggleOffOk && zoomInactiveOk &&
+                   zoomInOk && zoomOutOk
+               ? 0
+               : 1;
 }
 
 extern "C" int hud_sensor_tracker_load_map_paths_smoke(void) {
@@ -872,6 +1134,20 @@ extern "C" int hud_sensor_reset_mission_state_smoke(void) {
     return ok ? 0 : 1;
 }
 
+extern "C" int hud_sensor_shutdown_mission_gameplay_systems_early_smoke(void) {
+    HudSensorTracker tracker = {};
+    zClass_NodePartial worldNode = {};
+    tracker.missionLoaded = 0;
+    tracker.worldNode = &worldNode;
+    tracker.missionId = 17;
+
+    const bool ok = tracker.ShutdownMissionGameplaySystems() == 1 &&
+                    tracker.missionLoaded == 0 && tracker.worldNode == &worldNode &&
+                    tracker.missionId == 17;
+
+    return ok ? 0 : 1;
+}
+
 extern "C" int zutil_zar_write_section_blob_smoke(void) {
     char tempPath[MAX_PATH] = {};
     char tempFile[MAX_PATH] = {};
@@ -915,6 +1191,296 @@ extern "C" int zutil_zar_write_section_blob_smoke(void) {
     manager.indexArchive.records = nullptr;
     CloseHandle(file);
     return ok ? 0 : 1;
+}
+
+extern "C" int zutil_zbd_section_handler_invoke_data_ready_smoke(void) {
+    zZbdSectionHandler handler = {};
+    zZbdSectionCallbackCtx callbackCtx = {};
+    unsigned char payload[4] = {1, 2, 3, 4};
+    int userData = 7;
+
+    g_zbdDataReadyCallCount = 0;
+    handler.InvokeDataReady(&callbackCtx, "Token", payload, sizeof(payload));
+    const bool nullOk = g_zbdDataReadyCallCount == 0;
+
+    handler.onDataReady = TestZbdCallbackPtr(&TestZbdDataReadyCallback);
+    handler.userData = &userData;
+    handler.InvokeDataReady(&callbackCtx, "Token", payload, sizeof(payload));
+
+    const bool callbackOk =
+        g_zbdDataReadyCallCount == 1 && g_zbdDataReadyCtx == &callbackCtx &&
+        g_zbdDataReadyToken != nullptr && std::strcmp(g_zbdDataReadyToken, "Token") == 0 &&
+        g_zbdDataReadyBuffer == payload && g_zbdDataReadySize == sizeof(payload) &&
+        g_zbdDataReadyUserData == &userData;
+
+    return nullOk && callbackOk ? 0 : 1;
+}
+
+extern "C" int zutil_zbd_section_handler_compare_sort_order_smoke(void) {
+    zZbdSectionHandler low = {};
+    zZbdSectionHandler high = {};
+    zZbdSectionHandler equal = {};
+    low.sortOrder = 10;
+    high.sortOrder = 20;
+    equal.sortOrder = 10;
+
+    const bool ok = zZbdSectionHandler::CompareSortOrderLessThan(&low, &high) &&
+                    !zZbdSectionHandler::CompareSortOrderLessThan(&high, &low) &&
+                    !zZbdSectionHandler::CompareSortOrderLessThan(&low, &equal);
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int zutil_zbd_section_handler_invoke_pre_load_smoke(void) {
+    zZbdSectionHandler handler = {};
+    zZbdSectionCallbackCtx callbackCtx = {};
+    ZbdPreLoadControl control = {};
+    control.result = 77;
+    control.failAtCall = -1;
+
+    ResetZbdPreLoadCalls();
+    const bool nullOk = handler.InvokePreLoad(&callbackCtx) == 1 &&
+                        g_zbdPreLoadCallCount == 0;
+
+    handler.onPreLoad = TestZbdCallbackPtr(&TestZbdPreLoadCallback);
+    handler.userData = &control;
+    const int callbackResult = handler.InvokePreLoad(&callbackCtx);
+
+    const bool callbackOk = callbackResult == control.result &&
+                            g_zbdPreLoadCallCount == 1 &&
+                            g_zbdPreLoadCtx == &callbackCtx &&
+                            g_zbdPreLoadUserData == &control;
+
+    return nullOk && callbackOk ? 0 : 1;
+}
+
+extern "C" int zutil_zbd_manager_sort_section_handlers_smoke(void) {
+    zZbdSectionHandlerNode sentinel = {};
+    zZbdManager manager = MakeManager(sentinel);
+    manager.RegisterSectionHandler("Late", nullptr, nullptr, 30, nullptr);
+    manager.RegisterSectionHandler("Early", nullptr, nullptr, 10, nullptr);
+    manager.RegisterSectionHandler("Middle", nullptr, nullptr, 20, nullptr);
+    manager.RegisterSectionHandler("Tie", nullptr, nullptr, 20, nullptr);
+
+    manager.SortSectionHandlers();
+
+    zZbdSectionHandlerNode *first = sentinel.next;
+    zZbdSectionHandlerNode *second = first != &sentinel ? first->next : &sentinel;
+    zZbdSectionHandlerNode *third = second != &sentinel ? second->next : &sentinel;
+    zZbdSectionHandlerNode *fourth = third != &sentinel ? third->next : &sentinel;
+    const bool ok = manager.sectionHandlerCount == 4 && first != &sentinel &&
+                    second != &sentinel && third != &sentinel && fourth != &sentinel &&
+                    fourth->next == &sentinel &&
+                    std::strcmp(first->sectionHandler.sectionName, "Early") == 0 &&
+                    std::strcmp(second->sectionHandler.sectionName, "Middle") == 0 &&
+                    std::strcmp(third->sectionHandler.sectionName, "Tie") == 0 &&
+                    std::strcmp(fourth->sectionHandler.sectionName, "Late") == 0 &&
+                    sentinel.prev == fourth;
+
+    ClearRegisteredHandlers(sentinel);
+    return ok ? 0 : 1;
+}
+
+extern "C" int zutil_zbd_manager_load_entries_smoke(void) {
+    char tempDir[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "zle", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    zZbdSectionHandlerNode sentinel = {};
+    zZbdManager manager = MakeManager(sentinel);
+    ZbdPreLoadControl control = {};
+    control.result = 1;
+    control.failAtCall = -1;
+    control.writeRecord = true;
+    manager.RegisterSectionHandler("Late", TestZbdCallbackPtr(&TestZbdPreLoadCallback),
+                                   nullptr, 30, &control);
+    manager.RegisterSectionHandler("Early", TestZbdCallbackPtr(&TestZbdPreLoadCallback),
+                                   nullptr, 10, &control);
+    manager.RegisterSectionHandler("Middle", TestZbdCallbackPtr(&TestZbdPreLoadCallback),
+                                   nullptr, 20, &control);
+
+    ResetZbdPreLoadCalls();
+    const int loadResult = manager.LoadEntries(tempFile);
+    const bool loadOk = loadResult == 1 && g_zbdPreLoadCallCount == 3 &&
+                        std::strcmp(g_zbdPreLoadCalls[0].sectionName, "Early") == 0 &&
+                        std::strcmp(g_zbdPreLoadCalls[1].sectionName, "Middle") == 0 &&
+                        std::strcmp(g_zbdPreLoadCalls[2].sectionName, "Late") == 0 &&
+                        manager.indexArchive.hFile == INVALID_HANDLE_VALUE &&
+                        manager.indexArchive.records == nullptr &&
+                        manager.indexArchive.recordCount == 0;
+
+    control.writeRecord = false;
+    control.failAtCall = 1;
+    ResetZbdPreLoadCalls();
+    const int failedResult = manager.LoadEntries(tempFile);
+    const bool failOk = failedResult == 0 && g_zbdPreLoadCallCount == 2 &&
+                        std::strcmp(g_zbdPreLoadCalls[0].sectionName, "Early") == 0 &&
+                        std::strcmp(g_zbdPreLoadCalls[1].sectionName, "Middle") == 0 &&
+                        manager.indexArchive.hFile == INVALID_HANDLE_VALUE &&
+                        manager.indexArchive.records == nullptr;
+
+    ClearRegisteredHandlers(sentinel);
+    DeleteFileA(tempFile);
+    return loadOk && failOk ? 0 : 2;
+}
+
+extern "C" int zutil_zbd_load_entries_global_smoke(void) {
+    g_zUtil_ZbdManager = nullptr;
+    const bool nullManagerOk = zUtil::ZBD_LoadEntriesGlobal("missing.zbd") == 0;
+
+    char tempDir[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "zlg", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    zZbdSectionHandlerNode sentinel = {};
+    zZbdManager manager = MakeManager(sentinel);
+    ZbdPreLoadControl control = {};
+    control.result = 1;
+    control.failAtCall = -1;
+    manager.RegisterSectionHandler("Global", TestZbdCallbackPtr(&TestZbdPreLoadCallback),
+                                   nullptr, 5, &control);
+
+    g_zUtil_ZbdManager = &manager;
+    ResetZbdPreLoadCalls();
+    const int loadResult = zUtil::ZBD_LoadEntriesGlobal(tempFile);
+    const bool delegateOk = loadResult == 1 && g_zbdPreLoadCallCount == 1 &&
+                            g_zbdPreLoadCalls[0].manager == &manager &&
+                            std::strcmp(g_zbdPreLoadCalls[0].sectionName, "Global") == 0 &&
+                            manager.indexArchive.hFile == INVALID_HANDLE_VALUE &&
+                            manager.indexArchive.records == nullptr;
+
+    g_zUtil_ZbdManager = nullptr;
+    ClearRegisteredHandlers(sentinel);
+    DeleteFileA(tempFile);
+    return nullManagerOk && delegateOk ? 0 : 2;
+}
+
+extern "C" int zutil_zbd_manager_load_zar_file_smoke(void) {
+    char tempDir[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "zzb", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    const unsigned char firstPayload[3] = {17, 34, 51};
+    const unsigned char ignoredPayload[2] = {68, 85};
+    const unsigned char secondPayload[5] = {102, 119, 136, 153, 170};
+
+    zIndexArchive writer = {};
+    writer.Reset();
+    if (writer.OpenCreateWrite(tempFile) == 0 ||
+        writer.AddFileRecord("Demo/TokenOne", firstPayload, sizeof(firstPayload), nullptr,
+                             nullptr) == 0 ||
+        writer.AddFileRecord("Other/Skip", ignoredPayload, sizeof(ignoredPayload), nullptr,
+                             nullptr) == 0 ||
+        writer.AddFileRecord("Demo/TokenTwo", secondPayload, sizeof(secondPayload), nullptr,
+                             nullptr) == 0 ||
+        writer.CloseAndFreeRecords() == 0) {
+        writer.CloseAndFreeRecords();
+        DeleteFileA(tempFile);
+        return 2;
+    }
+
+    zZbdSectionHandlerNode sentinel = {};
+    zZbdManager manager = MakeManager(sentinel);
+    ZbdLoadDataReadyControl control = {};
+    manager.RegisterSectionHandler("Demo", nullptr,
+                                   TestZbdCallbackPtr(&TestZbdLoadDataReadyCallback), 0,
+                                   &control);
+
+    ResetZbdLoadCalls();
+    const int loadResult = manager.LoadZarFile(tempFile);
+    zZbdSectionHandler *const handler = sentinel.next != &sentinel
+                                            ? &sentinel.next->sectionHandler
+                                            : nullptr;
+    const bool fullLoadOk =
+        loadResult == 1 && g_zbdLoadCallCount == 2 && g_zbdLoadCalls[0].manager == &manager &&
+        g_zbdLoadCalls[0].sectionHandler == handler && g_zbdLoadCalls[0].userData == &control &&
+        std::strcmp(g_zbdLoadCalls[0].sectionToken, "TokenOne") == 0 &&
+        g_zbdLoadCalls[0].size == sizeof(firstPayload) &&
+        std::memcmp(g_zbdLoadCalls[0].bytes, firstPayload, sizeof(firstPayload)) == 0 &&
+        g_zbdLoadCalls[1].manager == &manager && g_zbdLoadCalls[1].sectionHandler == handler &&
+        g_zbdLoadCalls[1].userData == &control &&
+        std::strcmp(g_zbdLoadCalls[1].sectionToken, "TokenTwo") == 0 &&
+        g_zbdLoadCalls[1].size == sizeof(secondPayload) &&
+        std::memcmp(g_zbdLoadCalls[1].bytes, secondPayload, sizeof(secondPayload)) == 0 &&
+        manager.indexArchive.hFile == INVALID_HANDLE_VALUE &&
+        manager.indexArchive.records == nullptr && manager.indexArchive.recordCount == 0 &&
+        manager.tempBuffer != nullptr && manager.tempBufferSize >= sizeof(secondPayload) &&
+        manager.stopRequested == 0;
+
+    control.stopOnFirstCall = true;
+    ResetZbdLoadCalls();
+    const int stoppedLoadResult = manager.LoadZarFile(tempFile);
+    const bool stopOk = stoppedLoadResult == 1 && g_zbdLoadCallCount == 1 &&
+                        std::strcmp(g_zbdLoadCalls[0].sectionToken, "TokenOne") == 0 &&
+                        manager.stopRequested == 1 &&
+                        manager.indexArchive.hFile == INVALID_HANDLE_VALUE &&
+                        manager.indexArchive.records == nullptr;
+
+    ClearRegisteredHandlers(sentinel);
+    if (manager.tempBuffer != nullptr) {
+        ::operator delete(manager.tempBuffer);
+        manager.tempBuffer = nullptr;
+    }
+    DeleteFileA(tempFile);
+    return fullLoadOk && stopOk ? 0 : 3;
+}
+
+extern "C" int zutil_zar_load_file_global_smoke(void) {
+    g_zUtil_ZbdManager = nullptr;
+    const bool nullManagerOk = zUtil::ZAR_LoadFileGlobal("missing.zar") == 0;
+
+    char tempDir[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "zlg", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    const unsigned char payload[4] = {3, 1, 4, 1};
+    zIndexArchive writer = {};
+    writer.Reset();
+    if (writer.OpenCreateWrite(tempFile) == 0 ||
+        writer.AddFileRecord("Demo/Global", payload, sizeof(payload), nullptr, nullptr) == 0 ||
+        writer.CloseAndFreeRecords() == 0) {
+        writer.CloseAndFreeRecords();
+        DeleteFileA(tempFile);
+        return 2;
+    }
+
+    zZbdSectionHandlerNode sentinel = {};
+    zZbdManager manager = MakeManager(sentinel);
+    ZbdLoadDataReadyControl control = {};
+    manager.RegisterSectionHandler("Demo", nullptr,
+                                   TestZbdCallbackPtr(&TestZbdLoadDataReadyCallback), 0,
+                                   &control);
+
+    g_zUtil_ZbdManager = &manager;
+    ResetZbdLoadCalls();
+    const int loadResult = zUtil::ZAR_LoadFileGlobal(tempFile);
+    const bool delegateOk =
+        loadResult == 1 && g_zbdLoadCallCount == 1 &&
+        g_zbdLoadCalls[0].manager == &manager &&
+        std::strcmp(g_zbdLoadCalls[0].sectionToken, "Global") == 0 &&
+        g_zbdLoadCalls[0].size == sizeof(payload) &&
+        std::memcmp(g_zbdLoadCalls[0].bytes, payload, sizeof(payload)) == 0;
+
+    g_zUtil_ZbdManager = nullptr;
+    ClearRegisteredHandlers(sentinel);
+    if (manager.tempBuffer != nullptr) {
+        ::operator delete(manager.tempBuffer);
+        manager.tempBuffer = nullptr;
+    }
+    DeleteFileA(tempFile);
+    return nullManagerOk && delegateOk ? 0 : 3;
 }
 
 extern "C" int zeffect_anim_shutdown_entry_smoke(void) {
@@ -3100,6 +3666,145 @@ extern "C" int zeffect_anim_activation_prereqs_smoke(void) {
     return mismatchOk ? 0 : 5;
 }
 
+extern "C" int hud_sensor_run_start_anims_from_zrd_smoke(void) {
+    zArchiveList *const oldMountedList = g_zArchive_MountedList;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+    const int oldQueueEnabled = g_zEffectAnim_RecordQueueEnabled;
+    const int oldDispatchEnabled = g_zEffectAnim_DispatchEnabled;
+    const unsigned int oldDispatchTag = g_zEffectAnim_ActivationDispatchTagHigh;
+    const auto oldDispatchCallback = g_zEffectAnim_ActivationDispatchCallback;
+
+    char tempDir[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "hsa", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr,
+                    CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempFile);
+        return 2;
+    }
+
+    WriteEffectTestZrdArray(file, 3);
+    WriteEffectTestZrdString(file, "START_ANIMS");
+    WriteEffectTestZrdArray(file, 4);
+    WriteEffectTestZrdArray(file, 2);
+    WriteEffectTestZrdString(file, "introflash");
+    WriteEffectTestZrdArray(file, 2);
+    WriteEffectTestZrdString(file, "missing_anim");
+    WriteEffectTestZrdArray(file, 2);
+    WriteEffectTestZrdString(file, "startcountdown");
+    FlushFileBuffers(file);
+
+    zZarFileRecord record = {};
+    record.fileOffset = 0;
+    record.fileSize = SetFilePointer(file, 0, nullptr, FILE_CURRENT);
+    std::strcpy(record.name, "start.zrd");
+    zIndexArchive archive = {};
+    archive.hFile = file;
+    archive.recordCount = 1;
+    archive.records = &record;
+    zArchiveListNode archiveNode = {};
+    archiveNode.payload = &archive;
+    archiveNode.next = &archiveNode;
+    archiveNode.prev = &archiveNode;
+    zArchiveList mountedList = {};
+    mountedList.count = 1;
+    mountedList.head = &archiveNode;
+
+    zClass_NodePartial boundNodes[2] = {};
+    boundNodes[0].classId = 2;
+    boundNodes[1].classId = 2;
+    zClass_NodePartial runtimeNodes[2] = {};
+    runtimeNodes[0].callbackPriority = 1;
+    runtimeNodes[1].callbackPriority = 2;
+    zEffectAnimEntry entries[2] = {};
+    std::strcpy(entries[0].name, "introflash");
+    std::strcpy(entries[1].name, "startcountdown");
+    entries[0].boundNode = &boundNodes[0];
+    entries[1].boundNode = &boundNodes[1];
+    entries[0].callbackNode = &boundNodes[0];
+    entries[1].callbackNode = &boundNodes[1];
+    entries[0].runtimeNode = &runtimeNodes[0];
+    entries[1].runtimeNode = &runtimeNodes[1];
+    entries[0].activationPrereqCount = 5;
+    entries[1].activationPrereqCount = 6;
+    entries[0].velocityX = 11.0f;
+    entries[0].velocityY = 12.0f;
+    entries[0].velocityZ = 13.0f;
+    entries[1].velocityX = 21.0f;
+    entries[1].velocityY = 22.0f;
+    entries[1].velocityZ = 23.0f;
+
+    int networkEnabled = 1;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zArchive_MountedList = &mountedList;
+    g_zEffectAnim_EntryList = entries;
+    g_zEffectAnim_EntryCount = 2;
+    zEffect_Anim::ClearActivationRecords();
+    g_zEffectAnim_RecordQueueEnabled = 1;
+    g_zEffectAnim_DispatchEnabled = 0;
+    g_zEffectAnim_ActivationDispatchCallback = nullptr;
+    g_zEffectAnim_ActivationDispatchTagHigh = 0;
+
+    HudSensorTracker tracker = {};
+    tracker.RunStartAnimsFromZrd("C:\\dummy\\start.zrd", "START_ANIMS");
+    int networkSkipResult = 0;
+    if (entries[0].activationPrereqCount != 5 || entries[1].activationPrereqCount != 6) {
+        networkSkipResult = 31;
+    } else if (entries[0].activationState != 0 || entries[1].activationState != 0) {
+        networkSkipResult = 32;
+    } else if (g_zEffectAnim_ActivationRecordCount != 0) {
+        networkSkipResult = 33;
+    }
+
+    networkEnabled = 0;
+    tracker.RunStartAnimsFromZrd("C:\\dummy\\start.zrd", "START_ANIMS");
+    int loadResult = 0;
+    if (entries[0].activationPrereqCount != 0 || entries[1].activationPrereqCount != 0) {
+        loadResult = 4;
+    } else if (entries[0].activationState != 2) {
+        loadResult = 51;
+    } else if (entries[1].activationState != 2) {
+        loadResult = 52;
+    } else if (entries[0].velocityX != 0.0f || entries[0].velocityY != 0.0f ||
+               entries[0].velocityZ != 0.0f || entries[1].velocityX != 0.0f ||
+               entries[1].velocityY != 0.0f || entries[1].velocityZ != 0.0f) {
+        loadResult = 6;
+    } else if (runtimeNodes[0].callbackContext !=
+                   reinterpret_cast<zClass_NodePartial *>(&entries[0]) ||
+               runtimeNodes[1].callbackContext !=
+                   reinterpret_cast<zClass_NodePartial *>(&entries[1])) {
+        loadResult = 7;
+    } else if (g_zEffectAnim_ActivationRecordCount != 2 ||
+               g_zEffectAnim_ActivationRecordTable[0].commandType != 2 ||
+               g_zEffectAnim_ActivationRecordTable[1].commandType != 2) {
+        loadResult = 8;
+    }
+
+    zEffect_Anim::ClearActivationRecords();
+    g_zEffectAnim_RecordQueueEnabled = oldQueueEnabled;
+    g_zEffectAnim_DispatchEnabled = oldDispatchEnabled;
+    g_zEffectAnim_ActivationDispatchCallback = oldDispatchCallback;
+    g_zEffectAnim_ActivationDispatchTagHigh = oldDispatchTag;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    g_zArchive_MountedList = oldMountedList;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    CloseHandle(file);
+    DeleteFileA(tempFile);
+    if (networkSkipResult != 0) {
+        return networkSkipResult;
+    }
+    return loadResult;
+}
+
 extern "C" int zeffect_anim_activation_record_queue_smoke(void) {
     zEffect_Anim::ClearActivationRecords();
     g_zEffectAnim_ActivationRecordCapacity = 0;
@@ -3266,6 +3971,14 @@ extern "C" int zeffect_anim_activation_record_queue_smoke(void) {
     g_zEffectAnim_ActivationDispatchTagHigh = 0;
     zEffect_Anim::ClearActivationRecords();
     return overrideOk ? 0 : 14;
+}
+
+extern "C" int zeffect_anim_process_activation_record_smoke(void) {
+    zEffectAnimActivationRecord record = {};
+    record.commandType = 2;
+    std::strcpy(record.animName, "missing_activation_record_entry");
+
+    return zEffect_Anim::ProcessActivationRecord(&record) == nullptr ? 0 : 1;
 }
 
 extern "C" int zeffect_handle_emitter_reset_event_smoke(void) {
