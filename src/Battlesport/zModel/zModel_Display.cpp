@@ -700,6 +700,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Release(zModel_MaterialSlot *slot) {
 } // namespace zModel_MatlSlot
 
 namespace zModel_MatlBuffer {
+enum {
+    kMaterialHasTextureUploadSurface = 0x0100,
+    kMaterialTextureSurfacePinned = 0x0200,
+    kRendererBackend3dfx = 2,
+};
+
 // Reimplements 0x480d80: zModel_MatlBuffer::ReleaseAllActive
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
 RECOIL_NOINLINE int RECOIL_CDECL ReleaseAllActive() {
@@ -714,6 +720,33 @@ RECOIL_NOINLINE int RECOIL_CDECL ReleaseAllActive() {
 
     g_zModel_MatlReuseCache = 0;
     return 0;
+}
+
+// Reimplements 0x480fd0: zModel_MatlBuffer::ReleaseTextureSurfaces
+// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL ReleaseTextureSurfaces() {
+    int slotIndex = g_zModel_MatlActiveHeadIndex;
+    while (slotIndex >= 0) {
+        zModel_MaterialSlot *const slot = &g_zModel_MatlPool[slotIndex];
+        zModel_MaterialPartial *const material = &slot->material;
+
+        if ((material->flags & kMaterialHasTextureUploadSurface) != 0 &&
+            (material->flags & kMaterialTextureSurfacePinned) == 0) {
+            zImage_TexDirEntryPartial *const texDirEntry =
+                material->currentTextureDirectoryEntry;
+
+            if (texDirEntry != 0 && texDirEntry->texture != 0) {
+                if (g_zVideo_ActiveRendererPath == kRendererBackend3dfx) {
+                    zVid_Image::ReleaseOwnedBuffers(texDirEntry->image);
+                }
+
+                ((zVideo_TextureRecordReleaseUploadSurfaceRefProc)
+                     g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef)(texDirEntry->texture);
+            }
+        }
+
+        slotIndex = slot->nextPoolIndex;
+    }
 }
 
 // Reimplements 0x480f10: zModel_MatlBuffer::Shutdown

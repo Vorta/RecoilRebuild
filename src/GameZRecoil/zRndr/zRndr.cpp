@@ -2891,9 +2891,7 @@ zRndr_SpanOcclusion_TestPointVisibility(zVec3 *samplePoint) {
 // Reimplements 0x498f90: zRndr_SpanOcclusion_TestSample
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_TestSample(int x, int y,
                                                                     int color16) {
-    if (zRndr::g_pfnPointOpActive != 0) {
-        zRndr::g_pfnPointOpActive(zRndr::g_frameBuffer, y, x, color16);
-    }
+    zRndr::g_pfnPointOpActive(zRndr::g_frameBuffer, y, x, color16);
 }
 
 // Reimplements 0x499020: zRndr_DrawCircleOctants16_Framebuffer
@@ -3977,7 +3975,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyUniformAlphaOrShade
     }
 
     zVidImagePartial *image = entry != 0 ? entry->image : 0;
-    if ((image->formatFlagsPacked & 2) == 0 && alphaOrShadeF >= 1.0f) {
+    if ((image->formatFlagsPacked & 2) == 0 && alphaOrShadeF < 1.0f) {
         zRndr_DrawTexturedQueuedAlpha(entry, projectedPolyVerts, clippedTriVerts, triData9f, triUVs,
                                       vertexCount, g_zRndr_ActivePaletteRemapKey);
         return;
@@ -5370,6 +5368,36 @@ zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(int startIndex) {
         ++startIndex;
         ++sample;
     }
+}
+
+// Reimplements 0x49a9c0: zRndr_LensFlare::BuildVisibleSampleListFromQueue
+// (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+zRndr_LensFlare_BuildVisibleSampleListFromQueue(int startIndex) {
+    int visibleSampleCount = 0;
+    zRndr::g_lensFlareVisibleSampleCount = 0;
+    if (startIndex >= zRndr::g_lensFlareSampleQueueCount) {
+        return visibleSampleCount;
+    }
+
+    zRndr::LensFlareSamplePartial *sample = &zRndr::g_lensFlareSampleQueue[startIndex];
+    while (startIndex < zRndr::g_lensFlareSampleQueueCount) {
+        zRndr_LensFlareSource *source =
+            (zRndr_LensFlareSource *)(sample->lensFlareSource);
+        if (source != 0 && source->lensFlareEnabled != 0 &&
+            sample < &zRndr::g_lensFlareSampleQueue[0x40] &&
+            sample->reciprocalZ != 0.0f) {
+            zRndr::g_lensFlareVisibleSampleDefs[visibleSampleCount] =
+                (zRndr_LensFlareVisibleSampleDef *)(sample);
+            visibleSampleCount = zRndr::g_lensFlareVisibleSampleCount + 1;
+            zRndr::g_lensFlareVisibleSampleCount = visibleSampleCount;
+        }
+
+        ++startIndex;
+        ++sample;
+    }
+
+    return visibleSampleCount;
 }
 
 // Reimplements 0x49aa40: zRndr_LensFlare_SetVisibleSampleStage

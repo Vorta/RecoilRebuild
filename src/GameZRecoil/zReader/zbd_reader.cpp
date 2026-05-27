@@ -1026,7 +1026,7 @@ wstring ReadZbdDetailedText(const wstring &path) {
                                         const unsigned int chunk = (toCheck > kWorldChildRefChunk)
                                                                         ? kWorldChildRefChunk
                                                                         : toCheck;
-                                        array<int, kWorldChildRefChunk> bufRefs = {};
+                                        array<int, kWorldChildRefChunk> bufRefs = {0};
                                         if (!ReadExact(f, bufRefs.data(), (size_t)chunk * 4)) {
                                             vrBad = true;
                                             break;

@@ -255,6 +255,7 @@ RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor(
     return this;
 }
 
+// Reimplements 0x430610: CZRecoilFrame::Destructor
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::Destructor() {
     vftable = Ptr32FromSymbol(&kCZRecoilFrame_Vtable);
     m_mainMenuVftable = Ptr32FromSymbol(&kCMenu_Vtable);

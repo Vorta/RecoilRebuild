@@ -12,6 +12,21 @@ namespace zSndCd {
 int RECOIL_CDECL Stop();
 }
 
+class CPaintDC {
+  public:
+    CPaintDC(CWnd *pWnd);
+    virtual ~CPaintDC();
+
+    HDC m_hDC;
+    HDC m_hAttribDC;
+    HWND m_hWnd;
+    BOOL m_bPrinting;
+    PAINTSTRUCT m_ps;
+};
+
+RECOIL_STATIC_ASSERT(offsetof(CPaintDC, m_hDC) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(CPaintDC, m_ps) == 0x14);
+
 namespace {
 const RecoilNamedVtable kCZGameFrame_Vtable = {"CZGameFrame vtable"};
 const RecoilNamedVtable kCBitmap_Vtable = {"CBitmap vtable"};
@@ -75,6 +90,21 @@ const AFX_MSGMAP *RECOIL_STDCALL CZGameFrame::GetBaseMessageMapForMfc() {
     return &CFrameWnd::messageMap;
 }
 
+// Reimplements 0x443730: CZGameFrame::CreateObject
+RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_CDECL CZGameFrame::CreateObject() {
+    CZGameFrame *const frame = static_cast<CZGameFrame *>(::operator new(sizeof(CZGameFrame)));
+    if (frame == 0) {
+        return 0;
+    }
+
+    try {
+        return frame->Constructor("gamez");
+    } catch (...) {
+        ::operator delete(frame);
+        throw;
+    }
+}
+
 RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetRuntimeClass() {
     return Ptr32FromSymbol(&CZGameFrame::classCZGameFrame);
 }
@@ -111,6 +141,7 @@ CZGameFrame::Constructor(const char *appId) {
     return this;
 }
 
+// Reimplements 0x443830: CZGameFrame::Destructor
 RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::Destructor() {
     *(RecoilPtr32 *)(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
     zVideo::ReturnSuccessStub();
@@ -144,6 +175,32 @@ CZGameFrame::OnCreate(CREATESTRUCTA *createStruct) {
 // Reimplements 0x4438f0: CZGameFrame::OnClose
 RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnClose() {
     CFrameWnd::OnClose();
+}
+
+// Reimplements 0x443900: CZGameFrame::OnPaint
+RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnPaint() {
+    CPaintDC paintDc((CWnd *)(void *)this);
+    if (zVid_QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
+        return;
+    }
+
+    PAINTSTRUCT paintStruct = paintDc.m_ps;
+    HDC compatibleDc = CreateCompatibleDC(paintDc.m_hDC);
+    SelectObject(compatibleDc, m_gameBitmap.m_hObject);
+
+    const int paintLeft = paintStruct.rcPaint.left;
+    const int paintTop = paintStruct.rcPaint.top;
+    const int paintWidth = paintStruct.rcPaint.right - paintLeft;
+    const int paintHeight = paintStruct.rcPaint.bottom - paintTop;
+    if (paintHeight > 480) {
+        StretchBlt(paintDc.m_hDC, paintLeft, paintTop, paintWidth, paintHeight, compatibleDc,
+                   paintLeft, paintTop, 640, 480, SRCCOPY);
+    } else {
+        BitBlt(paintDc.m_hDC, paintLeft, paintTop, paintWidth, paintHeight, compatibleDc,
+               paintLeft, paintTop, SRCCOPY);
+    }
+
+    DeleteDC(compatibleDc);
 }
 
 // Reimplements 0x443ab0: CZGameFrame::OnDestroy

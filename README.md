@@ -5,7 +5,7 @@ Zipper Interactive's 1999 game *Recoil*. The goal is not to build a modern
 port first; the goal is to recover a source-faithful C/C++ codebase whose
 compiled output can be compared against the original retail executable.
 
-The recovered decompiled source and original executable analysis are the
+The Binary Ninja analysis database and original executable analysis are the
 behavioral and ABI reference. Source in this workspace is rewritten from that
 evidence, then checked through native builds, focused tests, and VC
 object-byte comparison. VC5SP3 is the normal first-pass compiler for
@@ -36,13 +36,14 @@ publishing the executable itself.
   reconstructed C/C++ code.
 - `tests/native` - CTest smoke tests, ABI checks, and focused behavior tests
   for reconstructed native code.
-- `tools` - plan navigation, decompiled-source frontier reports, assembly evidence,
+- `tools` - plan navigation, Binary Ninja frontier reports, assembly evidence,
   and source guard scripts. See `tools/README.md`.
 - `tools/vc6_verify_targets` - public VC assembly-verification manifests for
   reconstructed functions and dependency groups. The directory name is
   historical; targets may use VC5SP3 or VC6 profiles.
-- `docs/reconstruction` - durable reconstruction notes. The previous large root
-  notes file is preserved as `docs/reconstruction/NOTES.md`.
+- `docs/reconstruction` - compact durable reconstruction notes.
+- `export` - watcher-facing Binary Ninja text dumps; not authoritative
+  reconstruction evidence.
 - `.agent` - long-lived reconstruction plan, implementation group notes, and
   source guard baselines used by coding agents.
 
@@ -54,12 +55,11 @@ Ignored local-only paths used by private verification include:
   mirrors used for native ABI work.
 - `img/GAMEBMP.bmp` and `img/RECOIL.ico` - extracted resource payloads
   regenerated from a local `support/Recoil.exe`.
-- `RECOIL_VC6_ROOT`, a sibling `Compiler/VC6` directory, a sibling
-  `Compiler/VC5SP3` directory, plus local decompiler databases - local
-  toolchain and reverse-engineering state.
+- `D:\Recoil Project\Compiler\VC6` and sibling `Compiler\VC5SP3` - local
+  portable VC toolchains, plus local decompiler databases.
 
 The root `AGENTS.md` is the authoritative workflow for reconstruction agents.
-It defines the binary-safety gate, source style rules, decompiled-source workflow,
+It defines the binary-safety gate, source style rules, Binary Ninja evidence workflow,
 plan marker meanings, and required verification process.
 Use `docs/reconstruction/agent_launch_checklist.md` as the compact launch
 checklist before assigning a new reconstruction agent.
@@ -127,7 +127,11 @@ A Visual Studio Win32 solution can be generated with:
 cmake --preset vs-x86
 ```
 
-The generated native solution is under `build/vs-x86`.
+The generated native solution is under `build/vs-x86`. Agents should prefer
+Visual Studio MCP for solution-backed navigation, builds, diagnostics, and
+focused debugging when available, using the workflow in
+`docs/reconstruction/visual_studio_mcp_workflow.md`, instead of calling Visual
+Studio batch files directly.
 
 The local full verification workspace uses legacy SDK surfaces:
 
@@ -144,23 +148,27 @@ run native ABI builds need to supply equivalent local files.
 Passing tests is necessary but not sufficient for a function to be complete.
 Completion is tracked per function in `.agent/RECOIL_PLAN.md`:
 
-- `Reconstructed` means the decompiled source model is accepted.
+- `Reconstructed` means the Binary Ninja evidence model is accepted.
 - `Source dependencies satisfied` means direct source/ABI dependencies are ready
-  for implementation.
+  for implementation on authored functions.
 - `Reimplemented` means native source exists and compiles with the correct
-  source-level behavior.
+  source-level behavior on authored functions.
 - `Functional-equivalent` means source, ABI, and targeted behavior evidence are
   accepted for default dependency progress.
 - `Binary-safe` means generated 32-bit assembly or provider ABI
   evidence has been compared against the original and accepted. It is the final
   acceptance gate for class, vtable, source-cluster, and rebuilt-executable
   confidence.
+- `Provider-boundary` replaces the authored-source markers for non-authored
+  compiler/runtime/import/framework functions. Accepted provider boundaries are
+  dependency-ready for authored callers.
+  Use `python tools/recoil_plan_cli.py reclassify ...` when current evidence
+  changes an entry between authored and provider-boundary classifications.
 
 Useful commands:
 
 ```powershell
 python tools/recoil_status.py
-python tools/recoil_claim.py next --owner <name> --claim
 python tools/recoil_plan_cli.py next
 python tools/recoil_plan_cli.py next --lane binary
 python tools/recoil_frontier.py 0x4301e0 --depth 1
@@ -171,9 +179,10 @@ python tools/recoil_pe_reference.py --reference support/Recoil.exe --manifest .a
 python tools/recoil_plan_audit.py --summary
 ```
 
-Use `recoil_claim.py` to coordinate active function ownership between agents.
-`recoil_plan_cli.py next` is read-only navigation; it does not reserve work.
-The default lane is functional equivalence. Use `--lane binary` only when
+Agents create local git commits after finishing a function or class
+reimplementation step; coherent multi-function batches may use one commit. Do
+not push. `recoil_plan_cli.py next` selects the next unfinished plan entry. The
+default lane is functional equivalence. Use `--lane binary` only when
 intentionally working remaining binary-safe debt after functional evidence is
 accepted.
 
@@ -189,9 +198,11 @@ icon payloads are not. Regenerate them in a private workspace with:
 python tools/recoil_resource_extract.py
 ```
 
-CTest also includes source guards that reject new raw original-image addresses,
-raw assembly/naked functions, and `reinterpret_cast` uses in production
-source. The Python tooling tests can also be run directly:
+CTest also runs native smoke tests plus process/source guards for VC manifest
+source policy, source-map freshness, compiler/linker provenance, workspace
+hygiene, raw original-image addresses, raw assembly/naked functions, and
+`reinterpret_cast` uses in production source. The Python tooling tests can also
+be run directly:
 
 ```powershell
 python -m unittest discover -s tests/tools -p *_tests.py
@@ -219,10 +230,8 @@ python -m unittest discover -s tests/tools -p *_tests.py
   namespace boundaries.
 - `docs/reconstruction/source_file_map.md` - generated original-source to
   current-source placement map.
-- `docs/reconstruction/NOTES.md` - archival subsystem reconstruction notes and
-  decompiled-source findings; source material, not the preferred location for
-  new notes.
-
+- `docs/reconstruction/visual_studio_mcp_workflow.md` - Visual Studio MCP
+  development workflow for generated `vs-x86` projects.
 When adding reconstructed source, document durable facts in code where future
 contributors need them: original address provenance, recovered layouts, ABI
 constraints, ownership/cleanup order, provider assumptions, decompiler

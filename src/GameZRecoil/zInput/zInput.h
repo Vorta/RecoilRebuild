@@ -371,7 +371,7 @@ void RECOIL_CDECL Mouse_RecenterCursorX();
 void RECOIL_STDCALL Mouse_SetNormalizedCursorPos(float normX, float normY);
 int RECOIL_CDECL Mouse_IsInitialized();
 int RECOIL_CDECL Mouse_InitDevice();
-void RECOIL_CDECL Mouse_PollAndStoreState();
+void RECOIL_FASTCALL Mouse_PollAndStoreState(int dispatchCallbacks);
 int RECOIL_FASTCALL Mouse_PollState(int dispatchCallbacks);
 int RECOIL_CDECL Mouse_AddRef();
 int RECOIL_FASTCALL Mouse_GetButtonTransitionState(int buttonNumber);

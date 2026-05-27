@@ -411,7 +411,7 @@ namespace {
             return 0;
         }
 
-        PlayerProbeSampleCandidateBuffer rayData = {};
+        PlayerProbeSampleCandidateBuffer rayData = {0};
         zClass_cls_di::SetBreakOnFirstCandidate(1);
         zClass_cls_di::SetStopAfterFirstHit(0x40000);
         zClass_Class::gwNodeSetRaycastable(node, 0);
@@ -1210,8 +1210,8 @@ namespace zClass_cls_di {
         }
 
         int uniqueGridCellCount = 0;
-        for (int i = 0; i < pointCount; ++i) {
-            zWorldAreaPartial *cell = gridCellForPoint[i];
+        for (int uniquePointIndex = 0; uniquePointIndex < pointCount; ++uniquePointIndex) {
+            zWorldAreaPartial *cell = gridCellForPoint[uniquePointIndex];
             if (cell == 0) {
                 continue;
             }
@@ -1255,15 +1255,15 @@ namespace zClass_cls_di {
             }
         }
 
-        for (int i = 0; i < pointCount; ++i) {
-            if (pointWasClamped[i] != 0) {
-                pointArray[i].x -= clampOffsetX[i];
-                pointArray[i].z -= clampOffsetZ[i];
+        for (int restoreIndex = 0; restoreIndex < pointCount; ++restoreIndex) {
+            if (pointWasClamped[restoreIndex] != 0) {
+                pointArray[restoreIndex].x -= clampOffsetX[restoreIndex];
+                pointArray[restoreIndex].z -= clampOffsetZ[restoreIndex];
             }
         }
 
-        for (int i = 0; i < world->listCountB; ++i) {
-            zClass_NodePartial *node = world->listB[i];
+        for (int worldNodeIndex = 0; worldNodeIndex < world->listCountB; ++worldNodeIndex) {
+            zClass_NodePartial *node = world->listB[worldNodeIndex];
             if (NodePassesQueryFlags(node) && NodePassesQueryVariant(node)) {
                 BuildPickCandidatesForPoints(node, world->listCountB + 1, pointActive);
             }
@@ -1724,17 +1724,17 @@ namespace zClass_cls_di {
         const int cullBackface =
             static_cast<int>((faceEntry->flagsAndVertexCount >> 8) & 1u);
         int anyActive = 0;
-        for (int i = 0; i < segmentCount; ++i) {
-            if (localActive[i] == 0) {
+        for (int planeIndex = 0; planeIndex < segmentCount; ++planeIndex) {
+            if (localActive[planeIndex] == 0) {
                 continue;
             }
 
-            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[i];
+            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[planeIndex];
             if (buffer->candidateCount >= kMaxPickCandidates ||
                 !BuildBatchSegmentPlaneHit(&buffer->entries[buffer->candidateCount],
-                                           &segmentEndpointsByBatch[i], polygonVertices, &normal,
-                                           cullBackface)) {
-                localActive[i] = 0;
+                                           &segmentEndpointsByBatch[planeIndex],
+                                           polygonVertices, &normal, cullBackface)) {
+                localActive[planeIndex] = 0;
                 continue;
             }
 
@@ -1746,25 +1746,27 @@ namespace zClass_cls_di {
         }
 
         const int vertexCount = static_cast<int>(faceEntry->flagsAndVertexCount & 0xffu);
-        for (int i = 0; i < segmentCount; ++i) {
-            if (localActive[i] == 0) {
+        for (int polygonIndex = 0; polygonIndex < segmentCount; ++polygonIndex) {
+            if (localActive[polygonIndex] == 0) {
                 continue;
             }
 
-            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[i];
+            PlayerProbeSampleCandidateBuffer *buffer =
+                &outCandidateBuffersBySegment[polygonIndex];
             const zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
-            localActive[i] =
+            localActive[polygonIndex] =
                 PointInProjectedPolygon(polygonVertices, vertexCount, &entry->hitPos, &normal)
                     ? 1
                     : 0;
         }
 
         anyActive = 0;
-        for (int i = 0; i < segmentCount; ++i) {
-            if (localActive[i] != 0) {
+        for (int appendIndex = 0; appendIndex < segmentCount; ++appendIndex) {
+            if (localActive[appendIndex] != 0) {
                 anyActive = 1;
-                AppendBatchPolygonCandidate(candidateOwner, &outCandidateBuffersBySegment[i],
-                                            &normal, faceEntry);
+                AppendBatchPolygonCandidate(candidateOwner,
+                                            &outCandidateBuffersBySegment[appendIndex], &normal,
+                                            faceEntry);
             }
         }
 
@@ -1793,17 +1795,17 @@ namespace zClass_cls_di {
         const int cullBackface =
             static_cast<int>((faceEntry->flagsAndVertexCount >> 8) & 1u);
         int anyActive = 0;
-        for (int i = 0; i < segmentCount; ++i) {
-            if (localActive[i] == 0) {
+        for (int planeIndex = 0; planeIndex < segmentCount; ++planeIndex) {
+            if (localActive[planeIndex] == 0) {
                 continue;
             }
 
-            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[i];
+            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[planeIndex];
             if (buffer->candidateCount >= kMaxPickCandidates ||
                 !BuildBatchSegmentPlaneHit(&buffer->entries[buffer->candidateCount],
-                                           &segmentEndpointsByBatch[i], polygonVertices, &normal,
-                                           cullBackface)) {
-                localActive[i] = 0;
+                                           &segmentEndpointsByBatch[planeIndex],
+                                           polygonVertices, &normal, cullBackface)) {
+                localActive[planeIndex] = 0;
                 continue;
             }
 
@@ -1815,14 +1817,15 @@ namespace zClass_cls_di {
         }
 
         const int vertexCount = static_cast<int>(faceEntry->flagsAndVertexCount & 0xffu);
-        for (int i = 0; i < segmentCount; ++i) {
-            if (localActive[i] == 0) {
+        for (int polygonIndex = 0; polygonIndex < segmentCount; ++polygonIndex) {
+            if (localActive[polygonIndex] == 0) {
                 continue;
             }
 
-            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[i];
+            PlayerProbeSampleCandidateBuffer *buffer =
+                &outCandidateBuffersBySegment[polygonIndex];
             const zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
-            localActive[i] =
+            localActive[polygonIndex] =
                 PointInProjectedPolygon(polygonVertices, vertexCount, &entry->hitPos, &normal)
                     ? 1
                     : 0;
@@ -1831,19 +1834,20 @@ namespace zClass_cls_di {
         const int damageMaskEnabled = OptCatalog_IsDamageMaskEnabled();
         const int dominantAxis = DominantAxis(&normal);
         anyActive = 0;
-        for (int i = 0; i < segmentCount; ++i) {
-            if (localActive[i] == 0) {
+        for (int damageMaskIndex = 0; damageMaskIndex < segmentCount; ++damageMaskIndex) {
+            if (localActive[damageMaskIndex] == 0) {
                 continue;
             }
 
-            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[i];
+            PlayerProbeSampleCandidateBuffer *buffer =
+                &outCandidateBuffersBySegment[damageMaskIndex];
             if (buffer->candidateCount >= kMaxPickCandidates) {
                 continue;
             }
 
             if (damageMaskEnabled != 0) {
                 const zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
-                zClassDiPickCandidateEntry uvCandidate = {};
+                zClassDiPickCandidateEntry uvCandidate = {0};
                 uvCandidate.hitPos = entry->hitPos;
                 uvCandidate.surfaceNormal = normal;
                 SolvePickCandidateUvForProjectedPlane(&uvCandidate, polygonVertices, faceUvData,
@@ -2729,19 +2733,20 @@ namespace zClass_cls_di {
 
         const int segmentCount = endpointCount >> 1;
         int segmentActive[24] = {0};
-        for (int i = 0; i < segmentCount; ++i) {
-            segmentActive[i] = 1;
-            hitBatches[i].candidateCount = 0;
+        for (int activeIndex = 0; activeIndex < segmentCount; ++activeIndex) {
+            segmentActive[activeIndex] = 1;
+            hitBatches[activeIndex].candidateCount = 0;
         }
 
         zClass_WorldDataPartial *worldData =
             static_cast<zClass_WorldDataPartial *>(world->classData);
         int anyActive = 0;
-        for (int i = 0; i < segmentCount; ++i) {
-            BuildSegmentBoundsFromEndpoints(&segmentEndpoints[i], &g_DiSegmentBounds[i]);
+        for (int boundsIndex = 0; boundsIndex < segmentCount; ++boundsIndex) {
+            BuildSegmentBoundsFromEndpoints(&segmentEndpoints[boundsIndex],
+                                            &g_DiSegmentBounds[boundsIndex]);
             if (worldData->clampQueriesToBounds == 0 &&
-                !SegmentBoundsOverlapWorldXZ(&g_DiSegmentBounds[i], worldData)) {
-                segmentActive[i] = 0;
+                !SegmentBoundsOverlapWorldXZ(&g_DiSegmentBounds[boundsIndex], worldData)) {
+                segmentActive[boundsIndex] = 0;
             } else {
                 anyActive = 1;
             }
@@ -2757,8 +2762,8 @@ namespace zClass_cls_di {
             g_DiPickPointCount = segmentCount;
 
             BuildPickCandidatesForSegmentsInGridWindow(world, segmentActive);
-            for (int i = 0; i < world->listCountB; ++i) {
-                zClass_NodePartial *node = world->listB[i];
+            for (int worldNodeIndex = 0; worldNodeIndex < world->listCountB; ++worldNodeIndex) {
+                zClass_NodePartial *node = world->listB[worldNodeIndex];
                 if ((node->flags & kNodeFlagEnabledForPick) != 0 &&
                     (node->flags & kNodeFlagRaycastable) != 0 &&
                     VariantTag::CurrentAllowsId(node->nodeType) != 0) {
@@ -2810,18 +2815,18 @@ namespace zClass_cls_di {
         int windowMaxCol = segmentMaxCol[0];
         int windowMinRow = segmentMinRow[0];
         int windowMaxRow = segmentMaxRow[0];
-        for (int i = 1; i < segmentCount; ++i) {
-            if (segmentMinCol[i] < windowMinCol) {
-                windowMinCol = segmentMinCol[i];
+        for (int windowIndex = 1; windowIndex < segmentCount; ++windowIndex) {
+            if (segmentMinCol[windowIndex] < windowMinCol) {
+                windowMinCol = segmentMinCol[windowIndex];
             }
-            if (segmentMaxCol[i] > windowMaxCol) {
-                windowMaxCol = segmentMaxCol[i];
+            if (segmentMaxCol[windowIndex] > windowMaxCol) {
+                windowMaxCol = segmentMaxCol[windowIndex];
             }
-            if (segmentMinRow[i] < windowMinRow) {
-                windowMinRow = segmentMinRow[i];
+            if (segmentMinRow[windowIndex] < windowMinRow) {
+                windowMinRow = segmentMinRow[windowIndex];
             }
-            if (segmentMaxRow[i] > windowMaxRow) {
-                windowMaxRow = segmentMaxRow[i];
+            if (segmentMaxRow[windowIndex] > windowMaxRow) {
+                windowMaxRow = segmentMaxRow[windowIndex];
             }
         }
 

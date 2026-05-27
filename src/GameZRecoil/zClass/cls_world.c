@@ -364,10 +364,10 @@ namespace zClass_World {
                                                         sizeof(zWorldAreaPartial)));
         }
 
-        for (int row = 0; row < data->areaGridRowCount; ++row) {
-            const float rowAsFloat = static_cast<float>(row);
+        for (int initRow = 0; initRow < data->areaGridRowCount; ++initRow) {
+            const float rowAsFloat = static_cast<float>(initRow);
             for (int col = 0; col < data->areaGridColCount; ++col) {
-                zWorldAreaPartial *area = &data->areaGridRows[row][col];
+                zWorldAreaPartial *area = &data->areaGridRows[initRow][col];
                 area->areaFlags |= 0x100;
                 area->cellMinX = static_cast<float>(col) * data->areaCellSizeX + data->originX;
                 area->cellMinZ = rowAsFloat * data->areaCellSizeZ + data->originZ;
@@ -403,17 +403,18 @@ namespace zClass_World {
         }
 
         zWorldAreaPartial *lastRow = data->areaGridRows[data->areaGridRowCount - 1];
-        for (int col = 0; col < data->areaGridColCount; ++col) {
-            MoveAreaChildrenToVapStatics(world, &lastRow[col]);
+        for (int lastCol = 0; lastCol < data->areaGridColCount; ++lastCol) {
+            MoveAreaChildrenToVapStatics(world, &lastRow[lastCol]);
         }
 
-        for (int row = 1; row < data->areaGridRowCount - 1; ++row) {
-            MoveAreaChildrenToVapStatics(world, &data->areaGridRows[row][0]);
+        for (int firstEdgeRow = 1; firstEdgeRow < data->areaGridRowCount - 1; ++firstEdgeRow) {
+            MoveAreaChildrenToVapStatics(world, &data->areaGridRows[firstEdgeRow][0]);
         }
 
-        for (int row = 1; row < data->areaGridRowCount - 1; ++row) {
+        for (int lastEdgeRow = 1; lastEdgeRow < data->areaGridRowCount - 1; ++lastEdgeRow) {
             MoveAreaChildrenToVapStatics(world,
-                                         &data->areaGridRows[row][data->areaGridColCount - 1]);
+                                         &data->areaGridRows[lastEdgeRow]
+                                                            [data->areaGridColCount - 1]);
         }
 
         return 0;

@@ -19,11 +19,15 @@ unsigned int g_zNetwork_LastSendExHandle = 0;
 int g_zNetwork_LastSendExCompleted = 0;
 int g_zNetwork_SessionRuntimeInitialized = 0;
 zNetworkDPlaySessionDescCache *g_zNetwork_CurrentSessionDescCache = 0;
+zNetworkFatalDisconnectCallback g_zNetwork_FatalDisconnectCallback = 0;
+int g_zNetwork_FatalDisconnectTriggered = 0;
+int g_zNetworkCurrentPlayerCountCached = 0;
 char g_zNetwork_SessionNameCache[0x5c] = {0};
 zArchiveList *g_zNetwork_EnumeratedSessionList = 0;
 zNetworkServiceProviderListVec *g_zNetwork_ServiceProviderList = 0;
 zNetworkPlayerRecordList *g_zNetwork_PlayerRecordList = 0;
 void *g_zNetwork_ReceiveBuffer = 0;
+unsigned int g_zNetwork_ReceiveBufferCapacity = 0;
 int g_zNetwork_PlayerColorInUseFlags[16] = {0};
 zNetworkDispatchHandlerListNode *g_zNetwork_DispatchHandlerListSentinel = 0;
 int g_zNetwork_DispatchHandlerListCount = 0;
@@ -33,6 +37,7 @@ unsigned char g_zNetwork_DispatchHandlerListFlags = 0;
 namespace {
 const char *kZNetworkDPlaySourceFile = "D:\\Proj\\GameZRecoil\\zNetwork\\znet_dplay.cpp";
 const int kDPlayPending = static_cast<int>(0x8000000a);
+const int kDPlayBufferTooSmall = static_cast<int>(0x8877001e);
 
 struct DPlayErrorName {
     int hresult;
@@ -198,6 +203,18 @@ namespace zNetwork {
 RECOIL_NOINLINE int RECOIL_CDECL IsHost() {
     return g_zNetwork_IsHostFlag;
 }
+
+// Reimplements 0x48afa0: zNetwork::GetPlayerNameByKey
+RECOIL_NOINLINE int RECOIL_FASTCALL
+GetPlayerNameByKey(int playerKey, char *destination, unsigned int maxCount) {
+    zNetwork_PlayerRecord *const playerRecord = zNetwork_FindPlayerRecordByKey(playerKey);
+    if (playerRecord == 0 || playerRecord->playerName == 0) {
+        return 0;
+    }
+
+    strncpy(destination, playerRecord->playerName, maxCount);
+    return 1;
+}
 } // namespace zNetwork
 
 // Reimplements 0x48acf0: zNetwork_DPlay_SendUnreliable (GameZRecoil/zNetwork/znet_dplay.cpp)
@@ -339,6 +356,311 @@ zNetwork_FindPlayerRecordByKey(int playerKey) {
     return 0;
 }
 
+namespace zNetwork {
+// Reimplements 0x48b940: zNetwork::AllocFreePlayerColorIndex
+RECOIL_NOINLINE int RECOIL_CDECL AllocFreePlayerColorIndex() {
+    const int maxPlayers = g_zNetwork_CurrentSessionDescCache->desc.maxPlayers;
+    for (int colorIndex = 1;
+         static_cast<unsigned int>(colorIndex) <= static_cast<unsigned int>(maxPlayers);
+         ++colorIndex) {
+        if (g_zNetwork_PlayerColorInUseFlags[colorIndex] == 0) {
+            g_zNetwork_PlayerColorInUseFlags[colorIndex] = 1;
+            return colorIndex;
+        }
+    }
+
+    return 0;
+}
+
+// Reimplements 0x48b860: zNetwork::HostSendPlayerColorAssignmentsPacket
+RECOIL_NOINLINE void RECOIL_FASTCALL HostSendPlayerColorAssignmentsPacket(int joiningPlayerKey) {
+    if (IsHost() == 0) {
+        return;
+    }
+
+    zNetwork_PlayerRecord *const joiningPlayer =
+        zNetwork_FindPlayerRecordByKey(joiningPlayerKey);
+    if (joiningPlayer == 0) {
+        return;
+    }
+
+    if (joiningPlayer->colorIndex <= 0) {
+        joiningPlayer->colorIndex = AllocFreePlayerColorIndex();
+    }
+
+    const int playerCount = zNetwork_GetPlayerRecordCount();
+    const int packetSizeBytes =
+        static_cast<int>(sizeof(zNetworkPacketHeader) + sizeof(int) +
+                         (sizeof(zNetworkPlayerColorPair) * playerCount));
+    NetPkt01_PlayerColorAssignments *const packet =
+        static_cast<NetPkt01_PlayerColorAssignments *>(malloc(packetSizeBytes));
+    memset(packet, 0, packetSizeBytes);
+    packet->header.packetType = 1;
+    packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    packet->header.packetSizeBytes = static_cast<short>(packetSizeBytes);
+    packet->pairCount = playerCount;
+
+    zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
+    zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
+    int pairIndex = 0;
+    for (zNetworkPlayerRecordListNode *node = sentinel->next; node != sentinel;
+         node = node->next) {
+        zNetwork_PlayerRecord *const playerRecord = node->playerRecord;
+        packet->pairs[pairIndex].playerKey = static_cast<int>(playerRecord->playerKey);
+        packet->pairs[pairIndex].colorIndex = playerRecord->colorIndex;
+        ++pairIndex;
+    }
+
+    zNetwork_SendPacketReliable(&packet->header);
+    free(packet);
+}
+} // namespace zNetwork
+
+namespace zNetworkDPlay {
+// Reimplements 0x48afe0: zNetworkDPlay::PumpIncomingMessages
+RECOIL_NOINLINE int RECOIL_FASTCALL
+PumpIncomingMessages(zNetworkDPlaySystemMessage *systemMessage) {
+    zNetworkPacketHeader packet;
+    const int msgType = systemMessage->msgType;
+
+    if (msgType == 0x21 || msgType == 7) {
+        return 0;
+    }
+
+    if (msgType == 3) {
+        zNetwork_PlayerRecord *playerRecord =
+            static_cast<zNetwork_PlayerRecord *>(::operator new(sizeof(zNetwork_PlayerRecord)));
+        if (playerRecord != 0) {
+            strncpy(playerRecord->playerName, "noname", 0x50);
+            playerRecord->playerName[0x4f] = 0;
+        }
+
+        playerRecord->playerKey = systemMessage->fields.playerId;
+        playerRecord->playerNameInfo.size = systemMessage->fields.createFlagsOrPlayerType;
+        playerRecord->playerNameInfo.flags = systemMessage->fields.nameShortOrAsyncHandle;
+        playerRecord->playerNameInfo.shortName = systemMessage->fields.nameLong;
+        playerRecord->playerNameInfo.longName = systemMessage->fields.nameDisplay;
+        strcpy(playerRecord->playerName, playerRecord->playerNameInfo.longName);
+        strcpy(playerRecord->altName, playerRecord->playerNameInfo.shortName);
+        playerRecord->colorIndex = 0;
+
+        zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
+        zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
+        zNetworkPlayerRecordListNode *prev = sentinel->prev;
+        zNetworkPlayerRecordListNode *const node =
+            static_cast<zNetworkPlayerRecordListNode *>(
+                ::operator new(sizeof(zNetworkPlayerRecordListNode)));
+        node->next = sentinel != 0 ? sentinel : node;
+        node->prev = prev != 0 ? prev : node;
+        sentinel->prev = node;
+        node->prev->next = node;
+        node->playerRecord = playerRecord;
+        ++list->count;
+
+        ++g_zNetworkCurrentPlayerCountCached;
+        packet.packetType = 2;
+        packet.packetSizeBytes = 8;
+        packet.payloadDword0 = 0;
+        zNetwork_DPlay::DispatchPacketToHandlers(systemMessage->fields.playerId, &packet);
+        if (zNetwork::IsHost() != 0) {
+            zNetwork::HostSendPlayerColorAssignmentsPacket(systemMessage->fields.playerId);
+        }
+
+        return 0;
+    }
+
+    if (msgType == 5) {
+        packet.packetType = 3;
+        packet.packetSizeBytes = 8;
+        packet.payloadDword0 = 0;
+        zNetwork_DPlay::DispatchPacketToHandlers(systemMessage->fields.playerId, &packet);
+        zNetwork::RemovePlayerRecordByKey(systemMessage->fields.playerId);
+        --g_zNetworkCurrentPlayerCountCached;
+        return 0;
+    }
+
+    if (msgType == 0x31) {
+        if (g_zNetwork_FatalDisconnectCallback != 0) {
+            g_zNetwork_FatalDisconnectCallback(-1);
+        }
+        g_zNetwork_FatalDisconnectTriggered = 1;
+        return -1;
+    }
+
+    if (msgType == 0x101) {
+        g_zNetwork_IsHostFlag = 1;
+        return 0;
+    }
+
+    if (msgType == 0x102) {
+        packet.packetType = 4;
+        packet.packetSizeBytes = 8;
+        packet.payloadDword0 = 0;
+        zNetwork_DPlay::DispatchPacketToHandlers(systemMessage->fields.playerId, &packet);
+        return 0;
+    }
+
+    if (msgType == 0x103) {
+        packet.packetType = 5;
+        packet.packetSizeBytes = 8;
+        packet.payloadDword0 = 0;
+        zNetwork_DPlay::DispatchPacketToHandlers(systemMessage->fields.playerId, &packet);
+        return 0;
+    }
+
+    if (msgType == 0x104) {
+        memcpy(&g_zNetwork_CurrentSessionDescCache->desc, systemMessage->payload_004,
+               sizeof(zNetworkDPlaySessionDesc));
+        return 0;
+    }
+
+    if (msgType == 0x10d) {
+        if (systemMessage->fields.nameShortOrAsyncHandle == g_zNetwork_LastSendExHandle) {
+            g_zNetwork_LastSendExCompleted = 1;
+        }
+        return 0;
+    }
+
+    zError::ReportOld(0x200, kZNetworkDPlaySourceFile, 0x346,
+                      "Unhandled DirectPlay system message");
+    return 0;
+}
+} // namespace zNetworkDPlay
+
+namespace zNetwork {
+// Reimplements 0x48b9e0: zNetwork::RemovePlayerRecordByKey
+RECOIL_NOINLINE void RECOIL_FASTCALL RemovePlayerRecordByKey(int playerKey) {
+    zNetwork_PlayerRecord *const playerRecord = zNetwork_FindPlayerRecordByKey(playerKey);
+    if (playerRecord == 0) {
+        return;
+    }
+
+    const int colorIndex = playerRecord->colorIndex;
+    if (colorIndex > 0) {
+        g_zNetwork_PlayerColorInUseFlags[colorIndex] = 0;
+    }
+
+    zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
+    zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
+    zNetworkPlayerRecordListNode *node = sentinel->next;
+    while (node != sentinel) {
+        if (node->playerRecord == playerRecord) {
+            zNetworkPlayerRecordListNode *const deleteNode = node;
+            node = node->next;
+            deleteNode->prev->next = deleteNode->next;
+            deleteNode->next->prev = deleteNode->prev;
+            ::operator delete(deleteNode);
+            --list->count;
+        } else {
+            node = node->next;
+        }
+    }
+}
+} // namespace zNetwork
+
+namespace zNetworkDPlay {
+// Reimplements 0x48ae70: zNetworkDPlay::ReceivePendingMessages
+RECOIL_NOINLINE int RECOIL_FASTCALL ReceivePendingMessages(int messageBudget) {
+    if (g_zNetwork_SessionRuntimeInitialized == 0) {
+        return 0;
+    }
+
+    if (g_zNetwork_FatalDisconnectTriggered != 0) {
+        return -1;
+    }
+
+    int processedCount = 0;
+    int pumpResult = 0;
+    while (true) {
+        unsigned int receiveBufferCapacity = g_zNetwork_ReceiveBufferCapacity;
+        unsigned int fromPlayer = 0;
+        unsigned int toPlayer = 0;
+        const int hresult = g_zNetwork_pDirectPlay4->vtbl_00->Receive_64(
+            g_zNetwork_pDirectPlay4, &fromPlayer, &toPlayer, 1, g_zNetwork_ReceiveBuffer,
+            &receiveBufferCapacity);
+
+        if (hresult == kDPlayBufferTooSmall) {
+            const unsigned int oldCapacity = g_zNetwork_ReceiveBufferCapacity;
+            g_zNetwork_ReceiveBuffer = realloc(g_zNetwork_ReceiveBuffer, receiveBufferCapacity);
+            zError::ReportOld(0x100, kZNetworkDPlaySourceFile, 0x299,
+                              "Receiving buffer size increased from %d to %d", oldCapacity,
+                              receiveBufferCapacity);
+            g_zNetwork_ReceiveBufferCapacity = receiveBufferCapacity;
+            continue;
+        }
+
+        if (hresult < 0) {
+            break;
+        }
+
+        if (receiveBufferCapacity >= 4) {
+            --messageBudget;
+            ++processedCount;
+            if (fromPlayer != 0) {
+                zNetwork_DPlay::DispatchPacketToHandlers(
+                    static_cast<int>(fromPlayer),
+                    static_cast<zNetworkPacketHeader *>(g_zNetwork_ReceiveBuffer));
+            } else {
+                pumpResult = PumpIncomingMessages(
+                    static_cast<zNetworkDPlaySystemMessage *>(g_zNetwork_ReceiveBuffer));
+            }
+        }
+
+        if (messageBudget == 0 || pumpResult != 0) {
+            break;
+        }
+    }
+
+    return processedCount;
+}
+
+// Reimplements 0x48b660: zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord
+RECOIL_NOINLINE int RECOIL_STDCALL EnumPlayerCallback_AddPlayerRecord(
+    unsigned int playerId, unsigned int, zNetworkDPlayName *playerNameInfo, unsigned int,
+    void *) {
+    if (zNetwork_FindPlayerRecordByKey(static_cast<int>(playerId)) != 0) {
+        return 1;
+    }
+
+    zNetwork_PlayerRecord *const playerRecord =
+        static_cast<zNetwork_PlayerRecord *>(::operator new(sizeof(zNetwork_PlayerRecord)));
+    strncpy(playerRecord->playerName, playerNameInfo->shortName, 0x50);
+    playerRecord->playerName[0x4f] = 0;
+    playerRecord->playerKey = playerId;
+
+    zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
+    zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
+    zNetworkPlayerRecordListNode *prev = sentinel->prev;
+    zNetworkPlayerRecordListNode *const node =
+        static_cast<zNetworkPlayerRecordListNode *>(::operator new(sizeof(zNetworkPlayerRecordListNode)));
+
+    node->next = sentinel != 0 ? sentinel : node;
+    if (prev == 0) {
+        prev = node;
+    }
+    node->prev = prev;
+    sentinel->prev = node;
+    node->prev->next = node;
+    node->playerRecord = playerRecord;
+    ++list->count;
+    return 1;
+}
+} // namespace zNetworkDPlay
+
+namespace zNetwork_DPlay {
+// Reimplements 0x48a310: zNetwork_DPlay::EnumPlayers
+RECOIL_NOINLINE int RECOIL_CDECL EnumPlayers() {
+    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
+    const int hresult = directPlay->vtbl_00->EnumPlayers_30(
+        directPlay, 0, zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord, 0, 0);
+    if (hresult < 0) {
+        return zNetwork_DPlay_ReportError(hresult, kZNetworkDPlaySourceFile, 0xd9);
+    }
+
+    return g_zNetwork_PlayerRecordList->count;
+}
+} // namespace zNetwork_DPlay
+
 // Reimplements 0x48bff0: zNetwork_DestroyDispatchHandlerList
 extern "C" RECOIL_NOINLINE void RECOIL_CDECL zNetwork_DestroyDispatchHandlerList() {
     zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;
@@ -447,6 +769,34 @@ void DeletePlayerRecordNode(zNetworkPlayerRecordListNode *node) {
 } // namespace
 
 namespace zNetwork {
+// Reimplements 0x48c0a0: zNetwork::RegisterPacketHandler
+// (D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp)
+RECOIL_NOINLINE zNetworkDispatchHandlerRecord *RECOIL_FASTCALL
+RegisterPacketHandler(int packetType, zNetworkPacketHandler handlerProc, int mode) {
+    zNetworkDispatchHandlerRecord *const record =
+        static_cast<zNetworkDispatchHandlerRecord *>(
+            ::operator new(sizeof(zNetworkDispatchHandlerRecord)));
+    if (record != 0) {
+        record->packetType = static_cast<short>(packetType);
+        record->handler = handlerProc;
+        record->mode = mode;
+    }
+
+    zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;
+    zNetworkDispatchHandlerListNode *const node =
+        static_cast<zNetworkDispatchHandlerListNode *>(
+            ::operator new(sizeof(zNetworkDispatchHandlerListNode)));
+    zNetworkDispatchHandlerListNode *const prev = sentinel->prev;
+    node->next = sentinel != 0 ? sentinel : node;
+    node->prev = prev != 0 ? prev : node;
+    sentinel->prev = node;
+    node->prev->next = node;
+    node->record = record;
+    ++g_zNetwork_DispatchHandlerListCount;
+
+    return record;
+}
+
 // Reimplements 0x48c120: zNetwork::UnregisterPacketHandler
 RECOIL_NOINLINE int RECOIL_FASTCALL
 UnregisterPacketHandler(int packetType, zNetworkPacketHandler handlerProc) {
@@ -472,7 +822,26 @@ UnregisterPacketHandler(int packetType, zNetworkPacketHandler handlerProc) {
 
     return 1;
 }
+} // namespace zNetwork
 
+namespace zNetwork_DPlay {
+// Reimplements 0x48c200: zNetwork_DPlay::DispatchPacketToHandlers
+RECOIL_NOINLINE void RECOIL_FASTCALL
+DispatchPacketToHandlers(int senderPlayerId, zNetworkPacketHeader *packet) {
+    zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;
+    zNetworkDispatchHandlerListNode *node = sentinel->next;
+    while (node != sentinel) {
+        zNetworkDispatchHandlerRecord *const record = node->record;
+        if (record->packetType == packet->packetType) {
+            record->handler(senderPlayerId, packet);
+        }
+
+        node = node->next;
+    }
+}
+} // namespace zNetwork_DPlay
+
+namespace zNetwork {
 // Reimplements 0x489f30: zNetwork::ClearEnumeratedSessionList
 RECOIL_NOINLINE void RECOIL_CDECL ClearEnumeratedSessionList() {
     zNetworkDPlaySessionDesc *desc = static_cast<zNetworkDPlaySessionDesc *>(

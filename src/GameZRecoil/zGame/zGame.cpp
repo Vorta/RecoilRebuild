@@ -1242,7 +1242,7 @@ RECOIL_NOINLINE int RECOIL_CDECL GetNetworkEnabled() {
     return *ZOPT_NETWORK_ENABLED;
 }
 
-// Reimplements 0x4083d0: zOpt::ViewRectSection_SetPosition
+// Reimplements 0x4083d0: zOpt_ViewRectSection::SetPosition
 RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_SetPosition(zOpt_ViewRectSection *section,
                                                                  int x, int y) {
     section->x = x;
@@ -1253,7 +1253,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_SetPosition(zOpt_ViewRectSe
     section->maxYInclusive = section->bottomExclusive - 1;
 }
 
-// Reimplements 0x408400: zOpt::ViewRectSection_SetSize
+// Reimplements 0x408400: zOpt_ViewRectSection::SetSize
 RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_SetSize(zOpt_ViewRectSection *section,
                                                              int width,
                                                              int height) {

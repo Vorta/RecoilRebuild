@@ -10,6 +10,7 @@ struct zSndPlayHandle;
 struct zEffectAnimEntry;
 struct PlayerTimedHitStatus;
 struct PlayerProgressTargetSlotRuntime;
+struct NetPkt0A_RemoveRuntimeRelay;
 struct OptCatalogEntryDef;
 struct OptCatalogTrailRuntimeState;
 struct OptCatalogFxSpec;
@@ -244,6 +245,13 @@ MineIterator_Begin(OptCatalogEntryDef *entry);
 RECOIL_NOINLINE OptCatalogRuntimeInstanceStorage *RECOIL_CDECL MineIterator_Next();
 RECOIL_NOINLINE void RECOIL_FASTCALL
 SetPendingSpawnTargetOverrides(void *pendingSpawnTargetCountPtr, void *pendingSpawnTargetListPtr);
+RECOIL_NOINLINE int RECOIL_FASTCALL
+AltGunDispatchAllocRuntimeGateCallback(OptCatalogEntryDef *self, void **saveStateSlot);
+RECOIL_NOINLINE void RECOIL_FASTCALL
+SendPkt0A_RemoveRuntimeRelay(OptCatalogEntryDef *self, zVec3 *pointOrVec3,
+                             zClass_NodePartial *ownerNode);
+RECOIL_NOINLINE int RECOIL_FASTCALL
+HandlePkt0A_RemoveRuntimeRelay(int senderPlayerId, NetPkt0A_RemoveRuntimeRelay *packet);
 RECOIL_NOINLINE void RECOIL_FASTCALL
 LoadFxSpecFromReaderNode(zReader::Node *parentNode, OptCatalogFxSpec *spec,
                          const char *childName);
@@ -394,6 +402,8 @@ typedef int (RECOIL_FASTCALL *OptCatalogAllocRuntimeGateCallback)(OptCatalogEntr
                                                                   void **saveStateSlot);
 extern int g_OptCatalogNetworkOptionState;
 extern OptCatalogAllocRuntimeGateCallback g_OptCatalog_AllocRuntimeGateCallback;
+extern OptCatalogAllocRuntimeGateCallback g_OptCatalog_AltGunDispatchNoOpCallback;
+extern int g_OptCatalogProcessRuntimeRelayEnabled;
 }
 
 RECOIL_STATIC_ASSERT(offsetof(OptCatalogHitEventPartial, hitPos) == 0x0c);

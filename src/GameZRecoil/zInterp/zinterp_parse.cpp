@@ -37,7 +37,7 @@ char g_zInterp_LineBuffer[1024] = {0};
 char g_zInterp_AssignToken_Equal = '=';
 unsigned int g_zInterp_NodeUserDataScratch = 0;
 zDiPartial *g_zInterp_CurrentCycleTextureDi = 0;
-zInterp_Context g_zInterp_GlobalContext = {};
+zInterp_Context g_zInterp_GlobalContext = {0};
 
 namespace
 {

@@ -1254,7 +1254,7 @@ BindGroupList_GetGroupCommandId(int groupIndex, int commandIndex) {
     return g_zInput_BindGroupInfoList.begin[groupIndex]->commandIdsBegin[commandIndex];
 }
 
-// Reimplements 0x42a000: zInput::BindGroupInfo_Destroy
+// Reimplements 0x42a000: zInput_BindGroupInfo::Destroy
 RECOIL_NOINLINE void RECOIL_FASTCALL BindGroupInfo_Destroy(zInput_BindGroupInfo *group) {
     free(group->title);
     group->title = 0;
@@ -2552,7 +2552,7 @@ DI_PollJoystickState(int dispatchCallbacks) {
 
     g_zInput_JoystickPreviousState = g_zInput_JoystickCurrentState;
     g_zInput_JoystickCurrentState = polledState;
-    if (dispatchCallbacks != 0 && g_zInput_BindMap_Current != 0) {
+    if (dispatchCallbacks != 0) {
         g_zInput_BindMap_Current->DispatchJoystickButtonCallbacks();
     }
 
@@ -2657,15 +2657,15 @@ RECOIL_NOINLINE int RECOIL_CDECL Mouse_ShutdownDevice() {
 }
 
 // Reimplements 0x4703b0: zInput::Mouse_PollAndStoreState
-RECOIL_NOINLINE void RECOIL_CDECL Mouse_PollAndStoreState() {
-    g_zInputMouseLastPollResult = Mouse_PollState(0);
+RECOIL_NOINLINE void RECOIL_FASTCALL Mouse_PollAndStoreState(int dispatchCallbacks) {
+    g_zInputMouseLastPollResult = Mouse_PollState(dispatchCallbacks);
 }
 
 // Reimplements 0x471de0: zInput::PollActiveDevices
 RECOIL_NOINLINE void RECOIL_FASTCALL PollActiveDevices(int dispatchCallbacks) {
     const int savedDispatchCallbacks = dispatchCallbacks;
     if (g_zInputMouseFlags == 1 && static_cast<unsigned short>(g_zInputMousePollRefCount) > 0) {
-        Mouse_PollAndStoreState();
+        Mouse_PollAndStoreState(savedDispatchCallbacks);
     }
 
     if (g_zInputJoystickFlags == 1 &&

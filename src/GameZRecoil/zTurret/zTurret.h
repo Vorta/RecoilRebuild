@@ -169,6 +169,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadDefinitionsFromPath(zClass_NodePartial *
                                                             const char *path);
 RECOIL_NOINLINE void RECOIL_CDECL TickAllRuntimesRoundRobin();
 RECOIL_NOINLINE int RECOIL_CDECL DisableTickCallback();
+RECOIL_NOINLINE int RECOIL_CDECL EnableTickCallback();
 RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
 RECOIL_NOINLINE int RECOIL_CDECL FreeAllRuntimes();
 } // namespace zTurret_System

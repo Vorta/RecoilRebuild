@@ -28,6 +28,11 @@ enum RecoilApp_StateQueueKind {
     RecoilApp_StateQueueKind_SwitchCurrent = 3,
 };
 
+enum RecoilAppMissionShutdownMode {
+    RECOILAPP_MISSION_SHUTDOWN_ON_EXIT = 0,
+    RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY = 1,
+};
+
 struct RecoilApp_IState_Vtbl {
     RecoilFn32 ScalarDeletingDtor;
     RecoilFn32 OnWndActivate;
@@ -172,7 +177,10 @@ struct RecoilApp_PlayState {
 
     RECOIL_NOINLINE RecoilApp_PlayState *RECOIL_THISCALL Constructor();
     RECOIL_NOINLINE void RECOIL_THISCALL OnWndActivate(int bActivate);
+    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     RECOIL_NOINLINE int RECOIL_THISCALL TickAndRenderFrame(int shouldPresent);
+    RECOIL_NOINLINE int RECOIL_THISCALL OnUpdateShouldQuit();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
     RECOIL_NOINLINE void RECOIL_THISCALL OnResume(int param);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_PlayState) == 0x18);
@@ -201,7 +209,7 @@ struct RecoilApp {
     int m_currentStateIndex_0c8;
     int _pad_0cc;
     int m_skipWait_0d0;
-    int m_reserved0d4;
+    RecoilAppMissionShutdownMode m_missionShutdownMode;
     RecoilPtr32 m_stateStack_0d8[16]; // RecoilApp_IState*
     RecoilApp_StateQueue m_stateQueue_118;
     int m_reserved148;
@@ -228,6 +236,7 @@ struct RecoilApp {
     RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
     RECOIL_NOINLINE RecoilApp *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL InitInstance();
+    RECOIL_NOINLINE int RECOIL_THISCALL Run();
     RECOIL_NOINLINE int RECOIL_THISCALL ExitInstance();
     RECOIL_NOINLINE CZRecoilFrame *RECOIL_THISCALL CreateMainWnd();
     RECOIL_NOINLINE int RECOIL_THISCALL InitMainWindow();
