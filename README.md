@@ -128,7 +128,8 @@ cmake --preset vs-x86
 ```
 
 The generated native solution is under `build/vs-x86`. Agents should prefer
-Visual Studio MCP for this solution when available, using the workflow in
+Visual Studio MCP for solution-backed navigation, builds, diagnostics, and
+focused debugging when available, using the workflow in
 `docs/reconstruction/visual_studio_mcp_workflow.md`, instead of calling Visual
 Studio batch files directly.
 
@@ -222,8 +223,8 @@ python -m unittest discover -s tests/tools -p *_tests.py
   namespace boundaries.
 - `docs/reconstruction/source_file_map.md` - generated original-source to
   current-source placement map.
-- `docs/reconstruction/visual_studio_mcp_workflow.md` - Visual Studio MCP build
-  workflow for generated `vs-x86` projects.
+- `docs/reconstruction/visual_studio_mcp_workflow.md` - Visual Studio MCP
+  development workflow for generated `vs-x86` projects.
 - `docs/reconstruction/NOTES.md` - archival subsystem reconstruction notes and
   decompiled-source findings; source material, not the preferred location for
   new notes.

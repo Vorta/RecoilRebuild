@@ -55,10 +55,11 @@ trust the current plan/Binary Ninja evidence and refresh or prune the group note
 ## Native build shell
 
 Native CMake configure/build/test work needs an x86 MSVC developer environment.
-For generated Visual Studio solution builds, prefer Visual Studio MCP when
+For generated Visual Studio solution work, prefer Visual Studio MCP when
 `build/vs-x86/RecoilRebuildNative.slnx` is open or can be opened without
-disrupting a user solution. See
-`docs/reconstruction/visual_studio_mcp_workflow.md`.
+disrupting a user solution. Use it for solution navigation, builds, Error List
+triage, output panes, symbol outlines, open-buffer checks, and focused
+debugging. See `docs/reconstruction/visual_studio_mcp_workflow.md`.
 
 Before running the native build presets from a new shell, verify that shell:
 
@@ -72,9 +73,10 @@ From normal PowerShell, run native commands through the checked-in helper:
 python tools/recoil_msvc_x86_run.py -- cmake --preset ninja-x86-debug
 ```
 
-Use this helper for Ninja presets, CMake configure commands, direct `ctest`, and
-other command-line work that MCP cannot express. Do not call Visual Studio batch
-files under `Program Files` directly.
+Use this helper for Ninja presets, CMake configure commands, direct `ctest`,
+native smoke runs with command-line arguments, and other command-line work that
+MCP cannot express. Do not call Visual Studio batch files under `Program Files`
+directly.
 
 If this fails because `cl.exe`, `INCLUDE`, `LIB`, the x86 compiler target, the
 Windows SDK, `support/sdk`, or `support/Recoil.exe` are unavailable, switch to a
