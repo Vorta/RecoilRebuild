@@ -169,6 +169,25 @@ extern "C" int zturret_runtime_init_defaults_smoke(void) {
     return failed != 0 ? 2 : 0;
 }
 
+extern "C" int zturret_runtime_has_active_node_smoke(void) {
+    zClass_NodePartial turretNode{};
+    zTurret_Runtime runtime{};
+    runtime.turretNode = &turretNode;
+
+    runtime.flags = 0;
+    turretNode.flags = 4;
+    const bool inactiveRuntime = runtime.HasActiveNode() == 0;
+
+    runtime.flags = 1;
+    turretNode.flags = 0;
+    const bool inactiveNode = runtime.HasActiveNode() == 0;
+
+    turretNode.flags = 4;
+    const bool activeNode = runtime.HasActiveNode() == 1;
+
+    return inactiveRuntime && inactiveNode && activeNode ? 0 : 1;
+}
+
 extern "C" int zturret_runtime_init_from_reader_node_smoke(void) {
     const int oldEntryCount = g_OptCatalog_EntryCount;
     OptCatalogEntryDef *const oldEntryTable = g_OptCatalog_EntryTable;

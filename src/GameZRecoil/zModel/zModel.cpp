@@ -811,12 +811,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddOrMergeVertex(zDiPartial *self, zVec3 *po
         return -1;
     }
 
-    const int vertexIndex = self->vertCount;
+    const int appendedVertexIndex = self->vertCount;
     self->verts = static_cast<zVec3 *>(realloc(
-        self->verts, static_cast<size_t>(vertexIndex + 1) * sizeof(zVec3)));
-    self->verts[vertexIndex] = *point;
-    self->vertCount = vertexIndex + 1;
-    return vertexIndex;
+        self->verts, static_cast<size_t>(appendedVertexIndex + 1) * sizeof(zVec3)));
+    self->verts[appendedVertexIndex] = *point;
+    self->vertCount = appendedVertexIndex + 1;
+    return appendedVertexIndex;
 }
 
 // Reimplements 0x482860: zModel_Const::AddOrMergeVertexAndNormal
@@ -839,16 +839,16 @@ AddOrMergeVertexAndNormal(zDiPartial *self, zVec3 *point, zVec3 *normal) {
         }
     }
 
-    const int vertexIndex = self->vertCount;
+    const int appendedVertexIndex = self->vertCount;
     self->verts = static_cast<zVec3 *>(realloc(
-        self->verts, static_cast<size_t>(vertexIndex + 1) * sizeof(zVec3)));
-    self->verts[vertexIndex] = *point;
+        self->verts, static_cast<size_t>(appendedVertexIndex + 1) * sizeof(zVec3)));
+    self->verts[appendedVertexIndex] = *point;
 
     self->blendVerts = static_cast<zVec3 *>(realloc(
-        self->blendVerts, static_cast<size_t>(vertexIndex + 1) * sizeof(zVec3)));
-    self->blendVerts[vertexIndex] = blendNormalDelta;
+        self->blendVerts, static_cast<size_t>(appendedVertexIndex + 1) * sizeof(zVec3)));
+    self->blendVerts[appendedVertexIndex] = blendNormalDelta;
 
-    self->vertCount = vertexIndex + 1;
+    self->vertCount = appendedVertexIndex + 1;
     self->blendVertCount = self->vertCount;
     if (static_cast<double>(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
         sprintf(g_zError_DebugMsgBuffer,
@@ -860,7 +860,7 @@ AddOrMergeVertexAndNormal(zDiPartial *self, zVec3 *point, zVec3 *normal) {
         return -1;
     }
 
-    return vertexIndex;
+    return appendedVertexIndex;
 }
 
 // Reimplements 0x482a10: zModel_Const::FindOrAppendNormalIndex
@@ -876,11 +876,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindOrAppendNormalIndex(zDiPartial *self,
         }
     }
 
-    const int normalIndex = self->normalCount;
+    const int appendedNormalIndex = self->normalCount;
     self->normals = static_cast<zVec3 *>(realloc(
-        self->normals, static_cast<size_t>(normalIndex + 1) * sizeof(zVec3)));
-    self->normals[normalIndex] = *normal;
-    self->normalCount = normalIndex + 1;
+        self->normals, static_cast<size_t>(appendedNormalIndex + 1) * sizeof(zVec3)));
+    self->normals[appendedNormalIndex] = *normal;
+    self->normalCount = appendedNormalIndex + 1;
     if (static_cast<double>(self->normalCount) > g_zModel_ConstVertexWarnThreshold) {
         sprintf(g_zError_DebugMsgBuffer,
                 "%s: Line %d: WARNING: Model normal count = %d\n",
@@ -891,7 +891,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindOrAppendNormalIndex(zDiPartial *self,
         return -1;
     }
 
-    return normalIndex;
+    return appendedNormalIndex;
 }
 
 // Reimplements 0x484860: zModel_Const::SolveTriScalarGradient2D
@@ -908,7 +908,7 @@ SolveTriScalarGradient2D(float vertex0A, float vertex0B, float vertex1A,
     const float value10 = value0 - value1;
     const float determinant = edge20B * edge10A - edge20A * edge10B;
 
-    zClipUV gradient = {};
+    zClipUV gradient = {0};
     if (determinant == 0.0f) {
         return gradient;
     }
@@ -949,9 +949,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL QuantizeAndNormalizeUvPairs(int vertexCount
 
     const float baseU = static_cast<float>(floor(minU));
     const float baseV = static_cast<float>(floor(minV));
-    for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-        uvPairs[vertexIndex].u -= baseU;
-        uvPairs[vertexIndex].v -= baseV;
+    for (int normalizeIndex = 0; normalizeIndex < vertexCount; ++normalizeIndex) {
+        uvPairs[normalizeIndex].u -= baseU;
+        uvPairs[normalizeIndex].v -= baseV;
     }
 }
 
@@ -1212,7 +1212,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeHardware(zClass_NodePartial *node
         return;
     }
 
-    zMat4x3 matrixScratch = {};
+    zMat4x3 matrixScratch = {0};
     zMath::MatStackPushPtr((float *)(&matrixScratch));
     if (di->mode == 1) {
         if ((di->flags & 0x10) != 0) {
@@ -1247,7 +1247,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeHardware(zClass_NodePartial *node
             continue;
         }
 
-        zVec3 surfaceNormal = {};
+        zVec3 surfaceNormal = {0};
         if (ComputeSurfaceNormalAndCull(vertexCount, &surfaceNormal) == 0) {
             continue;
         }
@@ -1519,21 +1519,21 @@ BuildBlendVertsFromConnectivity(zDiPartial *self, int *excludedVertexIndices, fl
         }
     }
 
-    for (int vertexIndex = 0; vertexIndex < vertCount; ++vertexIndex) {
+    for (int blendVertexIndex = 0; blendVertexIndex < vertCount; ++blendVertexIndex) {
         int enableBlendY = 1;
         for (int excludeIndex = 0; enableBlendY != 0 && excludeIndex < excludedVertexCount;
              ++excludeIndex) {
-            if (excludedVertexIndices[excludeIndex] == vertexIndex) {
+            if (excludedVertexIndices[excludeIndex] == blendVertexIndex) {
                 enableBlendY = 0;
             }
         }
-        if (blendDisabledMask[vertexIndex] == 1) {
+        if (blendDisabledMask[blendVertexIndex] == 1) {
             enableBlendY = 0;
         }
 
-        self->blendVerts[vertexIndex].x = 0.0f;
-        self->blendVerts[vertexIndex].y = enableBlendY != 0 ? blendY : 0.0f;
-        self->blendVerts[vertexIndex].z = 0.0f;
+        self->blendVerts[blendVertexIndex].x = 0.0f;
+        self->blendVerts[blendVertexIndex].y = enableBlendY != 0 ? blendY : 0.0f;
+        self->blendVerts[blendVertexIndex].z = 0.0f;
     }
 
     if (blendDisabledMask != 0) {

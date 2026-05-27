@@ -1,7 +1,9 @@
 # Agent Launch Checklist
 
-Use this compact checklist before assigning reconstruction work to a new agent.
-`AGENTS.md`, Binary Ninja, and `.agent/RECOIL_PLAN.md` remain authoritative.
+Use this compact checklist before assigning address-led reconstruction work to a
+new agent. It does not replace `AGENTS.md`; Binary Ninja and
+`.agent/RECOIL_PLAN.md` remain authoritative for function evidence and plan
+state.
 
 ## Required preflight
 
@@ -11,18 +13,21 @@ Run the process-health check from the workspace root:
 python tools/recoil_doctor.py --quick --binja
 ```
 
-Use plain `--quick` only when Binary Ninja is intentionally unavailable for a
-non-Binary-Ninja task. For active implementation or verification handoff, also
-run the address-specific doctor command described in `AGENTS.md`.
+Use plain `--quick` only when Binary Ninja is intentionally unavailable or the
+task does not depend on current Binary Ninja evidence. For documentation-only or
+tooling-inspection work, inspect the relevant files and run targeted checks
+instead of selecting a plan address. For active implementation or verification
+handoff, also run the address-specific doctor command described in `AGENTS.md`.
 
-For a combined launch packet, use:
+For an address-led reconstruction launch packet, use:
 
 ```powershell
 python tools/recoil_task_packet.py
 ```
 
 Use `--address 0xNNNNNN` for a specific function or `--no-binja` only when the
-task intentionally does not need Binary Ninja.
+task intentionally does not need Binary Ninja. Do not use this packet for
+documentation-only or tooling-inspection cleanup, because it selects an address.
 
 ## Task selection
 
@@ -43,10 +48,11 @@ Generate a handoff report before ending a multi-step reconstruction session:
 python tools/recoil_handoff.py 0xNNNNNN --include-artifacts
 ```
 
-After a significant verified step, create a focused git commit that stages only
-the agent's own related changes. Do not use `git add .`, and do not stage
-private inputs, generated artifacts, ignored runtime state, or unrelated user
-changes.
+After finishing a function or class reimplementation step, create a focused
+local git commit. A coherent multi-function batch may use one commit. Do not
+push. Stage only the agent's own related changes, do not use `git add .`, and
+do not stage private inputs, generated artifacts, ignored runtime state, or
+unrelated user changes.
 
 Treat `.agent/IMPLEMENTATION_GROUPS.md` as temporary context only. If it
 disagrees with `.agent/RECOIL_PLAN.md`, Binary Ninja, or `recoil_status.py`,

@@ -520,6 +520,91 @@ extern "C" int zinput_mouse_coop_level_flags_smoke(void) {
                                                                                                : 2;
 }
 
+extern "C" int zinput_mouse_button_transition_state_smoke(void) {
+    g_zInput_MouseCurrentState = {};
+    g_zInput_MousePreviousState = {};
+    if (zInput::Mouse_GetButtonTransitionState(1) != 0) {
+        return 1;
+    }
+
+    g_zInput_MouseCurrentState.rgbButtons = 0x80;
+    g_zInput_MousePreviousState.rgbButtons = 0;
+    if (zInput::Mouse_GetButtonTransitionState(1) != 1) {
+        return 2;
+    }
+
+    g_zInput_MousePreviousState.rgbButtons = 0x80;
+    if (zInput::Mouse_GetButtonTransitionState(1) != 2) {
+        return 3;
+    }
+
+    g_zInput_MouseCurrentState.rgbButtons = 0;
+    if (zInput::Mouse_GetButtonTransitionState(1) != 4) {
+        return 4;
+    }
+
+    g_zInput_MouseCurrentState.rgbButtons = 0x800000;
+    g_zInput_MousePreviousState.rgbButtons = 0;
+    if (zInput::Mouse_GetButtonTransitionState(3) != 1) {
+        return 5;
+    }
+
+    return 0;
+}
+
+extern "C" int zinput_mouse_apply_accumulated_delta_smoke(void) {
+    auto nearFloat = [](float lhs, float rhs) {
+        const float delta = lhs - rhs;
+        return delta >= -0.0001f && delta <= 0.0001f;
+    };
+
+    g_zInput_MouseClientWidth = 100;
+    g_zInput_MouseClientHeight = 80;
+    g_zInput_MouseClientCenterX = 50;
+    g_zInput_MouseClientCenterY = 40;
+    g_zInput_MouseInvClientCenterX = 0.02f;
+    g_zInput_MouseInvClientCenterY = 0.025f;
+    g_zInput_MouseSensitivityX = 1.5f;
+    g_zInput_MouseSensitivityY = 1.0f;
+    g_zInput_MouseWrapModeFlag = 0;
+    g_zInput_MouseStateSnapshot.cursorClientX = 50;
+    g_zInput_MouseStateSnapshot.cursorClientY = 40;
+    g_zInput_MouseStateSnapshot.deltaX = 20;
+    g_zInput_MouseStateSnapshot.deltaY = -50;
+
+    zInput::Mouse_ApplyAccumulatedDelta();
+    if (g_zInput_MouseStateSnapshot.deltaX != 30 ||
+        g_zInput_MouseStateSnapshot.deltaY != -50 ||
+        g_zInput_MouseStateSnapshot.cursorClientX != 80 ||
+        g_zInput_MouseStateSnapshot.cursorClientY != 0 ||
+        !nearFloat(g_zInput_MouseStateSnapshot.cursorNormX, 0.6f) ||
+        !nearFloat(g_zInput_MouseStateSnapshot.cursorNormY, -1.0f) ||
+        !nearFloat(g_zInput_MouseStateSnapshot.deltaNormX, 0.6f) ||
+        !nearFloat(g_zInput_MouseStateSnapshot.deltaNormY, -1.25f)) {
+        return 1;
+    }
+
+    g_zInput_MouseSensitivityX = 1.0f;
+    g_zInput_MouseSensitivityY = 1.0f;
+    g_zInput_MouseWrapModeFlag = 1;
+    g_zInput_MouseStateSnapshot.cursorClientX = 95;
+    g_zInput_MouseStateSnapshot.cursorClientY = 2;
+    g_zInput_MouseStateSnapshot.deltaX = 10;
+    g_zInput_MouseStateSnapshot.deltaY = -5;
+
+    zInput::Mouse_ApplyAccumulatedDelta();
+    if (g_zInput_MouseStateSnapshot.cursorClientX != 105 ||
+        g_zInput_MouseStateSnapshot.cursorClientY != -3 ||
+        !nearFloat(g_zInput_MouseStateSnapshot.cursorNormX, 1.1f) ||
+        !nearFloat(g_zInput_MouseStateSnapshot.cursorNormY, -1.075f) ||
+        !nearFloat(g_zInput_MouseStateSnapshot.deltaNormX, 0.2f) ||
+        !nearFloat(g_zInput_MouseStateSnapshot.deltaNormY, -0.125f)) {
+        return 2;
+    }
+
+    return 0;
+}
+
 extern "C" int zinput_mouse_keyboard_small_accessors_smoke(void) {
     g_zInputKbdKeyDispatchTable[7].callback = reinterpret_cast<void *>(0x1234);
     zInput::Keyboard_UnregisterKeyCallback(7);
@@ -720,6 +805,44 @@ extern "C" int zinput_bindmap_context_smoke(void) {
     }
 
     return copyOk ? 0 : 3;
+}
+
+extern "C" int zinput_bindmap_dispatch_mouse_callbacks_smoke(void) {
+    FreeOptionList();
+
+    zInput_BindMapContext context = {};
+    context.InitCommandMap(4);
+    context.m_mouseToCommand[1] = 1;
+    context.m_mouseToCommand[2] = 2;
+    context.m_mouseToCommand[3] = 3;
+    context.m_commandCallbacks[1] = BindMapContextCountingCallback;
+    context.m_commandCallbacks[2] = nullptr;
+    context.m_commandCallbacks[3] = BindMapContextCountingCallback;
+
+    g_bindMapDispatchCallbackCount = 0;
+    g_zInput_MouseStateSnapshot.button1Transition = 1;
+    g_zInput_MouseStateSnapshot.button2Transition = 1;
+    g_zInput_MouseStateSnapshot.button3Transition = 1;
+    context.DispatchMouseButtonCallbacks();
+    if (g_bindMapDispatchCallbackCount != 2) {
+        context.FreeNonOwnedBuffers();
+        FreeOptionList();
+        return 1;
+    }
+
+    g_zInput_MouseStateSnapshot.button1Transition = 2;
+    g_zInput_MouseStateSnapshot.button2Transition = 4;
+    g_zInput_MouseStateSnapshot.button3Transition = 0;
+    context.DispatchMouseButtonCallbacks();
+    if (g_bindMapDispatchCallbackCount != 2) {
+        context.FreeNonOwnedBuffers();
+        FreeOptionList();
+        return 2;
+    }
+
+    context.FreeNonOwnedBuffers();
+    FreeOptionList();
+    return 0;
 }
 
 namespace {
@@ -1681,11 +1804,32 @@ extern "C" int zinput_joystick_poll_and_wait_smoke(void) {
         return 1;
     }
 
+    FreeOptionList();
+    zInput_BindMapContext context = {};
+    context.InitCommandMap(3);
+    context.m_joystickToCommand[2] = 1;
+    context.m_commandCallbacks[1] = BindMapContextCountingCallback;
+    g_zInput_BindMap_Current = &context;
+
+    g_bindMapDispatchCallbackCount = 0;
     fakeJoystickState = {};
     fakeJoystickState.rgbButtons[1] = 0x80;
     if (zInput::DI_WaitForButtonPress(0) != 2) {
+        g_zInput_BindMap_Current = nullptr;
+        context.FreeNonOwnedBuffers();
+        FreeOptionList();
         return 2;
     }
+    if (g_bindMapDispatchCallbackCount != 1) {
+        g_zInput_BindMap_Current = nullptr;
+        context.FreeNonOwnedBuffers();
+        FreeOptionList();
+        return 6;
+    }
+
+    g_zInput_BindMap_Current = nullptr;
+    context.FreeNonOwnedBuffers();
+    FreeOptionList();
 
     getDeviceStateResult = static_cast<std::int32_t>(0x8007001e);
     if (zInput::DI_PollJoystickState(0) != nullptr || acquireCalls != 1) {
@@ -1816,8 +1960,39 @@ extern "C" int zinput_mouse_poll_state_smoke() {
         return 14;
     }
 
+    FreeOptionList();
+    zInput_BindMapContext context = {};
+    context.InitCommandMap(2);
+    context.m_mouseToCommand[1] = 1;
+    context.m_commandCallbacks[1] = BindMapContextCountingCallback;
+    g_zInput_BindMap_Current = &context;
+
+    g_bindMapDispatchCallbackCount = 0;
+    g_zInput_MouseCurrentState = {};
+    fakeMouseState = {0, 0, 0, 0x80};
+    if (zInput::Mouse_PollState(1) != 0 || g_bindMapDispatchCallbackCount != 1) {
+        g_zInput_BindMap_Current = nullptr;
+        context.FreeNonOwnedBuffers();
+        FreeOptionList();
+        return 15;
+    }
+
+    g_bindMapDispatchCallbackCount = 0;
+    g_zInput_MouseCurrentState = {};
+    fakeMouseState = {0, 0, 0, 0x80};
+    if (zInput::Mouse_PollState(0) != 0 || g_bindMapDispatchCallbackCount != 0) {
+        g_zInput_BindMap_Current = nullptr;
+        context.FreeNonOwnedBuffers();
+        FreeOptionList();
+        return 16;
+    }
+
+    g_zInput_BindMap_Current = nullptr;
+    context.FreeNonOwnedBuffers();
+    FreeOptionList();
+
     fakeMouseState = {0, 0, 0, 0};
-    zInput::Mouse_PollAndStoreState();
+    zInput::Mouse_PollAndStoreState(0);
     if (g_zInputMouseLastPollResult != 0 || g_zInput_MouseStateSnapshot.button1Transition != 4) {
         return 2;
     }

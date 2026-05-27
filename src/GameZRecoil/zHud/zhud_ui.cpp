@@ -182,8 +182,23 @@ HudUiTripletPanel_FTable MakeHudUiTripletPanelFTable() {
 
 HudUiMessageBoxDialog_FTable MakeHudUiMessageBoxDialogFTable() {
     HudUiMessageBoxDialog_FTable table = {0};
+    table.slots[0] = MethodAddress(&HudUiBackground::Update);
+    table.slots[1] = MethodAddress(&HudUiBackground::SetEnabled);
+    table.slots[2] = MethodAddress(&HudUiMessageBoxDialog::ScalarDeletingDestructor);
     table.slots[3] = MethodAddress(&HudUiMessageBoxDialog::OnOk);
     table.slots[4] = MethodAddress(&HudUiMessageBoxDialog::OnCancel);
+    return table;
+}
+
+HudUiZrdWidget_FTable MakeHudUiMessageBoxButtonFTable(unsigned int activateSlot) {
+    HudUiZrdWidget_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidget_FTable>();
+    table.slots[0] = MethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
+    table.slots[12] = activateSlot;
+    table.slots[15] = MethodAddress(&HudUiZrdWidget::ShowPreview);
+    table.slots[16] = MethodAddress(&HudUiZrdWidget::HidePreview);
+    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = MethodAddress(&HudUiZrdWidget::LoadFromZrd);
+    table.slots[32] = (unsigned int)(&HudUiNoOpMethodStub);
     return table;
 }
 
@@ -334,6 +349,10 @@ const HudCmdBindButtonBase_FTable g_HudCmdBindButtonBase_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudCmdBindButtonBase_FTable>();
 const HudUiMessageBoxDialog_FTable g_HudUiMessageBoxDialog_FTable =
     MakeHudUiMessageBoxDialogFTable();
+const HudUiZrdWidget_FTable g_HudUiMessageBoxOkButton_Vtbl =
+    MakeHudUiMessageBoxButtonFTable(MethodAddress(&HudUiMessageBoxOkButton::OnActivate));
+const HudUiZrdWidget_FTable g_HudUiMessageBoxCancelButton_Vtbl =
+    MakeHudUiMessageBoxButtonFTable(MethodAddress(&HudUiMessageBoxCancelButton::OnActivate));
 const HudUiCounter_FTable g_HudUiCounter_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiCounter_FTable>();
 const HudUiMessage_FTable g_HudUiMessage_FTable =
@@ -3531,6 +3550,14 @@ RECOIL_NOINLINE void RECOIL_CDECL UpdateFrame() {
 
     ((UpdateFn)(g_HudUiMgrReticleWidget.ftable->slots[9]))(
         &g_HudUiMgrReticleWidget, g_Time_UnscaledDeltaTimeSec);
+
+    {
+    for (int slotIndex = 0; slotIndex < 32; ++slotIndex) {
+        HudUiSlot &slot = g_HudUiMgrWeaponSlots[slotIndex];
+        HudUiVirtualSetVisibleRequired(&slot.trackMarkerWidget, 0);
+        HudUiVirtualSetVisibleRequired(&slot.slotWidget, 0);
+    }
+    }
 
     g_HudUiMgrSensorTargetMarkerCount = 0;
     g_HudUiMgrWeaponState = 0;
@@ -7382,7 +7409,7 @@ void RECOIL_THISCALL HudCmdBindButtonBase::RebuildBindingSlotWidgets(int totalCo
 
 // Reimplements 0x4b8de0: HudCmdBindButtonBase::LoadFromZrd
 int RECOIL_THISCALL HudCmdBindButtonBase::LoadFromZrd(zReader::Node *zrdSection,
-                                                               void *ownerDialog) {
+                                                      void *ownerDialog) {
     base.LoadFromZrd(zrdSection, ownerDialog);
 
     void *const clipSource = OwnerField<void *>(ownerDialog, 0x118);
@@ -7449,6 +7476,217 @@ int RECOIL_THISCALL HudCmdBindButtonBase::LoadFromZrd(zReader::Node *zrdSection,
     }
 
     return 1;
+}
+
+int HudUiDialogSignedDivPow2(int value, int shift) {
+    const int signMask = value >> 31;
+    return (value + (signMask & ((1 << shift) - 1))) >> shift;
+}
+
+zVidImagePartial *HudUiMessageBoxCreateSolidImage(int width, int height,
+                                                  unsigned short color565) {
+    zVidImagePartial *const image = zVid_Image::Create();
+    zVid_Image::SetFormatCode(image, 1);
+    zVid_Image::SetSize(image, static_cast<short>(width), static_cast<short>(height));
+
+    void *const pixels = malloc(zVid_Image::QueryBytesPerPixel(image) * width * height);
+    zVid_Image_SetPixels(image, pixels, 0);
+
+    unsigned short *const pixelWords = static_cast<unsigned short *>(pixels);
+    for (int index = 0; index < image->pixelCount; ++index) {
+        pixelWords[index] = color565;
+    }
+
+    return image;
+}
+
+// Reimplements 0x4bf060: HudUiMessageBoxDialog::Constructor
+HudUiMessageBoxDialog *RECOIL_THISCALL
+HudUiMessageBoxDialog::Constructor(const char *zrdPath, const char *sectionName) {
+    HudUiBackground::Constructor();
+    backdropWidget.Constructor(0);
+    messagePanel.ConstructorDefault(0, 0, 0);
+    titlePanel.ConstructorDefault(0, 0, 0);
+    okButton.base.Constructor();
+    okButton.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiMessageBoxOkButton_Vtbl);
+    cancelButton.base.Constructor();
+    cancelButton.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiMessageBoxCancelButton_Vtbl);
+    base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiMessageBoxDialog_FTable);
+
+    const zVidRect32 *const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
+    blitRect = *primaryRect;
+
+    if (zrdPath != 0 && sectionName != 0) {
+        backgroundImage = 0;
+        okButtonNormalImage = 0;
+        okButtonPressedImage = 0;
+
+        zReader::Node *const loadedSection = LoadFromZrd(zrdPath, sectionName, 0);
+        if (loadedSection != 0) {
+            BindWidgetByName(loadedSection, &okButton.base.base, "MB_OK");
+            BindWidgetByName(loadedSection, &cancelButton.base.base, "MB_CANCEL");
+            BindPrimitiveNodeToElement(loadedSection, (HudUiElement *)(&titlePanel), "TITLE");
+            BindPrimitiveNodeToElement(loadedSection, (HudUiElement *)(&messagePanel), "MESSAGE");
+        }
+
+        FreeLoadedTreeRoots(0);
+        ((HudUiElement *)(&titlePanel))->SetVisible(1);
+        ((HudUiElement *)(&messagePanel))->SetVisible(1);
+        return this;
+    }
+
+    const int centerX = HudUiDialogSignedDivPow2(blitRect.right, 1);
+    const int centerY = HudUiDialogSignedDivPow2(blitRect.bottom, 1);
+    fallbackWidth = 300;
+    fallbackHeight = 200;
+
+    backgroundImage = HudUiMessageBoxCreateSolidImage(
+        fallbackWidth, fallbackHeight,
+        static_cast<unsigned short>(zVid_PackColorRGB(128, 128, 128)));
+
+    const int buttonWidth = HudUiDialogSignedDivPow2(fallbackWidth, 2);
+    const int buttonHeight = HudUiDialogSignedDivPow2(fallbackHeight, 2);
+    okButtonNormalImage = HudUiMessageBoxCreateSolidImage(
+        buttonWidth, buttonHeight,
+        static_cast<unsigned short>(zVid_PackColorRGB(192, 192, 192)));
+    okButtonPressedImage = HudUiMessageBoxCreateSolidImage(
+        buttonWidth, buttonHeight,
+        static_cast<unsigned short>(zVid_PackColorRGB(160, 192, 160)));
+
+    backdropWidget.SetImageBorrowedAndInvalidate(backgroundImage);
+    messagePanel.SetTextFmt("");
+    titlePanel.SetTextFmt("");
+    okButton.base.LoadFromZrd(0, this);
+    okButton.base.defaultImage =
+        okButton.base.base.SetImageBorrowedAndInvalidate(okButtonNormalImage);
+    okButton.base.rolloverImage = okButtonPressedImage;
+
+    ((HudUiElement *)(&backdropWidget))->SetPos(centerX - 150, centerY - 100);
+    ((HudUiElement *)(&titlePanel))->SetPos(centerX - 140, centerY - 90);
+    ((HudUiElement *)(&messagePanel))->SetPos(centerX - 140, centerY - 70);
+    ((HudUiElement *)(&okButton.base))
+        ->SetPos(centerX - 150 + HudUiDialogSignedDivPow2(fallbackWidth, 1) -
+                     HudUiDialogSignedDivPow2(fallbackWidth, 3),
+                 centerY - 100 - HudUiDialogSignedDivPow2(fallbackHeight, 2) +
+                     fallbackHeight - 10);
+
+    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(&backdropWidget));
+    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(&messagePanel));
+    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(&titlePanel));
+    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(&okButton.base));
+    ((HudUiElement *)(&messagePanel))->SetVisible(1);
+    ((HudUiElement *)(&titlePanel))->SetVisible(1);
+    ((HudUiElement *)(&okButton.base))->SetVisible(0);
+    ((HudUiContainer *)(this))->SetChildFlags(0);
+    return this;
+}
+
+// Reimplements 0x4bf540: HudUiMessageBoxDialog::ScalarDeletingDestructor
+HudUiMessageBoxDialog *
+RECOIL_THISCALL HudUiMessageBoxDialog::ScalarDeletingDestructor(unsigned int flags) {
+    Destructor();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x4bf560: HudUiMessageBoxDialog::Destructor
+void RECOIL_THISCALL HudUiMessageBoxDialog::Destructor() {
+    base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiMessageBoxDialog_FTable);
+
+    if (backgroundImage != 0) {
+        if (backgroundImage->pixels != 0) {
+            free(backgroundImage->pixels);
+            backgroundImage->pixels = 0;
+        }
+
+        zVid_Image::Destroy(backgroundImage);
+        backgroundImage = 0;
+    }
+
+    cancelButton.base.DestructorCore();
+    okButton.base.DestructorCore();
+    titlePanel.Destructor();
+    messagePanel.Destructor();
+    backdropWidget.DestructorCore();
+    HudUiBackground::Destructor();
+}
+
+// Reimplements 0x4bf630: HudUiMessageBoxDialog::RunModal
+int RECOIL_THISCALL HudUiMessageBoxDialog::RunModal(const char *messageText,
+                                                    const char *titleText,
+                                                    void *modalContext,
+                                                    float timeoutSeconds) {
+    (void)modalContext;
+    (void)timeoutSeconds;
+
+    if (g_zVideo_ActiveRendererPath != 0) {
+        g_zVideo_pfnBltSwToPrimaryRectDirect(0, 0);
+    }
+
+    const int previousHalfResMode =
+        zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
+    HudUi::SetInvalidateMode(0);
+
+    zVidRect32 previousRegionRect = {0, 0, 0, 0};
+    int previousBitsPerPixel = 0;
+    int previousPitchBytes = 0;
+    void *const previousPixels =
+        zRndr::GetActiveRegionState(&previousRegionRect.right, &previousRegionRect.bottom,
+                                    &previousBitsPerPixel, &previousPitchBytes);
+
+    int dialogPitchBytes;
+    int dialogBitsPerPixel;
+    void *dialogPixels;
+    if (g_zVideo_ActiveRendererPath == 0) {
+        dialogPitchBytes = zVideo::GetSwSurfacePitch();
+        dialogBitsPerPixel = zVideo::GetDisplayModeBpp();
+        dialogPixels = zVideo::GetSwSurfacePixels();
+    } else {
+        dialogPitchBytes = zVideo::GetPrimarySurfacePitch();
+        dialogBitsPerPixel = zVideo::GetDisplayModeBpp();
+        dialogPixels = zVideo::GetPrimarySurfacePixels();
+    }
+
+    zRndr::SetFrameBufferRegion(dialogPixels, (zOpt_ViewRectSection *)(&blitRect),
+                                dialogBitsPerPixel, dialogPitchBytes);
+
+    const unsigned int *const dialogDispatch = (const unsigned int *)(base.base.vptr);
+    typedef void (RECOIL_THISCALL *DialogSetEnabledFn)(HudUiMessageBoxDialog * self,
+                                                       int enabled);
+    typedef void (RECOIL_THISCALL *DialogUpdateFn)(HudUiMessageBoxDialog * self,
+                                                   float deltaSeconds);
+
+    modalResult = 0;
+    modalFrameCountdown = 100000;
+    ((DialogSetEnabledFn)(dialogDispatch[1]))(this, 1);
+    messagePanel.SetTextFmt(messageText);
+    titlePanel.SetTextFmt(titleText);
+    ((HudUiElement *)(&okButton.base))->SetVisible(1);
+
+    int framesRemaining = modalFrameCountdown;
+    modalFrameCountdown = framesRemaining - 1;
+    while (framesRemaining > 0) {
+        zInput::PollActiveDevices(0);
+        Time::Tick();
+        zVideo::RunPostprocessOnPrimaryBuffer();
+        ((DialogUpdateFn)(dialogDispatch[0]))(this, g_FrameDeltaTimeSec);
+        zVideo::Dispatch_UnlockPrimarySurfaceState();
+        zVideo::AdjustSurfacesIfEnabled(&blitRect, &blitRect, 1, 1);
+        framesRemaining = modalFrameCountdown;
+        modalFrameCountdown = framesRemaining - 1;
+    }
+
+    ((HudUiDialogController *)(this))->BlitOwnedSurfaceToPrimary();
+    ((DialogSetEnabledFn)(dialogDispatch[1]))(this, 0);
+    zVideo::SetHalfResAdjustMode(previousHalfResMode);
+    HudUi::SetInvalidateMode(previousHalfResMode);
+    zRndr::SetFrameBufferRegion(previousPixels, (zOpt_ViewRectSection *)(&previousRegionRect),
+                                previousBitsPerPixel, previousPitchBytes);
+    return modalResult;
 }
 
 // Reimplements 0x4bf7c0: HudUiMessageBoxDialog::OnOk
@@ -8713,6 +8951,12 @@ void RECOIL_THISCALL HudUiNumericTextInput::SetRawKeyboardCapture(int enable) {
     }
 }
 
+// Reimplements 0x4b4c90: HudUiNumericTextInput::OnActivate
+void RECOIL_THISCALL HudUiNumericTextInput::OnActivate() {
+    sliderBorder.inputActive = 1;
+    base.OnActivate();
+}
+
 // Reimplements 0x4b4ac0: HudUiNumericTextInput::Destructor
 void RECOIL_THISCALL HudUiNumericTextInput::Destructor() {
     base.base.ftable =
@@ -9000,6 +9244,13 @@ void RECOIL_THISCALL HudUiPanel::Destructor() {
 
     DeleteObject(hFont);
     vtbl = &g_HudUiCommon_FTable;
+}
+
+// Reimplements 0x40bef0: HudUiPanel::DestructorThunk
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudUiPanel::DestructorThunk()
+{
+    Destructor();
 }
 
 // Reimplements 0x4bb460: HudUiPanel::Draw
@@ -10046,6 +10297,17 @@ namespace HudUi {
 // Reimplements 0x4bc760: HudUi::SetInvalidateMode (D:\Proj\Battlesport\hudui.cpp)
 RECOIL_NOINLINE void RECOIL_FASTCALL SetInvalidateMode(int mode) {
     g_HudUi_InvalidateMask = mode != 0 ? 0x0c : 0x04;
+}
+
+// Reimplements 0x438350: HudUi::ShowMessageBox (D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL ShowMessageBox(const char *messageText,
+                                                   const char *titleText,
+                                                   void *modalContext) {
+    HudUiMessageBoxDialog dialog;
+    dialog.Constructor("dialog.zrd", "MESSAGEBOX");
+    const int result = dialog.RunModal(messageText, titleText, modalContext, -1.0f);
+    dialog.Destructor();
+    return result;
 }
 
 // Reimplements 0x426150: HudUi::HandleHotkeyCommand (D:\Proj\Battlesport\hudui.cpp)

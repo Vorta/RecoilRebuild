@@ -34,12 +34,6 @@ for function identity, types, markers, and acceptance state.
   notes, including the `FindByName` inline-`strcmp` mismatch profile.
 - `README.md` - rules for when to add durable reconstruction notes.
 
-## Archival Notes
-
-- `docs/reconstruction/NOTES.md` is archival working evidence and source
-  material for narrower durable docs. Do not add routine new findings there
-  unless no narrower document or source comment can carry the fact.
-
 ## Agent Use
 
 - For new implementation placement, check `source_file_map.md` first, then

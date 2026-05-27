@@ -4603,6 +4603,49 @@ extern "C" int player_ai_restore_saved_top_level_state_smoke(void) {
     return playerState.aiTopLevelState == 12 && playerState.aiSavedTopLevelState == 12 ? 0 : 1;
 }
 
+extern "C" int player_ai_finalize_mode2_state1_for_all_players_smoke(void) {
+    zUtil_SaveGameState *const oldHead = g_PlayerSaveStateListHead;
+    const int oldFinalized = g_Player_AiMode2State1Finalized;
+
+    zUtil_SaveGameState saves[3] = {};
+    zUtil_PlayerStateStorage states[3] = {};
+    for (int i = 0; i < 3; ++i) {
+        saves[i].playerState = &states[i];
+    }
+    saves[0].next = &saves[1];
+    saves[1].next = &saves[2];
+
+    states[0].lifecycleState = 2;
+    states[0].aiTopLevelState = 1;
+    states[0].aiSavedTopLevelState = 11;
+    states[1].lifecycleState = 2;
+    states[1].aiTopLevelState = 3;
+    states[1].aiSavedTopLevelState = 12;
+    states[2].lifecycleState = 4;
+    states[2].aiTopLevelState = 1;
+    states[2].aiSavedTopLevelState = 13;
+
+    g_PlayerSaveStateListHead = &saves[0];
+    g_Player_AiMode2State1Finalized = 0;
+    Player::AiFinalizeMode2State1ForAllPlayers();
+    const bool listOk = states[0].aiTopLevelState == 11 &&
+                        states[0].aiSavedTopLevelState == 11 &&
+                        states[1].aiTopLevelState == 3 &&
+                        states[1].aiSavedTopLevelState == 12 &&
+                        states[2].aiTopLevelState == 1 &&
+                        states[2].aiSavedTopLevelState == 13 &&
+                        g_Player_AiMode2State1Finalized == 1;
+
+    g_PlayerSaveStateListHead = nullptr;
+    g_Player_AiMode2State1Finalized = 0;
+    Player::AiFinalizeMode2State1ForAllPlayers();
+    const bool emptyOk = g_Player_AiMode2State1Finalized == 1;
+
+    g_PlayerSaveStateListHead = oldHead;
+    g_Player_AiMode2State1Finalized = oldFinalized;
+    return listOk && emptyOk ? 0 : 1;
+}
+
 extern "C" int player_ai_steer_toward_path_node_forward_smoke(void) {
     const float oldTotalTimeSecScaled = g_Player_TotalTimeSecScaled;
 
@@ -5180,7 +5223,7 @@ extern "C" int player_alt_gun_fire_point_selection_smoke(void) {
     playerState.steerBasisRaw = {1.0f, 2.0f, 3.0f};
     PlayerGunFireSlot sentinelSlot = {};
     PlayerGunFireSlot *outSlot = &sentinelSlot;
-    Player::SelectAltGunFireOriginAndSlot(&saveState, &outSlot);
+    Player::SelectAltGunFirePointAndSlot(&saveState, &outSlot);
     if (!Vec3Equals(playerState.altFireOrigin, {10.0f, 21.0f, 30.0f}) ||
         !Vec3Equals(playerState.aimBasisOrigin, {10.0f, 21.0f, 30.0f}) ||
         !Vec3Equals(playerState.gunFireDir, {1.0f, 2.0f, 3.0f}) || outSlot != &sentinelSlot) {
@@ -5400,7 +5443,7 @@ extern "C" int player_alt_gun_fire_point_selection_smoke(void) {
     outSlot = nullptr;
     playerState.altHardpointSelectState = 0;
     controller.attachState = nullptr;
-    Player::SelectAltGunFireOriginAndSlot(&saveState, &outSlot);
+    Player::SelectAltGunFirePointAndSlot(&saveState, &outSlot);
     if (!Vec3Equals(playerState.altFireOrigin, {11.0f, 22.0f, 33.0f}) ||
         outSlot != &playerState.altFireSlotCenter ||
         playerState.altFireSlotCenter.attachNode != &primaryAttachNode ||
@@ -5410,7 +5453,7 @@ extern "C" int player_alt_gun_fire_point_selection_smoke(void) {
 
     outSlot = nullptr;
     controller.attachState = &activeAttachState;
-    Player::SelectAltGunFireOriginAndSlot(&saveState, &outSlot);
+    Player::SelectAltGunFirePointAndSlot(&saveState, &outSlot);
     if (!Vec3Equals(playerState.altFireOrigin, {10.0f, 20.0f, 30.0f}) ||
         outSlot != &playerState.altFireSlotCenter ||
         playerState.altFireSlotCenter.attachNode != &primaryAttachNode ||
@@ -5421,7 +5464,7 @@ extern "C" int player_alt_gun_fire_point_selection_smoke(void) {
     outSlot = nullptr;
     controller.attachState = nullptr;
     playerState.altHardpointSelectState = 1;
-    Player::SelectAltGunFireOriginAndSlot(&saveState, &outSlot);
+    Player::SelectAltGunFirePointAndSlot(&saveState, &outSlot);
     if (!Vec3Equals(playerState.altFireOrigin, {14.0f, 25.0f, 36.0f}) ||
         outSlot != &playerState.altFireSlotRight ||
         playerState.altFireSlotRight.attachNode != &secondaryAttachNode ||
@@ -5431,7 +5474,7 @@ extern "C" int player_alt_gun_fire_point_selection_smoke(void) {
 
     outSlot = nullptr;
     playerState.altHardpointSelectState = 2;
-    Player::SelectAltGunFireOriginAndSlot(&saveState, &outSlot);
+    Player::SelectAltGunFirePointAndSlot(&saveState, &outSlot);
     if (!Vec3Equals(playerState.altFireOrigin, {17.0f, 28.0f, 39.0f}) ||
         outSlot != &playerState.altFireSlotLeft ||
         playerState.altFireSlotLeft.attachNode != &primaryAttachNode ||
@@ -5451,7 +5494,7 @@ extern "C" int player_primary_gun_fire_point_selection_smoke(void) {
     playerState.steerBasisRaw = {1.0f, 2.0f, 3.0f};
     PlayerGunFireSlot sentinelSlot = {};
     PlayerGunFireSlot *outSlot = &sentinelSlot;
-    Player::SelectPrimaryGunFireOriginAndSlot(&saveState, &outSlot);
+    Player::SelectPrimaryGunFirePointAndSlot(&saveState, &outSlot);
     if (!Vec3Equals(playerState.primaryFireOrigin, {10.0f, 21.0f, 30.0f}) ||
         !Vec3Equals(playerState.aimBasisOrigin, {10.0f, 21.0f, 30.0f}) ||
         !Vec3Equals(playerState.gunFireDir, {1.0f, 2.0f, 3.0f}) || outSlot != &sentinelSlot) {
@@ -5501,7 +5544,7 @@ extern "C" int player_primary_gun_fire_point_selection_smoke(void) {
     outSlot = nullptr;
     playerState.primaryHardpointSelectState = 0;
     controller.attachState = nullptr;
-    Player::SelectPrimaryGunFireOriginAndSlot(&saveState, &outSlot);
+    Player::SelectPrimaryGunFirePointAndSlot(&saveState, &outSlot);
     if (!Vec3Equals(playerState.primaryFireOrigin, {11.0f, 22.0f, 33.0f}) ||
         outSlot != &playerState.altFireSlotCenter ||
         playerState.altFireSlotCenter.attachNode != &primaryAttachNode ||
@@ -5511,7 +5554,7 @@ extern "C" int player_primary_gun_fire_point_selection_smoke(void) {
 
     outSlot = nullptr;
     controller.attachState = &activeAttachState;
-    Player::SelectPrimaryGunFireOriginAndSlot(&saveState, &outSlot);
+    Player::SelectPrimaryGunFirePointAndSlot(&saveState, &outSlot);
     if (!Vec3Equals(playerState.primaryFireOrigin, {10.0f, 20.0f, 30.0f}) ||
         outSlot != &playerState.altFireSlotCenter ||
         playerState.altFireSlotCenter.attachNode != &primaryAttachNode ||
@@ -5522,7 +5565,7 @@ extern "C" int player_primary_gun_fire_point_selection_smoke(void) {
     outSlot = nullptr;
     controller.attachState = nullptr;
     playerState.primaryHardpointSelectState = 1;
-    Player::SelectPrimaryGunFireOriginAndSlot(&saveState, &outSlot);
+    Player::SelectPrimaryGunFirePointAndSlot(&saveState, &outSlot);
     if (!Vec3Equals(playerState.primaryFireOrigin, {14.0f, 25.0f, 36.0f}) ||
         outSlot != &playerState.altFireSlotRight ||
         playerState.altFireSlotRight.attachNode != &secondaryAttachNode ||
@@ -5532,7 +5575,7 @@ extern "C" int player_primary_gun_fire_point_selection_smoke(void) {
 
     outSlot = nullptr;
     playerState.primaryHardpointSelectState = 2;
-    Player::SelectPrimaryGunFireOriginAndSlot(&saveState, &outSlot);
+    Player::SelectPrimaryGunFirePointAndSlot(&saveState, &outSlot);
     if (!Vec3Equals(playerState.primaryFireOrigin, {17.0f, 28.0f, 39.0f}) ||
         outSlot != &playerState.altFireSlotLeft ||
         playerState.altFireSlotLeft.attachNode != &primaryAttachNode ||
@@ -5619,7 +5662,7 @@ extern "C" int player_alt_gun_ensure_aux_effect_active_smoke(void) {
 
     zVec3 effectPos = {10.0f, 11.0f, 12.0f};
     const int presetResult =
-        Player::AltGunEnsureAuxEffectActive(&saveState, &controller, &effectPos);
+        Player::EnsureGunAuxEffectActive(&saveState, &controller, &effectPos);
 
     if (presetResult != 1) {
         result = 1;
@@ -5667,7 +5710,7 @@ extern "C" int player_alt_gun_ensure_aux_effect_active_smoke(void) {
         g_playerTestFfStopCount = 0;
         g_playerTestFfStartCount = 0;
 
-        const int normalizedResult = Player::AltGunEnsureAuxEffectActive(
+        const int normalizedResult = Player::EnsureGunAuxEffectActive(
             &remoteSaveState, &remoteController, &remoteEffectPos);
         if (normalizedResult != 1) {
             result = 11;
@@ -5684,7 +5727,7 @@ extern "C" int player_alt_gun_ensure_aux_effect_active_smoke(void) {
         zClass_Class::RemoveChild(&remoteRuntimeWorld, &remoteProjectileSlot.node);
         g_OptCatalogFreeRuntimeInstanceList = nullptr;
         remoteEntry.activeRuntimeListHead = nullptr;
-        const int failResult = Player::AltGunEnsureAuxEffectActive(
+        const int failResult = Player::EnsureGunAuxEffectActive(
             &remoteSaveState, &remoteController, &remoteEffectPos);
         if (failResult != 0 || remoteEntry.activeRuntimeListHead != nullptr) {
             result = 15;
@@ -5995,7 +6038,7 @@ extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void) {
     g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&saveState;
     g_HudSensorTracker.primaryGunDispatchCount = 10;
 
-    Player::ProcessAltGunFireDispatchRequest(&saveState);
+    Player::ProcessAltGunDispatchRequest(&saveState);
     const bool fireOk =
         playerState.altGunDispatchRequested == 0 && entry.activeRuntimeListHead == &runtime &&
         Vec3Equals(runtime.dir, playerState.gunFireDir) &&
@@ -6005,7 +6048,7 @@ extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void) {
     playerState.altGunFireHeldFlag = 1;
     playerState.altGunDispatchRequested = 9;
     g_HudSensorTracker.primaryGunDispatchCount = 20;
-    Player::ProcessAltGunFireDispatchRequest(&saveState);
+    Player::ProcessAltGunDispatchRequest(&saveState);
     const bool heldOk =
         playerState.altGunDispatchRequested == 9 &&
         g_HudSensorTracker.primaryGunDispatchCount == 21;
@@ -6096,14 +6139,14 @@ extern "C" int player_process_primary_gun_dispatch_request_smoke(void) {
     g_HudSensorTracker.primaryGunDispatchCount = 10;
 
     playerState.primaryGunDispatchRequested = 0;
-    Player::ProcessPrimaryGunDispatchRequest(&saveState);
+    Player::ProcessPrimaryGunDispatchTick(&saveState);
     const bool noDispatchOk =
         playerState.primaryGunDispatchRequested == 0 && controller.ammoOrCharge == 2.0f &&
         entry.activeRuntimeListHead == nullptr && g_OptCatalogFreeRuntimeInstanceList == &runtime &&
         g_HudSensorTracker.primaryGunDispatchCount == 10;
 
     playerState.primaryGunDispatchRequested = 1;
-    Player::ProcessPrimaryGunDispatchRequest(&saveState);
+    Player::ProcessPrimaryGunDispatchTick(&saveState);
     const bool fireOk =
         playerState.primaryGunDispatchRequested == 0 && controller.ammoOrCharge == 1.0f &&
         entry.activeRuntimeListHead == &runtime &&
@@ -14858,6 +14901,7 @@ extern "C" int player_build_environment_probe_result_smoke(void) {
 extern "C" int player_los_from_fx_offset_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
     zClass_NodePartial *const oldRuntimeScene = g_Player_RuntimeDiScene;
+    zClass_NodePartial *const oldMainCamera = g_MainCamera;
     const zTag4Partial oldVariantCurrent = g_Variant_CurrentTag;
     PlayerProbeSampleCandidateBuffer *const oldPickBuffer = g_DiPickCandidateBuffer;
     const int oldBreakOnFirst = g_cls_di_BreakOnFirstCandidate;
@@ -14869,6 +14913,8 @@ extern "C" int player_los_from_fx_offset_smoke(void) {
     zClass_NodePartial rootNode = {};
     zClass_NodePartial worldNode = {};
     zClass_WorldDataPartial worldData = {};
+    zClass_NodePartial cameraNode = {};
+    zClass_CameraDataPartial cameraData = {};
     const zVec3 targetPoint = {10.0f, 20.0f, 30.0f};
 
     playerState.rootNode = &rootNode;
@@ -14882,9 +14928,13 @@ extern "C" int player_los_from_fx_offset_smoke(void) {
     worldNode.classData = &worldData;
     excludedNode.flags = 0x10;
     rootNode.flags = 0x10;
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    cameraData.targetOrEuler = {4.0f, 5.0f, 6.0f};
 
     g_GameStateOrMapTable = &gameStateOrMap;
     g_Player_RuntimeDiScene = &worldNode;
+    g_MainCamera = &cameraNode;
     g_cls_di_BreakOnFirstCandidate = 99;
     g_cls_di_StopAfterFirstHit = 99;
 
@@ -14911,14 +14961,39 @@ extern "C" int player_los_from_fx_offset_smoke(void) {
         FloatNear(g_DiSegmentEnd.z, 3.0f) &&
         (excludedNode.flags & 0x10) != 0 && (rootNode.flags & 0x10) != 0;
 
+    excludedNode.flags = 0x10;
+    rootNode.flags = 0x10;
+    const int cameraForwardResult =
+        Player::TestScenePathBetweenCameraTargetAndPoint(&excludedNode, &targetPoint, 1);
+    const bool cameraForwardOk =
+        cameraForwardResult == 1 && FloatNear(g_DiPickQueryPoint.x, 4.0f) &&
+        FloatNear(g_DiPickQueryPoint.y, 5.0f) && FloatNear(g_DiPickQueryPoint.z, 6.0f) &&
+        FloatNear(g_DiSegmentEnd.x, 10.0f) && FloatNear(g_DiSegmentEnd.y, 20.0f) &&
+        FloatNear(g_DiSegmentEnd.z, 30.0f) &&
+        (excludedNode.flags & 0x10) != 0 && (rootNode.flags & 0x10) != 0 &&
+        g_Variant_CurrentTag.count == 2 && g_Variant_CurrentTag.tags[0] == 7 &&
+        g_Variant_CurrentTag.tags[1] == 8;
+
+    excludedNode.flags = 0x10;
+    rootNode.flags = 0x10;
+    const int cameraReverseResult =
+        Player::TestScenePathBetweenCameraTargetAndPoint(&excludedNode, &targetPoint, 0);
+    const bool cameraReverseOk =
+        cameraReverseResult == 1 && FloatNear(g_DiPickQueryPoint.x, 10.0f) &&
+        FloatNear(g_DiPickQueryPoint.y, 20.0f) && FloatNear(g_DiPickQueryPoint.z, 30.0f) &&
+        FloatNear(g_DiSegmentEnd.x, 4.0f) && FloatNear(g_DiSegmentEnd.y, 5.0f) &&
+        FloatNear(g_DiSegmentEnd.z, 6.0f) &&
+        (excludedNode.flags & 0x10) != 0 && (rootNode.flags & 0x10) != 0;
+
     g_cls_di_StopAfterFirstHit = oldStopAfterFirst;
     g_cls_di_BreakOnFirstCandidate = oldBreakOnFirst;
     g_DiPickCandidateBuffer = oldPickBuffer;
     g_Variant_CurrentTag = oldVariantCurrent;
+    g_MainCamera = oldMainCamera;
     g_Player_RuntimeDiScene = oldRuntimeScene;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
 
-    return forwardOk && reverseOk ? 0 : 1;
+    return forwardOk && reverseOk && cameraForwardOk && cameraReverseOk ? 0 : 1;
 }
 
 extern "C" int player_apply_aim_pitch_to_direction_smoke(void) {

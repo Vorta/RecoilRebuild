@@ -2503,9 +2503,9 @@
 0x4ce300     void (__thiscall* OnAccept)(struct HudUiTextInput* self) = GameNet::EndChatComposeAndSendThunk
 0x4ce304     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
 0x4ce308     void (__thiscall* Backspace)(struct HudUiTextInput* self) = HudUiTextInput::BackspaceDeleteChar
-0x4ce30c     void (__thiscall* DeleteAtCursor)(struct HudUiTextInput* self) = HudUiTextBuffer::DeleteCharForward
-0x4ce310     void (__thiscall* CursorLeft)(struct HudUiTextInput* self) = HudUiTextBuffer::MoveCursorLeft
-0x4ce314     void (__thiscall* CursorRight)(struct HudUiTextInput* self) = HudUiTextBuffer::MoveCursorRight
+0x4ce30c     void (__thiscall* DeleteAtCursor)(struct HudUiTextInput* self) = HudUiTextInput::DeleteCharForward
+0x4ce310     void (__thiscall* CursorLeft)(struct HudUiTextInput* self) = HudUiTextInput::MoveCursorLeft
+0x4ce314     void (__thiscall* CursorRight)(struct HudUiTextInput* self) = HudUiTextInput::MoveCursorRight
 0x4ce318     void (__thiscall* OnBufferFull)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
 0x4ce31c }
 0x4ce31c void* data_4ce31c = 0x0
@@ -8496,9 +8496,9 @@
 0x4d34e0     void (__thiscall* OnAccept)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
 0x4d34e4     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
 0x4d34e8     void (__thiscall* Backspace)(struct HudUiTextInput* self) = HudUiTextInput::BackspaceDeleteChar
-0x4d34ec     void (__thiscall* DeleteAtCursor)(struct HudUiTextInput* self) = HudUiTextBuffer::DeleteCharForward
-0x4d34f0     void (__thiscall* CursorLeft)(struct HudUiTextInput* self) = HudUiTextBuffer::MoveCursorLeft
-0x4d34f4     void (__thiscall* CursorRight)(struct HudUiTextInput* self) = HudUiTextBuffer::MoveCursorRight
+0x4d34ec     void (__thiscall* DeleteAtCursor)(struct HudUiTextInput* self) = HudUiTextInput::DeleteCharForward
+0x4d34f0     void (__thiscall* CursorLeft)(struct HudUiTextInput* self) = HudUiTextInput::MoveCursorLeft
+0x4d34f4     void (__thiscall* CursorRight)(struct HudUiTextInput* self) = HudUiTextInput::MoveCursorRight
 0x4d34f8     void (__thiscall* OnBufferFull)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
 0x4d34fc }
 0x4d34fc int32_t data_4d34fc = 0x0
@@ -8588,9 +8588,9 @@
 0x4d3610     void (__thiscall* OnAccept)(struct HudUiTextInput* self) = HudUiOwnedTextInput::OnAcceptNotifyOwner
 0x4d3614     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
 0x4d3618     void (__thiscall* Backspace)(struct HudUiTextInput* self) = HudUiTextInput::BackspaceDeleteChar
-0x4d361c     void (__thiscall* DeleteAtCursor)(struct HudUiTextInput* self) = HudUiTextBuffer::DeleteCharForward
-0x4d3620     void (__thiscall* CursorLeft)(struct HudUiTextInput* self) = HudUiTextBuffer::MoveCursorLeft
-0x4d3624     void (__thiscall* CursorRight)(struct HudUiTextInput* self) = HudUiTextBuffer::MoveCursorRight
+0x4d361c     void (__thiscall* DeleteAtCursor)(struct HudUiTextInput* self) = HudUiTextInput::DeleteCharForward
+0x4d3620     void (__thiscall* CursorLeft)(struct HudUiTextInput* self) = HudUiTextInput::MoveCursorLeft
+0x4d3624     void (__thiscall* CursorRight)(struct HudUiTextInput* self) = HudUiTextInput::MoveCursorRight
 0x4d3628     void (__thiscall* OnBufferFull)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
 0x4d362c }
 0x4d362c int32_t data_4d362c = 0x0
@@ -9323,7 +9323,7 @@
 0x4d3fa8 struct zVideoFxPass3Config_VTable g_zVideoFxPass3Config_Vtable =
 0x4d3fa8 {
     // Compact pass-3 config vtable: Update / SetEnabled.
-0x4d3fa8     void (__thiscall* Update)(struct zVideoFxPass3Config* self, float deltaTime) = zVideo::FxPass3Config_UpdateLocal
+0x4d3fa8     void (__thiscall* Update)(struct zVideoFxPass3Config* self, float deltaTime) = zVideoFxPass3Config::UpdateLocal
 0x4d3fac     void (__thiscall* SetEnabled)(struct zVideoFxPass3Config* self, int32_t enabled) = HudUiContainer::SetEnabled
 // Corrected boundary: pass-3 root element vtable ends at 0x4d4027; 0x4d4028 begins the message-box dialog vtable.
 0x4d3fb0 }

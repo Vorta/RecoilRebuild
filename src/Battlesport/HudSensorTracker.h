@@ -220,6 +220,7 @@ struct HudSensorTracker {
     RECOIL_NOINLINE int RECOIL_THISCALL GetMissionId();
     RECOIL_NOINLINE int RECOIL_THISCALL LoadMissionCoreResources();
     RECOIL_NOINLINE int RECOIL_THISCALL InitMissionGameplaySystems();
+    RECOIL_NOINLINE int RECOIL_THISCALL ShutdownMissionGameplaySystems();
     RECOIL_NOINLINE void RECOIL_THISCALL LoadMissionWeatherFx(const char *zrdPath);
     RECOIL_NOINLINE int RECOIL_THISCALL UnloadObjectives();
     RECOIL_NOINLINE int RECOIL_THISCALL LoadObjectivesFromPath(const char *path);

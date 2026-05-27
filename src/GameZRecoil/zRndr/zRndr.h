@@ -600,6 +600,9 @@ RECOIL_NOINLINE int RECOIL_CDECL zRndr_LensFlare_GetQueuedSampleCount();
 RECOIL_NOINLINE void RECOIL_FASTCALL
 zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(int startIndex);
 
+RECOIL_NOINLINE int RECOIL_FASTCALL
+zRndr_LensFlare_BuildVisibleSampleListFromQueue(int startIndex);
+
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_SetVisibleSampleStage(
     int stageIndex, zImage_TexDirEntryPartial *stageTexDirEntry);
 

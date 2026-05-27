@@ -111,7 +111,7 @@ namespace {
 
     RECOIL_STATIC_ASSERT(sizeof(OptCatalogQueuedImpactRecord) == 68);
 
-    OptCatalogQueuedImpactRecord g_OptCatalogQueuedImpacts[kMaxQueuedImpacts] = {};
+    OptCatalogQueuedImpactRecord g_OptCatalogQueuedImpacts[kMaxQueuedImpacts] = {0};
 
     typedef void (RECOIL_THISCALL *OptCatalogRuntimeUpdateCallback)(
         OptCatalogRuntimeInstanceStorage *runtimeInstance);
@@ -1249,7 +1249,7 @@ namespace OptCatalog {
         int result = 0;
 
         if (pointOrVec3 != 0) {
-            OptCatalogRuntimeInstanceStorage runtimeInstance = {};
+            OptCatalogRuntimeInstanceStorage runtimeInstance = {0};
             runtimeInstance.ownerNode = ownerNode;
             runtimeInstance.pos = *pointOrVec3;
             runtimeInstance.spawnScale = 1.0f;
@@ -1830,8 +1830,8 @@ namespace OptCatalog {
     RECOIL_NOINLINE void RECOIL_FASTCALL
     HandleImpactEventFromRuntimeState(OptCatalogEntryDef *self,
                                       OptCatalogRuntimeInstanceStorage *runtimeInstance) {
-        OptCatalogHitEventPartial hitEvent = {};
-        OptCatalogSurfaceMaterialRef surfaceRef = {};
+        OptCatalogHitEventPartial hitEvent = {0};
+        OptCatalogSurfaceMaterialRef surfaceRef = {0};
 
         surfaceRef.flags &= 0xfeff;
         surfaceRef.impactSlot = 0;
@@ -1934,7 +1934,7 @@ namespace OptCatalog {
             zClass_Class::gwNodeSetActive(projectileNode, 0);
         }
 
-        PlayerProbeSampleCandidateBuffer rayData = {};
+        PlayerProbeSampleCandidateBuffer rayData = {0};
         if (zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
                 g_OptCatalogRuntimeWorld, &startPoint, &endPoint, &rayData) == 0) {
             OptCatalogHitEventPartial *const hitEvent =
@@ -1948,7 +1948,7 @@ namespace OptCatalog {
         }
 
         if (g_OptCatalog_FallbackImpactProbeEnabled != 0 && self->impactProximity > 0.0f) {
-            OptCatalogRaycastHitList fallbackHits = {};
+            OptCatalogRaycastHitList fallbackHits = {0};
             if (BuildImpactHitList(self, runtimeInstance, 1, &fallbackHits) != 0) {
                 runtimeInstance->pos = startPoint;
                 HandleImpactFromRuntimeProbe(self, runtimeInstance, &fallbackHits, 0);
@@ -2007,8 +2007,8 @@ namespace OptCatalog {
                         if (trailRuntime->pendingSpawnTargetCountPtr != 0 &&
                             trailRuntime->pendingSpawnTargetListPtr != 0 &&
                             *trailRuntime->pendingSpawnTargetCountPtr > 1) {
-                            float targetProjectionScratch[8] = {};
-                            zVec3 sortedDirection = {};
+                            float targetProjectionScratch[8] = {0};
+                            zVec3 sortedDirection = {0};
                             ReflectAndSortImpactTraceList(trailRuntime, targetProjectionScratch,
                                                           &sortedDirection);
 
@@ -2199,8 +2199,10 @@ namespace OptCatalog {
                                   float *targetProjectionScratch, zVec3 *directionOut) {
         zVec3 *farthestTarget = directionOut;
         float farthestDistance = 0.0f;
-        for (int i = 0; i < *runtime->pendingSpawnTargetCountPtr; ++i) {
-            zVec3 *const targetPos = runtime->pendingSpawnTargetListPtr[i].targetPos;
+        for (int projectionIndex = 0; projectionIndex < *runtime->pendingSpawnTargetCountPtr;
+             ++projectionIndex) {
+            zVec3 *const targetPos =
+                runtime->pendingSpawnTargetListPtr[projectionIndex].targetPos;
             const float distance = zMath::Vec3DeltaLength(runtime->spawnPos, targetPos);
             if (distance > farthestDistance) {
                 farthestDistance = distance;
@@ -2210,14 +2212,18 @@ namespace OptCatalog {
 
         zMath::Vec3DirectionTo(runtime->spawnPos, farthestTarget, directionOut);
 
-        for (int i = 0; i < *runtime->pendingSpawnTargetCountPtr; ++i) {
-            zVec3 *const targetPos = runtime->pendingSpawnTargetListPtr[i].targetPos;
+        for (int targetProjectionIndex = 0;
+             targetProjectionIndex < *runtime->pendingSpawnTargetCountPtr;
+             ++targetProjectionIndex) {
+            zVec3 *const targetPos =
+                runtime->pendingSpawnTargetListPtr[targetProjectionIndex].targetPos;
             zVec3 delta;
             delta.x = targetPos->x - runtime->spawnPos->x;
             delta.y = targetPos->y - runtime->spawnPos->y;
             delta.z = targetPos->z - runtime->spawnPos->z;
-            targetProjectionScratch[i] = directionOut->x * delta.x + directionOut->y * delta.y +
-                                         directionOut->z * delta.z;
+            targetProjectionScratch[targetProjectionIndex] =
+                directionOut->x * delta.x + directionOut->y * delta.y +
+                directionOut->z * delta.z;
         }
 
         int swapped;
@@ -2247,7 +2253,7 @@ namespace OptCatalog {
         zClass_cls_di::SetStopAfterFirstHit(0x40000);
         zClass_Class::gwNodeSetRaycastable(trailRuntime->projectileNode, 0);
 
-        PlayerProbeSampleCandidateBuffer rayData = {};
+        PlayerProbeSampleCandidateBuffer rayData = {0};
         const int raycastResult = zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
             g_OptCatalogRuntimeWorld, &segment->pos, targetPos, &rayData);
 

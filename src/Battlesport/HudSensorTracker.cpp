@@ -165,6 +165,15 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HudGeom2D::ClassifyPointAgainstSegment(
     if (cross < 0.0f) {
         return -1;
     }
+    if (px * dx < 0.0f) {
+        return -1;
+    }
+    if (py * dy < 0.0f) {
+        return -1;
+    }
+    if (px * px + py * py > dx * dx + dy * dy) {
+        return 1;
+    }
     return 0;
 }
 
@@ -1549,6 +1558,76 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::InitMissionGameplaySystems
     }
 
     Player::RefreshHudFromState((zUtil_SaveGameState *)g_GameStateOrMapTable);
+    return 1;
+}
+
+// Reimplements 0x417d40: HudSensorTracker::ShutdownMissionGameplaySystems
+// (D:\Proj\Battlesport\map.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::ShutdownMissionGameplaySystems() {
+    if (missionLoaded == 0) {
+        return 1;
+    }
+
+    HudUiLoadingCheckpoint::AdvanceAndLog("Unloading Mission...");
+    HudUiMgr::UpdateTargetReticleFromCursor(0, 0, 0.0f, 0.0f);
+    HudUiMgr::DisableHud();
+    HudUiLoadingCheckpoint::AdvanceAndLog(0);
+    HudUiAuxOverlay::ClearTextLines();
+
+    HudUiLoadingCheckpoint::AdvanceAndLog("Stop All Sounds");
+    zSndPlayHandleSnapshot *const soundSnapshot =
+        zSndPlayHandleSnapshot::CreateFromActiveSamples();
+    soundSnapshot->StopAllIfPlaying();
+    zClass_Camera::gwCameraSetFlagBit0(cameraNode, 0);
+    MapShutdownAndReset();
+
+    HudUiLoadingCheckpoint::AdvanceAndLog("Unload Objectives");
+    UnloadObjectives();
+
+    HudUiLoadingCheckpoint::AdvanceAndLog("Closing Player");
+    GameNet::UnregisterGameplayPacketHandlers();
+    Player::ShutdownMissionRuntime();
+    PickupAirdropSpawnRef::ShutdownGlobal();
+    zTurret_System::FreeAllRuntimes();
+
+    HudUiLoadingCheckpoint::AdvanceAndLog("Closing Weapons");
+    OptCatalog::ShutdownCore();
+
+    HudUiLoadingCheckpoint::AdvanceAndLog("Closing Effects");
+    zEffect::Reset();
+
+    HudUiLoadingCheckpoint::AdvanceAndLog("Closing Animations");
+    zEffect_Anim::Shutdown();
+    zDEClient::ShutdownGlobals();
+    Pickup::Shutdown();
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+    zOpt::RenderSection_SetTargetWindow(0);
+    zOpt::DisplaySection_SetTargetDisplay(0);
+    zOpt::CameraSection_SetActiveCamera(0);
+
+    char loadingMessage[80];
+    sprintf(loadingMessage, "Large Models: %d", worldNode->listCountB);
+    HudUiLoadingCheckpoint::AdvanceAndLog(loadingMessage);
+
+    HudUiLoadingCheckpoint::AdvanceAndLog("Closing Class");
+    zClass::ShutdownCore();
+
+    HudUiLoadingCheckpoint::AdvanceAndLog("Closing Models");
+    zModel_Display::Shutdown();
+    zImage::Shutdown();
+
+    sprintf(g_HudSensor_MissionSoundSetName + 16, "M%d", missionId);
+    zSndSampleSet_DestroyByName(g_HudSensor_MissionSoundSetName + 16);
+
+    HudUiLoadingCheckpoint::AdvanceAndLog("...Mission Unloaded");
+    HudUiLoadingCheckpoint::AdvanceAndLog(0);
+
+    displayNode = 0;
+    windowNode = 0;
+    cameraNode = 0;
+    worldNode = 0;
+    missionLoaded = 0;
+    ResetMissionState();
     return 1;
 }
 

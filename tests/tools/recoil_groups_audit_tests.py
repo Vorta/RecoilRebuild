@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 import textwrap
 import unittest
 
@@ -158,23 +159,34 @@ class RecoilGroupsAuditTests(unittest.TestCase):
         self.assertIn("active_wip_limit:", result.stdout)
 
     def test_cli_strict_wip_fails_when_limit_is_exceeded(self) -> None:
-        result = subprocess.run(
-            [
-                sys.executable,
-                str(CLI),
-                "--section",
-                "active",
-                "--wip-limit",
-                "0",
-                "--strict-wip",
-                "--limit",
-                "0",
-            ],
-            cwd=REPO_ROOT,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-        )
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            groups_path = tmp_path / "IMPLEMENTATION_GROUPS.md"
+            plan_path = tmp_path / "RECOIL_PLAN.md"
+            groups_path.write_text(GROUPS_TEXT, encoding="utf-8")
+            plan_path.write_text(PLAN_TEXT, encoding="utf-8")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(CLI),
+                    "--groups",
+                    str(groups_path),
+                    "--plan",
+                    str(plan_path),
+                    "--section",
+                    "active",
+                    "--wip-limit",
+                    "0",
+                    "--strict-wip",
+                    "--limit",
+                    "0",
+                ],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
 
         self.assertEqual(result.returncode, 1)
 

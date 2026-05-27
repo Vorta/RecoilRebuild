@@ -51,6 +51,11 @@ void *g_modelRefLerpLastCallbackCtx = nullptr;
 int g_zclassUpdateBucketCallbackCount = 0;
 zClass_NodePartial *g_zclassUpdateBucketLastNode = nullptr;
 int g_zclassUpdateBucketDeferredDuringCallback = -1;
+int g_zclassRenderTraverseCallCount = 0;
+zClass_NodePartial *g_zclassRenderTraverseNodes[16] = {};
+int g_zclassRenderTraverseClipMasks[16] = {};
+float g_zclassRenderTraverseAlphaScales[16] = {};
+int g_zclassRenderTraverseVertexAlphaEnabled[16] = {};
 
 void RECOIL_CDECL TestZGameUpdateFogColor(void) {
     ++g_zgameFogColorUpdateCount;
@@ -66,6 +71,18 @@ int RECOIL_FASTCALL TestZClassUpdateBucketCallback(zClass_NodePartial *node) {
     g_zclassUpdateBucketLastNode = node;
     g_zclassUpdateBucketDeferredDuringCallback = g_zClass_DeferredProcessingEnabled;
     return 0;
+}
+
+void RECOIL_FASTCALL TestZClassRenderTraverseCallback(zClass_NodePartial *node, int clipMask) {
+    if (g_zclassRenderTraverseCallCount < 16) {
+        g_zclassRenderTraverseNodes[g_zclassRenderTraverseCallCount] = node;
+        g_zclassRenderTraverseClipMasks[g_zclassRenderTraverseCallCount] = clipMask;
+        g_zclassRenderTraverseAlphaScales[g_zclassRenderTraverseCallCount] =
+            gModel_RenderAlphaScaleCurrent;
+        g_zclassRenderTraverseVertexAlphaEnabled[g_zclassRenderTraverseCallCount] =
+            gModel_RenderVertexAlphaEnabled;
+    }
+    ++g_zclassRenderTraverseCallCount;
 }
 
 int g_zmodelReleaseTextureUploadCount = 0;
@@ -428,6 +445,39 @@ extern "C" int zmodel_set_vertex_shading_enabled_smoke() {
 
     g_zModel_VertexShadingEnabled = savedVertexShadingEnabled;
     return signedValueOk ? 0 : 2;
+}
+
+extern "C" int zmodel_render_state_setters_smoke(void) {
+    gModel_RenderVertexAlphaEnabled = -1;
+    zModel_RenderVertexAlphaEnabled_SetCurrent(3);
+    if (gModel_RenderVertexAlphaEnabled != 3) {
+        return 1;
+    }
+
+    gModel_RenderAlphaScaleCurrent = -1.0f;
+    zModel_RenderAlphaScale_SetCurrent(0.375f);
+    if (gModel_RenderAlphaScaleCurrent != 0.375f) {
+        return 2;
+    }
+
+    zColorRgb color{0.25f, 0.5f, 0.75f};
+    g_zModel_FogTargetColorOverride = {};
+    zModel_FogTargetColorOverride_SetCurrent(&color, 0.625f);
+    if (g_zModel_FogTargetColorOverride.colorRgb01.red != 0.25f ||
+        g_zModel_FogTargetColorOverride.colorRgb01.green != 0.5f ||
+        g_zModel_FogTargetColorOverride.colorRgb01.blue != 0.75f ||
+        g_zModel_FogTargetColorOverride.weight != 0.625f) {
+        return 3;
+    }
+
+    color = {1.0f, 1.0f, 1.0f};
+    zModel_FogTargetColorOverride_SetCurrent(nullptr, 0.0f);
+    return g_zModel_FogTargetColorOverride.colorRgb01.red == 0.25f &&
+                   g_zModel_FogTargetColorOverride.colorRgb01.green == 0.5f &&
+                   g_zModel_FogTargetColorOverride.colorRgb01.blue == 0.75f &&
+                   g_zModel_FogTargetColorOverride.weight == 0.0f
+               ? 0
+               : 4;
 }
 
 extern "C" int zmodel_const_tolerances_and_cross_smoke() {
@@ -4953,6 +5003,50 @@ extern "C" int zmodel_light_point_in_polygon_init_smoke(void) {
                : 2;
 }
 
+extern "C" int zclass_world_build_active_light_list_smoke(void) {
+    const int savedRendererPath = g_zVideo_ActiveRendererPath;
+
+    zClass_LightDataPartial light0{};
+    zClass_LightDataPartial light1{};
+    light1.specularColor = {0.4f, 0.5f, 0.6f};
+    light1.intensityScale = 0.375f;
+    light1.isPointMode = 1;
+    zClass_LightDataPartial *lightDataList[2] = {&light0, &light1};
+
+    zClass_NodePartial lightNode0{};
+    zClass_NodePartial lightNode1{};
+    lightNode1.flags = 4;
+    zClass_NodePartial *lightNodes[2] = {&lightNode0, &lightNode1};
+
+    zClass_WorldDataPartial worldData{};
+    worldData.lightCount = 2;
+    worldData.lightNodes = lightNodes;
+    worldData.lightDataList = lightDataList;
+
+    zClass_NodePartial world{};
+    world.classData = &worldData;
+
+    g_zVideo_ActiveRendererPath = 0;
+    gModel_FogColorRgb01 = {0.1f, 0.2f, 0.3f};
+    gModel_SpecialLightPaletteRemapRecipe = {};
+
+    const int result = zClass_World::InitLightPointInPolygonXZ(&world);
+    const bool ok =
+        result == 0 && gModel_LightInputDataList == lightDataList &&
+        gModel_LightInputNodeStates == reinterpret_cast<zModel_LightStatePartial **>(lightNodes) &&
+        gModel_LightInputCount == 2 && gModel_ActiveLightCount == 1 &&
+        gModel_HasActiveLights == 1 && gModel_ActiveLightSpecialIndex == 0 &&
+        gModel_ActiveLights[0].light == &light1 &&
+        gModel_ActiveLights[0].lightState ==
+            reinterpret_cast<zModel_LightStatePartial *>(&lightNode1) &&
+        gModel_AmbientColorRgb01.red == 0.4f &&
+        gModel_AmbientIntensityFactor == 0.625f &&
+        gModel_SpecialLightPaletteRemapRecipe.color1Strength == 1.0f;
+
+    g_zVideo_ActiveRendererPath = savedRendererPath;
+    return ok ? 0 : 1;
+}
+
 extern "C" int zmodel_light_set_active_lights_smoke(void) {
     std::memset(gModel_ActiveLights, 0, sizeof(gModel_ActiveLights));
     std::memset(g_Clip_PolyAttr0, 0, sizeof(g_Clip_PolyAttr0));
@@ -5594,6 +5688,104 @@ extern "C" int zgame_options_find_option_smoke() {
 
     g_zGame_Options_OptionListHead = nullptr;
     return zGame::Options_FindOption("First") == nullptr ? 0 : 3;
+}
+
+extern "C" int zopt_lookup_named_value_as_int_smoke() {
+    if (zOpt::LookupNamedValueAsInt("TRUE") != 1 ||
+        zOpt::LookupNamedValueAsInt("FALSE") != 0 ||
+        zOpt::LookupNamedValueAsInt("LOW") != 2 ||
+        zOpt::LookupNamedValueAsInt("TEXMEM_4MB") != 3 ||
+        zOpt::LookupNamedValueAsInt("ZVID_1024x768x16") != 7 ||
+        zOpt::LookupNamedValueAsInt("SOUND_API_A3D") != 1) {
+        return 1;
+    }
+
+    if (zOpt::LookupNamedValueAsInt("SOUND_API_DSOUND") != 0 ||
+        zOpt::LookupNamedValueAsInt("MISSING_TOKEN") != 0 ||
+        zOpt::LookupNamedValueAsInt("low") != 0) {
+        return 2;
+    }
+
+    return 0;
+}
+
+extern "C" int zopt_read_scalar_value_as_int_smoke() {
+    zReader::Node intNode{};
+    intNode.type = zReader::ZRDR_NODE_INT;
+    intNode.value.i32 = -7;
+
+    zReader::Node floatNode{};
+    floatNode.type = zReader::ZRDR_NODE_FLOAT;
+    floatNode.value.f32 = 6.0f;
+
+    zReader::Node stringNode{};
+    stringNode.type = zReader::ZRDR_NODE_STRING;
+    stringNode.value.str = const_cast<char *>("CPU_CLASS_PENTIUM_PRO");
+
+    zReader::Node unknownNode{};
+    unknownNode.type = static_cast<zReader::NodeType>(99);
+    unknownNode.value.i32 = 1234;
+
+    return zOpt::ReadScalarValueAsInt(&intNode) == -7 &&
+                   zOpt::ReadScalarValueAsInt(&floatNode) == 6 &&
+                   zOpt::ReadScalarValueAsInt(&stringNode) == 6 &&
+                   zOpt::ReadScalarValueAsInt(&unknownNode) == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int zopt_evaluate_profile_metric_condition_smoke() {
+    zReader::Node defaultNode{};
+    defaultNode.type = zReader::ZRDR_NODE_STRING;
+    defaultNode.value.str = const_cast<char *>("DEFAULT");
+    zReader::Node otherStringNode{};
+    otherStringNode.type = zReader::ZRDR_NODE_STRING;
+    otherStringNode.value.str = const_cast<char *>("OTHER");
+    zReader::Node badTypeNode{};
+    badTypeNode.type = zReader::ZRDR_NODE_INT;
+    badTypeNode.value.i32 = 1;
+
+    if (zOpt::EvaluateProfileMetricCondition(&defaultNode) != 1 ||
+        zOpt::EvaluateProfileMetricCondition(&otherStringNode) != 0 ||
+        zOpt::EvaluateProfileMetricCondition(&badTypeNode) != 0) {
+        return 1;
+    }
+
+    g_zGame_Options_RuntimeConfig.cpuClass = 6;
+    g_zGame_Options_RuntimeConfig.cpuMhz = 450;
+    g_zGame_Options_RuntimeConfig.soundHardwareMemKb = 8192;
+    g_zGame_Options_RuntimeConfig.systemRamKb = 65536;
+    g_zGame_Options_RuntimeConfig.defaultFlags = 0x40;
+
+    auto evalMetric = [](const char *metricKey, const char *opString, int rhs) {
+        zReader::Node conditionCells[4] = {};
+        conditionCells[0].type = zReader::ZRDR_NODE_INT;
+        conditionCells[0].value.i32 = 4;
+        conditionCells[1].type = zReader::ZRDR_NODE_STRING;
+        conditionCells[1].value.str = const_cast<char *>(metricKey);
+        conditionCells[2].type = zReader::ZRDR_NODE_STRING;
+        conditionCells[2].value.str = const_cast<char *>(opString);
+        conditionCells[3].type = zReader::ZRDR_NODE_INT;
+        conditionCells[3].value.i32 = rhs;
+
+        zReader::Node conditionNode{};
+        conditionNode.type = zReader::ZRDR_NODE_ARRAY;
+        conditionNode.value.nodes = conditionCells;
+        return zOpt::EvaluateProfileMetricCondition(&conditionNode);
+    };
+
+    if (evalMetric("CPU_CLASS", ">=", 6) != 1 || evalMetric("CPU_MHZ", "==", 450) != 1 ||
+        evalMetric("VIDEO_KB", "<", 9000) != 1 || evalMetric("RAM_KB", ">", 32000) != 1 ||
+        evalMetric("HW_ACCEL", "==", 1) != 1 || evalMetric("MISSING", "==", 0) != 0) {
+        return 2;
+    }
+
+    zReader::Node badCountCells[4] = {};
+    badCountCells[0].value.i32 = 3;
+    zReader::Node badCountNode{};
+    badCountNode.type = zReader::ZRDR_NODE_ARRAY;
+    badCountNode.value.nodes = badCountCells;
+    return zOpt::EvaluateProfileMetricCondition(&badCountNode) == 0 ? 0 : 3;
 }
 
 extern "C" int zgame_options_runtime_config_copy_default_smoke() {
@@ -6790,14 +6982,18 @@ extern "C" int zopt_view_rect_target_side_effects_smoke() {
     cameraData.frustumWidth = 0.25f;
     cameraData.frustumHeight = 0.5f;
     zOpt::CameraSection_SetActiveCamera(&cameraNode);
-    if (cameraSection.m_pCamera != &cameraNode || cameraData.frustumWidth != 1.0f ||
-        cameraData.frustumHeight != 0.5f || cameraData.fovX != 1.0f / 400.0f ||
-        cameraData.fovY != 0.5f / 200.0f || cameraData.clipDistance != 0.5f) {
+    if (cameraSection.m_pCamera != &cameraNode ||
+        zOpt_CameraSection_GetActiveCamera() != &cameraNode ||
+        cameraData.frustumWidth != 1.0f || cameraData.frustumHeight != 0.5f ||
+        cameraData.fovX != 1.0f / 400.0f || cameraData.fovY != 0.5f / 200.0f ||
+        cameraData.clipDistance != 0.5f) {
         return 5;
     }
 
     zOpt::CameraSection_SetActiveCamera(nullptr);
-    return cameraSection.m_pCamera == nullptr ? 0 : 6;
+    return cameraSection.m_pCamera == nullptr && zOpt_CameraSection_GetActiveCamera() == nullptr
+               ? 0
+               : 6;
 }
 
 extern "C" int zopt_section_accessor_smoke() {
@@ -6885,6 +7081,30 @@ extern "C" int zclipalt_set_target_rect_smoke() {
     g_zClipAlt_BiasIncludesPrimaryOrigin = 1;
     zClipAlt::SetTargetRect(&target, 1);
     return g_zClipAlt_RemapBiasX == 47.0f && g_zClipAlt_RemapBiasY == 14.0f ? 0 : 2;
+}
+
+extern "C" int zclipalt_remap_point_xy_in_place_smoke() {
+    zClipAltFloatRect source{2.0f, 4.0f, 18.0f, 28.0f};
+    zClipAltFloatRect target{10.0f, 20.0f, 42.0f, 44.0f};
+    gClipRect_Primary.xMin = 0.0f;
+    gClipRect_Primary.yMin = 0.0f;
+    g_zClipAlt_BiasIncludesPrimaryOrigin = 0;
+    zClipAlt::SetSourceRect(&source);
+    zClipAlt::SetTargetRect(&target, 0);
+
+    float acceptedPoint[2] = {26.0f, 32.0f};
+    const bool accepted =
+        zClipAlt::RemapPointXYInPlace(acceptedPoint) == 1 &&
+        g_Clip_PolyVerts[0].x == 26.0f && g_Clip_PolyVerts[0].y == 32.0f &&
+        acceptedPoint[0] == 10.0f && acceptedPoint[1] == 16.0f;
+
+    float rejectedPoint[2] = {50.0f, 32.0f};
+    const bool rejected =
+        zClipAlt::RemapPointXYInPlace(rejectedPoint) == 0 &&
+        g_Clip_PolyVerts[0].x == 50.0f && g_Clip_PolyVerts[0].y == 32.0f &&
+        rejectedPoint[0] == 50.0f && rejectedPoint[1] == 32.0f;
+
+    return accepted && rejected ? 0 : 1;
 }
 
 extern "C" int zclass_cls_di_segment_batch_vs_polygon_smoke() {
@@ -11002,6 +11222,74 @@ extern "C" int zclass_world_remove_light_sound_smoke() {
         return 2;
     }
 
+    zClass_NodePartial updateWorld{};
+    zClass_WorldDataPartial updateWorldData{};
+    int updateLightMatrixIdentityFlags[4] = {};
+    float *updateLightMatrixSlots[4] = {};
+    zMat4x3 updateLightBaseMatrix{};
+    updateLightMatrixIdentityFlags[0] = 1;
+    updateLightMatrixSlots[0] = reinterpret_cast<float *>(&updateLightBaseMatrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &updateLightMatrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &updateLightMatrixSlots[0];
+    zMath::g_zMath_CameraScratchB = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                                     0.0f, 0.0f, 1.0f, 5.0f, 6.0f, 7.0f};
+    zClass_NodePartial updateLightA{};
+    zClass_NodePartial updateLightB{};
+    zClass_LightDataPartial updateLightDataA{};
+    zClass_LightDataPartial updateLightDataB{};
+    zClass_NodePartial *updateLights[2] = {&updateLightA, &updateLightB};
+    updateWorld.classData = &updateWorldData;
+    updateWorldData.lightCount = 2;
+    updateWorldData.lightNodes = updateLights;
+    updateLightA.classId = 9;
+    updateLightA.flags = 0x04;
+    updateLightA.classData = &updateLightDataA;
+    updateLightDataA.dirty = 1;
+    updateLightDataA.localPosition = {1.0f, 2.0f, 3.0f};
+    updateLightDataA.isDirectionalMode = 1;
+    updateLightB.classId = 9;
+    updateLightB.flags = 0x04;
+    updateLightB.classData = &updateLightDataB;
+    updateLightDataB.dirty = 1;
+    updateLightDataB.localPosition = {4.0f, 5.0f, 6.0f};
+    updateLightDataB.isDirectionalMode = 1;
+    if (zClass_World::UpdateAllLights(&updateWorld) != 0 || updateLightDataA.dirty != 0 ||
+        updateLightDataB.dirty != 0 || updateLightDataA.worldPosition.x != 1.0f ||
+        updateLightDataA.worldPosition.y != 2.0f || updateLightDataA.worldPosition.z != 3.0f ||
+        updateLightDataA.viewPos.x != 6.0f || updateLightDataA.viewPos.y != 8.0f ||
+        updateLightDataA.viewPos.z != 10.0f || updateLightDataB.worldPosition.x != 4.0f ||
+        updateLightDataB.worldPosition.y != 5.0f || updateLightDataB.worldPosition.z != 6.0f ||
+        updateLightDataB.viewPos.x != 9.0f || updateLightDataB.viewPos.y != 11.0f ||
+        updateLightDataB.viewPos.z != 13.0f) {
+        return 30;
+    }
+
+    zClass_NodePartial updateSoundA{};
+    zClass_NodePartial updateSoundB{};
+    zClass_SoundDataPartial updateSoundDataA{};
+    zClass_SoundDataPartial updateSoundDataB{};
+    zClass_NodePartial *updateSounds[2] = {&updateSoundA, &updateSoundB};
+    updateWorld.classData = &updateWorldData;
+    updateWorldData.soundCount = 2;
+    updateWorldData.soundNodes = updateSounds;
+    updateSoundA.classId = 10;
+    updateSoundA.flags = 0x04;
+    updateSoundA.classData = &updateSoundDataA;
+    updateSoundDataA.runtimeFlags = 0x03;
+    updateSoundDataA.localPosition = {1.0f, 2.0f, 3.0f};
+    updateSoundB.classId = 10;
+    updateSoundB.flags = 0x04;
+    updateSoundB.classData = &updateSoundDataB;
+    updateSoundDataB.runtimeFlags = 0x03;
+    updateSoundDataB.localPosition = {4.0f, 5.0f, 6.0f};
+    if (zClass_World::UpdateAllSounds(&updateWorld) != 0 ||
+        updateSoundDataA.runtimeFlags != 0x06 || updateSoundDataB.runtimeFlags != 0x06 ||
+        updateSoundDataA.worldPos.x != 1.0f || updateSoundDataA.worldPos.y != 2.0f ||
+        updateSoundDataA.worldPos.z != 3.0f || updateSoundDataB.worldPos.x != 4.0f ||
+        updateSoundDataB.worldPos.y != 5.0f || updateSoundDataB.worldPos.z != 6.0f) {
+        return 3;
+    }
+
     return 0;
 }
 
@@ -13772,7 +14060,558 @@ extern "C" int zclass_world_to_grid_coords_clamped_smoke() {
         return 3;
     }
 
+    worldData.areaInvSizeX = 0.5f;
+    worldData.areaInvSizeZ = 0.5f;
+
+    int clampedCol = -1;
+    int clampedRow = -1;
+    int insideBounds = -1;
+    col = -1;
+    row = -1;
+    if (zClass_World::WorldToGridCoordsClampedEx(&world, &col, 4.0f, 6.0f, &row, &clampedCol,
+                                                 &clampedRow, &insideBounds) != 0 ||
+        col != 2 || row != 3 || clampedCol != 2 || clampedRow != 3 || insideBounds != 1) {
+        return 4;
+    }
+
+    col = -1;
+    row = -1;
+    clampedCol = -1;
+    clampedRow = -1;
+    insideBounds = -1;
+    if (zClass_World::WorldToGridCoordsClampedEx(&world, &col, -2.0f, 0.0f, &row, &clampedCol,
+                                                 &clampedRow, &insideBounds) != 0 ||
+        col != -1 || row != 0 || clampedCol != 0 || clampedRow != 0 || insideBounds != 0) {
+        return 5;
+    }
+
+    col = -1;
+    row = -1;
+    clampedCol = -1;
+    clampedRow = -1;
+    insideBounds = -1;
+    if (zClass_World::WorldToGridCoordsClampedEx(&world, &col, 12.0f, 12.0f, &row, &clampedCol,
+                                                 &clampedRow, &insideBounds) != 0 ||
+        col != 6 || row != 6 || clampedCol != 4 || clampedRow != 5 || insideBounds != 0) {
+        return 6;
+    }
+
     return 0;
+}
+
+extern "C" int zclass_camera_convex_hull_xz_smoke() {
+    auto nearFloat = [](float lhs, float rhs) { return std::fabs(lhs - rhs) <= 0.00001f; };
+    auto nearPoint = [](const zVec3 &point, float x, float z) {
+        return std::fabs(point.x - x) <= 0.00001f && std::fabs(point.z - z) <= 0.00001f;
+    };
+
+    zVec3 origin{0.0f, 0.0f, 0.0f};
+    zVec3 east{10.0f, 0.0f, 0.0f};
+    zVec3 north{0.0f, 0.0f, -10.0f};
+    zVec3 west{-10.0f, 0.0f, 0.0f};
+    zVec3 south{0.0f, 0.0f, 10.0f};
+    zVec3 northEast{10.0f, 0.0f, -10.0f};
+
+    if (!nearFloat(zClass_Camera::FastAngleXZ(&origin, &origin), 0.0f) ||
+        !nearFloat(zClass_Camera::FastAngleXZ(&origin, &east), 0.0f) ||
+        !nearFloat(zClass_Camera::FastAngleXZ(&origin, &north), 1.57079601f) ||
+        !nearFloat(zClass_Camera::FastAngleXZ(&origin, &west), 3.14159203f) ||
+        !nearFloat(zClass_Camera::FastAngleXZ(&origin, &south), 4.71238804f) ||
+        !nearFloat(zClass_Camera::FastAngleXZ(&origin, &northEast), 0.785398006f)) {
+        return 1;
+    }
+
+    zVec3 points[6] = {{0.0f, 0.0f, 0.0f},
+                       {2.0f, 0.0f, 0.0f},
+                       {2.0f, 0.0f, 2.0f},
+                       {0.0f, 0.0f, 2.0f},
+                       {1.0f, 0.0f, 1.0f},
+                       {123.0f, 0.0f, 123.0f}};
+
+    const int hullCount = zClass_Camera::FindConvexHullXZ(points, 5);
+    if (hullCount != 3) {
+        return 2;
+    }
+
+    if (!nearPoint(points[0], 2.0f, 2.0f) || !nearPoint(points[1], 2.0f, 0.0f) ||
+        !nearPoint(points[2], 0.0f, 2.0f)) {
+        return 3;
+    }
+
+    return 0;
+}
+
+extern "C" int zclass_cls_di_region_filter_mesh_faces_smoke() {
+    auto nearFloat = [](float lhs, float rhs) { return std::fabs(lhs - rhs) <= 0.00001f; };
+
+    zVec3 vertexCache[65] = {};
+    zVec3 normalCache[65] = {};
+    zVec3 *const savedVertices = g_zModel_PointInPolygonVertices;
+    zVec3 *const savedNormals = g_zModel_PointInPolygonEdgeNormals;
+    const int savedVertexCount = g_zModel_PointInPolygonVertexCount;
+
+    g_zModel_PointInPolygonVertices = vertexCache;
+    g_zModel_PointInPolygonEdgeNormals = normalCache;
+    g_zModel_PointInPolygonVertexCount = 37;
+
+    zVec3 tooMany[65] = {};
+    if (zClass_cls_di::FilterRegionsAgainstMeshFaces(tooMany, 65) != 0 ||
+        g_zModel_PointInPolygonVertexCount != 0) {
+        g_zModel_PointInPolygonVertices = savedVertices;
+        g_zModel_PointInPolygonEdgeNormals = savedNormals;
+        g_zModel_PointInPolygonVertexCount = savedVertexCount;
+        return 1;
+    }
+
+    zVec3 clockwiseSquare[4] = {{0.0f, 0.0f, 0.0f},
+                               {0.0f, 0.0f, 2.0f},
+                               {2.0f, 0.0f, 2.0f},
+                               {2.0f, 0.0f, 0.0f}};
+    if (zClass_cls_di::FilterRegionsAgainstMeshFaces(clockwiseSquare, 4) != 1 ||
+        g_zModel_PointInPolygonVertexCount != 4) {
+        g_zModel_PointInPolygonVertices = savedVertices;
+        g_zModel_PointInPolygonEdgeNormals = savedNormals;
+        g_zModel_PointInPolygonVertexCount = savedVertexCount;
+        return 2;
+    }
+
+    if (!nearFloat(vertexCache[2].x, 2.0f) || !nearFloat(vertexCache[2].z, 2.0f) ||
+        !nearFloat(normalCache[0].x, 1.0f) || !nearFloat(normalCache[0].z, 0.0f) ||
+        !nearFloat(normalCache[1].x, 0.0f) || !nearFloat(normalCache[1].z, -1.0f) ||
+        !nearFloat(normalCache[2].x, -1.0f) || !nearFloat(normalCache[2].z, 0.0f) ||
+        !nearFloat(normalCache[3].x, 0.0f) || !nearFloat(normalCache[3].z, 1.0f)) {
+        g_zModel_PointInPolygonVertices = savedVertices;
+        g_zModel_PointInPolygonEdgeNormals = savedNormals;
+        g_zModel_PointInPolygonVertexCount = savedVertexCount;
+        return 3;
+    }
+
+    zVec3 centerInside{1.0f, 0.0f, 1.0f};
+    zVec3 centerOutside{-1.0f, 0.0f, 1.0f};
+    if (zClass_cls_di::FilterRegionsAgainstHexahedronFaces(&centerInside, 0.25f) != 1 ||
+        zClass_cls_di::FilterRegionsAgainstHexahedronFaces(&centerOutside, 0.25f) != 0 ||
+        zClass_cls_di::FilterRegionsAgainstHexahedronFaces(&centerInside, 1.5f) != 0) {
+        g_zModel_PointInPolygonVertices = savedVertices;
+        g_zModel_PointInPolygonEdgeNormals = savedNormals;
+        g_zModel_PointInPolygonVertexCount = savedVertexCount;
+        return 4;
+    }
+
+    g_zModel_PointInPolygonVertexCount = 0;
+    if (zClass_cls_di::FilterRegionsAgainstHexahedronFaces(&centerOutside, 100.0f) != 1) {
+        g_zModel_PointInPolygonVertices = savedVertices;
+        g_zModel_PointInPolygonEdgeNormals = savedNormals;
+        g_zModel_PointInPolygonVertexCount = savedVertexCount;
+        return 5;
+    }
+
+    g_zModel_PointInPolygonVertices = savedVertices;
+    g_zModel_PointInPolygonEdgeNormals = savedNormals;
+    g_zModel_PointInPolygonVertexCount = savedVertexCount;
+    return 0;
+}
+
+extern "C" int zclass_camera_build_frustum_grid_tiles_from_params_smoke() {
+    zVec3 polygonVertices[8] = {};
+    zVec3 polygonNormals[8] = {};
+    zVec3 *const savedPolygonVertices = g_zModel_PointInPolygonVertices;
+    zVec3 *const savedPolygonNormals = g_zModel_PointInPolygonEdgeNormals;
+    const int savedPolygonVertexCount = g_zModel_PointInPolygonVertexCount;
+    zClass_CameraDataPartial *const savedViewContext = g_zVideo_pActiveViewContext;
+
+    g_zModel_PointInPolygonVertices = polygonVertices;
+    g_zModel_PointInPolygonEdgeNormals = polygonNormals;
+    g_zModel_PointInPolygonVertexCount = 0;
+
+    zWorldAreaPartial row0[2] = {};
+    zWorldAreaPartial row1[2] = {};
+    zWorldAreaPartial *rows[2] = {row0, row1};
+    for (int rowIndex = 0; rowIndex < 2; ++rowIndex) {
+        for (int colIndex = 0; colIndex < 2; ++colIndex) {
+            rows[rowIndex][colIndex].areaIndex = 1;
+            rows[rowIndex][colIndex].cellMinX = static_cast<float>(colIndex * 10);
+            rows[rowIndex][colIndex].cellMinZ = static_cast<float>(rowIndex - 1);
+        }
+    }
+
+    zClass_WorldDataPartial worldData{};
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.worldMaxX = 20.0f;
+    worldData.worldMaxZ = 1.0f;
+    worldData.areaCellSizeX = 10.0f;
+    worldData.areaCellSizeZ = 1.0f;
+    worldData.areaInvSizeX = 0.1f;
+    worldData.areaInvSizeZ = 1.0f;
+    worldData.areaHalfSizeX = 5.0f;
+    worldData.areaHalfSizeZ = 0.5f;
+    worldData.areaCellRadiusBias = -1000.0f;
+    worldData.areaGridColCount = 2;
+    worldData.areaGridRowCount = 2;
+    worldData.areaGridRows = rows;
+
+    zClass_NodePartial world{};
+    world.classData = &worldData;
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.cameraPos = {0.5f, 0.0f, 0.5f};
+    cameraData.frustumOrigin = {-5.0f, 0.0f, -5.0f};
+    cameraData.frustumCorners[0] = {5.0f, 0.0f, -5.0f};
+    cameraData.frustumCorners[1] = {-5.0f, 0.0f, 5.0f};
+    g_zVideo_pActiveViewContext = &cameraData;
+
+    int result = zClass_Camera::BuildFrustumGridTilesFromParams(&world, &worldData, &cameraData);
+    int status = 0;
+    if (result != 0 || g_zCamera_FrustumFootprintPointCount != 3) {
+        status = 1;
+    } else if (g_zCamera_FrustumGridTileRings[0].count != 12) {
+        status = 20 + g_zCamera_FrustumGridTileRings[0].count;
+    } else {
+        auto hasTile = [](int col, int row, int hasPosOffset, float posOffsetX,
+                          float posOffsetZ) {
+            const zCamera_FrustumGridTileRingPartial &ring = g_zCamera_FrustumGridTileRings[0];
+            for (int i = 0; i < ring.count; ++i) {
+                const zCamera_FrustumGridTilePartial &tile = ring.tiles[i];
+                if (tile.col == col && tile.row == row && tile.hasPosOffset == hasPosOffset &&
+                    tile.posOffsetX == posOffsetX && tile.posOffsetZ == posOffsetZ &&
+                    tile.clipMask == 0x3f) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        if (!hasTile(0, 0, 1, -10.0f, -5.0f)) {
+            status = 3;
+        } else if (!hasTile(0, 0, 1, -10.0f, 0.0f)) {
+            status = 4;
+        } else if (!hasTile(0, 0, 1, 0.0f, -5.0f)) {
+            status = 5;
+        } else if (!hasTile(0, 0, 0, 0.0f, 0.0f)) {
+            status = 6;
+        }
+    }
+
+    g_zVideo_pActiveViewContext = savedViewContext;
+    g_zModel_PointInPolygonVertices = savedPolygonVertices;
+    g_zModel_PointInPolygonEdgeNormals = savedPolygonNormals;
+    g_zModel_PointInPolygonVertexCount = savedPolygonVertexCount;
+    return status;
+}
+
+extern "C" int zclass_camera_build_frustum_grid_tiles_smoke() {
+    zVec3 polygonVertices[8] = {};
+    zVec3 polygonNormals[8] = {};
+    zVec3 *const savedPolygonVertices = g_zModel_PointInPolygonVertices;
+    zVec3 *const savedPolygonNormals = g_zModel_PointInPolygonEdgeNormals;
+    const int savedPolygonVertexCount = g_zModel_PointInPolygonVertexCount;
+    zClass_CameraDataPartial *const savedViewContext = g_zVideo_pActiveViewContext;
+
+    g_zModel_PointInPolygonVertices = polygonVertices;
+    g_zModel_PointInPolygonEdgeNormals = polygonNormals;
+    g_zModel_PointInPolygonVertexCount = 0;
+
+    zWorldAreaPartial row0[2] = {};
+    zWorldAreaPartial row1[2] = {};
+    zWorldAreaPartial *rows[2] = {row0, row1};
+    for (int rowIndex = 0; rowIndex < 2; ++rowIndex) {
+        for (int colIndex = 0; colIndex < 2; ++colIndex) {
+            rows[rowIndex][colIndex].areaIndex = 1;
+            rows[rowIndex][colIndex].cellMinX = static_cast<float>(colIndex * 10);
+            rows[rowIndex][colIndex].cellMinZ = static_cast<float>(rowIndex * 10);
+        }
+    }
+
+    zClass_WorldDataPartial worldData{};
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.worldMaxX = 20.0f;
+    worldData.worldMaxZ = 20.0f;
+    worldData.areaCellSizeX = 10.0f;
+    worldData.areaCellSizeZ = 10.0f;
+    worldData.areaInvSizeX = 0.1f;
+    worldData.areaInvSizeZ = 0.1f;
+    worldData.areaHalfSizeX = 5.0f;
+    worldData.areaHalfSizeZ = 5.0f;
+    worldData.areaCellRadiusBias = -1000.0f;
+    worldData.areaGridColCount = 2;
+    worldData.areaGridRowCount = 2;
+    worldData.areaGridRows = rows;
+
+    zClass_NodePartial world{};
+    world.classData = &worldData;
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.cameraPos = {5.0f, 0.0f, -1.0f};
+    cameraData.frustumOrigin = {0.0f, 0.0f, 0.0f};
+    cameraData.frustumCorners[0] = {10.0f, 0.0f, 0.0f};
+    cameraData.frustumCorners[1] = {0.0f, 0.0f, 2.0f};
+    g_zVideo_pActiveViewContext = &cameraData;
+
+    int result = zClass_Camera::BuildFrustumGridTiles(&world, &worldData, &cameraData);
+    int status = 0;
+    if (result != 0) {
+        status = result;
+    } else if (g_zCamera_FrustumFootprintPointCount != 3) {
+        status = 10 + g_zCamera_FrustumFootprintPointCount;
+    } else if (g_zCamera_FrustumGridTileRings[0].count != 1 ||
+               g_zCamera_FrustumGridTileRings[1].count != 2 ||
+               g_zCamera_FrustumGridTileRings[2].count != 1) {
+        status = 20 + g_zCamera_FrustumGridTileRings[0].count +
+                 g_zCamera_FrustumGridTileRings[1].count * 4 +
+                 g_zCamera_FrustumGridTileRings[2].count * 16;
+    } else {
+        const zCamera_FrustumGridTilePartial &originTile =
+            g_zCamera_FrustumGridTileRings[0].tiles[0];
+        const zCamera_FrustumGridTilePartial &rowTile = g_zCamera_FrustumGridTileRings[1].tiles[0];
+        const zCamera_FrustumGridTilePartial &colTile = g_zCamera_FrustumGridTileRings[1].tiles[1];
+        const zCamera_FrustumGridTilePartial &diagonalTile =
+            g_zCamera_FrustumGridTileRings[2].tiles[0];
+        if (originTile.col != 0 || originTile.row != 0 || originTile.hasPosOffset != 0 ||
+            originTile.clipMask != 0x3f) {
+            status = 3;
+        } else if (rowTile.col != 0 || rowTile.row != 1 || rowTile.hasPosOffset != 0 ||
+                   rowTile.clipMask != 0x3f) {
+            status = 4;
+        } else if (colTile.col != 1 || colTile.row != 0 || colTile.hasPosOffset != 0 ||
+                   colTile.clipMask != 0x3f) {
+            status = 5;
+        } else if (diagonalTile.col != 1 || diagonalTile.row != 1 ||
+                   diagonalTile.hasPosOffset != 0 || diagonalTile.clipMask != 0x3f) {
+            status = 6;
+        }
+    }
+
+    g_zVideo_pActiveViewContext = savedViewContext;
+    g_zModel_PointInPolygonVertices = savedPolygonVertices;
+    g_zModel_PointInPolygonEdgeNormals = savedPolygonNormals;
+    g_zModel_PointInPolygonVertexCount = savedPolygonVertexCount;
+    return status;
+}
+
+extern "C" int zclass_render_traverse_dispatch_smoke() {
+    auto setIdentity = [](float *matrix) {
+        const zMat4x3 identity{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                               0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+        std::memcpy(matrix, &identity, sizeof(identity));
+    };
+    auto resetRenderLog = []() {
+        g_zclassRenderTraverseCallCount = 0;
+        for (int i = 0; i < 16; ++i) {
+            g_zclassRenderTraverseNodes[i] = nullptr;
+            g_zclassRenderTraverseClipMasks[i] = -1;
+            g_zclassRenderTraverseAlphaScales[i] = -1.0f;
+            g_zclassRenderTraverseVertexAlphaEnabled[i] = -1;
+        }
+    };
+    auto initVisibleNode = [](zClass_NodePartial &node, int classId, void *classData) {
+        node = {};
+        node.flags = 0x02080004;
+        node.nodeType = 0xff;
+        node.classId = classId;
+        node.classData = classData;
+    };
+
+    zClass_RenderFn const savedRenderFn = gModel_RenderFn;
+    int *const savedClipStackTop = gModel_ClipMaskStackTop;
+    const int savedClipStack0 = gModel_ClipMaskStack[0];
+    const int savedBoundsContext = g_zClass_RenderBoundsContextActive;
+    const int savedFrustumGridTileIndex = g_zClass_RenderFrustumGridTileIndex;
+    const int savedRangeFadeActive = g_zClass_RenderRangeFadeActive;
+    const float savedRangeFadeScale = g_zClass_RenderRangeFadeScale;
+    const int savedVertexAlphaOverride = g_zClass_RenderVertexAlphaOverrideActive;
+    const int savedAlphaScaleStackTop = g_zClass_RenderAlphaScaleStackTop;
+    const int savedSoftwarePathStateStackTop = g_zClass_SoftwarePathStateStackTop;
+    const int savedLodStackTop = g_zClass_LodDistanceStateStackTop;
+    const zClass_LodDistanceState savedLodState0 = g_zClass_LodDistanceStateStack[0];
+    const int savedObjectHseTestEnabled = g_zClass_ObjectHseTestEnabled;
+    const int savedVariantFilterEnabled = g_Variant_FilterEnabled;
+    const zTag4Partial savedVariantTag = g_Variant_CurrentTag;
+    const int savedModelVertexAlpha = gModel_RenderVertexAlphaEnabled;
+    const float savedModelAlphaScale = gModel_RenderAlphaScaleCurrent;
+    const zModel_FogTargetColorOverride savedFogOverride = g_zModel_FogTargetColorOverride;
+    int *const savedMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
+    float **const savedMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
+
+    int matrixIdentityFlags[16] = {};
+    float *matrixSlots[16] = {};
+    zMat4x3 matrixStorage[16] = {};
+    setIdentity(reinterpret_cast<float *>(&matrixStorage[0]));
+    matrixIdentityFlags[0] = 1;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrixStorage[0]);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    gModel_RenderFn = TestZClassRenderTraverseCallback;
+    gModel_ClipMaskStackTop = gModel_ClipMaskStack;
+    gModel_ClipMaskStack[0] = 0;
+    g_zClass_RenderBoundsContextActive = 0;
+    g_zClass_RenderFrustumGridTileIndex = 0;
+    g_zClass_RenderRangeFadeActive = 0;
+    g_zClass_RenderRangeFadeScale = 0.0f;
+    g_zClass_RenderVertexAlphaOverrideActive = 0;
+    g_zClass_RenderAlphaScaleStackTop = -1;
+    g_zClass_SoftwarePathStateStackTop = -1;
+    g_zClass_LodDistanceStateStackTop = 0;
+    g_zClass_LodDistanceStateStack[0].distanceSq = 25.0f;
+    g_zClass_ObjectHseTestEnabled = 0;
+    gModel_RenderVertexAlphaEnabled = 0;
+    gModel_RenderAlphaScaleCurrent = 1.0f;
+    g_zModel_FogTargetColorOverride = {};
+
+    zClass_Object3DDataPartial rootData{};
+    rootData.flags = 0x0e;
+    rootData.alphaScale = 0.375f;
+    rootData.color = {0.25f, 0.5f, 0.75f};
+    rootData.colorAlpha = 0.625f;
+    zClass_Object3DDataPartial childData{};
+    childData.flags = 0x08;
+    zClass_NodePartial root{};
+    zClass_NodePartial child{};
+    initVisibleNode(root, 5, &rootData);
+    initVisibleNode(child, 5, &childData);
+    root.flags |= 0x00800000;
+    zDiPartial rootDi{};
+    root.userDataOrDiRef = static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(&rootDi));
+    zClass_NodePartial *rootChildren[2] = {&child, nullptr};
+    root.listCountB = 2;
+    root.listB = rootChildren;
+
+    int status = 0;
+    resetRenderLog();
+    g_zClass_RenderRangeFadeActive = 1;
+    g_zClass_RenderRangeFadeScale = 0.625f;
+    g_Variant_FilterEnabled = 0;
+    if (zClass_Class::gwNodeRenderDispatch(&root, 1) != 0 ||
+        g_zclassRenderTraverseCallCount != 2 || g_zclassRenderTraverseNodes[0] != &root ||
+        g_zclassRenderTraverseNodes[1] != &child ||
+        g_zclassRenderTraverseAlphaScales[0] != 0.375f ||
+        g_zclassRenderTraverseAlphaScales[1] != 0.375f ||
+        g_zclassRenderTraverseVertexAlphaEnabled[0] != 1 ||
+        g_zclassRenderTraverseVertexAlphaEnabled[1] != 1 ||
+        (root.flags & 0x02000000) != 0 || (root.flags & 0x80000000) == 0 ||
+        (child.flags & 0x80000000) == 0 || (rootDi.flags & 0x08) == 0 ||
+        rootDi.blendScale != 0.625f || gModel_RenderVertexAlphaEnabled != 0 ||
+        gModel_RenderAlphaScaleCurrent != 1.0f || g_zClass_RenderAlphaScaleStackTop != -1 ||
+        g_zClass_SoftwarePathStateStackTop != -1 || gModel_ClipMaskStackTop != gModel_ClipMaskStack ||
+        g_zClass_RenderBoundsContextActive != 0 ||
+        g_zModel_FogTargetColorOverride.weight != 0.0f) {
+        status = 1;
+    }
+
+    if (status == 0) {
+        resetRenderLog();
+        root.nodeType = 0x33;
+        g_Variant_FilterEnabled = 1;
+        g_Variant_CurrentTag.count = 1;
+        g_Variant_CurrentTag.tags[0] = 0x44;
+        g_Variant_CurrentTag.tags[1] = 0xff;
+        g_Variant_CurrentTag.tags[2] = 0xff;
+        if (zClass_Class::gwNodeRenderDispatch(&root, 1) != 0 ||
+            g_zclassRenderTraverseCallCount != 0) {
+            status = 2;
+        }
+        root.nodeType = 0xff;
+        g_Variant_FilterEnabled = 0;
+    }
+
+    if (status == 0) {
+        zClass_CameraDataPartial cameraData{};
+        zClass_LightDataPartial lightData{};
+        zClass_SoundDataPartial soundData{};
+        zClass_AnimateDataPartial animateData{};
+        zClass_LodDataPartial lodData{};
+        zClass_SequenceDataPartial sequenceData{};
+        zClass_SwitchDataPartial switchData{};
+        zClass_NodePartial cameraNode{};
+        zClass_NodePartial lightNode{};
+        zClass_NodePartial soundNode{};
+        zClass_NodePartial animateNode{};
+        zClass_NodePartial lodNode{};
+        zClass_NodePartial sequenceNode{};
+        zClass_NodePartial switchNode{};
+        zClass_NodePartial fanoutChild{};
+        zClass_Object3DDataPartial fanoutChildData{};
+
+        setIdentity(cameraData.worldTransform);
+        setIdentity(lightData.savedParentMatrix);
+        setIdentity(reinterpret_cast<float *>(soundData.unknown_48));
+        fanoutChildData.flags = 0x08;
+        initVisibleNode(cameraNode, 1, &cameraData);
+        initVisibleNode(lightNode, 9, &lightData);
+        initVisibleNode(soundNode, 10, &soundData);
+        initVisibleNode(animateNode, 8, &animateData);
+        initVisibleNode(lodNode, 6, &lodData);
+        initVisibleNode(sequenceNode, 7, &sequenceData);
+        initVisibleNode(switchNode, 11, &switchData);
+        initVisibleNode(fanoutChild, 5, &fanoutChildData);
+
+        lodData.computeOwnDistance = 0;
+        lodData.nearRangeSq = 0.0f;
+        lodData.farRangeSq = 100.0f;
+        lodData.nearRange = 0.0f;
+        zClass_NodePartial *lodChildren[1] = {&fanoutChild};
+        lodNode.listCountB = 1;
+        lodNode.listB = lodChildren;
+        sequenceData.isActive = 1;
+        sequenceData.currentIndex = 0;
+        sequenceData.entries[0].node = &fanoutChild;
+        switchData.activeMaskIndex = 0;
+        switchData.childMasks[0] = 1;
+        zClass_NodePartial *switchChildren[1] = {&fanoutChild};
+        switchNode.listCountB = 1;
+        switchNode.listB = switchChildren;
+
+        resetRenderLog();
+        const bool dispatchOk =
+            zClass_Class::gwNodeRenderDispatch(&cameraNode, 1) == 0 &&
+            zClass_Class::gwNodeRenderDispatch(&lightNode, 1) == 0 &&
+            zClass_Class::gwNodeRenderDispatch(&soundNode, 1) == 0 &&
+            zClass_Class::gwNodeRenderDispatch(&animateNode, 1) == 0 &&
+            zClass_Class::gwNodeRenderDispatch(&lodNode, 1) == 0 &&
+            zClass_Class::gwNodeRenderDispatch(&sequenceNode, 1) == 0 &&
+            zClass_Class::gwNodeRenderDispatch(&switchNode, 1) == 0;
+        if (!dispatchOk || g_zclassRenderTraverseCallCount != 7 ||
+            g_zclassRenderTraverseNodes[0] != &cameraNode ||
+            g_zclassRenderTraverseNodes[1] != &lightNode ||
+            g_zclassRenderTraverseNodes[2] != &soundNode ||
+            g_zclassRenderTraverseNodes[3] != &animateNode ||
+            g_zclassRenderTraverseNodes[4] != &fanoutChild ||
+            g_zclassRenderTraverseNodes[5] != &fanoutChild ||
+            g_zclassRenderTraverseNodes[6] != &fanoutChild ||
+            (cameraNode.flags & 0x02000000) != 0 ||
+            (lightNode.flags & 0x02000000) != 0 ||
+            (soundNode.flags & 0x02000000) != 0 ||
+            (animateNode.flags & 0x02000000) != 0 ||
+            (lodNode.flags & 0x02000000) != 0 ||
+            (sequenceNode.flags & 0x02000000) != 0 ||
+            (switchNode.flags & 0x02000000) != 0 ||
+            gModel_ClipMaskStackTop != gModel_ClipMaskStack ||
+            zMath::g_currentMatrixIdentityFlagSlot != &matrixIdentityFlags[0]) {
+            status = 3;
+        }
+    }
+
+    gModel_RenderFn = savedRenderFn;
+    gModel_ClipMaskStackTop = savedClipStackTop;
+    gModel_ClipMaskStack[0] = savedClipStack0;
+    g_zClass_RenderBoundsContextActive = savedBoundsContext;
+    g_zClass_RenderFrustumGridTileIndex = savedFrustumGridTileIndex;
+    g_zClass_RenderRangeFadeActive = savedRangeFadeActive;
+    g_zClass_RenderRangeFadeScale = savedRangeFadeScale;
+    g_zClass_RenderVertexAlphaOverrideActive = savedVertexAlphaOverride;
+    g_zClass_RenderAlphaScaleStackTop = savedAlphaScaleStackTop;
+    g_zClass_SoftwarePathStateStackTop = savedSoftwarePathStateStackTop;
+    g_zClass_LodDistanceStateStackTop = savedLodStackTop;
+    g_zClass_LodDistanceStateStack[0] = savedLodState0;
+    g_zClass_ObjectHseTestEnabled = savedObjectHseTestEnabled;
+    g_Variant_FilterEnabled = savedVariantFilterEnabled;
+    g_Variant_CurrentTag = savedVariantTag;
+    gModel_RenderVertexAlphaEnabled = savedModelVertexAlpha;
+    gModel_RenderAlphaScaleCurrent = savedModelAlphaScale;
+    g_zModel_FogTargetColorOverride = savedFogOverride;
+    zMath::g_currentMatrixIdentityFlagSlot = savedMatrixIdentitySlot;
+    zMath::g_currentMatrixPtrSlot = savedMatrixPtrSlot;
+    return status;
 }
 
 extern "C" int zclass_world_animate_delete_node_smoke() {
@@ -13956,8 +14795,43 @@ extern "C" int zclass_sound_leaf_smoke() {
         return 64;
     }
 
+    stackNode.classId = 10;
+    stackNode.classData = &data;
+    data.localPosition = {4.0f, 5.0f, 6.0f};
+    data.worldPos = {};
+    if (zClass_Sound::ComputeWorldTransform(&stackNode, &data) != 0 ||
+        data.worldPos.x != 4.0f || data.worldPos.y != 5.0f || data.worldPos.z != 6.0f) {
+        return 65;
+    }
+
+    data.runtimeFlags = 0x01;
+    stackNode.flags = 0;
+    if (zClass_Sound::UpdatePlayback(&stackNode) != 0 || data.runtimeFlags != 0x01) {
+        return 66;
+    }
+
+    stackNode.flags = 0x04;
+    data.playHandle = nullptr;
+    data.sample = nullptr;
+    data.runtimeFlags = 0x03;
+    data.localPosition = {7.0f, 8.0f, 9.0f};
+    data.worldPos = {};
+    if (zClass_Sound::UpdatePlayback(&stackNode) != 0 || data.runtimeFlags != 0x06 ||
+        data.worldPos.x != 7.0f || data.worldPos.y != 8.0f || data.worldPos.z != 9.0f) {
+        return 67;
+    }
+
+    data.runtimeFlags = 0x01;
+    data.worldPos = {1.0f, 2.0f, 3.0f};
+    if (zClass_Sound::UpdatePlayback(&stackNode) != 0 || data.runtimeFlags != 0 ||
+        data.worldPos.x != 1.0f || data.worldPos.y != 2.0f || data.worldPos.z != 3.0f) {
+        return 68;
+    }
+
     stackNode.classData = nullptr;
-    if (zClass_Sound::SetSampleSetByName(nullptr, "x") != 5 ||
+    if (zClass_Sound::UpdatePlayback(nullptr) != 5 ||
+        zClass_Sound::UpdatePlayback(&stackNode) != 5 ||
+        zClass_Sound::SetSampleSetByName(nullptr, "x") != 5 ||
         zClass_Sound::SetSampleSetByName(&stackNode, "x") != 5 ||
         zClass_Sound::gwSoundSetPosition(nullptr, 1.0f, 2.0f, 3.0f) != 5 ||
         zClass_Sound::gwSoundSetPosition(&stackNode, 1.0f, 2.0f, 3.0f) != 5 ||
@@ -14474,6 +15348,14 @@ extern "C" int zclass_light_new_smoke() {
         data->localRotation.z != 6.0f) {
         return 15;
     }
+    int lightMatrixIdentityFlags[4] = {};
+    float *lightMatrixSlots[4] = {};
+    zMat4x3 lightBaseMatrix{};
+    lightMatrixIdentityFlags[0] = 1;
+    lightMatrixSlots[0] = reinterpret_cast<float *>(&lightBaseMatrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &lightMatrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &lightMatrixSlots[0];
+
     data->localRotation = {0.0f, 0.0f, 0.0f};
     data->localPosition = {1.0f, 2.0f, 3.0f};
     data->isPointMode = 0;
@@ -14489,6 +15371,42 @@ extern "C" int zclass_light_new_smoke() {
         data->worldRotation.y != 0.0f || data->worldRotation.z != 0.0f) {
         return 152;
     }
+    const int activeLightFlags = node->flags;
+    node->flags = activeLightFlags & ~0x04;
+    data->dirty = 1;
+    if (zClass_Light::gwLightUpdate(node) != 0 || data->dirty != 1) {
+        return 153;
+    }
+    node->flags = activeLightFlags;
+    zClass_NodePartial updateNullData{};
+    updateNullData.flags = 0x04;
+    if (zClass_Light::gwLightUpdate(nullptr) != 5 ||
+        zClass_Light::gwLightUpdate(&updateNullData) != 5) {
+        return 154;
+    }
+
+    zMath::g_zMath_CameraScratchB = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                                     0.0f, 0.0f, 1.0f, 10.0f, 20.0f, 30.0f};
+    data->dirty = 1;
+    data->localPosition = {2.0f, 3.0f, 4.0f};
+    data->localRotation = {0.0f, 0.0f, 0.0f};
+    data->isPointMode = 1;
+    data->coneAngle = 0.0f;
+    data->isDirectionalMode = 1;
+    data->viewDir = {};
+    data->viewPos = {};
+    data->worldPosScratch = {};
+    if (zClass_Light::gwLightUpdate(node) != 0 || data->dirty != 0 ||
+        data->worldPosition.x != 2.0f || data->worldPosition.y != 3.0f ||
+        data->worldPosition.z != 4.0f || data->worldDir.x != 0.0f ||
+        data->worldDir.y != 0.0f || data->worldDir.z != -1.0f ||
+        data->viewDir.x != 0.0f || data->viewDir.y != 0.0f || data->viewDir.z != 1.0f ||
+        data->worldPosScratch.x != 2.0f || data->worldPosScratch.y != 3.0f ||
+        data->worldPosScratch.z != 4.0f || data->viewPos.x != 12.0f ||
+        data->viewPos.y != 23.0f || data->viewPos.z != 34.0f) {
+        return 155;
+    }
+
     data->specularColor = {0.2f, 0.4f, 0.6f};
     float specR = 0.0f;
     float specG = 0.0f;
@@ -14868,6 +15786,98 @@ extern "C" int zclass_camera_view_distance_smoke() {
         return 27;
     }
 
+    int projectionMatrixIdentityFlags[3] = {};
+    float *projectionMatrixSlots[3] = {};
+    zMat4x3 projectionBaseMatrix{};
+    projectionMatrixIdentityFlags[0] = 1;
+    projectionMatrixSlots[0] = reinterpret_cast<float *>(&projectionBaseMatrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &projectionMatrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &projectionMatrixSlots[0];
+    data->frustumYaw = 0.0f;
+    data->frustumPitch = 0.0f;
+    zVideo_UpdateProjectionStateFromCameraData(data);
+    if (data->localFrustumLeftNormal.x != 1.0f || data->localFrustumLeftNormal.y != 0.0f ||
+        data->localFrustumLeftNormal.z != 0.0f || data->localFrustumRightNormal.x != -1.0f ||
+        data->localFrustumRightNormal.y != 0.0f || data->localFrustumRightNormal.z != 0.0f ||
+        data->localFrustumBottomNormal.x != 0.0f ||
+        data->localFrustumBottomNormal.y != -1.0f ||
+        data->localFrustumBottomNormal.z != 0.0f || data->localFrustumTopNormal.x != 0.0f ||
+        data->localFrustumTopNormal.y != 1.0f || data->localFrustumTopNormal.z != 0.0f ||
+        data->localFrustumNearNormal.z != -1.0f || data->localFrustumFarNormal.z != 1.0f) {
+        return 28;
+    }
+    for (int i = 0; i < 12; ++i) {
+        data->worldTransform[i] = 0.0f;
+    }
+    data->worldTransform[0] = 1.0f;
+    data->worldTransform[4] = 1.0f;
+    data->worldTransform[8] = 1.0f;
+    zClipAlt_BuildFrustumPlanes(data);
+    if (data->worldFrustumNormals[0].x != 1.0f || data->worldFrustumNormals[1].x != -1.0f ||
+        data->worldFrustumNormals[2].y != -1.0f || data->worldFrustumNormals[3].y != 1.0f ||
+        data->worldFrustumNormals[4].z != -1.0f || data->worldFrustumNormals[5].z != 1.0f) {
+        return 29;
+    }
+
+    const int savedCameraNodeFlags = camera->flags;
+    const int savedCameraListCountA = camera->listCountA;
+    const int savedCameraListCountB = camera->listCountB;
+    camera->classId = 1;
+    camera->flags = 0;
+    camera->listCountA = 0;
+    camera->listCountB = 0;
+    zVec3 buildOffset{4.0f, 5.0f, 6.0f};
+    data->cameraFlags = 0;
+    data->posOffset = {0.0f, 0.0f, 0.0f};
+    data->targetOrEuler = {1.0f, 2.0f, 3.0f};
+    if (zClass_Camera::BuildWorldTransform(camera, data, &buildOffset) != 0 ||
+        data->cameraPos.x != 5.0f || data->cameraPos.y != 7.0f ||
+        data->cameraPos.z != 9.0f || data->forwardDir.x != 0.0f ||
+        data->forwardDir.y != 0.0f || data->forwardDir.z != -1.0f ||
+        data->worldTransform[9] != 5.0f || data->worldTransform[10] != 7.0f ||
+        data->worldTransform[11] != 9.0f) {
+        return 30;
+    }
+
+    data->nearClip = 2.0f;
+    data->farClip = 5.0f;
+    data->frustumYaw = 0.0f;
+    data->frustumPitch = 0.0f;
+    data->fovX = 0.0f;
+    data->fovY = 0.0f;
+    data->localFrustumNormalsDirty = 1;
+    data->frustumVectorsDirty = 1;
+    data->transformDirty = 1;
+    if (zClass_Camera::UpdateImpl(camera, &buildOffset) != 0 ||
+        data->localFrustumNormalsDirty != 0 || data->frustumVectorsDirty != 0 ||
+        data->transformDirty != 0 || data->nearClipCenter.x != 5.0f ||
+        data->nearClipCenter.y != 7.0f || data->nearClipCenter.z != 7.0f ||
+        data->farClipCenter.x != 5.0f || data->farClipCenter.y != 7.0f ||
+        data->farClipCenter.z != 4.0f || data->frustumCorners[0].z != -5.0f ||
+        data->frustumCorners[3].z != -5.0f) {
+        return 31;
+    }
+
+    zClass_NodePartial updateNullData{};
+    if (zClass_Camera::gwCameraUpdate(nullptr) != 5 ||
+        zClass_Camera::gwCameraUpdate(&updateNullData) != 5) {
+        return 32;
+    }
+
+    data->targetOrEuler = {10.0f, 20.0f, 30.0f};
+    data->posOffset = {0.0f, 0.0f, 0.0f};
+    data->localFrustumNormalsDirty = 0;
+    data->frustumVectorsDirty = 0;
+    if (zClass_Camera::gwCameraUpdate(camera) != 0 || data->cameraPos.x != 10.0f ||
+        data->cameraPos.y != 20.0f || data->cameraPos.z != 30.0f ||
+        data->nearClipCenter.z != 28.0f || data->farClipCenter.z != 25.0f) {
+        return 33;
+    }
+
+    camera->flags = savedCameraNodeFlags;
+    camera->listCountA = savedCameraListCountA;
+    camera->listCountB = savedCameraListCountB;
+
     zClass_Object3D::DeleteNode(camera);
     zClass_TypeList::FreeAll();
 
@@ -14896,4 +15906,55 @@ extern "C" int zclass_camera_view_distance_smoke() {
                    zClass_Camera::gwCameraSetHorizonXZ(nullptr, &child) == 5
                ? 0
                : 25;
+}
+
+extern "C" int zclass_camera_sync_view_context_positions_smoke() {
+    zClass_CameraDataPartial *oldActiveViewContext = g_zVideo_pActiveViewContext;
+    for (int i = 0; i < 16; ++i) {
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+
+    zClass_Object3DDataPartial horizonData{};
+    horizonData.flags = 0x10;
+    horizonData.scale = {1.0f, 1.0f, 1.0f};
+    zClass_NodePartial horizon{};
+    horizon.classId = 5;
+    horizon.classData = &horizonData;
+
+    zClass_Object3DDataPartial horizonXZData{};
+    horizonXZData.flags = 0x10;
+    horizonXZData.scale = {1.0f, 1.0f, 1.0f};
+    horizonXZData.localMatrix[9] = 10.0f;
+    horizonXZData.localMatrix[10] = 20.0f;
+    horizonXZData.localMatrix[11] = 30.0f;
+    zClass_NodePartial horizonXZ{};
+    horizonXZ.classId = 5;
+    horizonXZ.classData = &horizonXZData;
+
+    zClass_CameraDataPartial viewContext{};
+    viewContext.horizonNode = &horizon;
+    viewContext.horizonXZNode = &horizonXZ;
+    viewContext.cameraPos = {1.0f, 2.0f, 3.0f};
+    g_zVideo_pActiveViewContext = &viewContext;
+
+    zClass_Camera::SyncViewContextPositions();
+    int result = 0;
+    if (horizonData.localMatrix[9] != 1.0f || horizonData.localMatrix[10] != 2.0f ||
+        horizonData.localMatrix[11] != 3.0f) {
+        result = 1;
+    } else if (horizonXZData.localMatrix[9] != 1.0f) {
+        result = 2;
+    } else if (horizonXZData.localMatrix[10] != 20.0f) {
+        result = 3;
+    } else if (horizonXZData.localMatrix[11] != 3.0f) {
+        result = 4;
+    }
+
+    g_zVideo_pActiveViewContext = oldActiveViewContext;
+    free_zclass_type_lists_for_test();
+    return result;
 }

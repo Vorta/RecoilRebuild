@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <windows.h>
 #include "recoil/recoil_types.h"
 
 #include "Battlesport/RecoilApp.h"
@@ -39,6 +40,155 @@ struct HudUiCheatCodeDialog;
 struct zSndSample;
 struct zSndPlayHandleSnapshot;
 struct zClass_NodePartial;
+
+struct HudUiSaveLoadEntry : WIN32_FIND_DATAA {
+    RECOIL_NOINLINE int RECOIL_FASTCALL IsNewerThan(const HudUiSaveLoadEntry *other) const;
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadEntry) == 0x140);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadEntry, ftLastWriteTime) == 0x14);
+
+struct HudUiSaveLoadEntries {
+    int reserved00;
+    HudUiSaveLoadEntry *begin;
+    HudUiSaveLoadEntry *end;
+    HudUiSaveLoadEntry *capacityEnd;
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadEntries) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadEntries, begin) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadEntries, end) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadEntries, capacityEnd) == 0x0c);
+
+struct HudUiSaveLoadDialog;
+struct HudUiSaveLoadListItem;
+typedef void(RECOIL_THISCALL *HudUiSaveLoadInvalidateFn)(HudUiSaveLoadListItem *self);
+typedef void(RECOIL_THISCALL *HudUiSaveLoadOnActivateFn)(HudUiSaveLoadListItem *self);
+typedef void(RECOIL_THISCALL *HudUiSaveLoadSetVisibleFn)(HudUiSaveLoadListItem *self,
+                                                         int visible);
+typedef void(RECOIL_CDECL *HudUiSaveLoadSetTextFmtFn)(HudUiSaveLoadListItem *self,
+                                                      const char *format,
+                                                      const char *text);
+
+struct HudUiSaveLoadListItemVtable {
+    void *reserved00[8];
+    HudUiSaveLoadInvalidateFn Invalidate;
+    void *reserved24[3];
+    HudUiSaveLoadOnActivateFn OnActivate;
+    void *reserved34[11];
+    HudUiSaveLoadSetVisibleFn SetVisible;
+    void *reserved64[4];
+    HudUiSaveLoadSetTextFmtFn SetTextFmt;
+};
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItemVtable, Invalidate) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItemVtable, OnActivate) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItemVtable, SetVisible) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItemVtable, SetTextFmt) == 0x74);
+
+struct HudUiSaveLoadListItem {
+    const HudUiSaveLoadListItemVtable *vftable;
+    void *next;
+    HudUiSaveLoadDialog *parent;
+    unsigned char reserved0c[0x298];
+    int layoutX;
+    int layoutY;
+
+    RECOIL_NOINLINE HudUiSaveLoadListItem *RECOIL_THISCALL Constructor();
+    void RECOIL_THISCALL OnActivate();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadListItem) == 0x2ac);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItem, parent) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItem, layoutX) == 0x2a4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItem, layoutY) == 0x2a8);
+
+extern const HudUiSaveLoadListItemVtable g_HudUiSaveLoadListItem_Vtbl;
+
+struct HudUiSaveLoadDeleteButton : HudUiZrdWidget {
+    void RECOIL_THISCALL OnActivate();
+};
+
+struct HudUiSaveLoadNextButton : HudUiZrdWidget {
+    void RECOIL_THISCALL OnActivate();
+};
+
+struct HudUiSaveLoadPrevButton : HudUiZrdWidget {
+    void RECOIL_THISCALL OnActivate();
+};
+
+struct HudUiSaveGamePrimaryActionButton : HudUiZrdWidget {
+    void RECOIL_THISCALL OnActivate();
+};
+
+struct HudUiLoadGamePrimaryActionButton : HudUiZrdWidget {
+    void RECOIL_THISCALL OnActivate();
+};
+
+struct HudUiSaveLoadGameNameInput : HudUiNumericTextInput {
+    void RECOIL_THISCALL OnActivate();
+    int RECOIL_THISCALL OnRawKeyboardEvent(int key);
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadGameNameInput) == 0x374);
+
+struct HudUiSaveLoadDialog {
+    HudUiBackground base;
+    HudUiSaveLoadDeleteButton deleteButton;
+    HudUiZrdWidget backButton;
+    HudUiSaveLoadNextButton nextEntryButton;
+    HudUiSaveLoadPrevButton prevEntryButton;
+    HudUiSaveLoadGameNameInput gameNameInput;
+    HudUiSaveLoadListItem entryWidgets[9];
+    HudUiSaveLoadEntries fileEntries;
+    int selectedEntryIndex;
+
+    RECOIL_NOINLINE void RECOIL_THISCALL InitializeFileEntries();
+    RECOIL_NOINLINE void RECOIL_THISCALL DeleteSaveFile(int confirmDelete);
+    RECOIL_NOINLINE void RECOIL_THISCALL RefreshSaveFileList();
+    RECOIL_NOINLINE void RECOIL_THISCALL SetSelectedEntryIndex(int selectedEntryIndex);
+    RECOIL_NOINLINE void RECOIL_THISCALL ProcessDialogResult();
+
+    static RECOIL_NOINLINE void RECOIL_FASTCALL
+    InsertEntryIntoSortedPrefix(HudUiSaveLoadEntry *entryPosition, HudUiSaveLoadEntry entry);
+    static RECOIL_NOINLINE HudUiSaveLoadEntry *RECOIL_FASTCALL
+    PartitionEntriesByPivot(HudUiSaveLoadEntry *begin, HudUiSaveLoadEntry *end,
+                            HudUiSaveLoadEntry pivot);
+    static RECOIL_NOINLINE void RECOIL_FASTCALL
+    SortEntryRange(HudUiSaveLoadEntry *begin, HudUiSaveLoadEntry *end, int unused);
+};
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, deleteButton) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, backButton) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, nextEntryButton) == 0xabe4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, prevEntryButton) == 0xad30);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, gameNameInput) == 0xae7c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, entryWidgets) == 0xb1f0);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, entryWidgets) +
+                     offsetof(HudUiSaveLoadListItem, layoutX) == 0xb494);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, entryWidgets) +
+                     offsetof(HudUiSaveLoadListItem, layoutY) == 0xb498);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, entryWidgets) +
+                     sizeof(HudUiSaveLoadListItem) * 8 +
+                     offsetof(HudUiSaveLoadListItem, layoutY) == 0xc9f8);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, fileEntries) == 0xc9fc);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, fileEntries.begin) == 0xca00);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, fileEntries.end) == 0xca04);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, fileEntries.capacityEnd) == 0xca08);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, selectedEntryIndex) == 0xca0c);
+
+struct HudUiSaveGameDialog : HudUiSaveLoadDialog {
+    HudUiSaveGamePrimaryActionButton primaryActionButton;
+
+    RECOIL_NOINLINE HudUiSaveGameDialog *RECOIL_THISCALL InitLayout();
+};
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveGameDialog, primaryActionButton) == 0xca10);
+
+struct HudUiLoadGameDialog : HudUiSaveLoadDialog {
+    HudUiLoadGamePrimaryActionButton primaryActionButton;
+
+    RECOIL_NOINLINE HudUiLoadGameDialog *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE HudUiLoadGameDialog *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
+    RECOIL_NOINLINE void RECOIL_THISCALL ProcessDialogResult();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnPrimaryAction();
+};
+RECOIL_STATIC_ASSERT(offsetof(HudUiLoadGameDialog, primaryActionButton) == 0xca10);
 
 struct HudWeatherFxParticleQuad {
     int x;
@@ -107,6 +257,8 @@ struct RecoilStateSaveLoadTransition : RecoilApp_IState {
     RecoilSaveLoadTransitionMode m_transitionMode;
     RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshot*
 
+    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
+    RECOIL_NOINLINE int RECOIL_THISCALL OnUpdateShouldQuit();
     static void RECOIL_FASTCALL
     QueueOpenSaveDialog(RecoilSaveLoadPresentationCaptureMode capturePresentationMode);
     static void RECOIL_FASTCALL

@@ -78,7 +78,6 @@ struct GameNetPlayerRow {
     zClass_NodePartial *gunNode;
     char displayName[0x40];
     HudUiPanel hudWidget;
-    unsigned char reserved1bc[0x14c];
     GameNetPlayerSaveState *saveState;
     GameNetPlayerRow *next;
 

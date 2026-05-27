@@ -463,9 +463,10 @@ extern "C" RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_InitWildcardPath(cha
     g_zUtil_ZRDR_WildcardStarCount = 0;
 
     const int patternLength = static_cast<int>(strlen(pattern));
-    for (int i = patternLength - 1; i >= 0; --i) {
-        if (pattern[i] == '*') {
-            g_zUtil_ZRDR_WildcardStarPtrs[g_zUtil_ZRDR_WildcardStarCount] = &pattern[i];
+    for (int patternIndex = patternLength - 1; patternIndex >= 0; --patternIndex) {
+        if (pattern[patternIndex] == '*') {
+            g_zUtil_ZRDR_WildcardStarPtrs[g_zUtil_ZRDR_WildcardStarCount] =
+                &pattern[patternIndex];
             ++g_zUtil_ZRDR_WildcardStarCount;
             if (g_zUtil_ZRDR_WildcardStarCount == 5) {
                 break;

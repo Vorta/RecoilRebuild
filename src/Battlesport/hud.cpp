@@ -3,7 +3,6 @@
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zSound/zSound.h"
 
-#include <new>
 #include <stdlib.h>
 #include <string.h>
 
@@ -87,9 +86,9 @@ RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL HudWeatherFx::Constructor(int newP
     particlePositions[destBufferIndex] =
         static_cast<zVec3 *>(::operator new(positionBytes));
 
-    for (int index = 0; index < newParticleCount; ++index)
+    for (int resetIndex = 0; resetIndex < newParticleCount; ++resetIndex)
     {
-        ResetParticleSlot(index, 1);
+        ResetParticleSlot(resetIndex, 1);
     }
 
     basisVector.x = 0.0f;

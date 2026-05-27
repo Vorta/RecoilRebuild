@@ -5,8 +5,8 @@ compiler fully inlined, leaving no standalone executable function address.
 Binary Ninja and caller assembly remain authoritative.
 
 Record only helpers that recur across callers, clarify class/source structure,
-or materially reduce duplicate decompiled-source bodies. Local one-off cleanup
-belongs in source comments beside the caller instead.
+or materially reduce duplicate recovered behavior/source patterns. Local
+one-off cleanup belongs in source comments beside the caller instead.
 
 ## Entry Pattern
 

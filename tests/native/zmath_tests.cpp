@@ -5,6 +5,9 @@
 
 #include <cmath>
 
+extern float g_zMath_ClipZLowerBound;
+extern float g_zMath_ClipZUpperBound;
+
 namespace {
 bool Near(float actual, float expected) {
     return std::fabs(actual - expected) < 0.00001f;
@@ -136,7 +139,63 @@ extern "C" int zmath_matrix_stack_and_direction_smoke(void) {
     }
 
     zMath::Vec3ArrayProjectToCachedY(points, projectedY, 0);
-    return Near(projectedY[0], 25.0f) ? 0 : 10;
+    if (!Near(projectedY[0], 25.0f)) {
+        return 10;
+    }
+
+    zMat4x3 normalMatrix{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f,
+                         7.0f, 8.0f, 9.0f, 100.0f, 200.0f, 300.0f};
+    slots[0] = reinterpret_cast<float *>(&normalMatrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &flags[0];
+    zMath::g_currentMatrixPtrSlot = &slots[0];
+    zVec3 normals[2] = {{1.0f, 2.0f, 3.0f}, {-1.0f, 0.5f, 2.0f}};
+    zVec3 transformedNormals[2] = {{-7.0f, -8.0f, -9.0f}, {-10.0f, -11.0f, -12.0f}};
+    flags[0] = 1;
+    zMath_Mat_TransformNormalBatch(normals, transformedNormals, 2);
+    if (transformedNormals[0].x != 1.0f || transformedNormals[0].y != 2.0f ||
+        transformedNormals[0].z != 3.0f || transformedNormals[1].x != -1.0f ||
+        transformedNormals[1].y != 0.5f || transformedNormals[1].z != 2.0f) {
+        return 15;
+    }
+
+    flags[0] = 0;
+    zMath_Mat_TransformNormalBatch(normals, transformedNormals, 2);
+    if (!Near(transformedNormals[0].x, 30.0f) || !Near(transformedNormals[0].y, 36.0f) ||
+        !Near(transformedNormals[0].z, 42.0f) || !Near(transformedNormals[1].x, 15.0f) ||
+        !Near(transformedNormals[1].y, 16.5f) || !Near(transformedNormals[1].z, 18.0f)) {
+        return 16;
+    }
+
+    transformedNormals[0] = {-7.0f, -8.0f, -9.0f};
+    zMath_Mat_TransformNormalBatch(normals, transformedNormals, 0);
+    if (transformedNormals[0].x != -7.0f || transformedNormals[0].y != -8.0f ||
+        transformedNormals[0].z != -9.0f) {
+        return 17;
+    }
+
+    zVec3 untransformVectors[2] = {{1.0f, 2.0f, 3.0f}, {-1.0f, 0.5f, 2.0f}};
+    flags[0] = 1;
+    zMath_Vec3Array_UntransformDirection(untransformVectors, 2);
+    if (untransformVectors[0].x != 1.0f || untransformVectors[0].y != 2.0f ||
+        untransformVectors[0].z != 3.0f || untransformVectors[1].x != -1.0f ||
+        untransformVectors[1].y != 0.5f || untransformVectors[1].z != 2.0f) {
+        return 18;
+    }
+
+    flags[0] = 0;
+    zMath_Vec3Array_UntransformDirection(untransformVectors, 2);
+    if (!Near(untransformVectors[0].x, 30.0f) || !Near(untransformVectors[0].y, 36.0f) ||
+        !Near(untransformVectors[0].z, 42.0f) || !Near(untransformVectors[1].x, 15.0f) ||
+        !Near(untransformVectors[1].y, 16.5f) || !Near(untransformVectors[1].z, 18.0f)) {
+        return 19;
+    }
+
+    untransformVectors[0] = {-7.0f, -8.0f, -9.0f};
+    zMath_Vec3Array_UntransformDirection(untransformVectors, 0);
+    return untransformVectors[0].x == -7.0f && untransformVectors[0].y == -8.0f &&
+                   untransformVectors[0].z == -9.0f
+               ? 0
+               : 20;
 }
 
 extern "C" int zmath_vec3_array_transform_direction_smoke(void) {
@@ -229,6 +288,31 @@ extern "C" int zmath_extract_euler_smoke(void) {
     zMath::MatBuildEulerRotation3x3(&matrix, 0.5f, -0.25f, 0.75f);
     zMath_Mat_ExtractEulerAngles(&matrix, &euler);
     return Near(euler.x, 0.5f) && Near(euler.y, -0.25f) && Near(euler.z, 0.75f) ? 0 : 5;
+}
+
+extern "C" int zmath_projection_setup_smoke(void) {
+    zMath_SetScreenSize(640, 480);
+    if (g_zMath_ScreenWidthPx != 640 || g_zMath_ScreenHeightPx != 480) {
+        return 1;
+    }
+
+    zMath_Setup_Projection(10.0f, 20.0f, 100.0f, 50.0f, 2.0f, 4.0f, 0.25f,
+                           1000.0f);
+
+    if (!Near(g_zMath_FocalScaleX, 2.0f) || !Near(g_zMath_FocalScaleY, 4.0f) ||
+        !Near(g_zMath_InvFocalScaleX, 0.5f) || !Near(g_zMath_InvFocalScaleY, 0.25f) ||
+        !Near(g_zMath_ProjScaleX, 200.0f) || !Near(g_zMath_ProjScaleY, 200.0f) ||
+        !Near(g_zMath_InvProjScaleX, 0.005f) || !Near(g_zMath_InvProjScaleY, 0.005f) ||
+        !Near(g_zMath_HalfViewWidth, 100.0f) || !Near(g_zMath_HalfViewHeight, 50.0f) ||
+        !Near(g_zMath_ViewportOriginX, 10.0f) ||
+        !Near(g_zMath_ViewportOriginY, 20.0f) ||
+        !Near(g_zMath_ProjOffsetX, 110.0f) || !Near(g_zMath_ProjOffsetY, 70.0f) ||
+        !Near(g_zMath_ProjSphereRadiusScale, 0.25f) ||
+        !Near(g_zMath_ProjDepth, 1000.0f)) {
+        return 2;
+    }
+
+    return 0;
 }
 
 extern "C" int zmath_projection_batches_smoke(void) {
@@ -335,6 +419,53 @@ extern "C" int zmath_project_point_and_clamp_to_screen_clip_smoke(void) {
     point = {0.0f, 0.0f, -2.0f};
     const int result = zMath::ProjectPointAndClampToScreenClip(&point, &projected);
     return result == 8 && projected.y == 480.0f && Near(projected.x, 340.48f) ? 0 : 5;
+}
+
+extern "C" int zmath_clip_line_segment_z_range_smoke(void) {
+    const float oldLower = g_zMath_ClipZLowerBound;
+    const float oldUpper = g_zMath_ClipZUpperBound;
+    g_zMath_ClipZLowerBound = 1.0f;
+    g_zMath_ClipZUpperBound = 5.0f;
+
+    zVec3 clipPoint{0.0f, 0.0f, 0.0f};
+    zVec3 otherPoint{10.0f, 20.0f, 5.0f};
+    zMath::ClipLineSegmentPointToZ(&clipPoint, &otherPoint, 2.5f);
+    const bool pointClipOk = Near(clipPoint.x, 5.0f) && Near(clipPoint.y, 10.0f) &&
+                             Near(clipPoint.z, 2.5f);
+
+    zVec3 aboveA{1.0f, 2.0f, 6.0f};
+    zVec3 aboveB{3.0f, 4.0f, 7.0f};
+    const bool rejectAboveOk = zMath::ClipLineSegmentToZRange(&aboveA, &aboveB) == 0 &&
+                               Near(aboveA.z, 6.0f) && Near(aboveB.z, 7.0f);
+
+    zVec3 belowA{1.0f, 2.0f, 0.0f};
+    zVec3 belowB{3.0f, 4.0f, 0.5f};
+    const bool rejectBelowOk = zMath::ClipLineSegmentToZRange(&belowA, &belowB) == 0 &&
+                               Near(belowA.z, 0.0f) && Near(belowB.z, 0.5f);
+
+    zVec3 lowerA{0.0f, 0.0f, 0.0f};
+    zVec3 lowerB{10.0f, 20.0f, 5.0f};
+    const bool lowerOk = zMath::ClipLineSegmentToZRange(&lowerA, &lowerB) == 1 &&
+                         Near(lowerA.x, 2.0f) && Near(lowerA.y, 4.0f) &&
+                         Near(lowerA.z, 1.0f) && Near(lowerB.z, 5.0f);
+
+    zVec3 upperA{0.0f, 0.0f, 0.0f};
+    zVec3 upperB{10.0f, 20.0f, 10.0f};
+    const bool upperOk = zMath::ClipLineSegmentToZRange(&upperA, &upperB) == 1 &&
+                         Near(upperA.z, 1.0f) && Near(upperB.x, 5.0f) &&
+                         Near(upperB.y, 10.0f) && Near(upperB.z, 5.0f);
+
+    zVec3 insideA{2.0f, 3.0f, 2.0f};
+    zVec3 insideB{4.0f, 5.0f, 4.0f};
+    const bool insideOk = zMath::ClipLineSegmentToZRange(&insideA, &insideB) == 1 &&
+                          Near(insideA.x, 2.0f) && Near(insideA.z, 2.0f) &&
+                          Near(insideB.x, 4.0f) && Near(insideB.z, 4.0f);
+
+    g_zMath_ClipZLowerBound = oldLower;
+    g_zMath_ClipZUpperBound = oldUpper;
+
+    return pointClipOk && rejectAboveOk && rejectBelowOk && lowerOk && upperOk && insideOk ? 0
+                                                                                          : 1;
 }
 
 extern "C" int zmath_vec3_lerp_smoke(void) {
@@ -760,6 +891,27 @@ extern "C" int zmath_array_add_scaled_and_transform_smoke(void) {
     }
 
     current = {};
+    setupFlags[1] = 1;
+    zMath_Mat_Scale(2.0f, 3.0f, 4.0f);
+    if (setupFlags[1] != 0 || !Near(current.xx, 2.0f) || !Near(current.yy, 3.0f) ||
+        !Near(current.zz, 4.0f) || !Near(current.posX, 0.0f) || !Near(current.posY, 0.0f) ||
+        !Near(current.posZ, 0.0f)) {
+        return 26;
+    }
+
+    current = matrix;
+    setupFlags[1] = 0;
+    zMath_Mat_Scale(2.0f, 3.0f, 4.0f);
+    if (!Near(current.xx, 2.0f) || !Near(current.xy, 4.0f) || !Near(current.xz, 6.0f) ||
+        !Near(current.yx, 12.0f) || !Near(current.yy, 15.0f) ||
+        !Near(current.yz, 18.0f) || !Near(current.zx, 28.0f) ||
+        !Near(current.zy, 32.0f) || !Near(current.zz, 36.0f) ||
+        !Near(current.posX, 10.0f) || !Near(current.posY, 20.0f) ||
+        !Near(current.posZ, 30.0f)) {
+        return 27;
+    }
+
+    current = {};
     current.xx = 1.0f;
     current.yy = 1.0f;
     current.zz = 1.0f;
@@ -853,6 +1005,26 @@ extern "C" int zmath_array_add_scaled_and_transform_smoke(void) {
     zMath::MatLoadCameraScratchA();
     if (!Near(current.posX, 10.0f) || !Near(current.posY, 20.0f) || !Near(current.posZ, 30.0f)) {
         return 5;
+    }
+
+    zMat4x3 stageCameraMatrix{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f,
+                              7.0f, 8.0f, 9.0f, 10.0f, 20.0f, 30.0f};
+    zMath_Camera_StageInverseRotation(&stageCameraMatrix);
+    if (!Near(zMath::g_zMath_CameraScratchA.xx, 1.0f) ||
+        !Near(zMath::g_zMath_CameraScratchA.yx, -4.0f) ||
+        !Near(zMath::g_zMath_CameraScratchA.zz, -9.0f) ||
+        !Near(zMath::g_zMath_CameraScratchA.posZ, 30.0f) ||
+        !Near(zMath::g_zMath_CameraScratchB.xx, 1.0f) ||
+        !Near(zMath::g_zMath_CameraScratchB.xy, -4.0f) ||
+        !Near(zMath::g_zMath_CameraScratchB.xz, -7.0f) ||
+        !Near(zMath::g_zMath_CameraScratchB.yx, 2.0f) ||
+        !Near(zMath::g_zMath_CameraScratchB.yz, -8.0f) ||
+        !Near(zMath::g_zMath_CameraScratchB.zx, 3.0f) ||
+        !Near(zMath::g_zMath_CameraScratchB.zy, -6.0f) ||
+        !Near(zMath::g_zMath_CameraScratchB.posX, -140.0f) ||
+        !Near(zMath::g_zMath_CameraScratchB.posY, 320.0f) ||
+        !Near(zMath::g_zMath_CameraScratchB.posZ, 500.0f)) {
+        return 25;
     }
 
     zMath::g_zMath_CameraScratchB = {};

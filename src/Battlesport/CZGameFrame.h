@@ -75,6 +75,7 @@ struct CZGameFrame : CFrameWnd {
 
     RECOIL_GAME_FRAME_NOINLINE static RecoilPtr32 RECOIL_CDECL GetBaseRuntimeClass();
     static const AFX_MSGMAP *RECOIL_STDCALL GetBaseMessageMapForMfc();
+    RECOIL_GAME_FRAME_NOINLINE static CZGameFrame *RECOIL_CDECL CreateObject();
     RECOIL_GAME_FRAME_NOINLINE static RecoilPtr32 RECOIL_CDECL GetRuntimeClass();
     RECOIL_GAME_FRAME_NOINLINE static RecoilPtr32 RECOIL_CDECL GetBaseMessageMap();
     RECOIL_GAME_FRAME_NOINLINE static RecoilPtr32 RECOIL_CDECL GetMessageMap();
@@ -85,6 +86,7 @@ struct CZGameFrame : CFrameWnd {
     RECOIL_GAME_FRAME_NOINLINE CString *RECOIL_THISCALL BuildWindowTitle(CString *outTitle);
     RECOIL_GAME_FRAME_NOINLINE int RECOIL_THISCALL OnCreate(CREATESTRUCTA *createStruct);
     RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL OnClose();
+    RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL OnPaint();
     RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL OnDestroy();
     RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL OnActivate(unsigned int nState,
                                                                CWnd *pWndOther, BOOL bMinimized);

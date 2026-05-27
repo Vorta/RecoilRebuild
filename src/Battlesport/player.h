@@ -769,20 +769,20 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DecayAndApplyAltFireSlotOffsetToNode(
     PlayerGunFireSlot *slot, zClass_NodePartial *slotNode, float slotAimY, int applyMatrix);
 RECOIL_NOINLINE void RECOIL_FASTCALL
 ApplyGunFireSlotOffsetToNode(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectAltGunFireOriginAndSlot(
+RECOIL_NOINLINE void RECOIL_FASTCALL SelectAltGunFirePointAndSlot(
     zUtil_SaveGameState *saveState, PlayerGunFireSlot **outActiveFireSlotPtr);
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectPrimaryGunFireOriginAndSlot(
+RECOIL_NOINLINE void RECOIL_FASTCALL SelectPrimaryGunFirePointAndSlot(
     zUtil_SaveGameState *saveState, PlayerGunFireSlot **outActiveFireSlotPtr);
 RECOIL_NOINLINE void RECOIL_FASTCALL
 UpdateContinuousAltGunFireController(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE int RECOIL_FASTCALL AltGunEnsureAuxEffectActive(
+RECOIL_NOINLINE int RECOIL_FASTCALL EnsureGunAuxEffectActive(
     zUtil_SaveGameState *saveState, PlayerGunFireController *gunController, zVec3 *effectPos);
 RECOIL_NOINLINE int RECOIL_FASTCALL AltGunLaunchProjectile(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE int RECOIL_FASTCALL AltGunFireSimpleProjectile(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL
-ProcessAltGunFireDispatchRequest(zUtil_SaveGameState *saveState);
+ProcessAltGunDispatchRequest(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL
-ProcessPrimaryGunDispatchRequest(zUtil_SaveGameState *saveState);
+ProcessPrimaryGunDispatchTick(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL TickAltGunRuntimeState(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL DestroySaveGameState(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_CDECL ShutdownMissionRuntime();

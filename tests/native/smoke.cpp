@@ -4,8 +4,10 @@ extern "C" int recoil_mfc42_provider_smoke(void);
 extern "C" int mfc_cstring_default_ctor_provider_smoke(void);
 extern "C" int czrecoil_frame_build_window_title_smoke(void);
 extern "C" int czframe_metadata_accessors_smoke(void);
+extern "C" int get_open_file_name_import_provider_smoke(void);
 extern "C" int czrecoil_frame_set_menu_bar_visibility_smoke(void);
 extern "C" int czrecoil_frame_configure_mode_feature_flags_smoke(void);
+extern "C" int czrecoil_frame_video_mode_menu_handlers_smoke(void);
 extern "C" int czrecoil_frame_set_hw_api_and_init_mode_smoke(void);
 extern "C" int czrecoil_frame_init_fallback_mode_smoke(void);
 extern "C" int czrecoil_frame_ensure_hw_api_initialized_smoke(void);
@@ -15,14 +17,48 @@ extern "C" int czrecoil_frame_menu_exit_game_smoke(void);
 extern "C" int czrecoil_frame_update_video_mode_cmd_ui_smoke(void);
 extern "C" int czrecoil_frame_hw_api_menu_cmd_ui_smoke(void);
 extern "C" int czrecoil_frame_audio_input_menu_smoke(void);
+extern "C" int czrecoil_frame_on_size_smoke(void);
 extern "C" int czgame_frame_is_window_valid_smoke(void);
 extern "C" int czgame_frame_build_window_title_smoke(void);
 extern "C" int czgame_frame_constructor_smoke(void);
+extern "C" int czgame_frame_create_object_smoke(void);
+extern "C" int czgame_frame_destructor_smoke(void);
+extern "C" int czgame_frame_on_close_smoke(void);
+extern "C" int czgame_frame_on_create_smoke(void);
+extern "C" int czgame_frame_on_destroy_smoke(void);
+extern "C" int czgame_frame_on_activate_smoke(void);
+extern "C" int czgame_frame_on_paint_smoke(void);
 extern "C" int czrecoil_frame_constructor_smoke(void);
+extern "C" int czrecoil_frame_create_object_smoke(void);
 extern "C" int recoil_app_create_main_wnd_smoke(void);
 extern "C" int recoil_app_init_main_window_smoke(void);
 extern "C" int czrecoil_frame_destructor_smoke(void);
+extern "C" int czrecoil_frame_on_menu_start_single_player_smoke(void);
+extern "C" int czrecoil_frame_on_open_file_dialog_smoke(void);
+extern "C" int czrecoil_frame_on_menu_open_campaign_smoke(void);
+extern "C" int czrecoil_frame_on_menu_open_help_docs_smoke(void);
+extern "C" int cabout_dlg_constructor_smoke(void);
+extern "C" int czrecoil_frame_on_menu_about_smoke(void);
+extern "C" int czrecoil_frame_start_mode_menu_handlers_smoke(void);
+extern "C" int czrecoil_frame_select_hw_api_menu_handlers_smoke(void);
+extern "C" int czrecoil_frame_toggle_archive_banks_smoke(void);
+extern "C" int czrecoil_frame_toggle_texture_packs_smoke(void);
+extern "C" int hud_ui_save_load_entry_is_newer_than_smoke(void);
+extern "C" int hud_ui_save_load_list_item_constructor_smoke(void);
+extern "C" int hud_ui_save_load_list_item_on_activate_smoke(void);
+extern "C" int hud_ui_save_load_insert_entry_sorted_prefix_smoke(void);
+extern "C" int hud_ui_save_load_partition_entries_by_pivot_smoke(void);
+extern "C" int hud_ui_save_load_sort_entry_range_smoke(void);
+extern "C" int hud_ui_save_load_refresh_file_list_smoke(void);
+extern "C" int hud_ui_save_load_initialize_file_entries_smoke(void);
+extern "C" int hud_ui_save_load_delete_save_file_smoke(void);
+extern "C" int hud_ui_save_load_set_selected_entry_index_smoke(void);
+extern "C" int hud_ui_save_load_game_name_input_smoke(void);
+extern "C" int hud_ui_save_load_next_prev_buttons_smoke(void);
+extern "C" int hud_ui_save_load_delete_button_on_activate_smoke(void);
 extern "C" int czgame_frame_on_app_idle_dispatch_message_smoke(void);
+extern "C" int recoil_state_controls_queue_enter_smoke(void);
+extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void);
 extern "C" int briefing_stop_and_shutdown_thread_smoke(void);
 extern "C" int briefing_thread_main_one_iteration_smoke(void);
 extern "C" int briefing_start_for_mission_smoke(void);
@@ -126,6 +162,7 @@ extern "C" int player_update_ai_mode2_move_and_turn_toward_dynamic_offset_target
 extern "C" int player_tick_ai_mode2_offset_target_steering_smoke(void);
 extern "C" int player_tick_ai_mode2_dynamic_offset_target_steering_smoke(void);
 extern "C" int player_ai_restore_saved_top_level_state_smoke(void);
+extern "C" int player_ai_finalize_mode2_state1_for_all_players_smoke(void);
 extern "C" int player_ai_steer_toward_path_node_forward_smoke(void);
 extern "C" int player_ai_steer_toward_path_node_reverse_smoke(void);
 extern "C" int player_tick_ai_mode2_timed_path_steering_smoke(void);
@@ -333,6 +370,7 @@ extern "C" int zmodel_display_init_smoke(void);
 extern "C" int zmodel_backface_elimination_tolerance_smoke(void);
 extern "C" int zmodel_small_poly_reject_thresholds_smoke(void);
 extern "C" int zmodel_set_vertex_shading_enabled_smoke(void);
+extern "C" int zmodel_render_state_setters_smoke(void);
 extern "C" int zmodel_const_tolerances_and_cross_smoke(void);
 extern "C" int zdi_add_polygon_wrapper_smoke(void);
 extern "C" int zmodel_damage_mask_uv_smoke(void);
@@ -377,6 +415,7 @@ extern "C" int zmodel_light_point_in_polygon_init_smoke(void);
 extern "C" int zmodel_light_set_active_lights_smoke(void);
 extern "C" int zmodel_light_build_attr0_depth_fade_smoke(void);
 extern "C" int zmodel_light_build_attr1_falloff_smoke(void);
+extern "C" int zclass_world_build_active_light_list_smoke(void);
 extern "C" int zclass_world_apply_pending_fog_settings_smoke(void);
 extern "C" int zclass_world_settings_section_callbacks_smoke(void);
 extern "C" int zclass_shutdown_core_smoke(void);
@@ -384,6 +423,9 @@ extern "C" int zclass_gwnode_update_smoke(void);
 extern "C" int zclass_init_smoke(void);
 extern "C" int zgame_options_find_option_smoke(void);
 extern "C" int zgame_options_runtime_config_copy_default_smoke(void);
+extern "C" int zopt_lookup_named_value_as_int_smoke(void);
+extern "C" int zopt_read_scalar_value_as_int_smoke(void);
+extern "C" int zopt_evaluate_profile_metric_condition_smoke(void);
 extern "C" int zopt_select_profile_value_for_system_smoke(void);
 extern "C" int zgame_options_load_from_registry_missing_smoke(void);
 extern "C" int zgame_options_save_game_options_smoke(void);
@@ -406,6 +448,7 @@ extern "C" int zopt_view_rect_target_side_effects_smoke(void);
 extern "C" int zopt_section_accessor_smoke(void);
 extern "C" int zclipalt_set_source_rect_smoke(void);
 extern "C" int zclipalt_set_target_rect_smoke(void);
+extern "C" int zclipalt_remap_point_xy_in_place_smoke(void);
 extern "C" int zclass_cls_di_segment_batch_vs_polygon_smoke(void);
 extern "C" int zclass_cls_di_segment_batch_vs_polygon_uv_smoke(void);
 extern "C" int zclass_cls_di_filter_regions_polygon_damage_mask_uv_smoke(void);
@@ -431,6 +474,7 @@ extern "C" int zhud_composite_panel_entry_copy_smoke(void);
 extern "C" int zhud_flash_panel_compute_blend_color_smoke(void);
 extern "C" int zhud_layout_shutdown_stub_smoke(void);
 extern "C" int zhud_layout_hw_release_images_smoke(void);
+extern "C" int zhud_layout_hw_update_objective_dirty_rect_smoke(void);
 extern "C" int zhud_element_clip_and_invalidate_smoke(void);
 extern "C" int zhud_element_visible_smoke(void);
 extern "C" int zhud_element_update_smoke(void);
@@ -441,6 +485,7 @@ extern "C" int zhud_container_child_list_smoke(void);
 extern "C" int zhud_container_destructor_core_smoke(void);
 extern "C" int zhud_widget_constructor_smoke(void);
 extern "C" int zhud_widget_default_ctor_thunk_smoke(void);
+extern "C" int zhud_widget_invalidate_rect_smoke(void);
 extern "C" int zhud_zrd_widget_constructor_smoke(void);
 extern "C" int zhud_zrd_widget_helpers_smoke(void);
 extern "C" int zhud_zrd_widget_load_from_zrd_smoke(void);
@@ -452,9 +497,14 @@ extern "C" int zhud_fill_bitmap_core_smoke(void);
 extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void);
 extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void);
 extern "C" int zhud_message_box_leaf_handlers_smoke(void);
+extern "C" int zhud_message_box_constructor_fallback_smoke(void);
+extern "C" int zhud_message_box_run_modal_smoke(void);
+extern "C" int zhud_message_box_destructor_smoke(void);
+extern "C" int zhud_message_box_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_background_container_focus_smoke(void);
 extern "C" int zhud_background_update_input_focus_smoke(void);
 extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void);
+extern "C" int zhud_background_video_widget_destructor_smoke(void);
 extern "C" int zhud_background_constructor_smoke(void);
 extern "C" int zhud_background_bind_widget_by_name_smoke(void);
 extern "C" int zhud_background_free_loaded_tree_roots_smoke(void);
@@ -466,6 +516,7 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void);
 extern "C" int zhud_widget_release_and_destructor_core_smoke(void);
 extern "C" int zhud_triplet_panel_constructor_smoke(void);
 extern "C" int zhud_triplet_panel_set_visible_count_smoke(void);
+extern "C" int zhud_triplet_panel_draw_smoke(void);
 extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void);
 extern "C" int zhud_triplet_panel_destructor_core_smoke(void);
 extern "C" int zhud_text_input_destructor_core_smoke(void);
@@ -483,6 +534,7 @@ extern "C" int zhud_mgr_toggle_hud_smoke(void);
 extern "C" int zhud_mgr_switch_active_dialog_smoke(void);
 extern "C" int zhud_mgr_set_float_timer_visible_smoke(void);
 extern "C" int zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke(void);
+extern "C" int zhud_mgr_target_update_selected_progress_meter_smoke(void);
 extern "C" int zhud_mgr_set_aux_overlay_visible_smoke(void);
 extern "C" int zhud_mgr_apply_hud_mode_switch_smoke(void);
 extern "C" int zhud_mgr_ensure_hud_loaded_minimal_smoke(void);
@@ -507,6 +559,7 @@ extern "C" int zhud_bar_and_meter_constructor_smoke(void);
 extern "C" int zhud_polyline_and_slider_border_constructor_smoke(void);
 extern "C" int zhud_polyline_draw_and_slider_update_smoke(void);
 extern "C" int zhud_panel_scalar_deleting_destructor_smoke(void);
+extern "C" int zhud_panel_destructor_thunk_smoke(void);
 extern "C" int zhud_panel_text_color_shadow_smoke(void);
 extern "C" int zhud_panel_constructor_default_smoke(void);
 extern "C" int zhud_panel_copy_construct_core_smoke(void);
@@ -525,6 +578,7 @@ extern "C" int zhud_timer_panel_zar_write_smoke(void);
 extern "C" int zhud_timer_and_counter_constructor_smoke(void);
 extern "C" int zhud_objective_refresh_counter_text_smoke(void);
 extern "C" int zhud_objective_update_meter_xpoints_smoke(void);
+extern "C" int zhud_objective_tick_meter_fill_animation_smoke(void);
 extern "C" int zhud_layout_node_read_rect_offset_and_size_smoke(void);
 extern "C" int zhud_layout_node_read_rect_smoke(void);
 extern "C" int zhud_layout_node_read_int3_smoke(void);
@@ -549,19 +603,40 @@ extern "C" int zhud_text_stack_push_line_smoke(void);
 extern "C" int zhud_text_stack_clear_and_enable_smoke(void);
 extern "C" int zhud_text_stack_clear_and_disable_smoke(void);
 extern "C" int zhud_text_stack_destructor_core_smoke(void);
+extern "C" int zhud_timed_task_remove_from_active_list_smoke(void);
+extern "C" int zhud_timed_task_run_immediate_action_smoke(void);
+extern "C" int zhud_timed_task_tick_active_list_smoke(void);
+extern "C" int zhud_mgr_update_frame_smoke(void);
 extern "C" int zhud_loading_checkpoint_init_table_smoke(void);
 extern "C" int zhud_loading_checkpoint_advance_and_log_smoke(void);
 extern "C" int zhud_sensor_viewport_rect_smoke(void);
+extern "C" int zhud_sensor_get_fx_rect_smoke(void);
+extern "C" int zhud_layout_apply_viewport_rect_smoke(void);
 extern "C" int zhud_objective_update_smoke(void);
 extern "C" int zhud_objective_begin_smoke(void);
+extern "C" int zhud_objective_start_hide_smoke(void);
 extern "C" int zhud_objective_show_smoke(void);
 extern "C" int hud_sensor_tracker_show_objective_pickup_info_smoke(void);
 extern "C" int hud_sensor_tracker_objective_panel_visible_smoke(void);
+extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void);
+extern "C" int hud_sensor_tracker_update_map_scale_lerp_smoke(void);
+extern "C" int hud_sensor_tracker_project_world_points_smoke(void);
+extern "C" int hud_line_clip_current_bounds_smoke(void);
+extern "C" int hud_recti_clip_segment_helpers_smoke(void);
+extern "C" int hud_sensor_tracker_draw_diamond_marker_smoke(void);
+extern "C" int hud_sensor_tracker_save_marker_leaf_smoke(void);
+extern "C" int hud_sensor_tracker_save_state_marker_smoke(void);
+extern "C" int hud_sensor_tracker_update_smoke(void);
+extern "C" int hud_sensor_map_node_draw_projected_path_smoke(void);
+extern "C" int hud_sensor_map_node_draw_on_tracker_smoke(void);
 extern "C" int hud_weather_fx_constructor_smoke(void);
 extern "C" int hud_weather_fx_derived_constructors_smoke(void);
 extern "C" int zhud_mgr_viewport_activation_smoke(void);
 extern "C" int zhud_mgr_project_point_to_normalized_clamped_smoke(void);
 extern "C" int zhud_mgr_update_target_reticle_smoke(void);
+extern "C" int zhud_mgr_sensor_place_track_counter_widget_smoke(void);
+extern "C" int zhud_mgr_sensor_place_track_marker_smoke(void);
+extern "C" int zhud_mgr_sensor_update_markers_and_progress_smoke(void);
 extern "C" int zhud_mgr_init_layouts_reentry_smoke(void);
 extern "C" int zhud_mgr_shutdown_resources_smoke(void);
 extern "C" int zhud_sensor_track_list_add_smoke(void);
@@ -647,6 +722,11 @@ extern "C" int zclass_world_free_virtual_area_partitions_smoke(void);
 extern "C" int zclass_world_set_virtual_area_partition_smoke(void);
 extern "C" int zclass_world_get_area_partition_at_grid_smoke(void);
 extern "C" int zclass_world_to_grid_coords_clamped_smoke(void);
+extern "C" int zclass_camera_convex_hull_xz_smoke(void);
+extern "C" int zclass_cls_di_region_filter_mesh_faces_smoke(void);
+extern "C" int zclass_camera_build_frustum_grid_tiles_from_params_smoke(void);
+extern "C" int zclass_camera_build_frustum_grid_tiles_smoke(void);
+extern "C" int zclass_render_traverse_dispatch_smoke(void);
 extern "C" int zclass_world_animate_delete_node_smoke(void);
 extern "C" int zclass_sound_leaf_smoke(void);
 extern "C" int zclass_object3d_init_smoke(void);
@@ -656,6 +736,7 @@ extern "C" int zclass_lod_leaf_smoke(void);
 extern "C" int zclass_light_new_smoke(void);
 extern "C" int zclass_damage_handler_smoke(void);
 extern "C" int zclass_camera_view_distance_smoke(void);
+extern "C" int zclass_camera_sync_view_context_positions_smoke(void);
 extern "C" int directinput_create_import_provider_smoke(void);
 extern "C" int zinput_init_fastpath_smoke(void);
 extern "C" int zinput_mouse_update_acquire_state_smoke(void);
@@ -670,9 +751,12 @@ extern "C" int zinput_keyboard_dik_ascii_smoke(void);
 extern "C" int zinput_mouse_client_size_center_smoke(void);
 extern "C" int zinput_mouse_apply_and_recenter_cursor_smoke(void);
 extern "C" int zinput_mouse_coop_level_flags_smoke(void);
+extern "C" int zinput_mouse_button_transition_state_smoke(void);
+extern "C" int zinput_mouse_apply_accumulated_delta_smoke(void);
 extern "C" int zinput_mouse_keyboard_small_accessors_smoke(void);
 extern "C" int zinput_bindmap_name_tables_smoke(void);
 extern "C" int zinput_bindmap_context_smoke(void);
+extern "C" int zinput_bindmap_dispatch_mouse_callbacks_smoke(void);
 extern "C" int zinput_keyboard_clear_callbacks_smoke(void);
 extern "C" int zinput_keyboard_mouse_addref_smoke(void);
 extern "C" int zinput_keyboard_init_device_smoke(void);
@@ -741,8 +825,10 @@ extern "C" int zmath_matrix_stack_and_direction_smoke(void);
 extern "C" int zmath_vec3_array_transform_direction_smoke(void);
 extern "C" int zmath_mat_build_euler_rotation3x3_smoke(void);
 extern "C" int zmath_extract_euler_smoke(void);
+extern "C" int zmath_projection_setup_smoke(void);
 extern "C" int zmath_projection_batches_smoke(void);
 extern "C" int zmath_project_point_and_clamp_to_screen_clip_smoke(void);
+extern "C" int zmath_clip_line_segment_z_range_smoke(void);
 extern "C" int zmath_vec3_lerp_smoke(void);
 extern "C" int zmath_vec3_lerp_normalize_smoke(void);
 extern "C" int zmath_vec3_direction_to_smoke(void);
@@ -763,6 +849,7 @@ extern "C" int recoil_app_accessor_and_skip_wait_smoke(void);
 extern "C" int recoil_app_activate_existing_instance_absent_smoke(void);
 extern "C" int recoil_app_pre_translate_message_smoke(void);
 extern "C" int recoil_app_init_std_log_files_smoke(void);
+extern "C" int recoil_app_fatal_error_and_exit_smoke(void);
 extern "C" int crt_atexit_import_provider_smoke(void);
 extern "C" int recoil_app_get_current_state_smoke(void);
 extern "C" int recoil_app_state_queue_block_init_from_cursor_smoke(void);
@@ -773,6 +860,18 @@ extern "C" int hud_sensor_save_and_queue_mission_state_smoke(void);
 extern "C" int recoil_app_queue_push_state_smoke(void);
 extern "C" int hud_ui_callback_queue_cheat_code_state_smoke(void);
 extern "C" int recoil_app_queue_exit_current_state_smoke(void);
+extern "C" int recoil_app_run_current_state_quit_smoke(void);
+extern "C" int hud_ui_save_game_primary_action_button_on_activate_smoke(void);
+extern "C" int hud_ui_load_game_dialog_on_primary_action_smoke(void);
+extern "C" int hud_ui_load_game_dialog_process_dialog_result_smoke(void);
+extern "C" int hud_ui_load_game_primary_action_button_on_activate_smoke(void);
+extern "C" int hud_ui_save_load_process_dialog_result_smoke(void);
+extern "C" int hud_ui_save_game_dialog_init_layout_smoke(void);
+extern "C" int hud_ui_load_game_dialog_constructor_smoke(void);
+extern "C" int hud_ui_load_game_dialog_destructor_smoke(void);
+extern "C" int hud_ui_load_game_dialog_scalar_deleting_destructor_smoke(void);
+extern "C" int recoil_state_save_load_transition_on_try_become_current_smoke(void);
+extern "C" int recoil_state_save_load_transition_on_update_should_quit_smoke(void);
 extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void);
 extern "C" int recoil_app_load_zbd_and_start_engine_smoke(void);
 extern "C" int recoil_app_load_zbd_and_setup_sensor_tracker_smoke(void);
@@ -783,6 +882,10 @@ extern "C" int recoil_app_mfc_ole_module_destructor_smoke(void);
 extern "C" int recoil_app_mfc_ole_module_scalar_deleting_destructor_smoke(void);
 extern "C" int recoil_app_play_state_constructor_smoke(void);
 extern "C" int recoil_app_play_state_on_wnd_activate_smoke(void);
+extern "C" int recoil_app_play_state_tick_and_render_frame_quit_smoke(void);
+extern "C" int recoil_app_play_state_on_update_should_quit_transition_smoke(void);
+extern "C" int recoil_app_play_state_on_resume_cd_disabled_smoke(void);
+extern "C" int recoil_app_play_state_on_deactivate_skip_gameplay_smoke(void);
 extern "C" int recoil_app_fmv_state_constructor_smoke(void);
 extern "C" int recoil_app_fmv_state_on_idle_or_dispatch_smoke(void);
 extern "C" int recoil_app_intro_fmv_on_try_become_current_smoke(void);
@@ -819,6 +922,7 @@ extern "C" int zsnd_options_cpu_and_cached_directsound_smoke(void);
 extern "C" int zsnd_cd_reset_track_state_smoke(void);
 extern "C" int zsnd_cd_is_stereo_aux_enabled_smoke(void);
 extern "C" int zsnd_cd_not_ready_playback_smoke(void);
+extern "C" int zsnd_cd_on_mci_notify_loop_smoke(void);
 extern "C" int zsnd_cd_init_ready_guard_smoke(void);
 extern "C" int zsnd_cd_get_track_count_ready_guard_smoke(void);
 extern "C" int zsnd_cd_shutdown_track_list_smoke(void);
@@ -843,6 +947,7 @@ extern "C" int zsnd_backend_shutdown_release_smoke(void);
 extern "C" int zsnd_play_handle_stop_if_active_smoke(void);
 extern "C" int zsnd_sample_stop_active_voices_if_playing_smoke(void);
 extern "C" int zsnd_snapshot_create_from_active_samples_smoke(void);
+extern "C" int zsnd_apply_mute_state_to_active_voices_smoke(void);
 extern "C" int zsnd_snapshot_restore_all_with_global_volume_delta_smoke(void);
 extern "C" int zsnd_snapshot_destroy_smoke(void);
 extern "C" int zsnd_snapshot_stop_all_if_playing_smoke(void);
@@ -855,6 +960,7 @@ extern "C" int zsnd_play_handle_try_disable_managed_smoke(void);
 extern "C" int zsnd_sample_play_a3d_simple_direct_smoke(void);
 extern "C" int zsnd_sample_play_a3d_worldpos_smoke(void);
 extern "C" int zsnd_sample_destroy_owned_data_smoke(void);
+extern "C" int zsnd_sample_destroy_smoke(void);
 extern "C" int zsnd_sample_set_playback_event_handler_smoke(void);
 extern "C" int zsnd_fade_entry_backend_and_dispatch_smoke(void);
 extern "C" int zsnd_fade_active_list_tick_compacts_smoke(void);
@@ -872,7 +978,10 @@ extern "C" int zrndr_framebuffer_and_stride_cache_smoke(void);
 extern "C" int zrndr_init_globals_smoke(void);
 extern "C" int zrndr_immediate_line_dispatch_smoke(void);
 extern "C" int zrndr_lens_flare_queue_projected_sample_smoke(void);
+extern "C" int zrndr_lens_flare_build_visible_sample_list_smoke(void);
+extern "C" int zrndr_lens_flare_draw_queued_samples16_smoke(void);
 extern "C" int zrndr_lens_flare_draw_sample_smoke(void);
+extern "C" int zrndr_lens_flare_draw_queued_samples_scaled16_smoke(void);
 extern "C" int zrndr_lens_flare_stage_helpers_smoke(void);
 extern "C" int zrndr_span_occlusion_filter_sample_list_smoke(void);
 extern "C" int zrndr_lens_flare_draw_sample_stage_clipped_smoke(void);
@@ -886,6 +995,7 @@ extern "C" int zrndr_span_occlusion_build_span_list_smoke(void);
 extern "C" int zrndr_span_occlusion_insert_local_smoke(void);
 extern "C" int zrndr_span_occlusion_build_span_list_fast_smoke(void);
 extern "C" int zrndr_span_occlusion_test_column_visibility_smoke(void);
+extern "C" int zscene_test_projected_sphere_visible_smoke(void);
 extern "C" int zrndr_span_occlusion_test_point_visibility_smoke(void);
 extern "C" int zrndr_span_occlusion_test_sample_smoke(void);
 extern "C" int zrndr_draw_circle_octants_smoke(void);
@@ -928,6 +1038,7 @@ extern "C" int zrndr_perspective_texture_delta_x_smoke(void);
 extern "C" int zrndr_perspective_texture_far_z_smoke(void);
 extern "C" int zrndr_set_inverse_z_tolerance_smoke(void);
 extern "C" int zrndr_perspective_adaptive_span_params_smoke(void);
+extern "C" int zrndr_overlay_rect_submit_smoke(void);
 extern "C" int zrndr_overlay_and_mmx_masks_smoke(void);
 extern "C" int zrndr_span_alpha_blend_565_const_alpha_pal8_smoke(void);
 extern "C" int zrndr_fill_span16_opaque_smoke(void);
@@ -968,6 +1079,7 @@ extern "C" int zvideo_fog_color_commit_smoke(void);
 extern "C" int zvideo_fog_target_color_commit_smoke(void);
 extern "C" int zturret_reset_iteration_state_smoke(void);
 extern "C" int zturret_runtime_init_defaults_smoke(void);
+extern "C" int zturret_runtime_has_active_node_smoke(void);
 extern "C" int zturret_runtime_init_from_reader_node_smoke(void);
 extern "C" int zturret_update_fire_position_from_parts_smoke(void);
 extern "C" int zturret_update_aim_and_part_matrices_smoke(void);
@@ -985,7 +1097,12 @@ extern "C" int zturret_shutdown_leaf_smoke(void);
 extern "C" int zutil_zar_register_section_handler_smoke(void);
 extern "C" int zutil_zbd_init_smoke(void);
 extern "C" int zutil_zbd_destroy_global_manager_smoke(void);
+extern "C" int zutil_zbd_section_handler_compare_sort_order_smoke(void);
+extern "C" int zutil_zbd_section_handler_invoke_pre_load_smoke(void);
 extern "C" int zutil_zbd_section_handler_invoke_data_ready_smoke(void);
+extern "C" int zutil_zbd_manager_sort_section_handlers_smoke(void);
+extern "C" int zutil_zbd_manager_load_entries_smoke(void);
+extern "C" int zutil_zbd_load_entries_global_smoke(void);
 extern "C" int zutil_zbd_manager_load_zar_file_smoke(void);
 extern "C" int zutil_zar_load_file_global_smoke(void);
 extern "C" int hud_sensor_register_mission_sections_smoke(void);
@@ -998,6 +1115,7 @@ extern "C" int hud_sensor_map_remove_and_shutdown_smoke(void);
 extern "C" int hud_sensor_map_overlay_toggle_smoke(void);
 extern "C" int hud_sensor_tracker_load_map_paths_smoke(void);
 extern "C" int hud_sensor_reset_mission_state_smoke(void);
+extern "C" int hud_sensor_shutdown_mission_gameplay_systems_early_smoke(void);
 extern "C" int zutil_zar_write_section_blob_smoke(void);
 extern "C" int zeffect_anim_shutdown_entry_smoke(void);
 extern "C" int zeffect_anim_find_entry_by_name_smoke(void);
@@ -1095,15 +1213,20 @@ extern "C" int zloc_message_lookup_failure_smoke(void);
 extern "C" int zloc_load_unload_messages_dll_smoke(void);
 extern "C" int directdraw_enumerate_import_provider_smoke(void);
 extern "C" int zvid_pack_color_rgb_smoke(void);
+extern "C" int zvideo_draw_noise_rect_smoke(void);
 extern "C" int zvideo_pixel_pack_setup_smoke(void);
 extern "C" int zvideo_pixel_pack_getters_smoke(void);
 extern "C" int zvideo_set_renderer_type_smoke(void);
 extern "C" int zvideo_pending_dither_enable_smoke(void);
 extern "C" int zvideo_pending_wireframe_state_smoke(void);
 extern "C" int zvideo_dd3d_begin_scene_flush_pending_smoke(void);
+extern "C" int zvideo_sw_render_frame_smoke(void);
+extern "C" int zclass_camera_render_scene_smoke(void);
+extern "C" int zclass_list_render_active_cameras_smoke(void);
 extern "C" int zvideo_surface_accessors_smoke(void);
 extern "C" int zvideo_fxpass3_local_queue_smoke(void);
 extern "C" int zvideo_primary_surface_rect_scratch_smoke(void);
+extern "C" int zvideo_run_postprocess_on_sw_buffer_smoke(void);
 extern "C" int zvideo_frame_scratch_buffers_smoke(void);
 extern "C" int zvideo_clear_dispatch_and_exchange_smoke(void);
 extern "C" int zvideo_mode_geometry_and_set_video_mode_smoke(void);
@@ -1120,6 +1243,7 @@ extern "C" int zvideo_module_init_smoke(void);
 extern "C" int zvid_hw_api_accessors_smoke(void);
 extern "C" int zvid_cached_renderer_and_texture_counts_smoke(void);
 extern "C" int zvid_texture_pack_load_state_getter_smoke(void);
+extern "C" int zvid_texture_pack_load_state_setter_smoke(void);
 extern "C" int zvid_option_accessors_smoke(void);
 extern "C" int zvid_set_video_mode_index_smoke(void);
 extern "C" int zvideo_buff_clip_coord_to_range_smoke(void);
@@ -1134,6 +1258,8 @@ extern "C" int zvideo_palette_set_entries_non8bpp_smoke(void);
 extern "C" int zvideo_apply_brightness_to_palette_entries_smoke(void);
 extern "C" int zvideo_load_palette_file_and_apply_brightness_smoke(void);
 extern "C" int zvideo_quad_batch_depth_and_rhw_smoke(void);
+extern "C" int zvideo_set_active_view_context_smoke(void);
+extern "C" int zvideo_frustum_test_sphere_clip_mask_smoke(void);
 extern "C" int zvideo_queue_solid_quad_smoke(void);
 extern "C" int zvideo_flush_quad_batch_empty_smoke(void);
 extern "C" int zvideo_flush_sorted_polys_empty_smoke(void);
@@ -1359,10 +1485,13 @@ int main(int argc, char **argv) {
          mfc_cstring_default_ctor_provider_smoke},
         {"czrecoil_frame_build_window_title_smoke", czrecoil_frame_build_window_title_smoke},
         {"czframe_metadata_accessors_smoke", czframe_metadata_accessors_smoke},
+        {"get_open_file_name_import_provider_smoke", get_open_file_name_import_provider_smoke},
         {"czrecoil_frame_set_menu_bar_visibility_smoke",
          czrecoil_frame_set_menu_bar_visibility_smoke},
         {"czrecoil_frame_configure_mode_feature_flags_smoke",
          czrecoil_frame_configure_mode_feature_flags_smoke},
+        {"czrecoil_frame_video_mode_menu_handlers_smoke",
+         czrecoil_frame_video_mode_menu_handlers_smoke},
         {"czrecoil_frame_set_hw_api_and_init_mode_smoke",
          czrecoil_frame_set_hw_api_and_init_mode_smoke},
         {"czrecoil_frame_init_fallback_mode_smoke", czrecoil_frame_init_fallback_mode_smoke},
@@ -1376,15 +1505,69 @@ int main(int argc, char **argv) {
          czrecoil_frame_update_video_mode_cmd_ui_smoke},
         {"czrecoil_frame_hw_api_menu_cmd_ui_smoke", czrecoil_frame_hw_api_menu_cmd_ui_smoke},
         {"czrecoil_frame_audio_input_menu_smoke", czrecoil_frame_audio_input_menu_smoke},
+        {"czrecoil_frame_on_size_smoke", czrecoil_frame_on_size_smoke},
         {"czgame_frame_is_window_valid_smoke", czgame_frame_is_window_valid_smoke},
         {"czgame_frame_build_window_title_smoke", czgame_frame_build_window_title_smoke},
         {"czgame_frame_constructor_smoke", czgame_frame_constructor_smoke},
+        {"czgame_frame_create_object_smoke", czgame_frame_create_object_smoke},
+        {"czgame_frame_destructor_smoke", czgame_frame_destructor_smoke},
+        {"czgame_frame_on_close_smoke", czgame_frame_on_close_smoke},
+        {"czgame_frame_on_create_smoke", czgame_frame_on_create_smoke},
+        {"czgame_frame_on_destroy_smoke", czgame_frame_on_destroy_smoke},
+        {"czgame_frame_on_activate_smoke", czgame_frame_on_activate_smoke},
+        {"czgame_frame_on_paint_smoke", czgame_frame_on_paint_smoke},
         {"czrecoil_frame_constructor_smoke", czrecoil_frame_constructor_smoke},
+        {"czrecoil_frame_create_object_smoke", czrecoil_frame_create_object_smoke},
         {"recoil_app_create_main_wnd_smoke", recoil_app_create_main_wnd_smoke},
         {"recoil_app_init_main_window_smoke", recoil_app_init_main_window_smoke},
         {"czrecoil_frame_destructor_smoke", czrecoil_frame_destructor_smoke},
+        {"czrecoil_frame_on_menu_start_single_player_smoke",
+         czrecoil_frame_on_menu_start_single_player_smoke},
+        {"czrecoil_frame_on_open_file_dialog_smoke",
+         czrecoil_frame_on_open_file_dialog_smoke},
+        {"czrecoil_frame_on_menu_open_campaign_smoke",
+         czrecoil_frame_on_menu_open_campaign_smoke},
+        {"czrecoil_frame_on_menu_open_help_docs_smoke",
+         czrecoil_frame_on_menu_open_help_docs_smoke},
+        {"cabout_dlg_constructor_smoke", cabout_dlg_constructor_smoke},
+        {"czrecoil_frame_on_menu_about_smoke", czrecoil_frame_on_menu_about_smoke},
+        {"czrecoil_frame_start_mode_menu_handlers_smoke",
+         czrecoil_frame_start_mode_menu_handlers_smoke},
+        {"czrecoil_frame_select_hw_api_menu_handlers_smoke",
+         czrecoil_frame_select_hw_api_menu_handlers_smoke},
+        {"czrecoil_frame_toggle_archive_banks_smoke",
+         czrecoil_frame_toggle_archive_banks_smoke},
+        {"czrecoil_frame_toggle_texture_packs_smoke",
+         czrecoil_frame_toggle_texture_packs_smoke},
+        {"hud_ui_save_load_entry_is_newer_than_smoke",
+         hud_ui_save_load_entry_is_newer_than_smoke},
+        {"hud_ui_save_load_list_item_constructor_smoke",
+         hud_ui_save_load_list_item_constructor_smoke},
+        {"hud_ui_save_load_list_item_on_activate_smoke",
+         hud_ui_save_load_list_item_on_activate_smoke},
+        {"hud_ui_save_load_insert_entry_sorted_prefix_smoke",
+         hud_ui_save_load_insert_entry_sorted_prefix_smoke},
+        {"hud_ui_save_load_partition_entries_by_pivot_smoke",
+         hud_ui_save_load_partition_entries_by_pivot_smoke},
+        {"hud_ui_save_load_sort_entry_range_smoke", hud_ui_save_load_sort_entry_range_smoke},
+        {"hud_ui_save_load_refresh_file_list_smoke", hud_ui_save_load_refresh_file_list_smoke},
+        {"hud_ui_save_load_initialize_file_entries_smoke",
+         hud_ui_save_load_initialize_file_entries_smoke},
+        {"hud_ui_save_load_delete_save_file_smoke", hud_ui_save_load_delete_save_file_smoke},
+        {"hud_ui_save_load_set_selected_entry_index_smoke",
+         hud_ui_save_load_set_selected_entry_index_smoke},
+        {"hud_ui_save_load_game_name_input_smoke",
+         hud_ui_save_load_game_name_input_smoke},
+        {"hud_ui_save_load_next_prev_buttons_smoke",
+         hud_ui_save_load_next_prev_buttons_smoke},
+        {"hud_ui_save_load_delete_button_on_activate_smoke",
+         hud_ui_save_load_delete_button_on_activate_smoke},
         {"czgame_frame_on_app_idle_dispatch_message_smoke",
          czgame_frame_on_app_idle_dispatch_message_smoke},
+        {"recoil_state_controls_queue_enter_smoke",
+         recoil_state_controls_queue_enter_smoke},
+        {"hud_ui_options_panel_overlay_owner_queue_enter_smoke",
+         hud_ui_options_panel_overlay_owner_queue_enter_smoke},
         {"briefing_stop_and_shutdown_thread_smoke", briefing_stop_and_shutdown_thread_smoke},
         {"briefing_thread_main_one_iteration_smoke", briefing_thread_main_one_iteration_smoke},
         {"briefing_start_for_mission_smoke", briefing_start_for_mission_smoke},
@@ -1555,6 +1738,8 @@ int main(int argc, char **argv) {
          player_tick_ai_mode2_dynamic_offset_target_steering_smoke},
         {"player_ai_restore_saved_top_level_state_smoke",
          player_ai_restore_saved_top_level_state_smoke},
+        {"player_ai_finalize_mode2_state1_for_all_players_smoke",
+         player_ai_finalize_mode2_state1_for_all_players_smoke},
         {"player_ai_steer_toward_path_node_forward_smoke",
          player_ai_steer_toward_path_node_forward_smoke},
         {"player_ai_steer_toward_path_node_reverse_smoke",
@@ -1891,6 +2076,7 @@ int main(int argc, char **argv) {
          zmodel_small_poly_reject_thresholds_smoke},
         {"zmodel_set_vertex_shading_enabled_smoke",
          zmodel_set_vertex_shading_enabled_smoke},
+        {"zmodel_render_state_setters_smoke", zmodel_render_state_setters_smoke},
         {"zmodel_const_tolerances_and_cross_smoke", zmodel_const_tolerances_and_cross_smoke},
         {"zdi_add_polygon_wrapper_smoke", zdi_add_polygon_wrapper_smoke},
         {"zmodel_damage_mask_uv_smoke", zmodel_damage_mask_uv_smoke},
@@ -1951,6 +2137,8 @@ int main(int argc, char **argv) {
         {"zmodel_light_set_active_lights_smoke", zmodel_light_set_active_lights_smoke},
         {"zmodel_light_build_attr0_depth_fade_smoke", zmodel_light_build_attr0_depth_fade_smoke},
         {"zmodel_light_build_attr1_falloff_smoke", zmodel_light_build_attr1_falloff_smoke},
+        {"zclass_world_build_active_light_list_smoke",
+         zclass_world_build_active_light_list_smoke},
         {"zclass_world_apply_pending_fog_settings_smoke",
          zclass_world_apply_pending_fog_settings_smoke},
         {"zclass_world_settings_section_callbacks_smoke",
@@ -1961,6 +2149,10 @@ int main(int argc, char **argv) {
         {"zgame_options_find_option_smoke", zgame_options_find_option_smoke},
         {"zgame_options_runtime_config_copy_default_smoke",
          zgame_options_runtime_config_copy_default_smoke},
+        {"zopt_lookup_named_value_as_int_smoke", zopt_lookup_named_value_as_int_smoke},
+        {"zopt_read_scalar_value_as_int_smoke", zopt_read_scalar_value_as_int_smoke},
+        {"zopt_evaluate_profile_metric_condition_smoke",
+         zopt_evaluate_profile_metric_condition_smoke},
         {"zopt_select_profile_value_for_system_smoke",
          zopt_select_profile_value_for_system_smoke},
         {"zgame_options_load_from_registry_missing_smoke",
@@ -1995,6 +2187,7 @@ int main(int argc, char **argv) {
         {"zopt_section_accessor_smoke", zopt_section_accessor_smoke},
         {"zclipalt_set_source_rect_smoke", zclipalt_set_source_rect_smoke},
         {"zclipalt_set_target_rect_smoke", zclipalt_set_target_rect_smoke},
+        {"zclipalt_remap_point_xy_in_place_smoke", zclipalt_remap_point_xy_in_place_smoke},
         {"zclass_cls_di_segment_batch_vs_polygon_smoke",
          zclass_cls_di_segment_batch_vs_polygon_smoke},
         {"zclass_cls_di_segment_batch_vs_polygon_uv_smoke",
@@ -2035,6 +2228,8 @@ int main(int argc, char **argv) {
         {"zhud_flash_panel_compute_blend_color_smoke", zhud_flash_panel_compute_blend_color_smoke},
         {"zhud_layout_shutdown_stub_smoke", zhud_layout_shutdown_stub_smoke},
         {"zhud_layout_hw_release_images_smoke", zhud_layout_hw_release_images_smoke},
+        {"zhud_layout_hw_update_objective_dirty_rect_smoke",
+         zhud_layout_hw_update_objective_dirty_rect_smoke},
         {"zhud_element_clip_and_invalidate_smoke", zhud_element_clip_and_invalidate_smoke},
         {"zhud_element_visible_smoke", zhud_element_visible_smoke},
         {"zhud_element_update_smoke", zhud_element_update_smoke},
@@ -2047,6 +2242,7 @@ int main(int argc, char **argv) {
         {"zhud_container_destructor_core_smoke", zhud_container_destructor_core_smoke},
         {"zhud_widget_constructor_smoke", zhud_widget_constructor_smoke},
         {"zhud_widget_default_ctor_thunk_smoke", zhud_widget_default_ctor_thunk_smoke},
+        {"zhud_widget_invalidate_rect_smoke", zhud_widget_invalidate_rect_smoke},
         {"zhud_zrd_widget_constructor_smoke", zhud_zrd_widget_constructor_smoke},
         {"zhud_zrd_widget_helpers_smoke", zhud_zrd_widget_helpers_smoke},
         {"zhud_zrd_widget_load_from_zrd_smoke", zhud_zrd_widget_load_from_zrd_smoke},
@@ -2062,10 +2258,18 @@ int main(int argc, char **argv) {
         {"zhud_cmd_bind_button_base_constructor_smoke",
          zhud_cmd_bind_button_base_constructor_smoke},
         {"zhud_message_box_leaf_handlers_smoke", zhud_message_box_leaf_handlers_smoke},
+        {"zhud_message_box_constructor_fallback_smoke",
+         zhud_message_box_constructor_fallback_smoke},
+        {"zhud_message_box_run_modal_smoke", zhud_message_box_run_modal_smoke},
+        {"zhud_message_box_destructor_smoke", zhud_message_box_destructor_smoke},
+        {"zhud_message_box_scalar_deleting_destructor_smoke",
+         zhud_message_box_scalar_deleting_destructor_smoke},
         {"zhud_background_container_focus_smoke", zhud_background_container_focus_smoke},
         {"zhud_background_update_input_focus_smoke", zhud_background_update_input_focus_smoke},
         {"zhud_background_cursor_widget_member_constructor_smoke",
          zhud_background_cursor_widget_member_constructor_smoke},
+        {"zhud_background_video_widget_destructor_smoke",
+         zhud_background_video_widget_destructor_smoke},
         {"zhud_background_constructor_smoke", zhud_background_constructor_smoke},
         {"zhud_background_bind_widget_by_name_smoke", zhud_background_bind_widget_by_name_smoke},
         {"zhud_background_free_loaded_tree_roots_smoke",
@@ -2081,6 +2285,7 @@ int main(int argc, char **argv) {
          zhud_widget_release_and_destructor_core_smoke},
         {"zhud_triplet_panel_constructor_smoke", zhud_triplet_panel_constructor_smoke},
         {"zhud_triplet_panel_set_visible_count_smoke", zhud_triplet_panel_set_visible_count_smoke},
+        {"zhud_triplet_panel_draw_smoke", zhud_triplet_panel_draw_smoke},
         {"zhud_triplet_panel_shutdown_items_stub_smoke",
          zhud_triplet_panel_shutdown_items_stub_smoke},
         {"zhud_triplet_panel_destructor_core_smoke", zhud_triplet_panel_destructor_core_smoke},
@@ -2102,6 +2307,8 @@ int main(int argc, char **argv) {
          zhud_mgr_set_float_timer_visible_smoke},
         {"zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke",
          zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke},
+        {"zhud_mgr_target_update_selected_progress_meter_smoke",
+         zhud_mgr_target_update_selected_progress_meter_smoke},
         {"zhud_mgr_set_aux_overlay_visible_smoke",
          zhud_mgr_set_aux_overlay_visible_smoke},
         {"zhud_mgr_apply_hud_mode_switch_smoke", zhud_mgr_apply_hud_mode_switch_smoke},
@@ -2138,6 +2345,7 @@ int main(int argc, char **argv) {
         {"zhud_polyline_draw_and_slider_update_smoke", zhud_polyline_draw_and_slider_update_smoke},
         {"zhud_panel_scalar_deleting_destructor_smoke",
          zhud_panel_scalar_deleting_destructor_smoke},
+        {"zhud_panel_destructor_thunk_smoke", zhud_panel_destructor_thunk_smoke},
         {"zhud_panel_text_color_shadow_smoke", zhud_panel_text_color_shadow_smoke},
         {"zhud_panel_constructor_default_smoke", zhud_panel_constructor_default_smoke},
         {"zhud_panel_copy_construct_core_smoke", zhud_panel_copy_construct_core_smoke},
@@ -2158,6 +2366,8 @@ int main(int argc, char **argv) {
         {"zhud_objective_refresh_counter_text_smoke", zhud_objective_refresh_counter_text_smoke},
         {"zhud_objective_update_meter_xpoints_smoke",
          zhud_objective_update_meter_xpoints_smoke},
+        {"zhud_objective_tick_meter_fill_animation_smoke",
+         zhud_objective_tick_meter_fill_animation_smoke},
         {"zhud_layout_node_read_rect_offset_and_size_smoke",
          zhud_layout_node_read_rect_offset_and_size_smoke},
         {"zhud_layout_node_read_rect_smoke", zhud_layout_node_read_rect_smoke},
@@ -2187,17 +2397,45 @@ int main(int argc, char **argv) {
         {"zhud_text_stack_clear_and_enable_smoke", zhud_text_stack_clear_and_enable_smoke},
         {"zhud_text_stack_clear_and_disable_smoke", zhud_text_stack_clear_and_disable_smoke},
         {"zhud_text_stack_destructor_core_smoke", zhud_text_stack_destructor_core_smoke},
+        {"zhud_timed_task_remove_from_active_list_smoke",
+         zhud_timed_task_remove_from_active_list_smoke},
+        {"zhud_timed_task_run_immediate_action_smoke",
+         zhud_timed_task_run_immediate_action_smoke},
+        {"zhud_timed_task_tick_active_list_smoke", zhud_timed_task_tick_active_list_smoke},
+        {"zhud_mgr_update_frame_smoke", zhud_mgr_update_frame_smoke},
         {"zhud_loading_checkpoint_init_table_smoke", zhud_loading_checkpoint_init_table_smoke},
         {"zhud_loading_checkpoint_advance_and_log_smoke",
          zhud_loading_checkpoint_advance_and_log_smoke},
         {"zhud_sensor_viewport_rect_smoke", zhud_sensor_viewport_rect_smoke},
+        {"zhud_sensor_get_fx_rect_smoke", zhud_sensor_get_fx_rect_smoke},
+        {"zhud_layout_apply_viewport_rect_smoke", zhud_layout_apply_viewport_rect_smoke},
         {"zhud_objective_update_smoke", zhud_objective_update_smoke},
         {"zhud_objective_begin_smoke", zhud_objective_begin_smoke},
+        {"zhud_objective_start_hide_smoke", zhud_objective_start_hide_smoke},
         {"zhud_objective_show_smoke", zhud_objective_show_smoke},
         {"hud_sensor_tracker_show_objective_pickup_info_smoke",
          hud_sensor_tracker_show_objective_pickup_info_smoke},
         {"hud_sensor_tracker_objective_panel_visible_smoke",
          hud_sensor_tracker_objective_panel_visible_smoke},
+        {"hud_sensor_tracker_reset_hud_for_mission_start_smoke",
+         hud_sensor_tracker_reset_hud_for_mission_start_smoke},
+        {"hud_sensor_tracker_update_map_scale_lerp_smoke",
+         hud_sensor_tracker_update_map_scale_lerp_smoke},
+        {"hud_sensor_tracker_project_world_points_smoke",
+         hud_sensor_tracker_project_world_points_smoke},
+        {"hud_line_clip_current_bounds_smoke", hud_line_clip_current_bounds_smoke},
+        {"hud_recti_clip_segment_helpers_smoke", hud_recti_clip_segment_helpers_smoke},
+        {"hud_sensor_tracker_draw_diamond_marker_smoke",
+         hud_sensor_tracker_draw_diamond_marker_smoke},
+        {"hud_sensor_tracker_save_marker_leaf_smoke",
+         hud_sensor_tracker_save_marker_leaf_smoke},
+        {"hud_sensor_tracker_save_state_marker_smoke",
+         hud_sensor_tracker_save_state_marker_smoke},
+        {"hud_sensor_tracker_update_smoke", hud_sensor_tracker_update_smoke},
+        {"hud_sensor_map_node_draw_projected_path_smoke",
+         hud_sensor_map_node_draw_projected_path_smoke},
+        {"hud_sensor_map_node_draw_on_tracker_smoke",
+         hud_sensor_map_node_draw_on_tracker_smoke},
         {"hud_weather_fx_constructor_smoke", hud_weather_fx_constructor_smoke},
         {"hud_weather_fx_derived_constructors_smoke",
          hud_weather_fx_derived_constructors_smoke},
@@ -2205,6 +2443,11 @@ int main(int argc, char **argv) {
         {"zhud_mgr_project_point_to_normalized_clamped_smoke",
          zhud_mgr_project_point_to_normalized_clamped_smoke},
         {"zhud_mgr_update_target_reticle_smoke", zhud_mgr_update_target_reticle_smoke},
+        {"zhud_mgr_sensor_place_track_counter_widget_smoke",
+         zhud_mgr_sensor_place_track_counter_widget_smoke},
+        {"zhud_mgr_sensor_place_track_marker_smoke", zhud_mgr_sensor_place_track_marker_smoke},
+        {"zhud_mgr_sensor_update_markers_and_progress_smoke",
+         zhud_mgr_sensor_update_markers_and_progress_smoke},
         {"zhud_mgr_init_layouts_reentry_smoke", zhud_mgr_init_layouts_reentry_smoke},
         {"zhud_mgr_shutdown_resources_smoke", zhud_mgr_shutdown_resources_smoke},
         {"zhud_sensor_track_list_add_smoke", zhud_sensor_track_list_add_smoke},
@@ -2304,6 +2547,14 @@ int main(int argc, char **argv) {
          zclass_world_get_area_partition_at_grid_smoke},
         {"zclass_world_to_grid_coords_clamped_smoke",
          zclass_world_to_grid_coords_clamped_smoke},
+        {"zclass_camera_convex_hull_xz_smoke", zclass_camera_convex_hull_xz_smoke},
+        {"zclass_cls_di_region_filter_mesh_faces_smoke",
+         zclass_cls_di_region_filter_mesh_faces_smoke},
+        {"zclass_camera_build_frustum_grid_tiles_from_params_smoke",
+         zclass_camera_build_frustum_grid_tiles_from_params_smoke},
+        {"zclass_camera_build_frustum_grid_tiles_smoke",
+         zclass_camera_build_frustum_grid_tiles_smoke},
+        {"zclass_render_traverse_dispatch_smoke", zclass_render_traverse_dispatch_smoke},
         {"zclass_world_animate_delete_node_smoke", zclass_world_animate_delete_node_smoke},
         {"zclass_sound_leaf_smoke", zclass_sound_leaf_smoke},
         {"zclass_object3d_init_smoke", zclass_object3d_init_smoke},
@@ -2313,6 +2564,8 @@ int main(int argc, char **argv) {
         {"zclass_light_new_smoke", zclass_light_new_smoke},
         {"zclass_damage_handler_smoke", zclass_damage_handler_smoke},
         {"zclass_camera_view_distance_smoke", zclass_camera_view_distance_smoke},
+        {"zclass_camera_sync_view_context_positions_smoke",
+         zclass_camera_sync_view_context_positions_smoke},
         {"directinput_create_import_provider_smoke", directinput_create_import_provider_smoke},
         {"zinput_init_fastpath_smoke", zinput_init_fastpath_smoke},
         {"zinput_mouse_update_acquire_state_smoke", zinput_mouse_update_acquire_state_smoke},
@@ -2330,10 +2583,16 @@ int main(int argc, char **argv) {
         {"zinput_mouse_apply_and_recenter_cursor_smoke",
          zinput_mouse_apply_and_recenter_cursor_smoke},
         {"zinput_mouse_coop_level_flags_smoke", zinput_mouse_coop_level_flags_smoke},
+        {"zinput_mouse_button_transition_state_smoke",
+         zinput_mouse_button_transition_state_smoke},
+        {"zinput_mouse_apply_accumulated_delta_smoke",
+         zinput_mouse_apply_accumulated_delta_smoke},
         {"zinput_mouse_keyboard_small_accessors_smoke",
          zinput_mouse_keyboard_small_accessors_smoke},
         {"zinput_bindmap_name_tables_smoke", zinput_bindmap_name_tables_smoke},
         {"zinput_bindmap_context_smoke", zinput_bindmap_context_smoke},
+        {"zinput_bindmap_dispatch_mouse_callbacks_smoke",
+         zinput_bindmap_dispatch_mouse_callbacks_smoke},
         {"zinput_keyboard_clear_callbacks_smoke", zinput_keyboard_clear_callbacks_smoke},
         {"zinput_keyboard_mouse_addref_smoke", zinput_keyboard_mouse_addref_smoke},
         {"zinput_keyboard_init_device_smoke", zinput_keyboard_init_device_smoke},
@@ -2412,9 +2671,11 @@ int main(int argc, char **argv) {
         {"zmath_mat_build_euler_rotation3x3_smoke",
          zmath_mat_build_euler_rotation3x3_smoke},
         {"zmath_extract_euler_smoke", zmath_extract_euler_smoke},
+        {"zmath_projection_setup_smoke", zmath_projection_setup_smoke},
         {"zmath_projection_batches_smoke", zmath_projection_batches_smoke},
         {"zmath_project_point_and_clamp_to_screen_clip_smoke",
          zmath_project_point_and_clamp_to_screen_clip_smoke},
+        {"zmath_clip_line_segment_z_range_smoke", zmath_clip_line_segment_z_range_smoke},
         {"zmath_vec3_lerp_smoke", zmath_vec3_lerp_smoke},
         {"zmath_vec3_lerp_normalize_smoke", zmath_vec3_lerp_normalize_smoke},
         {"zmath_vec3_direction_to_smoke", zmath_vec3_direction_to_smoke},
@@ -2437,6 +2698,7 @@ int main(int argc, char **argv) {
          recoil_app_activate_existing_instance_absent_smoke},
         {"recoil_app_pre_translate_message_smoke", recoil_app_pre_translate_message_smoke},
         {"recoil_app_init_std_log_files_smoke", recoil_app_init_std_log_files_smoke},
+        {"recoil_app_fatal_error_and_exit_smoke", recoil_app_fatal_error_and_exit_smoke},
         {"crt_atexit_import_provider_smoke", crt_atexit_import_provider_smoke},
         {"recoil_app_get_current_state_smoke", recoil_app_get_current_state_smoke},
         {"recoil_app_state_queue_block_init_from_cursor_smoke",
@@ -2453,6 +2715,29 @@ int main(int argc, char **argv) {
         {"hud_ui_callback_queue_cheat_code_state_smoke",
          hud_ui_callback_queue_cheat_code_state_smoke},
         {"recoil_app_queue_exit_current_state_smoke", recoil_app_queue_exit_current_state_smoke},
+        {"recoil_app_run_current_state_quit_smoke", recoil_app_run_current_state_quit_smoke},
+        {"hud_ui_save_game_primary_action_button_on_activate_smoke",
+         hud_ui_save_game_primary_action_button_on_activate_smoke},
+        {"hud_ui_load_game_dialog_on_primary_action_smoke",
+         hud_ui_load_game_dialog_on_primary_action_smoke},
+        {"hud_ui_load_game_dialog_process_dialog_result_smoke",
+         hud_ui_load_game_dialog_process_dialog_result_smoke},
+        {"hud_ui_load_game_primary_action_button_on_activate_smoke",
+         hud_ui_load_game_primary_action_button_on_activate_smoke},
+        {"hud_ui_save_load_process_dialog_result_smoke",
+         hud_ui_save_load_process_dialog_result_smoke},
+        {"hud_ui_save_game_dialog_init_layout_smoke",
+         hud_ui_save_game_dialog_init_layout_smoke},
+        {"hud_ui_load_game_dialog_constructor_smoke",
+         hud_ui_load_game_dialog_constructor_smoke},
+        {"hud_ui_load_game_dialog_destructor_smoke",
+         hud_ui_load_game_dialog_destructor_smoke},
+        {"hud_ui_load_game_dialog_scalar_deleting_destructor_smoke",
+         hud_ui_load_game_dialog_scalar_deleting_destructor_smoke},
+        {"recoil_state_save_load_transition_on_try_become_current_smoke",
+         recoil_state_save_load_transition_on_try_become_current_smoke},
+        {"recoil_state_save_load_transition_on_update_should_quit_smoke",
+         recoil_state_save_load_transition_on_update_should_quit_smoke},
         {"recoil_app_start_engine_and_queue_startup_state_smoke",
          recoil_app_start_engine_and_queue_startup_state_smoke},
         {"recoil_app_load_zbd_and_start_engine_smoke",
@@ -2470,6 +2755,14 @@ int main(int argc, char **argv) {
         {"recoil_app_play_state_constructor_smoke", recoil_app_play_state_constructor_smoke},
         {"recoil_app_play_state_on_wnd_activate_smoke",
          recoil_app_play_state_on_wnd_activate_smoke},
+        {"recoil_app_play_state_tick_and_render_frame_quit_smoke",
+         recoil_app_play_state_tick_and_render_frame_quit_smoke},
+        {"recoil_app_play_state_on_update_should_quit_transition_smoke",
+         recoil_app_play_state_on_update_should_quit_transition_smoke},
+        {"recoil_app_play_state_on_resume_cd_disabled_smoke",
+         recoil_app_play_state_on_resume_cd_disabled_smoke},
+        {"recoil_app_play_state_on_deactivate_skip_gameplay_smoke",
+         recoil_app_play_state_on_deactivate_skip_gameplay_smoke},
         {"recoil_app_fmv_state_constructor_smoke", recoil_app_fmv_state_constructor_smoke},
         {"recoil_app_fmv_state_on_idle_or_dispatch_smoke",
          recoil_app_fmv_state_on_idle_or_dispatch_smoke},
@@ -2529,6 +2822,7 @@ int main(int argc, char **argv) {
         {"zsnd_cd_reset_track_state_smoke", zsnd_cd_reset_track_state_smoke},
         {"zsnd_cd_is_stereo_aux_enabled_smoke", zsnd_cd_is_stereo_aux_enabled_smoke},
         {"zsnd_cd_not_ready_playback_smoke", zsnd_cd_not_ready_playback_smoke},
+        {"zsnd_cd_on_mci_notify_loop_smoke", zsnd_cd_on_mci_notify_loop_smoke},
         {"zsnd_cd_init_ready_guard_smoke", zsnd_cd_init_ready_guard_smoke},
         {"zsnd_cd_get_track_count_ready_guard_smoke", zsnd_cd_get_track_count_ready_guard_smoke},
         {"zsnd_cd_shutdown_track_list_smoke", zsnd_cd_shutdown_track_list_smoke},
@@ -2558,6 +2852,8 @@ int main(int argc, char **argv) {
          zsnd_sample_stop_active_voices_if_playing_smoke},
         {"zsnd_snapshot_create_from_active_samples_smoke",
          zsnd_snapshot_create_from_active_samples_smoke},
+        {"zsnd_apply_mute_state_to_active_voices_smoke",
+         zsnd_apply_mute_state_to_active_voices_smoke},
         {"zsnd_snapshot_restore_all_with_global_volume_delta_smoke",
          zsnd_snapshot_restore_all_with_global_volume_delta_smoke},
         {"zsnd_snapshot_destroy_smoke", zsnd_snapshot_destroy_smoke},
@@ -2573,6 +2869,7 @@ int main(int argc, char **argv) {
         {"zsnd_sample_play_a3d_simple_direct_smoke", zsnd_sample_play_a3d_simple_direct_smoke},
         {"zsnd_sample_play_a3d_worldpos_smoke", zsnd_sample_play_a3d_worldpos_smoke},
         {"zsnd_sample_destroy_owned_data_smoke", zsnd_sample_destroy_owned_data_smoke},
+        {"zsnd_sample_destroy_smoke", zsnd_sample_destroy_smoke},
         {"zsnd_sample_set_playback_event_handler_smoke",
          zsnd_sample_set_playback_event_handler_smoke},
         {"zsnd_fade_entry_backend_and_dispatch_smoke", zsnd_fade_entry_backend_and_dispatch_smoke},
@@ -2594,7 +2891,13 @@ int main(int argc, char **argv) {
         {"zrndr_immediate_line_dispatch_smoke", zrndr_immediate_line_dispatch_smoke},
         {"zrndr_lens_flare_queue_projected_sample_smoke",
          zrndr_lens_flare_queue_projected_sample_smoke},
+        {"zrndr_lens_flare_build_visible_sample_list_smoke",
+         zrndr_lens_flare_build_visible_sample_list_smoke},
+        {"zrndr_lens_flare_draw_queued_samples16_smoke",
+         zrndr_lens_flare_draw_queued_samples16_smoke},
         {"zrndr_lens_flare_draw_sample_smoke", zrndr_lens_flare_draw_sample_smoke},
+        {"zrndr_lens_flare_draw_queued_samples_scaled16_smoke",
+         zrndr_lens_flare_draw_queued_samples_scaled16_smoke},
         {"zrndr_lens_flare_stage_helpers_smoke", zrndr_lens_flare_stage_helpers_smoke},
         {"zrndr_span_occlusion_filter_sample_list_smoke",
          zrndr_span_occlusion_filter_sample_list_smoke},
@@ -2615,6 +2918,8 @@ int main(int argc, char **argv) {
          zrndr_span_occlusion_build_span_list_fast_smoke},
         {"zrndr_span_occlusion_test_column_visibility_smoke",
          zrndr_span_occlusion_test_column_visibility_smoke},
+        {"zscene_test_projected_sphere_visible_smoke",
+         zscene_test_projected_sphere_visible_smoke},
         {"zrndr_span_occlusion_test_point_visibility_smoke",
          zrndr_span_occlusion_test_point_visibility_smoke},
         {"zrndr_span_occlusion_test_sample_smoke", zrndr_span_occlusion_test_sample_smoke},
@@ -2662,6 +2967,7 @@ int main(int argc, char **argv) {
         {"zrndr_set_inverse_z_tolerance_smoke", zrndr_set_inverse_z_tolerance_smoke},
         {"zrndr_perspective_adaptive_span_params_smoke",
          zrndr_perspective_adaptive_span_params_smoke},
+        {"zrndr_overlay_rect_submit_smoke", zrndr_overlay_rect_submit_smoke},
         {"zrndr_overlay_and_mmx_masks_smoke", zrndr_overlay_and_mmx_masks_smoke},
         {"zrndr_span_alpha_blend_565_const_alpha_pal8_smoke",
          zrndr_span_alpha_blend_565_const_alpha_pal8_smoke},
@@ -2724,6 +3030,7 @@ int main(int argc, char **argv) {
         {"zvideo_fog_target_color_commit_smoke", zvideo_fog_target_color_commit_smoke},
         {"zturret_reset_iteration_state_smoke", zturret_reset_iteration_state_smoke},
         {"zturret_runtime_init_defaults_smoke", zturret_runtime_init_defaults_smoke},
+        {"zturret_runtime_has_active_node_smoke", zturret_runtime_has_active_node_smoke},
         {"zturret_runtime_init_from_reader_node_smoke",
          zturret_runtime_init_from_reader_node_smoke},
         {"zturret_update_fire_position_from_parts_smoke",
@@ -2748,8 +3055,16 @@ int main(int argc, char **argv) {
         {"zutil_zar_register_section_handler_smoke", zutil_zar_register_section_handler_smoke},
         {"zutil_zbd_init_smoke", zutil_zbd_init_smoke},
         {"zutil_zbd_destroy_global_manager_smoke", zutil_zbd_destroy_global_manager_smoke},
+        {"zutil_zbd_section_handler_compare_sort_order_smoke",
+         zutil_zbd_section_handler_compare_sort_order_smoke},
+        {"zutil_zbd_section_handler_invoke_pre_load_smoke",
+         zutil_zbd_section_handler_invoke_pre_load_smoke},
         {"zutil_zbd_section_handler_invoke_data_ready_smoke",
          zutil_zbd_section_handler_invoke_data_ready_smoke},
+        {"zutil_zbd_manager_sort_section_handlers_smoke",
+         zutil_zbd_manager_sort_section_handlers_smoke},
+        {"zutil_zbd_manager_load_entries_smoke", zutil_zbd_manager_load_entries_smoke},
+        {"zutil_zbd_load_entries_global_smoke", zutil_zbd_load_entries_global_smoke},
         {"zutil_zbd_manager_load_zar_file_smoke", zutil_zbd_manager_load_zar_file_smoke},
         {"zutil_zar_load_file_global_smoke", zutil_zar_load_file_global_smoke},
         {"hud_sensor_register_mission_sections_smoke", hud_sensor_register_mission_sections_smoke},
@@ -2764,6 +3079,8 @@ int main(int argc, char **argv) {
         {"hud_sensor_map_overlay_toggle_smoke", hud_sensor_map_overlay_toggle_smoke},
         {"hud_sensor_tracker_load_map_paths_smoke", hud_sensor_tracker_load_map_paths_smoke},
         {"hud_sensor_reset_mission_state_smoke", hud_sensor_reset_mission_state_smoke},
+        {"hud_sensor_shutdown_mission_gameplay_systems_early_smoke",
+         hud_sensor_shutdown_mission_gameplay_systems_early_smoke},
         {"zutil_zar_write_section_blob_smoke", zutil_zar_write_section_blob_smoke},
         {"zeffect_anim_shutdown_entry_smoke", zeffect_anim_shutdown_entry_smoke},
         {"zeffect_anim_find_entry_by_name_smoke", zeffect_anim_find_entry_by_name_smoke},
@@ -2899,6 +3216,7 @@ int main(int argc, char **argv) {
         {"directdraw_enumerate_import_provider_smoke",
          directdraw_enumerate_import_provider_smoke},
         {"zvid_pack_color_rgb_smoke", zvid_pack_color_rgb_smoke},
+        {"zvideo_draw_noise_rect_smoke", zvideo_draw_noise_rect_smoke},
         {"zvideo_pixel_pack_setup_smoke", zvideo_pixel_pack_setup_smoke},
         {"zvideo_pixel_pack_getters_smoke", zvideo_pixel_pack_getters_smoke},
         {"zvideo_set_renderer_type_smoke", zvideo_set_renderer_type_smoke},
@@ -2906,9 +3224,14 @@ int main(int argc, char **argv) {
         {"zvideo_pending_wireframe_state_smoke", zvideo_pending_wireframe_state_smoke},
         {"zvideo_dd3d_begin_scene_flush_pending_smoke",
          zvideo_dd3d_begin_scene_flush_pending_smoke},
+        {"zvideo_sw_render_frame_smoke", zvideo_sw_render_frame_smoke},
+        {"zclass_camera_render_scene_smoke", zclass_camera_render_scene_smoke},
+        {"zclass_list_render_active_cameras_smoke", zclass_list_render_active_cameras_smoke},
         {"zvideo_surface_accessors_smoke", zvideo_surface_accessors_smoke},
         {"zvideo_fxpass3_local_queue_smoke", zvideo_fxpass3_local_queue_smoke},
         {"zvideo_primary_surface_rect_scratch_smoke", zvideo_primary_surface_rect_scratch_smoke},
+        {"zvideo_run_postprocess_on_sw_buffer_smoke",
+         zvideo_run_postprocess_on_sw_buffer_smoke},
         {"zvideo_frame_scratch_buffers_smoke", zvideo_frame_scratch_buffers_smoke},
         {"zvideo_clear_dispatch_and_exchange_smoke", zvideo_clear_dispatch_and_exchange_smoke},
         {"zvideo_mode_geometry_and_set_video_mode_smoke",
@@ -2931,6 +3254,8 @@ int main(int argc, char **argv) {
          zvid_cached_renderer_and_texture_counts_smoke},
         {"zvid_texture_pack_load_state_getter_smoke",
          zvid_texture_pack_load_state_getter_smoke},
+        {"zvid_texture_pack_load_state_setter_smoke",
+         zvid_texture_pack_load_state_setter_smoke},
         {"zvid_option_accessors_smoke", zvid_option_accessors_smoke},
         {"zvid_set_video_mode_index_smoke", zvid_set_video_mode_index_smoke},
         {"zvideo_buff_clip_coord_to_range_smoke", zvideo_buff_clip_coord_to_range_smoke},
@@ -2950,6 +3275,9 @@ int main(int argc, char **argv) {
         {"zvideo_load_palette_file_and_apply_brightness_smoke",
          zvideo_load_palette_file_and_apply_brightness_smoke},
         {"zvideo_quad_batch_depth_and_rhw_smoke", zvideo_quad_batch_depth_and_rhw_smoke},
+        {"zvideo_set_active_view_context_smoke", zvideo_set_active_view_context_smoke},
+        {"zvideo_frustum_test_sphere_clip_mask_smoke",
+         zvideo_frustum_test_sphere_clip_mask_smoke},
         {"zvideo_queue_solid_quad_smoke", zvideo_queue_solid_quad_smoke},
         {"zvideo_flush_quad_batch_empty_smoke", zvideo_flush_quad_batch_empty_smoke},
         {"zvideo_flush_sorted_polys_empty_smoke", zvideo_flush_sorted_polys_empty_smoke},

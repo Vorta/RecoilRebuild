@@ -12,6 +12,8 @@ sys.path.insert(0, str(REPO_ROOT / "tools"))
 
 from recoil_provenance_audit import audit_final_build, audit_manifests, load_profiles  # noqa: E402
 
+VC6_ENV = "D:/Recoil Project/Compiler/VC6/vc6-env.cmd"
+
 
 def write_profiles(root: Path) -> Path:
     path = root / "profiles.json"
@@ -22,7 +24,7 @@ def write_profiles(root: Path) -> Path:
                 "final_build": {
                     "name": "final",
                     "description": "final",
-                    "compiler_env": "${RECOIL_VC6_ROOT}/vc6-env.cmd",
+                    "compiler_env": VC6_ENV,
                     "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 12.00.8168",
                     "compile_flags": ["/nologo", "/TP"],
                     "resource_flags": ["/r"],
@@ -32,7 +34,7 @@ def write_profiles(root: Path) -> Path:
                     {
                         "name": "default",
                         "description": "default",
-                        "compiler_env": "${RECOIL_VC6_ROOT}/vc6-env.cmd",
+                        "compiler_env": VC6_ENV,
                         "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 12.00.8168",
                         "compiler_flags": ["/nologo", "/TP", "/O2"],
                     }
@@ -53,7 +55,7 @@ class RecoilProvenanceAuditTests(unittest.TestCase):
             final_build.write_text(
                 json.dumps(
                     {
-                        "vc6_env": "${RECOIL_VC6_ROOT}/vc6-env.cmd",
+                        "vc6_env": VC6_ENV,
                         "compile_flags": ["/nologo", "/TP"],
                         "resource_flags": ["/r"],
                         "link_flags": ["/nologo", "/MACHINE:IX86"],

@@ -463,7 +463,7 @@ RespawnPlayerAndDropWeaponPickupIfAllowed(zUtil_SaveGameState *saveState,
         selectedSpawn = 0;
     } else {
         PickupType *const pickupType = Pickup::FindDroppableTypeForPlayerCurrentWeapon(saveState);
-        PickupParsedZrdEntry entry = {};
+        PickupParsedZrdEntry entry = {0};
         entry.typeDesc = pickupType;
         entry.amount = pickupType->defaultAmount;
         entry.position = playerState->worldPos;
@@ -731,10 +731,12 @@ ApplyPkt06_PlayerStateSnapshotToRow(GameNetPlayerRow *row,
     }
 
     playerState->progressTargetCount = packet->progressTargetCount;
-    for (int index = 0; index < playerState->progressTargetCount; ++index) {
-        playerState->progressTargetPointStorage[index] = packet->progressTargetPoints[index];
-        playerState->progressTargetRuntimeSlots[index].targetPos =
-            &playerState->progressTargetPointStorage[index];
+    for (int progressIndex = 0; progressIndex < playerState->progressTargetCount;
+         ++progressIndex) {
+        playerState->progressTargetPointStorage[progressIndex] =
+            packet->progressTargetPoints[progressIndex];
+        playerState->progressTargetRuntimeSlots[progressIndex].targetPos =
+            &playerState->progressTargetPointStorage[progressIndex];
     }
 
     return 1;
@@ -884,7 +886,7 @@ HandlePkt07_AltGunDispatch(int, NetPkt07_AltGunDispatch *packet) {
 
     OptCatalog::SetPendingSpawnTargetOverrides(&playerState->progressTargetCount,
                                                playerState->progressTargetSlots);
-    Player::ProcessAltGunFireDispatchRequest(saveState);
+    Player::ProcessAltGunDispatchRequest(saveState);
 
     playerState->altGunDispatchFlags = 0;
     playerState->activeAltGunController = oldActiveAltGunController;

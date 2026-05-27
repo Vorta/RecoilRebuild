@@ -177,7 +177,7 @@ float PlayerClampSigned(float value, float limit) {
 }
 
 zVec3 TransformWorldVectorToLocal(const zVec3 &vec, const zMat4x3 &matrix) {
-    zVec3 out = {};
+    zVec3 out = {0};
     out.x = vec.x * matrix.xx + vec.y * matrix.xy + vec.z * matrix.xz;
     out.y = vec.x * matrix.yx + vec.y * matrix.yy + vec.z * matrix.yz;
     out.z = vec.x * matrix.zx + vec.y * matrix.zy + vec.z * matrix.zz;
@@ -185,7 +185,7 @@ zVec3 TransformWorldVectorToLocal(const zVec3 &vec, const zMat4x3 &matrix) {
 }
 
 zVec3 TransformLocalVectorToWorld(const zVec3 &vec, const zMat4x3 &matrix) {
-    zVec3 out = {};
+    zVec3 out = {0};
     out.x = vec.x * matrix.xx + vec.y * matrix.yx + vec.z * matrix.zx;
     out.y = vec.x * matrix.xy + vec.y * matrix.yy + vec.z * matrix.zy;
     out.z = vec.x * matrix.xz + vec.y * matrix.yz + vec.z * matrix.zz;
@@ -1060,7 +1060,7 @@ void TickAltGunLocalSlotAndPrimaryState(zUtil_SaveGameState *saveState) {
     }
 
     if (playerState->activePrimaryGunController != 0) {
-        Player::ProcessPrimaryGunDispatchRequest(saveState);
+        Player::ProcessPrimaryGunDispatchTick(saveState);
     }
 }
 
@@ -2036,7 +2036,7 @@ SampleGroundAndAlignRootToSurface(zUtil_SaveGameState *saveState, int updateRota
     zClass_Class::gwNodeSetNodeType(playerState->rootNode, playerState->variantTag.tags[0]);
     zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 0);
 
-    PlayerProbeSampleCandidateBuffer candidateBuffer = {};
+    PlayerProbeSampleCandidateBuffer candidateBuffer = {0};
     zClass_cls_di::BuildPickCandidateListBelowPoint(
         g_Player_RuntimeDiScene, &candidateBuffer, playerState->worldPos.x, 500.0f,
         playerState->worldPos.z);
@@ -3071,7 +3071,6 @@ PlayerPendingContact::SelectPreferred(PlayerPendingContact *rhs) {
 }
 
 namespace Player {
-namespace {
 zVec3 TransformPointByMatrix(const zVec3 &point, const zMat4x3 &matrix) {
     zVec3 result = {0};
     result.x = point.x * matrix.xx + point.y * matrix.yx + point.z * matrix.zx + matrix.posX;
@@ -3085,6 +3084,8 @@ enum {
     kPlayerMaxModalProbePoints = 4,
     kPlayerEnvProbeBasePointOffset = 15
 };
+
+#define PLAYER_MAX_MODAL_PROBE_POINTS 4
 
 const int g_PlayerEnvProbeSampleMaskTable[8] = {0x89, 0x43, 0x86, 0x4c,
                                                 0x28, 0x22, 0xf0, 0x00};
@@ -3241,12 +3242,12 @@ float Vec3DotXZ(const zVec3 &a, const zVec3 &b) {
 }
 
 zVec3 Vec3Cross(const zVec3 &a, const zVec3 &b) {
-    return {a.y * b.z - a.z * b.y,
-            a.z * b.x - a.x * b.z,
-            a.x * b.y - a.y * b.x};
+    zVec3 result;
+    result.x = a.y * b.z - a.z * b.y;
+    result.y = a.z * b.x - a.x * b.z;
+    result.z = a.x * b.y - a.y * b.x;
+    return result;
 }
-
-} // namespace
 
 // Reimplements 0x42a9f0: Player::AddScaledHudCounterValue
 // (D:\Proj\Battlesport\player.cpp)
@@ -3509,7 +3510,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2PathFollow(zUtil_SaveGameState *
     AINetNode *targetPathNode =
         currentNode->neighborNodes[playerState->aiCurrentPathNeighborIndex];
 
-    zVec3 targetDelta = {};
+    zVec3 targetDelta = {0};
     if (AiMode2ForwardProbeRequiresAutoTurn(saveState) != 0) {
         AiAdvancePathCursorAndComputeTargetVec(saveState, &currentNode, &edgeProbeFan,
                                                &targetDelta);
@@ -4047,7 +4048,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardOffsetTarget(
     targetToPlayerDir.y = 0.0f;
     zMath::Vec3Normalize(&targetToPlayerDir);
 
-    zVec3 steerOffsetDir = {};
+    zVec3 steerOffsetDir = {0};
     steerOffsetDir.y = 0.0f;
     steerOffsetDir.x =
         offsetDistance *
@@ -4449,8 +4450,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindNearestThirdPersonCameraProbePoint(
         zMath::Vec3DeltaLengthSq(&batches[bestBatchIndex].entries[bestEntryIndex].hitPos,
                                  referencePos);
 
-    for (int batchIndex = 0; batchIndex < batchCount; ++batchIndex) {
-        PlayerProbeSampleCandidateBuffer *const batch = &batches[batchIndex];
+    for (int searchBatchIndex = 0; searchBatchIndex < batchCount; ++searchBatchIndex) {
+        PlayerProbeSampleCandidateBuffer *const batch = &batches[searchBatchIndex];
         for (int hitIndex = 0; hitIndex < batch->candidateCount; ++hitIndex) {
             zClassDiPickCandidateEntry *const candidate = &batch->entries[hitIndex];
             if (candidate->node != 0) {
@@ -4458,7 +4459,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindNearestThirdPersonCameraProbePoint(
                 if (distSq < bestDistSq) {
                     bestDistSq = distSq;
                     bestEntryIndex = hitIndex;
-                    bestBatchIndex = batchIndex;
+                    bestBatchIndex = searchBatchIndex;
                 }
             }
         }
@@ -4476,7 +4477,7 @@ AdjustSubCameraFocusForObstruction(zUtil_SaveGameState *saveState, zVec3 *focusP
     const float kSubCameraFocusObstructionYOffset = 0.200000003f;
 
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zClass_DiSegmentEndpoints segmentPairs[2] = {};
+    zClass_DiSegmentEndpoints segmentPairs[2] = {0};
     segmentPairs[0].start = playerState->worldPos;
     segmentPairs[0].end = *focusPos;
     segmentPairs[1].start = *focusPos;
@@ -4485,14 +4486,14 @@ AdjustSubCameraFocusForObstruction(zUtil_SaveGameState *saveState, zVec3 *focusP
     zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
     zClass_cls_di::SetStopAfterFirstHit(kCameraProbeStopAfterFirstHitFlag);
 
-    PlayerProbeSampleCandidateBuffer probeBatches[2] = {};
+    PlayerProbeSampleCandidateBuffer probeBatches[2] = {0};
     zClass_cls_di::BuildProbeHitBatchesForSegments(g_Player_RuntimeDiScene, segmentPairs, 4,
                                                    probeBatches);
 
     zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 1);
     FilterCameraProbeBlockingHits(probeBatches, 2);
 
-    zVec3 hitPos = {};
+    zVec3 hitPos = {0};
     if (FindNearestThirdPersonCameraProbePoint(probeBatches, 2, &playerState->worldPos,
                                                &hitPos) != 0) {
         focusPos->y -= kSubCameraFocusObstructionYOffset;
@@ -4514,9 +4515,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraByOffsetProbes(
         saveState->primaryModalState->masterModalData;
     zClass_NodePartial *const rootNode = saveState->playerState->rootNode;
 
-    zVec3 perpDir = {};
+    zVec3 perpDir = {0};
     zMath::Vec3PerpXZ(sideDir, &perpDir);
-    zVec3 normalizedPerp = {};
+    zVec3 normalizedPerp = {0};
     zMath::Vec3NormalizeXZ(&perpDir, &normalizedPerp);
     normalizedPerp.y = 0.0f;
 
@@ -4526,42 +4527,36 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraByOffsetProbes(
         normalizedPerp.z * kCameraSideProbeDistance,
     };
 
-    zClass_DiSegmentEndpoints segmentPairs[3] = {};
+    zClass_DiSegmentEndpoints segmentPairs[3] = {0};
     segmentPairs[0].start = *cameraPos;
-    segmentPairs[0].end = {
-        cameraPos->x + sideOffset.x,
-        cameraPos->y + sideOffset.y,
-        cameraPos->z + sideOffset.z,
-    };
+    segmentPairs[0].end.x = cameraPos->x + sideOffset.x;
+    segmentPairs[0].end.y = cameraPos->y + sideOffset.y;
+    segmentPairs[0].end.z = cameraPos->z + sideOffset.z;
     segmentPairs[1].start = *cameraPos;
-    segmentPairs[1].end = {
-        cameraPos->x - sideOffset.x,
-        cameraPos->y - sideOffset.y,
-        cameraPos->z - sideOffset.z,
-    };
+    segmentPairs[1].end.x = cameraPos->x - sideOffset.x;
+    segmentPairs[1].end.y = cameraPos->y - sideOffset.y;
+    segmentPairs[1].end.z = cameraPos->z - sideOffset.z;
 
     int endpointCount = 4;
     if (masterModalData->masterType == kPlayerMasterTypeSub) {
         endpointCount = 6;
         segmentPairs[2].start = *cameraPos;
-        segmentPairs[2].end = {
-            cameraPos->x,
-            cameraPos->y + kSubVerticalProbeDistance,
-            cameraPos->z,
-        };
+        segmentPairs[2].end.x = cameraPos->x;
+        segmentPairs[2].end.y = cameraPos->y + kSubVerticalProbeDistance;
+        segmentPairs[2].end.z = cameraPos->z;
     }
 
     zClass_cls_di::SetStopAfterFirstHit(kCameraProbeStopAfterFirstHitFlag);
     zClass_Class::gwNodeSetRaycastable(rootNode, 0);
 
-    PlayerProbeSampleCandidateBuffer probeBatches[3] = {};
+    PlayerProbeSampleCandidateBuffer probeBatches[3] = {0};
     zClass_cls_di::BuildProbeHitBatchesForSegments(g_Player_RuntimeDiScene, segmentPairs,
                                                    endpointCount, probeBatches);
 
     zClass_Class::gwNodeSetRaycastable(rootNode, 1);
     FilterCameraProbeBlockingHits(probeBatches, endpointCount >> 1);
 
-    zVec3 outHitPos = {};
+    zVec3 outHitPos = {0};
     int result = 0;
     if (FindNearestThirdPersonCameraProbePoint(probeBatches, 1, cameraPos, &outHitPos) != 0) {
         result = 1;
@@ -4641,7 +4636,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraVariantFromAnchor(
 RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraVariantFromCameraPos(
     zUtil_SaveGameState *saveState, zVec3 *cameraPos) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    PlayerProbeSampleCandidateBuffer candidateBuffers[2] = {};
+    PlayerProbeSampleCandidateBuffer candidateBuffers[2] = {0};
 
     zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 0);
     const int pickResult = zClass_cls_di::BuildPickCandidateListBelowPoint(
@@ -4690,7 +4685,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraBySideProbes(
         cameraPos->z + sideProbeOffset.z,
     };
 
-    zClass_DiSegmentEndpoints segmentPairs[2] = {};
+    zClass_DiSegmentEndpoints segmentPairs[2] = {0};
     segmentPairs[0].start = sideProbeEndpoint;
     segmentPairs[0].end = *focusPos;
     segmentPairs[1].start = *focusPos;
@@ -4699,14 +4694,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraBySideProbes(
     zClass_Class::gwNodeSetRaycastable(rootNode, 0);
     zClass_cls_di::SetStopAfterFirstHit(kCameraProbeStopAfterFirstHitFlag);
 
-    PlayerProbeSampleCandidateBuffer probeBatches[2] = {};
+    PlayerProbeSampleCandidateBuffer probeBatches[2] = {0};
     zClass_cls_di::BuildProbeHitBatchesForSegments(g_Player_RuntimeDiScene, segmentPairs, 4,
                                                    probeBatches);
 
     zClass_Class::gwNodeSetRaycastable(rootNode, 1);
     FilterCameraProbeBlockingHits(probeBatches, 2);
 
-    zVec3 hitPos = {};
+    zVec3 hitPos = {0};
     if (FindNearestThirdPersonCameraProbePoint(probeBatches, 2, focusPos, &hitPos) != 0) {
         cameraPos->x =
             hitPos.x + g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->x;
@@ -4842,7 +4837,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CollectPendingContactsForSegments(
     zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
     g_Variant_CurrentTag = playerState->variantTag;
 
-    PlayerProbeSampleCandidateBuffer hitBatches[24] = {};
+    PlayerProbeSampleCandidateBuffer hitBatches[24] = {0};
     zClass_cls_di::BuildProbeHitBatchesForSegments(g_Player_RuntimeDiScene, segmentPairs,
                                                    endpointCount, hitBatches);
 
@@ -4919,7 +4914,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PassesCollectionTest(
         pickupNode->cachedSphereCenter[2],
     };
 
-    PlayerProbeSampleCandidateBuffer rayData = {};
+    PlayerProbeSampleCandidateBuffer rayData = {0};
     const int raycastResult = zClass_cls_di::RaycastFindClosest(
         g_Player_RuntimeDiScene, &rayData, startPoint.x, startPoint.y, startPoint.z, endPoint.x,
         endPoint.y, endPoint.z);
@@ -6038,14 +6033,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildPendingContactQueues(zUtil_SaveGameSta
     }
 
     segmentCount = 0;
-    for (int i = 0; i < 15; ++i) {
-        if (enabledSegmentFlags[i] == 0) {
+    for (int subSegmentIndex = 0; subSegmentIndex < 15; ++subSegmentIndex) {
+        if (enabledSegmentFlags[subSegmentIndex] == 0) {
             continue;
         }
 
-        segmentPairs[segmentCount].start = playerState->rootProbeWorldByIndex[i];
+        segmentPairs[segmentCount].start = playerState->rootProbeWorldByIndex[subSegmentIndex];
         segmentPairs[segmentCount].start.y -= -3.0f;
-        segmentPairs[segmentCount].end = playerState->modalProbeWorldByIndex[i];
+        segmentPairs[segmentCount].end = playerState->modalProbeWorldByIndex[subSegmentIndex];
         segmentPairs[segmentCount].end.y += probeYAdvance - -3.0f;
         ++segmentCount;
     }
@@ -6554,7 +6549,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickActiveCameraState(zUtil_SaveGameState *
 
     if (g_Player_RebuildCameraDirFlatFromCurrentTarget != 0) {
         zVec3 targetWorldPos = playerState->worldPos;
-        zVec3 activeCameraTarget = {};
+        zVec3 activeCameraTarget = {0};
         zClass_Camera::gwCameraGetTarget(g_MainCamera, &activeCameraTarget.x,
                                          &activeCameraTarget.y, &activeCameraTarget.z);
 
@@ -6631,7 +6626,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
     const float cameraZoneInvRange = g_Player_CameraZoneInvRange;
     const float maxCamYawRate = g_Player_MaxCamYawRate;
 
-    zInput::MouseStateSnapshot mouseState = {};
+    zInput::MouseStateSnapshot mouseState = {0};
     if (zOpt::GetCursorMode() != 0) {
         memcpy(&mouseState, zInput::Mouse_GetStateSnapshotPtr(), sizeof(mouseState));
     }
@@ -6734,7 +6729,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
         (1.0f - distanceBlend) * targetDistance +
         distanceBlend * playerState->cameraTargetDistance;
 
-    zVec3 cameraOffset = {};
+    zVec3 cameraOffset = {0};
     cameraOffset.x = -cameraDirZ * thirdPersonSideOffset -
                      cameraDirX * playerState->cameraTargetDistance;
     cameraOffset.z = cameraDirX * thirdPersonSideOffset -
@@ -6758,7 +6753,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
         yOffsetBlend * playerState->thirdPersonPositionYOffset +
         targetYOffset * yOffsetInvBlend;
 
-    zVec3 cameraPos = {};
+    zVec3 cameraPos = {0};
     cameraPos.x = playerState->worldPos.x + cameraOffset.x;
     cameraPos.y = playerState->worldPos.y + thirdPersonBaseYOffset +
                   playerState->thirdPersonPositionYOffset -
@@ -6784,7 +6779,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
                                         &playerState->cameraDirNext);
 
     zClass_Camera::gwCameraSetTarget(g_MainCamera, cameraPos.x, cameraPos.y, cameraPos.z);
-    zVec3 cameraAngles = {};
+    zVec3 cameraAngles = {0};
     zVec3 *const cameraAnglesPtr =
         zMath::Vec3DirectionAnglesBetweenPoints(&cameraPos, &focusPos, &cameraAngles);
     zClass_Camera::gwCameraSetPosition(g_MainCamera, cameraAnglesPtr->x, cameraAnglesPtr->y,
@@ -6868,7 +6863,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateFirstPersonCameraFromInput(
     const zMat4x3 &motionBasis = playerState->motionBasis;
     const zVec3 &localOffset = playerState->cameraState6LocalOffset;
     zVec3 cameraPoint = playerState->worldPos;
-    zVec3 cameraLocalOffsetWorld = {};
+    zVec3 cameraLocalOffsetWorld = {0};
     cameraLocalOffsetWorld.x = localOffset.x * motionBasis.xx +
                                localOffset.y * motionBasis.yx +
                                localOffset.z * motionBasis.zx;
@@ -6916,7 +6911,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraFromStoredTargetTowardPlayer(
     playerState->cameraDirNext.x = dirX * invDirLength;
     playerState->cameraDirNext.y = dirY * invDirLength;
 
-    zVec3 cameraAngles = {};
+    zVec3 cameraAngles = {0};
     zVec3 *const cameraAnglesPtr =
         zMath::Vec3DirectionAnglesBetweenPoints(&cameraTarget, &lookAt, &cameraAngles);
     zClass_Camera::gwCameraSetPosition(g_MainCamera, cameraAnglesPtr->x,
@@ -6954,14 +6949,14 @@ RECOIL_NOINLINE void RECOIL_CDECL UpdateCameraWeatherFxEmitterVisibility() {
         }
     } else {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-        zVec3 cameraTarget = {};
+        zVec3 cameraTarget = {0};
         zClass_Camera::gwCameraGetTarget(g_MainCamera, &cameraTarget.x, &cameraTarget.y,
                                          &cameraTarget.z);
         zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
         zClass_cls_di::SetStopAfterFirstHit(0x40000);
         zClass_cls_di::SetBreakOnFirstCandidate(1);
 
-        PlayerProbeSampleCandidateBuffer raycastCandidates = {};
+        PlayerProbeSampleCandidateBuffer raycastCandidates = {0};
         const int raycastResult = zClass_cls_di::RaycastFindClosest(
             g_Player_RuntimeDiScene, &raycastCandidates, cameraTarget.x, cameraTarget.y,
             cameraTarget.z, cameraTarget.x, cameraTarget.y + 50.0f, cameraTarget.z);
@@ -7001,7 +6996,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickLocalPlayerControls(zUtil_SaveGameState
     PlayerMasterModalData *const masterModalData =
         saveState->primaryModalState->masterModalData;
 
-    zInput::MouseStateSnapshot mouseState = {};
+    zInput::MouseStateSnapshot mouseState = {0};
     if (zInp::GetJoystickOption() != 0) {
         zInput::JoystickStatePartial *const joyState = zInput::DI_GetCurrentState();
         if (playerState->cameraState == kPlayerCameraStateProjectileAttached) {
@@ -7194,7 +7189,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickLocalPlayerControls(zUtil_SaveGameState
     playerState->autoTurnTargetWorldPos = playerState->storedTargetPos;
     SetAutoTurnTargetDirFromWorldPoint(saveState, &playerState->autoTurnTargetWorldPos);
 
-    zVec3 cameraTarget = {};
+    zVec3 cameraTarget = {0};
     zClass_Camera::gwCameraGetTarget(g_MainCamera, &cameraTarget.x, &cameraTarget.y,
                                      &cameraTarget.z);
     playerState->cameraLerpStart.x = cameraTarget.x - playerState->worldPos.x;
@@ -7397,7 +7392,7 @@ ApplyAmphibSpeedOscillation(zUtil_SaveGameState *saveState, zVec3 *inOutUpVector
     const float rollSin = static_cast<float>(sin(rollAngle));
     const float rollCos = static_cast<float>(cos(rollAngle));
 
-    zMat4x3 oscillationBasis = {};
+    zMat4x3 oscillationBasis = {0};
     oscillationBasis.xx = yawSin * pitchSin * rollSin + rollCos * yawCos;
     oscillationBasis.xy = rollSin * pitchCos;
     oscillationBasis.xz = rollSin * yawCos * pitchSin - rollCos * yawSin;
@@ -7423,7 +7418,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL
 RebuildMotionBasisFromSteerBasis(zUtil_SaveGameState *saveState) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
 
-    zVec3 basisSide = {};
+    zVec3 basisSide = {0};
     basisSide.x = playerState->steerBasisRaw.y * playerState->steerBasisRef.z -
                   playerState->steerBasisRaw.z * playerState->steerBasisRef.y;
     basisSide.y = playerState->steerBasisRaw.z * playerState->steerBasisRef.x -
@@ -7431,7 +7426,7 @@ RebuildMotionBasisFromSteerBasis(zUtil_SaveGameState *saveState) {
     basisSide.z = playerState->steerBasisRaw.x * playerState->steerBasisRef.y -
                   playerState->steerBasisRaw.y * playerState->steerBasisRef.x;
 
-    zMat4x3 motionBasis = {};
+    zMat4x3 motionBasis = {0};
     motionBasis.xx = basisSide.x;
     motionBasis.xy = basisSide.y;
     motionBasis.xz = basisSide.z;
@@ -7524,13 +7519,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL
 SetAutoTurnTargetDirFromWorldPoint(zUtil_SaveGameState *saveState, const zVec3 *worldPoint) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
 
-    zVec3 targetDir = {};
+    zVec3 targetDir = {0};
     targetDir.x = worldPoint->x - playerState->worldPos.x;
     targetDir.y = worldPoint->y - playerState->worldPos.y;
     targetDir.z = worldPoint->z - playerState->worldPos.z;
     targetDir.y = 0.0f;
 
-    zVec3 normalizedTargetDir = {};
+    zVec3 normalizedTargetDir = {0};
     zMath::Vec3NormalizeXZ(&targetDir, &normalizedTargetDir);
     playerState->autoTurnTargetDir = normalizedTargetDir;
     playerState->autoTurnActive = 1;
@@ -7975,7 +7970,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL
 WriteMinesZarSection(zZbdSectionCallbackCtx *writer, void *userData) {
     (void)userData;
 
-    PlayerMineSaveEntry data = {};
+    PlayerMineSaveEntry data = {0};
     data.resetMarker = 1;
     strncpy(data.ownerNodeName, "Dummy", 0x24);
 
@@ -8582,9 +8577,9 @@ UpdateSubModeWaterProbeState(zUtil_SaveGameState *saveState) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerMasterModalData *const masterModalData = primaryModalState->masterModalData;
 
-    float probeHeightByPoint[kPlayerMaxModalProbePoints] = {};
+    float probeHeightByPoint[PLAYER_MAX_MODAL_PROBE_POINTS] = {0};
     float outBestHeight = 0.0f;
-    PlayerProbeTypeHistogram outTypeHistogram = {};
+    PlayerProbeTypeHistogram outTypeHistogram = {0};
     int outAttachmentCandidateCount = 0;
     zClass_NodePartial *outAttachmentNode = 0;
     ProbeModalSampleHeights(saveState, probeHeightByPoint, &outBestHeight, 1,
@@ -9234,11 +9229,11 @@ AutoSwitchToNextUsableAltWeapon(zUtil_SaveGameState *saveState) {
         }
     }
 
-    for (int bankIndex = activeBankIndex + 1; bankIndex < 10; ++bankIndex) {
-        bank = &playerState->altWeaponBanks[bankIndex];
+    for (int nextBankIndex = activeBankIndex + 1; nextBankIndex < 10; ++nextBankIndex) {
+        bank = &playerState->altWeaponBanks[nextBankIndex];
         if (IsUsableAltWeaponController(saveState, &bank->controllerA) != 0 ||
             IsUsableAltWeaponController(saveState, &bank->controllerB) != 0) {
-            HandleAltWeaponBankSelectInput(bankIndex + 14);
+            HandleAltWeaponBankSelectInput(nextBankIndex + 14);
             return;
         }
     }
@@ -9943,7 +9938,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProbeModalSampleHeights(
     zClass_Class::gwNodeSetCellPickable(globalPlayerState->rootNode, 0);
     g_Variant_CurrentTag = playerState->variantTag;
 
-    PlayerProbeSampleCandidateBuffer candidateBuffers[kPlayerMaxModalProbePoints] = {};
+    PlayerProbeSampleCandidateBuffer candidateBuffers[PLAYER_MAX_MODAL_PROBE_POINTS] = {0};
     zClass_cls_di::BuildPickCandidatesForPointBatch(
         g_Player_RuntimeDiScene, primaryModalState->transformedProbePointWorldByIndex,
         probePointCount, 500.0f, candidateBuffers);
@@ -9955,14 +9950,16 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProbeModalSampleHeights(
     *outBestHeight = -300.0f;
     *outAttachmentCandidateCount = 0;
 
-    for (int i = 0; i < probePointCount; ++i) {
+    for (int sampleIndex = 0; sampleIndex < probePointCount; ++sampleIndex) {
         int bestCandidateIndex = 0;
         int selectedImpactSlot = 0;
         float taggedHeight = -300.0f;
-        PlayerProbeSampleCandidateBuffer *const candidateBuffer = &candidateBuffers[i];
-        const float sampleHeight = primaryModalState->transformedProbePointWorldByIndex[i].y;
+        PlayerProbeSampleCandidateBuffer *const candidateBuffer =
+            &candidateBuffers[sampleIndex];
+        const float sampleHeight =
+            primaryModalState->transformedProbePointWorldByIndex[sampleIndex].y;
 
-        outSampleHeightByPoint[i] = SelectProbeSampleHeightFromCandidates(
+        outSampleHeightByPoint[sampleIndex] = SelectProbeSampleHeightFromCandidates(
             candidateBuffer, &bestCandidateIndex, sampleHeight, maxRiseWindow,
             preferAttachmentSlot1, &selectedImpactSlot, &taggedHeight);
 
@@ -9970,7 +9967,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProbeModalSampleHeights(
             *outBestHeight = taggedHeight;
         }
 
-        if (i == 0) {
+        if (sampleIndex == 0) {
             if (candidateBuffers[0].candidateCount <= 0) {
                 zClass_Class::gwNodeSetNodeType(playerState->rootNode, 0xff);
             } else {
@@ -10058,23 +10055,24 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildEnvironmentProbeResult(
         maxRiseWindow = outProbe->minProbeDepth;
     }
 
-    for (int i = 0; i < g_PlayerEnvProbeSampleCount; ++i) {
+    for (int sampleIndex = 0; sampleIndex < g_PlayerEnvProbeSampleCount; ++sampleIndex) {
         int bestCandidateIndex = 0;
         int selectedImpactSlot = 0;
         float taggedHeight = -300.0f;
-        PlayerProbeSampleCandidateBuffer *const candidateBuffer = &outProbe->candidateBuffers[i];
+        PlayerProbeSampleCandidateBuffer *const candidateBuffer =
+            &outProbe->candidateBuffers[sampleIndex];
 
-        outProbe->candidateScoreBySample[i] = SelectProbeSampleHeightFromCandidates(
-            candidateBuffer, &bestCandidateIndex, g_PlayerEnvProbeWorldPoints[i].y, maxRiseWindow,
-            outProbe->preferAttachmentSlot1, &selectedImpactSlot, &taggedHeight);
-        outProbe->bestIndexBySample[i] = bestCandidateIndex;
-        outProbe->impactSlotBySample[i] = selectedImpactSlot;
+        outProbe->candidateScoreBySample[sampleIndex] = SelectProbeSampleHeightFromCandidates(
+            candidateBuffer, &bestCandidateIndex, g_PlayerEnvProbeWorldPoints[sampleIndex].y,
+            maxRiseWindow, outProbe->preferAttachmentSlot1, &selectedImpactSlot, &taggedHeight);
+        outProbe->bestIndexBySample[sampleIndex] = bestCandidateIndex;
+        outProbe->impactSlotBySample[sampleIndex] = selectedImpactSlot;
 
         if (outProbe->highestSelectedHitY < taggedHeight) {
             outProbe->highestSelectedHitY = taggedHeight;
         }
 
-        if (i < 4 && i == 0) {
+        if (sampleIndex < 4 && sampleIndex == 0) {
             if (outProbe->candidateBuffers[0].candidateCount <= 0) {
                 zClass_Class::gwNodeSetNodeType(playerState->rootNode, 0xff);
             } else {
@@ -10107,8 +10105,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildEnvironmentProbeResult(
             }
         }
 
-        if (i >= 4 && (g_PlayerEnvProbeSampleMaskTable[i] & 0x0a) == 0) {
-            outProbe->candidateScoreBySample[i] -= 0.2f;
+        if (sampleIndex >= 4 && (g_PlayerEnvProbeSampleMaskTable[sampleIndex] & 0x0a) == 0) {
+            outProbe->candidateScoreBySample[sampleIndex] -= 0.2f;
         }
     }
 
@@ -10717,7 +10715,7 @@ RebuildOrientationFromNormal(zUtil_SaveGameState *saveState) {
     zMath::Vec3Normalize(&rawBasis);
     playerState->steerBasisRaw = rawBasis;
 
-    zVec3 yawRelativeNormal = {};
+    zVec3 yawRelativeNormal = {0};
     zMath::Vec3RotateY(&yawRelativeNormal, &playerState->steerBasisRef,
                        -playerState->restartYawRad);
     playerState->vehiclePitchRad = static_cast<float>(asin(yawRelativeNormal.z));
@@ -10866,9 +10864,9 @@ UpdateMasterTypeBasicOrTrack_FromModalProbe(zUtil_SaveGameState *saveState) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerMasterModalData *const masterModalData = primaryModalState->masterModalData;
 
-    float sampleHeights[kPlayerMaxModalProbePoints] = {};
+    float sampleHeights[PLAYER_MAX_MODAL_PROBE_POINTS] = {0};
     float unusedBestHeight = 0.0f;
-    PlayerProbeTypeHistogram unusedHistogram = {};
+    PlayerProbeTypeHistogram unusedHistogram = {0};
     int unusedAttachmentCandidateCount = 0;
     zClass_NodePartial *unusedAttachmentNode = 0;
     ProbeModalSampleHeights(saveState, sampleHeights, &unusedBestHeight, 0, &unusedHistogram,
@@ -10900,9 +10898,9 @@ UpdateMasterTypeHover_FromModalProbe(zUtil_SaveGameState *saveState) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerMasterModalData *const masterModalData = primaryModalState->masterModalData;
 
-    float probeHeightByPoint[kPlayerMaxModalProbePoints] = {};
+    float probeHeightByPoint[PLAYER_MAX_MODAL_PROBE_POINTS] = {0};
     float outBestHeight = 0.0f;
-    PlayerProbeTypeHistogram outTypeHistogram = {};
+    PlayerProbeTypeHistogram outTypeHistogram = {0};
     int outAttachmentCandidateCount = 0;
     zClass_NodePartial *outAttachmentNode = 0;
     ProbeModalSampleHeights(saveState, probeHeightByPoint, &outBestHeight, 0,
@@ -10921,11 +10919,12 @@ UpdateMasterTypeHover_FromModalProbe(zUtil_SaveGameState *saveState) {
         }
     }
 
-    int supportPointIndex[3] = {};
+    int supportPointIndex[3] = {0};
     int supportCount = 0;
-    for (int i = 0; i < probePointCount && supportCount < 3; ++i) {
-        if (i != lowestProbeIndex) {
-            supportPointIndex[supportCount] = i;
+    for (int supportIndex = 0; supportIndex < probePointCount && supportCount < 3;
+         ++supportIndex) {
+        if (supportIndex != lowestProbeIndex) {
+            supportPointIndex[supportCount] = supportIndex;
             ++supportCount;
         }
     }
@@ -10940,7 +10939,7 @@ UpdateMasterTypeHover_FromModalProbe(zUtil_SaveGameState *saveState) {
         primaryModalState->transformedProbePointWorldByIndex[supportPointIndex[2]];
     supportPoint2.y = probeHeightByPoint[supportPointIndex[2]];
 
-    zVec3 probePlaneNormal = {};
+    zVec3 probePlaneNormal = {0};
     zMath_Vec3_TriangleNormal(&supportPoint0, &supportPoint1, &supportPoint2,
                               &probePlaneNormal);
 
@@ -10949,7 +10948,7 @@ UpdateMasterTypeHover_FromModalProbe(zUtil_SaveGameState *saveState) {
         gravityScale *= 12.0f;
     }
     const float slopeBase = g_Player_DeltaTime * gravityScale;
-    zVec3 slopeImpulse = {};
+    zVec3 slopeImpulse = {0};
     slopeImpulse.x = probePlaneNormal.x * slopeBase;
     slopeImpulse.z = probePlaneNormal.z * slopeBase;
     slopeImpulse.y = (probePlaneNormal.y - 1.0f) * g_Player_DeltaTime * slopeBase;
@@ -10970,13 +10969,14 @@ UpdateMasterTypeHover_FromModalProbe(zUtil_SaveGameState *saveState) {
     RebuildMotionBasisFromSteerBasis(saveState);
 
     float minHoverClearance = 1000.0f;
-    for (int i = 0; i < probePointCount; ++i) {
+    for (int clearanceIndex = 0; clearanceIndex < probePointCount; ++clearanceIndex) {
         const zVec3 transformedProbePoint = TransformPointByMatrix(
-            masterModalData->probePoints[kPlayerEnvProbeBasePointOffset + i],
+            masterModalData->probePoints[kPlayerEnvProbeBasePointOffset + clearanceIndex],
             playerState->motionBasis);
-        primaryModalState->transformedProbePointWorldByIndex[i] = transformedProbePoint;
+        primaryModalState->transformedProbePointWorldByIndex[clearanceIndex] =
+            transformedProbePoint;
 
-        const float clearance = transformedProbePoint.y - probeHeightByPoint[i];
+        const float clearance = transformedProbePoint.y - probeHeightByPoint[clearanceIndex];
         if (clearance < minHoverClearance) {
             minHoverClearance = clearance;
         }
@@ -11015,7 +11015,7 @@ UpdateMasterTypeHover_FromModalProbe(zUtil_SaveGameState *saveState) {
             TransformLocalVectorToWorld(playerState->localVel, playerState->motionBasis);
     }
 
-    zVec3 yawRelativeNormal = {};
+    zVec3 yawRelativeNormal = {0};
     zMath::Vec3RotateY(&yawRelativeNormal, &playerState->steerBasisRef,
                        -playerState->restartYawRad);
     playerState->vehiclePitchRad = static_cast<float>(asin(yawRelativeNormal.z));
@@ -11050,9 +11050,9 @@ UpdateMasterTypeAmphib_FromModalProbe(zUtil_SaveGameState *saveState) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerMasterModalData *const masterModalData = primaryModalState->masterModalData;
 
-    float probeHeightByPoint[kPlayerMaxModalProbePoints] = {};
+    float probeHeightByPoint[PLAYER_MAX_MODAL_PROBE_POINTS] = {0};
     float outBestHeight = 0.0f;
-    PlayerProbeTypeHistogram outTypeHistogram = {};
+    PlayerProbeTypeHistogram outTypeHistogram = {0};
     int outAttachmentCandidateCount = 0;
     zClass_NodePartial *outAttachmentNode = 0;
     ProbeModalSampleHeights(saveState, probeHeightByPoint, &outBestHeight, 0,
@@ -11669,8 +11669,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyGunFireSlotOffsetToNode(
     }
 }
 
-// Reimplements 0x43aa30: Player::SelectAltGunFireOriginAndSlot (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectAltGunFireOriginAndSlot(
+// Reimplements 0x43aa30: Player::SelectAltGunFirePointAndSlot (D:\Proj\Battlesport\player.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL SelectAltGunFirePointAndSlot(
     zUtil_SaveGameState *saveState, PlayerGunFireSlot **outActiveFireSlotPtr) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerGunFireController *const activeAltGunController = playerState->activeAltGunController;
@@ -11722,9 +11722,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SelectAltGunFireOriginAndSlot(
     }
 }
 
-// Reimplements 0x43acf0: Player::SelectPrimaryGunFireOriginAndSlot
+// Reimplements 0x43acf0: Player::SelectPrimaryGunFirePointAndSlot
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectPrimaryGunFireOriginAndSlot(
+RECOIL_NOINLINE void RECOIL_FASTCALL SelectPrimaryGunFirePointAndSlot(
     zUtil_SaveGameState *saveState, PlayerGunFireSlot **outActiveFireSlotPtr) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerGunFireController *const activePrimaryGunController =
@@ -11810,9 +11810,9 @@ UpdateContinuousAltGunFireController(zUtil_SaveGameState *saveState) {
     }
 }
 
-// Reimplements 0x43c330: Player::AltGunEnsureAuxEffectActive
+// Reimplements 0x43c330: Player::EnsureGunAuxEffectActive
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AltGunEnsureAuxEffectActive(
+RECOIL_NOINLINE int RECOIL_FASTCALL EnsureGunAuxEffectActive(
     zUtil_SaveGameState *saveState, PlayerGunFireController *gunController, zVec3 *effectPos) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
 
@@ -11932,15 +11932,15 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AltGunFireSimpleProjectile(zUtil_SaveGameSta
                                             &playerState->projectileSpawnVel, saveState, 0) != 0;
 }
 
-// Reimplements 0x43c190: Player::ProcessAltGunFireDispatchRequest
+// Reimplements 0x43c190: Player::ProcessAltGunDispatchRequest
 // (D:\Proj\GameZRecoil\zWeapon.cpp)
 RECOIL_NOINLINE void RECOIL_FASTCALL
-ProcessAltGunFireDispatchRequest(zUtil_SaveGameState *saveState) {
+ProcessAltGunDispatchRequest(zUtil_SaveGameState *saveState) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerGunFireController *const activeAltGunController =
         playerState->activeAltGunController;
     PlayerGunFireSlot *activeFireSlot = 0;
-    SelectAltGunFireOriginAndSlot(saveState, &activeFireSlot);
+    SelectAltGunFirePointAndSlot(saveState, &activeFireSlot);
 
     if (playerState->altGunFireHeldFlag != 0) {
         if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
@@ -11959,7 +11959,7 @@ ProcessAltGunFireDispatchRequest(zUtil_SaveGameState *saveState) {
 
     int didFire = 0;
     if (playerState->activeAltBankIndex == 1) {
-        didFire = AltGunEnsureAuxEffectActive(saveState, activeAltGunController,
+        didFire = EnsureGunAuxEffectActive(saveState, activeAltGunController,
                                               &playerState->altFireOrigin);
     } else if ((activeAltGunController->optCatalogEntry->flags &
                 kOptCatalogFlagCreateTrail) != 0) {
@@ -12001,10 +12001,10 @@ ProcessAltGunFireDispatchRequest(zUtil_SaveGameState *saveState) {
     }
 }
 
-// Reimplements 0x43a400: Player::ProcessPrimaryGunDispatchRequest
+// Reimplements 0x43a400: Player::ProcessPrimaryGunDispatchTick
 // (D:\Proj\Battlesport\player.cpp)
 RECOIL_NOINLINE void RECOIL_FASTCALL
-ProcessPrimaryGunDispatchRequest(zUtil_SaveGameState *saveState) {
+ProcessPrimaryGunDispatchTick(zUtil_SaveGameState *saveState) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerGunFireController *const activePrimaryGunController =
         playerState->activePrimaryGunController;
@@ -12023,7 +12023,7 @@ ProcessPrimaryGunDispatchRequest(zUtil_SaveGameState *saveState) {
     }
 
     PlayerGunFireSlot *activeFireSlot = 0;
-    SelectPrimaryGunFireOriginAndSlot(saveState, &activeFireSlot);
+    SelectPrimaryGunFirePointAndSlot(saveState, &activeFireSlot);
     playerState->primaryGunDispatchRequested = 0;
 
     if (activePrimaryGunController->ammoOrCharge > 0.0f) {
@@ -12034,7 +12034,7 @@ ProcessPrimaryGunDispatchRequest(zUtil_SaveGameState *saveState) {
             }
         }
 
-        AltGunEnsureAuxEffectActive(saveState, activePrimaryGunController,
+        EnsureGunAuxEffectActive(saveState, activePrimaryGunController,
                                     &playerState->primaryFireOrigin);
 
         if ((activePrimaryGunController->flags & 1) != 0 &&
@@ -12066,7 +12066,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickAltGunRuntimeState(zUtil_SaveGameState 
     if (playerState->altGunTransitionState == 1 ||
         (playerState->altGunTransitionState & 0x180) != 0) {
         if (playerState->altGunDispatchRequested != 0) {
-            ProcessAltGunFireDispatchRequest(saveState);
+            ProcessAltGunDispatchRequest(saveState);
         } else if (playerState->altGunFireHeldFlag != 0) {
             playerState->altGunFireHeldFlag = 0;
             OptCatalog::DeactivateTrailRuntimeState(activeAltGunController->trailRuntimeState);

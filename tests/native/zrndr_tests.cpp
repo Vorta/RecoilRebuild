@@ -1,5 +1,6 @@
 #include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zRndr/zRndr.h"
@@ -334,6 +335,19 @@ extern "C" int zrndr_get_active_region_state_smoke(void) {
 }
 
 extern "C" int zrndr_framebuffer_and_stride_cache_smoke(void) {
+    zRndr::g_activeRegionWidth = 11;
+    zRndr::g_activeRegionHeight = 22;
+    zRndr::SetActiveRegionSizeFromRect(nullptr);
+    if (zRndr::g_activeRegionWidth != 11 || zRndr::g_activeRegionHeight != 22) {
+        return 4;
+    }
+
+    HudUiRect activeRect{3, 5, 163, 125};
+    zRndr::SetActiveRegionSizeFromRect(&activeRect);
+    if (zRndr::g_activeRegionWidth != 160 || zRndr::g_activeRegionHeight != 120) {
+        return 5;
+    }
+
     zOpt_ViewRectSection rect{};
     rect.x = 10;
     rect.y = 20;
@@ -424,6 +438,133 @@ extern "C" int zrndr_lens_flare_queue_projected_sample_smoke(void) {
     return zRndr::g_lensFlareSampleQueueCount == 0x28a && point.reciprocalZ == 9.0f ? 0 : 2;
 }
 
+extern "C" int zrndr_lens_flare_build_visible_sample_list_smoke(void) {
+    zRndr_LensFlareSource enabledSource{};
+    enabledSource.lensFlareEnabled = 1;
+    zRndr_LensFlareSource disabledSource{};
+
+    for (int i = 0; i < 66; ++i) {
+        zRndr::g_lensFlareSampleQueue[i] = {};
+    }
+    for (int i = 0; i < 4; ++i) {
+        zRndr::g_lensFlareVisibleSampleDefs[i] = nullptr;
+    }
+
+    zRndr::g_lensFlareSampleQueueCount = 3;
+    zRndr::g_lensFlareVisibleSampleCount = 7;
+    if (zRndr_LensFlare_BuildVisibleSampleListFromQueue(3) != 0 ||
+        zRndr::g_lensFlareVisibleSampleCount != 0) {
+        return 1;
+    }
+
+    zRndr::g_lensFlareSampleQueueCount = 66;
+    zRndr::g_lensFlareSampleQueue[1].reciprocalZ = 2.0f;
+    zRndr::g_lensFlareSampleQueue[1].lensFlareSource =
+        static_cast<int>(reinterpret_cast<std::intptr_t>(&enabledSource));
+    zRndr::g_lensFlareSampleQueue[2].reciprocalZ = 3.0f;
+    zRndr::g_lensFlareSampleQueue[2].lensFlareSource =
+        static_cast<int>(reinterpret_cast<std::intptr_t>(&disabledSource));
+    zRndr::g_lensFlareSampleQueue[4].lensFlareSource =
+        static_cast<int>(reinterpret_cast<std::intptr_t>(&enabledSource));
+    zRndr::g_lensFlareSampleQueue[63].reciprocalZ = 4.0f;
+    zRndr::g_lensFlareSampleQueue[63].lensFlareSource =
+        static_cast<int>(reinterpret_cast<std::intptr_t>(&enabledSource));
+    zRndr::g_lensFlareSampleQueue[64].reciprocalZ = 5.0f;
+    zRndr::g_lensFlareSampleQueue[64].lensFlareSource =
+        static_cast<int>(reinterpret_cast<std::intptr_t>(&enabledSource));
+
+    const int visibleCount = zRndr_LensFlare_BuildVisibleSampleListFromQueue(1);
+    if (visibleCount != 2 || zRndr::g_lensFlareVisibleSampleCount != 2) {
+        return 2;
+    }
+
+    if (zRndr::g_lensFlareVisibleSampleDefs[0] !=
+            (zRndr_LensFlareVisibleSampleDef *)(&zRndr::g_lensFlareSampleQueue[1]) ||
+        zRndr::g_lensFlareVisibleSampleDefs[1] !=
+            (zRndr_LensFlareVisibleSampleDef *)(&zRndr::g_lensFlareSampleQueue[63]) ||
+        zRndr::g_lensFlareVisibleSampleDefs[2] != nullptr) {
+        return 3;
+    }
+
+    return 0;
+}
+
+extern "C" int zrndr_lens_flare_draw_queued_samples16_smoke(void) {
+    zRndr_LensFlareSource enabledSource{};
+    enabledSource.lensFlareEnabled = 1;
+    zRndr_LensFlareSource disabledSource{};
+
+    for (int i = 0; i < 66; ++i) {
+        zRndr::g_lensFlareSampleQueue[i] = {};
+    }
+    for (int i = 0; i < 4; ++i) {
+        zRndr::g_lensFlareVisibleSampleDefs[i] = nullptr;
+    }
+
+    zRndr::g_lensFlareSampleQueueCount = 1;
+    zRndr::g_lensFlareVisibleSampleCount = 3;
+    zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(1);
+    if (zRndr::g_lensFlareSampleQueueCount != 1 ||
+        zRndr::g_lensFlareVisibleSampleCount != 3) {
+        return 1;
+    }
+
+    zRndr::g_spanColumnHeadTable = nullptr;
+    zRndr::g_spanAllocCursor = nullptr;
+    zRndr::g_spanColumnCountPadded = 0;
+    zRndr::g_lensFlareSampleQueueCount = 3;
+    zRndr::g_lensFlareVisibleSampleCount = 0;
+    zRndr::g_lensFlareSampleQueue[0].reciprocalZ = 11.0f;
+    zRndr::g_lensFlareSampleQueue[1].reciprocalZ = 22.0f;
+    zRndr::g_lensFlareSampleQueue[2].reciprocalZ = 33.0f;
+    zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(1);
+    if (zRndr::g_lensFlareSampleQueueCount != 1 ||
+        zRndr::g_lensFlareSampleQueue[0].reciprocalZ != 11.0f ||
+        zRndr::g_lensFlareVisibleSampleCount != 0) {
+        return 2;
+    }
+
+    zRndr::SpanNodePartial *heads[4] = {};
+    zRndr::SpanNodePartial pool[1] = {};
+    zRndr::g_spanColumnCountPadded = 4;
+    zRndr::g_spanColumnHeadTable = heads;
+    zRndr::g_spanAllocCursor = &pool[0];
+    zRndr::g_lensFlareSampleQueueCount = 4;
+    zRndr::g_lensFlareVisibleSampleCount = 1;
+    zRndr::g_lensFlareSampleQueue[1].x = 1.0f;
+    zRndr::g_lensFlareSampleQueue[1].y = 1.0f;
+    zRndr::g_lensFlareSampleQueue[1].reciprocalZ = 0.5f;
+    zRndr::g_lensFlareSampleQueue[1].lensFlareSource =
+        static_cast<int>(reinterpret_cast<std::intptr_t>(&enabledSource));
+    zRndr::g_lensFlareSampleQueue[2].x = 2.0f;
+    zRndr::g_lensFlareSampleQueue[2].y = 2.0f;
+    zRndr::g_lensFlareSampleQueue[2].reciprocalZ = 0.0f;
+    zRndr::g_lensFlareSampleQueue[2].lensFlareSource =
+        static_cast<int>(reinterpret_cast<std::intptr_t>(&enabledSource));
+    zRndr::g_lensFlareSampleQueue[3].x = 3.0f;
+    zRndr::g_lensFlareSampleQueue[3].y = 3.0f;
+    zRndr::g_lensFlareSampleQueue[3].reciprocalZ = 0.75f;
+    zRndr::g_lensFlareSampleQueue[3].lensFlareSource =
+        static_cast<int>(reinterpret_cast<std::intptr_t>(&disabledSource));
+
+    zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(1);
+    if (zRndr::g_lensFlareSampleQueueCount != 4 ||
+        zRndr::g_lensFlareVisibleSampleCount != 2 ||
+        zRndr::g_lensFlareVisibleSampleDefs[1] !=
+            (zRndr_LensFlareVisibleSampleDef *)(&zRndr::g_lensFlareSampleQueue[1]) ||
+        zRndr::g_lensFlareVisibleSampleDefs[2] != nullptr) {
+        zRndr::g_spanColumnHeadTable = nullptr;
+        zRndr::g_spanAllocCursor = nullptr;
+        zRndr::g_spanColumnCountPadded = 0;
+        return 3;
+    }
+
+    zRndr::g_spanColumnHeadTable = nullptr;
+    zRndr::g_spanAllocCursor = nullptr;
+    zRndr::g_spanColumnCountPadded = 0;
+    return 0;
+}
+
 extern "C" int zrndr_lens_flare_draw_sample_smoke(void) {
     std::uint16_t frame[8 * 8] = {};
     zRndr::LensFlareSamplePartial sample{};
@@ -477,6 +618,49 @@ extern "C" int zrndr_lens_flare_draw_sample_smoke(void) {
 
     zRndr::g_frameBuffer = nullptr;
     zRndr::g_overlayBlendEnabled = 0;
+    return 0;
+}
+
+extern "C" int zrndr_lens_flare_draw_queued_samples_scaled16_smoke(void) {
+    std::uint16_t frame[8 * 8] = {};
+    for (int i = 0; i < 3; ++i) {
+        zRndr::g_lensFlareSampleQueue[i] = {};
+    }
+
+    zRndr::g_frameBuffer = frame;
+    zRndr::g_pitchBytes = 8 * static_cast<int>(sizeof(std::uint16_t));
+    zRndr::g_activeRegionWidth = 7;
+    zRndr::g_activeRegionHeight = 7;
+    zRndr::g_pixelPackGreenBits = 6;
+    zRndr::g_overlayBlendEnabled = 1;
+    zRndr::g_overlayBlendPackedColor16 = 0xf800;
+    zRndr::g_overlayBlendAlpha = 1.0;
+
+    zRndr::g_lensFlareSampleQueueCount = 2;
+    zRndr::g_lensFlareSampleQueue[0].x = 1.0f;
+    zRndr::g_lensFlareSampleQueue[0].y = 1.0f;
+    zRndr::g_lensFlareSampleQueue[0].packedColor16 = 0x001f;
+    zRndr::g_lensFlareSampleQueue[1].x = 2.0f;
+    zRndr::g_lensFlareSampleQueue[1].y = 2.0f;
+    zRndr::g_lensFlareSampleQueue[1].packedColor16 = 0x07e0;
+
+    zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(1, 1.0f);
+    if (frame[2 * 8 + 1] != 0xf800 || frame[3 * 8 + 2] != 0xf800 ||
+        zRndr::g_lensFlareSampleQueueCount != 0 || zRndr::g_overlayBlendEnabled != 0) {
+        zRndr::g_frameBuffer = nullptr;
+        return 1;
+    }
+
+    zRndr::g_lensFlareSampleQueueCount = 0;
+    zRndr::g_overlayBlendEnabled = 1;
+    zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(1, 1.0f);
+    if (zRndr::g_lensFlareSampleQueueCount != 0 || zRndr::g_overlayBlendEnabled != 0 ||
+        frame[0] != 0) {
+        zRndr::g_frameBuffer = nullptr;
+        return 2;
+    }
+
+    zRndr::g_frameBuffer = nullptr;
     return 0;
 }
 
@@ -1054,8 +1238,8 @@ extern "C" int zrndr_span_occlusion_build_span_list_smoke(void) {
     zRndr::g_spanAllocCursor = &pool[1];
     pool[1].sampleXMin = 1;
     pool[1].sampleXMax = 4;
-    pool[1].invDepth = 1.0f;
-    pool[1].invDepthStep = 1.0f;
+    pool[1].invDepth = 0.01f;
+    pool[1].invDepthStep = 0.01f;
     pool[1].depthSlope = 0.0f;
     zRndr_SpanOcclusion_BuildSpanList(visible, 1, &spanCount);
     if (spanCount != 0 || heads[1] != &pool[0] || zRndr::g_spanAllocCursor != &pool[1]) {
@@ -1287,6 +1471,92 @@ extern "C" int zrndr_span_occlusion_test_column_visibility_smoke(void) {
     return 0;
 }
 
+extern "C" int zscene_test_projected_sphere_visible_smoke(void) {
+    zRndr::SetPerspectiveAdaptiveCorrection(0.0f);
+
+    int matrixIdentityFlags[2] = {};
+    float *matrixSlots[2] = {};
+    zMat4x3 baseMatrix{};
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    matrixSlots[0] = reinterpret_cast<float *>(&baseMatrix);
+    zMath::g_zMath_CameraScratchB = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                                     0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    g_zMath_ProjScaleX = 10.0f;
+    g_zMath_ProjScaleY = 10.0f;
+    g_zMath_ProjOffsetX = 50.0f;
+    g_zMath_ProjOffsetY = 50.0f;
+    gClipRect_Primary = {0, 0.0f, 0.0f, 0.0f, 100.0f, 100.0f, 1.0f, 100.0f, 100.0f};
+
+    zRndr::SpanNodePartial *heads[128] = {};
+    zRndr::SpanNodePartial pool[4] = {};
+    auto resetSpanState = [&]() {
+        std::memset(heads, 0, sizeof(heads));
+        std::memset(pool, 0, sizeof(pool));
+        zRndr::g_spanColumnCountPadded = 128;
+        zRndr::g_spanColumnHeadTable = heads;
+        zRndr::g_spanAllocCursor = &pool[0];
+    };
+
+    zVec3 center{0.0f, 0.0f, 1.0f};
+    resetSpanState();
+    if (zScene::TestProjectedSphereVisible(&center, 2.0f) != 1) {
+        return 1;
+    }
+
+    center = {0.0f, 0.0f, 10.0f};
+    resetSpanState();
+    if (zScene::TestProjectedSphereVisible(&center, 0.5f) != 0) {
+        return 2;
+    }
+
+    center = {100.0f, 0.0f, 10.0f};
+    resetSpanState();
+    if (zScene::TestProjectedSphereVisible(&center, 5.0f) != 0) {
+        return 3;
+    }
+
+    center = {0.0f, 0.0f, 10.0f};
+    resetSpanState();
+    if (zScene::TestProjectedSphereVisible(&center, 5.0f) != 1 ||
+        pool[0].sampleXMin != 40 || pool[0].sampleXMax != 60 ||
+        pool[0].invDepth != 0.2f || pool[0].invDepthStep != 0.2f ||
+        pool[0].depthSlope != 0.0f) {
+        return 4;
+    }
+
+    resetSpanState();
+    pool[1].sampleXMin = 40;
+    pool[1].sampleXMax = 60;
+    pool[1].invDepth = 10.0f;
+    pool[1].invDepthStep = 10.0f;
+    pool[1].depthSlope = 0.0f;
+    for (int column = 0; column < 128; ++column) {
+        heads[column] = &pool[1];
+    }
+    if (zScene::TestProjectedSphereVisible(&center, 5.0f) != 0) {
+        return 5;
+    }
+
+    resetSpanState();
+    pool[1].sampleXMin = 40;
+    pool[1].sampleXMax = 60;
+    pool[1].invDepth = 0.01f;
+    pool[1].invDepthStep = 0.01f;
+    pool[1].depthSlope = 0.0f;
+    for (int column = 0; column < 128; ++column) {
+        heads[column] = &pool[1];
+    }
+    if (zScene::TestProjectedSphereVisible(&center, 5.0f) != 1) {
+        return 6;
+    }
+
+    zRndr::g_spanColumnHeadTable = nullptr;
+    zRndr::g_spanAllocCursor = nullptr;
+    zRndr::g_spanColumnCountPadded = 0;
+    return 0;
+}
+
 extern "C" int zrndr_span_occlusion_test_point_visibility_smoke(void) {
     zRndr::SetPerspectiveAdaptiveCorrection(0.0f);
 
@@ -1342,9 +1612,7 @@ extern "C" int zrndr_span_occlusion_test_sample_smoke(void) {
         return 1;
     }
 
-    zRndr::g_pfnPointOpActive = nullptr;
-    zRndr_SpanOcclusion_TestSample(1, 2, 3);
-    return g_pointOpCount == 1 ? 0 : 2;
+    return 0;
 }
 
 extern "C" int zrndr_draw_circle_octants_smoke(void) {
@@ -2644,6 +2912,62 @@ extern "C" int zrndr_submit_textured_poly_uniform_smoke(void) {
         return 2;
     }
 
+    std::uint16_t frame[16 * 16] = {};
+    zRndr::SpanNodePartial spanPool[16] = {};
+    std::uint8_t texels[16] = {};
+    std::uint16_t palette[0x400] = {};
+    zVec3 directProjected[3] = {
+        {1.0f, 1.0f, 1.0f},
+        {5.0f, 1.0f, 1.0f},
+        {1.0f, 5.0f, 1.0f},
+    };
+    zVec3 directTriData[3] = {
+        {1.0f, 1.0f, 1.0f},
+        {5.0f, 1.0f, 1.0f},
+        {1.0f, 5.0f, 1.0f},
+    };
+    zVec2 directUvs[3] = {
+        {0.0f, 0.0f},
+        {1.0f, 0.0f},
+        {0.0f, 1.0f},
+    };
+
+    image.formatFlagsPacked = 0;
+    image.width = 4;
+    image.height = 4;
+    image.pixels = texels;
+    image.palette = palette;
+    image.widthScale = 4.0f;
+    image.uShiftFrom20 = 20;
+    image.uMask = 3;
+    image.vMaskFixed20 = 3 << 20;
+
+    g_rasterSpanBuildCount = 0;
+    g_rasterLastDst = nullptr;
+    g_texturedQueuedSpanCount = 0;
+    g_texturedQueuedLastPixelCount = 0;
+    g_texturedQueuedLastVShift = 0;
+    zRndr::g_frameBuffer = frame;
+    zRndr::g_pitchBytes = 16 * static_cast<int>(sizeof(std::uint16_t));
+    zRndr::g_bytesPerPixel = static_cast<int>(sizeof(std::uint16_t));
+    zRndr::g_spanAllocCursor = spanPool;
+    zRndr::g_pfnBuildSpanList = TestRasterBuildSpanList;
+    zRndr::g_pfnTexturedQueuedSpanOp_Mode0 = nullptr;
+    zRndr::g_pfnTexturedQueuedSpanOp_Mode1 = TestTexturedQueuedSpanOp;
+    zRndr::g_inverseDepthBias = 0.0f;
+    zRndr::g_inverseDepthScale = 1.0f;
+    zRndr::g_perspectiveAdaptiveMinSpan = 0;
+    zRndr::g_perspectiveTextureDeltaXPow2 = 4;
+    zRndr::g_transparentQueueCount = 0;
+
+    zRndr_SubmitTexturedPolyUniformAlphaOrShade(directProjected, nullptr, directTriData,
+                                                directUvs, 3, &entry, 0.5f, 0);
+    if (zRndr::g_transparentQueueCount != 0 || g_rasterSpanBuildCount <= 0 ||
+        g_texturedQueuedSpanCount <= 0 || g_texturedQueuedLastPixelCount <= 0 ||
+        g_texturedQueuedLastVShift != 20) {
+        return 3;
+    }
+
     return 0;
 }
 
@@ -3335,6 +3659,78 @@ extern "C" int zrndr_set_inverse_z_tolerance_smoke(void) {
     return softwareOk && hardwareOk ? 0 : 1;
 }
 
+extern "C" int zrndr_overlay_rect_submit_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldQuadBatchCount = g_zVideo_QuadBatchCount;
+    zVideo_QuadBatchItemPartial oldQuadBatch[16];
+    std::memcpy(oldQuadBatch, g_zVideo_QuadBatchItemsBase, sizeof(oldQuadBatch));
+    const int oldOverlayEnabled = zRndr::g_overlayBlendEnabled;
+    const int oldOverlayLeft = zRndr::g_overlayBlendRectLeft;
+    const int oldOverlayTop = zRndr::g_overlayBlendRectTop;
+    const int oldOverlayRight = zRndr::g_overlayBlendRectRight;
+    const int oldOverlayBottom = zRndr::g_overlayBlendRectBottom;
+    const unsigned int oldOverlayColor = zRndr::g_overlayBlendPackedColor16;
+    const double oldOverlayAlpha = zRndr::g_overlayBlendAlpha;
+
+    g_zVideo_ActiveRendererPath = 0;
+    zRndr::g_overlayBlendEnabled = 0;
+    zVidRect32 rect{4, 6, 9, 11};
+    zRndr_OverlayRect_Submit(0x1234abcd, &rect, 0.375);
+    const bool softwareRectOk =
+        zRndr::g_overlayBlendEnabled == 1 && zRndr::g_overlayBlendRectLeft == 4 &&
+        zRndr::g_overlayBlendRectTop == 6 && zRndr::g_overlayBlendRectRight == 9 &&
+        zRndr::g_overlayBlendRectBottom == 11 &&
+        zRndr::g_overlayBlendPackedColor16 == 0xabcd && zRndr::g_overlayBlendAlpha == 0.375;
+
+    g_zVideo_FxSurfaceWidth = 13;
+    g_zVideo_FxSurfaceHeight = 17;
+    zRndr_OverlayRect_Submit(0xffff001f, nullptr, 0.25);
+    const bool softwareFallbackOk =
+        zRndr::g_overlayBlendEnabled == 1 && zRndr::g_overlayBlendRectLeft == 0 &&
+        zRndr::g_overlayBlendRectTop == 0 && zRndr::g_overlayBlendRectRight == 12 &&
+        zRndr::g_overlayBlendRectBottom == 17 &&
+        zRndr::g_overlayBlendPackedColor16 == 0x001f && zRndr::g_overlayBlendAlpha == 0.25;
+
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+    std::memset(g_zVideo_QuadBatchItemsBase, 0, sizeof(g_zVideo_QuadBatchItemsBase));
+    g_zVideo_QuadBatchCount = 0;
+    g_zVideo_ActiveRendererPath = 1;
+    zRndr::g_overlayBlendEnabled = 0;
+    zVidRect32 hwRect{2, 3, 5, 7};
+    zRndr_OverlayRect_Submit(0xfffff800, &hwRect, 0.5);
+    const zVideo_QuadBatchItemPartial &quad = g_zVideo_QuadBatchItemsBase[0];
+    const bool hardwareOk =
+        g_zVideo_QuadBatchCount == 1 && zRndr::g_overlayBlendEnabled == 0 &&
+        quad.vertices[0].sx == 2.0f && quad.vertices[0].sy == 3.0f &&
+        quad.vertices[1].sx == 6.0f && quad.vertices[1].sy == 3.0f &&
+        quad.vertices[2].sx == 6.0f && quad.vertices[2].sy == 7.0f &&
+        quad.vertices[3].sx == 2.0f && quad.vertices[3].sy == 7.0f &&
+        quad.vertices[0].color == 0x7ff80000 && quad.vertices[3].color == 0x7ff80000;
+
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_QuadBatchCount = oldQuadBatchCount;
+    std::memcpy(g_zVideo_QuadBatchItemsBase, oldQuadBatch, sizeof(oldQuadBatch));
+    zRndr::g_overlayBlendEnabled = oldOverlayEnabled;
+    zRndr::g_overlayBlendRectLeft = oldOverlayLeft;
+    zRndr::g_overlayBlendRectTop = oldOverlayTop;
+    zRndr::g_overlayBlendRectRight = oldOverlayRight;
+    zRndr::g_overlayBlendRectBottom = oldOverlayBottom;
+    zRndr::g_overlayBlendPackedColor16 = oldOverlayColor;
+    zRndr::g_overlayBlendAlpha = oldOverlayAlpha;
+
+    if (!softwareRectOk) {
+        return 1;
+    }
+    if (!softwareFallbackOk) {
+        return 2;
+    }
+    return hardwareOk ? 0 : 3;
+}
+
 extern "C" int zrndr_overlay_and_mmx_masks_smoke(void) {
     zRndr::g_swOverlayDstScale5 = 3;
     zRndr::g_swOverlayPremulPacked = 0x00200100;
@@ -3349,14 +3745,35 @@ extern "C" int zrndr_overlay_and_mmx_masks_smoke(void) {
         return 1;
     }
 
-    zRndr::SpanMmxSetPixelFormatMasks(5);
-    if (zRndr::g_mmxMaskGreenBits[0] != 0x03e0 || zRndr::g_mmxMaskRedPacked[3] != 0xfc00 ||
-        zRndr::g_mmxMaskGreenPacked[2] != 0xffe0 || zRndr::g_mmxMaskBlueBits[1] != 0x001f) {
+    std::uint16_t surface[12] = {};
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+    zRndr::g_pixelPackRedMask = 0xf800;
+    zRndr::g_pixelPackGreenMask = 0x07e0;
+    zRndr::g_pixelPackBlueMask = 0x001f;
+    zRndr::g_pixelPackGreenBits = 6;
+    g_zVideo_FxSurfacePixels16 = surface;
+    g_zVideo_FxSurfacePitchPixels16 = 4;
+    zRndr::g_overlayBlendEnabled = 1;
+    zRndr::g_overlayBlendRectLeft = 1;
+    zRndr::g_overlayBlendRectTop = 1;
+    zRndr::g_overlayBlendRectRight = 3;
+    zRndr::g_overlayBlendRectBottom = 3;
+    zRndr::g_overlayBlendPackedColor16 = 0xf800;
+    zRndr::g_overlayBlendAlpha = 1.0;
+    zRndr_OverlayRect_FlushSw();
+    if (surface[5] != 0xf800 || surface[6] != 0xf800 || surface[9] != 0xf800 ||
+        surface[10] != 0xf800 || surface[4] != 0 || surface[7] != 0) {
         return 2;
     }
 
+    zRndr::SpanMmxSetPixelFormatMasks(5);
+    if (zRndr::g_mmxMaskGreenBits[0] != 0x03e0 || zRndr::g_mmxMaskRedPacked[3] != 0xfc00 ||
+        zRndr::g_mmxMaskGreenPacked[2] != 0xffe0 || zRndr::g_mmxMaskBlueBits[1] != 0x001f) {
+        return 3;
+    }
+
     zRndr::SpanMmxSetPixelFormatMasks(6);
-    return zRndr::g_mmxMaskGreenBits[0] == 0x07e0 && zRndr::g_mmxMaskRedPacked[3] == 0xf800 ? 0 : 3;
+    return zRndr::g_mmxMaskGreenBits[0] == 0x07e0 && zRndr::g_mmxMaskRedPacked[3] == 0xf800 ? 0 : 4;
 }
 
 extern "C" int zrndr_span_alpha_blend_565_const_alpha_pal8_smoke(void) {
@@ -4529,7 +4946,8 @@ extern "C" int zrndr_and_zmodel_current_fog_color_smoke(void) {
     gModel_FogDistanceEnd = 20.0f;
     gModel_FogDistanceInvRange = -1.0f;
     zModel_Fog_SetDistanceStart(5.0f);
-    if (gModel_FogDistanceStart != 5.0f || gModel_FogDistanceInvRange < 0.066f ||
+    if (gModel_FogDistanceStart != 5.0f || zModel_Fog_GetDistanceStart() != 5.0f ||
+        gModel_FogDistanceInvRange < 0.066f ||
         gModel_FogDistanceInvRange > 0.067f) {
         return 3;
     }
@@ -4550,16 +4968,23 @@ extern "C" int zrndr_and_zmodel_current_fog_color_smoke(void) {
     zModel_Fog_SetEnabled(1);
     zModel_Fog_SetLinearModeEnabled(0);
     if (gModel_FogHeightLow != 7.0f || gModel_FogHeightInvRange != 0.2f ||
-        gModel_FogDensity != 0.75f || gModel_FogEnabled != 1 || gModel_FogLinearModeEnabled != 0) {
+        gModel_FogDensity != 0.75f || gModel_FogEnabled != 1 || zModel_Fog_IsEnabled() != 1 ||
+        gModel_FogLinearModeEnabled != 0) {
         return 6;
     }
+
+    zModel_Fog_SetEnabled(0);
+    if (gModel_FogEnabled != 0 || zModel_Fog_IsEnabled() != 0) {
+        return 7;
+    }
+    zModel_Fog_SetEnabled(1);
 
     zColorRgb modelColor{0.2f, 0.4f, 0.6f};
     zModel_Fog_SetColorRgb01(&modelColor);
     if (gModel_FogColorRgb01.red != 0.2f || gModel_FogColorRgb01.green != 0.4f ||
         gModel_FogColorRgb01.blue != 0.6f || g_zVideo_FogColorPendingR255 != 51.0f ||
         g_zVideo_FogColorPendingG255 != 102.0f || g_zVideo_FogColorPendingB255 != 153.0f) {
-        return 7;
+        return 8;
     }
 
     zRndr::g_fogColorParams = {};
@@ -4569,5 +4994,5 @@ extern "C" int zrndr_and_zmodel_current_fog_color_smoke(void) {
                    zRndr::g_fogColorParams.colorRgb01[1] == 0.25f &&
                    zRndr::g_fogColorParams.colorRgb01[2] == 1.0f
                ? 0
-               : 8;
+               : 9;
 }

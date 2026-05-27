@@ -513,8 +513,8 @@ RECOIL_NOINLINE int RECOIL_CDECL InitAndLoadPuppySpawns() {
     zReader::Node *const rootFields = treeRoot->value.nodes;
     zReader::Node *const spawnList = rootFields[1].value.nodes;
     const int spawnCount = spawnList[0].value.i32 - 1;
-    for (int index = 0; index < spawnCount; ++index) {
-        zReader::Node *const entryFields = spawnList[index + 1].value.nodes;
+    for (int spawnIndex = 0; spawnIndex < spawnCount; ++spawnIndex) {
+        zReader::Node *const entryFields = spawnList[spawnIndex + 1].value.nodes;
         PickupType *const pickupType = PickupTypeMeta::FindByName(entryFields[1].value.str);
         if (pickupType == 0) {
             continue;
@@ -527,7 +527,7 @@ RECOIL_NOINLINE int RECOIL_CDECL InitAndLoadPuppySpawns() {
 
         zReader::Node *const position = entryFields[3].value.nodes;
         zReader::Node *const rotation = entryFields[4].value.nodes;
-        PickupParsedZrdEntry parsedEntry = {};
+        PickupParsedZrdEntry parsedEntry = {0};
         parsedEntry.typeDesc = pickupType;
         parsedEntry.amount = entryFields[2].value.i32;
         parsedEntry.position.x = position[1].value.f32;
@@ -548,12 +548,12 @@ RECOIL_NOINLINE int RECOIL_CDECL InitAndLoadPuppySpawns() {
 
     zUtil_PlayerStateStorage *const playerState =
         static_cast<zUtil_PlayerStateStorage *>(static_cast<void *>(g_GameStateOrMapTable->playerState));
-    for (int index = 17; index <= 33; ++index) {
-        PickupType &pickupType = g_PickupTypes[index];
+    for (int weaponIndex = 17; weaponIndex <= 33; ++weaponIndex) {
+        PickupType &pickupType = g_PickupTypes[weaponIndex];
         if (pickupType.weaponPresenceCount != 0) {
             ++g_HudSensorTracker.weaponsFoundMask;
         } else if (zOpt::GetNetworkEnabled() != 0 && pickupType.weaponKeyName != 0 &&
-                   index < 32) {
+                   weaponIndex < 32) {
             const int bankIndex = pickupType.weaponKeyName[4] - '0';
             const int sideIndex = pickupType.weaponKeyName[6] - '0';
             PlayerAltWeaponBank &bank = playerState->altWeaponBanks[bankIndex];

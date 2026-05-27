@@ -66,6 +66,11 @@ std::int32_t RECOIL_CDECL Shutdown();
 } // namespace zSndCd
 
 namespace {
+struct CodeFunctionPatch {
+    unsigned char *address;
+    unsigned char original[5];
+};
+
 using TestBackendSimpleFn = std::int32_t(__stdcall *)(void *self);
 using TestBackendGetStatusFn = std::int32_t(__stdcall *)(void *self, std::int32_t *status);
 using TestBackendGetUint32Fn = std::int32_t(__stdcall *)(void *self, std::uint32_t *value);
@@ -112,6 +117,59 @@ struct TestDirectSoundBufferVTable {
 struct TestDirectSoundBuffer {
     TestDirectSoundBufferVTable *vtable;
 };
+
+std::int32_t g_fakePlayTrackWithModeCount;
+std::int32_t g_fakePlayTrackWithModeTrack;
+std::int32_t g_fakePlayTrackWithModeMode;
+
+std::int32_t RECOIL_FASTCALL FakePlayTrackWithMode(std::int32_t trackIndex,
+                                                   std::int32_t playbackMode) {
+    ++g_fakePlayTrackWithModeCount;
+    g_fakePlayTrackWithModeTrack = trackIndex;
+    g_fakePlayTrackWithModeMode = playbackMode;
+    return 1;
+}
+
+bool PatchFunctionJump(void *target, void *replacement, CodeFunctionPatch &patch) {
+    patch.address = static_cast<unsigned char *>(target);
+    std::memcpy(patch.original, patch.address, sizeof(patch.original));
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(patch.address, sizeof(patch.original), PAGE_EXECUTE_READWRITE,
+                       &oldProtect) == 0) {
+        patch.address = nullptr;
+        return false;
+    }
+
+    patch.address[0] = 0xe9;
+    const std::intptr_t relativeOffset =
+        reinterpret_cast<std::intptr_t>(replacement) -
+        reinterpret_cast<std::intptr_t>(patch.address + sizeof(patch.original));
+    *reinterpret_cast<std::int32_t *>(patch.address + 1) =
+        static_cast<std::int32_t>(relativeOffset);
+
+    DWORD ignored = 0;
+    VirtualProtect(patch.address, sizeof(patch.original), oldProtect, &ignored);
+    FlushInstructionCache(GetCurrentProcess(), patch.address, sizeof(patch.original));
+    return true;
+}
+
+void RestoreFunctionPatch(CodeFunctionPatch &patch) {
+    if (patch.address == nullptr) {
+        return;
+    }
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(patch.address, sizeof(patch.original), PAGE_EXECUTE_READWRITE,
+                       &oldProtect) != 0) {
+        std::memcpy(patch.address, patch.original, sizeof(patch.original));
+        DWORD ignored = 0;
+        VirtualProtect(patch.address, sizeof(patch.original), oldProtect, &ignored);
+        FlushInstructionCache(GetCurrentProcess(), patch.address, sizeof(patch.original));
+    }
+
+    patch.address = nullptr;
+}
 
 struct TestCreateDirectSoundBufferVTable {
     void *slots00_20[9];
@@ -982,6 +1040,45 @@ extern "C" int zsnd_cd_not_ready_playback_smoke(void) {
 
     zSndCd::OnMciNotify(1, 0x5678);
     return g_zSndCdPlayToTrack == 99 ? 0 : 2;
+}
+
+extern "C" int zsnd_cd_on_mci_notify_loop_smoke(void) {
+    CodeFunctionPatch playTrackPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zSndCd::PlayTrackWithMode),
+                           reinterpret_cast<void *>(&FakePlayTrackWithMode),
+                           playTrackPatch)) {
+        return 1;
+    }
+
+    g_fakePlayTrackWithModeCount = 0;
+    g_fakePlayTrackWithModeTrack = 0;
+    g_fakePlayTrackWithModeMode = 0;
+    g_zSndCdFlags = 2;
+    g_zSndCdLastPlayMode = 5;
+    g_zSndCdDeviceId = 0x12345678;
+    g_zSndCdCurrentTrack = 7;
+
+    zSndCd::OnMciNotify(1, 0x5678);
+    const bool matchedReplay =
+        g_fakePlayTrackWithModeCount == 1 && g_fakePlayTrackWithModeTrack == 7 &&
+        g_fakePlayTrackWithModeMode == 5;
+
+    zSndCd::OnMciNotify(0, 0x5678);
+    zSndCd::OnMciNotify(1, 0x5679);
+    g_zSndCdLastPlayMode = 4;
+    zSndCd::OnMciNotify(1, 0x5678);
+    g_zSndCdLastPlayMode = 5;
+    g_zSndCdFlags = 0;
+    zSndCd::OnMciNotify(1, 0x5678);
+
+    const bool guardsHeld = g_fakePlayTrackWithModeCount == 1;
+    RestoreFunctionPatch(playTrackPatch);
+
+    if (!matchedReplay) {
+        return 2;
+    }
+
+    return guardsHeld ? 0 : 3;
 }
 
 extern "C" int zsnd_cd_init_ready_guard_smoke(void) {
@@ -2189,6 +2286,11 @@ extern "C" int zsnd_update_listener_state_smoke(void) {
     listenerState.position = {7.0f, 8.0f, 9.0f};
     zVec3 listenerVelocity{2.0f, 3.0f, 4.0f};
 
+    g_zSndSpeedOfSoundMps = 321.0f;
+    if (zSnd_GetSpeedOfSoundMps() != 321.0f) {
+        return 4;
+    }
+
     g_zSnd_ActiveBackend = 0;
     g_zSnd_ListenerStateValid = 0;
     if (zSnd_UpdateListenerState(&listenerState, &listenerVelocity) != 1 ||
@@ -2402,8 +2504,15 @@ extern "C" int zsnd_play_handle_set_enable_scale_smoke(void) {
 
 extern "C" int zsnd_play_handle_try_disable_managed_smoke(void) {
     zSndPlayHandle handle{};
+    if (zSndPlayHandle_TryEnableManaged(nullptr) != 0 ||
+        zSndPlayHandle_TryEnableManaged(&handle) != 1 || handle.isActive != 1 ||
+        zSndPlayHandle_TryEnableManaged(&handle) != 0 || handle.isActive != 1) {
+        return 3;
+    }
+
     if (zSndPlayHandle_TryDisableManaged(nullptr) != 0 ||
-        zSndPlayHandle_TryDisableManaged(&handle) != 0 || handle.isActive != 0) {
+        zSndPlayHandle_TryDisableManaged(&handle) != 1 || handle.isActive != 0 ||
+        zSndPlayHandle_TryDisableManaged(&handle) != 0) {
         return 1;
     }
 
@@ -2693,6 +2802,22 @@ extern "C" int zsnd_sample_destroy_owned_data_smoke(void) {
                    (sample.replayFields.flags & 0x08) == 0
                ? 0
                : 2;
+}
+
+extern "C" int zsnd_sample_destroy_smoke(void) {
+    zSndSample *const sample = static_cast<zSndSample *>(std::calloc(1, sizeof(zSndSample)));
+    if (sample == nullptr) {
+        return 1;
+    }
+
+    sample->markerTimes = static_cast<float *>(std::malloc(sizeof(float)));
+    sample->markerValues = static_cast<float *>(std::malloc(sizeof(float)));
+    sample->markerAux = static_cast<std::int32_t *>(std::malloc(sizeof(std::int32_t)));
+    sample->highVariant.sampleName = _strdup("destroy_high");
+    sample->medVariant.sampleName = _strdup("destroy_med");
+    sample->lowVariant.sampleName = _strdup("destroy_low");
+    sample->Destroy();
+    return 0;
 }
 
 void RECOIL_FASTCALL TestPlaybackEventHandler(int) {
@@ -3512,6 +3637,94 @@ extern "C" int zsnd_snapshot_create_from_active_samples_smoke(void) {
                    a3dStatusCount
                ? 0
                : 1;
+}
+
+// Reimplements 0x4a0670: zSnd::ApplyMuteStateToActiveVoices active-voice rewrite behavior.
+extern "C" int zsnd_apply_mute_state_to_active_voices_smoke(void) {
+    const int oldInitialized = g_zSnd_IsInitialized;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const int oldMuteDepth = g_zSnd_MuteDepth;
+    void *const oldMuteOptionValuePtr = g_zSnd_MuteOptionValuePtr;
+    void *const oldGlobalVolumeScalePtr = g_zSnd_GlobalVolumeScalePtr;
+    const zSndSampleSetRegistry oldRegistry = g_zSnd_SampleSetRegistry;
+
+    zSndSampleSet set = {};
+    zSndSample sample = {};
+    zSndSampleSet *slots[1] = {&set};
+    TestDirectSoundBufferVTable directSoundVTable = {};
+    TestDirectSoundBuffer directSoundBuffer = {};
+    SnapshotDirectSoundBuffer directSnapshotBuffer = {};
+    TestA3dSourceVTable a3dVTable = {};
+    SnapshotA3dSource a3dSource = {};
+    int muteOption = 0;
+    float globalVolume = 1.0f;
+
+    directSoundVTable.GetStatus = &TestSnapshotGetStatus;
+    directSoundVTable.SetVolume = &TestDirectSoundSetVolume;
+    directSoundBuffer.vtable = &directSoundVTable;
+    directSnapshotBuffer.vtable = &directSoundVTable;
+    directSnapshotBuffer.status = 1;
+    a3dVTable.GetStatus = &TestSnapshotGetStatus;
+    a3dVTable.SetGain = &TestA3dSetGain;
+    a3dSource.vtable = &a3dVTable;
+    a3dSource.status = 1;
+
+    set.sampleCount = 1;
+    set.samples = &sample;
+    g_zSnd_SampleSetRegistry.begin = slots;
+    g_zSnd_SampleSetRegistry.end = slots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = slots + 1;
+    g_zSnd_MuteOptionValuePtr = &muteOption;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+
+    g_zSnd_IsInitialized = 0;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_ActiveBackend = 0;
+    const bool uninitializedOk = zSnd::ApplyMuteStateToActiveVoices(1) == 0 &&
+                                 g_zSnd_MuteDepth == 0 && muteOption == 0;
+
+    g_zSnd_IsInitialized = 1;
+    InitSnapshotPlayHandle(&sample, &sample.primaryVoice,
+                           reinterpret_cast<zSndBuffer *>(&directSnapshotBuffer), -321,
+                           10.0f);
+    ResetStopBackendCounters();
+    const int directMutePrevious = zSnd::ApplyMuteStateToActiveVoices(1);
+    const bool directMuteOk = directMutePrevious == 0 && g_zSnd_MuteDepth == 1 &&
+                              muteOption == 1 && g_testSetVolumeCount == 1 &&
+                              g_testLastVolume == -10000;
+
+    ResetStopBackendCounters();
+    const int directUnmutePrevious = zSnd::ApplyMuteStateToActiveVoices(0);
+    const bool directUnmuteOk = directUnmutePrevious == 1 && g_zSnd_MuteDepth == 0 &&
+                                muteOption == 0 && g_testSetVolumeCount == 1 &&
+                                g_testLastVolume == -321;
+
+    float a3dGain = 0.25f;
+    int a3dGainBits = 0;
+    std::memcpy(&a3dGainBits, &a3dGain, sizeof(a3dGainBits));
+    InitSnapshotPlayHandle(&sample, &sample.primaryVoice,
+                           reinterpret_cast<zSndBuffer *>(&a3dSource), a3dGainBits, 20.0f);
+    g_zSnd_ActiveBackend = 1;
+    ResetStopBackendCounters();
+    const int a3dMutePrevious = zSnd::ApplyMuteStateToActiveVoices(1);
+    const bool a3dMuteOk = a3dMutePrevious == 0 && g_zSnd_MuteDepth == 1 &&
+                           muteOption == 1 && g_testSetGainCount == 1 &&
+                           g_testLastGain == 0.0f;
+
+    ResetStopBackendCounters();
+    const int a3dUnmutePrevious = zSnd::ApplyMuteStateToActiveVoices(0);
+    const bool a3dUnmuteOk = a3dUnmutePrevious == 1 && g_zSnd_MuteDepth == 0 &&
+                             muteOption == 0 && g_testSetGainCount == 1 &&
+                             g_testLastGain == a3dGain;
+
+    g_zSnd_IsInitialized = oldInitialized;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSnd_MuteDepth = oldMuteDepth;
+    g_zSnd_MuteOptionValuePtr = oldMuteOptionValuePtr;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScalePtr;
+    g_zSnd_SampleSetRegistry = oldRegistry;
+
+    return uninitializedOk && directMuteOk && directUnmuteOk && a3dMuteOk && a3dUnmuteOk ? 0 : 1;
 }
 
 // Reimplements 0x4a0590: zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta loop behavior.

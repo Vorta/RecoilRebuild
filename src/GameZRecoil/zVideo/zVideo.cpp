@@ -1,11 +1,14 @@
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include "GameZRecoil/include/zClipRect.h"
+#include "GameZRecoil/include/zDi.h"
 #include "GameZRecoil/include/zImage.h"
+#include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zMath/zMath.h"
+#include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "zClass.h"
@@ -17,7 +20,7 @@
 #include <string.h>
 
 namespace {
-typedef void (RECOIL_FASTCALL *zVideo_ClearZBufferRectProc)(zVidRect32 *rect);
+typedef void (RECOIL_CDECL *zVideo_FlushProc)();
 typedef void (RECOIL_FASTCALL *zVideo_ImageProc)(zVidImagePartial *image);
 } // namespace
 
@@ -412,6 +415,154 @@ zVideo_SetActiveViewContext(zClass_CameraDataPartial *viewContext) {
     memcpy(&fovXBits, &viewContext->fovX, sizeof(fovXBits));
     memcpy(&fovYBits, &viewContext->fovY, sizeof(fovYBits));
     zMath_SetScreenSize(fovXBits, fovYBits);
+}
+
+// Reimplements 0x44d600: zVideo_sw::RenderFrame
+// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
+    zClass_NodePartial *camera, int updateFxPass3Local) {
+    const int queuedLensFlareSampleCount = zRndr_LensFlare_GetQueuedSampleCount();
+    zMat4x3 slotBuffer = {0};
+    zMath::MatStackPushPtr((float *)&slotBuffer);
+
+    g_zVideo_pActiveViewContext =
+        static_cast<zClass_CameraDataPartial *>(camera->classData);
+    zClass_NodePartial *world = zClass_Camera::gwCameraGetWorld(camera);
+    zClass_CameraDataPartial *viewContext = g_zVideo_pActiveViewContext;
+    zClass_WindowDataPartial *windowData =
+        static_cast<zClass_WindowDataPartial *>(viewContext->windowNode->classData);
+
+    if (g_zClass_CameraAutoClipDistanceAdjustEnabled != 0) {
+        if (g_FrameDeltaTimeSec <= g_zClass_CameraAutoClipDistanceThreshold) {
+            g_zClass_CameraAutoClipDistanceScale += g_zClass_CameraAutoClipDistanceStep;
+        } else {
+            g_zClass_CameraAutoClipDistanceScale -= g_zClass_CameraAutoClipDistanceStep;
+        }
+
+        if (g_zClass_CameraAutoClipDistanceScale > 1.0f) {
+            g_zClass_CameraAutoClipDistanceScale = 1.0f;
+        } else if (g_zClass_CameraAutoClipDistanceScale <
+                   g_zClass_CameraAutoClipDistanceMinScale) {
+            g_zClass_CameraAutoClipDistanceScale =
+                g_zClass_CameraAutoClipDistanceMinScale;
+        }
+
+        zClass_Camera::gwCameraSetClipDistance(camera,
+                                               g_zClass_CameraAutoClipDistanceScale);
+    }
+
+    zClass_World::InitLightPointInPolygonXZ(world);
+    zVideo::ReturnSuccessStub();
+    zClass_Camera::gwCameraUpdate(camera);
+    zClass_Camera::SyncViewContextPositions();
+    zVideo_SetActiveViewContext(g_zVideo_pActiveViewContext);
+    zClass_World::UpdateAllLights(world);
+    zClass_World::UpdateAllSounds(world);
+
+    const int variantFilterEnabled = g_Variant_FilterEnabled;
+    g_zClass_LodDistanceStateStackTop = 0;
+    PlayerProbeSampleCandidateBuffer pickCandidates = {0};
+    if (variantFilterEnabled != 0) {
+        viewContext = g_zVideo_pActiveViewContext;
+        if (viewContext->variantOverrideEnabled != 0 && variantFilterEnabled == 1) {
+            g_Variant_CurrentTag = viewContext->variantTag;
+        } else {
+            g_Variant_FilterEnabled = 0;
+            zClass_cls_di::FindBestPickCandidateBelowPoint(world, &viewContext->cameraPos,
+                                                           &pickCandidates);
+            g_Variant_FilterEnabled = variantFilterEnabled;
+
+            if (pickCandidates.candidateCount <= 0) {
+                zTag4::Clear(&g_zVideo_pActiveViewContext->variantTag);
+                viewContext = g_zVideo_pActiveViewContext;
+                g_Variant_CurrentTag = viewContext->variantTag;
+            } else if (pickCandidates.entries[0].variantTag.count > 0) {
+                g_zVideo_pActiveViewContext->variantTag =
+                    pickCandidates.entries[0].variantTag;
+                viewContext = g_zVideo_pActiveViewContext;
+                g_Variant_CurrentTag = pickCandidates.entries[0].variantTag;
+            }
+        }
+
+        viewContext = g_zVideo_pActiveViewContext;
+        g_zVideo_ActiveViewVariantTag = viewContext->variantTag;
+    }
+
+    zVideoD3D::SceneEnter();
+    zClass_Camera::RenderWorld(world, camera, g_zVideo_pActiveViewContext);
+    zMath::MatStackPopPtr();
+
+    ((zVideo_FlushProc)g_zVideo_pfnFlushSortedPolys)();
+    if (updateFxPass3Local != 0) {
+        zVideo::FxPass3_UpdateLocal(g_FrameDeltaTimeSec);
+    }
+    ((zVideo_FlushProc)g_zVideo_pfnFlushSortedPolys)();
+    ((zVideo_FlushProc)g_zVideo_pfnFlushOverwritePolys)();
+
+    const int visibleLensFlareSampleCount =
+        zRndr_LensFlare_BuildVisibleSampleListFromQueue(queuedLensFlareSampleCount);
+    for (int sampleIndex = 0; sampleIndex < visibleLensFlareSampleCount; ++sampleIndex) {
+        zVec3 visibleSamplePoint = {0};
+        zRndr_SpanOcclusion_FilterSampleList(sampleIndex, &visibleSamplePoint);
+        zClass_cls_di::SetStopAfterFirstHit(0x40000);
+        zClass_cls_di::SetBreakOnFirstCandidate(1);
+        viewContext = g_zVideo_pActiveViewContext;
+        const int raycastHit = zClass_cls_di::RaycastFindClosest(
+            viewContext->worldNode, &pickCandidates, viewContext->cameraPos.x,
+            viewContext->cameraPos.y, viewContext->cameraPos.z, visibleSamplePoint.x,
+            visibleSamplePoint.y, visibleSamplePoint.z);
+        zClass_cls_di::SetBreakOnFirstCandidate(0);
+        if (raycastHit != 0 || pickCandidates.candidateCount == 0) {
+            zRndr_LensFlare_DrawVisibleSample(sampleIndex);
+        }
+    }
+
+    ((zVideo_FlushProc)g_zVideo_pfnFlushSortedPolys)();
+    ((zVideo_FlushProc)g_zVideo_pfnFlushOverwritePolys)();
+    ((zVideo_FlushProc)g_zVideo_pfnFlushQuadBatch)();
+    zVideoD3D::SceneLeave();
+
+    if (zClass_TypeList::CountNodes(8) > 1 &&
+        (windowData->clearPolyIndexFlags & 0x80000000) != 0) {
+        const int clearPolyCount = windowData->clearPolyIndexFlags & 0x7fffffff;
+        for (int i = 0; i < clearPolyCount; ++i) {
+            zClass_WindowClearPoly *poly = &windowData->clearPolys[i];
+            if ((poly->vertCount & 0x80000000) == 0) {
+                continue;
+            }
+
+            const int vertexCount = poly->vertCount & 0x7fffffff;
+            if (vertexCount <= 0) {
+                continue;
+            }
+
+            zVidRect32 rect;
+            rect.left = static_cast<int>(poly->vertices[0].x);
+            rect.right = rect.left;
+            rect.top = static_cast<int>(poly->vertices[0].y);
+            rect.bottom = rect.top;
+
+            for (int vertexIndex = 1; vertexIndex < vertexCount; ++vertexIndex) {
+                const zVec3 *vertex = &poly->vertices[vertexIndex];
+                if (rect.left > vertex->x) {
+                    rect.left = static_cast<int>(vertex->x);
+                }
+                if (rect.right < vertex->x) {
+                    rect.right = static_cast<int>(vertex->x);
+                }
+                if (rect.top > vertex->y) {
+                    rect.top = static_cast<int>(vertex->y);
+                }
+                if (rect.bottom < vertex->y) {
+                    rect.bottom = static_cast<int>(vertex->y);
+                }
+            }
+
+            zVideo_dd3d::CallClearZBufferRect(&rect);
+        }
+    }
+
+    return 0;
 }
 
 // Reimplements 0x47a0c0: zVideo_UpdateProjectionStateFromCameraData
@@ -865,7 +1016,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Slot::SetRectAndPayload(
     sinPhase = sinPhaseValue;
 }
 
-// Reimplements 0x4bee00: zVideo_FxPass3Config::SetInputRectByIndex
+// Reimplements 0x4bee00: zVideoFxPass3Config::SetInputRectByIndex
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::SetInputRectByIndex(
     int index, HudUiRect *rectOrNull) {
@@ -1453,7 +1604,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(void *pixels, int width,
 
 } // namespace zVideo
 
-// Reimplements 0x4bee20: zVideo::FxPass3Config_QueuePrimitiveRaw
+// Reimplements 0x4bee20: zVideoFxPass3Config::QueuePrimitiveRaw
 RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::QueuePrimitiveRaw(
     void *primitive, int width, int height, int pitchBytes) {
     surfacePixels = static_cast<unsigned short *>(primitive);
@@ -1464,16 +1615,16 @@ RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::QueuePrimitiveRaw(
 
 namespace zVideo {
 
-// Reimplements 0x4bed30: zVideo::FxPass3Config_UpdateLocal
+// Reimplements 0x4bed30: zVideoFxPass3Config::UpdateLocal
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3Config_UpdateLocal(zVideoFxPass3Config *config,
+RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_UpdateLocal(zVideoFxPass3Config *config,
                                                                float deltaTime) {
     ((HudUiContainer *)(config))->UpdateAll(deltaTime);
     config->slotWriteIndex = 0;
 }
 
-// Reimplements 0x4bed50: zVideo::FxPass3Config_SetPrimaryElementParamsLocal
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3Config_SetPrimaryElementParamsLocal(
+// Reimplements 0x4bed50: zVideoFxPass3Config::SetPrimaryElementParamsLocal
+RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_SetPrimaryElementParamsLocal(
     zVideoFxPass3Config *config, unsigned int packedColor, double primaryAlpha) {
     config->rootElement.packedColor16 = static_cast<unsigned short>(packedColor);
     config->rootElement.alpha = primaryAlpha;
@@ -1487,12 +1638,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3Config_SetPrimaryElementParamsLocal(
 // Reimplements 0x4beee0: zVideo::FxPass3_SetPrimaryElementParamsLocal
 RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetPrimaryElementParamsLocal(unsigned int packedColor,
                                                                           double primaryAlpha) {
-    FxPass3Config_SetPrimaryElementParamsLocal(&g_zVideo_FxPass3ConfigLocal, packedColor,
+    zVideoFxPass3Config_SetPrimaryElementParamsLocal(&g_zVideo_FxPass3ConfigLocal, packedColor,
                                                primaryAlpha);
 }
 
-// Reimplements 0x4bed90: zVideo::FxPass3Config_QueueElementLocal
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3Config_QueueElementLocal(
+// Reimplements 0x4bed90: zVideoFxPass3Config::QueueElementLocal
+RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_QueueElementLocal(
     zVideoFxPass3Config *config, int rectLeftPixels, int rectTopPixels,
     int currentRadiusPixels, int maxRadiusPixels, int extentPixels,
     float sinFreq, float sinPhase) {
@@ -1515,7 +1666,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3Config_QueueElementLocal(
 RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueueElementLocal(
     int rectLeftPixels, int rectTopPixels, int currentRadiusPixels,
     int maxRadiusPixels, int extentPixels, float sinFreq, float sinPhase) {
-    FxPass3Config_QueueElementLocal(&g_zVideo_FxPass3ConfigLocal, rectLeftPixels, rectTopPixels,
+    zVideoFxPass3Config_QueueElementLocal(&g_zVideo_FxPass3ConfigLocal, rectLeftPixels, rectTopPixels,
                                     currentRadiusPixels, maxRadiusPixels, extentPixels, sinFreq,
                                     sinPhase);
 }
@@ -1537,7 +1688,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetInputRectByIndex(int index,
 // Reimplements 0x4bef70: zVideo::FxPass3_UpdateLocal
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_UpdateLocal(float deltaTime) {
-    FxPass3Config_UpdateLocal(&g_zVideo_FxPass3ConfigLocal, deltaTime);
+    zVideoFxPass3Config_UpdateLocal(&g_zVideo_FxPass3ConfigLocal, deltaTime);
 }
 
 // Reimplements 0x4a6770: zVideo::RunPostprocessOnSwBuffer

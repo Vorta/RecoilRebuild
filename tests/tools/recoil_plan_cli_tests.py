@@ -37,6 +37,10 @@ PLAN_TEXT = textwrap.dedent(
       - [✅] Reimplemented (Name: FunctionalOnly File: src/FunctionalOnly.cpp)
       - [✅] Functional-equivalent (Target: functional_only)
       - [❌] Binary-safe
+
+    - 0x401060:
+      - [✅] Reconstructed (Name: RuntimeProvider)
+      - [✅] Provider-boundary (Kind: imported runtime wrapper; Name: RuntimeProvider; Origin: import provider; File: external; Target: runtime_provider)
     """
 )
 
@@ -81,6 +85,12 @@ class RecoilPlanCliTests(unittest.TestCase):
         self.assertEqual(milestone_result.returncode, 0, milestone_result.stderr)
         self.assertIn("0x401000", milestone_result.stdout)
         self.assertIn("0x401020", milestone_result.stdout)
+
+        provider_result = self.run_cli(plan, "find", "runtime_provider")
+        self.assertEqual(provider_result.returncode, 0, provider_result.stderr)
+        self.assertIn("0x401060", provider_result.stdout)
+        self.assertIn("provider=imported runtime wrapper", provider_result.stdout)
+        self.assertIn("provider_target=runtime_provider", provider_result.stdout)
 
     def test_dry_run_does_not_mutate_file(self) -> None:
         temp = self.with_plan()
@@ -156,6 +166,161 @@ class RecoilPlanCliTests(unittest.TestCase):
             "  - [✅] Functional-equivalent (Target: test_leaf_functional)",
             updated,
         )
+
+    def test_set_provider_boundary_replaces_authored_markers(self) -> None:
+        temp = self.with_plan()
+        plan = Path(temp.name) / "RECOIL_PLAN.md"
+        result = self.run_cli(
+            plan,
+            "set",
+            "0x401000",
+            "provider-boundary",
+            "✅",
+            "--provider",
+            "compiler-generated glue",
+            "--name",
+            "TestLeaf",
+            "--origin",
+            "compiler-generated",
+            "--file",
+            "external",
+            "--target",
+            "pending",
+            "--evidence",
+            "provider boundary evidence",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        updated = plan.read_text(encoding="utf-8")
+        entry_text = updated.split("- 0x401000:", 1)[1].split("- 0x401020:", 1)[0]
+        self.assertIn(
+            "  - [✅] Provider-boundary (Kind: compiler-generated glue; "
+            "Name: TestLeaf; Origin: compiler-generated; File: external; Target: pending)",
+            entry_text,
+        )
+        self.assertNotIn("Source dependencies satisfied", entry_text)
+        self.assertNotIn("Reimplemented", entry_text)
+
+    def test_reclassify_authored_to_provider_boundary(self) -> None:
+        temp = self.with_plan()
+        plan = Path(temp.name) / "RECOIL_PLAN.md"
+        result = self.run_cli(
+            plan,
+            "reclassify",
+            "0x401000",
+            "provider-boundary",
+            "✅",
+            "--provider",
+            "compiler-generated glue",
+            "--name",
+            "TestLeaf",
+            "--origin",
+            "compiler-generated",
+            "--target",
+            "pending",
+            "--evidence",
+            "Binary Ninja shows compiler glue",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        updated = plan.read_text(encoding="utf-8")
+        entry_text = updated.split("- 0x401000:", 1)[1].split("- 0x401020:", 1)[0]
+        self.assertIn(
+            "  - [✅] Provider-boundary (Kind: compiler-generated glue; "
+            "Name: TestLeaf; Origin: compiler-generated; File: external; Target: pending)",
+            entry_text,
+        )
+        self.assertNotIn("Source dependencies satisfied", entry_text)
+        self.assertNotIn("Binary-safe", entry_text)
+
+    def test_reclassify_provider_boundary_to_authored_resets_markers(self) -> None:
+        temp = self.with_plan()
+        plan = Path(temp.name) / "RECOIL_PLAN.md"
+        result = self.run_cli(
+            plan,
+            "reclassify",
+            "0x401060",
+            "authored",
+            "--evidence",
+            "Binary Ninja shows authored game body",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        updated = plan.read_text(encoding="utf-8")
+        entry_text = updated.split("- 0x401060:", 1)[1]
+        self.assertIn("  - [❓] Source dependencies satisfied", entry_text)
+        self.assertIn("  - [❌] Reimplemented (Name: pending File: pending)", entry_text)
+        self.assertIn("  - [❌] Functional-equivalent (Target: pending)", entry_text)
+        self.assertIn("  - [❌] Binary-safe", entry_text)
+        self.assertNotIn("Provider-boundary", entry_text)
+
+    def test_reclassify_dry_run_does_not_mutate_file(self) -> None:
+        temp = self.with_plan()
+        plan = Path(temp.name) / "RECOIL_PLAN.md"
+        before = plan.read_text(encoding="utf-8")
+        result = self.run_cli(
+            plan,
+            "reclassify",
+            "0x401060",
+            "authored",
+            "--evidence",
+            "classification audit",
+            "--dry-run",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Before:", result.stdout)
+        self.assertIn("After:", result.stdout)
+        self.assertEqual(plan.read_text(encoding="utf-8"), before)
+
+    def test_reclassify_requires_evidence(self) -> None:
+        temp = self.with_plan()
+        plan = Path(temp.name) / "RECOIL_PLAN.md"
+        result = self.run_cli(plan, "reclassify", "0x401060", "authored")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("required", result.stderr)
+
+    def test_reclassify_provider_boundary_requires_metadata(self) -> None:
+        temp = self.with_plan()
+        plan = Path(temp.name) / "RECOIL_PLAN.md"
+        result = self.run_cli(
+            plan,
+            "reclassify",
+            "0x401000",
+            "provider-boundary",
+            "✅",
+            "--provider",
+            "compiler-generated glue",
+            "--name",
+            "TestLeaf",
+            "--evidence",
+            "classification audit",
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("--origin", result.stderr)
+
+    def test_reclassify_provider_to_authored_makes_deps_next_blocker(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            plan = Path(tmp) / "RECOIL_PLAN.md"
+            plan.write_text(
+                "# Test Plan\n"
+                "\n"
+                "## M01 Test\n"
+                "\n"
+                "- 0x401000:\n"
+                "  - [✅] Reconstructed (Name: RuntimeProvider)\n"
+                "  - [✅] Provider-boundary (Kind: imported runtime wrapper; Name: RuntimeProvider; Origin: import provider; File: external; Target: runtime_provider)\n",
+                encoding="utf-8",
+            )
+            reclassify = self.run_cli(
+                plan,
+                "reclassify",
+                "0x401000",
+                "authored",
+                "--evidence",
+                "Binary Ninja shows authored game body",
+            )
+            next_result = self.run_cli(plan, "next")
+
+        self.assertEqual(reclassify.returncode, 0, reclassify.stderr)
+        self.assertEqual(next_result.returncode, 0, next_result.stderr)
+        self.assertIn("next_field=deps", next_result.stdout)
 
     def test_positive_deps_requires_reconstructed_marker(self) -> None:
         temp = self.with_plan()

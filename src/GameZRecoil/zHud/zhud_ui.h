@@ -214,6 +214,8 @@ extern const HudUiTextInput_FTable g_HudUiTextInput_FTable;
 extern const HudUiTextInput_FTable g_HudUiNumericTextInput_TextInputFTable;
 extern const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_Base_FTable;
 extern const HudUiSlot_FTable g_HudUiSlot_FTable;
+extern const HudUiZrdWidget_FTable g_HudUiMessageBoxOkButton_Vtbl;
+extern const HudUiZrdWidget_FTable g_HudUiMessageBoxCancelButton_Vtbl;
 struct HudUiWidget;
 struct HudUiMgrSensorTrackNode;
 struct PlayerProgressTargetSlotRuntime;
@@ -432,6 +434,9 @@ void RECOIL_CDECL InitTable();
 
 namespace HudUi {
 RECOIL_NOINLINE void RECOIL_FASTCALL SetInvalidateMode(int mode);
+RECOIL_NOINLINE int RECOIL_FASTCALL ShowMessageBox(const char *messageText,
+                                                   const char *titleText,
+                                                   void *modalContext);
 RECOIL_NOINLINE void RECOIL_FASTCALL HandleHotkeyCommand(int commandId);
 void RECOIL_FASTCALL ShowTopMessageLine(const char *message, float duration);
 void RECOIL_FASTCALL ShowChatLine(const char *message, float duration);
@@ -920,14 +925,7 @@ RECOIL_NOINLINE void **RECOIL_FASTCALL zUtil_StdPtrVector_Clear(HudCmdBindingVec
 RECOIL_NOINLINE void RECOIL_FASTCALL
 zUtil_StdPtrVector_FreeBufferAndReset(HudCmdBindingVector *self);
 
-struct HudUiMessageBoxDialog {
-    unsigned char storage[0xa95c];
-    int modalResult;
-    int modalFrameCountdown;
-
-    void RECOIL_THISCALL OnOk();
-    void RECOIL_THISCALL OnCancel();
-};
+struct HudUiMessageBoxDialog;
 
 struct HudUiMessageBoxOkButton {
     HudUiZrdWidget base;
@@ -1165,6 +1163,7 @@ struct HudUiNumericTextInput {
     int RECOIL_THISCALL SetInputActive(int active);
     void RECOIL_THISCALL SetRawKeyboardCapture(int enable);
     int RECOIL_THISCALL OnRawKeyboardChar(int key);
+    void RECOIL_THISCALL OnActivate();
     static int RECOIL_FASTCALL RawKeyboardCallback(int key,
                                                             HudUiNumericTextInput *callbackCtx);
 };
@@ -1219,6 +1218,7 @@ struct HudUiPanel {
     zVidImagePartial *textPick;
     unsigned char reserved14c[0x08];
     HGDIOBJ hFont;
+    unsigned char reserved158[0x14c];
 
     HudUiPanel *RECOIL_THISCALL ConstructorDefault(const char *text, int x,
                                                    int y);
@@ -1230,6 +1230,7 @@ struct HudUiPanel {
     void RECOIL_THISCALL EnableWordWrapWithRect(const HudUiRect *rect);
     void RECOIL_THISCALL Draw();
     void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL DestructorThunk();
     unsigned int RECOIL_THISCALL SetTextColor(unsigned int color);
     void RECOIL_THISCALL SetTextColorsAndMarkDirty(unsigned int color0, unsigned int color1);
     unsigned int RECOIL_THISCALL SetShadow(unsigned int shadowEnabled, int shadowOffsetX,
@@ -1371,6 +1372,31 @@ struct HudUiBackground {
                                const char *name);
     RECOIL_NOINLINE void RECOIL_THISCALL FreeLoadedTreeRoots(int unused);
     RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSeconds);
+};
+
+struct HudUiMessageBoxDialog : HudUiBackground {
+    zVidRect32 blitRect;
+    int modalResult;
+    int modalFrameCountdown;
+    int fallbackWidth;
+    int fallbackHeight;
+    zVidImagePartial *backgroundImage;
+    zVidImagePartial *okButtonNormalImage;
+    zVidImagePartial *okButtonPressedImage;
+    HudUiWidget backdropWidget;
+    HudUiPanel messagePanel;
+    HudUiPanel titlePanel;
+    HudUiMessageBoxOkButton okButton;
+    HudUiMessageBoxCancelButton cancelButton;
+
+    HudUiMessageBoxDialog *RECOIL_THISCALL Constructor(const char *zrdPath,
+                                                       const char *sectionName);
+    HudUiMessageBoxDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    void RECOIL_THISCALL Destructor();
+    int RECOIL_THISCALL RunModal(const char *messageText, const char *titleText,
+                                 void *modalContext = 0, float timeoutSeconds = -1.0f);
+    void RECOIL_THISCALL OnOk();
+    void RECOIL_THISCALL OnCancel();
 };
 
 struct HudUiZrdScrollingText {
@@ -1715,8 +1741,20 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, cfgRoot) == 0xa940);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, uiOriginX) == 0xa944);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, uiOriginY) == 0xa948);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackground) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, blitRect) == 0xa94c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, modalResult) == 0xa95c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, modalFrameCountdown) == 0xa960);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, fallbackWidth) == 0xa964);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, fallbackHeight) == 0xa968);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, backgroundImage) == 0xa96c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, okButtonNormalImage) == 0xa970);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, okButtonPressedImage) == 0xa974);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, backdropWidget) == 0xa978);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, messagePanel) == 0xaa34);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, titlePanel) == 0xacd8);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, okButton) == 0xaf7c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, cancelButton) == 0xb0c8);
+RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxDialog) == 0xb214);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxOkButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxCancelButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTransitionTextPanel) == 0x2c0);
@@ -1822,6 +1860,7 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, chatComposeTextInput) == 0
 RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, counterTextPanel) == 0x538);
 RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, textPick) == 0x148);
 RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, hFont) == 0x154);
+RECOIL_STATIC_ASSERT(sizeof(HudUiPanel) == 0x2a4);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanelSimple) == 0x2a4);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTimerPanelFloat) == 0x2b0);
 RECOIL_STATIC_ASSERT(sizeof(HudUiStringMenu) == 0x3cdc);
