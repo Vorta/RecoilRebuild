@@ -18,7 +18,7 @@ run the address-specific doctor command described in `AGENTS.md`.
 For a combined launch packet, use:
 
 ```powershell
-python tools/recoil_task_packet.py --owner <name> --claim-next
+python tools/recoil_task_packet.py
 ```
 
 Use `--address 0xNNNNNN` for a specific function or `--no-binja` only when the
@@ -26,25 +26,27 @@ task intentionally does not need Binary Ninja.
 
 ## Task selection
 
-Choose and claim the next address from current plan state, not from stale
-working notes:
+Choose the next address from current plan state, not from stale working notes:
 
 ```powershell
-python tools/recoil_claim.py next --owner <name> --claim
+python tools/recoil_plan_cli.py next
 python tools/recoil_status.py 0xNNNNNN
 ```
 
-Use `python tools/recoil_plan_cli.py next` only for read-only navigation when
-no agent should claim work yet. If a task expands into a multi-function closure,
-claim every affected address before editing source, Binary Ninja state, plan
-markers, VC verification manifests, or group notes. Release claims at handoff, or report
-the owner, token, and addresses if the next session should continue the work.
+If a task expands into a multi-function closure, identify every affected address
+before editing source, Binary Ninja state, plan markers, VC verification
+manifests, or group notes.
 
 Generate a handoff report before ending a multi-step reconstruction session:
 
 ```powershell
 python tools/recoil_handoff.py 0xNNNNNN --include-artifacts
 ```
+
+After a significant verified step, create a focused git commit that stages only
+the agent's own related changes. Do not use `git add .`, and do not stage
+private inputs, generated artifacts, ignored runtime state, or unrelated user
+changes.
 
 Treat `.agent/IMPLEMENTATION_GROUPS.md` as temporary context only. If it
 disagrees with `.agent/RECOIL_PLAN.md`, Binary Ninja, or `recoil_status.py`,

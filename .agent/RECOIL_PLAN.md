@@ -12,8 +12,8 @@ Use the currently loaded `Recoil.bndb` as the behavioral/ABI source of truth and
 
 - Keep this file updated with each function's reconstruction, dependency, implementation, functional-equivalence, and binary-safety state.
 - Addresses are stable identifiers. Function names may change as Binary Ninja reconstruction improves or as source implementation reveals a better source-level name.
-- Use `python tools/recoil_plan_cli.py next/show/find/milestone` for normal plan navigation and `python tools/recoil_plan_cli.py set ...` for marker updates. Use `python tools/recoil_claim.py next --owner <name> --claim` when selecting unassigned work for an agent.
-- Claim affected addresses with `python tools/recoil_claim.py claim 0xNNNNNN --owner <name>` before Binary Ninja, source, plan-marker, VC-verification-manifest, or implementation-group edits; claim files are local coordination state, not plan evidence.
+- Use `python tools/recoil_plan_cli.py next/show/find/milestone` for normal plan navigation and `python tools/recoil_plan_cli.py set ...` for marker updates.
+- Agents may create git commits after each significant verified function, dependency group, verification target, marker update batch, or coherent tooling/workflow cleanup.
 - Do not use line-number dependent reads such as `Get-Content .agent\RECOIL_PLAN.md | Select-Object -Skip ...` except as a read-only fallback while diagnosing a broken plan CLI.
 - If Binary Ninja reconstruction improves, update only the affected `Reconstructed` name/status after following `AGENTS.md`.
 - If a function does not belong to the milestone it is under, move it according to `AGENTS.md`.
@@ -45,9 +45,9 @@ Each function has these trackers and they should be completed in order:
 
 - Milestone/address order is an inventory and progress ledger, not a linear implementation queue.
 - Start from the first unfinished plan area only to choose an anchor, unless the user directs a different address.
-- Use `python tools/recoil_claim.py next --owner <name> --claim` to claim the first unfinished unclaimed entry in the default functional lane. Use `python tools/recoil_plan_cli.py next` only for navigation when no claim should be taken yet, `--lane binary` when planning binary-safe debt, and `python tools/recoil_plan_cli.py show 0xNNNNNN` to inspect a specific anchor entry.
-- Before implementing the anchor, claim the anchor and every affected function in a multi-function dependency closure, class/vtable cluster, source-file cluster, shared type/global group, or recursive/cyclic group; release claims at handoff, or report the owner/token/address list if work must continue later.
-- After claiming, use Binary Ninja to identify direct callees, shared helpers, constructors/destructors, vtable targets, imported/provider functions, globals, structs/classes, constants, and caller-visible ABI requirements.
+- Use `python tools/recoil_plan_cli.py next` to select the first unfinished entry in the default functional lane, `--lane binary` when planning binary-safe debt, and `python tools/recoil_plan_cli.py show 0xNNNNNN` to inspect a specific anchor entry.
+- Before implementing the anchor, identify every affected function in a multi-function dependency closure, class/vtable cluster, source-file cluster, shared type/global group, or recursive/cyclic group.
+- Use Binary Ninja to identify direct callees, shared helpers, constructors/destructors, vtable targets, imported/provider functions, globals, structs/classes, constants, and caller-visible ABI requirements.
 - Run `python tools/recoil_frontier.py 0xNNNNNN --depth 1` for the anchor and use the report as a starting work package; Binary Ninja evidence still outranks tool output.
 - Do not implement or mark a caller as `Reimplemented` while `Source dependencies satisfied` is `❓` or `❌`. Audit unknown dependencies first; when dependencies are not satisfied, switch to the lowest blocking dependency or dependency group.
 - For virtual or function-table dispatch, treat `Source dependencies satisfied` as requiring the callee signature, object layout, table ownership, slot mapping, and dispatch semantics to be known before caller implementation. Prefer clean original-era member/virtual/typed-provider calls first; use raw `slots[n]` dispatch only when evidence or VC verification proves the clean spelling cannot preserve the original ABI/codegen.

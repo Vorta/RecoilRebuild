@@ -37,15 +37,12 @@ class RecoilHandoffTests(unittest.TestCase):
             root = Path(tmp)
             manifest_dir = root / "vc"
             functional_dir = root / "functional"
-            claims_dir = root / "claims"
             manifest_dir.mkdir()
             functional_dir.mkdir()
-            claims_dir.mkdir()
             args = type(
                 "Args",
                 (),
                 {
-                    "claims_dir": str(claims_dir),
                     "groups": str(root / "missing_groups.md"),
                     "vc_manifest_dir": str(manifest_dir),
                     "functional_manifest_dir": str(functional_dir),
@@ -65,4 +62,3 @@ class RecoilHandoffTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

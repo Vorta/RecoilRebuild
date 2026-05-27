@@ -160,7 +160,6 @@ Useful commands:
 
 ```powershell
 python tools/recoil_status.py
-python tools/recoil_claim.py next --owner <name> --claim
 python tools/recoil_plan_cli.py next
 python tools/recoil_plan_cli.py next --lane binary
 python tools/recoil_frontier.py 0x4301e0 --depth 1
@@ -171,11 +170,12 @@ python tools/recoil_pe_reference.py --reference support/Recoil.exe --manifest .a
 python tools/recoil_plan_audit.py --summary
 ```
 
-Use `recoil_claim.py` to coordinate active function ownership between agents.
-`recoil_plan_cli.py next` is read-only navigation; it does not reserve work.
-The default lane is functional equivalence. Use `--lane binary` only when
-intentionally working remaining binary-safe debt after functional evidence is
-accepted.
+Agents may create git commits after significant verified steps, such as a
+completed function, dependency group, verification target, marker update batch,
+or coherent tooling cleanup. `recoil_plan_cli.py next` selects the next
+unfinished plan entry. The default lane is functional equivalence. Use
+`--lane binary` only when intentionally working remaining binary-safe debt after
+functional evidence is accepted.
 
 Commands that reference `support/Recoil.exe`, `support/zbd`, `support/sdk`,
 `img/`, or a VC toolchain require local private inputs. They are documented so
