@@ -44,6 +44,7 @@ typedef int (RECOIL_FASTCALL *zVideo_QueryMemoryBytesProc)(int flags,
 typedef zVideo_TextureRecordPartial * (RECOIL_FASTCALL *zVideo_CreateTextureRecordProc)(const char *textureName, zVidImagePartial *image, int useAlpha,
                        int clampU, int clampV);
 typedef void (RECOIL_FASTCALL *zVideo_DestroyTextureRecordProc)(zVideo_TextureRecordPartial *texture);
+typedef void (RECOIL_FASTCALL *zVideo_TextureRecordReleaseUploadSurfaceRefProc)(zVideo_TextureRecordPartial *texture);
 typedef void (RECOIL_CDECL *zVideo_ReleaseAllTextureUploadSurfacesProc)();
 typedef void (RECOIL_CDECL *zVideo_UpdateFogColorProc)();
 
@@ -282,6 +283,7 @@ extern int g_zVideo_PendingDitherEnable;
 extern float g_zVideo_InverseZTolerancePending;
 extern int g_zVideo_D3DAppendFanCloseVertexPending;
 extern int g_zVideo_PendingWireframeState;
+extern int g_zVideo_D3DSceneDepth;
 extern int g_zVid_AcceptedHardwareRendererCount;
 extern int g_zVideo_NumAcceptedDirectDrawDevices;
 extern int g_zVideo_DirectDrawEnumOrdinal;
@@ -318,6 +320,7 @@ extern zVideo_UpdateFogColorProc g_zVideo_pfnUpdateFogColor;
 extern zVideo_CreateTextureRecordProc g_zVideo_pfnCreateTextureRecord;
 extern unsigned int g_zVideo_pfnTextureRecordLockUploadSurface;
 extern unsigned int g_zVideo_pfnTextureRecordUnlockUploadSurface;
+extern unsigned int g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef;
 extern unsigned int g_zVideo_pfnTextureRecordFinalizeUpload;
 extern unsigned int g_zVideo_pfnTextureRecordDestroy;
 extern unsigned int g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces;
@@ -677,6 +680,8 @@ namespace zVideo_dd3d {
 RECOIL_NOINLINE void RECOIL_FASTCALL CallClearZBufferRect(zVidRect32 *rect);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingWireframeState(int pendingWireframeState);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingDitherEnable(int enabled);
+RECOIL_NOINLINE int RECOIL_CDECL BeginSceneAndFlushPendingRenderStates();
+RECOIL_NOINLINE int RECOIL_CDECL EndScene();
 RECOIL_NOINLINE int RECOIL_FASTCALL
 PresentDisplayModeSurface(zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForPresent,
                           int blitPrimaryToSwFirst);
@@ -743,3 +748,8 @@ TextureRecord_FinalizeUpload(zVideo_TextureRecordPartial *textureRecord, zVidIma
 RECOIL_NOINLINE void RECOIL_FASTCALL
 TextureRecord_Destroy(zVideo_TextureRecordPartial *textureRecord);
 } // namespace zVideo_dd3d
+
+namespace zVideoD3D {
+RECOIL_NOINLINE int RECOIL_CDECL SceneEnter();
+RECOIL_NOINLINE int RECOIL_CDECL SceneLeave();
+} // namespace zVideoD3D

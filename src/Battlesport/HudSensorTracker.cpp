@@ -2,11 +2,13 @@
 
 #include "Battlesport/GameNet.h"
 #include "Battlesport/RecoilApp.h"
+#include "Battlesport/hud.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/include/zImage.h"
+#include "GameZRecoil/zDEClient/zdec.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
@@ -18,6 +20,8 @@
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zTurret/zTurret.h"
+#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zWeapon/zWeapon.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -607,7 +611,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::Init(const HudUiRect *out
     mapZoom = 0.7f;
     SetBounds(outerRectOrNull, 0);
     SetTrackedSaveState(0);
-    outerRectCenterY = 0;
+    mapWorldNode = 0;
     mapSndOff = 0;
     mapSndOn = 0;
     SetSaveStateMarkerMaxDistance(450.0f);
@@ -1468,6 +1472,162 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadMissionCoreResources()
     return 1;
 }
 
+// Reimplements 0x417a00: HudSensorTracker::InitMissionGameplaySystems
+// (D:\Proj\Battlesport\map.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::InitMissionGameplaySystems() {
+    missionStat0 = 0;
+    missionStat1 = 0;
+    primaryGunDispatchCount = 0;
+    missionStat3 = 0;
+    weaponsFoundMask = 0;
+    g_Player_HudCounterValue = 0;
+    g_OptCatalog_DamageFeedbackHitCount = 0;
+    menuTransitionDelaySec = -1.0f;
+
+    LoadMissionMapAndSfx(missionId);
+    mapWorldNode = worldNode;
+
+    zInputCommandCallbackFn objectiveCommandCallback =
+        (zInputCommandCallbackFn)(HudSensorTracker::OnObjectiveCommand);
+    zInput::BindMap_Current_SetCommandCallback(27, objectiveCommandCallback);
+    if (zOpt::GetNetworkEnabled() == 0) {
+        zInput::BindMap_Current_SetCommandCallback(28, objectiveCommandCallback);
+        zInput::BindMap_Current_SetCommandCallback(29, objectiveCommandCallback);
+        zInput::BindMap_Current_SetCommandCallback(24, objectiveCommandCallback);
+        zInput::BindMap_Current_SetCommandCallback(25, objectiveCommandCallback);
+    }
+    zInput::BindMap_Current_SetCommandCallback(26, objectiveCommandCallback);
+
+    Pickup::Init(worldNode, "pickup.zrd");
+    HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x106));
+    zEffect::InitFromPath(worldNode, cameraNode, "effects.zrd");
+    HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x108));
+    zEffect::SetWorldNode(worldNode);
+    zEffect::SetResourceNode(effectResourceNode);
+    zEffect_Anim::LoadAndInstantiate();
+    HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x105));
+    zDEClient::LoadConfigResources(worldNode);
+    HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x109));
+    zWeapon::LoadOptCatalogFromPath(worldNode, "weapons.zrd", zOpt::GetNetworkEnabled(),
+                                     zWeapon_OptCatalog::LoadKillVerbString);
+    HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x10a));
+    zTurret_System::LoadDefinitionsFromPath(worldNode, "ai.zrd");
+    PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName("vtol2");
+    HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x10b));
+
+    HudUiMgr::ActivateHud((const HudUiRect *)zOpt::GetDisplaySection(),
+                          (const HudUiRect *)zOpt::GetWindowSection());
+    HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x10c));
+    Player::InitMissionRuntimeFromWorldAndCamera(worldNode, cameraNode);
+
+    if (hasPendingPlayerSave != 0) {
+        g_LocalPlayerSaveState->playerState->nanitePanelLevel =
+            pendingPlayerSave.savedNanitePanelLevel;
+        Player::ApplyMissionSaveData(&pendingPlayerSave.playerSaveData);
+        g_PlayerStatusMeterRatio = 1.0f;
+        hasPendingPlayerSave = 0;
+    }
+
+    Pickup::InitAndLoadPuppySpawns();
+    if (zOpt::GetNetworkEnabled() != 0) {
+        GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks();
+        Net::InitFromZrd();
+    }
+
+    HudUiLoadingCheckpoint::AdvanceAndLog("Find mission objectives");
+    LoadObjectivesFromZrd("objectives.zrd");
+    LoadMissionWeatherFx("Weather.zrd");
+    zInput::Keyboard_ResetTransitionState();
+
+    if (zOpt::GetNetworkEnabled() != 0 && GameNet::GetStatusBitAllowMaps() != 0) {
+        MapOverlayRefToggle(1);
+    }
+
+    zClass_Camera::gwCameraSetFlagBit0(cameraNode, 1);
+    if (g_zVideo_ActiveRendererPath != 0) {
+        zModel_MatlBuffer::ReleaseTextureSurfaces();
+    }
+
+    Player::RefreshHudFromState((zUtil_SaveGameState *)g_GameStateOrMapTable);
+    return 1;
+}
+
+// Reimplements 0x419050: HudSensorTracker::LoadMissionWeatherFx
+// (D:\Proj\Battlesport\map.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+HudSensorTracker::LoadMissionWeatherFx(const char *zrdPath) {
+    zReader::Node *rootNode = zReader::LoadNodeFromPath(zrdPath, 0, 0);
+    if (rootNode == 0) {
+        zError::ReportOld(0x200, "D:\\Proj\\Battlesport\\mission.cpp", 0x5f6,
+                          "Failed to read %s", zrdPath);
+        return;
+    }
+
+    char missionNodeName[0x40];
+    sprintf(missionNodeName, "MISSION%d", missionId);
+    zReader::Node *missionNode = zReader_GetNamedNode(rootNode, missionNodeName);
+    if (missionNode != 0) {
+        int particleCount = 100;
+        zReader::Node *particleNode = zReader_GetNamedNode(missionNode, "PARTICLES");
+        if (particleNode != 0) {
+            particleCount = particleNode->value.i32;
+        }
+
+        zReader::Node *typeNode = zReader_GetNamedNode(missionNode, "TYPE");
+        if (typeNode != 0) {
+            const char *const weatherType = typeNode->value.str;
+            if (strcmp(weatherType, "SNOW") == 0) {
+                HudWeatherFxSnow *const snow =
+                    static_cast<HudWeatherFxSnow *>(::operator new(sizeof(HudWeatherFxSnow)));
+                fxPass3Obj = snow != 0 ? snow->Constructor(particleCount) : 0;
+            } else if (strcmp(weatherType, "RAIN") == 0) {
+                HudWeatherFxRain *const rain =
+                    static_cast<HudWeatherFxRain *>(::operator new(sizeof(HudWeatherFxRain)));
+                fxPass3Obj = rain != 0 ? rain->Constructor(particleCount) : 0;
+            }
+        }
+
+        if (fxPass3Obj != 0) {
+            HudWeatherFx *const weatherFx = static_cast<HudWeatherFx *>(fxPass3Obj);
+
+            zReader::Node *colorNode = zReader_GetNamedNode(missionNode, "COLOR");
+            if (colorNode != 0) {
+                zReader::Node *const colorFields = colorNode->value.nodes;
+                weatherFx->packedColor16 = zVid_PackColorRGB(
+                    colorFields[1].value.i32, colorFields[2].value.i32,
+                    colorFields[3].value.i32);
+            }
+
+            zReader::Node *windDirNode = zReader_GetNamedNode(missionNode, "WIND_DIR");
+            if (windDirNode != 0) {
+                weatherFx->windDirection = windDirNode->value.f32;
+            }
+
+            zReader::Node *windVelNode = zReader_GetNamedNode(missionNode, "WIND_VEL");
+            if (windVelNode != 0) {
+                weatherFx->windVelocity = windVelNode->value.f32;
+            }
+
+            zReader::Node *gravityNode = zReader_GetNamedNode(missionNode, "GRAVITY");
+            if (gravityNode != 0) {
+                weatherFx->gravity = gravityNode->value.f32;
+            }
+
+            zReader::Node *alphaGradientNode =
+                zReader_GetNamedNode(missionNode, "ALPHA_GRADIENT");
+            if (alphaGradientNode != 0) {
+                zReader::Node *const alphaFields = alphaGradientNode->value.nodes;
+                weatherFx->alphaStartScale = alphaFields[1].value.f32;
+                weatherFx->alphaEndScale = alphaFields[2].value.f32;
+            }
+
+            ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->AddChild(fxPass3Obj);
+        }
+    }
+
+    zReader::FreeLoadedTree(rootNode);
+}
+
 // Reimplements 0x417ee0: HudSensorTracker::UnloadObjectives
 RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::UnloadObjectives() {
     if (zOpt::GetNetworkEnabled() == 0) {
@@ -1593,7 +1753,7 @@ HudSensorTracker::LoadObjectivesFromPath(const char *path) {
 
 // Reimplements 0x418230: HudSensorTracker::LoadObjectivesFromZrd
 // (D:\Proj\Battlesport\mission.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadObjectivesFromZrd(int) {
+RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadObjectivesFromZrd(const char *) {
     zReader::Node *reviewSoundNode = zReader_GetNamedNode(objectivesRootNode, "REVIEW_SOUND");
     if (reviewSoundNode != 0) {
         objectiveReviewSfx = zSnd::FindSampleByName(reviewSoundNode->value.nodes[1].value.str);

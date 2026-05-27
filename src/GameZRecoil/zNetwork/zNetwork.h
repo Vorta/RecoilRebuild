@@ -7,16 +7,35 @@
 
 struct zArchiveList;
 struct zNetwork_DPlay4;
+struct zNetworkDPlayName;
 struct zNetworkDPlaySessionDesc;
 struct zNetworkPacketHeader;
 
 typedef int (RECOIL_FASTCALL *zNetworkPacketHandler)(int senderPlayerId,
                                                               zNetworkPacketHeader *packet);
+typedef void (RECOIL_FASTCALL *zNetworkFatalDisconnectCallback)(int reason);
+typedef int (RECOIL_STDCALL *zNetworkDPlayEnumPlayersCallback)(
+    unsigned int playerId, unsigned int playerType, zNetworkDPlayName *playerNameInfo,
+    unsigned int flags, void *context);
+
+struct zNetworkDPlayName {
+    unsigned int size;
+    unsigned int flags;
+    char *shortName;
+    char *longName;
+};
 
 struct zNetwork_DPlay4Vtable {
     void *reserved_00[9];
     int(RECOIL_STDCALL *DestroyPlayer_24)(zNetwork_DPlay4 *self, unsigned int playerKey);
-    void *reserved_28[16];
+    void *reserved_28[2];
+    int(RECOIL_STDCALL *EnumPlayers_30)(zNetwork_DPlay4 *self, void *sessionGuid,
+                                        zNetworkDPlayEnumPlayersCallback callback, void *context,
+                                        unsigned int flags);
+    void *reserved_34[12];
+    int(RECOIL_STDCALL *Receive_64)(zNetwork_DPlay4 *self, unsigned int *fromPlayer,
+                                    unsigned int *toPlayer, unsigned int flags, void *packet,
+                                    unsigned int *packetSizeBytes);
     int(RECOIL_STDCALL *Send_68)(zNetwork_DPlay4 *self, unsigned int fromPlayer,
                                           unsigned int toPlayer, unsigned int flags, void *packet,
                                           unsigned int packetSizeBytes);
@@ -41,12 +60,45 @@ struct zNetwork_DPlay4 {
 
 struct zNetwork_PlayerRecord {
     unsigned int playerKey;
-    unsigned char reserved_004[0xdc];
+    unsigned char reserved_004[0x28];
+    zNetworkDPlayName playerNameInfo;
+    unsigned char reserved_03c[0x04];
+    char playerName[0x50];
+    char altName[0x50];
     int colorIndex;
 };
 
+struct zNetworkDPlaySystemMessageFields {
+    unsigned char reserved_004[0x04];
+    unsigned int playerId;
+    unsigned char reserved_00c[0x0c];
+    unsigned int createFlagsOrPlayerType;
+    unsigned int nameShortOrAsyncHandle;
+    char *nameLong;
+    char *nameDisplay;
+};
+
+struct zNetworkDPlaySystemMessage {
+    int msgType;
+    union {
+        unsigned char payload_004[0x50];
+        zNetworkDPlaySystemMessageFields fields;
+    };
+};
+
+RECOIL_STATIC_ASSERT(offsetof(zNetwork_PlayerRecord, playerNameInfo) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(zNetwork_PlayerRecord, playerName) == 0x40);
+RECOIL_STATIC_ASSERT(offsetof(zNetwork_PlayerRecord, altName) == 0x90);
 RECOIL_STATIC_ASSERT(offsetof(zNetwork_PlayerRecord, colorIndex) == 0xe0);
 RECOIL_STATIC_ASSERT(sizeof(zNetwork_PlayerRecord) == 0xe4);
+RECOIL_STATIC_ASSERT(offsetof(zNetworkDPlaySystemMessageFields, playerId) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zNetworkDPlaySystemMessageFields, createFlagsOrPlayerType) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zNetworkDPlaySystemMessageFields, nameShortOrAsyncHandle) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zNetworkDPlaySystemMessageFields, nameLong) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zNetworkDPlaySystemMessageFields, nameDisplay) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zNetworkDPlaySystemMessage, payload_004) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zNetworkDPlaySystemMessage, fields) == 0x04);
+RECOIL_STATIC_ASSERT(sizeof(zNetworkDPlaySystemMessage) == 0x54);
 
 struct zNetworkPacketHeader {
     short packetType;
@@ -146,11 +198,15 @@ extern unsigned int g_zNetwork_LastSendExHandle;
 extern int g_zNetwork_LastSendExCompleted;
 extern int g_zNetwork_SessionRuntimeInitialized;
 extern zNetworkDPlaySessionDescCache *g_zNetwork_CurrentSessionDescCache;
+extern zNetworkFatalDisconnectCallback g_zNetwork_FatalDisconnectCallback;
+extern int g_zNetwork_FatalDisconnectTriggered;
+extern int g_zNetworkCurrentPlayerCountCached;
 extern char g_zNetwork_SessionNameCache[0x5c];
 extern zArchiveList *g_zNetwork_EnumeratedSessionList;
 extern zNetworkServiceProviderListVec *g_zNetwork_ServiceProviderList;
 extern zNetworkPlayerRecordList *g_zNetwork_PlayerRecordList;
 extern void *g_zNetwork_ReceiveBuffer;
+extern unsigned int g_zNetwork_ReceiveBufferCapacity;
 extern int g_zNetwork_PlayerColorInUseFlags[16];
 extern zNetworkDispatchHandlerListNode *g_zNetwork_DispatchHandlerListSentinel;
 extern int g_zNetwork_DispatchHandlerListCount;
@@ -188,14 +244,32 @@ zNetwork_ApplyStatusFieldsToSessionDesc(zNetworkSessionDescStatusFields *statusF
 }
 
 namespace zNetwork_DPlay {
+RECOIL_NOINLINE int RECOIL_CDECL EnumPlayers();
 RECOIL_NOINLINE int RECOIL_FASTCALL
 CloseReleaseAndCoUninitialize(zNetwork_DPlay4 *directPlay4);
+RECOIL_NOINLINE void RECOIL_FASTCALL
+DispatchPacketToHandlers(int senderPlayerId, zNetworkPacketHeader *packet);
+}
+
+namespace zNetworkDPlay {
+RECOIL_NOINLINE int RECOIL_STDCALL EnumPlayerCallback_AddPlayerRecord(
+    unsigned int playerId, unsigned int playerType, zNetworkDPlayName *playerNameInfo,
+    unsigned int flags, void *context);
+RECOIL_NOINLINE int RECOIL_FASTCALL PumpIncomingMessages(zNetworkDPlaySystemMessage *systemMessage);
+RECOIL_NOINLINE int RECOIL_FASTCALL ReceivePendingMessages(int messageBudget);
 }
 
 namespace zNetwork {
 RECOIL_NOINLINE int RECOIL_CDECL IsHost();
+RECOIL_NOINLINE int RECOIL_CDECL AllocFreePlayerColorIndex();
+RECOIL_NOINLINE void RECOIL_FASTCALL HostSendPlayerColorAssignmentsPacket(int joiningPlayerKey);
+RECOIL_NOINLINE int RECOIL_FASTCALL
+GetPlayerNameByKey(int playerKey, char *destination, unsigned int maxCount);
+RECOIL_NOINLINE zNetworkDispatchHandlerRecord *RECOIL_FASTCALL
+RegisterPacketHandler(int packetType, zNetworkPacketHandler handlerProc, int mode);
 RECOIL_NOINLINE int RECOIL_FASTCALL
 UnregisterPacketHandler(int packetType, zNetworkPacketHandler handlerProc);
+RECOIL_NOINLINE void RECOIL_FASTCALL RemovePlayerRecordByKey(int playerKey);
 RECOIL_NOINLINE void RECOIL_CDECL ClearEnumeratedSessionList();
 RECOIL_NOINLINE void RECOIL_CDECL ClearServiceProviderList();
 RECOIL_NOINLINE void RECOIL_CDECL ClearPlayerRecordList();

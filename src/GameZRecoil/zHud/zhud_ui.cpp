@@ -914,11 +914,7 @@ HudUiPanel *NewSimplePanel(int fontSize, int fontWeight) {
 }
 
 size_t HudUiTripletEntryCount(const HudUiTripletEntries &entries) {
-    if (entries.begin == 0) {
-        return 0;
-    }
-
-    return static_cast<size_t>(entries.end - entries.begin);
+    return static_cast<size_t>(const_cast<HudUiTripletEntries *>(&entries)->GetCount());
 }
 
 size_t HudUiTripletEntryCapacity(const HudUiTripletEntries &entries) {
@@ -1047,9 +1043,7 @@ void HudUiTripletEnsureCapacity(HudUiTripletEntries &entries, size_t neededCount
     HudUiScoreboardEntry *const newBegin = static_cast<HudUiScoreboardEntry *>(
         ::operator new(newCapacity * sizeof(HudUiScoreboardEntry)));
 
-    for (size_t i = 0; i < count; ++i) {
-        newBegin[i] = entries.begin[i];
-    }
+    HudUiTripletEntries::CopyRange(entries.begin, entries.end, newBegin);
 
     ::operator delete(entries.begin);
     entries.begin = newBegin;
@@ -1343,6 +1337,46 @@ float ZrdArrayFloat(zReader::Node *arrayBase, int index, float fallback) {
 }
 
 } // namespace
+
+// Reimplements 0x414670: HudUiTripletEntries::GetCount
+RECOIL_NOINLINE int RECOIL_THISCALL HudUiTripletEntries::GetCount() {
+    if (begin == 0) {
+        return 0;
+    }
+
+    return static_cast<int>(end - begin);
+}
+
+// Reimplements 0x4146a0: HudUiTripletEntries::CopyRange
+RECOIL_NOINLINE HudUiScoreboardEntry *RECOIL_STDCALL
+HudUiTripletEntries::CopyRange(HudUiScoreboardEntry *sourceBegin,
+                               HudUiScoreboardEntry *sourceEnd,
+                               HudUiScoreboardEntry *dest) {
+    HudUiScoreboardEntry *cursor = dest;
+    while (sourceBegin != sourceEnd) {
+        if (cursor != 0) {
+            *cursor = *sourceBegin;
+        }
+        ++sourceBegin;
+        cursor = (HudUiScoreboardEntry *)((unsigned char *)cursor + sizeof(HudUiScoreboardEntry));
+    }
+
+    return cursor;
+}
+
+// Reimplements 0x4146e0: HudUiTripletEntries::FillN
+RECOIL_NOINLINE void RECOIL_STDCALL
+HudUiTripletEntries::FillN(HudUiScoreboardEntry *dest, unsigned int count,
+                           const HudUiScoreboardEntry *sourceValue) {
+    HudUiScoreboardEntry *cursor = dest;
+    while (count != 0) {
+        if (cursor != 0) {
+            *cursor = *sourceValue;
+        }
+        cursor = (HudUiScoreboardEntry *)((unsigned char *)cursor + sizeof(HudUiScoreboardEntry));
+        --count;
+    }
+}
 
 namespace HudUiLayoutNode {
 // Reimplements 0x413aa0: HudUiLayoutNode::ReadRect
@@ -9800,7 +9834,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTriplet::AddEntry(GameNetPlayerRow *en
 
     const size_t count = HudUiTripletEntryCount(entries);
     HudUiTripletEnsureCapacity(entries, count + 1);
-    entries.end[0] = sourceValue;
+    HudUiTripletEntries::FillN(entries.end, 1, &sourceValue);
     ++entries.end;
     RebuildDisplay();
 }

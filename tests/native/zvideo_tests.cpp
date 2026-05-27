@@ -47,6 +47,56 @@ int RECOIL_FASTCALL CapturePaletteSetEntries(unsigned short firstEntry,
     std::memcpy(g_zVideoPaletteCaptureEntries, entries, sizeof(g_zVideoPaletteCaptureEntries));
     return g_zVideoPaletteCaptureReturnValue;
 }
+
+struct FakeD3DDevice2Object {
+    void **vtable;
+};
+
+void *gFakeD3DDevice2VTable[24];
+HRESULT gFakeD3DBeginSceneResult;
+HRESULT gFakeD3DEndSceneResult;
+int gFakeD3DBeginSceneCalls;
+int gFakeD3DEndSceneCalls;
+int gFakeD3DSetRenderStateCalls;
+D3DRENDERSTATETYPE gFakeD3DRenderStates[4];
+DWORD gFakeD3DRenderStateValues[4];
+
+HRESULT __stdcall FakeD3DDevice2_BeginScene(IDirect3DDevice2 *) {
+    ++gFakeD3DBeginSceneCalls;
+    return gFakeD3DBeginSceneResult;
+}
+
+HRESULT __stdcall FakeD3DDevice2_EndScene(IDirect3DDevice2 *) {
+    ++gFakeD3DEndSceneCalls;
+    return gFakeD3DEndSceneResult;
+}
+
+HRESULT __stdcall FakeD3DDevice2_SetRenderState(IDirect3DDevice2 *,
+                                                D3DRENDERSTATETYPE renderState,
+                                                DWORD value) {
+    if (gFakeD3DSetRenderStateCalls < 4) {
+        gFakeD3DRenderStates[gFakeD3DSetRenderStateCalls] = renderState;
+        gFakeD3DRenderStateValues[gFakeD3DSetRenderStateCalls] = value;
+    }
+    ++gFakeD3DSetRenderStateCalls;
+    return DD_OK;
+}
+
+void InstallFakeD3DDevice2(FakeD3DDevice2Object &device) {
+    std::memset(gFakeD3DDevice2VTable, 0, sizeof(gFakeD3DDevice2VTable));
+    gFakeD3DDevice2VTable[10] = reinterpret_cast<void *>(FakeD3DDevice2_BeginScene);
+    gFakeD3DDevice2VTable[11] = reinterpret_cast<void *>(FakeD3DDevice2_EndScene);
+    gFakeD3DDevice2VTable[23] = reinterpret_cast<void *>(FakeD3DDevice2_SetRenderState);
+    device.vtable = gFakeD3DDevice2VTable;
+    g_zVideo_pD3DDevice = reinterpret_cast<IDirect3DDevice2 *>(&device);
+    gFakeD3DBeginSceneResult = DD_OK;
+    gFakeD3DEndSceneResult = DD_OK;
+    gFakeD3DBeginSceneCalls = 0;
+    gFakeD3DEndSceneCalls = 0;
+    gFakeD3DSetRenderStateCalls = 0;
+    std::memset(gFakeD3DRenderStates, 0, sizeof(gFakeD3DRenderStates));
+    std::memset(gFakeD3DRenderStateValues, 0, sizeof(gFakeD3DRenderStateValues));
+}
 } // namespace
 
 extern "C" int directdraw_enumerate_import_provider_smoke(void) {
@@ -178,6 +228,82 @@ extern "C" int zvideo_pending_wireframe_state_smoke(void) {
 
     g_zVideo_PendingWireframeState = savedPendingWireframeState;
     return signedValueOk ? 0 : 2;
+}
+
+extern "C" int zvideo_dd3d_begin_scene_flush_pending_smoke(void) {
+    FakeD3DDevice2Object fakeDevice = {};
+    IDirect3DDevice2 *const oldDevice = g_zVideo_pD3DDevice;
+    const int oldPendingWireframe = g_zVideo_PendingWireframeState;
+    const int oldPendingDither = g_zVideo_PendingDitherEnable;
+    const int oldSceneDepth = g_zVideo_D3DSceneDepth;
+
+    InstallFakeD3DDevice2(fakeDevice);
+    g_zVideo_PendingWireframeState = 0;
+    g_zVideo_PendingDitherEnable = 1;
+
+    const int firstResult = zVideo_dd3d::BeginSceneAndFlushPendingRenderStates();
+    const bool solidFlushOk =
+        firstResult == 0 && gFakeD3DBeginSceneCalls == 1 && gFakeD3DSetRenderStateCalls == 2 &&
+        gFakeD3DRenderStates[0] == D3DRENDERSTATE_FILLMODE &&
+        gFakeD3DRenderStateValues[0] == D3DFILL_SOLID &&
+        gFakeD3DRenderStates[1] == D3DRENDERSTATE_DITHERENABLE &&
+        gFakeD3DRenderStateValues[1] == 1 && g_zVideo_PendingWireframeState == -1 &&
+        g_zVideo_PendingDitherEnable == -1;
+
+    InstallFakeD3DDevice2(fakeDevice);
+    g_zVideo_PendingWireframeState = 1;
+    g_zVideo_PendingDitherEnable = -1;
+    zVideo_dd3d::BeginSceneAndFlushPendingRenderStates();
+    const bool wireframeFlushOk =
+        gFakeD3DBeginSceneCalls == 1 && gFakeD3DSetRenderStateCalls == 1 &&
+        gFakeD3DRenderStates[0] == D3DRENDERSTATE_FILLMODE &&
+        gFakeD3DRenderStateValues[0] == D3DFILL_WIREFRAME &&
+        g_zVideo_PendingWireframeState == -1 && g_zVideo_PendingDitherEnable == -1;
+
+    InstallFakeD3DDevice2(fakeDevice);
+    gFakeD3DBeginSceneResult = static_cast<HRESULT>(DDERR_INVALIDPARAMS);
+    g_zVideo_PendingWireframeState = 0;
+    g_zVideo_PendingDitherEnable = 0;
+    const int errorResult = zVideo_dd3d::BeginSceneAndFlushPendingRenderStates();
+    const bool failureLeavesPendingOk = errorResult == -1 && gFakeD3DBeginSceneCalls == 1 &&
+                                        gFakeD3DSetRenderStateCalls == 0 &&
+                                        g_zVideo_PendingWireframeState == 0 &&
+                                        g_zVideo_PendingDitherEnable == 0;
+
+    InstallFakeD3DDevice2(fakeDevice);
+    const int endResult = zVideo_dd3d::EndScene();
+    gFakeD3DEndSceneResult = static_cast<HRESULT>(DDERR_INVALIDPARAMS);
+    const int endErrorResult = zVideo_dd3d::EndScene();
+    const bool endSceneOk = endResult == 0 && endErrorResult == -1 && gFakeD3DEndSceneCalls == 2;
+
+    InstallFakeD3DDevice2(fakeDevice);
+    g_zVideo_PendingWireframeState = -1;
+    g_zVideo_PendingDitherEnable = -1;
+    g_zVideo_D3DSceneDepth = 0;
+    const int enterResult = zVideoD3D::SceneEnter();
+    const int enterAgainResult = zVideoD3D::SceneEnter();
+    const bool enterDepthOk = enterResult == 0 && enterAgainResult == 0 &&
+                              g_zVideo_D3DSceneDepth == 1 && gFakeD3DBeginSceneCalls == 1;
+
+    InstallFakeD3DDevice2(fakeDevice);
+    g_zVideo_D3DSceneDepth = 2;
+    const int leaveNestedResult = zVideoD3D::SceneLeave();
+    const bool leaveNestedOk = leaveNestedResult == 0 && g_zVideo_D3DSceneDepth == 1 &&
+                               gFakeD3DEndSceneCalls == 0;
+    const int leaveFinalResult = zVideoD3D::SceneLeave();
+    const int leaveIdleResult = zVideoD3D::SceneLeave();
+    const bool leaveDepthOk = leaveFinalResult == 0 && leaveIdleResult == 0 &&
+                              g_zVideo_D3DSceneDepth == 0 && gFakeD3DEndSceneCalls == 1;
+
+    g_zVideo_pD3DDevice = oldDevice;
+    g_zVideo_PendingWireframeState = oldPendingWireframe;
+    g_zVideo_PendingDitherEnable = oldPendingDither;
+    g_zVideo_D3DSceneDepth = oldSceneDepth;
+
+    return solidFlushOk && wireframeFlushOk && failureLeavesPendingOk && endSceneOk &&
+                   enterDepthOk && leaveNestedOk && leaveDepthOk
+               ? 0
+               : 1;
 }
 
 extern "C" int zvideo_surface_accessors_smoke(void) {
@@ -1851,6 +1977,32 @@ extern "C" int zvideo_image_set_pixels_smoke(void) {
                               image.formatFlagsPacked == 0x20u;
 
     return withAlpha && withoutAlpha ? 0 : 1;
+}
+
+extern "C" int zvid_image_create_format_size_pixels_smoke(void) {
+    zVidImagePartial *const image = zVid_Image::Create();
+    if (image == nullptr) {
+        return 1;
+    }
+
+    const bool createdZeroed =
+        image->pixelCount == 0 && image->width == 0 && image->height == 0 &&
+        image->formatFlagsPacked == 0 && image->pixels == nullptr && image->alphaMap == nullptr;
+
+    std::uint16_t pixels[128] = {};
+    char alpha[128] = {};
+    const bool configured =
+        zVid_Image::SetFormatCode(image, 1) == 0 &&
+        zVid_Image_SetPixels(image, pixels, alpha) == 0 &&
+        zVid_Image::SetSize(image, 16, 8) == 0 &&
+        image->formatFlagsPacked == 3 && image->pixels == pixels && image->alphaMap == alpha &&
+        image->width == 16 && image->height == 8 && image->pixelCount == 128 &&
+        image->pitchWords == 16 && image->widthScale == 16.0f &&
+        image->uShiftFrom20 == 20 && image->uMask == 15 &&
+        image->vMaskFixed20 == (7 << 20);
+
+    zVid_Image::Destroy(image);
+    return createdZeroed && configured ? 0 : 2;
 }
 
 extern "C" int zvideo_image_file_read_helpers_smoke(void) {

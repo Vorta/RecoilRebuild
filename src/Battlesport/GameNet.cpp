@@ -1,5 +1,7 @@
 #include "Battlesport/GameNet.h"
 
+#include "Battlesport/Briefing.h"
+#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/HudSensorTracker.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
@@ -12,7 +14,14 @@
 #include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
+#include "GameZRecoil/zReader/zReader.h"
+#include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zSys/zSys.h"
+#include "GameZRecoil/zTurret/zTurret.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
+#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zDEClient/zdec.h"
+#include "GameZRecoil/zModel/zModel.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,20 +50,70 @@ NetPkt0D_HudTimerPanelState g_NetPkt0D_HudTimerPanelStateBuf = {
     0,
     0,
 };
+NetPkt0A_RemoveRuntimeRelay g_NetPkt0A_RemoveRuntimeRelayBuf = {
+    {0x0a, sizeof(NetPkt0A_RemoveRuntimeRelay), 0},
+    0,
+    0,
+    {0.0f, 0.0f, 0.0f},
+    0,
+};
+NetPkt07_AltGunDispatch g_NetPkt07_AltGunDispatchBuf = {
+    {0x07, sizeof(NetPkt07_AltGunDispatch), 0},
+    0,
+    0,
+    0,
+    {0.0f, 0.0f, 0.0f},
+};
+NetPkt06_PlayerStateSnapshot g_NetPkt06_PlayerStateSnapshotBuf = {
+    {0x06, 0x44, 0},
+};
 NetPkt0E_PlayerLapProgress g_NetPkt0E_PlayerLapProgressBuf = {
     {0x0e, sizeof(NetPkt0E_PlayerLapProgress), 0},
     0,
     0,
     0.0f,
 };
+NetPkt0F_CraterEvent g_NetPkt0F_CraterEventSendBuf = {
+    {0x0f, sizeof(NetPkt0F_CraterEvent), 0}, 0, 0, {0.0f, 0.0f, 0.0f}, 0.0f,
+};
+NetPkt10_QSandEvent g_NetPkt10_QSandEventSendBuf = {
+    {0x10, sizeof(NetPkt10_QSandEvent), 0}, 0, 0, {0.0f, 0.0f, 0.0f}, 0.0f,
+};
 int g_GameNetOneLapLeftMessageShown = 0;
 int g_GameNetStatus_AllowMaps = 0;
 int g_GameNetStatus_NameTags = 0;
 int g_GameNetAllPlayersLapTargetCheckStarted = 0;
 int g_GameNetSuppressPkt13ActivationEcho = 0;
+int g_GameNetPkt06InitialSyncGate = 0;
+int g_GameNetPkt06InputBit17Latch = 0;
+int g_GameNetPkt06InputBit16Latch = 0;
+float g_GameNetPkt06NextSendTimeSec = 0.0f;
+int g_GameNetHostHudTimerInitFlag = 0;
+int g_GameNetHudTimerTenSecondWarningArmed = 0;
+int g_GameNetHudTimerPendingSaveReminderArmed = 0;
+int g_GameNet_HandlersRegistered = 0;
 }
 
+extern "C" HWND g_RecoilApp_hWndMain;
+
 namespace {
+const float kGameNetPkt06SendIntervalSec = 0.100000001f;
+const float kGameNetHudTimerWarningDurationSec = 5.0f;
+const float kGameNetHudTimerTenSecondThreshold = 10.0f;
+const float kGameNetHudTimerOneMinuteLeadSec = 60.0f;
+const unsigned int kGameNetPkt06InputBit16Flag = 0x10000u;
+const unsigned int kGameNetPkt06InputBit17Flag = 0x20000u;
+const unsigned int kGameNetPkt06ProgressTargetsFlag = 0x40000u;
+const unsigned int kGameNetRemoteAltGunDispatchFlag = 0x2000000u;
+const unsigned int kGameNetRemoteCloneNodeFlag = 0x400000u;
+const float kGameNetRemoteUnlimitedAmmo = 123456792.0f;
+
+struct GameNetReaderArray {
+    int countTag;
+    int count;
+    zReader::Node nodes[1];
+};
+
 template <typename T> T &EmbeddedHudPanelField(HudUiPanel &panel, size_t offset) {
     return *(T *)((unsigned char *)(&panel) + offset);
 }
@@ -90,6 +149,38 @@ void GameNetSetRemoteHudPos(HudUiPanel *panel, int x, int y) {
     const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
     ((SetPosFn)(ftable->slots[0x0c / 4]))(panel, x, y);
 }
+
+void GameNetUnlockRemotePlayerWeaponBanks(zUtil_PlayerStateStorage *playerState) {
+    for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
+        PlayerAltWeaponBank &bank = playerState->altWeaponBanks[bankIndex];
+        bank.controllerA.flags |= 4u;
+        bank.controllerA.ammoOrCharge = kGameNetRemoteUnlimitedAmmo;
+        bank.controllerB.flags |= 4u;
+        bank.controllerB.ammoOrCharge = kGameNetRemoteUnlimitedAmmo;
+    }
+}
+
+void GameNetShowPairedTimerMessages(int firstMessageId, int secondMessageId) {
+    HudUi::ShowTopMessageLine(zLoc::GetMessageString(firstMessageId),
+                              kGameNetHudTimerWarningDurationSec);
+    HudUi::ShowTopMessageLine(zLoc::GetMessageString(secondMessageId),
+                              kGameNetHudTimerWarningDurationSec);
+}
+
+void GameNetCopyPkt06ProgressTargets(NetPkt06_PlayerStateSnapshot *packet,
+                                     zUtil_PlayerStateStorage *playerState) {
+    for (int index = 0; index < playerState->progressTargetCount; ++index) {
+        const zVec3 *const targetPos = playerState->progressTargetSlots[index].targetPos;
+        packet->progressTargetPoints[index] = *targetPos;
+    }
+}
+
+PlayerGunFireController *GameNetPkt06DecodeWeaponController(zUtil_PlayerStateStorage *playerState,
+                                                            int selectionCode) {
+    const int bankIndex = selectionCode / 100;
+    const int sideIndex = selectionCode % 100;
+    return &playerState->altWeaponBanks[bankIndex].controllerA + sideIndex;
+}
 } // namespace
 
 // Reimplements 0x433a50: GameNetPlayerRow::ApplyPlayerColorTint
@@ -119,6 +210,125 @@ void RECOIL_THISCALL HudTimerPanelNetState::ClearTailFlagsLocal() {
     }
     }
 }
+
+namespace Net {
+// Reimplements 0x431dd0: Net::InitFromZrd
+RECOIL_NOINLINE void RECOIL_CDECL InitFromZrd() {
+    zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
+    while (saveState != 0) {
+        zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+        if (playerState->lifecycleState == 2) {
+            playerState->lifecycleState = 4;
+            zClass_NodePartial *const rootNode = playerState->rootNode;
+            zClass_Class::RemoveChild(rootNode->listA[0], rootNode);
+        }
+
+        saveState = saveState->next;
+    }
+
+    zTurret_System::DisableTickCallback();
+
+    zReader::Node *const treeRoot = zReader::LoadNodeFromPath("net.zrd", 0, 0);
+    if (treeRoot != 0) {
+        GameNetReaderArray *const rootArray =
+            static_cast<GameNetReaderArray *>(treeRoot->value.ptr);
+        GameNetReaderArray *const spawnArray =
+            static_cast<GameNetReaderArray *>(rootArray->nodes[0].value.ptr);
+        int spawnPointCount = spawnArray->count - 1;
+        for (int index = 0; index < spawnPointCount; ++index) {
+            GameNetSpawnPoint *const spawnPoint =
+                static_cast<GameNetSpawnPoint *>(::operator new(sizeof(GameNetSpawnPoint)));
+            memset(spawnPoint, 0, sizeof(GameNetSpawnPoint));
+
+            if (g_GameNetSpawnPointCount == 0) {
+                g_GameNetSpawnPointHead = spawnPoint;
+            } else {
+                g_GameNetSpawnPointTail->next = spawnPoint;
+            }
+            g_GameNetSpawnPointTail = spawnPoint;
+            spawnPoint->next = 0;
+            ++g_GameNetSpawnPointCount;
+
+            GameNetReaderArray *const spawnValueArray =
+                static_cast<GameNetReaderArray *>(spawnArray->nodes[index].value.ptr);
+            spawnPoint->position.x = spawnValueArray->nodes[0].value.f32;
+            spawnPoint->position.y = spawnValueArray->nodes[1].value.f32;
+            spawnPoint->position.z = spawnValueArray->nodes[2].value.f32;
+            spawnPoint->yawDegrees = spawnValueArray->nodes[3].value.f32;
+        }
+
+        zReader::FreeLoadedTree(treeRoot);
+    }
+
+    zUtil_SaveGameState *const localSaveState =
+        (zUtil_SaveGameState *)(g_GameStateOrMapTable);
+    GameNetPlayerRow *const playerRow =
+        GameNetPlayerRowList::AppendNewRow(
+            (GameNetPlayerRowListState *)(&g_GameNetPlayerRowList), 1);
+    playerRow->saveState = (GameNetPlayerSaveState *)(localSaveState);
+    playerRow->playerKey = zNetwork_GetLocalPlayerKey();
+    zNetwork::GetPlayerNameByKey(playerRow->playerKey, playerRow->displayName,
+                                 sizeof(playerRow->displayName));
+    playerRow->playerColorIndex = zNetwork_GetPlayerColorIndexByKey(playerRow->playerKey);
+
+    if (playerRow->playerColorIndex <= 0) {
+        if (zNetwork::IsHost() == 0) {
+            playerRow->playerColorIndex = GameNet::WaitForLocalPlayerColorIndex(60);
+        }
+
+        if (playerRow->playerColorIndex <= 0) {
+            zVideo_dd::FlipToGDIIfAttached();
+            Briefing::StopAndShutdownThread(0);
+            zSndSystem::Shutdown();
+            zNetwork::ShutdownSessionRuntime();
+            zVideo::ShutdownVideoSystem();
+
+            char fatalErrorCaption[0x80];
+            char fatalErrorMessage[0x80];
+            strcpy(fatalErrorCaption, zLoc::GetMessageString(18));
+            strcpy(fatalErrorMessage, zLoc::GetMessageString(26));
+            printf("%s: %s\n", fatalErrorCaption, fatalErrorMessage);
+            Sleep(1000);
+            MessageBeep(MB_ICONHAND);
+            MessageBoxA(g_RecoilApp_hWndMain, fatalErrorMessage, fatalErrorCaption,
+                        MB_ICONHAND);
+            zSys::ExitProcessWithCleanup(2);
+        }
+    }
+
+    if (zNetwork::IsHost() != 0) {
+        const unsigned int styleColor =
+            g_GameNetPlayerRowStyleColors_00RRGGBB[playerRow->playerColorIndex];
+        playerRow->playerColorPackedRgb = styleColor;
+        EmbeddedHudPanelField<unsigned int>(playerRow->hudWidget, 0x14c) = styleColor;
+        EmbeddedHudPanelField<unsigned int>(playerRow->hudWidget, 0x150) = styleColor;
+        EmbeddedHudPanelField<int>(playerRow->hudWidget, 0x270) = 1;
+        playerRow->ApplyPlayerColorTint();
+
+        if (g_HudSensorTracker.raceCheckpointMode == 0) {
+            float runtimeTimerSec;
+            memcpy(&runtimeTimerSec, &g_HudSensorTracker.runtimeTimerSecRaw,
+                   sizeof(runtimeTimerSec));
+            g_GameNetHostHudTimerInitFlag = 0;
+            HudUiTimerPanel::SetSeconds(runtimeTimerSec, -1.0f);
+            g_HudTimerPanelNetState.timerDirectionNeg = 1;
+            g_HudTimerPanelNetState.statusBitsResendDeadline = 30.0f;
+        }
+    }
+
+    g_HudTimerPanelNetState.timeWarningShown = 0;
+    g_HudTimerPanelNetState.oneMinuteWarningShown = 0;
+    GameNet::RefreshPlayerListMenu(playerRow);
+    localSaveState->netPlayerRow = playerRow;
+    GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed(localSaveState, 1);
+    if (g_HudSensorTracker.raceCheckpointMode != 0) {
+        GameNet::ResetHudTimerPanelNetStateLongCountdown();
+    }
+
+    g_GameNetPkt06InitialSyncGate = 1;
+    g_GameNetPkt06NextSendTimeSec = 0.0f;
+}
+} // namespace Net
 
 namespace GameNet {
 // Reimplements 0x414550: GameNet::ChatComposeKeyCallback (D:\Proj\Battlesport\ai_net.cpp)
@@ -296,6 +506,537 @@ RespawnPlayerAndDropWeaponPickupIfAllowed(zUtil_SaveGameState *saveState,
     playerState->subUnlocked = 0;
 }
 
+// Reimplements 0x432300: GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+TickLocalPlayerPkt06ReplicationAndHudTimer(zUtil_SaveGameState *saveState) {
+    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+    PlayerModalState *const primaryModalState = saveState->primaryModalState;
+
+    if (zOpt::GetNetworkEnabled() == 0) {
+        return 0;
+    }
+
+    if (zNetwork::IsHost() == 0 && g_GameNetPkt06InitialSyncGate != 0) {
+        return 0;
+    }
+
+    g_GameNetPkt06InputBit16Latch |= playerState->netInputBit16Latch;
+    g_GameNetPkt06InputBit17Latch |= playerState->netInputBit17Latch;
+    if (g_Time_AccumulatedTimeSec < g_GameNetPkt06NextSendTimeSec) {
+        return 1;
+    }
+
+    g_GameNetPkt06NextSendTimeSec =
+        g_Time_AccumulatedTimeSec + kGameNetPkt06SendIntervalSec;
+
+    NetPkt06_PlayerStateSnapshot *const packet = &g_NetPkt06_PlayerStateSnapshotBuf;
+    packet->header.packetType = 0x06;
+    packet->header.packetSizeBytes = 0x44;
+    packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    packet->cachedAltSelectionCode = static_cast<short>(playerState->cachedAltSelectionCode);
+    packet->cachedPrimarySelectionCode =
+        static_cast<short>(playerState->cachedPrimarySelectionCode);
+
+    unsigned int packedFlags = packet->packedMasterTypeColorFlags;
+    packedFlags = (packedFlags & ~0xffu) |
+                  (static_cast<unsigned int>(primaryModalState->masterModalData->masterType) &
+                   0xffu);
+    packedFlags = (packedFlags & ~0xff00u) |
+                  ((static_cast<unsigned int>(GetLocalPlayerColorIndexOrZero()) & 0xffu) << 8);
+    if ((g_GameNetPkt06InputBit16Latch & 1) != 0) {
+        packedFlags |= 0x10000u;
+    } else {
+        packedFlags &= ~0x10000u;
+    }
+    g_GameNetPkt06InputBit16Latch = 0;
+    if ((g_GameNetPkt06InputBit17Latch & 1) != 0) {
+        packedFlags |= 0x20000u;
+    } else {
+        packedFlags &= ~0x20000u;
+    }
+    g_GameNetPkt06InputBit17Latch = 0;
+
+    packet->altGunAimOrigin = playerState->altGunAimOrigin;
+    packet->storedTargetPos = playerState->storedTargetPos;
+    packet->worldPos = playerState->worldPos;
+    packet->vehicleRotationAngles = playerState->vehicleRotationAngles;
+    packet->statusMeterValue = playerState->statusMeterValue;
+
+    if (playerState->progressTargetCount > 0) {
+        packedFlags |= 0x40000u;
+        packet->header.packetSizeBytes =
+            static_cast<short>(0x44 + 4 + playerState->progressTargetCount * sizeof(zVec3));
+        packet->progressTargetCount = playerState->progressTargetCount;
+        GameNetCopyPkt06ProgressTargets(packet, playerState);
+    } else {
+        packedFlags &= ~0x40000u;
+    }
+    packet->packedMasterTypeColorFlags = packedFlags;
+
+    const int sendResult = zNetwork_SendPacketUnreliable(&packet->header);
+    const int raceCheckpointMode = g_HudSensorTracker.raceCheckpointMode;
+    if (zNetwork::IsHost() != 0) {
+        if (raceCheckpointMode != 0) {
+            HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
+            const float timerSeconds = HudUiTimerPanel::GetSeconds();
+            timerState.startCountdownTriggered = 0;
+            timerState.timerSeconds = timerSeconds;
+
+            if (timerState.startGateTriggered == 0) {
+                if (timerSeconds <= 0.0f) {
+                    timerState.startGateTriggered = 1;
+                    timerState.timerDirectionNeg = 0;
+                    timerState.timerSeconds = 0.0f;
+                    zEffectAnim::SetVelocity_Thunk(zEffectAnim::FindEntryByName("startgate"), 0,
+                                                   0.0f, 0.0f, 0.0f);
+                    SendPkt0D_HudTimerPanelState(&timerState);
+                } else if (g_HudTimerPanelNetState.startCountdownTriggered == 0 &&
+                           g_HudTimerPanelNetState.tenSecondWarningsEnabled != 0 &&
+                           timerSeconds <= kGameNetHudTimerTenSecondThreshold) {
+                    timerState.timerSeconds = kGameNetHudTimerTenSecondThreshold;
+                    HudUiTimerPanel::SetSeconds(g_FrameDeltaTimeSec +
+                                                    kGameNetHudTimerTenSecondThreshold,
+                                                -1.0f);
+                    timerState.startCountdownTriggered = 1;
+                    SendPkt0D_HudTimerPanelState(&timerState);
+                } else if (timerSeconds > kGameNetHudTimerTenSecondThreshold &&
+                           static_cast<int>(timerSeconds) % 10 == 0) {
+                    if (g_GameNetHudTimerTenSecondWarningArmed != 0) {
+                        GameNetShowPairedTimerMessages(0x32, 0x31);
+                        g_GameNetHudTimerTenSecondWarningArmed = 0;
+                    }
+                } else {
+                    g_GameNetHudTimerTenSecondWarningArmed = 1;
+                }
+            }
+
+            if (timerState.raceFinishCountdownTriggered != 0 &&
+                timerState.timeWarningShown == 0) {
+                timerState.timeWarningShown = 1;
+                SendPkt0D_HudTimerPanelState(&timerState);
+                return sendResult;
+            }
+        } else {
+            const float timerSeconds = HudUiTimerPanel::GetSeconds();
+            g_HudTimerPanelNetState.timerSeconds = timerSeconds;
+            HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
+
+            if (timerState.oneMinuteWarningShown == 0 &&
+                timerSeconds < g_FrameDeltaTimeSec + kGameNetHudTimerOneMinuteLeadSec) {
+                timerState.oneMinuteWarningShown = 1;
+                SendPkt0C_HudTimerStatusBits(&timerState);
+            }
+
+            if (g_HudTimerPanelNetState.timeWarningShown == 0 &&
+                timerSeconds < g_FrameDeltaTimeSec) {
+                timerState.timeWarningShown = 1;
+                SendPkt0C_HudTimerStatusBits(&timerState);
+            }
+
+            if (g_Time_AccumulatedTimeSec > g_HudTimerPanelNetState.statusBitsResendDeadline) {
+                SendPkt0C_HudTimerStatusBits(&timerState);
+                return sendResult;
+            }
+        }
+
+        return sendResult;
+    }
+
+    if (raceCheckpointMode != 0) {
+        HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
+        if (timerState.startGateTriggered != 0 || timerState.startCountdownTriggered != 0) {
+            g_GameNetHudTimerPendingSaveReminderArmed = 1;
+        } else if (static_cast<int>(HudUiTimerPanel::GetSeconds()) % 10 != 0) {
+            g_GameNetHudTimerPendingSaveReminderArmed = 1;
+        } else if (g_GameNetHudTimerPendingSaveReminderArmed != 0) {
+            GameNetShowPairedTimerMessages(0x34, 0x33);
+            g_GameNetHudTimerPendingSaveReminderArmed = 0;
+            return sendResult;
+        }
+    }
+
+    return sendResult;
+}
+
+// Reimplements 0x432ae0: GameNet::ApplyPkt06_PlayerStateSnapshotToRow
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+ApplyPkt06_PlayerStateSnapshotToRow(GameNetPlayerRow *row,
+                                    NetPkt06_PlayerStateSnapshot *packet) {
+    GameNetPlayerSaveState *const rowSaveState = row->saveState;
+    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)rowSaveState;
+    zUtil_PlayerStateStorage *const playerState = rowSaveState->playerState;
+    PlayerMasterModalData *const masterModalData =
+        rowSaveState->primaryModalState->masterModalData;
+    const unsigned int packedFlags = packet->packedMasterTypeColorFlags;
+
+    playerState->netUpdateReceived = 1;
+
+    const int colorIndex = static_cast<int>((packedFlags >> 8) & 0xffu);
+    if (row->playerColorIndex != colorIndex) {
+        row->playerColorIndex = colorIndex;
+        const unsigned int packedColor = g_GameNetPlayerRowStyleColors_00RRGGBB[colorIndex];
+        row->playerColorPackedRgb = packedColor;
+        SetEmbeddedHudPanelColor(row, packedColor);
+        HudUi::RefreshScoreboardEntryRow(row);
+        row->ApplyPlayerColorTint();
+    }
+
+    const int masterType = static_cast<int>(packedFlags & 0xffu);
+    if (masterType != masterModalData->masterType) {
+        Player::ApplyMasterTypeTransition(saveState, masterType, 0);
+    }
+
+    playerState->netReceivedPos = packet->worldPos;
+    playerState->netReceivedAngles = packet->vehicleRotationAngles;
+
+    const int inputBit16 = (packedFlags & kGameNetPkt06InputBit16Flag) != 0 ? 1 : 0;
+    const int inputBit17 = (packedFlags & kGameNetPkt06InputBit17Flag) != 0 ? 1 : 0;
+    if (playerState->netLastUpdateFrameTick == g_zVideo_FrameTick) {
+        playerState->netInputBit16Latch |= inputBit16;
+        playerState->netInputBit17Latch |= inputBit17;
+    } else {
+        playerState->netInputBit16Latch = inputBit16;
+        playerState->netInputBit17Latch = inputBit17;
+        playerState->netLastUpdateFrameTick = g_zVideo_FrameTick;
+    }
+
+    playerState->storedTargetPos = packet->storedTargetPos;
+
+    const int altSelectionCode =
+        static_cast<int>(static_cast<unsigned short>(packet->cachedAltSelectionCode));
+    if (altSelectionCode != playerState->cachedAltSelectionCode) {
+        Player::ApplyAltWeaponSwitch(
+            saveState, playerState->activeAltGunController,
+            GameNetPkt06DecodeWeaponController(playerState, altSelectionCode));
+    }
+
+    const int primarySelectionCode =
+        static_cast<int>(static_cast<unsigned short>(packet->cachedPrimarySelectionCode));
+    if (primarySelectionCode != playerState->cachedPrimarySelectionCode) {
+        Player::ApplyPrimaryWeaponSwitch(
+            saveState, playerState->activePrimaryGunController,
+            GameNetPkt06DecodeWeaponController(playerState, primarySelectionCode));
+    }
+
+    playerState->statusMeterValue = packet->statusMeterValue;
+    for (int index = 0; index < 10; ++index) {
+        playerState->progressTargetRuntimeSlots[index].targetPos = 0;
+    }
+
+    if ((packedFlags & kGameNetPkt06ProgressTargetsFlag) == 0) {
+        playerState->progressTargetCount = 0;
+        return 1;
+    }
+
+    playerState->progressTargetCount = packet->progressTargetCount;
+    for (int index = 0; index < playerState->progressTargetCount; ++index) {
+        playerState->progressTargetPointStorage[index] = packet->progressTargetPoints[index];
+        playerState->progressTargetRuntimeSlots[index].targetPos =
+            &playerState->progressTargetPointStorage[index];
+    }
+
+    return 1;
+}
+
+// Reimplements 0x432860: GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(int senderPlayerId,
+                                               NetPkt06_PlayerStateSnapshot *packet) {
+    char displayNameScratch[0x40];
+    if (zNetwork::GetPlayerNameByKey(senderPlayerId, displayNameScratch,
+                                     sizeof(displayNameScratch)) == 0) {
+        zNetwork_DPlay::EnumPlayers();
+    }
+
+    zClass_NodePartial *const sourceNode = zClass::FindByTypeAndName(6, "bft_99");
+    zClass_NodePartial *clonedNode = 0;
+    if (sourceNode != 0) {
+        clonedNode = zClass_cls_util::CopyNodeWithCloneOptions(sourceNode, 1, 1);
+    }
+
+    if (clonedNode == 0) {
+        HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x911), 5.0f);
+        return 0;
+    }
+
+    clonedNode->flags |= kGameNetRemoteCloneNodeFlag;
+
+    char netNodeName[0x14];
+    sprintf(netNodeName, "net%d", packet->header.payloadDword0);
+    zClass_Class::gwNodeSetName(clonedNode, netNodeName);
+
+    zUtil_SaveGameState *const saveState = Player::CreateFromNamesAtPoseGetState(
+        &packet->worldPos, "bft", packet->vehicleRotationAngles.y, netNodeName);
+    if (saveState != 0) {
+        zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+        playerState->lifecycleState = 3;
+        playerState->amphibUnlocked = 1;
+        playerState->hoverUnlocked = 1;
+        playerState->subUnlocked = 1;
+        GameNetUnlockRemotePlayerWeaponBanks(playerState);
+    }
+
+    GameNetPlayerRowListState *const rowList = (GameNetPlayerRowListState *)(&g_GameNetPlayerRowList);
+    GameNetPlayerRow *const row = GameNetPlayerRowList::AppendNewRow(rowList, 0);
+    row->playerKey = packet->header.payloadDword0;
+    row->playerColorIndex = static_cast<int>((packet->packedMasterTypeColorFlags >> 8) & 0xffu);
+    row->playerNode = clonedNode;
+    row->score = 0;
+    row->lapCount = 0;
+    row->turretNode = zClass_Class::FindSubNodeByName(clonedNode, "turret");
+    row->gunNode = zClass_Class::FindSubNodeByName(clonedNode, "gun");
+    row->saveState = (GameNetPlayerSaveState *)saveState;
+
+    if (zNetwork::GetPlayerNameByKey(senderPlayerId, row->displayName,
+                                     sizeof(row->displayName)) != 0) {
+        HudUi::ShowTopMessageLine(row->displayName, 5.0f);
+    }
+    HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x912), 5.0f);
+
+    row->hudWidget.SetText(row->displayName);
+    SetEmbeddedHudPanelColor(row, g_GameNetPlayerRowStyleColors_00RRGGBB[0]);
+    GameNetSetRemoteHudVisible(&row->hudWidget, 0);
+    g_HudUiTopMessageStack->base.AddChild((HudUiElement *)(&row->hudWidget));
+
+    if (saveState != 0) {
+        saveState->netPlayerRow = row;
+        if (row->playerNode->listCountA == 0) {
+            zClass_Class::AddChild(g_Player_RuntimeDiScene, row->playerNode);
+        }
+        zClass_Class::gwNodeSetActive(row->playerNode, 1);
+    }
+
+    RefreshPlayerListMenu(row);
+    ReassignPlayerColorsAndRefreshRows(0, 0);
+
+    if (zNetwork::IsHost() != 0) {
+        SendPkt09_PlayerScoreboardSnapshot();
+        zDEClient::DispatchFeatureEventTemplates(HostSendPkt0F_CraterFeature,
+                                                 HostSendPkt10_QSandFeature);
+        SendAllPkt13_EffectAnimActivationRecords();
+        Pickup::ReconcilePrimaryAndNetworkCopySpawnLists();
+
+        HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
+        if (g_HudSensorTracker.raceCheckpointMode != 0) {
+            timerState.startCountdownTriggered = 0;
+            if (g_HudTimerPanelNetState.startGateTriggered != 0) {
+                timerState.ClearTailFlagsLocal();
+            }
+            SendPkt0D_HudTimerPanelState(&timerState);
+        } else {
+            SendPkt0C_HudTimerStatusBits(&timerState);
+        }
+    }
+
+    ApplyPkt06_PlayerStateSnapshotToRow(row, packet);
+    return 1;
+}
+
+// Reimplements 0x4327e0: GameNet::HandlePkt06_PlayerStateSnapshot
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+HandlePkt06_PlayerStateSnapshot(int senderPlayerId, NetPkt06_PlayerStateSnapshot *packet) {
+    if (packet == 0) {
+        return -1;
+    }
+
+    GameNetPlayerRow *const row = FindPlayerRowByKey(packet->header.payloadDword0);
+    if (g_GameNetPkt06InitialSyncGate != 0) {
+        g_GameNetPkt06InitialSyncGate = 0;
+    }
+
+    if (packet->header.packetType == 6) {
+        if (row == 0) {
+            SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(senderPlayerId, packet);
+            return 0;
+        }
+
+        ApplyPkt06_PlayerStateSnapshotToRow(row, packet);
+    }
+
+    return 0;
+}
+
+// Reimplements 0x434190: GameNet::HandlePkt07_AltGunDispatch
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+HandlePkt07_AltGunDispatch(int, NetPkt07_AltGunDispatch *packet) {
+    GameNetPlayerRow *const row = FindPlayerRowByKey(packet->header.payloadDword0);
+    if (row == 0) {
+        return 0;
+    }
+
+    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)row->saveState;
+    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+
+    playerState->altGunDispatchFlags =
+        static_cast<int>(packet->dispatchFlags | kGameNetRemoteAltGunDispatchFlag);
+    playerState->storedTargetPos = packet->targetPos;
+
+    PlayerGunFireController *const oldActiveAltGunController =
+        playerState->activeAltGunController;
+    playerState->activeAltGunController =
+        Player::FindAltGunFireControllerForWeaponId(saveState,
+                                                    static_cast<int>(packet->weaponId));
+
+    OptCatalog::SetPendingSpawnTargetOverrides(&playerState->progressTargetCount,
+                                               playerState->progressTargetSlots);
+    Player::ProcessAltGunFireDispatchRequest(saveState);
+
+    playerState->altGunDispatchFlags = 0;
+    playerState->activeAltGunController = oldActiveAltGunController;
+    OptCatalog::SetPendingSpawnTargetOverrides(0, 0);
+    return 1;
+}
+
+// Reimplements 0x434130: GameNet::SendPkt07_AltGunDispatch
+// (D:\Proj\Battlesport\ai_net.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt07_AltGunDispatch(short weaponId,
+                                                              unsigned int dispatchFlags) {
+    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
+    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+
+    g_NetPkt07_AltGunDispatchBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt07_AltGunDispatchBuf.weaponId = weaponId;
+    g_NetPkt07_AltGunDispatchBuf.dispatchFlags = dispatchFlags;
+    g_NetPkt07_AltGunDispatchBuf.targetPos = playerState->storedTargetPos;
+    zNetwork_SendPacketReliable(&g_NetPkt07_AltGunDispatchBuf.header);
+}
+
+// Reimplements 0x434230: GameNet::AltGunDispatchNoOpCallback
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL AltGunDispatchNoOpCallback(OptCatalogEntryDef *, void **) {
+    return 1;
+}
+
+// Reimplements 0x433ca0: GameNet::SendPkt10_QSandEvent
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+SendPkt10_QSandEvent(zDEClient_QSandEventTemplate *eventTemplate) {
+    if (eventTemplate->radius <= 0.0f) {
+        eventTemplate->radius = -eventTemplate->radius;
+        return 1;
+    }
+
+    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
+    if (eventTemplate->damageOwnerNode != saveState->playerState->rootNode) {
+        return 0;
+    }
+
+    g_NetPkt10_QSandEventSendBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt10_QSandEventSendBuf.center = eventTemplate->center;
+    g_NetPkt10_QSandEventSendBuf.radius = eventTemplate->radius;
+    g_NetPkt10_QSandEventSendBuf.eventFlags &= 0xffff0000u;
+
+    if (zNetwork::IsHost() != 0) {
+        zDEClient_QSand::NetRelayCallback(zNetwork_GetLocalPlayerKey(),
+                                          &g_NetPkt10_QSandEventSendBuf);
+        return 0;
+    }
+
+    zNetwork_SendPacketReliable(&g_NetPkt10_QSandEventSendBuf.header);
+    return 0;
+}
+
+// Reimplements 0x433de0: GameNet::HostSendPkt10_QSandFeature
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+HostSendPkt10_QSandFeature(zDEClient_QSandEventTemplate *eventTemplate) {
+    if (zNetwork::IsHost() == 0) {
+        return 0;
+    }
+
+    g_NetPkt10_QSandEventSendBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt10_QSandEventSendBuf.center = eventTemplate->center;
+    g_NetPkt10_QSandEventSendBuf.eventFlags |= 0x80u;
+    g_NetPkt10_QSandEventSendBuf.radius = eventTemplate->radius;
+    zNetwork_SendPacketReliable(&g_NetPkt10_QSandEventSendBuf.header);
+    return 1;
+}
+
+// Reimplements 0x433c30: GameNet::HostSendPkt0F_CraterFeature
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+HostSendPkt0F_CraterFeature(zDEClient_CraterEventTemplate *eventTemplate) {
+    if (zNetwork::IsHost() == 0) {
+        return 0;
+    }
+
+    g_NetPkt0F_CraterEventSendBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt0F_CraterEventSendBuf.craterTypeId =
+        zModel_MatlSlot::IndexFromPtrOrMinus1(eventTemplate->craterMaterialSlot);
+    g_NetPkt0F_CraterEventSendBuf.center = eventTemplate->center;
+    g_NetPkt0F_CraterEventSendBuf.eventFlags |= 0x80u;
+    g_NetPkt0F_CraterEventSendBuf.radius = eventTemplate->radius;
+    zNetwork_SendPacketReliable(&g_NetPkt0F_CraterEventSendBuf.header);
+    return 1;
+}
+
+// Reimplements 0x4321b0: GameNet::UnregisterGameplayPacketHandlers
+// (D:\Proj\Battlesport\gamenet.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL UnregisterGameplayPacketHandlers() {
+    zNetwork::UnregisterPacketHandler(6, (zNetworkPacketHandler)&HandlePkt06_PlayerStateSnapshot);
+    zNetwork::UnregisterPacketHandler(7, (zNetworkPacketHandler)&HandlePkt07_AltGunDispatch);
+    zNetwork::UnregisterPacketHandler(0x0a,
+                                      (zNetworkPacketHandler)&OptCatalog::HandlePkt0A_RemoveRuntimeRelay);
+    zNetwork::UnregisterPacketHandler(1, (zNetworkPacketHandler)&ReassignPlayerColorsAndRefreshRows);
+    zNetwork::UnregisterPacketHandler(8, (zNetworkPacketHandler)&HandlePkt08_PlayerKillEvent);
+    zNetwork::UnregisterPacketHandler(9, (zNetworkPacketHandler)&HandlePkt09_PlayerScoreboardSnapshot);
+    zNetwork::UnregisterPacketHandler(0x0b, (zNetworkPacketHandler)&HandlePkt0B_ChatMessage);
+    zNetwork::UnregisterPacketHandler(0x0e, (zNetworkPacketHandler)&HandlePkt0E_PlayerLapProgress);
+    zNetwork::UnregisterPacketHandler(0x0c, (zNetworkPacketHandler)&HandlePkt0C_HudTimerStatusBits);
+    zNetwork::UnregisterPacketHandler(0x0d, (zNetworkPacketHandler)&HandlePkt0D_HudTimerPanelState);
+    zNetwork::UnregisterPacketHandler(0x0f, (zNetworkPacketHandler)&zDEClient_Crater::NetRelayCallback);
+    zNetwork::UnregisterPacketHandler(0x10, (zNetworkPacketHandler)&zDEClient_QSand::NetRelayCallback);
+    zNetwork::UnregisterPacketHandler(0x11, (zNetworkPacketHandler)&Pickup::HandlePkt11_SpawnDelta);
+    zNetwork::UnregisterPacketHandler(
+        0x12, (zNetworkPacketHandler)&Pickup::HandlePkt12_AirdropSpawnChuteRelay);
+    zNetwork::UnregisterPacketHandler(0x13,
+                                      (zNetworkPacketHandler)&HandlePkt13_EffectAnimActivationRecord);
+    g_GameNet_HandlersRegistered = 0;
+}
+
+// Reimplements 0x431c50: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RegisterGameplayHandlersAndOptCatalogCallbacks() {
+    if (g_GameNet_HandlersRegistered == 0) {
+        zNetwork::RegisterPacketHandler(6, (zNetworkPacketHandler)&HandlePkt06_PlayerStateSnapshot, 2);
+        zNetwork::RegisterPacketHandler(7, (zNetworkPacketHandler)&HandlePkt07_AltGunDispatch, 2);
+        zNetwork::RegisterPacketHandler(
+            0x0a, (zNetworkPacketHandler)&OptCatalog::HandlePkt0A_RemoveRuntimeRelay, 2);
+        zNetwork::RegisterPacketHandler(1, (zNetworkPacketHandler)&ReassignPlayerColorsAndRefreshRows, 2);
+        zNetwork::RegisterPacketHandler(8, (zNetworkPacketHandler)&HandlePkt08_PlayerKillEvent, 2);
+        zNetwork::RegisterPacketHandler(9, (zNetworkPacketHandler)&HandlePkt09_PlayerScoreboardSnapshot, 2);
+        zNetwork::RegisterPacketHandler(0x0b, (zNetworkPacketHandler)&HandlePkt0B_ChatMessage, 2);
+        zNetwork::RegisterPacketHandler(0x0e, (zNetworkPacketHandler)&HandlePkt0E_PlayerLapProgress, 2);
+        zNetwork::RegisterPacketHandler(0x0c, (zNetworkPacketHandler)&HandlePkt0C_HudTimerStatusBits, 2);
+        zNetwork::RegisterPacketHandler(0x0d, (zNetworkPacketHandler)&HandlePkt0D_HudTimerPanelState, 2);
+        zNetwork::RegisterPacketHandler(0x0f, (zNetworkPacketHandler)&zDEClient_Crater::NetRelayCallback, 2);
+        zNetwork::RegisterPacketHandler(0x10, (zNetworkPacketHandler)&zDEClient_QSand::NetRelayCallback, 2);
+        zNetwork::RegisterPacketHandler(0x11, (zNetworkPacketHandler)&Pickup::HandlePkt11_SpawnDelta, 2);
+        zNetwork::RegisterPacketHandler(
+            0x12, (zNetworkPacketHandler)&Pickup::HandlePkt12_AirdropSpawnChuteRelay, 2);
+        zNetwork::RegisterPacketHandler(0x13,
+                                        (zNetworkPacketHandler)&HandlePkt13_EffectAnimActivationRecord, 2);
+        zNetwork::RegisterPacketHandler(0x14,
+                                        (zNetworkPacketHandler)&HandlePkt14_HudTimerAndFlagsSync, 2);
+        zNetwork::RegisterPacketHandler(3, (zNetworkPacketHandler)&HandlePkt03_RemoveRemotePlayer, 2);
+        g_GameNet_HandlersRegistered = 1;
+    }
+
+    g_zDEClientCraterNetRelayCallback =
+        (zDEClient_NetRelayCallback)&zDEClient_Crater::Execute;
+    g_zDEClientQSandNetRelayCallback =
+        (zDEClient_NetRelayCallback)&SendPkt10_QSandEvent;
+    g_OptCatalog_AllocRuntimeGateCallback = &OptCatalog::AltGunDispatchAllocRuntimeGateCallback;
+    g_OptCatalog_AltGunDispatchNoOpCallback = &AltGunDispatchNoOpCallback;
+    g_OptCatalog_RemoveRuntimeRelayCallback = &OptCatalog::SendPkt0A_RemoveRuntimeRelay;
+    zEffect_Anim::SetActivationDispatchContext(&SendPkt13_EffectAnimActivationRecord, 0x0c);
+}
+
 // Reimplements 0x4320f0: GameNet::ResetRemotePlayersAndSpawnLists
 // (D:\Proj\Battlesport\GameNet.cpp)
 RECOIL_NOINLINE void RECOIL_CDECL ResetRemotePlayersAndSpawnLists() {
@@ -330,6 +1071,24 @@ RECOIL_NOINLINE void RECOIL_CDECL ResetRemotePlayersAndSpawnLists() {
     g_GameNetPlayerRowTail = 0;
     g_GameNetPlayerRowHead = 0;
     g_GameNetPlayerRowCount = 0;
+}
+
+// Reimplements 0x4320b0: GameNet::WaitForLocalPlayerColorIndex
+RECOIL_NOINLINE int RECOIL_FASTCALL WaitForLocalPlayerColorIndex(int maxWaitSeconds) {
+    int waitedSeconds = 0;
+    while (waitedSeconds < maxWaitSeconds) {
+        zNetworkDPlay::ReceivePendingMessages(-1);
+
+        const int colorIndex = zNetwork_GetLocalPlayerColorIndex();
+        if (colorIndex > 0) {
+            return colorIndex;
+        }
+
+        Sleep(1000);
+        ++waitedSeconds;
+    }
+
+    return 0;
 }
 
 // Reimplements 0x4322a0: GameNet::ResetHudTimerPanelNetStateLongCountdown
@@ -438,6 +1197,65 @@ ReassignPlayerColorsAndRefreshRows(int, zNetworkPacketHeader *) {
     }
 
     return 1;
+}
+
+// Reimplements 0x432ed0: GameNet::HandlePkt03_RemoveRemotePlayer
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+HandlePkt03_RemoveRemotePlayer(int senderPlayerId, zNetworkPacketHeader *) {
+    GameNetPlayerRow *const row = FindPlayerRowByKey(senderPlayerId);
+    if (row == 0) {
+        return 0;
+    }
+
+    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)row->saveState;
+    if (saveState != 0) {
+        zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+        playerState->cameraTransitionTimer = 1;
+        playerState->lifecycleState = 4;
+        Player::ResetAltGunRuntimeState(saveState);
+        Player::RemoveAllDeployedMines(saveState);
+    }
+
+    char message[0x80] = {0};
+    zLoc::FormatMessage(message, sizeof(message), 0x913, row->displayName);
+    HudUi::ShowTopMessageLine(message, 5.0f);
+    HudUi::RemoveScoreboardEntryRow(row);
+    GameNetSetRemoteHudVisible(&row->hudWidget, 0);
+    g_HudUiTopMessageStack->base.RemoveChild((HudUiElement *)(&row->hudWidget));
+
+    if (g_GameNetPlayerRowCount == 0) {
+        return 0;
+    }
+
+    if (row == g_GameNetPlayerRowHead) {
+        --g_GameNetPlayerRowCount;
+        GameNetPlayerRow *const next = row->next;
+        g_GameNetPlayerRowHead = next;
+        if (next == 0) {
+            g_GameNetPlayerRowList = 0;
+            g_GameNetPlayerRowTail = 0;
+        }
+    } else {
+        GameNetPlayerRow *previous = g_GameNetPlayerRowHead;
+        while (previous != 0 && previous->next != row) {
+            previous = previous->next;
+        }
+
+        if (previous == 0) {
+            return 0;
+        }
+
+        --g_GameNetPlayerRowCount;
+        previous->next = row->next;
+        if (g_GameNetPlayerRowTail == row) {
+            g_GameNetPlayerRowTail = previous;
+        }
+    }
+
+    row->DestroyEmbeddedPanel();
+    ::operator delete(row);
+    return 0;
 }
 
 // Reimplements 0x414390: GameNet::RefreshPlayerListMenu (D:\Proj\Battlesport\ai_net.cpp)
@@ -762,6 +1580,43 @@ HandlePkt0E_PlayerLapProgress(int senderPlayerId, NetPkt0E_PlayerLapProgress *pa
     return 1;
 }
 
+// Reimplements 0x434370: GameNet::SendPkt13_EffectAnimActivationRecord
+// (D:\Proj\GameZRecoil\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL
+SendPkt13_EffectAnimActivationRecord(zEffectAnimActivationRecord *record) {
+    if (g_GameNetSuppressPkt13ActivationEcho != 0) {
+        return;
+    }
+
+    const int packedRecordSize = zEffect_Anim::GetActivationRecordPackedSize(record);
+    const int packetSize = static_cast<int>(sizeof(zNetworkPacketHeader)) + packedRecordSize;
+    zNetworkPacketHeader *const packet =
+        static_cast<zNetworkPacketHeader *>(malloc(static_cast<size_t>(packetSize)));
+    memset(packet, 0, static_cast<size_t>(packetSize));
+
+    packet->packetType = 0x13;
+    packet->packetSizeBytes = static_cast<short>(packetSize);
+    packet->payloadDword0 = zNetwork_GetLocalPlayerKey();
+    memcpy(((unsigned char *)(packet)) + sizeof(zNetworkPacketHeader), record,
+           static_cast<size_t>(packedRecordSize));
+
+    zNetwork_SendPacketReliable(packet);
+    free(packet);
+}
+
+// Reimplements 0x434430: GameNet::SendAllPkt13_EffectAnimActivationRecords
+// (D:\Proj\GameZRecoil\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL SendAllPkt13_EffectAnimActivationRecords() {
+    if (zNetwork::IsHost() == 0) {
+        return;
+    }
+
+    const int recordCount = zEffect_Anim::GetActivationRecordCount();
+    for (int index = 0; index < recordCount; ++index) {
+        SendPkt13_EffectAnimActivationRecord(zEffect_Anim::GetActivationRecordAt(index));
+    }
+}
+
 // Reimplements 0x4343f0: GameNet::HandlePkt13_EffectAnimActivationRecord
 // (D:\Proj\GameZRecoil\GameNet.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL
@@ -807,6 +1662,39 @@ SendPkt0C_HudTimerStatusBits(HudTimerPanelNetState *timerState) {
                                           &g_NetPkt0C_HudTimerStatusBitsBuf);
 }
 
+// Reimplements 0x4344b0: GameNet::HandlePkt14_HudTimerAndFlagsSync
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+HandlePkt14_HudTimerAndFlagsSync(int senderPlayerId,
+                                 NetPkt14_HudTimerAndFlagsSync *packet) {
+    (void)senderPlayerId;
+
+    UnregisterGameplayPacketHandlers();
+    ResetRemotePlayersAndSpawnLists();
+
+    union TimerSecondsBits {
+        float seconds;
+        int raw;
+    } timerSeconds = {static_cast<float>(packet->valueOrTime) * 60.0f};
+    g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(timerSeconds.raw, packet->auxParam);
+
+    CZRecoilFrame *const mainWnd =
+        (CZRecoilFrame *)(static_cast<unsigned int>(g_RecoilApp.GetMainWnd()));
+    g_HudSensorTracker.InitMissionIdAndFlags(packet->eventCode + 6,
+                                             mainWnd->m_useArchiveBanks);
+    SetStatusBitsFromFlags(packet->statusFlags);
+
+    g_RecoilApp.m_missionFmvState_1d8.m_missionId = 0;
+    g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_introFmvState_1a0.base, 0);
+
+    if (zNetwork::IsHost() != 0) {
+        HostUpdateSessionDescStatusFields(packet->eventCode, packet->auxParam,
+                                          packet->valueOrTime, packet->statusFlags);
+    }
+
+    return 1;
+}
+
 // Reimplements 0x434550: GameNet::HostUpdateSessionDescStatusFields
 // (D:\Proj\Battlesport\GameNet.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL
@@ -846,5 +1734,28 @@ void RECOIL_CDECL Reset() {
     g_GameNetPlayerRowTail = 0;
     g_GameNetPlayerRowHead = 0;
     g_GameNetPlayerRowCount = 0;
+}
+
+// Reimplements 0x4345a0: GameNetPlayerRowList::AppendNewRow
+RECOIL_NOINLINE GameNetPlayerRow *RECOIL_FASTCALL
+AppendNewRow(GameNetPlayerRowListState *self, int zeroInitializeRow) {
+    GameNetPlayerRow *const row =
+        static_cast<GameNetPlayerRow *>(::operator new(sizeof(GameNetPlayerRow)));
+    row->hudWidget.ConstructorDefault(0, 0, 0);
+    if (zeroInitializeRow != 0) {
+        memset(row, 0, sizeof(GameNetPlayerRow));
+    }
+
+    row->next = 0;
+    if (self->count == 0) {
+        self->head = row;
+    } else {
+        self->tail->next = row;
+    }
+
+    self->tail = row;
+    row->next = 0;
+    ++self->count;
+    return row;
 }
 } // namespace GameNetPlayerRowList

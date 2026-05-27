@@ -1,6 +1,7 @@
 #include "Battlesport/RecoilApp.h"
 
 #include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/GameNet.h"
 #include "Battlesport/HudSensorTracker.h"
 #include "Battlesport/hud.h"
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
@@ -515,6 +516,164 @@ extern "C" int recoil_app_queue_switch_current_state_smoke(void) {
     ::operator delete(chunkList);
 
     return itemOk ? 0 : 3;
+}
+
+extern "C" int hud_sensor_queue_mission_fmv_state_for_mission_id_smoke(void) {
+    InitTestRecoilAppVtable();
+    const RecoilApp oldApp = g_RecoilApp;
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_RecoilApp.m_missionFmvState_1d8.base.vftable = oldState.vftable;
+    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 7;
+
+    HudSensorTracker tracker{};
+    const int returned = tracker.QueueMissionFmvStateForMissionId(14);
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+
+    int result = 0;
+    if (returned != 1 || g_RecoilApp.m_missionFmvState_1d8.m_missionId != 14 ||
+        g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv != 0 ||
+        g_stateExitCount != 1 || g_stateEnterCount != 1) {
+        result = 1;
+    } else if (queue.m_itemCount != 1 || queue.m_chunkPtrCapacity != 2) {
+        result = 2;
+    } else {
+        const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+        auto *const slot = reinterpret_cast<RecoilPtr32 *>(
+            static_cast<std::uintptr_t>(slotValue));
+        auto *const item = reinterpret_cast<RecoilApp_StateQueueItem *>(
+            static_cast<std::uintptr_t>(*slot));
+        if (item->m_type != 0 || item->m_kind != RecoilApp_StateQueueKind_SwitchCurrent ||
+            item->m_stateObj != static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                                    &g_RecoilApp.m_missionFmvState_1d8.base)) ||
+            item->m_param != 0) {
+            result = 3;
+        }
+    }
+
+    if (queue.m_itemCount == 1) {
+        CleanupSingleQueuedItem(queue);
+    }
+    g_RecoilApp = oldApp;
+    return result;
+}
+
+extern "C" int hud_sensor_save_and_queue_mission_state_smoke(void) {
+    InitTestRecoilAppVtable();
+    const RecoilApp oldApp = g_RecoilApp;
+    zUtil_SaveGameState *const oldLocalSaveState = g_LocalPlayerSaveState;
+    zClass_NodePartial *const oldMainCamera = g_MainCamera;
+    const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
+    const int oldHudCounterValue = g_Player_HudCounterValue;
+    const int oldQuitAfterCredits = g_RecoilApp_QuitAfterCredits;
+
+    HudSensorTracker finalTracker{};
+    finalTracker.finalMissionFlag = 1;
+    g_RecoilApp_QuitAfterCredits = 0;
+    finalTracker.SaveAndQueueMissionState();
+    const bool finalOk = g_RecoilApp_QuitAfterCredits == 1;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_RecoilApp.m_missionFmvState_1d8.base.vftable = oldState.vftable;
+
+    zUtil_SaveGameState saveState{};
+    zUtil_PlayerStateStorage playerState{};
+    PlayerModalState modalState{};
+    PlayerMasterModalData modalData{};
+    zClass_NodePartial cameraNode{};
+    zClass_CameraDataPartial cameraData{};
+
+    for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
+        PlayerAltWeaponBank &bank = playerState.altWeaponBanks[bankIndex];
+        bank.selectedSide = bankIndex & 1;
+        bank.controllerA.flags = 4;
+        bank.controllerA.ammoOrCharge = static_cast<float>(bankIndex);
+        bank.controllerA.weaponBankIndex = bankIndex;
+        bank.controllerA.weaponSideIndex = 0;
+        bank.controllerB.flags = 0;
+        bank.controllerB.ammoOrCharge = static_cast<float>(bankIndex + 20);
+        bank.controllerB.weaponBankIndex = bankIndex;
+        bank.controllerB.weaponSideIndex = 1;
+    }
+
+    playerState.activeAltGunController = &playerState.altWeaponBanks[2].controllerA;
+    playerState.activePrimaryGunController = &playerState.altWeaponBanks[3].controllerB;
+    playerState.nanitePanelLevel = 77;
+    playerState.amphibUnlocked = 1;
+    playerState.hoverUnlocked = 1;
+    playerState.subUnlocked = 1;
+    playerState.aiMode = 4;
+    playerState.motionInput = 5;
+    playerState.autoTurnSign = -1;
+    playerState.bankInput = 6;
+    modalData.masterType = 9;
+    modalState.masterModalData = &modalData;
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    cameraData.worldTarget = {1.0f, 2.0f, 3.0f};
+    cameraData.posOffset = {4.0f, 5.0f, 6.0f};
+
+    g_LocalPlayerSaveState = &saveState;
+    g_MainCamera = &cameraNode;
+    g_PlayerStatusMeterRatio = 0.5f;
+    g_Player_HudCounterValue = 123;
+    g_RecoilApp_QuitAfterCredits = 0;
+
+    HudSensorTracker tracker{};
+    tracker.missionId = 5;
+    tracker.SaveAndQueueMissionState();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    bool normalOk = tracker.hasPendingPlayerSave == 1 &&
+                    tracker.pendingPlayerSave.savedNanitePanelLevel == 77 &&
+                    tracker.pendingPlayerSave.playerSaveData.size ==
+                        sizeof(PlayerMissionSaveData) &&
+                    tracker.pendingPlayerSave.playerSaveData.altWeaponBankIndex == 2 &&
+                    tracker.pendingPlayerSave.playerSaveData.primaryWeaponSideIndex == 1 &&
+                    g_RecoilApp.m_missionFmvState_1d8.m_missionId == 6 &&
+                    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv == 0 &&
+                    queue.m_itemCount == 1;
+    if (normalOk) {
+        const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+        auto *const slot = reinterpret_cast<RecoilPtr32 *>(
+            static_cast<std::uintptr_t>(slotValue));
+        auto *const item = reinterpret_cast<RecoilApp_StateQueueItem *>(
+            static_cast<std::uintptr_t>(*slot));
+        normalOk = item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
+                   item->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                                           &g_RecoilApp.m_missionFmvState_1d8.base)) &&
+                   item->m_param == 0;
+    }
+
+    if (queue.m_itemCount == 1) {
+        CleanupSingleQueuedItem(queue);
+    }
+    g_RecoilApp_QuitAfterCredits = oldQuitAfterCredits;
+    g_Player_HudCounterValue = oldHudCounterValue;
+    g_PlayerStatusMeterRatio = oldStatusMeterRatio;
+    g_MainCamera = oldMainCamera;
+    g_LocalPlayerSaveState = oldLocalSaveState;
+    g_RecoilApp = oldApp;
+    return finalOk && normalOk ? 0 : 1;
 }
 
 extern "C" int recoil_app_queue_push_state_smoke(void) {

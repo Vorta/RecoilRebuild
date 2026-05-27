@@ -1,4 +1,5 @@
 #include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/hud.h"
 #include "Battlesport/player.h"
 #include "Battlesport/zUtil/zutil.h"
 #include "GameZRecoil/Time/Time.h"
@@ -45,9 +46,35 @@ unsigned short *g_damageMaskUploadPixels = nullptr;
 int g_damageMaskUploadPitchBytes = 0;
 zVideo_TextureRecordPartial *g_damageMaskLastTextureRecord = nullptr;
 int g_zgameFogColorUpdateCount = 0;
+int g_modelRefLerpCallbackCount = 0;
+void *g_modelRefLerpLastCallbackCtx = nullptr;
+int g_zclassUpdateBucketCallbackCount = 0;
+zClass_NodePartial *g_zclassUpdateBucketLastNode = nullptr;
+int g_zclassUpdateBucketDeferredDuringCallback = -1;
 
 void RECOIL_CDECL TestZGameUpdateFogColor(void) {
     ++g_zgameFogColorUpdateCount;
+}
+
+void RECOIL_FASTCALL TestModelRefLerpCallback(void *callbackCtx) {
+    ++g_modelRefLerpCallbackCount;
+    g_modelRefLerpLastCallbackCtx = callbackCtx;
+}
+
+int RECOIL_FASTCALL TestZClassUpdateBucketCallback(zClass_NodePartial *node) {
+    ++g_zclassUpdateBucketCallbackCount;
+    g_zclassUpdateBucketLastNode = node;
+    g_zclassUpdateBucketDeferredDuringCallback = g_zClass_DeferredProcessingEnabled;
+    return 0;
+}
+
+int g_zmodelReleaseTextureUploadCount = 0;
+zVideo_TextureRecordPartial *g_zmodelReleaseTextureUploadLast = nullptr;
+
+void RECOIL_FASTCALL TestReleaseTextureUploadSurfaceRef(
+    zVideo_TextureRecordPartial *textureRecord) {
+    ++g_zmodelReleaseTextureUploadCount;
+    g_zmodelReleaseTextureUploadLast = textureRecord;
 }
 
 int RECOIL_FASTCALL TextureMemoryQueryMissingStub(int, int *, int *) {
@@ -95,11 +122,69 @@ void WriteZrdIntNode(HANDLE file, std::int32_t value) {
     WriteU32(file, static_cast<std::uint32_t>(value));
 }
 
+void WriteZrdFloatNode(HANDLE file, float value) {
+    DWORD written = 0;
+    WriteU32(file, zReader::ZRDR_NODE_FLOAT);
+    WriteFile(file, &value, sizeof(value), &written, nullptr);
+}
+
+void WriteZrdNamedStringNode(HANDLE file, const char *name, const char *value) {
+    WriteZrdStringNode(file, name);
+    WriteZrdStringNode(file, value);
+}
+
+void WriteZrdNamedFloatNode(HANDLE file, const char *name, float value) {
+    WriteZrdStringNode(file, name);
+    WriteZrdFloatNode(file, value);
+}
+
 void WriteZrdNamedIntArray(HANDLE file, const char *name, std::int32_t value) {
     WriteZrdStringNode(file, name);
     WriteU32(file, zReader::ZRDR_NODE_ARRAY);
     WriteU32(file, 2);
     WriteZrdIntNode(file, value);
+}
+
+void WriteZrdNamedDirectInt(HANDLE file, const char *name, std::int32_t value) {
+    WriteZrdStringNode(file, name);
+    WriteZrdIntNode(file, value);
+}
+
+void WriteZrdNamedColorArray(HANDLE file, const char *name, std::int32_t red,
+                             std::int32_t green, std::int32_t blue) {
+    WriteZrdStringNode(file, name);
+    WriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteU32(file, 4);
+    WriteZrdIntNode(file, red);
+    WriteZrdIntNode(file, green);
+    WriteZrdIntNode(file, blue);
+}
+
+void WriteZrdNamedFloatPairArray(HANDLE file, const char *name, float first, float second) {
+    WriteZrdStringNode(file, name);
+    WriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteU32(file, 3);
+    WriteZrdFloatNode(file, first);
+    WriteZrdFloatNode(file, second);
+}
+
+void FreeHudWeatherFxForTest(HudUiElement *element) {
+    if (element == nullptr) {
+        return;
+    }
+
+    HudWeatherFx *const weatherFx = static_cast<HudWeatherFx *>(element);
+    if (weatherFx->softwareImage != nullptr) {
+        char *const alphaMap = weatherFx->softwareImage->alphaMap;
+        zVid_Image::Destroy(weatherFx->softwareImage);
+        if (alphaMap != nullptr) {
+            std::free(alphaMap);
+        }
+    }
+    ::operator delete(weatherFx->particleQuads);
+    ::operator delete(weatherFx->particlePositions[0]);
+    ::operator delete(weatherFx->particlePositions[1]);
+    ::operator delete(weatherFx);
 }
 
 bool EnterSupportDirectoryForRetailZbdTest(char *oldDir, DWORD oldDirSize) {
@@ -1159,6 +1244,65 @@ extern "C" int zmodel_set_software_path_active_smoke() {
     g_zVideo_ActiveRendererPath = savedRendererPath;
     g_zModel_SoftwarePathActive = savedSoftwareActive;
     return softwareSetOk && signedValueOk && hardwareSkippedOk ? 0 : 1;
+}
+
+extern "C" int zmodel_matlbuffer_release_texture_surfaces_smoke() {
+    zModel_MaterialSlot *const savedPool = g_zModel_MatlPool;
+    const int savedActiveHead = g_zModel_MatlActiveHeadIndex;
+    const int savedRendererPath = g_zVideo_ActiveRendererPath;
+    const unsigned int savedReleaseUploadSurface =
+        g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef;
+
+    zVideo_TextureRecordPartial textureRelease{};
+    zVideo_TextureRecordPartial texturePinned{};
+    zVideo_TextureRecordPartial textureMissing{};
+    zImage_TexDirEntryPartial entryRelease{};
+    zImage_TexDirEntryPartial entryPinned{};
+    zImage_TexDirEntryPartial entryMissing{};
+    zModel_MaterialSlot slots[4] = {};
+
+    entryRelease.texture = &textureRelease;
+    entryPinned.texture = &texturePinned;
+    entryMissing.texture = &textureMissing;
+
+    slots[0].material.flags = 0x0100;
+    slots[0].material.currentTextureDirectoryEntry = &entryRelease;
+    slots[0].nextPoolIndex = 1;
+
+    slots[1].material.flags = 0x0300;
+    slots[1].material.currentTextureDirectoryEntry = &entryPinned;
+    slots[1].nextPoolIndex = 2;
+
+    slots[2].material.flags = 0x0100;
+    slots[2].material.currentTextureDirectoryEntry = nullptr;
+    slots[2].nextPoolIndex = 3;
+
+    slots[3].material.flags = 0x0000;
+    slots[3].material.currentTextureDirectoryEntry = &entryMissing;
+    slots[3].nextPoolIndex = -1;
+
+    g_zmodelReleaseTextureUploadCount = 0;
+    g_zmodelReleaseTextureUploadLast = nullptr;
+    g_zModel_MatlPool = slots;
+    g_zModel_MatlActiveHeadIndex = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef =
+        (unsigned int)TestReleaseTextureUploadSurfaceRef;
+
+    zModel_MatlBuffer::ReleaseTextureSurfaces();
+
+    const bool releaseOk =
+        g_zmodelReleaseTextureUploadCount == 1 &&
+        g_zmodelReleaseTextureUploadLast == &textureRelease;
+
+    g_zModel_MatlPool = savedPool;
+    g_zModel_MatlActiveHeadIndex = savedActiveHead;
+    g_zVideo_ActiveRendererPath = savedRendererPath;
+    g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef = savedReleaseUploadSurface;
+    g_zmodelReleaseTextureUploadCount = 0;
+    g_zmodelReleaseTextureUploadLast = nullptr;
+
+    return releaseOk ? 0 : 1;
 }
 
 extern "C" int zmodel_material_defaults_and_find_smoke() {
@@ -5353,6 +5497,83 @@ extern "C" int zclass_gwnode_update_tree_smoke(void) {
     return result;
 }
 
+extern "C" int zclass_typelist_update_bucket_smoke(void) {
+    reset_zclass_type_lists_for_test();
+    g_zClass_DeferredProcessingEnabled = 1;
+    g_zclassUpdateBucketCallbackCount = 0;
+    g_zclassUpdateBucketLastNode = nullptr;
+    g_zclassUpdateBucketDeferredDuringCallback = -1;
+
+    zClass_NodePartial activeNode{};
+    zClass_NodePartial nullCallbackNode{};
+    zClass_NodePartial pendingNode{};
+    zClass_NodePartial inactiveNode{};
+    activeNode.flags = 4;
+    pendingNode.flags = 4;
+    inactiveNode.flags = 0;
+    activeNode.actionCallback = reinterpret_cast<void *>(&TestZClassUpdateBucketCallback);
+    pendingNode.actionCallback = reinterpret_cast<void *>(&TestZClassUpdateBucketCallback);
+    inactiveNode.actionCallback = reinterpret_cast<void *>(&TestZClassUpdateBucketCallback);
+
+    zClass_TypeListLink activeLink{&activeNode, nullptr, nullptr, 0};
+    zClass_TypeListLink nullCallbackLink{&nullCallbackNode, nullptr, nullptr, 0};
+    zClass_TypeListLink pendingLink{&pendingNode, nullptr, nullptr, 1};
+    zClass_TypeListLink inactiveLink{&inactiveNode, nullptr, nullptr, 0};
+    activeLink.next = &nullCallbackLink;
+    nullCallbackLink.prev = &activeLink;
+    nullCallbackLink.next = &pendingLink;
+    pendingLink.prev = &nullCallbackLink;
+    pendingLink.next = &inactiveLink;
+    inactiveLink.prev = &pendingLink;
+
+    zClass_TypeList::UpdateBucket(&activeLink);
+    const bool updateOk =
+        g_zclassUpdateBucketCallbackCount == 1 &&
+        g_zclassUpdateBucketLastNode == &activeNode &&
+        g_zclassUpdateBucketDeferredDuringCallback == 0 &&
+        nullCallbackLink.pendingRemove == 1 && pendingLink.pendingRemove == 1 &&
+        inactiveLink.pendingRemove == 0 && g_zClass_DeferredProcessingEnabled == 1;
+
+    g_zClass_DeferredProcessingEnabled = 0;
+    zClass_TypeList::UpdateBucket(nullptr);
+    const bool nullBucketOk = g_zClass_DeferredProcessingEnabled == 0;
+
+    reset_zclass_type_lists_for_test();
+    return updateOk && nullBucketOk ? 0 : 1;
+}
+
+extern "C" int zclass_typelist_update_all_buckets_smoke(void) {
+    reset_zclass_type_lists_for_test();
+    g_zClass_DeferredProcessingEnabled = 1;
+    g_zclassUpdateBucketCallbackCount = 0;
+    g_zclassUpdateBucketLastNode = nullptr;
+    g_zclassUpdateBucketDeferredDuringCallback = -1;
+
+    zClass_NodePartial firstNode{};
+    zClass_NodePartial secondNode{};
+    firstNode.flags = 4;
+    secondNode.flags = 4;
+    firstNode.actionCallback = reinterpret_cast<void *>(&TestZClassUpdateBucketCallback);
+    secondNode.actionCallback = reinterpret_cast<void *>(&TestZClassUpdateBucketCallback);
+
+    zClass_TypeListLink firstLink{&firstNode, nullptr, nullptr, 0};
+    zClass_TypeListLink secondLink{&secondNode, nullptr, nullptr, 0};
+    zClass_TypeList::Head(0) = &firstLink;
+    zClass_TypeList::Tail(0) = &firstLink;
+    zClass_TypeList::Head(1) = &secondLink;
+    zClass_TypeList::Tail(1) = &secondLink;
+
+    zClass_TypeList::UpdateAllBuckets();
+    const bool ok = g_zclassUpdateBucketCallbackCount == 2 &&
+                    g_zclassUpdateBucketLastNode == &secondNode &&
+                    g_zclassUpdateBucketDeferredDuringCallback == 0 &&
+                    firstLink.pendingRemove == 0 && secondLink.pendingRemove == 0 &&
+                    g_zClass_DeferredProcessingEnabled == 1;
+
+    reset_zclass_type_lists_for_test();
+    return ok ? 0 : 1;
+}
+
 extern "C" int zgame_options_find_option_smoke() {
     zOptionEntryPartial first{};
     zOptionEntryPartial second{};
@@ -6077,6 +6298,16 @@ extern "C" int hud_sensor_tracker_load_race_checkpoint_meta_smoke() {
     return missingOk && loadedOk ? 0 : 3;
 }
 
+extern "C" int hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke() {
+    HudSensorTracker tracker = {};
+    tracker.runtimeGoalValue = 1;
+    tracker.runtimeTimerSecRaw = 2;
+
+    tracker.SetRuntimeTimerSecAndGoalValue(3600, 7);
+
+    return tracker.runtimeTimerSecRaw == 3600 && tracker.runtimeGoalValue == 7 ? 0 : 1;
+}
+
 extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
     zOpt_ViewRectSection **const oldRender = g_zOpt_RenderSectionOption;
@@ -6254,6 +6485,235 @@ extern "C" int hud_sensor_tracker_load_objectives_from_path_smoke() {
     CloseHandle(file);
     DeleteFileA(tempPath);
     return disabledOk && networkOk ? 0 : 3;
+}
+
+extern "C" int hud_sensor_tracker_load_objectives_from_zrd_smoke() {
+    zReader::Node reviewSound[2] = {};
+    reviewSound[0].type = zReader::ZRDR_NODE_INT;
+    reviewSound[0].value.i32 = 2;
+    reviewSound[1].type = zReader::ZRDR_NODE_STRING;
+    reviewSound[1].value.str = const_cast<char *>("snd_review");
+
+    zReader::Node readSound[3] = {};
+    readSound[0].type = zReader::ZRDR_NODE_INT;
+    readSound[0].value.i32 = 3;
+    readSound[1].type = zReader::ZRDR_NODE_STRING;
+    readSound[1].value.str = const_cast<char *>("snd_read");
+    readSound[2].type = zReader::ZRDR_NODE_INT;
+    readSound[2].value.i32 = FloatBitsForTest(3.5f);
+
+    zReader::Node objective1[3] = {};
+    objective1[0].type = zReader::ZRDR_NODE_INT;
+    objective1[0].value.i32 = 3;
+    objective1[1].type = zReader::ZRDR_NODE_STRING;
+    objective1[1].value.str = const_cast<char *>("READ_SOUND");
+    objective1[2].type = zReader::ZRDR_NODE_ARRAY;
+    objective1[2].value.nodes = readSound;
+
+    zReader::Node objectiveSound[2] = {};
+    objectiveSound[0].type = zReader::ZRDR_NODE_INT;
+    objectiveSound[0].value.i32 = 2;
+    objectiveSound[1].type = zReader::ZRDR_NODE_STRING;
+    objectiveSound[1].value.str = const_cast<char *>("snd_complete");
+
+    zReader::Node rootNodes[7] = {};
+    rootNodes[0].type = zReader::ZRDR_NODE_INT;
+    rootNodes[0].value.i32 = 7;
+    rootNodes[1].type = zReader::ZRDR_NODE_STRING;
+    rootNodes[1].value.str = const_cast<char *>("REVIEW_SOUND");
+    rootNodes[2].type = zReader::ZRDR_NODE_ARRAY;
+    rootNodes[2].value.nodes = reviewSound;
+    rootNodes[3].type = zReader::ZRDR_NODE_STRING;
+    rootNodes[3].value.str = const_cast<char *>("OBJECTIVE1");
+    rootNodes[4].type = zReader::ZRDR_NODE_ARRAY;
+    rootNodes[4].value.nodes = objective1;
+    rootNodes[5].type = zReader::ZRDR_NODE_STRING;
+    rootNodes[5].value.str = const_cast<char *>("OBJECTIVE_SOUND");
+    rootNodes[6].type = zReader::ZRDR_NODE_ARRAY;
+    rootNodes[6].value.nodes = objectiveSound;
+
+    zReader::Node root = {};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = rootNodes;
+
+    zSndSample samples[4] = {};
+    samples[0].replayFields.sampleId = "snd_review";
+    samples[0].primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(0x1000);
+    samples[1].replayFields.sampleId = "snd_read";
+    samples[1].primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(0x1004);
+    samples[2].replayFields.sampleId = "snd_complete";
+    samples[2].primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(0x1008);
+    samples[3].replayFields.sampleId = "snd_incoming";
+    samples[3].primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(0x100c);
+
+    zSndSampleSet sampleSet = {};
+    sampleSet.sampleCount = 4;
+    sampleSet.samples = samples;
+    zSndSampleSet *sampleSetSlots[1] = {&sampleSet};
+
+    const zSndSampleSetRegistry oldRegistry = g_zSnd_SampleSetRegistry;
+    const int oldSndInitialized = g_zSnd_IsInitialized;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    int *const oldNetwork = ZOPT_NETWORK_ENABLED;
+
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+
+    std::int32_t networkEnabled = 0;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    HudSensorTracker tracker = {};
+    tracker.objectivesRootNode = &root;
+    tracker.objectiveCount = 2;
+    tracker.objectiveSlots[0].completedFlag = 1;
+    tracker.objectiveSlots[1].completedFlag = 0;
+    const int loaded = tracker.LoadObjectivesFromZrd();
+    const bool loadedOk =
+        loaded == 0 &&
+        tracker.objectiveReviewSfx == &samples[0] &&
+        tracker.objectiveSlots[0].readSoundSample == &samples[1] &&
+        samples[1].playbackEventHandler == HudSensorTracker::OnObjectiveReadSoundEvent &&
+        tracker.objectiveReadSoundDelaySecRaw == FloatBitsForTest(3.5f) &&
+        tracker.objectiveCompleteSfx == &samples[2] &&
+        tracker.objectiveIncomingSfx == &samples[3] &&
+        tracker.firstIncompleteObjectiveIndex == 1;
+
+    networkEnabled = 1;
+    HudSensorTracker networkTracker = {};
+    networkTracker.objectivesRootNode = &root;
+    networkTracker.firstIncompleteObjectiveIndex = 9;
+    const int networkLoaded = networkTracker.LoadObjectivesFromZrd();
+    const bool networkOk =
+        networkLoaded == 0 &&
+        networkTracker.objectiveReviewSfx == &samples[0] &&
+        networkTracker.objectiveCompleteSfx == nullptr &&
+        networkTracker.objectiveIncomingSfx == nullptr &&
+        networkTracker.firstIncompleteObjectiveIndex == 9;
+
+    g_zSnd_SampleSetRegistry = oldRegistry;
+    g_zSnd_IsInitialized = oldSndInitialized;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    ZOPT_NETWORK_ENABLED = oldNetwork;
+
+    return loadedOk && networkOk ? 0 : 1;
+}
+
+extern "C" int hud_sensor_tracker_load_mission_weather_fx_smoke() {
+    char tempDir[MAX_PATH] = {};
+    char tempPath[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "wfx", 0, tempPath) == 0) {
+        return 1;
+    }
+
+    HANDLE file = CreateFileA(tempPath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr,
+                              CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempPath);
+        return 2;
+    }
+
+    WriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteU32(file, 5);
+    WriteZrdStringNode(file, "MISSION12");
+    WriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteU32(file, 15);
+    WriteZrdNamedDirectInt(file, "PARTICLES", 4);
+    WriteZrdNamedStringNode(file, "TYPE", "SNOW");
+    WriteZrdNamedColorArray(file, "COLOR", 10, 20, 30);
+    WriteZrdNamedFloatNode(file, "WIND_DIR", 1.25f);
+    WriteZrdNamedFloatNode(file, "WIND_VEL", 2.5f);
+    WriteZrdNamedFloatNode(file, "GRAVITY", 3.75f);
+    WriteZrdNamedFloatPairArray(file, "ALPHA_GRADIENT", 0.25f, 0.75f);
+    WriteZrdStringNode(file, "MISSION13");
+    WriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteU32(file, 5);
+    WriteZrdNamedDirectInt(file, "PARTICLES", 2);
+    WriteZrdNamedStringNode(file, "TYPE", "RAIN");
+    FlushFileBuffers(file);
+
+    zZarFileRecord record = {};
+    record.fileOffset = 0;
+    record.fileSize = SetFilePointer(file, 0, nullptr, FILE_CURRENT);
+    std::strcpy(record.name, "weather.zrd");
+
+    zIndexArchive archive = {};
+    archive.hFile = file;
+    archive.recordCount = 1;
+    archive.records = &record;
+
+    zArchiveListNode node = {};
+    node.payload = &archive;
+    node.next = &node;
+    node.prev = &node;
+
+    zArchiveList list = {};
+    list.count = 1;
+    list.head = &node;
+
+    zArchiveList *const oldMountedList = g_zArchive_MountedList;
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const unsigned int oldRMask = g_zVideo_PixelPack_RMaskShifted;
+    const unsigned int oldGMask = g_zVideo_PixelPack_GMaskShifted;
+    const unsigned int oldRShift = g_zVideo_PixelPack_RShift;
+    const unsigned int oldGShift = g_zVideo_PixelPack_GShift;
+    const unsigned int oldBShift = g_zVideo_PixelPack_BShiftTo8;
+    HudUiContainer *const pass3 = (HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal);
+    HudUiElement *const oldPass3Head = pass3->childHead;
+    HudUiElement *const oldPass3Tail = pass3->childTail;
+
+    g_zArchive_MountedList = &list;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_PixelPack_RMaskShifted = 0xf8;
+    g_zVideo_PixelPack_GMaskShifted = 0xfc;
+    g_zVideo_PixelPack_RShift = 8;
+    g_zVideo_PixelPack_GShift = 3;
+    g_zVideo_PixelPack_BShiftTo8 = 3;
+    pass3->childHead = nullptr;
+    pass3->childTail = nullptr;
+
+    HudSensorTracker snowTracker = {};
+    snowTracker.missionId = 12;
+    snowTracker.LoadMissionWeatherFx("weather.zrd");
+    HudWeatherFx *const snowFx = static_cast<HudWeatherFx *>(snowTracker.fxPass3Obj);
+    const bool snowOk =
+        snowFx != nullptr && snowFx->ftable == &g_HudWeatherFxSnow_Vtable &&
+        snowFx->particleCount == 4 &&
+        snowFx->packedColor16 == (zVid_PackColorRGB(10, 20, 30) & 0xffffu) &&
+        snowFx->windDirection == 1.25f && snowFx->windVelocity == 2.5f &&
+        snowFx->gravity == 3.75f && snowFx->alphaStartScale == 0.25f &&
+        snowFx->alphaEndScale == 0.75f && pass3->childHead == snowTracker.fxPass3Obj &&
+        pass3->childTail == snowTracker.fxPass3Obj && snowTracker.fxPass3Obj->parent == pass3;
+
+    pass3->childHead = nullptr;
+    pass3->childTail = nullptr;
+    HudSensorTracker rainTracker = {};
+    rainTracker.missionId = 13;
+    rainTracker.LoadMissionWeatherFx("weather.zrd");
+    HudWeatherFx *const rainFx = static_cast<HudWeatherFx *>(rainTracker.fxPass3Obj);
+    const bool rainOk =
+        rainFx != nullptr && rainFx->ftable == &g_HudWeatherFxRain_Vtable &&
+        rainFx->particleCount == 2 && rainFx->packedColor16 == 0x7fff &&
+        pass3->childHead == rainTracker.fxPass3Obj && pass3->childTail == rainTracker.fxPass3Obj;
+
+    FreeHudWeatherFxForTest(snowTracker.fxPass3Obj);
+    FreeHudWeatherFxForTest(rainTracker.fxPass3Obj);
+    pass3->childHead = oldPass3Head;
+    pass3->childTail = oldPass3Tail;
+    g_zArchive_MountedList = oldMountedList;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_PixelPack_RMaskShifted = oldRMask;
+    g_zVideo_PixelPack_GMaskShifted = oldGMask;
+    g_zVideo_PixelPack_RShift = oldRShift;
+    g_zVideo_PixelPack_GShift = oldGShift;
+    g_zVideo_PixelPack_BShiftTo8 = oldBShift;
+    CloseHandle(file);
+    DeleteFileA(tempPath);
+
+    return snowOk && rainOk ? 0 : 3;
 }
 
 extern "C" int zopt_view_rect_target_side_effects_smoke() {
@@ -8583,6 +9043,65 @@ extern "C" int zclass_model_ref_lerp_queue_add_smoke() {
 
     zClass_Object3D_ModelRefLerpQueue::Reset();
     return firstOk && secondOk && g_ModelRefLerpQueueState.count == 0 ? 0 : 1;
+}
+
+extern "C" int zclass_model_ref_lerp_queue_update_smoke() {
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+
+    zClass_NodePartial completeHeadNode{};
+    zClass_Object3DDataPartial completeHeadData{};
+    completeHeadNode.classId = 5;
+    completeHeadNode.classData = &completeHeadData;
+
+    zClass_NodePartial ongoingNode{};
+    zClass_Object3DDataPartial ongoingData{};
+    ongoingNode.classId = 5;
+    ongoingNode.classData = &ongoingData;
+
+    zClass_NodePartial completeTailNode{};
+    zClass_Object3DDataPartial completeTailData{};
+    completeTailNode.classId = 5;
+    completeTailNode.classData = &completeTailData;
+
+    int headCallbackCtx = 0x1111;
+    int tailCallbackCtx = 0x3333;
+    g_modelRefLerpCallbackCount = 0;
+    g_modelRefLerpLastCallbackCtx = nullptr;
+    g_FrameDeltaTimeSec = 2.0f;
+
+    zClass_Object3D_ModelRefLerpQueue::Add(&completeHeadNode, &headCallbackCtx,
+                                           (void *)TestModelRefLerpCallback, 0.9f, 1.0f,
+                                           1.0f);
+    zClass_Object3D_ModelRefLerpQueue::Add(&ongoingNode, nullptr, nullptr, 0.2f, 0.8f,
+                                           10.0f);
+    zClass_Object3D_ModelRefLerpQueue::Add(&completeTailNode, &tailCallbackCtx,
+                                           (void *)TestModelRefLerpCallback, 1.0f, 0.0f,
+                                           1.0f);
+
+    zClass_Object3D_ModelRefLerpTask *const ongoingTask =
+        g_ModelRefLerpQueueState.head != nullptr ? g_ModelRefLerpQueueState.head->next
+                                                 : nullptr;
+
+    zClass_Object3D_ModelRefLerpQueue::Update();
+
+    const bool listOk =
+        g_ModelRefLerpQueueState.count == 1 && g_ModelRefLerpQueueState.head == ongoingTask &&
+        g_ModelRefLerpQueueState.tail == ongoingTask && ongoingTask != nullptr &&
+        ongoingTask->next == nullptr;
+    const bool alphaOk =
+        completeHeadData.alphaScale == 1.0f && ongoingData.alphaScale > 0.31f &&
+        ongoingData.alphaScale < 0.33f && completeTailData.alphaScale == 0.0f;
+    const bool taskOk =
+        ongoingTask != nullptr && ongoingTask->currentModelRef > 0.31f &&
+        ongoingTask->currentModelRef < 0.33f && ongoingTask->targetModelRef == 0.8f;
+    const bool callbackOk = g_modelRefLerpCallbackCount == 2 &&
+                            g_modelRefLerpLastCallbackCtx == &tailCallbackCtx;
+    const bool litOk = (completeHeadData.flags & 0x02) == 0 &&
+                       (ongoingData.flags & 0x02) != 0 &&
+                       (completeTailData.flags & 0x02) != 0;
+
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+    return listOk && alphaOk && taskOk && callbackOk && litOk ? 0 : 1;
 }
 
 extern "C" int zclass_type_list_alloc_and_insert_smoke() {

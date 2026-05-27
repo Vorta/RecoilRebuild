@@ -2,6 +2,7 @@
 #include "Battlesport/Briefing.h"
 #include "Battlesport/HudSensorTracker.h"
 #include "Battlesport/HudUiNetExitPanel.h"
+#include "Battlesport/hud.h"
 #include "Battlesport/pickup.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/OptCatalog.h"
@@ -33,6 +34,10 @@ extern float g_HudUiLoadingCheckpointProgressScale;
 extern unsigned int g_HudUiLoadingCheckpointMaxIndex;
 extern unsigned int g_HudUiLoadingCheckpointCurrentIndex;
 extern float g_HudUiLoadingCheckpointCurrentProgress;
+extern zSndSample *g_HudUi_PowerupSample;
+extern unsigned char g_HudUi_PowerupSampleInitFlags;
+extern "C" int g_Hud_MapOverlayRefCount;
+extern "C" int g_HudSensorTracker_ObjectiveCommandLocked;
 
 namespace {
 template <typename T> T &TestFieldAt(void *base, std::size_t offset) {
@@ -45,6 +50,71 @@ std::size_t HudUiTripletEntryCountForTest(const HudUiTriplet &triplet) {
     }
 
     return static_cast<std::size_t>(triplet.entries.end - triplet.entries.begin);
+}
+
+typedef std::int32_t(__stdcall *HudUiTestBackendGetStatusFn)(void *self,
+                                                             std::int32_t *status);
+typedef std::int32_t(__stdcall *HudUiTestBackendSetIntFn)(void *self, std::int32_t value);
+typedef std::int32_t(__stdcall *HudUiTestBackendSimpleFn)(void *self);
+typedef std::int32_t(__stdcall *HudUiTestBackendPlayDirectSoundFn)(
+    void *self, std::uint32_t reserved1, std::uint32_t reserved2, std::uint32_t flags);
+
+struct HudUiTestDirectSoundBufferVTable {
+    void *slots00_0c[4];
+    void *GetCurrentPosition;
+    void *slots14_1c[3];
+    void *GetFrequency;
+    HudUiTestBackendGetStatusFn GetStatus;
+    void *slot28;
+    void *slot2c;
+    HudUiTestBackendPlayDirectSoundFn Play;
+    HudUiTestBackendSetIntFn SetCurrentPosition;
+    void *slot38;
+    HudUiTestBackendSetIntFn SetVolume;
+    HudUiTestBackendSetIntFn SetPan;
+    HudUiTestBackendSetIntFn SetFrequency;
+    HudUiTestBackendSimpleFn Stop;
+    void *slot4c;
+    void *Restore;
+};
+
+struct HudUiTestDirectSoundBuffer {
+    HudUiTestDirectSoundBufferVTable *vtable;
+};
+
+int g_HudUiTestPowerupPlayCount = 0;
+int g_HudUiTestPowerupStopCount = 0;
+int g_HudUiTestPowerupVolumeCount = 0;
+int g_HudUiTestPowerupPositionCount = 0;
+
+std::int32_t __stdcall HudUiTestDirectSoundGetStatus(void *, std::int32_t *status) {
+    *status = 0;
+    return 0;
+}
+
+std::int32_t __stdcall HudUiTestDirectSoundSetInt(void *, std::int32_t) {
+    return 0;
+}
+
+std::int32_t __stdcall HudUiTestDirectSoundSetVolume(void *, std::int32_t) {
+    ++g_HudUiTestPowerupVolumeCount;
+    return 0;
+}
+
+std::int32_t __stdcall HudUiTestDirectSoundSetCurrentPosition(void *, std::int32_t) {
+    ++g_HudUiTestPowerupPositionCount;
+    return 0;
+}
+
+std::int32_t __stdcall HudUiTestDirectSoundPlay(void *, std::uint32_t, std::uint32_t,
+                                                std::uint32_t) {
+    ++g_HudUiTestPowerupPlayCount;
+    return 0;
+}
+
+std::int32_t __stdcall HudUiTestDirectSoundStop(void *) {
+    ++g_HudUiTestPowerupStopCount;
+    return 0;
 }
 
 void DeletePanelAllocation(HudUiPanel *panel) {
@@ -4532,6 +4602,79 @@ extern "C" int zhud_background_free_loaded_tree_roots_smoke(void) {
     return cleared ? 0 : 1;
 }
 
+extern "C" int zhud_play_powerup_sfx_smoke(void) {
+    zSndSample *const oldPowerupSample = g_HudUi_PowerupSample;
+    const unsigned char oldPowerupInitFlags = g_HudUi_PowerupSampleInitFlags;
+    const int oldSndInitialized = g_zSnd_IsInitialized;
+    const int oldSndPreInitialized = g_zSnd_PreInitialized;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const int oldMuteDepth = g_zSnd_MuteDepth;
+    const int oldPlaybackEnabled = g_zSnd_Flag10PlaybackEnabled;
+    void *const oldGlobalVolumeScalePtr = g_zSnd_GlobalVolumeScalePtr;
+    const zSndSampleSetRegistry oldSampleRegistry = g_zSnd_SampleSetRegistry;
+
+    HudUiTestDirectSoundBufferVTable directSoundVTable = {};
+    directSoundVTable.GetStatus = &HudUiTestDirectSoundGetStatus;
+    directSoundVTable.SetVolume = &HudUiTestDirectSoundSetVolume;
+    directSoundVTable.SetCurrentPosition = &HudUiTestDirectSoundSetCurrentPosition;
+    directSoundVTable.Play = &HudUiTestDirectSoundPlay;
+    directSoundVTable.Stop = &HudUiTestDirectSoundStop;
+    HudUiTestDirectSoundBuffer directSoundBuffer{&directSoundVTable};
+
+    zSndSample sample = {};
+    sample.replayFields.sampleId = "snd_powerup";
+    sample.replayFields.flags = 8;
+    sample.replayFields.gain = 1.0f;
+    sample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+
+    zSndSampleSet sampleSet = {};
+    sampleSet.sampleCount = 1;
+    sampleSet.samples = &sample;
+    zSndSampleSet *sampleSetSlots[1] = {&sampleSet};
+
+    float globalVolume = 1.0f;
+    g_HudUi_PowerupSample = nullptr;
+    g_HudUi_PowerupSampleInitFlags = 0;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_Flag10PlaybackEnabled = 1;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+
+    g_HudUiTestPowerupPlayCount = 0;
+    g_HudUiTestPowerupStopCount = 0;
+    g_HudUiTestPowerupVolumeCount = 0;
+    g_HudUiTestPowerupPositionCount = 0;
+
+    HudUi::PlayPowerupSfx(1);
+    const bool played = g_HudUi_PowerupSample == &sample &&
+                        (g_HudUi_PowerupSampleInitFlags & 1) != 0 &&
+                        g_HudUiTestPowerupPlayCount == 1 &&
+                        g_HudUiTestPowerupVolumeCount == 1 &&
+                        g_HudUiTestPowerupPositionCount == 1;
+
+    HudUi::PlayPowerupSfx(0);
+    const bool stopped = g_HudUi_PowerupSample == &sample &&
+                         g_HudUiTestPowerupStopCount == 1 &&
+                         g_HudUiTestPowerupPlayCount == 1;
+
+    g_zSnd_SampleSetRegistry = oldSampleRegistry;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScalePtr;
+    g_zSnd_Flag10PlaybackEnabled = oldPlaybackEnabled;
+    g_zSnd_MuteDepth = oldMuteDepth;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSnd_PreInitialized = oldSndPreInitialized;
+    g_zSnd_IsInitialized = oldSndInitialized;
+    g_HudUi_PowerupSampleInitFlags = oldPowerupInitFlags;
+    g_HudUi_PowerupSample = oldPowerupSample;
+
+    return played && stopped ? 0 : 1;
+}
+
 extern "C" int zhud_background_bind_widget_by_name_smoke(void) {
     zReader::Node buttonItems[3] = {};
     buttonItems[0].type = zReader::ZRDR_NODE_INT;
@@ -8261,6 +8404,40 @@ extern "C" int zhud_text_stack_clear_and_enable_smoke(void) {
     return cleared ? 0 : 1;
 }
 
+extern "C" int zhud_text_stack_clear_and_disable_smoke(void) {
+    HudUiTopMessageStack top{};
+    top.Constructor();
+    HudUiChatMessageStack chat{};
+    chat.Constructor();
+    g_HudUiTopMessageStack = &top;
+    g_HudUiChatMessageStack = &chat;
+
+    top.PushLine("top alpha", 2.0f);
+    top.PushLine("top beta", 3.0f);
+    chat.base.enabled = 1;
+    chat.PushLine("chat alpha", 4.0f);
+
+    top.base.enabled = 1;
+    chat.base.enabled = 1;
+    HudUiMgr::DisableTopAndChatStacks();
+
+    bool cleared = top.base.enabled == 0 && chat.base.enabled == 0;
+    for (int index = 0; index < 4; ++index) {
+        HudUiPanel *const topLine = TextStackLineAt(&top, index);
+        HudUiPanel *const chatLine = TextStackLineAt(&chat, index);
+        cleared = cleared && (TestFieldAt<std::uint32_t>(topLine, 0x0c) & 0x10u) != 0 &&
+                  (TestFieldAt<std::uint32_t>(chatLine, 0x0c) & 0x10u) != 0 &&
+                  std::strcmp(topLine->GetLastTextPtr(), "") == 0 &&
+                  std::strcmp(chatLine->GetLastTextPtr(), "") == 0;
+    }
+
+    DeleteTextStackLineFonts(&top);
+    DeleteTextStackLineFonts(&chat);
+    g_HudUiTopMessageStack = nullptr;
+    g_HudUiChatMessageStack = nullptr;
+    return cleared ? 0 : 1;
+}
+
 extern "C" int zhud_text_stack_destructor_core_smoke(void) {
     HudUiTopMessageStack top{};
     top.Constructor();
@@ -8406,6 +8583,8 @@ extern "C" int zhud_objective_update_smoke(void) {
         reinterpret_cast<const HudUiBar_FTable *>(&g_HudUiCommon_FTable);
     g_HudUiMgrObjectiveSensorRect.ftable =
         reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+    g_HudUiMgrObjectiveMeter.ftable =
+        reinterpret_cast<const HudUiMeter_FTable *>(&g_HudUiCommon_FTable);
     g_HudUiMgrObjectiveDescTextPanel = desc;
     g_HudUiMgrObjectiveLabelTextPanel = label;
     g_HudUiMgrObjectiveWidget.flags = 0x10;
@@ -8436,12 +8615,45 @@ extern "C" int zhud_objective_update_smoke(void) {
                         (reinterpret_cast<HudUiElement *>(label)->flags & 0x10) == 0 &&
                         (g_HudUiMgrObjectiveSensorRect.flags & 0x10) == 0;
 
+    reinterpret_cast<HudUiElement *>(label)->flags = 0x10;
+    reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveMeter)->flags = 0x10;
+    g_HudUiMgrObjectiveMeter.points[0].y = 4.0f;
+    g_HudUiMgrObjectiveMeter.points[1].y = 23.75f;
+    g_HudUiMgrObjectiveMeter.points[3].y = 7.0f;
+    g_HudUiMgrObjectiveMeterFillAnimTimerSec = 9.0f;
+    g_HudUiMgrObjectiveMeterFillAnimEnabled = 0;
+    HudUiMgrObjective::SetVisibleAndResetMeterFill(1);
+    const bool meterShow =
+        (reinterpret_cast<HudUiElement *>(label)->flags & 0x10) == 0 &&
+        (reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveMeter)->flags & 0x10) == 0 &&
+        g_HudUiMgrObjectiveMeterFillAnimTimerSec == 0.0f &&
+        g_HudUiMgrObjectiveMeterFillAnimEnabled == 1 &&
+        g_HudUiMgrObjectiveMeter.points[0].y == 23.0f &&
+        g_HudUiMgrObjectiveMeter.points[3].y == 23.0f;
+
+    HudUiMgrObjective::SetVisibleAndResetMeterFill(0);
+    const bool meterHide =
+        (reinterpret_cast<HudUiElement *>(label)->flags & 0x10) != 0 &&
+        (reinterpret_cast<HudUiElement *>(&g_HudUiMgrObjectiveMeter)->flags & 0x10) != 0;
+
     DeleteObject(desc->hFont);
     DeleteObject(label->hFont);
     desc->hFont = nullptr;
     label->hFont = nullptr;
     g_HudUi_InvalidateMask = 0;
-    return phase0 && phase2 ? 0 : 1;
+    if (!phase0) {
+        return 1;
+    }
+    if (!phase2) {
+        return 2;
+    }
+    if (!meterShow) {
+        return 3;
+    }
+    if (!meterHide) {
+        return 4;
+    }
+    return 0;
 }
 
 extern "C" int zhud_objective_begin_smoke(void) {
@@ -8605,6 +8817,7 @@ extern "C" int hud_sensor_tracker_show_objective_pickup_info_smoke(void) {
     float readTime = 4.0f;
     std::memcpy(&tracker.objectiveReadTimeSecRaw, &readTime, sizeof(readTime));
     const float oldUnscaledTime = g_Time_UnscaledAccumulatedTimeSec;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
     g_Time_UnscaledAccumulatedTimeSec = 3.0f;
 
     tracker.ShowObjectivePickupInfo(1, 1, &entry);
@@ -8622,13 +8835,584 @@ extern "C" int hud_sensor_tracker_show_objective_pickup_info_smoke(void) {
     tracker.ShowObjectivePickupInfo(0, 0, &entry);
     const bool hideOk = tracker.objectiveUiMode == 0 && g_HudUiMgrObjectivePhase == 3;
 
+    TestReticleAltGunController altGun{};
+    altGun.optCatalogEntry = &entry;
+    TestReticlePlayerState playerState{};
+    playerState.activeAltGunController = &altGun;
+    zInput_GameStateOrMapTablePartial gameState{};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    g_GameStateOrMapTable = &gameState;
+
+    tracker.objectiveUiMode = 0;
+    g_HudUiMgrObjectivePhase = 0;
+    tracker.Command_ShowObjectivePickupInfo();
+    const bool commandShowOk =
+        tracker.objectiveUiMode == 3 &&
+        std::strcmp(&TestFieldAt<char>(summary, 0x34), "Pickup objective") == 0;
+
+    g_HudUiMgrObjectivePhase = 1;
+    tracker.Command_ShowObjectivePickupInfo();
+    const bool commandHideOk = tracker.objectiveUiMode == 0 && g_HudUiMgrObjectivePhase == 3;
+
     DeleteObject(summary->hFont);
     DeleteObject(desc->hFont);
     summary->hFont = nullptr;
     desc->hFont = nullptr;
     g_PickupTypes[17] = oldPickupType;
     g_Time_UnscaledAccumulatedTimeSec = oldUnscaledTime;
-    return showOk && hideOk ? 0 : 1;
+    g_GameStateOrMapTable = oldGameState;
+    return showOk && hideOk && commandShowOk && commandHideOk ? 0 : 1;
+}
+
+extern "C" int hud_sensor_tracker_objective_panel_visible_smoke(void) {
+    alignas(HudUiPanel) std::uint8_t summaryStorage[0x2a4]{};
+    alignas(HudUiPanel) std::uint8_t descStorage[0x2a4]{};
+    auto *const summary = reinterpret_cast<HudUiPanel *>(summaryStorage);
+    auto *const desc = reinterpret_cast<HudUiPanel *>(descStorage);
+    summary->ConstructorDefault(nullptr, 0, 0);
+    desc->ConstructorDefault(nullptr, 0, 0);
+
+    HMODULE const oldMessagesDll = g_zLoc_MessagesDllHandle;
+    HudUiPanel *const oldSummaryPanel = g_HudUiMgrObjectiveSummaryTextPanel;
+    HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
+    HudUiPanel *const oldLabelPanel = g_HudUiMgrObjectiveLabelTextPanel;
+    const int oldHitCount = g_OptCatalog_DamageFeedbackHitCount;
+    void *const oldVolumeScalePtr = g_zSnd_GlobalVolumeScalePtr;
+    const int oldFlag10 = g_zSnd_Flag10PlaybackEnabled;
+    const int oldSndInitialized = g_zSnd_IsInitialized;
+    const int oldSndPreInitialized = g_zSnd_PreInitialized;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const float oldHudScale = g_HudSensorTracker.hudScale;
+    const float oldUnscaledTime = g_Time_UnscaledAccumulatedTimeSec;
+    HudSensorTracker const oldGlobalTracker = g_HudSensorTracker;
+    const int oldObjectiveCommandLocked = g_HudSensorTracker_ObjectiveCommandLocked;
+    const int oldMapOverlayRefCount = g_Hud_MapOverlayRefCount;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+
+    HMODULE messagesDll = LoadLibraryA("support\\messages.dll");
+    if (messagesDll == nullptr) {
+        messagesDll = LoadLibraryA("..\\..\\..\\..\\support\\messages.dll");
+    }
+    if (messagesDll == nullptr) {
+        DeleteObject(summary->hFont);
+        DeleteObject(desc->hFont);
+        return 1;
+    }
+
+    zVidImagePartial firstImage = {};
+    zVidImagePartial currentImage = {};
+    zVidImagePartial widgetImage = {};
+    widgetImage.width = 16;
+
+    g_zLoc_MessagesDllHandle = messagesDll;
+    g_HudUiMgrObjectiveSummaryTextPanel = summary;
+    g_HudUiMgrObjectiveDescTextPanel = desc;
+    g_HudUiMgrObjectiveLabelTextPanel = summary;
+    g_HudUiMgrSensorOverlay.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+    g_HudUiMgrObjectiveSensorRect.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+    g_HudUiMgrObjectiveBar.ftable =
+        reinterpret_cast<const HudUiBar_FTable *>(&g_HudUiCommon_FTable);
+    g_HudUiMgrObjectiveWidget.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+    g_HudUiMgrObjectiveMeter.ftable =
+        reinterpret_cast<const HudUiMeter_FTable *>(&g_HudUiCommon_FTable);
+    g_HudUiMgrObjectiveWidget.image = &widgetImage;
+    g_HudUiMgrObjectiveChatComposeActive = 0;
+
+    HudSensorTracker tracker = {};
+    tracker.objectiveCount = 5;
+    tracker.completedObjectiveCount = 2;
+    tracker.primaryGunDispatchCount = 8;
+    tracker.missionStat0 = 9;
+    tracker.missionStat1 = 7;
+    tracker.missionStat3 = 11;
+    tracker.weaponsFoundMask = 0x15;
+    tracker.objectiveMeterSeconds = 125.8f;
+    tracker.currentObjectiveIndex = -1;
+    tracker.objectiveSlots[0].objectiveImage = &firstImage;
+    std::strcpy(tracker.objectiveSlots[0].objectiveTitle, "First objective");
+    tracker.objectiveSlots[2].objectiveImage = &currentImage;
+    std::strcpy(tracker.objectiveSlots[2].objectiveTitle, "Review title");
+    std::strcpy(tracker.objectiveSlots[2].objectiveDesc, "Review description");
+    std::strcpy(tracker.objectiveSlots[2].objectiveSummary, "Current summary");
+    g_OptCatalog_DamageFeedbackHitCount = 3;
+
+    g_HudUiMgrObjectivePhase = 1;
+    tracker.objectiveUiMode = 2;
+    tracker.SetObjectivePanelVisible(0);
+    const bool hideOk = tracker.objectiveUiMode == 0 && g_HudUiMgrObjectivePhase == 3;
+
+    char objectiveLine[0x80] = {};
+    char statLine[0x80] = {};
+    char timeLine[0x80] = {};
+    if (zLoc::FormatMessage(objectiveLine, 0x40, 0x116, 2, 5, 37) == 0 ||
+        zLoc::FormatMessage(statLine, 0x40, 0x117, 7, 7, 11, 0x15) == 0 ||
+        zLoc::FormatMessage(timeLine, 0x40, 0x118, 2, 5) == 0) {
+        g_zLoc_MessagesDllHandle = oldMessagesDll;
+        g_HudUiMgrObjectiveSummaryTextPanel = oldSummaryPanel;
+        g_HudUiMgrObjectiveDescTextPanel = oldDescPanel;
+        g_HudUiMgrObjectiveLabelTextPanel = oldLabelPanel;
+        g_OptCatalog_DamageFeedbackHitCount = oldHitCount;
+        FreeLibrary(messagesDll);
+        DeleteObject(summary->hFont);
+        DeleteObject(desc->hFont);
+        return 2;
+    }
+
+    char expectedSummary[0x400] = {};
+    std::sprintf(expectedSummary, "%s\n%s\n%s", objectiveLine, statLine, timeLine);
+    for (char *percent = std::strstr(expectedSummary, "%%"); percent != nullptr;
+         percent = std::strstr(percent + 1, "%%")) {
+        std::memmove(percent, percent + 1, std::strlen(percent));
+    }
+
+    g_HudUiMgrObjectivePhase = 0;
+    tracker.SetObjectivePanelVisible(1);
+    const bool firstSlotOk =
+        tracker.objectiveUiMode == 2 && g_HudUiMgrObjectiveSensorRect.image == &firstImage &&
+        std::strcmp(&TestFieldAt<char>(summary, 0x34), "First objective") == 0 &&
+        std::strcmp(&TestFieldAt<char>(desc, 0x34), expectedSummary) == 0;
+
+    tracker.currentObjectiveIndex = 2;
+    g_HudUiMgrObjectivePhase = 0;
+    tracker.SetObjectivePanelVisible(1);
+    const bool currentSlotOk =
+        tracker.objectiveUiMode == 2 && g_HudUiMgrObjectiveSensorRect.image == &currentImage &&
+        std::strcmp(&TestFieldAt<char>(summary, 0x34), "Current summary") == 0 &&
+        std::strcmp(&TestFieldAt<char>(desc, 0x34), expectedSummary) == 0;
+
+    tracker.objectiveReviewSfx = nullptr;
+    tracker.objectiveUiMode = 0;
+    g_HudUiMgrObjectivePhase = 0;
+    tracker.Command_ToggleObjectivePanel();
+    const bool commandShowOk = tracker.objectiveUiMode == 2;
+
+    g_HudUiMgrObjectivePhase = 1;
+    tracker.Command_ToggleObjectivePanel();
+    const bool commandHideOk = tracker.objectiveUiMode == 0 && g_HudUiMgrObjectivePhase == 3;
+
+    tracker.firstIncompleteObjectiveIndex = 2;
+    tracker.objectiveFlowState = 0;
+    g_HudUiMgrObjectivePhase = 0;
+    tracker.SetObjectiveReviewVisible(1);
+    const bool reviewShowOk =
+        tracker.objectiveFlowState == 0x65 && tracker.objectiveUiMode == 1 &&
+        g_HudUiMgrObjectiveSensorRect.image == &currentImage &&
+        std::strcmp(&TestFieldAt<char>(summary, 0x34), "Review title") == 0 &&
+        std::strcmp(&TestFieldAt<char>(desc, 0x34), "Review description") == 0;
+
+    char completeTitle[0x100] = {};
+    char *const completeTitleRaw = zLoc::GetMessageString(0x0f0f);
+    if (completeTitleRaw == nullptr) {
+        g_zLoc_MessagesDllHandle = oldMessagesDll;
+        g_HudUiMgrObjectiveSummaryTextPanel = oldSummaryPanel;
+        g_HudUiMgrObjectiveDescTextPanel = oldDescPanel;
+        g_HudUiMgrObjectiveLabelTextPanel = oldLabelPanel;
+        g_OptCatalog_DamageFeedbackHitCount = oldHitCount;
+        g_zSnd_GlobalVolumeScalePtr = oldVolumeScalePtr;
+        g_zSnd_Flag10PlaybackEnabled = oldFlag10;
+        g_HudSensorTracker.hudScale = oldHudScale;
+        FreeLibrary(messagesDll);
+        DeleteObject(summary->hFont);
+        DeleteObject(desc->hFont);
+        return 8;
+    }
+    std::strcpy(completeTitle, completeTitleRaw);
+
+    tracker.firstIncompleteObjectiveIndex = tracker.objectiveCount;
+    tracker.currentObjectiveIndex = 2;
+    g_HudUiMgrObjectivePhase = 0;
+    tracker.SetObjectiveReviewVisible(1);
+    const bool reviewCompleteOk =
+        tracker.objectiveUiMode == 1 && g_HudUiMgrObjectiveSensorRect.image == &currentImage &&
+        std::strcmp(&TestFieldAt<char>(summary, 0x34), "Review title") == 0;
+
+    float globalScale = 0.2f;
+    g_zSnd_GlobalVolumeScalePtr = &globalScale;
+    g_zSnd_Flag10PlaybackEnabled = 0;
+    g_HudSensorTracker.hudScale = 0.625f;
+    g_HudUiMgrObjectivePhase = 1;
+    tracker.SetObjectiveReviewVisible(0);
+    const bool reviewHideOk = tracker.objectiveUiMode == 0 &&
+                              g_HudUiMgrObjectivePhase == 3 &&
+                              globalScale == 0.625f &&
+                              g_zSnd_Flag10PlaybackEnabled == 1;
+
+    zSndSample completeSfx = {};
+    zSndSample previousReadSfx = {};
+    zSndSample firstReadSfx = {};
+    zSndSample thirdReadSfx = {};
+    tracker.objectiveCompleteSfx = &completeSfx;
+    tracker.objectiveSlots[0].readSoundSample = &firstReadSfx;
+    tracker.objectiveSlots[2].readSoundSample = &thirdReadSfx;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_ActiveBackend = 2;
+    g_HudSensorTracker.hudScale = 0.75f;
+
+    tracker.objectiveUiMode = 0;
+    tracker.objectiveFlowState = 0;
+    tracker.firstIncompleteObjectiveIndex = 2;
+    g_HudUiMgrObjectivePhase = 0;
+    tracker.AdvanceObjectiveState();
+    const bool advanceShowReviewOk =
+        tracker.objectiveFlowState == 0x65 && tracker.objectiveUiMode == 1 &&
+        g_HudUiMgrObjectiveSensorRect.image == &currentImage &&
+        std::strcmp(&TestFieldAt<char>(summary, 0x34), "Review title") == 0;
+
+    globalScale = 0.4f;
+    g_zSnd_GlobalVolumeScalePtr = &globalScale;
+    g_zSnd_Flag10PlaybackEnabled = 0;
+    tracker.objectiveUiMode = 1;
+    tracker.objectiveFlowState = 0;
+    tracker.currentObjectiveReadSound = &previousReadSfx;
+    g_HudUiMgrObjectivePhase = 1;
+    tracker.AdvanceObjectiveState();
+    const bool advanceHideReviewOk =
+        tracker.objectiveFlowState == 0x65 && tracker.objectiveUiMode == 0 &&
+        g_HudUiMgrObjectivePhase == 3 && globalScale == 0.75f &&
+        g_zSnd_Flag10PlaybackEnabled == 1;
+
+    globalScale = 1.0f;
+    g_zSnd_GlobalVolumeScalePtr = &globalScale;
+    g_zSnd_Flag10PlaybackEnabled = 1;
+    g_Time_UnscaledAccumulatedTimeSec = 10.0f;
+    float readTime = 2.5f;
+    std::memcpy(&tracker.objectiveReadTimeSecRaw, &readTime, sizeof(readTime));
+    tracker.objectiveUiMode = 0;
+    tracker.objectiveFlowState = 0x64;
+    tracker.missionId = 2;
+    tracker.currentObjectiveIndex = -1;
+    tracker.firstIncompleteObjectiveIndex = 0;
+    g_HudUiMgrObjectivePhase = 0;
+    tracker.AdvanceObjectiveState();
+    float deadline = 0.0f;
+    std::memcpy(&deadline, &tracker.objectiveFlowDeadlineSecRaw, sizeof(deadline));
+    const bool advanceSequentialOk =
+        tracker.currentObjectiveReadSound == &firstReadSfx &&
+        tracker.objectiveFlowState == 0x68 && deadline == 12.5f &&
+        tracker.objectiveUiMode == 2 && tracker.hudScale == 1.0f &&
+        globalScale == 0.600000024f && g_zSnd_Flag10PlaybackEnabled == 0;
+
+    globalScale = 0.5f;
+    g_zSnd_GlobalVolumeScalePtr = &globalScale;
+    g_zSnd_Flag10PlaybackEnabled = 1;
+    tracker.objectiveUiMode = 0;
+    tracker.objectiveFlowState = 0x67;
+    tracker.currentObjectiveIndex = 0;
+    tracker.firstIncompleteObjectiveIndex = 2;
+    tracker.currentObjectiveReadSound = nullptr;
+    g_HudUiMgrObjectivePhase = 0;
+    tracker.AdvanceObjectiveState();
+    const bool advanceJumpOk =
+        tracker.currentObjectiveReadSound == &thirdReadSfx &&
+        tracker.objectiveFlowState == 0x69 && tracker.hudScale == 0.5f &&
+        globalScale == 0.300000012f && g_zSnd_Flag10PlaybackEnabled == 0;
+
+    int networkEnabled = 0;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_HudSensorTracker = {};
+    g_HudSensorTracker.objectiveCount = 5;
+    g_HudSensorTracker.objectiveCompleteSfx = &completeSfx;
+    g_HudSensorTracker.objectiveSlots[0].objectiveImage = &firstImage;
+    g_HudSensorTracker.objectiveSlots[0].readSoundSample = &firstReadSfx;
+    g_HudSensorTracker.objectiveSlots[2].objectiveImage = &currentImage;
+    g_HudSensorTracker.objectiveSlots[2].readSoundSample = &thirdReadSfx;
+    std::strcpy(g_HudSensorTracker.objectiveSlots[0].objectiveTitle, "First objective");
+    std::strcpy(g_HudSensorTracker.objectiveSlots[2].objectiveTitle, "Review title");
+    std::strcpy(g_HudSensorTracker.objectiveSlots[2].objectiveDesc, "Review description");
+    std::strcpy(g_HudSensorTracker.objectiveSlots[2].objectiveSummary, "Current summary");
+
+    g_HudSensorTracker_ObjectiveCommandLocked = 1;
+    g_HudSensorTracker.objectiveUiMode = 0;
+    g_HudSensorTracker.objectiveFlowState = 0;
+    HudSensorTracker::OnObjectiveCommand(0x18);
+    const bool commandLockedOk =
+        g_HudSensorTracker.objectiveUiMode == 0 && g_HudSensorTracker.objectiveFlowState == 0;
+
+    g_HudSensorTracker_ObjectiveCommandLocked = 0;
+    g_HudSensorTracker.firstIncompleteObjectiveIndex = 2;
+    g_HudUiMgrObjectivePhase = 0;
+    HudSensorTracker::OnObjectiveCommand(0x18);
+    const bool commandAdvanceOk =
+        g_HudSensorTracker.objectiveUiMode == 1 &&
+        g_HudSensorTracker.objectiveFlowState == 0x65;
+
+    g_HudSensorTracker.objectiveUiMode = 0;
+    g_HudSensorTracker.currentObjectiveIndex = -1;
+    g_HudUiMgrObjectivePhase = 0;
+    HudSensorTracker::OnObjectiveCommand(0x19);
+    const bool commandPanelOk = g_HudSensorTracker.objectiveUiMode == 2;
+
+    g_HudSensorTracker.mapScaleLerpActive = 1;
+    g_HudSensorTracker.mapScaleCurrent.x = 4.0f;
+    g_HudSensorTracker.mapScaleCurrent.y = 5.0f;
+    g_HudSensorTracker.mapScaleCurrent.z = 6.0f;
+    g_HudSensorTracker.mapLoadedFlag = 0;
+    g_Hud_MapOverlayRefCount = 1;
+    HudSensorTracker::OnObjectiveCommand(0x1b);
+    const bool commandMapToggleOk =
+        g_HudSensorTracker.mapScaleLerpActive == 0 && g_Hud_MapOverlayRefCount == 0;
+
+    g_HudSensorTracker.mapScaleLerpActive = 1;
+    g_HudSensorTracker.mapZoom = 10.0f;
+    g_HudSensorTracker.mapSndClick = &completeSfx;
+    HudSensorTracker::OnObjectiveCommand(0x1c);
+    HudSensorTracker::OnObjectiveCommand(0x1d);
+    const bool commandZoomOk = g_HudSensorTracker.mapZoom > 9.89f &&
+                               g_HudSensorTracker.mapZoom < 9.91f;
+
+    g_HudSensorTracker.hudScale = 0.875f;
+    g_HudSensorTracker.firstIncompleteObjectiveIndex = 2;
+    g_HudSensorTracker.objectiveUiMode = 0;
+    g_HudSensorTracker.objectiveFlowState = 0;
+    g_HudUiMgrObjectivePhase = 0;
+    HudSensorTracker::OnObjectiveReadSoundEvent(0);
+    const bool readEventShowOk =
+        g_HudSensorTracker.objectiveFlowState == 0x65 &&
+        g_HudSensorTracker.objectiveUiMode == 1 &&
+        g_HudUiMgrObjectiveSensorRect.image == &currentImage &&
+        std::strcmp(&TestFieldAt<char>(summary, 0x34), "Review title") == 0 &&
+        std::strcmp(&TestFieldAt<char>(desc, 0x34), "Review description") == 0;
+
+    globalScale = 0.25f;
+    g_zSnd_GlobalVolumeScalePtr = &globalScale;
+    g_zSnd_Flag10PlaybackEnabled = 0;
+    g_HudUiMgrObjectivePhase = 1;
+    HudSensorTracker::OnObjectiveReadSoundEvent(1);
+    const bool readEventHideOk =
+        g_HudSensorTracker.objectiveUiMode == 0 &&
+        g_HudUiMgrObjectivePhase == 3 &&
+        globalScale == 0.875f &&
+        g_zSnd_Flag10PlaybackEnabled == 1;
+
+    globalScale = 0.1f;
+    g_zSnd_GlobalVolumeScalePtr = &globalScale;
+    g_zSnd_Flag10PlaybackEnabled = 0;
+    HudSensorTracker::OnObjectiveReadSoundEvent(2);
+    const bool readEventRestoreOk =
+        globalScale == 0.875f && g_zSnd_Flag10PlaybackEnabled == 1;
+
+    globalScale = 0.2f;
+    g_zSnd_GlobalVolumeScalePtr = &globalScale;
+    g_zSnd_Flag10PlaybackEnabled = 0;
+    HudSensorTracker::OnObjectiveReadSoundEvent(99);
+    const bool readEventIgnoreOk =
+        globalScale == 0.2f && g_zSnd_Flag10PlaybackEnabled == 0;
+
+    g_zLoc_MessagesDllHandle = oldMessagesDll;
+    g_HudUiMgrObjectiveSummaryTextPanel = oldSummaryPanel;
+    g_HudUiMgrObjectiveDescTextPanel = oldDescPanel;
+    g_HudUiMgrObjectiveLabelTextPanel = oldLabelPanel;
+    g_OptCatalog_DamageFeedbackHitCount = oldHitCount;
+    g_zSnd_GlobalVolumeScalePtr = oldVolumeScalePtr;
+    g_zSnd_Flag10PlaybackEnabled = oldFlag10;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSnd_PreInitialized = oldSndPreInitialized;
+    g_zSnd_IsInitialized = oldSndInitialized;
+    g_HudSensorTracker.hudScale = oldHudScale;
+    g_Time_UnscaledAccumulatedTimeSec = oldUnscaledTime;
+    g_HudSensorTracker = oldGlobalTracker;
+    g_HudSensorTracker_ObjectiveCommandLocked = oldObjectiveCommandLocked;
+    g_Hud_MapOverlayRefCount = oldMapOverlayRefCount;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    FreeLibrary(messagesDll);
+    DeleteObject(summary->hFont);
+    DeleteObject(desc->hFont);
+    summary->hFont = nullptr;
+    desc->hFont = nullptr;
+
+    if (!hideOk) {
+        return 3;
+    }
+    if (!firstSlotOk) {
+        return 4;
+    }
+    if (!currentSlotOk) {
+        return 5;
+    }
+    if (!commandShowOk) {
+        return 6;
+    }
+    if (!commandHideOk) {
+        return 7;
+    }
+    if (!reviewShowOk) {
+        return 9;
+    }
+    if (!reviewCompleteOk) {
+        return 10;
+    }
+    if (!reviewHideOk) {
+        return 11;
+    }
+    if (!advanceShowReviewOk) {
+        return 12;
+    }
+    if (!advanceHideReviewOk) {
+        return 13;
+    }
+    if (!advanceSequentialOk) {
+        return 14;
+    }
+    if (!advanceJumpOk) {
+        return 15;
+    }
+    if (!commandLockedOk) {
+        return 16;
+    }
+    if (!commandAdvanceOk) {
+        return 17;
+    }
+    if (!commandPanelOk) {
+        return 18;
+    }
+    if (!commandMapToggleOk) {
+        return 19;
+    }
+    if (!commandZoomOk) {
+        return 20;
+    }
+    if (!readEventShowOk) {
+        return 21;
+    }
+    if (!readEventHideOk) {
+        return 22;
+    }
+    if (!readEventRestoreOk) {
+        return 23;
+    }
+    if (!readEventIgnoreOk) {
+        return 24;
+    }
+
+    return 0;
+}
+
+namespace {
+const char *g_weatherTextureName = nullptr;
+zVidImagePartial *g_weatherTextureImage = nullptr;
+int g_weatherTextureUseAlpha = 0;
+int g_weatherTextureArg3 = 0;
+int g_weatherTextureArg4 = 0;
+zVideo_TextureRecordPartial g_weatherTextureRecord = {};
+
+zVideo_TextureRecordPartial *RECOIL_FASTCALL
+HudWeatherFxCreateTextureRecordStub(const char *textureName, zVidImagePartial *image,
+                                    int useAlpha, int arg3, int arg4) {
+    g_weatherTextureName = textureName;
+    g_weatherTextureImage = image;
+    g_weatherTextureUseAlpha = useAlpha;
+    g_weatherTextureArg3 = arg3;
+    g_weatherTextureArg4 = arg4;
+    return &g_weatherTextureRecord;
+}
+} // namespace
+
+extern "C" int hud_weather_fx_constructor_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    zVideo_CreateTextureRecordProc const oldCreateTextureRecord = g_zVideo_pfnCreateTextureRecord;
+
+    g_weatherTextureName = nullptr;
+    g_weatherTextureImage = nullptr;
+    g_weatherTextureUseAlpha = 0;
+    g_weatherTextureArg3 = 0;
+    g_weatherTextureArg4 = 0;
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_pfnCreateTextureRecord = HudWeatherFxCreateTextureRecordStub;
+
+    std::srand(1);
+    HudWeatherFx weather = {};
+    HudWeatherFx *const result = weather.Constructor(3);
+
+    bool particlesCopied = true;
+    for (int index = 0; index < weather.particleCount; ++index) {
+        const zVec3 &source = weather.particlePositions[weather.sourceBufferIndex][index];
+        const zVec3 &dest = weather.particlePositions[weather.destBufferIndex][index];
+        particlesCopied = particlesCopied && source.x == dest.x && source.y == dest.y &&
+                          source.z == dest.z && source.z >= 0.5f && source.z <= 1.0f;
+    }
+
+    const bool quadsInvalid =
+        weather.particleQuads[0].x == -1 && weather.particleQuads[0].y == -1 &&
+        weather.particleQuads[0].width == -1 && weather.particleQuads[0].height == -1 &&
+        weather.particleQuads[2].x == -1 && weather.particleQuads[2].y == -1 &&
+        weather.particleQuads[2].width == -1 && weather.particleQuads[2].height == -1;
+
+    const bool initialized =
+        result == &weather && weather.ftable == &g_HudWeatherFx_Vtable &&
+        weather.viewportRect == nullptr && weather.maxParticles == 3 &&
+        weather.particleCount == 3 && weather.packedColor16 == 0x7fff &&
+        weather.alphaStartScale == 1.0f && weather.alphaEndScale == 0.0500000007f &&
+        weather.camera == nullptr && weather.activeParticleCount == 0 &&
+        weather.sourceBufferIndex == 0 && weather.destBufferIndex == 1 &&
+        weather.basisVector.x == 0.0f && weather.basisVector.y == 1.0f &&
+        weather.basisVector.z == 0.0f && weather.gravity == 1.0f &&
+        weather.windDirection == 0.0f && weather.windVelocity == 1.0f;
+
+    const bool imageOk =
+        weather.textureName != nullptr && std::strcmp(weather.textureName, "SnowFX") == 0 &&
+        weather.softwareImage != nullptr && weather.softwareImage->formatFlagsPacked == 0x2b &&
+        weather.softwareImage->width == 16 && weather.softwareImage->height == 8 &&
+        weather.softwareImage->pixelCount == 128 && weather.textureRecord == &g_weatherTextureRecord &&
+        g_weatherTextureName == weather.textureName &&
+        g_weatherTextureImage == weather.softwareImage && g_weatherTextureUseAlpha == 2 &&
+        g_weatherTextureArg3 == 1 && g_weatherTextureArg4 == 1;
+
+    char *const alphaMap =
+        weather.softwareImage != nullptr ? weather.softwareImage->alphaMap : nullptr;
+    if (weather.softwareImage != nullptr) {
+        zVid_Image::Destroy(weather.softwareImage);
+    }
+    if (alphaMap != nullptr) {
+        std::free(alphaMap);
+    }
+    ::operator delete(weather.particleQuads);
+    ::operator delete(weather.particlePositions[0]);
+    ::operator delete(weather.particlePositions[1]);
+
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_pfnCreateTextureRecord = oldCreateTextureRecord;
+
+    return initialized && quadsInvalid && particlesCopied && imageOk ? 0 : 1;
+}
+
+extern "C" int hud_weather_fx_derived_constructors_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    g_zVideo_ActiveRendererPath = 0;
+
+    std::srand(2);
+    HudWeatherFxSnow snow = {};
+    HudWeatherFxSnow *const snowResult = snow.Constructor(2);
+    const bool snowOk =
+        snowResult == &snow && snow.ftable == &g_HudWeatherFxSnow_Vtable &&
+        snow.maxParticles == 2 && snow.particleCount == 2 && snow.emitEnabled == 1 &&
+        snow.emitRadius == 20.0f && snow.emitDepth == 400.0f &&
+        snow.softwareImage == nullptr && snow.textureRecord == nullptr &&
+        snow.particlePositions[0][0].x == snow.particlePositions[1][0].x &&
+        snow.particlePositions[0][1].z == snow.particlePositions[1][1].z;
+
+    std::srand(3);
+    HudWeatherFxRain rain = {};
+    HudWeatherFxRain *const rainResult = rain.Constructor(1);
+    const bool rainOk =
+        rainResult == &rain && rain.ftable == &g_HudWeatherFxRain_Vtable &&
+        rain.maxParticles == 1 && rain.particleCount == 1 && rain.emitEnabled == 1 &&
+        rain.emitRadius == 20.0f && rain.emitDepth == 400.0f &&
+        rain.softwareImage == nullptr && rain.textureRecord == nullptr &&
+        rain.particlePositions[0][0].y == rain.particlePositions[1][0].y;
+
+    ::operator delete(snow.particleQuads);
+    ::operator delete(snow.particlePositions[0]);
+    ::operator delete(snow.particlePositions[1]);
+    ::operator delete(rain.particleQuads);
+    ::operator delete(rain.particlePositions[0]);
+    ::operator delete(rain.particlePositions[1]);
+
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    return snowOk && rainOk ? 0 : 1;
 }
 
 extern "C" int zhud_mgr_viewport_activation_smoke(void) {

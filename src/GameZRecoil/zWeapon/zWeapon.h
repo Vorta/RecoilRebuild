@@ -34,3 +34,8 @@ OnWeaponsSectionDataReady(zZbdSectionCallbackCtx *callbackCtx, const char *secti
                           void *weaponData, unsigned int dataSize, void *userData);
 RECOIL_NOINLINE void RECOIL_STDCALL SetMaxTetherAltitude(float altitude);
 }
+
+namespace zWeapon_OptCatalog {
+RECOIL_NOINLINE void RECOIL_FASTCALL LoadKillVerbString(zReader::Node *entryNode,
+                                                        OptCatalogEntryDef *entry);
+}

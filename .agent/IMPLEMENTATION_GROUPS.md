@@ -27,6 +27,22 @@ Use this file for temporary dependency-group notes during binary-safe reimplemen
 
 ## Active Groups
 
+### Group: zNetwork DirectPlay receive pump
+
+- Anchor: 0x48ae70 zNetworkDPlay::ReceivePendingMessages
+- Reason: dependency/source-file cluster; the receive wait loop depends on DirectPlay message pumping, packet dispatch, player-record list ownership, and host color-assignment packet helpers.
+- Source blockers:
+  - 0x48ae70 zNetworkDPlay::ReceivePendingMessages
+  - 0x48afe0 zNetworkDPlay::PumpIncomingMessages
+- Next action:
+  - `python tools/recoil_status.py 0x48afe0`
+  - Implement the EH-framed DirectPlay system-message pump now that its helper frontier is source-ready.
+- Current recovered shared facts:
+  - `0x48c200` dispatches registered packet handlers by packet type without owning handler records.
+  - `0x48b9e0` unlinks and deletes player-record list nodes, clears a positive color slot, and leaves the player record allocation caller-owned.
+  - `0x48b940` reserves the first free color index from 1 through the current session max-player count.
+  - `0x48b860` host-broadcasts packet type 1 with list-order player-key/color-index pairs after assigning a joining player color when needed.
+
 ### Group: OptCatalog runtime processing loop
 
 - Anchor: 0x4af060 OptCatalog::ProcessRuntimeInstances

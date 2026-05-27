@@ -90,6 +90,7 @@ int g_zVideo_PendingDitherEnable = 0;
 float g_zVideo_InverseZTolerancePending = 0.0f;
 int g_zVideo_D3DAppendFanCloseVertexPending = 0;
 int g_zVideo_PendingWireframeState = 0;
+int g_zVideo_D3DSceneDepth = 0;
 int g_zVid_AcceptedHardwareRendererCount = 0;
 int g_zVideo_NumAcceptedDirectDrawDevices = 0;
 int g_zVideo_DirectDrawEnumOrdinal = 0;
@@ -2880,6 +2881,46 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingDitherEnable(int enabled) {
     g_zVideo_PendingDitherEnable = enabled;
 }
 
+// Reimplements 0x4a9ac0: zVideo_dd3d::BeginSceneAndFlushPendingRenderStates
+RECOIL_NOINLINE int RECOIL_CDECL BeginSceneAndFlushPendingRenderStates()
+{
+    const HRESULT hresult = g_zVideo_pD3DDevice->BeginScene();
+    if (hresult != DD_OK) {
+        return zVideo_dd::ReportError(static_cast<int>(hresult),
+                                      "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c", 76);
+    }
+
+    const int pendingWireframeState = g_zVideo_PendingWireframeState;
+    if (pendingWireframeState == 0) {
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_FILLMODE, D3DFILL_SOLID);
+        g_zVideo_PendingWireframeState = -1;
+    } else if (pendingWireframeState == 1) {
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_FILLMODE, D3DFILL_WIREFRAME);
+        g_zVideo_PendingWireframeState = -1;
+    }
+
+    const int pendingDitherEnable = g_zVideo_PendingDitherEnable;
+    if (pendingDitherEnable != -1) {
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_DITHERENABLE,
+                                            static_cast<DWORD>(pendingDitherEnable));
+        g_zVideo_PendingDitherEnable = -1;
+    }
+
+    return 0;
+}
+
+// Reimplements 0x4a9b40: zVideo_dd3d::EndScene
+RECOIL_NOINLINE int RECOIL_CDECL EndScene()
+{
+    const HRESULT hresult = g_zVideo_pD3DDevice->EndScene();
+    if (hresult != DD_OK) {
+        return zVideo_dd::ReportError(static_cast<int>(hresult),
+                                      "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c", 115);
+    }
+
+    return 0;
+}
+
 namespace {
 const char *kZVideoDirect3DSourceFile = "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c";
 
@@ -4740,6 +4781,36 @@ TextureRecord_Destroy(zVideo_TextureRecordPartial *textureRecord) {
     free(textureRecord);
 }
 } // namespace zVideo_dd3d
+
+namespace zVideoD3D {
+
+// Reimplements 0x4a74d0: zVideoD3D::SceneEnter
+RECOIL_NOINLINE int RECOIL_CDECL SceneEnter()
+{
+    if (g_zVideo_D3DSceneDepth <= 0) {
+        zVideo_dd3d::BeginSceneAndFlushPendingRenderStates();
+        ++g_zVideo_D3DSceneDepth;
+    }
+
+    return 0;
+}
+
+// Reimplements 0x4a74f0: zVideoD3D::SceneLeave
+RECOIL_NOINLINE int RECOIL_CDECL SceneLeave()
+{
+    int depth = g_zVideo_D3DSceneDepth;
+    if (depth > 0) {
+        if (depth <= 1) {
+            zVideo_dd3d::EndScene();
+            depth = g_zVideo_D3DSceneDepth;
+        }
+        g_zVideo_D3DSceneDepth = depth - 1;
+    }
+
+    return 0;
+}
+
+} // namespace zVideoD3D
 
 namespace zVideo_dd {
 // Reimplements 0x4a9900: zVideo_dd::GetAcceptedDirectDrawDeviceCountCached

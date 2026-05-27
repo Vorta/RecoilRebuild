@@ -109,7 +109,7 @@ struct HudSensorTracker {
     HudSensorMapNode *mapNodeListHead;
     int mapLoadedFlag;
     zUtil_SaveGameState *trackedSaveStateSelection;
-    int outerRectCenterY;
+    zClass_NodePartial *mapWorldNode;
     int mapOverlayCenterX;
     int mapOverlayCenterY;
     char *loadedMapPath;
@@ -135,7 +135,10 @@ struct HudSensorTracker {
     float hudScale;
     int missionLoaded;
     int missionId;
-    int missionFlags;
+    union {
+        int missionFlags;
+        zClass_NodePartial *effectResourceNode;
+    };
     CString missionDataPath;
     CString zbdPath;
     CString missionGsPath;
@@ -216,10 +219,12 @@ struct HudSensorTracker {
     RECOIL_NOINLINE int RECOIL_THISCALL SetMissionId(int missionId);
     RECOIL_NOINLINE int RECOIL_THISCALL GetMissionId();
     RECOIL_NOINLINE int RECOIL_THISCALL LoadMissionCoreResources();
+    RECOIL_NOINLINE int RECOIL_THISCALL InitMissionGameplaySystems();
+    RECOIL_NOINLINE void RECOIL_THISCALL LoadMissionWeatherFx(const char *zrdPath);
     RECOIL_NOINLINE int RECOIL_THISCALL UnloadObjectives();
     RECOIL_NOINLINE int RECOIL_THISCALL LoadObjectivesFromPath(const char *path);
     RECOIL_NOINLINE int RECOIL_THISCALL
-    LoadObjectivesFromZrd(int unusedStack = 0);
+    LoadObjectivesFromZrd(const char *zrdPath = 0);
     RECOIL_NOINLINE int RECOIL_THISCALL LoadRaceCheckpointMeta();
     RECOIL_NOINLINE void RECOIL_THISCALL RunStartAnimsFromZrd(const char *zrdPath,
                                                               const char *namedNodeName);

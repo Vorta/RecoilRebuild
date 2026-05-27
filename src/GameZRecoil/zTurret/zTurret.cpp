@@ -952,6 +952,13 @@ RECOIL_NOINLINE int RECOIL_CDECL DisableTickCallback() {
     return zClass_Class::gwNodeSetActionCallback(g_zTurret_CallbackNode, 0);
 }
 
+// Reimplements 0x437d50: zTurret_System::EnableTickCallback
+// (D:\Proj\Battlesport\turret.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL EnableTickCallback() {
+    return zClass_Class::gwNodeSetActionCallback(
+        g_zTurret_CallbackNode, (void *)zTurret_System::TickAllRuntimesRoundRobin);
+}
+
 // Reimplements 0x437dc0: zTurret_System::FreeAllRuntimes
 RECOIL_NOINLINE int RECOIL_CDECL FreeAllRuntimes() {
     for (int i = 0; i < g_zTurret_RuntimeCount; ++i) {

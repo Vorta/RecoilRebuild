@@ -1,6 +1,8 @@
 #include "OptCatalog.h"
 #include "zWeapon.h"
 
+#include "Battlesport/GameNet.h"
+#include "Battlesport/player.h"
 #include "GameZRecoil/zDEClient/zdec.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/Time/Time.h"
@@ -54,6 +56,8 @@ zSndSample *g_OptCatalogSndLockOnWarning = 0;
 OptCatalogRemoveRuntimeRelayCallback g_OptCatalog_RemoveRuntimeRelayCallback = 0;
 int g_OptCatalogNetworkOptionState = 0;
 OptCatalogAllocRuntimeGateCallback g_OptCatalog_AllocRuntimeGateCallback = 0;
+OptCatalogAllocRuntimeGateCallback g_OptCatalog_AltGunDispatchNoOpCallback = 0;
+int g_OptCatalogProcessRuntimeRelayEnabled = 1;
 }
 
 namespace {
@@ -350,6 +354,26 @@ namespace {
         } else {
             SetCurrentVariantTagFromPacked(packedRuntimeTag);
         }
+    }
+}
+
+namespace zWeapon_OptCatalog {
+    // Reimplements 0x43ca20: zWeapon_OptCatalog::LoadKillVerbString
+    // (D:\Proj\GameZRecoil\zWeapon\zwep_init.c)
+    RECOIL_NOINLINE void RECOIL_FASTCALL LoadKillVerbString(zReader::Node *entryNode,
+                                                            OptCatalogEntryDef *entry) {
+        char *const killVerbString = static_cast<char *>(calloc(1, 20));
+        entry->killVerbString = killVerbString;
+
+        zReader::Node *const killVerbNode = zReader_GetNamedNode(entryNode, "KILL_VERB");
+        const char *sourceText = 0;
+        if (killVerbNode != 0) {
+            sourceText = zLoc::ResolveMessageKeyOrFallback(zReaderArrayString(killVerbNode, 1));
+        } else {
+            sourceText = zLoc::GetMessageString(0x250);
+        }
+
+        strncpy(killVerbString, sourceText, 19);
     }
 }
 
@@ -758,6 +782,99 @@ namespace OptCatalog {
         void *pendingSpawnTargetCountPtr, void *pendingSpawnTargetListPtr) {
         g_OptCatalogPendingSpawnTargetCountPtr = pendingSpawnTargetCountPtr;
         g_OptCatalogPendingSpawnTargetListPtr = pendingSpawnTargetListPtr;
+    }
+
+    // Reimplements 0x4340c0: OptCatalog::AltGunDispatchAllocRuntimeGateCallback
+    // (D:\Proj\Battlesport\ai_net.cpp)
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    AltGunDispatchAllocRuntimeGateCallback(OptCatalogEntryDef *self, void **saveStateSlot) {
+        const int ordinalIndex = self->ordinalIndex;
+        if (ordinalIndex == 0 || ordinalIndex == 1) {
+            return 1;
+        }
+
+        zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(*saveStateSlot);
+        if (saveState == 0) {
+            return 0;
+        }
+
+        if (saveState == (zUtil_SaveGameState *)(g_GameStateOrMapTable)) {
+            *saveStateSlot = (void *)(zVideo::ReturnSuccessStub());
+            GameNet::SendPkt07_AltGunDispatch(static_cast<short>(ordinalIndex),
+                                              (unsigned int)(*saveStateSlot));
+            *saveStateSlot = (void *)((unsigned int)(*saveStateSlot) | 0x01000000u);
+            return 1;
+        }
+
+        const unsigned int dispatchFlags =
+            static_cast<unsigned int>(saveState->playerState->altGunDispatchFlags);
+        if ((dispatchFlags & 0x02000000u) == 0) {
+            return 0;
+        }
+
+        *saveStateSlot = (void *)(dispatchFlags);
+        return 1;
+    }
+
+    // Reimplements 0x434240: OptCatalog::SendPkt0A_RemoveRuntimeRelay
+    // (D:\Proj\GameZRecoil\GameNet.cpp)
+    RECOIL_NOINLINE void RECOIL_FASTCALL
+    SendPkt0A_RemoveRuntimeRelay(OptCatalogEntryDef *self, zVec3 *pointOrVec3,
+                                 zClass_NodePartial *ownerNode) {
+        if (g_OptCatalogProcessRuntimeRelayEnabled == 0 || ownerNode == 0) {
+            return;
+        }
+
+        HudUiMgrSensorTrackNode *const ownerTrackContext =
+            (HudUiMgrSensorTrackNode *)(ownerNode->callbackContext);
+        if (ownerTrackContext == 0) {
+            return;
+        }
+
+        zUtil_SaveGameState *const ownerSaveState =
+            (zUtil_SaveGameState *)(ownerTrackContext->payload);
+        g_NetPkt0A_RemoveRuntimeRelayBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+        g_NetPkt0A_RemoveRuntimeRelayBuf.optCatalogEntryId =
+            static_cast<short>(self->ordinalIndex);
+        if (pointOrVec3 != 0) {
+            g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3 = *pointOrVec3;
+        } else {
+            g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3.x = 0.0f;
+            g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3.y = 0.0f;
+            g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3.z = 0.0f;
+        }
+        g_NetPkt0A_RemoveRuntimeRelayBuf.ownerPlayerKey = ownerSaveState->netPlayerRow->playerKey;
+        zNetwork_SendPacketReliable(&g_NetPkt0A_RemoveRuntimeRelayBuf.header);
+    }
+
+    // Reimplements 0x4342d0: OptCatalog::HandlePkt0A_RemoveRuntimeRelay
+    // (D:\Proj\GameZRecoil\GameNet.cpp)
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    HandlePkt0A_RemoveRuntimeRelay(int, NetPkt0A_RemoveRuntimeRelay *packet) {
+        OptCatalogEntryDef *const entry =
+            OptCatalog::FindEntryById(static_cast<int>(packet->optCatalogEntryId));
+
+        zVec3 relayPointScratch;
+        zVec3 *pointOrVec3 = &relayPointScratch;
+        if (packet->pointOrVec3.x == 0.0f && packet->pointOrVec3.y == 0.0f &&
+            packet->pointOrVec3.z == 0.0f) {
+            pointOrVec3 = 0;
+        }
+
+        GameNetPlayerRow *const row = GameNet::FindPlayerRowByKey(packet->ownerPlayerKey);
+        if (row == 0) {
+            return 0;
+        }
+
+        zUtil_SaveGameState *const ownerSaveState = (zUtil_SaveGameState *)row->saveState;
+        if (entry != 0 && ownerSaveState != 0) {
+            g_OptCatalogProcessRuntimeRelayEnabled = 0;
+            OptCatalog::RemoveRuntimeInstance(entry, pointOrVec3,
+                                              ownerSaveState->playerState->rootNode);
+            g_OptCatalogProcessRuntimeRelayEnabled = 1;
+        }
+
+        return 1;
     }
 
     // Reimplements 0x4b1fa0: OptCatalog::LoadFxSpecFromReaderNode

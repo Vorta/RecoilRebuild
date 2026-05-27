@@ -1463,6 +1463,14 @@ struct HudUiTripletEntries {
     HudUiScoreboardEntry *begin;
     HudUiScoreboardEntry *end;
     HudUiScoreboardEntry *cap;
+
+    RECOIL_NOINLINE int RECOIL_THISCALL GetCount();
+    RECOIL_NOINLINE static HudUiScoreboardEntry *RECOIL_STDCALL
+    CopyRange(HudUiScoreboardEntry *sourceBegin, HudUiScoreboardEntry *sourceEnd,
+              HudUiScoreboardEntry *dest);
+    RECOIL_NOINLINE static void RECOIL_STDCALL FillN(HudUiScoreboardEntry *dest,
+                                                     unsigned int count,
+                                                     const HudUiScoreboardEntry *sourceValue);
 };
 
 struct HudUiTriplet {

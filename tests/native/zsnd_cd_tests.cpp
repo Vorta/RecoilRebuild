@@ -1207,6 +1207,32 @@ extern "C" int zsnd_sample_play_simple_smoke(void) {
     return zSndSample_PlaySimple(0.375f) == 0.375f ? 0 : 1;
 }
 
+extern "C" int zsnd_global_volume_and_flag_helpers_smoke(void) {
+    void *const oldVolumeScalePtr = g_zSnd_GlobalVolumeScalePtr;
+    const int oldFlag10 = g_zSnd_Flag10PlaybackEnabled;
+
+    float scale = 0.25f;
+    g_zSnd_GlobalVolumeScalePtr = &scale;
+    const bool setOk =
+        zSnd::SetGlobalVolumeScale(0.75f) == 0.75f && scale == 0.75f;
+
+    const float previous = zSnd::MulGlobalVolumeScaleAndGetPrev(0.5f);
+    const bool mulOk = previous == 0.75f && scale == 0.375f;
+
+    g_zSnd_GlobalVolumeScalePtr = nullptr;
+    const bool nullSetOk = zSnd::SetGlobalVolumeScale(0.125f) == 0.125f &&
+                           scale == 0.375f;
+
+    zSnd::SetFlag10PlaybackEnabled(0);
+    const bool flagOffOk = g_zSnd_Flag10PlaybackEnabled == 0;
+    zSnd::SetFlag10PlaybackEnabled(7);
+    const bool flagOnOk = g_zSnd_Flag10PlaybackEnabled == 7;
+
+    g_zSnd_GlobalVolumeScalePtr = oldVolumeScalePtr;
+    g_zSnd_Flag10PlaybackEnabled = oldFlag10;
+    return setOk && mulOk && nullSetOk && flagOffOk && flagOnOk ? 0 : 1;
+}
+
 extern "C" int zsnd_sample_acquire_play_handle_smoke(void) {
     ResetStopBackendCounters();
 
@@ -2424,6 +2450,30 @@ extern "C" int zsnd_sample_play_a3d_simple_direct_smoke(void) {
     }
 
     ResetStopBackendCounters();
+    float markerTimes[2] = {1.25f, 4.5f};
+    int markerAux[4] = {11, 12, 321, 322};
+    sample.markerTimes = markerTimes;
+    sample.markerAux = markerAux;
+    sample.markerCount = 2;
+    sample.markerBaseTime = 0.0f;
+    g_zSndLastVoiceStopMarkerIndex = -1;
+
+    zSndPlayHandle *directMarkerResult = sample.PlayDirectSound(1, 0.25f, 77);
+    if (directMarkerResult != &sample.primaryVoice || sample.markerBaseTime != 4.5f ||
+        g_zSndLastVoiceStopMarkerIndex != 77 || sample.primaryVoice.gainScaled != -1204 ||
+        g_testSetVolumeCount != 1 || g_testLastVolume != -1204 ||
+        g_testSetCurrentPositionCount != 1 || g_testLastCurrentPosition != 321 ||
+        g_testPlayDirectSoundCount != 1) {
+        return 3;
+    }
+
+    sample.createGuard = 1;
+    if (sample.PlayDirectSound(1, 0.25f, 77) != nullptr) {
+        return 4;
+    }
+    sample.createGuard = 0;
+
+    ResetStopBackendCounters();
     TestA3dSourceVTable a3dVTable = {};
     a3dVTable.GetStatus = &TestDirectSoundGetStatus;
     a3dVTable.SetSpatializationEnabled = &TestA3dSetSpatializationEnabled;
@@ -2643,6 +2693,28 @@ extern "C" int zsnd_sample_destroy_owned_data_smoke(void) {
                    (sample.replayFields.flags & 0x08) == 0
                ? 0
                : 2;
+}
+
+void RECOIL_FASTCALL TestPlaybackEventHandler(int) {
+}
+
+void RECOIL_FASTCALL TestPlaybackEventHandlerOther(int) {
+}
+
+extern "C" int zsnd_sample_set_playback_event_handler_smoke(void) {
+    zSndSample sample{};
+    sample.SetPlaybackEventHandler(&TestPlaybackEventHandler);
+    const bool setOk = sample.playbackEventHandler == &TestPlaybackEventHandler;
+
+    sample.createGuard = 1;
+    sample.SetPlaybackEventHandler(&TestPlaybackEventHandlerOther);
+    const bool guardedOk = sample.playbackEventHandler == &TestPlaybackEventHandler;
+
+    sample.createGuard = 0;
+    sample.SetPlaybackEventHandler(nullptr);
+    const bool clearOk = sample.playbackEventHandler == nullptr;
+
+    return setOk && guardedOk && clearOk ? 0 : 1;
 }
 
 extern "C" int zsnd_fade_entry_backend_and_dispatch_smoke(void) {

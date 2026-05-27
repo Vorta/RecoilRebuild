@@ -124,12 +124,12 @@ void RECOIL_FASTCALL TestOptCatalogImpactCallback(
                                          : -1;
 }
 
-int RECOIL_CDECL TestOptCatalogCraterRelayCallback() {
+int RECOIL_FASTCALL TestOptCatalogCraterRelayCallback(void *) {
     ++g_TestCraterRelayCalls;
     return g_TestCraterRelayResult;
 }
 
-int RECOIL_CDECL TestOptCatalogQSandRelayCallback() {
+int RECOIL_FASTCALL TestOptCatalogQSandRelayCallback(void *) {
     ++g_TestQSandRelayCalls;
     return g_TestQSandRelayResult;
 }
@@ -313,6 +313,28 @@ extern "C" int zweapon_init_smoke(void) {
     g_zUtil_ZbdManager = nullptr;
     g_zWeapon_ZarHandlerRegistered = 1;
     return skipOk ? 0 : 3;
+}
+
+extern "C" int zweapon_optcatalog_load_kill_verb_string_smoke(void) {
+    zReader::Node killVerbPayload[2] = {};
+    zReader::Node entryPayload[3] = {};
+    zReader::Node entryNode = {};
+    const char *const longVerb = "abcdefghijklmnopqrstuv";
+
+    MakeReaderNameNode(entryPayload[1], "KILL_VERB");
+    MakeReaderStringArrayNode(entryPayload[2], killVerbPayload, longVerb);
+    MakeReaderArrayNode(entryNode, entryPayload, 3);
+
+    OptCatalogEntryDef entry = {};
+    zWeapon_OptCatalog::LoadKillVerbString(&entryNode, &entry);
+
+    const bool copiedAndTerminated =
+        entry.killVerbString != nullptr &&
+        std::strncmp(entry.killVerbString, "abcdefghijklmnopqrs", 19) == 0 &&
+        entry.killVerbString[19] == '\0';
+
+    std::free(entry.killVerbString);
+    return copiedAndTerminated ? 0 : 1;
 }
 
 extern "C" int zweapon_load_opt_catalog_from_path_smoke(void) {

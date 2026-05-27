@@ -1,10 +1,13 @@
 #include "zdec.h"
 
+#include "Battlesport/GameNet.h"
+#include "Battlesport/player.h"
 #include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zUtil/zZbd.h"
 #include "GameZRecoil/zVideo/zVideo.h"
@@ -185,6 +188,63 @@ char *zReaderArrayString(zReader::Node *node, int index) {
 } // namespace
 
 namespace zDEClient_Crater {
+// Reimplements 0x433ad0: zDEClient_Crater::Execute
+// (D:\Proj\GameZRecoil\RecoilApp\zDEClient_Crater.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL Execute(zDEClient_CraterEventTemplate *eventTemplate) {
+    if (eventTemplate->radius <= 0.0f) {
+        eventTemplate->radius = -eventTemplate->radius;
+        return 1;
+    }
+
+    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
+    if (eventTemplate->damageOwnerNode != saveState->playerState->rootNode) {
+        return 0;
+    }
+
+    g_NetPkt0F_CraterEventSendBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt0F_CraterEventSendBuf.craterTypeId =
+        zModel_MatlSlot::IndexFromPtrOrMinus1(eventTemplate->craterMaterialSlot);
+    g_NetPkt0F_CraterEventSendBuf.center = eventTemplate->center;
+    g_NetPkt0F_CraterEventSendBuf.radius = eventTemplate->radius;
+
+    if (zNetwork::IsHost() != 0) {
+        NetRelayCallback(zNetwork_GetLocalPlayerKey(), &g_NetPkt0F_CraterEventSendBuf);
+        return 0;
+    }
+
+    zNetwork_SendPacketReliable(&g_NetPkt0F_CraterEventSendBuf.header);
+    return 0;
+}
+
+// Reimplements 0x433b70: zDEClient_Crater::NetRelayCallback
+// (D:\Proj\GameZRecoil\RecoilApp\zDEClient_Crater.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+NetRelayCallback(int, NetPkt0F_CraterEvent *packet) {
+    zDEClient_CraterEventTemplate eventTemplate;
+    InitEventTemplateDefaults(&eventTemplate);
+
+    if (zNetwork::IsHost() != 0) {
+        eventTemplate.craterMaterialSlot = zModel_Matl::GetPoolEntry(packet->craterTypeId);
+        eventTemplate.center = packet->center;
+        eventTemplate.radius = -packet->radius;
+        if (InstanceEventMaybeRelay(&eventTemplate) == 0) {
+            packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+            packet->eventFlags |= 0x80u;
+            zNetwork_SendPacketReliable(&packet->header);
+        }
+        return 1;
+    }
+
+    if ((packet->eventFlags & 0x80u) != 0) {
+        eventTemplate.craterMaterialSlot = zModel_Matl::GetPoolEntry(packet->craterTypeId);
+        eventTemplate.center = packet->center;
+        eventTemplate.radius = -packet->radius;
+        InstanceEventMaybeRelay(&eventTemplate);
+    }
+
+    return 1;
+}
+
 // Reimplements 0x456ad0: zDEClient_Crater::DestroyFeature
 // (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c)
 RECOIL_NOINLINE void RECOIL_FASTCALL DestroyFeature(zDEClient_CraterFeature *featureInstance) {
@@ -583,7 +643,8 @@ InstanceEvent(zDEClient_CraterEventTemplate *eventTemplate, int playEffectAnim) 
 // (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c)
 RECOIL_NOINLINE int RECOIL_FASTCALL
 InstanceEventMaybeRelay(zDEClient_CraterEventTemplate *eventTemplate) {
-    if (g_zDEClientCraterNetRelayCallback != 0 && g_zDEClientCraterNetRelayCallback() == 0) {
+    if (g_zDEClientCraterNetRelayCallback != 0 &&
+        g_zDEClientCraterNetRelayCallback(eventTemplate) == 0) {
         return -1;
     }
 
@@ -592,6 +653,33 @@ InstanceEventMaybeRelay(zDEClient_CraterEventTemplate *eventTemplate) {
 } // namespace zDEClient_Crater
 
 namespace zDEClient_QSand {
+// Reimplements 0x433d40: zDEClient_QSand::NetRelayCallback
+// (D:\Proj\GameZRecoil\RecoilApp\zDEClient_QSand.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+NetRelayCallback(int, NetPkt10_QSandEvent *packet) {
+    zDEClient_QSandEventTemplate eventTemplate;
+    zDEClient::CopyQSandEventTemplateDefaults(&eventTemplate);
+
+    if (zNetwork::IsHost() != 0) {
+        eventTemplate.center = packet->center;
+        eventTemplate.radius = -packet->radius;
+        if (InstanceEventMaybeRelay(&eventTemplate) == 0) {
+            packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+            packet->eventFlags |= 0x80u;
+            zNetwork_SendPacketReliable(&packet->header);
+        }
+        return 1;
+    }
+
+    if ((packet->eventFlags & 0x80u) != 0) {
+        eventTemplate.center = packet->center;
+        eventTemplate.radius = -packet->radius;
+        InstanceEventMaybeRelay(&eventTemplate);
+    }
+
+    return 1;
+}
+
 // Reimplements 0x455ea0: zDEClient_QSand::DestroyFeature
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.c)
 RECOIL_NOINLINE void RECOIL_FASTCALL DestroyFeature(zDEClient_QSandFeature *featureInstance) {
@@ -973,7 +1061,8 @@ CreateFeature(zDEClient_QSandFeature *featureInstance) {
 // (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.c)
 RECOIL_NOINLINE int RECOIL_FASTCALL
 InstanceEventMaybeRelay(zDEClient_QSandEventTemplate *eventTemplate) {
-    if (g_zDEClientQSandNetRelayCallback != 0 && g_zDEClientQSandNetRelayCallback() == 0) {
+    if (g_zDEClientQSandNetRelayCallback != 0 &&
+        g_zDEClientQSandNetRelayCallback(eventTemplate) == 0) {
         return -1;
     }
 
@@ -1778,6 +1867,28 @@ RECOIL_NOINLINE void RECOIL_STDCALL ApplyFeatureEntry(zDEClient_FeatureEntry *co
         zDEClient_Crater::InstanceEvent(&container->eventData.crater, 0);
     } else if (container->featureType == 3) {
         zDEClient_QSand::InstanceEventMaybeRelay(&container->eventData.quickSand);
+    }
+}
+
+// Reimplements 0x457c50: zDEClient::DispatchFeatureEventTemplates
+// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL
+DispatchFeatureEventTemplates(zDEClient_CraterFeatureDispatch craterHandler,
+                              zDEClient_QSandFeatureDispatch qSandHandler) {
+    for (zDEClient_FeatureEntry *entry = g_zDEClient_FeatureListBegin;
+         entry != g_zDEClient_FeatureListEnd; ++entry) {
+        zDEClient_FeatureEntry featureEntry;
+        memcpy(&featureEntry, entry, sizeof(featureEntry));
+
+        if (featureEntry.featureType == 1) {
+            if (craterHandler != 0) {
+                craterHandler(&featureEntry.eventData.crater);
+            }
+        } else if (featureEntry.featureType == 3) {
+            if (qSandHandler != 0) {
+                qSandHandler(&featureEntry.eventData.quickSand);
+            }
+        }
     }
 }
 
