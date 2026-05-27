@@ -20,6 +20,8 @@ for function identity, types, markers, and acceptance state.
   legacy DirectX, imports, and runtime verification.
 - `source_file_map.md` - generated original-source placement map from
   `Reimplements` provenance comments in `src/`.
+- `visual_studio_mcp_workflow.md` - preferred Visual Studio MCP build workflow
+  for generated `vs-x86` solution projects.
 - `verified_patterns.md` - compact ledger of currently verified reusable source
   and verification shapes.
 - `zsnd_error_verification.md` - zSound error-helper verification notes,

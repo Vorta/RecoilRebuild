@@ -65,3 +65,5 @@ Current durable reconstruction notes:
   assumptions.
 - `source_file_map.md` maps recovered original source paths to current repo
   files from provenance comments.
+- `visual_studio_mcp_workflow.md` records the preferred Visual Studio MCP build
+  path for generated `vs-x86` projects.

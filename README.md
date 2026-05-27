@@ -127,7 +127,10 @@ A Visual Studio Win32 solution can be generated with:
 cmake --preset vs-x86
 ```
 
-The generated native solution is under `build/vs-x86`.
+The generated native solution is under `build/vs-x86`. Agents should prefer
+Visual Studio MCP for this solution when available, using the workflow in
+`docs/reconstruction/visual_studio_mcp_workflow.md`, instead of calling Visual
+Studio batch files directly.
 
 The local full verification workspace uses legacy SDK surfaces:
 
@@ -219,6 +222,8 @@ python -m unittest discover -s tests/tools -p *_tests.py
   namespace boundaries.
 - `docs/reconstruction/source_file_map.md` - generated original-source to
   current-source placement map.
+- `docs/reconstruction/visual_studio_mcp_workflow.md` - Visual Studio MCP build
+  workflow for generated `vs-x86` projects.
 - `docs/reconstruction/NOTES.md` - archival subsystem reconstruction notes and
   decompiled-source findings; source material, not the preferred location for
   new notes.
