@@ -65,6 +65,7 @@ extern "C" int briefing_start_for_mission_smoke(void);
 extern "C" int briefing_set_progress_and_sleep_smoke(void);
 extern "C" int briefing_runtime_constructor_smoke(void);
 extern "C" int briefing_locator_panel_constructor_smoke(void);
+extern "C" int briefing_locator_panel_blit_dirty_rect_smoke(void);
 extern "C" int briefing_runtime_update_smoke(void);
 extern "C" int briefing_objective_picture_draw_noise_overlay_smoke(void);
 extern "C" int briefing_build_objective_actions_smoke(void);
@@ -1602,6 +1603,8 @@ int main(int argc, char **argv) {
         {"briefing_set_progress_and_sleep_smoke", briefing_set_progress_and_sleep_smoke},
         {"briefing_runtime_constructor_smoke", briefing_runtime_constructor_smoke},
         {"briefing_locator_panel_constructor_smoke", briefing_locator_panel_constructor_smoke},
+        {"briefing_locator_panel_blit_dirty_rect_smoke",
+         briefing_locator_panel_blit_dirty_rect_smoke},
         {"briefing_runtime_update_smoke", briefing_runtime_update_smoke},
         {"briefing_objective_picture_draw_noise_overlay_smoke",
          briefing_objective_picture_draw_noise_overlay_smoke},

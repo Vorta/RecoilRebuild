@@ -1278,7 +1278,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBriefingLocatorPanel::BlitDirtyRect)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBriefingLocatorPanel::BlitDirtyRect File: src/Battlesport/Briefing.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: briefing_locator_panel_blit_dirty_rect)
   - [❌] Binary-safe
 - 0x403cb0:
   - [✅] Reconstructed (Name: HudUiBriefingLocatorPanel::Update)

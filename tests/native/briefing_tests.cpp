@@ -38,6 +38,7 @@ int g_briefingBlitX;
 int g_briefingBlitY;
 int g_briefingBlitFlags;
 int g_briefingBlitHasRect;
+zVidRect32 g_briefingBlitRect;
 
 int RECOIL_FASTCALL TestVideoSurfaceDispatch(zVideo_SurfaceStatePartial *) {
     return 0;
@@ -76,6 +77,9 @@ void RECOIL_FASTCALL TestBriefingBltSourceToPrimary(void *self, int dstX, int ds
     g_briefingBlitY = dstY;
     g_briefingBlitFlags = clipFlags;
     g_briefingBlitHasRect = srcRect != nullptr ? 1 : 0;
+    if (srcRect != nullptr) {
+        g_briefingBlitRect = *static_cast<zVidRect32 *>(srcRect);
+    }
 }
 
 struct TestBriefingTransportProgress : HudUiBriefingTransportProgress {
@@ -582,6 +586,51 @@ extern "C" int briefing_locator_panel_constructor_smoke(void) {
 
     RestoreConstructorGlobals(state);
     return ok ? 0 : 1;
+}
+
+extern "C" int briefing_locator_panel_blit_dirty_rect_smoke(void) {
+    constexpr std::size_t kRuntimeSize = 0xba70;
+    constexpr std::size_t kLocatorPanelsOffset = 0xb8f0;
+
+    zVideo_BltSourceToPrimaryProc oldBlit = g_zVideo_pfnBltSourceToPrimary;
+    ConstructorGlobalState state = {};
+    PrepareConstructorGlobals(state);
+
+    alignas(4) static unsigned char storage[kRuntimeSize];
+    std::memset(storage, 0, sizeof(storage));
+    HudUiBriefingRuntime *const runtime = reinterpret_cast<HudUiBriefingRuntime *>(storage);
+    runtime->Constructor(3);
+
+    auto *const locator = reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset);
+    typedef void (RECOIL_THISCALL *DrawBaseFn)(HudUiCircle * self);
+    DrawBaseFn const drawBase = reinterpret_cast<DrawBaseFn>(locator->base.ftable->slots[2]);
+
+    g_zVideo_pfnBltSourceToPrimary = TestBriefingBltSourceToPrimary;
+    g_briefingBlitCount = 0;
+    g_briefingBlitImage = nullptr;
+    locator->base.bltSource = nullptr;
+    drawBase(locator);
+    const bool nullSkipped = g_briefingBlitCount == 0 && g_briefingBlitImage == nullptr;
+
+    zVidImagePartial image{};
+    locator->base.bltSource = &image;
+    locator->base.clipRect.left = 4;
+    locator->base.clipRect.top = 5;
+    locator->base.clipRect.right = 24;
+    locator->base.clipRect.bottom = 25;
+    g_briefingBlitCount = 0;
+    g_briefingBlitImage = nullptr;
+    drawBase(locator);
+
+    const bool blitted = g_briefingBlitCount == 1 && g_briefingBlitImage == &image &&
+                         g_briefingBlitX == 4 && g_briefingBlitY == 5 &&
+                         g_briefingBlitFlags == 0 && g_briefingBlitHasRect != 0 &&
+                         g_briefingBlitRect.left == 4 && g_briefingBlitRect.top == 5 &&
+                         g_briefingBlitRect.right == 24 && g_briefingBlitRect.bottom == 25;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    RestoreConstructorGlobals(state);
+    return nullSkipped && blitted ? 0 : 1;
 }
 
 extern "C" int briefing_runtime_update_smoke(void) {
