@@ -108,8 +108,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zCom::QueryInterfaceFromInterfaceMap)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zCom::QueryInterfaceFromInterfaceMap File: src/GameZRecoil/zCom/zCom.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zcom_query_interface_from_interface_map)
+  - [✅] Binary-safe
 - 0x42dc30:
   - [✅] Reconstructed (Name: zCom::ConnectionPointContainer_Advise)
   - [✅] Source dependencies satisfied
