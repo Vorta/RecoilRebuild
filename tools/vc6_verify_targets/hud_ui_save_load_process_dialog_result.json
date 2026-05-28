@@ -1,0 +1,26 @@
+{
+  "name": "hud_ui_save_load_process_dialog_result",
+  "description": "HudUiSaveLoadDialog::ProcessDialogResult save/load transition dispatch.",
+  "source_filename": "RecoilApp.cpp",
+  "compiler_profile": "vc5_o2_ob1_gx_facs",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilApp.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x435a70",
+      "symbol": "?ProcessDialogResult@HudUiSaveLoadDialog@@QAEXXZ",
+      "name": "HudUiSaveLoadDialog::ProcessDialogResult"
+    }
+  ]
+}

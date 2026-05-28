@@ -1209,7 +1209,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_lifecycle)
   - [✅] Binary-safe
 - 0x435a70:
-  - [☑️] Reconstructed (Name: HudUiSaveLoadDialog::ProcessDialogResult)
+  - [✅] Reconstructed (Name: HudUiSaveLoadDialog::ProcessDialogResult)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiSaveLoadDialog::ProcessDialogResult File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: hud_ui_save_load_process_dialog_result)

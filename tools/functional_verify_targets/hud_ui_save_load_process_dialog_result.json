@@ -1,0 +1,16 @@
+{
+  "name": "hud_ui_save_load_process_dialog_result",
+  "description": "HudUiSaveLoadDialog::ProcessDialogResult validates the selected save name, loads its ZAR, restores paused audio/input option state, and queues the app-state transition for standard and fade load modes.",
+  "address": "0x435a70",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "hud_ui_save_load_process_dialog_result_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py hud_ui_save_load_process_dialog_result",
+  "known_limits": [
+    "Binary Ninja assembly for 0x435a70 validates the game-name buffer guard, SavedGames path construction, FileExists and ZAR_LoadFileGlobal gates, paused-audio snapshot cleanup for both transition owners, joystick/cursor/camera/throttle/steering option refreshes, and transition-mode dispatch.",
+    "The standard transition branch duplicates the save path into RecoilApp_PlayState::pPendingLoadGameStartPath, marks the mission FMV state to skip FMV, queues ExitCurrent with parameter 1, and queues SwitchCurrent to the mission FMV state with parameter 0.",
+    "The fade and quickload branches extend or start the transition fade timer by 5 seconds, mute sound when starting the timer, and queue ExitCurrent with parameters 1 for fade or 0 for quickload. The smoke covers the standard branch and the fade branch with a newly started timer.",
+    "Current VC5SP3 binary-safe attempt uses tools/vc6_verify_targets/hud_ui_save_load_process_dialog_result.json with cl 11.00.7022 and /O2 /Ob1 /GX /Zp4 /FAcs. It still fails byte comparison: BN size 520, VC size 528, 10 trailing VC NOP bytes trimmed, 228 relocation bytes masked, and 228 unmasked mismatches. Remaining drift is branch displacement/import-call relocation shape and schedule around the verified transition dispatch; keep Binary-safe marked ❌."
+  ]
+}

@@ -153,8 +153,8 @@ LPCSTR IntResource(unsigned int value) {
     return (LPCSTR)(value);
 }
 
-void ExtendPlayStateTransitionTimer(float seconds) {
-    if (g_RecoilApp.m_transitionFadeTimer150 > 0.0f) {
+RECOIL_FORCEINLINE void ExtendPlayStateTransitionTimer(float seconds) {
+    if (g_RecoilApp.m_transitionFadeTimer150 > 0.0) {
         g_RecoilApp.m_transitionFadeTimer150 += seconds;
         return;
     }
