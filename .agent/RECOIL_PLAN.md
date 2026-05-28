@@ -735,7 +735,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: hud_ui_save_load_entry_is_newer_than)
   - [❌] Binary-safe
 - 0x435d20:
-  - [☑️] Reconstructed (Name: RecoilStateSaveLoadTransition::OnTryBecomeCurrent)
+  - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::OnTryBecomeCurrent File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: RecoilStateSaveLoadTransition::OnTryBecomeCurrent)
