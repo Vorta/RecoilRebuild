@@ -18870,8 +18870,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::SetHudTypeForCurrentHwMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetHudTypeForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zopt_set_hud_type_for_current_hw_mode)
+  - [✅] Binary-safe
 - 0x408300:
   - [✅] Reconstructed (Name: zOpt::SetReplicateMode)
   - [✅] Source dependencies satisfied
@@ -19647,8 +19647,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVid::GetVideoModeIndexFromOptions)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::GetVideoModeIndexFromOptions File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zvid_get_video_mode_index_from_options)
+  - [✅] Binary-safe
 - 0x408720:
   - [✅] Reconstructed (Name: zVid::SetVideoModeIndex)
   - [✅] Source dependencies satisfied
