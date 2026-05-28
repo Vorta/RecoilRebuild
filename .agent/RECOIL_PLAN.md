@@ -793,13 +793,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::TakeSkipWaitMessage File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: RecoilApp::TakeSkipWaitMessage)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x442a30:
   - [✅] Reconstructed (Name: RecoilApp::MarkSkipWaitMessage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::MarkSkipWaitMessage File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: RecoilApp::MarkSkipWaitMessage)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x442a50:
   - [✅] Reconstructed (Name: RecoilApp::EngineInit)
   - [✅] Source dependencies satisfied
