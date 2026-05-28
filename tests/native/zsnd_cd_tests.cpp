@@ -121,6 +121,13 @@ struct TestDirectSoundBuffer {
 std::int32_t g_fakePlayTrackWithModeCount;
 std::int32_t g_fakePlayTrackWithModeTrack;
 std::int32_t g_fakePlayTrackWithModeMode;
+std::int32_t g_fakeMciSendCommandCount;
+MCIDEVICEID g_fakeMciLastDevice;
+UINT g_fakeMciLastMessage;
+DWORD_PTR g_fakeMciLastFlags;
+MCI_PLAY_PARMS g_fakeMciLastPlayParams;
+MCI_SEEK_PARMS g_fakeMciLastSeekParams;
+MCIERROR g_fakeMciReturn;
 
 std::int32_t RECOIL_FASTCALL FakePlayTrackWithMode(std::int32_t trackIndex,
                                                    std::int32_t playbackMode) {
@@ -128,6 +135,20 @@ std::int32_t RECOIL_FASTCALL FakePlayTrackWithMode(std::int32_t trackIndex,
     g_fakePlayTrackWithModeTrack = trackIndex;
     g_fakePlayTrackWithModeMode = playbackMode;
     return 1;
+}
+
+MCIERROR WINAPI FakeMciSendCommandA(MCIDEVICEID deviceId, UINT message, DWORD_PTR flags,
+                                    DWORD_PTR params) {
+    ++g_fakeMciSendCommandCount;
+    g_fakeMciLastDevice = deviceId;
+    g_fakeMciLastMessage = message;
+    g_fakeMciLastFlags = flags;
+    if (message == 0x806 && params != 0) {
+        g_fakeMciLastPlayParams = *reinterpret_cast<const MCI_PLAY_PARMS *>(params);
+    } else if (message == 0x807 && params != 0) {
+        g_fakeMciLastSeekParams = *reinterpret_cast<const MCI_SEEK_PARMS *>(params);
+    }
+    return g_fakeMciReturn;
 }
 
 bool PatchFunctionJump(void *target, void *replacement, CodeFunctionPatch &patch) {
@@ -1040,6 +1061,91 @@ extern "C" int zsnd_cd_not_ready_playback_smoke(void) {
 
     zSndCd::OnMciNotify(1, 0x5678);
     return g_zSndCdPlayToTrack == 99 ? 0 : 2;
+}
+
+extern "C" int zsnd_cd_playback_mci_commands_smoke(void) {
+    CodeFunctionPatch mciPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&mciSendCommandA),
+                           reinterpret_cast<void *>(&FakeMciSendCommandA), mciPatch)) {
+        return 1;
+    }
+
+    g_fakeMciReturn = 0;
+    g_fakeMciSendCommandCount = 0;
+    g_zSndCdFlags = 2;
+    g_zSndCdDeviceId = 0x12345678;
+    g_zSndCdCurrentTrack = 7;
+    g_zSndCdCurrentMinute = 55;
+    g_zSndCdCurrentSecond = 56;
+    g_zSndCdTrackCountCached = 9;
+    g_zSndCdLastPlayMode = 0;
+    g_zSnd_WindowHandle = 0x2468;
+
+    if (zSndCd::ApplyPlaybackMode(2) != 1 || g_fakeMciSendCommandCount != 1 ||
+        g_fakeMciLastDevice != 0x5678 || g_fakeMciLastMessage != 0x806 ||
+        g_fakeMciLastFlags != 0x0d || g_zSndCdPlayToTrack != 8 ||
+        g_zSndCdLastPlayMode != 2) {
+        RestoreFunctionPatch(mciPatch);
+        return 2;
+    }
+
+    if (g_fakeMciLastPlayParams.dwFrom != 7 || g_fakeMciLastPlayParams.dwTo != 8 ||
+        g_fakeMciLastPlayParams.dwCallback != 0x2468) {
+        RestoreFunctionPatch(mciPatch);
+        return 3;
+    }
+
+    g_fakeMciSendCommandCount = 0;
+    g_zSndCdCurrentTrack = 7;
+    g_zSndCdTrackCountCached = 9;
+    if (zSndCd::ApplyPlaybackMode(3) != 1 || g_fakeMciSendCommandCount != 1 ||
+        g_fakeMciLastFlags != 0x05 || g_zSndCdPlayToTrack != 10 ||
+        g_zSndCdLastPlayMode != 3) {
+        RestoreFunctionPatch(mciPatch);
+        return 4;
+    }
+
+    if (g_fakeMciLastPlayParams.dwFrom != 7 || g_fakeMciLastPlayParams.dwTo != 10) {
+        RestoreFunctionPatch(mciPatch);
+        return 5;
+    }
+
+    g_fakeMciSendCommandCount = 0;
+    g_zSndCdCurrentTrack = 11;
+    g_zSndCdPlayFromTrack = 30;
+    g_zSndCdPlayToTrack = 40;
+    if (zSndCd::PlayTrack(11) != 1 || g_fakeMciSendCommandCount != 1 ||
+        g_fakeMciLastDevice != 0x5678 || g_fakeMciLastMessage != 0x807 ||
+        g_fakeMciLastFlags != 0x0a || g_zSndCdCurrentTrack != 11 ||
+        g_zSndCdPlayFromTrack != 11 || g_zSndCdPlayToTrack != 11) {
+        RestoreFunctionPatch(mciPatch);
+        return 6;
+    }
+
+    if (g_fakeMciLastSeekParams.dwTo != 11) {
+        RestoreFunctionPatch(mciPatch);
+        return 7;
+    }
+
+    g_fakeMciSendCommandCount = 0;
+    g_zSndCdCurrentTrack = 0;
+    g_zSndCdTrackCountCached = 12;
+    g_zSndCdLastPlayMode = 0;
+    if (zSndCd::PlayTrackWithMode(7, 5) != 1 || g_fakeMciSendCommandCount != 2 ||
+        g_fakeMciLastMessage != 0x806 || g_fakeMciLastFlags != 0x0d ||
+        g_zSndCdCurrentTrack != 7 || g_zSndCdPlayFromTrack != 7 ||
+        g_zSndCdPlayToTrack != 8 || g_zSndCdLastPlayMode != 5) {
+        RestoreFunctionPatch(mciPatch);
+        return 8;
+    }
+
+    if (g_fakeMciLastPlayParams.dwFrom != 7 || g_fakeMciLastPlayParams.dwTo != 8) {
+        RestoreFunctionPatch(mciPatch);
+        return 9;
+    }
+
+    RestoreFunctionPatch(mciPatch);
+    return 0;
 }
 
 extern "C" int zsnd_cd_on_mci_notify_loop_smoke(void) {

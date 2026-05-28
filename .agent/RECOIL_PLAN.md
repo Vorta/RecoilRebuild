@@ -18531,13 +18531,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndCd::PlayTrackWithMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::PlayTrackWithMode File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsnd_cd_play_track_with_mode)
+  - [✅] Binary-safe
 - 0x4a2600:
   - [✅] Reconstructed (Name: zSndCd::ApplyPlaybackMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::ApplyPlaybackMode File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_cd_apply_playback_mode)
   - [❌] Binary-safe
 - 0x4a26b0:
   - [✅] Reconstructed (Name: zSndCd::OnMciNotify)
@@ -18555,8 +18555,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndCd::PlayTrack)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::PlayTrack File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsnd_cd_play_track)
+  - [✅] Binary-safe
 - 0x4a27d0:
   - [✅] Reconstructed (Name: zSndCd::IsStereoAuxEnabled)
   - [✅] Source dependencies satisfied

@@ -926,6 +926,7 @@ extern "C" int zsnd_options_cpu_and_cached_directsound_smoke(void);
 extern "C" int zsnd_cd_reset_track_state_smoke(void);
 extern "C" int zsnd_cd_is_stereo_aux_enabled_smoke(void);
 extern "C" int zsnd_cd_not_ready_playback_smoke(void);
+extern "C" int zsnd_cd_playback_mci_commands_smoke(void);
 extern "C" int zsnd_cd_on_mci_notify_loop_smoke(void);
 extern "C" int zsnd_cd_init_ready_guard_smoke(void);
 extern "C" int zsnd_cd_get_track_count_ready_guard_smoke(void);
@@ -2842,6 +2843,7 @@ int main(int argc, char **argv) {
         {"zsnd_cd_reset_track_state_smoke", zsnd_cd_reset_track_state_smoke},
         {"zsnd_cd_is_stereo_aux_enabled_smoke", zsnd_cd_is_stereo_aux_enabled_smoke},
         {"zsnd_cd_not_ready_playback_smoke", zsnd_cd_not_ready_playback_smoke},
+        {"zsnd_cd_playback_mci_commands_smoke", zsnd_cd_playback_mci_commands_smoke},
         {"zsnd_cd_on_mci_notify_loop_smoke", zsnd_cd_on_mci_notify_loop_smoke},
         {"zsnd_cd_init_ready_guard_smoke", zsnd_cd_init_ready_guard_smoke},
         {"zsnd_cd_get_track_count_ready_guard_smoke", zsnd_cd_get_track_count_ready_guard_smoke},
