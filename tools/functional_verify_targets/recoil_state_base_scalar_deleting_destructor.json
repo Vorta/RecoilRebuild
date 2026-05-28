@@ -1,0 +1,17 @@
+{
+  "name": "RecoilStateBase::ScalarDeletingDestructor",
+  "description": "RecoilStateBase::ScalarDeletingDestructor restores the base state vtable, conditionally frees this when bit 0 of the flags argument is set, and returns this.",
+  "address": "0x407170",
+  "source_from": "src/GameZRecoil/RecoilApp/RecoilStateBase.cpp",
+  "smoke_tests": [
+    "recoil_state_base_scalar_deleting_destructor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x407170",
+  "known_limits": [
+    "Binary-safe verification remains tracked separately by the recoil_state_base VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x407170 validates the RecoilStateBase vtable write, conditional operator delete when flags bit 0 is set, returning this, and callee stack cleanup for the flags argument.",
+    "The native smoke verifies the flags=0 caller-owned path returns this and restores the RecoilStateBase vtable, then exercises the flags=1 heap-delete path and verifies the returned self pointer."
+  ]
+}

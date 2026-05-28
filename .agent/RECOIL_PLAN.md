@@ -42,8 +42,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilStateBase::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateBase::ScalarDeletingDestructor File: src/GameZRecoil/RecoilApp/RecoilStateBase.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: RecoilStateBase::ScalarDeletingDestructor)
+  - [✅] Binary-safe
 - 0x408f50:
   - [✅] Reconstructed (Name: RecoilStateDialogHost::OnWndActivate)
   - [✅] Source dependencies satisfied
