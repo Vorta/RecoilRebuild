@@ -61,6 +61,11 @@ const RecoilNamedVtable kCObject_Vtable = {"CObject vtable"};
 
 typedef int (RECOIL_THISCALL *CMenuDestroyMenuProc)(void *);
 
+class MfcCmdUIView {
+  public:
+    virtual void Enable(int enable) = 0;
+};
+
 unsigned int Ptr32FromSymbol(const void *symbol) {
     return static_cast<unsigned int>((unsigned int)(symbol));
 }
@@ -157,7 +162,7 @@ RECOIL_FRAME_NOINLINE unsigned int RECOIL_CDECL CZRecoilFrame::GetMessageMap() {
 namespace MfcCmdUI {
 // Reimplements 0x431a80: MfcCmdUI::EnableAlways
 RECOIL_FRAME_NOINLINE void RECOIL_STDCALL EnableAlways(CZRecoilCmdUI *cmdUi) {
-    cmdUi->vftable->Enable(cmdUi, 1);
+    ((MfcCmdUIView *)cmdUi)->Enable(1);
 }
 } // namespace MfcCmdUI
 

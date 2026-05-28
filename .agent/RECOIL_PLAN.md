@@ -661,7 +661,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: MfcCmdUI::EnableAlways File: src/Battlesport/CZRecoilFrame.cpp)
   - [✅] Functional-equivalent (Target: mfc_cmd_ui_enable_always)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x431a90:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSelectDirectSound)
   - [✅] Source dependencies satisfied

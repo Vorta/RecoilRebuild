@@ -1,0 +1,26 @@
+{
+  "name": "mfc_cmd_ui_enable_always",
+  "description": "MFC command UI helper that always enables the command.",
+  "source_filename": "CZRecoilFrame.cpp",
+  "compiler_profile": "vc5_o2_ob1_gx_uintptr_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/Battlesport/CZRecoilFrame.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x431a80",
+      "symbol": "?EnableAlways@MfcCmdUI@@YGXPAUCZRecoilCmdUI@@@Z",
+      "name": "MfcCmdUI::EnableAlways"
+    }
+  ],
+  "source_from": "src/Battlesport/CZRecoilFrame.cpp"
+}
