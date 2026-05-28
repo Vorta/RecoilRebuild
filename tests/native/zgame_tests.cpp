@@ -739,6 +739,30 @@ extern "C" int zmodel_const_tolerances_and_cross_smoke() {
         return 16;
     }
 
+    zDiPartial thresholdDi = {};
+    thresholdDi.vertCount = 921;
+    thresholdDi.verts =
+        static_cast<zVec3 *>(std::malloc(static_cast<std::size_t>(thresholdDi.vertCount) *
+                                         sizeof(zVec3)));
+    if (thresholdDi.verts == nullptr) {
+        return 98;
+    }
+    for (int i = 0; i < thresholdDi.vertCount; ++i) {
+        thresholdDi.verts[i].x = 1000.0f + static_cast<float>(i);
+        thresholdDi.verts[i].y = 0.0f;
+        thresholdDi.verts[i].z = 0.0f;
+    }
+    zVec3 thresholdPoint = {1.0f, 2.0f, 3.0f};
+    vertexIndex = zModel_Const::AddOrMergeVertex(&thresholdDi, &thresholdPoint);
+    const bool thresholdOk =
+        vertexIndex == 921 && thresholdDi.vertCount == 922 && thresholdDi.verts != nullptr &&
+        thresholdDi.verts[921].x == 1.0f && thresholdDi.verts[921].y == 2.0f &&
+        thresholdDi.verts[921].z == 3.0f;
+    std::free(thresholdDi.verts);
+    if (!thresholdOk) {
+        return 17;
+    }
+
     zDiPartial normalDi = {};
     zVec3 normalPoint = {0.0f, 1.0f, 0.0f};
     int normalIndex = zModel_Const::FindOrAppendNormalIndex(&normalDi, &normalPoint);

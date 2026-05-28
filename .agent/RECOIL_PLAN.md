@@ -1053,7 +1053,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: zdi_ref_count)
   - [✅] Binary-safe
 - 0x482720:
-  - [☑️] Reconstructed (Name: zModel_Const::AddOrMergeVertex)
+  - [✅] Reconstructed (Name: zModel_Const::AddOrMergeVertex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Const::AddOrMergeVertex File: src/GameZRecoil/zModel/zModel.cpp)
   - [✅] Functional-equivalent (Target: zmodel_const_add_or_merge_vertex)
