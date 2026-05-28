@@ -2828,9 +2828,17 @@ extern "C" int zhud_element_update_smoke(void) {
     element.Update(0.1f);
     const bool visibleDirty = g_elementDrawCount == 2 && (element.flags & 0x04) == 0;
 
+    element.flags = 0x02 | 0x08;
+    element.Update(0.1f);
+    const bool visibleAlternateDirty = g_elementDrawCount == 3 && (element.flags & 0x08) == 0;
+
     element.flags = 0x10 | 0x02 | 0x04;
     element.Update(0.1f);
     const bool hiddenDirty = g_elementBaseDrawCount == 1 && (element.flags & 0x04) == 0;
+
+    element.flags = 0x10 | 0x02 | 0x08;
+    element.Update(0.1f);
+    const bool hiddenAlternateDirty = g_elementBaseDrawCount == 2 && (element.flags & 0x08) == 0;
 
     element.flags = 0x01;
     element.timer = 0.5f;
@@ -2840,8 +2848,10 @@ extern "C" int zhud_element_update_smoke(void) {
     const bool countdownExpired = element.timer == 0.0f && (element.flags & 0x10) != 0;
 
     g_HudUi_InvalidateMask = 0;
-    return visibleDraw && visibleDirty && hiddenDirty && countdownActive && countdownExpired ? 0
-                                                                                             : 1;
+    return visibleDraw && visibleDirty && visibleAlternateDirty && hiddenDirty &&
+                   hiddenAlternateDirty && countdownActive && countdownExpired
+               ? 0
+               : 1;
 }
 
 extern "C" int zhud_element_position_mutators_smoke(void) {

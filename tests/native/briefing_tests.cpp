@@ -633,6 +633,79 @@ extern "C" int briefing_locator_panel_blit_dirty_rect_smoke(void) {
     return nullSkipped && blitted ? 0 : 1;
 }
 
+extern "C" int briefing_locator_panel_update_smoke(void) {
+    constexpr std::size_t kRuntimeSize = 0xba70;
+    constexpr std::size_t kLocatorPanelsOffset = 0xb8f0;
+
+    ConstructorGlobalState state = {};
+    PrepareConstructorGlobals(state);
+
+    alignas(4) static unsigned char storage[kRuntimeSize];
+    std::memset(storage, 0, sizeof(storage));
+    HudUiBriefingRuntime *const runtime = reinterpret_cast<HudUiBriefingRuntime *>(storage);
+    runtime->Constructor(3);
+
+    auto *const locator = reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset);
+    typedef void (RECOIL_THISCALL *UpdateFn)(HudUiCircle * self, float deltaSec);
+    UpdateFn const update = reinterpret_cast<UpdateFn>(locator->base.ftable->slots[9]);
+
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+
+    locator->base.flags = 0;
+    locator->base.clipRect.left = 1;
+    locator->base.clipRect.top = 2;
+    locator->base.clipRect.right = 3;
+    locator->base.clipRect.bottom = 4;
+    locator->radius = 12;
+    locator->radiusSquared = 144;
+    g_HudUi_InvalidateMask = 0x80;
+    update(locator, 1.0f);
+    const bool visibleSkipped =
+        locator->base.flags == 0 && locator->base.clipRect.left == 1 &&
+        locator->base.clipRect.top == 2 && locator->base.clipRect.right == 3 &&
+        locator->base.clipRect.bottom == 4 && locator->radius == 12 &&
+        locator->radiusSquared == 144;
+
+    locator->base.flags = 0x10 | 0x02 | 0x08;
+    locator->base.x = 100;
+    locator->base.y = 110;
+    locator->base.bltSource = nullptr;
+    locator->radius = 30;
+    locator->radiusSquared = 900;
+    update(locator, 0.25f);
+    const bool clipAndShrink =
+        locator->base.clipRect.left == 70 && locator->base.clipRect.top == 80 &&
+        locator->base.clipRect.right == 131 && locator->base.clipRect.bottom == 141 &&
+        locator->radius == 25 && locator->radiusSquared == 625;
+    const bool baseUpdateAndInvalidate =
+        (locator->base.flags & 0x08) == 0 && (locator->base.flags & 0x80) != 0;
+
+    locator->base.flags = 0x10;
+    locator->base.x = 20;
+    locator->base.y = 25;
+    locator->radius = 10;
+    locator->radiusSquared = 100;
+    g_HudUi_InvalidateMask = 0;
+    update(locator, 0.01f);
+    const bool minimumStep =
+        locator->base.clipRect.left == 10 && locator->base.clipRect.top == 15 &&
+        locator->base.clipRect.right == 31 && locator->base.clipRect.bottom == 36 &&
+        locator->radius == 9 && locator->radiusSquared == 81;
+
+    locator->base.flags = 0x10;
+    locator->radius = 4;
+    locator->radiusSquared = 16;
+    update(locator, 1.0f);
+    const bool clamped = locator->radius == 3 && locator->radiusSquared == 9;
+
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    RestoreConstructorGlobals(state);
+    return visibleSkipped && clipAndShrink && baseUpdateAndInvalidate && minimumStep &&
+                   clamped
+               ? 0
+               : 1;
+}
+
 extern "C" int briefing_runtime_update_smoke(void) {
     constexpr std::size_t kRuntimeSize = 0xba70;
     constexpr std::size_t kActionQueueHeadOffset = 0xa950;

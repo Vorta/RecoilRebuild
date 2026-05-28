@@ -1282,9 +1282,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x403cb0:
   - [✅] Reconstructed (Name: HudUiBriefingLocatorPanel::Update)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiBriefingLocatorPanel::Update File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_locator_panel_update)
   - [❌] Binary-safe
 - 0x403ed0:
   - [☑️] Reconstructed (Name: HudUiBriefingRuntime::Destructor)
@@ -4515,7 +4515,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiElement::Update)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_element_update)
   - [❌] Binary-safe
 - 0x4b4280:
   - [☑️] Reconstructed (Name: HudUiElement::SetTimer)
