@@ -993,7 +993,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: zscene_test_projected_sphere_visible)
   - [❌] Binary-safe
 - 0x4803b0:
-  - [☑️] Reconstructed (Name: zClipRect::TrivialRejectPolyXY)
+  - [✅] Reconstructed (Name: zClipRect::TrivialRejectPolyXY)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClipRect::TrivialRejectPolyXY File: src/GameZRecoil/zGeometry/zClipRect.cpp)
   - [✅] Functional-equivalent (Target: zcliprect_trivial_reject_poly_xy)

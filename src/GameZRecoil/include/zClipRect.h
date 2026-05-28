@@ -30,7 +30,12 @@ struct zClipUV {
     float v;
 };
 
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, flags) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, xMin) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, yMin) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, zMin) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, xMax) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, yMax) == 0x14);
 RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, zMax) == 0x18);
 RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, xMaxAlt) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, yMaxAlt) == 0x20);
