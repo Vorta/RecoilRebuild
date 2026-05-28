@@ -1270,9 +1270,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x403c10:
   - [✅] Reconstructed (Name: HudUiBriefingLocatorPanel::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiBriefingLocatorPanel::Constructor File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_locator_panel_constructor)
   - [❌] Binary-safe
 - 0x403c90:
   - [✅] Reconstructed (Name: HudUiBriefingLocatorPanel::BlitDirtyRect)
@@ -3480,7 +3480,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiElement::SetVisible)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetVisible File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_element_set_visible)
   - [❌] Binary-safe
 - 0x404d50:
   - [✅] Reconstructed (Name: HudUiElement::GetX)
@@ -4839,7 +4839,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiCircle::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCircle::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_circle_constructor)
   - [❌] Binary-safe
 - 0x4bc4c0:
   - [✅] Reconstructed (Name: HudUiCircle::DrawDirty)

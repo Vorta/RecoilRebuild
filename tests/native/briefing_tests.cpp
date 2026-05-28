@@ -548,6 +548,42 @@ extern "C" int briefing_runtime_constructor_smoke(void) {
     return failure;
 }
 
+extern "C" int briefing_locator_panel_constructor_smoke(void) {
+    constexpr std::size_t kRuntimeSize = 0xba70;
+    constexpr std::size_t kLocatorPanelsOffset = 0xb8f0;
+    constexpr std::size_t kLocatorPanelStride = 0x40;
+
+    ConstructorGlobalState state = {};
+    PrepareConstructorGlobals(state);
+
+    alignas(4) static unsigned char storage[kRuntimeSize];
+    std::memset(storage, 0, sizeof(storage));
+    HudUiBriefingRuntime *const runtime = reinterpret_cast<HudUiBriefingRuntime *>(storage);
+    runtime->Constructor(2);
+
+    const unsigned int expectedColor =
+        static_cast<unsigned short>(zVid_PackColorRGB(0xff, 0, 0));
+    const HudUiCommon_FTable *locatorFTable = nullptr;
+    bool ok = true;
+    for (std::size_t index = 0; index < 6; ++index) {
+        auto *const locator =
+            reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset +
+                                            index * kLocatorPanelStride);
+        if (index == 0) {
+            locatorFTable = locator->base.ftable;
+            ok = ok && locatorFTable != nullptr && locatorFTable != &g_HudUiCircle_FTable;
+        }
+
+        ok = ok && locator->base.ftable == locatorFTable && locator->base.x == 100 &&
+             locator->base.y == 110 && (locator->base.flags & 0x10u) != 0 &&
+             locator->radius == 30 && locator->radiusSquared == 900 &&
+             locator->color565 == expectedColor;
+    }
+
+    RestoreConstructorGlobals(state);
+    return ok ? 0 : 1;
+}
+
 extern "C" int briefing_runtime_update_smoke(void) {
     constexpr std::size_t kRuntimeSize = 0xba70;
     constexpr std::size_t kActionQueueHeadOffset = 0xa950;
