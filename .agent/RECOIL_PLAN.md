@@ -1038,20 +1038,20 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zDi::AddRef)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::AddRef File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zdi_ref_count)
+  - [✅] Binary-safe
 - 0x482700:
   - [✅] Reconstructed (Name: zDi::Release)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::Release File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zdi_ref_count)
+  - [✅] Binary-safe
 - 0x482710:
   - [✅] Reconstructed (Name: zDi::GetRefCount)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::GetRefCount File: src/Battlesport/zModel/gdi.c)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zdi_ref_count)
+  - [✅] Binary-safe
 - 0x482720:
   - [☑️] Reconstructed (Name: zModel_Const::AddOrMergeVertex)
   - [✅] Source dependencies satisfied
