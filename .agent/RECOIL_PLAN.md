@@ -19881,8 +19881,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zRndr::SetFrameBufferRegion)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SetFrameBufferRegion File: src/GameZRecoil/zRndr/zRndr.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zrndr_set_framebuffer_region)
+  - [✅] Binary-safe
 - 0x490480:
   - [✅] Reconstructed (Name: zRndr::SetPerspectiveAdaptiveSpanParams)
   - [✅] Source dependencies satisfied
