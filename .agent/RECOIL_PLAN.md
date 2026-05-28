@@ -13152,8 +13152,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zFMV_ActionBlur::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_ActionBlur::Constructor File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zfmv_action_blur_constructor)
+  - [✅] Binary-safe
 - 0x463870:
   - [✅] Reconstructed (Name: zFMV_ActionBlur::Begin)
   - [❌] Source dependencies satisfied
