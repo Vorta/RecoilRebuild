@@ -114,14 +114,14 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zCom::ConnectionPointContainer_Advise)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zCom::ConnectionPointContainer_Advise File: src/GameZRecoil/zCom/zCom.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zcom_m01_helpers)
+  - [✅] Binary-safe
 - 0x42dcf0:
   - [✅] Reconstructed (Name: zCom::ConnectionPointContainer_Unadvise)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zCom::ConnectionPointContainer_Unadvise File: src/GameZRecoil/zCom/zCom.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zcom_m01_helpers)
+  - [✅] Binary-safe
 - 0x42de10:
   - [✅] Reconstructed (Name: RecoilApp::GetMessageMap)
   - [✅] Source dependencies satisfied
