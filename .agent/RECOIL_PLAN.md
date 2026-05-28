@@ -831,8 +831,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: recoil_app_mfc_ole_module_constructor)
   - [❌] Binary-safe
 - 0x442d00:
-  - [☑️] Reconstructed (Name: RecoilApp::Run)
-  - [☑️] Source dependencies satisfied
+  - [✅] Reconstructed (Name: RecoilApp::Run)
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::Run File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: RecoilApp::Run)
   - [❌] Binary-safe

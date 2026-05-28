@@ -46,6 +46,12 @@ struct RecoilApp_IState_Vtbl {
     RecoilFn32 OnIdleOrDispatch;
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_IState_Vtbl) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_IState_Vtbl, OnCanBecomeCurrent) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_IState_Vtbl, OnUpdateShouldQuit) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_IState_Vtbl, OnExit) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_IState_Vtbl, OnDeactivate) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_IState_Vtbl, OnSuspend) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_IState_Vtbl, OnResume) == 0x20);
 
 struct RecoilApp_IState {
     RecoilPtr32 vftable; // RecoilApp_IState_Vtbl*
