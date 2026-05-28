@@ -84,8 +84,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::OnDeactivate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::OnDeactivate File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnDeactivate.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_state_main_menu_transition_on_deactivate)
+  - [✅] Binary-safe
 - 0x415630:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::ClearPausedAudioSnapshot)
   - [✅] Source dependencies satisfied
@@ -4914,8 +4914,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUi::SetInvalidateMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUi::SetInvalidateMode File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_set_invalidate_mode)
+  - [✅] Binary-safe
 - 0x4bc780:
   - [✅] Reconstructed (Name: HudUiContainer::ConstructorDefault)
   - [✅] Source dependencies satisfied
@@ -14400,8 +14400,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zInput::Keyboard_ResetTransitionState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Keyboard_ResetTransitionState File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_keyboard_reset_transition_state)
+  - [✅] Binary-safe
 - 0x46f690:
   - [☑️] Reconstructed (Name: zInput::Keyboard_PollState)
   - [❌] Source dependencies satisfied
@@ -17805,8 +17805,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndSampleSet::DestroyByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSet_DestroyByName File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsnd_sample_set_destroy_by_name)
+  - [✅] Binary-safe
 - 0x4a0880:
   - [✅] Reconstructed (Name: zSndSampleSetRegistry::DestroyAll)
   - [✅] Source dependencies satisfied
@@ -17829,7 +17829,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndSampleSetRegistry::FindByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSetRegistry_FindByName File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_set_registry_find_by_name)
   - [❌] Binary-safe
 - 0x4a0990:
   - [✅] Reconstructed (Name: zSnd::FindSampleByName)
@@ -17853,7 +17853,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndSampleSet::Destroy)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSet::Destroy File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_set_destroy)
   - [❌] Binary-safe
 - 0x4a0e90:
   - [✅] Reconstructed (Name: zSndSampleSet::GetSampleAt)
@@ -18318,8 +18318,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSnd::ReportMciError)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::ReportMciError File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsnd_report_mci_error)
+  - [✅] Binary-safe
 - 0x4a3ef0:
   - [✅] Reconstructed (Name: zSnd::ReportA3DError)
   - [✅] Source dependencies satisfied
@@ -18519,8 +18519,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndCd::ResetTrackState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::ResetTrackState File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsnd_cd_reset_track_state)
+  - [✅] Binary-safe
 - 0x4a24d0:
   - [☑️] Reconstructed (Name: zSndCd::Shutdown)
   - [✅] Source dependencies satisfied
@@ -18549,8 +18549,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndCd::Stop)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::Stop File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsnd_cd_stop)
+  - [✅] Binary-safe
 - 0x4a2750:
   - [✅] Reconstructed (Name: zSndCd::PlayTrack)
   - [✅] Source dependencies satisfied
@@ -18822,8 +18822,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSnd::GetCDAudioOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::GetCDAudioOption File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsnd_get_cd_audio_option)
+  - [✅] Binary-safe
 - 0x408230:
   - [✅] Reconstructed (Name: zOpt::SetNetworkEnabled)
   - [✅] Source dependencies satisfied
@@ -18876,8 +18876,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::SetReplicateMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::SetReplicateMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zopt_video_section_setters)
+  - [✅] Binary-safe
 - 0x408330:
   - [✅] Reconstructed (Name: zOpt::GetFullscreenOption)
   - [✅] Source dependencies satisfied
@@ -18936,14 +18936,14 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::RenderSection_SetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::RenderSection_SetSize File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zopt_video_section_setters)
+  - [✅] Binary-safe
 - 0x408530:
   - [✅] Reconstructed (Name: zOpt::RenderSection_SetPosition)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::RenderSection_SetPosition File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zopt_video_section_setters)
+  - [✅] Binary-safe
 - 0x408570:
   - [✅] Reconstructed (Name: zOpt::RenderSection_SetTargetWindow)
   - [✅] Source dependencies satisfied
@@ -18966,14 +18966,14 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetPosition)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::DisplaySection_SetPosition File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zopt_video_section_setters)
+  - [✅] Binary-safe
 - 0x408620:
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::DisplaySection_SetSize File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zopt_video_section_setters)
+  - [✅] Binary-safe
 - 0x408650:
   - [✅] Reconstructed (Name: zOpt::GetDisplaySection)
   - [✅] Source dependencies satisfied
@@ -18996,8 +18996,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetBitsPerPixel)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::DisplaySection_SetBitsPerPixel File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zopt_video_section_setters)
+  - [✅] Binary-safe
 - 0x408690:
   - [✅] Reconstructed (Name: zOpt::GetDisplaySectionBitsPerPixel)
   - [✅] Source dependencies satisfied
@@ -19026,14 +19026,14 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::WindowSection_SetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::WindowSection_SetSize File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zopt_video_section_setters)
+  - [✅] Binary-safe
 - 0x408700:
   - [✅] Reconstructed (Name: zOpt::WindowSection_SetPosition)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::WindowSection_SetPosition File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zopt_video_section_setters)
+  - [✅] Binary-safe
 - 0x40bdc0:
   - [☑️] Reconstructed (Name: StdPtrVector::Clear)
   - [✅] Source dependencies satisfied
@@ -19653,8 +19653,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVid::SetVideoModeIndex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid::SetVideoModeIndex File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zvid_set_video_mode_index)
+  - [✅] Binary-safe
 - 0x40c6e0:
   - [☑️] Reconstructed (Name: HudUiOptionsPanelBackButton::OnActivate)
   - [❌] Source dependencies satisfied
@@ -19665,8 +19665,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiMgr::TriggerCurrentLayoutOnActivated)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::TriggerCurrentLayoutOnActivated File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_mgr_trigger_current_layout_on_activated)
+  - [✅] Binary-safe
 - 0x437ef0:
   - [✅] Reconstructed (Name: zVideo::HandleSoftwareModeHotkeyCommand)
   - [✅] Source dependencies satisfied
@@ -19947,8 +19947,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideo::Init_ApplyModeIndex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Init_ApplyModeIndex File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zvideo_init_set_surface_geometry_from_mode_index)
+  - [✅] Binary-safe
 - 0x4a6760:
   - [✅] Reconstructed (Name: zVideo::CallClearSwSurfaceAndZBuffer)
   - [✅] Source dependencies satisfied
@@ -20061,8 +20061,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideo::Init_SetSurfaceGeometryFromModeIndex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Init_SetSurfaceGeometryFromModeIndex File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zvideo_init_set_surface_geometry_from_mode_index)
+  - [✅] Binary-safe
 - 0x4a7af0:
   - [✅] Reconstructed (Name: zVideo::SetVideoMode)
   - [✅] Source dependencies satisfied
@@ -20520,8 +20520,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideo::SetHalfResAdjustMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::SetHalfResAdjustMode File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zvideo_set_half_res_adjust_mode)
+  - [✅] Binary-safe
 - 0x4a7200:
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfaceRectScratch)
   - [✅] Source dependencies satisfied
