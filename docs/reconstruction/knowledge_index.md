@@ -32,7 +32,8 @@ for function identity, types, markers, and acceptance state.
   including the `StopIfActive` backend-dispatch mismatch profile.
 - `zsnd_sample_set_verification.md` - zSound sample-set registry verification
   notes, including the `FindByName` inline-`strcmp` mismatch profile.
-- `README.md` - rules for when to add durable reconstruction notes.
+- `docs/reconstruction/README.md` - rules for when to add durable
+  reconstruction notes.
 
 ## Agent Use
 
