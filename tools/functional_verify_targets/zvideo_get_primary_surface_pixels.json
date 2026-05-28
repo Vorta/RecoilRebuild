@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_get_primary_surface_pixels",
+  "description": "zVideo::GetPrimarySurfacePixels returns the current primary surface pixel pointer.",
+  "address": "0x4a67f0",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_surface_accessors_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a67f0",
+  "known_limits": [],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4a67f0 validates a leaf load and return of g_zVideo_PrimarySurfaceState.pixels.",
+    "The native surface accessor smoke seeds g_zVideo_PrimarySurfaceState.pixels and verifies zVideo::GetPrimarySurfacePixels returns that pointer."
+  ],
+  "binary_safe_evidence": [
+    "VC6 cl 12.00.8168 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?GetPrimarySurfacePixels@zVideo@@YAPAXXZ at 0x4a67f0 with zero unmasked mismatches after masking 4 relocation bytes; 10 trailing VC NOP bytes trimmed."
+  ]
+}

@@ -20466,8 +20466,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfacePixels)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::GetPrimarySurfacePixels File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zvideo_get_primary_surface_pixels)
+  - [✅] Binary-safe
 - 0x4a6800:
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfaceWidth)
   - [✅] Source dependencies satisfied
