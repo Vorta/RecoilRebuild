@@ -68,6 +68,9 @@ struct RecoilApp_StateQueueItem {
     int m_param;
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_StateQueueItem) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_StateQueueItem, m_kind) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_StateQueueItem, m_stateObj) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_StateQueueItem, m_param) == 0x0c);
 
 struct RecoilApp_StateQueueBlock {
     RecoilPtr32 m_chunkBegin;   // RecoilApp_StateQueueItem**
@@ -79,6 +82,10 @@ struct RecoilApp_StateQueueBlock {
                                                               RecoilPtr32 chunkPtrSlot);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_StateQueueBlock) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_StateQueueBlock, m_chunkBegin) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_StateQueueBlock, m_chunkEnd) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_StateQueueBlock, m_cursor) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_StateQueueBlock, m_chunkPtrSlot) == 0x0c);
 
 struct RecoilApp_StateQueue {
     int m_ctorTag_00;
@@ -91,6 +98,11 @@ struct RecoilApp_StateQueue {
     RecoilPtr32 RECOIL_THISCALL GrowAndCenterChunkBaseList(int newCapacity);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_StateQueue) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_StateQueue, m_readBlock) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_StateQueue, m_writeBlock) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_StateQueue, m_chunkPtrList) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_StateQueue, m_chunkPtrCapacity) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(RecoilApp_StateQueue, m_itemCount) == 0x2c);
 
 struct zMfcMsgMapEntry {
     int nMessage;

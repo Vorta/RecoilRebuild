@@ -843,7 +843,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: recoil_app_get_current_state)
   - [✅] Binary-safe
 - 0x443160:
-  - [☑️] Reconstructed (Name: RecoilApp::QueueSwitchCurrentState)
+  - [✅] Reconstructed (Name: RecoilApp::QueueSwitchCurrentState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::QueueSwitchCurrentState File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: recoil_app_queue_switch_current_state)
@@ -870,8 +870,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilApp_StateQueue::GrowAndCenterChunkBaseList)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_StateQueue::GrowAndCenterChunkBaseList File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_state_queue_grow_and_center_chunk_base_list)
+  - [✅] Binary-safe
 - 0x443700:
   - [✅] Reconstructed (Name: RecoilApp_StateQueueBlock::InitFromCursor)
   - [✅] Source dependencies satisfied
