@@ -1005,7 +1005,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: zmodel_update_small_poly_reject_thresholds)
   - [❌] Binary-safe
 - 0x4804e0:
-  - [☑️] Reconstructed (Name: zReader::FindGlobalStringPrefixIndex)
+  - [✅] Reconstructed (Name: zReader::FindGlobalStringPrefixIndex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader::FindGlobalStringPrefixIndex File: src/GameZRecoil/zReader/zreader_lookup.cpp)
   - [✅] Functional-equivalent (Target: zreader_find_global_string_prefix_index)
