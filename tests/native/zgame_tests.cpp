@@ -704,6 +704,43 @@ extern "C" int zmodel_const_tolerances_and_cross_smoke() {
         return 13;
     }
 
+    zDiPartial thresholdBlendDi = {};
+    thresholdBlendDi.vertCount = 920;
+    thresholdBlendDi.blendVertCount = 920;
+    thresholdBlendDi.verts =
+        static_cast<zVec3 *>(std::malloc(static_cast<std::size_t>(thresholdBlendDi.vertCount) *
+                                         sizeof(zVec3)));
+    thresholdBlendDi.blendVerts = static_cast<zVec3 *>(
+        std::malloc(static_cast<std::size_t>(thresholdBlendDi.blendVertCount) * sizeof(zVec3)));
+    if (thresholdBlendDi.verts == nullptr || thresholdBlendDi.blendVerts == nullptr) {
+        std::free(thresholdBlendDi.verts);
+        std::free(thresholdBlendDi.blendVerts);
+        return 97;
+    }
+    for (int i = 0; i < thresholdBlendDi.vertCount; ++i) {
+        thresholdBlendDi.verts[i].x = 1000.0f + static_cast<float>(i);
+        thresholdBlendDi.verts[i].y = 0.0f;
+        thresholdBlendDi.verts[i].z = 0.0f;
+        thresholdBlendDi.blendVerts[i].x = 0.0f;
+        thresholdBlendDi.blendVerts[i].y = 0.0f;
+        thresholdBlendDi.blendVerts[i].z = 0.0f;
+    }
+    mergedIndex = zModel_Const::AddOrMergeVertexAndNormal(&thresholdBlendDi, &mergePoint,
+                                                          &mergeNormal);
+    const bool thresholdBlendOk =
+        mergedIndex == 920 && thresholdBlendDi.vertCount == 921 &&
+        thresholdBlendDi.blendVertCount == 921 && thresholdBlendDi.verts != nullptr &&
+        thresholdBlendDi.blendVerts != nullptr && thresholdBlendDi.verts[920].x == 1.0f &&
+        thresholdBlendDi.verts[920].y == 2.0f && thresholdBlendDi.verts[920].z == 3.0f &&
+        thresholdBlendDi.blendVerts[920].x == 1.0f &&
+        thresholdBlendDi.blendVerts[920].y == 2.0f &&
+        thresholdBlendDi.blendVerts[920].z == 3.0f;
+    std::free(thresholdBlendDi.verts);
+    std::free(thresholdBlendDi.blendVerts);
+    if (!thresholdBlendOk) {
+        return 96;
+    }
+
     zModel_Const::SetVertexMergeEpsilon(0.25f);
     if (zModel_Const::GetVertexMergeEpsilon() != 0.25f) {
         return 99;
@@ -737,6 +774,30 @@ extern "C" int zmodel_const_tolerances_and_cross_smoke() {
     std::free(vertexDi.verts);
     if (!secondVertexOk) {
         return 16;
+    }
+
+    zDiPartial thresholdDi = {};
+    thresholdDi.vertCount = 921;
+    thresholdDi.verts =
+        static_cast<zVec3 *>(std::malloc(static_cast<std::size_t>(thresholdDi.vertCount) *
+                                         sizeof(zVec3)));
+    if (thresholdDi.verts == nullptr) {
+        return 98;
+    }
+    for (int i = 0; i < thresholdDi.vertCount; ++i) {
+        thresholdDi.verts[i].x = 1000.0f + static_cast<float>(i);
+        thresholdDi.verts[i].y = 0.0f;
+        thresholdDi.verts[i].z = 0.0f;
+    }
+    zVec3 thresholdPoint = {1.0f, 2.0f, 3.0f};
+    vertexIndex = zModel_Const::AddOrMergeVertex(&thresholdDi, &thresholdPoint);
+    const bool thresholdOk =
+        vertexIndex == 921 && thresholdDi.vertCount == 922 && thresholdDi.verts != nullptr &&
+        thresholdDi.verts[921].x == 1.0f && thresholdDi.verts[921].y == 2.0f &&
+        thresholdDi.verts[921].z == 3.0f;
+    std::free(thresholdDi.verts);
+    if (!thresholdOk) {
+        return 17;
     }
 
     zDiPartial normalDi = {};

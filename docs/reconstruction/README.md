@@ -8,6 +8,12 @@ Prefer source comments for facts that are local to one function, class, layout, 
 call site. Put the note beside the code that depends on it, with the original
 address and evidence source when that fact affects ABI or code generation.
 
+When finishing reimplemented code, class/source-cluster work, or verification
+evidence, make a documentation decision before handoff: add a compact durable
+note here, add a local source comment, or state that no durable new
+documentation was needed. Document facts that prevent rediscovery, not routine
+progress.
+
 Add or update a reconstruction document when a recovered fact is likely to be
 rediscovered by multiple agents, for example:
 

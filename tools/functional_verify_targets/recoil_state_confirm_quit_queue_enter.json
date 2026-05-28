@@ -1,0 +1,17 @@
+{
+  "name": "recoil_state_confirm_quit_queue_enter",
+  "description": "RecoilStateConfirmQuit::QueueEnter queues g_RecoilState_ConfirmQuit on the global Recoil app with replaceTop false.",
+  "address": "0x4159b0",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_confirm_quit_queue_enter_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py recoil_state_confirm_quit_destructors",
+  "known_limits": [
+    "Binary-safe verification is accepted by the recoil_state_confirm_quit_destructors VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja disassembly/decompilation for 0x4159b0 validates push 0, push g_RecoilState_ConfirmQuit, ecx = g_RecoilApp, call RecoilApp::QueuePushState, and return.",
+    "The native smoke verifies QueueEnter enqueues one push-state item for g_RecoilState_ConfirmQuit with param 0, enters the state once, and does not exit the previous state."
+  ]
+}

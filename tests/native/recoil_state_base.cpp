@@ -12,5 +12,11 @@ extern "C" int recoil_state_base_scalar_deleting_destructor_smoke(void) {
         return 2;
     }
 
+    RecoilStateBase *const heapState = new RecoilStateBase{0x12345678};
+    RecoilApp_IState *const heapReturned = heapState->ScalarDeletingDestructor(1);
+    if (heapReturned != reinterpret_cast<RecoilApp_IState *>(heapState)) {
+        return 3;
+    }
+
     return 0;
 }

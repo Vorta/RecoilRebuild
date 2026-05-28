@@ -16,7 +16,3 @@ extern "C" void __cdecl __cpuid(int cpuInfo[4], int) {
     cpuInfo[3] = 0;
 }
 #endif
-
-extern "C" int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-    return 0;
-}

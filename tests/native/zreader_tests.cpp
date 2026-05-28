@@ -945,6 +945,46 @@ extern "C" int zreader_index_archive_flush_close_smoke(void) {
                : 5;
 }
 
+extern "C" int zreader_zrdr_get_file_size_smoke(void) {
+    if (zUtil::ZRDR_GetFileSize(nullptr) != 0) {
+        return 1;
+    }
+
+    char tempDir[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0) {
+        return 2;
+    }
+
+    char tempPath[MAX_PATH] = {};
+    if (GetTempFileNameA(tempDir, "zfs", 0, tempPath) == 0) {
+        return 3;
+    }
+
+    FILE *out = std::fopen(tempPath, "wb");
+    if (out == nullptr) {
+        DeleteFileA(tempPath);
+        return 4;
+    }
+
+    const char bytes[] = "recoil-file-size";
+    std::fwrite(bytes, 1, sizeof(bytes) - 1, out);
+    std::fclose(out);
+
+    FILE *in = std::fopen(tempPath, "rb");
+    if (in == nullptr) {
+        DeleteFileA(tempPath);
+        return 5;
+    }
+
+    std::fseek(in, 6, SEEK_SET);
+    const int size = zUtil::ZRDR_GetFileSize(in);
+    const long restoredOffset = std::ftell(in);
+    std::fclose(in);
+    DeleteFileA(tempPath);
+
+    return size == static_cast<int>(sizeof(bytes) - 1) && restoredOffset == 6 ? 0 : 6;
+}
+
 extern "C" int zreader_free_loaded_tree_smoke(void) {
     zReader::Node stringNode{};
     stringNode.type = zReader::ZRDR_NODE_STRING;

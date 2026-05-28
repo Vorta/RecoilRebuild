@@ -1,0 +1,17 @@
+{
+  "name": "briefing_locator_panel_blit_dirty_rect",
+  "description": "HudUiBriefingLocatorPanel::BlitDirtyRect blits the locator panel clip rect when a blit source is present.",
+  "address": "0x403c90",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "smoke_tests": [
+    "briefing_locator_panel_blit_dirty_rect_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py --explain-missing 0x403c90",
+  "known_limits": [
+    "No VC byte target currently covers 0x403c90, so Binary-safe remains false."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x403c90 validate the null bltSource early return and zVid_Image::BlitToActiveTarget(bltSource, clipRect.left, clipRect.top, 0, &clipRect) call.",
+    "The native smoke invokes the locator panel vtable DrawBase/BlitDirtyRect slot from a constructed briefing runtime, verifies no blit when bltSource is null, and verifies image, x, y, flags, and source rect arguments when bltSource is present."
+  ]
+}

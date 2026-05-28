@@ -37,6 +37,15 @@ extern "C" int g_RecoilApp_AttractFmvReloadMode;
 BOOL RECOIL_STDCALL AfxWinInit(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine,
                                int showCommand);
 
+struct RecoilStateCredits {
+    RecoilPtr32 vftable;
+    RecoilPtr32 dialog;
+
+    RecoilStateCredits *RECOIL_THISCALL Constructor();
+    ~RecoilStateCredits();
+    static void RECOIL_CDECL QueuePush();
+};
+
 namespace {
 void AtexitProviderNoOp() {}
 
@@ -73,6 +82,7 @@ int g_runSetThreadPriorityValue;
 int g_runReceivePendingMessagesCount;
 int g_runReceivePendingMessagesBudget;
 int g_runQuitPosted;
+int g_runPeekMessageTrueAfterReceive;
 int g_saveLoadUpdatePollCalls;
 int g_saveLoadUpdatePollDispatch;
 int g_saveLoadUpdateTimeCalls;
@@ -84,9 +94,72 @@ int g_saveLoadUpdateAdjustBlit;
 float g_saveLoadUpdateDelta;
 zVidRect32 *g_saveLoadUpdateAdjustSrc;
 zVidRect32 *g_saveLoadUpdateAdjustDst;
+int g_confirmQuitPostprocessCalls;
+int g_confirmQuitBlitCalls;
+int g_confirmQuitUnlockCalls;
+int g_confirmQuitSleepCalls;
+DWORD g_confirmQuitSleepMilliseconds;
+int g_confirmQuitBackgroundLoadCalls;
+bool g_confirmQuitBackgroundLoadArgsOk;
+int g_confirmQuitBackgroundBindCalls;
+bool g_confirmQuitBackgroundBindArgsOk;
+int g_confirmQuitBackgroundFreeCalls;
+bool g_confirmQuitBackgroundFreeArgsOk;
 int g_openFileNameCalls;
 bool g_openFileNameStructOk;
 char g_openFileNameSelectedPath[MAX_PATH];
+
+extern "C" int g_RecoilState_MainMenuSkipExitDelay;
+
+struct TestCreditsPanel {
+    virtual void RECOIL_THISCALL Update(float) {}
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+        ++setEnabledCount;
+        lastEnabled = enabled;
+    }
+    virtual TestCreditsPanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags) {
+        ++scalarDeletingCount;
+        lastScalarDeletingFlags = flags;
+        return this;
+    }
+
+    int setEnabledCount = 0;
+    int lastEnabled = -1;
+    int scalarDeletingCount = 0;
+    unsigned int lastScalarDeletingFlags = 0;
+};
+
+struct TestConfirmQuitDialog {
+    virtual void RECOIL_THISCALL Update(float) {}
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+        ++setEnabledCount;
+        lastEnabled = enabled;
+    }
+    virtual TestConfirmQuitDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags) {
+        ++scalarDeletingCount;
+        lastScalarDeletingFlags = flags;
+        return this;
+    }
+
+    int setEnabledCount = 0;
+    int lastEnabled = -1;
+    int scalarDeletingCount = 0;
+    unsigned int lastScalarDeletingFlags = 0;
+};
+
+struct TestSaveLoadTransitionDialog {
+    virtual void RECOIL_THISCALL Update(float) {}
+    virtual void RECOIL_THISCALL SetEnabled(int) {}
+    virtual TestSaveLoadTransitionDialog *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags) {
+        ++scalarDeletingCount;
+        lastScalarDeletingFlags = flags;
+        return this;
+    }
+
+    int scalarDeletingCount = 0;
+    unsigned int lastScalarDeletingFlags = 0;
+};
 
 struct ImportFunctionPatch {
     ULONG_PTR *slot;
@@ -121,7 +194,11 @@ void ClearTestRegisteredHandlers(zZbdSectionHandlerNode &sentinel) {
 
 BOOL WINAPI FakeRunPeekMessageA(LPMSG, HWND, UINT, UINT, UINT) {
     ++g_runPeekMessageCount;
-    return g_runQuitPosted != 0 ? TRUE : FALSE;
+    return g_runQuitPosted != 0 ||
+                   (g_runPeekMessageTrueAfterReceive != 0 &&
+                    g_runReceivePendingMessagesCount > 0)
+               ? TRUE
+               : FALSE;
 }
 
 void WINAPI FakeRunPostQuitMessage(int exitCode) {
@@ -176,6 +253,29 @@ int RECOIL_FASTCALL FakeSaveLoadUpdateAdjustSurfaces(zVidRect32 *srcRect, zVidRe
     g_saveLoadUpdateAdjustWait = waitForPresent;
     g_saveLoadUpdateAdjustBlit = blitPrimaryToSwFirst;
     return 0;
+}
+
+int RECOIL_CDECL FakeConfirmQuitRunPostprocessOnPrimaryBuffer() {
+    ++g_confirmQuitPostprocessCalls;
+    return 0;
+}
+
+int RECOIL_CDECL FakeConfirmQuitUnlockPrimarySurfaceState() {
+    ++g_confirmQuitUnlockCalls;
+    return 0;
+}
+
+struct FakeConfirmQuitBlitThunk {
+    void RECOIL_THISCALL BlitOwnedSurfaceToPrimary();
+};
+
+void RECOIL_THISCALL FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary() {
+    ++g_confirmQuitBlitCalls;
+}
+
+void WINAPI FakeConfirmQuitSleep(DWORD milliseconds) {
+    ++g_confirmQuitSleepCalls;
+    g_confirmQuitSleepMilliseconds = milliseconds;
 }
 
 bool PatchImportByName(const char *dllName, const char *functionName, void *replacement,
@@ -355,6 +455,81 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
     }
 
     patch.address = nullptr;
+}
+
+struct RunPatchSet {
+    ImportFunctionPatch peek;
+    ImportFunctionPatch postQuit;
+    ImportFunctionPatch wait;
+    ImportFunctionPatch priority;
+    CodeFunctionPatch receive;
+};
+
+void RestoreRunPatches(RunPatchSet &patches) {
+    RestoreFunctionPatch(patches.receive);
+    RestoreImportPatch(patches.priority);
+    RestoreImportPatch(patches.wait);
+    RestoreImportPatch(patches.postQuit);
+    RestoreImportPatch(patches.peek);
+}
+
+int InstallRunPatches(RunPatchSet &patches) {
+    if (!PatchImportByName("USER32.dll", "PeekMessageA",
+                           reinterpret_cast<void *>(&FakeRunPeekMessageA), patches.peek)) {
+        return 1;
+    }
+    if (!PatchImportByName("USER32.dll", "PostQuitMessage",
+                           reinterpret_cast<void *>(&FakeRunPostQuitMessage), patches.postQuit)) {
+        RestoreRunPatches(patches);
+        return 2;
+    }
+    if (!PatchImportByName("USER32.dll", "WaitMessage",
+                           reinterpret_cast<void *>(&FakeRunWaitMessage), patches.wait)) {
+        RestoreRunPatches(patches);
+        return 3;
+    }
+    if (!PatchImportByName("KERNEL32.dll", "SetThreadPriority",
+                           reinterpret_cast<void *>(&FakeRunSetThreadPriority),
+                           patches.priority)) {
+        RestoreRunPatches(patches);
+        return 4;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zNetworkDPlay::ReceivePendingMessages),
+                           reinterpret_cast<void *>(&FakeRunReceivePendingMessages),
+                           patches.receive)) {
+        RestoreRunPatches(patches);
+        return 5;
+    }
+
+    return 0;
+}
+
+void ResetRunHarnessCounters() {
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+    g_stateTryBecomeCurrentCount = 0;
+    g_stateTryBecomeCurrentResult = 0;
+    g_stateUpdateShouldQuitCount = 0;
+    g_stateUpdateShouldQuitResult = 0;
+    g_stateDeactivateCount = 0;
+    g_stateSuspendCount = 0;
+    g_stateSuspendParam = 0;
+    g_stateResumeCount = 0;
+    g_stateResumeParam = 0;
+    g_runPumpMessageCount = 0;
+    g_runPumpMessageResult = 0;
+    g_runOnAppDeactivateCount = 0;
+    g_runPeekMessageCount = 0;
+    g_runPostQuitCount = 0;
+    g_runPostQuitCode = -1;
+    g_runWaitMessageCount = 0;
+    g_runSetThreadPriorityCount = 0;
+    g_runSetThreadPriorityValue = 0;
+    g_runReceivePendingMessagesCount = 0;
+    g_runReceivePendingMessagesBudget = 0;
+    g_runQuitPosted = 0;
+    g_runPeekMessageTrueAfterReceive = 0;
+    g_exitInstanceCount = 0;
 }
 
 bool FilterStringMatchesOpenFileDialogContract(const char *filter) {
@@ -685,6 +860,16 @@ struct FakeSaveGameInitLoadThunk {
                                                int capturePrimary);
 };
 
+struct FakeConfirmQuitBackgroundThunk {
+    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *zrdPath,
+                                               const char *sectionName,
+                                               int capturePrimary);
+    int RECOIL_THISCALL BindWidgetByName(zReader::Node *loadedSectionNode,
+                                         HudUiWidget *widget,
+                                         const char *name);
+    void RECOIL_THISCALL FreeLoadedTreeRoots(int loadedRoot);
+};
+
 zReader::Node *RECOIL_THISCALL FakeSaveGameInitLoadThunk::LoadFromZrd(
     const char *zrdPath, const char *sectionName, int capturePrimary) {
     ++g_saveGameInitLoadCalls;
@@ -695,6 +880,43 @@ zReader::Node *RECOIL_THISCALL FakeSaveGameInitLoadThunk::LoadFromZrd(
         std::strcmp(sectionName, g_saveLoadInitExpectedSectionName) == 0 &&
         capturePrimary == 0;
     return nullptr;
+}
+
+zReader::Node g_confirmQuitBackgroundFakeNode;
+
+zReader::Node *RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::LoadFromZrd(
+    const char *zrdPath, const char *sectionName, int capturePrimary) {
+    ++g_confirmQuitBackgroundLoadCalls;
+    g_confirmQuitBackgroundLoadArgsOk =
+        this != nullptr && zrdPath != nullptr && std::strcmp(zrdPath, "dialog.zrd") == 0 &&
+        sectionName != nullptr && std::strcmp(sectionName, "CONFIRM_QUIT") == 0 &&
+        capturePrimary == 0;
+    return &g_confirmQuitBackgroundFakeNode;
+}
+
+int RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::BindWidgetByName(
+    zReader::Node *loadedSectionNode, HudUiWidget *widget, const char *name) {
+    ++g_confirmQuitBackgroundBindCalls;
+
+    auto *const dialog = static_cast<HudUiBackgroundConfirmQuit *>(static_cast<void *>(this));
+    const bool widgetOk =
+        (g_confirmQuitBackgroundBindCalls == 1 &&
+         widget == &dialog->okButton.base &&
+         name != nullptr && std::strcmp(name, "OK_TO_QUIT") == 0) ||
+        (g_confirmQuitBackgroundBindCalls == 2 &&
+         widget == &dialog->cancelButton.base &&
+         name != nullptr && std::strcmp(name, "CANCEL_QUIT") == 0);
+    g_confirmQuitBackgroundBindArgsOk =
+        g_confirmQuitBackgroundBindArgsOk &&
+        loadedSectionNode == &g_confirmQuitBackgroundFakeNode && widgetOk;
+    return 0;
+}
+
+void RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::FreeLoadedTreeRoots(int loadedRoot) {
+    ++g_confirmQuitBackgroundFreeCalls;
+    g_confirmQuitBackgroundFreeArgsOk =
+        loadedRoot == static_cast<int>(reinterpret_cast<std::uintptr_t>(
+                          &g_confirmQuitBackgroundFakeNode));
 }
 
 void *FakeSaveGameInitLoadFromZrdProc() {
@@ -718,6 +940,65 @@ void *HudUiBackgroundLoadFromZrdProc() {
 
     MemberToFunction thunk{};
     thunk.member = &HudUiBackground::LoadFromZrd;
+    return thunk.function;
+}
+
+void *FakeConfirmQuitBackgroundLoadFromZrdProc() {
+    union MemberToFunction {
+        zReader::Node *(RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::*member)(
+            const char *, const char *, int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &FakeConfirmQuitBackgroundThunk::LoadFromZrd;
+    return thunk.function;
+}
+
+void *HudUiBackgroundBindWidgetByNameProc() {
+    union MemberToFunction {
+        int (RECOIL_THISCALL HudUiBackground::*member)(zReader::Node *, HudUiWidget *,
+                                                       const char *);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &HudUiBackground::BindWidgetByName;
+    return thunk.function;
+}
+
+void *FakeConfirmQuitBackgroundBindWidgetByNameProc() {
+    union MemberToFunction {
+        int (RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::*member)(zReader::Node *,
+                                                                      HudUiWidget *,
+                                                                      const char *);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &FakeConfirmQuitBackgroundThunk::BindWidgetByName;
+    return thunk.function;
+}
+
+void *HudUiBackgroundFreeLoadedTreeRootsProc() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL HudUiBackground::*member)(int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &HudUiBackground::FreeLoadedTreeRoots;
+    return thunk.function;
+}
+
+void *FakeConfirmQuitBackgroundFreeLoadedTreeRootsProc() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::*member)(int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &FakeConfirmQuitBackgroundThunk::FreeLoadedTreeRoots;
     return thunk.function;
 }
 
@@ -1135,6 +1416,19 @@ bool IsSingleExitCurrentQueueItem(RecoilApp_StateQueue &queue, int param) {
     auto *const item =
         reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
     return item->m_kind == RecoilApp_StateQueueKind_ExitCurrent && item->m_param == param;
+}
+
+bool IsSinglePushStateQueueItem(RecoilApp_StateQueue &queue, RecoilPtr32 state, int param) {
+    if (queue.m_itemCount != 1 || queue.m_chunkPtrList == 0) {
+        return false;
+    }
+
+    const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+    auto *const slot = reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
+    auto *const item =
+        reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+    return item->m_type == 0 && item->m_kind == RecoilApp_StateQueueKind_PushState &&
+           item->m_stateObj == state && item->m_param == param;
 }
 
 int RunOpenCampaignDialogHarness(bool throughMenuHandler) {
@@ -1839,6 +2133,221 @@ extern "C" int recoil_state_controls_queue_enter_smoke(void) {
     return result;
 }
 
+extern "C" int recoil_state_confirm_quit_queue_enter_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    const RecoilStateConfirmQuit oldConfirmQuitState = g_RecoilState_ConfirmQuit;
+    g_RecoilApp = RecoilApp{};
+    g_RecoilState_ConfirmQuit = RecoilStateConfirmQuit{};
+    g_RecoilState_ConfirmQuit.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    RecoilStateConfirmQuit::QueueEnter();
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    int result = 0;
+    if (g_stateEnterCount != 1 || g_stateExitCount != 0) {
+        result = 1;
+    } else if (queue.m_itemCount != 1 || queue.m_chunkPtrCapacity != 2) {
+        result = 2;
+    } else {
+        const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+        auto *const slot = reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
+        auto *const item =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+        if (item->m_type != 0 || item->m_kind != RecoilApp_StateQueueKind_PushState ||
+            item->m_stateObj !=
+                static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                    &g_RecoilState_ConfirmQuit)) ||
+            item->m_param != 0) {
+            result = 3;
+        }
+    }
+
+    if (queue.m_itemCount == 1) {
+        CleanupSingleQueuedItem(queue);
+    }
+    g_RecoilState_ConfirmQuit = oldConfirmQuitState;
+    g_RecoilApp = oldApp;
+    return result;
+}
+
+extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    g_RecoilApp = RecoilApp{};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiZrdWidget widget{};
+    widget.Constructor();
+    widget.OnActivateQueueExitCurrentState();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    int result = 0;
+    if (g_stateExitCount != 1 || g_stateEnterCount != 0) {
+        result = 1;
+    } else if (!IsSingleExitCurrentQueueItem(queue, 0)) {
+        result = 2;
+    }
+
+    CleanupQueuedItems(queue);
+    widget.DestructorCore();
+    g_RecoilApp = oldApp;
+    return result;
+}
+
+extern "C" int hud_ui_background_confirm_quit_lifecycle_smoke(void) {
+    CodeFunctionPatch loadPatch{};
+    CodeFunctionPatch bindPatch{};
+    CodeFunctionPatch freePatch{};
+
+    if (!PatchFunctionJump(HudUiBackgroundLoadFromZrdProc(),
+                           FakeConfirmQuitBackgroundLoadFromZrdProc(), loadPatch)) {
+        return 1;
+    }
+    if (!PatchFunctionJump(HudUiBackgroundBindWidgetByNameProc(),
+                           FakeConfirmQuitBackgroundBindWidgetByNameProc(), bindPatch)) {
+        RestoreFunctionPatch(loadPatch);
+        return 2;
+    }
+    if (!PatchFunctionJump(HudUiBackgroundFreeLoadedTreeRootsProc(),
+                           FakeConfirmQuitBackgroundFreeLoadedTreeRootsProc(), freePatch)) {
+        RestoreFunctionPatch(bindPatch);
+        RestoreFunctionPatch(loadPatch);
+        return 3;
+    }
+
+    g_confirmQuitBackgroundLoadCalls = 0;
+    g_confirmQuitBackgroundLoadArgsOk = false;
+    g_confirmQuitBackgroundBindCalls = 0;
+    g_confirmQuitBackgroundBindArgsOk = true;
+    g_confirmQuitBackgroundFreeCalls = 0;
+    g_confirmQuitBackgroundFreeArgsOk = false;
+
+    HudUiBackgroundConfirmQuit dialog{};
+    HudUiBackgroundConfirmQuit *const returned = dialog.Constructor();
+    int result = 0;
+    if (returned != &dialog || g_confirmQuitBackgroundLoadCalls != 1 ||
+        !g_confirmQuitBackgroundLoadArgsOk ||
+        g_confirmQuitBackgroundBindCalls != 2 || !g_confirmQuitBackgroundBindArgsOk ||
+        g_confirmQuitBackgroundFreeCalls != 1 || !g_confirmQuitBackgroundFreeArgsOk ||
+        dialog.okButton.base.ftable == nullptr || dialog.cancelButton.base.ftable == nullptr) {
+        result = 4;
+    }
+
+    dialog.Destructor();
+
+    HudUiBackgroundConfirmQuit scalarState{};
+    scalarState.Constructor();
+    HudUiBackgroundConfirmQuit *const scalarReturned =
+        scalarState.ScalarDeletingDestructor(0);
+    if (result == 0 && scalarReturned != &scalarState) {
+        result = 5;
+    }
+
+    RestoreFunctionPatch(freePatch);
+    RestoreFunctionPatch(bindPatch);
+    RestoreFunctionPatch(loadPatch);
+    return result;
+}
+
+extern "C" int recoil_state_confirm_quit_on_try_become_current_smoke(void) {
+    CodeFunctionPatch loadPatch{};
+    CodeFunctionPatch bindPatch{};
+    CodeFunctionPatch freePatch{};
+
+    if (!PatchFunctionJump(HudUiBackgroundLoadFromZrdProc(),
+                           FakeConfirmQuitBackgroundLoadFromZrdProc(), loadPatch)) {
+        return 1;
+    }
+    if (!PatchFunctionJump(HudUiBackgroundBindWidgetByNameProc(),
+                           FakeConfirmQuitBackgroundBindWidgetByNameProc(), bindPatch)) {
+        RestoreFunctionPatch(loadPatch);
+        return 2;
+    }
+    if (!PatchFunctionJump(HudUiBackgroundFreeLoadedTreeRootsProc(),
+                           FakeConfirmQuitBackgroundFreeLoadedTreeRootsProc(), freePatch)) {
+        RestoreFunctionPatch(bindPatch);
+        RestoreFunctionPatch(loadPatch);
+        return 3;
+    }
+
+    g_confirmQuitBackgroundLoadCalls = 0;
+    g_confirmQuitBackgroundLoadArgsOk = false;
+    g_confirmQuitBackgroundBindCalls = 0;
+    g_confirmQuitBackgroundBindArgsOk = true;
+    g_confirmQuitBackgroundFreeCalls = 0;
+    g_confirmQuitBackgroundFreeArgsOk = false;
+
+    RecoilStateConfirmQuit state{};
+    const int accepted = state.OnTryBecomeCurrent();
+    HudUiBackgroundConfirmQuit *const dialog =
+        reinterpret_cast<HudUiBackgroundConfirmQuit *>(
+            static_cast<std::uintptr_t>(state.m_dialog));
+
+    int result = 0;
+    if (accepted != 1 || dialog == nullptr ||
+        g_confirmQuitBackgroundLoadCalls != 1 || !g_confirmQuitBackgroundLoadArgsOk ||
+        g_confirmQuitBackgroundBindCalls != 2 || !g_confirmQuitBackgroundBindArgsOk ||
+        g_confirmQuitBackgroundFreeCalls != 1 || !g_confirmQuitBackgroundFreeArgsOk ||
+        dialog->okButton.base.ftable == nullptr ||
+        dialog->cancelButton.base.ftable == nullptr) {
+        result = 4;
+    }
+
+    if (dialog != nullptr) {
+        dialog->ScalarDeletingDestructor(1);
+    }
+    state.m_dialog = 0;
+
+    RestoreFunctionPatch(freePatch);
+    RestoreFunctionPatch(bindPatch);
+    RestoreFunctionPatch(loadPatch);
+    return result;
+}
+
+extern "C" int recoil_state_confirm_quit_static_init_smoke(void) {
+    TestConfirmQuitDialog dialog{};
+
+    g_RecoilState_ConfirmQuit.vftable = 0x11111111;
+    g_RecoilState_ConfirmQuit.m_dialog = 0x22222222;
+    RecoilStateConfirmQuit *const staticInitReturned =
+        RecoilStateConfirmQuit::StaticInit();
+    if (staticInitReturned != &g_RecoilState_ConfirmQuit ||
+        g_RecoilState_ConfirmQuit.vftable == 0 ||
+        g_RecoilState_ConfirmQuit.m_dialog != 0) {
+        return 1;
+    }
+
+    g_RecoilState_ConfirmQuit.m_dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    RecoilStateConfirmQuit::AtExitDestructor();
+    if (g_RecoilState_ConfirmQuit.vftable != kRecoilStateBase_VtblAddress ||
+        g_RecoilState_ConfirmQuit.m_dialog != 0 ||
+        dialog.setEnabledCount != 1 || dialog.lastEnabled != 0 ||
+        dialog.scalarDeletingCount != 1 || dialog.lastScalarDeletingFlags != 1) {
+        return 2;
+    }
+
+    g_RecoilState_ConfirmQuit.vftable = 0x33333333;
+    g_RecoilState_ConfirmQuit.m_dialog = 0;
+    RecoilStateConfirmQuit::StaticInitAndRegisterAtExit();
+    if (g_RecoilState_ConfirmQuit.vftable == 0 ||
+        g_RecoilState_ConfirmQuit.m_dialog != 0) {
+        return 3;
+    }
+
+    return 0;
+}
+
 extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {
     const RecoilApp oldApp = g_RecoilApp;
     const HudUiOptionsPanelOverlayOwner oldOptionsState = g_HudUiOptionsPanelOverlayOwner;
@@ -1874,6 +2383,71 @@ extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {
         CleanupSingleQueuedItem(queue);
     }
     g_HudUiOptionsPanelOverlayOwner = oldOptionsState;
+    g_RecoilApp = oldApp;
+    return result;
+}
+
+extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    const int oldSkipExitDelay = g_RecoilState_MainMenuSkipExitDelay;
+
+    TestAppState currentState{};
+    currentState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    g_RecoilApp = RecoilApp{};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&currentState));
+    g_RecoilApp.m_leaveNetworkState_1d0.base.vftable = currentState.vftable;
+    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_ON_EXIT;
+    g_RecoilState_MainMenuSkipExitDelay = 0;
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiConfirmQuitOkButton button{};
+    button.OnActivate();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    int result = 0;
+    if (g_RecoilState_MainMenuSkipExitDelay != 1 ||
+        g_RecoilApp.m_missionShutdownMode != RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY ||
+        g_stateExitCount != 3 || g_stateEnterCount != 1) {
+        result = 1;
+    } else if (queue.m_itemCount != 3 || queue.m_chunkPtrCapacity != 2) {
+        result = 2;
+    } else {
+        const RecoilPtr32 firstSlotValue = queue.m_writeBlock.m_cursor - 12;
+        auto *const firstSlot =
+            reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(firstSlotValue));
+        auto *const firstItem =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(
+                static_cast<std::uintptr_t>(firstSlot[0]));
+        auto *const secondItem =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(
+                static_cast<std::uintptr_t>(firstSlot[1]));
+        auto *const thirdItem =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(
+                static_cast<std::uintptr_t>(firstSlot[2]));
+
+        const RecoilPtr32 leaveNetworkState =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_RecoilApp.m_leaveNetworkState_1d0.base));
+        if (firstItem->m_type != 0 ||
+            firstItem->m_kind != RecoilApp_StateQueueKind_ExitCurrent ||
+            firstItem->m_stateObj != 0 || firstItem->m_param != 1 ||
+            secondItem->m_type != 0 ||
+            secondItem->m_kind != RecoilApp_StateQueueKind_ExitCurrent ||
+            secondItem->m_stateObj != 0 || secondItem->m_param != 0 ||
+            thirdItem->m_type != 0 ||
+            thirdItem->m_kind != RecoilApp_StateQueueKind_SwitchCurrent ||
+            thirdItem->m_stateObj != leaveNetworkState || thirdItem->m_param != 0) {
+            result = 3;
+        }
+    }
+
+    CleanupQueuedItems(queue);
+    g_RecoilState_MainMenuSkipExitDelay = oldSkipExitDelay;
     g_RecoilApp = oldApp;
     return result;
 }
@@ -1966,6 +2540,7 @@ extern "C" int recoil_app_run_current_state_quit_smoke(void) {
     g_runReceivePendingMessagesCount = 0;
     g_runReceivePendingMessagesBudget = 0;
     g_runQuitPosted = 0;
+    g_runPeekMessageTrueAfterReceive = 0;
     g_exitInstanceCount = 0;
 
     TestAppState state{};
@@ -1996,6 +2571,125 @@ extern "C" int recoil_app_run_current_state_quit_smoke(void) {
                     g_runPumpMessageCount == 1 && g_exitInstanceCount == 1 &&
                     g_runWaitMessageCount == 0;
     return ok ? 0 : 6;
+}
+
+extern "C" int recoil_app_run_queue_transitions_smoke(void) {
+    InitTestRecoilAppVtable();
+
+    RunPatchSet patches{};
+    const int patchResult = InstallRunPatches(patches);
+    if (patchResult != 0) {
+        return patchResult;
+    }
+
+    int result = 0;
+
+    TestAppState switchOldState{};
+    TestAppState switchNewState{};
+    switchOldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    switchNewState.vftable = switchOldState.vftable;
+
+    TestRecoilApp switchApp{};
+    switchApp.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+    switchApp.m_currentStateIndex_0c8 = 0;
+    switchApp.m_skipWait_0d0 = 1;
+    switchApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&switchOldState));
+    switchApp.QueueSwitchCurrentState(&switchNewState, 42);
+
+    ResetRunHarnessCounters();
+    g_stateTryBecomeCurrentResult = 1;
+    g_runPeekMessageTrueAfterReceive = 1;
+    const int switchRunResult = switchApp.Run();
+    if (switchRunResult != 77) {
+        result = 10;
+    } else if (g_stateDeactivateCount != 1) {
+        result = 11;
+    } else if (g_stateTryBecomeCurrentCount != 1) {
+        result = 12;
+    } else if (g_stateSuspendCount != 0 || g_stateResumeCount != 0) {
+        result = 13;
+    } else if (switchApp.m_currentStateIndex_0c8 != 0) {
+        result = 14;
+    } else if (switchApp.m_stateStack_0d8[0] !=
+               static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&switchNewState))) {
+        result = 15;
+    } else if (switchApp.m_stateQueue_118.m_itemCount != 0) {
+        result = 16;
+    } else if (g_runPumpMessageCount != 1 || g_exitInstanceCount != 1) {
+        result = 17;
+    } else if (g_runWaitMessageCount != 0) {
+        result = 18;
+    }
+
+    if (result == 0) {
+        TestAppState pushOldState{};
+        TestAppState pushNewState{};
+        pushOldState.vftable =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+        pushNewState.vftable = pushOldState.vftable;
+
+        TestRecoilApp pushApp{};
+        pushApp.vftable =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+        pushApp.m_currentStateIndex_0c8 = 0;
+        pushApp.m_skipWait_0d0 = 1;
+        pushApp.m_stateStack_0d8[0] =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&pushOldState));
+        pushApp.QueuePushState(&pushNewState, 23);
+
+        ResetRunHarnessCounters();
+        g_stateTryBecomeCurrentResult = 1;
+        g_runPeekMessageTrueAfterReceive = 1;
+        const int pushRunResult = pushApp.Run();
+        if (pushRunResult != 77 || g_stateSuspendCount != 1 || g_stateSuspendParam != 23 ||
+            g_stateTryBecomeCurrentCount != 1 || g_stateDeactivateCount != 0 ||
+            g_stateResumeCount != 0 || pushApp.m_currentStateIndex_0c8 != 1 ||
+            pushApp.m_stateStack_0d8[1] !=
+                static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&pushNewState)) ||
+            pushApp.m_stateQueue_118.m_itemCount != 0 || g_runPumpMessageCount != 1 ||
+            g_exitInstanceCount != 1 || g_runWaitMessageCount != 0) {
+            result = 20;
+        }
+    }
+
+    if (result == 0) {
+        TestAppState resumeState{};
+        TestAppState exitState{};
+        resumeState.vftable =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+        exitState.vftable = resumeState.vftable;
+
+        TestRecoilApp exitApp{};
+        exitApp.vftable =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+        exitApp.m_currentStateIndex_0c8 = 1;
+        exitApp.m_skipWait_0d0 = 1;
+        exitApp.m_stateStack_0d8[0] =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&resumeState));
+        exitApp.m_stateStack_0d8[1] =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&exitState));
+        exitApp.QueueExitCurrentState(17);
+
+        ResetRunHarnessCounters();
+        g_runPeekMessageTrueAfterReceive = 1;
+        const int exitRunResult = exitApp.Run();
+        if (exitRunResult != 77 || g_stateDeactivateCount != 1 || g_stateResumeCount != 1 ||
+            g_stateResumeParam != 17 || g_stateTryBecomeCurrentCount != 0 ||
+            g_stateSuspendCount != 0 || exitApp.m_currentStateIndex_0c8 != 0 ||
+            exitApp.m_stateStack_0d8[0] !=
+                static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&resumeState)) ||
+            exitApp.m_stateStack_0d8[1] != 0 || exitApp.m_stateQueue_118.m_itemCount != 0 ||
+            g_runPumpMessageCount != 1 || g_exitInstanceCount != 1 ||
+            g_runWaitMessageCount != 0) {
+            result = 30;
+        }
+    }
+
+    RestoreRunPatches(patches);
+    return result;
 }
 
 extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void) {
@@ -3637,6 +4331,207 @@ extern "C" int recoil_state_save_load_transition_on_update_should_quit_smoke(voi
     return emptyOk && dialogOk ? 0 : 6;
 }
 
+extern "C" int recoil_state_save_load_transition_lifecycle_smoke(void) {
+    const RecoilStateSaveLoadTransition oldTransition = g_RecoilStateSaveLoadTransition;
+
+    RecoilStateSaveLoadTransition constructed{};
+    constructed.vftable = 0x11111111;
+    constructed.m_dialog = 0x22222222;
+    constructed.m_dialogKind = RECOIL_SAVELOAD_DIALOG_LOAD;
+    RecoilStateSaveLoadTransition *const constructedReturned = constructed.Constructor();
+    if (constructedReturned != &constructed || constructed.vftable == 0 ||
+        constructed.m_dialog != 0 ||
+        constructed.m_dialogKind != RECOIL_SAVELOAD_DIALOG_SAVE) {
+        return 1;
+    }
+
+    RecoilStateSaveLoadTransition state{};
+    TestSaveLoadTransitionDialog dialog{};
+    state.vftable = 0x33333333;
+    state.m_dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.Destructor();
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0 ||
+        dialog.scalarDeletingCount != 1 || dialog.lastScalarDeletingFlags != 1) {
+        return 2;
+    }
+
+    state.vftable = 0x44444444;
+    state.m_dialog = 0;
+    state.Destructor();
+    if (state.vftable != kRecoilStateBase_VtblAddress) {
+        return 3;
+    }
+
+    RecoilStateSaveLoadTransition scalarState{};
+    RecoilStateSaveLoadTransition *const scalarReturned =
+        scalarState.ScalarDeletingDestructor(0);
+    if (scalarReturned != &scalarState ||
+        scalarState.vftable != kRecoilStateBase_VtblAddress) {
+        return 4;
+    }
+
+    RecoilStateSaveLoadTransition *const deletingState =
+        new RecoilStateSaveLoadTransition{};
+    RecoilStateSaveLoadTransition *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+    if (deletingReturned != deletingState) {
+        return 5;
+    }
+
+    g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
+    RecoilStateSaveLoadTransition *const staticInitReturned =
+        RecoilStateSaveLoadTransition::StaticInit();
+    if (staticInitReturned != &g_RecoilStateSaveLoadTransition ||
+        g_RecoilStateSaveLoadTransition.vftable == 0 ||
+        g_RecoilStateSaveLoadTransition.m_dialog != 0 ||
+        g_RecoilStateSaveLoadTransition.m_dialogKind != RECOIL_SAVELOAD_DIALOG_SAVE) {
+        g_RecoilStateSaveLoadTransition = oldTransition;
+        return 6;
+    }
+
+    TestSaveLoadTransitionDialog globalDialog{};
+    g_RecoilStateSaveLoadTransition.m_dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&globalDialog));
+    RecoilStateSaveLoadTransition::AtExitDestructor();
+    if (g_RecoilStateSaveLoadTransition.vftable != kRecoilStateBase_VtblAddress ||
+        g_RecoilStateSaveLoadTransition.m_dialog != 0 ||
+        globalDialog.scalarDeletingCount != 1 ||
+        globalDialog.lastScalarDeletingFlags != 1) {
+        g_RecoilStateSaveLoadTransition = oldTransition;
+        return 7;
+    }
+
+    g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
+    RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit();
+    const bool staticRegisterOk =
+        g_RecoilStateSaveLoadTransition.vftable != 0 &&
+        g_RecoilStateSaveLoadTransition.m_dialog == 0 &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE;
+
+    g_RecoilStateSaveLoadTransition = oldTransition;
+    g_RecoilStateSaveLoadTransition.m_dialog = 0;
+    return staticRegisterOk ? 0 : 8;
+}
+
+extern "C" int hud_ui_main_menu_dialog_save_load_checks_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+
+    g_GameStateOrMapTable = nullptr;
+    const bool noGameOk =
+        HudUiMainMenuDialog::CanLoadGame() == 1 && HudUiMainMenuDialog::CanSaveGame() == 0;
+
+    zInput_GameStateOrMapTablePartial gameState = {};
+    g_GameStateOrMapTable = &gameState;
+    const bool noPlayerOk =
+        HudUiMainMenuDialog::CanLoadGame() == 1 && HudUiMainMenuDialog::CanSaveGame() == 1;
+
+    zUtil_PlayerStateStorage playerState = {};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    playerState.environmentAttachmentActive = 0;
+    const bool unblockedOk =
+        HudUiMainMenuDialog::CanLoadGame() == 1 && HudUiMainMenuDialog::CanSaveGame() == 1;
+
+    playerState.environmentAttachmentActive = 1;
+    const bool blockedOk =
+        HudUiMainMenuDialog::CanLoadGame() == 0 && HudUiMainMenuDialog::CanSaveGame() == 0;
+
+    g_GameStateOrMapTable = oldGameState;
+    return noGameOk && noPlayerOk && unblockedOk && blockedOk ? 0 : 1;
+}
+
+extern "C" int recoil_state_save_load_transition_queue_dialogs_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    const RecoilStateSaveLoadTransition oldTransition = g_RecoilStateSaveLoadTransition;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+
+    zUtil_PlayerStateStorage playerState = {};
+    zInput_GameStateOrMapTablePartial gameState = {};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    g_GameStateOrMapTable = &gameState;
+
+    const RecoilPtr32 transitionState =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+            &g_RecoilStateSaveLoadTransition));
+
+    auto resetHarness = [&]() {
+        if (g_RecoilApp.m_stateQueue_118.m_itemCount != 0) {
+            CleanupQueuedItems(g_RecoilApp.m_stateQueue_118);
+        }
+        g_RecoilApp = RecoilApp{};
+        g_RecoilApp.m_currentStateIndex_0c8 = -1;
+        g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
+        g_RecoilStateSaveLoadTransition.vftable =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+        g_stateEnterCount = 0;
+        playerState.environmentAttachmentActive = 0;
+    };
+
+    resetHarness();
+    RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
+        RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED);
+    const bool saveOk =
+        g_stateEnterCount == 1 &&
+        g_RecoilStateSaveLoadTransition.m_capturePresentationMode ==
+            RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE &&
+        IsSinglePushStateQueueItem(g_RecoilApp.m_stateQueue_118, transitionState, 0);
+
+    resetHarness();
+    g_RecoilStateSaveLoadTransition.m_capturePresentationMode =
+        RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED;
+    g_RecoilStateSaveLoadTransition.m_dialogKind = RECOIL_SAVELOAD_DIALOG_LOAD;
+    playerState.environmentAttachmentActive = 1;
+    RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
+        RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED);
+    const bool saveBlockedOk =
+        g_stateEnterCount == 0 && g_RecoilApp.m_stateQueue_118.m_itemCount == 0 &&
+        g_RecoilStateSaveLoadTransition.m_capturePresentationMode ==
+            RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_LOAD;
+
+    resetHarness();
+    g_RecoilStateSaveLoadTransition.m_capturePresentationMode =
+        RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED;
+    RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RECOIL_SAVELOAD_MODE_STANDARD);
+    const bool loadStandardOk =
+        g_stateEnterCount == 1 &&
+        g_RecoilStateSaveLoadTransition.m_transitionMode == RECOIL_SAVELOAD_MODE_STANDARD &&
+        g_RecoilStateSaveLoadTransition.m_capturePresentationMode ==
+            RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_LOAD &&
+        IsSinglePushStateQueueItem(g_RecoilApp.m_stateQueue_118, transitionState, 0);
+
+    resetHarness();
+    RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RECOIL_SAVELOAD_MODE_QUICKLOAD);
+    const bool loadQuickOk =
+        g_stateEnterCount == 1 &&
+        g_RecoilStateSaveLoadTransition.m_transitionMode == RECOIL_SAVELOAD_MODE_QUICKLOAD &&
+        g_RecoilStateSaveLoadTransition.m_capturePresentationMode ==
+            RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_LOAD &&
+        IsSinglePushStateQueueItem(g_RecoilApp.m_stateQueue_118, transitionState, 0);
+
+    resetHarness();
+    g_RecoilStateSaveLoadTransition.m_transitionMode = RECOIL_SAVELOAD_MODE_FADE;
+    g_RecoilStateSaveLoadTransition.m_dialogKind = RECOIL_SAVELOAD_DIALOG_SAVE;
+    playerState.environmentAttachmentActive = 1;
+    RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RECOIL_SAVELOAD_MODE_QUICKLOAD);
+    const bool loadBlockedOk =
+        g_stateEnterCount == 0 && g_RecoilApp.m_stateQueue_118.m_itemCount == 0 &&
+        g_RecoilStateSaveLoadTransition.m_transitionMode == RECOIL_SAVELOAD_MODE_FADE &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE;
+
+    if (g_RecoilApp.m_stateQueue_118.m_itemCount != 0) {
+        CleanupQueuedItems(g_RecoilApp.m_stateQueue_118);
+    }
+    g_RecoilApp = oldApp;
+    g_RecoilStateSaveLoadTransition = oldTransition;
+    g_GameStateOrMapTable = oldGameState;
+
+    return saveOk && saveBlockedOk && loadStandardOk && loadQuickOk && loadBlockedOk ? 0 : 1;
+}
+
 extern "C" int recoil_app_load_zbd_and_setup_sensor_tracker_smoke(void) {
     InitTestRecoilAppVtable();
     g_startEngineCount = 0;
@@ -4513,6 +5408,161 @@ extern "C" int recoil_app_fmv_state_destructor_smoke(void) {
                : 4;
 }
 
+extern "C" int recoil_state_credits_destructor_smoke(void) {
+    RecoilStateCredits state{};
+    TestCreditsPanel panel{};
+
+    state.vftable = 0x11111111;
+    state.dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+
+    state.~RecoilStateCredits();
+
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.dialog != 0) {
+        return 1;
+    }
+    if (panel.setEnabledCount != 1 || panel.lastEnabled != 0) {
+        return 2;
+    }
+    if (panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
+        return 3;
+    }
+
+    state.vftable = 0x22222222;
+    state.dialog = 0;
+    state.~RecoilStateCredits();
+
+    return state.vftable == kRecoilStateBase_VtblAddress ? 0 : 4;
+}
+
+extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
+    RecoilStateConfirmQuit constructed{};
+    constructed.vftable = 0x11111111;
+    constructed.m_dialog = 0x22222222;
+    RecoilStateConfirmQuit *const constructedReturned = constructed.Constructor();
+    if (constructedReturned != &constructed || constructed.vftable == 0 ||
+        constructed.m_dialog != 0) {
+        return 7;
+    }
+
+    RecoilStateConfirmQuit state{};
+    TestConfirmQuitDialog dialog{};
+
+    state.vftable = 0x11111111;
+    state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+
+    state.~RecoilStateConfirmQuit();
+
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0) {
+        return 1;
+    }
+    if (dialog.setEnabledCount != 1 || dialog.lastEnabled != 0) {
+        return 2;
+    }
+    if (dialog.scalarDeletingCount != 1 || dialog.lastScalarDeletingFlags != 1) {
+        return 3;
+    }
+
+    state.vftable = 0x22222222;
+    state.m_dialog = 0;
+    state.~RecoilStateConfirmQuit();
+
+    if (state.vftable != kRecoilStateBase_VtblAddress) {
+        return 4;
+    }
+
+    RecoilStateConfirmQuit scalarState{};
+    RecoilStateConfirmQuit *const returned = scalarState.ScalarDeletingDestructor(0);
+    if (returned != &scalarState || scalarState.vftable != kRecoilStateBase_VtblAddress) {
+        return 5;
+    }
+
+    auto *const deletingState = new RecoilStateConfirmQuit{};
+    RecoilStateConfirmQuit *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+    if (deletingReturned != deletingState) {
+        return 6;
+    }
+
+    CodeFunctionPatch postprocessPatch{};
+    CodeFunctionPatch blitPatch{};
+    CodeFunctionPatch unlockPatch{};
+    ImportFunctionPatch sleepPatch{};
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                           reinterpret_cast<void *>(
+                               &FakeConfirmQuitRunPostprocessOnPrimaryBuffer),
+                           postprocessPatch)) {
+        return 8;
+    }
+
+    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+        &HudUiDialogController::BlitOwnedSurfaceToPrimary;
+    void (RECOIL_THISCALL FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
+        &FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestSaveLoadMethodAddress(blitMember)),
+                           reinterpret_cast<void *>(TestSaveLoadMethodAddress(fakeBlitMember)),
+                           blitPatch)) {
+        RestoreFunctionPatch(postprocessPatch);
+        return 9;
+    }
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                           reinterpret_cast<void *>(&FakeConfirmQuitUnlockPrimarySurfaceState),
+                           unlockPatch)) {
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 10;
+    }
+
+    if (!PatchImportByName("KERNEL32.dll", "Sleep",
+                           reinterpret_cast<void *>(&FakeConfirmQuitSleep), sleepPatch)) {
+        RestoreFunctionPatch(unlockPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 11;
+    }
+
+    g_confirmQuitPostprocessCalls = 0;
+    g_confirmQuitBlitCalls = 0;
+    g_confirmQuitUnlockCalls = 0;
+    g_confirmQuitSleepCalls = 0;
+    g_confirmQuitSleepMilliseconds = 0;
+    dialog.setEnabledCount = 0;
+    dialog.lastEnabled = -1;
+    dialog.scalarDeletingCount = 0;
+    dialog.lastScalarDeletingFlags = 0;
+
+    state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.OnDeactivate();
+
+    const bool deactivateOk =
+        state.m_dialog == 0 && dialog.setEnabledCount == 1 && dialog.lastEnabled == 0 &&
+        dialog.scalarDeletingCount == 1 && dialog.lastScalarDeletingFlags == 1 &&
+        g_confirmQuitPostprocessCalls == 1 && g_confirmQuitBlitCalls == 1 &&
+        g_confirmQuitUnlockCalls == 1 && g_confirmQuitSleepCalls == 1 &&
+        g_confirmQuitSleepMilliseconds == 1000;
+
+    state.m_dialog = 0;
+    g_confirmQuitPostprocessCalls = 0;
+    g_confirmQuitBlitCalls = 0;
+    g_confirmQuitUnlockCalls = 0;
+    g_confirmQuitSleepCalls = 0;
+    state.OnDeactivate();
+    const bool nullDeactivateOk =
+        g_confirmQuitPostprocessCalls == 0 && g_confirmQuitBlitCalls == 0 &&
+        g_confirmQuitUnlockCalls == 0 && g_confirmQuitSleepCalls == 0;
+
+    RestoreImportPatch(sleepPatch);
+    RestoreFunctionPatch(unlockPatch);
+    RestoreFunctionPatch(blitPatch);
+    RestoreFunctionPatch(postprocessPatch);
+
+    if (!deactivateOk) {
+        return 12;
+    }
+    return nullDeactivateOk ? 0 : 13;
+}
+
 extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void) {
     RecoilApp_MissionFmvState mission{};
     mission.base.vftable = 0x33333333;
@@ -4536,21 +5586,48 @@ extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void) {
 }
 
 extern "C" int recoil_app_scalar_deleting_destructor_smoke(void) {
+    RecoilApp app{};
+    app.Constructor();
+    RecoilApp *returnedApp = app.ScalarDeletingDestructor(0);
+    if (returnedApp != &app || app.m_attractFmvState_160.base.vftable != kRecoilStateBase_VtblAddress ||
+        app.m_introFmvState_1a0.base.vftable != kRecoilStateBase_VtblAddress ||
+        app.m_mainMenuPrepState_1c8.base.vftable != kRecoilStateBase_VtblAddress ||
+        app.m_leaveNetworkState_1d0.base.vftable != kRecoilStateBase_VtblAddress ||
+        app.m_missionFmvState_1d8.base.vftable != kRecoilStateBase_VtblAddress ||
+        app.m_playState_208.base.vftable != kRecoilStateBase_VtblAddress ||
+        app.m_mpExitDialogState_220.base.vftable != kRecoilStateBase_VtblAddress) {
+        return 1;
+    }
+
+    auto *deletingApp = new RecoilApp{};
+    deletingApp->Constructor();
+    RecoilApp *deletingReturnedApp = deletingApp->ScalarDeletingDestructor(1);
+    if (deletingReturnedApp != deletingApp) {
+        return 2;
+    }
+
     auto *state = new RecoilApp_IState{0x11111111};
     RecoilApp_IState *returnedState = state->ScalarDeletingDestructor(1);
     if (returnedState != state) {
-        return 1;
+        return 3;
     }
 
     auto *attract = new RecoilApp_AttractFmvState{};
     attract->base.vftable = 0x22222222;
     auto *returnedAttract = attract->ScalarDeletingDestructor(1);
     if (returnedAttract != attract) {
-        return 2;
+        return 4;
     }
 
     auto *intro = new RecoilApp_IntroFmvState{};
     intro->base.vftable = 0x33333333;
     auto *returnedIntro = intro->ScalarDeletingDestructor(1);
-    return returnedIntro == intro ? 0 : 3;
+    if (returnedIntro != intro) {
+        return 5;
+    }
+
+    auto *mission = new RecoilApp_MissionFmvState{};
+    mission->base.vftable = 0x44444444;
+    RecoilApp_MissionFmvState *returnedMission = mission->ScalarDeletingDestructor(1);
+    return returnedMission == mission ? 0 : 6;
 }

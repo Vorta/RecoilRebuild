@@ -128,3 +128,6 @@ contracts where hexadecimal grouping carries evidence.
 Keep `.agent/IMPLEMENTATION_GROUPS.md` for short-lived dependency closures.
 Move durable cross-file facts into source comments or narrow notes under
 `docs/reconstruction/`, and prune completed group notes before handoff.
+Before final handoff or a required git checkpoint, state the documentation
+decision: durable facts were captured in source/docs, or no durable new
+documentation was needed.

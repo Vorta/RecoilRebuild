@@ -121,6 +121,23 @@ struct HudUiLoadGamePrimaryActionButton : HudUiZrdWidget {
     void RECOIL_THISCALL OnActivate();
 };
 
+struct HudUiConfirmQuitOkButton : HudUiZrdWidget {
+    void RECOIL_THISCALL OnActivate();
+};
+
+struct HudUiBackgroundConfirmQuit : HudUiBackground {
+    HudUiConfirmQuitOkButton okButton;
+    HudUiZrdWidget cancelButton;
+
+    HudUiBackgroundConfirmQuit *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE HudUiBackgroundConfirmQuit *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundConfirmQuit) == 0xabe4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundConfirmQuit, okButton) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundConfirmQuit, cancelButton) == 0xaa98);
+
 struct HudUiSaveLoadGameNameInput : HudUiNumericTextInput {
     void RECOIL_THISCALL OnActivate();
     int RECOIL_THISCALL OnRawKeyboardEvent(int key);
@@ -257,6 +274,14 @@ struct RecoilStateSaveLoadTransition : RecoilApp_IState {
     RecoilSaveLoadTransitionMode m_transitionMode;
     RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshot*
 
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    RECOIL_NOINLINE static RecoilStateSaveLoadTransition *RECOIL_CDECL StaticInit();
+    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
+    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
+    RecoilStateSaveLoadTransition *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE RecoilStateSaveLoadTransition *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     RECOIL_NOINLINE int RECOIL_THISCALL OnUpdateShouldQuit();
     static void RECOIL_FASTCALL
@@ -288,6 +313,16 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiOptionsPanelOverlayOwner) == 0x08);
 struct RecoilStateConfirmQuit : RecoilApp_IState {
     RecoilPtr32 m_dialog; // HudUiBackgroundConfirmQuit*
 
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    RECOIL_NOINLINE static RecoilStateConfirmQuit *RECOIL_CDECL StaticInit();
+    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
+    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
+    RecoilStateConfirmQuit *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
+    RECOIL_NOINLINE ~RecoilStateConfirmQuit();
+    RECOIL_NOINLINE RecoilStateConfirmQuit *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
     static void RECOIL_CDECL QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateConfirmQuit) == 0x08);

@@ -160,10 +160,16 @@ void GameNetUnlockRemotePlayerWeaponBanks(zUtil_PlayerStateStorage *playerState)
     }
 }
 
-void GameNetShowPairedTimerMessages(int firstMessageId, int secondMessageId) {
-    HudUi::ShowTopMessageLine(zLoc::GetMessageString(firstMessageId),
-                              kGameNetHudTimerWarningDurationSec);
-    HudUi::ShowTopMessageLine(zLoc::GetMessageString(secondMessageId),
+void GameNetShowPairedTimerMessages(
+    int firstMessageId,
+    int secondMessageId
+) {
+    HudUi::ShowTopMessageLine(
+        zLoc::GetMessageString(firstMessageId),
+        kGameNetHudTimerWarningDurationSec
+    );
+    HudUi::ShowTopMessageLine(
+        zLoc::GetMessageString(secondMessageId),
                               kGameNetHudTimerWarningDurationSec);
 }
 

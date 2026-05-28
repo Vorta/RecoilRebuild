@@ -765,6 +765,7 @@ struct HudUiZrdWidget {
     HudUiRect *RECOIL_THISCALL GetBoundsRectOrNull();
     void RECOIL_THISCALL ShowPreview();
     void RECOIL_THISCALL OnActivate();
+    void RECOIL_THISCALL OnActivateQueueExitCurrentState();
     int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
     void RECOIL_THISCALL RefreshState();
     void RECOIL_THISCALL HidePreview();

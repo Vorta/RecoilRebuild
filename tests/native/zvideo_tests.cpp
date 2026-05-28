@@ -75,6 +75,10 @@ struct FakeD3DDevice2Object {
     void **vtable;
 };
 
+struct FakeDirectDrawSurface3Object {
+    void **vtable;
+};
+
 void *gFakeD3DDevice2VTable[24];
 HRESULT gFakeD3DBeginSceneResult;
 HRESULT gFakeD3DEndSceneResult;
@@ -83,6 +87,29 @@ int gFakeD3DEndSceneCalls;
 int gFakeD3DSetRenderStateCalls;
 D3DRENDERSTATETYPE gFakeD3DRenderStates[4];
 DWORD gFakeD3DRenderStateValues[4];
+void *gFakeDirectDrawSurface3VTable[40];
+HRESULT gFakeDirectDrawSurface3BltResult;
+int gFakeDirectDrawSurface3BltCalls;
+RECT gFakeDirectDrawSurface3LastBltDstRect;
+RECT gFakeDirectDrawSurface3LastBltSrcRect;
+IDirectDrawSurface3 *gFakeDirectDrawSurface3LastBltSource;
+DWORD gFakeDirectDrawSurface3LastBltFlags;
+LPDDBLTFX gFakeDirectDrawSurface3LastBltFx;
+HRESULT gFakeDirectDrawSurface3LockResults[4];
+int gFakeDirectDrawSurface3LockResultCount;
+int gFakeDirectDrawSurface3LockCalls;
+LPRECT gFakeDirectDrawSurface3LastLockRect;
+LPDDSURFACEDESC gFakeDirectDrawSurface3LastLockDesc;
+DWORD gFakeDirectDrawSurface3LastLockFlags;
+HANDLE gFakeDirectDrawSurface3LastLockEvent;
+DWORD gFakeDirectDrawSurface3LockDescSize;
+void *gFakeDirectDrawSurface3LockPixels;
+HRESULT gFakeDirectDrawSurface3UnlockResults[4];
+int gFakeDirectDrawSurface3UnlockResultCount;
+int gFakeDirectDrawSurface3UnlockCalls;
+LPVOID gFakeDirectDrawSurface3LastUnlockArg;
+HRESULT gFakeDirectDrawSurface3RestoreResult;
+int gFakeDirectDrawSurface3RestoreCalls;
 
 HRESULT __stdcall FakeD3DDevice2_BeginScene(IDirect3DDevice2 *) {
     ++gFakeD3DBeginSceneCalls;
@@ -105,6 +132,62 @@ HRESULT __stdcall FakeD3DDevice2_SetRenderState(IDirect3DDevice2 *,
     return DD_OK;
 }
 
+HRESULT __stdcall FakeDirectDrawSurface3_Blt(IDirectDrawSurface3 *,
+                                             LPRECT dstRect,
+                                             IDirectDrawSurface3 *sourceSurface,
+                                             LPRECT srcRect,
+                                             DWORD flags,
+                                             LPDDBLTFX bltFx) {
+    ++gFakeDirectDrawSurface3BltCalls;
+    gFakeDirectDrawSurface3LastBltDstRect = *dstRect;
+    gFakeDirectDrawSurface3LastBltSrcRect = *srcRect;
+    gFakeDirectDrawSurface3LastBltSource = sourceSurface;
+    gFakeDirectDrawSurface3LastBltFlags = flags;
+    gFakeDirectDrawSurface3LastBltFx = bltFx;
+    return gFakeDirectDrawSurface3BltResult;
+}
+
+HRESULT __stdcall FakeDirectDrawSurface3_Lock(IDirectDrawSurface3 *,
+                                              LPRECT rect,
+                                              LPDDSURFACEDESC surfaceDesc,
+                                              DWORD flags,
+                                              HANDLE eventHandle) {
+    int index = gFakeDirectDrawSurface3LockCalls;
+    if (index >= gFakeDirectDrawSurface3LockResultCount) {
+        index = gFakeDirectDrawSurface3LockResultCount - 1;
+    }
+    ++gFakeDirectDrawSurface3LockCalls;
+    gFakeDirectDrawSurface3LastLockRect = rect;
+    gFakeDirectDrawSurface3LastLockDesc = surfaceDesc;
+    gFakeDirectDrawSurface3LastLockFlags = flags;
+    gFakeDirectDrawSurface3LastLockEvent = eventHandle;
+    gFakeDirectDrawSurface3LockDescSize = surfaceDesc->dwSize;
+
+    if (gFakeDirectDrawSurface3LockResults[index] == DD_OK) {
+        surfaceDesc->dwWidth = 640;
+        surfaceDesc->dwHeight = 480;
+        surfaceDesc->lPitch = 1280;
+        surfaceDesc->lpSurface = gFakeDirectDrawSurface3LockPixels;
+    }
+
+    return gFakeDirectDrawSurface3LockResults[index];
+}
+
+HRESULT __stdcall FakeDirectDrawSurface3_Unlock(IDirectDrawSurface3 *, LPVOID surfaceData) {
+    int index = gFakeDirectDrawSurface3UnlockCalls;
+    if (index >= gFakeDirectDrawSurface3UnlockResultCount) {
+        index = gFakeDirectDrawSurface3UnlockResultCount - 1;
+    }
+    ++gFakeDirectDrawSurface3UnlockCalls;
+    gFakeDirectDrawSurface3LastUnlockArg = surfaceData;
+    return gFakeDirectDrawSurface3UnlockResults[index];
+}
+
+HRESULT __stdcall FakeDirectDrawSurface3_Restore(IDirectDrawSurface3 *) {
+    ++gFakeDirectDrawSurface3RestoreCalls;
+    return gFakeDirectDrawSurface3RestoreResult;
+}
+
 void InstallFakeD3DDevice2(FakeD3DDevice2Object &device) {
     std::memset(gFakeD3DDevice2VTable, 0, sizeof(gFakeD3DDevice2VTable));
     gFakeD3DDevice2VTable[10] = reinterpret_cast<void *>(FakeD3DDevice2_BeginScene);
@@ -119,6 +202,52 @@ void InstallFakeD3DDevice2(FakeD3DDevice2Object &device) {
     gFakeD3DSetRenderStateCalls = 0;
     std::memset(gFakeD3DRenderStates, 0, sizeof(gFakeD3DRenderStates));
     std::memset(gFakeD3DRenderStateValues, 0, sizeof(gFakeD3DRenderStateValues));
+}
+
+void InstallFakeDirectDrawSurface3(FakeDirectDrawSurface3Object &surface,
+                                   HRESULT firstUnlockResult,
+                                   HRESULT secondUnlockResult,
+                                   HRESULT restoreResult) {
+    std::memset(gFakeDirectDrawSurface3VTable, 0, sizeof(gFakeDirectDrawSurface3VTable));
+    gFakeDirectDrawSurface3VTable[5] =
+        reinterpret_cast<void *>(FakeDirectDrawSurface3_Blt);
+    gFakeDirectDrawSurface3VTable[25] =
+        reinterpret_cast<void *>(FakeDirectDrawSurface3_Lock);
+    gFakeDirectDrawSurface3VTable[27] =
+        reinterpret_cast<void *>(FakeDirectDrawSurface3_Restore);
+    gFakeDirectDrawSurface3VTable[32] =
+        reinterpret_cast<void *>(FakeDirectDrawSurface3_Unlock);
+    surface.vtable = gFakeDirectDrawSurface3VTable;
+    gFakeDirectDrawSurface3BltResult = DD_OK;
+    gFakeDirectDrawSurface3BltCalls = 0;
+    gFakeDirectDrawSurface3LastBltDstRect = {};
+    gFakeDirectDrawSurface3LastBltSrcRect = {};
+    gFakeDirectDrawSurface3LastBltSource = nullptr;
+    gFakeDirectDrawSurface3LastBltFlags = 0;
+    gFakeDirectDrawSurface3LastBltFx = reinterpret_cast<LPDDBLTFX>(1);
+    gFakeDirectDrawSurface3LockResults[0] = DD_OK;
+    gFakeDirectDrawSurface3LockResults[1] = DD_OK;
+    gFakeDirectDrawSurface3LockResultCount = 2;
+    gFakeDirectDrawSurface3LockCalls = 0;
+    gFakeDirectDrawSurface3LastLockRect = reinterpret_cast<LPRECT>(1);
+    gFakeDirectDrawSurface3LastLockDesc = nullptr;
+    gFakeDirectDrawSurface3LastLockFlags = 0;
+    gFakeDirectDrawSurface3LastLockEvent = reinterpret_cast<HANDLE>(1);
+    gFakeDirectDrawSurface3LockDescSize = 0;
+    gFakeDirectDrawSurface3LockPixels = reinterpret_cast<void *>(0x12345678);
+    gFakeDirectDrawSurface3UnlockResults[0] = firstUnlockResult;
+    gFakeDirectDrawSurface3UnlockResults[1] = secondUnlockResult;
+    gFakeDirectDrawSurface3UnlockResultCount = 2;
+    gFakeDirectDrawSurface3UnlockCalls = 0;
+    gFakeDirectDrawSurface3LastUnlockArg = reinterpret_cast<LPVOID>(1);
+    gFakeDirectDrawSurface3RestoreResult = restoreResult;
+    gFakeDirectDrawSurface3RestoreCalls = 0;
+}
+
+void ConfigureFakeDirectDrawSurface3LockResults(HRESULT firstLockResult,
+                                                HRESULT secondLockResult) {
+    gFakeDirectDrawSurface3LockResults[0] = firstLockResult;
+    gFakeDirectDrawSurface3LockResults[1] = secondLockResult;
 }
 
 void RECOIL_CDECL CaptureFlushSortedPolys() {
@@ -1289,6 +1418,107 @@ extern "C" int zvideo_run_postprocess_on_sw_buffer_smoke(void) {
     return lockOk && frameBufferOk && fxSurfaceOk && primitiveOk ? 0 : 1;
 }
 
+extern "C" int zvideo_run_postprocess_on_primary_buffer_smoke(void) {
+    zVideo_SurfaceStateProc const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimarySurfaceState = g_zVideo_PrimarySurfaceState;
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedUseHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    void *const savedFrameBuffer = zRndr::g_frameBuffer;
+    const int savedPitchBytes = zRndr::g_pitchBytes;
+    const int savedBytesPerPixel = zRndr::g_bytesPerPixel;
+    unsigned char savedConfig[kFxPass3ConfigSize] = {};
+    std::memcpy(savedConfig, FxPass3ConfigBytes(), sizeof(savedConfig));
+    unsigned short *const savedFxSurfacePixels = g_zVideo_FxSurfacePixels16;
+    const int savedFxSurfaceWidth = g_zVideo_FxSurfaceWidth;
+    const int savedFxSurfaceHeight = g_zVideo_FxSurfaceHeight;
+    const int savedFxSurfacePitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int savedFxSurfacePitchPixels = g_zVideo_FxSurfacePitchPixels16;
+
+    unsigned short pixels[16] = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 4;
+    g_zVideo_PrimarySurfaceState.height = 3;
+    g_zVideo_PrimarySurfaceState.pitch = 8;
+    g_zVideo_pfnLockSurfaceState = CaptureLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = CaptureUnlockSurfaceState;
+
+    auto resetObservedState = [&]() {
+        g_zVideoTestLockSurfaceCount = 0;
+        g_zVideoTestLockSurfaceState = nullptr;
+        g_zVideoTestUnlockSurfaceCount = 0;
+        g_zVideoTestUnlockSurfaceState = nullptr;
+        zRndr::g_frameBuffer = nullptr;
+        zRndr::g_pitchBytes = 0;
+        zRndr::g_bytesPerPixel = 7;
+        std::memset(FxPass3ConfigBytes(), 0, kFxPass3ConfigSize);
+        g_zVideo_FxSurfacePixels16 = nullptr;
+        g_zVideo_FxSurfaceWidth = 0;
+        g_zVideo_FxSurfaceHeight = 0;
+        g_zVideo_FxSurfacePitchBytes = 0;
+        g_zVideo_FxSurfacePitchPixels16 = 0;
+    };
+
+    auto pipelineOk = [&]() {
+        return zRndr::g_frameBuffer == pixels && zRndr::g_pitchBytes == 8 &&
+               zRndr::g_bytesPerPixel == 7 && g_zVideo_FxSurfacePixels16 == pixels &&
+               g_zVideo_FxSurfaceWidth == 4 && g_zVideo_FxSurfaceHeight == 3 &&
+               g_zVideo_FxSurfacePitchBytes == 8 && g_zVideo_FxSurfacePitchPixels16 == 4 &&
+               FxPass3FieldAt<unsigned short *>(kFxPass3SurfacePixelsOffset) == pixels &&
+               FxPass3FieldAt<int>(kFxPass3SurfaceWidthOffset) == 4 &&
+               FxPass3FieldAt<int>(kFxPass3SurfaceHeightOffset) == 3 &&
+               FxPass3FieldAt<int>(kFxPass3SurfacePitchOffset) == 8;
+    };
+
+    resetObservedState();
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_PrimarySurfaceState.locked = 0;
+    const int softwareResult = zVideo::RunPostprocessOnPrimaryBuffer();
+    const bool softwareOk = softwareResult == 0 && g_zVideoTestLockSurfaceCount == 0 &&
+                            g_zVideoTestUnlockSurfaceCount == 0 &&
+                            g_zVideo_PrimarySurfaceState.locked == 0 && pipelineOk();
+
+    resetObservedState();
+    g_zVideo_RendererType = 1;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_PrimarySurfaceState.locked = 0;
+    const int hardwareResult = zVideo::RunPostprocessOnPrimaryBuffer();
+    const bool hardwareOk = hardwareResult == 0 && g_zVideoTestLockSurfaceCount == 1 &&
+                            g_zVideoTestLockSurfaceState == &g_zVideo_PrimarySurfaceState &&
+                            g_zVideoTestUnlockSurfaceCount == 0 &&
+                            g_zVideo_PrimarySurfaceState.locked == 1 && pipelineOk();
+
+    resetObservedState();
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 1;
+    g_zVideo_PrimarySurfaceState.locked = 0;
+    const int halfResResult = zVideo::RunPostprocessOnPrimaryBuffer();
+    const bool halfResOk = halfResResult == 0 && g_zVideoTestLockSurfaceCount == 1 &&
+                           g_zVideoTestLockSurfaceState == &g_zVideo_PrimarySurfaceState &&
+                           g_zVideoTestUnlockSurfaceCount == 1 &&
+                           g_zVideoTestUnlockSurfaceState == &g_zVideo_PrimarySurfaceState &&
+                           g_zVideo_PrimarySurfaceState.locked == 0 && pipelineOk();
+
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+    g_zVideo_PrimarySurfaceState = savedPrimarySurfaceState;
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_UseHalfResBackbuffer = savedUseHalfResBackbuffer;
+    zRndr::g_frameBuffer = savedFrameBuffer;
+    zRndr::g_pitchBytes = savedPitchBytes;
+    zRndr::g_bytesPerPixel = savedBytesPerPixel;
+    std::memcpy(FxPass3ConfigBytes(), savedConfig, sizeof(savedConfig));
+    g_zVideo_FxSurfacePixels16 = savedFxSurfacePixels;
+    g_zVideo_FxSurfaceWidth = savedFxSurfaceWidth;
+    g_zVideo_FxSurfaceHeight = savedFxSurfaceHeight;
+    g_zVideo_FxSurfacePitchBytes = savedFxSurfacePitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = savedFxSurfacePitchPixels;
+
+    return softwareOk && hardwareOk && halfResOk ? 0 : 1;
+}
+
 extern "C" int zvideo_frame_scratch_buffers_smoke(void) {
     std::free(g_zVid_NoiseByteTable);
     std::free(g_zVideo_FxPass3_ScratchPixels16);
@@ -2008,6 +2238,49 @@ extern "C" int zvideo_buff_copy_surface_rect_to_image_smoke(void) {
                : 3;
 }
 
+extern "C" int zvideo_buff_blt_source_to_primary_clipped_smoke(void) {
+    FakeDirectDrawSurface3Object primarySurface{};
+    FakeDirectDrawSurface3Object sourceSurface{};
+    InstallFakeDirectDrawSurface3(primarySurface, DD_OK, DD_OK, DD_OK);
+    sourceSurface.vtable = gFakeDirectDrawSurface3VTable;
+
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.width = 100;
+    g_zVideo_PrimarySurfaceState.height = 80;
+    g_zVideo_PrimarySurfaceState.locked = 1;
+    g_zVideo_PrimarySurfaceState.surf =
+        reinterpret_cast<IDirectDrawSurface3 *>(&primarySurface);
+
+    zVidImagePartial image{};
+    image.width = 20;
+    image.height = 10;
+    image.formatFlagsPacked = 2;
+    image.surface = reinterpret_cast<IDirectDrawSurface3 *>(&sourceSurface);
+
+    zVidRect32 srcRect{2, 3, 12, 9};
+    zVideo_buff::BltSourceToPrimaryClipped(&image, -1, 4, 0, &srcRect);
+
+    return gFakeDirectDrawSurface3UnlockCalls == 1 &&
+                   gFakeDirectDrawSurface3BltCalls == 1 &&
+                   gFakeDirectDrawSurface3LockCalls == 1 &&
+                   gFakeDirectDrawSurface3RestoreCalls == 0 &&
+                   g_zVideo_PrimarySurfaceState.locked == 1 &&
+                   gFakeDirectDrawSurface3LastBltSource == image.surface &&
+                   gFakeDirectDrawSurface3LastBltFx == nullptr &&
+                   gFakeDirectDrawSurface3LastBltFlags ==
+                       (DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE | DDBLT_KEYSRC) &&
+                   gFakeDirectDrawSurface3LastBltDstRect.left == 0 &&
+                   gFakeDirectDrawSurface3LastBltDstRect.top == 4 &&
+                   gFakeDirectDrawSurface3LastBltDstRect.right == 9 &&
+                   gFakeDirectDrawSurface3LastBltDstRect.bottom == 10 &&
+                   gFakeDirectDrawSurface3LastBltSrcRect.left == 3 &&
+                   gFakeDirectDrawSurface3LastBltSrcRect.top == 3 &&
+                   gFakeDirectDrawSurface3LastBltSrcRect.right == 12 &&
+                   gFakeDirectDrawSurface3LastBltSrcRect.bottom == 9
+               ? 0
+               : 1;
+}
+
 extern "C" int zvideo_surface_state_lock_skip_smoke(void) {
     g_zVideo_DisplayModeSurfaceState = {};
     g_zVideo_DisplayModeSurfaceState.surf = reinterpret_cast<IDirectDrawSurface3 *>(0x1234);
@@ -2032,6 +2305,99 @@ extern "C" int zvideo_surface_state_lock_skip_smoke(void) {
                    zVideo_dd::UnlockSurfaceState(&unlocked) == 0
                ? 0
                : 3;
+}
+
+extern "C" int zvideo_dd_unlock_directdraw_surface_smoke(void) {
+    FakeDirectDrawSurface3Object surface{};
+    InstallFakeDirectDrawSurface3(surface, DD_OK, DD_OK, DD_OK);
+    IDirectDrawSurface3 *surfaceInterface = reinterpret_cast<IDirectDrawSurface3 *>(&surface);
+
+    if (zVideo_dd::UnlockDirectDrawSurface(surfaceInterface) != 0 ||
+        gFakeDirectDrawSurface3UnlockCalls != 1 || gFakeDirectDrawSurface3RestoreCalls != 0 ||
+        gFakeDirectDrawSurface3LastUnlockArg != nullptr) {
+        return 1;
+    }
+
+    InstallFakeDirectDrawSurface3(surface, DDERR_SURFACELOST, DD_OK, DD_OK);
+    if (zVideo_dd::UnlockDirectDrawSurface(surfaceInterface) != 0 ||
+        gFakeDirectDrawSurface3UnlockCalls != 2 || gFakeDirectDrawSurface3RestoreCalls != 1 ||
+        gFakeDirectDrawSurface3LastUnlockArg != nullptr) {
+        return 2;
+    }
+
+    return 0;
+}
+
+extern "C" int zvideo_dd_lock_directdraw_surface_smoke(void) {
+    FakeDirectDrawSurface3Object surface{};
+    InstallFakeDirectDrawSurface3(surface, DD_OK, DD_OK, DD_OK);
+    IDirectDrawSurface3 *surfaceInterface = reinterpret_cast<IDirectDrawSurface3 *>(&surface);
+    DDSURFACEDESC surfaceDesc;
+    std::memset(&surfaceDesc, 0xcc, sizeof(surfaceDesc));
+
+    if (zVideo_dd::LockDirectDrawSurface(surfaceInterface, &surfaceDesc) != 0 ||
+        gFakeDirectDrawSurface3LockCalls != 1 || gFakeDirectDrawSurface3RestoreCalls != 0 ||
+        gFakeDirectDrawSurface3LastLockRect != nullptr ||
+        gFakeDirectDrawSurface3LastLockDesc != &surfaceDesc ||
+        gFakeDirectDrawSurface3LastLockFlags != DDLOCK_WAIT ||
+        gFakeDirectDrawSurface3LastLockEvent != nullptr ||
+        gFakeDirectDrawSurface3LockDescSize != sizeof(surfaceDesc) ||
+        surfaceDesc.dwSize != sizeof(surfaceDesc) || surfaceDesc.dwWidth != 640 ||
+        surfaceDesc.dwHeight != 480 || surfaceDesc.lPitch != 1280 ||
+        surfaceDesc.lpSurface != gFakeDirectDrawSurface3LockPixels) {
+        return 1;
+    }
+
+    std::memset(&surfaceDesc, 0xcc, sizeof(surfaceDesc));
+    InstallFakeDirectDrawSurface3(surface, DD_OK, DD_OK, DD_OK);
+    ConfigureFakeDirectDrawSurface3LockResults(DDERR_SURFACELOST, DD_OK);
+    if (zVideo_dd::LockDirectDrawSurface(surfaceInterface, &surfaceDesc) != 0 ||
+        gFakeDirectDrawSurface3LockCalls != 2 || gFakeDirectDrawSurface3RestoreCalls != 1 ||
+        gFakeDirectDrawSurface3LockDescSize != sizeof(surfaceDesc) ||
+        surfaceDesc.dwSize != sizeof(surfaceDesc) || surfaceDesc.dwWidth != 640 ||
+        surfaceDesc.dwHeight != 480 || surfaceDesc.lPitch != 1280 ||
+        surfaceDesc.lpSurface != gFakeDirectDrawSurface3LockPixels) {
+        return 2;
+    }
+
+    return 0;
+}
+
+extern "C" int zvideo_dd_lock_surface_state_smoke(void) {
+    FakeDirectDrawSurface3Object surface{};
+    InstallFakeDirectDrawSurface3(surface, DD_OK, DD_OK, DD_OK);
+
+    zVideo_SurfaceStatePartial surfaceState{};
+    surfaceState.surf = reinterpret_cast<IDirectDrawSurface3 *>(&surface);
+    g_zVideo_FullscreenOption = 1;
+
+    if (zVideo_dd::LockSurfaceState(&surfaceState) != 0 ||
+        gFakeDirectDrawSurface3LockCalls != 1 || gFakeDirectDrawSurface3RestoreCalls != 0 ||
+        surfaceState.width != 640 || surfaceState.height != 480 || surfaceState.pitch != 1280 ||
+        surfaceState.pixels != gFakeDirectDrawSurface3LockPixels ||
+        surfaceState.locked != 1 || surfaceState.lockInfoValid != 1) {
+        return 1;
+    }
+
+    return 0;
+}
+
+extern "C" int zvideo_dd_unlock_surface_state_smoke(void) {
+    FakeDirectDrawSurface3Object surface{};
+    InstallFakeDirectDrawSurface3(surface, DD_OK, DD_OK, DD_OK);
+
+    zVideo_SurfaceStatePartial surfaceState{};
+    surfaceState.locked = 1;
+    surfaceState.surf = reinterpret_cast<IDirectDrawSurface3 *>(&surface);
+    g_zVideo_FullscreenOption = 1;
+
+    if (zVideo_dd::UnlockSurfaceState(&surfaceState) != 0 || surfaceState.locked != 0 ||
+        gFakeDirectDrawSurface3UnlockCalls != 1 || gFakeDirectDrawSurface3RestoreCalls != 0 ||
+        gFakeDirectDrawSurface3LastUnlockArg != nullptr) {
+        return 1;
+    }
+
+    return 0;
 }
 
 extern "C" int zvideo_capture_surface_to_image_smoke(void) {

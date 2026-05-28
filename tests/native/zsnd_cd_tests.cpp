@@ -121,6 +121,13 @@ struct TestDirectSoundBuffer {
 std::int32_t g_fakePlayTrackWithModeCount;
 std::int32_t g_fakePlayTrackWithModeTrack;
 std::int32_t g_fakePlayTrackWithModeMode;
+std::int32_t g_fakeMciSendCommandCount;
+MCIDEVICEID g_fakeMciLastDevice;
+UINT g_fakeMciLastMessage;
+DWORD_PTR g_fakeMciLastFlags;
+MCI_PLAY_PARMS g_fakeMciLastPlayParams;
+MCI_SEEK_PARMS g_fakeMciLastSeekParams;
+MCIERROR g_fakeMciReturn;
 
 std::int32_t RECOIL_FASTCALL FakePlayTrackWithMode(std::int32_t trackIndex,
                                                    std::int32_t playbackMode) {
@@ -128,6 +135,20 @@ std::int32_t RECOIL_FASTCALL FakePlayTrackWithMode(std::int32_t trackIndex,
     g_fakePlayTrackWithModeTrack = trackIndex;
     g_fakePlayTrackWithModeMode = playbackMode;
     return 1;
+}
+
+MCIERROR WINAPI FakeMciSendCommandA(MCIDEVICEID deviceId, UINT message, DWORD_PTR flags,
+                                    DWORD_PTR params) {
+    ++g_fakeMciSendCommandCount;
+    g_fakeMciLastDevice = deviceId;
+    g_fakeMciLastMessage = message;
+    g_fakeMciLastFlags = flags;
+    if (message == 0x806 && params != 0) {
+        g_fakeMciLastPlayParams = *reinterpret_cast<const MCI_PLAY_PARMS *>(params);
+    } else if (message == 0x807 && params != 0) {
+        g_fakeMciLastSeekParams = *reinterpret_cast<const MCI_SEEK_PARMS *>(params);
+    }
+    return g_fakeMciReturn;
 }
 
 bool PatchFunctionJump(void *target, void *replacement, CodeFunctionPatch &patch) {
@@ -1040,6 +1061,91 @@ extern "C" int zsnd_cd_not_ready_playback_smoke(void) {
 
     zSndCd::OnMciNotify(1, 0x5678);
     return g_zSndCdPlayToTrack == 99 ? 0 : 2;
+}
+
+extern "C" int zsnd_cd_playback_mci_commands_smoke(void) {
+    CodeFunctionPatch mciPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&mciSendCommandA),
+                           reinterpret_cast<void *>(&FakeMciSendCommandA), mciPatch)) {
+        return 1;
+    }
+
+    g_fakeMciReturn = 0;
+    g_fakeMciSendCommandCount = 0;
+    g_zSndCdFlags = 2;
+    g_zSndCdDeviceId = 0x12345678;
+    g_zSndCdCurrentTrack = 7;
+    g_zSndCdCurrentMinute = 55;
+    g_zSndCdCurrentSecond = 56;
+    g_zSndCdTrackCountCached = 9;
+    g_zSndCdLastPlayMode = 0;
+    g_zSnd_WindowHandle = 0x2468;
+
+    if (zSndCd::ApplyPlaybackMode(2) != 1 || g_fakeMciSendCommandCount != 1 ||
+        g_fakeMciLastDevice != 0x5678 || g_fakeMciLastMessage != 0x806 ||
+        g_fakeMciLastFlags != 0x0d || g_zSndCdPlayToTrack != 8 ||
+        g_zSndCdLastPlayMode != 2) {
+        RestoreFunctionPatch(mciPatch);
+        return 2;
+    }
+
+    if (g_fakeMciLastPlayParams.dwFrom != 7 || g_fakeMciLastPlayParams.dwTo != 8 ||
+        g_fakeMciLastPlayParams.dwCallback != 0x2468) {
+        RestoreFunctionPatch(mciPatch);
+        return 3;
+    }
+
+    g_fakeMciSendCommandCount = 0;
+    g_zSndCdCurrentTrack = 7;
+    g_zSndCdTrackCountCached = 9;
+    if (zSndCd::ApplyPlaybackMode(3) != 1 || g_fakeMciSendCommandCount != 1 ||
+        g_fakeMciLastFlags != 0x05 || g_zSndCdPlayToTrack != 10 ||
+        g_zSndCdLastPlayMode != 3) {
+        RestoreFunctionPatch(mciPatch);
+        return 4;
+    }
+
+    if (g_fakeMciLastPlayParams.dwFrom != 7 || g_fakeMciLastPlayParams.dwTo != 10) {
+        RestoreFunctionPatch(mciPatch);
+        return 5;
+    }
+
+    g_fakeMciSendCommandCount = 0;
+    g_zSndCdCurrentTrack = 11;
+    g_zSndCdPlayFromTrack = 30;
+    g_zSndCdPlayToTrack = 40;
+    if (zSndCd::PlayTrack(11) != 1 || g_fakeMciSendCommandCount != 1 ||
+        g_fakeMciLastDevice != 0x5678 || g_fakeMciLastMessage != 0x807 ||
+        g_fakeMciLastFlags != 0x0a || g_zSndCdCurrentTrack != 11 ||
+        g_zSndCdPlayFromTrack != 11 || g_zSndCdPlayToTrack != 11) {
+        RestoreFunctionPatch(mciPatch);
+        return 6;
+    }
+
+    if (g_fakeMciLastSeekParams.dwTo != 11) {
+        RestoreFunctionPatch(mciPatch);
+        return 7;
+    }
+
+    g_fakeMciSendCommandCount = 0;
+    g_zSndCdCurrentTrack = 0;
+    g_zSndCdTrackCountCached = 12;
+    g_zSndCdLastPlayMode = 0;
+    if (zSndCd::PlayTrackWithMode(7, 5) != 1 || g_fakeMciSendCommandCount != 2 ||
+        g_fakeMciLastMessage != 0x806 || g_fakeMciLastFlags != 0x0d ||
+        g_zSndCdCurrentTrack != 7 || g_zSndCdPlayFromTrack != 7 ||
+        g_zSndCdPlayToTrack != 8 || g_zSndCdLastPlayMode != 5) {
+        RestoreFunctionPatch(mciPatch);
+        return 8;
+    }
+
+    if (g_fakeMciLastPlayParams.dwFrom != 7 || g_fakeMciLastPlayParams.dwTo != 8) {
+        RestoreFunctionPatch(mciPatch);
+        return 9;
+    }
+
+    RestoreFunctionPatch(mciPatch);
+    return 0;
 }
 
 extern "C" int zsnd_cd_on_mci_notify_loop_smoke(void) {
@@ -3078,6 +3184,112 @@ extern "C" int zsnd_sample_set_init_by_name_empty_smoke(void) {
     return 0;
 }
 
+extern "C" int zsnd_sample_set_init_loose_file_smoke(void) {
+    const char *fileName = "recoil_sample_set_init_loose.wav";
+    const std::uint8_t wavBytes[] = {
+        'R', 'I', 'F', 'F', 40,  0,   0,   0,   'W',  'A',  'V', 'E', 'f',  'm',  't', ' ',
+        16,  0,   0,   0,   1,   0,   1,   0,   0x40, 0x1f, 0,   0,   0x80, 0x3e, 0,   0,
+        2,   0,   16,  0,   'd', 'a', 't', 'a', 4,    0,    0,   0,   1,    2,    3,   4,
+    };
+
+    FILE *file = std::fopen(fileName, "wb");
+    if (file == nullptr) {
+        return 1;
+    }
+    std::fwrite(wavBytes, sizeof(wavBytes), 1, file);
+    std::fclose(file);
+
+    char searchDir[MAX_PATH] = {};
+    if (GetCurrentDirectoryA(sizeof(searchDir), searchDir) == 0) {
+        std::remove(fileName);
+        return 2;
+    }
+
+    const zSndSampleSetRegistry oldRegistry = g_zSnd_SampleSetRegistry;
+    zArchiveList *const oldSearchPathList = g_zSnd_SearchPathList;
+    const int oldUseArchiveBanksFlag = g_zSnd_UseArchiveBanksFlag;
+    void *const oldBackendDevice = g_zSnd_BackendDevice;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+
+    EnsureZrdrFreePool();
+    zArchiveList *searchList = zArchiveList_CreateEmpty();
+    if (searchList == nullptr || zArchiveList_PushFrontPayload(searchList, searchDir) <= 0) {
+        std::remove(fileName);
+        if (searchList != nullptr) {
+            std::free(searchList);
+        }
+        return 3;
+    }
+
+    auto cleanup = [&]() {
+        g_zSnd_SampleSetRegistry = oldRegistry;
+        g_zSnd_SearchPathList = oldSearchPathList;
+        g_zSnd_UseArchiveBanksFlag = oldUseArchiveBanksFlag;
+        g_zSnd_BackendDevice = oldBackendDevice;
+        g_zSnd_ActiveBackend = oldActiveBackend;
+        zArchiveList_PopFrontPayload(searchList);
+        std::free(searchList);
+        std::remove(fileName);
+    };
+
+    g_testCreateSoundBufferCount = 0;
+    g_testLockCount = 0;
+    g_testUnlockCount = 0;
+    g_testGetStatusCount = 0;
+    g_testSetCurrentPositionCount = 0;
+    g_testCreateDescFlags = 0;
+    g_testCreateDescBytes = 0;
+    g_testCreateDescFormat = nullptr;
+    g_testUnlockBytes1 = 0;
+    g_testUnlockBytes2 = 0;
+    g_testStatusValue = 0;
+    std::memset(g_testLockedBytes, 0, sizeof(g_testLockedBytes));
+
+    TestCreateDirectSoundDeviceVTable deviceVTable = {};
+    deviceVTable.CreateSoundBuffer = &TestCreateSoundBuffer;
+    TestCreateDirectSoundDevice device{&deviceVTable};
+    g_zSnd_BackendDevice = &device;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_UseArchiveBanksFlag = 0;
+    g_zSnd_SearchPathList = searchList;
+
+    zSndSample samples[2] = {};
+    samples[0].replayFields.resourceName = fileName;
+    samples[0].replayFields.sampleId = "loose";
+    samples[1].replayFields.resourceName = fileName;
+    samples[1].replayFields.sampleId = "skipped";
+    samples[1].replayFields.flags = 0x08;
+
+    zSndSampleSet sampleSet = {};
+    sampleSet.setName = const_cast<char *>("loose_set");
+    sampleSet.sampleCount = 2;
+    sampleSet.samples = samples;
+
+    zSndSampleSet *slots[1] = {&sampleSet};
+    g_zSnd_SampleSetRegistry.begin = slots;
+    g_zSnd_SampleSetRegistry.end = slots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = slots + 1;
+
+    const int result = zSndSampleSet_InitByName("loose_set");
+    const bool loadedOk =
+        result == 1 && sampleSet.resourcesLoaded == 1 &&
+        (samples[0].replayFields.flags & 0x08) != 0 &&
+        samples[0].primaryVoice.handleKind == ZSND_PLAYHANDLE_BACKEND &&
+        samples[0].primaryVoice.backendBuffer != nullptr && samples[0].markerCount == 0 &&
+        g_testCreateSoundBufferCount == 1 && g_testCreateDescFlags == 0x80 &&
+        g_testCreateDescBytes == 4 && g_testGetStatusCount == 1 && g_testLockCount == 1 &&
+        g_testUnlockCount == 1 && g_testSetCurrentPositionCount == 1 &&
+        std::memcmp(g_testLockedBytes, &wavBytes[44], 4) == 0;
+    const bool skippedOk = (samples[1].replayFields.flags & 0x08) != 0 &&
+                           samples[1].primaryVoice.backendBuffer == nullptr;
+    const bool reloadOk =
+        zSndSampleSet_InitByName("loose_set") == 0 && sampleSet.Init() == 0 &&
+        zSndSampleSet_InitByName("missing_set") == 0 && g_testCreateSoundBufferCount == 1;
+
+    cleanup();
+    return loadedOk && skippedOk && reloadOk ? 0 : 4;
+}
+
 extern "C" int zsnd_wave_data_load_parse_reset_smoke(void) {
     const char *fileName = "recoil_wave_data_smoke.wav";
     FILE *file = std::fopen(fileName, "wb");
@@ -3109,6 +3321,116 @@ extern "C" int zsnd_wave_data_load_parse_reset_smoke(void) {
     wave.Destructor();
     std::remove(fileName);
     return loaded && reset ? 0 : 2;
+}
+
+extern "C" int zsnd_wave_data_parse_chunks_smoke(void) {
+    zSndWaveData wave = {};
+    if (wave.ParseLoadedWaveFile() != 0) {
+        return 1;
+    }
+
+    std::uint8_t badMagic[] = {
+        'N', 'O', 'P', 'E', 4, 0, 0, 0, 'W', 'A', 'V', 'E',
+    };
+    WAVEFORMATEX staleFmt = {};
+    std::uint8_t stalePcm = 0;
+    wave.fileData = badMagic;
+    wave.fmt = &staleFmt;
+    wave.pcmData = &stalePcm;
+    wave.pcmByteCount = 123;
+    if (wave.ParseLoadedWaveFile() != 1 || wave.fmt != nullptr || wave.pcmData != nullptr ||
+        wave.pcmByteCount != 0) {
+        return 2;
+    }
+
+    std::uint8_t riffBytes[] = {
+        'R', 'I', 'F', 'F', 86, 0, 0, 0, 'W', 'A', 'V', 'E',
+        'J', 'U', 'N', 'K', 1, 0, 0, 0, 0xaa, 0,
+        'c', 'u', 'e', ' ', 28, 0, 0, 0, 1, 0, 0, 0,
+        7, 0, 0, 0, 9, 0, 0, 0, 'd', 'a', 't', 'a',
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        'f', 'm', 't', ' ', 16, 0, 0, 0, 1, 0, 2, 0,
+        0x22, 0x56, 0, 0, 0x88, 0x58, 1, 0, 4, 0, 16, 0,
+        'd', 'a', 't', 'a', 4, 0, 0, 0, 1, 2, 3, 4,
+    };
+    wave = {};
+    wave.fileData = riffBytes;
+    if (wave.ParseLoadedWaveFile() != 1) {
+        return 3;
+    }
+    if (wave.cuePointCount != 1 || wave.cuePoints != reinterpret_cast<zSndCuePoint *>(riffBytes + 34) ||
+        wave.cuePoints->identifier != 7) {
+        return 4;
+    }
+    if (wave.fmt != reinterpret_cast<WAVEFORMATEX *>(riffBytes + 66) || wave.fmt->nChannels != 2) {
+        return 5;
+    }
+    if (wave.pcmData != riffBytes + 90 || wave.pcmByteCount != 4) {
+        return 6;
+    }
+
+    std::uint8_t shortFmt[] = {
+        'R', 'I', 'F', 'F', 36, 0, 0, 0, 'W', 'A', 'V', 'E',
+        'f', 'm', 't', ' ', 12, 0, 0, 0, 1, 0, 1, 0,
+        0x40, 0x1f, 0, 0, 0x80, 0x3e, 0, 0,
+        'd', 'a', 't', 'a', 4, 0, 0, 0, 1, 2, 3, 4,
+    };
+    wave = {};
+    wave.fileData = shortFmt;
+    if (wave.ParseLoadedWaveFile() != 1 || wave.fmt != nullptr || wave.pcmData != nullptr ||
+        wave.pcmByteCount != 0) {
+        return 7;
+    }
+
+    return 0;
+}
+
+extern "C" int zsnd_wave_data_load_parse_edges_smoke(void) {
+    zSndWaveData wave = {};
+    if (wave.LoadAndParseIfNeeded() != 0 || wave.parsedOk != 0 || wave.fileData != nullptr) {
+        return 1;
+    }
+
+    wave.nameOrPath = const_cast<char *>("recoil_missing_wave_data_smoke.wav");
+    if (wave.LoadAndParseIfNeeded() != 0 || wave.parsedOk != 0 || wave.fileData != nullptr) {
+        return 2;
+    }
+
+    wave = {};
+    wave.parsedOk = 1;
+    if (wave.LoadAndParseIfNeeded() != 1) {
+        return 3;
+    }
+
+    wave = {};
+    wave.ConstructorFromPath("missing_arch.wav", 0);
+    zIndexArchive archive = {};
+    if (wave.LoadAndParseFromIndexArchiveIfNeeded(&archive) != 0 || wave.fileSize != 0 ||
+        wave.fileData != nullptr || wave.parsedOk != 0) {
+        wave.Destructor();
+        return 4;
+    }
+    wave.Destructor();
+
+    wave = {};
+    wave.parsedOk = 1;
+    if (wave.LoadAndParseFromIndexArchiveIfNeeded(nullptr) != 1) {
+        return 5;
+    }
+
+    wave = {};
+    if (wave.ConstructorFromPath("constructor.wav", 0) != &wave || wave.nameOrPath == nullptr ||
+        std::strcmp(wave.nameOrPath, "constructor.wav") != 0 ||
+        wave.nameOrPath == static_cast<const char *>("constructor.wav") || wave.parsedOk != 0 ||
+        wave.fileSize != 0 || wave.fileData != nullptr || wave.fmt != nullptr ||
+        wave.pcmData != nullptr || wave.pcmByteCount != 0 || wave.cuePointCount != 0 ||
+        wave.cuePoints != nullptr) {
+        wave.Destructor();
+        return 6;
+    }
+    wave.Destructor();
+
+    return 0;
 }
 
 extern "C" int zsnd_wave_data_archive_load_smoke(void) {
@@ -3172,6 +3494,93 @@ extern "C" int zsnd_wave_data_archive_load_smoke(void) {
     CloseHandle(handle);
     std::remove(fileName);
     return archiveLoadOk ? 0 : 5;
+}
+
+extern "C" int zsnd_sample_set_load_samples_from_index_archive_smoke(void) {
+    const char *fileName = "recoil_sample_set_archive_smoke.bin";
+    const std::uint8_t wavBytes[] = {
+        'R', 'I', 'F', 'F', 40,  0,   0,   0,   'W',  'A',  'V', 'E', 'f',  'm',  't', ' ',
+        16,  0,   0,   0,   1,   0,   1,   0,   0x40, 0x1f, 0,   0,   0x80, 0x3e, 0,   0,
+        2,   0,   16,  0,   'd', 'a', 't', 'a', 4,    0,    0,   0,   1,    2,    3,   4,
+    };
+
+    FILE *file = std::fopen(fileName, "wb");
+    if (file == nullptr) {
+        return 1;
+    }
+    std::fwrite(wavBytes, sizeof(wavBytes), 1, file);
+    std::fclose(file);
+
+    HANDLE handle = CreateFileA(fileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                                FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (handle == INVALID_HANDLE_VALUE) {
+        std::remove(fileName);
+        return 2;
+    }
+
+    zZarFileRecord record = {};
+    record.fileOffset = 0;
+    record.fileSize = sizeof(wavBytes);
+    std::strcpy(record.name, "loaded.wav");
+
+    zIndexArchive archive = {};
+    archive.hFile = handle;
+    archive.recordCount = 1;
+    archive.records = &record;
+
+    g_testCreateSoundBufferCount = 0;
+    g_testLockCount = 0;
+    g_testUnlockCount = 0;
+    g_testGetStatusCount = 0;
+    g_testSetCurrentPositionCount = 0;
+    g_testCreateDescFlags = 0;
+    g_testCreateDescBytes = 0;
+    g_testCreateDescFormat = nullptr;
+    g_testUnlockBytes1 = 0;
+    g_testUnlockBytes2 = 0;
+    g_testStatusValue = 0;
+    std::memset(g_testLockedBytes, 0, sizeof(g_testLockedBytes));
+
+    TestCreateDirectSoundDeviceVTable deviceVTable = {};
+    deviceVTable.CreateSoundBuffer = &TestCreateSoundBuffer;
+    TestCreateDirectSoundDevice device{&deviceVTable};
+    g_zSnd_BackendDevice = &device;
+    g_zSnd_ActiveBackend = 0;
+
+    zSndSample samples[3] = {};
+    samples[0].replayFields.resourceName = "loaded.wav";
+    samples[0].replayFields.sampleId = "loaded";
+    samples[1].replayFields.resourceName = "missing.wav";
+    samples[1].replayFields.sampleId = "missing";
+    samples[2].replayFields.resourceName = "loaded.wav";
+    samples[2].replayFields.sampleId = "already_loaded";
+    samples[2].replayFields.flags = 0x08;
+
+    zSndSampleSet sampleSet = {};
+    sampleSet.sampleCount = 3;
+    sampleSet.samples = samples;
+
+    const int result = sampleSet.LoadSamplesFromIndexArchive(&archive);
+    const bool loadedOk =
+        result == 1 && (samples[0].replayFields.flags & 0x08) != 0 &&
+        samples[0].primaryVoice.handleKind == ZSND_PLAYHANDLE_BACKEND &&
+        samples[0].primaryVoice.backendBuffer != nullptr && samples[0].markerCount == 0 &&
+        samples[0].playbackEventHandler == nullptr && g_testCreateSoundBufferCount == 1 &&
+        g_testCreateDescFlags == 0x80 && g_testCreateDescBytes == 4 &&
+        g_testGetStatusCount == 1 && g_testLockCount == 1 && g_testUnlockCount == 1 &&
+        g_testUnlockBytes1 == 4 && g_testUnlockBytes2 == 2 &&
+        g_testSetCurrentPositionCount == 1 && g_testLastCurrentPosition == 0 &&
+        std::memcmp(g_testLockedBytes, &wavBytes[44], 4) == 0;
+    const bool missingOk = (samples[1].replayFields.flags & 0x08) == 0 &&
+                           samples[1].primaryVoice.backendBuffer == nullptr;
+    const bool skippedOk = (samples[2].replayFields.flags & 0x08) != 0 &&
+                           samples[2].primaryVoice.backendBuffer == nullptr;
+
+    g_zSnd_BackendDevice = nullptr;
+    CloseHandle(handle);
+    std::remove(fileName);
+
+    return loadedOk && missingOk && skippedOk ? 0 : 3;
 }
 
 extern "C" int zsnd_sample_backend_buffer_lock_unlock_smoke(void) {
@@ -3293,8 +3702,28 @@ extern "C" int zsnd_sample_init_from_wave_data_directsound_smoke(void) {
     std::free(sample.markerTimes);
     std::free(sample.markerValues);
     std::free(sample.markerAux);
+
+    g_testCreateSoundBufferCount = 0;
+    g_testLockCount = 0;
+    g_testUnlockCount = 0;
+    g_testGetStatusCount = 0;
+    g_testSetCurrentPositionCount = 0;
+    g_testStatusValue = 0;
+    std::memset(g_testLockedBytes, 0, sizeof(g_testLockedBytes));
+    zSndSample dispatchSample = {};
+    const std::int32_t dispatchResult = dispatchSample.InitFromWaveData(&wave);
+    const bool dispatchOk =
+        dispatchResult == 1 && g_testCreateSoundBufferCount == 1 && g_testLockCount == 1 &&
+        g_testUnlockCount == 1 && g_testGetStatusCount == 1 && g_testSetCurrentPositionCount == 1 &&
+        std::memcmp(g_testLockedBytes, pcmData, sizeof(pcmData)) == 0 &&
+        dispatchSample.primaryVoice.handleKind == ZSND_PLAYHANDLE_BACKEND &&
+        dispatchSample.markerCount == 2;
+    std::free(dispatchSample.markerTimes);
+    std::free(dispatchSample.markerValues);
+    std::free(dispatchSample.markerAux);
+
     g_zSnd_BackendDevice = nullptr;
-    return ok ? 0 : 1;
+    return ok && dispatchOk ? 0 : 1;
 }
 
 extern "C" int zsnd_sample_init_from_wave_data_a3d_smoke(void) {
@@ -3374,6 +3803,21 @@ extern "C" int zsnd_sample_init_from_wave_data_a3d_smoke(void) {
     ResetStopBackendCounters();
     std::memset(g_testLockedBytes, 0, sizeof(g_testLockedBytes));
     sample = {};
+    sample.replayFields.flags = 0x04;
+    sample.rangeMin = 3.0f;
+    sample.rangeMax = 9.0f;
+    sample.a3dDistanceScale = 2.0f;
+    g_testA3dCreateBufferResult = reinterpret_cast<zSndBuffer *>(&a3dSource);
+    const std::int32_t dispatchResult = sample.InitFromWaveData(&wave);
+    const bool dispatchOk = dispatchResult == 1 && sample.markerCount == 2 &&
+                            sample.primaryVoice.backendBuffer != nullptr;
+    std::free(sample.markerTimes);
+    std::free(sample.markerValues);
+    std::free(sample.markerAux);
+
+    ResetStopBackendCounters();
+    std::memset(g_testLockedBytes, 0, sizeof(g_testLockedBytes));
+    sample = {};
     sample.replayFields.flags = 0;
     g_testA3dCreateBufferResult = reinterpret_cast<zSndBuffer *>(&a3dSource);
     const std::int32_t spatialResult = sample.InitFromWaveData_A3D(&wave);
@@ -3384,9 +3828,16 @@ extern "C" int zsnd_sample_init_from_wave_data_a3d_smoke(void) {
     std::free(sample.markerTimes);
     std::free(sample.markerValues);
     std::free(sample.markerAux);
+
+    g_zSnd_ActiveBackend = 2;
+    sample = {};
+    const bool unsupportedOk = sample.InitFromWaveData(&wave) == 0;
     g_zSnd_BackendDevice = nullptr;
     g_testA3dCreateBufferResult = nullptr;
-    return ok && spatialOk ? 0 : 1;
+    if (!ok) {
+        return 1;
+    }
+    return ok && dispatchOk && spatialOk && unsupportedOk ? 0 : 1;
 }
 
 namespace {

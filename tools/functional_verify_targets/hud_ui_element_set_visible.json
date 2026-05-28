@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_element_set_visible",
+  "description": "HudUiElement::SetVisible toggles the hidden flag and invalidates through the element ftable.",
+  "address": "0x404d20",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_element_visible_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x404d20",
+  "known_limits": [
+    "VC6 COFF byte verification for hud_ui_element_set_visible currently fails with 23 unmasked mismatches and 7 trimmed NOPs, so Binary-safe remains false."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x404d20 validate visible != 0 clears low-byte flag 0x10, visible == 0 sets low-byte flag 0x10, and both paths indirect-call Invalidate through ftable slot 0x20.",
+    "The native smoke verifies ResetCommonFTable, visible SetVisible(1) flag clear plus invalidate-mask propagation, and hidden SetVisible(0) flag set plus invalidate-mask propagation."
+  ]
+}

@@ -25,7 +25,7 @@ namespace {
 
 float g_zModel_ConstVertexMergeEpsilon = 0.001f;
 int g_zModel_MaxPolygonVertexCountBeforeSplit = 48;
-double g_zModel_ConstVertexWarnThreshold = 920.0;
+double g_zModel_ConstVertexWarnThreshold = 921.6;
 double g_zModel_NormalMergeEpsilon = 0.0001;
 double g_zModel_CoplanarTolerance = 0.001;
 double g_zModel_ColinearTolerance = 0.001;

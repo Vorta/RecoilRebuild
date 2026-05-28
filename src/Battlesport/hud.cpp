@@ -17,6 +17,8 @@ int g_Hud_LowMeterLoopActive = 0;
 float g_Hud_LowMeterBeepInterval = 0.0f;
 float g_Hud_LowMeterNextBeepTime = 0.0f;
 
+extern "C" int g_RecoilState_MainMenuSkipExitDelay;
+
 namespace {
 template <typename Method> unsigned int HudMethodAddress(Method method)
 {
@@ -46,6 +48,75 @@ const float kHudWeatherFxConeRandScale = -0.0000457777642f;
 const float kHudWeatherFxDepthBase = 0.5f;
 const float kHudWeatherFxConeBase = -1.0f;
 const float kHudWeatherFxReflectBias = 1.5f;
+
+struct HudUiBackgroundConfirmQuitVirtual
+{
+    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
+    virtual HudUiBackgroundConfirmQuitVirtual *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags) = 0;
+};
+
+struct HudUiBackgroundConfirmQuit_FTable
+{
+    unsigned int slots[3];
+};
+
+RECOIL_NOINLINE void RECOIL_CDECL HudUiConfirmQuitPostLoadNoOp()
+{
+}
+
+HudUiWidget_FTable MakeConfirmQuitButtonFTable(unsigned int activateCallback)
+{
+    HudUiWidget_FTable table = {0};
+    table.slots[0] = HudMethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
+    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
+    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
+    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
+    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
+    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
+    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
+    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
+    table.slots[12] = activateCallback;
+    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
+    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
+    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
+    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
+    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
+    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
+    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
+    return table;
+}
+
+HudUiBackgroundConfirmQuit_FTable MakeConfirmQuitDialogFTable()
+{
+    HudUiBackgroundConfirmQuit_FTable table = {0};
+    table.slots[0] = HudMethodAddress(&HudUiBackground::Update);
+    table.slots[1] = HudMethodAddress(&HudUiBackground::SetEnabled);
+    table.slots[2] = HudMethodAddress(&HudUiBackgroundConfirmQuit::ScalarDeletingDestructor);
+    return table;
+}
+
+const HudUiWidget_FTable g_HudUiConfirmQuitCancelButton_FTable =
+    MakeConfirmQuitButtonFTable(
+        HudMethodAddress(&HudUiZrdWidget::OnActivateQueueExitCurrentState));
+const HudUiWidget_FTable g_HudUiConfirmQuitOkButton_FTable =
+    MakeConfirmQuitButtonFTable(HudMethodAddress(&HudUiConfirmQuitOkButton::OnActivate));
+const HudUiBackgroundConfirmQuit_FTable g_HudUiBackgroundConfirmQuit_FTable =
+    MakeConfirmQuitDialogFTable();
+
+RecoilApp_IState_Vtbl g_RecoilStateConfirmQuit_Vtbl = {0};
+
+struct RecoilStateConfirmQuitBaseVtableGuard
+{
+    RecoilStateConfirmQuit *self;
+
+    ~RecoilStateConfirmQuitBaseVtableGuard()
+    {
+        self->vftable = kRecoilStateBase_VtblAddress;
+    }
+};
 } // namespace
 
 const HudUiCommon_FTable g_HudWeatherFx_Vtable = MakeHudWeatherFxFTable();
@@ -193,6 +264,196 @@ void RECOIL_CDECL HudUiOptionsPanelOverlayOwner::QueueEnter()
 void RECOIL_CDECL RecoilStateConfirmQuit::QueueEnter()
 {
     g_RecoilApp.QueuePushState(&g_RecoilState_ConfirmQuit, 0);
+}
+
+// Reimplements 0x409160: HudUiZrdWidget::OnActivateQueueExitCurrentState
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void RECOIL_THISCALL HudUiZrdWidget::OnActivateQueueExitCurrentState()
+{
+    g_RecoilApp.QueueExitCurrentState(0);
+    OnActivate();
+}
+
+// Reimplements 0x415810: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateConfirmQuit::StaticInitAndRegisterAtExit()
+{
+    StaticInit();
+    RegisterAtExit();
+}
+
+// Reimplements 0x415820: RecoilStateConfirmQuit::StaticInit
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RECOIL_NOINLINE RecoilStateConfirmQuit *RECOIL_CDECL RecoilStateConfirmQuit::StaticInit()
+{
+    return g_RecoilState_ConfirmQuit.Constructor();
+}
+
+// Reimplements 0x415830: RecoilStateConfirmQuit::RegisterAtExit
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateConfirmQuit::RegisterAtExit()
+{
+    atexit(AtExitDestructor);
+}
+
+// Reimplements 0x415840: RecoilStateConfirmQuit::AtExitDestructor
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateConfirmQuit::AtExitDestructor()
+{
+    g_RecoilState_ConfirmQuit.~RecoilStateConfirmQuit();
+}
+
+// Reimplements 0x415740: HudUiConfirmQuitOkButton::OnActivate
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+void RECOIL_THISCALL HudUiConfirmQuitOkButton::OnActivate()
+{
+    g_RecoilState_MainMenuSkipExitDelay = 1;
+    g_RecoilApp.QueueExitCurrentState(1);
+    g_RecoilApp.QueueExitCurrentState(0);
+    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
+    g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_leaveNetworkState_1d0.base, 0);
+    HudUiZrdWidget::OnActivate();
+}
+
+// Reimplements 0x415680: HudUiBackgroundConfirmQuit::Constructor
+// (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
+HudUiBackgroundConfirmQuit *RECOIL_THISCALL HudUiBackgroundConfirmQuit::Constructor()
+{
+    HudUiBackground::Constructor();
+    okButton.Constructor();
+    okButton.base.ftable = &g_HudUiConfirmQuitOkButton_FTable;
+    cancelButton.Constructor();
+    cancelButton.base.ftable = &g_HudUiConfirmQuitCancelButton_FTable;
+    base.base.vptr = (const HudUiContainer_FTable *)&g_HudUiBackgroundConfirmQuit_FTable;
+
+    zReader::Node *const dialogRoot =
+        HudUiBackground::LoadFromZrd("dialog.zrd", "CONFIRM_QUIT", 0);
+    if (dialogRoot != 0)
+    {
+        HudUiBackground::BindWidgetByName(dialogRoot, &okButton.base, "OK_TO_QUIT");
+        HudUiBackground::BindWidgetByName(dialogRoot, &cancelButton.base, "CANCEL_QUIT");
+        HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
+    }
+
+    return this;
+}
+
+// Reimplements 0x4157b0: HudUiBackgroundConfirmQuit::Destructor
+// (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudUiBackgroundConfirmQuit::Destructor()
+{
+    cancelButton.DestructorCore();
+    okButton.DestructorCore();
+    HudUiBackground::Destructor();
+}
+
+// Reimplements 0x415790: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
+RECOIL_NOINLINE HudUiBackgroundConfirmQuit *RECOIL_THISCALL
+HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x415850: RecoilStateConfirmQuit::Constructor
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RecoilStateConfirmQuit *RECOIL_THISCALL RecoilStateConfirmQuit::Constructor()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateConfirmQuit_Vtbl;
+    m_dialog = 0;
+    return this;
+}
+
+// Reimplements 0x4158f0: RecoilStateConfirmQuit::OnTryBecomeCurrent
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateConfirmQuit::OnTryBecomeCurrent()
+{
+    HudUiBackgroundConfirmQuit *dialog =
+        (HudUiBackgroundConfirmQuit *)::operator new(sizeof(HudUiBackgroundConfirmQuit));
+    if (dialog != 0)
+    {
+        dialog = dialog->Constructor();
+    }
+    m_dialog = (RecoilPtr32)(unsigned int)dialog;
+
+    HudUiBackgroundConfirmQuitVirtual *dialogView =
+        (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
+    dialogView->SetEnabled(1);
+
+    return 1;
+}
+
+// Reimplements 0x415960: RecoilStateConfirmQuit::OnDeactivate
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateConfirmQuit::OnDeactivate()
+{
+    if (m_dialog == 0)
+    {
+        return;
+    }
+
+    zVideo::RunPostprocessOnPrimaryBuffer();
+
+    HudUiBackgroundConfirmQuitVirtual *dialogView =
+        (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
+    dialogView->SetEnabled(0);
+
+    ((HudUiDialogController *)(unsigned int)m_dialog)->BlitOwnedSurfaceToPrimary();
+    zVideo::Dispatch_UnlockPrimarySurfaceState();
+
+    dialogView = (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
+    if (dialogView != 0)
+    {
+        dialogView->ScalarDeletingDestructor(1);
+    }
+
+    m_dialog = 0;
+    Sleep(1000);
+}
+
+// Reimplements 0x415880: RecoilStateConfirmQuit::~RecoilStateConfirmQuit
+// (D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp)
+RECOIL_NOINLINE RecoilStateConfirmQuit::~RecoilStateConfirmQuit()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateConfirmQuit_Vtbl;
+    RecoilStateConfirmQuitBaseVtableGuard baseVtableOnExit = {this};
+
+    HudUiBackgroundConfirmQuitVirtual *dialogView =
+        (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
+    if (dialogView != 0)
+    {
+        dialogView->SetEnabled(0);
+
+        dialogView = (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
+        if (dialogView != 0)
+        {
+            dialogView->ScalarDeletingDestructor(1);
+        }
+
+        m_dialog = 0;
+    }
+}
+
+// Reimplements 0x415860: RecoilStateConfirmQuit::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp)
+RECOIL_NOINLINE RecoilStateConfirmQuit *RECOIL_THISCALL
+RecoilStateConfirmQuit::ScalarDeletingDestructor(unsigned int flags)
+{
+    this->~RecoilStateConfirmQuit();
+
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
 }
 
 // Reimplements 0x408ff0: RecoilStateControls::QueueEnter
