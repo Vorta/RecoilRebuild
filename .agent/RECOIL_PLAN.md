@@ -1065,10 +1065,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: zmodel_const_add_or_merge_vertex_and_normal)
   - [❌] Binary-safe
 - 0x48bf40:
-  - [☑️] Reconstructed (Name: zNetwork::DeleteAllDispatchHandlers)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: zNetwork::DeleteAllDispatchHandlers)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetwork::DeleteAllDispatchHandlers File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_delete_all_dispatch_handlers)
   - [❌] Binary-safe
 - 0x490330:
   - [✅] Reconstructed (Name: zFloat::Set255f)

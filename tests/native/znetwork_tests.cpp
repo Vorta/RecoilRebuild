@@ -340,6 +340,21 @@ extern "C" int znetwork_dispatch_handler_list_smoke() {
         return 1;
     }
 
+    zNetworkDispatchHandlerRecord *const recordA =
+        zNetwork::RegisterPacketHandler(0x22, &PacketHandlerFake, 1);
+    zNetworkDispatchHandlerRecord *const recordB =
+        zNetwork::RegisterPacketHandler(0x23, &PacketHandlerDispatchA, 2);
+    zNetwork::DeleteAllDispatchHandlers();
+    const bool deleteAllOk =
+        sentinel->next == sentinel && sentinel->prev == sentinel &&
+        g_zNetwork_DispatchHandlerListSentinel == sentinel &&
+        g_zNetwork_DispatchHandlerListCount == 0;
+    ::operator delete(recordA);
+    ::operator delete(recordB);
+    if (!deleteAllOk) {
+        return 4;
+    }
+
     auto *node = AllocObject<zNetworkDispatchHandlerListNode>();
     sentinel->next = node;
     sentinel->prev = node;
