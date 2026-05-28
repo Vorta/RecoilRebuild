@@ -1152,8 +1152,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::ScalarDeletingDestructor File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_state_main_menu_transition_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x415860:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::ScalarDeletingDestructor)
   - [❌] Source dependencies satisfied

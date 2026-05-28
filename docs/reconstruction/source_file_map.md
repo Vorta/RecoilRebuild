@@ -488,9 +488,9 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x408f50` `RecoilStateDialogHost::OnWndActivate` -> `src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp:3`
 - `0x408ff0` `RecoilStateControls::QueueEnter` -> `src/Battlesport/hud.cpp:198`
 - `0x409550` `HudUiZrdScrollingText::OnActivateResetOwnerFade` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4677`
-- `0x409990` `RecoilStateCredits::Constructor` -> `src/Battlesport/RecoilStateCredits.cpp:42`
-- `0x4099f0` `RecoilStateCredits::Destructor` -> `src/Battlesport/RecoilStateCredits.cpp:51`
-- `0x409b00` `RecoilStateCredits::QueuePush` -> `src/Battlesport/RecoilStateCredits.cpp:71`
+- `0x409990` `RecoilStateCredits::Constructor` -> `src/Battlesport/RecoilStateCredits.cpp:43`
+- `0x4099f0` `RecoilStateCredits::Destructor` -> `src/Battlesport/RecoilStateCredits.cpp:52`
+- `0x409b00` `RecoilStateCredits::QueuePush` -> `src/Battlesport/RecoilStateCredits.cpp:72`
 - `0x40a590` `HudUiPanel::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9385`
 - `0x40bdc0` `zUtil_StdPtrVector_Clear` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7322`
 - `0x40bdf0` `StdPtrVector::ClearNoOpDestroy` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7316`

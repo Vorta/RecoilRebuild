@@ -339,3 +339,30 @@ extern "C" int recoil_state_main_menu_transition_destructor_smoke(void) {
 
     return 0;
 }
+
+extern "C" int recoil_state_main_menu_transition_scalar_deleting_destructor_smoke(void) {
+    RecoilStateMainMenuTransition state{};
+    state.vftable = kRecoilStateMainMenuTransition_VtblAddress;
+    state.m_mainMenuDialog = 0;
+
+    RecoilStateMainMenuTransition *const returned = state.ScalarDeletingDestructor(0);
+    if (returned != &state) {
+        return 1;
+    }
+
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_mainMenuDialog != 0) {
+        return 2;
+    }
+
+    auto *const deletingState = new RecoilStateMainMenuTransition{};
+    deletingState->vftable = kRecoilStateMainMenuTransition_VtblAddress;
+    deletingState->m_mainMenuDialog = 0;
+
+    RecoilStateMainMenuTransition *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+    if (deletingReturned != deletingState) {
+        return 3;
+    }
+
+    return 0;
+}
