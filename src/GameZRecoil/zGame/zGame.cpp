@@ -829,6 +829,7 @@ int WrappedAbsDifference(int lhs, int rhs) {
 } // namespace
 
 // Reimplements 0x407190: zOpt::LookupNamedValueAsInt
+// (D:\Proj\GameZRecoil\zGame\zopt.c)
 RECOIL_NOINLINE int RECOIL_FASTCALL LookupNamedValueAsInt(const char *key) {
     unsigned int pairIndex;
     for (pairIndex = 0; pairIndex < sizeof(g_zOpt_NamedScalarValues) / sizeof(g_zOpt_NamedScalarValues[0]); ++pairIndex) {

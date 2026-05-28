@@ -1137,7 +1137,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: winmain)
   - [✅] Binary-safe
 - 0x407190:
-  - [☑️] Reconstructed (Name: zOpt::LookupNamedValueAsInt)
+  - [✅] Reconstructed (Name: zOpt::LookupNamedValueAsInt)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::LookupNamedValueAsInt File: src/GameZRecoil/zGame/zGame.cpp)
   - [✅] Functional-equivalent (Target: zopt_lookup_named_value_as_int)

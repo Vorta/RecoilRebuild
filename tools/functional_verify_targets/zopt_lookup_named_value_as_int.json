@@ -8,7 +8,7 @@
   ],
   "vc6_attempt": "python tools/recoil_vc6_verify.py zopt_lookup_named_value_as_int",
   "known_limits": [
-    "Binary Ninja keeps a limited reconstruction marker because the compiler inlined strcmp sequence uses an sbb flag pattern that the current LLIL lifter does not fully model. The smoke verifies table hits including the last entry, zero-valued hits, missing names, and case-sensitive mismatch behavior.",
+    "Binary Ninja still reports a non-fixable LLIL warning for the compiler inlined strcmp sbb flag sequence at 0x4071c3, but the surrounding assembly, typed scalar-token table, functional smoke, and VC5SP3 byte comparison resolve the source contract.",
     "Binary-safe verification is accepted by the zopt_lookup_named_value_as_int VC target."
   ]
 }
