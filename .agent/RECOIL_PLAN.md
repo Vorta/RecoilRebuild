@@ -60,8 +60,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::Constructor File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_state_main_menu_transition)
+  - [✅] Binary-safe
 - 0x4151b0:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::Destructor)
   - [✅] Source dependencies satisfied
