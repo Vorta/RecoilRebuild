@@ -1086,8 +1086,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zLoc::LoadMessagesDll)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zLoc::LoadMessagesDll File: src/GameZRecoil/zLoc/zLoc.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zloc_load_messages_dll)
+  - [✅] Binary-safe
 - 0x4a5b00:
   - [✅] Reconstructed (Name: zLoc::UnloadMessagesDll)
   - [✅] Source dependencies satisfied
