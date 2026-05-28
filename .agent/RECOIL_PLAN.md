@@ -1059,7 +1059,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: zmodel_const_add_or_merge_vertex)
   - [❌] Binary-safe
 - 0x482860:
-  - [☑️] Reconstructed (Name: zModel_Const::AddOrMergeVertexAndNormal)
+  - [✅] Reconstructed (Name: zModel_Const::AddOrMergeVertexAndNormal)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel_Const::AddOrMergeVertexAndNormal File: src/GameZRecoil/zModel/zModel.cpp)
   - [✅] Functional-equivalent (Target: zmodel_const_add_or_merge_vertex_and_normal)
