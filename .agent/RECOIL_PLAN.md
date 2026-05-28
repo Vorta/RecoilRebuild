@@ -1077,7 +1077,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: zfloat_set255f)
   - [❌] Binary-safe
 - 0x4a5780:
-  - [☑️] Reconstructed (Name: RecoilApp::InitStdLogFiles)
+  - [✅] Reconstructed (Name: RecoilApp::InitStdLogFiles)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::InitStdLogFiles File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: recoil_app_init_std_log_files)
