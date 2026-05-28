@@ -4,7 +4,7 @@ Generated from `Reimplements 0xNNNNNN: Name (original/source/path)` comments in 
 Binary Ninja remains authoritative; this map is an agent navigation aid.
 It only contains address-backed provenance comments and excludes helpers fully inlined by the retail compiler.
 
-Entries: 2904
+Entries: 2906
 
 ## Case-insensitive source path collisions
 
@@ -392,7 +392,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x406610` `Player::UpdateCameraWeatherFxEmitterVisibility` -> `src/Battlesport/player.cpp:6935`
 - `0x406730` `Player::FilterCameraProbeBlockingHits` -> `src/Battlesport/player.cpp:4384`
 - `0x4067a0` `Player::AdjustSubCameraFocusForObstruction` -> `src/Battlesport/player.cpp:4472`
-- `0x407110` `HudUiCallback::QueueCheatCodeState` -> `src/Battlesport/hud.cpp:205`
+- `0x407110` `HudUiCallback::QueueCheatCodeState` -> `src/Battlesport/hud.cpp:263`
 - `0x407130` `zStub::ReturnOneNoArgs` -> `src/GameZRecoil/zClass/cls_stubs.cpp:10`
 - `0x407140` `zStub::ReturnZeroNoArgs` -> `src/GameZRecoil/zClass/cls_stubs.cpp:16`
 - `0x407150` `zStub::NoOp1Arg` -> `src/GameZRecoil/zClass/cls_stubs.cpp:22`
@@ -486,7 +486,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x408a10` `zOpt::SetWolPasswordFlag` -> `src/GameZRecoil/zGame/zGame.cpp:1172`
 - `0x408a20` `zOpt_GetWolPasswordFlagValue` -> `src/GameZRecoil/zGame/zGame.cpp:1405`
 - `0x408f50` `RecoilStateDialogHost::OnWndActivate` -> `src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp:3`
-- `0x408ff0` `RecoilStateControls::QueueEnter` -> `src/Battlesport/hud.cpp:198`
+- `0x408ff0` `RecoilStateControls::QueueEnter` -> `src/Battlesport/hud.cpp:256`
 - `0x409550` `HudUiZrdScrollingText::OnActivateResetOwnerFade` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4677`
 - `0x409990` `RecoilStateCredits::Constructor` -> `src/Battlesport/RecoilStateCredits.cpp:43`
 - `0x4099f0` `RecoilStateCredits::Destructor` -> `src/Battlesport/RecoilStateCredits.cpp:52`
@@ -502,7 +502,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x40bf00` `HudUtil::FreeFieldPtr` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9377`
 - `0x40c1d0` `HudCmdBindButtonBase::ClearBindingEntries` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7338`
 - `0x40c370` `zSys::ProbePlatformAndVideoCaps` -> `src/GameZRecoil/zSys/zSys_probe_platform.inl:1`
-- `0x40d1c0` `HudUiOptionsPanelOverlayOwner::QueueEnter` -> `src/Battlesport/hud.cpp:184`
+- `0x40d1c0` `HudUiOptionsPanelOverlayOwner::QueueEnter` -> `src/Battlesport/hud.cpp:204`
 - `0x40d220` `HudUiListMenuEntry::CompareSortKey` -> `src/GameZRecoil/zHud/zhud_ui.cpp:953`
 - `0x40d3b0` `HudLayoutBase::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:498`
 - `0x40d590` `HudUiMessage::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8593`
@@ -604,7 +604,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x413340` `HudLayoutHW::OnActivated` -> `src/GameZRecoil/zHud/zhud_ui.cpp:610`
 - `0x413540` `HudLayoutHW::Enable` -> `src/GameZRecoil/zHud/zhud_ui.cpp:820`
 - `0x4135f0` `HudLayoutHW::Disable` -> `src/GameZRecoil/zHud/zhud_ui.cpp:861`
-- `0x413600` `zOpt::ToggleHudTypeForCurrentHwMode` -> `src/Battlesport/hud.cpp:215`
+- `0x413600` `zOpt::ToggleHudTypeForCurrentHwMode` -> `src/Battlesport/hud.cpp:273`
 - `0x413630` `HudUiMgr::TriggerCurrentLayoutOnActivated` -> `src/GameZRecoil/zHud/zhud_ui.cpp:2859`
 - `0x413640` `HudUiMgr::ToggleHud` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3479`
 - `0x413660` `HudUiMgr::SwitchActiveDialog` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3566`
@@ -655,7 +655,9 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x415630` `RecoilStateMainMenuTransition::ClearPausedAudioSnapshot` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_ClearPausedAudioSnapshot.cpp:3`
 - `0x415650` `RecoilStateMainMenuTransition::QueueEnter` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_QueueEnter.cpp:3`
 - `0x415670` `RecoilStateMainMenuTransition::SetDeferredVideoModeIndex` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_SetDeferredVideoModeIndex.cpp:3`
-- `0x4159b0` `RecoilStateConfirmQuit::QueueEnter` -> `src/Battlesport/hud.cpp:191`
+- `0x415860` `RecoilStateConfirmQuit::ScalarDeletingDestructor` -> `src/Battlesport/hud.cpp:241`
+- `0x415880` `RecoilStateConfirmQuit::~RecoilStateConfirmQuit` -> `src/Battlesport/hud.cpp:218`
+- `0x4159b0` `RecoilStateConfirmQuit::QueueEnter` -> `src/Battlesport/hud.cpp:211`
 - `0x4159d0` `zFMV_Action::NoOpUpdate` -> `src/GameZRecoil/zFMV/fmv_script.cpp:428`
 - `0x4159e0` `zFMV_Action::RunBlockingTimed` -> `src/GameZRecoil/zFMV/fmv_script.cpp:446`
 - `0x415a80` `zFMV_Action::ScalarDeletingDestructor` -> `src/GameZRecoil/zFMV/fmv_script.cpp:402`
@@ -741,7 +743,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x41c070` `HudUiNetExitPanel::Show` -> `src/Battlesport/HudUiNetExitPanel.cpp:216`
 - `0x41c080` `HudUiNetExitPanel::Tick` -> `src/Battlesport/HudUiNetExitPanel.cpp:223`
 - `0x41c0a0` `HudUiNetExitPanel::DestroyGlobal` -> `src/Battlesport/HudUiNetExitPanel.cpp:235`
-- `0x41c6c0` `HudUiNewGamePanelOverlayOwner::QueueEnter` -> `src/Battlesport/hud.cpp:177`
+- `0x41c6c0` `HudUiNewGamePanelOverlayOwner::QueueEnter` -> `src/Battlesport/hud.cpp:197`
 - `0x41cca0` `PickupTypeTable::FreeOptMeta` -> `src/Battlesport/pickup.cpp:1645`
 - `0x41cf30` `Pickup::ResolveOwnerFromBvolHit` -> `src/Battlesport/pickup.cpp:1270`
 - `0x41cf50` `Pickup::RemoveObject` -> `src/Battlesport/pickup.cpp:1102`
@@ -1167,8 +1169,8 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x439690` `HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag` -> `src/GameZRecoil/zHud/zhud_ui.cpp:2103`
 - `0x439990` `Player::ResetDamageStateAndTimedHitStatus` -> `src/Battlesport/player.cpp:9526`
 - `0x4399c0` `Player::ResetDamageVisualsAndTimedStatus` -> `src/Battlesport/player.cpp:9538`
-- `0x439b20` `HudLowMeterLoopSound::SetLoopActive` -> `src/Battlesport/hud.cpp:235`
-- `0x439b70` `HudLowMeterLoopSound::Disable` -> `src/Battlesport/hud.cpp:257`
+- `0x439b20` `HudLowMeterLoopSound::SetLoopActive` -> `src/Battlesport/hud.cpp:293`
+- `0x439b70` `HudLowMeterLoopSound::Disable` -> `src/Battlesport/hud.cpp:315`
 - `0x439ba0` `Player::TickAltGunRuntimeState` -> `src/Battlesport/player.cpp:12056`
 - `0x43a400` `Player::ProcessPrimaryGunDispatchTick` -> `src/Battlesport/player.cpp:12004`
 - `0x43a4f0` `Player::UpdateGunAndTurretAimNodes` -> `src/Battlesport/player.cpp:11465`
@@ -2939,10 +2941,10 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4bd9f0` `HudLineClip::ClipSegmentToCurrentYBounds` -> `src/Battlesport/HudSensorTracker.cpp:243`
 - `0x4bdb30` `HudLineClip::ClipEndpointToY` -> `src/Battlesport/HudSensorTracker.cpp:190`
 - `0x4bdc00` `zVideoFxPass3Slot::SetRectAndPayload` -> `src/GameZRecoil/zVideo/zVideo.cpp:999`
-- `0x4bdc70` `HudWeatherFx::Constructor` -> `src/Battlesport/hud.cpp:55`
-- `0x4bdee0` `HudWeatherFx::ResetParticleSlot` -> `src/Battlesport/hud.cpp:121`
-- `0x4be280` `HudWeatherFxSnow::Constructor` -> `src/Battlesport/hud.cpp:151`
-- `0x4be810` `HudWeatherFxRain::Constructor` -> `src/Battlesport/hud.cpp:164`
+- `0x4bdc70` `HudWeatherFx::Constructor` -> `src/Battlesport/hud.cpp:75`
+- `0x4bdee0` `HudWeatherFx::ResetParticleSlot` -> `src/Battlesport/hud.cpp:141`
+- `0x4be280` `HudWeatherFxSnow::Constructor` -> `src/Battlesport/hud.cpp:171`
+- `0x4be810` `HudWeatherFxRain::Constructor` -> `src/Battlesport/hud.cpp:184`
 - `0x4bed30` `zVideoFxPass3Config::UpdateLocal` -> `src/GameZRecoil/zVideo/zVideo.cpp:1618`
 - `0x4bed50` `zVideoFxPass3Config::SetPrimaryElementParamsLocal` -> `src/GameZRecoil/zVideo/zVideo.cpp:1626`
 - `0x4bed90` `zVideoFxPass3Config::QueueElementLocal` -> `src/GameZRecoil/zVideo/zVideo.cpp:1645`

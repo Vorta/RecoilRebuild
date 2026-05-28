@@ -1,0 +1,31 @@
+{
+  "name": "recoil_state_confirm_quit_destructors",
+  "description": "RecoilStateConfirmQuit destructor and scalar deleting destructor.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_gx_facs",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x415880",
+      "symbol": "??1RecoilStateConfirmQuit@@QAE@XZ",
+      "name": "RecoilStateConfirmQuit::~RecoilStateConfirmQuit"
+    },
+    {
+      "address": "0x415860",
+      "symbol": "?ScalarDeletingDestructor@RecoilStateConfirmQuit@@QAEPAU1@I@Z",
+      "name": "RecoilStateConfirmQuit::ScalarDeletingDestructor"
+    }
+  ]
+}

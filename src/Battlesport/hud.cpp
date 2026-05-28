@@ -46,6 +46,26 @@ const float kHudWeatherFxConeRandScale = -0.0000457777642f;
 const float kHudWeatherFxDepthBase = 0.5f;
 const float kHudWeatherFxConeBase = -1.0f;
 const float kHudWeatherFxReflectBias = 1.5f;
+
+struct HudUiBackgroundConfirmQuitVirtual
+{
+    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
+    virtual HudUiBackgroundConfirmQuitVirtual *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags) = 0;
+};
+
+RecoilApp_IState_Vtbl g_RecoilStateConfirmQuit_Vtbl = {0};
+
+struct RecoilStateConfirmQuitBaseVtableGuard
+{
+    RecoilStateConfirmQuit *self;
+
+    ~RecoilStateConfirmQuitBaseVtableGuard()
+    {
+        self->vftable = kRecoilStateBase_VtblAddress;
+    }
+};
 } // namespace
 
 const HudUiCommon_FTable g_HudWeatherFx_Vtable = MakeHudWeatherFxFTable();
@@ -193,6 +213,44 @@ void RECOIL_CDECL HudUiOptionsPanelOverlayOwner::QueueEnter()
 void RECOIL_CDECL RecoilStateConfirmQuit::QueueEnter()
 {
     g_RecoilApp.QueuePushState(&g_RecoilState_ConfirmQuit, 0);
+}
+
+// Reimplements 0x415880: RecoilStateConfirmQuit::~RecoilStateConfirmQuit
+// (D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp)
+RECOIL_NOINLINE RecoilStateConfirmQuit::~RecoilStateConfirmQuit()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateConfirmQuit_Vtbl;
+    RecoilStateConfirmQuitBaseVtableGuard baseVtableOnExit = {this};
+
+    HudUiBackgroundConfirmQuitVirtual *dialogView =
+        (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
+    if (dialogView != 0)
+    {
+        dialogView->SetEnabled(0);
+
+        dialogView = (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
+        if (dialogView != 0)
+        {
+            dialogView->ScalarDeletingDestructor(1);
+        }
+
+        m_dialog = 0;
+    }
+}
+
+// Reimplements 0x415860: RecoilStateConfirmQuit::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp)
+RECOIL_NOINLINE RecoilStateConfirmQuit *RECOIL_THISCALL
+RecoilStateConfirmQuit::ScalarDeletingDestructor(unsigned int flags)
+{
+    this->~RecoilStateConfirmQuit();
+
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
 }
 
 // Reimplements 0x408ff0: RecoilStateControls::QueueEnter

@@ -1,0 +1,18 @@
+{
+  "name": "recoil_state_confirm_quit_scalar_deleting_destructor",
+  "description": "RecoilStateConfirmQuit::ScalarDeletingDestructor runs the confirm-quit state destructor, conditionally frees this when bit 0 of flags is set, and returns this.",
+  "address": "0x415860",
+  "source_from": "src/Battlesport/hud.cpp",
+  "smoke_tests": [
+    "recoil_state_confirm_quit_destructor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py recoil_state_confirm_quit_destructors",
+  "known_limits": [
+    "Binary-safe verification is accepted by the recoil_state_confirm_quit_destructors VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x415860 validates the destructor call, flags bit-0 delete branch, returned self pointer, and thiscall callee cleanup for the flags argument.",
+    "The native smoke verifies the non-deleting scalar path returns this and leaves the base vtable restored.",
+    "The native smoke verifies the deleting heap path returns the original this pointer."
+  ]
+}

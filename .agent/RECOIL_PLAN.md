@@ -1156,10 +1156,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x415860:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateConfirmQuit::ScalarDeletingDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_confirm_quit_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x42e0b0:
   - [✅] Reconstructed (Name: RecoilApp::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
@@ -2542,10 +2542,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x415880:
   - [☑️] Reconstructed (Name: RecoilStateConfirmQuit::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateConfirmQuit::~RecoilStateConfirmQuit File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_confirm_quit_destructor)
+  - [✅] Binary-safe
 - 0x4158f0:
   - [☑️] Reconstructed (Name: RecoilStateConfirmQuit::OnTryBecomeCurrent)
   - [❌] Source dependencies satisfied

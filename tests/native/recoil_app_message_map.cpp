@@ -116,6 +116,24 @@ struct TestCreditsPanel {
     unsigned int lastScalarDeletingFlags = 0;
 };
 
+struct TestConfirmQuitDialog {
+    virtual void RECOIL_THISCALL Update(float) {}
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+        ++setEnabledCount;
+        lastEnabled = enabled;
+    }
+    virtual TestConfirmQuitDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags) {
+        ++scalarDeletingCount;
+        lastScalarDeletingFlags = flags;
+        return this;
+    }
+
+    int setEnabledCount = 0;
+    int lastEnabled = -1;
+    int scalarDeletingCount = 0;
+    unsigned int lastScalarDeletingFlags = 0;
+};
+
 struct ImportFunctionPatch {
     ULONG_PTR *slot;
     ULONG_PTR original;
@@ -4895,6 +4913,45 @@ extern "C" int recoil_state_credits_destructor_smoke(void) {
     state.~RecoilStateCredits();
 
     return state.vftable == kRecoilStateBase_VtblAddress ? 0 : 4;
+}
+
+extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
+    RecoilStateConfirmQuit state{};
+    TestConfirmQuitDialog dialog{};
+
+    state.vftable = 0x11111111;
+    state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+
+    state.~RecoilStateConfirmQuit();
+
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0) {
+        return 1;
+    }
+    if (dialog.setEnabledCount != 1 || dialog.lastEnabled != 0) {
+        return 2;
+    }
+    if (dialog.scalarDeletingCount != 1 || dialog.lastScalarDeletingFlags != 1) {
+        return 3;
+    }
+
+    state.vftable = 0x22222222;
+    state.m_dialog = 0;
+    state.~RecoilStateConfirmQuit();
+
+    if (state.vftable != kRecoilStateBase_VtblAddress) {
+        return 4;
+    }
+
+    RecoilStateConfirmQuit scalarState{};
+    RecoilStateConfirmQuit *const returned = scalarState.ScalarDeletingDestructor(0);
+    if (returned != &scalarState || scalarState.vftable != kRecoilStateBase_VtblAddress) {
+        return 5;
+    }
+
+    auto *const deletingState = new RecoilStateConfirmQuit{};
+    RecoilStateConfirmQuit *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+    return deletingReturned == deletingState ? 0 : 6;
 }
 
 extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void) {
