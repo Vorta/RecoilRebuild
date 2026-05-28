@@ -174,8 +174,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilApp_IState::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_IState::Destructor File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_fmv_state_scalar_deleting_destructors)
+  - [✅] Binary-safe
 - 0x42dfa0:
   - [✅] Reconstructed (Name: RecoilApp::Constructor)
   - [✅] Source dependencies satisfied
