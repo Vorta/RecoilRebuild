@@ -78,8 +78,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::OnResume)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::OnResume File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnResume.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_state_main_menu_transition_on_resume)
+  - [✅] Binary-safe
 - 0x4153d0:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::OnDeactivate)
   - [✅] Source dependencies satisfied
@@ -4650,8 +4650,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiContainer::InvalidateChildren)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::InvalidateChildren File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_container_invalidate_children)
+  - [✅] Binary-safe
 - 0x4ba3c0:
   - [✅] Reconstructed (Name: HudUiFillBitmap::SetNormalizedValue)
   - [❌] Source dependencies satisfied
