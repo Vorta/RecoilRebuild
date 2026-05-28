@@ -1258,8 +1258,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 
 - 0x4038a0:
   - [✅] Reconstructed (Name: HudUiBriefingObjectivePicture::DrawWithNoiseOverlay)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiBriefingObjectivePicture::DrawWithNoiseOverlay File: src/Battlesport/Briefing.cpp)
   - [❌] Functional-equivalent
   - [❌] Binary-safe
 - 0x403930:

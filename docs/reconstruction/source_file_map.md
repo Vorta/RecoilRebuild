@@ -340,7 +340,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x403550` `AINet::ResolveNeighborLinksAndBuildProbeFans` -> `src/Battlesport/ainet.cpp:290`
 - `0x403620` `AINetPathProbeFan::InitFromSegment` -> `src/Battlesport/ainet.cpp:270`
 - `0x403750` `Player::BuildAiPeerRingsByAiNetId` -> `src/Battlesport/player.cpp:1917`
-- `0x4038a0` `HudUiBriefingObjectivePicture::DrawNoiseOverlay` -> `src/Battlesport/Briefing.cpp:517`
+- `0x4038a0` `HudUiBriefingObjectivePicture::DrawWithNoiseOverlay` -> `src/Battlesport/Briefing.cpp:517`
 - `0x403c10` `HudUiBriefingLocatorPanel::Constructor` -> `src/Battlesport/Briefing.cpp:533`
 - `0x403c90` `HudUiBriefingLocatorPanel::BlitDirtyRect` -> `src/Battlesport/Briefing.cpp:544`
 - `0x403cb0` `HudUiBriefingLocatorPanel::Update` -> `src/Battlesport/Briefing.cpp:553`

@@ -99,7 +99,7 @@ struct HudUiBriefingObjectivePicture {
     HudUiWidget base;
     float noiseAlpha;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL DrawNoiseOverlay();
+    RECOIL_NOINLINE void RECOIL_THISCALL DrawWithNoiseOverlay();
 };
 
 RECOIL_STATIC_ASSERT(offsetof(HudUiBriefingObjectivePicture, noiseAlpha) ==
@@ -114,7 +114,7 @@ HudUiCommon_FTable MakeBriefingLocatorPanelFTable() {
 
 HudUiWidget_FTable MakeBriefingObjectivePictureFTable() {
     HudUiWidget_FTable table = MakeBriefingHudUiFTableWithCommonSlots<HudUiWidget_FTable>();
-    table.slots[1] = MethodAddress(&HudUiBriefingObjectivePicture::DrawNoiseOverlay);
+    table.slots[1] = MethodAddress(&HudUiBriefingObjectivePicture::DrawWithNoiseOverlay);
     table.slots[25] = MethodAddress(&HudUiWidget::GetCenterX);
     table.slots[26] = MethodAddress(&HudUiWidget::GetCenterY);
     return table;
@@ -514,10 +514,10 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingRuntime::Destructor() {
     layout->base.Destructor();
 }
 
-// Reimplements 0x4038a0: HudUiBriefingObjectivePicture::DrawNoiseOverlay
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingObjectivePicture::DrawNoiseOverlay() {
+// Reimplements 0x4038a0: HudUiBriefingObjectivePicture::DrawWithNoiseOverlay
+RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingObjectivePicture::DrawWithNoiseOverlay() {
     base.Draw();
-    if (noiseAlpha <= 0.0f) {
+    if (noiseAlpha <= 0.0) {
         return;
     }
 
