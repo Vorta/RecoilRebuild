@@ -54,8 +54,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSys::ProbePlatformAndVideoCaps)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSys::ProbePlatformAndVideoCaps File: src/GameZRecoil/zSys/zSys.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsys_probe_platform)
+  - [✅] Binary-safe
 - 0x415170:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::Constructor)
   - [✅] Source dependencies satisfied
