@@ -404,11 +404,18 @@ namespace zDi {
 RECOIL_NOINLINE void RECOIL_FASTCALL InvalidateImagesForFlagBit8Materials(zDiPartial *self);
 }
 
+RECOIL_STATIC_ASSERT(offsetof(zDiPartial, mode) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, flags) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zDiPartial, refCount) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, entryCount) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, vertCount) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zDiPartial, normalCount) == 0x14);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, blendVertCount) == 0x18);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, pointCount) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zDiPartial, blendScale) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zDiPartial, textureWorldPerMeter) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zDiPartial, textureWorldAxis) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(zDiPartial, field2c) == 0x2c);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, entries) == 0x30);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, verts) == 0x34);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, normals) == 0x38);

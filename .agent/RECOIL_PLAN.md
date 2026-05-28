@@ -1017,7 +1017,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: zdi_free_contents)
   - [❌] Binary-safe
 - 0x482270:
-  - [☑️] Reconstructed (Name: zDi::CloneToInstance)
+  - [✅] Reconstructed (Name: zDi::CloneToInstance)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::CloneToInstance File: src/Battlesport/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_clone_to_instance)
