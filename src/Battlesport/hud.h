@@ -292,6 +292,10 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiOptionsPanelOverlayOwner) == 0x08);
 struct RecoilStateConfirmQuit : RecoilApp_IState {
     RecoilPtr32 m_dialog; // HudUiBackgroundConfirmQuit*
 
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    RECOIL_NOINLINE static RecoilStateConfirmQuit *RECOIL_CDECL StaticInit();
+    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
+    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
     RecoilStateConfirmQuit *RECOIL_THISCALL Constructor();
     RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
     RECOIL_NOINLINE ~RecoilStateConfirmQuit();

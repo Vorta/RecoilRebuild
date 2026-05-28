@@ -23,6 +23,26 @@
       "name": "HudUiConfirmQuitOkButton::OnActivate"
     },
     {
+      "address": "0x415810",
+      "symbol": "?StaticInitAndRegisterAtExit@RecoilStateConfirmQuit@@SAXXZ",
+      "name": "RecoilStateConfirmQuit::StaticInitAndRegisterAtExit"
+    },
+    {
+      "address": "0x415820",
+      "symbol": "?StaticInit@RecoilStateConfirmQuit@@SAPAU1@XZ",
+      "name": "RecoilStateConfirmQuit::StaticInit"
+    },
+    {
+      "address": "0x415830",
+      "symbol": "?RegisterAtExit@RecoilStateConfirmQuit@@SAXXZ",
+      "name": "RecoilStateConfirmQuit::RegisterAtExit"
+    },
+    {
+      "address": "0x415840",
+      "symbol": "?AtExitDestructor@RecoilStateConfirmQuit@@SAXXZ",
+      "name": "RecoilStateConfirmQuit::AtExitDestructor"
+    },
+    {
       "address": "0x415850",
       "symbol": "?Constructor@RecoilStateConfirmQuit@@QAEPAU1@XZ",
       "name": "RecoilStateConfirmQuit::Constructor"

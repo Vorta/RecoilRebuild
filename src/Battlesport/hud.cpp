@@ -217,6 +217,35 @@ void RECOIL_CDECL RecoilStateConfirmQuit::QueueEnter()
     g_RecoilApp.QueuePushState(&g_RecoilState_ConfirmQuit, 0);
 }
 
+// Reimplements 0x415810: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateConfirmQuit::StaticInitAndRegisterAtExit()
+{
+    StaticInit();
+    RegisterAtExit();
+}
+
+// Reimplements 0x415820: RecoilStateConfirmQuit::StaticInit
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RECOIL_NOINLINE RecoilStateConfirmQuit *RECOIL_CDECL RecoilStateConfirmQuit::StaticInit()
+{
+    return g_RecoilState_ConfirmQuit.Constructor();
+}
+
+// Reimplements 0x415830: RecoilStateConfirmQuit::RegisterAtExit
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateConfirmQuit::RegisterAtExit()
+{
+    atexit(AtExitDestructor);
+}
+
+// Reimplements 0x415840: RecoilStateConfirmQuit::AtExitDestructor
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateConfirmQuit::AtExitDestructor()
+{
+    g_RecoilState_ConfirmQuit.~RecoilStateConfirmQuit();
+}
+
 // Reimplements 0x415740: HudUiConfirmQuitOkButton::OnActivate
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
 void RECOIL_THISCALL HudUiConfirmQuitOkButton::OnActivate()

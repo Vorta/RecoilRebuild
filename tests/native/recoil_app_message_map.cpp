@@ -2046,6 +2046,40 @@ extern "C" int recoil_state_confirm_quit_queue_enter_smoke(void) {
     return result;
 }
 
+extern "C" int recoil_state_confirm_quit_static_init_smoke(void) {
+    TestConfirmQuitDialog dialog{};
+
+    g_RecoilState_ConfirmQuit.vftable = 0x11111111;
+    g_RecoilState_ConfirmQuit.m_dialog = 0x22222222;
+    RecoilStateConfirmQuit *const staticInitReturned =
+        RecoilStateConfirmQuit::StaticInit();
+    if (staticInitReturned != &g_RecoilState_ConfirmQuit ||
+        g_RecoilState_ConfirmQuit.vftable == 0 ||
+        g_RecoilState_ConfirmQuit.m_dialog != 0) {
+        return 1;
+    }
+
+    g_RecoilState_ConfirmQuit.m_dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    RecoilStateConfirmQuit::AtExitDestructor();
+    if (g_RecoilState_ConfirmQuit.vftable != kRecoilStateBase_VtblAddress ||
+        g_RecoilState_ConfirmQuit.m_dialog != 0 ||
+        dialog.setEnabledCount != 1 || dialog.lastEnabled != 0 ||
+        dialog.scalarDeletingCount != 1 || dialog.lastScalarDeletingFlags != 1) {
+        return 2;
+    }
+
+    g_RecoilState_ConfirmQuit.vftable = 0x33333333;
+    g_RecoilState_ConfirmQuit.m_dialog = 0;
+    RecoilStateConfirmQuit::StaticInitAndRegisterAtExit();
+    if (g_RecoilState_ConfirmQuit.vftable == 0 ||
+        g_RecoilState_ConfirmQuit.m_dialog != 0) {
+        return 3;
+    }
+
+    return 0;
+}
+
 extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {
     const RecoilApp oldApp = g_RecoilApp;
     const HudUiOptionsPanelOverlayOwner oldOptionsState = g_HudUiOptionsPanelOverlayOwner;
