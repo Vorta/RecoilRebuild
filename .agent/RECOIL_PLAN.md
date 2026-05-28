@@ -976,9 +976,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x443b50:
   - [✅] Reconstructed (Name: CZGameFrame::OnAppIdleDispatchMessage)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: CZGameFrame::OnAppIdleDispatchMessage File: src/Battlesport/CZGameFrame.cpp)
+  - [✅] Functional-equivalent (Target: czgame_frame_on_app_idle_dispatch_message)
   - [❌] Binary-safe
 - 0x46e3e0:
   - [☑️] Reconstructed (Name: zImage_TexDirEntry::BuildMipChain)
