@@ -981,7 +981,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: czgame_frame_on_app_idle_dispatch_message)
   - [❌] Binary-safe
 - 0x46e3e0:
-  - [☑️] Reconstructed (Name: zImage_TexDirEntry::BuildMipChain)
+  - [✅] Reconstructed (Name: zImage_TexDirEntry::BuildMipChain)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage_TexDirEntryPartial::BuildMipChain File: src/GameZRecoil/zImage/zimg_texture.cpp)
   - [✅] Functional-equivalent (Target: zimage_texdir_entry_build_mip_chain)
