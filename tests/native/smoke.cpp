@@ -65,6 +65,7 @@ extern "C" int briefing_start_for_mission_smoke(void);
 extern "C" int briefing_set_progress_and_sleep_smoke(void);
 extern "C" int briefing_runtime_constructor_smoke(void);
 extern "C" int briefing_runtime_update_smoke(void);
+extern "C" int briefing_objective_picture_draw_noise_overlay_smoke(void);
 extern "C" int briefing_build_objective_actions_smoke(void);
 extern "C" int gamenet_list_reset_smoke(void);
 extern "C" int gamenet_player_row_append_smoke(void);
@@ -486,6 +487,7 @@ extern "C" int zhud_container_destructor_core_smoke(void);
 extern "C" int zhud_widget_constructor_smoke(void);
 extern "C" int zhud_widget_default_ctor_thunk_smoke(void);
 extern "C" int zhud_widget_invalidate_rect_smoke(void);
+extern "C" int hud_ui_widget_draw_smoke(void);
 extern "C" int zhud_zrd_widget_constructor_smoke(void);
 extern "C" int zhud_zrd_widget_helpers_smoke(void);
 extern "C" int zhud_zrd_widget_load_from_zrd_smoke(void);
@@ -1599,6 +1601,8 @@ int main(int argc, char **argv) {
         {"briefing_set_progress_and_sleep_smoke", briefing_set_progress_and_sleep_smoke},
         {"briefing_runtime_constructor_smoke", briefing_runtime_constructor_smoke},
         {"briefing_runtime_update_smoke", briefing_runtime_update_smoke},
+        {"briefing_objective_picture_draw_noise_overlay_smoke",
+         briefing_objective_picture_draw_noise_overlay_smoke},
         {"briefing_build_objective_actions_smoke", briefing_build_objective_actions_smoke},
         {"gamenet_list_reset_smoke", gamenet_list_reset_smoke},
         {"gamenet_player_row_append_smoke", gamenet_player_row_append_smoke},
@@ -2268,6 +2272,7 @@ int main(int argc, char **argv) {
         {"zhud_widget_constructor_smoke", zhud_widget_constructor_smoke},
         {"zhud_widget_default_ctor_thunk_smoke", zhud_widget_default_ctor_thunk_smoke},
         {"zhud_widget_invalidate_rect_smoke", zhud_widget_invalidate_rect_smoke},
+        {"hud_ui_widget_draw_smoke", hud_ui_widget_draw_smoke},
         {"zhud_zrd_widget_constructor_smoke", zhud_zrd_widget_constructor_smoke},
         {"zhud_zrd_widget_helpers_smoke", zhud_zrd_widget_helpers_smoke},
         {"zhud_zrd_widget_load_from_zrd_smoke", zhud_zrd_widget_load_from_zrd_smoke},

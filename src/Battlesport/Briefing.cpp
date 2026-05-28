@@ -46,8 +46,14 @@ void RECOIL_FASTCALL BriefingHudUiCommonInvalidateThunk(HudUiElement *element) {
     element->Invalidate();
 }
 
+void RECOIL_FASTCALL BriefingHudUiNoOpMethodStub(void *) {}
+
 template <typename FTable> FTable MakeBriefingHudUiFTableWithCommonSlots() {
     FTable table = {0};
+    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 2) {
+        table.slots[2] = (unsigned int)(&BriefingHudUiNoOpMethodStub);
+    }
+
     if ((sizeof(table.slots) / sizeof(table.slots[0])) > 8) {
         table.slots[8] = (unsigned int)(&BriefingHudUiCommonInvalidateThunk);
     }

@@ -3,6 +3,8 @@
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zLoc/zLoc.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
@@ -30,6 +32,12 @@ int g_briefingSetVisibleValue[16];
 int g_briefingAdjustSurfaceCalls;
 int g_briefingStopAfterAdjustCalls = 1;
 int g_briefingStopRequested;
+int g_briefingBlitCount;
+zVidImagePartial *g_briefingBlitImage;
+int g_briefingBlitX;
+int g_briefingBlitY;
+int g_briefingBlitFlags;
+int g_briefingBlitHasRect;
 
 int RECOIL_FASTCALL TestVideoSurfaceDispatch(zVideo_SurfaceStatePartial *) {
     return 0;
@@ -58,6 +66,16 @@ int RECOIL_FASTCALL TestAdjustSurfacesStopBriefingThread(zVidRect32 *, zVidRect3
         g_Briefing_ThreadRunFlag = 0;
     }
     return 0;
+}
+
+void RECOIL_FASTCALL TestBriefingBltSourceToPrimary(void *self, int dstX, int dstY,
+                                                    int clipFlags, void *srcRect) {
+    ++g_briefingBlitCount;
+    g_briefingBlitImage = static_cast<zVidImagePartial *>(self);
+    g_briefingBlitX = dstX;
+    g_briefingBlitY = dstY;
+    g_briefingBlitFlags = clipFlags;
+    g_briefingBlitHasRect = srcRect != nullptr ? 1 : 0;
 }
 
 struct TestBriefingTransportProgress : HudUiBriefingTransportProgress {
@@ -583,6 +601,121 @@ extern "C" int briefing_runtime_update_smoke(void) {
     }
 
     return g_Briefing_AllowAdvanceFlag == 0 && invalidatedInOrder ? 0 : 1;
+}
+
+extern "C" int briefing_objective_picture_draw_noise_overlay_smoke(void) {
+    constexpr std::size_t kRuntimeSize = 0xba70;
+    constexpr std::size_t kObjectivePictureOffset = 0xb2d4;
+    constexpr std::size_t kObjectivePictureNoiseAlphaOffset = kObjectivePictureOffset + 0xbc;
+
+    ConstructorGlobalState state = {};
+    PrepareConstructorGlobals(state);
+
+    zVideo_BltSourceToPrimaryProc oldBlit = g_zVideo_pfnBltSourceToPrimary;
+    zVidImagePartial *oldExclusiveImage = g_HudUiWidget_ExclusiveDrawImage;
+    unsigned char *const oldNoiseTable = g_zVid_NoiseByteTable;
+    const int oldNoiseTableSize = g_zVid_NoiseByteTableSize;
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
+
+    alignas(4) static unsigned char storage[kRuntimeSize];
+    std::memset(storage, 0, sizeof(storage));
+    HudUiBriefingRuntime *const runtime = reinterpret_cast<HudUiBriefingRuntime *>(storage);
+    runtime->Constructor(1);
+
+    HudUiWidget *const picture =
+        reinterpret_cast<HudUiWidget *>(storage + kObjectivePictureOffset);
+    float *const noiseAlpha =
+        reinterpret_cast<float *>(storage + kObjectivePictureNoiseAlphaOffset);
+    typedef void (RECOIL_THISCALL *DrawFn)(HudUiWidget * self);
+    DrawFn const draw = reinterpret_cast<DrawFn>(picture->ftable->slots[1]);
+
+    zVidImagePartial image{};
+    image.width = 3;
+    image.height = 2;
+    picture->image = &image;
+    picture->x = 2;
+    picture->y = 1;
+    picture->dirtyRectCount = 0;
+    picture->bltClipRectOrNull = nullptr;
+
+    unsigned char noiseTable[32] = {};
+    for (int i = 0; i < 32; ++i) {
+        noiseTable[i] = static_cast<unsigned char>(i);
+    }
+
+    unsigned short pixels[64] = {};
+    for (int i = 0; i < 64; ++i) {
+        pixels[i] = 0xaaaa;
+    }
+
+    g_zVideo_pfnBltSourceToPrimary = TestBriefingBltSourceToPrimary;
+    g_HudUiWidget_ExclusiveDrawImage = nullptr;
+    g_zVid_NoiseByteTable = noiseTable;
+    g_zVid_NoiseByteTableSize = 32;
+    g_zVideo_FxSurfacePixels16 = pixels;
+    g_zVideo_FxSurfaceWidth = 8;
+    g_zVideo_FxSurfaceHeight = 8;
+    g_zVideo_FxSurfacePitchBytes = 16;
+    g_zVideo_FxSurfacePitchPixels16 = 8;
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+
+    g_briefingBlitCount = 0;
+    g_briefingBlitImage = nullptr;
+    *noiseAlpha = 0.0f;
+    draw(picture);
+
+    bool lowAlphaOk = g_briefingBlitCount == 1 && g_briefingBlitImage == &image &&
+                      g_briefingBlitX == 2 && g_briefingBlitY == 1 &&
+                      g_briefingBlitFlags == 0 && g_briefingBlitHasRect == 0;
+    for (int i = 0; i < 64; ++i) {
+        lowAlphaOk = lowAlphaOk && pixels[i] == 0xaaaa;
+    }
+
+    for (int i = 0; i < 64; ++i) {
+        pixels[i] = 0xaaaa;
+    }
+
+    std::srand(11);
+    const int rowWidth = image.width;
+    const int firstOffset = (std::rand() * (g_zVid_NoiseByteTableSize - rowWidth)) / 0x7fff;
+    const int secondOffset = (std::rand() * (g_zVid_NoiseByteTableSize - rowWidth)) / 0x7fff;
+    std::srand(11);
+    g_briefingBlitCount = 0;
+    *noiseAlpha = 1.0f;
+    draw(picture);
+
+    const auto gray565 = [](unsigned char value) -> unsigned short {
+        const unsigned short level = static_cast<unsigned short>(value & 0x1f);
+        return static_cast<unsigned short>((level << 11) | (level << 6) | level);
+    };
+
+    const bool noiseOk =
+        g_briefingBlitCount == 1 && g_briefingBlitImage == &image &&
+        pixels[2 + 1 * 8] == gray565(noiseTable[firstOffset]) &&
+        pixels[3 + 1 * 8] == gray565(noiseTable[firstOffset + 1]) &&
+        pixels[4 + 1 * 8] == gray565(noiseTable[firstOffset + 2]) &&
+        pixels[2 + 2 * 8] == gray565(noiseTable[secondOffset]) &&
+        pixels[3 + 2 * 8] == gray565(noiseTable[secondOffset + 1]) &&
+        pixels[4 + 2 * 8] == gray565(noiseTable[secondOffset + 2]) &&
+        pixels[0] == 0xaaaa && pixels[1 + 1 * 8] == 0xaaaa &&
+        pixels[5 + 1 * 8] == 0xaaaa && pixels[2 + 3 * 8] == 0xaaaa;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    g_HudUiWidget_ExclusiveDrawImage = oldExclusiveImage;
+    g_zVid_NoiseByteTable = oldNoiseTable;
+    g_zVid_NoiseByteTableSize = oldNoiseTableSize;
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
+    RestoreConstructorGlobals(state);
+
+    return lowAlphaOk && noiseOk ? 0 : 1;
 }
 
 extern "C" int briefing_build_objective_actions_smoke(void) {

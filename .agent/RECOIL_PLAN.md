@@ -1260,7 +1260,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBriefingObjectivePicture::DrawWithNoiseOverlay)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBriefingObjectivePicture::DrawWithNoiseOverlay File: src/Battlesport/Briefing.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: briefing_objective_picture_draw_noise_overlay)
   - [❌] Binary-safe
 - 0x403930:
   - [✅] Reconstructed (Name: HudUiBriefingRuntime::Constructor)
@@ -4467,7 +4467,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiWidget::Draw)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_widget_draw)
   - [❌] Binary-safe
 - 0x4b4030:
   - [☑️] Reconstructed (Name: HudUiWidget::HitTest)
