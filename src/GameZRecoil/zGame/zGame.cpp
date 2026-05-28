@@ -830,14 +830,11 @@ int WrappedAbsDifference(int lhs, int rhs) {
 
 // Reimplements 0x407190: zOpt::LookupNamedValueAsInt
 RECOIL_NOINLINE int RECOIL_FASTCALL LookupNamedValueAsInt(const char *key) {
-    {
-        int pairIndex1;
-        for (pairIndex1 = 0; pairIndex1 < (int)(sizeof(g_zOpt_NamedScalarValues) / sizeof((g_zOpt_NamedScalarValues)[0])); ++pairIndex1) {
-            const zOpt_NameInt32Pair & pair = (g_zOpt_NamedScalarValues)[pairIndex1];
-        if (strcmp(pair.name, key) == 0) {
-            return pair.value;
+    unsigned int pairIndex;
+    for (pairIndex = 0; pairIndex < sizeof(g_zOpt_NamedScalarValues) / sizeof(g_zOpt_NamedScalarValues[0]); ++pairIndex) {
+        if (strcmp(g_zOpt_NamedScalarValues[pairIndex].name, key) == 0) {
+            return g_zOpt_NamedScalarValues[pairIndex].value;
         }
-    }
     }
 
     return 0;

@@ -1141,7 +1141,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::LookupNamedValueAsInt File: src/GameZRecoil/zGame/zGame.cpp)
   - [✅] Functional-equivalent (Target: zopt_lookup_named_value_as_int)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x4099f0:
   - [☑️] Reconstructed (Name: RecoilStateCredits::Destructor)
   - [❌] Source dependencies satisfied
