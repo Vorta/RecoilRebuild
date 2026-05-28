@@ -102,8 +102,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::SetDeferredVideoModeIndex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::SetDeferredVideoModeIndex File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_SetDeferredVideoModeIndex.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_state_main_menu_transition_set_deferred_video_mode_index)
+  - [✅] Binary-safe
 - 0x42db50:
   - [✅] Reconstructed (Name: zCom::QueryInterfaceFromInterfaceMap)
   - [✅] Source dependencies satisfied
