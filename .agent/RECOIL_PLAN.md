@@ -19821,8 +19821,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideo::Fx_SetSurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Fx_SetSurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zvideo_fx_set_surface_state)
+  - [✅] Binary-safe
 - 0x48ea20:
   - [☑️] Reconstructed (Name: zVideo_FxSurface::ApplyBlueTintRect)
   - [❌] Source dependencies satisfied
@@ -20367,8 +20367,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideoFxPass3Config::QueuePrimitiveRaw)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideoFxPass3Config::QueuePrimitiveRaw File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zvideo_fxpass3_config_queue_primitive_raw)
+  - [✅] Binary-safe
 - 0x4bee40:
   - [✅] Reconstructed (Name: zVideoFxPass3Config::CrtInitGlobalSingleton)
   - [❌] Source dependencies satisfied
@@ -21045,8 +21045,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zVideo::RunPostprocessOnPrimaryBuffer)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::RunPostprocessOnPrimaryBuffer File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zvideo_run_postprocess_on_primary_buffer)
+  - [✅] Binary-safe
 - 0x4a69c0:
   - [✅] Reconstructed (Name: zVideo_buff::ClipCoordToRange)
   - [✅] Source dependencies satisfied
@@ -21165,8 +21165,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideo::FxPass3_QueuePrimitive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::FxPass3_QueuePrimitive File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zvideo_fxpass3_queue_primitive)
+  - [✅] Binary-safe
 - 0x4bef70:
   - [✅] Reconstructed (Name: zVideo::FxPass3_UpdateLocal)
   - [✅] Source dependencies satisfied

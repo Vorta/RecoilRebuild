@@ -1289,6 +1289,107 @@ extern "C" int zvideo_run_postprocess_on_sw_buffer_smoke(void) {
     return lockOk && frameBufferOk && fxSurfaceOk && primitiveOk ? 0 : 1;
 }
 
+extern "C" int zvideo_run_postprocess_on_primary_buffer_smoke(void) {
+    zVideo_SurfaceStateProc const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimarySurfaceState = g_zVideo_PrimarySurfaceState;
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedUseHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    void *const savedFrameBuffer = zRndr::g_frameBuffer;
+    const int savedPitchBytes = zRndr::g_pitchBytes;
+    const int savedBytesPerPixel = zRndr::g_bytesPerPixel;
+    unsigned char savedConfig[kFxPass3ConfigSize] = {};
+    std::memcpy(savedConfig, FxPass3ConfigBytes(), sizeof(savedConfig));
+    unsigned short *const savedFxSurfacePixels = g_zVideo_FxSurfacePixels16;
+    const int savedFxSurfaceWidth = g_zVideo_FxSurfaceWidth;
+    const int savedFxSurfaceHeight = g_zVideo_FxSurfaceHeight;
+    const int savedFxSurfacePitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int savedFxSurfacePitchPixels = g_zVideo_FxSurfacePitchPixels16;
+
+    unsigned short pixels[16] = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 4;
+    g_zVideo_PrimarySurfaceState.height = 3;
+    g_zVideo_PrimarySurfaceState.pitch = 8;
+    g_zVideo_pfnLockSurfaceState = CaptureLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = CaptureUnlockSurfaceState;
+
+    auto resetObservedState = [&]() {
+        g_zVideoTestLockSurfaceCount = 0;
+        g_zVideoTestLockSurfaceState = nullptr;
+        g_zVideoTestUnlockSurfaceCount = 0;
+        g_zVideoTestUnlockSurfaceState = nullptr;
+        zRndr::g_frameBuffer = nullptr;
+        zRndr::g_pitchBytes = 0;
+        zRndr::g_bytesPerPixel = 7;
+        std::memset(FxPass3ConfigBytes(), 0, kFxPass3ConfigSize);
+        g_zVideo_FxSurfacePixels16 = nullptr;
+        g_zVideo_FxSurfaceWidth = 0;
+        g_zVideo_FxSurfaceHeight = 0;
+        g_zVideo_FxSurfacePitchBytes = 0;
+        g_zVideo_FxSurfacePitchPixels16 = 0;
+    };
+
+    auto pipelineOk = [&]() {
+        return zRndr::g_frameBuffer == pixels && zRndr::g_pitchBytes == 8 &&
+               zRndr::g_bytesPerPixel == 7 && g_zVideo_FxSurfacePixels16 == pixels &&
+               g_zVideo_FxSurfaceWidth == 4 && g_zVideo_FxSurfaceHeight == 3 &&
+               g_zVideo_FxSurfacePitchBytes == 8 && g_zVideo_FxSurfacePitchPixels16 == 4 &&
+               FxPass3FieldAt<unsigned short *>(kFxPass3SurfacePixelsOffset) == pixels &&
+               FxPass3FieldAt<int>(kFxPass3SurfaceWidthOffset) == 4 &&
+               FxPass3FieldAt<int>(kFxPass3SurfaceHeightOffset) == 3 &&
+               FxPass3FieldAt<int>(kFxPass3SurfacePitchOffset) == 8;
+    };
+
+    resetObservedState();
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_PrimarySurfaceState.locked = 0;
+    const int softwareResult = zVideo::RunPostprocessOnPrimaryBuffer();
+    const bool softwareOk = softwareResult == 0 && g_zVideoTestLockSurfaceCount == 0 &&
+                            g_zVideoTestUnlockSurfaceCount == 0 &&
+                            g_zVideo_PrimarySurfaceState.locked == 0 && pipelineOk();
+
+    resetObservedState();
+    g_zVideo_RendererType = 1;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_PrimarySurfaceState.locked = 0;
+    const int hardwareResult = zVideo::RunPostprocessOnPrimaryBuffer();
+    const bool hardwareOk = hardwareResult == 0 && g_zVideoTestLockSurfaceCount == 1 &&
+                            g_zVideoTestLockSurfaceState == &g_zVideo_PrimarySurfaceState &&
+                            g_zVideoTestUnlockSurfaceCount == 0 &&
+                            g_zVideo_PrimarySurfaceState.locked == 1 && pipelineOk();
+
+    resetObservedState();
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 1;
+    g_zVideo_PrimarySurfaceState.locked = 0;
+    const int halfResResult = zVideo::RunPostprocessOnPrimaryBuffer();
+    const bool halfResOk = halfResResult == 0 && g_zVideoTestLockSurfaceCount == 1 &&
+                           g_zVideoTestLockSurfaceState == &g_zVideo_PrimarySurfaceState &&
+                           g_zVideoTestUnlockSurfaceCount == 1 &&
+                           g_zVideoTestUnlockSurfaceState == &g_zVideo_PrimarySurfaceState &&
+                           g_zVideo_PrimarySurfaceState.locked == 0 && pipelineOk();
+
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+    g_zVideo_PrimarySurfaceState = savedPrimarySurfaceState;
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_UseHalfResBackbuffer = savedUseHalfResBackbuffer;
+    zRndr::g_frameBuffer = savedFrameBuffer;
+    zRndr::g_pitchBytes = savedPitchBytes;
+    zRndr::g_bytesPerPixel = savedBytesPerPixel;
+    std::memcpy(FxPass3ConfigBytes(), savedConfig, sizeof(savedConfig));
+    g_zVideo_FxSurfacePixels16 = savedFxSurfacePixels;
+    g_zVideo_FxSurfaceWidth = savedFxSurfaceWidth;
+    g_zVideo_FxSurfaceHeight = savedFxSurfaceHeight;
+    g_zVideo_FxSurfacePitchBytes = savedFxSurfacePitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = savedFxSurfacePitchPixels;
+
+    return softwareOk && hardwareOk && halfResOk ? 0 : 1;
+}
+
 extern "C" int zvideo_frame_scratch_buffers_smoke(void) {
     std::free(g_zVid_NoiseByteTable);
     std::free(g_zVideo_FxPass3_ScratchPixels16);

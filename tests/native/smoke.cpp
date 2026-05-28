@@ -1227,6 +1227,7 @@ extern "C" int zvideo_surface_accessors_smoke(void);
 extern "C" int zvideo_fxpass3_local_queue_smoke(void);
 extern "C" int zvideo_primary_surface_rect_scratch_smoke(void);
 extern "C" int zvideo_run_postprocess_on_sw_buffer_smoke(void);
+extern "C" int zvideo_run_postprocess_on_primary_buffer_smoke(void);
 extern "C" int zvideo_frame_scratch_buffers_smoke(void);
 extern "C" int zvideo_clear_dispatch_and_exchange_smoke(void);
 extern "C" int zvideo_mode_geometry_and_set_video_mode_smoke(void);
@@ -3232,6 +3233,8 @@ int main(int argc, char **argv) {
         {"zvideo_primary_surface_rect_scratch_smoke", zvideo_primary_surface_rect_scratch_smoke},
         {"zvideo_run_postprocess_on_sw_buffer_smoke",
          zvideo_run_postprocess_on_sw_buffer_smoke},
+        {"zvideo_run_postprocess_on_primary_buffer_smoke",
+         zvideo_run_postprocess_on_primary_buffer_smoke},
         {"zvideo_frame_scratch_buffers_smoke", zvideo_frame_scratch_buffers_smoke},
         {"zvideo_clear_dispatch_and_exchange_smoke", zvideo_clear_dispatch_and_exchange_smoke},
         {"zvideo_mode_geometry_and_set_video_mode_smoke",

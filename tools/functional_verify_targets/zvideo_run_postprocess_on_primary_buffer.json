@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_run_postprocess_on_primary_buffer",
+  "description": "zVideo::RunPostprocessOnPrimaryBuffer conditionally locks the primary surface, binds it as the renderer framebuffer and FX surface, queues the pass-3 primitive, conditionally unlocks half-resolution software mode, and returns zero.",
+  "address": "0x4a6840",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_run_postprocess_on_primary_buffer_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a6840",
+  "known_limits": [],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4a6840 validates the renderer-type or half-res lock gate, the unconditional zRndr::SetFrameBufferRegion, zVideo::Fx_SetSurfaceState, and zVideo::FxPass3_QueuePrimitive calls over g_zVideo_PrimarySurfaceState, the half-res unlock gate, and return value zero.",
+    "The native primary-buffer postprocess smoke verifies the software non-half-res path skips lock/unlock while running the framebuffer/FX/primitive pipeline, the hardware path locks without unlocking, and the software half-res path locks and unlocks the primary surface."
+  ],
+  "binary_safe_evidence": [
+    "VC6 cl 12.00.8168 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison passed for ?RunPostprocessOnPrimaryBuffer@zVideo@@YAHXZ at 0x4a6840 with zero unmasked mismatches after masking 80 relocation bytes; 10 trailing VC NOP bytes trimmed."
+  ]
+}
