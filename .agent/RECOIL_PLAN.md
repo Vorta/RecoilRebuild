@@ -1011,7 +1011,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: zreader_find_global_string_prefix_index)
   - [❌] Binary-safe
 - 0x482160:
-  - [☑️] Reconstructed (Name: zDi::FreeContents)
+  - [✅] Reconstructed (Name: zDi::FreeContents)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zDi::FreeContents File: src/Battlesport/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_free_contents)

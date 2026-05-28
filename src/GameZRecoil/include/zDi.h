@@ -411,6 +411,7 @@ RECOIL_STATIC_ASSERT(offsetof(zDiPartial, blendVertCount) == 0x18);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, pointCount) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, entries) == 0x30);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, verts) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zDiPartial, normals) == 0x38);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, pointEntries) == 0x3c);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, blendVerts) == 0x40);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, bboxCenter) == 0x44);
