@@ -1104,8 +1104,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zLoc::ResolveMessageKeyOrFallback)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zLoc::ResolveMessageKeyOrFallback File: src/GameZRecoil/zLoc/zLoc.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zloc_resolve_message_key_or_fallback)
+  - [✅] Binary-safe
 - 0x4a5b60:
   - [✅] Reconstructed (Name: zLoc::FormatMessage)
   - [✅] Source dependencies satisfied
@@ -1116,8 +1116,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zLoc::GetMessageString)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zLoc::GetMessageString File: src/GameZRecoil/zLoc/zLoc.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zloc_get_message_string)
+  - [✅] Binary-safe
 - 0x4c06a0:
   - [✅] Reconstructed (Name: zZbdSectionHandler::InvokePreLoad)
   - [✅] Source dependencies satisfied
