@@ -807,7 +807,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: recoil_app_engine_init)
   - [❌] Binary-safe
 - 0x442bc0:
-  - [☑️] Reconstructed (Name: RecoilApp::ShutdownSubsystems)
+  - [✅] Reconstructed (Name: RecoilApp::ShutdownSubsystems)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::ShutdownSubsystems File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: recoil_app_shutdown_subsystems)
@@ -10335,7 +10335,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zClass::Shutdown)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass::Shutdown File: src/GameZRecoil/zClass/cls_util.c)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: zclass_shutdown)
   - [❌] Binary-safe
 - 0x4518f0:
   - [✅] Reconstructed (Name: zClass::IsInitialized)
