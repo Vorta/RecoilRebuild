@@ -33,6 +33,10 @@
 
 #include <windows.h>
 
+#ifndef SPI_SETSCREENSAVERRUNNING
+#define SPI_SETSCREENSAVERRUNNING 0x0061
+#endif
+
 #ifdef FormatMessage
 #undef FormatMessage
 #endif

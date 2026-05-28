@@ -132,26 +132,26 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilApp::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::StaticInitAndRegisterAtExit File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_register_at_exit)
+  - [✅] Binary-safe
 - 0x42de30:
   - [✅] Reconstructed (Name: RecoilApp::StaticInit)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::StaticInit File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_register_at_exit)
+  - [✅] Binary-safe
 - 0x42de40:
   - [✅] Reconstructed (Name: RecoilApp::RegisterAtExit)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::RegisterAtExit File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_register_at_exit)
+  - [✅] Binary-safe
 - 0x42de50:
   - [✅] Reconstructed (Name: RecoilApp::AtExitDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::AtExitDestructor File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_register_at_exit)
+  - [✅] Binary-safe
 - 0x42de60:
   - [✅] Reconstructed (Name: RecoilApp::Destructor)
   - [✅] Source dependencies satisfied
