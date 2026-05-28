@@ -939,7 +939,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: czgame_frame_on_close)
   - [❌] Binary-safe
 - 0x443900:
-  - [☑️] Reconstructed (Name: CZGameFrame::OnPaint)
+  - [✅] Reconstructed (Name: CZGameFrame::OnPaint)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZGameFrame::OnPaint File: src/Battlesport/CZGameFrame.cpp)
   - [✅] Functional-equivalent (Target: czgame_frame_on_paint)

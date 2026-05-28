@@ -97,6 +97,7 @@ struct CZGameFrame : CFrameWnd {
 };
 
 #if defined(_M_IX86) || defined(__i386__)
+RECOIL_STATIC_ASSERT(offsetof(CGdiObject, m_hObject) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(CZGameFrameAppVtable, OnAppActivate) == 0x0a4);
 RECOIL_STATIC_ASSERT(offsetof(CZGameFrameAppVtable, OnAppDeactivate) == 0x0a8);
 RECOIL_STATIC_ASSERT(offsetof(CZGameFrameAppVtable, OnIdleOrDispatch) == 0x0b4);
