@@ -816,8 +816,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilApp::GetMainWnd)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::GetMainWnd File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_get_main_wnd)
+  - [✅] Binary-safe
 - 0x442c10:
   - [✅] Reconstructed (Name: RecoilApp::StartEngineAndQueueStartupState)
   - [✅] Source dependencies satisfied
