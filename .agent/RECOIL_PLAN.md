@@ -2554,10 +2554,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x415960:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::OnDeactivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateConfirmQuit::OnDeactivate File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_confirm_quit_on_deactivate)
+  - [✅] Binary-safe
 - 0x4159b0:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::QueueEnter)
   - [✅] Source dependencies satisfied

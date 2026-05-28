@@ -94,6 +94,11 @@ int g_saveLoadUpdateAdjustBlit;
 float g_saveLoadUpdateDelta;
 zVidRect32 *g_saveLoadUpdateAdjustSrc;
 zVidRect32 *g_saveLoadUpdateAdjustDst;
+int g_confirmQuitPostprocessCalls;
+int g_confirmQuitBlitCalls;
+int g_confirmQuitUnlockCalls;
+int g_confirmQuitSleepCalls;
+DWORD g_confirmQuitSleepMilliseconds;
 int g_openFileNameCalls;
 bool g_openFileNameStructOk;
 char g_openFileNameSelectedPath[MAX_PATH];
@@ -226,6 +231,29 @@ int RECOIL_FASTCALL FakeSaveLoadUpdateAdjustSurfaces(zVidRect32 *srcRect, zVidRe
     g_saveLoadUpdateAdjustWait = waitForPresent;
     g_saveLoadUpdateAdjustBlit = blitPrimaryToSwFirst;
     return 0;
+}
+
+int RECOIL_CDECL FakeConfirmQuitRunPostprocessOnPrimaryBuffer() {
+    ++g_confirmQuitPostprocessCalls;
+    return 0;
+}
+
+int RECOIL_CDECL FakeConfirmQuitUnlockPrimarySurfaceState() {
+    ++g_confirmQuitUnlockCalls;
+    return 0;
+}
+
+struct FakeConfirmQuitBlitThunk {
+    void RECOIL_THISCALL BlitOwnedSurfaceToPrimary();
+};
+
+void RECOIL_THISCALL FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary() {
+    ++g_confirmQuitBlitCalls;
+}
+
+void WINAPI FakeConfirmQuitSleep(DWORD milliseconds) {
+    ++g_confirmQuitSleepCalls;
+    g_confirmQuitSleepMilliseconds = milliseconds;
 }
 
 bool PatchImportByName(const char *dllName, const char *functionName, void *replacement,
@@ -4960,7 +4988,88 @@ extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
     auto *const deletingState = new RecoilStateConfirmQuit{};
     RecoilStateConfirmQuit *const deletingReturned =
         deletingState->ScalarDeletingDestructor(1);
-    return deletingReturned == deletingState ? 0 : 6;
+    if (deletingReturned != deletingState) {
+        return 6;
+    }
+
+    CodeFunctionPatch postprocessPatch{};
+    CodeFunctionPatch blitPatch{};
+    CodeFunctionPatch unlockPatch{};
+    ImportFunctionPatch sleepPatch{};
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                           reinterpret_cast<void *>(
+                               &FakeConfirmQuitRunPostprocessOnPrimaryBuffer),
+                           postprocessPatch)) {
+        return 8;
+    }
+
+    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+        &HudUiDialogController::BlitOwnedSurfaceToPrimary;
+    void (RECOIL_THISCALL FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
+        &FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestSaveLoadMethodAddress(blitMember)),
+                           reinterpret_cast<void *>(TestSaveLoadMethodAddress(fakeBlitMember)),
+                           blitPatch)) {
+        RestoreFunctionPatch(postprocessPatch);
+        return 9;
+    }
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                           reinterpret_cast<void *>(&FakeConfirmQuitUnlockPrimarySurfaceState),
+                           unlockPatch)) {
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 10;
+    }
+
+    if (!PatchImportByName("KERNEL32.dll", "Sleep",
+                           reinterpret_cast<void *>(&FakeConfirmQuitSleep), sleepPatch)) {
+        RestoreFunctionPatch(unlockPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 11;
+    }
+
+    g_confirmQuitPostprocessCalls = 0;
+    g_confirmQuitBlitCalls = 0;
+    g_confirmQuitUnlockCalls = 0;
+    g_confirmQuitSleepCalls = 0;
+    g_confirmQuitSleepMilliseconds = 0;
+    dialog.setEnabledCount = 0;
+    dialog.lastEnabled = -1;
+    dialog.scalarDeletingCount = 0;
+    dialog.lastScalarDeletingFlags = 0;
+
+    state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.OnDeactivate();
+
+    const bool deactivateOk =
+        state.m_dialog == 0 && dialog.setEnabledCount == 1 && dialog.lastEnabled == 0 &&
+        dialog.scalarDeletingCount == 1 && dialog.lastScalarDeletingFlags == 1 &&
+        g_confirmQuitPostprocessCalls == 1 && g_confirmQuitBlitCalls == 1 &&
+        g_confirmQuitUnlockCalls == 1 && g_confirmQuitSleepCalls == 1 &&
+        g_confirmQuitSleepMilliseconds == 1000;
+
+    state.m_dialog = 0;
+    g_confirmQuitPostprocessCalls = 0;
+    g_confirmQuitBlitCalls = 0;
+    g_confirmQuitUnlockCalls = 0;
+    g_confirmQuitSleepCalls = 0;
+    state.OnDeactivate();
+    const bool nullDeactivateOk =
+        g_confirmQuitPostprocessCalls == 0 && g_confirmQuitBlitCalls == 0 &&
+        g_confirmQuitUnlockCalls == 0 && g_confirmQuitSleepCalls == 0;
+
+    RestoreImportPatch(sleepPatch);
+    RestoreFunctionPatch(unlockPatch);
+    RestoreFunctionPatch(blitPatch);
+    RestoreFunctionPatch(postprocessPatch);
+
+    if (!deactivateOk) {
+        return 12;
+    }
+    return nullDeactivateOk ? 0 : 13;
 }
 
 extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void) {

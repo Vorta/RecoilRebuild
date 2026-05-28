@@ -224,6 +224,34 @@ RecoilStateConfirmQuit *RECOIL_THISCALL RecoilStateConfirmQuit::Constructor()
     return this;
 }
 
+// Reimplements 0x415960: RecoilStateConfirmQuit::OnDeactivate
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateConfirmQuit::OnDeactivate()
+{
+    if (m_dialog == 0)
+    {
+        return;
+    }
+
+    zVideo::RunPostprocessOnPrimaryBuffer();
+
+    HudUiBackgroundConfirmQuitVirtual *dialogView =
+        (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
+    dialogView->SetEnabled(0);
+
+    ((HudUiDialogController *)(unsigned int)m_dialog)->BlitOwnedSurfaceToPrimary();
+    zVideo::Dispatch_UnlockPrimarySurfaceState();
+
+    dialogView = (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
+    if (dialogView != 0)
+    {
+        dialogView->ScalarDeletingDestructor(1);
+    }
+
+    m_dialog = 0;
+    Sleep(1000);
+}
+
 // Reimplements 0x415880: RecoilStateConfirmQuit::~RecoilStateConfirmQuit
 // (D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp)
 RECOIL_NOINLINE RecoilStateConfirmQuit::~RecoilStateConfirmQuit()
