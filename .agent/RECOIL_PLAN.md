@@ -390,8 +390,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: CZRecoilFrame::BuildWindowTitle)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::BuildWindowTitle File: src/Battlesport/CZRecoilFrame.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: czrecoilframe_build_window_title)
+  - [✅] Binary-safe
 - 0x430740:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuStartSinglePlayer)
   - [✅] Source dependencies satisfied
