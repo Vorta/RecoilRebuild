@@ -987,7 +987,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: zimage_texdir_entry_build_mip_chain)
   - [❌] Binary-safe
 - 0x476700:
-  - [☑️] Reconstructed (Name: zScene::TestProjectedSphereVisible)
+  - [✅] Reconstructed (Name: zScene::TestProjectedSphereVisible)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zScene::TestProjectedSphereVisible File: src/Battlesport/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zscene_test_projected_sphere_visible)
