@@ -840,8 +840,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilApp::GetCurrentState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::GetCurrentState File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_get_current_state)
+  - [✅] Binary-safe
 - 0x443160:
   - [☑️] Reconstructed (Name: RecoilApp::QueueSwitchCurrentState)
   - [✅] Source dependencies satisfied
