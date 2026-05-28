@@ -3111,6 +3111,116 @@ extern "C" int zsnd_wave_data_load_parse_reset_smoke(void) {
     return loaded && reset ? 0 : 2;
 }
 
+extern "C" int zsnd_wave_data_parse_chunks_smoke(void) {
+    zSndWaveData wave = {};
+    if (wave.ParseLoadedWaveFile() != 0) {
+        return 1;
+    }
+
+    std::uint8_t badMagic[] = {
+        'N', 'O', 'P', 'E', 4, 0, 0, 0, 'W', 'A', 'V', 'E',
+    };
+    WAVEFORMATEX staleFmt = {};
+    std::uint8_t stalePcm = 0;
+    wave.fileData = badMagic;
+    wave.fmt = &staleFmt;
+    wave.pcmData = &stalePcm;
+    wave.pcmByteCount = 123;
+    if (wave.ParseLoadedWaveFile() != 1 || wave.fmt != nullptr || wave.pcmData != nullptr ||
+        wave.pcmByteCount != 0) {
+        return 2;
+    }
+
+    std::uint8_t riffBytes[] = {
+        'R', 'I', 'F', 'F', 86, 0, 0, 0, 'W', 'A', 'V', 'E',
+        'J', 'U', 'N', 'K', 1, 0, 0, 0, 0xaa, 0,
+        'c', 'u', 'e', ' ', 28, 0, 0, 0, 1, 0, 0, 0,
+        7, 0, 0, 0, 9, 0, 0, 0, 'd', 'a', 't', 'a',
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        'f', 'm', 't', ' ', 16, 0, 0, 0, 1, 0, 2, 0,
+        0x22, 0x56, 0, 0, 0x88, 0x58, 1, 0, 4, 0, 16, 0,
+        'd', 'a', 't', 'a', 4, 0, 0, 0, 1, 2, 3, 4,
+    };
+    wave = {};
+    wave.fileData = riffBytes;
+    if (wave.ParseLoadedWaveFile() != 1) {
+        return 3;
+    }
+    if (wave.cuePointCount != 1 || wave.cuePoints != reinterpret_cast<zSndCuePoint *>(riffBytes + 34) ||
+        wave.cuePoints->identifier != 7) {
+        return 4;
+    }
+    if (wave.fmt != reinterpret_cast<WAVEFORMATEX *>(riffBytes + 66) || wave.fmt->nChannels != 2) {
+        return 5;
+    }
+    if (wave.pcmData != riffBytes + 90 || wave.pcmByteCount != 4) {
+        return 6;
+    }
+
+    std::uint8_t shortFmt[] = {
+        'R', 'I', 'F', 'F', 36, 0, 0, 0, 'W', 'A', 'V', 'E',
+        'f', 'm', 't', ' ', 12, 0, 0, 0, 1, 0, 1, 0,
+        0x40, 0x1f, 0, 0, 0x80, 0x3e, 0, 0,
+        'd', 'a', 't', 'a', 4, 0, 0, 0, 1, 2, 3, 4,
+    };
+    wave = {};
+    wave.fileData = shortFmt;
+    if (wave.ParseLoadedWaveFile() != 1 || wave.fmt != nullptr || wave.pcmData != nullptr ||
+        wave.pcmByteCount != 0) {
+        return 7;
+    }
+
+    return 0;
+}
+
+extern "C" int zsnd_wave_data_load_parse_edges_smoke(void) {
+    zSndWaveData wave = {};
+    if (wave.LoadAndParseIfNeeded() != 0 || wave.parsedOk != 0 || wave.fileData != nullptr) {
+        return 1;
+    }
+
+    wave.nameOrPath = const_cast<char *>("recoil_missing_wave_data_smoke.wav");
+    if (wave.LoadAndParseIfNeeded() != 0 || wave.parsedOk != 0 || wave.fileData != nullptr) {
+        return 2;
+    }
+
+    wave = {};
+    wave.parsedOk = 1;
+    if (wave.LoadAndParseIfNeeded() != 1) {
+        return 3;
+    }
+
+    wave = {};
+    wave.ConstructorFromPath("missing_arch.wav", 0);
+    zIndexArchive archive = {};
+    if (wave.LoadAndParseFromIndexArchiveIfNeeded(&archive) != 0 || wave.fileSize != 0 ||
+        wave.fileData != nullptr || wave.parsedOk != 0) {
+        wave.Destructor();
+        return 4;
+    }
+    wave.Destructor();
+
+    wave = {};
+    wave.parsedOk = 1;
+    if (wave.LoadAndParseFromIndexArchiveIfNeeded(nullptr) != 1) {
+        return 5;
+    }
+
+    wave = {};
+    if (wave.ConstructorFromPath("constructor.wav", 0) != &wave || wave.nameOrPath == nullptr ||
+        std::strcmp(wave.nameOrPath, "constructor.wav") != 0 ||
+        wave.nameOrPath == static_cast<const char *>("constructor.wav") || wave.parsedOk != 0 ||
+        wave.fileSize != 0 || wave.fileData != nullptr || wave.fmt != nullptr ||
+        wave.pcmData != nullptr || wave.pcmByteCount != 0 || wave.cuePointCount != 0 ||
+        wave.cuePoints != nullptr) {
+        wave.Destructor();
+        return 6;
+    }
+    wave.Destructor();
+
+    return 0;
+}
+
 extern "C" int zsnd_wave_data_archive_load_smoke(void) {
     const char *fileName = "recoil_archive_wave_smoke.bin";
     const std::uint8_t wavBytes[] = {
@@ -3293,8 +3403,28 @@ extern "C" int zsnd_sample_init_from_wave_data_directsound_smoke(void) {
     std::free(sample.markerTimes);
     std::free(sample.markerValues);
     std::free(sample.markerAux);
+
+    g_testCreateSoundBufferCount = 0;
+    g_testLockCount = 0;
+    g_testUnlockCount = 0;
+    g_testGetStatusCount = 0;
+    g_testSetCurrentPositionCount = 0;
+    g_testStatusValue = 0;
+    std::memset(g_testLockedBytes, 0, sizeof(g_testLockedBytes));
+    zSndSample dispatchSample = {};
+    const std::int32_t dispatchResult = dispatchSample.InitFromWaveData(&wave);
+    const bool dispatchOk =
+        dispatchResult == 1 && g_testCreateSoundBufferCount == 1 && g_testLockCount == 1 &&
+        g_testUnlockCount == 1 && g_testGetStatusCount == 1 && g_testSetCurrentPositionCount == 1 &&
+        std::memcmp(g_testLockedBytes, pcmData, sizeof(pcmData)) == 0 &&
+        dispatchSample.primaryVoice.handleKind == ZSND_PLAYHANDLE_BACKEND &&
+        dispatchSample.markerCount == 2;
+    std::free(dispatchSample.markerTimes);
+    std::free(dispatchSample.markerValues);
+    std::free(dispatchSample.markerAux);
+
     g_zSnd_BackendDevice = nullptr;
-    return ok ? 0 : 1;
+    return ok && dispatchOk ? 0 : 1;
 }
 
 extern "C" int zsnd_sample_init_from_wave_data_a3d_smoke(void) {
@@ -3374,6 +3504,21 @@ extern "C" int zsnd_sample_init_from_wave_data_a3d_smoke(void) {
     ResetStopBackendCounters();
     std::memset(g_testLockedBytes, 0, sizeof(g_testLockedBytes));
     sample = {};
+    sample.replayFields.flags = 0x04;
+    sample.rangeMin = 3.0f;
+    sample.rangeMax = 9.0f;
+    sample.a3dDistanceScale = 2.0f;
+    g_testA3dCreateBufferResult = reinterpret_cast<zSndBuffer *>(&a3dSource);
+    const std::int32_t dispatchResult = sample.InitFromWaveData(&wave);
+    const bool dispatchOk = dispatchResult == 1 && sample.markerCount == 2 &&
+                            sample.primaryVoice.backendBuffer != nullptr;
+    std::free(sample.markerTimes);
+    std::free(sample.markerValues);
+    std::free(sample.markerAux);
+
+    ResetStopBackendCounters();
+    std::memset(g_testLockedBytes, 0, sizeof(g_testLockedBytes));
+    sample = {};
     sample.replayFields.flags = 0;
     g_testA3dCreateBufferResult = reinterpret_cast<zSndBuffer *>(&a3dSource);
     const std::int32_t spatialResult = sample.InitFromWaveData_A3D(&wave);
@@ -3384,9 +3529,16 @@ extern "C" int zsnd_sample_init_from_wave_data_a3d_smoke(void) {
     std::free(sample.markerTimes);
     std::free(sample.markerValues);
     std::free(sample.markerAux);
+
+    g_zSnd_ActiveBackend = 2;
+    sample = {};
+    const bool unsupportedOk = sample.InitFromWaveData(&wave) == 0;
     g_zSnd_BackendDevice = nullptr;
     g_testA3dCreateBufferResult = nullptr;
-    return ok && spatialOk ? 0 : 1;
+    if (!ok) {
+        return 1;
+    }
+    return ok && dispatchOk && spatialOk && unsupportedOk ? 0 : 1;
 }
 
 namespace {

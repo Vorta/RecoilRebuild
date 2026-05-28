@@ -12897,8 +12897,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zError::ReportOldNoOp)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zError::ReportOld File: src/GameZRecoil/zError/zerr_old.c)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zerror_report_old_noop)
+  - [✅] Binary-safe
 - 0x462310:
   - [✅] Reconstructed (Name: RecoilError::InitOutputContext)
   - [✅] Source dependencies satisfied
@@ -17931,7 +17931,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zSndSample::InitFromWaveData_DirectSound)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::InitFromWaveData_DirectSound File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_init_from_wave_data_directsound)
   - [❌] Binary-safe
 - 0x4a34e0:
   - [✅] Reconstructed (Name: zSndSample::LockBackendBuffers)
@@ -18222,13 +18222,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndSample::InitFromWaveData)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::InitFromWaveData File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_init_from_wave_data_dispatch)
   - [❌] Binary-safe
 - 0x4a2ec0:
   - [☑️] Reconstructed (Name: zSndSample::InitFromWaveData_A3D)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::InitFromWaveData_A3D File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_init_from_wave_data_a3d)
   - [❌] Binary-safe
 - 0x4a3620:
   - [☑️] Reconstructed (Name: zSndSample::GetPlayCursorBytes)
@@ -18324,8 +18324,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSnd::ReportA3DError)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::ReportA3DError File: src/GameZRecoil/zSound/zsnd_init.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsnd_report_a3d_error)
+  - [✅] Binary-safe
 - 0x4a4530:
   - [☑️] Reconstructed (Name: zSndGroup::QueuePendingLoadsFromConfigNode)
   - [✅] Source dependencies satisfied
@@ -18438,37 +18438,37 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndWaveData::ConstructorFromPath)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndWaveData::ConstructorFromPath File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_wave_data_constructor_from_path)
   - [❌] Binary-safe
 - 0x4a5440:
   - [✅] Reconstructed (Name: zSndWaveData::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndWaveData::Destructor File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_wave_data_destructor)
   - [❌] Binary-safe
 - 0x4a5460:
   - [☑️] Reconstructed (Name: zSndWaveData::ParseLoadedWaveFile)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndWaveData::ParseLoadedWaveFile File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_wave_data_parse_loaded_wave_file)
   - [❌] Binary-safe
 - 0x4a5540:
   - [✅] Reconstructed (Name: zSndWaveData::LoadAndParseIfNeeded)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndWaveData::LoadAndParseIfNeeded File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_wave_data_load_and_parse_if_needed)
   - [❌] Binary-safe
 - 0x4a55c0:
   - [✅] Reconstructed (Name: zSndWaveData::Reset)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndWaveData::Reset File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_wave_data_reset)
   - [❌] Binary-safe
 - 0x4a5600:
   - [☑️] Reconstructed (Name: zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_wave_data_load_and_parse_from_index_archive_if_needed)
   - [❌] Binary-safe
 - 0x4a5670:
   - [☑️] Reconstructed (Name: Time::Reset)
@@ -18597,8 +18597,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSnd::ReportDirectSoundError)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::ReportDirectSoundError File: src/GameZRecoil/zSound/zsnd_init.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zsnd_report_direct_sound_error)
+  - [✅] Binary-safe
 
 ## M40. zUtil archive/save helpers
 
