@@ -1164,32 +1164,32 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilApp::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::ScalarDeletingDestructor File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x42e0d0:
   - [✅] Reconstructed (Name: RecoilApp_IntroFmvState::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_IntroFmvState::ScalarDeletingDestructor File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_intro_fmv_state_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x42e0f0:
   - [✅] Reconstructed (Name: RecoilApp_IState::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_IState::ScalarDeletingDestructor File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_istate_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x42ebd0:
   - [✅] Reconstructed (Name: RecoilApp_AttractFmvState::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_AttractFmvState::ScalarDeletingDestructor File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_attract_fmv_state_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x42ed90:
   - [✅] Reconstructed (Name: RecoilApp_MissionFmvState::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp_MissionFmvState::ScalarDeletingDestructor File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_mission_fmv_state_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x435a40:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::StaticInit)
   - [❌] Source dependencies satisfied

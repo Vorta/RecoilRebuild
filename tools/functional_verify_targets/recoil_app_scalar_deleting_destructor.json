@@ -1,0 +1,18 @@
+{
+  "name": "recoil_app_scalar_deleting_destructor",
+  "description": "RecoilApp::ScalarDeletingDestructor runs the app destructor, conditionally frees this when bit 0 of flags is set, and returns this.",
+  "address": "0x42e0b0",
+  "source_from": "src/Battlesport/RecoilApp.cpp",
+  "smoke_tests": [
+    "recoil_app_scalar_deleting_destructor_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py recoil_app_scalar_deleting_destructor",
+  "known_limits": [
+    "Binary-safe verification is accepted by the recoil_app_scalar_deleting_destructor VC target."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly and decompilation for 0x42e0b0 validate the app destructor call, flags bit-0 delete branch, returned self pointer, and thiscall callee cleanup for the flags argument.",
+    "The native smoke verifies the non-deleting RecoilApp path returns this and leaves owned state vtables in the base-state teardown form.",
+    "The native smoke verifies the deleting RecoilApp heap path returns the original this pointer."
+  ]
+}

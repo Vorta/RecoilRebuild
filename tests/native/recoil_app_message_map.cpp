@@ -4920,21 +4920,48 @@ extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void) {
 }
 
 extern "C" int recoil_app_scalar_deleting_destructor_smoke(void) {
+    RecoilApp app{};
+    app.Constructor();
+    RecoilApp *returnedApp = app.ScalarDeletingDestructor(0);
+    if (returnedApp != &app || app.m_attractFmvState_160.base.vftable != kRecoilStateBase_VtblAddress ||
+        app.m_introFmvState_1a0.base.vftable != kRecoilStateBase_VtblAddress ||
+        app.m_mainMenuPrepState_1c8.base.vftable != kRecoilStateBase_VtblAddress ||
+        app.m_leaveNetworkState_1d0.base.vftable != kRecoilStateBase_VtblAddress ||
+        app.m_missionFmvState_1d8.base.vftable != kRecoilStateBase_VtblAddress ||
+        app.m_playState_208.base.vftable != kRecoilStateBase_VtblAddress ||
+        app.m_mpExitDialogState_220.base.vftable != kRecoilStateBase_VtblAddress) {
+        return 1;
+    }
+
+    auto *deletingApp = new RecoilApp{};
+    deletingApp->Constructor();
+    RecoilApp *deletingReturnedApp = deletingApp->ScalarDeletingDestructor(1);
+    if (deletingReturnedApp != deletingApp) {
+        return 2;
+    }
+
     auto *state = new RecoilApp_IState{0x11111111};
     RecoilApp_IState *returnedState = state->ScalarDeletingDestructor(1);
     if (returnedState != state) {
-        return 1;
+        return 3;
     }
 
     auto *attract = new RecoilApp_AttractFmvState{};
     attract->base.vftable = 0x22222222;
     auto *returnedAttract = attract->ScalarDeletingDestructor(1);
     if (returnedAttract != attract) {
-        return 2;
+        return 4;
     }
 
     auto *intro = new RecoilApp_IntroFmvState{};
     intro->base.vftable = 0x33333333;
     auto *returnedIntro = intro->ScalarDeletingDestructor(1);
-    return returnedIntro == intro ? 0 : 3;
+    if (returnedIntro != intro) {
+        return 5;
+    }
+
+    auto *mission = new RecoilApp_MissionFmvState{};
+    mission->base.vftable = 0x44444444;
+    RecoilApp_MissionFmvState *returnedMission = mission->ScalarDeletingDestructor(1);
+    return returnedMission == mission ? 0 : 6;
 }
