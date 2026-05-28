@@ -4916,6 +4916,15 @@ extern "C" int recoil_state_credits_destructor_smoke(void) {
 }
 
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
+    RecoilStateConfirmQuit constructed{};
+    constructed.vftable = 0x11111111;
+    constructed.m_dialog = 0x22222222;
+    RecoilStateConfirmQuit *const constructedReturned = constructed.Constructor();
+    if (constructedReturned != &constructed || constructed.vftable == 0 ||
+        constructed.m_dialog != 0) {
+        return 7;
+    }
+
     RecoilStateConfirmQuit state{};
     TestConfirmQuitDialog dialog{};
 

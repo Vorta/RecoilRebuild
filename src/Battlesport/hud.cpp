@@ -215,6 +215,15 @@ void RECOIL_CDECL RecoilStateConfirmQuit::QueueEnter()
     g_RecoilApp.QueuePushState(&g_RecoilState_ConfirmQuit, 0);
 }
 
+// Reimplements 0x415850: RecoilStateConfirmQuit::Constructor
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RecoilStateConfirmQuit *RECOIL_THISCALL RecoilStateConfirmQuit::Constructor()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateConfirmQuit_Vtbl;
+    m_dialog = 0;
+    return this;
+}
+
 // Reimplements 0x415880: RecoilStateConfirmQuit::~RecoilStateConfirmQuit
 // (D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp)
 RECOIL_NOINLINE RecoilStateConfirmQuit::~RecoilStateConfirmQuit()
