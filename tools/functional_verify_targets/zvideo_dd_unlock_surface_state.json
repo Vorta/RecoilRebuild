@@ -1,0 +1,19 @@
+{
+  "name": "zvideo_dd_unlock_surface_state",
+  "description": "zVideo_dd::UnlockSurfaceState skips the windowed display-mode surface, skips already-unlocked states, clears locked states, and tail-dispatches to zVideo_dd::UnlockDirectDrawSurface.",
+  "address": "0x4a8030",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_surface_state_lock_skip_smoke",
+    "zvideo_dd_unlock_surface_state_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a8030",
+  "known_limits": [
+    "VC6 cl 12.00.8168 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?UnlockSurfaceState@zVideo_dd@@YIHPAUzVideo_SurfaceStatePartial@@@Z still fails: the compiler folds the display-mode equality branch into the locked check and emits a different control-flow layout. The reviewed run reported 27 unmasked mismatches, 12 relocation-masked bytes, and 6 trailing VC6 NOP bytes trimmed."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a8030 returns zero when fullscreen is disabled and the argument is g_zVideo_DisplayModeSurfaceState, returns zero when surfaceState->locked is zero, clears surfaceState->locked, then tailcalls zVideo_dd::UnlockDirectDrawSurface(surfaceState->surf).",
+    "Binary Ninja decompilation for 0x4a8030 has no warnings and matches the implemented skip, clear, and tail-dispatch behavior.",
+    "The native skip smoke verifies the windowed display-mode skip and already-unlocked skip paths. The DirectDraw surface-state smoke verifies the locked path clears locked, calls the fake DirectDraw Unlock slot once with a null argument through zVideo_dd::UnlockDirectDrawSurface, and does not call Restore on DD_OK."
+  ]
+}

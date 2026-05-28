@@ -1249,7 +1249,12 @@ extern "C" int zvid_option_accessors_smoke(void);
 extern "C" int zvid_set_video_mode_index_smoke(void);
 extern "C" int zvideo_buff_clip_coord_to_range_smoke(void);
 extern "C" int zvideo_buff_copy_surface_rect_to_image_smoke(void);
+extern "C" int zvideo_buff_blt_source_to_primary_clipped_smoke(void);
 extern "C" int zvideo_surface_state_lock_skip_smoke(void);
+extern "C" int zvideo_dd_unlock_directdraw_surface_smoke(void);
+extern "C" int zvideo_dd_lock_directdraw_surface_smoke(void);
+extern "C" int zvideo_dd_lock_surface_state_smoke(void);
+extern "C" int zvideo_dd_unlock_surface_state_smoke(void);
 extern "C" int zvideo_capture_surface_to_image_smoke(void);
 extern "C" int zvideo_image_lazy_create_backing_surface_guards_smoke(void);
 extern "C" int zvideo_blt_sw_to_primary_rect_lazy_failure_smoke(void);
@@ -3264,7 +3269,14 @@ int main(int argc, char **argv) {
         {"zvideo_buff_clip_coord_to_range_smoke", zvideo_buff_clip_coord_to_range_smoke},
         {"zvideo_buff_copy_surface_rect_to_image_smoke",
          zvideo_buff_copy_surface_rect_to_image_smoke},
+        {"zvideo_buff_blt_source_to_primary_clipped_smoke",
+         zvideo_buff_blt_source_to_primary_clipped_smoke},
         {"zvideo_surface_state_lock_skip_smoke", zvideo_surface_state_lock_skip_smoke},
+        {"zvideo_dd_unlock_directdraw_surface_smoke",
+         zvideo_dd_unlock_directdraw_surface_smoke},
+        {"zvideo_dd_lock_directdraw_surface_smoke", zvideo_dd_lock_directdraw_surface_smoke},
+        {"zvideo_dd_lock_surface_state_smoke", zvideo_dd_lock_surface_state_smoke},
+        {"zvideo_dd_unlock_surface_state_smoke", zvideo_dd_unlock_surface_state_smoke},
         {"zvideo_capture_surface_to_image_smoke", zvideo_capture_surface_to_image_smoke},
         {"zvideo_image_lazy_create_backing_surface_guards_smoke",
          zvideo_image_lazy_create_backing_surface_guards_smoke},

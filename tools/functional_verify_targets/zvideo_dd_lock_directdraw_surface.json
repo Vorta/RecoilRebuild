@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_dd_lock_directdraw_surface",
+  "description": "zVideo_dd::LockDirectDrawSurface zeroes and sizes a DDSURFACEDESC, locks a DirectDraw surface with DDLOCK_WAIT, restores and retries when the surface is lost, and reports unrecovered DirectDraw errors.",
+  "address": "0x4a8060",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_dd_lock_directdraw_surface_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a8060",
+  "known_limits": [
+    "The current VC6 cl 12.00.8168 x86 /O2 /Ob0 /Zp4 /FAcs target zvideo_primary_blit_directdraw did not produce the expected COFF symbol ?LockDirectDrawSurface@zVideo_dd@@YIHPAUIDirectDrawSurface3@@PAUDDSURFACEDESC@@@Z for comparison, so Binary-safe remains false pending manifest/source-shape work."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly for 0x4a8060 clears 0x6c bytes of the output DDSURFACEDESC, writes dwSize = 0x6c, calls IDirectDrawSurface3::Lock through vtable offset 0x64 with null rect, the descriptor, DDLOCK_WAIT, and null event, returns zero on DD_OK, calls Restore through vtable offset 0x6c on DDERR_SURFACELOST, retries Lock when Restore succeeds, and reports other HRESULT failures with zVideo_dd::ReportError using zvid_dd.c line 0x1b9 before returning 0x5a56ffff.",
+    "Binary Ninja decompilation for 0x4a8060 has no warnings and matches the implemented descriptor setup, DirectDraw Lock call, lost-surface restore/retry loop, and error return.",
+    "The native smoke installs a fake IDirectDrawSurface3 vtable and verifies the direct DD_OK lock path plus the DDERR_SURFACELOST, Restore DD_OK, retry Lock DD_OK path, including null rect/event arguments, DDLOCK_WAIT, descriptor dwSize initialization, returned surface dimensions, pitch, and pixels."
+  ]
+}

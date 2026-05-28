@@ -1,0 +1,18 @@
+{
+  "name": "zvideo_buff_blt_source_to_primary_clipped",
+  "description": "zVideo_buff::BltSourceToPrimaryClipped clips a source image rectangle to the primary surface, unlocks a locked primary surface around DirectDraw Blt, restores the lock state afterward, and reports DirectDraw Blt failures.",
+  "address": "0x4a69e0",
+  "source_from": "src/GameZRecoil/zVideo/zVideo.cpp",
+  "smoke_tests": [
+    "zvideo_buff_blt_source_to_primary_clipped_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x4a69e0",
+  "known_limits": [
+    "VC6 cl 12.00.8168 x86 /O2 /Ob0 /Zp4 /FAcs COFF byte comparison for ?BltSourceToPrimaryClipped@zVideo_buff@@YIXPAUzVidImagePartial@@HHHPAUzVidRect32@@@Z still fails. The reviewed run reported 260 unmasked mismatches, 64 relocation-masked bytes, and no trailing NOP trim; normalized assembly shows broad register allocation, stack layout, and control-flow differences while preserving the recovered behavior."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4a69e0 initializes a source rectangle from the optional input rect or full image size, computes destination bounds from dstX/dstY, clips left/right/top/bottom against g_zVideo_PrimarySurfaceState dimensions with zVideo_buff::ClipCoordToRange, adjusts the source rectangle for clipped edges, skips when fully clipped or when the primary DirectDraw surface is null, unlocks the primary state if it was locked, calls IDirectDrawSurface3::Blt through vtable offset 0x14 with DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE and optional DDBLT_KEYSRC, relocks the primary state if needed, and reports a nonzero HRESULT with zvid_buff.c line 0x150.",
+    "Binary Ninja decompilation for 0x4a69e0 has no warnings and its direct callees are functionally accepted in the current plan.",
+    "The native smoke installs a fake primary IDirectDrawSurface3 vtable, starts from a locked primary state, calls the function with a left-clipped source rect and source color-key flag, and verifies the unlock/Blt/lock call counts, DirectDraw source surface, null blit FX argument, blit flags, clipped destination rect, and adjusted source rect."
+  ]
+}
