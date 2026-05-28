@@ -147,6 +147,20 @@ struct TestConfirmQuitDialog {
     unsigned int lastScalarDeletingFlags = 0;
 };
 
+struct TestSaveLoadTransitionDialog {
+    virtual void RECOIL_THISCALL Update(float) {}
+    virtual void RECOIL_THISCALL SetEnabled(int) {}
+    virtual TestSaveLoadTransitionDialog *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags) {
+        ++scalarDeletingCount;
+        lastScalarDeletingFlags = flags;
+        return this;
+    }
+
+    int scalarDeletingCount = 0;
+    unsigned int lastScalarDeletingFlags = 0;
+};
+
 struct ImportFunctionPatch {
     ULONG_PTR *slot;
     ULONG_PTR original;
@@ -4315,6 +4329,89 @@ extern "C" int recoil_state_save_load_transition_on_update_should_quit_smoke(voi
     g_FrameDeltaTimeSec = oldFrameDelta;
 
     return emptyOk && dialogOk ? 0 : 6;
+}
+
+extern "C" int recoil_state_save_load_transition_lifecycle_smoke(void) {
+    const RecoilStateSaveLoadTransition oldTransition = g_RecoilStateSaveLoadTransition;
+
+    RecoilStateSaveLoadTransition constructed{};
+    constructed.vftable = 0x11111111;
+    constructed.m_dialog = 0x22222222;
+    constructed.m_dialogKind = RECOIL_SAVELOAD_DIALOG_LOAD;
+    RecoilStateSaveLoadTransition *const constructedReturned = constructed.Constructor();
+    if (constructedReturned != &constructed || constructed.vftable == 0 ||
+        constructed.m_dialog != 0 ||
+        constructed.m_dialogKind != RECOIL_SAVELOAD_DIALOG_SAVE) {
+        return 1;
+    }
+
+    RecoilStateSaveLoadTransition state{};
+    TestSaveLoadTransitionDialog dialog{};
+    state.vftable = 0x33333333;
+    state.m_dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.Destructor();
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0 ||
+        dialog.scalarDeletingCount != 1 || dialog.lastScalarDeletingFlags != 1) {
+        return 2;
+    }
+
+    state.vftable = 0x44444444;
+    state.m_dialog = 0;
+    state.Destructor();
+    if (state.vftable != kRecoilStateBase_VtblAddress) {
+        return 3;
+    }
+
+    RecoilStateSaveLoadTransition scalarState{};
+    RecoilStateSaveLoadTransition *const scalarReturned =
+        scalarState.ScalarDeletingDestructor(0);
+    if (scalarReturned != &scalarState ||
+        scalarState.vftable != kRecoilStateBase_VtblAddress) {
+        return 4;
+    }
+
+    RecoilStateSaveLoadTransition *const deletingState =
+        new RecoilStateSaveLoadTransition{};
+    RecoilStateSaveLoadTransition *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+    if (deletingReturned != deletingState) {
+        return 5;
+    }
+
+    g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
+    RecoilStateSaveLoadTransition *const staticInitReturned =
+        RecoilStateSaveLoadTransition::StaticInit();
+    if (staticInitReturned != &g_RecoilStateSaveLoadTransition ||
+        g_RecoilStateSaveLoadTransition.vftable == 0 ||
+        g_RecoilStateSaveLoadTransition.m_dialog != 0 ||
+        g_RecoilStateSaveLoadTransition.m_dialogKind != RECOIL_SAVELOAD_DIALOG_SAVE) {
+        g_RecoilStateSaveLoadTransition = oldTransition;
+        return 6;
+    }
+
+    TestSaveLoadTransitionDialog globalDialog{};
+    g_RecoilStateSaveLoadTransition.m_dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&globalDialog));
+    RecoilStateSaveLoadTransition::AtExitDestructor();
+    if (g_RecoilStateSaveLoadTransition.vftable != kRecoilStateBase_VtblAddress ||
+        g_RecoilStateSaveLoadTransition.m_dialog != 0 ||
+        globalDialog.scalarDeletingCount != 1 ||
+        globalDialog.lastScalarDeletingFlags != 1) {
+        g_RecoilStateSaveLoadTransition = oldTransition;
+        return 7;
+    }
+
+    g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
+    RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit();
+    const bool staticRegisterOk =
+        g_RecoilStateSaveLoadTransition.vftable != 0 &&
+        g_RecoilStateSaveLoadTransition.m_dialog == 0 &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE;
+
+    g_RecoilStateSaveLoadTransition = oldTransition;
+    g_RecoilStateSaveLoadTransition.m_dialog = 0;
+    return staticRegisterOk ? 0 : 8;
 }
 
 extern "C" int hud_ui_main_menu_dialog_save_load_checks_smoke(void) {

@@ -1192,22 +1192,22 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x435a40:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::StaticInit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::StaticInit File: src/Battlesport/RecoilApp.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_lifecycle)
+  - [✅] Binary-safe
 - 0x435a50:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::RegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::RegisterAtExit File: src/Battlesport/RecoilApp.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_lifecycle)
+  - [✅] Binary-safe
 - 0x435a60:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::AtExitDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::AtExitDestructor File: src/Battlesport/RecoilApp.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_lifecycle)
+  - [✅] Binary-safe
 - 0x435a70:
   - [☑️] Reconstructed (Name: HudUiSaveLoadDialog::ProcessDialogResult)
   - [✅] Source dependencies satisfied
@@ -1216,16 +1216,16 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x435ca0:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::ScalarDeletingDestructor File: src/Battlesport/RecoilApp.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_lifecycle)
+  - [✅] Binary-safe
 - 0x435cc0:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::Destructor File: src/Battlesport/RecoilApp.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_lifecycle)
+  - [✅] Binary-safe
 - 0x4c9d52:
   - [☑️] Reconstructed (Name: RecoilApp_Dtor_EhCleanup_LeaveNetworkState)
   - [❌] Source dependencies satisfied
@@ -3454,16 +3454,16 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x435a30:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit File: src/Battlesport/RecoilApp.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_lifecycle)
+  - [✅] Binary-safe
 - 0x435c80:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::Constructor File: src/Battlesport/RecoilApp.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_lifecycle)
+  - [✅] Binary-safe
 
 ## M04. HUD gameplay overlays, messages, and timer panels
 

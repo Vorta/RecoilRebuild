@@ -274,6 +274,14 @@ struct RecoilStateSaveLoadTransition : RecoilApp_IState {
     RecoilSaveLoadTransitionMode m_transitionMode;
     RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshot*
 
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    RECOIL_NOINLINE static RecoilStateSaveLoadTransition *RECOIL_CDECL StaticInit();
+    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
+    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
+    RecoilStateSaveLoadTransition *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE RecoilStateSaveLoadTransition *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     RECOIL_NOINLINE int RECOIL_THISCALL OnUpdateShouldQuit();
     static void RECOIL_FASTCALL

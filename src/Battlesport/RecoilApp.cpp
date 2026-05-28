@@ -115,6 +115,19 @@ struct HudUiSaveLoadDialogUpdateDispatch {
     virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
 };
 
+struct RecoilStateSaveLoadDialogVirtual {
+    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
+    virtual RecoilStateSaveLoadDialogVirtual *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags) = 0;
+};
+
+struct RecoilStateSaveLoadTransition_Vtbl {
+    RecoilFn32 slots[10];
+};
+RECOIL_STATIC_ASSERT(sizeof(RecoilStateSaveLoadTransition_Vtbl) ==
+                     sizeof(RecoilApp_IState_Vtbl));
+
 enum zVideoRendererBackend {
     ZVID_RENDERER_BACKEND_SOFTWARE = 0,
 };
@@ -165,6 +178,17 @@ void RunGrandPrizeBlurAction() {
 
     blurAction.vftable = &g_zFMV_ActionBase_Vtable;
 }
+
+RecoilStateSaveLoadTransition_Vtbl g_RecoilStateSaveLoadTransition_Vtbl = {0};
+
+struct RecoilStateSaveLoadTransitionBaseVtableGuard {
+    RecoilStateSaveLoadTransition *self;
+
+    ~RecoilStateSaveLoadTransitionBaseVtableGuard()
+    {
+        self->vftable = kRecoilStateBase_VtblAddress;
+    }
+};
 
 void AppendSaveLoadEntry(HudUiSaveLoadEntries *entries, const HudUiSaveLoadEntry &entry)
 {
@@ -291,6 +315,77 @@ extern "C" {
 const char *g_RecoilApp_WndClassNamePtr = "RecoilClass";
 int g_RecoilApp_WindowClassRegistered = 0;
 int g_RecoilApp_AttractFmvReloadMode = 1;
+}
+
+// Reimplements 0x435a30: RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit
+// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL
+RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit()
+{
+    StaticInit();
+    RegisterAtExit();
+}
+
+// Reimplements 0x435a40: RecoilStateSaveLoadTransition::StaticInit
+// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+RECOIL_NOINLINE RecoilStateSaveLoadTransition *RECOIL_CDECL
+RecoilStateSaveLoadTransition::StaticInit()
+{
+    return g_RecoilStateSaveLoadTransition.Constructor();
+}
+
+// Reimplements 0x435a50: RecoilStateSaveLoadTransition::RegisterAtExit
+// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateSaveLoadTransition::RegisterAtExit()
+{
+    atexit(AtExitDestructor);
+}
+
+// Reimplements 0x435a60: RecoilStateSaveLoadTransition::AtExitDestructor
+// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateSaveLoadTransition::AtExitDestructor()
+{
+    g_RecoilStateSaveLoadTransition.Destructor();
+}
+
+// Reimplements 0x435c80: RecoilStateSaveLoadTransition::Constructor
+// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+RecoilStateSaveLoadTransition *RECOIL_THISCALL
+RecoilStateSaveLoadTransition::Constructor()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateSaveLoadTransition_Vtbl;
+    m_dialogKind = RECOIL_SAVELOAD_DIALOG_SAVE;
+    m_dialog = 0;
+    return this;
+}
+
+// Reimplements 0x435ca0: RecoilStateSaveLoadTransition::ScalarDeletingDestructor
+// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+RECOIL_NOINLINE RecoilStateSaveLoadTransition *RECOIL_THISCALL
+RecoilStateSaveLoadTransition::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x435cc0: RecoilStateSaveLoadTransition::Destructor
+// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateSaveLoadTransition::Destructor()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateSaveLoadTransition_Vtbl;
+    RecoilStateSaveLoadTransitionBaseVtableGuard baseVtableOnExit = {this};
+
+    RecoilStateSaveLoadDialogVirtual *dialog =
+        (RecoilStateSaveLoadDialogVirtual *)m_dialog;
+    if (dialog != 0) {
+        dialog->ScalarDeletingDestructor(1);
+        m_dialog = 0;
+    }
 }
 
 // Reimplements 0x434660: HudUiSaveLoadEntry::IsNewerThan
