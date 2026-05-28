@@ -17,6 +17,8 @@ int g_Hud_LowMeterLoopActive = 0;
 float g_Hud_LowMeterBeepInterval = 0.0f;
 float g_Hud_LowMeterNextBeepTime = 0.0f;
 
+extern "C" int g_RecoilState_MainMenuSkipExitDelay;
+
 namespace {
 template <typename Method> unsigned int HudMethodAddress(Method method)
 {
@@ -213,6 +215,18 @@ void RECOIL_CDECL HudUiOptionsPanelOverlayOwner::QueueEnter()
 void RECOIL_CDECL RecoilStateConfirmQuit::QueueEnter()
 {
     g_RecoilApp.QueuePushState(&g_RecoilState_ConfirmQuit, 0);
+}
+
+// Reimplements 0x415740: HudUiConfirmQuitOkButton::OnActivate
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+void RECOIL_THISCALL HudUiConfirmQuitOkButton::OnActivate()
+{
+    g_RecoilState_MainMenuSkipExitDelay = 1;
+    g_RecoilApp.QueueExitCurrentState(1);
+    g_RecoilApp.QueueExitCurrentState(0);
+    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
+    g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_leaveNetworkState_1d0.base, 0);
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x415850: RecoilStateConfirmQuit::Constructor

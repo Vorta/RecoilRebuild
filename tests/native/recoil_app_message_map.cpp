@@ -103,6 +103,8 @@ int g_openFileNameCalls;
 bool g_openFileNameStructOk;
 char g_openFileNameSelectedPath[MAX_PATH];
 
+extern "C" int g_RecoilState_MainMenuSkipExitDelay;
+
 struct TestCreditsPanel {
     virtual void RECOIL_THISCALL Update(float) {}
     virtual void RECOIL_THISCALL SetEnabled(int enabled) {
@@ -2079,6 +2081,71 @@ extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {
         CleanupSingleQueuedItem(queue);
     }
     g_HudUiOptionsPanelOverlayOwner = oldOptionsState;
+    g_RecoilApp = oldApp;
+    return result;
+}
+
+extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    const int oldSkipExitDelay = g_RecoilState_MainMenuSkipExitDelay;
+
+    TestAppState currentState{};
+    currentState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    g_RecoilApp = RecoilApp{};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&currentState));
+    g_RecoilApp.m_leaveNetworkState_1d0.base.vftable = currentState.vftable;
+    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_ON_EXIT;
+    g_RecoilState_MainMenuSkipExitDelay = 0;
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiConfirmQuitOkButton button{};
+    button.OnActivate();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    int result = 0;
+    if (g_RecoilState_MainMenuSkipExitDelay != 1 ||
+        g_RecoilApp.m_missionShutdownMode != RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY ||
+        g_stateExitCount != 3 || g_stateEnterCount != 1) {
+        result = 1;
+    } else if (queue.m_itemCount != 3 || queue.m_chunkPtrCapacity != 2) {
+        result = 2;
+    } else {
+        const RecoilPtr32 firstSlotValue = queue.m_writeBlock.m_cursor - 12;
+        auto *const firstSlot =
+            reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(firstSlotValue));
+        auto *const firstItem =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(
+                static_cast<std::uintptr_t>(firstSlot[0]));
+        auto *const secondItem =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(
+                static_cast<std::uintptr_t>(firstSlot[1]));
+        auto *const thirdItem =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(
+                static_cast<std::uintptr_t>(firstSlot[2]));
+
+        const RecoilPtr32 leaveNetworkState =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_RecoilApp.m_leaveNetworkState_1d0.base));
+        if (firstItem->m_type != 0 ||
+            firstItem->m_kind != RecoilApp_StateQueueKind_ExitCurrent ||
+            firstItem->m_stateObj != 0 || firstItem->m_param != 1 ||
+            secondItem->m_type != 0 ||
+            secondItem->m_kind != RecoilApp_StateQueueKind_ExitCurrent ||
+            secondItem->m_stateObj != 0 || secondItem->m_param != 0 ||
+            thirdItem->m_type != 0 ||
+            thirdItem->m_kind != RecoilApp_StateQueueKind_SwitchCurrent ||
+            thirdItem->m_stateObj != leaveNetworkState || thirdItem->m_param != 0) {
+            result = 3;
+        }
+    }
+
+    CleanupQueuedItems(queue);
+    g_RecoilState_MainMenuSkipExitDelay = oldSkipExitDelay;
     g_RecoilApp = oldApp;
     return result;
 }

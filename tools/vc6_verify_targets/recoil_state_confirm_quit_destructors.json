@@ -18,6 +18,11 @@
   ],
   "functions": [
     {
+      "address": "0x415740",
+      "symbol": "?OnActivate@HudUiConfirmQuitOkButton@@QAEXXZ",
+      "name": "HudUiConfirmQuitOkButton::OnActivate"
+    },
+    {
       "address": "0x415850",
       "symbol": "?Constructor@RecoilStateConfirmQuit@@QAEPAU1@XZ",
       "name": "RecoilStateConfirmQuit::Constructor"

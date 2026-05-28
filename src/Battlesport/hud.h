@@ -121,6 +121,10 @@ struct HudUiLoadGamePrimaryActionButton : HudUiZrdWidget {
     void RECOIL_THISCALL OnActivate();
 };
 
+struct HudUiConfirmQuitOkButton : HudUiZrdWidget {
+    void RECOIL_THISCALL OnActivate();
+};
+
 struct HudUiSaveLoadGameNameInput : HudUiNumericTextInput {
     void RECOIL_THISCALL OnActivate();
     int RECOIL_THISCALL OnRawKeyboardEvent(int key);

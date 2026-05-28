@@ -2506,10 +2506,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x415740:
   - [✅] Reconstructed (Name: HudUiConfirmQuitOkButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiConfirmQuitOkButton::OnActivate File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_confirm_quit_ok_button_on_activate)
+  - [✅] Binary-safe
 - 0x415810:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit)
   - [❌] Source dependencies satisfied
