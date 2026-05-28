@@ -99,6 +99,12 @@ int g_confirmQuitBlitCalls;
 int g_confirmQuitUnlockCalls;
 int g_confirmQuitSleepCalls;
 DWORD g_confirmQuitSleepMilliseconds;
+int g_confirmQuitBackgroundLoadCalls;
+bool g_confirmQuitBackgroundLoadArgsOk;
+int g_confirmQuitBackgroundBindCalls;
+bool g_confirmQuitBackgroundBindArgsOk;
+int g_confirmQuitBackgroundFreeCalls;
+bool g_confirmQuitBackgroundFreeArgsOk;
 int g_openFileNameCalls;
 bool g_openFileNameStructOk;
 char g_openFileNameSelectedPath[MAX_PATH];
@@ -840,6 +846,16 @@ struct FakeSaveGameInitLoadThunk {
                                                int capturePrimary);
 };
 
+struct FakeConfirmQuitBackgroundThunk {
+    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *zrdPath,
+                                               const char *sectionName,
+                                               int capturePrimary);
+    int RECOIL_THISCALL BindWidgetByName(zReader::Node *loadedSectionNode,
+                                         HudUiWidget *widget,
+                                         const char *name);
+    void RECOIL_THISCALL FreeLoadedTreeRoots(int loadedRoot);
+};
+
 zReader::Node *RECOIL_THISCALL FakeSaveGameInitLoadThunk::LoadFromZrd(
     const char *zrdPath, const char *sectionName, int capturePrimary) {
     ++g_saveGameInitLoadCalls;
@@ -850,6 +866,43 @@ zReader::Node *RECOIL_THISCALL FakeSaveGameInitLoadThunk::LoadFromZrd(
         std::strcmp(sectionName, g_saveLoadInitExpectedSectionName) == 0 &&
         capturePrimary == 0;
     return nullptr;
+}
+
+zReader::Node g_confirmQuitBackgroundFakeNode;
+
+zReader::Node *RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::LoadFromZrd(
+    const char *zrdPath, const char *sectionName, int capturePrimary) {
+    ++g_confirmQuitBackgroundLoadCalls;
+    g_confirmQuitBackgroundLoadArgsOk =
+        this != nullptr && zrdPath != nullptr && std::strcmp(zrdPath, "dialog.zrd") == 0 &&
+        sectionName != nullptr && std::strcmp(sectionName, "CONFIRM_QUIT") == 0 &&
+        capturePrimary == 0;
+    return &g_confirmQuitBackgroundFakeNode;
+}
+
+int RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::BindWidgetByName(
+    zReader::Node *loadedSectionNode, HudUiWidget *widget, const char *name) {
+    ++g_confirmQuitBackgroundBindCalls;
+
+    auto *const dialog = static_cast<HudUiBackgroundConfirmQuit *>(static_cast<void *>(this));
+    const bool widgetOk =
+        (g_confirmQuitBackgroundBindCalls == 1 &&
+         widget == &dialog->okButton.base &&
+         name != nullptr && std::strcmp(name, "OK_TO_QUIT") == 0) ||
+        (g_confirmQuitBackgroundBindCalls == 2 &&
+         widget == &dialog->cancelButton.base &&
+         name != nullptr && std::strcmp(name, "CANCEL_QUIT") == 0);
+    g_confirmQuitBackgroundBindArgsOk =
+        g_confirmQuitBackgroundBindArgsOk &&
+        loadedSectionNode == &g_confirmQuitBackgroundFakeNode && widgetOk;
+    return 0;
+}
+
+void RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::FreeLoadedTreeRoots(int loadedRoot) {
+    ++g_confirmQuitBackgroundFreeCalls;
+    g_confirmQuitBackgroundFreeArgsOk =
+        loadedRoot == static_cast<int>(reinterpret_cast<std::uintptr_t>(
+                          &g_confirmQuitBackgroundFakeNode));
 }
 
 void *FakeSaveGameInitLoadFromZrdProc() {
@@ -873,6 +926,65 @@ void *HudUiBackgroundLoadFromZrdProc() {
 
     MemberToFunction thunk{};
     thunk.member = &HudUiBackground::LoadFromZrd;
+    return thunk.function;
+}
+
+void *FakeConfirmQuitBackgroundLoadFromZrdProc() {
+    union MemberToFunction {
+        zReader::Node *(RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::*member)(
+            const char *, const char *, int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &FakeConfirmQuitBackgroundThunk::LoadFromZrd;
+    return thunk.function;
+}
+
+void *HudUiBackgroundBindWidgetByNameProc() {
+    union MemberToFunction {
+        int (RECOIL_THISCALL HudUiBackground::*member)(zReader::Node *, HudUiWidget *,
+                                                       const char *);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &HudUiBackground::BindWidgetByName;
+    return thunk.function;
+}
+
+void *FakeConfirmQuitBackgroundBindWidgetByNameProc() {
+    union MemberToFunction {
+        int (RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::*member)(zReader::Node *,
+                                                                      HudUiWidget *,
+                                                                      const char *);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &FakeConfirmQuitBackgroundThunk::BindWidgetByName;
+    return thunk.function;
+}
+
+void *HudUiBackgroundFreeLoadedTreeRootsProc() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL HudUiBackground::*member)(int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &HudUiBackground::FreeLoadedTreeRoots;
+    return thunk.function;
+}
+
+void *FakeConfirmQuitBackgroundFreeLoadedTreeRootsProc() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::*member)(int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &FakeConfirmQuitBackgroundThunk::FreeLoadedTreeRoots;
     return thunk.function;
 }
 
@@ -2043,6 +2155,148 @@ extern "C" int recoil_state_confirm_quit_queue_enter_smoke(void) {
     }
     g_RecoilState_ConfirmQuit = oldConfirmQuitState;
     g_RecoilApp = oldApp;
+    return result;
+}
+
+extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    g_RecoilApp = RecoilApp{};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiZrdWidget widget{};
+    widget.Constructor();
+    widget.OnActivateQueueExitCurrentState();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    int result = 0;
+    if (g_stateExitCount != 1 || g_stateEnterCount != 0) {
+        result = 1;
+    } else if (!IsSingleExitCurrentQueueItem(queue, 0)) {
+        result = 2;
+    }
+
+    CleanupQueuedItems(queue);
+    widget.DestructorCore();
+    g_RecoilApp = oldApp;
+    return result;
+}
+
+extern "C" int hud_ui_background_confirm_quit_lifecycle_smoke(void) {
+    CodeFunctionPatch loadPatch{};
+    CodeFunctionPatch bindPatch{};
+    CodeFunctionPatch freePatch{};
+
+    if (!PatchFunctionJump(HudUiBackgroundLoadFromZrdProc(),
+                           FakeConfirmQuitBackgroundLoadFromZrdProc(), loadPatch)) {
+        return 1;
+    }
+    if (!PatchFunctionJump(HudUiBackgroundBindWidgetByNameProc(),
+                           FakeConfirmQuitBackgroundBindWidgetByNameProc(), bindPatch)) {
+        RestoreFunctionPatch(loadPatch);
+        return 2;
+    }
+    if (!PatchFunctionJump(HudUiBackgroundFreeLoadedTreeRootsProc(),
+                           FakeConfirmQuitBackgroundFreeLoadedTreeRootsProc(), freePatch)) {
+        RestoreFunctionPatch(bindPatch);
+        RestoreFunctionPatch(loadPatch);
+        return 3;
+    }
+
+    g_confirmQuitBackgroundLoadCalls = 0;
+    g_confirmQuitBackgroundLoadArgsOk = false;
+    g_confirmQuitBackgroundBindCalls = 0;
+    g_confirmQuitBackgroundBindArgsOk = true;
+    g_confirmQuitBackgroundFreeCalls = 0;
+    g_confirmQuitBackgroundFreeArgsOk = false;
+
+    HudUiBackgroundConfirmQuit dialog{};
+    HudUiBackgroundConfirmQuit *const returned = dialog.Constructor();
+    int result = 0;
+    if (returned != &dialog || g_confirmQuitBackgroundLoadCalls != 1 ||
+        !g_confirmQuitBackgroundLoadArgsOk ||
+        g_confirmQuitBackgroundBindCalls != 2 || !g_confirmQuitBackgroundBindArgsOk ||
+        g_confirmQuitBackgroundFreeCalls != 1 || !g_confirmQuitBackgroundFreeArgsOk ||
+        dialog.okButton.base.ftable == nullptr || dialog.cancelButton.base.ftable == nullptr) {
+        result = 4;
+    }
+
+    dialog.Destructor();
+
+    HudUiBackgroundConfirmQuit scalarState{};
+    scalarState.Constructor();
+    HudUiBackgroundConfirmQuit *const scalarReturned =
+        scalarState.ScalarDeletingDestructor(0);
+    if (result == 0 && scalarReturned != &scalarState) {
+        result = 5;
+    }
+
+    RestoreFunctionPatch(freePatch);
+    RestoreFunctionPatch(bindPatch);
+    RestoreFunctionPatch(loadPatch);
+    return result;
+}
+
+extern "C" int recoil_state_confirm_quit_on_try_become_current_smoke(void) {
+    CodeFunctionPatch loadPatch{};
+    CodeFunctionPatch bindPatch{};
+    CodeFunctionPatch freePatch{};
+
+    if (!PatchFunctionJump(HudUiBackgroundLoadFromZrdProc(),
+                           FakeConfirmQuitBackgroundLoadFromZrdProc(), loadPatch)) {
+        return 1;
+    }
+    if (!PatchFunctionJump(HudUiBackgroundBindWidgetByNameProc(),
+                           FakeConfirmQuitBackgroundBindWidgetByNameProc(), bindPatch)) {
+        RestoreFunctionPatch(loadPatch);
+        return 2;
+    }
+    if (!PatchFunctionJump(HudUiBackgroundFreeLoadedTreeRootsProc(),
+                           FakeConfirmQuitBackgroundFreeLoadedTreeRootsProc(), freePatch)) {
+        RestoreFunctionPatch(bindPatch);
+        RestoreFunctionPatch(loadPatch);
+        return 3;
+    }
+
+    g_confirmQuitBackgroundLoadCalls = 0;
+    g_confirmQuitBackgroundLoadArgsOk = false;
+    g_confirmQuitBackgroundBindCalls = 0;
+    g_confirmQuitBackgroundBindArgsOk = true;
+    g_confirmQuitBackgroundFreeCalls = 0;
+    g_confirmQuitBackgroundFreeArgsOk = false;
+
+    RecoilStateConfirmQuit state{};
+    const int accepted = state.OnTryBecomeCurrent();
+    HudUiBackgroundConfirmQuit *const dialog =
+        reinterpret_cast<HudUiBackgroundConfirmQuit *>(
+            static_cast<std::uintptr_t>(state.m_dialog));
+
+    int result = 0;
+    if (accepted != 1 || dialog == nullptr ||
+        g_confirmQuitBackgroundLoadCalls != 1 || !g_confirmQuitBackgroundLoadArgsOk ||
+        g_confirmQuitBackgroundBindCalls != 2 || !g_confirmQuitBackgroundBindArgsOk ||
+        g_confirmQuitBackgroundFreeCalls != 1 || !g_confirmQuitBackgroundFreeArgsOk ||
+        dialog->okButton.base.ftable == nullptr ||
+        dialog->cancelButton.base.ftable == nullptr) {
+        result = 4;
+    }
+
+    if (dialog != nullptr) {
+        dialog->ScalarDeletingDestructor(1);
+    }
+    state.m_dialog = 0;
+
+    RestoreFunctionPatch(freePatch);
+    RestoreFunctionPatch(bindPatch);
+    RestoreFunctionPatch(loadPatch);
     return result;
 }
 

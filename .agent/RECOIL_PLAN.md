@@ -1636,10 +1636,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x409160:
   - [✅] Reconstructed (Name: HudUiZrdWidget::OnActivateQueueExitCurrentState)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidget::OnActivateQueueExitCurrentState File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_on_activate_queue_exit_current_state)
+  - [✅] Binary-safe
 - 0x409180:
   - [✅] Reconstructed (Name: HudUiCreditsQuitButton::OnActivate)
   - [❌] Source dependencies satisfied
@@ -2548,9 +2548,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x4158f0:
   - [☑️] Reconstructed (Name: RecoilStateConfirmQuit::OnTryBecomeCurrent)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateConfirmQuit::OnTryBecomeCurrent File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_confirm_quit_on_try_become_current)
   - [❌] Binary-safe
 - 0x415960:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::OnDeactivate)
@@ -4384,15 +4384,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x415680:
   - [☑️] Reconstructed (Name: HudUiBackgroundConfirmQuit::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiBackgroundConfirmQuit::Constructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_background_confirm_quit_lifecycle)
   - [❌] Binary-safe
 - 0x4157b0:
   - [☑️] Reconstructed (Name: HudUiBackgroundConfirmQuit::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiBackgroundConfirmQuit::Destructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_background_confirm_quit_lifecycle)
   - [❌] Binary-safe
 - 0x41a350:
   - [✅] Reconstructed (Name: HudUiClampedIntStepButton::OnActivate)
@@ -21672,10 +21672,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiMainMenuDialog_ScalarDeletingDtor; Origin: compiler-generated; File: external; Target: pending)
 - 0x415790:
   - [✅] Reconstructed (Name: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_background_confirm_quit_lifecycle)
+  - [✅] Binary-safe
 - 0x419850:
   - [✅] Reconstructed (Name: HudUiMpExitDialog::ScalarDeletingDestructorThunk)
   - [❌] Source dependencies satisfied

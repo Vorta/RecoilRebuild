@@ -125,6 +125,19 @@ struct HudUiConfirmQuitOkButton : HudUiZrdWidget {
     void RECOIL_THISCALL OnActivate();
 };
 
+struct HudUiBackgroundConfirmQuit : HudUiBackground {
+    HudUiConfirmQuitOkButton okButton;
+    HudUiZrdWidget cancelButton;
+
+    HudUiBackgroundConfirmQuit *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE HudUiBackgroundConfirmQuit *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundConfirmQuit) == 0xabe4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundConfirmQuit, okButton) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundConfirmQuit, cancelButton) == 0xaa98);
+
 struct HudUiSaveLoadGameNameInput : HudUiNumericTextInput {
     void RECOIL_THISCALL OnActivate();
     int RECOIL_THISCALL OnRawKeyboardEvent(int key);
@@ -297,6 +310,7 @@ struct RecoilStateConfirmQuit : RecoilApp_IState {
     RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
     RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
     RecoilStateConfirmQuit *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
     RECOIL_NOINLINE ~RecoilStateConfirmQuit();
     RECOIL_NOINLINE RecoilStateConfirmQuit *RECOIL_THISCALL

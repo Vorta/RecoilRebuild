@@ -1,0 +1,26 @@
+{
+  "name": "recoil_state_confirm_quit_on_try_become_current",
+  "description": "RecoilStateConfirmQuit::OnTryBecomeCurrent VC byte verification.",
+  "source_filename": "hud.cpp",
+  "compiler_profile": "vc5_o2_ob1_gx_facs",
+  "source_from": "src/Battlesport/hud.cpp",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4158f0",
+      "symbol": "?OnTryBecomeCurrent@RecoilStateConfirmQuit@@QAEHXZ",
+      "name": "RecoilStateConfirmQuit::OnTryBecomeCurrent"
+    }
+  ]
+}

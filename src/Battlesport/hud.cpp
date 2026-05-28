@@ -57,6 +57,55 @@ struct HudUiBackgroundConfirmQuitVirtual
     ScalarDeletingDestructor(unsigned int flags) = 0;
 };
 
+struct HudUiBackgroundConfirmQuit_FTable
+{
+    unsigned int slots[3];
+};
+
+RECOIL_NOINLINE void RECOIL_CDECL HudUiConfirmQuitPostLoadNoOp()
+{
+}
+
+HudUiWidget_FTable MakeConfirmQuitButtonFTable(unsigned int activateCallback)
+{
+    HudUiWidget_FTable table = {0};
+    table.slots[0] = HudMethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
+    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
+    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
+    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
+    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
+    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
+    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
+    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
+    table.slots[12] = activateCallback;
+    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
+    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
+    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
+    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
+    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
+    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
+    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
+    return table;
+}
+
+HudUiBackgroundConfirmQuit_FTable MakeConfirmQuitDialogFTable()
+{
+    HudUiBackgroundConfirmQuit_FTable table = {0};
+    table.slots[0] = HudMethodAddress(&HudUiBackground::Update);
+    table.slots[1] = HudMethodAddress(&HudUiBackground::SetEnabled);
+    table.slots[2] = HudMethodAddress(&HudUiBackgroundConfirmQuit::ScalarDeletingDestructor);
+    return table;
+}
+
+const HudUiWidget_FTable g_HudUiConfirmQuitCancelButton_FTable =
+    MakeConfirmQuitButtonFTable(
+        HudMethodAddress(&HudUiZrdWidget::OnActivateQueueExitCurrentState));
+const HudUiWidget_FTable g_HudUiConfirmQuitOkButton_FTable =
+    MakeConfirmQuitButtonFTable(HudMethodAddress(&HudUiConfirmQuitOkButton::OnActivate));
+const HudUiBackgroundConfirmQuit_FTable g_HudUiBackgroundConfirmQuit_FTable =
+    MakeConfirmQuitDialogFTable();
+
 RecoilApp_IState_Vtbl g_RecoilStateConfirmQuit_Vtbl = {0};
 
 struct RecoilStateConfirmQuitBaseVtableGuard
@@ -217,6 +266,14 @@ void RECOIL_CDECL RecoilStateConfirmQuit::QueueEnter()
     g_RecoilApp.QueuePushState(&g_RecoilState_ConfirmQuit, 0);
 }
 
+// Reimplements 0x409160: HudUiZrdWidget::OnActivateQueueExitCurrentState
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void RECOIL_THISCALL HudUiZrdWidget::OnActivateQueueExitCurrentState()
+{
+    g_RecoilApp.QueueExitCurrentState(0);
+    OnActivate();
+}
+
 // Reimplements 0x415810: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
 RECOIL_NOINLINE void RECOIL_CDECL RecoilStateConfirmQuit::StaticInitAndRegisterAtExit()
@@ -258,6 +315,53 @@ void RECOIL_THISCALL HudUiConfirmQuitOkButton::OnActivate()
     HudUiZrdWidget::OnActivate();
 }
 
+// Reimplements 0x415680: HudUiBackgroundConfirmQuit::Constructor
+// (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
+HudUiBackgroundConfirmQuit *RECOIL_THISCALL HudUiBackgroundConfirmQuit::Constructor()
+{
+    HudUiBackground::Constructor();
+    okButton.Constructor();
+    okButton.base.ftable = &g_HudUiConfirmQuitOkButton_FTable;
+    cancelButton.Constructor();
+    cancelButton.base.ftable = &g_HudUiConfirmQuitCancelButton_FTable;
+    base.base.vptr = (const HudUiContainer_FTable *)&g_HudUiBackgroundConfirmQuit_FTable;
+
+    zReader::Node *const dialogRoot =
+        HudUiBackground::LoadFromZrd("dialog.zrd", "CONFIRM_QUIT", 0);
+    if (dialogRoot != 0)
+    {
+        HudUiBackground::BindWidgetByName(dialogRoot, &okButton.base, "OK_TO_QUIT");
+        HudUiBackground::BindWidgetByName(dialogRoot, &cancelButton.base, "CANCEL_QUIT");
+        HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
+    }
+
+    return this;
+}
+
+// Reimplements 0x4157b0: HudUiBackgroundConfirmQuit::Destructor
+// (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudUiBackgroundConfirmQuit::Destructor()
+{
+    cancelButton.DestructorCore();
+    okButton.DestructorCore();
+    HudUiBackground::Destructor();
+}
+
+// Reimplements 0x415790: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
+RECOIL_NOINLINE HudUiBackgroundConfirmQuit *RECOIL_THISCALL
+HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
 // Reimplements 0x415850: RecoilStateConfirmQuit::Constructor
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
 RecoilStateConfirmQuit *RECOIL_THISCALL RecoilStateConfirmQuit::Constructor()
@@ -265,6 +369,25 @@ RecoilStateConfirmQuit *RECOIL_THISCALL RecoilStateConfirmQuit::Constructor()
     vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateConfirmQuit_Vtbl;
     m_dialog = 0;
     return this;
+}
+
+// Reimplements 0x4158f0: RecoilStateConfirmQuit::OnTryBecomeCurrent
+// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateConfirmQuit::OnTryBecomeCurrent()
+{
+    HudUiBackgroundConfirmQuit *dialog =
+        (HudUiBackgroundConfirmQuit *)::operator new(sizeof(HudUiBackgroundConfirmQuit));
+    if (dialog != 0)
+    {
+        dialog = dialog->Constructor();
+    }
+    m_dialog = (RecoilPtr32)(unsigned int)dialog;
+
+    HudUiBackgroundConfirmQuitVirtual *dialogView =
+        (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
+    dialogView->SetEnabled(1);
+
+    return 1;
 }
 
 // Reimplements 0x415960: RecoilStateConfirmQuit::OnDeactivate
