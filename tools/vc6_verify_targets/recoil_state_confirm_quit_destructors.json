@@ -33,6 +33,11 @@
       "name": "RecoilStateConfirmQuit::~RecoilStateConfirmQuit"
     },
     {
+      "address": "0x4159b0",
+      "symbol": "?QueueEnter@RecoilStateConfirmQuit@@SAXXZ",
+      "name": "RecoilStateConfirmQuit::QueueEnter"
+    },
+    {
       "address": "0x415860",
       "symbol": "?ScalarDeletingDestructor@RecoilStateConfirmQuit@@QAEPAU1@I@Z",
       "name": "RecoilStateConfirmQuit::ScalarDeletingDestructor"

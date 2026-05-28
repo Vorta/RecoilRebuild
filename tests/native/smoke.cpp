@@ -908,6 +908,7 @@ extern "C" int recoil_app_scalar_deleting_destructor_smoke(void);
 extern "C" int recoil_state_base_scalar_deleting_destructor_smoke(void);
 extern "C" int recoil_state_credits_destructor_smoke(void);
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void);
+extern "C" int recoil_state_confirm_quit_queue_enter_smoke(void);
 extern "C" int recoil_state_main_menu_transition_constructor_smoke(void);
 extern "C" int recoil_state_main_menu_transition_destructor_smoke(void);
 extern "C" int recoil_state_main_menu_transition_scalar_deleting_destructor_smoke(void);
@@ -2818,6 +2819,8 @@ int main(int argc, char **argv) {
         {"recoil_state_credits_destructor_smoke", recoil_state_credits_destructor_smoke},
         {"recoil_state_confirm_quit_destructor_smoke",
          recoil_state_confirm_quit_destructor_smoke},
+        {"recoil_state_confirm_quit_queue_enter_smoke",
+         recoil_state_confirm_quit_queue_enter_smoke},
         {"recoil_state_main_menu_transition_constructor_smoke",
          recoil_state_main_menu_transition_constructor_smoke},
         {"recoil_state_main_menu_transition_destructor_smoke",

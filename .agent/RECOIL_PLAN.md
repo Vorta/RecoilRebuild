@@ -2562,8 +2562,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::QueueEnter)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateConfirmQuit::QueueEnter File: src/Battlesport/hud.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_state_confirm_quit_queue_enter)
+  - [✅] Binary-safe
 - 0x41a190:
   - [☑️] Reconstructed (Name: HudUiNumericTextInput::Constructor)
   - [❌] Source dependencies satisfied

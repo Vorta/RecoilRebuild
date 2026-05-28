@@ -2005,6 +2005,45 @@ extern "C" int recoil_state_controls_queue_enter_smoke(void) {
     return result;
 }
 
+extern "C" int recoil_state_confirm_quit_queue_enter_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    const RecoilStateConfirmQuit oldConfirmQuitState = g_RecoilState_ConfirmQuit;
+    g_RecoilApp = RecoilApp{};
+    g_RecoilState_ConfirmQuit = RecoilStateConfirmQuit{};
+    g_RecoilState_ConfirmQuit.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    RecoilStateConfirmQuit::QueueEnter();
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    int result = 0;
+    if (g_stateEnterCount != 1 || g_stateExitCount != 0) {
+        result = 1;
+    } else if (queue.m_itemCount != 1 || queue.m_chunkPtrCapacity != 2) {
+        result = 2;
+    } else {
+        const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+        auto *const slot = reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
+        auto *const item =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+        if (item->m_type != 0 || item->m_kind != RecoilApp_StateQueueKind_PushState ||
+            item->m_stateObj !=
+                static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                    &g_RecoilState_ConfirmQuit)) ||
+            item->m_param != 0) {
+            result = 3;
+        }
+    }
+
+    if (queue.m_itemCount == 1) {
+        CleanupSingleQueuedItem(queue);
+    }
+    g_RecoilState_ConfirmQuit = oldConfirmQuitState;
+    g_RecoilApp = oldApp;
+    return result;
+}
+
 extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {
     const RecoilApp oldApp = g_RecoilApp;
     const HudUiOptionsPanelOverlayOwner oldOptionsState = g_HudUiOptionsPanelOverlayOwner;
