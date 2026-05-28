@@ -1228,58 +1228,31 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x4c9d52:
   - [☑️] Reconstructed (Name: RecoilApp_Dtor_EhCleanup_LeaveNetworkState)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: MsvcEh::RecoilApp_Dtor_EhCleanup_LeaveNetworkState; Origin: MSVC EH cleanup funclet; File: external; Target: RecoilApp destructor EH cleanup for m_leaveNetworkState)
 - 0x4c9d60:
   - [☑️] Reconstructed (Name: RecoilApp_Dtor_EhCleanup_IStateLocal0)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: MsvcEh::RecoilApp_Dtor_EhCleanup_IStateLocal0; Origin: MSVC EH cleanup funclet; File: external; Target: RecoilApp destructor EH cleanup for parent-frame IState local at EBP-0x0c)
 - 0x4c9d68:
   - [☑️] Reconstructed (Name: RecoilApp_Dtor_EhCleanup_IStateLocal1)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: MsvcEh::RecoilApp_Dtor_EhCleanup_IStateLocal1; Origin: MSVC EH cleanup funclet; File: external; Target: RecoilApp destructor EH cleanup for parent-frame IState local at EBP-0x18)
 - 0x4c9d70:
   - [☑️] Reconstructed (Name: RecoilApp_Dtor_EhCleanup_IStateLocal2)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: MsvcEh::RecoilApp_Dtor_EhCleanup_IStateLocal2; Origin: MSVC EH cleanup funclet; File: external; Target: RecoilApp destructor EH cleanup for parent-frame IState local at EBP-0x1c)
 - 0x4c9e0a:
   - [☑️] Reconstructed (Name: RecoilApp_Ctor_EhCleanup_LeaveNetworkState)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: MsvcEh::RecoilApp_Ctor_EhCleanup_LeaveNetworkState; Origin: MSVC EH cleanup funclet; File: external; Target: RecoilApp constructor EH cleanup for m_leaveNetworkState)
 - 0x4c9e30:
   - [☑️] Reconstructed (Name: RecoilApp_MissionFmvState_Dtor_EhCleanup_IStateBase)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: MsvcEh::RecoilApp_MissionFmvState_Dtor_EhCleanup_IStateBase; Origin: MSVC EH cleanup funclet; File: external; Target: RecoilApp_MissionFmvState destructor EH cleanup for IState base)
 - 0x4c9e50:
   - [☑️] Reconstructed (Name: RecoilApp_CreateMainWnd_EhCleanup_MissionFmvStateAllocation)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: MsvcEh::RecoilApp_CreateMainWnd_EhCleanup_MissionFmvStateAllocation; Origin: MSVC EH cleanup funclet; File: external; Target: RecoilApp::CreateMainWnd constructor-unwind delete for MissionFmvState allocation)
 - 0x4c9e90:
   - [☑️] Reconstructed (Name: RecoilApp_MissionFmvState_Ctor_EhCleanup_IStateBase)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: MsvcEh::RecoilApp_MissionFmvState_Ctor_EhCleanup_IStateBase; Origin: MSVC EH cleanup funclet; File: external; Target: RecoilApp_MissionFmvState constructor EH cleanup for IState base)
 - 0x4cad08:
   - [☑️] Reconstructed (Name: CZGameFrame_Dtor_EhCleanup_CObjectBase)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: MsvcEh::CZGameFrame_Dtor_EhCleanup_CObjectBase; Origin: MSVC EH cleanup funclet; File: external; Target: CZGameFrame destructor EH cleanup for CBitmap/CObject member)
 
 ## M02. Briefing runtime
 
