@@ -673,7 +673,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateDirectSoundCmdUI File: src/Battlesport/CZRecoilFrame.cpp)
   - [✅] Functional-equivalent (Target: czrecoil_frame_update_directsound_cmd_ui)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x431ad0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuSelectA3D)
   - [✅] Source dependencies satisfied
@@ -685,7 +685,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: CZRecoilFrame::OnUpdateA3DCmdUI File: src/Battlesport/CZRecoilFrame.cpp)
   - [✅] Functional-equivalent (Target: czrecoil_frame_update_a3d_cmd_ui)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x431b10:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnSize)
   - [✅] Source dependencies satisfied

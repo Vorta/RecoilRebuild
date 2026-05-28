@@ -64,6 +64,7 @@ typedef int (RECOIL_THISCALL *CMenuDestroyMenuProc)(void *);
 class MfcCmdUIView {
   public:
     virtual void Enable(int enable) = 0;
+    virtual void SetCheck(int check) = 0;
 };
 
 unsigned int Ptr32FromSymbol(const void *symbol) {
@@ -668,8 +669,9 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuSelectDirectSoun
 // Reimplements 0x431aa0: CZRecoilFrame::OnUpdateDirectSoundCmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
 CZRecoilFrame::OnUpdateDirectSoundCmdUI(CZRecoilCmdUI *cmdUi) {
-    cmdUi->vftable->Enable(cmdUi, 1);
-    cmdUi->vftable->SetCheck(cmdUi, zSnd::GetAudioApiOption() == 0 ? 1 : 0);
+    MfcCmdUIView *const cmdUiView = (MfcCmdUIView *)cmdUi;
+    cmdUiView->Enable(1);
+    cmdUiView->SetCheck(zSnd::GetAudioApiOption() == 0 ? 1 : 0);
 }
 
 // Reimplements 0x431ad0: CZRecoilFrame::OnMenuSelectA3D
@@ -679,8 +681,9 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuSelectA3D() {
 
 // Reimplements 0x431ae0: CZRecoilFrame::OnUpdateA3DCmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnUpdateA3DCmdUI(CZRecoilCmdUI *cmdUi) {
-    cmdUi->vftable->Enable(cmdUi, 1);
-    cmdUi->vftable->SetCheck(cmdUi, zSnd::GetActiveBackend() == 1 ? 1 : 0);
+    MfcCmdUIView *const cmdUiView = (MfcCmdUIView *)cmdUi;
+    cmdUiView->Enable(1);
+    cmdUiView->SetCheck(zSnd::GetActiveBackend() == 1 ? 1 : 0);
 }
 
 // Reimplements 0x431b10: CZRecoilFrame::OnSize
