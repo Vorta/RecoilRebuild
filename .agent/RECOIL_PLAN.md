@@ -90,8 +90,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::ClearPausedAudioSnapshot)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::ClearPausedAudioSnapshot File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_ClearPausedAudioSnapshot.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_state_main_menu_transition_clear_paused_audio_snapshot)
+  - [✅] Binary-safe
 - 0x415650:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::QueueEnter)
   - [✅] Source dependencies satisfied
