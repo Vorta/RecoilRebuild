@@ -4,7 +4,7 @@ Generated from `Reimplements 0xNNNNNN: Name (original/source/path)` comments in 
 Binary Ninja remains authoritative; this map is an agent navigation aid.
 It only contains address-backed provenance comments and excludes helpers fully inlined by the retail compiler.
 
-Entries: 2902
+Entries: 2903
 
 ## Case-insensitive source path collisions
 
@@ -3042,6 +3042,10 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4c7f00` `zImage_Font::BlitStringToActiveTarget` -> `src/GameZRecoil/zImage/zimg_texture.cpp:511`
 - `0x4c7fd0` `zVideo::LoadPaletteFileAndApplyBrightness` -> `src/GameZRecoil/zVideo/zVideo.cpp:1412`
 - `0x4c8070` `zVideo::ApplyBrightnessToPaletteEntries` -> `src/GameZRecoil/zVideo/zVideo.cpp:1430`
+
+## WinMain.cpp
+
+- `0x4c81c0` `WinMain` -> `src/Battlesport/WinMain.cpp:10`
 
 ## zeff_anim.c
 

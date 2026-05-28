@@ -1132,10 +1132,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4c81c0:
   - [✅] Reconstructed (Name: WinMain)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WinMain File: src/Battlesport/WinMain.cpp)
+  - [✅] Functional-equivalent (Target: winmain)
+  - [✅] Binary-safe
 - 0x407190:
   - [☑️] Reconstructed (Name: zOpt::LookupNamedValueAsInt)
   - [✅] Source dependencies satisfied

@@ -3,6 +3,7 @@ add_library(recoil_native STATIC
     ../Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp
     ../Battlesport/Recoil.cpp
     ../Battlesport/RecoilVersion.cpp
+    ../Battlesport/WinMain.cpp
     ../Battlesport/Briefing.cpp
     ../Battlesport/ainet.cpp
     ../Battlesport/GameNet.cpp
