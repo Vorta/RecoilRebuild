@@ -1137,6 +1137,19 @@ bool IsSingleExitCurrentQueueItem(RecoilApp_StateQueue &queue, int param) {
     return item->m_kind == RecoilApp_StateQueueKind_ExitCurrent && item->m_param == param;
 }
 
+bool IsSinglePushStateQueueItem(RecoilApp_StateQueue &queue, RecoilPtr32 state, int param) {
+    if (queue.m_itemCount != 1 || queue.m_chunkPtrList == 0) {
+        return false;
+    }
+
+    const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+    auto *const slot = reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
+    auto *const item =
+        reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+    return item->m_type == 0 && item->m_kind == RecoilApp_StateQueueKind_PushState &&
+           item->m_stateObj == state && item->m_param == param;
+}
+
 int RunOpenCampaignDialogHarness(bool throughMenuHandler) {
     ImportFunctionPatch patch{};
     if (!PatchImportByName("COMDLG32.dll", "GetOpenFileNameA",
@@ -3635,6 +3648,124 @@ extern "C" int recoil_state_save_load_transition_on_update_should_quit_smoke(voi
     g_FrameDeltaTimeSec = oldFrameDelta;
 
     return emptyOk && dialogOk ? 0 : 6;
+}
+
+extern "C" int hud_ui_main_menu_dialog_save_load_checks_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+
+    g_GameStateOrMapTable = nullptr;
+    const bool noGameOk =
+        HudUiMainMenuDialog::CanLoadGame() == 1 && HudUiMainMenuDialog::CanSaveGame() == 0;
+
+    zInput_GameStateOrMapTablePartial gameState = {};
+    g_GameStateOrMapTable = &gameState;
+    const bool noPlayerOk =
+        HudUiMainMenuDialog::CanLoadGame() == 1 && HudUiMainMenuDialog::CanSaveGame() == 1;
+
+    zUtil_PlayerStateStorage playerState = {};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    playerState.environmentAttachmentActive = 0;
+    const bool unblockedOk =
+        HudUiMainMenuDialog::CanLoadGame() == 1 && HudUiMainMenuDialog::CanSaveGame() == 1;
+
+    playerState.environmentAttachmentActive = 1;
+    const bool blockedOk =
+        HudUiMainMenuDialog::CanLoadGame() == 0 && HudUiMainMenuDialog::CanSaveGame() == 0;
+
+    g_GameStateOrMapTable = oldGameState;
+    return noGameOk && noPlayerOk && unblockedOk && blockedOk ? 0 : 1;
+}
+
+extern "C" int recoil_state_save_load_transition_queue_dialogs_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    const RecoilStateSaveLoadTransition oldTransition = g_RecoilStateSaveLoadTransition;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+
+    zUtil_PlayerStateStorage playerState = {};
+    zInput_GameStateOrMapTablePartial gameState = {};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    g_GameStateOrMapTable = &gameState;
+
+    const RecoilPtr32 transitionState =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+            &g_RecoilStateSaveLoadTransition));
+
+    auto resetHarness = [&]() {
+        if (g_RecoilApp.m_stateQueue_118.m_itemCount != 0) {
+            CleanupQueuedItems(g_RecoilApp.m_stateQueue_118);
+        }
+        g_RecoilApp = RecoilApp{};
+        g_RecoilApp.m_currentStateIndex_0c8 = -1;
+        g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
+        g_RecoilStateSaveLoadTransition.vftable =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+        g_stateEnterCount = 0;
+        playerState.environmentAttachmentActive = 0;
+    };
+
+    resetHarness();
+    RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
+        RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED);
+    const bool saveOk =
+        g_stateEnterCount == 1 &&
+        g_RecoilStateSaveLoadTransition.m_capturePresentationMode ==
+            RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE &&
+        IsSinglePushStateQueueItem(g_RecoilApp.m_stateQueue_118, transitionState, 0);
+
+    resetHarness();
+    g_RecoilStateSaveLoadTransition.m_capturePresentationMode =
+        RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED;
+    g_RecoilStateSaveLoadTransition.m_dialogKind = RECOIL_SAVELOAD_DIALOG_LOAD;
+    playerState.environmentAttachmentActive = 1;
+    RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
+        RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED);
+    const bool saveBlockedOk =
+        g_stateEnterCount == 0 && g_RecoilApp.m_stateQueue_118.m_itemCount == 0 &&
+        g_RecoilStateSaveLoadTransition.m_capturePresentationMode ==
+            RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_LOAD;
+
+    resetHarness();
+    g_RecoilStateSaveLoadTransition.m_capturePresentationMode =
+        RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED;
+    RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RECOIL_SAVELOAD_MODE_STANDARD);
+    const bool loadStandardOk =
+        g_stateEnterCount == 1 &&
+        g_RecoilStateSaveLoadTransition.m_transitionMode == RECOIL_SAVELOAD_MODE_STANDARD &&
+        g_RecoilStateSaveLoadTransition.m_capturePresentationMode ==
+            RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_LOAD &&
+        IsSinglePushStateQueueItem(g_RecoilApp.m_stateQueue_118, transitionState, 0);
+
+    resetHarness();
+    RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RECOIL_SAVELOAD_MODE_QUICKLOAD);
+    const bool loadQuickOk =
+        g_stateEnterCount == 1 &&
+        g_RecoilStateSaveLoadTransition.m_transitionMode == RECOIL_SAVELOAD_MODE_QUICKLOAD &&
+        g_RecoilStateSaveLoadTransition.m_capturePresentationMode ==
+            RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_LOAD &&
+        IsSinglePushStateQueueItem(g_RecoilApp.m_stateQueue_118, transitionState, 0);
+
+    resetHarness();
+    g_RecoilStateSaveLoadTransition.m_transitionMode = RECOIL_SAVELOAD_MODE_FADE;
+    g_RecoilStateSaveLoadTransition.m_dialogKind = RECOIL_SAVELOAD_DIALOG_SAVE;
+    playerState.environmentAttachmentActive = 1;
+    RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RECOIL_SAVELOAD_MODE_QUICKLOAD);
+    const bool loadBlockedOk =
+        g_stateEnterCount == 0 && g_RecoilApp.m_stateQueue_118.m_itemCount == 0 &&
+        g_RecoilStateSaveLoadTransition.m_transitionMode == RECOIL_SAVELOAD_MODE_FADE &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE;
+
+    if (g_RecoilApp.m_stateQueue_118.m_itemCount != 0) {
+        CleanupQueuedItems(g_RecoilApp.m_stateQueue_118);
+    }
+    g_RecoilApp = oldApp;
+    g_RecoilStateSaveLoadTransition = oldTransition;
+    g_GameStateOrMapTable = oldGameState;
+
+    return saveOk && saveBlockedOk && loadStandardOk && loadQuickOk && loadBlockedOk ? 0 : 1;
 }
 
 extern "C" int recoil_app_load_zbd_and_setup_sensor_tracker_smoke(void) {

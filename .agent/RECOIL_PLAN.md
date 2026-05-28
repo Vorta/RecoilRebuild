@@ -750,13 +750,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::QueueOpenSaveDialog)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::QueueOpenSaveDialog File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_queue_open_save_dialog)
   - [❌] Binary-safe
 - 0x435f80:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::QueueOpenLoadDialog)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::QueueOpenLoadDialog File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_queue_open_load_dialog)
   - [❌] Binary-safe
 - 0x438990:
   - [✅] Reconstructed (Name: PickupAirdropSpawnRef::InitNodesFromCarrierNodeName)
@@ -2412,13 +2412,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiMainMenuDialog::CanLoadGame)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMainMenuDialog::CanLoadGame File: src/Battlesport/HudUiMainMenuDialog.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_main_menu_dialog_can_load_game)
   - [❌] Binary-safe
 - 0x414b90:
   - [✅] Reconstructed (Name: HudUiMainMenuDialog::CanSaveGame)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMainMenuDialog::CanSaveGame File: src/Battlesport/HudUiMainMenuDialog.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_main_menu_dialog_can_save_game)
   - [❌] Binary-safe
 - 0x414bc0:
   - [✅] Reconstructed (Name: HudUiMainMenuDialog::Constructor)

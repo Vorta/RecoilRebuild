@@ -873,6 +873,8 @@ extern "C" int hud_ui_load_game_dialog_destructor_smoke(void);
 extern "C" int hud_ui_load_game_dialog_scalar_deleting_destructor_smoke(void);
 extern "C" int recoil_state_save_load_transition_on_try_become_current_smoke(void);
 extern "C" int recoil_state_save_load_transition_on_update_should_quit_smoke(void);
+extern "C" int hud_ui_main_menu_dialog_save_load_checks_smoke(void);
+extern "C" int recoil_state_save_load_transition_queue_dialogs_smoke(void);
 extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void);
 extern "C" int recoil_app_load_zbd_and_start_engine_smoke(void);
 extern "C" int recoil_app_load_zbd_and_setup_sensor_tracker_smoke(void);
@@ -2750,6 +2752,10 @@ int main(int argc, char **argv) {
          recoil_state_save_load_transition_on_try_become_current_smoke},
         {"recoil_state_save_load_transition_on_update_should_quit_smoke",
          recoil_state_save_load_transition_on_update_should_quit_smoke},
+        {"hud_ui_main_menu_dialog_save_load_checks_smoke",
+         hud_ui_main_menu_dialog_save_load_checks_smoke},
+        {"recoil_state_save_load_transition_queue_dialogs_smoke",
+         recoil_state_save_load_transition_queue_dialogs_smoke},
         {"recoil_app_start_engine_and_queue_startup_state_smoke",
          recoil_app_start_engine_and_queue_startup_state_smoke},
         {"recoil_app_load_zbd_and_start_engine_smoke",
