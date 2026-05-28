@@ -239,6 +239,9 @@ limitations, and binary-verification-sensitive code shape.
 Use `docs/reconstruction/` for cross-file, provider, ABI, file-format, or
 toolchain facts that are likely to be rediscovered by multiple agents; keep
 those notes compact and tied to evidence.
+When finishing a reimplementation, class/source-cluster pass, or verification
+target, make an explicit documentation decision: add the durable note in the
+right place, or state that no durable new documentation was needed.
 
 ## License
 
