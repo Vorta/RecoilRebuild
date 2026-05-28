@@ -818,6 +818,7 @@ extern "C" int zreader_zrdr_free_node_pool_smoke(void);
 extern "C" int zreader_mount_index_archive_smoke(void);
 extern "C" int zreader_retail_zrdr_archives_smoke(void);
 extern "C" int zreader_index_archive_flush_close_smoke(void);
+extern "C" int zreader_zrdr_get_file_size_smoke(void);
 extern "C" int zreader_free_loaded_tree_smoke(void);
 extern "C" int zreader_load_movers_from_zrd_smoke(void);
 extern "C" int zreader_resolve_and_open_file_smoke(void);
@@ -2668,6 +2669,7 @@ int main(int argc, char **argv) {
         {"zreader_mount_index_archive_smoke", zreader_mount_index_archive_smoke},
         {"zreader_retail_zrdr_archives_smoke", zreader_retail_zrdr_archives_smoke},
         {"zreader_index_archive_flush_close_smoke", zreader_index_archive_flush_close_smoke},
+        {"zreader_zrdr_get_file_size_smoke", zreader_zrdr_get_file_size_smoke},
         {"zreader_free_loaded_tree_smoke", zreader_free_loaded_tree_smoke},
         {"zreader_load_movers_from_zrd_smoke", zreader_load_movers_from_zrd_smoke},
         {"zreader_resolve_and_open_file_smoke", zreader_resolve_and_open_file_smoke},

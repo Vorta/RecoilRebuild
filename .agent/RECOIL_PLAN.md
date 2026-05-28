@@ -19254,7 +19254,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zUtil::ZRDR_GetFileSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil::ZRDR_GetFileSize File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zreader_zrdr_get_file_size)
   - [❌] Binary-safe
 - 0x4a5ca0:
   - [✅] Reconstructed (Name: zUtil_ZRDR::CreateSearchPathList)
