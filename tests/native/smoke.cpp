@@ -862,6 +862,7 @@ extern "C" int recoil_app_queue_push_state_smoke(void);
 extern "C" int hud_ui_callback_queue_cheat_code_state_smoke(void);
 extern "C" int recoil_app_queue_exit_current_state_smoke(void);
 extern "C" int recoil_app_run_current_state_quit_smoke(void);
+extern "C" int recoil_app_run_queue_transitions_smoke(void);
 extern "C" int hud_ui_save_game_primary_action_button_on_activate_smoke(void);
 extern "C" int hud_ui_load_game_dialog_on_primary_action_smoke(void);
 extern "C" int hud_ui_load_game_dialog_process_dialog_result_smoke(void);
@@ -2730,6 +2731,7 @@ int main(int argc, char **argv) {
          hud_ui_callback_queue_cheat_code_state_smoke},
         {"recoil_app_queue_exit_current_state_smoke", recoil_app_queue_exit_current_state_smoke},
         {"recoil_app_run_current_state_quit_smoke", recoil_app_run_current_state_quit_smoke},
+        {"recoil_app_run_queue_transitions_smoke", recoil_app_run_queue_transitions_smoke},
         {"hud_ui_save_game_primary_action_button_on_activate_smoke",
          hud_ui_save_game_primary_action_button_on_activate_smoke},
         {"hud_ui_load_game_dialog_on_primary_action_smoke",

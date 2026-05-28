@@ -73,6 +73,7 @@ int g_runSetThreadPriorityValue;
 int g_runReceivePendingMessagesCount;
 int g_runReceivePendingMessagesBudget;
 int g_runQuitPosted;
+int g_runPeekMessageTrueAfterReceive;
 int g_saveLoadUpdatePollCalls;
 int g_saveLoadUpdatePollDispatch;
 int g_saveLoadUpdateTimeCalls;
@@ -121,7 +122,11 @@ void ClearTestRegisteredHandlers(zZbdSectionHandlerNode &sentinel) {
 
 BOOL WINAPI FakeRunPeekMessageA(LPMSG, HWND, UINT, UINT, UINT) {
     ++g_runPeekMessageCount;
-    return g_runQuitPosted != 0 ? TRUE : FALSE;
+    return g_runQuitPosted != 0 ||
+                   (g_runPeekMessageTrueAfterReceive != 0 &&
+                    g_runReceivePendingMessagesCount > 0)
+               ? TRUE
+               : FALSE;
 }
 
 void WINAPI FakeRunPostQuitMessage(int exitCode) {
@@ -355,6 +360,81 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
     }
 
     patch.address = nullptr;
+}
+
+struct RunPatchSet {
+    ImportFunctionPatch peek;
+    ImportFunctionPatch postQuit;
+    ImportFunctionPatch wait;
+    ImportFunctionPatch priority;
+    CodeFunctionPatch receive;
+};
+
+void RestoreRunPatches(RunPatchSet &patches) {
+    RestoreFunctionPatch(patches.receive);
+    RestoreImportPatch(patches.priority);
+    RestoreImportPatch(patches.wait);
+    RestoreImportPatch(patches.postQuit);
+    RestoreImportPatch(patches.peek);
+}
+
+int InstallRunPatches(RunPatchSet &patches) {
+    if (!PatchImportByName("USER32.dll", "PeekMessageA",
+                           reinterpret_cast<void *>(&FakeRunPeekMessageA), patches.peek)) {
+        return 1;
+    }
+    if (!PatchImportByName("USER32.dll", "PostQuitMessage",
+                           reinterpret_cast<void *>(&FakeRunPostQuitMessage), patches.postQuit)) {
+        RestoreRunPatches(patches);
+        return 2;
+    }
+    if (!PatchImportByName("USER32.dll", "WaitMessage",
+                           reinterpret_cast<void *>(&FakeRunWaitMessage), patches.wait)) {
+        RestoreRunPatches(patches);
+        return 3;
+    }
+    if (!PatchImportByName("KERNEL32.dll", "SetThreadPriority",
+                           reinterpret_cast<void *>(&FakeRunSetThreadPriority),
+                           patches.priority)) {
+        RestoreRunPatches(patches);
+        return 4;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zNetworkDPlay::ReceivePendingMessages),
+                           reinterpret_cast<void *>(&FakeRunReceivePendingMessages),
+                           patches.receive)) {
+        RestoreRunPatches(patches);
+        return 5;
+    }
+
+    return 0;
+}
+
+void ResetRunHarnessCounters() {
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+    g_stateTryBecomeCurrentCount = 0;
+    g_stateTryBecomeCurrentResult = 0;
+    g_stateUpdateShouldQuitCount = 0;
+    g_stateUpdateShouldQuitResult = 0;
+    g_stateDeactivateCount = 0;
+    g_stateSuspendCount = 0;
+    g_stateSuspendParam = 0;
+    g_stateResumeCount = 0;
+    g_stateResumeParam = 0;
+    g_runPumpMessageCount = 0;
+    g_runPumpMessageResult = 0;
+    g_runOnAppDeactivateCount = 0;
+    g_runPeekMessageCount = 0;
+    g_runPostQuitCount = 0;
+    g_runPostQuitCode = -1;
+    g_runWaitMessageCount = 0;
+    g_runSetThreadPriorityCount = 0;
+    g_runSetThreadPriorityValue = 0;
+    g_runReceivePendingMessagesCount = 0;
+    g_runReceivePendingMessagesBudget = 0;
+    g_runQuitPosted = 0;
+    g_runPeekMessageTrueAfterReceive = 0;
+    g_exitInstanceCount = 0;
 }
 
 bool FilterStringMatchesOpenFileDialogContract(const char *filter) {
@@ -1979,6 +2059,7 @@ extern "C" int recoil_app_run_current_state_quit_smoke(void) {
     g_runReceivePendingMessagesCount = 0;
     g_runReceivePendingMessagesBudget = 0;
     g_runQuitPosted = 0;
+    g_runPeekMessageTrueAfterReceive = 0;
     g_exitInstanceCount = 0;
 
     TestAppState state{};
@@ -2009,6 +2090,125 @@ extern "C" int recoil_app_run_current_state_quit_smoke(void) {
                     g_runPumpMessageCount == 1 && g_exitInstanceCount == 1 &&
                     g_runWaitMessageCount == 0;
     return ok ? 0 : 6;
+}
+
+extern "C" int recoil_app_run_queue_transitions_smoke(void) {
+    InitTestRecoilAppVtable();
+
+    RunPatchSet patches{};
+    const int patchResult = InstallRunPatches(patches);
+    if (patchResult != 0) {
+        return patchResult;
+    }
+
+    int result = 0;
+
+    TestAppState switchOldState{};
+    TestAppState switchNewState{};
+    switchOldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    switchNewState.vftable = switchOldState.vftable;
+
+    TestRecoilApp switchApp{};
+    switchApp.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+    switchApp.m_currentStateIndex_0c8 = 0;
+    switchApp.m_skipWait_0d0 = 1;
+    switchApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&switchOldState));
+    switchApp.QueueSwitchCurrentState(&switchNewState, 42);
+
+    ResetRunHarnessCounters();
+    g_stateTryBecomeCurrentResult = 1;
+    g_runPeekMessageTrueAfterReceive = 1;
+    const int switchRunResult = switchApp.Run();
+    if (switchRunResult != 77) {
+        result = 10;
+    } else if (g_stateDeactivateCount != 1) {
+        result = 11;
+    } else if (g_stateTryBecomeCurrentCount != 1) {
+        result = 12;
+    } else if (g_stateSuspendCount != 0 || g_stateResumeCount != 0) {
+        result = 13;
+    } else if (switchApp.m_currentStateIndex_0c8 != 0) {
+        result = 14;
+    } else if (switchApp.m_stateStack_0d8[0] !=
+               static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&switchNewState))) {
+        result = 15;
+    } else if (switchApp.m_stateQueue_118.m_itemCount != 0) {
+        result = 16;
+    } else if (g_runPumpMessageCount != 1 || g_exitInstanceCount != 1) {
+        result = 17;
+    } else if (g_runWaitMessageCount != 0) {
+        result = 18;
+    }
+
+    if (result == 0) {
+        TestAppState pushOldState{};
+        TestAppState pushNewState{};
+        pushOldState.vftable =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+        pushNewState.vftable = pushOldState.vftable;
+
+        TestRecoilApp pushApp{};
+        pushApp.vftable =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+        pushApp.m_currentStateIndex_0c8 = 0;
+        pushApp.m_skipWait_0d0 = 1;
+        pushApp.m_stateStack_0d8[0] =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&pushOldState));
+        pushApp.QueuePushState(&pushNewState, 23);
+
+        ResetRunHarnessCounters();
+        g_stateTryBecomeCurrentResult = 1;
+        g_runPeekMessageTrueAfterReceive = 1;
+        const int pushRunResult = pushApp.Run();
+        if (pushRunResult != 77 || g_stateSuspendCount != 1 || g_stateSuspendParam != 23 ||
+            g_stateTryBecomeCurrentCount != 1 || g_stateDeactivateCount != 0 ||
+            g_stateResumeCount != 0 || pushApp.m_currentStateIndex_0c8 != 1 ||
+            pushApp.m_stateStack_0d8[1] !=
+                static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&pushNewState)) ||
+            pushApp.m_stateQueue_118.m_itemCount != 0 || g_runPumpMessageCount != 1 ||
+            g_exitInstanceCount != 1 || g_runWaitMessageCount != 0) {
+            result = 20;
+        }
+    }
+
+    if (result == 0) {
+        TestAppState resumeState{};
+        TestAppState exitState{};
+        resumeState.vftable =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+        exitState.vftable = resumeState.vftable;
+
+        TestRecoilApp exitApp{};
+        exitApp.vftable =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+        exitApp.m_currentStateIndex_0c8 = 1;
+        exitApp.m_skipWait_0d0 = 1;
+        exitApp.m_stateStack_0d8[0] =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&resumeState));
+        exitApp.m_stateStack_0d8[1] =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&exitState));
+        exitApp.QueueExitCurrentState(17);
+
+        ResetRunHarnessCounters();
+        g_runPeekMessageTrueAfterReceive = 1;
+        const int exitRunResult = exitApp.Run();
+        if (exitRunResult != 77 || g_stateDeactivateCount != 1 || g_stateResumeCount != 1 ||
+            g_stateResumeParam != 17 || g_stateTryBecomeCurrentCount != 0 ||
+            g_stateSuspendCount != 0 || exitApp.m_currentStateIndex_0c8 != 0 ||
+            exitApp.m_stateStack_0d8[0] !=
+                static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&resumeState)) ||
+            exitApp.m_stateStack_0d8[1] != 0 || exitApp.m_stateQueue_118.m_itemCount != 0 ||
+            g_runPumpMessageCount != 1 || g_exitInstanceCount != 1 ||
+            g_runWaitMessageCount != 0) {
+            result = 30;
+        }
+    }
+
+    RestoreRunPatches(patches);
+    return result;
 }
 
 extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void) {
