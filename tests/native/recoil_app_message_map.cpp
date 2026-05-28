@@ -37,6 +37,15 @@ extern "C" int g_RecoilApp_AttractFmvReloadMode;
 BOOL RECOIL_STDCALL AfxWinInit(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine,
                                int showCommand);
 
+struct RecoilStateCredits {
+    RecoilPtr32 vftable;
+    RecoilPtr32 dialog;
+
+    RecoilStateCredits *RECOIL_THISCALL Constructor();
+    ~RecoilStateCredits();
+    static void RECOIL_CDECL QueuePush();
+};
+
 namespace {
 void AtexitProviderNoOp() {}
 
@@ -88,6 +97,24 @@ zVidRect32 *g_saveLoadUpdateAdjustDst;
 int g_openFileNameCalls;
 bool g_openFileNameStructOk;
 char g_openFileNameSelectedPath[MAX_PATH];
+
+struct TestCreditsPanel {
+    virtual void RECOIL_THISCALL Update(float) {}
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+        ++setEnabledCount;
+        lastEnabled = enabled;
+    }
+    virtual TestCreditsPanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags) {
+        ++scalarDeletingCount;
+        lastScalarDeletingFlags = flags;
+        return this;
+    }
+
+    int setEnabledCount = 0;
+    int lastEnabled = -1;
+    int scalarDeletingCount = 0;
+    unsigned int lastScalarDeletingFlags = 0;
+};
 
 struct ImportFunctionPatch {
     ULONG_PTR *slot;
@@ -4842,6 +4869,32 @@ extern "C" int recoil_app_fmv_state_destructor_smoke(void) {
     return intro.base.vftable == kRecoilStateBase_VtblAddress && introScript->m_fmvPath == nullptr
                ? 0
                : 4;
+}
+
+extern "C" int recoil_state_credits_destructor_smoke(void) {
+    RecoilStateCredits state{};
+    TestCreditsPanel panel{};
+
+    state.vftable = 0x11111111;
+    state.dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+
+    state.~RecoilStateCredits();
+
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.dialog != 0) {
+        return 1;
+    }
+    if (panel.setEnabledCount != 1 || panel.lastEnabled != 0) {
+        return 2;
+    }
+    if (panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
+        return 3;
+    }
+
+    state.vftable = 0x22222222;
+    state.dialog = 0;
+    state.~RecoilStateCredits();
+
+    return state.vftable == kRecoilStateBase_VtblAddress ? 0 : 4;
 }
 
 extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void) {

@@ -1144,10 +1144,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x4099f0:
   - [☑️] Reconstructed (Name: RecoilStateCredits::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCredits::Destructor File: src/Battlesport/RecoilStateCredits.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_credits_destructor)
+  - [✅] Binary-safe
 - 0x415190:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied

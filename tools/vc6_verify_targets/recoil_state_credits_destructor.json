@@ -1,0 +1,26 @@
+{
+  "name": "recoil_state_credits_destructor",
+  "description": "RecoilStateCredits C++ destructor with dialog disable/delete and base-vtable guard.",
+  "source_filename": "RecoilStateCredits.cpp",
+  "source_from": "src/Battlesport/RecoilStateCredits.cpp",
+  "compiler_profile": "vc5_o2_ob1_gx_facs",
+  "include_dirs": [
+    "src",
+    "src/native/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX_Aug2007/Include",
+    "support/sdk/MFC42/Include"
+  ],
+  "source_files": [
+    "src/Battlesport/RecoilStateCredits.cpp"
+  ],
+  "functions": [
+    {
+      "address": "0x4099f0",
+      "symbol": "??1RecoilStateCredits@@QAE@XZ",
+      "name": "RecoilStateCredits::~RecoilStateCredits"
+    }
+  ]
+}
