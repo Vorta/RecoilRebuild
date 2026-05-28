@@ -742,7 +742,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x435e80:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::OnUpdateShouldQuit)
-  - [☑️] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::OnUpdateShouldQuit File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: RecoilStateSaveLoadTransition::OnUpdateShouldQuit)
   - [❌] Binary-safe
