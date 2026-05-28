@@ -126,8 +126,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilApp::GetMessageMap)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::GetMessageMap File: src/Battlesport/RecoilApp.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_app_get_message_map)
+  - [✅] Binary-safe
 - 0x42de20:
   - [✅] Reconstructed (Name: RecoilApp::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
