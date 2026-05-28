@@ -21051,8 +21051,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideo_buff::ClipCoordToRange)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_buff::ClipCoordToRange File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zvideo_buff_clip_coord_to_range)
+  - [✅] Binary-safe
 - 0x4a69e0:
   - [✅] Reconstructed (Name: zVideo_buff::BltSourceToPrimaryClipped)
   - [✅] Source dependencies satisfied
