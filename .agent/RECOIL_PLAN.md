@@ -17799,7 +17799,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndSampleSet::InitByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSet_InitByName File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: zsnd_sample_set_init_by_name)
   - [❌] Binary-safe
 - 0x4a0870:
   - [✅] Reconstructed (Name: zSndSampleSet::DestroyByName)
@@ -17847,7 +17847,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zSndSampleSet::Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSet::Init File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_set_init)
   - [❌] Binary-safe
 - 0x4a0e40:
   - [✅] Reconstructed (Name: zSndSampleSet::Destroy)

@@ -3078,6 +3078,112 @@ extern "C" int zsnd_sample_set_init_by_name_empty_smoke(void) {
     return 0;
 }
 
+extern "C" int zsnd_sample_set_init_loose_file_smoke(void) {
+    const char *fileName = "recoil_sample_set_init_loose.wav";
+    const std::uint8_t wavBytes[] = {
+        'R', 'I', 'F', 'F', 40,  0,   0,   0,   'W',  'A',  'V', 'E', 'f',  'm',  't', ' ',
+        16,  0,   0,   0,   1,   0,   1,   0,   0x40, 0x1f, 0,   0,   0x80, 0x3e, 0,   0,
+        2,   0,   16,  0,   'd', 'a', 't', 'a', 4,    0,    0,   0,   1,    2,    3,   4,
+    };
+
+    FILE *file = std::fopen(fileName, "wb");
+    if (file == nullptr) {
+        return 1;
+    }
+    std::fwrite(wavBytes, sizeof(wavBytes), 1, file);
+    std::fclose(file);
+
+    char searchDir[MAX_PATH] = {};
+    if (GetCurrentDirectoryA(sizeof(searchDir), searchDir) == 0) {
+        std::remove(fileName);
+        return 2;
+    }
+
+    const zSndSampleSetRegistry oldRegistry = g_zSnd_SampleSetRegistry;
+    zArchiveList *const oldSearchPathList = g_zSnd_SearchPathList;
+    const int oldUseArchiveBanksFlag = g_zSnd_UseArchiveBanksFlag;
+    void *const oldBackendDevice = g_zSnd_BackendDevice;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+
+    EnsureZrdrFreePool();
+    zArchiveList *searchList = zArchiveList_CreateEmpty();
+    if (searchList == nullptr || zArchiveList_PushFrontPayload(searchList, searchDir) <= 0) {
+        std::remove(fileName);
+        if (searchList != nullptr) {
+            std::free(searchList);
+        }
+        return 3;
+    }
+
+    auto cleanup = [&]() {
+        g_zSnd_SampleSetRegistry = oldRegistry;
+        g_zSnd_SearchPathList = oldSearchPathList;
+        g_zSnd_UseArchiveBanksFlag = oldUseArchiveBanksFlag;
+        g_zSnd_BackendDevice = oldBackendDevice;
+        g_zSnd_ActiveBackend = oldActiveBackend;
+        zArchiveList_PopFrontPayload(searchList);
+        std::free(searchList);
+        std::remove(fileName);
+    };
+
+    g_testCreateSoundBufferCount = 0;
+    g_testLockCount = 0;
+    g_testUnlockCount = 0;
+    g_testGetStatusCount = 0;
+    g_testSetCurrentPositionCount = 0;
+    g_testCreateDescFlags = 0;
+    g_testCreateDescBytes = 0;
+    g_testCreateDescFormat = nullptr;
+    g_testUnlockBytes1 = 0;
+    g_testUnlockBytes2 = 0;
+    g_testStatusValue = 0;
+    std::memset(g_testLockedBytes, 0, sizeof(g_testLockedBytes));
+
+    TestCreateDirectSoundDeviceVTable deviceVTable = {};
+    deviceVTable.CreateSoundBuffer = &TestCreateSoundBuffer;
+    TestCreateDirectSoundDevice device{&deviceVTable};
+    g_zSnd_BackendDevice = &device;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_UseArchiveBanksFlag = 0;
+    g_zSnd_SearchPathList = searchList;
+
+    zSndSample samples[2] = {};
+    samples[0].replayFields.resourceName = fileName;
+    samples[0].replayFields.sampleId = "loose";
+    samples[1].replayFields.resourceName = fileName;
+    samples[1].replayFields.sampleId = "skipped";
+    samples[1].replayFields.flags = 0x08;
+
+    zSndSampleSet sampleSet = {};
+    sampleSet.setName = const_cast<char *>("loose_set");
+    sampleSet.sampleCount = 2;
+    sampleSet.samples = samples;
+
+    zSndSampleSet *slots[1] = {&sampleSet};
+    g_zSnd_SampleSetRegistry.begin = slots;
+    g_zSnd_SampleSetRegistry.end = slots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = slots + 1;
+
+    const int result = zSndSampleSet_InitByName("loose_set");
+    const bool loadedOk =
+        result == 1 && sampleSet.resourcesLoaded == 1 &&
+        (samples[0].replayFields.flags & 0x08) != 0 &&
+        samples[0].primaryVoice.handleKind == ZSND_PLAYHANDLE_BACKEND &&
+        samples[0].primaryVoice.backendBuffer != nullptr && samples[0].markerCount == 0 &&
+        g_testCreateSoundBufferCount == 1 && g_testCreateDescFlags == 0x80 &&
+        g_testCreateDescBytes == 4 && g_testGetStatusCount == 1 && g_testLockCount == 1 &&
+        g_testUnlockCount == 1 && g_testSetCurrentPositionCount == 1 &&
+        std::memcmp(g_testLockedBytes, &wavBytes[44], 4) == 0;
+    const bool skippedOk = (samples[1].replayFields.flags & 0x08) != 0 &&
+                           samples[1].primaryVoice.backendBuffer == nullptr;
+    const bool reloadOk =
+        zSndSampleSet_InitByName("loose_set") == 0 && sampleSet.Init() == 0 &&
+        zSndSampleSet_InitByName("missing_set") == 0 && g_testCreateSoundBufferCount == 1;
+
+    cleanup();
+    return loadedOk && skippedOk && reloadOk ? 0 : 4;
+}
+
 extern "C" int zsnd_wave_data_load_parse_reset_smoke(void) {
     const char *fileName = "recoil_wave_data_smoke.wav";
     FILE *file = std::fopen(fileName, "wb");
