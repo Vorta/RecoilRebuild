@@ -3284,6 +3284,93 @@ extern "C" int zsnd_wave_data_archive_load_smoke(void) {
     return archiveLoadOk ? 0 : 5;
 }
 
+extern "C" int zsnd_sample_set_load_samples_from_index_archive_smoke(void) {
+    const char *fileName = "recoil_sample_set_archive_smoke.bin";
+    const std::uint8_t wavBytes[] = {
+        'R', 'I', 'F', 'F', 40,  0,   0,   0,   'W',  'A',  'V', 'E', 'f',  'm',  't', ' ',
+        16,  0,   0,   0,   1,   0,   1,   0,   0x40, 0x1f, 0,   0,   0x80, 0x3e, 0,   0,
+        2,   0,   16,  0,   'd', 'a', 't', 'a', 4,    0,    0,   0,   1,    2,    3,   4,
+    };
+
+    FILE *file = std::fopen(fileName, "wb");
+    if (file == nullptr) {
+        return 1;
+    }
+    std::fwrite(wavBytes, sizeof(wavBytes), 1, file);
+    std::fclose(file);
+
+    HANDLE handle = CreateFileA(fileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                                FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (handle == INVALID_HANDLE_VALUE) {
+        std::remove(fileName);
+        return 2;
+    }
+
+    zZarFileRecord record = {};
+    record.fileOffset = 0;
+    record.fileSize = sizeof(wavBytes);
+    std::strcpy(record.name, "loaded.wav");
+
+    zIndexArchive archive = {};
+    archive.hFile = handle;
+    archive.recordCount = 1;
+    archive.records = &record;
+
+    g_testCreateSoundBufferCount = 0;
+    g_testLockCount = 0;
+    g_testUnlockCount = 0;
+    g_testGetStatusCount = 0;
+    g_testSetCurrentPositionCount = 0;
+    g_testCreateDescFlags = 0;
+    g_testCreateDescBytes = 0;
+    g_testCreateDescFormat = nullptr;
+    g_testUnlockBytes1 = 0;
+    g_testUnlockBytes2 = 0;
+    g_testStatusValue = 0;
+    std::memset(g_testLockedBytes, 0, sizeof(g_testLockedBytes));
+
+    TestCreateDirectSoundDeviceVTable deviceVTable = {};
+    deviceVTable.CreateSoundBuffer = &TestCreateSoundBuffer;
+    TestCreateDirectSoundDevice device{&deviceVTable};
+    g_zSnd_BackendDevice = &device;
+    g_zSnd_ActiveBackend = 0;
+
+    zSndSample samples[3] = {};
+    samples[0].replayFields.resourceName = "loaded.wav";
+    samples[0].replayFields.sampleId = "loaded";
+    samples[1].replayFields.resourceName = "missing.wav";
+    samples[1].replayFields.sampleId = "missing";
+    samples[2].replayFields.resourceName = "loaded.wav";
+    samples[2].replayFields.sampleId = "already_loaded";
+    samples[2].replayFields.flags = 0x08;
+
+    zSndSampleSet sampleSet = {};
+    sampleSet.sampleCount = 3;
+    sampleSet.samples = samples;
+
+    const int result = sampleSet.LoadSamplesFromIndexArchive(&archive);
+    const bool loadedOk =
+        result == 1 && (samples[0].replayFields.flags & 0x08) != 0 &&
+        samples[0].primaryVoice.handleKind == ZSND_PLAYHANDLE_BACKEND &&
+        samples[0].primaryVoice.backendBuffer != nullptr && samples[0].markerCount == 0 &&
+        samples[0].playbackEventHandler == nullptr && g_testCreateSoundBufferCount == 1 &&
+        g_testCreateDescFlags == 0x80 && g_testCreateDescBytes == 4 &&
+        g_testGetStatusCount == 1 && g_testLockCount == 1 && g_testUnlockCount == 1 &&
+        g_testUnlockBytes1 == 4 && g_testUnlockBytes2 == 2 &&
+        g_testSetCurrentPositionCount == 1 && g_testLastCurrentPosition == 0 &&
+        std::memcmp(g_testLockedBytes, &wavBytes[44], 4) == 0;
+    const bool missingOk = (samples[1].replayFields.flags & 0x08) == 0 &&
+                           samples[1].primaryVoice.backendBuffer == nullptr;
+    const bool skippedOk = (samples[2].replayFields.flags & 0x08) != 0 &&
+                           samples[2].primaryVoice.backendBuffer == nullptr;
+
+    g_zSnd_BackendDevice = nullptr;
+    CloseHandle(handle);
+    std::remove(fileName);
+
+    return loadedOk && missingOk && skippedOk ? 0 : 3;
+}
+
 extern "C" int zsnd_sample_backend_buffer_lock_unlock_smoke(void) {
     TestDirectSoundBufferVTable directSoundVTable = {};
     directSoundVTable.slot2c = reinterpret_cast<void *>(&TestLockSoundBuffer);

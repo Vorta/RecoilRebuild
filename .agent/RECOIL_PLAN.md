@@ -17871,7 +17871,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zSndSampleSet::LoadSamplesFromIndexArchive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSampleSet::LoadSamplesFromIndexArchive File: src/GameZRecoil/zSound/zsnd_sample_set.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_set_load_samples_from_index_archive)
   - [❌] Binary-safe
 - 0x4a12b0:
   - [✅] Reconstructed (Name: zSnd::GetActiveBackend)

@@ -973,6 +973,7 @@ extern "C" int zsnd_wave_data_load_parse_reset_smoke(void);
 extern "C" int zsnd_wave_data_parse_chunks_smoke(void);
 extern "C" int zsnd_wave_data_load_parse_edges_smoke(void);
 extern "C" int zsnd_wave_data_archive_load_smoke(void);
+extern "C" int zsnd_sample_set_load_samples_from_index_archive_smoke(void);
 extern "C" int zsnd_sample_backend_buffer_lock_unlock_smoke(void);
 extern "C" int zsnd_sample_init_from_wave_data_directsound_smoke(void);
 extern "C" int zsnd_sample_init_from_wave_data_a3d_smoke(void);
@@ -2892,6 +2893,8 @@ int main(int argc, char **argv) {
         {"zsnd_wave_data_parse_chunks_smoke", zsnd_wave_data_parse_chunks_smoke},
         {"zsnd_wave_data_load_parse_edges_smoke", zsnd_wave_data_load_parse_edges_smoke},
         {"zsnd_wave_data_archive_load_smoke", zsnd_wave_data_archive_load_smoke},
+        {"zsnd_sample_set_load_samples_from_index_archive_smoke",
+         zsnd_sample_set_load_samples_from_index_archive_smoke},
         {"zsnd_sample_backend_buffer_lock_unlock_smoke",
          zsnd_sample_backend_buffer_lock_unlock_smoke},
         {"zsnd_sample_init_from_wave_data_directsound_smoke",
