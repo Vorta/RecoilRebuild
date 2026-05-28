@@ -91,6 +91,10 @@ template <typename FTable> FTable MakeHudUiContainerLikeFTable() {
 
 template <typename FTable> FTable MakeHudUiFTableWithCommonInvalidate() {
     FTable table = {0};
+    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 2) {
+        table.slots[2] = (unsigned int)(&HudUiNoOpMethodStub);
+    }
+
     if ((sizeof(table.slots) / sizeof(table.slots[0])) > 8) {
         table.slots[8] = (unsigned int)(&HudUiCommonInvalidateThunk);
     }
@@ -7784,10 +7788,8 @@ void RECOIL_THISCALL HudUiWidget::Draw() {
         return;
     }
 
-    if (ftable != 0 && ftable->slots[2] != 0) {
-        typedef void (RECOIL_THISCALL *DrawBaseFn)(HudUiWidget * self);
-        ((DrawBaseFn)(ftable->slots[2]))(this);
-    }
+    typedef void (RECOIL_THISCALL *DrawBaseFn)(HudUiWidget * self);
+    ((DrawBaseFn)(ftable->slots[2]))(this);
 
     zVid_Image::BlitToActiveTarget(image, x, y, 0,
                                    (zVidRect32 *)(bltClipRectOrNull));

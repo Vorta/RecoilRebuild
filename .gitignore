@@ -38,8 +38,6 @@ bld/
 [Ll]ogs/
 MCP/
 _scratch/
-tools/zbd_1998/
-tools/zbd_1999/
 
 # Native/compiler/linker output
 *.aps

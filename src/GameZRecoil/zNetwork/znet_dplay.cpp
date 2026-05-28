@@ -661,6 +661,23 @@ RECOIL_NOINLINE int RECOIL_CDECL EnumPlayers() {
 }
 } // namespace zNetwork_DPlay
 
+namespace zNetwork {
+// Reimplements 0x48bf40: zNetwork::DeleteAllDispatchHandlers
+// (D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL DeleteAllDispatchHandlers() {
+    zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;
+    zNetworkDispatchHandlerListNode *node = sentinel->next;
+    while (node != sentinel) {
+        zNetworkDispatchHandlerListNode *const next = node->next;
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+        ::operator delete(node);
+        --g_zNetwork_DispatchHandlerListCount;
+        node = next;
+    }
+}
+} // namespace zNetwork
+
 // Reimplements 0x48bff0: zNetwork_DestroyDispatchHandlerList
 extern "C" RECOIL_NOINLINE void RECOIL_CDECL zNetwork_DestroyDispatchHandlerList() {
     zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;

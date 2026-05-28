@@ -1,5 +1,27 @@
 BasedOnStyle: LLVM
 IndentWidth: 4
+ContinuationIndentWidth: 4
 ColumnLimit: 100
 AllowShortFunctionsOnASingleLine: Empty
 SortIncludes: CaseSensitive
+
+# Put wrapped argument/parameter lists in block form:
+# foo(
+#     a,
+#     b
+# )
+AlignAfterOpenBracket: BlockIndent
+
+# Once a call/declaration wraps, do not pack multiple args/params on one line.
+BinPackArguments: false
+BinPackParameters: false
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+
+# Force function definitions like:
+# void f(
+#     int a,
+#     int b
+# )
+# even when they would fit on one line.
+BreakFunctionDefinitionParameters: true

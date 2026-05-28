@@ -265,6 +265,7 @@ RECOIL_NOINLINE int RECOIL_CDECL AllocFreePlayerColorIndex();
 RECOIL_NOINLINE void RECOIL_FASTCALL HostSendPlayerColorAssignmentsPacket(int joiningPlayerKey);
 RECOIL_NOINLINE int RECOIL_FASTCALL
 GetPlayerNameByKey(int playerKey, char *destination, unsigned int maxCount);
+RECOIL_NOINLINE void RECOIL_CDECL DeleteAllDispatchHandlers();
 RECOIL_NOINLINE zNetworkDispatchHandlerRecord *RECOIL_FASTCALL
 RegisterPacketHandler(int packetType, zNetworkPacketHandler handlerProc, int mode);
 RECOIL_NOINLINE int RECOIL_FASTCALL
