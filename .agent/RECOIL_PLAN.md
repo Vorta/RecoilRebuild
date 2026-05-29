@@ -7135,7 +7135,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundContainer::SetEnabled File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [✅] Functional-equivalent (Target: hud_ui_background_container_set_enabled)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x42ee50:
   - [✅] Reconstructed (Name: RecoilApp_MissionFmvState::OnDeactivate)
   - [❌] Source dependencies satisfied
