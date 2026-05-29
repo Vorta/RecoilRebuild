@@ -1361,6 +1361,7 @@ namespace zClass_Class {
 }
 
 namespace zClass_Class {
+    // Reimplements 0x447980: zClass_Class::DeleteNodeByType
     RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNodeByType(zClass_NodePartial * node) {
         if (ReportNullNode(0x231, node)) {
             return 5;

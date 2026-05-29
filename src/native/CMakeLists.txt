@@ -155,6 +155,8 @@ target_include_directories(recoil_native PUBLIC
     ${PROJECT_SOURCE_DIR}/src/GameZRecoil/include
 )
 
+# Modern smoke builds use C++17 for test/toolchain compatibility only. Production
+# source under src/ still follows the VC-era rules enforced by the source guards.
 target_compile_features(recoil_native PUBLIC cxx_std_17)
 
 # Add reimplemented source files here only after their direct dependencies compile.

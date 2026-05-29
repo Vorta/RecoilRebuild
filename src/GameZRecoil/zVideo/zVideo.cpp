@@ -2979,6 +2979,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Shutdown() {
 } // namespace zVid_TexturePack
 
 namespace zVid_TexDir {
+// Reimplements 0x46d5d0: zVid_TexDir::Shutdown
 RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
         zImage_TexDirEntryPartial &entry = g_zImage_TexDirEntries[i];

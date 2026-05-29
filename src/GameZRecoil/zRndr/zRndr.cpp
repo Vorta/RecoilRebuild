@@ -3287,6 +3287,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan565Solid(int packedColor16,
     } while (pixelCount != 0);
 }
 
+// Reimplements 0x4907c0: zRndr_SpanOcclusion_TestSpanDepthOrderPair
 RECOIL_NOINLINE int RECOIL_FASTCALL zRndr_SpanOcclusion_TestSpanDepthOrderPair(
     zRndr::SpanNodePartial *lhs, zRndr::SpanNodePartial *rhs) {
     if (lhs == 0 || rhs == 0) {

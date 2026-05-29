@@ -173,6 +173,7 @@ namespace zClass {
 }
 
 namespace zClass_Util {
+    // Reimplements 0x451a60: zClass_Util::DestroyNodeRecursive
     RECOIL_NOINLINE int RECOIL_FASTCALL DestroyNodeRecursive(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(0x400, kClsUtilSourceFile, 0x2b6, "Null node pointer.");

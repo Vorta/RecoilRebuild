@@ -10,13 +10,14 @@ namespace-style subsystem.
 
 ## Core Rule
 
-Tables are evidence, not the source design.
+Tables are ABI evidence, not the source design.
 
 When Binary Ninja shows vtable or function-table dispatch, first recover the
-owning object boundary. Do not copy a decompiled ftable/vtable array as the main
-implementation of an authored class. Model the class, interface, custom object,
-provider boundary, or data system that owns the table, then use the table layout
-only as ABI evidence.
+owning source boundary. Do not copy a decompiled ftable/vtable array as the main
+implementation of an authored class or custom table object. Model the class,
+interface, typed custom function-table object, provider boundary, callback table,
+or data system that owns the table, then use the table layout only as ABI
+evidence.
 
 Raw `slots[n]` dispatch is acceptable only when current evidence proves one of
 these cases:
@@ -47,7 +48,10 @@ Required evidence checks:
   table, layout, provider, or source-file cluster
 
 Do not mark `Source dependencies satisfied` for a caller until this ownership
-classification is known for every table dispatch used by that caller.
+classification is known for every table dispatch used by that caller. For an
+authored table owner, the caller remains source-blocked until the owner is
+modeled as a class/interface or typed custom table object; a copied Binary Ninja
+ftable/vtable array is not enough.
 
 ## Boundary Decisions
 
@@ -56,7 +60,7 @@ Use the first matching classification that is supported by current evidence.
 | Evidence | Source model |
 |---|---|
 | Constructor installs a table at object offset `0`, methods use `this`, destructor restores or destroys base state | Authored class/interface. Implement class/layout/method cluster before isolated callers. |
-| Offset `0` table exists, but dispatch is a hand-built engine table rather than compiler C++ virtuals | Authored custom function-table object. Prefer typed table fields and named methods; use raw slots only where necessary. |
+| Offset `0` table exists, but dispatch is a hand-built engine table rather than compiler C++ virtuals | Authored custom function-table object. Implement the typed owner and named methods/table fields; use raw slots only where necessary. |
 | Table is COM/MFC/DirectX/import/runtime-owned | Provider boundary. Do not author fake provider internals; model only the game-owned wrapper or derived class. |
 | Functions operate on explicit records, globals, tags, or data nodes without constructor-owned table identity | Record or namespace subsystem. Do not promote to a C++ class by name alone. |
 | Repeated caller bodies look like an inlined helper or method and no standalone executable function exists | Restore a likely inline helper/member and verify through callers or the smallest class/source cluster. |

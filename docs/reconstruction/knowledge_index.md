@@ -32,8 +32,27 @@ for function identity, types, markers, and acceptance state.
   including the `StopIfActive` backend-dispatch mismatch profile.
 - `zsnd_sample_set_verification.md` - zSound sample-set registry verification
   notes, including the `FindByName` inline-`strcmp` mismatch profile.
-- `docs/reconstruction/README.md` - rules for when to add durable
-  reconstruction notes.
+- `zsnd_snapshot_verification.md` - zSound snapshot verification notes,
+  including current `StopAllIfPlaying` and snapshot cluster byte-diff limits.
+
+## Documentation Policy
+
+Use this directory for durable facts that save future reconstruction time across
+source files, subsystems, providers, or verification targets. Prefer source
+comments for facts local to one function, class, layout, or call site.
+
+When finishing reimplemented code, class/source-cluster work, or verification
+evidence, make a documentation decision before handoff: add a compact durable
+note here, add a local source comment, or state that no durable new
+documentation was needed. Document facts that prevent rediscovery, not routine
+progress.
+
+Add or update a reconstruction document for cross-cutting facts such as
+compiler/provider contracts, shared class layouts, repeated inlined helpers,
+file formats, repeated Binary Ninja/toolchain limits, or source-file placement
+evidence. Keep entries compact: name addresses and symbols when known, state
+the evidence source, separate recovered facts from open limits, and avoid broad
+progress notes or duplicated plan state.
 
 ## Agent Use
 

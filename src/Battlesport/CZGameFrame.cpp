@@ -82,6 +82,7 @@ CRuntimeClass CZGameFrame::classCZGameFrame = {
     "CZGameFrame", sizeof(CZGameFrame), 0xffff, 0, &GetCZGameFrameBaseRuntimeClass, 0,
 };
 
+// Reimplements 0x443790: CZGameFrame::GetBaseRuntimeClass
 RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetBaseRuntimeClass() {
     return Ptr32FromSymbol(&CFrameWnd::classCFrameWnd);
 }
@@ -105,14 +106,17 @@ RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_CDECL CZGameFrame::CreateObject()
     }
 }
 
+// Reimplements 0x4437a0: CZGameFrame::GetRuntimeClass
 RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetRuntimeClass() {
     return Ptr32FromSymbol(&CZGameFrame::classCZGameFrame);
 }
 
+// Reimplements 0x4437b0: CZGameFrame::GetBaseMessageMap
 RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetBaseMessageMap() {
     return Ptr32FromSymbol(&CFrameWnd::messageMap);
 }
 
+// Reimplements 0x4437c0: CZGameFrame::GetMessageMap
 RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetMessageMap() {
     return Ptr32FromSymbol(&CZGameFrame::messageMap);
 }

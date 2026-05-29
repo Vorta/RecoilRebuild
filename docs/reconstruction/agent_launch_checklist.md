@@ -52,8 +52,8 @@ After finishing a function or class reimplementation step, create a focused
 local git commit. A coherent multi-function batch may use one commit. Do not
 push. Stage only the agent's own related changes, do not use `git add .`, and
 do not stage private inputs, generated artifacts, ignored runtime state, local
-tools, local tool tests, or unrelated user changes. Never use `git add -f` to
-force ignored paths.
+tools, local tool tests, local verification manifests, or unrelated user
+changes. Never use `git add -f` to force ignored paths.
 
 Treat `.agent/IMPLEMENTATION_GROUPS.md` as temporary context only. If it
 disagrees with `.agent/RECOIL_PLAN.md`, Binary Ninja, or `recoil_status.py`,
@@ -114,7 +114,9 @@ class/source cluster.
 Check `docs/reconstruction/original_classes.md` before introducing or reshaping
 classes, inheritance, vtables, function tables, records, provider boundaries, or
 namespace/module boundaries. Use its class/table gate and boundary ledger, then
-confirm against current Binary Ninja facts.
+confirm against current Binary Ninja facts. For table dispatch, model the owner
+first; do not add copied ftable/vtable arrays or raw slots as the source
+substitute for an authored class or typed custom table object.
 
 ## Source literals
 

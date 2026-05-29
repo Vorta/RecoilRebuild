@@ -8,7 +8,7 @@ This ledger records the current compiler/linker assumptions used for source-fait
 - VC6 `cl` 12.00.8168 is a fallback for functions whose original bytes, imports, MFC/CRT behavior, or a reviewed VC5SP3 attempt indicate VS98-era code generation is more plausible.
 - Current executable provenance points strongly to VS97 SP3 first: VS97 SP3 `cvtres` produced 1 object, VS97 SP3 `link` 5.10.7303 linked 293 objects, and VS98-era tooling accounts for 10 objects.
 - Modern MSVC/CMake builds are smoke and guard builds only. They prove compile/link/test health, not binary-safe equivalence.
-- Binary-safe acceptance still requires relocation-masked COFF byte comparison or an explicitly accepted legacy listing comparison for the target function.
+- Binary-safe acceptance normally requires relocation-masked COFF byte comparison. Legacy listing/text comparison is acceptable only for explicitly accepted `compare_mode: text` targets with documented accepted differences.
 
 ## Final Candidate Build Assumptions
 
@@ -28,6 +28,7 @@ Accepted per-target verification profiles are intentionally narrow:
 
 - `vc5_o2_ob0_facs`: first-pass VC5SP3 object-byte verification profile for plain non-EH code.
 - `vc5_o2_ob1_gx_facs`: first-pass VC5SP3 profile when one-level inlining and C++ EH, constructor, destructor, or member-call cleanup shape are relevant.
+- `vc5_o2_ob1_facs`: VC5SP3 one-level inlining profile without C++ EH for plain leaf/helper code whose local evidence points to `/Ob1`.
 - `vc5_o2_ob1_gx_uintptr_facs`: VC5SP3 one-level inlining profile with a `UINT_PTR` compatibility define for focused full-TU MFC frame targets whose production headers otherwise require a later SDK typedef.
 - `vc5_o2_ob1_md_gx_facs`: VC5SP3 profile for functions where the original bytes use DLL CRT import-call forms such as `sprintf`.
 - `vc5_o2_ob2_facs` and `vc5_o2_ob2_gx_facs`: VC5SP3 profiles for local evidence requiring aggressive inlining.

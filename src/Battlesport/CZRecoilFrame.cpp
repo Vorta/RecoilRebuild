@@ -147,6 +147,7 @@ RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_CDECL CZRecoilFrame::CreateObject() 
     }
 }
 
+// Reimplements 0x430240: CZRecoilFrame::GetRuntimeClass
 RECOIL_FRAME_NOINLINE unsigned int RECOIL_CDECL CZRecoilFrame::GetRuntimeClass() {
     return Ptr32FromSymbol(&CZRecoilFrame::classCZRecoilFrame);
 }
