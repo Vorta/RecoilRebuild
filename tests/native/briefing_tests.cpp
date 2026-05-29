@@ -42,6 +42,16 @@ zVidRect32 g_briefingBlitRect;
 int g_briefingMessageEntryDtorCount;
 void *g_briefingMessageEntryDtorThis[4];
 unsigned int g_briefingMessageEntryDtorFlags[4];
+int g_briefingTickDrawBaseCount;
+int g_briefingTickInvalidateCount;
+int g_briefingTickRebuildCount;
+int g_briefingTickUpdateBoundsCount;
+int g_briefingTickSetVisibleCount;
+int g_briefingTickSetVisibleValue[8];
+void *g_briefingTickSetVisibleThis[8];
+void *g_briefingTickNoArgThis[16];
+void *g_briefingTickPanelSetTextThis;
+char g_briefingTickPanelSetText[0x100];
 
 int RECOIL_FASTCALL TestVideoSurfaceDispatch(zVideo_SurfaceStatePartial *) {
     return 0;
@@ -83,6 +93,123 @@ void RECOIL_FASTCALL TestBriefingBltSourceToPrimary(void *self, int dstX, int ds
     if (srcRect != nullptr) {
         g_briefingBlitRect = *static_cast<zVidRect32 *>(srcRect);
     }
+}
+
+struct TestBriefingTickTarget {
+    void RECOIL_THISCALL DrawBase() {
+        if (g_briefingTickDrawBaseCount < 16) {
+            g_briefingTickNoArgThis[g_briefingTickDrawBaseCount] = this;
+        }
+
+        ++g_briefingTickDrawBaseCount;
+    }
+
+    void RECOIL_THISCALL Invalidate() {
+        if (g_briefingTickInvalidateCount < 16) {
+            g_briefingTickNoArgThis[g_briefingTickInvalidateCount] = this;
+        }
+
+        ++g_briefingTickInvalidateCount;
+    }
+
+    void RECOIL_THISCALL Rebuild() {
+        ++g_briefingTickRebuildCount;
+        g_briefingTickNoArgThis[0] = this;
+    }
+
+    void RECOIL_THISCALL UpdateBounds() {
+        ++g_briefingTickUpdateBoundsCount;
+        g_briefingTickNoArgThis[1] = this;
+    }
+
+    void RECOIL_THISCALL SetVisible(int visible) {
+        if (g_briefingTickSetVisibleCount < 8) {
+            g_briefingTickSetVisibleThis[g_briefingTickSetVisibleCount] = this;
+            g_briefingTickSetVisibleValue[g_briefingTickSetVisibleCount] = visible;
+        }
+
+        ++g_briefingTickSetVisibleCount;
+    }
+};
+
+void RECOIL_CDECL TestBriefingTickPanelSetText(void *self, const char *format, ...) {
+    g_briefingTickPanelSetTextThis = self;
+    std::strncpy(g_briefingTickPanelSetText, format, sizeof(g_briefingTickPanelSetText) - 1);
+    g_briefingTickPanelSetText[sizeof(g_briefingTickPanelSetText) - 1] = '\0';
+}
+
+unsigned int MakeBriefingTickDrawBaseThunk() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL TestBriefingTickTarget::*member)();
+        unsigned int fn;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &TestBriefingTickTarget::DrawBase;
+    return thunk.fn;
+}
+
+unsigned int MakeBriefingTickInvalidateThunk() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL TestBriefingTickTarget::*member)();
+        unsigned int fn;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &TestBriefingTickTarget::Invalidate;
+    return thunk.fn;
+}
+
+unsigned int MakeBriefingTickRebuildThunk() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL TestBriefingTickTarget::*member)();
+        unsigned int fn;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &TestBriefingTickTarget::Rebuild;
+    return thunk.fn;
+}
+
+unsigned int MakeBriefingTickUpdateBoundsThunk() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL TestBriefingTickTarget::*member)();
+        unsigned int fn;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &TestBriefingTickTarget::UpdateBounds;
+    return thunk.fn;
+}
+
+unsigned int MakeBriefingTickSetVisibleThunk() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL TestBriefingTickTarget::*member)(int);
+        unsigned int fn;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &TestBriefingTickTarget::SetVisible;
+    return thunk.fn;
+}
+
+void ResetBriefingTickDispatchLog() {
+    g_briefingTickDrawBaseCount = 0;
+    g_briefingTickInvalidateCount = 0;
+    g_briefingTickRebuildCount = 0;
+    g_briefingTickUpdateBoundsCount = 0;
+    g_briefingTickSetVisibleCount = 0;
+    std::memset(g_briefingTickSetVisibleValue, 0, sizeof(g_briefingTickSetVisibleValue));
+    std::memset(g_briefingTickSetVisibleThis, 0, sizeof(g_briefingTickSetVisibleThis));
+    std::memset(g_briefingTickNoArgThis, 0, sizeof(g_briefingTickNoArgThis));
+    g_briefingTickPanelSetTextThis = nullptr;
+    std::memset(g_briefingTickPanelSetText, 0, sizeof(g_briefingTickPanelSetText));
+}
+
+int CallBriefingActionTick(void *action, float deltaSec) {
+    typedef int(RECOIL_THISCALL *TickFn)(void *self, float deltaSec);
+    const unsigned int *const vtable = *reinterpret_cast<unsigned int *const *>(action);
+    return ((TickFn)(vtable[0]))(action, deltaSec);
 }
 
 struct TestBriefingTransportProgress : HudUiBriefingTransportProgress {
@@ -1011,6 +1138,7 @@ extern "C" int briefing_build_objective_actions_smoke(void) {
     constexpr std::size_t kObjectiveSummaryOffset = 0xad8c;
     constexpr std::size_t kObjectiveDescOffset = 0xb030;
     constexpr std::size_t kObjectivePictureOffset = 0xb2d4;
+    constexpr std::size_t kObjectivePictureNoiseAlphaOffset = kObjectivePictureOffset + 0xbc;
     constexpr std::size_t kLocatorPanelsOffset = 0xb8f0;
     constexpr std::size_t kLocatorPanelStride = 0x40;
 
@@ -1195,6 +1323,107 @@ extern "C" int briefing_build_objective_actions_smoke(void) {
          delay3->requiredProgress == 5.0f && hideLocator2->target == locator2 &&
          hideMission2->target == missionName && hideSummary2->target == summaryPanel &&
          fade2->target == picture && fade2->alpha == 0.0f && hideDesc2->target == descPanel;
+
+    static unsigned int elementTickTable[31];
+    static unsigned int panelTickTable[31];
+    static unsigned int widgetTickTable[31];
+    std::memset(elementTickTable, 0, sizeof(elementTickTable));
+    std::memset(panelTickTable, 0, sizeof(panelTickTable));
+    std::memset(widgetTickTable, 0, sizeof(widgetTickTable));
+    elementTickTable[0x20 / 4] = MakeBriefingTickInvalidateThunk();
+    elementTickTable[0x60 / 4] = MakeBriefingTickSetVisibleThunk();
+    panelTickTable[0x20 / 4] = MakeBriefingTickInvalidateThunk();
+    panelTickTable[0x60 / 4] = MakeBriefingTickSetVisibleThunk();
+    panelTickTable[0x74 / 4] =
+        static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(TestBriefingTickPanelSetText));
+    panelTickTable[0x78 / 4] = MakeBriefingTickUpdateBoundsThunk();
+    widgetTickTable[0x08 / 4] = MakeBriefingTickDrawBaseThunk();
+    widgetTickTable[0x20 / 4] = MakeBriefingTickInvalidateThunk();
+    widgetTickTable[0x60 / 4] = MakeBriefingTickSetVisibleThunk();
+    widgetTickTable[0x74 / 4] = MakeBriefingTickRebuildThunk();
+    *reinterpret_cast<unsigned int **>(storage + kMissionNameOffset) = panelTickTable;
+    *reinterpret_cast<unsigned int **>(storage + kObjectiveSummaryOffset) = panelTickTable;
+    *reinterpret_cast<unsigned int **>(storage + kObjectiveDescOffset) = panelTickTable;
+    *reinterpret_cast<unsigned int **>(storage + kObjectivePictureOffset) = widgetTickTable;
+    *reinterpret_cast<unsigned int **>(
+        storage + kLocatorPanelsOffset + kLocatorPanelStride) = elementTickTable;
+
+    ResetBriefingTickDispatchLog();
+    const bool hideTick =
+        CallBriefingActionTick(actions[8], 0.125f) == 1 &&
+        g_briefingTickSetVisibleCount == 1 &&
+        g_briefingTickSetVisibleThis[0] == locator1 &&
+        g_briefingTickSetVisibleValue[0] == 0;
+
+    ResetBriefingTickDispatchLog();
+    const bool showTick =
+        CallBriefingActionTick(actions[5], 0.125f) == 1 &&
+        g_briefingTickSetVisibleCount == 1 &&
+        g_briefingTickSetVisibleThis[0] == locator1 &&
+        g_briefingTickSetVisibleValue[0] == 1 &&
+        g_briefingTickInvalidateCount == 1;
+
+    ResetBriefingTickDispatchLog();
+    const bool setTextTick =
+        CallBriefingActionTick(actions[2], 0.125f) == 1 &&
+        g_briefingTickPanelSetTextThis == missionName &&
+        std::strcmp(g_briefingTickPanelSetText, expectedTitle1) == 0 &&
+        g_briefingTickUpdateBoundsCount == 1 &&
+        g_briefingTickSetVisibleCount == 1 &&
+        g_briefingTickSetVisibleThis[0] == missionName &&
+        g_briefingTickSetVisibleValue[0] == 1 &&
+        g_briefingTickInvalidateCount == 1;
+
+    float *const pictureNoiseAlpha =
+        reinterpret_cast<float *>(storage + kObjectivePictureNoiseAlphaOffset);
+    ResetBriefingTickDispatchLog();
+    const int fadeFirst = CallBriefingActionTick(actions[11], 0.125f);
+    const bool fadeFirstOk =
+        fadeFirst == 0 && fade1->alpha == 0.5f && *pictureNoiseAlpha == 0.5f &&
+        g_briefingTickInvalidateCount == 1;
+    const int fadeSecond = CallBriefingActionTick(actions[11], 0.125f);
+    const bool fadeTick =
+        fadeFirstOk && fadeSecond == 1 && fade1->alpha == 1.0f &&
+        *pictureNoiseAlpha == 1.0f && g_briefingTickInvalidateCount == 2;
+
+    ResetBriefingTickDispatchLog();
+    const int imageFirst = CallBriefingActionTick(actions[4], 0.125f);
+    const int imageSecond = CallBriefingActionTick(actions[4], 0.125f);
+    const int imageThird = CallBriefingActionTick(actions[4], 0.125f);
+    const bool imageTick =
+        imageFirst == 0 && imageSecond == 0 && imageThird == 1 &&
+        imageAction1->timer == -0.5f &&
+        reinterpret_cast<HudUiWidget *>(storage + kObjectivePictureOffset)->image == &image1 &&
+        reinterpret_cast<HudUiWidget *>(storage + kObjectivePictureOffset)->ownsImage == 0 &&
+        *pictureNoiseAlpha == 0.0f &&
+        g_briefingTickDrawBaseCount == 3 &&
+        g_briefingTickRebuildCount == 3 &&
+        g_briefingTickSetVisibleCount == 3 &&
+        g_briefingTickInvalidateCount == 6;
+
+    g_Briefing_ProgressEventCode = 1;
+    const bool delayBefore = CallBriefingActionTick(actions[1], 0.125f) == 0;
+    g_Briefing_ProgressEventCode = 2;
+    const bool delayTick = delayBefore && CallBriefingActionTick(actions[1], 0.125f) == 1;
+
+    const zSndSampleSetRegistry oldSampleRegistry = g_zSnd_SampleSetRegistry;
+    zSndPlayHandle *const oldBriefingSndHandle = g_Briefing_CurrentSndHandle;
+    g_zSnd_SampleSetRegistry.begin = nullptr;
+    g_zSnd_SampleSetRegistry.end = nullptr;
+    g_zSnd_SampleSetRegistry.capacityEnd = nullptr;
+    g_Briefing_CurrentSndHandle = nullptr;
+    g_Briefing_ProgressEventCode = 0;
+    const bool playMissingVariantTick =
+        CallBriefingActionTick(actions[0], 0.125f) == 1 &&
+        g_Briefing_CurrentSndHandle == nullptr &&
+        g_Briefing_ProgressEventCode == 999;
+    Briefing::SampleEventCallback(77);
+    const bool sampleCallback = g_Briefing_ProgressEventCode == 77;
+    g_zSnd_SampleSetRegistry = oldSampleRegistry;
+    g_Briefing_CurrentSndHandle = oldBriefingSndHandle;
+
+    ok = ok && hideTick && showTick && setTextTick && fadeTick && imageTick &&
+         delayTick && playMissingVariantTick && sampleCallback;
 
     networkEnabled = 1;
     alignas(4) unsigned char networkStorage[kRuntimeSize] = {};

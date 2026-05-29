@@ -1324,9 +1324,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x404620:
   - [✅] Reconstructed (Name: HudUiBriefingAction_HideElement::Tick)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: BriefingActionHideElement::Tick File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_action_hide_element_tick)
   - [❌] Binary-safe
 - 0x404640:
   - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddShowElement)
@@ -1336,9 +1336,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4046b0:
   - [✅] Reconstructed (Name: HudUiBriefingAction_ShowElement::Tick)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: BriefingActionShowElement::Tick File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_action_show_element_tick)
   - [❌] Binary-safe
 - 0x4046d0:
   - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddFadeInObjectivePictureNoise)
@@ -1348,9 +1348,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x404740:
   - [✅] Reconstructed (Name: HudUiBriefingAction_FadeObjectiveNoise::Tick)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: BriefingActionFadeInElement::Tick File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_action_fade_in_element_tick)
   - [❌] Binary-safe
 - 0x404780:
   - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddSetPanelText)
@@ -1360,9 +1360,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x404850:
   - [✅] Reconstructed (Name: HudUiBriefingAction_SetPanelText::Tick)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: BriefingActionSetPanelText::Tick File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_action_set_panel_text_tick)
   - [❌] Binary-safe
 - 0x4048a0:
   - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddSetObjectivePictureImageTimed)
@@ -1372,9 +1372,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x404960:
   - [✅] Reconstructed (Name: HudUiBriefingAction_SetObjectivePictureImageTimed::Tick)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: BriefingActionSetWidgetImageTimed::Tick File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_action_set_objective_picture_image_timed_tick)
   - [❌] Binary-safe
 - 0x4049d0:
   - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddPlaySampleByName)
@@ -1386,13 +1386,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBriefingAction_PlaySample::Tick)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: BriefingActionPlaySample::Tick File: src/Battlesport/Briefing.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: briefing_action_play_sample_tick)
   - [❌] Binary-safe
 - 0x404b30:
   - [✅] Reconstructed (Name: Briefing::SampleEventCallback)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing::SampleEventCallback File: src/Battlesport/Briefing.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: briefing_sample_event_callback)
   - [❌] Binary-safe
 - 0x404b40:
   - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddDelayUntilProgress)
@@ -1404,7 +1404,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBriefingAction_DelayUntilProgress::Tick)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: BriefingActionDelayUntilProgress::Tick File: src/Battlesport/Briefing.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: briefing_action_delay_until_progress_tick)
   - [❌] Binary-safe
 - 0x404bd0:
   - [✅] Reconstructed (Name: Briefing::StopThreadAndDestroyRuntime)
