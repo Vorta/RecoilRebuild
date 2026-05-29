@@ -6,6 +6,7 @@ add_library(recoil_native STATIC
     ../Battlesport/WinMain.cpp
     ../Battlesport/Briefing.cpp
     ../Battlesport/MfcThreeFloatDialog.cpp
+    ../Battlesport/zStr.cpp
     ../Battlesport/ainet.cpp
     ../Battlesport/GameNet.cpp
     ../Battlesport/hud.cpp

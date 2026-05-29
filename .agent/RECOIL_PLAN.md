@@ -1483,9 +1483,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x406a00:
   - [☑️] Reconstructed (Name: zStr::ContainsCaseInsensitive)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zStr::ContainsCaseInsensitive File: src/Battlesport/zStr.cpp)
+  - [✅] Functional-equivalent (Target: zstr_contains_case_insensitive)
   - [❌] Binary-safe
 - 0x406af0:
   - [✅] Reconstructed (Name: HudCheat::ExecuteCommandString)

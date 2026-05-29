@@ -4,7 +4,7 @@ Generated from `Reimplements 0xNNNNNN: Name (original/source/path)` comments in 
 Binary Ninja remains authoritative; this map is an agent navigation aid.
 It only contains address-backed provenance comments and excludes helpers fully inlined by the retail compiler.
 
-Entries: 2933
+Entries: 2934
 
 ## Case-insensitive source path collisions
 
@@ -158,6 +158,10 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 - `0x489f70` `zNetwork_GetLocalPlayerKey` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:120`
 - `0x489f80` `zNetwork::IsHost` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:202`
+
+## Battlesport/zStr.cpp
+
+- `0x406a00` `zStr::ContainsCaseInsensitive` -> `src/Battlesport/zStr.cpp:20`
 
 ## GameZRecoil/RecoilApp/GameNet.cpp
 
