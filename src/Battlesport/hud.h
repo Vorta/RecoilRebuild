@@ -361,6 +361,10 @@ namespace HudUiCallback {
 int RECOIL_CDECL QueueCheatCodeState();
 }
 
+namespace HudCheat {
+RECOIL_NOINLINE void RECOIL_CDECL ClearNanitePanelCheatSentinel();
+}
+
 namespace HudLowMeterLoopSound {
 RECOIL_NOINLINE void RECOIL_FASTCALL SetLoopActive(int enabled);
 RECOIL_NOINLINE void RECOIL_CDECL Disable();

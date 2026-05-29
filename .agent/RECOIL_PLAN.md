@@ -1495,9 +1495,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x406cf0:
   - [✅] Reconstructed (Name: HudCheat::ClearNanitePanelCheatSentinel)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCheat::ClearNanitePanelCheatSentinel File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_cheat_clear_nanite_panel_cheat_sentinel)
   - [❌] Binary-safe
 - 0x406d20:
   - [✅] Reconstructed (Name: HudUiCheatCodeDialog::Constructor)

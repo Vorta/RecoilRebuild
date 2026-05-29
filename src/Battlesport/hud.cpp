@@ -1,7 +1,9 @@
 #include "Battlesport/hud.h"
 
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zUtil/zSaveGame.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -470,6 +472,29 @@ int RECOIL_CDECL HudUiCallback::QueueCheatCodeState()
     g_RecoilApp.QueuePushState(&g_RecoilStateCheatCode, 0);
     return 1;
 }
+
+namespace HudCheat {
+
+const int kNanitePanelCheatSentinel = 123456789; // 0x075bcd15
+
+// Reimplements 0x406cf0: HudCheat::ClearNanitePanelCheatSentinel
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL ClearNanitePanelCheatSentinel()
+{
+    if (g_GameStateOrMapTable == 0)
+    {
+        return;
+    }
+
+    zUtil_PlayerStateStorage *const playerState =
+        (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
+    if (playerState->nanitePanelLevel == kNanitePanelCheatSentinel)
+    {
+        playerState->nanitePanelLevel = 0;
+    }
+}
+
+} // namespace HudCheat
 
 namespace zOpt {
 

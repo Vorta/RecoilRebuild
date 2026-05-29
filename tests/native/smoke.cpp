@@ -120,6 +120,7 @@ extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void);
 extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void);
 extern "C" int gamenet_handle_pkt03_remove_remote_player_smoke(void);
 extern "C" int hud_low_meter_loop_sound_set_loop_active_smoke(void);
+extern "C" int hud_cheat_clear_nanite_panel_cheat_sentinel_smoke(void);
 extern "C" int ainet_free_all_smoke(void);
 extern "C" int ainet_alloc_smoke(void);
 extern "C" int ainet_find_node_by_index_smoke(void);
@@ -1697,6 +1698,8 @@ int main(int argc, char **argv) {
          gamenet_handle_pkt03_remove_remote_player_smoke},
         {"hud_low_meter_loop_sound_set_loop_active_smoke",
          hud_low_meter_loop_sound_set_loop_active_smoke},
+        {"hud_cheat_clear_nanite_panel_cheat_sentinel_smoke",
+         hud_cheat_clear_nanite_panel_cheat_sentinel_smoke},
         {"ainet_free_all_smoke", ainet_free_all_smoke},
         {"ainet_alloc_smoke", ainet_alloc_smoke},
         {"ainet_find_node_by_index_smoke", ainet_find_node_by_index_smoke},
