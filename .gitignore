@@ -137,5 +137,6 @@ Desktop.ini
 *.swo
 
 # Tools are not tracked
-tools/
-temp/
+/tools/
+/tests/tools/
+/temp/
