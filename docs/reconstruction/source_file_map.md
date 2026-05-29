@@ -4,7 +4,7 @@ Generated from `Reimplements 0xNNNNNN: Name (original/source/path)` comments in 
 Binary Ninja remains authoritative; this map is an agent navigation aid.
 It only contains address-backed provenance comments and excludes helpers fully inlined by the retail compiler.
 
-Entries: 2925
+Entries: 2933
 
 ## Case-insensitive source path collisions
 
@@ -392,6 +392,14 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x406610` `Player::UpdateCameraWeatherFxEmitterVisibility` -> `src/Battlesport/player.cpp:6935`
 - `0x406730` `Player::FilterCameraProbeBlockingHits` -> `src/Battlesport/player.cpp:4384`
 - `0x4067a0` `Player::AdjustSubCameraFocusForObstruction` -> `src/Battlesport/player.cpp:4472`
+- `0x406890` `MfcThreeFloatDialog::OnKillFocusValue0` -> `src/Battlesport/MfcThreeFloatDialog.cpp:75`
+- `0x4068c0` `MfcThreeFloatDialog::OnKillFocusValue1` -> `src/Battlesport/MfcThreeFloatDialog.cpp:82`
+- `0x4068f0` `MfcThreeFloatDialog::OnKillFocusValue2` -> `src/Battlesport/MfcThreeFloatDialog.cpp:89`
+- `0x406920` `MfcThreeFloatDialog::OnDeltaposSpinValue0` -> `src/Battlesport/MfcThreeFloatDialog.cpp:96`
+- `0x406960` `MfcThreeFloatDialog::OnDeltaposSpinValue1` -> `src/Battlesport/MfcThreeFloatDialog.cpp:103`
+- `0x4069a0` `MfcThreeFloatDialog::OnDeltaposSpinValue2` -> `src/Battlesport/MfcThreeFloatDialog.cpp:110`
+- `0x4069e0` `MfcThreeFloatDialog::OnDeltaposSpin2` -> `src/Battlesport/MfcThreeFloatDialog.cpp:117`
+- `0x4069f0` `MfcThreeFloatDialog::OnMove` -> `src/Battlesport/MfcThreeFloatDialog.cpp:124`
 - `0x407110` `HudUiCallback::QueueCheatCodeState` -> `src/Battlesport/hud.cpp:466`
 - `0x407130` `zStub::ReturnOneNoArgs` -> `src/GameZRecoil/zClass/cls_stubs.cpp:10`
 - `0x407140` `zStub::ReturnZeroNoArgs` -> `src/GameZRecoil/zClass/cls_stubs.cpp:16`

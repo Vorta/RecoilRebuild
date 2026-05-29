@@ -1435,51 +1435,51 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x406890:
   - [☑️] Reconstructed (Name: MfcThreeFloatDialog::OnKillFocusValue0)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnKillFocusValue0 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_kill_focus_value0)
   - [❌] Binary-safe
 - 0x4068c0:
   - [☑️] Reconstructed (Name: MfcThreeFloatDialog::OnKillFocusValue1)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnKillFocusValue1 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_kill_focus_value1)
   - [❌] Binary-safe
 - 0x4068f0:
   - [☑️] Reconstructed (Name: MfcThreeFloatDialog::OnKillFocusValue2)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnKillFocusValue2 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_kill_focus_value2)
   - [❌] Binary-safe
 - 0x406920:
   - [✅] Reconstructed (Name: MfcThreeFloatDialog::OnDeltaposSpinValue0)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnDeltaposSpinValue0 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_spin_value0)
   - [❌] Binary-safe
 - 0x406960:
   - [✅] Reconstructed (Name: MfcThreeFloatDialog::OnDeltaposSpinValue1)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnDeltaposSpinValue1 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_spin_value1)
   - [❌] Binary-safe
 - 0x4069a0:
   - [✅] Reconstructed (Name: MfcThreeFloatDialog::OnDeltaposSpinValue2)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnDeltaposSpinValue2 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_spin_value2)
   - [❌] Binary-safe
 - 0x4069e0:
   - [✅] Reconstructed (Name: MfcThreeFloatDialog::OnDeltaposSpin2)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnDeltaposSpin2 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_spin2_default)
   - [❌] Binary-safe
 - 0x4069f0:
   - [☑️] Reconstructed (Name: MfcThreeFloatDialog::OnMove)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnMove File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_on_move)
   - [❌] Binary-safe
 - 0x406a00:
   - [☑️] Reconstructed (Name: zStr::ContainsCaseInsensitive)

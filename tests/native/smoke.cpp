@@ -39,6 +39,7 @@ extern "C" int czrecoil_frame_on_menu_open_campaign_smoke(void);
 extern "C" int czrecoil_frame_on_menu_open_help_docs_smoke(void);
 extern "C" int cabout_dlg_constructor_smoke(void);
 extern "C" int czrecoil_frame_on_menu_about_smoke(void);
+extern "C" int mfc_three_float_dialog_handlers_smoke(void);
 extern "C" int czrecoil_frame_start_mode_menu_handlers_smoke(void);
 extern "C" int czrecoil_frame_select_hw_api_menu_handlers_smoke(void);
 extern "C" int czrecoil_frame_toggle_archive_banks_smoke(void);
@@ -1562,6 +1563,7 @@ int main(int argc, char **argv) {
          czrecoil_frame_on_menu_open_help_docs_smoke},
         {"cabout_dlg_constructor_smoke", cabout_dlg_constructor_smoke},
         {"czrecoil_frame_on_menu_about_smoke", czrecoil_frame_on_menu_about_smoke},
+        {"mfc_three_float_dialog_handlers_smoke", mfc_three_float_dialog_handlers_smoke},
         {"czrecoil_frame_start_mode_menu_handlers_smoke",
          czrecoil_frame_start_mode_menu_handlers_smoke},
         {"czrecoil_frame_select_hw_api_menu_handlers_smoke",

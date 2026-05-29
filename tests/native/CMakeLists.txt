@@ -3,6 +3,7 @@ add_executable(recoil_native_smoke
     briefing_tests.cpp
     mfc42_provider.cpp
     czrecoil_frame_tests.cpp
+    mfc_three_float_dialog_tests.cpp
     pickup_tests.cpp
     gamenet_tests.cpp
     hud_tests.cpp
