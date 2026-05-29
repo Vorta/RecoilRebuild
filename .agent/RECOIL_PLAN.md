@@ -1775,9 +1775,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x40a940:
   - [☑️] Reconstructed (Name: HudCmdCommandList::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdCommandList::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_command_list_destructor)
   - [❌] Binary-safe
 - 0x40aa30:
   - [☑️] Reconstructed (Name: HudCmdKeyAButton::Destructor)

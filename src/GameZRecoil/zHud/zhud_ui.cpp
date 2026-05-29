@@ -8183,6 +8183,50 @@ void RECOIL_THISCALL HudCmdBindButtonBase::ClearBindingEntries() {
     zUtil_StdPtrVector_Clear(&bindingVec);
 }
 
+// Reimplements 0x40a940: HudCmdCommandList::Destructor
+// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+void RECOIL_THISCALL HudCmdCommandList::Destructor()
+{
+    base.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
+
+    HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(base.bindingVec.begin);
+    HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(base.bindingVec.end);
+    while (entry != end)
+    {
+        HudCmdBindingEntry *const binding = *entry;
+        if (binding != 0)
+        {
+            if (binding->displayText != 0)
+            {
+                free(binding->displayText);
+                binding->displayText = 0;
+            }
+
+            ::operator delete(binding);
+        }
+
+        *entry = 0;
+        ++entry;
+    }
+
+    HudCmdBindingEntry **const oldEnd =
+        (HudCmdBindingEntry **)(base.bindingVec.end);
+    HudCmdBindingEntry **const oldBegin =
+        (HudCmdBindingEntry **)(base.bindingVec.begin);
+    base.bindingVec.end =
+        HudCmdBindingEntry::CopyRange(oldEnd, oldEnd, oldBegin);
+    ((StdPtrVector *)(&base.bindingVec))
+        ->ClearNoOpDestroy((int *)(base.bindingVec.end), (int *)(oldEnd));
+    ::operator delete(base.bindingVec.begin);
+    base.bindingVec.begin = 0;
+    base.bindingVec.end = 0;
+    base.bindingVec.capacity = 0;
+
+    ((HudUiPanel *)(&base.bindPanel))->Destructor();
+    base.base.DestructorCore();
+}
+
 // Reimplements 0x4b90e0: HudCmdBindButtonBase::RebuildBindingSlotWidgets
 void RECOIL_THISCALL HudCmdBindButtonBase::RebuildBindingSlotWidgets(int totalCount,
                                                                      int visibleCount) {

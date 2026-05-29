@@ -9145,6 +9145,36 @@ extern "C" int zhud_std_ptr_vector_clear_no_op_destroy_smoke(void) {
     return values[0] == 11 && values[1] == 22 && values[2] == 33 ? 0 : 1;
 }
 
+extern "C" int zhud_cmd_command_list_destructor_smoke(void) {
+    HudCmdCommandList list{};
+    list.base.Constructor();
+
+    HudCmdBindingEntry *const first =
+        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
+    HudCmdBindingEntry *const second =
+        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
+    first->displayText = (char *)(std::malloc(6));
+    second->displayText = 0;
+    std::strcpy(first->displayText, "Fire");
+
+    HudCmdBindingEntry **const slots =
+        (HudCmdBindingEntry **)(::operator new(2 * sizeof(HudCmdBindingEntry *)));
+    slots[0] = first;
+    slots[1] = second;
+    list.base.bindingVec.begin = slots;
+    list.base.bindingVec.end = slots + 2;
+    list.base.bindingVec.capacity = slots + 2;
+
+    list.Destructor();
+
+    return list.base.bindingVec.begin == 0 && list.base.bindingVec.end == 0 &&
+                   list.base.bindingVec.capacity == 0 &&
+                   list.base.base.base.base.ftable ==
+                       (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable)
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_panel_constructor_default_smoke(void) {
     alignas(HudUiPanel) std::uint8_t storage[0x2ac]{};
     auto *panel = reinterpret_cast<HudUiPanel *>(storage);
