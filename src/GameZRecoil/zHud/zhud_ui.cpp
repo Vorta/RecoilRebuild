@@ -8144,6 +8144,36 @@ HudCmdBindingEntry::CopyRange(HudCmdBindingEntry **sourceBegin,
     return dest;
 }
 
+// Reimplements 0x40be00: HudCmdBinding::DestroyRange
+// (HudCmdDialog.cpp)
+HudCmdBinding **RECOIL_FASTCALL
+HudCmdBinding::DestroyRange(HudCmdBinding **first, HudCmdBinding **last,
+                            HudCmdBinding **dest, void *unusedAlloc)
+{
+    (void)unusedAlloc;
+
+    while (first != last)
+    {
+        HudCmdBinding *const binding = *first;
+        if (binding != 0)
+        {
+            if (binding->displayText != 0)
+            {
+                free(binding->displayText);
+                binding->displayText = 0;
+            }
+
+            ::operator delete(binding);
+        }
+
+        *dest = 0;
+        ++first;
+        ++dest;
+    }
+
+    return dest;
+}
+
 // Reimplements 0x40bdc0: zUtil_StdPtrVector_Clear
 RECOIL_NOINLINE void **RECOIL_FASTCALL zUtil_StdPtrVector_Clear(HudCmdBindingVector *self) {
     void **const oldEnd = (void **)(self->end);

@@ -603,6 +603,7 @@ extern "C" int zhud_polyline_draw_and_slider_update_smoke(void);
 extern "C" int zhud_panel_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_util_free_field_ptr_smoke(void);
 extern "C" int zhud_cmd_binding_entry_copy_range_smoke(void);
+extern "C" int zhud_cmd_binding_destroy_range_smoke(void);
 extern "C" int zhud_std_ptr_vector_clear_no_op_destroy_smoke(void);
 extern "C" int zhud_cmd_command_list_destructor_smoke(void);
 extern "C" int zhud_cmd_command_list_scalar_deleting_destructor_smoke(void);
@@ -2505,6 +2506,8 @@ int main(int argc, char **argv) {
         {"zhud_util_free_field_ptr_smoke", zhud_util_free_field_ptr_smoke},
         {"zhud_cmd_binding_entry_copy_range_smoke",
          zhud_cmd_binding_entry_copy_range_smoke},
+        {"zhud_cmd_binding_destroy_range_smoke",
+         zhud_cmd_binding_destroy_range_smoke},
         {"zhud_std_ptr_vector_clear_no_op_destroy_smoke",
          zhud_std_ptr_vector_clear_no_op_destroy_smoke},
         {"zhud_cmd_command_list_destructor_smoke",

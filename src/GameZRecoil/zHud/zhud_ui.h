@@ -912,6 +912,14 @@ struct HudCmdBindingEntry {
               HudCmdBindingEntry **dest);
 };
 
+struct HudCmdBinding {
+    char *displayText;
+
+    static HudCmdBinding **RECOIL_FASTCALL
+    DestroyRange(HudCmdBinding **first, HudCmdBinding **last,
+                 HudCmdBinding **dest, void *unusedAlloc);
+};
+
 struct HudCmdBindButtonBase {
     HudUiCheckToggleWidget base;
     int bindingSlotTotalCount;

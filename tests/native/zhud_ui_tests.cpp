@@ -9136,6 +9136,34 @@ extern "C" int zhud_cmd_binding_entry_copy_range_smoke(void) {
                : 2;
 }
 
+extern "C" int zhud_cmd_binding_destroy_range_smoke(void) {
+    HudCmdBinding *const first =
+        (HudCmdBinding *)(::operator new(sizeof(HudCmdBinding)));
+    HudCmdBinding *const second =
+        (HudCmdBinding *)(::operator new(sizeof(HudCmdBinding)));
+    first->displayText = (char *)(std::malloc(6));
+    second->displayText = 0;
+    std::strcpy(first->displayText, "Mouse");
+
+    HudCmdBinding *source[3] = {first, 0, second};
+    HudCmdBinding *dest[4] = {
+        (HudCmdBinding *)1,
+        (HudCmdBinding *)2,
+        (HudCmdBinding *)3,
+        (HudCmdBinding *)4,
+    };
+
+    HudCmdBinding **const result =
+        HudCmdBinding::DestroyRange(source, source + 3, dest, 0);
+    HudCmdBinding **const emptyResult =
+        HudCmdBinding::DestroyRange(source, source, dest + 3, 0);
+
+    return result == dest + 3 && emptyResult == dest + 3 && dest[0] == 0 &&
+                   dest[1] == 0 && dest[2] == 0 && dest[3] == (HudCmdBinding *)4
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_std_ptr_vector_clear_no_op_destroy_smoke(void) {
     int values[3] = {11, 22, 33};
     StdPtrVector vector{};
