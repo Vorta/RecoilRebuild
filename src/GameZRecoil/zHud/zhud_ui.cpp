@@ -7137,7 +7137,8 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCheckToggleWidget::DestructorCore() {
     }
 
     if (checkedLabelPanel != 0) {
-        HudUiZrdWidget::DeleteChildIfPresent(checkedLabelPanel);
+        ((HudUiScalarDeletingDestructorDispatch *)(checkedLabelPanel))
+            ->ScalarDeletingDestructor(1);
         checkedLabelPanel = 0;
     }
 
