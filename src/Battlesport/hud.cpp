@@ -600,6 +600,51 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateCheatCode::OnTryBecomeCurrent()
     return 1;
 }
 
+// Reimplements 0x407010: RecoilStateCheatCode::OnDeactivate
+// (D:\Proj\Battlesport\RecoilStateCheatCode.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCheatCode::OnDeactivate()
+{
+    CString commandString;
+
+    HudUiCheatCodeDialog *dialog =
+        (HudUiCheatCodeDialog *)(unsigned int)m_dialog;
+    if (dialog != 0)
+    {
+        commandString = dialog->cheatInputWidget.GetBuffer();
+
+        zVideo::RunPostprocessOnPrimaryBuffer();
+
+        HudUiCheatCodeDialogVirtual *dialogView =
+            (HudUiCheatCodeDialogVirtual *)(unsigned int)m_dialog;
+        dialogView->SetEnabled(0);
+
+        ((HudUiDialogController *)(unsigned int)m_dialog)->BlitOwnedSurfaceToPrimary();
+        zVideo::Dispatch_UnlockPrimarySurfaceState();
+
+        dialogView = (HudUiCheatCodeDialogVirtual *)(unsigned int)m_dialog;
+        if (dialogView != 0)
+        {
+            dialogView->ScalarDeletingDestructor(1);
+        }
+
+        m_dialog = 0;
+    }
+
+    zSndSampleSet_DestroyByName("DIALOG");
+
+    zSndPlayHandleSnapshot *const audioSnapshot =
+        (zSndPlayHandleSnapshot *)(unsigned int)m_audioSnapshot;
+    if (audioSnapshot != 0)
+    {
+        audioSnapshot->RestoreAllWithGlobalVolumeDelta();
+    }
+
+    zVideo::SetHalfResAdjustMode(m_prevHalfResAdjustMode);
+    HudUi::SetInvalidateMode(m_prevHalfResAdjustMode);
+    HudUiMgr::TriggerCurrentLayoutOnActivated();
+    HudCheat::ExecuteCommandString(&commandString);
+}
+
 // Reimplements 0x406f00: RecoilStateCheatCode::Destructor
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
 RECOIL_NOINLINE RecoilStateCheatCode::~RecoilStateCheatCode()

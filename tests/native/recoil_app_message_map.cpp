@@ -125,6 +125,12 @@ int RECOIL_FASTCALL TestCheatCodeVideoSurfaceStateNoOp(
     return surfaceState != nullptr ? 1 : 0;
 }
 
+template <typename Method> std::uintptr_t TestCheatCodeMethodAddress(Method method) {
+    std::uintptr_t address = 0;
+    std::memcpy(&address, &method, sizeof(method));
+    return address;
+}
+
 struct TestCreditsPanel {
     virtual void RECOIL_THISCALL Update(float) {}
     virtual void RECOIL_THISCALL SetEnabled(int enabled) {
@@ -2624,6 +2630,146 @@ extern "C" int recoil_state_cheat_code_on_try_become_current_smoke(void) {
     g_zSnd_ActiveBackend = oldActiveBackend;
     g_zSnd_IsInitialized = oldSndInitialized;
     g_zSnd_PreInitialized = oldSndPreInitialized;
+    return result;
+}
+
+extern "C" int recoil_state_cheat_code_on_deactivate_smoke(void) {
+    CodeFunctionPatch postprocessPatch{};
+    CodeFunctionPatch blitPatch{};
+    CodeFunctionPatch unlockPatch{};
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                           reinterpret_cast<void *>(
+                               &FakeConfirmQuitRunPostprocessOnPrimaryBuffer),
+                           postprocessPatch)) {
+        return 1;
+    }
+
+    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+        &HudUiDialogController::BlitOwnedSurfaceToPrimary;
+    void (RECOIL_THISCALL FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
+        &FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(blitMember)),
+                           reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeBlitMember)),
+                           blitPatch)) {
+        RestoreFunctionPatch(postprocessPatch);
+        return 2;
+    }
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                           reinterpret_cast<void *>(&FakeConfirmQuitUnlockPrimarySurfaceState),
+                           unlockPatch)) {
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 3;
+    }
+
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 6;
+    vmodeOption.name = vmodeName;
+    zOptionEntryPartial *const oldOptionsHead = g_zGame_Options_OptionListHead;
+
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldUseHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_BltRectDirectProc oldBltDirect = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    const int oldHalfResMode = g_zVideo_HalfResAdjustMode;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    const zSndSampleSetRegistry oldSampleSetRegistry = g_zSnd_SampleSetRegistry;
+    void *const oldGlobalVolumeScale = g_zSnd_GlobalVolumeScalePtr;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const int oldSndInitialized = g_zSnd_IsInitialized;
+    const int oldSndPreInitialized = g_zSnd_PreInitialized;
+    HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
+
+    float globalVolumeScale = 1.0f;
+    char dialogSetName[] = "DIALOG";
+    zSndSampleSet dialogSet = {};
+    zSndSampleSet *sampleSetSlots[1] = {&dialogSet};
+    std::uint16_t pixels[4] = {};
+    HudLayoutBase_FTable layoutTable{};
+    HudLayoutBase layout{&layoutTable};
+    dialogSet.setName = dialogSetName;
+    layoutTable.OnActivated = TestPlayStateLayoutOnActivated;
+
+    g_zGame_Options_OptionListHead = &vmodeOption;
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_RendererType = 1;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = TestCheatCodeBltSwToPrimaryRectDirect;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+    g_zVideo_HalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    g_HudUi_InvalidateMask = 0x80;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolumeScale;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_HudUiMgrCurrentLayout = &layout;
+    g_cheatCodeBltDirectCalls = 0;
+    g_playStateLayoutActivatedCount = 0;
+
+    RecoilStateCheatCode state{};
+    state.Constructor();
+    int result = state.OnTryBecomeCurrent() == 1 ? 0 : 4;
+    if (result == 0 && state.m_dialog == 0) {
+        result = 13;
+    }
+    zSndPlayHandleSnapshot *const snapshot =
+        reinterpret_cast<zSndPlayHandleSnapshot *>(static_cast<std::uintptr_t>(state.m_audioSnapshot));
+
+    if (result == 0) {
+        state.OnDeactivate();
+        if (state.m_dialog != 0) {
+            result = 5;
+        } else if (g_zVideo_HalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED) {
+            result = 6;
+        } else if (g_HudUi_InvalidateMask != 0x0cu) {
+            result = 7;
+        } else if (dialogSet.resourcesLoaded != 0) {
+            result = 8;
+        } else if (g_playStateLayoutActivatedCount != 1) {
+            result = 9;
+        }
+    }
+
+    if (snapshot != nullptr) {
+        snapshot->Destroy();
+        state.m_audioSnapshot = 0;
+    }
+
+    g_zGame_Options_OptionListHead = oldOptionsHead;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldUseHalfResBackbuffer;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_HalfResAdjustMode = oldHalfResMode;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    g_zSnd_SampleSetRegistry = oldSampleSetRegistry;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScale;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSnd_IsInitialized = oldSndInitialized;
+    g_zSnd_PreInitialized = oldSndPreInitialized;
+    g_HudUiMgrCurrentLayout = oldLayout;
+
+    RestoreFunctionPatch(unlockPatch);
+    RestoreFunctionPatch(blitPatch);
+    RestoreFunctionPatch(postprocessPatch);
     return result;
 }
 

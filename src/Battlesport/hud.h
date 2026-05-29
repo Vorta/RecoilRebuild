@@ -370,6 +370,7 @@ struct RecoilStateCheatCode : RecoilApp_IState {
     RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
     RecoilStateCheatCode *RECOIL_THISCALL Constructor();
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
     RECOIL_NOINLINE ~RecoilStateCheatCode();
     RECOIL_NOINLINE RecoilStateCheatCode *RECOIL_THISCALL
     ScalarDeletingDestructor(unsigned int flags);

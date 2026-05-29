@@ -1561,9 +1561,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x407010:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::OnDeactivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::OnDeactivate File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_on_deactivate)
   - [❌] Binary-safe
 - 0x4070e0:
   - [✅] Reconstructed (Name: HudUiCheatTextInputWidget::OnActivate)
