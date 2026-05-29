@@ -14699,9 +14699,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x470f50:
   - [✅] Reconstructed (Name: zInput_BindMapContext::CopyCommandLabel)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput_BindMapContext::CopyCommandLabel File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_context_copy_command_label)
   - [❌] Binary-safe
 - 0x470f80:
   - [☑️] Reconstructed (Name: zInput::BindMap_FormatKeyComboName)
@@ -14855,10 +14855,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4717e0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_CopyCommandLabel)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMapCurrent_CopyCommandLabel File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_copy_command_label)
+  - [✅] Binary-safe
 - 0x471800:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_FormatKeyComboName)
   - [❌] Source dependencies satisfied
