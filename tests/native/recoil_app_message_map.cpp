@@ -2410,6 +2410,113 @@ extern "C" int recoil_state_confirm_quit_static_init_smoke(void) {
     return 0;
 }
 
+extern "C" int recoil_state_cheat_code_constructor_smoke(void) {
+    RecoilStateCheatCode state{};
+    state.vftable = 0x11111111;
+    state.m_dialog = 0x22222222;
+    state.m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    state.m_audioSnapshot = 0x33333333;
+
+    RecoilStateCheatCode *const returned = state.Constructor();
+    if (returned != &state || state.vftable == 0 || state.m_dialog != 0 ||
+        state.m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
+        state.m_audioSnapshot != 0x33333333) {
+        return 1;
+    }
+
+    return 0;
+}
+
+extern "C" int recoil_state_cheat_code_destructor_smoke(void) {
+    TestConfirmQuitDialog dialog{};
+
+    RecoilStateCheatCode state{};
+    state.vftable = 0x11111111;
+    state.m_dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    state.m_audioSnapshot = 0x33333333;
+
+    state.~RecoilStateCheatCode();
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0 ||
+        dialog.setEnabledCount != 0 || dialog.scalarDeletingCount != 1 ||
+        dialog.lastScalarDeletingFlags != 1 ||
+        state.m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
+        state.m_audioSnapshot != 0x33333333) {
+        return 1;
+    }
+
+    return 0;
+}
+
+extern "C" int recoil_state_cheat_code_scalar_deleting_destructor_smoke(void) {
+    RecoilStateCheatCode scalarState{};
+    scalarState.vftable = 0x11111111;
+    scalarState.m_dialog = 0;
+    scalarState.m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    scalarState.m_audioSnapshot = 0x33333333;
+
+    RecoilStateCheatCode *const scalarReturned =
+        scalarState.ScalarDeletingDestructor(0);
+    if (scalarReturned != &scalarState ||
+        scalarState.vftable != kRecoilStateBase_VtblAddress ||
+        scalarState.m_dialog != 0 ||
+        scalarState.m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
+        scalarState.m_audioSnapshot != 0x33333333) {
+        return 1;
+    }
+
+    RecoilStateCheatCode *const deletingState =
+        static_cast<RecoilStateCheatCode *>(::operator new(sizeof(RecoilStateCheatCode)));
+    deletingState->vftable = 0x11111111;
+    deletingState->m_dialog = 0;
+    deletingState->m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    deletingState->m_audioSnapshot = 0x33333333;
+    RecoilStateCheatCode *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+    return deletingReturned == deletingState ? 0 : 2;
+}
+
+extern "C" int recoil_state_cheat_code_static_init_thunks_smoke(void) {
+    TestConfirmQuitDialog dialog{};
+
+    g_RecoilStateCheatCode.vftable = 0x11111111;
+    g_RecoilStateCheatCode.m_dialog = 0x22222222;
+    g_RecoilStateCheatCode.m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    g_RecoilStateCheatCode.m_audioSnapshot = 0x33333333;
+    RecoilStateCheatCode *const constructReturned =
+        RecoilStateCheatCode::ConstructGlobal();
+    if (constructReturned != &g_RecoilStateCheatCode ||
+        g_RecoilStateCheatCode.vftable == 0 ||
+        g_RecoilStateCheatCode.m_dialog != 0 ||
+        g_RecoilStateCheatCode.m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
+        g_RecoilStateCheatCode.m_audioSnapshot != 0x33333333) {
+        return 1;
+    }
+
+    RecoilStateCheatCode::StaticInit();
+
+    g_RecoilStateCheatCode.m_dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    RecoilStateCheatCode::AtExitDestructor();
+    if (g_RecoilStateCheatCode.vftable != kRecoilStateBase_VtblAddress ||
+        g_RecoilStateCheatCode.m_dialog != 0 ||
+        dialog.setEnabledCount != 0 || dialog.scalarDeletingCount != 1 ||
+        dialog.lastScalarDeletingFlags != 1) {
+        return 2;
+    }
+
+    g_RecoilStateCheatCode.vftable = 0x44444444;
+    g_RecoilStateCheatCode.m_dialog = 0x55555555;
+    RecoilStateCheatCode::StaticInitAndRegisterAtExit();
+    if (g_RecoilStateCheatCode.vftable == 0 ||
+        g_RecoilStateCheatCode.m_dialog != 0) {
+        return 3;
+    }
+
+    return 0;
+}
+
 extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {
     const RecoilApp oldApp = g_RecoilApp;
     const HudUiOptionsPanelOverlayOwner oldOptionsState = g_HudUiOptionsPanelOverlayOwner;

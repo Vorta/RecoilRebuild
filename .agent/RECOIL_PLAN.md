@@ -1519,39 +1519,39 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x406e90:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::StaticInitAndRegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::StaticInitAndRegisterAtExit File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_static_init_and_register_at_exit)
   - [❌] Binary-safe
 - 0x406eb0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::StaticInit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::StaticInit File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_static_init)
   - [❌] Binary-safe
 - 0x406ec0:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::AtExitDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::AtExitDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_at_exit_destructor)
   - [❌] Binary-safe
 - 0x406ed0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::Constructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_constructor)
   - [❌] Binary-safe
 - 0x406ee0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::ScalarDeletingDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x406f00:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::Destructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_destructor)
   - [❌] Binary-safe
 - 0x406f60:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::OnTryBecomeCurrent)

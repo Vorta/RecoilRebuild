@@ -363,6 +363,15 @@ struct RecoilStateCheatCode : RecoilApp_IState {
     RecoilPtr32 m_dialog; // HudUiCheatCodeDialog*
     zVideoHalfResAdjustMode m_prevHalfResAdjustMode;
     RecoilPtr32 m_audioSnapshot; // zSndPlayHandleSnapshot*
+
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    RECOIL_NOINLINE static RecoilStateCheatCode *RECOIL_CDECL ConstructGlobal();
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInit();
+    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
+    RecoilStateCheatCode *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE ~RecoilStateCheatCode();
+    RECOIL_NOINLINE RecoilStateCheatCode *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateCheatCode) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(RecoilStateCheatCode, m_prevHalfResAdjustMode) == 0x08);

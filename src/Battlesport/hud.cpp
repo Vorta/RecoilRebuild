@@ -77,6 +77,14 @@ struct HudUiCheatCodeDialog_FTable
     unsigned int slots[3];
 };
 
+struct HudUiCheatCodeDialogVirtual
+{
+    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
+    virtual HudUiCheatCodeDialogVirtual *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags) = 0;
+};
+
 RECOIL_NOINLINE void RECOIL_CDECL HudUiConfirmQuitPostLoadNoOp()
 {
 }
@@ -181,12 +189,23 @@ const HudUiCheatCodeDialog_FTable g_HudUiCheatCodeDialog_FTable =
     MakeCheatCodeDialogFTable();
 
 RecoilApp_IState_Vtbl g_RecoilStateConfirmQuit_Vtbl = {0};
+RecoilApp_IState_Vtbl g_RecoilStateCheatCode_Vtbl = {0};
 
 struct RecoilStateConfirmQuitBaseVtableGuard
 {
     RecoilStateConfirmQuit *self;
 
     ~RecoilStateConfirmQuitBaseVtableGuard()
+    {
+        self->vftable = kRecoilStateBase_VtblAddress;
+    }
+};
+
+struct RecoilStateCheatCodeBaseVtableGuard
+{
+    RecoilStateCheatCode *self;
+
+    ~RecoilStateCheatCodeBaseVtableGuard()
     {
         self->vftable = kRecoilStateBase_VtblAddress;
     }
@@ -495,6 +514,76 @@ RECOIL_NOINLINE HudUiCheatCodeDialog *RECOIL_THISCALL
 HudUiCheatCodeDialog::ScalarDeletingDestructor(unsigned int flags)
 {
     Destructor();
+
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x406e90: RecoilStateCheatCode::StaticInitAndRegisterAtExit
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCheatCode::StaticInitAndRegisterAtExit()
+{
+    ConstructGlobal();
+    StaticInit();
+}
+
+// Reimplements 0x406ea0: RecoilStateCheatCode::ConstructGlobal
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE RecoilStateCheatCode *RECOIL_CDECL RecoilStateCheatCode::ConstructGlobal()
+{
+    return g_RecoilStateCheatCode.Constructor();
+}
+
+// Reimplements 0x406eb0: RecoilStateCheatCode::StaticInit
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCheatCode::StaticInit()
+{
+    atexit(AtExitDestructor);
+}
+
+// Reimplements 0x406ec0: RecoilStateCheatCode::AtExitDestructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCheatCode::AtExitDestructor()
+{
+    g_RecoilStateCheatCode.~RecoilStateCheatCode();
+}
+
+// Reimplements 0x406ed0: RecoilStateCheatCode::Constructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RecoilStateCheatCode *RECOIL_THISCALL RecoilStateCheatCode::Constructor()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCheatCode_Vtbl;
+    m_dialog = 0;
+    return this;
+}
+
+// Reimplements 0x406f00: RecoilStateCheatCode::Destructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE RecoilStateCheatCode::~RecoilStateCheatCode()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCheatCode_Vtbl;
+    RecoilStateCheatCodeBaseVtableGuard baseVtableOnExit = {this};
+
+    HudUiCheatCodeDialogVirtual *dialogView =
+        (HudUiCheatCodeDialogVirtual *)m_dialog;
+    if (dialogView != 0)
+    {
+        dialogView->ScalarDeletingDestructor(1);
+    }
+
+    m_dialog = 0;
+}
+
+// Reimplements 0x406ee0: RecoilStateCheatCode::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE RecoilStateCheatCode *RECOIL_THISCALL
+RecoilStateCheatCode::ScalarDeletingDestructor(unsigned int flags)
+{
+    this->~RecoilStateCheatCode();
 
     if ((flags & 1u) != 0)
     {

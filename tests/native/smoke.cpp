@@ -938,6 +938,10 @@ extern "C" int hud_ui_callback_queue_exit_current_state_smoke(void);
 extern "C" int hud_ui_background_confirm_quit_lifecycle_smoke(void);
 extern "C" int recoil_state_confirm_quit_on_try_become_current_smoke(void);
 extern "C" int recoil_state_confirm_quit_static_init_smoke(void);
+extern "C" int recoil_state_cheat_code_constructor_smoke(void);
+extern "C" int recoil_state_cheat_code_destructor_smoke(void);
+extern "C" int recoil_state_cheat_code_scalar_deleting_destructor_smoke(void);
+extern "C" int recoil_state_cheat_code_static_init_thunks_smoke(void);
 extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void);
 extern "C" int recoil_state_main_menu_transition_constructor_smoke(void);
 extern "C" int recoil_state_main_menu_transition_destructor_smoke(void);
@@ -2902,6 +2906,14 @@ int main(int argc, char **argv) {
          recoil_state_confirm_quit_on_try_become_current_smoke},
         {"recoil_state_confirm_quit_static_init_smoke",
          recoil_state_confirm_quit_static_init_smoke},
+        {"recoil_state_cheat_code_constructor_smoke",
+         recoil_state_cheat_code_constructor_smoke},
+        {"recoil_state_cheat_code_destructor_smoke",
+         recoil_state_cheat_code_destructor_smoke},
+        {"recoil_state_cheat_code_scalar_deleting_destructor_smoke",
+         recoil_state_cheat_code_scalar_deleting_destructor_smoke},
+        {"recoil_state_cheat_code_static_init_thunks_smoke",
+         recoil_state_cheat_code_static_init_thunks_smoke},
         {"hud_ui_confirm_quit_ok_button_on_activate_smoke",
          hud_ui_confirm_quit_ok_button_on_activate_smoke},
         {"recoil_state_main_menu_transition_constructor_smoke",
