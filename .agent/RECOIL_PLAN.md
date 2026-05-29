@@ -1590,11 +1590,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: zstub_vtable_stubs)
   - [✅] Binary-safe
 - 0x408c60:
-  - [❌] Reconstructed (Name: HudUiOptionSelectorWidget::DestructorCoreThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::DestructorCoreThunk)
+  - [✅] Provider-boundary (Kind: compiler-generated forwarding thunk; Name: HudUiOptionSelectorWidget::DestructorCoreThunk; Origin: Binary Ninja assembly at 0x408c60 is a single tail jmp to HudUiOptionSelectorWidget::DestructorCore/HudUiZrdWidgetEx17C::DestructorCore at 0x4b8b60; no local authored behavior or state.; File: external; Target: HudUiZrdWidgetEx17C::DestructorCore)
 - 0x409010:
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::EnableChildAtIndex)
   - [❌] Source dependencies satisfied
@@ -3199,9 +3196,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b8b60:
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::DestructorCore)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: zhud_zrd_widget_ex17c_destructor_core)
   - [❌] Binary-safe
 - 0x4b8be0:
   - [☑️] Reconstructed (Name: HudUiOptionSelectorWidget::LoadFromZrd)
