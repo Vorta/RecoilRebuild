@@ -942,6 +942,12 @@ struct HudCmdCommandList {
     HudCmdCommandList *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
 };
 
+struct HudCmdKeyAButton {
+    HudCmdBindButtonBase base;
+
+    void RECOIL_THISCALL Destructor();
+};
+
 RECOIL_NOINLINE void **RECOIL_FASTCALL zUtil_StdPtrVector_Clear(HudCmdBindingVector *self);
 RECOIL_NOINLINE void RECOIL_FASTCALL
 zUtil_StdPtrVector_FreeBufferAndReset(HudCmdBindingVector *self);
@@ -1804,6 +1810,7 @@ RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, overflowListOffsetY) == 0x44
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, selectedFontStyleRef) == 0x444);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, listFontStyleRef) == 0x448);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdCommandList) == 0x44c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdKeyAButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundContainer) == 0x44);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundContainer, inputFocusElement) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundContainer, captureTransitionMask) == 0x40);
