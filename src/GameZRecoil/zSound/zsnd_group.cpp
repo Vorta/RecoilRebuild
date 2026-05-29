@@ -59,7 +59,7 @@ void *RemovePayloadFromList(zArchiveList *list, void *payload) {
 }
 
 int RECOIL_FASTCALL MatchFinishedRequestPredicate(void *payload, void *) {
-    zSndStreamRequest * request = static_cast<zSndStreamRequest *>(payload);
+    zSndStreamRequest * request = (zSndStreamRequest *)(payload);
     if (request->streamState == 4) {
         if (g_zSndStream_MatchedRequest == 0) {
             g_zSndStream_MatchedRequest = request;
@@ -94,7 +94,7 @@ bool StoreFloatField(zReader::Node *valueNode, float *outValue) {
     }
 
     if (valueNode->type == zReader::ZRDR_NODE_INT) {
-        *outValue = static_cast<float>(valueNode->value.i32);
+        *outValue = (float)(valueNode->value.i32);
         return true;
     }
 
@@ -103,12 +103,12 @@ bool StoreFloatField(zReader::Node *valueNode, float *outValue) {
 
 bool StoreRepeatCount(zReader::Node *valueNode, unsigned short *outValue) {
     if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
-        *outValue = static_cast<unsigned short>(valueNode->value.f32);
+        *outValue = (unsigned short)(valueNode->value.f32);
         return true;
     }
 
     if (valueNode->type == zReader::ZRDR_NODE_INT) {
-        *outValue = static_cast<unsigned short>(valueNode->value.i32);
+        *outValue = (unsigned short)(valueNode->value.i32);
         return true;
     }
 
@@ -128,7 +128,7 @@ void NormalizeDefaultWeights(zSndGroup *group) {
         return;
     }
 
-    const float defaultWeight = 100.0f / static_cast<float>(group->configBlockCount);
+    const float defaultWeight = 100.0f / (float)(group->configBlockCount);
     {
     for (int defaultIndex = 0; defaultIndex < group->configBlockCount; ++defaultIndex) {
         group->configBlocks[defaultIndex].weight = defaultWeight;
@@ -153,14 +153,14 @@ zSndStreamRequest_StopIfActive(zSndPlayHandle *request) {
 // Reimplements 0x4a5220: zSndStreamRequest_MatchGroupPredicate
 extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
 zSndStreamRequest_MatchGroupPredicate(void *payload, void *group) {
-    return static_cast<zSndStreamRequest *>(payload)->group != group ? 1 : 0;
+    return ((zSndStreamRequest *)(payload))->group != group ? 1 : 0;
 }
 
 // Reimplements 0x4a44e0: zSndPendingList_MatchNamePredicate
 extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
 zSndPendingList_MatchNamePredicate(void *payload, void *sampleName) {
-    return strcmp(static_cast<zSndGroup *>(payload)->groupName,
-                       static_cast<const char *>(sampleName)) != 0
+    return strcmp(((zSndGroup *)(payload))->groupName,
+                       (const char *)(sampleName)) != 0
                ? 1
                : 0;
 }
@@ -174,7 +174,7 @@ zSndPendingList_FindByName(const char *sampleName) {
 
     return (zSndSample *)(zArchiveList_FindPayloadByPredicate(
         g_zSndStream_PendingList, &zSndPendingList_MatchNamePredicate,
-        const_cast<char *>(sampleName)));
+        (char *)(sampleName)));
 }
 
 // Reimplements 0x4a4d10: zSndGroup::SelectWeightedEntry
@@ -192,7 +192,7 @@ RECOIL_NOINLINE zSndGroupConfigBlock *RECOIL_THISCALL zSndGroup::SelectWeightedE
 
     zSndGroupConfigBlock *result = 0;
     int selectedIndex = 0;
-    const float selection = static_cast<float>(rand()) * 3.05185094e-05f * totalWeight;
+    const float selection = (float)(rand()) * 3.05185094e-05f * totalWeight;
     const float selectSlop = totalWeight * 0.00100000005f;
     float cumulativeWeight = 0.0f;
     for (; selectedIndex < configBlockCount; ++selectedIndex) {
@@ -338,10 +338,10 @@ void FreePendingList(zArchiveList *&list) {
         return;
     }
 
-    zSndGroup * pendingConfig = static_cast<zSndGroup *>(zArchiveList_PopFrontPayload(list));
+    zSndGroup * pendingConfig = (zSndGroup *)(zArchiveList_PopFrontPayload(list));
     while (pendingConfig != 0) {
         FreePendingGroupConfig(pendingConfig);
-        pendingConfig = static_cast<zSndGroup *>(zArchiveList_PopFrontPayload(list));
+        pendingConfig = (zSndGroup *)(zArchiveList_PopFrontPayload(list));
     }
 
     zArchiveList_Destroy(list);
@@ -379,9 +379,9 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndGroup::QueueStreamRequest(
         return 0;
     }
 
-    zSndStreamRequest * request = static_cast<zSndStreamRequest *>(zArchiveList_PopFrontPayload(g_zSndStream_FreeList));
+    zSndStreamRequest * request = (zSndStreamRequest *)(zArchiveList_PopFrontPayload(g_zSndStream_FreeList));
     if (request == 0) {
-        request = static_cast<zSndStreamRequest *>(malloc(sizeof(zSndStreamRequest)));
+        request = (zSndStreamRequest *)(malloc(sizeof(zSndStreamRequest)));
         if (request == 0) {
             return 0;
         }
@@ -451,7 +451,7 @@ zSndGroup_LoadConfigBlock(zReader::Node *readerNode, zSndGroupRuntimeFields *gro
             if (childIndex == 1) {
                 zSndGroup_LoadConfigBlock(childNode, groupFields, outConfigBlock);
             } else {
-                zSndGroupConfigBlock *nested = static_cast<zSndGroupConfigBlock *>(
+                zSndGroupConfigBlock *nested = (zSndGroupConfigBlock *)(
                     calloc(1, sizeof(zSndGroupConfigBlock)));
                 if (nested != 0) {
                     outConfigBlock->child = nested;
@@ -473,7 +473,7 @@ zSndGroup_LoadConfigBlock(zReader::Node *readerNode, zSndGroupRuntimeFields *gro
                 outConfigBlock->delayPlaySec = valueNode->value.f32;
                 ++childIndex;
             } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
-                outConfigBlock->delayPlaySec = static_cast<float>(valueNode->value.i32);
+                outConfigBlock->delayPlaySec = (float)(valueNode->value.i32);
                 ++childIndex;
             } else {
                 ReportConfigError(0xb1, "Error loading DELAY_PLAY for sound group (%s)",
@@ -483,10 +483,10 @@ zSndGroup_LoadConfigBlock(zReader::Node *readerNode, zSndGroupRuntimeFields *gro
         } else if (strcmp(key, "PLAY_COUNT") == 0) {
             if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                 StorePlayCount(outConfigBlock,
-                               static_cast<unsigned short>(valueNode->value.f32 + 0.5f));
+                               (unsigned short)(valueNode->value.f32 + 0.5f));
                 ++childIndex;
             } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
-                StorePlayCount(outConfigBlock, static_cast<unsigned short>(valueNode->value.i32));
+                StorePlayCount(outConfigBlock, (unsigned short)(valueNode->value.i32));
                 ++childIndex;
             } else {
                 ReportConfigError(0xbf, "Error loading PLAY_COUNT for sound group (%s)",
@@ -499,7 +499,7 @@ zSndGroup_LoadConfigBlock(zReader::Node *readerNode, zSndGroupRuntimeFields *gro
                 outConfigBlock->weight = valueNode->value.f32;
                 ++childIndex;
             } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
-                outConfigBlock->weight = static_cast<float>(valueNode->value.i32);
+                outConfigBlock->weight = (float)(valueNode->value.i32);
                 ++childIndex;
             } else {
                 ReportConfigError(0xcf, "Error loading WEIGHT for sound group (%s)", groupFields);
@@ -521,7 +521,7 @@ zSndGroup_LoadFromConfigNode(zReader::Node *readerNode) {
         return 0;
     }
 
-    zSndGroup *result = static_cast<zSndGroup *>(calloc(1, sizeof(zSndGroup)));
+    zSndGroup *result = (zSndGroup *)(calloc(1, sizeof(zSndGroup)));
     if (result == 0) {
         return 0;
     }
@@ -532,8 +532,8 @@ zSndGroup_LoadFromConfigNode(zReader::Node *readerNode) {
     for (int childIndex = 1; childIndex < ArrayCount(readerNode); ++childIndex) {
         zReader::Node *childNode = &nodeArray[childIndex];
         if (childNode->type == zReader::ZRDR_NODE_ARRAY) {
-            zSndGroupConfigBlock *blocks = static_cast<zSndGroupConfigBlock *>(realloc(
-                result->configBlocks, static_cast<size_t>(result->configBlockCount + 1) *
+            zSndGroupConfigBlock *blocks = (zSndGroupConfigBlock *)(realloc(
+                result->configBlocks, (size_t)(result->configBlockCount + 1) *
                                           sizeof(zSndGroupConfigBlock)));
             result->configBlocks = blocks;
             if (blocks != 0) {

@@ -406,7 +406,7 @@ int ClipPolyNoUvCore(zClipRectPartial *clipRect, int *vertexCount) {
 
     if (source != g_Clip_PolyVerts) {
         memcpy(g_Clip_PolyVerts, source,
-                    static_cast<size_t>(outputCount) * sizeof(zClipVert));
+                    (size_t)(outputCount) * sizeof(zClipVert));
     }
     return 1;
 }
@@ -479,11 +479,11 @@ int ClipPolyUvCore(zClipRectPartial *clipRect, int *vertexCount) {
 
     if (sourceVerts != g_Clip_PolyVerts) {
         memcpy(g_Clip_PolyVerts, sourceVerts,
-                    static_cast<size_t>(outputCount) * sizeof(zClipVert));
+                    (size_t)(outputCount) * sizeof(zClipVert));
     }
     if (sourceUvs != g_Clip_PolyUvs) {
         memcpy(g_Clip_PolyUvs, sourceUvs,
-                    static_cast<size_t>(outputCount) * sizeof(zClipUV));
+                    (size_t)(outputCount) * sizeof(zClipUV));
     }
     return 1;
 }
@@ -556,11 +556,11 @@ int ClipPolyAttr0NoUvCore(zClipRectPartial *clipRect, int *vertexCount) {
 
     if (sourceVerts != g_Clip_PolyVerts) {
         memcpy(g_Clip_PolyVerts, sourceVerts,
-                    static_cast<size_t>(outputCount) * sizeof(zClipVert));
+                    (size_t)(outputCount) * sizeof(zClipVert));
     }
     if (sourceAttrs != g_Clip_PolyAttr0) {
         memcpy(g_Clip_PolyAttr0, sourceAttrs,
-                    static_cast<size_t>(outputCount) * sizeof(float));
+                    (size_t)(outputCount) * sizeof(float));
     }
     return 1;
 }
@@ -659,13 +659,13 @@ int ClipPolyAttr012NoUvCore(zClipRectPartial *clipRect, int *vertexCount) {
 
     if (sourceVerts != g_Clip_PolyVerts) {
         memcpy(g_Clip_PolyVerts, sourceVerts,
-                    static_cast<size_t>(outputCount) * sizeof(zClipVert));
+                    (size_t)(outputCount) * sizeof(zClipVert));
         memcpy(g_Clip_PolyAttr0, sourceAttr0,
-                    static_cast<size_t>(outputCount) * sizeof(float));
+                    (size_t)(outputCount) * sizeof(float));
         memcpy(g_Clip_PolyAttr1, sourceAttr1,
-                    static_cast<size_t>(outputCount) * sizeof(float));
+                    (size_t)(outputCount) * sizeof(float));
         memcpy(g_Clip_PolyAttr2, sourceAttr2,
-                    static_cast<size_t>(outputCount) * sizeof(float));
+                    (size_t)(outputCount) * sizeof(float));
     }
     return 1;
 }
@@ -775,15 +775,15 @@ int ClipPolyAttr012UvCore(zClipRectPartial *clipRect, int *vertexCount) {
 
     if (sourceVerts != g_Clip_PolyVerts) {
         memcpy(g_Clip_PolyVerts, sourceVerts,
-                    static_cast<size_t>(outputCount) * sizeof(zClipVert));
+                    (size_t)(outputCount) * sizeof(zClipVert));
         memcpy(g_Clip_PolyUvs, sourceUvs,
-                    static_cast<size_t>(outputCount) * sizeof(zClipUV));
+                    (size_t)(outputCount) * sizeof(zClipUV));
         memcpy(g_Clip_PolyAttr0, sourceAttr0,
-                    static_cast<size_t>(outputCount) * sizeof(float));
+                    (size_t)(outputCount) * sizeof(float));
         memcpy(g_Clip_PolyAttr2, sourceAttr2,
-                    static_cast<size_t>(outputCount) * sizeof(float));
+                    (size_t)(outputCount) * sizeof(float));
         memcpy(g_Clip_PolyAttr1, sourceAttr1,
-                    static_cast<size_t>(outputCount) * sizeof(float));
+                    (size_t)(outputCount) * sizeof(float));
     }
     return 1;
 }
@@ -861,9 +861,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyNearZ(zClipRectPartial *clipRect,
     }
 
     memcpy(g_Clip_PolyVertsScratch, clippedVerts,
-                static_cast<size_t>(outputCount) * sizeof(zClipVert));
+                (size_t)(outputCount) * sizeof(zClipVert));
     memcpy(g_Clip_PolyUvs, clippedUvs,
-                static_cast<size_t>(outputCount) * sizeof(zClipUV));
+                (size_t)(outputCount) * sizeof(zClipUV));
     return 1;
 }
 
@@ -944,11 +944,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyNearZ_WithAttr0(zClipRectPartial *cl
     }
 
     memcpy(g_Clip_PolyVertsScratch, clippedVerts,
-                static_cast<size_t>(outputCount) * sizeof(zClipVert));
+                (size_t)(outputCount) * sizeof(zClipVert));
     memcpy(g_Clip_PolyUvs, clippedUvs,
-                static_cast<size_t>(outputCount) * sizeof(zClipUV));
+                (size_t)(outputCount) * sizeof(zClipUV));
     memcpy(g_Clip_PolyAttr0, clippedAttrs,
-                static_cast<size_t>(outputCount) * sizeof(float));
+                (size_t)(outputCount) * sizeof(float));
     return 1;
 }
 
@@ -1018,7 +1018,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyZRange_NoUV(zClipRectPartial *clipRe
     }
 
     memcpy(g_Clip_PolyVertsScratch, clippedVerts,
-                static_cast<size_t>(outputCount) * sizeof(zClipVert));
+                (size_t)(outputCount) * sizeof(zClipVert));
     return 1;
 }
 
@@ -1106,13 +1106,13 @@ ClipPolyZRange_NoUV_WithAttribs(zClipRectPartial *clipRect, int *vertexCount) {
     }
 
     memcpy(g_Clip_PolyVertsScratch, clippedVerts,
-                static_cast<size_t>(outputCount) * sizeof(zClipVert));
+                (size_t)(outputCount) * sizeof(zClipVert));
     memcpy(g_Clip_PolyAttr0, clippedAttr0,
-                static_cast<size_t>(outputCount) * sizeof(float));
+                (size_t)(outputCount) * sizeof(float));
     memcpy(g_Clip_PolyAttr1, clippedAttr1,
-                static_cast<size_t>(outputCount) * sizeof(float));
+                (size_t)(outputCount) * sizeof(float));
     memcpy(g_Clip_PolyAttr2, clippedAttr2,
-                static_cast<size_t>(outputCount) * sizeof(float));
+                (size_t)(outputCount) * sizeof(float));
     return 1;
 }
 
@@ -1204,15 +1204,15 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyZRange_WithAttr012(zClipRectPartial 
     }
 
     memcpy(g_Clip_PolyVertsScratch, clippedVerts,
-                static_cast<size_t>(outputCount) * sizeof(zClipVert));
+                (size_t)(outputCount) * sizeof(zClipVert));
     memcpy(g_Clip_PolyUvs, clippedUvs,
-                static_cast<size_t>(outputCount) * sizeof(zClipUV));
+                (size_t)(outputCount) * sizeof(zClipUV));
     memcpy(g_Clip_PolyAttr0, clippedAttr0,
-                static_cast<size_t>(outputCount) * sizeof(float));
+                (size_t)(outputCount) * sizeof(float));
     memcpy(g_Clip_PolyAttr2, clippedAttr2,
-                static_cast<size_t>(outputCount) * sizeof(float));
+                (size_t)(outputCount) * sizeof(float));
     memcpy(g_Clip_PolyAttr1, clippedAttr1,
-                static_cast<size_t>(outputCount) * sizeof(float));
+                (size_t)(outputCount) * sizeof(float));
     return 1;
 }
 

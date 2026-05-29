@@ -176,7 +176,7 @@ RECOIL_NOINLINE AINet *RECOIL_FASTCALL AINet::LoadFromZrd(int netId) {
             continue;
         }
 
-        AINetNode *const aiNode = static_cast<AINetNode *>(malloc(sizeof(AINetNode)));
+        AINetNode *const aiNode = (AINetNode *)(malloc(sizeof(AINetNode)));
         memset(aiNode, 0, sizeof(AINetNode));
 
         if (tail != 0) {
@@ -207,7 +207,7 @@ RECOIL_NOINLINE AINet *RECOIL_FASTCALL AINet::LoadFromZrd(int netId) {
 
 // Reimplements 0x402ff0: AINet::Alloc (D:\Proj\Battlesport\ai_net.cpp)
 RECOIL_NOINLINE AINet *RECOIL_CDECL AINet::Alloc() {
-    AINet *const aiNet = static_cast<AINet *>(malloc(sizeof(AINet)));
+    AINet *const aiNet = (AINet *)(malloc(sizeof(AINet)));
     memset(aiNet, 0, sizeof(AINet));
 
     if (g_AINetListHead != 0) {
@@ -303,7 +303,7 @@ AINet::ResolveNeighborLinksAndBuildProbeFans(AINetNode *nodeListHead, float path
                 node->neighborNodes[slot] = neighbor;
 
                 AINetPathProbeFan *const probeFan =
-                    static_cast<AINetPathProbeFan *>(malloc(sizeof(AINetPathProbeFan)));
+                    (AINetPathProbeFan *)(malloc(sizeof(AINetPathProbeFan)));
                 node->probeFans[slot] = probeFan;
                 memset(probeFan, 0, sizeof(AINetPathProbeFan));
                 probeFan->InitFromSegment(node->position, neighbor->position, pathWidth);

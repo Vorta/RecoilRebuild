@@ -6,25 +6,24 @@
 #include <Windows.h>
 
 #include <algorithm>
-#include <array>
 #include <stdio.h>
 #include <string.h>
-#include <filesystem>
 #include <sstream>
+#include <vector>
 
 namespace zbd {
 static const unsigned int kMagic = 0x02971222u;
 static const unsigned int kVersion = 0x0Fu;
 
 // Validation caps (perf guards). These are intended for report sanity checking, not strict parsing.
-static const unsigned __int64 kNodeRefListMaxBytes = (1ull << 20); // 1 MiB
-static const unsigned __int64 kWorldMaxCellsWalk = 500000ull;
-static const unsigned __int64 kWorldMaxTotalChildRefsToCheck = 200000ull;
+static const unsigned __int64 kNodeRefListMaxBytes = (1ui64 << 20); // 1 MiB
+static const unsigned __int64 kWorldMaxCellsWalk = 500000ui64;
+static const unsigned __int64 kWorldMaxTotalChildRefsToCheck = 200000ui64;
 static const unsigned int kWorldChildRefChunk = 4096u;
 
 struct NodeRecord32 {
     // Original likely: char name[0x34]. Treat as raw bytes; we only read it, not interpret.
-    array<unsigned char, 0x34> name_00;
+    unsigned char name_00[0x34];
 
     unsigned int classType_34;
     unsigned int
@@ -59,7 +58,8 @@ static wstring Win32LastErrorToString(DWORD err) {
     if (len && buf) {
         out.assign(buf, buf + len);
         // trim trailing CR/LF
-        while (!out.empty() && (out.back() == L'\r' || out.back() == L'\n'))
+        while (!out.empty() &&
+               (out[out.size() - 1] == L'\r' || out[out.size() - 1] == L'\n'))
             out.pop_back();
     }
     if (buf)
@@ -69,6 +69,53 @@ static wstring Win32LastErrorToString(DWORD err) {
 
 static bool ReadExact(FILE *f, void *dst, size_t sz) {
     return fread(dst, 1, sz, f) == sz;
+}
+
+static void InitSummary(Summary &s) {
+    memset(&s.header, 0, sizeof(s.header));
+    s.fileSize = 0;
+    s.headerValid = false;
+    s.classTypeHistogram.clear();
+}
+
+static unsigned __int64 GetFileSizeOrZero(const wstring &path) {
+    WIN32_FILE_ATTRIBUTE_DATA data;
+    if (!GetFileAttributesExW(path.c_str(), GetFileExInfoStandard, &data))
+        return 0;
+
+    ULARGE_INTEGER size;
+    size.HighPart = data.nFileSizeHigh;
+    size.LowPart = data.nFileSizeLow;
+    return size.QuadPart;
+}
+
+static bool ClassTypeCountGreater(const pair<unsigned int, unsigned int> &lhs,
+                                  const pair<unsigned int, unsigned int> &rhs) {
+    return lhs.second > rhs.second;
+}
+
+static unsigned int ReadU32FromBuffer(const unsigned char *buf, size_t offset) {
+    unsigned int value = 0;
+    memcpy(&value, buf + offset, sizeof(value));
+    return value;
+}
+
+static int ReadI32FromBuffer(const unsigned char *buf, size_t offset) {
+    int value = 0;
+    memcpy(&value, buf + offset, sizeof(value));
+    return value;
+}
+
+static wstring BytesToHex(const unsigned char *p, size_t n) {
+    static const wchar_t *kHex = L"0123456789abcdef";
+    wstring out;
+    out.reserve(n * 2);
+    for (size_t i = 0; i < n; i++) {
+        const unsigned char b = p[i];
+        out.push_back(kHex[(b >> 4) & 0xF]);
+        out.push_back(kHex[b & 0xF]);
+    }
+    return out;
 }
 
 static wstring FormatSummary(const Summary &s) {
@@ -90,12 +137,13 @@ static wstring FormatSummary(const Summary &s) {
     ss << L"\nClassType histogram (top 20)\n";
     ss << L"----------------------------\n";
 
-    vector<pair<unsigned int, unsigned int>> v;
+    vector<pair<unsigned int, unsigned int> > v;
     v.reserve(s.classTypeHistogram.size());
-    for (auto &kv : s.classTypeHistogram)
-        v.push_back(kv);
+    for (map<unsigned int, unsigned int>::const_iterator it = s.classTypeHistogram.begin();
+         it != s.classTypeHistogram.end(); ++it)
+        v.push_back(*it);
 
-    sort(v.begin(), v.end(), [](auto &a, auto &b) { return a.second > b.second; });
+    sort(v.begin(), v.end(), ClassTypeCountGreater);
     const size_t limit = min<size_t>(20, v.size());
     for (size_t i = 0; i < limit; i++) {
         ss << L"  " << v[i].first << L": " << v[i].second << L"\n";
@@ -108,10 +156,9 @@ static wstring FormatSummary(const Summary &s) {
 }
 
 wstring ReadZbdSummaryText(const wstring &path) {
-    Summary s = {0};
-
-    error_code ec;
-    s.fileSize = static_cast<unsigned __int64>(filesystem::file_size(path, ec));
+    Summary s;
+    InitSummary(s);
+    s.fileSize = GetFileSizeOrZero(path);
 
     FILE *f = 0;
     if (_wfopen_s(&f, path.c_str(), L"rb") != 0 || !f) {
@@ -138,7 +185,7 @@ wstring ReadZbdSummaryText(const wstring &path) {
     }
 
     // Read node records and build a histogram of classType_34.
-    if (fseek(f, static_cast<long>(hdr.nodeTableOffset_20), SEEK_SET) != 0) {
+    if (fseek(f, (long)(hdr.nodeTableOffset_20), SEEK_SET) != 0) {
         fclose(f);
         return L"Failed to seek to node table offset.";
     }
@@ -219,7 +266,7 @@ struct PayloadSanitySummary {
 };
 
 static bool ReadAt(FILE *f, unsigned __int64 off, void *dst, size_t sz) {
-    if (_fseeki64(f, static_cast<__int64>(off), SEEK_SET) != 0)
+    if (_fseeki64(f, (__int64)(off), SEEK_SET) != 0)
         return false;
     return ReadExact(f, dst, sz);
 }
@@ -239,22 +286,22 @@ static bool ValidateNodeRefList(FILE *f, unsigned __int64 off, unsigned int coun
     skipped = false;
     if (count == 0)
         return true;
-    const unsigned __int64 bytes = static_cast<unsigned __int64>(count) * 4ull;
+    const unsigned __int64 bytes = (unsigned __int64)(count) * 4ui64;
     if (bytes > kNodeRefListMaxBytes) {
         skipped = true;
         return true;
     }
-    if (_fseeki64(f, static_cast<__int64>(off), SEEK_SET) != 0)
+    if (_fseeki64(f, (__int64)(off), SEEK_SET) != 0)
         return false;
 
     vector<int> refs;
     refs.resize(count);
-    if (!ReadExact(f, refs.data(), (size_t)bytes))
+    if (!ReadExact(f, &refs[0], (size_t)bytes))
         return false;
 
     for (unsigned int i = 0; i < count; i++) {
         const int r = refs[i];
-        if (!(r == -1 || (r >= 0 && static_cast<unsigned int>(r) < nodeCount)))
+        if (!(r == -1 || (r >= 0 && (unsigned int)(r) < nodeCount)))
             return false;
     }
     return true;
@@ -284,6 +331,79 @@ static unsigned int PayloadSizeForClassType(unsigned int classType) {
     }
 }
 
+static void PrintStrongSamples(wstringstream &ss, const Summary &s,
+                               const vector<NodePayloadInfo> &payloadOffsets,
+                               const wchar_t *name, const vector<unsigned int> &idxs) {
+    if (idxs.empty())
+        return;
+
+    ss << L"\n  Strong anomaly samples: " << name << L"\n";
+    for (vector<unsigned int>::const_iterator it = idxs.begin(); it != idxs.end(); ++it) {
+        const unsigned int idx = *it;
+        const NodePayloadInfo &info = payloadOffsets[idx];
+        const unsigned __int64 nodeRecOff =
+            (unsigned __int64)(s.header.nodeTableOffset_20) +
+            (unsigned __int64)(idx) * sizeof(NodeRecord32);
+        ss << L"    [" << idx << L"] type=" << info.classType << L" off=0x" << hex
+           << info.payloadOff24 << L" nodeRecOff=0x" << nodeRecOff << L" classDataPtr=0x"
+           << info.classDataPtr_38 << L" actionCb=0x" << info.actionCallback_48 << dec
+           << L" listCountA=" << info.listCountA_54 << L" listA=0x" << hex
+           << info.listA_ptr_58 << dec << L" listCountB=" << info.listCountB_5C
+           << L" listB=0x" << hex << info.listB_ptr_60 << dec << L"\n";
+    }
+}
+
+static void PrintPointerFieldSamples(wstringstream &ss, const Summary &s,
+                                     const vector<NodePayloadInfo> &payloadOffsets,
+                                     const vector<unsigned int> &samplePtrFields) {
+    if (samplePtrFields.empty())
+        return;
+
+    ss << L"\n  Samples (index, type, payloadOff24, nodeRecOff, classDataPtr_38, actionCb_48, "
+          L"listCountA_54, listA_58, listCountB_5C, listB_60)\n";
+    for (vector<unsigned int>::const_iterator it = samplePtrFields.begin();
+         it != samplePtrFields.end(); ++it) {
+        const unsigned int idx = *it;
+        const NodePayloadInfo &info = payloadOffsets[idx];
+        const unsigned __int64 nodeRecOff =
+            (unsigned __int64)(s.header.nodeTableOffset_20) +
+            (unsigned __int64)(idx) * sizeof(NodeRecord32);
+        ss << L"    [" << idx << L"] type=" << info.classType << L" off=0x" << hex
+           << info.payloadOff24 << L" nodeRecOff=0x" << nodeRecOff << L" classDataPtr=0x"
+           << hex << info.classDataPtr_38 << L" actionCb=0x" << info.actionCallback_48
+           << L" listCountA=" << dec << info.listCountA_54 << L" listA=0x" << hex
+           << info.listA_ptr_58 << L" listCountB=" << dec << info.listCountB_5C
+           << L" listB=0x" << hex << info.listB_ptr_60 << dec << L"\n";
+    }
+}
+
+static void PrintOffsetLine(wstringstream &ss, const Summary &s, const wchar_t *name,
+                            unsigned int off) {
+    ss << L"  " << name << L": 0x" << hex << off << dec;
+    if (off < s.fileSize)
+        ss << L" (ok)\n";
+    else
+        ss << L" (out of range)\n";
+}
+
+static void PrintPayloadOffsetSamples(wstringstream &ss,
+                                      const vector<NodePayloadInfo> &payloadOffsets,
+                                      const wchar_t *name,
+                                      const vector<unsigned int> &idxs) {
+    if (idxs.empty())
+        return;
+
+    ss << L"\n  Samples: " << name << L"\n";
+    for (vector<unsigned int>::const_iterator it = idxs.begin(); it != idxs.end(); ++it) {
+        const unsigned int idx = *it;
+        if (idx >= payloadOffsets.size())
+            continue;
+        const NodePayloadInfo &info = payloadOffsets[idx];
+        ss << L"    [" << idx << L"] type=" << info.classType << L" off=0x" << hex
+           << info.payloadOff24 << L" flags=0x" << info.flags << dec << L"\n";
+    }
+}
+
 static wstring
 FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
                const map<unsigned int, unsigned int>
@@ -305,11 +425,12 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
     unsigned int beforeNodeTableEnd = 0;
 
     const unsigned __int64 nodeTableEnd =
-        static_cast<unsigned __int64>(s.header.nodeTableOffset_20) +
-        static_cast<unsigned __int64>(s.header.nodeCount_18) * sizeof(NodeRecord32);
+        (unsigned __int64)(s.header.nodeTableOffset_20) +
+        (unsigned __int64)(s.header.nodeCount_18) * sizeof(NodeRecord32);
 
-    for (auto &kv : payloadOffsets) {
-        const unsigned int off = kv.payloadOff24;
+    for (vector<NodePayloadInfo>::const_iterator it = payloadOffsets.begin();
+         it != payloadOffsets.end(); ++it) {
+        const unsigned int off = it->payloadOff24;
         if (off == 0)
             continue;
         nonZero++;
@@ -317,7 +438,7 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
         maxOff = max(maxOff, off);
         if (off >= s.fileSize)
             outOfRange++;
-        if (static_cast<unsigned __int64>(off) < nodeTableEnd)
+        if ((unsigned __int64)(off) < nodeTableEnd)
             beforeNodeTableEnd++;
     }
 
@@ -359,7 +480,7 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
     vector<unsigned int> samplePtrFields;
     samplePtrFields.reserve(16);
     for (size_t i = 0; i < payloadOffsets.size(); i++) {
-        const auto &n = payloadOffsets[i];
+        const NodePayloadInfo &n = payloadOffsets[i];
         bool any = false;
         if (n.classDataPtr_38 != 0) {
             nonZeroClassDataPtr++;
@@ -367,7 +488,7 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
             if (n.payloadOff24 == 0) {
                 nonZeroClassDataPtr_WithZeroPayloadOff++;
                 if (sampleClassDataPtrWithZeroOff.size() < 8)
-                    sampleClassDataPtrWithZeroOff.push_back(static_cast<unsigned int>(i));
+                    sampleClassDataPtrWithZeroOff.push_back((unsigned int)(i));
             }
         }
         if (n.actionCallback_48 != 0) {
@@ -376,7 +497,7 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
             if (n.payloadOff24 == 0) {
                 nonZeroActionCb_WithZeroPayloadOff++;
                 if (sampleActionCbWithZeroOff.size() < 8)
-                    sampleActionCbWithZeroOff.push_back(static_cast<unsigned int>(i));
+                    sampleActionCbWithZeroOff.push_back((unsigned int)(i));
             }
         }
         if (n.listA_ptr_58 != 0) {
@@ -385,7 +506,7 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
             if (n.listCountA_54 <= 0) {
                 nonZeroListA_WithNonPositiveCount++;
                 if (sampleListAWithNonPositiveCount.size() < 8)
-                    sampleListAWithNonPositiveCount.push_back(static_cast<unsigned int>(i));
+                    sampleListAWithNonPositiveCount.push_back((unsigned int)(i));
             }
         }
         if (n.listB_ptr_60 != 0) {
@@ -394,11 +515,11 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
             if (n.listCountB_5C <= 0) {
                 nonZeroListB_WithNonPositiveCount++;
                 if (sampleListBWithNonPositiveCount.size() < 8)
-                    sampleListBWithNonPositiveCount.push_back(static_cast<unsigned int>(i));
+                    sampleListBWithNonPositiveCount.push_back((unsigned int)(i));
             }
         }
         if (any && samplePtrFields.size() < 16)
-            samplePtrFields.push_back(static_cast<unsigned int>(i));
+            samplePtrFields.push_back((unsigned int)(i));
     }
 
     ss << L"\nOn-disk runtime-pointer fields (informational)\n";
@@ -422,62 +543,20 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
         ss << L"WARNING: strong anomalies present in on-disk node records (unexpected runtime "
               L"pointers/callbacks).\n";
 
-    const auto printStrongSamples = [&](const wchar_t *name,
-                                        const vector<unsigned int> &idxs) {
-        if (idxs.empty())
-            return;
-        ss << L"\n  Strong anomaly samples: " << name << L"\n";
-        for (unsigned int idx : idxs) {
-            const auto &info = payloadOffsets[idx];
-            const unsigned __int64 nodeRecOff =
-                static_cast<unsigned __int64>(s.header.nodeTableOffset_20) +
-                static_cast<unsigned __int64>(idx) * sizeof(NodeRecord32);
-            ss << L"    [" << idx << L"] type=" << info.classType << L" off=0x" << hex
-               << info.payloadOff24 << L" nodeRecOff=0x" << nodeRecOff << L" classDataPtr=0x"
-               << info.classDataPtr_38 << L" actionCb=0x" << info.actionCallback_48 << dec
-               << L" listCountA=" << info.listCountA_54 << L" listA=0x" << hex
-               << info.listA_ptr_58 << dec << L" listCountB=" << info.listCountB_5C
-               << L" listB=0x" << hex << info.listB_ptr_60 << dec << L"\n";
-        }
-    };
+    PrintStrongSamples(ss, s, payloadOffsets, L"classDataPtr_38 != 0 && payloadOff24 == 0", sampleClassDataPtrWithZeroOff);
+    PrintStrongSamples(ss, s, payloadOffsets, L"actionCallback_48 != 0 && payloadOff24 == 0", sampleActionCbWithZeroOff);
+    PrintStrongSamples(ss, s, payloadOffsets, L"listA_ptr_58 != 0 && listCountA_54 <= 0", sampleListAWithNonPositiveCount);
+    PrintStrongSamples(ss, s, payloadOffsets, L"listB_ptr_60 != 0 && listCountB_5C <= 0", sampleListBWithNonPositiveCount);
 
-    printStrongSamples(L"classDataPtr_38 != 0 && payloadOff24 == 0", sampleClassDataPtrWithZeroOff);
-    printStrongSamples(L"actionCallback_48 != 0 && payloadOff24 == 0", sampleActionCbWithZeroOff);
-    printStrongSamples(L"listA_ptr_58 != 0 && listCountA_54 <= 0", sampleListAWithNonPositiveCount);
-    printStrongSamples(L"listB_ptr_60 != 0 && listCountB_5C <= 0", sampleListBWithNonPositiveCount);
-
-    if (!samplePtrFields.empty()) {
-        ss << L"\n  Samples (index, type, payloadOff24, nodeRecOff, classDataPtr_38, actionCb_48, "
-              L"listCountA_54, listA_58, listCountB_5C, listB_60)\n";
-        for (unsigned int idx : samplePtrFields) {
-            const auto &info = payloadOffsets[idx];
-            const unsigned __int64 nodeRecOff =
-                static_cast<unsigned __int64>(s.header.nodeTableOffset_20) +
-                static_cast<unsigned __int64>(idx) * sizeof(NodeRecord32);
-            ss << L"    [" << idx << L"] type=" << info.classType << L" off=0x" << hex
-               << info.payloadOff24 << L" nodeRecOff=0x" << nodeRecOff << L" classDataPtr=0x"
-               << hex << info.classDataPtr_38 << L" actionCb=0x" << info.actionCallback_48
-               << L" listCountA=" << dec << info.listCountA_54 << L" listA=0x" << hex
-               << info.listA_ptr_58 << L" listCountB=" << dec << info.listCountB_5C
-               << L" listB=0x" << hex << info.listB_ptr_60 << dec << L"\n";
-        }
-    }
+    PrintPointerFieldSamples(ss, s, payloadOffsets, samplePtrFields);
 
     ss << L"\nSection offset sanity\n";
     ss << L"---------------------\n";
 
-    const auto printOff = [&](const wchar_t *name, unsigned int off) {
-        ss << L"  " << name << L": 0x" << hex << off << dec;
-        if (off < s.fileSize)
-            ss << L" (ok)\n";
-        else
-            ss << L" (out of range)\n";
-    };
-
-    printOff(L"TexDir offset", s.header.texDirOffset_0C);
-    printOff(L"Matl offset", s.header.matlOffset_10);
-    printOff(L"Model3D offset", s.header.model3dOffset_14);
-    printOff(L"NodeTable offset", s.header.nodeTableOffset_20);
+    PrintOffsetLine(ss, s, L"TexDir offset", s.header.texDirOffset_0C);
+    PrintOffsetLine(ss, s, L"Matl offset", s.header.matlOffset_10);
+    PrintOffsetLine(ss, s, L"Model3D offset", s.header.model3dOffset_14);
+    PrintOffsetLine(ss, s, L"NodeTable offset", s.header.nodeTableOffset_20);
 
     const bool monotonic = (s.header.texDirOffset_0C < s.header.matlOffset_10) &&
                            (s.header.matlOffset_10 < s.header.model3dOffset_14) &&
@@ -516,47 +595,47 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
     sampleExpectedRegion.reserve(8);
 
     for (size_t idx = 0; idx < payloadOffsets.size(); idx++) {
-        const auto &kv = payloadOffsets[idx];
+        const NodePayloadInfo &kv = payloadOffsets[idx];
         const unsigned int off32 = kv.payloadOff24;
         if (off32 == 0)
             continue;
 
-        const unsigned __int64 off = static_cast<unsigned __int64>(off32);
+        const unsigned __int64 off = (unsigned __int64)(off32);
         if (off >= s.fileSize) {
             payloadOutOfRange2++;
             if (sampleOutOfRange.size() < 16)
-                sampleOutOfRange.push_back(static_cast<unsigned int>(idx));
+                sampleOutOfRange.push_back((unsigned int)(idx));
             continue;
         }
 
-        if (off < static_cast<unsigned __int64>(s.header.texDirOffset_0C)) {
+        if (off < (unsigned __int64)(s.header.texDirOffset_0C)) {
             payloadBeforeTexDir++;
             if (sampleBeforeTexDir.size() < 16)
-                sampleBeforeTexDir.push_back(static_cast<unsigned int>(idx));
+                sampleBeforeTexDir.push_back((unsigned int)(idx));
             continue;
         }
 
         if (monotonic) {
-            if (off < static_cast<unsigned __int64>(s.header.matlOffset_10)) {
+            if (off < (unsigned __int64)(s.header.matlOffset_10)) {
                 payloadInTexDir++;
                 if (sampleInTexDir.size() < 16)
-                    sampleInTexDir.push_back(static_cast<unsigned int>(idx));
-            } else if (off < static_cast<unsigned __int64>(s.header.model3dOffset_14)) {
+                    sampleInTexDir.push_back((unsigned int)(idx));
+            } else if (off < (unsigned __int64)(s.header.model3dOffset_14)) {
                 payloadInMatl++;
                 if (sampleInMatl.size() < 16)
-                    sampleInMatl.push_back(static_cast<unsigned int>(idx));
-            } else if (off < static_cast<unsigned __int64>(s.header.nodeTableOffset_20)) {
+                    sampleInMatl.push_back((unsigned int)(idx));
+            } else if (off < (unsigned __int64)(s.header.nodeTableOffset_20)) {
                 payloadInModel3D++;
                 if (sampleInModel3D.size() < 16)
-                    sampleInModel3D.push_back(static_cast<unsigned int>(idx));
+                    sampleInModel3D.push_back((unsigned int)(idx));
             } else if (off < nodeTableEnd) {
                 payloadInNodeTable++;
                 if (sampleInNodeTable.size() < 16)
-                    sampleInNodeTable.push_back(static_cast<unsigned int>(idx));
+                    sampleInNodeTable.push_back((unsigned int)(idx));
             } else {
                 payloadInExpectedRegion++;
                 if (sampleExpectedRegion.size() < 8)
-                    sampleExpectedRegion.push_back(static_cast<unsigned int>(idx));
+                    sampleExpectedRegion.push_back((unsigned int)(idx));
             }
         } else {
             // Without monotonic section offsets we can't classify reliably; only node-table
@@ -564,11 +643,11 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
             if (off < nodeTableEnd) {
                 payloadInNodeTable++;
                 if (sampleInNodeTable.size() < 16)
-                    sampleInNodeTable.push_back(static_cast<unsigned int>(idx));
+                    sampleInNodeTable.push_back((unsigned int)(idx));
             } else {
                 payloadInExpectedRegion++;
                 if (sampleExpectedRegion.size() < 8)
-                    sampleExpectedRegion.push_back(static_cast<unsigned int>(idx));
+                    sampleExpectedRegion.push_back((unsigned int)(idx));
             }
         }
     }
@@ -583,34 +662,17 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
     }
     ss << L"  Out of range (>= file size): " << payloadOutOfRange2 << L"\n";
 
-    const auto printSamples = [&](const wchar_t *name, const vector<unsigned int> &idxs) {
-        if (idxs.empty())
-            return;
-        ss << L"\n  Samples: " << name << L"\n";
-        for (unsigned int idx : idxs) {
-            const auto &info = payloadOffsets[idx];
-            ss << L"    [" << idx << L"] type=" << info.classType << L" off=0x" << hex
-               << info.payloadOff24 << L" flags=0x" << info.flags << dec << L"\n";
-        }
-    };
-
-    printSamples(L"Out of range", sampleOutOfRange);
-    printSamples(L"Before TexDir", sampleBeforeTexDir);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Out of range", sampleOutOfRange);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Before TexDir", sampleBeforeTexDir);
     if (monotonic) {
-        printSamples(L"Inside TexDir", sampleInTexDir);
-        printSamples(L"Inside Matl", sampleInMatl);
-        printSamples(L"Inside Model3D", sampleInModel3D);
+        PrintPayloadOffsetSamples(ss, payloadOffsets, L"Inside TexDir", sampleInTexDir);
+        PrintPayloadOffsetSamples(ss, payloadOffsets, L"Inside Matl", sampleInMatl);
+        PrintPayloadOffsetSamples(ss, payloadOffsets, L"Inside Model3D", sampleInModel3D);
     }
-    printSamples(L"Inside node table", sampleInNodeTable);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Inside node table", sampleInNodeTable);
 
-    if (!sampleExpectedRegion.empty()) {
-        ss << L"\n  Samples: Expected region (>= nodeTableEnd)\n";
-        for (unsigned int idx : sampleExpectedRegion) {
-            const auto &info = payloadOffsets[idx];
-            ss << L"    [" << idx << L"] type=" << info.classType << L" off=0x" << hex
-               << info.payloadOff24 << L" flags=0x" << info.flags << dec << L"\n";
-        }
-    }
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Expected region (>= nodeTableEnd)",
+                              sampleExpectedRegion);
 
     ss << L"\nPayload header sanity (expected-region payloads, known class types)\n";
     ss << L"---------------------------------------------------------------\n";
@@ -657,58 +719,46 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
     ss << L"Sound variable-range failures (attached list): " << payloadSanity.soundVarRangeFail
        << L"\n";
 
-    const auto printPayloadSamples = [&](const wchar_t *name,
-                                         const vector<unsigned int> &idxs) {
-        if (idxs.empty())
-            return;
-        ss << L"\n  Samples: " << name << L"\n";
-        for (unsigned int idx : idxs) {
-            if (idx >= payloadOffsets.size())
-                continue;
-            const auto &info = payloadOffsets[idx];
-            ss << L"    [" << idx << L"] type=" << info.classType << L" off=0x" << hex
-               << info.payloadOff24 << L" flags=0x" << info.flags << dec << L"\n";
-        }
-    };
-
-    printPayloadSamples(L"Unknown classType", payloadSanity.sampleUnknown);
-    printPayloadSamples(L"Range fail", payloadSanity.sampleRangeFail);
-    printPayloadSamples(L"Camera bad ref", payloadSanity.sampleCameraBadRef);
-    printPayloadSamples(L"World bad counts", payloadSanity.sampleWorldBad);
-    printPayloadSamples(L"World bad NodeRefs", payloadSanity.sampleWorldBadNodeRefs);
-    printPayloadSamples(L"World NodeRef check skipped",
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Unknown classType", payloadSanity.sampleUnknown);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Range fail", payloadSanity.sampleRangeFail);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Camera bad ref", payloadSanity.sampleCameraBadRef);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"World bad counts", payloadSanity.sampleWorldBad);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"World bad NodeRefs", payloadSanity.sampleWorldBadNodeRefs);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"World NodeRef check skipped",
                         payloadSanity.sampleWorldNodeRefCheckSkipped);
-    printPayloadSamples(L"World bad child NodeRefs", payloadSanity.sampleWorldBadChildNodeRefs);
-    printPayloadSamples(L"World child NodeRef check skipped",
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"World bad child NodeRefs", payloadSanity.sampleWorldBadChildNodeRefs);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"World child NodeRef check skipped",
                         payloadSanity.sampleWorldChildNodeRefCheckSkipped);
-    printPayloadSamples(L"World variable-range fail", payloadSanity.sampleWorldVarRangeFail);
-    printPayloadSamples(L"World variable-range skipped", payloadSanity.sampleWorldVarRangeSkipped);
-    printPayloadSamples(L"Light bad count", payloadSanity.sampleLightBad);
-    printPayloadSamples(L"Light bad NodeRefs", payloadSanity.sampleLightBadNodeRefs);
-    printPayloadSamples(L"Light NodeRef check skipped",
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"World variable-range fail", payloadSanity.sampleWorldVarRangeFail);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"World variable-range skipped", payloadSanity.sampleWorldVarRangeSkipped);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Light bad count", payloadSanity.sampleLightBad);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Light bad NodeRefs", payloadSanity.sampleLightBadNodeRefs);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Light NodeRef check skipped",
                         payloadSanity.sampleLightNodeRefCheckSkipped);
-    printPayloadSamples(L"Light variable-range fail", payloadSanity.sampleLightVarRangeFail);
-    printPayloadSamples(L"Sound bad count", payloadSanity.sampleSoundBad);
-    printPayloadSamples(L"Sound bad NodeRefs", payloadSanity.sampleSoundBadNodeRefs);
-    printPayloadSamples(L"Sound NodeRef check skipped",
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Light variable-range fail", payloadSanity.sampleLightVarRangeFail);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Sound bad count", payloadSanity.sampleSoundBad);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Sound bad NodeRefs", payloadSanity.sampleSoundBadNodeRefs);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Sound NodeRef check skipped",
                         payloadSanity.sampleSoundNodeRefCheckSkipped);
-    printPayloadSamples(L"Sound variable-range fail", payloadSanity.sampleSoundVarRangeFail);
+    PrintPayloadOffsetSamples(ss, payloadOffsets, L"Sound variable-range fail", payloadSanity.sampleSoundVarRangeFail);
 
     ss << L"\nClassType -> nodes with non-zero payload offset\n";
     ss << L"----------------------------------------------\n";
-    vector<pair<unsigned int, unsigned int>> v;
+    vector<pair<unsigned int, unsigned int> > v;
     v.reserve(payloadOffsetHistogram.size());
-    for (auto &kv : payloadOffsetHistogram)
-        v.push_back(kv);
-    sort(v.begin(), v.end(), [](auto &a, auto &b) { return a.second > b.second; });
-    for (auto &kv : v)
-        ss << L"  " << kv.first << L": " << kv.second << L"\n";
+    for (map<unsigned int, unsigned int>::const_iterator it = payloadOffsetHistogram.begin();
+         it != payloadOffsetHistogram.end(); ++it)
+        v.push_back(*it);
+    sort(v.begin(), v.end(), ClassTypeCountGreater);
+    for (vector<pair<unsigned int, unsigned int> >::const_iterator it = v.begin(); it != v.end();
+         ++it)
+        ss << L"  " << it->first << L": " << it->second << L"\n";
 
     ss << L"\nFirst 32 nodes (index, classType_34, payloadOff24, flags_C0)\n";
     ss << L"-----------------------------------------------------------\n";
     const size_t limit = min<size_t>(32, payloadOffsets.size());
     for (size_t i = 0; i < limit; i++) {
-        const auto &info = payloadOffsets[i];
+        const NodePayloadInfo &info = payloadOffsets[i];
         ss << L"  [" << i << L"] type=" << info.classType << L" off=0x" << hex
            << info.payloadOff24 << L" flags=0x" << info.flags << dec << L"\n";
     }
@@ -723,10 +773,9 @@ FormatDetailed(const Summary &s, const vector<NodePayloadInfo> &payloadOffsets,
 }
 
 wstring ReadZbdDetailedText(const wstring &path) {
-    Summary s = {0};
-
-    error_code ec;
-    s.fileSize = static_cast<unsigned __int64>(filesystem::file_size(path, ec));
+    Summary s;
+    InitSummary(s);
+    s.fileSize = GetFileSizeOrZero(path);
 
     FILE *f = 0;
     if (_wfopen_s(&f, path.c_str(), L"rb") != 0 || !f) {
@@ -750,7 +799,7 @@ wstring ReadZbdDetailedText(const wstring &path) {
         return FormatDetailed(s, {}, {}, PayloadSanitySummary{});
     }
 
-    if (fseek(f, static_cast<long>(hdr.nodeTableOffset_20), SEEK_SET) != 0) {
+    if (fseek(f, (long)(hdr.nodeTableOffset_20), SEEK_SET) != 0) {
         fclose(f);
         return L"Failed to seek to node table offset.";
     }
@@ -807,16 +856,16 @@ wstring ReadZbdDetailedText(const wstring &path) {
     payloadSanity.sampleSoundVarRangeFail.reserve(8);
 
     const unsigned __int64 nodeTableEnd =
-        static_cast<unsigned __int64>(hdr.nodeTableOffset_20) +
-        static_cast<unsigned __int64>(hdr.nodeCount_18) * sizeof(NodeRecord32);
+        (unsigned __int64)(hdr.nodeTableOffset_20) +
+        (unsigned __int64)(hdr.nodeCount_18) * sizeof(NodeRecord32);
 
     for (unsigned int i = 0; i < hdr.nodeCount_18; i++) {
-        const auto &info = payloadOffsets[i];
+        const NodePayloadInfo &info = payloadOffsets[i];
         const unsigned int off32 = info.payloadOff24;
         if (off32 == 0)
             continue;
 
-        const unsigned __int64 off = static_cast<unsigned __int64>(off32);
+        const unsigned __int64 off = (unsigned __int64)(off32);
         if (off < nodeTableEnd || off >= s.fileSize)
             continue; // already covered by offset sanity buckets
 
@@ -845,7 +894,7 @@ wstring ReadZbdDetailedText(const wstring &path) {
                 bool bad = false;
                 for (int k = 0; k < 4; k++) {
                     const int r = refs[k];
-                    if (!(r == -1 || (r >= 0 && static_cast<unsigned int>(r) < hdr.nodeCount_18)))
+                    if (!(r == -1 || (r >= 0 && (unsigned int)(r) < hdr.nodeCount_18)))
                         bad = true;
                 }
                 if (bad) {
@@ -858,29 +907,18 @@ wstring ReadZbdDetailedText(const wstring &path) {
             // World: validate key counts.
             unsigned char buf[0xAC] = {0};
             if (ReadAt(f, off, buf, sizeof(buf))) {
-                auto rd_u32 = [&](size_t o) -> unsigned int {
-                    unsigned int v = 0;
-                    memcpy(&v, buf + o, 4);
-                    return v;
-                };
-                auto rd_i32 = [&](size_t o) -> int {
-                    int v = 0;
-                    memcpy(&v, buf + o, 4);
-                    return v;
-                };
-
-                const unsigned int cols = rd_u32(0x78);
-                const unsigned int rows = rd_u32(0x7C);
-                const int list1 = rd_i32(0x90);
-                const int list2 = rd_i32(0x9C);
+                const unsigned int cols = ReadU32FromBuffer(buf, 0x78);
+                const unsigned int rows = ReadU32FromBuffer(buf, 0x7C);
+                const int list1 = ReadI32FromBuffer(buf, 0x90);
+                const int list2 = ReadI32FromBuffer(buf, 0x9C);
 
                 bool bad = false;
                 if (cols == 0 || rows == 0 || cols > 8192 || rows > 8192)
                     bad = true;
                 if (list1 < 0 || list2 < 0)
                     bad = true;
-                if (list1 > static_cast<int>(hdr.nodeCount_18) ||
-                    list2 > static_cast<int>(hdr.nodeCount_18))
+                if (list1 > (int)(hdr.nodeCount_18) ||
+                    list2 > (int)(hdr.nodeCount_18))
                     bad = true;
 
                 if (bad) {
@@ -893,12 +931,12 @@ wstring ReadZbdDetailedText(const wstring &path) {
                 if (!bad) {
                     const unsigned __int64 list1Off = off + 0xAC;
                     const unsigned __int64 list2Off =
-                        list1Off + static_cast<unsigned __int64>(list1) * 4ull;
+                        list1Off + (unsigned __int64)(list1) * 4ui64;
                     bool skipped1 = false;
                     bool skipped2 = false;
-                    bool ok1 = ValidateNodeRefList(f, list1Off, static_cast<unsigned int>(list1),
+                    bool ok1 = ValidateNodeRefList(f, list1Off, (unsigned int)(list1),
                                                    hdr.nodeCount_18, skipped1);
-                    bool ok2 = ValidateNodeRefList(f, list2Off, static_cast<unsigned int>(list2),
+                    bool ok2 = ValidateNodeRefList(f, list2Off, (unsigned int)(list2),
                                                    hdr.nodeCount_18, skipped2);
                     if (skipped1 || skipped2) {
                         payloadSanity.worldNodeRefCheckSkipped++;
@@ -922,8 +960,8 @@ wstring ReadZbdDetailedText(const wstring &path) {
                     // Total cap for child NodeRef validation across all walked cells (perf guard).
                     const unsigned __int64 kMaxTotalChildRefsToCheck = kWorldMaxTotalChildRefsToCheck;
 
-                    const unsigned __int64 list1Bytes = static_cast<unsigned __int64>(list1) * 4ull;
-                    const unsigned __int64 list2Bytes = static_cast<unsigned __int64>(list2) * 4ull;
+                    const unsigned __int64 list1Bytes = (unsigned __int64)(list1) * 4ui64;
+                    const unsigned __int64 list2Bytes = (unsigned __int64)(list2) * 4ui64;
 
                     if (!CanAddRange(cur, list1Bytes, fileSize))
                         vrBad = true;
@@ -939,8 +977,8 @@ wstring ReadZbdDetailedText(const wstring &path) {
 
                     if (!vrBad) {
                         const unsigned __int64 cells =
-                            static_cast<unsigned __int64>(cols) * static_cast<unsigned __int64>(rows);
-                        if (cells > 0x1000000ull)
+                            (unsigned __int64)(cols) * (unsigned __int64)(rows);
+                        if (cells > 0x1000000ui64)
                             vrBad = true; // guard absurd multiplication
 
                         payloadSanity.worldVarCellsTotal += cells;
@@ -955,7 +993,7 @@ wstring ReadZbdDetailedText(const wstring &path) {
                         }
 
                         // Switch to sequential reads: seek once then ReadExact in the loop.
-                        if (_fseeki64(f, static_cast<__int64>(cur), SEEK_SET) != 0)
+                        if (_fseeki64(f, (__int64)(cur), SEEK_SET) != 0)
                             vrBad = true;
 
                         for (unsigned __int64 c = 0; !vrBad && c < cellsToWalk; c++) {
@@ -977,13 +1015,13 @@ wstring ReadZbdDetailedText(const wstring &path) {
                                 childCount = 0;
 
                             const unsigned int childCountU =
-                                static_cast<unsigned int>(childCount);
+                                (unsigned int)(childCount);
 
                             cur += 0x40;
                             payloadSanity.worldVarCellsChecked++;
 
                             const unsigned __int64 childBytes =
-                                static_cast<unsigned __int64>(childCountU) * 4ull;
+                                (unsigned __int64)(childCountU) * 4ui64;
                             if (!CanAddRange(cur, childBytes, fileSize)) {
                                 vrBad = true;
                                 break;
@@ -1005,7 +1043,7 @@ wstring ReadZbdDetailedText(const wstring &path) {
                                         payloadSanity.sampleWorldChildNodeRefCheckSkipped.push_back(
                                             i);
 
-                                    if (_fseeki64(f, static_cast<__int64>(childBytes), SEEK_CUR) !=
+                                    if (_fseeki64(f, (__int64)(childBytes), SEEK_CUR) !=
                                         0) {
                                         vrBad = true;
                                         break;
@@ -1015,8 +1053,8 @@ wstring ReadZbdDetailedText(const wstring &path) {
                                     const unsigned __int64 remaining =
                                         kMaxTotalChildRefsToCheck -
                                         payloadSanity.worldChildNodeRefsChecked;
-                                    if (static_cast<unsigned __int64>(toCheck) > remaining)
-                                        toCheck = static_cast<unsigned int>(remaining);
+                                    if ((unsigned __int64)(toCheck) > remaining)
+                                        toCheck = (unsigned int)(remaining);
 
                                     unsigned int toSkip = childCountU - toCheck;
                                     bool badChild = false;
@@ -1026,14 +1064,14 @@ wstring ReadZbdDetailedText(const wstring &path) {
                                         const unsigned int chunk = (toCheck > kWorldChildRefChunk)
                                                                         ? kWorldChildRefChunk
                                                                         : toCheck;
-                                        array<int, kWorldChildRefChunk> bufRefs = {0};
-                                        if (!ReadExact(f, bufRefs.data(), (size_t)chunk * 4)) {
+                                        int bufRefs[kWorldChildRefChunk] = {0};
+                                        if (!ReadExact(f, bufRefs, (size_t)chunk * 4)) {
                                             vrBad = true;
                                             break;
                                         }
                                         for (unsigned int k = 0; k < chunk; k++) {
                                             const int r = bufRefs[k];
-                                            if (!(r == -1 || (r >= 0 && static_cast<unsigned int>(
+                                            if (!(r == -1 || (r >= 0 && (unsigned int)(
                                                                             r) < hdr.nodeCount_18)))
                                                 badChild = true;
                                         }
@@ -1055,8 +1093,8 @@ wstring ReadZbdDetailedText(const wstring &path) {
                                                 .push_back(i);
 
                                         const unsigned __int64 skipBytes =
-                                            static_cast<unsigned __int64>(toSkip) * 4ull;
-                                        if (_fseeki64(f, static_cast<__int64>(skipBytes),
+                                            (unsigned __int64)(toSkip) * 4ui64;
+                                        if (_fseeki64(f, (__int64)(skipBytes),
                                                       SEEK_CUR) != 0) {
                                             vrBad = true;
                                             break;
@@ -1085,7 +1123,7 @@ wstring ReadZbdDetailedText(const wstring &path) {
             if (ReadAt(f, off, buf, sizeof(buf))) {
                 int count = 0;
                 memcpy(&count, buf + 0xDC, 4);
-                if (count < 0 || count > static_cast<int>(hdr.nodeCount_18)) {
+                if (count < 0 || count > (int)(hdr.nodeCount_18)) {
                     payloadSanity.lightBadCounts++;
                     if (payloadSanity.sampleLightBad.size() < 8)
                         payloadSanity.sampleLightBad.push_back(i);
@@ -1093,7 +1131,7 @@ wstring ReadZbdDetailedText(const wstring &path) {
 
                 if (count >= 0) {
                     const unsigned __int64 cur = off + 0xE4;
-                    const unsigned __int64 bytes = static_cast<unsigned __int64>(count) * 4ull;
+                    const unsigned __int64 bytes = (unsigned __int64)(count) * 4ui64;
                     if (!CanAddRange(cur, bytes, s.fileSize)) {
                         payloadSanity.lightVarRangeFail++;
                         if (payloadSanity.sampleLightVarRangeFail.size() < 8)
@@ -1103,7 +1141,7 @@ wstring ReadZbdDetailedText(const wstring &path) {
                     // Validate NodeRef indices in attached list.
                     bool skipped = false;
                     const bool okRefs = ValidateNodeRefList(
-                        f, cur, static_cast<unsigned int>(count), hdr.nodeCount_18, skipped);
+                        f, cur, (unsigned int)(count), hdr.nodeCount_18, skipped);
                     if (skipped) {
                         payloadSanity.lightNodeRefCheckSkipped++;
                         if (payloadSanity.sampleLightNodeRefCheckSkipped.size() < 8)
@@ -1122,7 +1160,7 @@ wstring ReadZbdDetailedText(const wstring &path) {
             if (ReadAt(f, off, buf, sizeof(buf))) {
                 int count = 0;
                 memcpy(&count, buf + 0x8C, 4);
-                if (count < 0 || count > static_cast<int>(hdr.nodeCount_18)) {
+                if (count < 0 || count > (int)(hdr.nodeCount_18)) {
                     payloadSanity.soundBadCounts++;
                     if (payloadSanity.sampleSoundBad.size() < 8)
                         payloadSanity.sampleSoundBad.push_back(i);
@@ -1130,7 +1168,7 @@ wstring ReadZbdDetailedText(const wstring &path) {
 
                 if (count >= 0) {
                     const unsigned __int64 cur = off + 0x94;
-                    const unsigned __int64 bytes = static_cast<unsigned __int64>(count) * 4ull;
+                    const unsigned __int64 bytes = (unsigned __int64)(count) * 4ui64;
                     if (!CanAddRange(cur, bytes, s.fileSize)) {
                         payloadSanity.soundVarRangeFail++;
                         if (payloadSanity.sampleSoundVarRangeFail.size() < 8)
@@ -1140,7 +1178,7 @@ wstring ReadZbdDetailedText(const wstring &path) {
                     // Validate NodeRef indices in attached list.
                     bool skipped = false;
                     const bool okRefs = ValidateNodeRefList(
-                        f, cur, static_cast<unsigned int>(count), hdr.nodeCount_18, skipped);
+                        f, cur, (unsigned int)(count), hdr.nodeCount_18, skipped);
                     if (skipped) {
                         payloadSanity.soundNodeRefCheckSkipped++;
                         if (payloadSanity.sampleSoundNodeRefCheckSkipped.size() < 8)
@@ -1161,20 +1199,7 @@ wstring ReadZbdDetailedText(const wstring &path) {
 }
 
 wstring ReadZbdNodesCsvText(const wstring &path) {
-    auto BytesToHex = [](const unsigned char *p, size_t n) -> wstring {
-        static const wchar_t *kHex = L"0123456789abcdef";
-        wstring out;
-        out.reserve(n * 2);
-        for (size_t i = 0; i < n; i++) {
-            const unsigned char b = p[i];
-            out.push_back(kHex[(b >> 4) & 0xF]);
-            out.push_back(kHex[b & 0xF]);
-        }
-        return out;
-    };
-
-    error_code ec;
-    const unsigned __int64 fileSize = static_cast<unsigned __int64>(filesystem::file_size(path, ec));
+    const unsigned __int64 fileSize = GetFileSizeOrZero(path);
 
     FILE *f = 0;
     if (_wfopen_s(&f, path.c_str(), L"rb") != 0 || !f) {
@@ -1195,7 +1220,7 @@ wstring ReadZbdNodesCsvText(const wstring &path) {
         return L"Invalid ZBD header (magic/version mismatch).";
     }
 
-    if (fseek(f, static_cast<long>(hdr.nodeTableOffset_20), SEEK_SET) != 0) {
+    if (fseek(f, (long)(hdr.nodeTableOffset_20), SEEK_SET) != 0) {
         fclose(f);
         return L"Failed to seek to node table offset.";
     }
@@ -1212,10 +1237,10 @@ wstring ReadZbdNodesCsvText(const wstring &path) {
         }
 
         const unsigned int payloadOff = (rec.flags_C0 & 0x00FFFFFFu);
-        const unsigned __int64 nodeRecOff = static_cast<unsigned __int64>(hdr.nodeTableOffset_20) +
-                                         static_cast<unsigned __int64>(i) * sizeof(NodeRecord32);
+        const unsigned __int64 nodeRecOff = (unsigned __int64)(hdr.nodeTableOffset_20) +
+                                         (unsigned __int64)(i) * sizeof(NodeRecord32);
 
-        const wstring nameHex = BytesToHex(rec.name_00.data(), rec.name_00.size());
+        const wstring nameHex = BytesToHex(rec.name_00, sizeof(rec.name_00));
 
         // Hex for offsets/pointers/flags to match reverse engineering workflows.
         ss << i << L"," << nameHex << L"," << rec.classType_34 << L",0x" << hex << payloadOff

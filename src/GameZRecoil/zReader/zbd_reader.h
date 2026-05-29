@@ -21,9 +21,9 @@ struct Header {
 };
 
 struct Summary {
-    Header header = {0};
-    unsigned __int64 fileSize = 0;
-    bool headerValid = false;
+    Header header;
+    unsigned __int64 fileSize;
+    bool headerValid;
     map<unsigned int, unsigned int> classTypeHistogram; // classType_34 -> count
 };
 

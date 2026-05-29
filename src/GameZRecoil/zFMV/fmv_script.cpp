@@ -82,7 +82,7 @@ struct zFMV_MciPlayParams {
 };
 
 template <typename T> T &FieldAt(void *base, size_t offset) {
-    return *(T *)(static_cast<unsigned char *>(base) + offset);
+    return *(T *)((unsigned char *)(base) + offset);
 }
 
 typedef void (RECOIL_THISCALL *zFMV_ImageEnsureSurfaceProc)(zVidImagePartial *image);
@@ -261,32 +261,32 @@ unsigned int RawArg(zReader::Node *actionNode, int index) {
 float FloatArg(zReader::Node *actionNode, int index) {
     zReader::Node *arg = ArrayItem(actionNode, index);
     if (arg->type == zReader::ZRDR_NODE_INT) {
-        return static_cast<float>(arg->value.i32);
+        return (float)(arg->value.i32);
     }
 
     return arg->value.f32;
 }
 
 zFMV_ActionImage *NewImageAction() {
-    return static_cast<zFMV_ActionImage *>(::operator new(sizeof(zFMV_ActionImage)));
+    return (zFMV_ActionImage *)(::operator new(sizeof(zFMV_ActionImage)));
 }
 
 zFMV_ActionFade *NewFadeAction() {
-    return static_cast<zFMV_ActionFade *>(::operator new(sizeof(zFMV_ActionFade)));
+    return (zFMV_ActionFade *)(::operator new(sizeof(zFMV_ActionFade)));
 }
 
 zFMV_ActionPlayAvi *NewPlayAviAction() {
-    return static_cast<zFMV_ActionPlayAvi *>(
+    return (zFMV_ActionPlayAvi *)(
         ::operator new(sizeof(zFMV_ActionPlayAvi)));
 }
 
 zFMV_ActionPlayMci *NewPlayMciAction() {
-    return static_cast<zFMV_ActionPlayMci *>(
+    return (zFMV_ActionPlayMci *)(
         ::operator new(sizeof(zFMV_ActionPlayMci)));
 }
 
 zFMV_ActionBlur *NewBlurAction() {
-    return static_cast<zFMV_ActionBlur *>(::operator new(sizeof(zFMV_ActionBlur)));
+    return (zFMV_ActionBlur *)(::operator new(sizeof(zFMV_ActionBlur)));
 }
 
 zFMV_Action *BuildAction(zFMV_Script *script, zReader::Node *actionNode) {
@@ -312,7 +312,7 @@ zFMV_Action *BuildAction(zFMV_Script *script, zReader::Node *actionNode) {
     }
 
     if (strcmp(actionTag, "WAIT") == 0) {
-        zFMV_ActionWait * action = static_cast<zFMV_ActionWait *>(::operator new(sizeof(zFMV_ActionWait)));
+        zFMV_ActionWait * action = (zFMV_ActionWait *)(::operator new(sizeof(zFMV_ActionWait)));
         if (action == 0) {
             return 0;
         }
@@ -370,7 +370,7 @@ zFMV_Action *BuildAction(zFMV_Script *script, zReader::Node *actionNode) {
     }
 
     if (strcmp(actionTag, "PLAYSOUND") == 0) {
-        zFMV_ActionPlaySound * action = static_cast<zFMV_ActionPlaySound *>(
+        zFMV_ActionPlaySound * action = (zFMV_ActionPlaySound *)(
             ::operator new(sizeof(zFMV_ActionPlaySound)));
         if (action == 0) {
             return 0;
@@ -445,10 +445,10 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::RunBlockingImmediate() {
 
 // Reimplements 0x4159e0: zFMV_Action::RunBlockingTimed
 RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::RunBlockingTimed() {
-    const double startSec = static_cast<double>(GetTickCount()) * 0.00100000005;
+    const double startSec = (double)(GetTickCount()) * 0.00100000005;
     vftable->Begin(this, 0.0);
     while (true) {
-        const double currentSec = (static_cast<double>(GetTickCount()) * 0.00100000005) - startSec;
+        const double currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
         if (vftable->Update(this, currentSec) == 0) {
             break;
         }
@@ -458,11 +458,11 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::RunBlockingTimed() {
 
 // Reimplements 0x462ed0: zFMV_ActionWait::Begin
 RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionWait::Begin(double timeSec) {
-    startSec = static_cast<float>(timeSec);
+    startSec = (float)(timeSec);
 }
 
 RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionWait::Update(double timeSec) {
-    return timeSec < static_cast<double>(startSec + durationSec) ? 1 : 0;
+    return timeSec < (double)(startSec + durationSec) ? 1 : 0;
 }
 
 // Reimplements 0x462e90: zFMV_ActionPlaySound::Begin
@@ -549,7 +549,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Playback::OpenAndPlay(unsigned int
         ReportMciError(mciError);
     }
 
-    mciDeviceId = static_cast<unsigned short>(openParams.deviceId);
+    mciDeviceId = (unsigned short)(openParams.deviceId);
 
     zFMV_MciWindowParams windowParams = {0};
     windowParams.hwnd = notifyHwnd;
@@ -590,7 +590,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Playback::OpenAndPlay(unsigned int
 
     zFMV_MciSetParams setParams = {0};
     setParams.timeFormat = 0x1b;
-    setParams.audio = static_cast<DWORD>((unsigned int)(notifyHwnd));
+    setParams.audio = (DWORD)((unsigned int)(notifyHwnd));
     mciError = mciSendCommandA(mciDeviceId, 0x811, 0x302, (DWORD_PTR)(&setParams));
     if (mciError != 0) {
         ReportMciError(mciError);
@@ -602,7 +602,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Playback::OpenAndPlay(unsigned int
     playParams.from = startMs;
     DWORD playFlags = 0x6;
     if (endMs >= 0) {
-        playParams.to = static_cast<DWORD>(endMs);
+        playParams.to = (DWORD)(endMs);
         playFlags = 0xe;
     }
     if (notifyFlag == 1) {
@@ -686,9 +686,9 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::Constructor() {
     void *&srcFormat = FieldAt<void *>(this, kSrcFormatOffset);
     void *&dstFormat = FieldAt<void *>(this, kDstFormatOffset);
     srcFormat = calloc(formatBytes, 1);
-    const LONG dstFormatBytes = formatBytes > static_cast<LONG>(sizeof(BITMAPV4HEADER))
+    const LONG dstFormatBytes = formatBytes > (LONG)(sizeof(BITMAPV4HEADER))
                                     ? formatBytes
-                                    : static_cast<LONG>(sizeof(BITMAPV4HEADER));
+                                    : (LONG)(sizeof(BITMAPV4HEADER));
     dstFormat = calloc(dstFormatBytes, 1);
 
     if (AVIStreamReadFormat(videoStream, 0, srcFormat, &formatBytes) != 0) {
@@ -708,10 +708,10 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::Constructor() {
     }
 
     memcpy(dstFormat, srcFormat, formatBytes);
-    BITMAPINFOHEADER *const srcHeader = static_cast<BITMAPINFOHEADER *>(srcFormat);
-    BITMAPV4HEADER *const dstHeader = static_cast<BITMAPV4HEADER *>(dstFormat);
-    dstHeader->bV4Size = static_cast<DWORD>(dstFormatBytes);
-    dstHeader->bV4BitCount = static_cast<WORD>(zVideo::GetDisplayModeBpp());
+    BITMAPINFOHEADER *const srcHeader = (BITMAPINFOHEADER *)(srcFormat);
+    BITMAPV4HEADER *const dstHeader = (BITMAPV4HEADER *)(dstFormat);
+    dstHeader->bV4Size = (DWORD)(dstFormatBytes);
+    dstHeader->bV4BitCount = (WORD)(zVideo::GetDisplayModeBpp());
     dstHeader->bV4V4Compression = BI_BITFIELDS;
     if (dstHeader->bV4BitCount == 24) {
         dstHeader->bV4V4Compression = BI_RGB;
@@ -736,7 +736,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::Constructor() {
 
     FieldAt<HIC>(this, kVideoDecompressorOffset) =
         ICLocate(ICTYPE_VIDEO, FieldAt<DWORD>(this, kStreamInfoFccHandlerOffset),
-                 static_cast<LPBITMAPINFOHEADER>(srcFormat),
+                 (LPBITMAPINFOHEADER)(srcFormat),
                  (LPBITMAPINFOHEADER)(dstFormat), ICMODE_DECOMPRESS);
     FieldAt<void *>(this, kCompressedFrameBufferOffset) = calloc(compressedFrameBytes, 1);
 
@@ -756,9 +756,9 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::Constructor() {
     FieldAt<int>(this, kFrameHeightOffset) = dstHeader->bV4Height;
 
     FieldAt<void *>(this, 0x10) = calloc(dstHeader->bV4SizeImage, 1);
-    FieldAt<int>(this, 0x00) = static_cast<int>(dstHeader->bV4SizeImage);
-    FieldAt<short>(this, 0x04) = static_cast<short>(dstHeader->bV4Width);
-    FieldAt<short>(this, 0x06) = static_cast<short>(dstHeader->bV4Height);
+    FieldAt<int>(this, 0x00) = (int)(dstHeader->bV4SizeImage);
+    FieldAt<short>(this, 0x04) = (short)(dstHeader->bV4Width);
+    FieldAt<short>(this, 0x06) = (short)(dstHeader->bV4Height);
     FieldAt<unsigned char>(this, 0x08) = 0;
     FieldAt<unsigned char>(this, 0x09) = 0;
     FieldAt<unsigned char>(this, 0x0a) = 0;
@@ -771,7 +771,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::Constructor() {
     FieldAt<void *>(this, 0x2c) = 0;
     FieldAt<void *>(this, 0x30) = 0;
     FieldAt<void *>(this, 0x18) = 0;
-    FieldAt<int>(this, 0x34) = static_cast<short>(dstHeader->bV4Width);
+    FieldAt<int>(this, 0x34) = (short)(dstHeader->bV4Width);
 
     dstHeader->bV4Height = -dstHeader->bV4Height;
     FieldAt<int>(this, kHasVideoStreamOffset) = 1;
@@ -838,7 +838,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::OpenAudio() {
         }
 
         FieldAt<zSndSample *>(this, kAudioSampleOffset) = zSndSample_CreateQueuedStreamingSample(
-            static_cast<WAVEFORMATEX *>(audioFormat), audioBuffer, segmentBytes * 2);
+            (WAVEFORMATEX *)(audioFormat), audioBuffer, segmentBytes * 2);
         FieldAt<int>(this, kAudioRefillSecondHalfNextOffset) = 1;
         FieldAt<int>(this, kHasAudioStreamOffset) = 1;
         FieldAt<unsigned int>(this, kAudioReadSampleIndexOffset) = segmentBytes / sampleSize;
@@ -857,7 +857,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::OpenAudio() {
     }
 
     FieldAt<zSndSample *>(this, kAudioSampleOffset) = zSndSample_CreateQueuedStreamingSample(
-        static_cast<WAVEFORMATEX *>(audioFormat), audioBuffer, audioBytes);
+        (WAVEFORMATEX *)(audioFormat), audioBuffer, audioBytes);
     FieldAt<int>(this, kHasAudioStreamOffset) = 1;
 }
 
@@ -889,7 +889,7 @@ zFMV_Stream::ReadAndDecodeFrame(unsigned int frameIndex) {
     }
 
     const unsigned int frameCount = FieldAt<unsigned int>(this, kVideoFrameCountOffset);
-    if (static_cast<int>(currentFrameIndex) < static_cast<int>(frameCount)) {
+    if ((int)(currentFrameIndex) < (int)(frameCount)) {
         if (AVIStreamRead(FieldAt<PAVISTREAM>(this, kVideoStreamOffset), currentFrameIndex, 1,
                           FieldAt<void *>(this, kCompressedFrameBufferOffset),
                           FieldAt<int>(this, kCompressedFrameBufferBytesOffset), 0,
@@ -901,9 +901,9 @@ zFMV_Stream::ReadAndDecodeFrame(unsigned int frameIndex) {
         CRITICAL_SECTION &lock = FieldAt<CRITICAL_SECTION>(this, kCriticalSectionOffset);
         EnterCriticalSection(&lock);
         if (ICDecompress((HIC)(FieldAt<void *>(this, kCodecOffset)), 0,
-                         static_cast<LPBITMAPINFOHEADER>(FieldAt<void *>(this, kSrcFormatOffset)),
+                         (LPBITMAPINFOHEADER)(FieldAt<void *>(this, kSrcFormatOffset)),
                          FieldAt<void *>(this, kCompressedFrameBufferOffset),
-                         static_cast<LPBITMAPINFOHEADER>(FieldAt<void *>(this, kDstFormatOffset)),
+                         (LPBITMAPINFOHEADER)(FieldAt<void *>(this, kDstFormatOffset)),
                          FieldAt<void *>(this, kPixelsOffset)) != 0) {
             zError::ReportOld(0x400, kFMVStreamSourceFile, 0x10c,
                               kCannotDecompressAviVideoStream);
@@ -913,7 +913,7 @@ zFMV_Stream::ReadAndDecodeFrame(unsigned int frameIndex) {
     }
 
     ++currentFrameIndex;
-    if (static_cast<int>(currentFrameIndex) >= static_cast<int>(frameCount)) {
+    if ((int)(currentFrameIndex) >= (int)(frameCount)) {
         currentFrameIndex = 0;
     }
 
@@ -976,22 +976,22 @@ zFMV_Stream::FillAudioBuffer(unsigned int offset, unsigned int bytes) {
 
     if (buffer1Bytes != 0) {
         if (AVIStreamRead(audioStream, readSampleIndex,
-                          static_cast<LONG>(static_cast<unsigned int>(buffer1Bytes) / sampleSize),
+                          (LONG)((unsigned int)(buffer1Bytes) / sampleSize),
                           buffer1Data, buffer1Bytes, 0, 0) != 0) {
             zError::ReportOld(0x400, kFMVStreamSourceFile, 0x13d, kCannotReadAviSoundStream);
         }
-        readSampleIndex += static_cast<unsigned int>(buffer1Bytes) / sampleSize;
+        readSampleIndex += (unsigned int)(buffer1Bytes) / sampleSize;
     }
 
     if (buffer2Bytes != 0) {
         if (AVIStreamRead(audioStream, readSampleIndex,
-                          static_cast<LONG>(static_cast<unsigned int>(buffer2Bytes) / sampleSize),
+                          (LONG)((unsigned int)(buffer2Bytes) / sampleSize),
                           buffer2Data, buffer2Bytes, 0, 0) != 0) {
             zError::ReportOld(0x400, kFMVStreamSourceFile, 0x144, kCannotReadAviSoundStream);
         }
 
         // The original advances by the first locked span again after the wrapped read.
-        readSampleIndex += static_cast<unsigned int>(buffer1Bytes) / sampleSize;
+        readSampleIndex += (unsigned int)(buffer1Bytes) / sampleSize;
     }
 
     return audioSample->UnlockBackendBuffers(buffer1Data, buffer1Bytes, buffer2Data, buffer2Bytes);
@@ -1238,8 +1238,8 @@ zFMV_Script::BeginCurrentAction(double startTimeSec) {
 
 // Reimplements 0x4630a0: zFMV_Script::BeginAtTime
 RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::BeginAtTime() {
-    return BeginCurrentAction(static_cast<double>(timeGetTime()) *
-                              static_cast<double>(0.00100000005f));
+    return BeginCurrentAction((double)(timeGetTime()) *
+                              (double)(0.00100000005f));
 }
 
 // Reimplements 0x463000: zFMV_Script::Update
@@ -1274,7 +1274,7 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::Update(double timeSec) {
 
 // Reimplements 0x4630e0: zFMV_Script::UpdateAtTime
 RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::UpdateAtTime() {
-    return Update(static_cast<double>(timeGetTime()) * static_cast<double>(0.00100000005f));
+    return Update((double)(timeGetTime()) * (double)(0.00100000005f));
 }
 
 // Reimplements 0x462f50: zFMV_Script::RunBlocking
@@ -1301,7 +1301,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL zFMV_ActionImage::Construc
     next = 0;
     image = 0;
     vftable = (zFMV_Action_Vtbl *)(
-        static_cast<unsigned int>(k_zFMV_ActionImage_VtblAddress));
+        (unsigned int)(k_zFMV_ActionImage_VtblAddress));
     imagePath = DuplicateCString(path);
     doAdjustSurfaces = adjustSurfaces;
     g_zFMV_ActionImage_BlitRectY = blitY;
@@ -1319,7 +1319,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL
 zFMV_ActionImage::ConstructorScaled(const char *path, int adjustSurfaces) {
     next = 0;
     vftable = (zFMV_Action_Vtbl *)(
-        static_cast<unsigned int>(k_zFMV_ActionImage_VtblAddress));
+        (unsigned int)(k_zFMV_ActionImage_VtblAddress));
     image = 0;
     imagePath = DuplicateCString(path);
     doAdjustSurfaces = adjustSurfaces;
@@ -1344,10 +1344,10 @@ zFMV_ActionFade::Constructor(int red, int green, int blue,
                              unsigned int duration, int direction, int alpha) {
     next = 0;
     vftable = (zFMV_Action_Vtbl *)(
-        static_cast<unsigned int>(k_zFMV_ActionFade_VtblAddress));
-    fadeColorPacked16 = static_cast<unsigned short>(
-        zVid_PackColorRGB(static_cast<unsigned char>(red), static_cast<unsigned char>(green),
-                          static_cast<unsigned char>(blue)));
+        (unsigned int)(k_zFMV_ActionFade_VtblAddress));
+    fadeColorPacked16 = (unsigned short)(
+        zVid_PackColorRGB((unsigned char)(red), (unsigned char)(green),
+                          (unsigned char)(blue)));
     maxAlpha = alpha;
     durationSecRaw = duration;
     fadeDirectionSign = direction;
@@ -1359,11 +1359,11 @@ RECOIL_FMV_NOINLINE zFMV_ActionPlayAvi *RECOIL_THISCALL zFMV_ActionPlayAvi::Cons
     const char *mediaRootPath, const char *mediaFileName, int flags) {
     next = 0;
     vftable = (zFMV_Action_Vtbl *)(
-        static_cast<unsigned int>(k_zFMV_ActionPlayAvi_VtblAddress));
+        (unsigned int)(k_zFMV_ActionPlayAvi_VtblAddress));
 
     const size_t rootLen = strlen(mediaRootPath);
     const size_t fileLen = strlen(mediaFileName);
-    mediaPath = static_cast<char *>(calloc(rootLen + fileLen + 0x1b, 1));
+    mediaPath = (char *)(calloc(rootLen + fileLen + 0x1b, 1));
     sprintf(mediaPath, "%s\\%s", mediaRootPath, mediaFileName);
     modeFlags = flags;
 
@@ -1383,14 +1383,14 @@ RECOIL_FMV_NOINLINE zFMV_ActionPlayMci *RECOIL_THISCALL
 zFMV_ActionPlayMci::Constructor(const char *mediaRootPath, const char *playbackTitle, HWND hwnd) {
     next = 0;
     vftable = (zFMV_Action_Vtbl *)(
-        static_cast<unsigned int>(k_zFMV_ActionPlayMci_VtblAddress));
+        (unsigned int)(k_zFMV_ActionPlayMci_VtblAddress));
 
     const size_t rootLen = strlen(mediaRootPath);
     const size_t titleLen = strlen(playbackTitle);
-    mediaPath = static_cast<char *>(calloc(rootLen + titleLen + 0x1b, 1));
+    mediaPath = (char *)(calloc(rootLen + titleLen + 0x1b, 1));
     sprintf(mediaPath, "%s\\%s", mediaRootPath, playbackTitle);
 
-    zFMV_Playback *const playbackStorage = static_cast<zFMV_Playback *>(::operator new(sizeof(zFMV_Playback)));
+    zFMV_Playback *const playbackStorage = (zFMV_Playback *)(::operator new(sizeof(zFMV_Playback)));
     zFMV_Playback *initializedPlayback = 0;
     if (playbackStorage != 0) {
         initializedPlayback = playbackStorage->Init(mediaPath, hwnd);

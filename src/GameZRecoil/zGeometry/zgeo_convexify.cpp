@@ -59,7 +59,7 @@ bool PointInTriangle2D(float px, float py, float ax, float ay, float bx, float b
 }
 
 void CopyOffsetVertex(int *dest, const int *source, int stride) {
-    memcpy(dest, source, static_cast<size_t>(stride) * sizeof(int));
+    memcpy(dest, source, (size_t)(stride) * sizeof(int));
 }
 
 const float *PointDwordBase(const zVec3 *points, int pointDwordOffset) {
@@ -73,7 +73,7 @@ zVec3 *CopySpanPoints(zGeometry_ConvexPolygonSetPartial *result, zVec3 *outputPo
     polygon->pointDwordOffset = result->totalPointCount * 3;
 
     memcpy(outputPointWriteCursor, sourcePointDwords,
-                static_cast<size_t>(pointCount) * sizeof(zVec3));
+                (size_t)(pointCount) * sizeof(zVec3));
 
     ++result->polygonCount;
     result->totalPointCount += pointCount;
@@ -109,7 +109,7 @@ zVec3 *AppendTriangulatedSpan(zGeometry_ConvexPolygonSetPartial *result,
     const float *sourcePointDwords = PointDwordBase(allPoints, inputPolygon->pointDwordOffset);
     zGeometry_TriangleDwordOffsetList *triangles =
         zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive(
-            inputPolygon->pointCount, const_cast<float *>(sourcePointDwords), 0, 0);
+            inputPolygon->pointCount, (float *)(sourcePointDwords), 0, 0);
 
     if (triangles == 0) {
         return outputPointWriteCursor;
@@ -277,7 +277,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ComputeNewellPlane(int pointCount, zVec3 *p
     outPlane->b = normalY * normalScale;
     outPlane->c = normalZ * normalScale;
     outPlane->d = -((sumX * normalX + sumY * normalY + sumZ * normalZ) /
-                    (static_cast<float>(pointCount) * estimatedMagnitude));
+                    ((float)(pointCount) * estimatedMagnitude));
 }
 } // namespace zGeometry_Vec3Array
 
@@ -437,23 +437,23 @@ TriangulatePolygonWithHole(int outerPointCount, zVec3 *outerPoints,
     g_zGeometry_TriangulateHole_CombinedPointCount = combinedPointCount;
 
     zGeometry_TriangulateHole_EdgeState *const edgeStates =
-        static_cast<zGeometry_TriangulateHole_EdgeState *>(
-            malloc(static_cast<size_t>(combinedPointCount * combinedPointCount) *
+        (zGeometry_TriangulateHole_EdgeState *)(
+            malloc((size_t)(combinedPointCount * combinedPointCount) *
                         sizeof(zGeometry_TriangulateHole_EdgeState)));
 
-    g_zGeometry_TriangulateHole_CombinedPoints = static_cast<zVec3 *>(
-        malloc(static_cast<size_t>(combinedPointCount) * sizeof(zVec3)));
+    g_zGeometry_TriangulateHole_CombinedPoints = (zVec3 *)(
+        malloc((size_t)(combinedPointCount) * sizeof(zVec3)));
 
     memcpy(g_zGeometry_TriangulateHole_CombinedPoints, outerPoints,
-                static_cast<size_t>(outerPointCount) * sizeof(zVec3));
+                (size_t)(outerPointCount) * sizeof(zVec3));
     memcpy(&g_zGeometry_TriangulateHole_CombinedPoints[outerPointCount], innerPoints,
-                static_cast<size_t>(innerPointCount) * sizeof(zVec3));
+                (size_t)(innerPointCount) * sizeof(zVec3));
 
     zGeometry_TriangulateHole::CacheCombinedPlane(outerPointCount, outerPoints);
     zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane(
         innerPointCount, &g_zGeometry_TriangulateHole_CombinedPoints[outerPointCount]);
     memcpy(innerPoints, &g_zGeometry_TriangulateHole_CombinedPoints[outerPointCount],
-                static_cast<size_t>(innerPointCount) * sizeof(zVec3));
+                (size_t)(innerPointCount) * sizeof(zVec3));
 
     int edgeCount = 0;
     edgeStates[edgeCount].vertexIndex0 = 0;
@@ -523,9 +523,9 @@ TriangulatePolygonWithHole(int outerPointCount, zVec3 *outerPoints,
     }
     }
 
-    zGeometry_TriangleSoup *const result = static_cast<zGeometry_TriangleSoup *>(malloc(
+    zGeometry_TriangleSoup *const result = (zGeometry_TriangleSoup *)(malloc(
         sizeof(int) +
-        static_cast<size_t>(g_zGeometry_TriangulateHole_TriangleCount * 3) * sizeof(zVec3)));
+        (size_t)(g_zGeometry_TriangulateHole_TriangleCount * 3) * sizeof(zVec3)));
     result->triangleCount = g_zGeometry_TriangulateHole_TriangleCount;
 
     zVec3 *outPoint = result->triangleVerts;
@@ -623,8 +623,8 @@ TriangulatePointDwordOffsetsRecursive(int pointCount, float *pointDwords,
     const int pointDwordStride = pointDwordStrideMode == 1 ? 2 : 3;
     int *workingOffsets = pointDwordOffsets;
     if (workingOffsets == 0) {
-        workingOffsets = static_cast<int *>(malloc(
-            static_cast<size_t>(pointCount * pointDwordStride) * sizeof(int)));
+        workingOffsets = (int *)(malloc(
+            (size_t)(pointCount * pointDwordStride) * sizeof(int)));
         for (int i = 0; i < pointCount * pointDwordStride; ++i) {
             workingOffsets[i] = i;
         }
@@ -632,16 +632,16 @@ TriangulatePointDwordOffsetsRecursive(int pointCount, float *pointDwords,
 
     const int triangleCount = pointCount - 2;
     zGeometry_TriangleDwordOffsetList *result =
-        static_cast<zGeometry_TriangleDwordOffsetList *>(malloc(
+        (zGeometry_TriangleDwordOffsetList *)(malloc(
             sizeof(int) +
-            static_cast<size_t>(triangleCount * pointDwordStride * 3) * sizeof(int)));
+            (size_t)(triangleCount * pointDwordStride * 3) * sizeof(int)));
     result->triangleCount = triangleCount;
 
     const bool ccw =
         PolygonArea2D(pointDwords, workingOffsets, pointCount, pointDwordStride) >= 0.0f;
 
-    int *indices = static_cast<int *>(
-        malloc(static_cast<size_t>(pointCount) * sizeof(int)));
+    int *indices = (int *)(
+        malloc((size_t)(pointCount) * sizeof(int)));
     for (int i = 0; i < pointCount; ++i) {
         indices[i] = i;
     }
@@ -703,12 +703,12 @@ RECOIL_NOINLINE zGeometry_ConvexPolygonSetPartial *RECOIL_FASTCALL Convexify(
         return 0;
     }
 
-    zGeometry_ConvexPolygonSetPartial *result = static_cast<zGeometry_ConvexPolygonSetPartial *>(
+    zGeometry_ConvexPolygonSetPartial *result = (zGeometry_ConvexPolygonSetPartial *)(
         malloc(sizeof(zGeometry_ConvexPolygonSetPartial)));
-    result->points = static_cast<zVec3 *>(
-        malloc(static_cast<size_t>(inputPointCount * 3 - 6) * sizeof(zVec3)));
-    result->polygons = static_cast<zGeometry_PolygonPointSpanPartial *>(malloc(
-        static_cast<size_t>(inputPointCount - 2) * sizeof(zGeometry_PolygonPointSpanPartial)));
+    result->points = (zVec3 *)(
+        malloc((size_t)(inputPointCount * 3 - 6) * sizeof(zVec3)));
+    result->polygons = (zGeometry_PolygonPointSpanPartial *)(malloc(
+        (size_t)(inputPointCount - 2) * sizeof(zGeometry_PolygonPointSpanPartial)));
     result->totalPointCount = 0;
     result->polygonCount = 0;
 

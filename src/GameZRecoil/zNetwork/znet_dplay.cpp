@@ -36,8 +36,8 @@ unsigned char g_zNetwork_DispatchHandlerListFlags = 0;
 
 namespace {
 const char *kZNetworkDPlaySourceFile = "D:\\Proj\\GameZRecoil\\zNetwork\\znet_dplay.cpp";
-const int kDPlayPending = static_cast<int>(0x8000000a);
-const int kDPlayBufferTooSmall = static_cast<int>(0x8877001e);
+const int kDPlayPending = (int)(0x8000000a);
+const int kDPlayBufferTooSmall = (int)(0x8877001e);
 
 struct DPlayErrorName {
     int hresult;
@@ -45,61 +45,61 @@ struct DPlayErrorName {
 };
 
 const DPlayErrorName kDPlayErrorNames[] = {
-    {static_cast<int>(0x8000000a), "DPERR_PENDING"},
-    {static_cast<int>(0x80004001), "DPERR_UNSUPPORTED"},
-    {static_cast<int>(0x80004005), "DPERR_GENERIC"},
-    {static_cast<int>(0x8007000e), "DPERR_OUTOFMEMORY"},
-    {static_cast<int>(0x80070057), "DPERR_INVALIDPARAMS"},
-    {static_cast<int>(0x88770005), "DPERR_ALREADYINITIALIZED"},
-    {static_cast<int>(0x8877000a), "DPERR_ACCESSDENIED"},
-    {static_cast<int>(0x88770014), "DPERR_ACTIVEPLAYERS"},
-    {static_cast<int>(0x8877001e), "DPERR_BUFFERTOOSMALL"},
-    {static_cast<int>(0x88770028), "DPERR_CANTADDPLAYER"},
-    {static_cast<int>(0x88770032), "DPERR_CANTCREATEGROUP:"},
-    {static_cast<int>(0x8877003c), "DPERR_CANTCREATEPLAYER"},
-    {static_cast<int>(0x88770046), "DPERR_CANTCREATESESSION"},
-    {static_cast<int>(0x88770050), "DPERR_CAPSNOTAVAILABLEYET"},
-    {static_cast<int>(0x8877005a), "DPERR_EXCEPTION"},
-    {static_cast<int>(0x88770078), "DPERR_INVALIDFLAGS"},
-    {static_cast<int>(0x88770082), "DPERR_INVALIDOBJECT"},
-    {static_cast<int>(0x88770096), "DPERR_INVALIDPLAYER"},
-    {static_cast<int>(0x8877009b), "DPERR_INVALIDGROUP"},
-    {static_cast<int>(0x887700a0), "DPERR_NOCAPS"},
-    {static_cast<int>(0x887700aa), "DPERR_NOCONNECTION"},
-    {static_cast<int>(0x887700be), "DPERR_NOMESSAGES "},
-    {static_cast<int>(0x887700c8), "DPERR_NONAMESERVERFOUND"},
-    {static_cast<int>(0x887700d2), "DPERR_NOPLAYERS"},
-    {static_cast<int>(0x887700dc), "DPERR_NOSESSIONS"},
-    {static_cast<int>(0x887700e6), "DPERR_SENDTOOBIG"},
-    {static_cast<int>(0x887700f0), "DPERR_TIMEOUT"},
-    {static_cast<int>(0x887700fa), "DPERR_UNAVAILABLE"},
-    {static_cast<int>(0x8877010e), "DPERR_BUSY"},
-    {static_cast<int>(0x88770118), "DPERR_USERCANCEL"},
-    {static_cast<int>(0x88770122), "DPERR_CANNOTCREATESERVER"},
-    {static_cast<int>(0x8877012c), "DPERR_PLAYERLOST "},
-    {static_cast<int>(0x88770136), "DPERR_SESSIONLOST"},
-    {static_cast<int>(0x88770140), "DPERR_UNINITIALIZED "},
-    {static_cast<int>(0x8877014a), "DPERR_NONEWPLAYERS"},
-    {static_cast<int>(0x8877015e), "DPERR_CONNECTING"},
-    {static_cast<int>(0x88770168), "DPERR_CONNECTIONLOST"},
-    {static_cast<int>(0x88770172), "DPERR_UNKNOWNMESSAGE"},
-    {static_cast<int>(0x8877017c), "DPERR_CANCELFAILED"},
-    {static_cast<int>(0x88770186), "DPERR_INVALIDPRIORITY"},
-    {static_cast<int>(0x887703e8), "DPERR_BUFFERTOOLARGE"},
-    {static_cast<int>(0x887703f2), "DPERR_CANTCREATEPROCESS"},
-    {static_cast<int>(0x887703fc), "DPERR_APPNOTSTARTED"},
-    {static_cast<int>(0x88770406), "DPERR_INVALIDINTERFACE "},
-    {static_cast<int>(0x8877041a), "DPERR_UNKNOWNAPPLICATION"},
-    {static_cast<int>(0x8877042e), "DPERR_NOTLOBBIED"},
-    {static_cast<int>(0x887707d0), "DPERR_AUTHENTICATIONFAILED"},
-    {static_cast<int>(0x887707da), "DPERR_CANTLOADSSPI"},
-    {static_cast<int>(0x887707e4), "DPERR_ENCRYPTIONFAILED"},
-    {static_cast<int>(0x887707ee), "DPERR_SIGNFAILED"},
-    {static_cast<int>(0x887707f8), "DPERR_CANTLOADSECURITYPACKAGE"},
-    {static_cast<int>(0x88770802), "DPERR_ENCRYPTIONNOTSUPPORTED"},
-    {static_cast<int>(0x8877080c), "DPERR_CANTLOADCAPI"},
-    {static_cast<int>(0x88770816), "DPERR_NOTLOGGEDIN"},
-    {static_cast<int>(0x88770820), "DPERR_LOGONDENIED "},
+    {(int)(0x8000000a), "DPERR_PENDING"},
+    {(int)(0x80004001), "DPERR_UNSUPPORTED"},
+    {(int)(0x80004005), "DPERR_GENERIC"},
+    {(int)(0x8007000e), "DPERR_OUTOFMEMORY"},
+    {(int)(0x80070057), "DPERR_INVALIDPARAMS"},
+    {(int)(0x88770005), "DPERR_ALREADYINITIALIZED"},
+    {(int)(0x8877000a), "DPERR_ACCESSDENIED"},
+    {(int)(0x88770014), "DPERR_ACTIVEPLAYERS"},
+    {(int)(0x8877001e), "DPERR_BUFFERTOOSMALL"},
+    {(int)(0x88770028), "DPERR_CANTADDPLAYER"},
+    {(int)(0x88770032), "DPERR_CANTCREATEGROUP:"},
+    {(int)(0x8877003c), "DPERR_CANTCREATEPLAYER"},
+    {(int)(0x88770046), "DPERR_CANTCREATESESSION"},
+    {(int)(0x88770050), "DPERR_CAPSNOTAVAILABLEYET"},
+    {(int)(0x8877005a), "DPERR_EXCEPTION"},
+    {(int)(0x88770078), "DPERR_INVALIDFLAGS"},
+    {(int)(0x88770082), "DPERR_INVALIDOBJECT"},
+    {(int)(0x88770096), "DPERR_INVALIDPLAYER"},
+    {(int)(0x8877009b), "DPERR_INVALIDGROUP"},
+    {(int)(0x887700a0), "DPERR_NOCAPS"},
+    {(int)(0x887700aa), "DPERR_NOCONNECTION"},
+    {(int)(0x887700be), "DPERR_NOMESSAGES "},
+    {(int)(0x887700c8), "DPERR_NONAMESERVERFOUND"},
+    {(int)(0x887700d2), "DPERR_NOPLAYERS"},
+    {(int)(0x887700dc), "DPERR_NOSESSIONS"},
+    {(int)(0x887700e6), "DPERR_SENDTOOBIG"},
+    {(int)(0x887700f0), "DPERR_TIMEOUT"},
+    {(int)(0x887700fa), "DPERR_UNAVAILABLE"},
+    {(int)(0x8877010e), "DPERR_BUSY"},
+    {(int)(0x88770118), "DPERR_USERCANCEL"},
+    {(int)(0x88770122), "DPERR_CANNOTCREATESERVER"},
+    {(int)(0x8877012c), "DPERR_PLAYERLOST "},
+    {(int)(0x88770136), "DPERR_SESSIONLOST"},
+    {(int)(0x88770140), "DPERR_UNINITIALIZED "},
+    {(int)(0x8877014a), "DPERR_NONEWPLAYERS"},
+    {(int)(0x8877015e), "DPERR_CONNECTING"},
+    {(int)(0x88770168), "DPERR_CONNECTIONLOST"},
+    {(int)(0x88770172), "DPERR_UNKNOWNMESSAGE"},
+    {(int)(0x8877017c), "DPERR_CANCELFAILED"},
+    {(int)(0x88770186), "DPERR_INVALIDPRIORITY"},
+    {(int)(0x887703e8), "DPERR_BUFFERTOOLARGE"},
+    {(int)(0x887703f2), "DPERR_CANTCREATEPROCESS"},
+    {(int)(0x887703fc), "DPERR_APPNOTSTARTED"},
+    {(int)(0x88770406), "DPERR_INVALIDINTERFACE "},
+    {(int)(0x8877041a), "DPERR_UNKNOWNAPPLICATION"},
+    {(int)(0x8877042e), "DPERR_NOTLOBBIED"},
+    {(int)(0x887707d0), "DPERR_AUTHENTICATIONFAILED"},
+    {(int)(0x887707da), "DPERR_CANTLOADSSPI"},
+    {(int)(0x887707e4), "DPERR_ENCRYPTIONFAILED"},
+    {(int)(0x887707ee), "DPERR_SIGNFAILED"},
+    {(int)(0x887707f8), "DPERR_CANTLOADSECURITYPACKAGE"},
+    {(int)(0x88770802), "DPERR_ENCRYPTIONNOTSUPPORTED"},
+    {(int)(0x8877080c), "DPERR_CANTLOADCAPI"},
+    {(int)(0x88770816), "DPERR_NOTLOGGEDIN"},
+    {(int)(0x88770820), "DPERR_LOGONDENIED "},
 };
 
 const char *GetDPlayErrorName(int hresult) {
@@ -141,8 +141,8 @@ zNetwork_GetPlayerColorIndexByKey(int playerKey) {
 
     const int colorIndex = playerRecord->colorIndex;
     if (colorIndex < 1 ||
-        static_cast<unsigned int>(colorIndex) >
-            static_cast<unsigned int>(g_zNetwork_CurrentSessionDescCache->desc.maxPlayers)) {
+        (unsigned int)(colorIndex) >
+            (unsigned int)(g_zNetwork_CurrentSessionDescCache->desc.maxPlayers)) {
         return 0;
     }
 
@@ -286,7 +286,7 @@ zNetwork_DPlay_SendExReliable(zNetworkPacketHeader *packet, unsigned int packetS
 // Reimplements 0x48c060: zNetwork_SendPacketUnreliable (GameZRecoil/zNetwork/znet_dplay.cpp)
 extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
 zNetwork_SendPacketUnreliable(zNetworkPacketHeader *packet) {
-    const unsigned int packetSizeBytes = static_cast<unsigned short>(packet->packetSizeBytes);
+    const unsigned int packetSizeBytes = (unsigned short)(packet->packetSizeBytes);
     if (g_zNetwork_TcpIpAsyncSendEnabled != 0) {
         return zNetwork_DPlay_SendExUnreliableTracked(packet, packetSizeBytes);
     }
@@ -297,7 +297,7 @@ zNetwork_SendPacketUnreliable(zNetworkPacketHeader *packet) {
 // Reimplements 0x48c080: zNetwork_SendPacketReliable (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
 extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
 zNetwork_SendPacketReliable(zNetworkPacketHeader *packet) {
-    const unsigned int packetSizeBytes = static_cast<unsigned short>(packet->packetSizeBytes);
+    const unsigned int packetSizeBytes = (unsigned short)(packet->packetSizeBytes);
     if (g_zNetwork_TcpIpAsyncSendEnabled != 0) {
         return zNetwork_DPlay_SendExReliable(packet, packetSizeBytes);
     }
@@ -348,7 +348,7 @@ zNetwork_FindPlayerRecordByKey(int playerKey) {
     for (zNetworkPlayerRecordListNode *node = sentinel->next; node != sentinel; node = node->next) {
         zNetwork_PlayerRecord *const playerRecord = node->playerRecord;
         if (playerRecord != 0 &&
-            playerRecord->playerKey == static_cast<unsigned int>(playerKey)) {
+            playerRecord->playerKey == (unsigned int)(playerKey)) {
             return playerRecord;
         }
     }
@@ -361,7 +361,7 @@ namespace zNetwork {
 RECOIL_NOINLINE int RECOIL_CDECL AllocFreePlayerColorIndex() {
     const int maxPlayers = g_zNetwork_CurrentSessionDescCache->desc.maxPlayers;
     for (int colorIndex = 1;
-         static_cast<unsigned int>(colorIndex) <= static_cast<unsigned int>(maxPlayers);
+         (unsigned int)(colorIndex) <= (unsigned int)(maxPlayers);
          ++colorIndex) {
         if (g_zNetwork_PlayerColorInUseFlags[colorIndex] == 0) {
             g_zNetwork_PlayerColorInUseFlags[colorIndex] = 1;
@@ -390,14 +390,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HostSendPlayerColorAssignmentsPacket(int jo
 
     const int playerCount = zNetwork_GetPlayerRecordCount();
     const int packetSizeBytes =
-        static_cast<int>(sizeof(zNetworkPacketHeader) + sizeof(int) +
+        (int)(sizeof(zNetworkPacketHeader) + sizeof(int) +
                          (sizeof(zNetworkPlayerColorPair) * playerCount));
     NetPkt01_PlayerColorAssignments *const packet =
-        static_cast<NetPkt01_PlayerColorAssignments *>(malloc(packetSizeBytes));
+        (NetPkt01_PlayerColorAssignments *)(malloc(packetSizeBytes));
     memset(packet, 0, packetSizeBytes);
     packet->header.packetType = 1;
     packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
-    packet->header.packetSizeBytes = static_cast<short>(packetSizeBytes);
+    packet->header.packetSizeBytes = (short)(packetSizeBytes);
     packet->pairCount = playerCount;
 
     zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
@@ -406,7 +406,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HostSendPlayerColorAssignmentsPacket(int jo
     for (zNetworkPlayerRecordListNode *node = sentinel->next; node != sentinel;
          node = node->next) {
         zNetwork_PlayerRecord *const playerRecord = node->playerRecord;
-        packet->pairs[pairIndex].playerKey = static_cast<int>(playerRecord->playerKey);
+        packet->pairs[pairIndex].playerKey = (int)(playerRecord->playerKey);
         packet->pairs[pairIndex].colorIndex = playerRecord->colorIndex;
         ++pairIndex;
     }
@@ -429,7 +429,7 @@ PumpIncomingMessages(zNetworkDPlaySystemMessage *systemMessage) {
 
     if (msgType == 3) {
         zNetwork_PlayerRecord *playerRecord =
-            static_cast<zNetwork_PlayerRecord *>(::operator new(sizeof(zNetwork_PlayerRecord)));
+            (zNetwork_PlayerRecord *)(::operator new(sizeof(zNetwork_PlayerRecord)));
         if (playerRecord != 0) {
             strncpy(playerRecord->playerName, "noname", 0x50);
             playerRecord->playerName[0x4f] = 0;
@@ -448,7 +448,7 @@ PumpIncomingMessages(zNetworkDPlaySystemMessage *systemMessage) {
         zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
         zNetworkPlayerRecordListNode *prev = sentinel->prev;
         zNetworkPlayerRecordListNode *const node =
-            static_cast<zNetworkPlayerRecordListNode *>(
+            (zNetworkPlayerRecordListNode *)(
                 ::operator new(sizeof(zNetworkPlayerRecordListNode)));
         node->next = sentinel != 0 ? sentinel : node;
         node->prev = prev != 0 ? prev : node;
@@ -598,11 +598,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReceivePendingMessages(int messageBudget) {
             ++processedCount;
             if (fromPlayer != 0) {
                 zNetwork_DPlay::DispatchPacketToHandlers(
-                    static_cast<int>(fromPlayer),
-                    static_cast<zNetworkPacketHeader *>(g_zNetwork_ReceiveBuffer));
+                    (int)(fromPlayer),
+                    (zNetworkPacketHeader *)(g_zNetwork_ReceiveBuffer));
             } else {
                 pumpResult = PumpIncomingMessages(
-                    static_cast<zNetworkDPlaySystemMessage *>(g_zNetwork_ReceiveBuffer));
+                    (zNetworkDPlaySystemMessage *)(g_zNetwork_ReceiveBuffer));
             }
         }
 
@@ -618,12 +618,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReceivePendingMessages(int messageBudget) {
 RECOIL_NOINLINE int RECOIL_STDCALL EnumPlayerCallback_AddPlayerRecord(
     unsigned int playerId, unsigned int, zNetworkDPlayName *playerNameInfo, unsigned int,
     void *) {
-    if (zNetwork_FindPlayerRecordByKey(static_cast<int>(playerId)) != 0) {
+    if (zNetwork_FindPlayerRecordByKey((int)(playerId)) != 0) {
         return 1;
     }
 
     zNetwork_PlayerRecord *const playerRecord =
-        static_cast<zNetwork_PlayerRecord *>(::operator new(sizeof(zNetwork_PlayerRecord)));
+        (zNetwork_PlayerRecord *)(::operator new(sizeof(zNetwork_PlayerRecord)));
     strncpy(playerRecord->playerName, playerNameInfo->shortName, 0x50);
     playerRecord->playerName[0x4f] = 0;
     playerRecord->playerKey = playerId;
@@ -632,7 +632,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL EnumPlayerCallback_AddPlayerRecord(
     zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
     zNetworkPlayerRecordListNode *prev = sentinel->prev;
     zNetworkPlayerRecordListNode *const node =
-        static_cast<zNetworkPlayerRecordListNode *>(::operator new(sizeof(zNetworkPlayerRecordListNode)));
+        (zNetworkPlayerRecordListNode *)(::operator new(sizeof(zNetworkPlayerRecordListNode)));
 
     node->next = sentinel != 0 ? sentinel : node;
     if (prev == 0) {
@@ -709,7 +709,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zNetwork_RegisterDispatchHandlerLis
 // Reimplements 0x48bfb0: zNetwork_CreateEmptyDispatchHandlerList
 extern "C" RECOIL_NOINLINE void RECOIL_CDECL zNetwork_CreateEmptyDispatchHandlerList() {
     g_zNetwork_DispatchHandlerListFlags = 0;
-    zNetworkDispatchHandlerListNode *const sentinel = static_cast<zNetworkDispatchHandlerListNode *>(
+    zNetworkDispatchHandlerListNode *const sentinel = (zNetworkDispatchHandlerListNode *)(
         ::operator new(sizeof(zNetworkDispatchHandlerListNode)));
     sentinel->next = sentinel;
     sentinel->prev = sentinel;
@@ -791,17 +791,17 @@ namespace zNetwork {
 RECOIL_NOINLINE zNetworkDispatchHandlerRecord *RECOIL_FASTCALL
 RegisterPacketHandler(int packetType, zNetworkPacketHandler handlerProc, int mode) {
     zNetworkDispatchHandlerRecord *const record =
-        static_cast<zNetworkDispatchHandlerRecord *>(
+        (zNetworkDispatchHandlerRecord *)(
             ::operator new(sizeof(zNetworkDispatchHandlerRecord)));
     if (record != 0) {
-        record->packetType = static_cast<short>(packetType);
+        record->packetType = (short)(packetType);
         record->handler = handlerProc;
         record->mode = mode;
     }
 
     zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;
     zNetworkDispatchHandlerListNode *const node =
-        static_cast<zNetworkDispatchHandlerListNode *>(
+        (zNetworkDispatchHandlerListNode *)(
             ::operator new(sizeof(zNetworkDispatchHandlerListNode)));
     zNetworkDispatchHandlerListNode *const prev = sentinel->prev;
     node->next = sentinel != 0 ? sentinel : node;
@@ -861,12 +861,12 @@ DispatchPacketToHandlers(int senderPlayerId, zNetworkPacketHeader *packet) {
 namespace zNetwork {
 // Reimplements 0x489f30: zNetwork::ClearEnumeratedSessionList
 RECOIL_NOINLINE void RECOIL_CDECL ClearEnumeratedSessionList() {
-    zNetworkDPlaySessionDesc *desc = static_cast<zNetworkDPlaySessionDesc *>(
+    zNetworkDPlaySessionDesc *desc = (zNetworkDPlaySessionDesc *)(
         zArchiveList_PopFrontPayload(g_zNetwork_EnumeratedSessionList));
     while (desc != 0) {
         free(desc->reservedData);
         free(desc);
-        desc = static_cast<zNetworkDPlaySessionDesc *>(
+        desc = (zNetworkDPlaySessionDesc *)(
             zArchiveList_PopFrontPayload(g_zNetwork_EnumeratedSessionList));
     }
 }

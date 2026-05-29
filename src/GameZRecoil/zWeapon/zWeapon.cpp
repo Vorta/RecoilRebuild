@@ -76,7 +76,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL
 OnWeaponsSectionDataReady(zZbdSectionCallbackCtx *, const char *, void *weaponData,
                           unsigned int, void *) {
     g_OptCatalogLockOnWarningGateTimeSec = 0.0f;
-    g_OptCatalog_DamageFeedbackHitCount = *static_cast<int *>(weaponData);
+    g_OptCatalog_DamageFeedbackHitCount = *(int *)(weaponData);
 }
 
 // Reimplements 0x4b1d80: zWeapon::SetMaxTetherAltitude

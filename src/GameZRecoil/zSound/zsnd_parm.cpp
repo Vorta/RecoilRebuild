@@ -66,7 +66,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::SetFreqScaled(float scale) {
             return -1;
         }
 
-        const int error = buffer->vtable->SetFrequency(buffer, static_cast<int>(playbackRate));
+        const int error = buffer->vtable->SetFrequency(buffer, (int)(playbackRate));
         if (error != 0) {
             return zSnd::ReportDirectSoundError(error, kZSndParmSourceFile, 218);
         }
@@ -92,7 +92,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zSndPlayHandle::SetEnableScale(float scale)
         return;
     }
 
-    const float globalScale = *static_cast<float *>(g_zSnd_GlobalVolumeScalePtr);
+    const float globalScale = *(float *)(g_zSnd_GlobalVolumeScalePtr);
     const float scaledGain = globalScale * scale;
     if (g_zSnd_ActiveBackend == 0) {
         gainScaled = zSnd::GainScaleToDirectSoundAttenuation(scaledGain);

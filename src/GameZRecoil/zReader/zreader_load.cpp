@@ -43,7 +43,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zArchiveList_LinkNodeBetween(
 
 // Reimplements 0x48c950: zArchiveList_CreateEmpty
 extern "C" RECOIL_NOINLINE zArchiveList *RECOIL_CDECL zArchiveList_CreateEmpty() {
-    zArchiveList *result = static_cast<zArchiveList *>(malloc(sizeof(zArchiveList)));
+    zArchiveList *result = (zArchiveList *)(malloc(sizeof(zArchiveList)));
     memset(result, 0, sizeof(zArchiveList));
     return result;
 }
@@ -82,7 +82,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zUtil_ZRDR_PushFreeNode(zArchive
 
 // Reimplements 0x48c800: zUtil_ZRDR_GrowFreePool
 extern "C" RECOIL_NOINLINE void RECOIL_CDECL zUtil_ZRDR_GrowFreePool() {
-    zArchiveListNode *node = static_cast<zArchiveListNode *>(malloc(sizeof(zArchiveListNode)));
+    zArchiveListNode *node = (zArchiveListNode *)(malloc(sizeof(zArchiveListNode)));
     zUtil_ZRDR_PushFreeNode(node);
     ++g_zUtil_ZRDR_TotalAllocated;
 }
@@ -339,7 +339,7 @@ zArchiveList_FindPayloadByValue(zArchiveList *list, unsigned int value) {
 
     zArchiveListNode *const head = list->head;
     zArchiveListNode *node = head;
-    if (*static_cast<unsigned int *>(node->payload) == value) {
+    if (*(unsigned int *)(node->payload) == value) {
         return node->payload;
     }
 
@@ -349,7 +349,7 @@ zArchiveList_FindPayloadByValue(zArchiveList *list, unsigned int value) {
             return 0;
         }
 
-        if (*static_cast<unsigned int *>(node->payload) == value) {
+        if (*(unsigned int *)(node->payload) == value) {
             return node->payload;
         }
     }
@@ -368,14 +368,14 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_StrCmpPredicate(void *
         return 1;
     }
 
-    return strcmp(static_cast<const char *>(str1), static_cast<const char *>(str2));
+    return strcmp((const char *)(str1), (const char *)(str2));
 }
 
 // Reimplements 0x4a5f20: zUtil_ZRDR_SearchPathContainsFilePredicate
 extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
 zUtil_ZRDR_SearchPathContainsFilePredicate(void *searchDir, void *filename) {
-    sprintf(g_zRdr_PathJoinBuf, "%s\\%s", static_cast<const char *>(searchDir),
-                 static_cast<const char *>(filename));
+    sprintf(g_zRdr_PathJoinBuf, "%s\\%s", (const char *)(searchDir),
+                 (const char *)(filename));
     return zReader::FileExists(g_zRdr_PathJoinBuf) == 0 ? 1 : 0;
 }
 
@@ -408,7 +408,7 @@ zUtil_ZRDR_ResolvePathInSearchPathList(zArchiveList *searchPathList, const char 
             list = g_zRdr_ScratchSearchPathList;
         }
 
-        char *matchedDir = static_cast<char *>(zArchiveList_FindPayloadByPredicate(
+        char *matchedDir = (char *)(zArchiveList_FindPayloadByPredicate(
             list, zUtil_ZRDR_SearchPathContainsFilePredicate, g_zRdr_ResolvedPathBuf));
         if (matchedDir != 0) {
             const size_t len = strlen(matchedDir);
@@ -462,7 +462,7 @@ extern "C" RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_InitWildcardPath(cha
     g_zUtil_ZRDR_WildcardPath = pattern;
     g_zUtil_ZRDR_WildcardStarCount = 0;
 
-    const int patternLength = static_cast<int>(strlen(pattern));
+    const int patternLength = (int)(strlen(pattern));
     for (int patternIndex = patternLength - 1; patternIndex >= 0; --patternIndex) {
         if (pattern[patternIndex] == '*') {
             g_zUtil_ZRDR_WildcardStarPtrs[g_zUtil_ZRDR_WildcardStarCount] =
@@ -612,7 +612,7 @@ void DestroyMountedArchive(zIndexArchive *archive) {
 extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
 zUtil_ZRDR_UnloadMountedArchives(int destroyCurrentToo) {
     zIndexArchive *archive =
-        static_cast<zIndexArchive *>(zArchiveList_PopFrontPayload(g_zArchive_MountedList));
+        (zIndexArchive *)(zArchiveList_PopFrontPayload(g_zArchive_MountedList));
     while (archive != 0) {
         zIndexArchive *const current = (zIndexArchive *)(g_zArchive_Current);
         if (destroyCurrentToo != 0 || archive != current) {
@@ -624,7 +624,7 @@ zUtil_ZRDR_UnloadMountedArchives(int destroyCurrentToo) {
         }
 
         archive =
-            static_cast<zIndexArchive *>(zArchiveList_PopFrontPayload(g_zArchive_MountedList));
+            (zIndexArchive *)(zArchiveList_PopFrontPayload(g_zArchive_MountedList));
     }
 
     if (destroyCurrentToo == 0 && g_zArchive_Current != 0) {
@@ -754,7 +754,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::CloseAndFreeRecords() {
         FlushIndexToTail();
     }
 
-    HANDLE const file = static_cast<HANDLE>(hFile);
+    HANDLE const file = (HANDLE)(hFile);
     if (file != INVALID_HANDLE_VALUE) {
         CloseHandle(file);
     }
@@ -783,19 +783,19 @@ RECOIL_NOINLINE void RECOIL_THISCALL zIndexArchive::FreeRecordsAndReset() {
 RECOIL_NOINLINE void RECOIL_THISCALL zIndexArchive::FlushIndexToTail() {
     DWORD numberOfBytesWritten = 0;
     const unsigned int footerMagic = 1;
-    SetFilePointer(static_cast<HANDLE>(hFile), 0, 0, FILE_END);
-    WriteFile(static_cast<HANDLE>(hFile), records, recordCount * sizeof(zZarFileRecord),
+    SetFilePointer((HANDLE)(hFile), 0, 0, FILE_END);
+    WriteFile((HANDLE)(hFile), records, recordCount * sizeof(zZarFileRecord),
               &numberOfBytesWritten, 0);
-    WriteFile(static_cast<HANDLE>(hFile), &footerMagic, sizeof(footerMagic), &numberOfBytesWritten,
+    WriteFile((HANDLE)(hFile), &footerMagic, sizeof(footerMagic), &numberOfBytesWritten,
               0);
-    WriteFile(static_cast<HANDLE>(hFile), &recordCount, sizeof(recordCount), &numberOfBytesWritten,
+    WriteFile((HANDLE)(hFile), &recordCount, sizeof(recordCount), &numberOfBytesWritten,
               0);
     dirty = 0;
 }
 
 // Reimplements 0x4a63f0: zIndexArchive::LoadIndexFromTail
 RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::LoadIndexFromTail() {
-    HANDLE const file = static_cast<HANDLE>(hFile);
+    HANDLE const file = (HANDLE)(hFile);
     if (GetFileSize(file, 0) < 8) {
         return 0;
     }
@@ -814,7 +814,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::LoadIndexFromTail() {
 
     EnsureCapacity(recordCountFromTail);
     const unsigned int bytesToRead = recordCountFromTail * sizeof(zZarFileRecord);
-    SetFilePointer(file, -8 - static_cast<LONG>(bytesToRead), 0, FILE_END);
+    SetFilePointer(file, -8 - (LONG)(bytesToRead), 0, FILE_END);
     ReadFile(file, records, bytesToRead, &numberOfBytesRead, 0);
     SetFilePointer(file, 0, 0, FILE_BEGIN);
     recordCount = recordCountFromTail;
@@ -834,8 +834,8 @@ RECOIL_NOINLINE void RECOIL_THISCALL zIndexArchive::EnsureCapacity(unsigned int 
     }
 
     recordCapacity = newCapacity;
-    records = static_cast<zZarFileRecord *>(
-        realloc(records, static_cast<size_t>(newCapacity) * sizeof(zZarFileRecord)));
+    records = (zZarFileRecord *)(
+        realloc(records, (size_t)(newCapacity) * sizeof(zZarFileRecord)));
 }
 
 // Reimplements 0x4a64d0: zIndexArchive::AddFileRecord
@@ -845,7 +845,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::AddFileRecord(
     const unsigned int oldRecordCount = recordCount;
     EnsureCapacity(oldRecordCount + 1);
 
-    HANDLE const file = static_cast<HANDLE>(hFile);
+    HANDLE const file = (HANDLE)(hFile);
     SetFilePointer(file, 0, 0, FILE_END);
 
     zZarFileRecord record = {0};
@@ -897,7 +897,7 @@ RECOIL_NOINLINE void *RECOIL_THISCALL zIndexArchive::OpenFileByName(const char *
         *outSize = record->fileSize;
     }
 
-    SetFilePointer(static_cast<HANDLE>(hFile), record->fileOffset, 0, FILE_BEGIN);
+    SetFilePointer((HANDLE)(hFile), record->fileOffset, 0, FILE_BEGIN);
     return hFile;
 }
 
@@ -915,9 +915,9 @@ zIndexArchive::ReadFileByName(const char *filename, void *buffer, unsigned int *
         return 0x10002;
     }
 
-    SetFilePointer(static_cast<HANDLE>(hFile), record->fileOffset, 0, FILE_BEGIN);
+    SetFilePointer((HANDLE)(hFile), record->fileOffset, 0, FILE_BEGIN);
     DWORD bytesRead = 0;
-    ReadFile(static_cast<HANDLE>(hFile), buffer, record->fileSize, &bytesRead, 0);
+    ReadFile((HANDLE)(hFile), buffer, record->fileSize, &bytesRead, 0);
     return 0;
 }
 
@@ -949,8 +949,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL MountIndexArchive(const char *path,
 // Reimplements 0x48cda0: zReader_AllocateNode
 extern "C" RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL
 zReader_AllocateNode(int headerWord, int fieldCount) {
-    zReader::Node *result = static_cast<zReader::Node *>(
-        malloc(static_cast<size_t>(fieldCount) * sizeof(zReader::Node)));
+    zReader::Node *result = (zReader::Node *)(
+        malloc((size_t)(fieldCount) * sizeof(zReader::Node)));
     result->type = headerWord;
     return result;
 }
@@ -960,16 +960,16 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
 zReader_ReadString(void *hFile, zReader::Value *outString) {
     DWORD bytesRead = 0;
     unsigned int length = 0;
-    ReadFile(static_cast<HANDLE>(hFile), &length, 4, &bytesRead, 0);
-    int result = static_cast<int>(bytesRead);
+    ReadFile((HANDLE)(hFile), &length, 4, &bytesRead, 0);
+    int result = (int)(bytesRead);
 
-    char *buffer = static_cast<char *>(malloc(length + 1));
+    char *buffer = (char *)(malloc(length + 1));
     outString->str = buffer;
     memset(buffer, 0, length + 1);
 
-    if (static_cast<int>(length) > 0) {
-        ReadFile(static_cast<HANDLE>(hFile), outString->str, length, &bytesRead, 0);
-        result += static_cast<int>(bytesRead);
+    if ((int)(length) > 0) {
+        ReadFile((HANDLE)(hFile), outString->str, length, &bytesRead, 0);
+        result += (int)(bytesRead);
     }
 
     return result;
@@ -979,25 +979,25 @@ zReader_ReadString(void *hFile, zReader::Value *outString) {
 extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zReader_ReadNode(void *hFile,
                                                                          zReader::Node *outNode) {
     DWORD bytesRead = 0;
-    ReadFile(static_cast<HANDLE>(hFile), outNode, 4, &bytesRead, 0);
-    int result = static_cast<int>(bytesRead);
+    ReadFile((HANDLE)(hFile), outNode, 4, &bytesRead, 0);
+    int result = (int)(bytesRead);
 
     switch (outNode->type) {
     case zReader::ZRDR_NODE_INT:
     case zReader::ZRDR_NODE_FLOAT:
-        ReadFile(static_cast<HANDLE>(hFile), &outNode->value, 4, &bytesRead, 0);
-        return result + static_cast<int>(bytesRead);
+        ReadFile((HANDLE)(hFile), &outNode->value, 4, &bytesRead, 0);
+        return result + (int)(bytesRead);
 
     case zReader::ZRDR_NODE_STRING:
         return result + zReader_ReadString(hFile, &outNode->value);
 
     case zReader::ZRDR_NODE_ARRAY: {
         int nodeCount = 0;
-        ReadFile(static_cast<HANDLE>(hFile), &nodeCount, 4, &bytesRead, 0);
-        result += static_cast<int>(bytesRead);
+        ReadFile((HANDLE)(hFile), &nodeCount, 4, &bytesRead, 0);
+        result += (int)(bytesRead);
 
-        zReader::Node *arrayBase = static_cast<zReader::Node *>(
-            malloc(static_cast<size_t>(nodeCount) * sizeof(zReader::Node)));
+        zReader::Node *arrayBase = (zReader::Node *)(
+            malloc((size_t)(nodeCount) * sizeof(zReader::Node)));
         outNode->value.nodes = arrayBase;
         arrayBase[0].type = zReader::ZRDR_NODE_INT;
         arrayBase[0].value.i32 = nodeCount;
@@ -1046,7 +1046,7 @@ zReader_OpenFileFromMountedArchives(const char *path) {
     int index = 0;
     while (index < zArchiveList_GetCount(g_zArchive_MountedList)) {
         zIndexArchive *archive =
-            static_cast<zIndexArchive *>(zArchiveList_GetAt(g_zArchive_MountedList, index));
+            (zIndexArchive *)(zArchiveList_GetAt(g_zArchive_MountedList, index));
         void *result = archive->OpenFileByName(path, 0);
         if (result != INVALID_HANDLE_VALUE) {
             return result;

@@ -97,7 +97,7 @@ void BuildPointSideTable(zVec3 *edgePoints, int edgePointCount, zVec3 *testPoint
 }
 
 void TogglePointAxes(zGeometry_WeilerBufferPartial *buffer, int contourSource) {
-    zVec3 *point = static_cast<zVec3 *>(buffer->base);
+    zVec3 *point = (zVec3 *)(buffer->base);
     if (buffer->count == 0) {
         return;
     }
@@ -116,7 +116,7 @@ void TogglePointAxes(zGeometry_WeilerBufferPartial *buffer, int contourSource) {
 }
 
 void RecenterPoints(zGeometry_WeilerBufferPartial *buffer, float translationX, float translationY) {
-    zVec3 *point = static_cast<zVec3 *>(buffer->base);
+    zVec3 *point = (zVec3 *)(buffer->base);
     for (int i = 0; i < buffer->count; ++i) {
         point[i].x -= translationX;
         point[i].y -= translationY;
@@ -147,7 +147,7 @@ bool HasStrictSameSign(float first, float second) {
 
 zGeometry_WeilerXingPartial *AllocWeilerXing(zGeometry_WeilerStatePartial *self,
                                              int errorLine) {
-    zGeometry_WeilerXingPartial *const xing = static_cast<zGeometry_WeilerXingPartial *>(
+    zGeometry_WeilerXingPartial *const xing = (zGeometry_WeilerXingPartial *)(
         zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
     if (xing == 0) {
         fprintf(stderr, "%s %d: _intersect2d call to buf_entry failed\n",
@@ -285,13 +285,13 @@ int EnsureMergedContourOutputs(zGeometry_WeilerStatePartial *self,
 }
 
 bool IsNearZeroForCoincidentWeedOut(float value) {
-    return fabs(static_cast<double>(value)) < 0.0000099999997473787516;
+    return fabs((double)(value)) < 0.0000099999997473787516;
 }
 
 bool IsNearPointXY(zVec3 *first, zVec3 *second) {
-    return fabs(static_cast<double>(first->x) - static_cast<double>(second->x)) <=
+    return fabs((double)(first->x) - (double)(second->x)) <=
                0.0010000000474974513 &&
-           fabs(static_cast<double>(first->y) - static_cast<double>(second->y)) <=
+           fabs((double)(first->y) - (double)(second->y)) <=
                0.0010000000474974513;
 }
 
@@ -483,7 +483,7 @@ bool SelectMaxXThenMaxY(zVec3 *candidate, zVec3 *current) {
         return true;
     }
 
-    return fabs(static_cast<double>(candidate->x) - static_cast<double>(current->x)) <
+    return fabs((double)(candidate->x) - (double)(current->x)) <
                0.0000099999997473787516 &&
            candidate->y > current->y;
 }
@@ -565,7 +565,7 @@ namespace zGeometry_Model {
 RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL GetLinearBufferOfPolygonVertices(
     zModel_DrawBatchBasePartial *model, zModel_PolygonPartial *polygon, zVec3 *points) {
     const unsigned int vertexCount = polygon->vertexCountAndFlags & 0xff;
-    zVec3 *result = static_cast<zVec3 *>(realloc(points, vertexCount * sizeof(zVec3)));
+    zVec3 *result = (zVec3 *)(realloc(points, vertexCount * sizeof(zVec3)));
 
     for (unsigned int i = 0; i < vertexCount; ++i) {
         const int vertexIndex = polygon->vertexIndices[i];
@@ -582,7 +582,7 @@ namespace zGeometry_Vec3 {
 RECOIL_NOINLINE int RECOIL_FASTCALL IsBetweenEndpointsXY(zVec3 *testPoint,
                                                                   zVec3 *startPoint,
                                                                   zVec3 *endPoint) {
-    if (fabs(static_cast<double>(startPoint->x) - static_cast<double>(endPoint->x)) <
+    if (fabs((double)(startPoint->x) - (double)(endPoint->x)) <
         0.0000099999997473787516) {
         if (startPoint->y < endPoint->y) {
             return testPoint->y >= startPoint->y && testPoint->y <= endPoint->y;
@@ -615,14 +615,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL RemoveAdjacentDuplicatePointsXY(zVec3 *verti
     int nextIndex = 1;
     zVec3 *current = vertices;
 
-    while (static_cast<unsigned int>(index) < static_cast<unsigned int>(result)) {
+    while ((unsigned int)(index) < (unsigned int)(result)) {
         if (zGeometry_Vec3::IsNearEqualXY(current, &vertices[nextIndex % result], 0.00999999978f)) {
             const int lastIndex = result - 1;
             if (index == lastIndex) {
                 result = lastIndex;
             } else {
                 const int bytesToMove =
-                    (result - index - 1) * static_cast<int>(sizeof(zVec3));
+                    (result - index - 1) * (int)(sizeof(zVec3));
                 memcpy(current, current + 1, bytesToMove);
                 --index;
                 --nextIndex;
@@ -701,7 +701,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Init(zGeometry_WeilerBufferPartial *self,
 RECOIL_NOINLINE void *RECOIL_FASTCALL GetAppendSpace(zGeometry_WeilerBufferPartial *self,
                                                      int appendCount, void **outBase) {
     const int newCount = self->count + appendCount;
-    if (static_cast<unsigned int>(newCount) >= static_cast<unsigned int>(self->capacity)) {
+    if ((unsigned int)(newCount) >= (unsigned int)(self->capacity)) {
         self->capacity += appendCount + 0x10;
         void *const base = realloc(self->base, self->capacity * self->elementSize);
         self->base = base;
@@ -818,7 +818,7 @@ GetInputContourAPointList(zGeometry_WeilerStatePartial *self, zVec3 **outPoints)
         return 0;
     }
 
-    *outPoints = static_cast<zVec3 *>(self->inputContourABuffer.base);
+    *outPoints = (zVec3 *)(self->inputContourABuffer.base);
     return self->inputContourABuffer.count;
 }
 
@@ -835,7 +835,7 @@ RECOIL_NOINLINE zGeometry_WeilerStatePartial *RECOIL_FASTCALL Init(zVec3 *points
     const int dedupedPointCount =
         zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY(points, pointCount);
 
-    zGeometry_WeilerStatePartial *const result = static_cast<zGeometry_WeilerStatePartial *>(
+    zGeometry_WeilerStatePartial *const result = (zGeometry_WeilerStatePartial *)(
         calloc(1, sizeof(zGeometry_WeilerStatePartial)));
 
     zGeometry_WeilerBuffer::Init(&result->segmentBuffer, 0x80,
@@ -844,7 +844,7 @@ RECOIL_NOINLINE zGeometry_WeilerStatePartial *RECOIL_FASTCALL Init(zVec3 *points
     zGeometry_WeilerBuffer::Init(&result->xingBuffer, 0x80, 0x30);
     zGeometry_WeilerBuffer::Init(&result->inputContourABuffer, dedupedPointCount, sizeof(zVec3));
 
-    const size_t pointBytes = static_cast<size_t>(dedupedPointCount) * sizeof(zVec3);
+    const size_t pointBytes = (size_t)(dedupedPointCount) * sizeof(zVec3);
     memcpy(result->inputContourABuffer.base, points, pointBytes);
     result->inputContourABuffer.count = dedupedPointCount;
     result->inputContourBBuffer.count = 0;
@@ -873,7 +873,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL
 InitInputContourPair(zGeometry_WeilerStatePartial *self, zVec3 *points, int pointCount,
                      int contourType) {
     zGeometry_WeilerContourSegmentPartial *segments =
-        static_cast<zGeometry_WeilerContourSegmentPartial *>(
+        (zGeometry_WeilerContourSegmentPartial *)(
             zGeometry_WeilerBuffer::GetAppendSpace(&self->segmentBuffer, pointCount * 2, 0));
     if (segments == 0) {
         fprintf(stderr, "%s %d: weilerInit call to bufEntry failed.\n", kZGeoWeilerSourceFile,
@@ -939,15 +939,15 @@ ClipPointList(zGeometry_WeilerStatePartial *self, int clipMode, zVec3 *points,
     self->outClip = outClip;
     outClip->polygonSetA.polygonCount = 0;
     outClip->polygonSetA.polygons =
-        static_cast<zGeometry_PolygonPointSpanPartial *>(self->polygonSetABuffer.base);
+        (zGeometry_PolygonPointSpanPartial *)(self->polygonSetABuffer.base);
     outClip->polygonSetB.polygonCount = 0;
     outClip->polygonSetB.polygons =
-        static_cast<zGeometry_PolygonPointSpanPartial *>(self->polygonSetBBuffer.base);
+        (zGeometry_PolygonPointSpanPartial *)(self->polygonSetBBuffer.base);
     outClip->polygonSetC.polygonCount = 0;
     outClip->polygonSetC.polygons =
-        static_cast<zGeometry_PolygonPointSpanPartial *>(self->polygonSetCBuffer.base);
+        (zGeometry_PolygonPointSpanPartial *)(self->polygonSetCBuffer.base);
     outClip->pointList.pointCount = 0;
-    outClip->pointList.points = static_cast<zVec3 *>(self->pointListBuffer.base);
+    outClip->pointList.points = (zVec3 *)(self->pointListBuffer.base);
 
     const int preclassifiedMode = zGeometry_Weiler::ClassifyInputContourPairBounds(self);
     if (preclassifiedMode == 1) {
@@ -981,7 +981,7 @@ ClipPointList(zGeometry_WeilerStatePartial *self, int clipMode, zVec3 *points,
 
     zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs(self);
     if (zGeometry_Weiler::InitInputContourPair(
-            self, static_cast<zVec3 *>(self->inputContourBBuffer.base), pointCount, 2) == 0) {
+            self, (zVec3 *)(self->inputContourBBuffer.base), pointCount, 2) == 0) {
         zGeometry_WeilerClipOutput::Destroy(outClip);
         if (self->pointsRecentered) {
             zGeometry_Weiler::RestorePointTranslation(self);
@@ -1126,7 +1126,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EnsureContourOutput(
     zGeometry_WeilerStatePartial *self, zGeometry_WeilerContourSegmentPartial *segment) {
     if (segment->contourOutput == 0) {
         zGeometry_WeilerContourOutputPartial *const contourOutput =
-            static_cast<zGeometry_WeilerContourOutputPartial *>(
+            (zGeometry_WeilerContourOutputPartial *)(
                 zGeometry_WeilerBuffer::GetAppendSpace(&self->contourBuffer, 1, 0));
 
         if (contourOutput == 0) {
@@ -1147,7 +1147,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EnsureContourOutput(
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL MergeContours(zGeometry_WeilerStatePartial *self) {
     zGeometry_WeilerXingPartial *const xingBase =
-        static_cast<zGeometry_WeilerXingPartial *>(self->xingBuffer.base);
+        (zGeometry_WeilerXingPartial *)(self->xingBuffer.base);
     if (zGeometry_Weiler::ValidateXings(self->xingBuffer.count, xingBase, 0) == 0) {
         zError::ReportOld(0x100, kZGeoWeilerSourceFile, 0xc9a,
                           "contourMerge:  Failed validation\n");
@@ -1156,7 +1156,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL MergeContours(zGeometry_WeilerStatePartial *
 
     zGeometry_WeilerXingPartial *xing = xingBase;
     for (unsigned int xingIndex = 0;
-         xingIndex < static_cast<unsigned int>(self->xingBuffer.count); ++xingIndex, ++xing) {
+         xingIndex < (unsigned int)(self->xingBuffer.count); ++xingIndex, ++xing) {
         zGeometry_WeilerContourSegmentPartial *const segment0 = xing->segment0;
         zGeometry_WeilerContourSegmentPartial *const segment1 = xing->segment1;
         zGeometry_WeilerContourSegmentPartial *const segment2 = xing->segment2;
@@ -1464,7 +1464,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DivideContourSegmentAtPoint(
     if (zGeometry_Vec3::IsNearEqualXY(segment->endPoint, xing, 0.00100000005f) != 0) {
         nextSegment = segment->next;
     } else {
-        nextSegment = static_cast<zGeometry_WeilerContourSegmentPartial *>(
+        nextSegment = (zGeometry_WeilerContourSegmentPartial *)(
             zGeometry_WeilerBuffer::GetAppendSpace(&self->segmentBuffer, 1, 0));
         if (nextSegment == 0) {
             fprintf(stderr, "%s %d: _divide_edge call to bufEntry failed.\n",
@@ -1513,7 +1513,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CreateForwardSegmentPairAtPoint(
 
     for (int i = 0; i < 2; ++i) {
         zGeometry_WeilerContourSegmentPartial *const newSegment =
-            static_cast<zGeometry_WeilerContourSegmentPartial *>(
+            (zGeometry_WeilerContourSegmentPartial *)(
                 zGeometry_WeilerBuffer::GetAppendSpace(&self->segmentBuffer, 1, 0));
         if (newSegment == 0) {
             zError::ReportOld(0x200, kZGeoWeilerSourceFile, 0x1181, "bufEntry failed");
@@ -1565,7 +1565,7 @@ GetNextContourSegmentForTraversal(zGeometry_WeilerContourSegmentPartial *segment
 RECOIL_NOINLINE void RECOIL_FASTCALL NewContour(zGeometry_WeilerStatePartial *self) {
     int contourCount = self->contourBuffer.count;
     zGeometry_WeilerContourOutputPartial *contour =
-        static_cast<zGeometry_WeilerContourOutputPartial *>(self->contourBuffer.base);
+        (zGeometry_WeilerContourOutputPartial *)(self->contourBuffer.base);
 
     self->allContoursSingleSided = true;
     if (contourCount == 0) {
@@ -1708,10 +1708,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OutputPreclassifiedContourPairResult(
             zVec3 *contourAPoint = contourAPoints;
 
             for (int j = contourAPointCount; j != 0; --j) {
-                if (fabs(static_cast<double>(contourAPoint->x) -
-                              static_cast<double>(contourBPoint->x)) <= 0.0010000000474974513 &&
-                    fabs(static_cast<double>(contourAPoint->y) -
-                              static_cast<double>(contourBPoint->y)) <= 0.0010000000474974513) {
+                if (fabs((double)(contourAPoint->x) -
+                              (double)(contourBPoint->x)) <= 0.0010000000474974513 &&
+                    fabs((double)(contourAPoint->y) -
+                              (double)(contourBPoint->y)) <= 0.0010000000474974513) {
                     pointMatched = true;
                     break;
                 }
@@ -1752,8 +1752,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL
 ClassifyInputContourPairBounds(zGeometry_WeilerStatePartial *self) {
     const int inputPointCountA = self->inputContourABuffer.count;
     const int inputPointCountB = self->inputContourBBuffer.count;
-    zVec3 *const inputPointsA = static_cast<zVec3 *>(self->inputContourABuffer.base);
-    zVec3 *const inputPointsB = static_cast<zVec3 *>(self->inputContourBBuffer.base);
+    zVec3 *const inputPointsA = (zVec3 *)(self->inputContourABuffer.base);
+    zVec3 *const inputPointsB = (zVec3 *)(self->inputContourBBuffer.base);
 
     WeilerPointBoundsXY boundsA;
     WeilerPointBoundsXY boundsB;
@@ -1801,15 +1801,15 @@ OutputSelectedInputContourToPolygonSetA(zGeometry_WeilerStatePartial *self, int 
     const int selectedPointCount = selectedInputContour->count;
     const int totalPointCount = oldPointCount + selectedPointCount;
 
-    if (static_cast<unsigned int>(totalPointCount) > 0x80) {
-        outClip->pointList.points = static_cast<zVec3 *>(realloc(
-            outClip->pointList.points, static_cast<size_t>(totalPointCount) * sizeof(zVec3)));
+    if ((unsigned int)(totalPointCount) > 0x80) {
+        outClip->pointList.points = (zVec3 *)(realloc(
+            outClip->pointList.points, (size_t)(totalPointCount) * sizeof(zVec3)));
     }
 
     outClip->polygonSetA.polygons->pointCount = selectedPointCount;
     outClip->polygonSetA.polygons->pointDwordOffset = oldPointCount * 3;
 
-    const size_t pointBytes = static_cast<size_t>(selectedPointCount) * sizeof(zVec3);
+    const size_t pointBytes = (size_t)(selectedPointCount) * sizeof(zVec3);
     memcpy(&outClip->pointList.points[oldPointCount], selectedInputContour->base, pointBytes);
 
     outClip->pointList.pointCount = oldPointCount + selectedPointCount;
@@ -1826,7 +1826,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OutputContourToPolygonSet(
     zGeometry_WeilerClipOutputPartial *const outClip = self->outClip;
 
     zGeometry_PolygonPointSpanPartial *const polygon =
-        static_cast<zGeometry_PolygonPointSpanPartial *>(zGeometry_WeilerBuffer::GetAppendSpace(
+        (zGeometry_PolygonPointSpanPartial *)(zGeometry_WeilerBuffer::GetAppendSpace(
             polygonBuffer, 1, (void **)(&polygonSet->polygons)));
     if (polygon == 0) {
         return 0;
@@ -1836,7 +1836,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OutputContourToPolygonSet(
     polygon->pointCount = contour->pointCount;
     ++polygonSet->polygonCount;
 
-    zVec3 *outPoint = static_cast<zVec3 *>(zGeometry_WeilerBuffer::GetAppendSpace(
+    zVec3 *outPoint = (zVec3 *)(zGeometry_WeilerBuffer::GetAppendSpace(
         &self->pointListBuffer, contour->pointCount,
         (void **)(&outClip->pointList.points)));
     if (outPoint == 0) {
@@ -1864,7 +1864,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL
 OutputContoursForClipMode(zGeometry_WeilerStatePartial *self) {
     int contourCount = self->contourBuffer.count;
     zGeometry_WeilerContourOutputPartial *contour =
-        static_cast<zGeometry_WeilerContourOutputPartial *>(self->contourBuffer.base);
+        (zGeometry_WeilerContourOutputPartial *)(self->contourBuffer.base);
 
     if (contourCount == 0) {
         return 1;
@@ -1917,7 +1917,7 @@ OutputContoursForClipMode(zGeometry_WeilerStatePartial *self) {
 RECOIL_NOINLINE void RECOIL_FASTCALL SelectForwardStartPointInContourA(
     zVec3 *point, zVec3 **selectedPoint, zGeometry_WeilerStatePartial *self) {
     const int pointCount = self->inputContourABuffer.count;
-    zVec3 *const points = static_cast<zVec3 *>(self->inputContourABuffer.base);
+    zVec3 *const points = (zVec3 *)(self->inputContourABuffer.base);
     if (pointCount == 0) {
         return;
     }
@@ -1956,7 +1956,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SelectForwardStartPointInContourA(
 RECOIL_NOINLINE int RECOIL_FASTCALL
 GenerateOutsideResults(zGeometry_WeilerStatePartial *self) {
     const int contourAPointCount = self->inputContourABuffer.count;
-    zVec3 *const contourBPoints = static_cast<zVec3 *>(self->inputContourBBuffer.base);
+    zVec3 *const contourBPoints = (zVec3 *)(self->inputContourBBuffer.base);
     zGeometry_WeilerClipOutputPartial *const outClip = self->outClip;
     const int contourBPointCount = self->inputContourBBuffer.count;
 
@@ -1965,7 +1965,7 @@ GenerateOutsideResults(zGeometry_WeilerStatePartial *self) {
     }
 
     zGeometry_PolygonPointSpanPartial *const polygon =
-        static_cast<zGeometry_PolygonPointSpanPartial *>(zGeometry_WeilerBuffer::GetAppendSpace(
+        (zGeometry_PolygonPointSpanPartial *)(zGeometry_WeilerBuffer::GetAppendSpace(
             &self->polygonSetBBuffer, 1,
             (void **)(&outClip->polygonSetB.polygons)));
     if (polygon == 0) {
@@ -1978,7 +1978,7 @@ GenerateOutsideResults(zGeometry_WeilerStatePartial *self) {
     polygon->pointCount = contourBPointCount + contourAPointCount + 2;
     ++outClip->polygonSetB.polygonCount;
 
-    zVec3 *outPoint = static_cast<zVec3 *>(zGeometry_WeilerBuffer::GetAppendSpace(
+    zVec3 *outPoint = (zVec3 *)(zGeometry_WeilerBuffer::GetAppendSpace(
         &self->pointListBuffer, polygon->pointCount,
         (void **)(&outClip->pointList.points)));
     if (outPoint == 0) {
@@ -1989,7 +1989,7 @@ GenerateOutsideResults(zGeometry_WeilerStatePartial *self) {
 
     outClip->pointList.pointCount += polygon->pointCount;
 
-    zVec3 *const contourAPoints = static_cast<zVec3 *>(self->inputContourABuffer.base);
+    zVec3 *const contourAPoints = (zVec3 *)(self->inputContourABuffer.base);
     zVec3 *selectedContourAPoint = contourAPoints;
     zVec3 *contourAPoint = &contourAPoints[1];
     for (int i = contourAPointCount - 1; i > 0; --i) {
@@ -2041,10 +2041,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL
 PreclassifyInputContourAAdjacentEdgePairs(zGeometry_WeilerStatePartial *self) {
     const int pointCount = self->inputContourABuffer.count;
     zGeometry_WeilerContourSegmentPartial *const segmentBase =
-        static_cast<zGeometry_WeilerContourSegmentPartial *>(self->segmentBuffer.base);
+        (zGeometry_WeilerContourSegmentPartial *)(self->segmentBuffer.base);
     zGeometry_WeilerContourOutputPartial *const contourBase =
-        static_cast<zGeometry_WeilerContourOutputPartial *>(self->contourBuffer.base);
-    zVec3 *const points = static_cast<zVec3 *>(self->inputContourABuffer.base);
+        (zGeometry_WeilerContourOutputPartial *)(self->contourBuffer.base);
+    zVec3 *const points = (zVec3 *)(self->inputContourABuffer.base);
 
     zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->segmentBuffer, pointCount << 1);
     zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->contourBuffer, 2);
@@ -2071,14 +2071,14 @@ PreclassifyInputContourAAdjacentEdgePairs(zGeometry_WeilerStatePartial *self) {
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
 RECOIL_NOINLINE void RECOIL_FASTCALL
 BuildPointSideTablesForContourPair(zGeometry_WeilerStatePartial *self) {
-    BuildPointSideTable(static_cast<zVec3 *>(self->inputContourBBuffer.base),
+    BuildPointSideTable((zVec3 *)(self->inputContourBBuffer.base),
                         self->inputContourBBuffer.count,
-                        static_cast<zVec3 *>(self->inputContourABuffer.base),
+                        (zVec3 *)(self->inputContourABuffer.base),
                         self->inputContourABuffer.count, self->contourAPointSideByContourBEdge);
 
-    BuildPointSideTable(static_cast<zVec3 *>(self->inputContourABuffer.base),
+    BuildPointSideTable((zVec3 *)(self->inputContourABuffer.base),
                         self->inputContourABuffer.count,
-                        static_cast<zVec3 *>(self->inputContourBBuffer.base),
+                        (zVec3 *)(self->inputContourBBuffer.base),
                         self->inputContourBBuffer.count, self->contourBPointSideByContourAEdge);
 }
 
@@ -2088,7 +2088,7 @@ BuildPointSideTablesForContourPair(zGeometry_WeilerStatePartial *self) {
 RECOIL_NOINLINE int RECOIL_FASTCALL
 PreclassifyInputContourPair(zGeometry_WeilerStatePartial *self) {
     WeilerPreclassifyContourPacket *const contourPacket =
-        static_cast<WeilerPreclassifyContourPacket *>(self->contourBuffer.base);
+        (WeilerPreclassifyContourPacket *)(self->contourBuffer.base);
 
     zGeometry_WeilerContourSegmentPartial *contourA = contourPacket->contourA.firstSegment;
     zGeometry_WeilerContourSegmentPartial *contourB = contourPacket->contourB.firstSegment;
@@ -2381,7 +2381,7 @@ PreclassifyInputContourPair(zGeometry_WeilerStatePartial *self) {
 RECOIL_NOINLINE int RECOIL_FASTCALL
 ClassifyContainedContour(zGeometry_WeilerStatePartial *self) {
     WeilerPreclassifyContourPacket *const contourPacket =
-        static_cast<WeilerPreclassifyContourPacket *>(self->contourBuffer.base);
+        (WeilerPreclassifyContourPacket *)(self->contourBuffer.base);
 
     zGeometry_WeilerContourSegmentPartial *const contourOutput0Start =
         contourPacket->contourA.firstSegment;
@@ -2484,7 +2484,7 @@ ClassifyIntersect2d(zVec3 *edge0Start, zVec3 *edge0End, zVec3 *edge1Start, zVec3
 
             const int probeClass = zGeometry_Weiler::ClassifyPointInContourPointListXY(
                 &probe, self->inputContourABuffer.count,
-                static_cast<zVec3 *>(self->inputContourABuffer.base));
+                (zVec3 *)(self->inputContourABuffer.base));
 
             if ((edge1EndSide > 0.0f && probeClass > 0) ||
                 (edge1EndSide <= 0.0f && probeClass < 0)) {
@@ -2498,7 +2498,7 @@ ClassifyIntersect2d(zVec3 *edge0Start, zVec3 *edge0End, zVec3 *edge1Start, zVec3
 
             const int probeClass = zGeometry_Weiler::ClassifyPointInContourPointListXY(
                 &probe, self->inputContourABuffer.count,
-                static_cast<zVec3 *>(self->inputContourABuffer.base));
+                (zVec3 *)(self->inputContourABuffer.base));
 
             if ((edge1StartSide > 0.0f && probeClass > 0) ||
                 (edge1StartSide <= 0.0f && probeClass < 0)) {
@@ -2529,17 +2529,17 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Intersect2d(zGeometry_WeilerStatePartial *se
         zGeometry_Weiler::ClassifyIntersect2d(&edge0Start, &edge0End, &edge1Start, &edge1End, self);
 
     zGeometry_WeilerXingPartial *createdXing = 0;
-    if (static_cast<unsigned int>(xingType) <= 0x17) {
+    if ((unsigned int)(xingType) <= 0x17) {
         switch (kIntersect2dOutputKindByXingType[xingType]) {
         case 1: {
             const double edge1ReverseDeltaX =
-                static_cast<double>(edge1Start.x) - static_cast<double>(edge1End.x);
+                (double)(edge1Start.x) - (double)(edge1End.x);
             const double edge1ReverseDeltaY =
-                static_cast<double>(edge1Start.y) - static_cast<double>(edge1End.y);
+                (double)(edge1Start.y) - (double)(edge1End.y);
             const double edge0DeltaX =
-                static_cast<double>(edge0End.x) - static_cast<double>(edge0Start.x);
+                (double)(edge0End.x) - (double)(edge0Start.x);
             const double edge0DeltaY =
-                static_cast<double>(edge0End.y) - static_cast<double>(edge0Start.y);
+                (double)(edge0End.y) - (double)(edge0Start.y);
             const double divisor =
                 edge1ReverseDeltaY * edge0DeltaX - edge1ReverseDeltaX * edge0DeltaY;
 
@@ -2554,28 +2554,28 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Intersect2d(zGeometry_WeilerStatePartial *se
             }
 
             const double edge0Param =
-                ((static_cast<double>(edge1Start.x) - static_cast<double>(edge0Start.x)) *
+                (((double)(edge1Start.x) - (double)(edge0Start.x)) *
                      edge1ReverseDeltaY +
-                 (static_cast<double>(edge1Start.y) - static_cast<double>(edge0Start.y)) *
+                 ((double)(edge1Start.y) - (double)(edge0Start.y)) *
                      -edge1ReverseDeltaX) /
                 divisor;
-            createdXing->point.x = static_cast<float>(edge0DeltaX * edge0Param + edge0Start.x);
-            createdXing->point.y = static_cast<float>(edge0DeltaY * edge0Param + edge0Start.y);
+            createdXing->point.x = (float)(edge0DeltaX * edge0Param + edge0Start.x);
+            createdXing->point.y = (float)(edge0DeltaY * edge0Param + edge0Start.y);
 
             if (edge1ReverseDeltaX != 0.0) {
-                createdXing->point.z = static_cast<float>(
-                    ((static_cast<double>(edge1Start.x) -
-                      static_cast<double>(createdXing->point.x)) /
+                createdXing->point.z = (float)(
+                    (((double)(edge1Start.x) -
+                      (double)(createdXing->point.x)) /
                      edge1ReverseDeltaX) *
-                        (static_cast<double>(edge1End.z) - static_cast<double>(edge1Start.z)) +
-                    static_cast<double>(edge1Start.z));
+                        ((double)(edge1End.z) - (double)(edge1Start.z)) +
+                    (double)(edge1Start.z));
             } else {
-                createdXing->point.z = static_cast<float>(
-                    ((static_cast<double>(edge1Start.y) -
-                      static_cast<double>(createdXing->point.y)) /
-                     (static_cast<double>(edge1Start.y) - static_cast<double>(edge1End.y))) *
-                        (static_cast<double>(edge1End.z) - static_cast<double>(edge1Start.z)) +
-                    static_cast<double>(edge1Start.z));
+                createdXing->point.z = (float)(
+                    (((double)(edge1Start.y) -
+                      (double)(createdXing->point.y)) /
+                     ((double)(edge1Start.y) - (double)(edge1End.y))) *
+                        ((double)(edge1End.z) - (double)(edge1Start.z)) +
+                    (double)(edge1Start.z));
             }
 
             break;
@@ -2755,7 +2755,7 @@ RecenterPointSetsIfOutOfRange(zGeometry_WeilerStatePartial *self) {
         return;
     }
 
-    zVec3 *const firstPoint = static_cast<zVec3 *>(self->inputContourABuffer.base);
+    zVec3 *const firstPoint = (zVec3 *)(self->inputContourABuffer.base);
     if (firstPoint->x < 65536.0f && firstPoint->x > -65536.0f && firstPoint->y < 65536.0f &&
         firstPoint->y > -65536.0f) {
         self->pointsRecentered = false;
@@ -2778,7 +2778,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RestorePointTranslation(zGeometry_WeilerSta
     const float translationX = self->pointTranslationX;
     const float translationY = self->pointTranslationY;
 
-    zVec3 *point = static_cast<zVec3 *>(self->inputContourBBuffer.base);
+    zVec3 *point = (zVec3 *)(self->inputContourBBuffer.base);
     for (int i = self->inputContourBBuffer.count; i != 0; --i) {
         point->x += translationX;
         point->y += translationY;
@@ -2799,7 +2799,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RestorePointTranslation(zGeometry_WeilerSta
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
 RECOIL_NOINLINE void RECOIL_FASTCALL
 RestoreOutputZFromInputPlane(zGeometry_WeilerStatePartial *self) {
-    zVec3 *const inputPoints = static_cast<zVec3 *>(self->inputContourBBuffer.base);
+    zVec3 *const inputPoints = (zVec3 *)(self->inputContourBBuffer.base);
 
     const zVec3 edge01 = {
         inputPoints[0].x - inputPoints[1].x,
@@ -2829,7 +2829,7 @@ RestoreOutputZFromInputPlane(zGeometry_WeilerStatePartial *self) {
 
     zGeometry_WeilerClipOutputPartial *const outClip = self->outClip;
     zVec3 *point = outClip->pointList.points;
-    for (unsigned int i = 0; i < static_cast<unsigned int>(outClip->pointList.pointCount); ++i) {
+    for (unsigned int i = 0; i < (unsigned int)(outClip->pointList.pointCount); ++i) {
         point->z = -(planeNormal.x * point->x + planeNormal.y * point->y + planeOffset);
         ++point;
     }
@@ -2960,7 +2960,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UpsertPointListXY(
                 zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex(clipPolygon, point);
             if (edgeIndex != -1) {
                 const int oldPointCount = clipPolygon->pointCount;
-                clipPolygon->points = static_cast<zVec3 *>(
+                clipPolygon->points = (zVec3 *)(
                     realloc(clipPolygon->points, (oldPointCount + 1) * sizeof(zVec3)));
 
                 if (edgeIndex != oldPointCount - 1) {

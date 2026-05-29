@@ -173,14 +173,14 @@ namespace zDi {
 
         clone->pointCount = self->pointCount;
         if (self->pointCount > 0) {
-            clone->pointEntries = static_cast<zModel_PointEntryPartial *>(malloc(
-                static_cast<size_t>(self->pointCount) * sizeof(zModel_PointEntryPartial)));
+            clone->pointEntries = (zModel_PointEntryPartial *)(malloc(
+                (size_t)(self->pointCount) * sizeof(zModel_PointEntryPartial)));
             for (int i = 0; i < self->pointCount; ++i) {
                 clone->pointEntries[i] = self->pointEntries[i];
                 if (self->pointEntries[i].pointCamCount > 0) {
-                    clone->pointEntries[i].pointCamList = static_cast<zVec3 *>(CopyArrayBytes(
+                    clone->pointEntries[i].pointCamList = (zVec3 *)(CopyArrayBytes(
                         self->pointEntries[i].pointCamList,
-                        static_cast<size_t>(self->pointEntries[i].pointCamCount) *
+                        (size_t)(self->pointEntries[i].pointCamCount) *
                             sizeof(zVec3)));
                 }
             }
@@ -188,26 +188,26 @@ namespace zDi {
 
         clone->blendVertCount = self->blendVertCount;
         if (self->blendVertCount > 0) {
-            clone->blendVerts = static_cast<zVec3 *>(CopyArrayBytes(
-                self->blendVerts, static_cast<size_t>(self->blendVertCount) * sizeof(zVec3)));
+            clone->blendVerts = (zVec3 *)(CopyArrayBytes(
+                self->blendVerts, (size_t)(self->blendVertCount) * sizeof(zVec3)));
         }
 
         clone->vertCount = self->vertCount;
         if (self->vertCount > 0) {
-            clone->verts = static_cast<zVec3 *>(CopyArrayBytes(
-                self->verts, static_cast<size_t>(self->vertCount) * sizeof(zVec3)));
+            clone->verts = (zVec3 *)(CopyArrayBytes(
+                self->verts, (size_t)(self->vertCount) * sizeof(zVec3)));
         }
 
         clone->normalCount = self->normalCount;
         if (self->normalCount > 0) {
-            clone->normals = static_cast<zVec3 *>(CopyArrayBytes(
-                self->normals, static_cast<size_t>(self->normalCount) * sizeof(zVec3)));
+            clone->normals = (zVec3 *)(CopyArrayBytes(
+                self->normals, (size_t)(self->normalCount) * sizeof(zVec3)));
         }
 
         clone->entryCount = self->entryCount;
         if (self->entryCount > 0) {
-            clone->entries = static_cast<zDiEntryPartial *>(
-                calloc(static_cast<size_t>(self->entryCount), sizeof(zDiEntryPartial)));
+            clone->entries = (zDiEntryPartial *)(
+                calloc((size_t)(self->entryCount), sizeof(zDiEntryPartial)));
         }
 
         MaterialClonePair *materialPairs = 0;
@@ -235,8 +235,8 @@ namespace zDi {
 
                     if (material == 0) {
                         material = zModel_Material::Clone(sourceEntry.material);
-                        materialPairs = static_cast<MaterialClonePair *>(realloc(
-                            materialPairs, static_cast<size_t>(materialPairCount + 1) *
+                        materialPairs = (MaterialClonePair *)(realloc(
+                            materialPairs, (size_t)(materialPairCount + 1) *
                                                sizeof(MaterialClonePair)));
                         materialPairs[materialPairCount].source = sourceEntry.material;
                         materialPairs[materialPairCount].clone = material;
@@ -248,18 +248,18 @@ namespace zDi {
 
             const unsigned int indexCount = sourceEntry.flagsAndIndexCount & 0xff;
             CopyEntryArrayIfPresent(&destEntry.vertexIndices, sourceEntry.vertexIndices,
-                                    static_cast<size_t>(indexCount) * sizeof(unsigned int));
+                                    (size_t)(indexCount) * sizeof(unsigned int));
             if ((sourceEntry.flagsAndIndexCount & 0x00000200) != 0 &&
                 sourceEntry.normalIndices != 0) {
                 CopyEntryArrayIfPresent(&destEntry.normalIndices, sourceEntry.normalIndices,
-                                        static_cast<size_t>(indexCount) *
+                                        (size_t)(indexCount) *
                                             sizeof(unsigned int));
             }
 
             destEntry.flagsAndIndexCount = (destEntry.flagsAndIndexCount & ~0xffu) | indexCount;
             if ((destEntry.material->flags & 0x0100) != 0) {
                 CopyEntryArrayIfPresent(&destEntry.uvPairs, sourceEntry.uvPairs,
-                                        static_cast<size_t>(indexCount) * 8u);
+                                        (size_t)(indexCount) * 8u);
             }
         }
 
@@ -399,7 +399,7 @@ namespace zModel_Material {
     RECOIL_NOINLINE void RECOIL_FASTCALL ResetDefaults(zModel_MaterialPartial * material) {
         material->cycle = 0;
         material->currentTextureDirectoryEntry = 0;
-        material->flags = static_cast<unsigned short>((material->flags & 0xf800u) | 0x00ffu);
+        material->flags = (unsigned short)((material->flags & 0xf800u) | 0x00ffu);
         material->colorRgb.red = 255.0f;
         material->colorRgb.green = 255.0f;
         material->colorRgb.blue = 255.0f;
@@ -515,12 +515,12 @@ namespace zModel_Material {
         }
 
         zModel_MaterialCyclePartial *cycle = material->cycle;
-        material->flags = static_cast<unsigned short>(material->flags | 0x0500);
+        material->flags = (unsigned short)(material->flags | 0x0500);
         if (cycle != 0 && cycle->frameCount >= textureCount) {
             return 0;
         }
 
-        cycle = static_cast<zModel_MaterialCyclePartial *>(
+        cycle = (zModel_MaterialCyclePartial *)(
             realloc(cycle, sizeof(zModel_MaterialCyclePartial)));
         material->cycle = cycle;
         cycle->loopEnabled = 0;
@@ -529,9 +529,9 @@ namespace zModel_Material {
         cycle->frameCount = textureCount;
         cycle->frameWriteCount = 0;
         cycle->frameTable = 0;
-        cycle->frameTable = static_cast<zImage_TexDirEntryPartial **>(
+        cycle->frameTable = (zImage_TexDirEntryPartial **)(
             realloc(cycle->frameTable,
-                         static_cast<size_t>(textureCount) * sizeof(cycle->frameTable[0])));
+                         (size_t)(textureCount) * sizeof(cycle->frameTable[0])));
 
         for (int i = 0; i < textureCount; ++i) {
             cycle->frameTable[i] = zImage::GetDefaultImageRefPtr();
@@ -581,19 +581,19 @@ namespace zModel_Material {
             return;
         }
 
-        const int frameIndex = static_cast<int>(cycle->currentFrame) % cycle->frameCount;
+        const int frameIndex = (int)(cycle->currentFrame) % cycle->frameCount;
         material->currentTextureDirectoryEntry = cycle->frameTable[frameIndex];
         cycle->currentFrame += cycle->framesPerSecond * g_FrameDeltaTimeSec;
 
         cycle = material->cycle;
-        if (cycle->loopEnabled == 0 && static_cast<float>(cycle->frameCount) <= cycle->currentFrame) {
-            cycle->currentFrame = static_cast<float>(cycle->frameCount - 1);
+        if (cycle->loopEnabled == 0 && (float)(cycle->frameCount) <= cycle->currentFrame) {
+            cycle->currentFrame = (float)(cycle->frameCount - 1);
         }
 
         cycle = material->cycle;
         if (cycle->currentFrame < 0.0f) {
             cycle->currentFrame +=
-                static_cast<float>(static_cast<int>(fabs(cycle->framesPerSecond)) * cycle->frameCount);
+                (float)((int)(fabs(cycle->framesPerSecond)) * cycle->frameCount);
         }
 
         material->cycle->lastUpdateFrameTick = g_zVideo_FrameTick;
@@ -662,19 +662,19 @@ namespace zModel_MatlBuffer {
         const int prevFreeIndex = slot->prevPoolIndex;
         if (prevFreeIndex >= 0) {
             g_zModel_MatlPool[prevFreeIndex].nextPoolIndex =
-                static_cast<short>(nextFreeIndex);
+                (short)(nextFreeIndex);
         }
         if (nextFreeIndex >= 0) {
             g_zModel_MatlPool[nextFreeIndex].prevPoolIndex =
-                static_cast<short>(prevFreeIndex);
+                (short)(prevFreeIndex);
         }
 
         g_zModel_MatlFreeHeadIndex = nextFreeIndex;
         slot->prevPoolIndex = -1;
-        slot->nextPoolIndex = static_cast<short>(g_zModel_MatlActiveHeadIndex);
+        slot->nextPoolIndex = (short)(g_zModel_MatlActiveHeadIndex);
         if (g_zModel_MatlActiveHeadIndex >= 0) {
             g_zModel_MatlPool[g_zModel_MatlActiveHeadIndex].prevPoolIndex =
-                static_cast<short>(slotIndex);
+                (short)(slotIndex);
         }
         g_zModel_MatlActiveHeadIndex = slotIndex;
         ++g_zModel_MatlPoolInUseCount;
@@ -685,14 +685,14 @@ namespace zModel_MatlBuffer {
             return &slot->material;
         }
 
-        slot->material.cycle = static_cast<zModel_MaterialCyclePartial *>(
+        slot->material.cycle = (zModel_MaterialCyclePartial *)(
             malloc(sizeof(zModel_MaterialCyclePartial)));
         memcpy(slot->material.cycle, material->cycle, sizeof(zModel_MaterialCyclePartial));
-        slot->material.cycle->frameTable = static_cast<zImage_TexDirEntryPartial **>(
-            calloc(static_cast<size_t>(slot->material.cycle->frameCount),
+        slot->material.cycle->frameTable = (zImage_TexDirEntryPartial **)(
+            calloc((size_t)(slot->material.cycle->frameCount),
                         sizeof(slot->material.cycle->frameTable[0])));
         memcpy(slot->material.cycle->frameTable, material->cycle->frameTable,
-                    static_cast<size_t>(slot->material.cycle->frameCount) *
+                    (size_t)(slot->material.cycle->frameCount) *
                         sizeof(slot->material.cycle->frameTable[0]));
 
         return &slot->material;
@@ -715,7 +715,7 @@ zModel_Material_SetFlagBit9(zModel_MaterialPartial *material, int enabled) {
         return 0;
     }
 
-    material->flags = static_cast<unsigned short>((material->flags & 0xfdff) | ((enabled & 1) << 9));
+    material->flags = (unsigned short)((material->flags & 0xfdff) | ((enabled & 1) << 9));
     return 1;
 }
 

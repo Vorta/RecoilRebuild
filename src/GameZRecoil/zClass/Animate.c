@@ -105,10 +105,10 @@ namespace zClass_Animate {
             return kAnimateStateStopped;
         }
 
-        const float frame = runtime->currentTime * static_cast<float>(runtime->maxFrameIndex - 1) /
+        const float frame = runtime->currentTime * (float)(runtime->maxFrameIndex - 1) /
                             runtime->duration;
-        const int frameIndex = static_cast<int>(frame);
-        const float fraction = frame - static_cast<float>(frameIndex);
+        const int frameIndex = (int)(frame);
+        const float fraction = frame - (float)(frameIndex);
         const zClass_AnimateKeyframePartial *key0 = &runtime->keyframes[frameIndex];
         const zClass_AnimateKeyframePartial *key1 = &runtime->keyframes[frameIndex + 1];
 
@@ -135,7 +135,7 @@ namespace zClass_Animate {
             goto reportError;
         }
 
-        data = static_cast<zClass_AnimateDataPartial *>(node->classData);
+        data = (zClass_AnimateDataPartial *)(node->classData);
         if (data == 0) {
             line = 0x1aa;
             message = "Null class data pointer";
@@ -222,7 +222,7 @@ namespace zClass_Animate {
 
         node->flags = flags & ~0x02000000;
         zClass_AnimateDataPartial *data =
-            static_cast<zClass_AnimateDataPartial *>(node->classData);
+            (zClass_AnimateDataPartial *)(node->classData);
         int clipMask = *gModel_ClipMaskStackTop;
         const int result = CullNodeForRender(node, siblingCountHint, &clipMask);
 

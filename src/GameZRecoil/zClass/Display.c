@@ -31,7 +31,7 @@ namespace {
             return 0;
         }
 
-        return static_cast<zClass_DisplayDataPartial *>(node->classData);
+        return (zClass_DisplayDataPartial *)(node->classData);
     }
 
     zClass_DisplayDataPartial *GetDisplayDataOldMessages(zClass_NodePartial * node, int nullLine,
@@ -59,7 +59,7 @@ namespace {
         }
 
         *result = 0;
-        return static_cast<zClass_DisplayDataPartial *>(node->classData);
+        return (zClass_DisplayDataPartial *)(node->classData);
     }
 }
 
@@ -74,7 +74,7 @@ namespace zClass_Display {
         }
 
         node->classId = kZClassNodeDisplay;
-        zClass_DisplayDataPartial *data = static_cast<zClass_DisplayDataPartial *>(
+        zClass_DisplayDataPartial *data = (zClass_DisplayDataPartial *)(
             calloc(1, sizeof(zClass_DisplayDataPartial)));
         node->classData = data;
         data->width = 1;
