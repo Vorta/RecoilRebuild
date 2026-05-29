@@ -697,6 +697,9 @@ extern "C" int zinput_bindmap_context_smoke(void) {
         context.GetCommandByAnyKeyboardKey(0x34) != 2 || context.GetCommandByJoystickSlot(5) != 2 ||
         context.GetCommandByMouseSlot(2) != 2 ||
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(2) != 0x12 ||
+        zInput::BindMapCurrent_GetSecondaryKeyboardKey(2) != 0x34 ||
+        zInput::BindMapCurrent_GetJoystickButtonSlot(2) != 5 ||
+        zInput::BindMapCurrent_GetMouseButtonSlot(2) != 2 ||
         context.m_primaryKeyToCommand[0x12] != 2 || context.m_secondaryKeyToCommand[0x34] != 2 ||
         context.m_joystickToCommand[5] != 2 || context.m_mouseToCommand[2] != 2 ||
         g_zInputKbdKeyDispatchTable[0x12].callback == nullptr) {

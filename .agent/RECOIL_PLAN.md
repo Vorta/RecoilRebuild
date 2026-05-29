@@ -14056,20 +14056,20 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetGroupCommandCount)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindGroupList_GetGroupCommandCount File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_bind_group_list_get_group_command_count)
   - [❌] Binary-safe
 - 0x42a4d0:
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetGroupCommandId)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindGroupList_GetGroupCommandId File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_bind_group_list_get_group_command_id)
   - [❌] Binary-safe
 - 0x42a4e0:
   - [✅] Reconstructed (Name: zInput::BindMap_GetCommandLabel)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_GetCommandLabel File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_get_command_label)
+  - [✅] Binary-safe
 - 0x4719e0:
   - [✅] Reconstructed (Name: zInput::GlobalStateStaticInitAndRegisterAtExit)
   - [❌] Source dependencies satisfied
@@ -14705,21 +14705,21 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x470f80:
   - [☑️] Reconstructed (Name: zInput::BindMap_FormatKeyComboName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMap_FormatKeyComboName File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_format_key_combo_name)
   - [❌] Binary-safe
 - 0x471040:
   - [✅] Reconstructed (Name: zInput::BindMap_CopyJoystickButtonName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMap_CopyJoystickButtonName File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_copy_joystick_button_name)
   - [❌] Binary-safe
 - 0x471070:
   - [✅] Reconstructed (Name: zInput::BindMap_CopyMouseButtonName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMap_CopyMouseButtonName File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_copy_mouse_button_name)
   - [❌] Binary-safe
 - 0x4710a0:
   - [☑️] Reconstructed (Name: zInput::BindMapSystem_Init)
@@ -14765,28 +14765,28 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4716d0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetPrimaryKeyboardKey)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetPrimaryKeyboardKey File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_get_primary_keyboard_key)
+  - [✅] Binary-safe
 - 0x4716e0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetSecondaryKeyboardKey)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetSecondaryKeyboardKey File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_get_secondary_keyboard_key)
+  - [✅] Binary-safe
 - 0x4716f0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetJoystickButtonSlot)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetJoystickButtonSlot File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_get_joystick_button_slot)
+  - [✅] Binary-safe
 - 0x471700:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetMouseButtonSlot)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetMouseButtonSlot File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_get_mouse_button_slot)
+  - [✅] Binary-safe
 - 0x471710:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetCommandByPrimaryKey)
   - [✅] Source dependencies satisfied
@@ -14861,21 +14861,21 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x471800:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_FormatKeyComboName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMapCurrent_FormatKeyComboName File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_format_key_combo_name)
   - [❌] Binary-safe
 - 0x471820:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_CopyJoystickButtonName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMapCurrent_CopyJoystickButtonName File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_copy_joystick_button_name)
   - [❌] Binary-safe
 - 0x471840:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_CopyMouseButtonName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMapCurrent_CopyMouseButtonName File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_copy_mouse_button_name)
   - [❌] Binary-safe
 - 0x471860:
   - [☑️] Reconstructed (Name: zInput::PushBindMapContextOverlay)
