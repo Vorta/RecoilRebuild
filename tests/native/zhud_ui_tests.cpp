@@ -5769,6 +5769,19 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {
     button.bindingVec.end = nullptr;
     button.bindingVec.capacity = nullptr;
 
+    const int firstAddIndex = button.AddBindingEntry("Primary", 7);
+    const int secondAddIndex = button.AddBindingEntry("Secondary", 9);
+    auto **const addedSlots = static_cast<HudCmdBindingEntry **>(button.bindingVec.begin);
+    const bool bindingsAdded =
+        firstAddIndex == 0 && secondAddIndex == 1 && addedSlots != nullptr &&
+        button.bindingVec.end == addedSlots + 2 && button.bindingVec.capacity == addedSlots + 2 &&
+        addedSlots[0] != nullptr && addedSlots[1] != nullptr &&
+        std::strcmp(addedSlots[0]->displayText, "Primary") == 0 &&
+        std::strcmp(addedSlots[1]->displayText, "Secondary") == 0 &&
+        addedSlots[0]->commandId == 7 && addedSlots[1]->commandId == 9;
+    button.ClearBindingEntries();
+    zUtil_StdPtrVector_FreeBufferAndReset(&button.bindingVec);
+
     HudCmdBindingVector rawVector{};
     rawVector.allocator = 0x7f;
     rawVector.begin = ::operator new(3 * sizeof(void *));
@@ -5897,7 +5910,7 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {
     reinterpret_cast<HudUiPanel *>(&loadedButton.bindPanel)->Destructor();
 
     const bool ok = itemConstructed && panelDraw && buttonConstructed && bindingsCleared &&
-                    vectorCleared && vectorFreed && rebuilt && loaded;
+                    bindingsAdded && vectorCleared && vectorFreed && rebuilt && loaded;
     return ok ? 0 : 1;
 }
 

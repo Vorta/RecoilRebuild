@@ -906,6 +906,7 @@ struct HudCmdBindingVector {
 
 struct HudCmdBindingEntry {
     char *displayText;
+    int commandId;
 
     HudCmdBindingEntry *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     static HudCmdBindingEntry *RECOIL_STDCALL DeleteAndReturnNull(HudCmdBindingEntry *entry);
@@ -939,6 +940,7 @@ struct HudCmdBindButtonBase {
     int listFontStyleRef;
 
     HudCmdBindButtonBase *RECOIL_THISCALL Constructor();
+    int RECOIL_THISCALL AddBindingEntry(const char *displayText, int commandId);
     void RECOIL_THISCALL ClearBindingEntries();
     int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
     void RECOIL_THISCALL RebuildBindingSlotWidgets(int totalCount,
@@ -1860,6 +1862,8 @@ RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingVector, begin) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingVector, end) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingVector, capacity) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingEntry, displayText) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingEntry, commandId) == 0x04);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdBindingEntry) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdBindButtonBase) == 0x44c);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, bindingSlotTotalCount) == 0x164);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, visibleBindingSlotCount) == 0x168);

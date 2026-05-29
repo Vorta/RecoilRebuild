@@ -8182,6 +8182,53 @@ HudCmdBindingEntry::DeleteAndReturnNull(HudCmdBindingEntry *entry)
     return 0;
 }
 
+// Reimplements 0x40bf80: HudCmdBindButtonBase::AddBindingEntry
+// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+int RECOIL_THISCALL
+HudCmdBindButtonBase::AddBindingEntry(const char *displayText, int commandId)
+{
+    HudCmdBindingEntry **begin = (HudCmdBindingEntry **)(bindingVec.begin);
+    HudCmdBindingEntry **end = (HudCmdBindingEntry **)(bindingVec.end);
+    HudCmdBindingEntry **capacity = (HudCmdBindingEntry **)(bindingVec.capacity);
+    const int oldCount = begin != 0 ? (int)(end - begin) : 0;
+
+    HudCmdBindingEntry *const entry =
+        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
+    if (entry != 0)
+    {
+        entry->displayText = _strdup(displayText);
+        entry->commandId = commandId;
+    }
+
+    const int hasCapacity = begin != 0 && (capacity - end) >= 1;
+    if (!hasCapacity)
+    {
+        const int growCount = oldCount > 1 ? oldCount : 1;
+        const int newCapacityCount = oldCount + growCount;
+        HudCmdBindingEntry **const newBegin =
+            (HudCmdBindingEntry **)(::operator new((unsigned int)newCapacityCount *
+                                                   sizeof(HudCmdBindingEntry *)));
+
+        for (int index = 0; index < oldCount; ++index)
+        {
+            newBegin[index] = begin[index];
+        }
+        newBegin[oldCount] = entry;
+
+        ::operator delete(begin);
+        bindingVec.begin = newBegin;
+        bindingVec.end = newBegin + oldCount + 1;
+        bindingVec.capacity = newBegin + newCapacityCount;
+    }
+    else
+    {
+        *end = entry;
+        bindingVec.end = end + 1;
+    }
+
+    return oldCount;
+}
+
 // Reimplements 0x40be00: HudCmdBinding::DestroyRange
 // (HudCmdDialog.cpp)
 HudCmdBinding **RECOIL_FASTCALL
