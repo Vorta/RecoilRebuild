@@ -2803,7 +2803,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::ResetCommonFTable File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [✅] Functional-equivalent (Target: hud_ui_element_reset_common_ftable)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x4b47b0:
   - [☑️] Reconstructed (Name: HudUiSliderBorder::Update)
   - [❌] Source dependencies satisfied
