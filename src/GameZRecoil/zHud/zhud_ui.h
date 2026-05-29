@@ -1471,6 +1471,7 @@ struct HudCmdDialog {
     void RECOIL_THISCALL RebuildCommandBindingListsForGroup(int groupIndex);
     void RECOIL_THISCALL OnCommandSelectionChanged(int commandIndex);
     int RECOIL_THISCALL ApplyPrimaryKeyRebind(int keyCode, int commandIndex);
+    int RECOIL_THISCALL ApplySecondaryKeyRebind(int keyCode, int commandIndex);
 };
 
 struct HudUiMessageBoxDialog : HudUiBackground {
