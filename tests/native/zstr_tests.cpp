@@ -1,8 +1,4 @@
-#include "recoil/recoil_callconv.h"
-
-namespace zStr {
-int RECOIL_FASTCALL ContainsCaseInsensitive(const char *haystack, const char *needle);
-}
+#include "Battlesport/zStr.h"
 
 extern "C" int zstr_contains_case_insensitive_smoke(void)
 {

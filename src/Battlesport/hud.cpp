@@ -1,7 +1,15 @@
 #include "Battlesport/hud.h"
 
+#include "Battlesport/GameNet.h"
+#include "Battlesport/Mfc42Abi.h"
+#include "Battlesport/pickup.h"
+#include "Battlesport/player.h"
+#include "Battlesport/zStr.h"
+#include "GameZRecoil/Time/Time.h"
+#include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 
@@ -476,6 +484,112 @@ int RECOIL_CDECL HudUiCallback::QueueCheatCodeState()
 namespace HudCheat {
 
 const int kNanitePanelCheatSentinel = 123456789; // 0x075bcd15
+const unsigned int kHudCheatPickup901MessageId = 4096;
+const unsigned int kHudCheatRespawnMessageId = 4097;
+const unsigned int kHudCheatPickup903MessageId = 4098;
+const unsigned int kHudCheatBindCommand36MessageId = 4100;
+const unsigned int kHudCheatBindCommand31MessageId = 4101;
+const int kHudCheatPickup901TypeId = 901;
+const int kHudCheatRespawnPickupTypeId = 902;
+const int kHudCheatPickup903TypeId = 903;
+const int kHudCheatBindCommand31 = 31;
+const int kHudCheatBindCommand36 = 36;
+const int kHudCheatLifecycleLocal = 1;
+const int kHudCheatLifecycleInactive = 4;
+const int kHudCheatMasterTypeSub = 2;
+const int kHudCheatMasterTypeHover = 4;
+const int kHudCheatMasterTypeAmphib = 5;
+const int kHudCheatAltGunTransitionReset = 16;
+
+// Reimplements 0x406af0: HudCheat::ExecuteCommandString
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL ExecuteCommandString(CString *commandString)
+{
+    if (commandString->IsEmpty())
+    {
+        return 0;
+    }
+
+    char *const command = commandString->GetBuffer(1);
+    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
+
+    if (zStr::ContainsCaseInsensitive(command,
+                                      zLoc::GetMessageString(kHudCheatPickup901MessageId)) != 0)
+    {
+        return Pickup::ApplyEffect(kHudCheatPickup901TypeId, 0, saveState);
+    }
+
+    if (zStr::ContainsCaseInsensitive(command,
+                                      zLoc::GetMessageString(kHudCheatRespawnMessageId)) != 0)
+    {
+        zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+        if (playerState->recentHitValid != 0)
+        {
+            zEffectAnim::Stop(playerState->recentHitLightHandle);
+            playerState->recentHitLightHandle = 0;
+            playerState->recentHitValid = 0;
+        }
+
+        if (playerState->lifecycleState == kHudCheatLifecycleInactive)
+        {
+            playerState->lifecycleState = kHudCheatLifecycleLocal;
+            zOpt::SetSteeringMode(g_PlayerPrevSteeringMode);
+            Player::ApplyCameraState(g_PlayerPrevCameraState);
+            Player::ResetMouseControlStateAndRecenterCursor(saveState);
+            zEffect_Anim::NodeActionCallback(playerState->destroyedRespawnFxEntry,
+                                             playerState->rootNode);
+            Player::ResetDamageStateAndTimedHitStatus(saveState);
+
+            const int masterType = saveState->primaryModalState->masterModalData->masterType;
+            playerState->aiMode = 0;
+            playerState->nextModeSwitchAllowedTime = 0.0f;
+            playerState->autoTurnSign = 0;
+            playerState->motionInput = 0;
+            Player::TransitionToMasterTypeTrack(saveState, 1);
+            playerState->primaryGunGateUntilTime = g_Time_AccumulatedTimeSec;
+
+            if (masterType == kHudCheatMasterTypeSub)
+            {
+                Player::TransitionToMasterTypeAmphib(saveState, 0, 1);
+                playerState->primaryGunGateUntilTime = g_Time_AccumulatedTimeSec;
+                Player::TransitionToMasterTypeSub(saveState, 0);
+            }
+            else if (masterType == kHudCheatMasterTypeHover)
+            {
+                Player::TransitionToMasterTypeHover(saveState, 0);
+            }
+            else if (masterType == kHudCheatMasterTypeAmphib)
+            {
+                Player::TransitionToMasterTypeAmphib(saveState, 0, 0);
+            }
+        }
+
+        playerState->altGunTransitionState = kHudCheatAltGunTransitionReset;
+        return Pickup::ApplyEffect(kHudCheatRespawnPickupTypeId, 0, saveState);
+    }
+
+    if (zStr::ContainsCaseInsensitive(command,
+                                      zLoc::GetMessageString(kHudCheatPickup903MessageId)) != 0)
+    {
+        return Pickup::ApplyEffect(kHudCheatPickup903TypeId, 0, saveState);
+    }
+
+    if (zStr::ContainsCaseInsensitive(command,
+                                      zLoc::GetMessageString(kHudCheatBindCommand31MessageId)) != 0)
+    {
+        zInput::BindMap_Current_SetCommandCallback(
+            kHudCheatBindCommand31, (zInputCommandCallbackFn)(HudUi::HandleHotkeyCommand));
+    }
+
+    if (zStr::ContainsCaseInsensitive(command,
+                                      zLoc::GetMessageString(kHudCheatBindCommand36MessageId)) != 0)
+    {
+        zInput::BindMap_Current_SetCommandCallback(
+            kHudCheatBindCommand36, (zInputCommandCallbackFn)(HudUi::HandleHotkeyCommand));
+    }
+
+    return 0;
+}
 
 // Reimplements 0x406cf0: HudCheat::ClearNanitePanelCheatSentinel
 // (D:\Proj\Battlesport\hud.cpp)

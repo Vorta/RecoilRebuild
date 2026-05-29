@@ -40,6 +40,7 @@ struct HudUiCheatCodeDialog;
 struct zSndSample;
 struct zSndPlayHandleSnapshot;
 struct zClass_NodePartial;
+class CString;
 
 struct HudUiSaveLoadEntry : WIN32_FIND_DATAA {
     RECOIL_NOINLINE int RECOIL_FASTCALL IsNewerThan(const HudUiSaveLoadEntry *other) const;
@@ -362,6 +363,7 @@ int RECOIL_CDECL QueueCheatCodeState();
 }
 
 namespace HudCheat {
+RECOIL_NOINLINE int RECOIL_FASTCALL ExecuteCommandString(CString *commandString);
 RECOIL_NOINLINE void RECOIL_CDECL ClearNanitePanelCheatSentinel();
 }
 
