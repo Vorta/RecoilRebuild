@@ -2325,6 +2325,30 @@ extern "C" int zhud_panel_span_clear_smoke(void) {
                : 1;
 }
 
+extern "C" int zhud_panel_span_destroy_and_free_smoke(void) {
+    auto *entries = static_cast<HudUiPanelLayoutEntry *>(
+        ::operator new(sizeof(HudUiPanelLayoutEntry) * 2));
+    entries[0].panel.ConstructorDefault("row a", 12, 22);
+    entries[0].layoutX = 12;
+    entries[0].layoutY = 22;
+    entries[1].panel.ConstructorDefault("row b", 32, 42);
+    entries[1].layoutX = 32;
+    entries[1].layoutY = 42;
+
+    HudUiPanelSpan span{};
+    span.allocatorProxy = 0x1234abcd;
+    span.begin = entries;
+    span.end = entries + 2;
+    span.cap = entries + 2;
+
+    span.DestroyAndFree();
+
+    return span.allocatorProxy == 0x1234abcd && span.begin == nullptr &&
+                   span.end == nullptr && span.cap == nullptr
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_composite_panel_vector_insert_copies_smoke(void) {
     HudUiCommon_FTable destructorTable{};
     destructorTable.slots[0] = MethodAddress(&TestCompositePanelEntry::ScalarDeletingDestructor);

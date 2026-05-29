@@ -1709,9 +1709,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x409b20:
   - [✅] Reconstructed (Name: HudUiPanelSpan::DestroyAndFree)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelSpan::DestroyAndFree File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_span_destroy_and_free)
   - [❌] Binary-safe
 - 0x409b60:
   - [✅] Reconstructed (Name: HudUiPanel::DestroyRange)

@@ -476,6 +476,7 @@ extern "C" int zhud_element_set_timer_smoke(void);
 extern "C" int zhud_circle_constructor_and_hit_test_smoke(void);
 extern "C" int zhud_composite_panel_vector_clear_smoke(void);
 extern "C" int zhud_panel_span_clear_smoke(void);
+extern "C" int zhud_panel_span_destroy_and_free_smoke(void);
 extern "C" int zhud_composite_panel_vector_insert_copies_smoke(void);
 extern "C" int zhud_composite_panel_constructor_with_entry_count_smoke(void);
 extern "C" int zhud_composite_panel_layout_entries_smoke(void);
@@ -2287,6 +2288,7 @@ int main(int argc, char **argv) {
         {"zhud_circle_constructor_and_hit_test_smoke", zhud_circle_constructor_and_hit_test_smoke},
         {"zhud_composite_panel_vector_clear_smoke", zhud_composite_panel_vector_clear_smoke},
         {"zhud_panel_span_clear_smoke", zhud_panel_span_clear_smoke},
+        {"zhud_panel_span_destroy_and_free_smoke", zhud_panel_span_destroy_and_free_smoke},
         {"zhud_composite_panel_vector_insert_copies_smoke",
          zhud_composite_panel_vector_insert_copies_smoke},
         {"zhud_composite_panel_constructor_with_entry_count_smoke",

@@ -4718,6 +4718,23 @@ void RECOIL_THISCALL HudUiPanelSpan::Clear()
     cap = 0;
 }
 
+// Reimplements 0x409b20: HudUiPanelSpan::DestroyAndFree
+// (D:\Proj\Battlesport\HudUiPanel.cpp)
+void RECOIL_THISCALL HudUiPanelSpan::DestroyAndFree()
+{
+    HudUiPanelLayoutEntry *entry = begin;
+    while (entry != end)
+    {
+        entry->panel.DestructorThunk();
+        ++entry;
+    }
+
+    ::operator delete(begin);
+    begin = 0;
+    end = 0;
+    cap = 0;
+}
+
 // Reimplements 0x4bc510: HudUiBackgroundContainer::Constructor
 HudUiBackgroundContainer *RECOIL_THISCALL
 HudUiBackgroundContainer::Constructor(int initFlag) {

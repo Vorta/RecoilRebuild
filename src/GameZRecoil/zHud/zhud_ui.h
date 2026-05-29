@@ -1414,6 +1414,7 @@ struct HudUiPanelSpan {
     HudUiPanelLayoutEntry *cap;
 
     void RECOIL_THISCALL Clear();
+    void RECOIL_THISCALL DestroyAndFree();
 };
 
 struct HudUiPanelSpanVec {
