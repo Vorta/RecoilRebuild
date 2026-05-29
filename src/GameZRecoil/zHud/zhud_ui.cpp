@@ -6001,12 +6001,16 @@ void RECOIL_THISCALL HudUiPanelPtrVector::InsertN(HudUiPanel **position, unsigne
     capacityEnd = newBegin + newCapacity;
 }
 
+struct HudUiScalarDeletingDestructorDispatch {
+    // Models slot-0 scalar-deleting destructor dispatch so VC emits ecx=this.
+    virtual void *ScalarDeletingDestructor(unsigned int flags);
+};
+
 // Reimplements 0x4b52f0: HudUiZrdWidget::DeleteChildIfPresent
 void *RECOIL_STDCALL HudUiZrdWidget::DeleteChildIfPresent(void *childWidgetOrNull) {
     if (childWidgetOrNull != 0) {
-        const HudUiWidget_FTable *const ftable = *(const HudUiWidget_FTable *const *)(childWidgetOrNull);
-        typedef void * (RECOIL_THISCALL *ScalarDeletingDtorFn)(void *self, unsigned int flags);
-        ((ScalarDeletingDtorFn)(ftable->slots[0]))(childWidgetOrNull, 1);
+        static_cast<HudUiScalarDeletingDestructorDispatch *>(childWidgetOrNull)
+            ->ScalarDeletingDestructor(1);
     }
 
     return 0;

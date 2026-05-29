@@ -2911,7 +2911,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidget::DeleteChildIfPresent File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [✅] Functional-equivalent (Target: HudUiZrdWidget::DeleteChildIfPresent)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x4b5310:
   - [✅] Reconstructed (Name: HudUiZrdWidget::Invalidate)
   - [❌] Source dependencies satisfied
