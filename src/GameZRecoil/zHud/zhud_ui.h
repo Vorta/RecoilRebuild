@@ -941,6 +941,7 @@ struct HudCmdBindButtonBase {
 
     HudCmdBindButtonBase *RECOIL_THISCALL Constructor();
     int RECOIL_THISCALL AddBindingEntry(const char *displayText, int commandId);
+    void RECOIL_THISCALL SetSelectedEntry(int selectedIndex);
     void RECOIL_THISCALL ClearBindingEntries();
     int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
     void RECOIL_THISCALL RebuildBindingSlotWidgets(int totalCount,
@@ -1467,6 +1468,7 @@ struct HudCmdDialog {
     HudCmdDescriptionPanel descriptionPanel;
 
     void RECOIL_THISCALL Destructor();
+    void RECOIL_THISCALL OnCommandSelectionChanged(int commandIndex);
 };
 
 struct HudUiMessageBoxDialog : HudUiBackground {

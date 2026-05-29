@@ -5806,6 +5806,10 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {
     rebuildButton.overflowListOffsetY = 4.5f;
     rebuildButton.bindingSlotSpacing = 15;
     rebuildButton.RebuildBindingSlotWidgets(3, 2);
+    rebuildButton.AddBindingEntry("First", 101);
+    rebuildButton.AddBindingEntry("Second", 102);
+    rebuildButton.AddBindingEntry("Third", 103);
+    rebuildButton.SetSelectedEntry(1);
     const bool rebuilt =
         rebuildButton.bindingSlotTotalCount == 3 && rebuildButton.visibleBindingSlotCount == 2 &&
         rebuildButton.bindingSlotPanels != nullptr &&
@@ -5816,7 +5820,19 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {
         TestFieldAt<std::int32_t>(&rebuildButton.bindingSlotPanels[2], 0x14) == 13 &&
         TestFieldAt<std::int32_t>(&rebuildButton.bindingSlotPanels[2], 0x18) == 119 &&
         TestFieldAt<std::int32_t>(&rebuildButton.bindPanel, 0x14) == 10 &&
-        TestFieldAt<std::int32_t>(&rebuildButton.bindPanel, 0x18) == 100;
+        TestFieldAt<std::int32_t>(&rebuildButton.bindPanel, 0x18) == 100 &&
+        rebuildButton.selectedBindingIndex == 1 &&
+        (TestFieldAt<std::uint32_t>(&rebuildButton.bindingSlotPanels[0], 0x0c) & 0x10) != 0 &&
+        (TestFieldAt<std::uint32_t>(&rebuildButton.bindingSlotPanels[1], 0x0c) & 0x10) == 0 &&
+        (TestFieldAt<std::uint32_t>(&rebuildButton.bindingSlotPanels[2], 0x0c) & 0x10) == 0 &&
+        TestFieldAt<std::int32_t>(&rebuildButton.bindingSlotPanels[1], 0x2a4) == 0 &&
+        TestFieldAt<std::int32_t>(&rebuildButton.bindingSlotPanels[2], 0x2a4) == 2 &&
+        TestFieldAt<std::int32_t>(&rebuildButton.bindPanel, 0x2a4) == 1 &&
+        std::strcmp(&TestFieldAt<char>(&rebuildButton.bindingSlotPanels[1], 0x34), "First") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&rebuildButton.bindingSlotPanels[2], 0x34), "Third") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&rebuildButton.bindPanel, 0x34), "Second") == 0;
+    rebuildButton.ClearBindingEntries();
+    zUtil_StdPtrVector_FreeBufferAndReset(&rebuildButton.bindingVec);
     DeleteListSelectorItemArray(rebuildButton.bindingSlotPanels);
     rebuildButton.bindingSlotPanels = nullptr;
     reinterpret_cast<HudUiPanel *>(&rebuildButton.bindPanel)->Destructor();
@@ -5912,6 +5928,63 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {
     const bool ok = itemConstructed && panelDraw && buttonConstructed && bindingsCleared &&
                     bindingsAdded && vectorCleared && vectorFreed && rebuilt && loaded;
     return ok ? 0 : 1;
+}
+
+static void SetupCommandDialogButton(HudCmdBindButtonBase *button,
+                                     const char *firstText, const char *secondText,
+                                     int firstCommandId, int secondCommandId) {
+    button->Constructor();
+    button->RebuildBindingSlotWidgets(3, 2);
+    button->AddBindingEntry(firstText, firstCommandId);
+    button->AddBindingEntry(secondText, secondCommandId);
+    button->AddBindingEntry("Tail", 99);
+}
+
+static void CleanupCommandDialogButton(HudCmdBindButtonBase *button) {
+    button->ClearBindingEntries();
+    zUtil_StdPtrVector_FreeBufferAndReset(&button->bindingVec);
+    DeleteListSelectorItemArray(button->bindingSlotPanels);
+    button->bindingSlotPanels = nullptr;
+    reinterpret_cast<HudUiPanel *>(&button->bindPanel)->Destructor();
+}
+
+extern "C" int zhud_cmd_dialog_on_command_selection_changed_smoke(void) {
+    HudCmdDialog dialog{};
+    dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
+    dialog.descriptionPanel.captureState = 77;
+
+    SetupCommandDialogButton(&dialog.commandList.base, "CommandZero", "CommandSeven", 3, 7);
+    SetupCommandDialogButton(&dialog.keyAButton.base, "KeyA0", "KeyA1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyBButton.base, "KeyB0", "KeyB1", 3, 7);
+    SetupCommandDialogButton(&dialog.joyButton.base, "Joy0", "Joy1", 3, 7);
+    SetupCommandDialogButton(&dialog.mouseButton.base, "Mouse0", "Mouse1", 3, 7);
+
+    dialog.OnCommandSelectionChanged(1);
+
+    const bool selected =
+        dialog.descriptionPanel.captureState == 0 &&
+        dialog.commandList.base.selectedBindingIndex == 1 &&
+        dialog.keyAButton.base.selectedBindingIndex == 1 &&
+        dialog.keyBButton.base.selectedBindingIndex == 1 &&
+        dialog.joyButton.base.selectedBindingIndex == 1 &&
+        dialog.mouseButton.base.selectedBindingIndex == 1;
+    const bool labels =
+        std::strcmp(&TestFieldAt<char>(&dialog.commandList.base.bindPanel, 0x34),
+                    "CommandSeven") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&dialog.keyAButton.base.bindPanel, 0x34), "KeyA1") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&dialog.keyBButton.base.bindPanel, 0x34), "KeyB1") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&dialog.joyButton.base.bindPanel, 0x34), "Joy1") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&dialog.mouseButton.base.bindPanel, 0x34), "Mouse1") == 0 &&
+        TestFieldAt<char>(&dialog.descriptionPanel, 0x34) == '\0';
+
+    CleanupCommandDialogButton(&dialog.mouseButton.base);
+    CleanupCommandDialogButton(&dialog.joyButton.base);
+    CleanupCommandDialogButton(&dialog.keyBButton.base);
+    CleanupCommandDialogButton(&dialog.keyAButton.base);
+    CleanupCommandDialogButton(&dialog.commandList.base);
+    dialog.descriptionPanel.base.Destructor();
+
+    return selected && labels ? 0 : 1;
 }
 
 extern "C" int zhud_message_box_leaf_handlers_smoke(void) {

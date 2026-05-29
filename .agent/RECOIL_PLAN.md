@@ -1871,9 +1871,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40b980:
   - [☑️] Reconstructed (Name: HudCmdDialog::OnCommandSelectionChanged)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialog::OnCommandSelectionChanged File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_on_command_selection_changed)
   - [❌] Binary-safe
 - 0x40ba30:
   - [✅] Reconstructed (Name: HudCmdKeyAButton::OnBeginCapture)
@@ -5315,9 +5315,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b9330:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::SetSelectedEntry)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindButtonBase::SetSelectedEntry File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_bind_button_base_set_selected_entry)
   - [❌] Binary-safe
 - 0x4ba9e0:
   - [✅] Reconstructed (Name: HudUiPanel::CopyConstructor)
@@ -14269,8 +14269,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindMap_GetCommandHint)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_GetCommandHint File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_get_command_hint)
+  - [✅] Binary-safe
 - 0x42a500:
   - [✅] Reconstructed (Name: zInput::BindMap_AddDefaultBinding)
   - [✅] Source dependencies satisfied

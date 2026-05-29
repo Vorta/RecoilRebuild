@@ -409,7 +409,7 @@ const HudUiPanel_FTable g_HudUiTransitionTextPanel_FTable =
 const HudUiCompositePanel_FTable g_HudUiCompositePanel_FTable =
     MakeHudUiCompositePanelFTable();
 const HudUiListSelectorItem_FTable g_HudUiListSelectorItem_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiListSelectorItem_FTable>();
+    MakeHudUiPanelFTable<HudUiListSelectorItem_FTable>();
 const HudUiTextLabel_FTable g_HudUiTextLabel_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiTextLabel_FTable>();
 const HudUiPanelSimple_FTable g_HudUiPanelSimple_FTable =
@@ -1234,6 +1234,29 @@ void HudUiVirtualInvalidateRequired(void *element) {
 
     const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
     ((InvalidateFn)(ftable->slots[8]))(element);
+}
+
+void HudUiVirtualDrawRequired(void *element) {
+    typedef void (RECOIL_THISCALL *DrawFn)(void *self);
+
+    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
+    ((DrawFn)(ftable->slots[2]))(element);
+}
+
+static void HudUiPanelVirtualSetTextFmtStringRequired(void *panel, const char *text)
+{
+    typedef void (RECOIL_CDECL *SetTextFmtFn)(void *self, const char *format, ...);
+
+    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
+    ((SetTextFmtFn)(ftable->slots[0x74 / 4]))(panel, "%s", text);
+}
+
+static void HudUiPanelVirtualSetTextFmtEmptyRequired(void *panel)
+{
+    typedef void (RECOIL_CDECL *SetTextFmtFn)(void *self, const char *format, ...);
+
+    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
+    ((SetTextFmtFn)(ftable->slots[0x74 / 4]))(panel, "");
 }
 
 void HudUiVirtualSetClipRect(void *element, const HudUiRect *rect) {
@@ -8229,6 +8252,66 @@ HudCmdBindButtonBase::AddBindingEntry(const char *displayText, int commandId)
     return oldCount;
 }
 
+// Reimplements 0x4b9330: HudCmdBindButtonBase::SetSelectedEntry
+// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+void RECOIL_THISCALL
+HudCmdBindButtonBase::SetSelectedEntry(int selectedIndex)
+{
+    HudCmdBindingEntry **const entries = (HudCmdBindingEntry **)(bindingVec.begin);
+    const int entryCount =
+        entries != 0 ? (int)((HudCmdBindingEntry **)(bindingVec.end) - entries) : 0;
+
+    int slotIndex;
+    for (slotIndex = 0; slotIndex < visibleBindingSlotCount; ++slotIndex)
+    {
+        HudUiListSelectorItem *const item = &bindingSlotPanels[slotIndex];
+        const int entryIndex = selectedIndex + slotIndex - visibleBindingSlotCount;
+        if (entryIndex >= 0 && entryIndex < entryCount)
+        {
+            FieldAt<int>(item, 0x2a4) = entryIndex;
+            HudUiPanelVirtualSetTextFmtStringRequired(item,
+                                                      entries[entryIndex]->displayText);
+            HudUiVirtualSetVisibleRequired(item, 1);
+        }
+        else
+        {
+            HudUiVirtualSetVisibleRequired(item, 0);
+            HudUiVirtualDrawRequired(item);
+        }
+
+        HudUiVirtualInvalidateRequired(item);
+    }
+
+    if (selectedIndex >= 0 && selectedIndex < entryCount)
+    {
+        FieldAt<int>(&bindPanel, 0x2a4) = selectedIndex;
+        HudUiPanelVirtualSetTextFmtStringRequired(&bindPanel,
+                                                  entries[selectedIndex]->displayText);
+    }
+
+    for (slotIndex = visibleBindingSlotCount; slotIndex < bindingSlotTotalCount; ++slotIndex)
+    {
+        HudUiListSelectorItem *const item = &bindingSlotPanels[slotIndex];
+        const int entryIndex = selectedIndex + slotIndex - visibleBindingSlotCount + 1;
+        if (entryIndex >= 0 && entryIndex < entryCount)
+        {
+            FieldAt<int>(item, 0x2a4) = entryIndex;
+            HudUiPanelVirtualSetTextFmtStringRequired(item,
+                                                      entries[entryIndex]->displayText);
+            HudUiVirtualSetVisibleRequired(item, 1);
+        }
+        else
+        {
+            HudUiVirtualSetVisibleRequired(item, 0);
+            HudUiVirtualDrawRequired(item);
+        }
+
+        HudUiVirtualInvalidateRequired(item);
+    }
+
+    selectedBindingIndex = selectedIndex;
+}
+
 // Reimplements 0x40be00: HudCmdBinding::DestroyRange
 // (HudCmdDialog.cpp)
 HudCmdBinding **RECOIL_FASTCALL
@@ -8581,6 +8664,33 @@ void RECOIL_THISCALL HudCmdDialog::Destructor()
     resetButton.base.DestructorCore();
     resumeButton.base.DestructorCore();
     base.Destructor();
+}
+
+// Reimplements 0x40b980: HudCmdDialog::OnCommandSelectionChanged
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdDialog::OnCommandSelectionChanged(int commandIndex)
+{
+    descriptionPanel.captureState = 0;
+    zInput::ResetAllTransitionState();
+    commandList.base.SetSelectedEntry(commandIndex);
+    keyAButton.base.SetSelectedEntry(commandIndex);
+    keyBButton.base.SetSelectedEntry(commandIndex);
+    joyButton.base.SetSelectedEntry(commandIndex);
+    mouseButton.base.SetSelectedEntry(commandIndex);
+
+    HudCmdBindingEntry **const entries =
+        (HudCmdBindingEntry **)(commandList.base.bindingVec.begin);
+    HudCmdBindingEntry *const selectedEntry =
+        entries[commandList.base.selectedBindingIndex];
+    char *const hint = zInput::BindMap_GetCommandHint(selectedEntry->commandId);
+    if (hint != 0)
+    {
+        HudUiPanelVirtualSetTextFmtStringRequired(&descriptionPanel, hint);
+    }
+    else
+    {
+        HudUiPanelVirtualSetTextFmtEmptyRequired(&descriptionPanel);
+    }
 }
 
 // Reimplements 0x4b90e0: HudCmdBindButtonBase::RebuildBindingSlotWidgets
