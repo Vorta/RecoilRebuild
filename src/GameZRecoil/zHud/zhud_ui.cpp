@@ -8446,6 +8446,58 @@ void RECOIL_THISCALL HudCmdMouseButton::Destructor()
     base.base.DestructorCore();
 }
 
+// Restores repeated inline bind-button cleanup observed in 0x40adf0; no
+// standalone helper exists in the retail executable.
+static void HudCmdDialog_DestroyBindButtonRange(HudCmdBindButtonBase *button)
+{
+    button->base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
+
+    HudCmdBinding **const begin = (HudCmdBinding **)(button->bindingVec.begin);
+    HudCmdBinding **const end = (HudCmdBinding **)(button->bindingVec.end);
+    HudCmdBinding::DestroyRange(begin, end, begin, button);
+    zUtil_StdPtrVector_Clear(&button->bindingVec);
+    zUtil_StdPtrVector_FreeBufferAndReset(&button->bindingVec);
+    ((HudUiPanel *)(&button->bindPanel))->Destructor();
+    button->base.DestructorCore();
+}
+
+// Restores the mouse-button cleanup variant observed in 0x40adf0; no
+// standalone helper exists in the retail executable.
+static void HudCmdDialog_DestroyMouseButton(HudCmdBindButtonBase *button)
+{
+    button->base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
+
+    button->ClearBindingEntries();
+    zUtil_StdPtrVector_FreeBufferAndReset(&button->bindingVec);
+    ((HudUiPanel *)(&button->bindPanel))->Destructor();
+    button->base.DestructorCore();
+}
+
+// Reimplements 0x40adf0: HudCmdDialog::Destructor
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdDialog::Destructor()
+{
+    descriptionPanel.base.Destructor();
+    ((HudUiPanel *)(&promptPanel))->Destructor();
+    prevCommandButton.base.DestructorCore();
+    nextCommandButton.base.DestructorCore();
+    prevSetButton.base.DestructorCore();
+    nextSetButton.base.DestructorCore();
+    setList.base.DestructorCore();
+
+    HudCmdDialog_DestroyMouseButton(&mouseButton.base);
+    HudCmdDialog_DestroyBindButtonRange(&joyButton.base);
+    HudCmdDialog_DestroyBindButtonRange(&keyBButton.base);
+    HudCmdDialog_DestroyBindButtonRange(&keyAButton.base);
+    HudCmdDialog_DestroyBindButtonRange(&commandList.base);
+
+    resetButton.base.DestructorCore();
+    resumeButton.base.DestructorCore();
+    base.Destructor();
+}
+
 // Reimplements 0x4b90e0: HudCmdBindButtonBase::RebuildBindingSlotWidgets
 void RECOIL_THISCALL HudCmdBindButtonBase::RebuildBindingSlotWidgets(int totalCount,
                                                                      int visibleCount) {

@@ -1428,6 +1428,43 @@ struct HudUiBackground {
     RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSeconds);
 };
 
+struct HudCmdSimpleWidget {
+    HudUiZrdWidget base;
+};
+
+struct HudCmdSetListWidget {
+    HudUiCycleSelectorWidget base;
+};
+
+struct HudCmdPromptPanel {
+    HudUiTransitionTextPanel base;
+};
+
+struct HudCmdDescriptionPanel {
+    HudUiPanel base;
+    int captureState;
+};
+
+struct HudCmdDialog {
+    HudUiBackground base;
+    HudCmdSimpleWidget resumeButton;
+    HudCmdSimpleWidget resetButton;
+    HudCmdCommandList commandList;
+    HudCmdKeyAButton keyAButton;
+    HudCmdKeyBButton keyBButton;
+    HudCmdJoyButton joyButton;
+    HudCmdMouseButton mouseButton;
+    HudCmdSetListWidget setList;
+    HudCmdSimpleWidget nextSetButton;
+    HudCmdSimpleWidget prevSetButton;
+    HudCmdSimpleWidget nextCommandButton;
+    HudCmdSimpleWidget prevCommandButton;
+    HudCmdPromptPanel promptPanel;
+    HudCmdDescriptionPanel descriptionPanel;
+
+    void RECOIL_THISCALL Destructor();
+};
+
 struct HudUiMessageBoxDialog : HudUiBackground {
     zVidRect32 blitRect;
     int modalResult;
@@ -1840,6 +1877,25 @@ RECOIL_STATIC_ASSERT(sizeof(HudCmdKeyAButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdKeyBButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdJoyButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdMouseButton) == 0x44c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdSimpleWidget) == 0x14c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdSetListWidget) == 0x208);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdPromptPanel) == 0x2c0);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdDescriptionPanel) == 0x2a8);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdDialog) == 0xce00);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, resumeButton) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, resetButton) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, commandList) == 0xabe4);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, keyAButton) == 0xb030);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, keyBButton) == 0xb47c);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, joyButton) == 0xb8c8);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, mouseButton) == 0xbd14);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, setList) == 0xc160);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, nextSetButton) == 0xc368);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, prevSetButton) == 0xc4b4);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, nextCommandButton) == 0xc600);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, prevCommandButton) == 0xc74c);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, promptPanel) == 0xc898);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, descriptionPanel) == 0xcb58);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundContainer) == 0x44);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundContainer, inputFocusElement) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundContainer, captureTransitionMask) == 0x40);

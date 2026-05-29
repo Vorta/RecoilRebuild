@@ -9326,6 +9326,66 @@ extern "C" int zhud_cmd_mouse_button_destructor_smoke(void) {
                : 1;
 }
 
+static void InstallDialogBinding(HudCmdBindButtonBase &button, const char *text) {
+    HudCmdBindingEntry *const binding =
+        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
+    binding->displayText = 0;
+    if (text != 0) {
+        const std::size_t length = std::strlen(text) + 1;
+        binding->displayText = (char *)(std::malloc(length));
+        std::memcpy(binding->displayText, text, length);
+    }
+
+    HudCmdBindingEntry **const slots =
+        (HudCmdBindingEntry **)(::operator new(sizeof(HudCmdBindingEntry *)));
+    slots[0] = binding;
+    button.bindingVec.begin = slots;
+    button.bindingVec.end = slots + 1;
+    button.bindingVec.capacity = slots + 1;
+}
+
+extern "C" int zhud_cmd_dialog_destructor_smoke(void) {
+    HudCmdDialog *const dialog =
+        (HudCmdDialog *)(::operator new(sizeof(HudCmdDialog)));
+    std::memset(dialog, 0, sizeof(HudCmdDialog));
+
+    InstallDialogBinding(dialog->commandList.base, "Command");
+    InstallDialogBinding(dialog->keyAButton.base, "KeyA");
+    InstallDialogBinding(dialog->keyBButton.base, "KeyB");
+    InstallDialogBinding(dialog->joyButton.base, "Joy");
+    InstallDialogBinding(dialog->mouseButton.base, "Mouse");
+
+    dialog->Destructor();
+
+    const bool bindingsCleared =
+        dialog->commandList.base.bindingVec.begin == 0 &&
+        dialog->commandList.base.bindingVec.end == 0 &&
+        dialog->commandList.base.bindingVec.capacity == 0 &&
+        dialog->keyAButton.base.bindingVec.begin == 0 &&
+        dialog->keyAButton.base.bindingVec.end == 0 &&
+        dialog->keyAButton.base.bindingVec.capacity == 0 &&
+        dialog->keyBButton.base.bindingVec.begin == 0 &&
+        dialog->keyBButton.base.bindingVec.end == 0 &&
+        dialog->keyBButton.base.bindingVec.capacity == 0 &&
+        dialog->joyButton.base.bindingVec.begin == 0 &&
+        dialog->joyButton.base.bindingVec.end == 0 &&
+        dialog->joyButton.base.bindingVec.capacity == 0 &&
+        dialog->mouseButton.base.bindingVec.begin == 0 &&
+        dialog->mouseButton.base.bindingVec.end == 0 &&
+        dialog->mouseButton.base.bindingVec.capacity == 0;
+    const bool ftableReset =
+        dialog->descriptionPanel.base.vtbl == &g_HudUiCommon_FTable &&
+        dialog->resumeButton.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->resetButton.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->setList.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable);
+
+    ::operator delete(dialog);
+    return bindingsCleared && ftableReset ? 0 : 1;
+}
+
 extern "C" int zhud_panel_constructor_default_smoke(void) {
     alignas(HudUiPanel) std::uint8_t storage[0x2ac]{};
     auto *panel = reinterpret_cast<HudUiPanel *>(storage);
