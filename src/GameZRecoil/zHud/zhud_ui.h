@@ -41,6 +41,11 @@ struct HudUiZrdWidget_FTable {
     unsigned int slots[34];
 };
 
+struct HudUiCreditsPanel_FTable {
+    unsigned int primarySlots[4];
+    HudUiZrdWidget_FTable SecondaryAction;
+};
+
 struct HudUiCheckToggleWidget_FTable {
     unsigned int slots[34];
 };
@@ -181,6 +186,9 @@ extern const HudUiBackgroundCursorWidget_FTable g_HudUiBackgroundCursorWidget_FT
 extern const HudUiBackgroundCursorWidget_FTable g_HudUiBackgroundCursorWidget_MemberFTable;
 extern const HudUiBackgroundVideoWidget_FTable g_HudUiBackgroundVideoWidget_FTable;
 extern const HudUiZrdWidget_FTable g_HudUiZrdWidget_FTable;
+extern const HudUiZrdWidget_FTable g_HudUiCreditsButtonQueueExitOnly_Vtbl;
+extern const HudUiZrdWidget_FTable g_HudUiCreditsButtonQueueExitAndLeaveNetwork_Vtbl;
+extern const HudUiCreditsPanel_FTable g_HudUiCreditsPanel_FTable;
 extern const HudUiCheckToggleWidget_FTable g_HudUiCheckToggleWidget_FTable;
 extern const HudUiCycleSelectorWidget_FTable g_HudUiCycleSelectorWidget_FTable;
 extern const HudUiFillBitmap_FTable g_HudUiFillBitmap_FTable;
@@ -1463,6 +1471,7 @@ struct HudUiCreditsPanel {
     HudUiZrdScrollingText creditsScreen;
     float fadeProgress;
 
+    HudUiCreditsPanel *RECOIL_THISCALL Constructor();
     void RECOIL_THISCALL UpdateFadeAndExit(float deltaSeconds);
     void RECOIL_THISCALL Destructor();
     HudUiCreditsPanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
@@ -1833,6 +1842,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiZrdScrollingText) == 0x170);
 RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, rows) == 0x14c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, rect) == 0x15c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, totalHeight) == 0x16c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel_FTable, SecondaryAction) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, fadeStep) == 0xa94c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, backButton) == 0xa950);
 RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, quitButton) == 0xaa9c);

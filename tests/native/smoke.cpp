@@ -490,6 +490,7 @@ extern "C" int zhud_credits_panel_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_panel_destructor_callback_smoke(void);
 extern "C" int zhud_scrolling_text_destructor_smoke(void);
 extern "C" int zhud_scrolling_text_scalar_deleting_destructor_smoke(void);
+extern "C" int zhud_credits_panel_constructor_smoke(void);
 extern "C" int zhud_scrolling_text_load_from_zrd_smoke(void);
 extern "C" int zhud_scrolling_text_update_smoke(void);
 extern "C" int zhud_scrolling_text_on_activate_reset_owner_fade_smoke(void);
@@ -2326,6 +2327,7 @@ int main(int argc, char **argv) {
         {"zhud_scrolling_text_destructor_smoke", zhud_scrolling_text_destructor_smoke},
         {"zhud_scrolling_text_scalar_deleting_destructor_smoke",
          zhud_scrolling_text_scalar_deleting_destructor_smoke},
+        {"zhud_credits_panel_constructor_smoke", zhud_credits_panel_constructor_smoke},
         {"zhud_scrolling_text_load_from_zrd_smoke", zhud_scrolling_text_load_from_zrd_smoke},
         {"zhud_scrolling_text_update_smoke", zhud_scrolling_text_update_smoke},
         {"zhud_scrolling_text_on_activate_reset_owner_fade_smoke",

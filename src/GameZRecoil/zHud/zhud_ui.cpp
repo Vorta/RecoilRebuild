@@ -221,6 +221,28 @@ HudUiZrdWidget_FTable MakeHudUiMessageBoxButtonFTable(unsigned int activateSlot)
     return table;
 }
 
+HudUiZrdWidget_FTable MakeHudUiCreditsButtonFTable(unsigned int activateSlot)
+{
+    return MakeHudUiMessageBoxButtonFTable(activateSlot);
+}
+
+HudUiCreditsPanel_FTable MakeHudUiCreditsPanelFTable()
+{
+    HudUiCreditsPanel_FTable table = {0};
+    table.primarySlots[0] = MethodAddress(&HudUiCreditsPanel::UpdateFadeAndExit);
+    table.primarySlots[1] = MethodAddress(&HudUiBackground::SetEnabled);
+    table.primarySlots[2] = MethodAddress(&HudUiCreditsPanel::ScalarDeletingDestructor);
+
+    table.SecondaryAction = MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidget_FTable>();
+    table.SecondaryAction.slots[0] = MethodAddress(&HudUiZrdScrollingText::ScalarDeletingDestructor);
+    table.SecondaryAction.slots[9] = MethodAddress(&HudUiZrdScrollingText::Update);
+    table.SecondaryAction.slots[12] = MethodAddress(&HudUiZrdScrollingText::OnActivateResetOwnerFade);
+    table.SecondaryAction.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
+    table.SecondaryAction.slots[31] = MethodAddress(&HudUiZrdScrollingText::LoadFromZrd);
+    table.SecondaryAction.slots[32] = (unsigned int)(&HudUiNoOpMethodStub);
+    return table;
+}
+
 HudUiBackgroundCursorWidget_FTable MakeHudUiBackgroundCursorWidgetFTable() {
     HudUiBackgroundCursorWidget_FTable table =
         MakeHudUiFTableWithCommonInvalidate<HudUiBackgroundCursorWidget_FTable>();
@@ -354,6 +376,11 @@ const HudUiBackgroundVideoWidget_FTable g_HudUiBackgroundVideoWidget_FTable =
     MakeHudUiBackgroundVideoWidgetFTable();
 const HudUiZrdWidget_FTable g_HudUiZrdWidget_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidget_FTable>();
+const HudUiZrdWidget_FTable g_HudUiCreditsButtonQueueExitOnly_Vtbl =
+    MakeHudUiCreditsButtonFTable(MethodAddress(&HudUiZrdWidget::OnActivateQueueExitCurrentState));
+const HudUiZrdWidget_FTable g_HudUiCreditsButtonQueueExitAndLeaveNetwork_Vtbl =
+    MakeHudUiCreditsButtonFTable(MethodAddress(&HudUiCreditsQuitButton::OnActivate));
+const HudUiCreditsPanel_FTable g_HudUiCreditsPanel_FTable = MakeHudUiCreditsPanelFTable();
 const HudUiCheckToggleWidget_FTable g_HudUiCheckToggleWidget_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiCheckToggleWidget_FTable>();
 const HudUiCycleSelectorWidget_FTable g_HudUiCycleSelectorWidget_FTable =
@@ -4691,6 +4718,59 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiContainer::InvalidateChildren() {
 // Reimplements 0x42ee40: HudUiBackgroundContainer::SetEnabled
 void RECOIL_THISCALL HudUiBackgroundContainer::SetEnabled(int enabled) {
     base.enabled = enabled;
+}
+
+// Reimplements 0x409040: HudUiCreditsPanel::Constructor
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+HudUiCreditsPanel *RECOIL_THISCALL HudUiCreditsPanel::Constructor()
+{
+    base.Constructor();
+
+    backButton.Constructor();
+    backButton.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiCreditsButtonQueueExitOnly_Vtbl);
+
+    quitButton.Constructor();
+    quitButton.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiCreditsButtonQueueExitAndLeaveNetwork_Vtbl);
+
+    creditsScreen.base.Constructor();
+#if defined(_MSC_VER) && _MSC_VER < 1200
+    char allocatorProxy;
+#else
+    char allocatorProxy = 0;
+#endif
+    creditsScreen.rows.allocatorProxy = allocatorProxy;
+    creditsScreen.rows.begin = 0;
+    creditsScreen.rows.end = 0;
+    creditsScreen.rows.cap = 0;
+    creditsScreen.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiCreditsPanel_FTable.SecondaryAction);
+
+    base.base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiCreditsPanel_FTable);
+    fadeProgress = 0.0f;
+    fadeStep = 0.05f;
+
+    zReader::Node *const loadedSection = base.LoadFromZrd("dialog.zrd", "CREDITSPANEL", 0);
+    if (loadedSection != 0)
+    {
+        HudUiWidget *button = (HudUiWidget *)(&backButton);
+        const char *buttonName = "BACK";
+        if (g_RecoilApp_QuitAfterCredits != 0)
+        {
+            button = (HudUiWidget *)(&quitButton);
+            buttonName = "QUIT";
+        }
+
+        base.BindWidgetByName(loadedSection, button, buttonName);
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&creditsScreen),
+                              "CREDITS_SCREEN");
+        base.FreeLoadedTreeRoots(0);
+    }
+
+    creditsScreen.base.base.flags =
+        (unsigned int)((unsigned char)(creditsScreen.base.base.flags) & 0x10u);
+    return this;
 }
 
 // Reimplements 0x409550: HudUiZrdScrollingText::OnActivateResetOwnerFade
