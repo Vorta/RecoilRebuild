@@ -22,7 +22,7 @@ int HalfTruncTowardZero(int value)
 
 zOpt_ViewRectSection *ViewRectFromPtr(RecoilPtr32 ptr)
 {
-    return (zOpt_ViewRectSection *)(static_cast<unsigned int>(ptr));
+    return (zOpt_ViewRectSection *)((unsigned int)(ptr));
 }
 } // namespace
 

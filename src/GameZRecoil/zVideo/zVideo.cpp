@@ -177,9 +177,9 @@ D3DTEXTUREHANDLE g_zVideo_D3DRenderState_TextureHandle = 0;
 int g_zVideo_D3DRenderState_ShadeMode = 0;
 int g_zVideo_D3DRenderState_AlphaBlendEnable = 0;
 int g_zVideo_D3DRenderState_ZWriteEnable = 0;
-D3DTEXTUREBLEND g_zVideo_D3DRenderState_TextureMapBlend = static_cast<D3DTEXTUREBLEND>(0);
-D3DTEXTUREADDRESS g_zVideo_D3DRenderState_TextureAddressU = static_cast<D3DTEXTUREADDRESS>(0);
-D3DTEXTUREADDRESS g_zVideo_D3DRenderState_TextureAddressV = static_cast<D3DTEXTUREADDRESS>(0);
+D3DTEXTUREBLEND g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(0);
+D3DTEXTUREADDRESS g_zVideo_D3DRenderState_TextureAddressU = (D3DTEXTUREADDRESS)(0);
+D3DTEXTUREADDRESS g_zVideo_D3DRenderState_TextureAddressV = (D3DTEXTUREADDRESS)(0);
 int g_zVideo_D3DColorNormalizeChannelIndex = 0;
 float g_zVideo_D3DColorAttrBiasR = 0.0f;
 float g_zVideo_D3DColorAttrBiasG = 0.0f;
@@ -282,9 +282,9 @@ RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColorRGB(unsigned char red
 
 // Reimplements 0x4a6ca0: zVid_PackColor00RRGGBB
 RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColor00RRGGBB(unsigned int color00RRGGBB) {
-    const unsigned char red = static_cast<unsigned char>(color00RRGGBB);
-    const unsigned char green = static_cast<unsigned char>(color00RRGGBB >> 8);
-    const unsigned char blue = static_cast<unsigned char>(color00RRGGBB >> 16);
+    const unsigned char red = (unsigned char)(color00RRGGBB);
+    const unsigned char green = (unsigned char)(color00RRGGBB >> 8);
+    const unsigned char blue = (unsigned char)(color00RRGGBB >> 16);
 
     return ((g_zVideo_PixelPack_GMaskShifted & green) << g_zVideo_PixelPack_GShift) |
            ((g_zVideo_PixelPack_RMaskShifted & red) << g_zVideo_PixelPack_RShift) |
@@ -293,14 +293,14 @@ RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColor00RRGGBB(unsigned int
 
 // Reimplements 0x4a6d40: zVid_PackColorRgbFloats
 RECOIL_NOINLINE unsigned short RECOIL_FASTCALL zVid_PackColorRgbFloats(zVideo_ColorRgbFloat *color) {
-    const int red = static_cast<int>(color->r + 0.5f);
-    const int green = static_cast<int>(color->g + 0.5f);
-    const int blue = static_cast<int>(color->b + 0.5f);
+    const int red = (int)(color->r + 0.5f);
+    const int green = (int)(color->g + 0.5f);
+    const int blue = (int)(color->b + 0.5f);
     const unsigned int packed =
         ((g_zVideo_PixelPack_RMaskShifted & red) << g_zVideo_PixelPack_RShift) |
         ((g_zVideo_PixelPack_GMaskShifted & green) << g_zVideo_PixelPack_GShift) |
-        (static_cast<unsigned int>(blue) >> g_zVideo_PixelPack_BShiftTo8);
-    return static_cast<unsigned short>(packed);
+        ((unsigned int)(blue) >> g_zVideo_PixelPack_BShiftTo8);
+    return (unsigned short)(packed);
 }
 
 // Reimplements 0x4a6b80: zVideo_SetClearColorPacked16
@@ -368,10 +368,10 @@ zVideo_SetActiveViewContext(zClass_CameraDataPartial *viewContext) {
 
     const int rightPx = windowX + width;
     const int bottomPx = windowY + height;
-    const float left = static_cast<float>(windowX);
-    const float top = static_cast<float>(windowY);
-    const float right = static_cast<float>(rightPx);
-    const float bottom = static_cast<float>(bottomPx);
+    const float left = (float)(windowX);
+    const float top = (float)(windowY);
+    const float right = (float)(rightPx);
+    const float bottom = (float)(bottomPx);
     float viewportOriginX;
     float viewportOriginY;
     float viewportBottom;
@@ -409,8 +409,8 @@ zVideo_SetActiveViewContext(zClass_CameraDataPartial *viewContext) {
     g_zVideo_ProjectClipBottom = viewportBottom - 0.00100000005f;
 
     viewContext = g_zVideo_pActiveViewContext;
-    zMath_Setup_Projection(viewportOriginX, viewportOriginY, static_cast<float>(width) * 0.5f,
-                           static_cast<float>(height) * 0.5f, viewContext->viewportScaleX,
+    zMath_Setup_Projection(viewportOriginX, viewportOriginY, (float)(width) * 0.5f,
+                           (float)(height) * 0.5f, viewContext->viewportScaleX,
                            viewContext->viewportScaleY, viewContext->nearClip,
                            viewContext->farClip);
 
@@ -430,11 +430,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
     zMath::MatStackPushPtr((float *)&slotBuffer);
 
     g_zVideo_pActiveViewContext =
-        static_cast<zClass_CameraDataPartial *>(camera->classData);
+        (zClass_CameraDataPartial *)(camera->classData);
     zClass_NodePartial *world = zClass_Camera::gwCameraGetWorld(camera);
     zClass_CameraDataPartial *viewContext = g_zVideo_pActiveViewContext;
     zClass_WindowDataPartial *windowData =
-        static_cast<zClass_WindowDataPartial *>(viewContext->windowNode->classData);
+        (zClass_WindowDataPartial *)(viewContext->windowNode->classData);
 
     if (g_zClass_CameraAutoClipDistanceAdjustEnabled != 0) {
         if (g_FrameDeltaTimeSec <= g_zClass_CameraAutoClipDistanceThreshold) {
@@ -541,24 +541,24 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
             }
 
             zVidRect32 rect;
-            rect.left = static_cast<int>(poly->vertices[0].x);
+            rect.left = (int)(poly->vertices[0].x);
             rect.right = rect.left;
-            rect.top = static_cast<int>(poly->vertices[0].y);
+            rect.top = (int)(poly->vertices[0].y);
             rect.bottom = rect.top;
 
             for (int vertexIndex = 1; vertexIndex < vertexCount; ++vertexIndex) {
                 const zVec3 *vertex = &poly->vertices[vertexIndex];
                 if (rect.left > vertex->x) {
-                    rect.left = static_cast<int>(vertex->x);
+                    rect.left = (int)(vertex->x);
                 }
                 if (rect.right < vertex->x) {
-                    rect.right = static_cast<int>(vertex->x);
+                    rect.right = (int)(vertex->x);
                 }
                 if (rect.top > vertex->y) {
-                    rect.top = static_cast<int>(vertex->y);
+                    rect.top = (int)(vertex->y);
                 }
                 if (rect.bottom < vertex->y) {
-                    rect.bottom = static_cast<int>(vertex->y);
+                    rect.bottom = (int)(vertex->y);
                 }
             }
 
@@ -979,14 +979,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetCachedClientRectUpdateMask(int mask) {
 RECOIL_NOINLINE char *RECOIL_CDECL GetSelectedHwApiDescriptionOrDefault() {
     return g_zVideo_pSelectedHwApiDeviceRecord != 0
                ? g_zVideo_pSelectedHwApiDeviceRecord->m_driverDescription
-               : const_cast<char *>("Default");
+               : (char *)("Default");
 }
 
 // Reimplements 0x4a9940: zVid::GetSelectedD3DDeviceNameOrDefault
 RECOIL_NOINLINE char *RECOIL_CDECL GetSelectedD3DDeviceNameOrDefault() {
     return g_zVideo_pSelectedD3DDeviceInfo != 0
                ? g_zVideo_pSelectedD3DDeviceInfo->m_deviceName
-               : const_cast<char *>("GameZ");
+               : (char *)("GameZ");
 }
 
 // Reimplements 0x4a7430: zVid::GetHwApiDescription
@@ -1013,9 +1013,9 @@ RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Slot::SetRectAndPayload(
         base.y = rectTopPixels;
     }
 
-    currentRadius = static_cast<float>(currentRadiusPixels);
-    maxRadius = static_cast<float>(maxRadiusPixels);
-    extent = static_cast<float>(extentPixels);
+    currentRadius = (float)(currentRadiusPixels);
+    maxRadius = (float)(maxRadiusPixels);
+    extent = (float)(extentPixels);
     sinFreq = sinFreqValue;
     sinPhase = sinPhaseValue;
 }
@@ -1066,7 +1066,7 @@ CopySurfaceRectToImage(int sourceSelector, zVidRect32 *rect,
     const int surfaceWidth = surfaceState->width;
     const int surfaceHeight = surfaceState->height;
     const int pitchWords = surfaceState->pitch >> 1;
-    unsigned char *const surfacePixels = static_cast<unsigned char *>(surfaceState->pixels);
+    unsigned char *const surfacePixels = (unsigned char *)(surfaceState->pixels);
 
     int dstOffsetX = 0;
     int dstOffsetY = 0;
@@ -1109,25 +1109,25 @@ CopySurfaceRectToImage(int sourceSelector, zVidRect32 *rect,
             return 0;
         }
 
-        zVid_Image::SetSize(image, static_cast<short>(clippedHeight),
-                            static_cast<short>(clippedWidth));
+        zVid_Image::SetSize(image, (short)(clippedHeight),
+                            (short)(clippedWidth));
         image->pixels =
-            malloc(static_cast<size_t>(image->pixelCount) * sizeof(unsigned short));
+            malloc((size_t)(image->pixelCount) * sizeof(unsigned short));
     }
 
-    unsigned char * dstBytes = static_cast<unsigned char *>(image->pixels) +
+    unsigned char * dstBytes = (unsigned char *)(image->pixels) +
                      (originalWidth * dstOffsetY + dstOffsetX) * sizeof(unsigned short);
     unsigned char *srcBytes =
         surfacePixels + (pitchWords * rect->top + rect->left) * sizeof(unsigned short);
-    const int rowBytes = clippedWidth * static_cast<int>(sizeof(unsigned short));
+    const int rowBytes = clippedWidth * (int)(sizeof(unsigned short));
     const int dstStrideBytes =
-        originalWidth * static_cast<int>(sizeof(unsigned short));
+        originalWidth * (int)(sizeof(unsigned short));
     const int srcStrideBytes =
-        pitchWords * static_cast<int>(sizeof(unsigned short));
+        pitchWords * (int)(sizeof(unsigned short));
 
     {
     for (int row = clippedHeight; row > 0; --row) {
-        memcpy(dstBytes, srcBytes, static_cast<size_t>(rowBytes));
+        memcpy(dstBytes, srcBytes, (size_t)(rowBytes));
         dstBytes += dstStrideBytes;
         srcBytes += srcStrideBytes;
     }
@@ -1224,7 +1224,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSourceToPrimaryClipped(zVidImagePartial 
     }
 
     if (hresult != DD_OK) {
-        zVideo_dd::ReportError(static_cast<int>(hresult),
+        zVideo_dd::ReportError((int)(hresult),
                                "D:\\Proj\\GameZRecoil\\zVideo\\zvid_buff.c", 0x150);
     }
 }
@@ -1446,24 +1446,24 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyBrightnessToPaletteEntries(PALETTEENTRY
     memcpy(adjustedEntries, g_zVideo_SystemPaletteEntries, sizeof(adjustedEntries));
 
     const int brightnessDelta =
-        (static_cast<int>(g_zVideo_PaletteBrightnessLevel) << 3) - 32;
+        ((int)(g_zVideo_PaletteBrightnessLevel) << 3) - 32;
     if (brightnessDelta > 0) {
         for (int index = 0; index < 256; ++index) {
             const int red = adjustedEntries[index].peRed + brightnessDelta;
             const int green = adjustedEntries[index].peGreen + brightnessDelta;
             const int blue = adjustedEntries[index].peBlue + brightnessDelta;
-            adjustedEntries[index].peRed = static_cast<BYTE>(red > 255 ? 255 : red);
-            adjustedEntries[index].peGreen = static_cast<BYTE>(green > 255 ? 255 : green);
-            adjustedEntries[index].peBlue = static_cast<BYTE>(blue > 255 ? 255 : blue);
+            adjustedEntries[index].peRed = (BYTE)(red > 255 ? 255 : red);
+            adjustedEntries[index].peGreen = (BYTE)(green > 255 ? 255 : green);
+            adjustedEntries[index].peBlue = (BYTE)(blue > 255 ? 255 : blue);
         }
     } else if (brightnessDelta < 0) {
         for (int index = 0; index < 256; ++index) {
             const int red = adjustedEntries[index].peRed + brightnessDelta;
             const int green = adjustedEntries[index].peGreen + brightnessDelta;
             const int blue = adjustedEntries[index].peBlue + brightnessDelta;
-            adjustedEntries[index].peRed = static_cast<BYTE>(red < 0 ? 0 : red);
-            adjustedEntries[index].peGreen = static_cast<BYTE>(green < 0 ? 0 : green);
-            adjustedEntries[index].peBlue = static_cast<BYTE>(blue < 0 ? 0 : blue);
+            adjustedEntries[index].peRed = (BYTE)(red < 0 ? 0 : red);
+            adjustedEntries[index].peGreen = (BYTE)(green < 0 ? 0 : green);
+            adjustedEntries[index].peBlue = (BYTE)(blue < 0 ? 0 : blue);
         }
     }
 
@@ -1602,7 +1602,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(void *pixels, int width,
     g_zVideo_FxSurfaceWidth = width;
     g_zVideo_FxSurfaceHeight = height;
     g_zVideo_FxSurfacePitchBytes = pitchBytes;
-    g_zVideo_FxSurfacePixels16 = static_cast<unsigned short *>(pixels);
+    g_zVideo_FxSurfacePixels16 = (unsigned short *)(pixels);
     g_zVideo_FxSurfacePitchPixels16 = pitchBytes / 2;
 }
 
@@ -1611,7 +1611,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(void *pixels, int width,
 // Reimplements 0x4bee20: zVideoFxPass3Config::QueuePrimitiveRaw
 RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::QueuePrimitiveRaw(
     void *primitive, int width, int height, int pitchBytes) {
-    surfacePixels = static_cast<unsigned short *>(primitive);
+    surfacePixels = (unsigned short *)(primitive);
     surfaceWidth = width;
     surfaceHeight = height;
     surfacePitchBytes = pitchBytes;
@@ -1630,7 +1630,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_UpdateLocal(zVideoFxPas
 // Reimplements 0x4bed50: zVideoFxPass3Config::SetPrimaryElementParamsLocal
 RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_SetPrimaryElementParamsLocal(
     zVideoFxPass3Config *config, unsigned int packedColor, double primaryAlpha) {
-    config->rootElement.packedColor16 = static_cast<unsigned short>(packedColor);
+    config->rootElement.packedColor16 = (unsigned short)(packedColor);
     config->rootElement.alpha = primaryAlpha;
     if (config->rootElement.base.ftable != 0) {
         config->rootElement.base.SetVisible(1);
@@ -1999,14 +1999,14 @@ RECOIL_NOINLINE void RECOIL_CDECL Noise_InitBuffers() {
     const int height = zVideo::GetPrimarySurfaceHeight();
 
     g_zVid_NoiseByteTableSize = width * 0x19;
-    g_zVid_NoiseByteTable = static_cast<unsigned char *>(
-        malloc(static_cast<size_t>(g_zVid_NoiseByteTableSize)));
+    g_zVid_NoiseByteTable = (unsigned char *)(
+        malloc((size_t)(g_zVid_NoiseByteTableSize)));
     for (int i = 0; i < g_zVid_NoiseByteTableSize; ++i) {
-        g_zVid_NoiseByteTable[i] = static_cast<unsigned char>(rand());
+        g_zVid_NoiseByteTable[i] = (unsigned char)(rand());
     }
 
-    g_zVideo_FxPass3_ScratchPixels16 = static_cast<unsigned short *>(
-        malloc(static_cast<size_t>(height * width) * sizeof(unsigned short)));
+    g_zVideo_FxPass3_ScratchPixels16 = (unsigned short *)(
+        malloc((size_t)(height * width) * sizeof(unsigned short)));
     g_zVideo_FxSurfacePixels16 = 0;
     g_zVideo_FxSurfaceWidth = 0;
     g_zVideo_FxSurfaceHeight = 0;
@@ -2034,7 +2034,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawNoiseRect(zVidRect32 *rectOrNull, doubl
         return;
     }
 
-    const int threshold = static_cast<int>(intensity * 256.0);
+    const int threshold = (int)(intensity * 256.0);
     int xMin = 0;
     int yMin = 0;
     int xMax = g_zVideo_FxSurfaceWidth - 1;
@@ -2068,8 +2068,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawNoiseRect(zVidRect32 *rectOrNull, doubl
         for (int x = 0; x < rowWidth; ++x) {
             const unsigned char noiseValue = noiseBytes[x];
             if (noiseValue < threshold) {
-                const unsigned short level = static_cast<unsigned short>(noiseValue & 0x1f);
-                dstPixels[x] = static_cast<unsigned short>(
+                const unsigned short level = (unsigned short)(noiseValue & 0x1f);
+                dstPixels[x] = (unsigned short)(
                     (level << rShift) | (level << gShift) | level);
             }
         }
@@ -2096,7 +2096,7 @@ zVidImagePartial g_zImage_DefaultImage = {0};
 // Reimplements 0x46ec00: zVid_Image::Create
 RECOIL_NOINLINE zVidImagePartial *RECOIL_CDECL Create() {
     zVidImagePartial *image =
-        static_cast<zVidImagePartial *>(malloc(sizeof(zVidImagePartial)));
+        (zVidImagePartial *)(malloc(sizeof(zVidImagePartial)));
     if (image != 0) {
         memset(image, 0, sizeof(zVidImagePartial));
     }
@@ -2154,20 +2154,20 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ReleaseOwnedBuffers(zVidImagePartial *image
     if (image->pixels != 0 && (image->formatFlagsPacked & 0x20) != 0) {
         freeProc(image->pixels);
         image->pixels = 0;
-        image->formatFlagsPacked &= static_cast<unsigned char>(~0x20);
+        image->formatFlagsPacked &= (unsigned char)(~0x20);
     }
 
     if (image->alphaMap != 0 && (image->formatFlagsPacked & 0x40) != 0) {
         freeProc(image->alphaMap);
         image->alphaMap = 0;
-        image->formatFlagsPacked &= static_cast<unsigned char>(~0x40);
+        image->formatFlagsPacked &= (unsigned char)(~0x40);
     }
 
     if (image->palette != 0 && (image->formatFlagsPacked & 0x80) != 0 &&
         (image->formatFlagsPacked & 0x10) == 0) {
         freeProc(image->palette);
         image->palette = 0;
-        image->formatFlagsPacked &= static_cast<unsigned char>(~0x80);
+        image->formatFlagsPacked &= (unsigned char)(~0x80);
     }
 }
 
@@ -2195,9 +2195,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetSize(zVidImagePartial *image, short width
                                                      short height) {
     image->width = width;
     image->height = height;
-    image->pixelCount = static_cast<int>(width) * static_cast<int>(height);
+    image->pixelCount = (int)(width) * (int)(height);
     image->pitchWords = width;
-    image->widthScale = width != 0 ? static_cast<float>(width) : 1.0f;
+    image->widthScale = width != 0 ? (float)(width) : 1.0f;
     image->uShiftFrom20 = 20;
     image->uMask = width > 0 ? width - 1 : 0;
     image->vMaskFixed20 = height > 0 ? (height - 1) << 20 : 0;
@@ -2259,31 +2259,31 @@ zVideo_buff_CaptureSurfaceToImage(int sourceSelector) {
 
     const int width = surfaceState->width;
     const int height = surfaceState->height;
-    const unsigned int pitchWords = static_cast<unsigned int>(surfaceState->pitch) >> 1;
-    unsigned char * srcPixels = static_cast<unsigned char *>(surfaceState->pixels);
+    const unsigned int pitchWords = (unsigned int)(surfaceState->pitch) >> 1;
+    unsigned char * srcPixels = (unsigned char *)(surfaceState->pixels);
 
     zVidImagePartial *image = zVid_Image::Create();
     if (image == 0) {
         return 0;
     }
 
-    zVid_Image::SetSize(image, static_cast<short>(width), static_cast<short>(height));
+    zVid_Image::SetSize(image, (short)(width), (short)(height));
     void *dstPixels =
-        malloc(static_cast<size_t>(image->pixelCount) * sizeof(unsigned short));
+        malloc((size_t)(image->pixelCount) * sizeof(unsigned short));
     image->formatFlagsPacked |= 0x20u;
     zVid_Image_SetPixels(image, dstPixels, 0);
 
-    unsigned char * dstBytes = static_cast<unsigned char *>(dstPixels);
-    if (width == static_cast<int>(pitchWords)) {
+    unsigned char * dstBytes = (unsigned char *)(dstPixels);
+    if (width == (int)(pitchWords)) {
         memcpy(dstBytes, srcPixels,
-                    static_cast<size_t>(image->pixelCount) * sizeof(unsigned short));
+                    (size_t)(image->pixelCount) * sizeof(unsigned short));
     } else if (height > 0) {
         const int rowBytes = width * sizeof(unsigned short);
         const int pitchBytes =
-            static_cast<int>(pitchWords * sizeof(unsigned short));
+            (int)(pitchWords * sizeof(unsigned short));
         {
         for (int row = 0; row < height; ++row) {
-            memcpy(dstBytes, srcPixels, static_cast<size_t>(rowBytes));
+            memcpy(dstBytes, srcPixels, (size_t)(rowBytes));
             dstBytes += rowBytes;
             srcPixels += pitchBytes;
         }
@@ -2316,7 +2316,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClearZeroAlphaPixelsInPlace(zVidImagePartia
 
     unsigned char *alpha = (unsigned char *)(image->alphaMap);
     if (bytesPerPixel == 1) {
-        unsigned char *pixels = static_cast<unsigned char *>(image->pixels);
+        unsigned char *pixels = (unsigned char *)(image->pixels);
         for (int i = 0; i < image->pixelCount; ++i) {
             if (alpha[i] == 0) {
                 pixels[i] = 0;
@@ -2326,7 +2326,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClearZeroAlphaPixelsInPlace(zVidImagePartia
     }
 
     if (bytesPerPixel == 2) {
-        unsigned short *pixels = static_cast<unsigned short *>(image->pixels);
+        unsigned short *pixels = (unsigned short *)(image->pixels);
         for (int i = 0; i < image->pixelCount; ++i) {
             if (alpha[i] == 0) {
                 pixels[i] = 0;
@@ -2336,7 +2336,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClearZeroAlphaPixelsInPlace(zVidImagePartia
     }
 
     if (bytesPerPixel == 4) {
-        unsigned int *pixels = static_cast<unsigned int *>(image->pixels);
+        unsigned int *pixels = (unsigned int *)(image->pixels);
         for (int i = 0; i < image->pixelCount; ++i) {
             if (alpha[i] == 0) {
                 pixels[i] = 0;
@@ -2388,15 +2388,15 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(FILE *file, zVidImagePartial *image
     }
 
     const int pixelBytes = QueryPixelDataBytes(image);
-    if (fread(image->pixels, 1, pixelBytes, file) != static_cast<size_t>(pixelBytes)) {
+    if (fread(image->pixels, 1, pixelBytes, file) != (size_t)(pixelBytes)) {
         return -1;
     }
 
     if ((image->formatFlagsPacked & 0x08) != 0) {
         image->alphaMap =
-            static_cast<char *>(malloc(static_cast<size_t>(image->pixelCount)));
+            (char *)(malloc((size_t)(image->pixelCount)));
         if (fread(image->alphaMap, 1, image->pixelCount, file) !=
-            static_cast<size_t>(image->pixelCount)) {
+            (size_t)(image->pixelCount)) {
             image->formatFlagsPacked |= 0x40;
             return -1;
         }
@@ -2405,9 +2405,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(FILE *file, zVidImagePartial *image
 
     if ((image->formatFlagsPacked & 0x10) == 0 && image->paletteMetaPacked != 0) {
         const int paletteBytes = bytesPerPixel * image->paletteMetaPacked;
-        image->palette = malloc(static_cast<size_t>(paletteBytes));
+        image->palette = malloc((size_t)(paletteBytes));
         if (fread(image->palette, 1, paletteBytes, file) !=
-            static_cast<size_t>(paletteBytes)) {
+            (size_t)(paletteBytes)) {
             image->formatFlagsPacked |= 0x80;
             return -1;
         }
@@ -2421,13 +2421,13 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(FILE *file, zVidImagePartial *image
         zVideo::PixelPack_GetRgbBits(&rBits, &gBits, &bBits);
         if (rBits == 5) {
             unsigned short *colors = image->paletteMetaPacked == 0
-                                        ? static_cast<unsigned short *>(image->pixels)
-                                        : static_cast<unsigned short *>(image->palette);
+                                        ? (unsigned short *)(image->pixels)
+                                        : (unsigned short *)(image->palette);
             int count =
                 image->paletteMetaPacked == 0 ? image->pixelCount : image->paletteMetaPacked;
             while (count > 0) {
                 const unsigned short value = *colors;
-                *colors = static_cast<unsigned short>(((value >> 1) & 0x7fe0) | (value & 0x1f));
+                *colors = (unsigned short)(((value >> 1) & 0x7fe0) | (value & 0x1f));
                 ++colors;
                 --count;
             }
@@ -2436,7 +2436,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(FILE *file, zVidImagePartial *image
 
     if (image->paletteMetaPacked != 0) {
         image->palette = zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
-            static_cast<unsigned short *>(image->palette), image->paletteMetaPacked);
+            (unsigned short *)(image->palette), image->paletteMetaPacked);
     }
 
     return 0;
@@ -2458,31 +2458,31 @@ RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL ReadFromFile(FILE *file) {
 // Reimplements 0x46e9b0: zVid_Image::ResampleSquare
 RECOIL_NOINLINE void RECOIL_FASTCALL ResampleSquare(zVidImagePartial *image,
                                                     int sideLength) {
-    const float inverseSideLength = 1.0f / static_cast<float>(sideLength);
-    unsigned short *oldPixels = static_cast<unsigned short *>(image->pixels);
+    const float inverseSideLength = 1.0f / (float)(sideLength);
+    unsigned short *oldPixels = (unsigned short *)(image->pixels);
     char *oldAlphaMap = image->alphaMap;
     const int sourceWidth = image->width;
     const int sourceHeight = image->height;
-    const float xScale = static_cast<float>(sourceWidth) * inverseSideLength;
-    const float yScale = static_cast<float>(sourceHeight) * inverseSideLength;
+    const float xScale = (float)(sourceWidth) * inverseSideLength;
+    const float yScale = (float)(sourceHeight) * inverseSideLength;
 
-    const unsigned int pixelCount = static_cast<unsigned int>(sideLength * sideLength);
+    const unsigned int pixelCount = (unsigned int)(sideLength * sideLength);
     unsigned short *newPixels =
-        static_cast<unsigned short *>(malloc(pixelCount * sizeof(unsigned short)));
+        (unsigned short *)(malloc(pixelCount * sizeof(unsigned short)));
     char *newAlphaMap = 0;
     if (oldAlphaMap != 0) {
-        newAlphaMap = static_cast<char *>(malloc(pixelCount));
+        newAlphaMap = (char *)(malloc(pixelCount));
     }
 
     {
     for (int dstY = 0; dstY < sideLength; ++dstY) {
-        const int srcY = static_cast<int>(static_cast<float>(dstY) * yScale);
+        const int srcY = (int)((float)(dstY) * yScale);
         unsigned short *newPixelCursor = &newPixels[dstY * sideLength];
         char *newAlphaCursor = newAlphaMap != 0 ? &newAlphaMap[dstY * sideLength] : 0;
 
         {
         for (int dstX = 0; dstX < sideLength; ++dstX) {
-            const int srcX = static_cast<int>(static_cast<float>(dstX) * xScale);
+            const int srcX = (int)((float)(dstX) * xScale);
             const int sourceIndex = srcY * sourceWidth + srcX;
             *newPixelCursor++ = oldPixels[sourceIndex];
             if (oldAlphaMap != 0) {
@@ -2494,8 +2494,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResampleSquare(zVidImagePartial *image,
     }
 
     free(image->pixels);
-    image->height = static_cast<short>(sideLength);
-    image->width = static_cast<short>(sideLength);
+    image->height = (short)(sideLength);
+    image->width = (short)(sideLength);
     image->pixels = newPixels;
     if (oldAlphaMap != 0) {
         free(oldAlphaMap);
@@ -2532,7 +2532,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyRecipeToPaletteVariant(zVidPaletteRema
     int bBits = 0;
     zVideo::PixelPack_GetRgbBits(&rBits, &gBits, &bBits);
 
-    const float variantWeight = static_cast<float>(variantIndex) * 0.0322580636f;
+    const float variantWeight = (float)(variantIndex) * 0.0322580636f;
     const float inverseVariantWeight = 1.0f - variantWeight;
 
     while (colorCount > 0) {
@@ -2540,13 +2540,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyRecipeToPaletteVariant(zVidPaletteRema
         float r = 0.0f;
         float g = 0.0f;
         if (gBits == 5) {
-            r = static_cast<float>(packed & 0x7c00) * 3.15020152e-05f;
-            g = static_cast<float>(packed & 0x03e0) * 0.00100806449f;
+            r = (float)(packed & 0x7c00) * 3.15020152e-05f;
+            g = (float)(packed & 0x03e0) * 0.00100806449f;
         } else {
-            r = static_cast<float>(packed & 0xf800) * 1.57510076e-05f;
-            g = static_cast<float>(packed & 0x07e0) * 0.000496031775f;
+            r = (float)(packed & 0xf800) * 1.57510076e-05f;
+            g = (float)(packed & 0x07e0) * 0.000496031775f;
         }
-        const float b = static_cast<float>(packed & 0x001f) * 0.0322580636f;
+        const float b = (float)(packed & 0x001f) * 0.0322580636f;
 
         zVideo_ColorRgbFloat color = {0};
         color.r = ((recipe->color0R - r) * inverseVariantWeight * recipe->color0Strength +
@@ -2574,13 +2574,13 @@ zVid_PaletteRemap_BuildPaletteVariant(zVidPaletteRemapRecipe *recipe) {
     }
 
     ++g_zVid_PaletteRemapRecipeCount;
-    g_zVid_PaletteRemapRecipes = static_cast<zVidPaletteRemapRecipe *>(realloc(
+    g_zVid_PaletteRemapRecipes = (zVidPaletteRemapRecipe *)(realloc(
         g_zVid_PaletteRemapRecipes,
-        static_cast<size_t>(g_zVid_PaletteRemapRecipeCount) * sizeof(zVidPaletteRemapRecipe)));
+        (size_t)(g_zVid_PaletteRemapRecipeCount) * sizeof(zVidPaletteRemapRecipe)));
     g_zVid_PaletteRemapRecipes[g_zVid_PaletteRemapRecipeCount - 1] = *recipe;
 
     const size_t expandedPaletteBytes =
-        (static_cast<size_t>(g_zVid_PaletteRemapRecipeCount) << 14) + 0x200;
+        ((size_t)(g_zVid_PaletteRemapRecipeCount) << 14) + 0x200;
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
         zVidImagePartial *image = g_zImage_TexDirEntries[i].image;
         if (image == 0 || image->paletteMetaPacked == 0 ||
@@ -2589,7 +2589,7 @@ zVid_PaletteRemap_BuildPaletteVariant(zVidPaletteRemapRecipe *recipe) {
         }
 
         image->palette = realloc(image->palette, expandedPaletteBytes);
-        unsigned short *palette = static_cast<unsigned short *>(image->palette);
+        unsigned short *palette = (unsigned short *)(image->palette);
         {
         for (int variant = 0; variant < 32; ++variant) {
             zVid_PaletteRemap::ApplyRecipeToPaletteVariant(
@@ -2603,7 +2603,7 @@ zVid_PaletteRemap_BuildPaletteVariant(zVidPaletteRemapRecipe *recipe) {
          ++tableIndex) {
         unsigned short *oldTable = g_zVid_PaletteRemapVariantTables[tableIndex];
         g_zVid_PaletteRemapVariantTables[tableIndex] =
-            static_cast<unsigned short *>(realloc(oldTable, expandedPaletteBytes));
+            (unsigned short *)(realloc(oldTable, expandedPaletteBytes));
         unsigned short *table = g_zVid_PaletteRemapVariantTables[tableIndex];
 
         {
@@ -2633,8 +2633,8 @@ zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(unsigned short *palette,
         return palette;
     }
 
-    unsigned short *result = static_cast<unsigned short *>(realloc(
-        palette, (static_cast<size_t>(g_zVid_PaletteRemapRecipeCount) << 14) + 0x200));
+    unsigned short *result = (unsigned short *)(realloc(
+        palette, ((size_t)(g_zVid_PaletteRemapRecipeCount) << 14) + 0x200));
 
     for (int recipeIndex = 0; recipeIndex < g_zVid_PaletteRemapRecipeCount;
          ++recipeIndex) {
@@ -2684,10 +2684,10 @@ zVid_TexturePackEntry_LoadFromFile(zVidTexturePackEntry *entry) {
         return 0;
     }
 
-    entry->records = static_cast<zVidTexturePackRecord *>(malloc(
-        static_cast<size_t>(entry->header.recordCount) * sizeof(zVidTexturePackRecord)));
+    entry->records = (zVidTexturePackRecord *)(malloc(
+        (size_t)(entry->header.recordCount) * sizeof(zVidTexturePackRecord)));
     if (fread(entry->records, sizeof(zVidTexturePackRecord), entry->header.recordCount,
-                   entry->fileHandle) != static_cast<size_t>(entry->header.recordCount)) {
+                   entry->fileHandle) != (size_t)(entry->header.recordCount)) {
         fclose(entry->fileHandle);
         entry->fileHandle = 0;
         free(entry->records);
@@ -2702,9 +2702,9 @@ zVid_TexturePackEntry_LoadFromFile(zVidTexturePackEntry *entry) {
 
     int tableIndex = g_zVid_PaletteRemapVariantTableCount;
     g_zVid_PaletteRemapVariantTableCount += entry->header.paletteTableCount;
-    g_zVid_PaletteRemapVariantTables = static_cast<unsigned short **>(realloc(
+    g_zVid_PaletteRemapVariantTables = (unsigned short **)(realloc(
         g_zVid_PaletteRemapVariantTables,
-        static_cast<size_t>(g_zVid_PaletteRemapVariantTableCount) * sizeof(unsigned short *)));
+        (size_t)(g_zVid_PaletteRemapVariantTableCount) * sizeof(unsigned short *)));
 
     int rBits = 0;
     int gBits = 0;
@@ -2712,7 +2712,7 @@ zVid_TexturePackEntry_LoadFromFile(zVidTexturePackEntry *entry) {
     zVideo::PixelPack_GetRgbBits(&rBits, &gBits, &bBits);
 
     while (tableIndex < g_zVid_PaletteRemapVariantTableCount) {
-        unsigned short *table = static_cast<unsigned short *>(malloc(0x200));
+        unsigned short *table = (unsigned short *)(malloc(0x200));
         g_zVid_PaletteRemapVariantTables[tableIndex] = table;
         if (fread(table, 2, 0x100, entry->fileHandle) != 0x100) {
             fclose(entry->fileHandle);
@@ -2728,10 +2728,10 @@ zVid_TexturePackEntry_LoadFromFile(zVidTexturePackEntry *entry) {
                 unsigned short *color = (unsigned short *)(
                     (unsigned char *)(table) + byteOffset);
                 const unsigned short value = *color;
-                const unsigned short shifted = static_cast<unsigned short>(value >> 1);
-                const unsigned short lowXor = static_cast<unsigned char>(
-                    static_cast<unsigned char>(value) ^ static_cast<unsigned char>(shifted));
-                *color = static_cast<unsigned short>((lowXor & 0x1f) ^ shifted);
+                const unsigned short shifted = (unsigned short)(value >> 1);
+                const unsigned short lowXor = (unsigned char)(
+                    (unsigned char)(value) ^ (unsigned char)(shifted));
+                *color = (unsigned short)((lowXor & 0x1f) ^ shifted);
             }
             }
         }
@@ -2750,8 +2750,8 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zVid_TexturePack_EnsureDefaultImage
         return;
     }
 
-    g_zVid_TexturePacks = static_cast<zVidTexturePackEntry *>(
-        realloc(g_zVid_TexturePacks, static_cast<size_t>(g_zVid_TexturePackCount + 1) *
+    g_zVid_TexturePacks = (zVidTexturePackEntry *)(
+        realloc(g_zVid_TexturePacks, (size_t)(g_zVid_TexturePackCount + 1) *
                                               sizeof(zVidTexturePackEntry)));
     zVidTexturePackEntry *entry = &g_zVid_TexturePacks[g_zVid_TexturePackCount];
     memset(entry, 0, sizeof(*entry));
@@ -2790,7 +2790,7 @@ zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() {
 
     if (g_zVideo_pfnQueryTextureMemoryBytes(-1, &totalBytes, &freeBytes) != 0 &&
         g_zVideo_ActiveRendererPath != 0) {
-        candidateSize = static_cast<unsigned int>(totalBytes) >> 20;
+        candidateSize = (unsigned int)(totalBytes) >> 20;
         sprintf(filePath, "r%s%d.%s", "texture", candidateSize, "zbd");
         probeWasRendererMemory = 1;
     } else {
@@ -2818,8 +2818,8 @@ zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() {
         }
     }
 
-    g_zVid_BuiltinTexturePacks = static_cast<zVidTexturePackEntry *>(realloc(
-        g_zVid_BuiltinTexturePacks, static_cast<size_t>(g_zVid_BuiltinTexturePackCount + 1) *
+    g_zVid_BuiltinTexturePacks = (zVidTexturePackEntry *)(realloc(
+        g_zVid_BuiltinTexturePacks, (size_t)(g_zVid_BuiltinTexturePackCount + 1) *
                                         sizeof(zVidTexturePackEntry)));
     zVidTexturePackEntry *const entry = &g_zVid_BuiltinTexturePacks[g_zVid_BuiltinTexturePackCount];
     memset(entry, 0, sizeof(*entry));
@@ -2878,7 +2878,7 @@ zVidImagePartial *LoadTexturePackImageByName(zVidTexturePackEntry *entries, int 
                     if (result->palette != 0) {
                         free(result->palette);
                         result->palette = 0;
-                        result->formatFlagsPacked &= static_cast<unsigned char>(~0x80);
+                        result->formatFlagsPacked &= (unsigned char)(~0x80);
                     }
                     result->paletteMetaPacked = 0x100;
                 }
@@ -3051,7 +3051,7 @@ RECOIL_NOINLINE int RECOIL_CDECL BeginSceneAndFlushPendingRenderStates()
 {
     const HRESULT hresult = g_zVideo_pD3DDevice->BeginScene();
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult),
+        return zVideo_dd::ReportError((int)(hresult),
                                       "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c", 76);
     }
 
@@ -3067,7 +3067,7 @@ RECOIL_NOINLINE int RECOIL_CDECL BeginSceneAndFlushPendingRenderStates()
     const int pendingDitherEnable = g_zVideo_PendingDitherEnable;
     if (pendingDitherEnable != -1) {
         g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_DITHERENABLE,
-                                            static_cast<DWORD>(pendingDitherEnable));
+                                            (DWORD)(pendingDitherEnable));
         g_zVideo_PendingDitherEnable = -1;
     }
 
@@ -3079,7 +3079,7 @@ RECOIL_NOINLINE int RECOIL_CDECL EndScene()
 {
     const HRESULT hresult = g_zVideo_pD3DDevice->EndScene();
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult),
+        return zVideo_dd::ReportError((int)(hresult),
                                       "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c", 115);
     }
 
@@ -3090,9 +3090,9 @@ namespace {
 const char *kZVideoDirect3DSourceFile = "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c";
 
 DWORD PackFogColorFrom255Floats(float red, float green, float blue) {
-    const DWORD redByte = static_cast<DWORD>(static_cast<int>(red + 0.5f));
-    const DWORD greenByte = static_cast<DWORD>(static_cast<int>(green + 0.5f));
-    const DWORD blueByte = static_cast<DWORD>(static_cast<int>(blue + 0.5f));
+    const DWORD redByte = (DWORD)((int)(red + 0.5f));
+    const DWORD greenByte = (DWORD)((int)(green + 0.5f));
+    const DWORD blueByte = (DWORD)((int)(blue + 0.5f));
     return ((redByte << 8) | greenByte) << 8 | blueByte;
 }
 
@@ -3100,7 +3100,7 @@ DWORD PackD3DColorFrom16(unsigned int packedColor16, int alpha) {
     const DWORD red = (packedColor16 & g_zVideo_PixelPack_RMask) >> g_zVideo_PixelPack_RShift;
     const DWORD green = (packedColor16 & g_zVideo_PixelPack_GMask) >> g_zVideo_PixelPack_GShift;
     const DWORD blue = (packedColor16 & g_zVideo_PixelPack_BMask) << g_zVideo_PixelPack_BShiftTo8;
-    return ((((red | (static_cast<DWORD>(alpha) << 8)) << 8) | green) << 8) | blue;
+    return ((((red | ((DWORD)(alpha) << 8)) << 8) | green) << 8) | blue;
 }
 
 void WriteFlatTlVertex(D3DTLVERTEX &dst, const zVideo_XyzVertex &src, DWORD packedColor) {
@@ -3132,11 +3132,11 @@ void CopyGouraudVerticesReverse(D3DTLVERTEX *dst, const zVideo_XyzVertex *vertic
 DWORD PackColorAttrConstant(const zVideo_ColorRgbFloat &baseColor, float attr1Scale,
                             DWORD alphaBits) {
     const DWORD red =
-        static_cast<DWORD>(static_cast<int>(baseColor.r * attr1Scale + 0.5f));
+        (DWORD)((int)(baseColor.r * attr1Scale + 0.5f));
     const DWORD green =
-        static_cast<DWORD>(static_cast<int>(baseColor.g * attr1Scale + 0.5f));
+        (DWORD)((int)(baseColor.g * attr1Scale + 0.5f));
     const DWORD blue =
-        static_cast<DWORD>(static_cast<int>(baseColor.b * attr1Scale + 0.5f));
+        (DWORD)((int)(baseColor.b * attr1Scale + 0.5f));
     return alphaBits | (((red << 8) | green) << 8) | blue;
 }
 
@@ -3155,9 +3155,9 @@ DWORD PackColorAttrBiased(const zVideo_ColorRgbFloat &baseColor, float attr1Scal
         blue *= scale;
     }
 
-    const DWORD redByte = static_cast<DWORD>(static_cast<int>(red));
-    const DWORD greenByte = static_cast<DWORD>(static_cast<int>(green));
-    const DWORD blueByte = static_cast<DWORD>(static_cast<int>(blue));
+    const DWORD redByte = (DWORD)((int)(red));
+    const DWORD greenByte = (DWORD)((int)(green));
+    const DWORD blueByte = (DWORD)((int)(blue));
     return alphaBits | (((redByte << 8) | greenByte) << 8) | blueByte;
 }
 
@@ -3167,7 +3167,7 @@ void FillColorAttrSpecularReverse(const float *attr2, int vertexCount) {
         if (attr2 != 0) {
             const float source = attr2[vertexCount - 1 - i];
             specular =
-                static_cast<DWORD>(static_cast<int>(0.5f + (1.0f - source) * 255.0f))
+                (DWORD)((int)(0.5f + (1.0f - source) * 255.0f))
                 << 24;
         }
         g_zVideo_D3DSubmitTempVertices[i].specular = specular;
@@ -3201,7 +3201,7 @@ void CopyPositionsReverse(D3DTLVERTEX *dst, const zVideo_XyzVertex *vertices,
 }
 
 DWORD PackAlphaWhite(float alpha) {
-    return (static_cast<DWORD>(static_cast<int>(alpha * 255.0f)) << 24) | 0x00ffffff;
+    return ((DWORD)((int)(alpha * 255.0f)) << 24) | 0x00ffffff;
 }
 
 void WriteTexturedTlVertex(D3DTLVERTEX &dst, const zVideo_XyzVertex &src,
@@ -3226,7 +3226,7 @@ void CopyTexturedVerticesReverse(D3DTLVERTEX *dst, const zVideo_XyzVertex *verti
 }
 
 DWORD PackGrayColor(float gray, DWORD alphaBits, bool clampHigh) {
-    DWORD grayByte = static_cast<DWORD>(static_cast<int>(gray));
+    DWORD grayByte = (DWORD)((int)(gray));
     if (clampHigh && grayByte > 0xff) {
         grayByte = 0xff;
     }
@@ -3247,9 +3247,9 @@ DWORD PackPolygonBiasedColor(float grayBase, float attr0Value, DWORD alphaBits) 
         blue *= scale;
     }
 
-    const DWORD redByte = static_cast<DWORD>(static_cast<int>(red));
-    const DWORD greenByte = static_cast<DWORD>(static_cast<int>(green));
-    const DWORD blueByte = static_cast<DWORD>(static_cast<int>(blue));
+    const DWORD redByte = (DWORD)((int)(red));
+    const DWORD greenByte = (DWORD)((int)(green));
+    const DWORD blueByte = (DWORD)((int)(blue));
     return alphaBits | (((redByte << 8) | greenByte) << 8) | blueByte;
 }
 
@@ -3366,7 +3366,7 @@ PresentDisplayModeSurface(zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForP
             continue;
         }
 
-        zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile, 0xae);
+        zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile, 0xae);
         return 0x5a56ffff;
     }
 }
@@ -3384,8 +3384,8 @@ CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlp
         (const D3DDEVICEDESC *)(g_zVideo_pSelectedD3DDeviceInfo->m_hwDesc);
     int width = image->width;
     int height = image->height;
-    if (static_cast<DWORD>(width) > selectedDeviceDesc->dwMaxTextureWidth ||
-        static_cast<DWORD>(height) > selectedDeviceDesc->dwMaxTextureHeight) {
+    if ((DWORD)(width) > selectedDeviceDesc->dwMaxTextureWidth ||
+        (DWORD)(height) > selectedDeviceDesc->dwMaxTextureHeight) {
         zError::ReportOld(
             0x200, kZVideoDirect3DSourceFile, 0x20e,
             "Texture [%s] dimensions [%d x %d] are too large.  Using default texture.", textureName,
@@ -3413,7 +3413,7 @@ CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlp
     if ((g_zVideo_D3DHalDeviceDesc.dpcTriCaps.dwTextureCaps & D3DPTEXTURECAPS_SQUAREONLY) != 0 &&
         image->width != image->height) {
         const int squareSide = FloorPowerOfTwo(
-            static_cast<int>(sqrt(static_cast<double>(height * width))));
+            (int)(sqrt((double)(height * width))));
         zVid_Image::ResampleSquare(image, squareSide);
         width = image->width;
         height = image->height;
@@ -3429,8 +3429,8 @@ CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlp
     DDSURFACEDESC desc = {0};
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-    desc.dwHeight = static_cast<DWORD>(height);
-    desc.dwWidth = static_cast<DWORD>(width);
+    desc.dwHeight = (DWORD)(height);
+    desc.dwWidth = (DWORD)(width);
     desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
     desc.ddpfPixelFormat.dwSize = sizeof(desc.ddpfPixelFormat);
     desc.ddpfPixelFormat.dwFlags = DDPF_RGB;
@@ -3525,7 +3525,7 @@ CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlp
     }
 
     if (hresult != DD_OK) {
-        zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                0x30f);
         if (texture != 0) {
             texture->Release();
@@ -3547,8 +3547,8 @@ CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlp
 // Reimplements 0x4a9c20: zVideo_dd3d::CreateDeviceState
 RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
     DDSURFACEDESC zBufferDesc = {0};
-    zBufferDesc.dwWidth = static_cast<DWORD>(g_zVideo_SwSurfaceState.width);
-    zBufferDesc.dwHeight = static_cast<DWORD>(g_zVideo_SwSurfaceState.height);
+    zBufferDesc.dwWidth = (DWORD)(g_zVideo_SwSurfaceState.width);
+    zBufferDesc.dwHeight = (DWORD)(g_zVideo_SwSurfaceState.height);
     g_zVideo_ClearScreenBufferEnabled = 1;
     zBufferDesc.dwSize = sizeof(zBufferDesc);
     zBufferDesc.dwFlags = 0x47;
@@ -3558,28 +3558,28 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
     HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(
         &zBufferDesc, (IDirectDrawSurface **)(&g_zVideo_pZBufferSurface), 0);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0xd3);
     }
 
     hresult = g_zVideo_pZBufferSurface->QueryInterface(
         IID_IDirectDrawSurface, (void **)(&g_zVideo_pZBufferAttachSurface));
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0xd9);
     }
 
     hresult = g_zVideo_SwSurfaceState.surf->AddAttachedSurface(
         (IDirectDrawSurface3 *)(g_zVideo_pZBufferAttachSurface));
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0xde);
     }
 
     hresult = g_zVideo_pDirectDraw2->QueryInterface(IID_IDirect3D2,
                                                     (void **)(&g_zVideo_pD3D2));
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0xe5);
     }
 
@@ -3587,19 +3587,19 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
         *g_zVideo_pSelectedD3DDeviceInfo->pD3DDeviceGuid,
         (IDirectDrawSurface *)(g_zVideo_SwSurfaceState.surf), &g_zVideo_pD3DDevice);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0xed);
     }
 
     hresult = g_zVideo_pD3D2->CreateViewport(&g_zVideo_pD3DViewport2, 0);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0xf4);
     }
 
     hresult = g_zVideo_pD3DDevice->AddViewport(g_zVideo_pD3DViewport2);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0xf9);
     }
 
@@ -3609,30 +3609,30 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
     viewport2.dwSize = sizeof(viewport2);
     viewport2.dwX = 0;
     viewport2.dwY = 0;
-    viewport2.dwWidth = static_cast<DWORD>(width);
-    viewport2.dwHeight = static_cast<DWORD>(height);
+    viewport2.dwWidth = (DWORD)(width);
+    viewport2.dwHeight = (DWORD)(height);
     viewport2.dvClipX = 0.0f;
     viewport2.dvClipY = 0.0f;
-    viewport2.dvClipWidth = static_cast<D3DVALUE>(width);
-    viewport2.dvClipHeight = static_cast<D3DVALUE>(height);
+    viewport2.dvClipWidth = (D3DVALUE)(width);
+    viewport2.dvClipHeight = (D3DVALUE)(height);
     viewport2.dvMinZ = 0.0f;
     viewport2.dvMaxZ = 1.0f;
 
     hresult = g_zVideo_pD3DViewport2->SetViewport2(&viewport2);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0x10a);
     }
 
     hresult = g_zVideo_pD3DDevice->SetCurrentViewport(g_zVideo_pD3DViewport2);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0x10f);
     }
 
     hresult = g_zVideo_pD3D2->CreateMaterial(&g_zVideo_pD3DMaterial2, 0);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0x116);
     }
 
@@ -3648,19 +3648,19 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
 
     hresult = g_zVideo_pD3DMaterial2->SetMaterial(&mat);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0x124);
     }
 
     hresult = g_zVideo_pD3DMaterial2->GetHandle(g_zVideo_pD3DDevice, &g_zVideo_D3DMaterialHandle);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0x12a);
     }
 
     hresult = g_zVideo_pD3DViewport2->SetBackground(g_zVideo_D3DMaterialHandle);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0x12f);
     }
 
@@ -3668,7 +3668,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
     g_zVideo_D3DHalDeviceDesc.dwSize = sizeof(g_zVideo_D3DHalDeviceDesc);
     hresult = g_zVideo_pD3DDevice->GetCaps(&g_zVideo_D3DHalDeviceDesc, &g_zVideo_D3DHelDeviceDesc);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                       0x139);
     }
 
@@ -3692,13 +3692,13 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
 // Reimplements 0x4aa9e0: zVideo_dd3d::SetFogEnable
 RECOIL_NOINLINE void RECOIL_FASTCALL SetFogEnable(int enable) {
     if (g_zVideo_CachedFogEnableRenderState != enable) {
-        g_zVideo_pD3DDevice->SetRenderState(static_cast<D3DRENDERSTATETYPE>(0x1c),
-                                            static_cast<DWORD>(enable));
+        g_zVideo_pD3DDevice->SetRenderState((D3DRENDERSTATETYPE)(0x1c),
+                                            (DWORD)(enable));
         g_zVideo_CachedFogEnableRenderState = enable;
     }
 
     if (g_zVideo_CachedFogModeLightState != 3) {
-        g_zVideo_pD3DDevice->SetLightState(static_cast<D3DLIGHTSTATETYPE>(4), 3);
+        g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(4), 3);
         g_zVideo_CachedFogModeLightState = 3;
     }
 }
@@ -3706,7 +3706,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetFogEnable(int enable) {
 // Reimplements 0x4aaa30: zVideo_dd3d::SetFogStart
 RECOIL_NOINLINE void RECOIL_STDCALL SetFogStart(float fogStart) {
     if (g_zVideo_CachedFogStartLightStateValue != fogStart) {
-        g_zVideo_pD3DDevice->SetLightState(static_cast<D3DLIGHTSTATETYPE>(5),
+        g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(5),
                                            *(DWORD *)(&fogStart));
         g_zVideo_CachedFogStartLightStateValue = fogStart;
     }
@@ -3715,7 +3715,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetFogStart(float fogStart) {
 // Reimplements 0x4aaa60: zVideo_dd3d::SetFogEnd
 RECOIL_NOINLINE void RECOIL_STDCALL SetFogEnd(float fogEnd) {
     if (g_zVideo_CachedFogEndLightStateValue != fogEnd) {
-        g_zVideo_pD3DDevice->SetLightState(static_cast<D3DLIGHTSTATETYPE>(5),
+        g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(5),
                                            *(DWORD *)(&fogEnd));
         g_zVideo_CachedFogEndLightStateValue = fogEnd;
     }
@@ -3733,9 +3733,9 @@ RECOIL_NOINLINE void RECOIL_STDCALL ApplyFogStateFromGlobals(float fogStart, flo
                                                                   g_zVideo_FogColorPendingB255));
 
     g_zVideo_pD3DDevice->SetLightState(D3DLIGHTSTATE_FOGMODE, D3DFOG_LINEAR);
-    g_zVideo_pD3DDevice->SetLightState(static_cast<D3DLIGHTSTATETYPE>(5),
+    g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(5),
                                        *(DWORD *)(&fogStart));
-    g_zVideo_pD3DDevice->SetLightState(static_cast<D3DLIGHTSTATETYPE>(6),
+    g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(6),
                                        *(DWORD *)(&fogEnd));
 }
 
@@ -3787,7 +3787,7 @@ SubmitPolyFlatColor16(zVideo_XyzVertex *vertices, unsigned int packedColor16, in
             entry.renderParam = renderParam;
             if (vertexCount > 0) {
                 memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
-                            static_cast<size_t>(vertexCount) * sizeof(D3DTLVERTEX));
+                            (size_t)(vertexCount) * sizeof(D3DTLVERTEX));
             }
             return;
         }
@@ -3802,10 +3802,10 @@ SubmitPolyFlatColor16(zVideo_XyzVertex *vertices, unsigned int packedColor16, in
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-            static_cast<D3DPRIMITIVETYPE>(6), static_cast<D3DVERTEXTYPE>(3),
-            g_zVideo_D3DSubmitTempVertices, static_cast<DWORD>(vertexCount), 0);
+            (D3DPRIMITIVETYPE)(6), (D3DVERTEXTYPE)(3),
+            g_zVideo_D3DSubmitTempVertices, (DWORD)(vertexCount), 0);
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                    0x520);
         }
         return;
@@ -3832,7 +3832,7 @@ SubmitPolyFlatColor16(zVideo_XyzVertex *vertices, unsigned int packedColor16, in
     }
 
     const int queueIndex = g_zVideo_SortedPolyQueueCount;
-    if (static_cast<unsigned int>(queueIndex) >= 0x100) {
+    if ((unsigned int)(queueIndex) >= 0x100) {
         zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x547,
                           "Not enough MAX_TRANSPARENT_POLYS: need %d", queueIndex);
         return;
@@ -3872,7 +3872,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyGouraudColor16(
             entry.renderParam = renderParam;
             if (vertexCount > 0) {
                 memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
-                            static_cast<size_t>(vertexCount) * sizeof(D3DTLVERTEX));
+                            (size_t)(vertexCount) * sizeof(D3DTLVERTEX));
             }
             return;
         }
@@ -3887,10 +3887,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyGouraudColor16(
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-            static_cast<D3DPRIMITIVETYPE>(6), static_cast<D3DVERTEXTYPE>(3),
-            g_zVideo_D3DSubmitTempVertices, static_cast<DWORD>(vertexCount), 0);
+            (D3DPRIMITIVETYPE)(6), (D3DVERTEXTYPE)(3),
+            g_zVideo_D3DSubmitTempVertices, (DWORD)(vertexCount), 0);
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                    0x5bb);
         }
         return;
@@ -3918,7 +3918,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyGouraudColor16(
     }
 
     const int queueIndex = g_zVideo_SortedPolyQueueCount;
-    if (static_cast<unsigned int>(queueIndex) >= 0x100) {
+    if ((unsigned int)(queueIndex) >= 0x100) {
         zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x5e2,
                           "Not enough MAX_TRANSPARENT_POLYS: need %d", queueIndex);
         return;
@@ -3942,7 +3942,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyColorAttr(
     (void)packedColor16;
 
     const float attr1Scale = 1.0f - *attr1;
-    const DWORD alphaBits = alpha < 0xff ? static_cast<DWORD>(alpha << 24) : 0xff000000;
+    const DWORD alphaBits = alpha < 0xff ? (DWORD)(alpha << 24) : 0xff000000;
 
     FillColorAttrSpecularReverse(attr2, vertexCount);
     FillColorAttrColorsReverse(*baseColor, attr0, attr1Scale, alphaBits, vertexCount);
@@ -3966,10 +3966,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyColorAttr(
         entry.type = 3;
         entry.vertexCount = vertexCount;
         entry.renderClass = 0;
-        entry.renderParam = static_cast<int>(renderParam);
+        entry.renderParam = (int)(renderParam);
         if (vertexCount > 0) {
             memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
-                        static_cast<size_t>(vertexCount) * sizeof(D3DTLVERTEX));
+                        (size_t)(vertexCount) * sizeof(D3DTLVERTEX));
         }
         return;
     }
@@ -3984,10 +3984,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyColorAttr(
     }
 
     const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-        static_cast<D3DPRIMITIVETYPE>(6), static_cast<D3DVERTEXTYPE>(3),
-        g_zVideo_D3DSubmitTempVertices, static_cast<DWORD>(vertexCount), 0);
+        (D3DPRIMITIVETYPE)(6), (D3DVERTEXTYPE)(3),
+        g_zVideo_D3DSubmitTempVertices, (DWORD)(vertexCount), 0);
     if (hresult != DD_OK) {
-        zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                0x6ba);
     }
 }
@@ -4000,7 +4000,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
                                                            unsigned int renderParam, float alpha,
                                                            int queueMode) {
     const bool opaquePath =
-        renderClass->textureMapBlend != static_cast<D3DTEXTUREBLEND>(4) && alpha >= 1.0f;
+        renderClass->textureMapBlend != (D3DTEXTUREBLEND)(4) && alpha >= 1.0f;
 
     if (opaquePath) {
         CopyTexturedVerticesReverse(g_zVideo_D3DSubmitTempVertices, vertices, texCoords,
@@ -4019,10 +4019,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
             entry.type = 4;
             entry.vertexCount = vertexCount;
             entry.renderClass = (int)(renderClass);
-            entry.renderParam = static_cast<int>(renderParam);
+            entry.renderParam = (int)(renderParam);
             if (vertexCount > 0) {
                 memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
-                            static_cast<size_t>(vertexCount) * sizeof(D3DTLVERTEX));
+                            (size_t)(vertexCount) * sizeof(D3DTLVERTEX));
             }
             return;
         }
@@ -4053,10 +4053,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-            static_cast<D3DPRIMITIVETYPE>(6), static_cast<D3DVERTEXTYPE>(3),
-            g_zVideo_D3DSubmitTempVertices, static_cast<DWORD>(vertexCount), 0);
+            (D3DPRIMITIVETYPE)(6), (D3DVERTEXTYPE)(3),
+            g_zVideo_D3DSubmitTempVertices, (DWORD)(vertexCount), 0);
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                    0x71d);
         }
         return;
@@ -4076,7 +4076,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
         entry.type = 0;
         entry.vertexCount = vertexCount;
         entry.renderClass = (int)(renderClass);
-        entry.renderParam = static_cast<int>(renderParam);
+        entry.renderParam = (int)(renderParam);
         if (vertexCount > 0) {
             CopyTexturedVerticesReverse(entry.vertices, vertices, texCoords, vertexCount,
                                         alphaWhite);
@@ -4085,7 +4085,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
     }
 
     const int queueIndex = g_zVideo_SortedPolyQueueCount;
-    if (static_cast<unsigned int>(queueIndex) >= 0x100) {
+    if ((unsigned int)(queueIndex) >= 0x100) {
         zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x74c,
                           "Not enough MAX_TRANSPARENT_POLYS: need %d", queueIndex);
         return;
@@ -4094,7 +4094,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
     zVideo_SortedPolyQueueEntry &entry = g_zVideo_SortedPolyQueueBase[queueIndex];
     entry.vertexCount = vertexCount;
     entry.renderClass = (int)(renderClass);
-    entry.renderParam = static_cast<int>(renderParam);
+    entry.renderParam = (int)(renderParam);
     if (vertexCount > 0) {
         CopyTexturedVerticesReverse(entry.vertices, vertices, texCoords, vertexCount, alphaWhite);
     }
@@ -4108,7 +4108,7 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
               unsigned int renderParam, float alpha, int queueMode) {
     const float attr1Scale = 1.0f - *attr1;
     const DWORD alphaBits =
-        alpha < 1.0f ? (static_cast<DWORD>(static_cast<int>(alpha * 255.0f)) << 24)
+        alpha < 1.0f ? ((DWORD)((int)(alpha * 255.0f)) << 24)
                      : 0xff000000;
     const float grayBase = attr1Scale * 255.0f;
 
@@ -4116,7 +4116,7 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
     FillPolygonColorsReverse(attr0, grayBase, alphaBits, vertexCount);
 
     const bool opaquePath =
-        renderClass->textureMapBlend != static_cast<D3DTEXTUREBLEND>(4) && alpha >= 1.0f;
+        renderClass->textureMapBlend != (D3DTEXTUREBLEND)(4) && alpha >= 1.0f;
 
     if (opaquePath) {
         int preparedVertexCount = vertexCount;
@@ -4137,10 +4137,10 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
             entry.type = 5;
             entry.vertexCount = preparedVertexCount;
             entry.renderClass = (int)(renderClass);
-            entry.renderParam = static_cast<int>(renderParam);
+            entry.renderParam = (int)(renderParam);
             if (preparedVertexCount > 0) {
                 memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
-                            static_cast<size_t>(preparedVertexCount) * sizeof(D3DTLVERTEX));
+                            (size_t)(preparedVertexCount) * sizeof(D3DTLVERTEX));
             }
             return;
         }
@@ -4154,9 +4154,9 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
                                                 renderClass->textureHandle);
             g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
         }
-        if (g_zVideo_D3DRenderState_TextureMapBlend != static_cast<D3DTEXTUREBLEND>(2)) {
+        if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(2)) {
             g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 2);
-            g_zVideo_D3DRenderState_TextureMapBlend = static_cast<D3DTEXTUREBLEND>(2);
+            g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(2);
         }
         if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
             g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSU,
@@ -4170,10 +4170,10 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-            static_cast<D3DPRIMITIVETYPE>(6), static_cast<D3DVERTEXTYPE>(3),
-            g_zVideo_D3DSubmitTempVertices, static_cast<DWORD>(preparedVertexCount), 0);
+            (D3DPRIMITIVETYPE)(6), (D3DVERTEXTYPE)(3),
+            g_zVideo_D3DSubmitTempVertices, (DWORD)(preparedVertexCount), 0);
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                    0x84a);
         }
         return;
@@ -4191,7 +4191,7 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
         ++g_zVideo_OverwriteQueueCount;
         entry.type = 0;
         entry.renderClass = (int)(renderClass);
-        entry.renderParam = static_cast<int>(renderParam);
+        entry.renderParam = (int)(renderParam);
         int preparedVertexCount = vertexCount;
         if (vertexCount > 0) {
             CopyPositionUvWithPreparedColorReverse(entry.vertices, vertices, uvPairs,
@@ -4203,7 +4203,7 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
     }
 
     const int queueIndex = g_zVideo_SortedPolyQueueCount;
-    if (static_cast<unsigned int>(queueIndex) >= 0x100) {
+    if ((unsigned int)(queueIndex) >= 0x100) {
         zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x88a,
                           "Not enough MAX_TRANSPARENT_POLYS: need %d", queueIndex);
         return;
@@ -4211,7 +4211,7 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
 
     zVideo_SortedPolyQueueEntry &entry = g_zVideo_SortedPolyQueueBase[queueIndex];
     entry.renderClass = (int)(renderClass);
-    entry.renderParam = static_cast<int>(renderParam);
+    entry.renderParam = (int)(renderParam);
     int preparedVertexCount = vertexCount;
     if (vertexCount > 0) {
         CopyPositionUvWithPreparedColorReverse(entry.vertices, vertices, uvPairs,
@@ -4228,14 +4228,14 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
                  float *attr2, int vertexCount, zVideo_RenderClass *renderClass,
                  unsigned int renderParam, float alpha, int queueMode) {
     const DWORD alphaBits =
-        alpha < 1.0f ? (static_cast<DWORD>(static_cast<int>(alpha * 255.0f)) << 24)
+        alpha < 1.0f ? ((DWORD)((int)(alpha * 255.0f)) << 24)
                      : 0xff000000;
 
     FillColorAttrSpecularReverse(attr2, vertexCount);
     FillPolygonLitColorsReverse(attr1, attr0, alphaBits, vertexCount);
 
     const bool opaquePath =
-        renderClass->textureMapBlend != static_cast<D3DTEXTUREBLEND>(4) && alpha >= 1.0f;
+        renderClass->textureMapBlend != (D3DTEXTUREBLEND)(4) && alpha >= 1.0f;
 
     if (opaquePath) {
         int preparedVertexCount = vertexCount;
@@ -4256,10 +4256,10 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
             entry.type = 6;
             entry.vertexCount = preparedVertexCount;
             entry.renderClass = (int)(renderClass);
-            entry.renderParam = static_cast<int>(renderParam);
+            entry.renderParam = (int)(renderParam);
             if (preparedVertexCount > 0) {
                 memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
-                            static_cast<size_t>(preparedVertexCount) * sizeof(D3DTLVERTEX));
+                            (size_t)(preparedVertexCount) * sizeof(D3DTLVERTEX));
             }
             return;
         }
@@ -4273,9 +4273,9 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
                                                 renderClass->textureHandle);
             g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
         }
-        if (g_zVideo_D3DRenderState_TextureMapBlend != static_cast<D3DTEXTUREBLEND>(2)) {
+        if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(2)) {
             g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 2);
-            g_zVideo_D3DRenderState_TextureMapBlend = static_cast<D3DTEXTUREBLEND>(2);
+            g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(2);
         }
         if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
             g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSU,
@@ -4289,10 +4289,10 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-            static_cast<D3DPRIMITIVETYPE>(6), static_cast<D3DVERTEXTYPE>(3),
-            g_zVideo_D3DSubmitTempVertices, static_cast<DWORD>(preparedVertexCount), 0);
+            (D3DPRIMITIVETYPE)(6), (D3DVERTEXTYPE)(3),
+            g_zVideo_D3DSubmitTempVertices, (DWORD)(preparedVertexCount), 0);
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                    0x9a4);
         }
         return;
@@ -4310,7 +4310,7 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
         ++g_zVideo_OverwriteQueueCount;
         entry.type = 0;
         entry.renderClass = (int)(renderClass);
-        entry.renderParam = static_cast<int>(renderParam);
+        entry.renderParam = (int)(renderParam);
         int preparedVertexCount = vertexCount;
         if (vertexCount > 0) {
             CopyPositionUvWithPreparedColorReverse(entry.vertices, vertices, uvPairs,
@@ -4322,7 +4322,7 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
     }
 
     const int queueIndex = g_zVideo_SortedPolyQueueCount;
-    if (static_cast<unsigned int>(queueIndex) >= 0x100) {
+    if ((unsigned int)(queueIndex) >= 0x100) {
         zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x9e4,
                           "Not enough MAX_TRANSPARENT_POLYS: need %d", queueIndex);
         return;
@@ -4330,7 +4330,7 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
 
     zVideo_SortedPolyQueueEntry &entry = g_zVideo_SortedPolyQueueBase[queueIndex];
     entry.renderClass = (int)(renderClass);
-    entry.renderParam = static_cast<int>(renderParam);
+    entry.renderParam = (int)(renderParam);
     int preparedVertexCount = vertexCount;
     if (vertexCount > 0) {
         CopyPositionUvWithPreparedColorReverse(entry.vertices, vertices, uvPairs,
@@ -4365,10 +4365,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawPointColor16(zVideo_XyzVertex *pointPos
     }
 
     const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-        static_cast<D3DPRIMITIVETYPE>(1), static_cast<D3DVERTEXTYPE>(3),
+        (D3DPRIMITIVETYPE)(1), (D3DVERTEXTYPE)(3),
         g_zVideo_D3DSubmitTempVertices, 1, 0);
     if (hresult != DD_OK) {
-        zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+        zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                0xa4c);
     }
 }
@@ -4377,7 +4377,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawPointColor16(zVideo_XyzVertex *pointPos
 RECOIL_NOINLINE void RECOIL_FASTCALL QueueSolidQuad(unsigned int packedColor16,
                                                     zVidRect32 *clipRect, double alpha) {
     const int batchIndex = g_zVideo_QuadBatchCount;
-    if (static_cast<unsigned int>(batchIndex) >= 0x10) {
+    if ((unsigned int)(batchIndex) >= 0x10) {
         return;
     }
 
@@ -4388,15 +4388,15 @@ RECOIL_NOINLINE void RECOIL_FASTCALL QueueSolidQuad(unsigned int packedColor16,
     float right;
     float bottom;
     if (clipRect != 0) {
-        left = static_cast<float>(clipRect->left);
-        top = static_cast<float>(clipRect->top);
-        right = static_cast<float>(clipRect->right);
-        bottom = static_cast<float>(clipRect->bottom);
+        left = (float)(clipRect->left);
+        top = (float)(clipRect->top);
+        right = (float)(clipRect->right);
+        bottom = (float)(clipRect->bottom);
     } else {
         left = 0.0f;
         top = 0.0f;
-        right = static_cast<float>(g_zVideo_PrimarySurfaceState.height);
-        bottom = static_cast<float>(g_zVideo_PrimarySurfaceState.width);
+        right = (float)(g_zVideo_PrimarySurfaceState.height);
+        bottom = (float)(g_zVideo_PrimarySurfaceState.width);
     }
 
     item.vertices[0].sx = left;
@@ -4408,7 +4408,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL QueueSolidQuad(unsigned int packedColor16,
     item.vertices[3].sx = left;
     item.vertices[3].sy = bottom;
 
-    const int alphaByte = static_cast<int>(alpha * 255.0);
+    const int alphaByte = (int)(alpha * 255.0);
     const DWORD packedColor = PackD3DColorFrom16(packedColor16, alphaByte);
     for (int i = 0; i < 4; ++i) {
         item.vertices[i].color = packedColor;
@@ -4440,15 +4440,15 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushSortedPolys() {
         g_zVideo_D3DRenderState_ZWriteEnable = 0;
     }
 
-    for (unsigned int i = 0; i < static_cast<unsigned int>(queueCount); ++i) {
-        g_zVideo_SortedPolyDrawOrder[i] = queueCount - static_cast<int>(i) - 1;
+    for (unsigned int i = 0; i < (unsigned int)(queueCount); ++i) {
+        g_zVideo_SortedPolyDrawOrder[i] = queueCount - (int)(i) - 1;
         queueCount = g_zVideo_SortedPolyQueueCount;
     }
 
     bool swapped;
     do {
         swapped = false;
-        for (unsigned int i = 1; i < static_cast<unsigned int>(queueCount); ++i) {
+        for (unsigned int i = 1; i < (unsigned int)(queueCount); ++i) {
             const int currentIndex = g_zVideo_SortedPolyDrawOrder[i];
             const int previousIndex = g_zVideo_SortedPolyDrawOrder[i - 1];
             if (g_zVideo_SortedPolyQueueBase[currentIndex].vertices[0].sz <
@@ -4461,7 +4461,7 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushSortedPolys() {
         }
     } while (swapped);
 
-    for (unsigned int i_4102 = 0; i_4102 < static_cast<unsigned int>(g_zVideo_SortedPolyQueueCount); ++i_4102) {
+    for (unsigned int i_4102 = 0; i_4102 < (unsigned int)(g_zVideo_SortedPolyQueueCount); ++i_4102) {
         const int drawIndex = g_zVideo_SortedPolyDrawOrder[i_4102];
         zVideo_SortedPolyQueueEntry &entry = g_zVideo_SortedPolyQueueBase[drawIndex];
         zVideo_RenderClass *renderClass = (zVideo_RenderClass *)(entry.renderClass);
@@ -4475,12 +4475,12 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushSortedPolys() {
 
             const D3DTEXTUREBLEND textureMapBlend = renderClass->textureMapBlend;
             const bool forceTransparentTextureBlend =
-                textureMapBlend != static_cast<D3DTEXTUREBLEND>(4) &&
+                textureMapBlend != (D3DTEXTUREBLEND)(4) &&
                 (entry.vertices[0].color & 0xff000000) != 0xff000000;
             if (forceTransparentTextureBlend) {
-                if (g_zVideo_D3DRenderState_TextureMapBlend != static_cast<D3DTEXTUREBLEND>(4)) {
+                if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(4)) {
                     g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 4);
-                    g_zVideo_D3DRenderState_TextureMapBlend = static_cast<D3DTEXTUREBLEND>(4);
+                    g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(4);
                 }
             } else if (g_zVideo_D3DRenderState_TextureMapBlend != textureMapBlend) {
                 g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND,
@@ -4504,10 +4504,10 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushSortedPolys() {
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-            D3DPT_TRIANGLEFAN, static_cast<D3DVERTEXTYPE>(3), entry.vertices,
-            static_cast<DWORD>(entry.vertexCount), 0);
+            D3DPT_TRIANGLEFAN, (D3DVERTEXTYPE)(3), entry.vertices,
+            (DWORD)(entry.vertexCount), 0);
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                    0xb09);
         }
     }
@@ -4548,8 +4548,8 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushQuadBatch() {
 
     g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_ALWAYS);
 
-    for (unsigned int i = 0; i < static_cast<unsigned int>(g_zVideo_QuadBatchCount); ++i) {
-        g_zVideo_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, static_cast<D3DVERTEXTYPE>(3),
+    for (unsigned int i = 0; i < (unsigned int)(g_zVideo_QuadBatchCount); ++i) {
+        g_zVideo_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, (D3DVERTEXTYPE)(3),
                                            g_zVideo_QuadBatchItemsBase[i].vertices, 4, 0);
     }
 
@@ -4600,13 +4600,13 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
 
                 const D3DTEXTUREBLEND textureMapBlend = renderClass->textureMapBlend;
                 const bool forceTransparentTextureBlend =
-                    textureMapBlend != static_cast<D3DTEXTUREBLEND>(4) &&
+                    textureMapBlend != (D3DTEXTUREBLEND)(4) &&
                     (entry.vertices[0].color & 0xff000000) != 0xff000000;
                 if (forceTransparentTextureBlend) {
                     if (g_zVideo_D3DRenderState_TextureMapBlend !=
-                        static_cast<D3DTEXTUREBLEND>(4)) {
+                        (D3DTEXTUREBLEND)(4)) {
                         g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 4);
-                        g_zVideo_D3DRenderState_TextureMapBlend = static_cast<D3DTEXTUREBLEND>(4);
+                        g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(4);
                     }
                 } else if (g_zVideo_D3DRenderState_TextureMapBlend != textureMapBlend) {
                     g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND,
@@ -4630,8 +4630,8 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
             }
 
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-                D3DPT_TRIANGLEFAN, static_cast<D3DVERTEXTYPE>(3), entry.vertices,
-                static_cast<DWORD>(entry.vertexCount), 0);
+                D3DPT_TRIANGLEFAN, (D3DVERTEXTYPE)(3), entry.vertices,
+                (DWORD)(entry.vertexCount), 0);
 
             if (g_zVideo_D3DRenderState_AlphaBlendEnable != 0) {
                 g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
@@ -4656,8 +4656,8 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
                 g_zVideo_D3DRenderState_ShadeMode = 1;
             }
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-                D3DPT_TRIANGLEFAN, static_cast<D3DVERTEXTYPE>(3), entry.vertices,
-                static_cast<DWORD>(entry.vertexCount), 0);
+                D3DPT_TRIANGLEFAN, (D3DVERTEXTYPE)(3), entry.vertices,
+                (DWORD)(entry.vertexCount), 0);
             break;
 
         case 4: {
@@ -4690,8 +4690,8 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
             }
 
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-                D3DPT_TRIANGLEFAN, static_cast<D3DVERTEXTYPE>(3), entry.vertices,
-                static_cast<DWORD>(entry.vertexCount), 0);
+                D3DPT_TRIANGLEFAN, (D3DVERTEXTYPE)(3), entry.vertices,
+                (DWORD)(entry.vertexCount), 0);
             break;
         }
 
@@ -4709,9 +4709,9 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
                                                     renderClass->textureHandle);
                 g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
             }
-            if (g_zVideo_D3DRenderState_TextureMapBlend != static_cast<D3DTEXTUREBLEND>(2)) {
+            if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(2)) {
                 g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 2);
-                g_zVideo_D3DRenderState_TextureMapBlend = static_cast<D3DTEXTUREBLEND>(2);
+                g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(2);
             }
             if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
                 g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSU,
@@ -4725,8 +4725,8 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
             }
 
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-                D3DPT_TRIANGLEFAN, static_cast<D3DVERTEXTYPE>(3), entry.vertices,
-                static_cast<DWORD>(entry.vertexCount), 0);
+                D3DPT_TRIANGLEFAN, (D3DVERTEXTYPE)(3), entry.vertices,
+                (DWORD)(entry.vertexCount), 0);
             break;
         }
 
@@ -4735,7 +4735,7 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
         }
 
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(static_cast<int>(hresult), kZVideoDirect3DSourceFile,
+            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
                                    0xbb7);
         }
     }
@@ -4760,7 +4760,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FloorPowerOfTwo(int value) {
 
 // Reimplements 0x4aa9d0: zVideo_dd3d::TextureRecord_Create
 RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_CDECL TextureRecord_Create() {
-    return static_cast<zVideo_TextureRecordPartial *>(
+    return (zVideo_TextureRecordPartial *)(
         calloc(1, sizeof(zVideo_TextureRecordPartial)));
 }
 
@@ -4788,7 +4788,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(unsigned short
 
     const int width = image->width;
     const int height = image->height;
-    unsigned short *srcPixels = static_cast<unsigned short *>(image->pixels);
+    unsigned short *srcPixels = (unsigned short *)(image->pixels);
     unsigned char *dstRowBytes = (unsigned char *)(dstPixels);
 
     if (image->alphaMap == 0) {
@@ -4801,7 +4801,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(unsigned short
                 const unsigned short src = *srcPixels++;
                 const unsigned short alphaBit = src != 0 ? 0x8000 : 0;
                 *dstCursor++ =
-                    static_cast<unsigned short>((src & g_zVideo_PixelPack_BMask) |
+                    (unsigned short)((src & g_zVideo_PixelPack_BMask) |
                                                ((src >> 1) & (redGreenMask >> 1)) | alphaBit);
             }
             }
@@ -4836,7 +4836,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(unsigned short
             const unsigned short src = *srcPixels++;
             const unsigned int alpha = (*alphaCursor++ & 0xf0) << 8;
             *dstCursor++ =
-                static_cast<unsigned short>(((src >> 1) & (g_zVideo_PixelPack_BMask >> 1)) |
+                (unsigned short)(((src >> 1) & (g_zVideo_PixelPack_BMask >> 1)) |
                                            ((greenAlphaMask & src) >> greenAlphaShift) |
                                            ((redAlphaMask & src) >> redAlphaShift) | alpha);
         }
@@ -4854,8 +4854,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UploadImageToSurface(IDirectDrawSurface *upl
     zVideo_dd::LockSurface_WaitRestore((IDirectDrawSurface3 *)(uploadSurface),
                                        &lockedDescOut);
 
-    unsigned char *dstPixels = static_cast<unsigned char *>(lockedDescOut.lpSurface);
-    unsigned char *srcPixels = static_cast<unsigned char *>(image->pixels);
+    unsigned char *dstPixels = (unsigned char *)(lockedDescOut.lpSurface);
+    unsigned char *srcPixels = (unsigned char *)(image->pixels);
     if (useAlpha != 0) {
         ConvertImagePixelsForTexture((unsigned short *)(dstPixels), image,
                                      lockedDescOut.lPitch, useAlpha);
@@ -4865,12 +4865,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UploadImageToSurface(IDirectDrawSurface *upl
         if (lockedDescOut.lPitch == width) {
             const int bytesPerPixel = (g_zVideo_DisplayModeBpp + 7) >> 3;
             memcpy(dstPixels, srcPixels,
-                        static_cast<size_t>(height * bytesPerPixel * width));
+                        (size_t)(height * bytesPerPixel * width));
         } else {
             const int rowCopyBytes = (g_zVideo_DisplayModeBpp * width + 7) >> 3;
             {
             for (int row = 0; row < height; ++row) {
-                memcpy(dstPixels, srcPixels, static_cast<size_t>(rowCopyBytes));
+                memcpy(dstPixels, srcPixels, (size_t)(rowCopyBytes));
                 dstPixels += lockedDescOut.lPitch;
                 srcPixels += width << 1;
             }
@@ -5013,7 +5013,7 @@ bool PageUnlockBeforeRelease(zVideo_SurfaceStatePartial &state, int reportLine) 
     if (state.surf != 0 && state.pageLockActive != 0) {
         const HRESULT hresult = state.surf->PageUnlock(0);
         if (hresult != DD_OK) {
-            ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile,
+            ReportError((int)(hresult), kZVideoDirectDrawSourceFile,
                         reportLine);
             return false;
         }
@@ -5040,7 +5040,7 @@ bool BltFillWithRestore(IDirectDrawSurface3 *surface, zVidRect32 *rect, DWORD fl
             }
         }
 
-        ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, reportLine);
+        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, reportLine);
         return false;
     }
 }
@@ -5251,7 +5251,7 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(GUID *guid, LPSTR driverDescription, 
     const HRESULT capsResult =
         g_zVideo_pDirectDraw2->GetCaps(&g_zVideo_DDrawCapsHal, &g_zVideo_DDrawCapsHel);
     if (capsResult != DD_OK) {
-        ReportError(static_cast<int>(capsResult), kZVideoDirectDrawSourceFile, 0x739);
+        ReportError((int)(capsResult), kZVideoDirectDrawSourceFile, 0x739);
         return FALSE;
     }
 
@@ -5292,7 +5292,7 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(GUID *guid, LPSTR driverDescription, 
 HRESULT CALLBACK EnumDirect3DDeviceCallback(GUID *guid, LPSTR deviceDescription, LPSTR deviceName,
                                             D3DDEVICEDESC *hwDesc, D3DDEVICEDESC *,
                                             LPVOID context) {
-    zVidHwApiDeviceRecordPartial *entry = static_cast<zVidHwApiDeviceRecordPartial *>(context);
+    zVidHwApiDeviceRecordPartial *entry = (zVidHwApiDeviceRecordPartial *)(context);
     zVidD3DDriverRecordPartial &driver = entry->m_d3dDrivers[entry->m_acceptedD3DDeviceCount];
 
     printf("DRIVER:%s - %s\n", deviceName, deviceDescription);
@@ -5355,7 +5355,7 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(GUID *guid, LPSTR deviceDescription,
 RECOIL_NOINLINE int RECOIL_CDECL PrepareWindowForMode() {
     SetMenu(g_zVideo_hWnd, 0);
     SetWindowLongA(g_zVideo_hWnd, GWL_EXSTYLE, 0x00040000);
-    SetWindowLongA(g_zVideo_hWnd, GWL_STYLE, static_cast<LONG>(0x82000000u));
+    SetWindowLongA(g_zVideo_hWnd, GWL_STYLE, (LONG)(0x82000000u));
     UpdateWindow(g_zVideo_hWnd);
     SetFocus(g_zVideo_hWnd);
 
@@ -5387,7 +5387,7 @@ RECOIL_NOINLINE int RECOIL_CDECL RunDirectDrawDeviceEnumeration() {
         return 1;
     }
 
-    ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x6ad);
+    ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x6ad);
     return 0;
 }
 
@@ -5397,14 +5397,14 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDirectDraw2ForSelectedDevice() {
     const HRESULT createResult = DirectDrawCreate(
         g_zVideo_pSelectedHwApiDeviceRecord->pDirectDrawGuid, &directDraw1, 0);
     if (createResult != DD_OK) {
-        return ReportError(static_cast<int>(createResult), kZVideoDirectDrawSourceFile,
+        return ReportError((int)(createResult), kZVideoDirectDrawSourceFile,
                            0x3c4);
     }
 
     const HRESULT queryResult = directDraw1->QueryInterface(
         IID_IDirectDraw2, (void **)(&g_zVideo_pDirectDraw2));
     if (queryResult != DD_OK) {
-        return ReportError(static_cast<int>(queryResult), kZVideoDirectDrawSourceFile,
+        return ReportError((int)(queryResult), kZVideoDirectDrawSourceFile,
                            0x3cb);
     }
 
@@ -5424,7 +5424,7 @@ EnumerateDirect3DDevicesForRecord(zVidHwApiDeviceRecordPartial *entry) {
     const HRESULT queryResult = g_zVideo_pDirectDraw2->QueryInterface(
         IID_IDirect3D2, (void **)(&g_zVideo_pD3D2));
     if (queryResult != DD_OK) {
-        ReportError(static_cast<int>(queryResult), kZVideoDirectDrawSourceFile, 0x781);
+        ReportError((int)(queryResult), kZVideoDirectDrawSourceFile, 0x781);
         return 0;
     }
 
@@ -5476,7 +5476,7 @@ LockDirectDrawSurface(IDirectDrawSurface3 *surface, DDSURFACEDESC *outLockedSurf
             }
         }
 
-        ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x1b9);
+        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x1b9);
         return 0x5a56ffff;
     }
 }
@@ -5496,7 +5496,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UnlockDirectDrawSurface(IDirectDrawSurface3 
             }
         }
 
-        ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x1d7);
+        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x1d7);
         return 0x5a56ffff;
     }
 }
@@ -5520,7 +5520,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LockSurface_WaitRestore(IDirectDrawSurface3 
             }
         }
 
-        ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x1fd);
+        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x1fd);
         return 0x5a56ffff;
     }
 }
@@ -5541,7 +5541,7 @@ UnlockSurface_WaitRestore(IDirectDrawSurface3 *surface) {
             }
         }
 
-        ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x21b);
+        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x21b);
         return 0x5a56ffff;
     }
 }
@@ -5566,11 +5566,11 @@ CheckLocked:
     const int result = LockDirectDrawSurface(surfaceState->surf, &lockedSurfaceDesc);
     if (result == 0) {
         const int locked = 1;
-        surfaceState->width = static_cast<int>(lockedSurfaceDesc.dwWidth);
+        surfaceState->width = (int)(lockedSurfaceDesc.dwWidth);
         surfaceState->locked = locked;
-        surfaceState->height = static_cast<int>(lockedSurfaceDesc.dwHeight);
+        surfaceState->height = (int)(lockedSurfaceDesc.dwHeight);
         surfaceState->lockInfoValid = locked;
-        surfaceState->pitch = static_cast<int>(lockedSurfaceDesc.lPitch);
+        surfaceState->pitch = (int)(lockedSurfaceDesc.lPitch);
         surfaceState->pixels = lockedSurfaceDesc.lpSurface;
     }
 
@@ -5610,8 +5610,8 @@ Image_LazyCreateBackingSurface(zVidImagePartial *image, unsigned int ddsCapsFlag
     DDSURFACEDESC desc = {0};
     desc.dwSize = sizeof(desc);
     desc.dwFlags = 0x10007;
-    desc.dwHeight = static_cast<DWORD>(image->height);
-    desc.dwWidth = static_cast<DWORD>(image->width);
+    desc.dwHeight = (DWORD)(image->height);
+    desc.dwWidth = (DWORD)(image->width);
     desc.ddsCaps.dwCaps = ddsCapsFlags | DDSCAPS_OFFSCREENPLAIN;
     image->surface = 0;
 
@@ -5626,7 +5626,7 @@ Image_LazyCreateBackingSurface(zVidImagePartial *image, unsigned int ddsCapsFlag
         }
     }
 
-    ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x2ed);
+    ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x2ed);
     return image->surface;
 }
 
@@ -5645,19 +5645,19 @@ Image_PopulateSurfaceFromHeapPixels(zVidImagePartial *image) {
         if (hresult == DDERR_SURFACELOST) {
             const HRESULT restoreResult = image->surface->Restore();
             if (restoreResult != DD_OK) {
-                ReportError(static_cast<int>(restoreResult), kZVideoDirectDrawSourceFile,
+                ReportError((int)(restoreResult), kZVideoDirectDrawSourceFile,
                             0x31b);
             }
             continue;
         }
 
-        ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x31f);
+        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x31f);
         return 0;
     }
 
-    const int rowBytes = static_cast<int>(image->width) << 1;
-    unsigned char *srcPixels = static_cast<unsigned char *>(image->pixels);
-    unsigned char *dstPixels = static_cast<unsigned char *>(lockedSurfaceDesc.lpSurface);
+    const int rowBytes = (int)(image->width) << 1;
+    unsigned char *srcPixels = (unsigned char *)(image->pixels);
+    unsigned char *dstPixels = (unsigned char *)(lockedSurfaceDesc.lpSurface);
     {
     for (int row = 0; row < image->height; ++row) {
         memcpy(dstPixels, srcPixels, rowBytes);
@@ -5679,13 +5679,13 @@ Image_PopulateSurfaceFromHeapPixels(zVidImagePartial *image) {
         if (hresult == DDERR_SURFACELOST) {
             const HRESULT restoreResult = image->surface->Restore();
             if (restoreResult != DD_OK) {
-                ReportError(static_cast<int>(restoreResult), kZVideoDirectDrawSourceFile,
+                ReportError((int)(restoreResult), kZVideoDirectDrawSourceFile,
                             0x33b);
             }
             continue;
         }
 
-        ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x33f);
+        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x33f);
         return 0;
     }
 }
@@ -5740,7 +5740,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Image_UploadPixelsToSurface(zVidImagePartial
         return 1;
     }
 
-    ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x36d);
+    ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x36d);
     return 0;
 }
 
@@ -5756,7 +5756,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Image_ReleaseSurface(zVidImagePartial *image
         return 1;
     }
 
-    ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x382);
+    ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x382);
     return 0;
 }
 
@@ -5767,7 +5767,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRectDirect(zVidRect32 *srcRec
         (RECT *)(dstRect), g_zVideo_SwSurfaceState.surf,
         (RECT *)(srcRect), DDBLT_WAIT, 0);
     if (hresult != DD_OK) {
-        ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0xe9);
+        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0xe9);
     }
 }
 
@@ -5778,7 +5778,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltPrimaryToSwRectDirect(zVidRect32 *srcRec
         (RECT *)(dstRect), g_zVideo_PrimarySurfaceState.surf,
         (RECT *)(srcRect), DDBLT_WAIT, 0);
     if (hresult != DD_OK) {
-        ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0xfc);
+        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0xfc);
     }
 }
 
@@ -5867,7 +5867,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(zVidImagePartial *srcIma
     }
 
     if (hresult != DD_OK) {
-        ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x159);
+        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x159);
     }
 }
 
@@ -5938,7 +5938,7 @@ RECOIL_NOINLINE void RECOIL_CDECL FlipToGDIIfAttached() {
 RECOIL_NOINLINE int RECOIL_CDECL SetDisplayMode() {
     HRESULT hresult = g_zVideo_pDirectDraw2->SetCooperativeLevel(g_zVideo_hWnd, 0x13);
     if (hresult != DD_OK) {
-        ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x393);
+        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x393);
         return 0;
     }
 
@@ -5949,7 +5949,7 @@ RECOIL_NOINLINE int RECOIL_CDECL SetDisplayMode() {
         return 1;
     }
 
-    ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x39c);
+    ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x39c);
     return 0;
 }
 
@@ -6007,7 +6007,7 @@ RECOIL_NOINLINE int RECOIL_CDECL RestoreDisplaySurfaces() {
     if (g_zVideo_DisplayModeSurfaceState.surf != 0) {
         const HRESULT hresult = g_zVideo_DisplayModeSurfaceState.surf->Restore();
         if (hresult != DD_OK) {
-            return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile,
+            return ReportError((int)(hresult), kZVideoDirectDrawSourceFile,
                                0x5e1);
         }
     }
@@ -6015,7 +6015,7 @@ RECOIL_NOINLINE int RECOIL_CDECL RestoreDisplaySurfaces() {
     if (g_zVideo_PrimarySurfaceState.surf != 0) {
         const HRESULT hresult = g_zVideo_PrimarySurfaceState.surf->Restore();
         if (hresult != DD_OK) {
-            return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile,
+            return ReportError((int)(hresult), kZVideoDirectDrawSourceFile,
                                0x5e8);
         }
     }
@@ -6023,7 +6023,7 @@ RECOIL_NOINLINE int RECOIL_CDECL RestoreDisplaySurfaces() {
     if (g_zVideo_SwSurfaceState.surf != 0) {
         const HRESULT hresult = g_zVideo_SwSurfaceState.surf->Restore();
         if (hresult != DD_OK) {
-            return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile,
+            return ReportError((int)(hresult), kZVideoDirectDrawSourceFile,
                                0x5ef);
         }
     }
@@ -6039,7 +6039,7 @@ InitFullscreenSoftwarePixelPack(IDirectDrawSurface3 *displaySurface) {
 
     const HRESULT hresult = displaySurface->GetPixelFormat(&pixelFormat);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x597);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x597);
     }
 
     if (pixelFormat.dwGBitMask == 0x07e0) {
@@ -6113,7 +6113,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateHalfResBackbufferSurfaces() {
     HRESULT hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc,
                                              &g_zVideo_DisplayModeSurfaceState.surf);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x41f);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x41f);
     }
 
     DDSCAPS attachedCaps = {0};
@@ -6122,7 +6122,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateHalfResBackbufferSurfaces() {
     hresult = g_zVideo_DisplayModeSurfaceState.surf->GetAttachedSurface(
         &attachedCaps, &g_zVideo_PrimarySurfaceState.surf);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x429);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x429);
     }
 
     desc.dwFlags = 0x07;
@@ -6135,12 +6135,12 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateHalfResBackbufferSurfaces() {
                 : 0;
         desc.ddsCaps.dwCaps = (featureFlags != 0 ? 0x20003800 : 0) + 0x840;
     }
-    desc.dwWidth = static_cast<DWORD>(g_zVideo_SwSurfaceState.width);
-    desc.dwHeight = static_cast<DWORD>(g_zVideo_SwSurfaceState.height);
+    desc.dwWidth = (DWORD)(g_zVideo_SwSurfaceState.width);
+    desc.dwHeight = (DWORD)(g_zVideo_SwSurfaceState.height);
 
     hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc, &g_zVideo_SwSurfaceState.surf);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x43f);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x43f);
     }
 
     if (InitFullscreenSoftwarePixelPack(g_zVideo_DisplayModeSurfaceState.surf) != 0) {
@@ -6149,12 +6149,12 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateHalfResBackbufferSurfaces() {
 
     hresult = g_zVideo_pDirectDraw2->CreateClipper(0, &g_zVideo_pClipper, 0);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x447);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x447);
     }
 
     hresult = g_zVideo_pClipper->SetHWnd(0, g_zVideo_hWnd);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x44b);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x44b);
     }
 
     hresult = g_zVideo_DisplayModeSurfaceState.surf->SetClipper(g_zVideo_pClipper);
@@ -6162,7 +6162,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateHalfResBackbufferSurfaces() {
         return 0;
     }
 
-    return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x450);
+    return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x450);
 }
 
 // Reimplements 0x4a8b20: zVideo_dd::CreateFullscreenSoftwareSurfaces
@@ -6182,7 +6182,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
     HRESULT hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc,
                                              &g_zVideo_DisplayModeSurfaceState.surf);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x4cc);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x4cc);
     }
 
     if (LockSurfaceState(&g_zVideo_DisplayModeSurfaceState) == 0) {
@@ -6193,7 +6193,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
         hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc,
                                          &g_zVideo_DisplayModeSurfaceState.surf);
         if (hresult != DD_OK) {
-            return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile,
+            return ReportError((int)(hresult), kZVideoDirectDrawSourceFile,
                                0x4da);
         }
     }
@@ -6206,13 +6206,13 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
         const int featureFlags = g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags;
         desc.ddsCaps.dwCaps = (featureFlags != 0 ? 0x20003800 : 0) + 0x840;
     }
-    desc.dwWidth = static_cast<DWORD>(g_zVideo_DisplayModeSurfaceState.width);
-    desc.dwHeight = static_cast<DWORD>(g_zVideo_DisplayModeSurfaceState.height);
+    desc.dwWidth = (DWORD)(g_zVideo_DisplayModeSurfaceState.width);
+    desc.dwHeight = (DWORD)(g_zVideo_DisplayModeSurfaceState.height);
 
     hresult =
         CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc, &g_zVideo_PrimarySurfaceState.surf);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x4f7);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x4f7);
     }
 
     desc.dwFlags = 7;
@@ -6222,12 +6222,12 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
         const int featureFlags = g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags;
         desc.ddsCaps.dwCaps = (featureFlags != 0 ? 0x20003800 : 0) + 0x840;
     }
-    desc.dwWidth = static_cast<DWORD>(g_zVideo_DisplayModeSurfaceState.width);
-    desc.dwHeight = static_cast<DWORD>(g_zVideo_DisplayModeSurfaceState.height);
+    desc.dwWidth = (DWORD)(g_zVideo_DisplayModeSurfaceState.width);
+    desc.dwHeight = (DWORD)(g_zVideo_DisplayModeSurfaceState.height);
 
     hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc, &g_zVideo_SwSurfaceState.surf);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x50d);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x50d);
     }
 
     if (InitFullscreenSoftwarePixelPack(g_zVideo_DisplayModeSurfaceState.surf) != 0) {
@@ -6236,12 +6236,12 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
 
     hresult = g_zVideo_pDirectDraw2->CreateClipper(0, &g_zVideo_pClipper, 0);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x515);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x515);
     }
 
     hresult = g_zVideo_pClipper->SetHWnd(0, g_zVideo_hWnd);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x519);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x519);
     }
 
     hresult = g_zVideo_DisplayModeSurfaceState.surf->SetClipper(g_zVideo_pClipper);
@@ -6249,7 +6249,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
         return 0;
     }
 
-    return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x51d);
+    return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x51d);
 }
 
 // Reimplements 0x4a8dc0: zVideo_dd::CreateFullscreenHardwareSurfaces
@@ -6263,7 +6263,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenHardwareSurfaces() {
     HRESULT hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc,
                                              &g_zVideo_DisplayModeSurfaceState.surf);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x53b);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x53b);
     }
 
     g_zVideo_PrimaryHasAttachedBackbuffer = 1;
@@ -6272,19 +6272,19 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenHardwareSurfaces() {
     hresult = g_zVideo_DisplayModeSurfaceState.surf->GetAttachedSurface(
         &attachedCaps, &g_zVideo_SwSurfaceState.surf);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x546);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x546);
     }
 
     desc.dwFlags = 7;
-    desc.dwWidth = static_cast<DWORD>(g_zVideo_DisplayModeSurfaceState.width);
-    desc.dwHeight = static_cast<DWORD>(g_zVideo_DisplayModeSurfaceState.height);
+    desc.dwWidth = (DWORD)(g_zVideo_DisplayModeSurfaceState.width);
+    desc.dwHeight = (DWORD)(g_zVideo_DisplayModeSurfaceState.height);
     const int featureFlags = g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags;
     desc.ddsCaps.dwCaps = (featureFlags != 0 ? 0x20003800 : 0) + 0x840;
 
     hresult =
         CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc, &g_zVideo_PrimarySurfaceState.surf);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x557);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x557);
     }
 
     if (InitFullscreenSoftwarePixelPack(g_zVideo_DisplayModeSurfaceState.surf) != 0) {
@@ -6293,12 +6293,12 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenHardwareSurfaces() {
 
     hresult = g_zVideo_pDirectDraw2->CreateClipper(0, &g_zVideo_pClipper, 0);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x55f);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x55f);
     }
 
     hresult = g_zVideo_pClipper->SetHWnd(0, g_zVideo_hWnd);
     if (hresult != DD_OK) {
-        return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x563);
+        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x563);
     }
 
     hresult = g_zVideo_DisplayModeSurfaceState.surf->SetClipper(g_zVideo_pClipper);
@@ -6306,7 +6306,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenHardwareSurfaces() {
         return 0;
     }
 
-    return ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x567);
+    return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x567);
 }
 
 // Reimplements 0x4a91b0: zVideo_dd::ReleaseAllInterfacesAndSurfaces
@@ -6385,7 +6385,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PaletteSetEntries(unsigned short firstEntry,
         return 0;
     }
 
-    ReportError(static_cast<int>(hresult), kZVideoDirectDrawSourceFile, 0x823);
+    ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x823);
     return 0x5a56ffff;
 }
 

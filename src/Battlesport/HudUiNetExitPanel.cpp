@@ -101,7 +101,7 @@ HudUiNetExitPanel *RECOIL_THISCALL HudUiNetExitPanel::Constructor() {
         base.BindWidgetByName(loadedSection, &exitWidget.base.base, "EXIT");
         base.BindWidgetByName(loadedSection, &resumeWidget.base.base, "RESUME");
         base.FreeLoadedTreeRoots(
-            static_cast<int>((unsigned int)(loadedSection)));
+            (int)((unsigned int)(loadedSection)));
     }
 
     if (zInp::GetJoystickOption() == 0) {
@@ -170,7 +170,7 @@ void RECOIL_THISCALL HudUiNetExitPanel_ResumeWidget::OnShowPreview() {
 
             HudUiElement *const focus = g_HudUiNetExitPanel_SavedInputFocus;
             if (focus != 0) {
-                static_cast<HudUiBackgroundContainer *>(base.owner)->SetInputFocus(focus);
+                ((HudUiBackgroundContainer *)(base.owner))->SetInputFocus(focus);
             }
         }
 
@@ -188,7 +188,7 @@ void RECOIL_THISCALL HudUiNetExitPanel_ResumeWidget::OnHidePreview() {
         if (zInp::GetJoystickOption() == 0) {
             HudUiMgr::UpdateTargetReticleFromCursor(1, 0, 0.0f, 0.0f);
             HudUiBackgroundContainer *const owner =
-                static_cast<HudUiBackgroundContainer *>(base.owner);
+                (HudUiBackgroundContainer *)(base.owner);
             g_HudUiNetExitPanel_SavedInputFocus = owner->GetInputFocus();
             owner->SetInputFocus(0);
         }
@@ -203,7 +203,7 @@ void RECOIL_THISCALL HudUiNetExitPanel_ResumeWidget::OnHidePreview() {
 // (D:\Proj\Battlesport\HudUi_NetExit.cpp)
 RECOIL_NOINLINE HudUiNetExitPanel *RECOIL_CDECL HudUiNetExitPanel::CreateGlobal() {
     HudUiNetExitPanel *const panel =
-        static_cast<HudUiNetExitPanel *>(::operator new(sizeof(HudUiNetExitPanel)));
+        (HudUiNetExitPanel *)(::operator new(sizeof(HudUiNetExitPanel)));
     if (panel == 0) {
         g_HudUiNetExitPanel = 0;
         return 0;

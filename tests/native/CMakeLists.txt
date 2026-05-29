@@ -68,9 +68,9 @@ add_test(
 )
 
 add_test(
-    NAME recoil_no_reinterpret_cast
+    NAME recoil_no_modern_cpp_constructs
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_no_reinterpret_cast.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil_no_modern_cpp_constructs.py
         --root src
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )

@@ -152,7 +152,7 @@ void RefreshHeaderExtents(zDEClient_MapTreeState *tree) {
 void EnsureFeatureMapTreeInitialized(zDEClient_MapTreeState *tree) {
     if (g_zDEClient_FeatureMapTreeNil == 0) {
         g_zDEClient_FeatureMapTreeNil =
-            static_cast<zDEClient_MapTreeNode *>(::operator new(sizeof(zDEClient_MapTreeNode)));
+            (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
         g_zDEClient_FeatureMapTreeNil->left = g_zDEClient_FeatureMapTreeNil;
         g_zDEClient_FeatureMapTreeNil->parent = g_zDEClient_FeatureMapTreeNil;
         g_zDEClient_FeatureMapTreeNil->right = g_zDEClient_FeatureMapTreeNil;
@@ -163,7 +163,7 @@ void EnsureFeatureMapTreeInitialized(zDEClient_MapTreeState *tree) {
 
     if (tree->header == 0) {
         tree->header =
-            static_cast<zDEClient_MapTreeNode *>(::operator new(sizeof(zDEClient_MapTreeNode)));
+            (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
         tree->header->left = tree->header;
         tree->header->parent = g_zDEClient_FeatureMapTreeNil;
         tree->header->right = tree->header;
@@ -277,13 +277,13 @@ InitEventTemplateDefaults(zDEClient_CraterEventTemplate *eventTemplate) {
 RECOIL_NOINLINE zDEClient_CraterFeature *RECOIL_FASTCALL
 CreateFeatureStructFromEventTemplate(zDEClient_CraterEventTemplate *eventTemplate) {
     zDEClient_CraterFeature *result =
-        static_cast<zDEClient_CraterFeature *>(malloc(sizeof(zDEClient_CraterFeature)));
+        (zDEClient_CraterFeature *)(malloc(sizeof(zDEClient_CraterFeature)));
     memset(result, 0, sizeof(zDEClient_CraterFeature));
 
     result->featureType = 1;
     memcpy(&result->eventTemplate, eventTemplate, sizeof(result->eventTemplate));
-    result->points = static_cast<zVec3 *>(
-        malloc(static_cast<size_t>(result->eventTemplate.pointCount) * sizeof(zVec3)));
+    result->points = (zVec3 *)(
+        malloc((size_t)(result->eventTemplate.pointCount) * sizeof(zVec3)));
     result->clipPatchOutput = zGeometry_ClipPatchOutput::Create();
 
     if ((result->eventTemplate.featureFlags & 0x1008) != 0) {
@@ -311,7 +311,7 @@ InitFeatureFromEventTemplate(zDEClient_CraterEventTemplate *eventTemplate) {
     zVec3 *currentPoint = featureInstance->points;
 
     zClass_NodePartial *world = zDEClient::GetCameraNode();
-    zClass_WorldDataPartial *worldData = static_cast<zClass_WorldDataPartial *>(world->classData);
+    zClass_WorldDataPartial *worldData = (zClass_WorldDataPartial *)(world->classData);
     if (worldData == 0) {
         return 0;
     }
@@ -358,10 +358,10 @@ InitFeatureFromEventTemplate(zDEClient_CraterEventTemplate *eventTemplate) {
 
     const int pointCount = eventTemplate->pointCount;
     float angle = 0.0f;
-    const float angleStep = static_cast<float>(6.2831853071800001 / pointCount);
+    const float angleStep = (float)(6.2831853071800001 / pointCount);
     for (int i = 0; i < pointCount; ++i) {
-        currentPoint->x = static_cast<float>(sin(static_cast<double>(angle)));
-        currentPoint->z = static_cast<float>(cos(static_cast<double>(angle)));
+        currentPoint->x = (float)(sin((double)(angle)));
+        currentPoint->z = (float)(cos((double)(angle)));
 
         currentPoint->x *= radius;
         currentPoint->z *= radius;
@@ -504,12 +504,12 @@ CreateFeature(zDEClient_CraterFeature *featureInstance) {
 
     zClipUV *uvPairs = 0;
     if (hasMaterialUv) {
-        uvPairs = static_cast<zClipUV *>(
-            malloc(static_cast<size_t>(uvCenterIndex + 1) * sizeof(zClipUV)));
+        uvPairs = (zClipUV *)(
+            malloc((size_t)(uvCenterIndex + 1) * sizeof(zClipUV)));
     }
 
     zVec3 *const midPoints =
-        static_cast<zVec3 *>(malloc(static_cast<size_t>(pointCount) * sizeof(zVec3)));
+        (zVec3 *)(malloc((size_t)(pointCount) * sizeof(zVec3)));
 
     const zVec3 center = featureInstance->eventTemplate.center;
     const float lowCenterY =
@@ -704,13 +704,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DestroyFeature(zDEClient_QSandFeature *feat
 RECOIL_NOINLINE zDEClient_QSandFeature *RECOIL_FASTCALL
 CreateFeatureStructFromEventTemplate(zDEClient_QSandEventTemplate *eventTemplate) {
     zDEClient_QSandFeature *result =
-        static_cast<zDEClient_QSandFeature *>(malloc(sizeof(zDEClient_QSandFeature)));
+        (zDEClient_QSandFeature *)(malloc(sizeof(zDEClient_QSandFeature)));
     memset(result, 0, sizeof(zDEClient_QSandFeature));
 
     result->featureType = 3;
     memcpy(&result->eventTemplate, eventTemplate, sizeof(result->eventTemplate));
     result->points =
-        static_cast<zVec3 *>(malloc(result->eventTemplate.pointCount * sizeof(zVec3)));
+        (zVec3 *)(malloc(result->eventTemplate.pointCount * sizeof(zVec3)));
     result->clipPatchOutput = zGeometry_ClipPatchOutput::Create();
 
     if ((result->eventTemplate.featureFlags & 0x1008) != 0 &&
@@ -731,7 +731,7 @@ InitFeatureFromEventTemplate(zDEClient_QSandEventTemplate *eventTemplate) {
     zVec3 *currentPoint = featureInstance->points;
 
     zClass_NodePartial *world = zDEClient::GetCameraNode();
-    zClass_WorldDataPartial *worldData = static_cast<zClass_WorldDataPartial *>(world->classData);
+    zClass_WorldDataPartial *worldData = (zClass_WorldDataPartial *)(world->classData);
     if (worldData == 0) {
         return 0;
     }
@@ -778,10 +778,10 @@ InitFeatureFromEventTemplate(zDEClient_QSandEventTemplate *eventTemplate) {
 
     const int pointCount = eventTemplate->pointCount;
     float angle = 0.0f;
-    const float angleStep = static_cast<float>(6.2831853071800001 / pointCount);
+    const float angleStep = (float)(6.2831853071800001 / pointCount);
     for (int i = 0; i < pointCount; ++i) {
-        currentPoint->x = static_cast<float>(sin(static_cast<double>(angle)));
-        currentPoint->z = static_cast<float>(cos(static_cast<double>(angle)));
+        currentPoint->x = (float)(sin((double)(angle)));
+        currentPoint->z = (float)(cos((double)(angle)));
 
         currentPoint->x *= radius;
         currentPoint->z *= radius;
@@ -927,12 +927,12 @@ CreateFeature(zDEClient_QSandFeature *featureInstance) {
 
     zClipUV *uvPairs = 0;
     if (hasMaterialUv) {
-        uvPairs = static_cast<zClipUV *>(
-            malloc(static_cast<size_t>(uvCenterIndex + 1) * sizeof(zClipUV)));
+        uvPairs = (zClipUV *)(
+            malloc((size_t)(uvCenterIndex + 1) * sizeof(zClipUV)));
     }
 
     zVec3 *const midPoints =
-        static_cast<zVec3 *>(malloc(static_cast<size_t>(pointCount) * sizeof(zVec3)));
+        (zVec3 *)(malloc((size_t)(pointCount) * sizeof(zVec3)));
 
     const zVec3 center = featureInstance->eventTemplate.center;
     const float lowCenterY =
@@ -1110,7 +1110,7 @@ namespace zGeometry_ClipPatchOutput {
 // Reimplements 0x46af00: zGeometry_ClipPatchOutput::Create
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
 RECOIL_NOINLINE zGeometry_ClipPatchOutputPartial *RECOIL_CDECL Create() {
-    zGeometry_ClipPatchOutputPartial *result = static_cast<zGeometry_ClipPatchOutputPartial *>(
+    zGeometry_ClipPatchOutputPartial *result = (zGeometry_ClipPatchOutputPartial *)(
         malloc(sizeof(zGeometry_ClipPatchOutputPartial)));
     result->pointCount = 0;
     result->points = 0;
@@ -1145,7 +1145,7 @@ ApplyNodeDiPairs(zGeometry_ClipPatchOutputPartial *self) {
 
             if (oldDisplayInstanceValue != 0) {
                 zModel_DiPool::FreeIfUnreferenced((zDiPartial *)(
-                    static_cast<unsigned int>(oldDisplayInstanceValue)));
+                    (unsigned int)(oldDisplayInstanceValue)));
             }
         }
 
@@ -1273,7 +1273,7 @@ RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::
     zDEClient_MapTreeNode **outNode, zDEClient_MapTreeNode *where,
     zDEClient_MapTreeNode *parent, zGeometry_ClipPatchNodeDiPair *key) {
     zDEClient_MapTreeNode *inserted =
-        static_cast<zDEClient_MapTreeNode *>(::operator new(sizeof(zDEClient_MapTreeNode)));
+        (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
     inserted->left = g_zDEClient_FeatureMapTreeNil;
     inserted->parent = parent;
     inserted->right = g_zDEClient_FeatureMapTreeNil;
@@ -1490,7 +1490,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
     zVideo::ReturnSuccessStub();
 
     g_zDEClient_ConfigReaderRoot = zReader::LoadNodeFromPath("declient.zrd", 0, 0);
-    srand(static_cast<unsigned int>(time(0)));
+    srand((unsigned int)(time(0)));
 
     if (g_zDEClient_ConfigReaderRoot == 0) {
         zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp", 0x57,
@@ -1511,13 +1511,13 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
     zReader::ReadNamedFloat(craterNode, "RADIUS", &g_zDEClient_CraterEventTemplateDefaults.radius);
 
     g_zDEClient_CraterDisplaySourceCount = 1;
-    g_zDEClient_CraterDisplaySourceList = static_cast<zDEClient_CraterDisplaySourceEntry *>(
+    g_zDEClient_CraterDisplaySourceList = (zDEClient_CraterDisplaySourceEntry *)(
         calloc(1, sizeof(zDEClient_CraterDisplaySourceEntry)));
 
     zDEClient_CraterDisplaySourceEntry *defaultDisplaySource = g_zDEClient_CraterDisplaySourceList;
     if (LoadMaterialFromTexturePath_Local(
             &defaultDisplaySource->craterMaterial,
-            const_cast<char *>(zReader::ReadNamedString(craterNode, "DEFAULT_TEXTURE"))) != 0) {
+            (char *)(zReader::ReadNamedString(craterNode, "DEFAULT_TEXTURE"))) != 0) {
         textureLoadPending = 1;
     }
 
@@ -1530,9 +1530,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
         const int additionalDisplaySourceCount = (textureAnimCount - 1) / 2;
         g_zDEClient_CraterDisplaySourceCount += additionalDisplaySourceCount;
 
-        g_zDEClient_CraterDisplaySourceList = static_cast<zDEClient_CraterDisplaySourceEntry *>(
+        g_zDEClient_CraterDisplaySourceList = (zDEClient_CraterDisplaySourceEntry *)(
             realloc(g_zDEClient_CraterDisplaySourceList,
-                         static_cast<size_t>(g_zDEClient_CraterDisplaySourceCount) *
+                         (size_t)(g_zDEClient_CraterDisplaySourceCount) *
                              sizeof(zDEClient_CraterDisplaySourceEntry)));
 
         zDEClient_CraterDisplaySourceEntry *displaySource = &g_zDEClient_CraterDisplaySourceList[1];
@@ -1579,8 +1579,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
             g_zDEClient_QuickSandTextureCount = textureCount;
 
             if (textureCount > 0) {
-                g_zDEClient_QuickSandTexturePaths = static_cast<char **>(
-                    malloc(static_cast<size_t>(textureCount) * sizeof(char *)));
+                g_zDEClient_QuickSandTexturePaths = (char **)(
+                    malloc((size_t)(textureCount) * sizeof(char *)));
                 for (int i = 0; i < textureCount; ++i) {
                     g_zDEClient_QuickSandTexturePaths[i] = defaultTextureArray[i + 2].value.str;
                 }
@@ -1608,7 +1608,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
 
         zModel_MaterialPartial material;
         zModel_Material::ResetDefaults(&material);
-        material.flags = static_cast<unsigned short>(material.flags | 0x0100);
+        material.flags = (unsigned short)(material.flags | 0x0100);
 
         if (textureCount > 1) {
             zModel_Material::SetCycleTextureCount(&material, textureCount);
@@ -1628,7 +1628,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
             textureLoadPending = 1;
             g_zDEClient_QuickSandMaterial = zModel_Material::FindOrClone(&material);
         } else {
-            material.flags = static_cast<unsigned short>(material.flags & 0xfeff);
+            material.flags = (unsigned short)(material.flags & 0xfeff);
             g_zDEClient_QuickSandMaterial = 0;
             zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp", 0xef,
                               "Quick sand will NOT be textured");
@@ -1640,7 +1640,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
 
         if (textureCount >= 1 && g_zDEClient_QuickSandTexturePaths != 0) {
             zModel_Material::ResetDefaults(&material);
-            material.flags = static_cast<unsigned short>(material.flags | 0x0100);
+            material.flags = (unsigned short)(material.flags | 0x0100);
             material.currentTextureDirectoryEntry =
                 zImage::FindTexDirEntryByName(g_zDEClient_QuickSandTexturePaths[0]);
             zModel_Material::SetUserTag(&material, 0);
@@ -1685,7 +1685,7 @@ LoadMaterialFromTexturePath_Local(zModel_MaterialPartial **outMaterial, char *te
     if (*outMaterial == 0) {
         zModel_MaterialPartial material;
         zModel_Material::ResetDefaults(&material);
-        material.flags = static_cast<unsigned short>(material.flags | 0x0100);
+        material.flags = (unsigned short)(material.flags | 0x0100);
         material.currentTextureDirectoryEntry = textureDirectoryEntry;
         *outMaterial = zModel_Material::FindOrClone(&material);
     }
@@ -1699,7 +1699,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetCameraNode(zClass_NodePartial *cameraNod
     if (cameraNode != 0) {
         g_zDEClient_CameraNode = cameraNode;
         g_zDEClient_CameraNodeClassData =
-            static_cast<zClass_CameraDataPartial *>(cameraNode->classData);
+            (zClass_CameraDataPartial *)(cameraNode->classData);
     }
 }
 
@@ -1781,8 +1781,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AppendFeatureEntry(int featureType,
         const ptrdiff_t capacityIncrement = oldCount > 1 ? oldCount : 1;
         const ptrdiff_t newCapacity = oldCount + capacityIncrement;
 
-        zDEClient_FeatureEntry *const newEntries = static_cast<zDEClient_FeatureEntry *>(
-            ::operator new(static_cast<size_t>(newCapacity) * sizeof(zDEClient_FeatureEntry)));
+        zDEClient_FeatureEntry *const newEntries = (zDEClient_FeatureEntry *)(
+            ::operator new((size_t)(newCapacity) * sizeof(zDEClient_FeatureEntry)));
 
         CopyFeatureEntriesForward(g_zDEClient_FeatureListBegin, g_zDEClient_FeatureListEnd,
                                   newEntries);
@@ -1927,7 +1927,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ClearFeatureDisplayNodes() {
         zClass_Class::gwNodeGetUserData(child, &displayInstanceValue);
         if (displayInstanceValue != 0) {
             zDiPartial *displayInstance =
-                (zDiPartial *)(static_cast<unsigned int>(displayInstanceValue));
+                (zDiPartial *)((unsigned int)(displayInstanceValue));
             zClass_Class::gwNodeSetDisplayInstance(child, 0);
             zModel_DiPool::FreeIfUnreferenced(displayInstance);
         }

@@ -15,7 +15,7 @@ namespace {
     const char *kWorldSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c";
 
     int TruncateToInt(float value) {
-        return static_cast<int>(value);
+        return (int)(value);
     }
 
     float ApproximateSqrtFromRangeSq(float rangeSq) {
@@ -33,7 +33,7 @@ namespace {
     }
 
     void AppendNodeRef(zClass_NodePartial * **list, int *count, zClass_NodePartial *node) {
-        zClass_NodePartial **resized = static_cast<zClass_NodePartial **>(
+        zClass_NodePartial **resized = (zClass_NodePartial **)(
             realloc(*list, (*count + 1) * sizeof(zClass_NodePartial *)));
         *list = resized;
         resized[*count] = node;
@@ -145,7 +145,7 @@ namespace zClass_World {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         node->classId = 2;
 
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(
             calloc(1, sizeof(zClass_WorldDataPartial)));
         node->classData = data;
         data->fogState = 0;
@@ -169,7 +169,7 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogState(zClass_NodePartial * world,
                                                                     int fogState) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->fogState = fogState;
         data->flags |= 0x01;
         return 0;
@@ -179,7 +179,7 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogColorRgb01(
         zClass_NodePartial * world, float red, float green, float blue) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->ambientColor.red = red;
         data->ambientColor.blue = blue;
         data->ambientColor.green = green;
@@ -191,7 +191,7 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogAltitudeRange(
         zClass_NodePartial * world, float minAlt, float maxAlt) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->fogHeightHigh = maxAlt;
         data->fogHeightLow = minAlt;
         data->flags |= 0x20;
@@ -202,7 +202,7 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogRange(
         zClass_NodePartial * world, float nearRange, float farRange) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->fogDistanceStart = nearRange;
         data->fogDistanceEnd = farRange;
         data->flags |= 0x04;
@@ -213,7 +213,7 @@ namespace zClass_World {
     // (GameZRecoil/zClass/cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogDensity(zClass_NodePartial * world,
                                                                       float *outDensity) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         *outDensity = data->fogDensity;
         return 0;
     }
@@ -222,7 +222,7 @@ namespace zClass_World {
     // (GameZRecoil/zClass/cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogState(zClass_NodePartial * world,
                                                                     int *outState) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         *outState = data->fogState;
         return 0;
     }
@@ -233,7 +233,7 @@ namespace zClass_World {
                                                                          float *outRed,
                                                                          float *outGreen,
                                                                          float *outBlue) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         *outRed = data->ambientColor.red;
         *outGreen = data->ambientColor.green;
         *outBlue = data->ambientColor.blue;
@@ -244,7 +244,7 @@ namespace zClass_World {
     // (GameZRecoil/zClass/cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogRange(
         zClass_NodePartial * world, float *outNearRange, float *outFarRange) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         *outNearRange = data->fogDistanceStart;
         *outFarRange = data->fogDistanceEnd;
         return 0;
@@ -254,7 +254,7 @@ namespace zClass_World {
     // (GameZRecoil/zClass/cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogAltitudeRange(
         zClass_NodePartial * world, float *outMinAlt, float *outMaxAlt) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         *outMaxAlt = data->fogHeightHigh;
         *outMinAlt = data->fogHeightLow;
         return 0;
@@ -264,7 +264,7 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogDensity(zClass_NodePartial * world,
                                                                       float density) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->fogDensity = density;
         data->flags |= 0x08;
         return 0;
@@ -274,7 +274,7 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetOrigin(zClass_NodePartial * world,
                                                                  float originX, float originZ) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->originX = originX;
         data->originZ = originZ;
         data->worldMaxX = data->worldSizeX + originX;
@@ -286,7 +286,7 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetSize(zClass_NodePartial * world,
                                                                float sizeX, float sizeZ) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->worldSizeX = sizeX;
         data->worldSizeZ = sizeZ;
         data->worldMaxX = data->originX + sizeX;
@@ -298,7 +298,7 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetPartitionInclusionTolerance(
         zClass_NodePartial * world, float toleranceX, float toleranceZ) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->partitionInclusionTolX = toleranceX;
         data->partitionInclusionTolZ = toleranceZ;
         return 0;
@@ -308,7 +308,7 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetMaxDecFeatures(zClass_NodePartial * world,
                                                                            int maxFeatures) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (maxFeatures > 255) {
             zError::ReportOld(
                 0x200, kWorldSourceFile, 0xc01,
@@ -317,7 +317,7 @@ namespace zClass_World {
             maxFeatures = 255;
         }
 
-        data->partitionMaxDecFeatureCount = static_cast<unsigned char>(maxFeatures);
+        data->partitionMaxDecFeatureCount = (unsigned char)(maxFeatures);
         return 0;
     }
 
@@ -325,7 +325,7 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetVirtualAreaPartition(
         zClass_NodePartial * world, float cellSizeX, float cellSizeZ) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data->areaGridRows != 0) {
             FreeVirtualAreaPartitions(world);
         }
@@ -343,33 +343,33 @@ namespace zClass_World {
 
         int gridColCount = TruncateToInt(data->worldSizeX / data->areaCellSizeX);
         data->areaGridColCount = gridColCount;
-        if (static_cast<float>(gridColCount) * data->areaCellSizeX < data->worldSizeX) {
+        if ((float)(gridColCount) * data->areaCellSizeX < data->worldSizeX) {
             ++gridColCount;
             data->areaGridColCount = gridColCount;
         }
 
         int gridRowCount = TruncateToInt(data->worldSizeZ / data->areaCellSizeZ);
         data->areaGridRowCount = gridRowCount;
-        if (static_cast<float>(gridRowCount) * data->areaCellSizeZ > data->worldSizeZ) {
+        if ((float)(gridRowCount) * data->areaCellSizeZ > data->worldSizeZ) {
             ++gridRowCount;
             data->areaGridRowCount = gridRowCount;
         }
 
         data->areaGridRows =
-            static_cast<zWorldAreaPartial **>(calloc(data->areaGridRowCount,
+            (zWorldAreaPartial **)(calloc(data->areaGridRowCount,
                                                      sizeof(zWorldAreaPartial *)));
         for (int row = 0; row < data->areaGridRowCount; ++row) {
             data->areaGridRows[row] =
-                static_cast<zWorldAreaPartial *>(calloc(data->areaGridColCount,
+                (zWorldAreaPartial *)(calloc(data->areaGridColCount,
                                                         sizeof(zWorldAreaPartial)));
         }
 
         for (int initRow = 0; initRow < data->areaGridRowCount; ++initRow) {
-            const float rowAsFloat = static_cast<float>(initRow);
+            const float rowAsFloat = (float)(initRow);
             for (int col = 0; col < data->areaGridColCount; ++col) {
                 zWorldAreaPartial *area = &data->areaGridRows[initRow][col];
                 area->areaFlags |= 0x100;
-                area->cellMinX = static_cast<float>(col) * data->areaCellSizeX + data->originX;
+                area->cellMinX = (float)(col) * data->areaCellSizeX + data->originX;
                 area->cellMinZ = rowAsFloat * data->areaCellSizeZ + data->originZ;
                 area->bbox[0] = area->cellMinX;
                 area->bbox[3] = area->cellMinX + data->areaCellSizeX;
@@ -387,7 +387,7 @@ namespace zClass_World {
     // Reimplements 0x4502b0: zClass_World::InitVirtualAreaPartitions
     // (GameZRecoil/zClass/cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL InitVirtualAreaPartitions(zClass_NodePartial * world) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data->areaGridRows == 0) {
             sprintf(g_zError_DebugMsgBuffer,
                     "%s: Line %d: ERROR initializing virtual area partition; NULL area partitions encountered.\n",
@@ -424,7 +424,7 @@ namespace zClass_World {
     // (GameZRecoil/zClass/cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL SetVirtualPartition(zClass_NodePartial * world,
                                                             int enabled) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->clampQueriesToBounds = enabled;
         if (enabled != 0) {
             InitVirtualAreaPartitions(world);
@@ -435,7 +435,7 @@ namespace zClass_World {
     // Reimplements 0x450e40: zClass_World::FreeVirtualAreaPartitions
     RECOIL_NOINLINE int RECOIL_FASTCALL FreeVirtualAreaPartitions(zClass_NodePartial *
                                                                            world) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data->areaGridRows == 0) {
             return 0;
         }
@@ -477,7 +477,7 @@ namespace zClass_World {
             return freeResult;
         }
 
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data->lightNodes != 0) {
             free(data->lightNodes);
         }
@@ -501,7 +501,7 @@ namespace zClass_World {
     RECOIL_NOINLINE int RECOIL_FASTCALL QueueAreaUpdate(
         zClass_NodePartial * world, zClass_WorldDataPartial * worldData, zWorldAreaPartial * area) {
         if (worldData->pendingAreaUpdateCount == worldData->pendingAreaUpdateCapacity) {
-            worldData->pendingAreaUpdates = static_cast<zWorldAreaPartial **>(realloc(
+            worldData->pendingAreaUpdates = (zWorldAreaPartial **)(realloc(
                 worldData->pendingAreaUpdates,
                 (worldData->pendingAreaUpdateCapacity + 1) * sizeof(zWorldAreaPartial *)));
             ++worldData->pendingAreaUpdateCapacity;
@@ -576,7 +576,7 @@ namespace zClass_World {
     // Reimplements 0x450530: zClass_World::ApplyPendingFogSettings
     RECOIL_NOINLINE int RECOIL_FASTCALL ApplyPendingFogSettings(zClass_NodePartial *
                                                                          world) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (zClass_TypeList::CountNodes(0x0d) > 1) {
             data->flags = 0x2f;
         }
@@ -645,7 +645,7 @@ namespace zClass_World {
     RECOIL_NOINLINE int RECOIL_FASTCALL WorldRectToGridIndex(
         zClass_NodePartial * world, int *outGridCol, float minX, float maxX, float minZ,
         float maxZ, int *outGridRow) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         InvalidateGrid(outGridCol, outGridRow);
 
         if (data->originX - data->partitionInclusionTolX > minX ||
@@ -696,7 +696,7 @@ namespace zClass_World {
         zClass_NodePartial *world, int *outGridCol, float worldX, float worldZ,
         int *outGridRow, int *clampedGridColOut,
         int *clampedGridRowOut, int *insideBoundsOut) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
         float clampedX = worldX;
         float clampedZ = worldZ;
@@ -727,9 +727,9 @@ namespace zClass_World {
             return 0;
         }
 
-        *outGridCol = static_cast<int>(
+        *outGridCol = (int)(
             floor((worldX - data->originX) * data->areaInvSizeX));
-        *outGridRow = static_cast<int>(
+        *outGridRow = (int)(
             floor((worldZ - data->originZ) * data->areaInvSizeZ));
         return 0;
     }
@@ -739,7 +739,7 @@ namespace zClass_World {
     RECOIL_NOINLINE int RECOIL_FASTCALL WorldToGridCoordsClamped(
         zClass_NodePartial * world, int *outGridCol, float worldX, float worldZ,
         int *outGridRow) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
         float clampedX;
         if (worldX < data->originX + 0.1f) {
@@ -773,7 +773,7 @@ namespace zClass_World {
             return 0;
         }
 
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data == 0) {
             zError::ReportOld(0x400, kWorldSourceFile, 0x6d5, "Null class data pointer");
             return 0;
@@ -790,7 +790,7 @@ namespace zClass_World {
             return 5;
         }
 
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data == 0) {
             zError::ReportOld(0x400, kWorldSourceFile, 0x6f6, "Null class data pointer");
             return 5;
@@ -842,7 +842,7 @@ namespace zClass_World {
                 }
             } else {
                 zClass_WorldDataPartial *data =
-                    static_cast<zClass_WorldDataPartial *>(world->classData);
+                    (zClass_WorldDataPartial *)(world->classData);
                 minX = data->originX;
                 minZ = data->originZ;
                 maxX = data->originX + data->worldSizeX;
@@ -859,7 +859,7 @@ namespace zClass_World {
     RECOIL_NOINLINE int RECOIL_FASTCALL AddChildToGridCell(
         zClass_NodePartial * world, zClass_NodePartial * child, int gridCol,
         int gridRow) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
         if (gridCol >= 0 && gridRow >= 0 && AreaAt(data, gridCol, gridRow)->childCount >= 0x7fff) {
             gridCol = -1;
@@ -878,8 +878,8 @@ namespace zClass_World {
         }
 
         zWorldAreaPartial *area = AreaAt(data, gridCol, gridRow);
-        zClass_NodePartial **resized = static_cast<zClass_NodePartial **>(
-            realloc(area->childList, (static_cast<int>(area->childCount) + 1) *
+        zClass_NodePartial **resized = (zClass_NodePartial **)(
+            realloc(area->childList, ((int)(area->childCount) + 1) *
                                               sizeof(zClass_NodePartial *)));
         area->childList = resized;
         resized[area->childCount] = child;
@@ -904,7 +904,7 @@ namespace zClass_World {
                                                                    zClass_NodePartial * child) {
         const int gridCol = child->gridCol;
         const int gridRow = child->gridRow;
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
         if (gridCol == -1 && gridRow == -1) {
             return zClass_Class::RemoveChildGeneric(world, child);
@@ -927,7 +927,7 @@ namespace zClass_World {
 
         int areaChildCount = area->childCount;
         CompactNodeRefList(area->childList, &areaChildCount, childIndex);
-        area->childCount = static_cast<short>(areaChildCount);
+        area->childCount = (short)(areaChildCount);
 
         child->gridCol = -1;
         child->gridRow = -1;
@@ -954,21 +954,21 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL AddLight(zClass_NodePartial * world,
                                                           zClass_NodePartial * light) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         zClass_LightDataPartial *lightData =
-            static_cast<zClass_LightDataPartial *>(light->classData);
+            (zClass_LightDataPartial *)(light->classData);
 
         const int lightListBytes = (data->lightCount + 1) * sizeof(zClass_NodePartial *);
         data->lightNodes =
-            static_cast<zClass_NodePartial **>(realloc(data->lightNodes, lightListBytes));
+            (zClass_NodePartial **)(realloc(data->lightNodes, lightListBytes));
         data->lightNodes[data->lightCount] = light;
 
-        data->lightDataList = static_cast<zClass_LightDataPartial **>(
+        data->lightDataList = (zClass_LightDataPartial **)(
             realloc(data->lightDataList, lightListBytes));
         data->lightDataList[data->lightCount] = lightData;
         ++data->lightCount;
 
-        lightData->attachedWorlds = static_cast<zClass_NodePartial **>(
+        lightData->attachedWorlds = (zClass_NodePartial **)(
             realloc(lightData->attachedWorlds,
                          (lightData->attachedWorldCount + 1) * sizeof(zClass_NodePartial *)));
         lightData->attachedWorlds[lightData->attachedWorldCount] = world;
@@ -979,7 +979,7 @@ namespace zClass_World {
     // Reimplements 0x451410: zClass_World::RemoveLight
     RECOIL_NOINLINE int RECOIL_FASTCALL RemoveLight(zClass_NodePartial * world,
                                                              zClass_NodePartial * light) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
         int lightIndex = -1;
         for (int i = 0; i < data->lightCount; ++i) {
@@ -994,8 +994,8 @@ namespace zClass_World {
                          "%s: Line %d: ERROR deleting light; not found in world list.\n"
                          "        world_ptr = %x; light_ptr = %x\n",
                          kWorldSourceFile, 0x108d,
-                         static_cast<unsigned int>((unsigned int)(world)),
-                         static_cast<unsigned int>((unsigned int)(light)));
+                         (unsigned int)((unsigned int)(world)),
+                         (unsigned int)((unsigned int)(light)));
             zError::EmitDebugBuffer(5);
             return 5;
         }
@@ -1021,8 +1021,8 @@ namespace zClass_World {
                 "%s: Line %d: ERROR deleting light; world not found in light's world list.\n"
                 "        world_ptr = %x; light_ptr = %x\n",
                 kWorldSourceFile, 0x10b4,
-                static_cast<unsigned int>((unsigned int)(world)),
-                static_cast<unsigned int>((unsigned int)(light)));
+                (unsigned int)((unsigned int)(world)),
+                (unsigned int)((unsigned int)(light)));
             zError::EmitDebugBuffer(5);
             return 5;
         }
@@ -1039,7 +1039,7 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL
     InitLightPointInPolygonXZ(zClass_NodePartial *world) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         zModel_Light_PointInPolygonInitXZ(
             data->lightDataList, (zModel_LightStatePartial **)(data->lightNodes),
             data->lightCount);
@@ -1049,7 +1049,7 @@ namespace zClass_World {
     // Reimplements 0x451560: zClass_World::UpdateAllLights
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL UpdateAllLights(zClass_NodePartial * world) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
         for (int i = 0; i < data->lightCount; ++i) {
             zClass_Light::gwLightUpdate(data->lightNodes[i]);
@@ -1062,21 +1062,21 @@ namespace zClass_World {
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL AddSound(zClass_NodePartial * world,
                                                           zClass_NodePartial * sound) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         zClass_SoundDataPartial *soundData =
-            static_cast<zClass_SoundDataPartial *>(sound->classData);
+            (zClass_SoundDataPartial *)(sound->classData);
 
         const int soundListBytes = (data->soundCount + 1) * sizeof(zClass_NodePartial *);
         data->soundNodes =
-            static_cast<zClass_NodePartial **>(realloc(data->soundNodes, soundListBytes));
+            (zClass_NodePartial **)(realloc(data->soundNodes, soundListBytes));
         data->soundNodes[data->soundCount] = sound;
 
-        data->soundDataList = static_cast<zClass_SoundDataPartial **>(
+        data->soundDataList = (zClass_SoundDataPartial **)(
             realloc(data->soundDataList, soundListBytes));
         data->soundDataList[data->soundCount] = soundData;
         ++data->soundCount;
 
-        soundData->attachedWorlds = static_cast<zClass_NodePartial **>(
+        soundData->attachedWorlds = (zClass_NodePartial **)(
             realloc(soundData->attachedWorlds,
                          (soundData->attachedWorldCount + 1) * sizeof(zClass_NodePartial *)));
         soundData->attachedWorlds[soundData->attachedWorldCount] = world;
@@ -1087,7 +1087,7 @@ namespace zClass_World {
     // Reimplements 0x451640: zClass_World::RemoveSound
     RECOIL_NOINLINE int RECOIL_FASTCALL RemoveSound(zClass_NodePartial * world,
                                                              zClass_NodePartial * sound) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
         int soundIndex = -1;
         for (int i = 0; i < data->soundCount; ++i) {
@@ -1102,8 +1102,8 @@ namespace zClass_World {
                          "%s: Line %d: ERROR deleting sound; not found in world list.\n"
                          "        world_ptr = %x; sound_ptr = %x\n",
                          kWorldSourceFile, 0x11cc,
-                         static_cast<unsigned int>((unsigned int)(world)),
-                         static_cast<unsigned int>((unsigned int)(sound)));
+                         (unsigned int)((unsigned int)(world)),
+                         (unsigned int)((unsigned int)(sound)));
             zError::EmitDebugBuffer(5);
             return 5;
         }
@@ -1129,8 +1129,8 @@ namespace zClass_World {
                 "%s: Line %d: ERROR deleting sound; world not found in sound's world list.\n"
                 "        world_ptr = %x; sound_ptr = %x\n",
                 kWorldSourceFile, 0x11f3,
-                static_cast<unsigned int>((unsigned int)(world)),
-                static_cast<unsigned int>((unsigned int)(sound)));
+                (unsigned int)((unsigned int)(world)),
+                (unsigned int)((unsigned int)(sound)));
             zError::EmitDebugBuffer(5);
             return 5;
         }
@@ -1146,7 +1146,7 @@ namespace zClass_World {
     // Reimplements 0x451770: zClass_World::UpdateAllSounds
     // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL UpdateAllSounds(zClass_NodePartial * world) {
-        zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(world->classData);
+        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
         for (int i = 0; i < data->soundCount; ++i) {
             zClass_Sound::UpdatePlayback(data->soundNodes[i]);

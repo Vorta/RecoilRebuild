@@ -108,7 +108,7 @@ struct BindMapDefaultBindingSpec {
 };
 
 inline void CopyCommandSlots(void *dest, const void *src, int count) {
-    memcpy(dest, src, static_cast<size_t>(count) * sizeof(int));
+    memcpy(dest, src, (size_t)(count) * sizeof(int));
 }
 
 } // namespace
@@ -133,16 +133,16 @@ zInput_BindMapContext::InitFromTemplate(const zInput_BindMapContext *tmpl) {
 
     m_commandCount = tmpl->m_commandCount;
     m_packedBindings =
-        static_cast<int *>(calloc(tmpl->m_commandCount, sizeof(int)));
+        (int *)(calloc(tmpl->m_commandCount, sizeof(int)));
     CopyCommandSlots(m_packedBindings, tmpl->m_packedBindings, tmpl->m_commandCount);
 
-    m_commandCallbacks = static_cast<zInputCommandCallbackFn *>(
+    m_commandCallbacks = (zInputCommandCallbackFn *)(
         calloc(m_commandCount, sizeof(zInputCommandCallbackFn)));
     CopyCommandSlots(m_commandCallbacks, tmpl->m_commandCallbacks, m_commandCount);
 
-    m_commandLabels = static_cast<char **>(calloc(m_commandCount, sizeof(char *)));
+    m_commandLabels = (char **)(calloc(m_commandCount, sizeof(char *)));
     for (int i = 0; i < m_commandCount; ++i) {
-        m_commandLabels[i] = static_cast<char *>(calloc(1, 0x50));
+        m_commandLabels[i] = (char *)(calloc(1, 0x50));
         strncpy(m_commandLabels[i], tmpl->m_commandLabels[i], 0x50);
     }
 
@@ -190,7 +190,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::RebuildLookupIndices
     zInput::Keyboard_ClearKeyCallbackTable();
     {
     for (int commandId = 1; commandId < m_commandCount; ++commandId) {
-        const unsigned int packed = static_cast<unsigned int>(m_packedBindings[commandId]);
+        const unsigned int packed = (unsigned int)(m_packedBindings[commandId]);
         m_primaryKeyToCommand[packed & 0x7ff] = commandId;
         m_secondaryKeyToCommand[(packed >> 0x0b) & 0x7ff] = commandId;
         m_joystickToCommand[(packed >> 0x16) & 0x0f] = commandId;
@@ -209,13 +209,13 @@ RECOIL_NOINLINE void RECOIL_THISCALL
 zInput_BindMapContext::InitCommandMap(int commandCount) {
     m_commandCount = commandCount;
     zOptionEntryPartial *option = zGame::Options_GetOrCreateOption(
-        "CmdMap", 7, commandCount * static_cast<int>(sizeof(int)), 1);
+        "CmdMap", 7, commandCount * (int)(sizeof(int)), 1);
     m_packedBindings = (int *)(option->payloadOrBuffer);
-    m_commandCallbacks = static_cast<zInputCommandCallbackFn *>(
+    m_commandCallbacks = (zInputCommandCallbackFn *)(
         calloc(commandCount, sizeof(zInputCommandCallbackFn)));
-    m_commandLabels = static_cast<char **>(calloc(commandCount, sizeof(char *)));
+    m_commandLabels = (char **)(calloc(commandCount, sizeof(char *)));
     for (int i = 0; i < commandCount; ++i) {
-        m_commandLabels[i] = static_cast<char *>(calloc(1, 0x50));
+        m_commandLabels[i] = (char *)(calloc(1, 0x50));
     }
 
     ResetAllBindings();
@@ -260,19 +260,19 @@ zInput_BindMapContext::GetPrimaryKeyboardKey(int commandIndex) {
 // Reimplements 0x470a60: zInput_BindMapContext::GetSecondaryKeyboardKey
 RECOIL_NOINLINE int RECOIL_THISCALL
 zInput_BindMapContext::GetSecondaryKeyboardKey(int commandIndex) {
-    return (static_cast<unsigned int>(m_packedBindings[commandIndex]) >> 0x0b) & 0x7ff;
+    return ((unsigned int)(m_packedBindings[commandIndex]) >> 0x0b) & 0x7ff;
 }
 
 // Reimplements 0x470a80: zInput_BindMapContext::GetJoystickButtonSlot
 RECOIL_NOINLINE int RECOIL_THISCALL
 zInput_BindMapContext::GetJoystickButtonSlot(int commandIndex) {
-    return (static_cast<unsigned int>(m_packedBindings[commandIndex]) >> 0x16) & 0x0f;
+    return ((unsigned int)(m_packedBindings[commandIndex]) >> 0x16) & 0x0f;
 }
 
 // Reimplements 0x470aa0: zInput_BindMapContext::GetMouseButtonSlot
 RECOIL_NOINLINE int RECOIL_THISCALL
 zInput_BindMapContext::GetMouseButtonSlot(int commandIndex) {
-    return (static_cast<unsigned int>(m_packedBindings[commandIndex]) >> 0x1a) & 0x03;
+    return ((unsigned int)(m_packedBindings[commandIndex]) >> 0x1a) & 0x03;
 }
 
 // Reimplements 0x470ac0: zInput_BindMapContext::GetCommandByPrimaryKey
@@ -337,7 +337,7 @@ zInput_BindMapContext::SetSecondaryKeyBinding(int keyCode, int commandId) {
         return;
     }
 
-    m_secondaryKeyToCommand[(static_cast<unsigned int>(m_packedBindings[commandId]) >> 0x0b) &
+    m_secondaryKeyToCommand[((unsigned int)(m_packedBindings[commandId]) >> 0x0b) &
                             0x7ff] = 0;
     m_packedBindings[commandId] =
         (m_packedBindings[commandId] & 0xffc007ff) | ((keyCode & 0x7ff) << 0x0b);
@@ -354,7 +354,7 @@ zInput_BindMapContext::SetJoystickBinding(int joystickSlot, int commandId) {
         return;
     }
 
-    m_joystickToCommand[(static_cast<unsigned int>(m_packedBindings[commandId]) >> 0x16) & 0x0f] =
+    m_joystickToCommand[((unsigned int)(m_packedBindings[commandId]) >> 0x16) & 0x0f] =
         0;
     m_packedBindings[commandId] =
         ((joystickSlot & 0x0f) << 0x16) | (m_packedBindings[commandId] & 0xfc3fffff);
@@ -371,7 +371,7 @@ zInput_BindMapContext::SetMouseBinding(int mouseSlot, int commandId) {
         return;
     }
 
-    m_mouseToCommand[(static_cast<unsigned int>(m_packedBindings[commandId]) >> 0x1a) & 0x03] = 0;
+    m_mouseToCommand[((unsigned int)(m_packedBindings[commandId]) >> 0x1a) & 0x03] = 0;
     m_packedBindings[commandId] =
         ((mouseSlot & 0x03) << 0x1a) | (m_packedBindings[commandId] & 0xf3ffffff);
 }
@@ -469,8 +469,8 @@ zInput_BindMapContext::ReadCommandInputState(int commandIndex) {
     }
 
     const int joystickButton = GetJoystickButtonSlot(commandIndex);
-    if (static_cast<unsigned int>(joystickButton) > 0 &&
-        static_cast<unsigned int>(joystickButton) < 0x0b) {
+    if ((unsigned int)(joystickButton) > 0 &&
+        (unsigned int)(joystickButton) < 0x0b) {
         result |= zInput::DI_GetButtonTransitionState(joystickButton);
     }
 
@@ -506,7 +506,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindGroupInfoVec::Count() {
         return 0;
     }
 
-    return static_cast<int>(end - begin);
+    return (int)(end - begin);
 }
 
 namespace zInp {
@@ -596,17 +596,17 @@ static float WrapForceFeedbackPolarRadians(float angle) {
 
 static int ForceFeedbackDirectionFromRadians(float angle) {
     const double kRadToDeg = 57.295779513079999;
-    return static_cast<int>(angle * kRadToDeg) * 100;
+    return (int)(angle * kRadToDeg) * 100;
 }
 
 static int ForceFeedbackDirectionFromImpact(const zVec3 *worldPosXZ, bool sourceToPlayer) {
     const float kPi = 3.14159274f;
     const zInput_PlayerStatePartial *const playerState = g_GameStateOrMapTable->playerState;
     const float sourceBearing =
-        sourceToPlayer ? static_cast<float>(atan2(worldPosXZ->z, worldPosXZ->x))
-                       : static_cast<float>(atan2(-worldPosXZ->z, -worldPosXZ->x));
+        sourceToPlayer ? (float)(atan2(worldPosXZ->z, worldPosXZ->x))
+                       : (float)(atan2(-worldPosXZ->z, -worldPosXZ->x));
     const float playerBearing =
-        static_cast<float>(atan2(-playerState->cameraDirNextZ, -playerState->cameraDirNextX));
+        (float)(atan2(-playerState->cameraDirNextZ, -playerState->cameraDirNextX));
     const float relativeBearing =
         WrapForceFeedbackPolarRadians(kPi - (sourceBearing - playerBearing));
     return ForceFeedbackDirectionFromRadians(relativeBearing);
@@ -618,7 +618,7 @@ static void SetAndStartDirectionalForceFeedbackEffect(zInput_DiEffect *effect,
     DIEFFECT desc = {0};
     desc.dwSize = sizeof(desc);
     desc.dwFlags = 0x20;
-    desc.dwGain = static_cast<DWORD>(gain * 10000.0f);
+    desc.dwGain = (DWORD)(gain * 10000.0f);
     desc.cAxes = 2;
     desc.rglDirection = polarDirection;
     effect->vtbl_00->SetParameters_18(effect, &desc, 0x44);
@@ -626,7 +626,7 @@ static void SetAndStartDirectionalForceFeedbackEffect(zInput_DiEffect *effect,
 }
 
 static float FastPitchLowpassFactor(float deltaTime) {
-    int bits = static_cast<int>(deltaTime * -3.0f * 12102200.0f);
+    int bits = (int)(deltaTime * -3.0f * 12102200.0f);
     bits += 0x3f800000;
 
     float factor = 0.0f;
@@ -644,8 +644,8 @@ zInput_DI_CreateConstantForceEffectScaled(float gain) {
     effect.dwSize = sizeof(effect);
     effect.dwFlags = 0x22;
     effect.dwDuration = 100000;
-    effect.dwGain = static_cast<DWORD>(ClampForceFeedbackGain(gain) * 10000.0f);
-    effect.dwTriggerButton = static_cast<DWORD>(-1);
+    effect.dwGain = (DWORD)(ClampForceFeedbackGain(gain) * 10000.0f);
+    effect.dwTriggerButton = (DWORD)(-1);
     effect.cAxes = 2;
     effect.rgdwAxes = axes;
     effect.rglDirection = direction;
@@ -663,8 +663,8 @@ zInput_DI_CreateConstantForceEffectWithDirection(int directionValue) {
     DIEFFECT effect = {0};
     effect.dwSize = sizeof(effect);
     effect.dwFlags = 0x22;
-    effect.dwDuration = static_cast<DWORD>(-1);
-    effect.dwTriggerButton = static_cast<DWORD>(-1);
+    effect.dwDuration = (DWORD)(-1);
+    effect.dwTriggerButton = (DWORD)(-1);
     effect.cAxes = 2;
     effect.rgdwAxes = axes;
     effect.rglDirection = direction;
@@ -678,15 +678,15 @@ RECOIL_NOINLINE zInput_DiEffect *RECOIL_STDCALL zInput_DI_CreateSineEffectScaled
     DWORD axes[2] = {0, 4};
     LONG direction[2] = {0, 0};
     DIPERIODIC periodic = {0};
-    periodic.dwMagnitude = static_cast<DWORD>(ClampForceFeedbackGain(gain) * 10000.0f);
+    periodic.dwMagnitude = (DWORD)(ClampForceFeedbackGain(gain) * 10000.0f);
     periodic.dwPeriod = 20000;
 
     DIEFFECT effect = {0};
     effect.dwSize = sizeof(effect);
     effect.dwFlags = 0x22;
-    effect.dwDuration = static_cast<DWORD>(-1);
+    effect.dwDuration = (DWORD)(-1);
     effect.dwGain = 10000;
-    effect.dwTriggerButton = static_cast<DWORD>(-1);
+    effect.dwTriggerButton = (DWORD)(-1);
     effect.cAxes = 2;
     effect.rgdwAxes = axes;
     effect.rglDirection = direction;
@@ -734,7 +734,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zInput_DI_PlayAltFireEffect(zInput_FFEffect
     }
 
     desc.dwSize = sizeof(desc);
-    desc.dwGain = static_cast<int>(gain * 10000.0f);
+    desc.dwGain = (int)(gain * 10000.0f);
     effectSet->AltFire->vtbl_00->SetParameters_18(effectSet->AltFire, &desc, 4);
     effectSet->AltFire->vtbl_00->Start_1c(effectSet->AltFire, 1, 0);
 }
@@ -845,7 +845,7 @@ namespace zInput {
 namespace {
 const int kDiOk = 0;
 const int kDiFalse = 1;
-const int kDiInputLost = static_cast<int>(0x8007001e);
+const int kDiInputLost = (int)(0x8007001e);
 const unsigned char kSuspendFlag = 2;
 const unsigned int kDirectInputVersion = 0x500;
 const char kZInputInitSourceFile[] = "D:\\Proj\\GameZRecoil\\zInput\\zin_init.cpp";
@@ -865,23 +865,23 @@ struct DirectInputErrorName {
 };
 
 const DirectInputErrorName kDirectInputErrorNames[] = {
-    {static_cast<int>(0x80040110), "DIERR_NOAGGREGATION"},
-    {static_cast<int>(0x80004001), "DIERR_UNSUPPORTED"},
-    {static_cast<int>(0x80004002), "DIERR_NOINTERFACE"},
-    {static_cast<int>(0x80004005), "DIERR_GENERIC"},
-    {static_cast<int>(0x80070002), "DIERR_OBJECTNOTFOUND"},
-    {static_cast<int>(0x80040154), "DIERR_DEVICENOTREG"},
-    {static_cast<int>(0x8007000c), "DIERR_NOTACQUIRED"},
-    {static_cast<int>(0x80070005), "DIERR_READONLY"},
-    {static_cast<int>(0x80070015), "DIERR_NOTINITIALIZED"},
-    {static_cast<int>(0x8007000e), "DIERR_OUTOFMEMORY"},
-    {static_cast<int>(0x80070057), "DIERR_INVALIDPARAM"},
-    {static_cast<int>(0x8007001e), "DIERR_INPUTLOST"},
-    {static_cast<int>(0x800700aa), "DIERR_ACQUIRED"},
-    {static_cast<int>(0x80070077), "DIERR_BADDRIVERVER"},
-    {static_cast<int>(0x80070481), "DIERR_BETADIRECTINPUTVERSION"},
-    {static_cast<int>(0x8007047e), "DIERR_OLDDIRECTINPUTVERSION"},
-    {static_cast<int>(0x800704df), "DIERR_ALREADYINITIALIZED"},
+    {(int)(0x80040110), "DIERR_NOAGGREGATION"},
+    {(int)(0x80004001), "DIERR_UNSUPPORTED"},
+    {(int)(0x80004002), "DIERR_NOINTERFACE"},
+    {(int)(0x80004005), "DIERR_GENERIC"},
+    {(int)(0x80070002), "DIERR_OBJECTNOTFOUND"},
+    {(int)(0x80040154), "DIERR_DEVICENOTREG"},
+    {(int)(0x8007000c), "DIERR_NOTACQUIRED"},
+    {(int)(0x80070005), "DIERR_READONLY"},
+    {(int)(0x80070015), "DIERR_NOTINITIALIZED"},
+    {(int)(0x8007000e), "DIERR_OUTOFMEMORY"},
+    {(int)(0x80070057), "DIERR_INVALIDPARAM"},
+    {(int)(0x8007001e), "DIERR_INPUTLOST"},
+    {(int)(0x800700aa), "DIERR_ACQUIRED"},
+    {(int)(0x80070077), "DIERR_BADDRIVERVER"},
+    {(int)(0x80070481), "DIERR_BETADIRECTINPUTVERSION"},
+    {(int)(0x8007047e), "DIERR_OLDDIRECTINPUTVERSION"},
+    {(int)(0x800704df), "DIERR_ALREADYINITIALIZED"},
 };
 
 const unsigned char kKeyboardModifierClasses[0x9c] = {
@@ -938,7 +938,7 @@ void ApplyKeyboardKeyEvent(DIDeviceObjectData &event) {
         event.dwData |= 0x10;
     }
 
-    const unsigned int dwOfs = event.dwOfs | static_cast<unsigned int>(g_zInput_KbdModifierState);
+    const unsigned int dwOfs = event.dwOfs | (unsigned int)(g_zInput_KbdModifierState);
     KbdKeyDispatchEntry &dispatch = g_zInputKbdKeyDispatchTable[dwOfs];
     if ((event.dwData & 0x80) != 0) {
         dispatch.state = dispatch.state == 1 ? 3 : 1;
@@ -978,14 +978,14 @@ int ApplyKeyboardWaitEvent(DIDeviceObjectData &event) {
         if ((g_zInput_KbdModifierState & 0x400) != 0) {
             event.dwData |= 0x10;
         }
-        dispatchIndex |= static_cast<unsigned int>(g_zInput_KbdModifierState);
+        dispatchIndex |= (unsigned int)(g_zInput_KbdModifierState);
         break;
     }
 
     KbdKeyDispatchEntry &dispatch = g_zInputKbdKeyDispatchTable[dispatchIndex];
     if ((event.dwData & 0x80) != 0) {
         dispatch.state = dispatch.state == 1 ? 3 : 1;
-        return returnPressedKey ? static_cast<int>(dispatchIndex) : 0;
+        return returnPressedKey ? (int)(dispatchIndex) : 0;
     }
 
     dispatch.state |= 4;
@@ -1020,7 +1020,7 @@ int ApplyKeyboardPollEvent(DIDeviceObjectData &event) {
         if ((g_zInput_KbdModifierState & 0x400) != 0) {
             event.dwData |= 0x10;
         }
-        dispatchIndex |= static_cast<unsigned int>(g_zInput_KbdModifierState);
+        dispatchIndex |= (unsigned int)(g_zInput_KbdModifierState);
         break;
     }
 
@@ -1029,18 +1029,18 @@ int ApplyKeyboardPollEvent(DIDeviceObjectData &event) {
         dispatch.state = dispatch.state == 1 ? 3 : 1;
         if (g_zInput_KbdRawEventCallback != 0) {
             KeyboardRawEventCallbackFn callback = (KeyboardRawEventCallbackFn)(g_zInput_KbdRawEventCallback);
-            callback(Keyboard_TranslateDikToAscii(static_cast<int>(dispatchIndex)),
+            callback(Keyboard_TranslateDikToAscii((int)(dispatchIndex)),
                      g_zInput_KbdRawEventCallbackCtx);
         }
     } else {
         dispatch.state |= 4;
     }
 
-    return static_cast<int>(dispatchIndex);
+    return (int)(dispatchIndex);
 }
 
 int KeyboardEventDispatchIndex(const DIDeviceObjectData &event) {
-    int dispatchIndex = static_cast<int>(event.dwOfs);
+    int dispatchIndex = (int)(event.dwOfs);
     if ((event.dwData & 0x40) != 0) {
         dispatchIndex |= 0x100;
     }
@@ -1228,7 +1228,7 @@ RECOIL_NOINLINE int RECOIL_CDECL BindGroupList_GetCount() {
         return 0;
     }
 
-    return static_cast<int>(g_zInput_BindGroupInfoList.end - begin);
+    return (int)(g_zInput_BindGroupInfoList.end - begin);
 }
 
 // Reimplements 0x42a4a0: zInput::BindGroupList_GetGroupTitle
@@ -1245,7 +1245,7 @@ BindGroupList_GetGroupCommandCount(int groupIndex) {
         return 0;
     }
 
-    return static_cast<int>(group->commandIdsEnd - begin);
+    return (int)(group->commandIdsEnd - begin);
 }
 
 // Reimplements 0x42a4d0: zInput::BindGroupList_GetGroupCommandId
@@ -1285,7 +1285,7 @@ RECOIL_NOINLINE void RECOIL_CDECL BindGroupList_Clear() {
 RECOIL_NOINLINE int RECOIL_FASTCALL BindGroupList_AddGroup(const char *title) {
     const int groupIndex = BindGroupList_GetCount();
 
-    zInput_BindGroupInfo * group = static_cast<zInput_BindGroupInfo *>(::operator new(sizeof(zInput_BindGroupInfo)));
+    zInput_BindGroupInfo * group = (zInput_BindGroupInfo *)(::operator new(sizeof(zInput_BindGroupInfo)));
     group->title = title != 0 ? _strdup(title) : 0;
     group->unknown_04 = 0;
     group->commandIdsBegin = 0;
@@ -1301,11 +1301,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BindGroupList_AddGroup(const char *title) {
         return groupIndex;
     }
 
-    const int count = begin != 0 ? static_cast<int>(end - begin) : 0;
+    const int count = begin != 0 ? (int)(end - begin) : 0;
     const int growth = count > 1 ? count : 1;
     const int newCapacity = count + growth;
-    zInput_BindGroupInfo **const newBegin = static_cast<zInput_BindGroupInfo **>(
-        ::operator new(static_cast<size_t>(newCapacity) * sizeof(zInput_BindGroupInfo *)));
+    zInput_BindGroupInfo **const newBegin = (zInput_BindGroupInfo **)(
+        ::operator new((size_t)(newCapacity) * sizeof(zInput_BindGroupInfo *)));
 
     for (int i = 0; i < count; ++i) {
         newBegin[i] = begin[i];
@@ -1333,11 +1333,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindGroupList_AddCommandToGroup(int groupIn
         return;
     }
 
-    const int count = begin != 0 ? static_cast<int>(end - begin) : 0;
+    const int count = begin != 0 ? (int)(end - begin) : 0;
     const int growth = count > 1 ? count : 1;
     const int newCapacity = count + growth;
-    int *const newBegin = static_cast<int *>(
-        ::operator new(static_cast<size_t>(newCapacity) * sizeof(int)));
+    int *const newBegin = (int *)(
+        ::operator new((size_t)(newCapacity) * sizeof(int)));
 
     for (int i = 0; i < count; ++i) {
         newBegin[i] = begin[i];
@@ -1481,7 +1481,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindMapContext_Push(zInput_BindMapContext *
         node->next = 0;
     }
 
-    node->bindMap = const_cast<zInput_BindMapContext *>(previousCurrent);
+    node->bindMap = (zInput_BindMapContext *)(previousCurrent);
     node->next = g_zInput_BindMapOverlayNodeStackHead;
     node->prev = 0;
     if (g_zInput_BindMapOverlayNodeStackHead != 0) {
@@ -1678,15 +1678,15 @@ RECOIL_NOINLINE char *RECOIL_STDCALL BindMap_FormatKeyComboName(int packedKey,
     *destBuf = '\0';
     if ((packedKey & 0x200) != 0) {
         strncat(destBuf, "Ctrl-", remaining);
-        remaining -= static_cast<int>(strlen(destBuf));
+        remaining -= (int)(strlen(destBuf));
     }
     if ((packedKey & 0x100) != 0) {
         strncat(destBuf, "Alt-", remaining);
-        remaining -= static_cast<int>(strlen(destBuf));
+        remaining -= (int)(strlen(destBuf));
     }
     if ((packedKey & 0x400) != 0) {
         strncat(destBuf, "Shift-", remaining);
-        remaining -= static_cast<int>(strlen(destBuf));
+        remaining -= (int)(strlen(destBuf));
     }
 
     return strncat(destBuf, keyName, remaining);
@@ -1759,8 +1759,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Init(HWND hWnd, HINSTANCE hInstance) {
     }
 
     g_zInput_hWnd = hWnd;
-    g_zInput_DeviceRegistry = Keyboard_InitDevice() == 0 ? static_cast<unsigned char>(1) : 0;
-    g_zInputMouseFlags = Mouse_InitDevice() != 0 ? static_cast<unsigned char>(1) : 0;
+    g_zInput_DeviceRegistry = Keyboard_InitDevice() == 0 ? (unsigned char)(1) : 0;
+    g_zInputMouseFlags = Mouse_InitDevice() != 0 ? (unsigned char)(1) : 0;
     g_zInputJoystickFlags = DI_InitJoystickDevice(hWnd) != 0 ? 1 : 0;
     Keyboard_AddRef();
     Mouse_AddRef();
@@ -1888,10 +1888,10 @@ RECOIL_NOINLINE void RECOIL_STDCALL Mouse_SetNormalizedCursorPos(float normX, fl
     g_zInput_MouseStateSnapshot.cursorNormY = normY;
     g_zInput_MouseStateSnapshot.cursorClientX =
         g_zInput_MouseClientCenterX +
-        static_cast<int>(g_zInput_MouseClientCenterX * normX);
+        (int)(g_zInput_MouseClientCenterX * normX);
     g_zInput_MouseStateSnapshot.cursorClientY =
         g_zInput_MouseClientCenterY +
-        static_cast<int>(g_zInput_MouseClientCenterY * normY);
+        (int)(g_zInput_MouseClientCenterY * normY);
     Mouse_ApplyClientCursorPosToOS();
 }
 
@@ -1907,8 +1907,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Mouse_SetClientSizeAndCenter(int width,
     g_zInput_MouseClientHeight = height;
     g_zInput_MouseClientCenterX = (width - (width >> 31)) >> 1;
     g_zInput_MouseClientCenterY = (height - (height >> 31)) >> 1;
-    g_zInput_MouseInvClientCenterX = 1.0f / static_cast<float>(g_zInput_MouseClientCenterX);
-    g_zInput_MouseInvClientCenterY = 1.0f / static_cast<float>(g_zInput_MouseClientCenterY);
+    g_zInput_MouseInvClientCenterX = 1.0f / (float)(g_zInput_MouseClientCenterX);
+    g_zInput_MouseInvClientCenterY = 1.0f / (float)(g_zInput_MouseClientCenterY);
 }
 
 // Reimplements 0x4703a0: zInput::Mouse_GetStateSnapshotPtr
@@ -1937,7 +1937,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Mouse_InitDevice() {
     g_zInput_MouseDevice->vtbl_00->SetDataFormat_2c(g_zInput_MouseDevice, &c_dfDIMouse);
     g_zInput_MouseDevice->vtbl_00->SetCooperativeLevel_34(
         g_zInput_MouseDevice, g_zInput_hWnd,
-        static_cast<unsigned int>(g_zInput_MouseCoopLevelFlags));
+        (unsigned int)(g_zInput_MouseCoopLevelFlags));
 
     DipropDwordInit bufferSizeProp = {0x14, 0x10, 0, 0, 0x10};
     g_zInput_MouseDevice->vtbl_00->SetProperty_18(g_zInput_MouseDevice, 1, &bufferSizeProp);
@@ -1998,7 +1998,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Keyboard_InitDevice() {
         return 1;
     }
 
-    g_zInput_KbdEventBuffer = static_cast<DIDeviceObjectData *>(calloc(1, 0x800));
+    g_zInput_KbdEventBuffer = (DIDeviceObjectData *)(calloc(1, 0x800));
     g_zInput_KbdSystemReady = 1;
     Keyboard_ResetTransitionState();
     Keyboard_ClearKeyCallbackTable();
@@ -2111,7 +2111,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Keyboard_TranslateDikToAscii(int comboIdx) {
         result -= 0x20;
     }
 
-    if (static_cast<unsigned int>(comboIdx - 0x402) > 0x33) {
+    if ((unsigned int)(comboIdx - 0x402) > 0x33) {
         return result;
     }
 
@@ -2210,7 +2210,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Keyboard_AddRef() {
         ++g_zInputKeyboardPollRefCount;
     }
 
-    return static_cast<unsigned short>(g_zInputKeyboardPollRefCount);
+    return (unsigned short)(g_zInputKeyboardPollRefCount);
 }
 
 // Reimplements 0x46f690: zInput::Keyboard_PollState
@@ -2306,7 +2306,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Mouse_AddRef() {
         ++g_zInputMousePollRefCount;
     }
 
-    return static_cast<unsigned short>(g_zInputMousePollRefCount);
+    return (unsigned short)(g_zInputMousePollRefCount);
 }
 
 // Reimplements 0x471d50: zInput::DI_AddJoystickRef
@@ -2322,7 +2322,7 @@ RECOIL_NOINLINE int RECOIL_CDECL DI_AddJoystickRef() {
 // Reimplements 0x471d80: zInput::DI_ReleaseJoystickRef
 RECOIL_NOINLINE int RECOIL_CDECL DI_ReleaseJoystickRef() {
     short refCount = g_zInputJoystickPollRefCount;
-    if (static_cast<unsigned short>(refCount) > 0) {
+    if ((unsigned short)(refCount) > 0) {
         --refCount;
     }
 
@@ -2421,9 +2421,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_SetAxisDeadzone(int axisOffset,
 
     prop.dwSize = sizeof(prop);
     prop.dwHeaderSize = 0x10;
-    prop.dwObj = static_cast<unsigned int>(axisOffset);
+    prop.dwObj = (unsigned int)(axisOffset);
     prop.dwHow = 1;
-    prop.dwData = static_cast<unsigned int>(deadzone);
+    prop.dwData = (unsigned int)(deadzone);
     return g_zInput_JoystickDevice->vtbl_00->SetProperty_18(g_zInput_JoystickDevice, 5, &prop);
 }
 
@@ -2442,7 +2442,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_SetAxisRange(int axisOffset,
 
     prop.dwSize = sizeof(prop);
     prop.dwHeaderSize = 0x10;
-    prop.dwObj = static_cast<unsigned int>(axisOffset);
+    prop.dwObj = (unsigned int)(axisOffset);
     prop.dwHow = 1;
     prop.lMin = rangeMin;
     prop.lMax = rangeMax;
@@ -2464,7 +2464,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_GetAxisRange(int axisOffset,
 
     prop.dwSize = sizeof(prop);
     prop.dwHeaderSize = 0x10;
-    prop.dwObj = static_cast<unsigned int>(axisOffset);
+    prop.dwObj = (unsigned int)(axisOffset);
     prop.dwHow = 1;
     const int result =
         g_zInput_JoystickDevice->vtbl_00->GetProperty_14(g_zInput_JoystickDevice, 4, &prop);
@@ -2481,8 +2481,8 @@ void ApplyAxisConfigEntry(JoystickAxisConfig *axisCfg, int axisIndex,
         DI_GetAxisRange(axisOffset, &axis.lMin, &axis.lMax);
     }
 
-    axis.midpoint = static_cast<float>(axis.lMin + axis.lMax) * 0.5f;
-    axis.normScale = 2.0f / static_cast<float>(axis.lMax - axis.lMin);
+    axis.midpoint = (float)(axis.lMin + axis.lMax) * 0.5f;
+    axis.normScale = 2.0f / (float)(axis.lMax - axis.lMin);
     result &= DI_SetAxisDeadzone(axisOffset, axis.deadzone) >= 0 ? 1 : 0;
 }
 } // namespace
@@ -2664,17 +2664,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Mouse_PollAndStoreState(int dispatchCallbac
 // Reimplements 0x471de0: zInput::PollActiveDevices
 RECOIL_NOINLINE void RECOIL_FASTCALL PollActiveDevices(int dispatchCallbacks) {
     const int savedDispatchCallbacks = dispatchCallbacks;
-    if (g_zInputMouseFlags == 1 && static_cast<unsigned short>(g_zInputMousePollRefCount) > 0) {
+    if (g_zInputMouseFlags == 1 && (unsigned short)(g_zInputMousePollRefCount) > 0) {
         Mouse_PollAndStoreState(savedDispatchCallbacks);
     }
 
     if (g_zInputJoystickFlags == 1 &&
-        static_cast<unsigned short>(g_zInputJoystickPollRefCount) > 0) {
+        (unsigned short)(g_zInputJoystickPollRefCount) > 0) {
         DI_PollJoystickState(savedDispatchCallbacks);
     }
 
     if (g_zInput_DeviceRegistry == 1 &&
-        static_cast<unsigned short>(g_zInputKeyboardPollRefCount) > 0) {
+        (unsigned short)(g_zInputKeyboardPollRefCount) > 0) {
         Keyboard_PollState(savedDispatchCallbacks);
     }
 }
@@ -2742,10 +2742,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Mouse_WaitForButtonPress(int pollUntilFound)
 
 // Reimplements 0x4704f0: zInput::Mouse_ApplyAccumulatedDelta
 RECOIL_NOINLINE void RECOIL_CDECL Mouse_ApplyAccumulatedDelta() {
-    g_zInput_MouseStateSnapshot.deltaX = static_cast<int>(
-        static_cast<double>(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseSensitivityX);
-    g_zInput_MouseStateSnapshot.deltaY = static_cast<int>(
-        static_cast<double>(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseSensitivityY);
+    g_zInput_MouseStateSnapshot.deltaX = (int)(
+        (double)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseSensitivityX);
+    g_zInput_MouseStateSnapshot.deltaY = (int)(
+        (double)(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseSensitivityY);
 
     int cursorX =
         g_zInput_MouseStateSnapshot.cursorClientX + g_zInput_MouseStateSnapshot.deltaX;
@@ -2774,15 +2774,15 @@ RECOIL_NOINLINE void RECOIL_CDECL Mouse_ApplyAccumulatedDelta() {
     }
 
     g_zInput_MouseStateSnapshot.cursorNormX =
-        static_cast<float>(static_cast<double>(cursorX - g_zInput_MouseClientCenterX) *
+        (float)((double)(cursorX - g_zInput_MouseClientCenterX) *
                            g_zInput_MouseInvClientCenterX);
     g_zInput_MouseStateSnapshot.cursorNormY =
-        static_cast<float>(static_cast<double>(cursorY - g_zInput_MouseClientCenterY) *
+        (float)((double)(cursorY - g_zInput_MouseClientCenterY) *
                            g_zInput_MouseInvClientCenterY);
-    g_zInput_MouseStateSnapshot.deltaNormX = static_cast<float>(
-        static_cast<double>(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseInvClientCenterX);
-    g_zInput_MouseStateSnapshot.deltaNormY = static_cast<float>(
-        static_cast<double>(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseInvClientCenterY);
+    g_zInput_MouseStateSnapshot.deltaNormX = (float)(
+        (double)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseInvClientCenterX);
+    g_zInput_MouseStateSnapshot.deltaNormY = (float)(
+        (double)(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseInvClientCenterY);
 }
 
 // Reimplements 0x470610: zInput::Mouse_ResetTransitionState
@@ -2838,7 +2838,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Mouse_ResumeFromSuspend() {
         Mouse_ResetTransitionState();
     }
 
-    g_zInput_MouseSuspendFlags &= static_cast<unsigned char>(~kSuspendFlag);
+    g_zInput_MouseSuspendFlags &= (unsigned char)(~kSuspendFlag);
 }
 
 // Reimplements 0x46f450: zInput::Keyboard_ResetTransitionState
@@ -2899,7 +2899,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Keyboard_ResetTransitionState() {
                 event->dwData |= 0x10;
             }
 
-            dispatchIndex |= static_cast<unsigned int>(g_zInput_KbdModifierState);
+            dispatchIndex |= (unsigned int)(g_zInput_KbdModifierState);
             break;
         }
 
@@ -2930,7 +2930,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Keyboard_ResumeFromSuspend() {
         Keyboard_ResetTransitionState();
     }
 
-    g_zInput_KeyboardSuspendFlags &= static_cast<unsigned char>(~kSuspendFlag);
+    g_zInput_KeyboardSuspendFlags &= (unsigned char)(~kSuspendFlag);
 }
 
 // Reimplements 0x472410: zInput::DI_ResetTransitionState
@@ -2963,7 +2963,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Joystick_ResumeFromSuspend() {
         DI_ResetTransitionState();
     }
 
-    g_zInput_JoystickSuspendFlags &= static_cast<unsigned char>(~kSuspendFlag);
+    g_zInput_JoystickSuspendFlags &= (unsigned char)(~kSuspendFlag);
 }
 
 // Reimplements 0x471b20: zInput::OnAppActivate

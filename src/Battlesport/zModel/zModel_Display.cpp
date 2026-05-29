@@ -91,7 +91,7 @@ namespace {
 const unsigned int kSpanOcclusionTestSphereVisible = 0x00476cf0;
 
 int TruncateToInt(float value) {
-    return static_cast<int>(value);
+    return (int)(value);
 }
 
 bool TestSpanColumnVisible(int columnIndex) {
@@ -137,7 +137,7 @@ unsigned short BlendDamageMaskPixel565(unsigned short dstPixel, unsigned short s
     const unsigned int green =
         ((((src & 0x07e0) - (dstPixel & 0x07e0)) * alpha) >> 8) & 0xffffffe0;
     const unsigned int blue = (((src & 0x001f) - (dst & 0x001f)) * alpha) >> 8;
-    return static_cast<unsigned short>(dst + green + blue);
+    return (unsigned short)(dst + green + blue);
 }
 
 unsigned short BlendDamageMaskPixel555(unsigned short dstPixel, unsigned short srcPixel,
@@ -148,7 +148,7 @@ unsigned short BlendDamageMaskPixel555(unsigned short dstPixel, unsigned short s
     const unsigned int green =
         ((((src & 0x03e0) - (dst & 0x03e0)) * alpha) >> 8) & 0xffffffe0;
     const unsigned int blue = (((src & 0x001f) - (dst & 0x001f)) * alpha) >> 8;
-    return static_cast<unsigned short>(dst + red + green + blue);
+    return (unsigned short)(dst + red + green + blue);
 }
 
 typedef int(RECOIL_FASTCALL *TextureRecordLockUploadSurfaceProc)(
@@ -213,23 +213,23 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TestProjectedSphereVisible(zVec3 *center,
 
     const int centerX = TruncateToInt(projectedPoint.x);
     zRndr::g_spanAllocCursor->sampleXMin = centerX - projectedRadius;
-    if (static_cast<float>(zRndr::g_spanAllocCursor->sampleXMin) >= gClipRect_Primary.xMax) {
+    if ((float)(zRndr::g_spanAllocCursor->sampleXMin) >= gClipRect_Primary.xMax) {
         return 0;
     }
 
     zRndr::g_spanAllocCursor->sampleXMax = centerX + projectedRadius;
-    if (static_cast<float>(zRndr::g_spanAllocCursor->sampleXMax) < gClipRect_Primary.xMin) {
+    if ((float)(zRndr::g_spanAllocCursor->sampleXMax) < gClipRect_Primary.xMin) {
         return 0;
     }
 
     const int centerY = TruncateToInt(projectedPoint.y);
     int columnMin = centerY - projectedRadius;
-    if (gClipRect_Primary.yMax - 2.0f < static_cast<float>(columnMin)) {
+    if (gClipRect_Primary.yMax - 2.0f < (float)(columnMin)) {
         return 0;
     }
 
     int columnMax = centerY + projectedRadius;
-    if (static_cast<float>(columnMax) <= gClipRect_Primary.yMin) {
+    if ((float)(columnMax) <= gClipRect_Primary.yMin) {
         return 0;
     }
 
@@ -438,8 +438,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyDamageMaskStampOnHit(
     const int dstHeight = dstSurface->height;
     const int srcWidth = srcSurface->width;
     const int srcHeight = srcSurface->height;
-    int dstX = static_cast<int>(dstWidth * g_OptCatalogDamageMaskPhaseU) - (srcWidth >> 1);
-    int dstY = static_cast<int>(dstHeight * g_OptCatalogDamageMaskPhaseV) - (srcHeight >> 1);
+    int dstX = (int)(dstWidth * g_OptCatalogDamageMaskPhaseU) - (srcWidth >> 1);
+    int dstY = (int)(dstHeight * g_OptCatalogDamageMaskPhaseV) - (srcHeight >> 1);
     int srcXBegin = 0;
     int srcXEnd = 0;
     int srcYBegin = 0;
@@ -579,7 +579,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LoadDynamicEntriesFromPath(char *path) {
         }
 
         const size_t byteCount = strlen(entry) + 1;
-        char *const copy = static_cast<char *>(malloc(byteCount));
+        char *const copy = (char *)(malloc(byteCount));
         g_zRndr_GlobalStringTable[g_zRndr_GlobalStringCount] = copy;
         if (copy != 0) {
             ++g_zRndr_GlobalStringCount;
@@ -599,7 +599,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PtrToIndexOrMinus1(zDiPartial *self) {
         return -1;
     }
 
-    return static_cast<int>(self - g_zModel_DiPoolBase);
+    return (int)(self - g_zModel_DiPoolBase);
 }
 
 // Reimplements 0x4815a0: zDi::IndexToPtrOrNull
@@ -649,7 +649,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FreeIfUnreferenced(zDiPartial *di) {
     const ptrdiff_t slotIndex = di - g_zModel_DiPoolBase;
     g_zModel_DiPoolBase[slotIndex].nextFreeIndex = g_zModel_DiPoolFreeHeadIndex;
     --g_zModel_DiPoolInUseCount;
-    g_zModel_DiPoolFreeHeadIndex = static_cast<int>(slotIndex);
+    g_zModel_DiPoolFreeHeadIndex = (int)(slotIndex);
     return 0;
 }
 } // namespace zModel_DiPool
@@ -688,10 +688,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Release(zModel_MaterialSlot *slot) {
     }
 
     slot->prevPoolIndex = -1;
-    slot->nextPoolIndex = static_cast<short>(g_zModel_MatlFreeHeadIndex);
+    slot->nextPoolIndex = (short)(g_zModel_MatlFreeHeadIndex);
     if (g_zModel_MatlFreeHeadIndex >= 0) {
         g_zModel_MatlPool[g_zModel_MatlFreeHeadIndex].prevPoolIndex =
-            static_cast<short>(slotIndex);
+            (short)(slotIndex);
     }
 
     g_zModel_MatlFreeHeadIndex = slotIndex;
@@ -779,17 +779,17 @@ RECOIL_NOINLINE int RECOIL_CDECL InitGlobals() {
     }
 
     const size_t poolBytes =
-        static_cast<size_t>(g_zModel_MatlPoolCapacity) * sizeof(zModel_MaterialSlot);
-    g_zModel_MatlPool = static_cast<zModel_MaterialSlot *>(malloc(poolBytes));
+        (size_t)(g_zModel_MatlPoolCapacity) * sizeof(zModel_MaterialSlot);
+    g_zModel_MatlPool = (zModel_MaterialSlot *)(malloc(poolBytes));
     memset(g_zModel_MatlPool, 0, poolBytes);
 
     g_zModel_MatlFreeHeadIndex = 0;
     if (g_zModel_MatlPoolCapacity > 0) {
         for (int i = 0; i < g_zModel_MatlPoolCapacity; ++i) {
             g_zModel_MatlPool[i].prevPoolIndex =
-                static_cast<short>(i == 0 ? -1 : i - 1);
+                (short)(i == 0 ? -1 : i - 1);
             g_zModel_MatlPool[i].nextPoolIndex =
-                static_cast<short>(i == g_zModel_MatlPoolCapacity - 1 ? -1 : i + 1);
+                (short)(i == g_zModel_MatlPoolCapacity - 1 ? -1 : i + 1);
         }
     }
 
@@ -908,7 +908,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CurrentAllowsId(int variantId) {
         return 1;
     }
 
-    const unsigned char id = static_cast<unsigned char>(variantId);
+    const unsigned char id = (unsigned char)(variantId);
     for (int i = 0; i < count; ++i) {
         const unsigned char tag = g_Variant_CurrentTag.tags[i];
         if (tag == 0xff || tag == id) {

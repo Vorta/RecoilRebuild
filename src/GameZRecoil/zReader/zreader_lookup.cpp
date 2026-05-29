@@ -56,7 +56,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindGlobalStringPrefixIndex(const char *text
             continue;
         }
 
-        const unsigned char nextChar = static_cast<unsigned char>(text[prefixLength]);
+        const unsigned char nextChar = (unsigned char)(text[prefixLength]);
         if (nextChar != '\0' && _isctype(nextChar, 0x0008) == 0) {
             continue;
         }
@@ -104,7 +104,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedFloat(Node *parentNode, const char 
     }
 
     if (node->type == ZRDR_NODE_INT) {
-        *outValue = static_cast<float>(node->value.i32);
+        *outValue = (float)(node->value.i32);
         return 1;
     }
 
@@ -116,7 +116,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedFloat(Node *parentNode, const char 
         }
 
         if (arrayBase[1].type == ZRDR_NODE_INT) {
-            *outValue = static_cast<float>(arrayBase[1].value.i32);
+            *outValue = (float)(arrayBase[1].value.i32);
             return 1;
         }
     }

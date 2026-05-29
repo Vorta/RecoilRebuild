@@ -78,7 +78,7 @@ namespace zClass_Lod {
             return 0;
         }
 
-        zClass_LodDataPartial *data = static_cast<zClass_LodDataPartial *>(node->classData);
+        zClass_LodDataPartial *data = (zClass_LodDataPartial *)(node->classData);
         node->flags = flags & ~0x02000000;
         zClass_LodDistanceState &state =
             g_zClass_LodDistanceStateStack[g_zClass_LodDistanceStateStackTop];
@@ -235,7 +235,7 @@ namespace zClass_Lod {
         node->classId = kZClassNodeLod;
 
         zClass_LodDataPartial *data =
-            static_cast<zClass_LodDataPartial *>(calloc(1, sizeof(zClass_LodDataPartial)));
+            (zClass_LodDataPartial *)(calloc(1, sizeof(zClass_LodDataPartial)));
         node->classData = data;
         data->computeOwnDistance = 1;
         data->nearRange = 1000.0f;
@@ -260,14 +260,14 @@ namespace zClass_Lod {
     // Reimplements 0x454330: zClass_Lod::SetComputeOwnDistance
     RECOIL_NOINLINE int RECOIL_FASTCALL SetComputeOwnDistance(zClass_NodePartial * node,
                                                                        int enabled) {
-        static_cast<zClass_LodDataPartial *>(node->classData)->computeOwnDistance = enabled;
+        ((zClass_LodDataPartial *)(node->classData))->computeOwnDistance = enabled;
         return 0;
     }
 
     // Reimplements 0x454340: zClass_Lod::SetTargetNodeAndRange
     RECOIL_NOINLINE int RECOIL_FASTCALL SetTargetNodeAndRange(
         zClass_NodePartial * node, zClass_NodePartial * target, float range) {
-        zClass_LodDataPartial *data = static_cast<zClass_LodDataPartial *>(node->classData);
+        zClass_LodDataPartial *data = (zClass_LodDataPartial *)(node->classData);
         data->rangeNode = target;
         if (target != 0) {
             data->rangeSq = range * range;

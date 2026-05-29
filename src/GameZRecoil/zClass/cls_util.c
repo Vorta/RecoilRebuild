@@ -111,9 +111,9 @@ namespace zClass {
         }
 
         const size_t nodeArrayBytes =
-            static_cast<size_t>(g_zClass_NodeArraySize) * sizeof(zClass_NodeFreeListSlot);
+            (size_t)(g_zClass_NodeArraySize) * sizeof(zClass_NodeFreeListSlot);
         g_zClass_NodeArray =
-            static_cast<zClass_NodeFreeListSlot *>(malloc(nodeArrayBytes));
+            (zClass_NodeFreeListSlot *)(malloc(nodeArrayBytes));
         memset(g_zClass_NodeArray, 0, nodeArrayBytes);
 
         g_zClass_ActiveNodeCount = 0;
@@ -122,7 +122,7 @@ namespace zClass {
             for (int i = 0; i < g_zClass_NodeArraySize - 1; ++i) {
                 unsigned int freeTag = g_zClass_NodeArray[i].freeTag;
                 freeTag = (freeTag & ~kNodeFreeTagIndexMask) |
-                          (static_cast<unsigned int>(i + 1) & kNodeFreeTagIndexMask);
+                          ((unsigned int)(i + 1) & kNodeFreeTagIndexMask);
                 g_zClass_NodeArray[i].freeTag = freeTag;
             }
             g_zClass_NodeArray[g_zClass_NodeArraySize - 1].freeTag |= kNodeFreeTagIndexMask;
@@ -199,7 +199,7 @@ namespace zClass_Util {
         }
 
         zDiPartial *displayInstance =
-            (zDiPartial *)(static_cast<unsigned int>(node->userDataOrDiRef));
+            (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (displayInstance != 0) {
             const int setResult = zClass_Class::gwNodeSetDisplayInstance(node, 0);
             if (setResult != 0) {
@@ -234,7 +234,7 @@ namespace zClass_cls_util {
             if (result == 0) {
                 return zClass_Class::gwNodeSetDisplayInstance(
                     dest, (zDiPartial *)(
-                              static_cast<unsigned int>(displayInstanceValue)));
+                              (unsigned int)(displayInstanceValue)));
             }
             return result;
         }
@@ -246,7 +246,7 @@ namespace zClass_cls_util {
         }
 
         zDiPartial *const sourceDisplayInstance =
-            (zDiPartial *)(static_cast<unsigned int>(sourceDisplayInstanceValue));
+            (zDiPartial *)((unsigned int)(sourceDisplayInstanceValue));
         displayInstanceValue = sourceDisplayInstanceValue;
         int cloneInstance = 1;
         if (g_zClass_CopyNodeDiArg1 != 0 &&
@@ -257,7 +257,7 @@ namespace zClass_cls_util {
         if (cloneInstance == 0) {
             return zClass_Class::gwNodeSetDisplayInstance(
                 dest,
-                (zDiPartial *)(static_cast<unsigned int>(displayInstanceValue)));
+                (zDiPartial *)((unsigned int)(displayInstanceValue)));
         }
 
         zDiPartial *const clonedDisplayInstance = zDi::CloneToInstance(
@@ -436,7 +436,7 @@ namespace zClass_cls_util {
         }
 
         zClass_CameraDataPartial *const data =
-            static_cast<zClass_CameraDataPartial *>(source->classData);
+            (zClass_CameraDataPartial *)(source->classData);
         if (zClass_Camera::gwCameraSetWorld(camera, data->worldNode) != 0) {
             return 0;
         }
@@ -487,7 +487,7 @@ namespace zClass_cls_util {
         }
 
         zClass_Object3DDataPartial *const data =
-            static_cast<zClass_Object3DDataPartial *>(source->classData);
+            (zClass_Object3DDataPartial *)(source->classData);
         if (zClass_Object3D::gwObject3DSetAlphaScale(parent, data->alphaScale) != 0) {
             return 0;
         }
@@ -569,13 +569,13 @@ namespace zClass_cls_util {
         }
 
         zClass_LodDataPartial *const sourceData =
-            static_cast<zClass_LodDataPartial *>(source->classData);
+            (zClass_LodDataPartial *)(source->classData);
         if (zClass_Lod::SetComputeOwnDistance(parent, sourceData->computeOwnDistance) != 0) {
             return 0;
         }
 
         zClass_LodDataPartial *const destData =
-            static_cast<zClass_LodDataPartial *>(parent->classData);
+            (zClass_LodDataPartial *)(parent->classData);
         destData->nearRangeSq = sourceData->nearRangeSq;
         destData->nearRange = sourceData->nearRange;
         destData->farRangeSq = sourceData->farRangeSq;

@@ -68,7 +68,7 @@ class MfcCmdUIView {
 };
 
 unsigned int Ptr32FromSymbol(const void *symbol) {
-    return static_cast<unsigned int>((unsigned int)(symbol));
+    return (unsigned int)((unsigned int)(symbol));
 }
 
 CRuntimeClass *RECOIL_STDCALL GetCZRecoilFrameBaseRuntimeClass() {
@@ -134,7 +134,7 @@ RECOIL_FRAME_NOINLINE unsigned int RECOIL_CDECL CZRecoilFrame::GetBaseRuntimeCla
 
 // Reimplements 0x4301e0: CZRecoilFrame::CreateObject
 RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_CDECL CZRecoilFrame::CreateObject() {
-    CZRecoilFrame *const frame = static_cast<CZRecoilFrame *>(::operator new(sizeof(CZRecoilFrame)));
+    CZRecoilFrame *const frame = (CZRecoilFrame *)(::operator new(sizeof(CZRecoilFrame)));
     if (frame == 0) {
         return 0;
     }
@@ -216,7 +216,7 @@ RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor(
     RemoveMenu(SubMenuHandleOrNull(m_mainMenuHandle, 2), kFullscreenMenuCommandId, MF_BYCOMMAND);
 
     g_RecoilApp_hInstance =
-        (HINSTANCE)(static_cast<unsigned int>(g_RecoilApp.m_hInstance_6c));
+        (HINSTANCE)((unsigned int)(g_RecoilApp.m_hInstance_6c));
     g_RecoilApp_hWndMain = m_hWnd;
 
     unsigned long formattedTitleStorage[(sizeof(CString) + sizeof(unsigned long) - 1) /
@@ -276,10 +276,10 @@ CZRecoilFrame::SetMenuBarVisibility(int visible) {
     LONG style = GetWindowLongA(m_hWnd, GWL_STYLE);
     HMENU menu = 0;
     if (visible != 0) {
-        style |= static_cast<LONG>(0x82ca0000);
+        style |= (LONG)(0x82ca0000);
         menu = m_mainMenuHandle;
     } else {
-        style &= static_cast<LONG>(0xfff7ffff);
+        style &= (LONG)(0xfff7ffff);
     }
 
     SetWindowLongA(m_hWnd, GWL_STYLE, style);
@@ -447,7 +447,7 @@ RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL CZRecoilFrame::OnMenuOpe
     char messageBoxTitle[0x80];
     strcpy(messageBoxTitle, zLoc::GetMessageString(0x19));
 
-    const UINT resultCode = static_cast<UINT>((UINT_PTR)(findResult));
+    const UINT resultCode = (UINT)((UINT_PTR)(findResult));
     if (resultCode <= 0x1f) {
         switch (kFindExecutableErrorMap[resultCode]) {
         case 0:

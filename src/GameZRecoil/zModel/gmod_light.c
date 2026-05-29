@@ -601,7 +601,7 @@ zModel_Light_BuildLightWeights(zVec3 *surfaceNormal, int vertexCount,
     zFloat::Set255f(&scale);
     scale -= 1.0f;
     zRndr::BlendPackedColor565WithFogInPlace(outPackedFogColor,
-                                             static_cast<int>(maxVertexWeight * scale));
+                                             (int)(maxVertexWeight * scale));
     return 1;
 }
 
@@ -755,9 +755,9 @@ namespace zModel_Light {
         zMath::Vec3Normalize(surfaceNormal);
 
         float fogWeights[0x40] = {0};
-        memset(g_Clip_PolyAttr1, 0, static_cast<size_t>(vertexCount) * sizeof(float));
+        memset(g_Clip_PolyAttr1, 0, (size_t)(vertexCount) * sizeof(float));
         if (g_zVideo_ActiveRendererPath != 0 && (*lightFlags & 1) == 0) {
-            memset(g_Clip_PolyAttr2, 0, static_cast<size_t>(vertexCount) * sizeof(float));
+            memset(g_Clip_PolyAttr2, 0, (size_t)(vertexCount) * sizeof(float));
         }
 
         int fogContributorCount = 0;

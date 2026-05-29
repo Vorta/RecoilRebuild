@@ -37,7 +37,7 @@ namespace zClass_Switch {
         }
 
         zClass_SwitchDataPartial *data =
-            static_cast<zClass_SwitchDataPartial *>(node->classData);
+            (zClass_SwitchDataPartial *)(node->classData);
         node->flags = flags & ~0x02000000;
         int clipMask = *gModel_ClipMaskStackTop;
         const int result = CullNodeForRender(node, siblingCountHint, &clipMask);

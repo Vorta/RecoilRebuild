@@ -60,7 +60,7 @@ void UnlinkAndDeleteFadeNode(zSndFadeListNode *node) {
 }
 
 void InitializeSentinel(zSndFadeListNode *&sentinel) {
-    sentinel = static_cast<zSndFadeListNode *>(::operator new(sizeof(*sentinel)));
+    sentinel = (zSndFadeListNode *)(::operator new(sizeof(*sentinel)));
     sentinel->next = sentinel;
     sentinel->prev = sentinel;
     sentinel->fadeEntry = 0;
@@ -160,7 +160,7 @@ void LoadSample(zSndSample *sample, zReader::Node *sampleNode) {
 
 void LoadSampleSet(const char *setName, zReader::Node *sampleListNode) {
     const int sampleCount = ArrayCount(sampleListNode) - 1;
-    zSndSampleSet *sampleSet = static_cast<zSndSampleSet *>(::operator new(sizeof(zSndSampleSet)));
+    zSndSampleSet *sampleSet = (zSndSampleSet *)(::operator new(sizeof(zSndSampleSet)));
     if (sampleSet != 0) {
         sampleSet = sampleSet->RegistryAddEntry(setName, sampleCount);
     }
@@ -238,7 +238,7 @@ void LoadLegacySample(zSndSample *sample, zReader::Node *legacyEntryNode) {
 
 void LoadLegacySampleSet(const char *setName, zReader::Node *sampleListNode) {
     const int sampleCount = ArrayCount(sampleListNode) - 1;
-    zSndSampleSet *sampleSet = static_cast<zSndSampleSet *>(::operator new(sizeof(zSndSampleSet)));
+    zSndSampleSet *sampleSet = (zSndSampleSet *)(::operator new(sizeof(zSndSampleSet)));
     if (sampleSet != 0) {
         sampleSet = sampleSet->RegistryAddEntry(setName, sampleCount);
     }
@@ -265,7 +265,7 @@ namespace zSndFadeDispatchList {
 RECOIL_NOINLINE void RECOIL_FASTCALL PushBack(zSndFadeEntry *fadeEntry) {
     zSndFadeListNode *const sentinel = g_zSndFadeDispatchListSentinel;
     zSndFadeListNode *const previous = sentinel->prev;
-    zSndFadeListNode *const node = static_cast<zSndFadeListNode *>(::operator new(sizeof(*node)));
+    zSndFadeListNode *const node = (zSndFadeListNode *)(::operator new(sizeof(*node)));
 
     node->next = sentinel != 0 ? sentinel : node;
     node->prev = previous != 0 ? previous : node;
@@ -289,7 +289,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndFadeEntry::TickAndMaybeDispatch(float de
         }
 
         DirectSoundBuffer *const buffer = (DirectSoundBuffer *)(handle->backendBuffer);
-        buffer->vtable->SetVolume(buffer, static_cast<int>(currentValue));
+        buffer->vtable->SetVolume(buffer, (int)(currentValue));
     } else if (g_zSnd_ActiveBackend == 1) {
         if (currentValue > 1.0f) {
             currentValue = 1.0f;
@@ -396,16 +396,16 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_Tick(int skipA3dCommit) {
     sample->playbackEventHandler(g_zSndLastVoiceMarkerIndex);
 
     const int markerIndex = g_zSndLastVoiceMarkerIndex;
-    if (static_cast<unsigned int>(markerIndex) >=
-        static_cast<unsigned int>(g_zSndLastVoice->markerCount)) {
+    if ((unsigned int)(markerIndex) >=
+        (unsigned int)(g_zSndLastVoice->markerCount)) {
         g_zSndLastVoiceMarkerIndex = 0;
         g_zSndLastVoice = 0;
         g_zSndLastVoiceStopMarkerIndex = 999;
         return;
     }
 
-    if (static_cast<unsigned int>(markerIndex) >=
-        static_cast<unsigned int>(g_zSndLastVoiceStopMarkerIndex)) {
+    if ((unsigned int)(markerIndex) >=
+        (unsigned int)(g_zSndLastVoiceStopMarkerIndex)) {
         g_zSndLastVoiceHandle->StopIfActive();
         g_zSndLastVoiceStopMarkerIndex = 999;
         return;

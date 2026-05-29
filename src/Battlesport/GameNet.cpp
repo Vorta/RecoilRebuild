@@ -194,9 +194,9 @@ void RECOIL_THISCALL GameNetPlayerRow::ApplyPlayerColorTint() {
     PlayerModalState *primaryModalState = saveState->primaryModalState;
     const unsigned int packedColor = g_GameNetPlayerRowStyleColors_00RRGGBB[playerColorIndex];
     zColorRgb color = {
-        static_cast<float>(packedColor & 0xff),
-        static_cast<float>((packedColor >> 8) & 0xff),
-        static_cast<float>((packedColor >> 16) & 0xff),
+        (float)(packedColor & 0xff),
+        (float)((packedColor >> 8) & 0xff),
+        (float)((packedColor >> 16) & 0xff),
     };
 
     zClass_Object3D::gwObject3DSetColorAlpha(primaryModalState->modalNode, &color, 0.2f);
@@ -237,13 +237,13 @@ RECOIL_NOINLINE void RECOIL_CDECL InitFromZrd() {
     zReader::Node *const treeRoot = zReader::LoadNodeFromPath("net.zrd", 0, 0);
     if (treeRoot != 0) {
         GameNetReaderArray *const rootArray =
-            static_cast<GameNetReaderArray *>(treeRoot->value.ptr);
+            (GameNetReaderArray *)(treeRoot->value.ptr);
         GameNetReaderArray *const spawnArray =
-            static_cast<GameNetReaderArray *>(rootArray->nodes[0].value.ptr);
+            (GameNetReaderArray *)(rootArray->nodes[0].value.ptr);
         int spawnPointCount = spawnArray->count - 1;
         for (int index = 0; index < spawnPointCount; ++index) {
             GameNetSpawnPoint *const spawnPoint =
-                static_cast<GameNetSpawnPoint *>(::operator new(sizeof(GameNetSpawnPoint)));
+                (GameNetSpawnPoint *)(::operator new(sizeof(GameNetSpawnPoint)));
             memset(spawnPoint, 0, sizeof(GameNetSpawnPoint));
 
             if (g_GameNetSpawnPointCount == 0) {
@@ -256,7 +256,7 @@ RECOIL_NOINLINE void RECOIL_CDECL InitFromZrd() {
             ++g_GameNetSpawnPointCount;
 
             GameNetReaderArray *const spawnValueArray =
-                static_cast<GameNetReaderArray *>(spawnArray->nodes[index].value.ptr);
+                (GameNetReaderArray *)(spawnArray->nodes[index].value.ptr);
             spawnPoint->position.x = spawnValueArray->nodes[0].value.f32;
             spawnPoint->position.y = spawnValueArray->nodes[1].value.f32;
             spawnPoint->position.z = spawnValueArray->nodes[2].value.f32;
@@ -495,7 +495,7 @@ RespawnPlayerAndDropWeaponPickupIfAllowed(zUtil_SaveGameState *saveState,
 
     if (selectedSpawn != 0) {
         const double kDegreesToRadians = 0.017453292519943295;
-        const float yawRad = static_cast<float>(selectedSpawn->yawDegrees * kDegreesToRadians);
+        const float yawRad = (float)(selectedSpawn->yawDegrees * kDegreesToRadians);
         Player::SetWorldPoseAndRestartAnchor(saveState, &selectedSpawn->position, yawRad);
     }
 
@@ -540,16 +540,16 @@ TickLocalPlayerPkt06ReplicationAndHudTimer(zUtil_SaveGameState *saveState) {
     packet->header.packetType = 0x06;
     packet->header.packetSizeBytes = 0x44;
     packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
-    packet->cachedAltSelectionCode = static_cast<short>(playerState->cachedAltSelectionCode);
+    packet->cachedAltSelectionCode = (short)(playerState->cachedAltSelectionCode);
     packet->cachedPrimarySelectionCode =
-        static_cast<short>(playerState->cachedPrimarySelectionCode);
+        (short)(playerState->cachedPrimarySelectionCode);
 
     unsigned int packedFlags = packet->packedMasterTypeColorFlags;
     packedFlags = (packedFlags & ~0xffu) |
-                  (static_cast<unsigned int>(primaryModalState->masterModalData->masterType) &
+                  ((unsigned int)(primaryModalState->masterModalData->masterType) &
                    0xffu);
     packedFlags = (packedFlags & ~0xff00u) |
-                  ((static_cast<unsigned int>(GetLocalPlayerColorIndexOrZero()) & 0xffu) << 8);
+                  (((unsigned int)(GetLocalPlayerColorIndexOrZero()) & 0xffu) << 8);
     if ((g_GameNetPkt06InputBit16Latch & 1) != 0) {
         packedFlags |= 0x10000u;
     } else {
@@ -572,7 +572,7 @@ TickLocalPlayerPkt06ReplicationAndHudTimer(zUtil_SaveGameState *saveState) {
     if (playerState->progressTargetCount > 0) {
         packedFlags |= 0x40000u;
         packet->header.packetSizeBytes =
-            static_cast<short>(0x44 + 4 + playerState->progressTargetCount * sizeof(zVec3));
+            (short)(0x44 + 4 + playerState->progressTargetCount * sizeof(zVec3));
         packet->progressTargetCount = playerState->progressTargetCount;
         GameNetCopyPkt06ProgressTargets(packet, playerState);
     } else {
@@ -607,7 +607,7 @@ TickLocalPlayerPkt06ReplicationAndHudTimer(zUtil_SaveGameState *saveState) {
                     timerState.startCountdownTriggered = 1;
                     SendPkt0D_HudTimerPanelState(&timerState);
                 } else if (timerSeconds > kGameNetHudTimerTenSecondThreshold &&
-                           static_cast<int>(timerSeconds) % 10 == 0) {
+                           (int)(timerSeconds) % 10 == 0) {
                     if (g_GameNetHudTimerTenSecondWarningArmed != 0) {
                         GameNetShowPairedTimerMessages(0x32, 0x31);
                         g_GameNetHudTimerTenSecondWarningArmed = 0;
@@ -653,7 +653,7 @@ TickLocalPlayerPkt06ReplicationAndHudTimer(zUtil_SaveGameState *saveState) {
         HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
         if (timerState.startGateTriggered != 0 || timerState.startCountdownTriggered != 0) {
             g_GameNetHudTimerPendingSaveReminderArmed = 1;
-        } else if (static_cast<int>(HudUiTimerPanel::GetSeconds()) % 10 != 0) {
+        } else if ((int)(HudUiTimerPanel::GetSeconds()) % 10 != 0) {
             g_GameNetHudTimerPendingSaveReminderArmed = 1;
         } else if (g_GameNetHudTimerPendingSaveReminderArmed != 0) {
             GameNetShowPairedTimerMessages(0x34, 0x33);
@@ -679,7 +679,7 @@ ApplyPkt06_PlayerStateSnapshotToRow(GameNetPlayerRow *row,
 
     playerState->netUpdateReceived = 1;
 
-    const int colorIndex = static_cast<int>((packedFlags >> 8) & 0xffu);
+    const int colorIndex = (int)((packedFlags >> 8) & 0xffu);
     if (row->playerColorIndex != colorIndex) {
         row->playerColorIndex = colorIndex;
         const unsigned int packedColor = g_GameNetPlayerRowStyleColors_00RRGGBB[colorIndex];
@@ -689,7 +689,7 @@ ApplyPkt06_PlayerStateSnapshotToRow(GameNetPlayerRow *row,
         row->ApplyPlayerColorTint();
     }
 
-    const int masterType = static_cast<int>(packedFlags & 0xffu);
+    const int masterType = (int)(packedFlags & 0xffu);
     if (masterType != masterModalData->masterType) {
         Player::ApplyMasterTypeTransition(saveState, masterType, 0);
     }
@@ -711,7 +711,7 @@ ApplyPkt06_PlayerStateSnapshotToRow(GameNetPlayerRow *row,
     playerState->storedTargetPos = packet->storedTargetPos;
 
     const int altSelectionCode =
-        static_cast<int>(static_cast<unsigned short>(packet->cachedAltSelectionCode));
+        (int)((unsigned short)(packet->cachedAltSelectionCode));
     if (altSelectionCode != playerState->cachedAltSelectionCode) {
         Player::ApplyAltWeaponSwitch(
             saveState, playerState->activeAltGunController,
@@ -719,7 +719,7 @@ ApplyPkt06_PlayerStateSnapshotToRow(GameNetPlayerRow *row,
     }
 
     const int primarySelectionCode =
-        static_cast<int>(static_cast<unsigned short>(packet->cachedPrimarySelectionCode));
+        (int)((unsigned short)(packet->cachedPrimarySelectionCode));
     if (primarySelectionCode != playerState->cachedPrimarySelectionCode) {
         Player::ApplyPrimaryWeaponSwitch(
             saveState, playerState->activePrimaryGunController,
@@ -790,7 +790,7 @@ SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(int senderPlayerId,
     GameNetPlayerRowListState *const rowList = (GameNetPlayerRowListState *)(&g_GameNetPlayerRowList);
     GameNetPlayerRow *const row = GameNetPlayerRowList::AppendNewRow(rowList, 0);
     row->playerKey = packet->header.payloadDword0;
-    row->playerColorIndex = static_cast<int>((packet->packedMasterTypeColorFlags >> 8) & 0xffu);
+    row->playerColorIndex = (int)((packet->packedMasterTypeColorFlags >> 8) & 0xffu);
     row->playerNode = clonedNode;
     row->score = 0;
     row->lapCount = 0;
@@ -881,14 +881,14 @@ HandlePkt07_AltGunDispatch(int, NetPkt07_AltGunDispatch *packet) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
 
     playerState->altGunDispatchFlags =
-        static_cast<int>(packet->dispatchFlags | kGameNetRemoteAltGunDispatchFlag);
+        (int)(packet->dispatchFlags | kGameNetRemoteAltGunDispatchFlag);
     playerState->storedTargetPos = packet->targetPos;
 
     PlayerGunFireController *const oldActiveAltGunController =
         playerState->activeAltGunController;
     playerState->activeAltGunController =
         Player::FindAltGunFireControllerForWeaponId(saveState,
-                                                    static_cast<int>(packet->weaponId));
+                                                    (int)(packet->weaponId));
 
     OptCatalog::SetPendingSpawnTargetOverrides(&playerState->progressTargetCount,
                                                playerState->progressTargetSlots);
@@ -1152,8 +1152,8 @@ UpdateRemotePlayerHudWidgetScreenPos(zUtil_SaveGameState *saveState) {
     zVec3 projectedPoint = {0};
     const int clipped = zMath::ProjectPointAndClampToScreenClip(&labelWorldPos, &projectedPoint);
     const float replicateScale = zOpt::GetReplicateMode() != 0 ? 2.0f : 1.0f;
-    const int screenX = static_cast<int>(projectedPoint.x * replicateScale);
-    const int screenY = static_cast<int>(projectedPoint.y * replicateScale) - 10;
+    const int screenX = (int)(projectedPoint.x * replicateScale);
+    const int screenY = (int)(projectedPoint.y * replicateScale) - 10;
 
     if (screenY <= hudWidget->QueryTextHeight() + 26) {
         GameNetSetRemoteHudVisible(hudWidget, 0);
@@ -1315,7 +1315,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0B_ChatMessage(int,
     }
 
     if (messageLength > 0) {
-        memcpy(message, packet->message, static_cast<size_t>(messageLength));
+        memcpy(message, packet->message, (size_t)(messageLength));
     }
 
     message[messageLength] = '\0';
@@ -1422,7 +1422,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt0E_PlayerLapProgress(zUtil_SaveGameS
     packet.header.packetType = 0x0e;
     packet.header.packetSizeBytes = sizeof(NetPkt0E_PlayerLapProgress);
     packet.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
-    packet.lapCountPacked = static_cast<short>(playerState->lapCount);
+    packet.lapCountPacked = (short)(playerState->lapCount);
     packet.reserved_0a = 0;
     packet.lapTimeSec = playerState->lapTimeSec;
 
@@ -1442,16 +1442,16 @@ RECOIL_NOINLINE void RECOIL_CDECL SendPkt09_PlayerScoreboardSnapshot() {
         return;
     }
 
-    const int entryCount = static_cast<int>(g_GameNetPlayerRowCount);
+    const int entryCount = (int)(g_GameNetPlayerRowCount);
     const size_t packetSize =
         sizeof(zNetworkPacketHeader) + sizeof(int) +
-        static_cast<size_t>(entryCount) * sizeof(NetPkt09_PlayerScoreboardEntry);
+        (size_t)(entryCount) * sizeof(NetPkt09_PlayerScoreboardEntry);
     NetPkt09_PlayerScoreboardSnapshot *const packet =
-        static_cast<NetPkt09_PlayerScoreboardSnapshot *>(malloc(packetSize));
+        (NetPkt09_PlayerScoreboardSnapshot *)(malloc(packetSize));
     memset(packet, 0, packetSize);
 
     packet->header.packetType = 0x09;
-    packet->header.packetSizeBytes = static_cast<unsigned short>(packetSize);
+    packet->header.packetSizeBytes = (unsigned short)(packetSize);
     packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
     packet->entryCount = entryCount;
 
@@ -1460,7 +1460,7 @@ RECOIL_NOINLINE void RECOIL_CDECL SendPkt09_PlayerScoreboardSnapshot() {
     while (row != 0) {
         entry->playerKey = row->playerKey;
         entry->packedScoreAndLapCount =
-            static_cast<unsigned short>((row->lapCount << 9) + (row->score & 0x1ff));
+            (unsigned short)((row->lapCount << 9) + (row->score & 0x1ff));
         row = row->next;
         ++entry;
     }
@@ -1490,7 +1490,7 @@ HandlePkt09_PlayerScoreboardSnapshot(int, NetPkt09_PlayerScoreboardSnapshot *pac
 
         const unsigned short packed = entry->packedScoreAndLapCount;
         row->score = packed & 0x1ff;
-        row->lapCount = (static_cast<short>(packed) >> 9) & 0x7f;
+        row->lapCount = ((short)(packed) >> 9) & 0x7f;
         HudUi::RefreshScoreboardEntryRow(row);
 
         if (g_GameNetOneLapLeftMessageShown == 0 && oneLapLeftRow == 0 &&
@@ -1597,16 +1597,16 @@ SendPkt13_EffectAnimActivationRecord(zEffectAnimActivationRecord *record) {
     }
 
     const int packedRecordSize = zEffect_Anim::GetActivationRecordPackedSize(record);
-    const int packetSize = static_cast<int>(sizeof(zNetworkPacketHeader)) + packedRecordSize;
+    const int packetSize = (int)(sizeof(zNetworkPacketHeader)) + packedRecordSize;
     zNetworkPacketHeader *const packet =
-        static_cast<zNetworkPacketHeader *>(malloc(static_cast<size_t>(packetSize)));
-    memset(packet, 0, static_cast<size_t>(packetSize));
+        (zNetworkPacketHeader *)(malloc((size_t)(packetSize)));
+    memset(packet, 0, (size_t)(packetSize));
 
     packet->packetType = 0x13;
-    packet->packetSizeBytes = static_cast<short>(packetSize);
+    packet->packetSizeBytes = (short)(packetSize);
     packet->payloadDword0 = zNetwork_GetLocalPlayerKey();
     memcpy(((unsigned char *)(packet)) + sizeof(zNetworkPacketHeader), record,
-           static_cast<size_t>(packedRecordSize));
+           (size_t)(packedRecordSize));
 
     zNetwork_SendPacketReliable(packet);
     free(packet);
@@ -1683,11 +1683,11 @@ HandlePkt14_HudTimerAndFlagsSync(int senderPlayerId,
     union TimerSecondsBits {
         float seconds;
         int raw;
-    } timerSeconds = {static_cast<float>(packet->valueOrTime) * 60.0f};
+    } timerSeconds = {(float)(packet->valueOrTime) * 60.0f};
     g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(timerSeconds.raw, packet->auxParam);
 
     CZRecoilFrame *const mainWnd =
-        (CZRecoilFrame *)(static_cast<unsigned int>(g_RecoilApp.GetMainWnd()));
+        (CZRecoilFrame *)((unsigned int)(g_RecoilApp.GetMainWnd()));
     g_HudSensorTracker.InitMissionIdAndFlags(packet->eventCode + 6,
                                              mainWnd->m_useArchiveBanks);
     SetStatusBitsFromFlags(packet->statusFlags);
@@ -1748,7 +1748,7 @@ void RECOIL_CDECL Reset() {
 RECOIL_NOINLINE GameNetPlayerRow *RECOIL_FASTCALL
 AppendNewRow(GameNetPlayerRowListState *self, int zeroInitializeRow) {
     GameNetPlayerRow *const row =
-        static_cast<GameNetPlayerRow *>(::operator new(sizeof(GameNetPlayerRow)));
+        (GameNetPlayerRow *)(::operator new(sizeof(GameNetPlayerRow)));
     row->hudWidget.ConstructorDefault(0, 0, 0);
     if (zeroInitializeRow != 0) {
         memset(row, 0, sizeof(GameNetPlayerRow));

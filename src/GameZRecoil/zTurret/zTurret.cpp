@@ -75,7 +75,7 @@ float zTurret_ReaderArrayFloat(zReader::Node *node, int index) {
         return 0.0f;
     }
 
-    return slot->type == zReader::ZRDR_NODE_INT ? static_cast<float>(slot->value.i32)
+    return slot->type == zReader::ZRDR_NODE_INT ? (float)(slot->value.i32)
                                                 : slot->value.f32;
 }
 
@@ -112,7 +112,7 @@ void zTurret_DeactivateRuntimeInstance(zTurret_Runtime *runtime) {
 
 void zTurret_AddCandidateTarget(zTurret_Runtime *runtime, const zVec3 *candidatePos,
                                 float *bestDistance, const zVec3 **bestTarget) {
-    const float distance = static_cast<float>(fabs(runtime->worldPos.x - candidatePos->x) +
+    const float distance = (float)(fabs(runtime->worldPos.x - candidatePos->x) +
                                               fabs(runtime->worldPos.z - candidatePos->z));
     runtime->nearestTargetScore = distance;
     if (distance < *bestDistance) {
@@ -129,7 +129,7 @@ const zVec3 *zTurret_FindNearestTarget(zTurret_Runtime *runtime,
         playerFxOffsetWorld != 0 ? playerFxOffsetWorld
                                  : (playerState != 0 ? &playerState->fxOffsetWorld : 0);
     const zVec3 *bestTarget = playerTarget != 0 ? playerTarget : &runtime->worldPos;
-    *bestDistance = static_cast<float>(_HUGE);
+    *bestDistance = (float)(_HUGE);
 
     for (int i = 0; i < 8; ++i) {
         zClass_NodePartial *const targetNode = runtime->targetTypes[i];
@@ -213,7 +213,7 @@ RECOIL_NOINLINE zTurret_Runtime *RECOIL_THISCALL zTurret_Runtime::InitDefaults()
     intersectBvolEnabled = 1;
     destroyAnimEntry = 0;
     activateOnHitDamage = 0.0f;
-    activateOnHitTimeout = static_cast<float>(_HUGE);
+    activateOnHitTimeout = (float)(_HUGE);
     for (int i = 0; i < 8; ++i) {
         targetTypes[i] = 0;
     }
@@ -522,7 +522,7 @@ zTurret_Runtime::UpdateAimAndPartMatrices(const zVec3 *targetPos) {
     }
 
     const int forwardBlendBits =
-        static_cast<int>(g_FrameDeltaTimeSec * -3.0f * 12102200.0f) + 0x3f800000;
+        (int)(g_FrameDeltaTimeSec * -3.0f * 12102200.0f) + 0x3f800000;
     const float oldForwardWeight = zTurret_FloatFromBits(forwardBlendBits);
     const float newForwardWeight = 1.0f - oldForwardWeight;
     forward.x = oldForwardWeight * forward.x + newForwardWeight * localAimDir.x;
@@ -893,7 +893,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadDefinitionsFromPath(zClass_NodePartial *
                         zClass::FindByTypeAndName(kZClassNodeObject3D, searchName);
                     if (turretWorldNode != 0) {
                         zTurret_Runtime *runtime =
-                            static_cast<zTurret_Runtime *>(::operator new(sizeof(zTurret_Runtime)));
+                            (zTurret_Runtime *)(::operator new(sizeof(zTurret_Runtime)));
                         if (runtime != 0) {
                             runtime = runtime->InitDefaults();
                         }

@@ -323,7 +323,7 @@ void *BriefingTransmissionHaltedPanel(HudUiBriefingRuntime *runtime) {
 void *BriefingLocatorPanel(HudUiBriefingRuntime *runtime, int objectiveIndex) {
     return BriefingField<void>(runtime,
                                kBriefingLocatorPanelsOffset +
-                                   static_cast<size_t>(objectiveIndex) *
+                                   (size_t)(objectiveIndex) *
                                        kBriefingLocatorPanelStride);
 }
 
@@ -535,7 +535,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingObjectivePicture::DrawWithNois
 RECOIL_NOINLINE HudUiBriefingLocatorPanel *RECOIL_THISCALL
 HudUiBriefingLocatorPanel::Constructor() {
     const unsigned short color =
-        static_cast<unsigned short>(zVid_PackColorRGB(0xff, 0, 0));
+        (unsigned short)(zVid_PackColorRGB(0xff, 0, 0));
     base.Constructor(0x64, 0x6e, 0x1e, color);
     base.base.ftable = &g_HudUiBriefingLocatorPanel_FTable;
     base.base.SetVisible(0);
@@ -545,7 +545,7 @@ HudUiBriefingLocatorPanel::Constructor() {
 // Reimplements 0x403c90: HudUiBriefingLocatorPanel::BlitDirtyRect
 RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingLocatorPanel::BlitDirtyRect() {
     if (base.base.bltSource != 0) {
-        zVid_Image::BlitToActiveTarget(static_cast<zVidImagePartial *>(base.base.bltSource),
+        zVid_Image::BlitToActiveTarget((zVidImagePartial *)(base.base.bltSource),
                                        base.base.clipRect.left, base.base.clipRect.top, 0,
                                        (zVidRect32 *)(&base.base.clipRect));
     }
@@ -568,7 +568,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingLocatorPanel::Update(float del
             radiusStep = 1.0f;
         }
 
-        const int newRadius = base.radius - static_cast<int>(radiusStep);
+        const int newRadius = base.radius - (int)(radiusStep);
         base.radius = newRadius;
         base.radiusSquared = newRadius * newRadius;
         if (base.radius < 3) {
@@ -612,7 +612,7 @@ int RECOIL_THISCALL BriefingActionShowElement::Tick(float) {
 int RECOIL_THISCALL BriefingActionFadeInElement::Tick(float) {
     alpha += 0.5f;
 
-    HudUiWidget *const widget = static_cast<HudUiWidget *>(target);
+    HudUiWidget *const widget = (HudUiWidget *)(target);
     BriefingObjectivePictureSetNoiseAlpha(widget, alpha);
     HudCallNoArg(widget, 0x20);
 
@@ -668,7 +668,7 @@ int RECOIL_THISCALL BriefingActionPlaySample::Tick(float) {
 
 // Reimplements 0x404bb0: BriefingAction_DelayUntilProgress::Tick
 int RECOIL_THISCALL BriefingActionDelayUntilProgress::Tick(float) {
-    return static_cast<float>(g_Briefing_ProgressEventCode) >= requiredProgress ? 1 : 0;
+    return (float)(g_Briefing_ProgressEventCode) >= requiredProgress ? 1 : 0;
 }
 
 // Reimplements 0x4045b0: Briefing_ActionQueue::AddHideElement
@@ -752,7 +752,7 @@ Briefing_ActionQueue::AddDelayUntilProgress(int progressId) {
     BriefingActionDelayUntilProgress *const action =
         new BriefingActionDelayUntilProgress;
     if (action != 0) {
-        action->requiredProgress = static_cast<float>(progressId);
+        action->requiredProgress = (float)(progressId);
     }
 
     return InsertAction(action);
@@ -776,7 +776,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL StartForMission(int missionId) {
     g_Briefing_SystemActiveFlag = 1;
 
     HudUiBriefingRuntime *runtime =
-        static_cast<HudUiBriefingRuntime *>(::operator new(sizeof(HudUiBriefingRuntimeLayout)));
+        (HudUiBriefingRuntime *)(::operator new(sizeof(HudUiBriefingRuntimeLayout)));
     if (runtime != 0) {
         runtime = runtime->Constructor(missionId);
     }

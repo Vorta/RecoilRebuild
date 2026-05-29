@@ -102,19 +102,19 @@ namespace {
     }
 
     zMat4x3 *MatrixAt(void *base, size_t offset) {
-        return (zMat4x3 *)(static_cast<unsigned char *>(base) + offset);
+        return (zMat4x3 *)((unsigned char *)(base) + offset);
     }
 
     const zMat4x3 *MatrixAt(const void *base, size_t offset) {
-        return (const zMat4x3 *)(static_cast<const unsigned char *>(base) + offset);
+        return (const zMat4x3 *)((const unsigned char *)(base) + offset);
     }
 
     zVec3 *Vec3At(void *base, size_t offset) {
-        return (zVec3 *)(static_cast<unsigned char *>(base) + offset);
+        return (zVec3 *)((unsigned char *)(base) + offset);
     }
 
     const zVec3 *Vec3At(const void *base, size_t offset) {
-        return (const zVec3 *)(static_cast<const unsigned char *>(base) + offset);
+        return (const zVec3 *)((const unsigned char *)(base) + offset);
     }
 
     void CopyCurrentMatrixTo(float *outMatrix) {
@@ -277,7 +277,7 @@ namespace zClass_Class {
         }
 
         zClass_NodeFreeListSlot *slot = &g_zClass_NodeArray[index];
-        g_zClass_NodeFreeHeadIndex = static_cast<int>(slot->freeTag << 8) >> 8;
+        g_zClass_NodeFreeHeadIndex = (int)(slot->freeTag << 8) >> 8;
 
         memset(&slot->node, 0, 0xc0);
         ++g_zClass_ActiveNodeCount;
@@ -312,7 +312,7 @@ namespace zClass_Class {
         switch (node->classId) {
         case 1: {
             zClass_CameraDataPartial *cameraData =
-                static_cast<zClass_CameraDataPartial *>(node->classData);
+                (zClass_CameraDataPartial *)(node->classData);
             if (cameraData != 0 && (cameraData->cameraFlags & 0x04) != 0) {
                 if ((cameraData->cameraFlags & 0x02) == 0) {
                     zMath::MatStackPushPtr((float *)(MatrixAt(cameraData, 0x80)));
@@ -332,7 +332,7 @@ namespace zClass_Class {
             break;
         case 5: {
             zClass_Object3DDataPartial *objectData =
-                static_cast<zClass_Object3DDataPartial *>(node->classData);
+                (zClass_Object3DDataPartial *)(node->classData);
             if (objectData != 0 && (objectData->flags & 0x01) != 0) {
                 if ((objectData->flags & 0x10) == 0) {
                     zMath::MatStackPushPtr(objectData->localMatrix);
@@ -353,7 +353,7 @@ namespace zClass_Class {
             break;
         case 8: {
             zClass_AnimateDataPartial *animateData =
-                static_cast<zClass_AnimateDataPartial *>(node->classData);
+                (zClass_AnimateDataPartial *)(node->classData);
             if ((node->flags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0 &&
                 animateData->flags != 0) {
                 if ((animateData->flags & 0x01) != 0) {
@@ -394,7 +394,7 @@ namespace zClass_Class {
         }
 
         zDiPartial *di =
-            (zDiPartial *)(static_cast<unsigned int>(node->userDataOrDiRef));
+            (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
             zDi::RebuildBounds(di, (zBoundsMinMaxPartial *)(
                                        (unsigned char *)(node) + 0x8c));
@@ -442,7 +442,7 @@ namespace zClass_Class {
         const zBBox3f *bbox = CachedBBox(node);
         if (node->classId == 5) {
             const zClass_Object3DDataPartial *objectData =
-                static_cast<const zClass_Object3DDataPartial *>(node->classData);
+                (const zClass_Object3DDataPartial *)(node->classData);
             if ((objectData->flags & 0x08) == 0) {
                 zMath_Mat_TransformBBoxToCorners(
                     (const zMat4x3 *)(objectData->localMatrix), bbox, outCorners);
@@ -452,7 +452,7 @@ namespace zClass_Class {
             zMath_Mat_TransformBBoxToCorners(MatrixAt(node->classData, 0x80), bbox, outCorners);
             return 0;
         } else if (node->classId == 8 && (node->flags & 0x04) != 0 &&
-                   (static_cast<const unsigned char *>(node->classData)[4] & 0x04) != 0) {
+                   (((const unsigned char *)(node->classData))[4] & 0x04) != 0) {
             zMath_Mat_TransformBBoxToCorners(MatrixAt(node->classData, 0x08), bbox, outCorners);
             return 0;
         }
@@ -492,14 +492,14 @@ namespace zClass_Class {
             break;
         case 5: {
             const zClass_Object3DDataPartial *objectData =
-                static_cast<const zClass_Object3DDataPartial *>(node->classData);
+                (const zClass_Object3DDataPartial *)(node->classData);
             skipTransform = (objectData->flags >> 3) & 0x01;
             nodeMatrix = MatrixAt(node->classData, 0x30);
             break;
         }
         case 8:
             if ((node->flags & 0x04) == 0 ||
-                (static_cast<const unsigned char *>(node->classData)[4] & 0x04) == 0) {
+                (((const unsigned char *)(node->classData))[4] & 0x04) == 0) {
                 skipTransform = 1;
             }
             nodeMatrix = MatrixAt(node->classData, 0x08);
@@ -743,13 +743,13 @@ namespace zClass_Class {
         }
 
         zDiPartial *oldDisplayInstance =
-            (zDiPartial *)(static_cast<unsigned int>(node->userDataOrDiRef));
+            (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (oldDisplayInstance != 0) {
             zDi::Release(oldDisplayInstance);
         }
 
         node->userDataOrDiRef =
-            static_cast<unsigned int>((unsigned int)(displayInstance));
+            (unsigned int)((unsigned int)(displayInstance));
         int flags = node->flags;
         if (displayInstance != 0) {
             zDi::AddRef(displayInstance);
@@ -972,7 +972,7 @@ namespace zClass_Class {
             return 5;
         }
 
-        node->nodeType = static_cast<unsigned char>(nodeType);
+        node->nodeType = (unsigned char)(nodeType);
         return 0;
     }
 
@@ -1235,14 +1235,14 @@ namespace zClass_Class {
     RECOIL_NOINLINE int RECOIL_FASTCALL AddChildGeneric(zClass_NodePartial * parent,
                                                                  zClass_NodePartial * child) {
         const int newChildCount = parent->listCountB + 1;
-        parent->listB = static_cast<zClass_NodePartial **>(realloc(
-            parent->listB, static_cast<size_t>(newChildCount) * sizeof(parent->listB[0])));
+        parent->listB = (zClass_NodePartial **)(realloc(
+            parent->listB, (size_t)(newChildCount) * sizeof(parent->listB[0])));
         parent->listB[parent->listCountB] = child;
         parent->listCountB = newChildCount;
 
         const int newParentCount = child->listCountA + 1;
-        child->listA = static_cast<zClass_NodePartial **>(realloc(
-            child->listA, static_cast<size_t>(newParentCount) * sizeof(child->listA[0])));
+        child->listA = (zClass_NodePartial **)(realloc(
+            child->listA, (size_t)(newParentCount) * sizeof(child->listA[0])));
         child->listA[child->listCountA] = parent;
         child->listCountA = newParentCount;
         if (newParentCount > 1) {
@@ -1335,9 +1335,9 @@ namespace zClass_Class {
             (zClass_NodeFreeListSlot *)(node) - g_zClass_NodeArray;
         zClass_NodeFreeListSlot &slot = g_zClass_NodeArray[index];
         slot.freeTag = (slot.freeTag & 0xff000000) |
-                       (static_cast<unsigned int>(g_zClass_NodeFreeHeadIndex) & 0x00ffffff);
+                       ((unsigned int)(g_zClass_NodeFreeHeadIndex) & 0x00ffffff);
         --g_zClass_ActiveNodeCount;
-        g_zClass_NodeFreeHeadIndex = static_cast<int>(index);
+        g_zClass_NodeFreeHeadIndex = (int)(index);
 
         return 0;
     }
@@ -1373,7 +1373,7 @@ namespace zClass_Class {
         switch (node->classId) {
         case 0:
             TryFreeNode(node);
-            return static_cast<int>((unsigned int)(node));
+            return (int)((unsigned int)(node));
         case 1:
         case 3:
         case 4:
@@ -1412,7 +1412,7 @@ namespace gwNode {
 
         if (node->classId == 5 && (node->flags & kSingleParentFlag) != 0) {
             zClass_Object3DDataPartial *objectData =
-                static_cast<zClass_Object3DDataPartial *>(node->classData);
+                (zClass_Object3DDataPartial *)(node->classData);
             if ((objectData->flags & 0x20) == 0) {
                 zMath::MatLoadCurrentFrom(
                     (const zMat4x3 *)(objectData->cachedWorldMatrix));
@@ -1463,7 +1463,7 @@ namespace gwNode {
             switch (ancestor->classId) {
             case 1: {
                 zClass_CameraDataPartial *cameraData =
-                    static_cast<zClass_CameraDataPartial *>(ancestor->classData);
+                    (zClass_CameraDataPartial *)(ancestor->classData);
                 if ((cameraData->cameraFlags & 0x02) == 0) {
                     zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler,
                                             &unitScale);
@@ -1477,7 +1477,7 @@ namespace gwNode {
                 break;
             case 5: {
                 zClass_Object3DDataPartial *objectData =
-                    static_cast<zClass_Object3DDataPartial *>(ancestor->classData);
+                    (zClass_Object3DDataPartial *)(ancestor->classData);
                 const int objectFlags = objectData->flags;
                 if ((objectFlags & 0x08) == 0) {
                     if ((ancestorFlags & kSingleParentFlag) != 0) {
@@ -1504,7 +1504,7 @@ namespace gwNode {
             case 8: {
                 void *animateData = ancestor->classData;
                 if ((ancestorFlags & 0x04) != 0 &&
-                    (*static_cast<unsigned char *>(static_cast<unsigned char *>(animateData) +
+                    (*(unsigned char *)((unsigned char *)(animateData) +
                                                   0x04) &
                      0x04) != 0) {
                     zMath::MatMultiply(MatrixAt(animateData, 0x08), matMode);
@@ -1513,7 +1513,7 @@ namespace gwNode {
             }
             case 9: {
                 zClass_LightDataPartial *lightData =
-                    static_cast<zClass_LightDataPartial *>(ancestor->classData);
+                    (zClass_LightDataPartial *)(ancestor->classData);
                 zMath::MatApplyLocalTRS(&lightData->localRotation, &lightData->localPosition,
                                         &unitScale);
                 break;
@@ -1546,7 +1546,7 @@ namespace gwNode {
 
         if (node->classId == 5 && (node->flags & kSingleParentFlag) != 0) {
             zClass_Object3DDataPartial *objectData =
-                static_cast<zClass_Object3DDataPartial *>(node->classData);
+                (zClass_Object3DDataPartial *)(node->classData);
             if ((objectData->flags & 0x20) == 0) {
                 outPosition->x = objectData->cachedWorldMatrix[9];
                 outPosition->y = objectData->cachedWorldMatrix[10];
@@ -1742,7 +1742,7 @@ namespace zClass_Node {
     RECOIL_NOINLINE void RECOIL_FASTCALL SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
         zClass_NodePartial * node, int enabled) {
         zDiPartial *di =
-            (zDiPartial *)(static_cast<unsigned int>(node->userDataOrDiRef));
+            (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
             zDi_SetMaterialFlagBit9ForFlagBit0Entries(di, enabled);
         }
@@ -1756,7 +1756,7 @@ namespace zClass_Node {
     RECOIL_NOINLINE void RECOIL_FASTCALL InvalidateFlagBit8MaterialImagesRecursive(
         zClass_NodePartial * node) {
         zDiPartial *di =
-            (zDiPartial *)(static_cast<unsigned int>(node->userDataOrDiRef));
+            (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
             zDi::InvalidateImagesForFlagBit8Materials(di);
         }
@@ -1781,7 +1781,7 @@ namespace zClass_Node {
     RECOIL_NOINLINE void RECOIL_FASTCALL AssignInt32ToDiRecursive(zClass_NodePartial * node,
                                                                   int value) {
         zDiPartial *di =
-            (zDiPartial *)(static_cast<unsigned int>(node->userDataOrDiRef));
+            (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
             zDi::SetFlagBit0(di, value);
         }
@@ -1822,7 +1822,7 @@ namespace zClass_Node {
         void *callback, zClass_NodePartial *node, void *context) {
         OptCatalogDamageHandlerPartial *handler = DamageHandlerRef(node);
         if (handler == 0) {
-            handler = static_cast<OptCatalogDamageHandlerPartial *>(
+            handler = (OptCatalogDamageHandlerPartial *)(
                 calloc(1, sizeof(OptCatalogDamageHandlerPartial)));
         } else if (handler->hitContext != 0) {
             return 0;
@@ -1858,7 +1858,7 @@ namespace zClass_Node {
         void *callback, zClass_NodePartial *node, void *context) {
         OptCatalogDamageHandlerPartial *handler = DamageHandlerRef(node);
         if (handler == 0) {
-            handler = static_cast<OptCatalogDamageHandlerPartial *>(
+            handler = (OptCatalogDamageHandlerPartial *)(
                 calloc(1, sizeof(OptCatalogDamageHandlerPartial)));
         }
 

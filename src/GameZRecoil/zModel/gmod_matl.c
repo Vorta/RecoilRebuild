@@ -29,7 +29,7 @@ namespace zDi {
         for (int i = 0; i < self->entryCount; ++i) {
             zDiEntryPartial *entry = &self->entries[i];
             if (entry->variantTagInitialized == 0) {
-                entry->variantTag = static_cast<unsigned char>(variantTag);
+                entry->variantTag = (unsigned char)(variantTag);
                 entry->variantTagInitialized = 1;
             }
         }
@@ -44,7 +44,7 @@ namespace zModel_MatlSlot {
             return -1;
         }
 
-        return static_cast<int>(slot - g_zModel_MatlPool);
+        return (int)(slot - g_zModel_MatlPool);
     }
 }
 
@@ -73,7 +73,7 @@ namespace zModel_MatlBuffer {
     // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL WriteGameZ(void *stream) {
         zImage_TexDirEntryPartial **frameBuffer = 0;
-        FILE *const file = static_cast<FILE *>(stream);
+        FILE *const file = (FILE *)(stream);
 
         if (fwrite(&g_zModel_MatlPoolCapacity, 4, 1, file) != 1) {
             zError::ReportOld(0x200, kGmodMatlSourceFile, 0x1e9, kMatlWriteError);
@@ -90,8 +90,8 @@ namespace zModel_MatlBuffer {
 
         int result = g_zModel_MatlPoolCapacity;
         const int poolBytes =
-            g_zModel_MatlPoolCapacity * static_cast<int>(sizeof(zModel_MaterialSlot));
-        zModel_MaterialSlot *poolCopy = static_cast<zModel_MaterialSlot *>(malloc(poolBytes));
+            g_zModel_MatlPoolCapacity * (int)(sizeof(zModel_MaterialSlot));
+        zModel_MaterialSlot *poolCopy = (zModel_MaterialSlot *)(malloc(poolBytes));
         memcpy(poolCopy, g_zModel_MatlPool, poolBytes);
 
         {
@@ -99,7 +99,7 @@ namespace zModel_MatlBuffer {
             zModel_MaterialSlot *const slot = &poolCopy[activeIndex];
             if ((slot->material.flags & 0x0100) != 0) {
                 slot->material.currentTextureDirectoryEntry =
-                    (zImage_TexDirEntryPartial *)(static_cast<int>(
+                    (zImage_TexDirEntryPartial *)((int)(
                         zImage::TexDirEntryToIndex(slot->material.currentTextureDirectoryEntry)));
             }
             activeIndex = slot->nextPoolIndex;
@@ -122,14 +122,14 @@ namespace zModel_MatlBuffer {
                     break;
                 }
 
-                const unsigned int frameBytes = static_cast<unsigned int>(cycle->frameCount) *
+                const unsigned int frameBytes = (unsigned int)(cycle->frameCount) *
                                                  sizeof(zImage_TexDirEntryPartial *);
-                frameBuffer = static_cast<zImage_TexDirEntryPartial **>(
+                frameBuffer = (zImage_TexDirEntryPartial **)(
                     realloc(frameBuffer, frameBytes));
                 memcpy(frameBuffer, cycle->frameTable, frameBytes);
                 for (int i = 0; i < cycle->frameCount; ++i) {
                     frameBuffer[i] = (zImage_TexDirEntryPartial *)(
-                        static_cast<int>(zImage::TexDirEntryToIndex(frameBuffer[i])));
+                        (int)(zImage::TexDirEntryToIndex(frameBuffer[i])));
                 }
 
                 if (fwrite(frameBuffer, frameBytes, 1, file) != 1) {
@@ -152,7 +152,7 @@ namespace zModel_MatlBuffer {
     // Reimplements 0x4808c0: zModel_MatlBuffer::ReadGameZ
     // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL ReadGameZ(void *stream) {
-        FILE *const file = static_cast<FILE *>(stream);
+        FILE *const file = (FILE *)(stream);
         const int oldCapacity = g_zModel_MatlPoolCapacity;
         const char *errorMessage = kMatlReadError;
         int errorLine = 0;
@@ -180,12 +180,12 @@ namespace zModel_MatlBuffer {
         }
 
         poolBytes =
-            g_zModel_MatlPoolCapacity * static_cast<int>(sizeof(zModel_MaterialSlot));
+            g_zModel_MatlPoolCapacity * (int)(sizeof(zModel_MaterialSlot));
         if (g_zModel_MatlPool == 0) {
-            g_zModel_MatlPool = static_cast<zModel_MaterialSlot *>(malloc(poolBytes));
+            g_zModel_MatlPool = (zModel_MaterialSlot *)(malloc(poolBytes));
         } else if (g_zModel_MatlPoolCapacity > oldCapacity) {
             g_zModel_MatlPool =
-                static_cast<zModel_MaterialSlot *>(realloc(g_zModel_MatlPool, poolBytes));
+                (zModel_MaterialSlot *)(realloc(g_zModel_MatlPool, poolBytes));
         }
 
         if (fread(g_zModel_MatlPool, poolBytes, 1, file) != 1) {
@@ -200,7 +200,7 @@ namespace zModel_MatlBuffer {
 
             if ((material->flags & 0x0100) != 0) {
                 material->currentTextureDirectoryEntry =
-                    zImage::TexIndexToDirEntry(static_cast<int>(
+                    zImage::TexIndexToDirEntry((int)(
                         (int)(material->currentTextureDirectoryEntry)));
             } else {
                 material->packedColor = zVid_PackColorRgbFloats(
@@ -208,7 +208,7 @@ namespace zModel_MatlBuffer {
             }
 
             if ((material->flags & 0x0400) != 0) {
-                material->cycle = static_cast<zModel_MaterialCyclePartial *>(
+                material->cycle = (zModel_MaterialCyclePartial *)(
                     malloc(sizeof(zModel_MaterialCyclePartial)));
                 if (fread(material->cycle, sizeof(zModel_MaterialCyclePartial), 1, file) !=
                     1) {
@@ -218,10 +218,10 @@ namespace zModel_MatlBuffer {
                 }
 
                 const unsigned int frameTableBytes =
-                    static_cast<unsigned int>(material->cycle->frameCount) *
+                    (unsigned int)(material->cycle->frameCount) *
                     sizeof(zImage_TexDirEntryPartial *);
                 material->cycle->frameTable =
-                    static_cast<zImage_TexDirEntryPartial **>(malloc(frameTableBytes));
+                    (zImage_TexDirEntryPartial **)(malloc(frameTableBytes));
                 if (fread(material->cycle->frameTable, frameTableBytes, 1, file) != 1) {
                     errorMessage = kMatlCycleReadError;
                     errorLine = 0x30b;
@@ -230,7 +230,7 @@ namespace zModel_MatlBuffer {
 
                 for (int i = 0; i < material->cycle->frameCount; ++i) {
                     material->cycle->frameTable[i] =
-                        zImage::TexIndexToDirEntry(static_cast<int>(
+                        zImage::TexIndexToDirEntry((int)(
                             (int)(material->cycle->frameTable[i])));
                 }
             }

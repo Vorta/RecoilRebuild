@@ -112,7 +112,7 @@ RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_FASTCALL zImage_TexDirEntryPartial::Bui
         currentEntry->nextVariant = variantEntry;
         currentEntry = variantEntry;
         variantImage->widthScale =
-            static_cast<float>(baseEntry->image->width / variantImage->width);
+            (float)(baseEntry->image->width / variantImage->width);
         variantEntry->nextVariant = 0;
     }
 }
@@ -156,7 +156,7 @@ RECOIL_NOINLINE int RECOIL_CDECL TexDir_LoadPendingEntries() {
         } else if (entry->texture == 0) {
             image = entry->image;
             const unsigned short textureAddressFlags =
-                static_cast<unsigned short>(image->textureAddressFlagsPacked);
+                (unsigned short)(image->textureAddressFlagsPacked);
             entry->texture = g_zVideo_pfnCreateTextureRecord(
                 entry->baseName, image, image->formatFlagsPacked & 2, textureAddressFlags & 1,
                 (textureAddressFlags >> 1) & 1);
@@ -213,7 +213,7 @@ TexDirEntryToIndex(zImage_TexDirEntryPartial *texDirEntry) {
         return -1;
     }
 
-    return static_cast<int>(texDirEntry - g_zImage_TexDirEntries);
+    return (int)(texDirEntry - g_zImage_TexDirEntries);
 }
 
 // Reimplements 0x46d340: zImage::TexIndexToDirEntry
@@ -274,17 +274,17 @@ RECOIL_NOINLINE int RECOIL_FASTCALL WriteTextureDirectory(void *stream) {
     }
 
     const int byteCount =
-        count * static_cast<int>(sizeof(zImage_TexDirEntryPartial));
+        count * (int)(sizeof(zImage_TexDirEntryPartial));
     zImage_TexDirEntryPartial *serializedEntries =
-        static_cast<zImage_TexDirEntryPartial *>(malloc(byteCount));
+        (zImage_TexDirEntryPartial *)(malloc(byteCount));
     memcpy(serializedEntries, g_zImage_TexDirEntries, byteCount);
 
     for (int i = 0; i < count; ++i) {
         serializedEntries[i].nextVariant = (zImage_TexDirEntryPartial *)(
-            static_cast<int>(TexDirEntryToIndex(serializedEntries[i].nextVariant)));
+            (int)(TexDirEntryToIndex(serializedEntries[i].nextVariant)));
     }
 
-    if (fwrite(serializedEntries, byteCount, 1, static_cast<FILE *>(stream)) != 1) {
+    if (fwrite(serializedEntries, byteCount, 1, (FILE *)(stream)) != 1) {
         zError::ReportOld(0x200, "D:\\Proj\\GameZRecoil\\zImage\\zimg_texture.cpp", 0x100,
                           "Error writing texture directory.");
         count = 0;
@@ -310,8 +310,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadTextureDirectory(int entryCount,
     }
 
     const int byteCount =
-        count * static_cast<int>(sizeof(zImage_TexDirEntryPartial));
-    if (fread(g_zImage_TexDirEntries, byteCount, 1, static_cast<FILE *>(stream)) != 1) {
+        count * (int)(sizeof(zImage_TexDirEntryPartial));
+    if (fread(g_zImage_TexDirEntries, byteCount, 1, (FILE *)(stream)) != 1) {
         zError::ReportOld(0x200, "D:\\Proj\\GameZRecoil\\zImage\\zimg_texture.cpp", 0x12a,
                           "Error reading GameZ Texture directory data.");
         return -1;
@@ -319,7 +319,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadTextureDirectory(int entryCount,
 
     g_zImage_TexDirEntryCount = count;
     for (int i = 0; i < count; ++i) {
-        g_zImage_TexDirEntries[i].nextVariant = TexIndexToDirEntry(static_cast<int>(
+        g_zImage_TexDirEntries[i].nextVariant = TexIndexToDirEntry((int)(
             (int)(g_zImage_TexDirEntries[i].nextVariant)));
     }
 
@@ -387,8 +387,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FontsLoadFromPath(const char *path) {
 
     zReader::Node *fontArray = fontsNode->value.nodes;
     const int count = fontArray[0].value.i32;
-    zImage_Font *font = static_cast<zImage_Font *>(
-        malloc(static_cast<size_t>(count - 1) * sizeof(zImage_Font)));
+    zImage_Font *font = (zImage_Font *)(
+        malloc((size_t)(count - 1) * sizeof(zImage_Font)));
 
     for (int i = 1; i < count; ++i) {
         zImage_Font **slot = &g_zImage_FontTable[i - 1];
@@ -490,7 +490,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zImage_Font::MeasureString(const char *text
             currentLineWidth = 0;
             totalLineAdvance += lineAdvance;
         } else {
-            int glyphIndex = static_cast<int>(ch) - 0x21;
+            int glyphIndex = (int)(ch) - 0x21;
             if (glyphIndex < 0 || glyphIndex >= 0x5f) {
                 glyphIndex = 0;
             }
@@ -537,7 +537,7 @@ zImage_Font::BlitStringToActiveTarget(const char *text, int dstX, int dstY,
             currentX = dstX;
             currentY += fontImage->height;
         } else {
-            int glyphIndex = static_cast<int>(ch) - 0x21;
+            int glyphIndex = (int)(ch) - 0x21;
             if (glyphIndex < 0 || glyphIndex >= 0x5f) {
                 glyphIndex = 0;
             }
@@ -554,7 +554,7 @@ zImage_Font::BlitStringToActiveTarget(const char *text, int dstX, int dstY,
 RECOIL_NOINLINE int RECOIL_FASTCALL
 zImage_Font::IsImageColumnTransparent(zVidImagePartial *image, int columnX) {
     const int width = image->width;
-    unsigned short *column = static_cast<unsigned short *>(image->pixels) + columnX;
+    unsigned short *column = (unsigned short *)(image->pixels) + columnX;
     if (columnX >= width) {
         return 0;
     }
@@ -565,7 +565,7 @@ zImage_Font::IsImageColumnTransparent(zVidImagePartial *image, int columnX) {
     }
 
     for (int y = 0; y < height; ++y) {
-        if (*column != static_cast<unsigned short>(g_zImage_Unknown5617f4)) {
+        if (*column != (unsigned short)(g_zImage_Unknown5617f4)) {
             return 0;
         }
         column += width;

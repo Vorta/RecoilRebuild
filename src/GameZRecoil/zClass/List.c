@@ -110,7 +110,7 @@ namespace zClass_List {
             zClass_TypeList::MarkPendingRemoval(10, node);
             break;
         default:
-            if (static_cast<unsigned int>(node->classId) > 11) {
+            if ((unsigned int)(node->classId) > 11) {
                 zError::ReportOld(0x200, kListSourceFile, 0x75d,
                                   "Unknown class type while deleting node from lists.\n");
             }
@@ -237,7 +237,7 @@ namespace zClass_List {
                 return result;
             }
             zClass_LightDataPartial *lightData =
-                static_cast<zClass_LightDataPartial *>(node->classData);
+                (zClass_LightDataPartial *)(node->classData);
             if (lightData->attachedWorldCount > 0 || node->listCountA != 0) {
                 return 1;
             }
@@ -250,7 +250,7 @@ namespace zClass_List {
                 return result;
             }
             zClass_SoundDataPartial *soundData =
-                static_cast<zClass_SoundDataPartial *>(node->classData);
+                (zClass_SoundDataPartial *)(node->classData);
             if (soundData->attachedWorldCount > 0 || node->listCountA != 0) {
                 return 1;
             }
@@ -259,7 +259,7 @@ namespace zClass_List {
 
         case 11: {
             zClass_WorldDataPartial *worldData =
-                static_cast<zClass_WorldDataPartial *>(node->classData);
+                (zClass_WorldDataPartial *)(node->classData);
 
             while (worldData->lightCount > 0) {
                 result = zClass_World::RemoveLight(node, worldData->lightNodes[0]);
@@ -372,7 +372,7 @@ namespace zClass_TypeList {
 
         zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead;
         if (link == 0) {
-            return static_cast<zClass_TypeListLink *>(calloc(1, sizeof(zClass_TypeListLink)));
+            return (zClass_TypeListLink *)(calloc(1, sizeof(zClass_TypeListLink)));
         }
 
         zClass_TypeListLink *next = link->next;
@@ -775,14 +775,14 @@ namespace zClass {
     RECOIL_NOINLINE int RECOIL_FASTCALL FindNextByTypePrefix_Predicate(zClass_NodePartial *
                                                                                 node) {
         return strncmp(node->name, g_zClass_FilterIterText,
-                            static_cast<size_t>(g_zClass_FilterIterPrefixLen)) == 0;
+                            (size_t)(g_zClass_FilterIterPrefixLen)) == 0;
     }
 
     // Reimplements 0x44f6f0: zClass::FindNextByTypePrefix
     RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL FindNextByTypePrefix(const char *prefixText,
                                                                              int bucket) {
         if (prefixText != 0) {
-            g_zClass_FilterIterPrefixLen = static_cast<int>(strlen(prefixText));
+            g_zClass_FilterIterPrefixLen = (int)(strlen(prefixText));
         }
 
         return zClass_List::IterateBucketFiltered(prefixText, bucket,

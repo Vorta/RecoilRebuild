@@ -84,7 +84,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReportA3DError(int a3dError,
     char errorNameStorage[0x100];
     if (a3dError <= 0) {
         if (a3dError != 0) {
-            switch (static_cast<unsigned int>(a3dError)) {
+            switch ((unsigned int)(a3dError)) {
     case 0x80040001u:
         sprintf(errorNameStorage, "\tA3DERROR_MEMORY_ALLOCATION\t");
         break;
@@ -278,7 +278,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReportDirectSoundError(int directSoundError,
                                                                     const char *sourceFile,
                                                                     int sourceLine) {
     char errorNameStorage[0x100];
-    switch (static_cast<HRESULT>(directSoundError)) {
+    switch ((HRESULT)(directSoundError)) {
     case DSERR_GENERIC:
         sprintf(errorNameStorage, "DSERR_GENERIC");
         break;
@@ -414,7 +414,7 @@ zSnd_PreInitializeRuntimeState(unsigned int hwnd) {
     if (g_zSnd_MuteOptionValuePtr == 0) {
         g_zSnd_MuteOptionValuePtr = &g_zSnd_MuteOptionDefault;
     }
-    g_zSnd_MuteDepth = *static_cast<int *>(g_zSnd_MuteOptionValuePtr);
+    g_zSnd_MuteDepth = *(int *)(g_zSnd_MuteOptionValuePtr);
 
     g_zSndLastSample = 0;
     g_zSndLastVoice = 0;

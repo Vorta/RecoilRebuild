@@ -26,13 +26,13 @@ RECOIL_NOINLINE void RECOIL_CDECL Reset() {
     g_FrameDeltaTimeSec = 0.0f;
 
     const __int64 tickCountMillis = GetTickCount();
-    g_Time_CurrentTimeSec = static_cast<float>(tickCountMillis) * 0.00100000005f;
+    g_Time_CurrentTimeSec = (float)(tickCountMillis) * 0.00100000005f;
 }
 
 // Reimplements 0x4a56d0: Time::Tick (Time.cpp)
 RECOIL_NOINLINE void RECOIL_CDECL Tick() {
     const __int64 tickCountMillis = GetTickCount();
-    const float newTimeSec = static_cast<float>(tickCountMillis) * 0.00100000005f;
+    const float newTimeSec = (float)(tickCountMillis) * 0.00100000005f;
     const float unscaledDeltaTimeSec = newTimeSec - g_Time_CurrentTimeSec;
     const float timeScaleFactor = g_Time_TimeScaleFactor;
 

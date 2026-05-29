@@ -234,7 +234,7 @@ RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL HudWeatherFx::Constructor(int newP
     ftable = &g_HudWeatherFx_Vtable;
     maxParticles = newParticleCount;
     particleCount = newParticleCount;
-    particleQuads = static_cast<HudWeatherFxParticleQuad *>(
+    particleQuads = (HudWeatherFxParticleQuad *)(
         ::operator new(sizeof(HudWeatherFxParticleQuad) * newParticleCount));
 
     for (int index = 0; index < newParticleCount; ++index)
@@ -255,9 +255,9 @@ RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL HudWeatherFx::Constructor(int newP
 
     const unsigned int positionBytes = sizeof(zVec3) * newParticleCount;
     particlePositions[sourceBufferIndex] =
-        static_cast<zVec3 *>(::operator new(positionBytes));
+        (zVec3 *)(::operator new(positionBytes));
     particlePositions[destBufferIndex] =
-        static_cast<zVec3 *>(::operator new(positionBytes));
+        (zVec3 *)(::operator new(positionBytes));
 
     for (int resetIndex = 0; resetIndex < newParticleCount; ++resetIndex)
     {
@@ -279,7 +279,7 @@ RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL HudWeatherFx::Constructor(int newP
         textureName = "SnowFX";
         softwareImage = zVid_Image::Create();
         zVid_Image::SetFormatCode(softwareImage, 0x0b);
-        char *const alphaMap = static_cast<char *>(malloc(0x80));
+        char *const alphaMap = (char *)(malloc(0x80));
         void *const surfacePixels = malloc(0x100);
         zVid_Image_SetPixels(softwareImage, surfacePixels, alphaMap);
         softwareImage->formatFlagsPacked |= 0x20;
@@ -300,10 +300,10 @@ HudWeatherFx::ResetParticleSlot(int particleIndex, int)
     zVec3 *const destPosition = &particlePositions[destBufferIndex][particleIndex];
 
     sourcePosition->z =
-        kHudWeatherFxDepthBase - static_cast<float>(rand()) * kHudWeatherFxDepthRandScale;
+        kHudWeatherFxDepthBase - (float)(rand()) * kHudWeatherFxDepthRandScale;
 
     sourcePosition->x =
-        kHudWeatherFxConeBase - static_cast<float>(rand()) * kHudWeatherFxConeRandScale;
+        kHudWeatherFxConeBase - (float)(rand()) * kHudWeatherFxConeRandScale;
     if (sourcePosition->x < -sourcePosition->z)
     {
         sourcePosition->x += kHudWeatherFxReflectBias;
@@ -311,7 +311,7 @@ HudWeatherFx::ResetParticleSlot(int particleIndex, int)
     }
 
     sourcePosition->y =
-        kHudWeatherFxConeBase - static_cast<float>(rand()) * kHudWeatherFxConeRandScale;
+        kHudWeatherFxConeBase - (float)(rand()) * kHudWeatherFxConeRandScale;
     if (sourcePosition->y < -sourcePosition->z)
     {
         sourcePosition->y += kHudWeatherFxReflectBias;

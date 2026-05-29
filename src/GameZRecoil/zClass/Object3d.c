@@ -51,7 +51,7 @@ namespace {
             return 0;
         }
 
-        return static_cast<zClass_Object3DDataPartial *>(node->classData);
+        return (zClass_Object3DDataPartial *)(node->classData);
     }
 
     zClass_Object3DDataPartial *GetObject3DDataNoClassCheck(zClass_NodePartial * node, int nullLine,
@@ -66,7 +66,7 @@ namespace {
             return 0;
         }
 
-        return static_cast<zClass_Object3DDataPartial *>(node->classData);
+        return (zClass_Object3DDataPartial *)(node->classData);
     }
 
     void QueueTransformUpdate(zClass_NodePartial * node, zClass_Object3DDataPartial * data) {
@@ -246,7 +246,7 @@ namespace zClass_Object3D {
         }
 
         zClass_Object3DDataPartial *data =
-            static_cast<zClass_Object3DDataPartial *>(node->classData);
+            (zClass_Object3DDataPartial *)(node->classData);
         int clipMask = *gModel_ClipMaskStackTop;
         const int result = CullNodeForRender(node, siblingCountHint, &clipMask);
         if (result == 0) {
@@ -765,7 +765,7 @@ namespace zClass_Node {
     RECOIL_NOINLINE int RECOIL_FASTCALL HasRenderableDiPredicate(zClass_NodePartial *
                                                                           node) {
         zDiPartial *di =
-            (zDiPartial *)(static_cast<unsigned int>(node->userDataOrDiRef));
+            (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0 && di->mode == 1 && (di->flags & 0x10) == 0) {
             return 1;
         }
@@ -777,7 +777,7 @@ namespace zClass_Node {
     RECOIL_NOINLINE void RECOIL_FASTCALL PropagateTransformDirtyRecursive(zClass_NodePartial *
                                                                           self) {
         if (self->classId == kZClassNodeObject3D) {
-            *static_cast<int *>(self->classData) |= kObject3DTransformDirtyFlag;
+            *(int *)(self->classData) |= kObject3DTransformDirtyFlag;
         }
 
         self->boundsFlags |= kNodeBoundsDirtyFlag;
