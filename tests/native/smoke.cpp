@@ -531,6 +531,7 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void);
 extern "C" int zhud_cmd_dialog_on_command_selection_changed_smoke(void);
 extern "C" int zhud_cmd_dialog_rebuild_command_binding_lists_smoke(void);
 extern "C" int zhud_cmd_dialog_select_group_relative_smoke(void);
+extern "C" int zhud_cmd_dialog_select_command_relative_smoke(void);
 extern "C" int zhud_cmd_dialog_apply_primary_key_rebind_smoke(void);
 extern "C" int zhud_cmd_dialog_apply_secondary_key_rebind_smoke(void);
 extern "C" int zhud_cmd_dialog_apply_joystick_button_rebind_smoke(void);
@@ -2410,6 +2411,8 @@ int main(int argc, char **argv) {
          zhud_cmd_dialog_rebuild_command_binding_lists_smoke},
         {"zhud_cmd_dialog_select_group_relative_smoke",
          zhud_cmd_dialog_select_group_relative_smoke},
+        {"zhud_cmd_dialog_select_command_relative_smoke",
+         zhud_cmd_dialog_select_command_relative_smoke},
         {"zhud_cmd_dialog_apply_primary_key_rebind_smoke",
          zhud_cmd_dialog_apply_primary_key_rebind_smoke},
         {"zhud_cmd_dialog_apply_secondary_key_rebind_smoke",

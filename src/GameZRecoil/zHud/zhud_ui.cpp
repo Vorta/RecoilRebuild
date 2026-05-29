@@ -8695,6 +8695,36 @@ int RECOIL_THISCALL HudCmdDialog::SelectGroupRelative(int delta)
     return selectedIndex;
 }
 
+// Reimplements 0x40b630: HudCmdDialog::SelectCommandRelative
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+int RECOIL_THISCALL HudCmdDialog::SelectCommandRelative(int delta)
+{
+    int selectedIndex = delta;
+    selectedIndex += commandList.base.selectedBindingIndex;
+    if (selectedIndex >= 0)
+    {
+        HudCmdBindingEntry **const begin =
+            (HudCmdBindingEntry **)(commandList.base.bindingVec.begin);
+        int count;
+        if (begin == 0)
+        {
+            count = 0;
+        }
+        else
+        {
+            count = (int)((HudCmdBindingEntry **)(commandList.base.bindingVec.end) - begin);
+        }
+        if (selectedIndex < count)
+        {
+            commandList.base.SetSelectedEntry(selectedIndex);
+        }
+    }
+
+    const int currentIndex = commandList.base.selectedBindingIndex;
+    OnCommandSelectionChanged(currentIndex);
+    return currentIndex;
+}
+
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)

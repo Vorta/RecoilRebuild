@@ -6214,6 +6214,55 @@ extern "C" int zhud_cmd_dialog_select_group_relative_smoke(void) {
     return forward && wrapForward && wrapBackward ? 0 : 1;
 }
 
+extern "C" int zhud_cmd_dialog_select_command_relative_smoke(void) {
+    HudCmdDialog dialog{};
+    dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
+    dialog.descriptionPanel.captureState = 77;
+
+    SetupCommandDialogButton(&dialog.commandList.base, "Command0", "Command1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyAButton.base, "KeyA0", "KeyA1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyBButton.base, "KeyB0", "KeyB1", 3, 7);
+    SetupCommandDialogButton(&dialog.joyButton.base, "Joy0", "Joy1", 3, 7);
+    SetupCommandDialogButton(&dialog.mouseButton.base, "Mouse0", "Mouse1", 3, 7);
+    dialog.OnCommandSelectionChanged(1);
+
+    const int forwardResult = dialog.SelectCommandRelative(1);
+    const bool forward =
+        forwardResult == 2 && dialog.commandList.base.selectedBindingIndex == 2 &&
+        dialog.keyAButton.base.selectedBindingIndex == 2 &&
+        dialog.keyBButton.base.selectedBindingIndex == 2 &&
+        dialog.joyButton.base.selectedBindingIndex == 2 &&
+        dialog.mouseButton.base.selectedBindingIndex == 2 &&
+        std::strcmp(&TestFieldAt<char>(&dialog.commandList.base.bindPanel, 0x34), "Tail") == 0;
+
+    const int positiveOutOfRangeResult = dialog.SelectCommandRelative(1);
+    const bool positiveOutOfRange =
+        positiveOutOfRangeResult == 2 && dialog.commandList.base.selectedBindingIndex == 2 &&
+        dialog.keyAButton.base.selectedBindingIndex == 2 &&
+        std::strcmp(&TestFieldAt<char>(&dialog.keyAButton.base.bindPanel, 0x34), "Tail") == 0;
+
+    const int backwardResult = dialog.SelectCommandRelative(-1);
+    const bool backward =
+        backwardResult == 1 && dialog.commandList.base.selectedBindingIndex == 1 &&
+        dialog.keyBButton.base.selectedBindingIndex == 1 &&
+        std::strcmp(&TestFieldAt<char>(&dialog.commandList.base.bindPanel, 0x34), "Command1") == 0;
+
+    const int negativeOutOfRangeResult = dialog.SelectCommandRelative(-2);
+    const bool negativeOutOfRange =
+        negativeOutOfRangeResult == 1 && dialog.commandList.base.selectedBindingIndex == 1 &&
+        dialog.mouseButton.base.selectedBindingIndex == 1 &&
+        std::strcmp(&TestFieldAt<char>(&dialog.mouseButton.base.bindPanel, 0x34), "Mouse1") == 0;
+
+    CleanupCommandDialogButton(&dialog.mouseButton.base);
+    CleanupCommandDialogButton(&dialog.joyButton.base);
+    CleanupCommandDialogButton(&dialog.keyBButton.base);
+    CleanupCommandDialogButton(&dialog.keyAButton.base);
+    CleanupCommandDialogButton(&dialog.commandList.base);
+    dialog.descriptionPanel.base.Destructor();
+
+    return forward && positiveOutOfRange && backward && negativeOutOfRange ? 0 : 1;
+}
+
 extern "C" int zhud_cmd_dialog_apply_primary_key_rebind_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
