@@ -1691,9 +1691,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x409a60:
   - [☑️] Reconstructed (Name: RecoilStateCredits::OnTryBecomeCurrent)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCredits::OnTryBecomeCurrent File: src/Battlesport/RecoilStateCredits.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_credits_on_try_become_current)
   - [❌] Binary-safe
 - 0x409ad0:
   - [✅] Reconstructed (Name: RecoilStateCredits::OnDeactivate)

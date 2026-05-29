@@ -4,7 +4,7 @@ Generated from `Reimplements 0xNNNNNN: Name (original/source/path)` comments in 
 Binary Ninja remains authoritative; this map is an agent navigation aid.
 It only contains address-backed provenance comments and excludes helpers fully inlined by the retail compiler.
 
-Entries: 2982
+Entries: 2983
 
 ## Case-insensitive source path collisions
 
@@ -529,10 +529,11 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x409550` `HudUiZrdScrollingText::OnActivateResetOwnerFade` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4776`
 - `0x409570` `HudUiZrdScrollingText::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4784`
 - `0x409910` `HudUiPanelSpan::Clear` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5121`
-- `0x409990` `RecoilStateCredits::Constructor` -> `src/Battlesport/RecoilStateCredits.cpp:45`
-- `0x4099a0` `RecoilStateCredits::OnWndActivate` -> `src/Battlesport/RecoilStateCredits.cpp:54`
-- `0x4099f0` `RecoilStateCredits::Destructor` -> `src/Battlesport/RecoilStateCredits.cpp:72`
-- `0x409b00` `RecoilStateCredits::QueuePush` -> `src/Battlesport/RecoilStateCredits.cpp:92`
+- `0x409990` `RecoilStateCredits::Constructor` -> `src/Battlesport/RecoilStateCredits.cpp:46`
+- `0x4099a0` `RecoilStateCredits::OnWndActivate` -> `src/Battlesport/RecoilStateCredits.cpp:55`
+- `0x4099f0` `RecoilStateCredits::Destructor` -> `src/Battlesport/RecoilStateCredits.cpp:88`
+- `0x409a60` `RecoilStateCredits::OnTryBecomeCurrent` -> `src/Battlesport/RecoilStateCredits.cpp:73`
+- `0x409b00` `RecoilStateCredits::QueuePush` -> `src/Battlesport/RecoilStateCredits.cpp:108`
 - `0x409b20` `HudUiPanelSpan::DestroyAndFree` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5454`
 - `0x409b60` `HudUiPanelLayoutEntry::DestroyRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5108`
 - `0x409b90` `HudUiPanelSpan::InsertN` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5249`

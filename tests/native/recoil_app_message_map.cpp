@@ -44,6 +44,7 @@ struct RecoilStateCredits {
 
     RecoilStateCredits *RECOIL_THISCALL Constructor();
     void RECOIL_THISCALL OnWndActivate(int activateCode);
+    int RECOIL_THISCALL OnTryBecomeCurrent();
     ~RecoilStateCredits();
     static void RECOIL_CDECL QueuePush();
 };
@@ -106,6 +107,9 @@ int g_creditsOnWndActivateInvalidateCalls;
 int g_creditsOnWndActivateCallOrder;
 int g_creditsOnWndActivateBlitOrder;
 int g_creditsOnWndActivateInvalidateOrder;
+int g_creditsTryBecomeCurrentSetEnabledCalls;
+int g_creditsTryBecomeCurrentLastEnabled;
+void *g_creditsTryBecomeCurrentSetEnabledThis;
 int g_confirmQuitBackgroundLoadCalls;
 bool g_confirmQuitBackgroundLoadArgsOk;
 int g_confirmQuitBackgroundBindCalls;
@@ -312,6 +316,16 @@ void RECOIL_THISCALL FakeCreditsOnWndActivateThunk::BlitOwnedSurfaceToPrimary() 
 void RECOIL_THISCALL FakeCreditsOnWndActivateThunk::InvalidateChildren() {
     ++g_creditsOnWndActivateInvalidateCalls;
     g_creditsOnWndActivateInvalidateOrder = ++g_creditsOnWndActivateCallOrder;
+}
+
+struct FakeCreditsTryBecomeCurrentSetEnabledThunk {
+    void RECOIL_THISCALL SetEnabled(int enabled);
+};
+
+void RECOIL_THISCALL FakeCreditsTryBecomeCurrentSetEnabledThunk::SetEnabled(int enabled) {
+    ++g_creditsTryBecomeCurrentSetEnabledCalls;
+    g_creditsTryBecomeCurrentLastEnabled = enabled;
+    g_creditsTryBecomeCurrentSetEnabledThis = this;
 }
 
 void WINAPI FakeConfirmQuitSleep(DWORD milliseconds) {
@@ -6015,6 +6029,105 @@ extern "C" int recoil_state_credits_on_wnd_activate_smoke(void) {
         return 4;
     }
     return activeOk ? 0 : 5;
+}
+
+extern "C" int recoil_state_credits_on_try_become_current_smoke(void) {
+    char oldDir[MAX_PATH] = {};
+    char tempBase[MAX_PATH] = {};
+    char tempDir[MAX_PATH] = {};
+    if (GetCurrentDirectoryA(sizeof(oldDir), oldDir) == 0 ||
+        GetTempPathA(sizeof(tempBase), tempBase) == 0) {
+        return 1;
+    }
+
+    std::snprintf(tempDir, sizeof(tempDir), "%srecoil_credits_state_%lu",
+                  tempBase, GetTickCount());
+    if (CreateDirectoryA(tempDir, nullptr) == 0 || SetCurrentDirectoryA(tempDir) == 0) {
+        RemoveDirectoryA(tempDir);
+        return 2;
+    }
+
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 5;
+    vmodeOption.name = vmodeName;
+    vmodeOption.next = nullptr;
+
+    zOptionEntryPartial *const oldOptionsHead = g_zGame_Options_OptionListHead;
+    const int oldQuitAfterCredits = g_RecoilApp_QuitAfterCredits;
+    std::uint16_t pixels[4] = {};
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial savedPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    g_zGame_Options_OptionListHead = &vmodeOption;
+    g_RecoilApp_QuitAfterCredits = 0;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    CodeFunctionPatch setEnabledPatch{};
+    void (RECOIL_THISCALL HudUiBackground::*setEnabledMember)(int) =
+        &HudUiBackground::SetEnabled;
+    void (RECOIL_THISCALL FakeCreditsTryBecomeCurrentSetEnabledThunk::*
+              fakeSetEnabledMember)(int) =
+        &FakeCreditsTryBecomeCurrentSetEnabledThunk::SetEnabled;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(setEnabledMember)),
+                           reinterpret_cast<void *>(
+                               TestCheatCodeMethodAddress(fakeSetEnabledMember)),
+                           setEnabledPatch)) {
+        g_zVideo_RendererType = savedRendererType;
+        g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+        g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+        g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+        g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+        g_RecoilApp_QuitAfterCredits = oldQuitAfterCredits;
+        g_zGame_Options_OptionListHead = oldOptionsHead;
+        SetCurrentDirectoryA(oldDir);
+        RemoveDirectoryA(tempDir);
+        return 3;
+    }
+
+    g_creditsTryBecomeCurrentSetEnabledCalls = 0;
+    g_creditsTryBecomeCurrentLastEnabled = -1;
+    g_creditsTryBecomeCurrentSetEnabledThis = nullptr;
+
+    RecoilStateCredits state{};
+    const int result = state.OnTryBecomeCurrent();
+    HudUiCreditsPanel *const dialog = (HudUiCreditsPanel *)static_cast<std::uintptr_t>(
+        state.dialog);
+
+    int failure = result == 1 ? 0 : 4;
+    failure |= dialog != nullptr ? 0 : 8;
+    if (dialog != nullptr) {
+        failure |= dialog->base.base.base.vptr ==
+                           (const HudUiContainer_FTable *)(&g_HudUiCreditsPanel_FTable)
+                       ? 0
+                       : 16;
+        failure |= g_creditsTryBecomeCurrentSetEnabledCalls == 1 ? 0 : 32;
+        failure |= g_creditsTryBecomeCurrentSetEnabledThis == dialog ? 0 : 64;
+        failure |= g_creditsTryBecomeCurrentLastEnabled == 1 ? 0 : 128;
+    }
+
+    RestoreFunctionPatch(setEnabledPatch);
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+    g_RecoilApp_QuitAfterCredits = oldQuitAfterCredits;
+    g_zGame_Options_OptionListHead = oldOptionsHead;
+    SetCurrentDirectoryA(oldDir);
+    RemoveDirectoryA(tempDir);
+    return failure;
 }
 
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
