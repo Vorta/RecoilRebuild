@@ -1,8 +1,9 @@
 # RecoilRebuild public source-only ignore policy.
 #
-# Keep reconstructed source, tools, tests, progress docs, and verification
-# manifests public. Keep original/proprietary binaries, extracted payloads,
-# local SDK/toolchain mirrors, and generated build output local.
+# Keep reconstructed source, public tests, progress docs, and source-facing
+# evidence public. Keep local tools, tool tests, verification manifests,
+# original/proprietary binaries, extracted payloads, local SDK/toolchain mirrors,
+# and generated build output local.
 
 # Local/private original inputs and extracted assets
 support/

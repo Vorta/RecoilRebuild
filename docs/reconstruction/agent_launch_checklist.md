@@ -51,8 +51,9 @@ python tools/recoil_handoff.py 0xNNNNNN --include-artifacts
 After finishing a function or class reimplementation step, create a focused
 local git commit. A coherent multi-function batch may use one commit. Do not
 push. Stage only the agent's own related changes, do not use `git add .`, and
-do not stage private inputs, generated artifacts, ignored runtime state, or
-unrelated user changes.
+do not stage private inputs, generated artifacts, ignored runtime state, local
+tools, local tool tests, or unrelated user changes. Never use `git add -f` to
+force ignored paths.
 
 Treat `.agent/IMPLEMENTATION_GROUPS.md` as temporary context only. If it
 disagrees with `.agent/RECOIL_PLAN.md`, Binary Ninja, or `recoil_status.py`,
