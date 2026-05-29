@@ -1625,9 +1625,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4091e0:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdScrollingText::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_scrolling_text_destructor)
   - [❌] Binary-safe
 - 0x4092a0:
   - [✅] Reconstructed (Name: HudUiCreditsPanel::Destructor)
@@ -1637,9 +1637,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x409360:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdScrollingText::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_scrolling_text_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x409380:
   - [✅] Reconstructed (Name: HudUiCreditsPanel::UpdateFadeAndExit)
@@ -1649,9 +1649,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x409410:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::Update)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdScrollingText::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_scrolling_text_update)
   - [❌] Binary-safe
 - 0x409470:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::UpdateScrollPositions)
@@ -1663,7 +1663,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::OnActivateResetOwnerFade)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdScrollingText::OnActivateResetOwnerFade File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_scrolling_text_on_activate_reset_owner_fade)
   - [❌] Binary-safe
 - 0x409570:
   - [☑️] Reconstructed (Name: HudUiZrdScrollingText::LoadFromZrd)
@@ -1727,9 +1727,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x409ef0:
   - [✅] Reconstructed (Name: HudUiPanel::DestructorCallback)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanel::DestructorCallback File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_destructor_callback)
   - [❌] Binary-safe
 - 0x409f00:
   - [☑️] Reconstructed (Name: HudUiPanelSpanVec::InsertN)

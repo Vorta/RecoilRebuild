@@ -482,6 +482,11 @@ extern "C" int zhud_panel_span_destroy_and_free_smoke(void);
 extern "C" int zhud_panel_span_insert_n_smoke(void);
 extern "C" int zhud_credits_panel_destructor_smoke(void);
 extern "C" int zhud_credits_panel_scalar_deleting_destructor_smoke(void);
+extern "C" int zhud_panel_destructor_callback_smoke(void);
+extern "C" int zhud_scrolling_text_destructor_smoke(void);
+extern "C" int zhud_scrolling_text_scalar_deleting_destructor_smoke(void);
+extern "C" int zhud_scrolling_text_update_smoke(void);
+extern "C" int zhud_scrolling_text_on_activate_reset_owner_fade_smoke(void);
 extern "C" int zhud_scrolling_text_update_scroll_positions_smoke(void);
 extern "C" int zhud_credits_panel_update_fade_and_exit_smoke(void);
 extern "C" int zhud_composite_panel_vector_insert_copies_smoke(void);
@@ -2304,6 +2309,13 @@ int main(int argc, char **argv) {
         {"zhud_credits_panel_destructor_smoke", zhud_credits_panel_destructor_smoke},
         {"zhud_credits_panel_scalar_deleting_destructor_smoke",
          zhud_credits_panel_scalar_deleting_destructor_smoke},
+        {"zhud_panel_destructor_callback_smoke", zhud_panel_destructor_callback_smoke},
+        {"zhud_scrolling_text_destructor_smoke", zhud_scrolling_text_destructor_smoke},
+        {"zhud_scrolling_text_scalar_deleting_destructor_smoke",
+         zhud_scrolling_text_scalar_deleting_destructor_smoke},
+        {"zhud_scrolling_text_update_smoke", zhud_scrolling_text_update_smoke},
+        {"zhud_scrolling_text_on_activate_reset_owner_fade_smoke",
+         zhud_scrolling_text_on_activate_reset_owner_fade_smoke},
         {"zhud_scrolling_text_update_scroll_positions_smoke",
          zhud_scrolling_text_update_scroll_positions_smoke},
         {"zhud_credits_panel_update_fade_and_exit_smoke",

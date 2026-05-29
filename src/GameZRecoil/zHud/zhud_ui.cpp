@@ -4701,6 +4701,29 @@ void RECOIL_THISCALL HudUiZrdScrollingText::OnActivateResetOwnerFade() {
     *ownerFadeProgress = 0.0f;
 }
 
+// Reimplements 0x409410: HudUiZrdScrollingText::Update
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void RECOIL_THISCALL HudUiZrdScrollingText::Update(float deltaSeconds)
+{
+    ((HudUiElement *)(this))->Update(deltaSeconds);
+
+    HudUiPanelSpan *row = rows.begin;
+    while (row != rows.end)
+    {
+        HudUiPanelLayoutEntry *entry = row->begin;
+        while (entry != row->end)
+        {
+            typedef void (RECOIL_THISCALL *UpdateFn)(HudUiPanel * self, float deltaSeconds);
+            const HudUiPanel_FTable *const ftable =
+                *(const HudUiPanel_FTable *const *)(&entry->panel);
+            ((UpdateFn)(ftable->slots[9]))(&entry->panel, deltaSeconds);
+            ++entry;
+        }
+
+        ++row;
+    }
+}
+
 // Reimplements 0x409470: HudUiZrdScrollingText::UpdateScrollPositions
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
 void RECOIL_THISCALL HudUiZrdScrollingText::UpdateScrollPositions(float scrollProgress)
@@ -4731,6 +4754,57 @@ void RECOIL_THISCALL HudUiZrdScrollingText::UpdateScrollPositions(float scrollPr
 
         ++row;
     }
+}
+
+// Reimplements 0x409ef0: HudUiPanel::DestructorCallback
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void RECOIL_STDCALL HudUiPanel::DestructorCallback(HudUiPanel *panel)
+{
+    panel->DestructorThunk();
+}
+
+// Reimplements 0x4091e0: HudUiZrdScrollingText::Destructor
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void RECOIL_THISCALL HudUiZrdScrollingText::Destructor()
+{
+    HudUiPanelSpan *row = rows.begin;
+    while (row != rows.end)
+    {
+        HudUiPanelLayoutEntry *entry = row->begin;
+        while (entry != row->end)
+        {
+            HudUiPanel::DestructorCallback(&entry->panel);
+            ++entry;
+        }
+
+        ::operator delete(row->begin);
+        row->begin = 0;
+        row->end = 0;
+        row->cap = 0;
+        ++row;
+    }
+
+    ::operator delete(rows.begin);
+    rows.begin = 0;
+    rows.end = 0;
+    rows.cap = 0;
+
+    base.DestructorCore();
+}
+
+// Reimplements 0x409360: HudUiZrdScrollingText::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+HudUiZrdScrollingText *RECOIL_THISCALL
+HudUiZrdScrollingText::ScalarDeletingDestructor(unsigned int flags)
+{
+    HudUiZrdScrollingText *self = this;
+    Destructor();
+    if ((flags & 1) != 0)
+    {
+        ::operator delete(self);
+    }
+
+    return self;
 }
 
 // Reimplements 0x409380: HudUiCreditsPanel::UpdateFadeAndExit

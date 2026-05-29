@@ -2447,6 +2447,37 @@ int CreditsPanelDestructorFailureBits(const HudUiCreditsPanel &panel) {
     return failure;
 }
 
+void InitScrollingTextForDestructorTest(HudUiZrdScrollingText *text) {
+    text->base.Constructor();
+
+    text->rows.begin = static_cast<HudUiPanelSpan *>(
+        ::operator new(sizeof(HudUiPanelSpan) * 2));
+    text->rows.end = text->rows.begin + 2;
+    text->rows.cap = text->rows.end;
+
+    for (int rowIndex = 0; rowIndex < 2; ++rowIndex) {
+        HudUiPanelSpan &row = text->rows.begin[rowIndex];
+        row.allocatorProxy = 0;
+        row.begin = AllocatePanelLayoutEntriesForTest(1);
+        row.end = row.begin + 1;
+        row.cap = row.end;
+        InitPanelLayoutEntryForTest(&row.begin[0], rowIndex == 0 ? "scroll a" : "scroll b",
+                                    300 + rowIndex, 400 + rowIndex);
+    }
+}
+
+int ScrollingTextDestructorFailureBits(const HudUiZrdScrollingText &text) {
+    int failure = 0;
+    failure |= text.rows.begin == nullptr ? 0 : 1;
+    failure |= text.rows.end == nullptr ? 0 : 2;
+    failure |= text.rows.cap == nullptr ? 0 : 4;
+    failure |= text.base.base.ftable ==
+                       reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable)
+                   ? 0
+                   : 8;
+    return failure;
+}
+
 extern "C" int zhud_panel_span_insert_n_smoke(void) {
     HudUiPanelLayoutEntry templateEntry{};
     InitPanelLayoutEntryForTest(&templateEntry, "insert", 90, 91);
@@ -2543,6 +2574,52 @@ extern "C" int zhud_credits_panel_scalar_deleting_destructor_smoke(void) {
     return failure;
 }
 
+extern "C" int zhud_panel_destructor_callback_smoke(void) {
+    HudUiPanel panel{};
+    panel.ConstructorDefault("callback", 0, 0);
+    HudUiPanel::DestructorCallback(&panel);
+    return panel.vtbl == &g_HudUiCommon_FTable ? 0 : 1;
+}
+
+extern "C" int zhud_scrolling_text_destructor_smoke(void) {
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 5;
+    vmodeOption.name = vmodeName;
+    vmodeOption.next = nullptr;
+
+    zOptionEntryPartial *const oldOptionsHead = g_zGame_Options_OptionListHead;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+
+    HudUiZrdScrollingText text{};
+    InitScrollingTextForDestructorTest(&text);
+    text.Destructor();
+
+    const int failure = ScrollingTextDestructorFailureBits(text);
+    g_zGame_Options_OptionListHead = oldOptionsHead;
+    return failure;
+}
+
+extern "C" int zhud_scrolling_text_scalar_deleting_destructor_smoke(void) {
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 5;
+    vmodeOption.name = vmodeName;
+    vmodeOption.next = nullptr;
+
+    zOptionEntryPartial *const oldOptionsHead = g_zGame_Options_OptionListHead;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+
+    HudUiZrdScrollingText text{};
+    InitScrollingTextForDestructorTest(&text);
+    HudUiZrdScrollingText *const result = text.ScalarDeletingDestructor(0);
+
+    int failure = result == &text ? 0 : 1;
+    failure |= ScrollingTextDestructorFailureBits(text) << 1;
+    g_zGame_Options_OptionListHead = oldOptionsHead;
+    return failure;
+}
+
 void InitScrollingTextEntryForTest(HudUiPanelLayoutEntry *entry, int x, int y, int height) {
     entry->panel.vtbl = &g_HudUiPanel_FTable;
     TestFieldAt<std::uint32_t>(&entry->panel, 0x0c) = 0;
@@ -2551,6 +2628,67 @@ void InitScrollingTextEntryForTest(HudUiPanelLayoutEntry *entry, int x, int y, i
     TestFieldAt<std::uint32_t>(&entry->panel, 0x270) = 0;
     entry->layoutX = x;
     entry->layoutY = y;
+}
+
+int g_scrollingTextUpdateDispatchCount = 0;
+float g_scrollingTextUpdateLastDelta = 0.0f;
+void *g_scrollingTextUpdateFirstSelf = nullptr;
+void *g_scrollingTextUpdateSecondSelf = nullptr;
+
+struct TestScrollingTextUpdatePanel {
+    void RECOIL_THISCALL Update(float deltaSeconds) {
+        ++g_scrollingTextUpdateDispatchCount;
+        g_scrollingTextUpdateLastDelta = deltaSeconds;
+        if (g_scrollingTextUpdateDispatchCount == 1) {
+            g_scrollingTextUpdateFirstSelf = this;
+        } else if (g_scrollingTextUpdateDispatchCount == 2) {
+            g_scrollingTextUpdateSecondSelf = this;
+        }
+    }
+};
+
+extern "C" int zhud_scrolling_text_update_smoke(void) {
+    HudUiPanel_FTable updateTable{};
+    updateTable.slots[9] = static_cast<unsigned int>(
+        MethodAddress(&TestScrollingTextUpdatePanel::Update));
+
+    HudUiZrdScrollingText text{};
+    text.base.base.flags = 0x10u;
+    HudUiPanelSpan row{};
+    HudUiPanelLayoutEntry entries[2]{};
+    entries[0].panel.vtbl = &updateTable;
+    entries[1].panel.vtbl = &updateTable;
+    row.begin = entries;
+    row.end = entries + 2;
+    row.cap = row.end;
+    text.rows.begin = &row;
+    text.rows.end = &row + 1;
+    text.rows.cap = text.rows.end;
+
+    g_scrollingTextUpdateDispatchCount = 0;
+    g_scrollingTextUpdateLastDelta = 0.0f;
+    g_scrollingTextUpdateFirstSelf = nullptr;
+    g_scrollingTextUpdateSecondSelf = nullptr;
+
+    text.Update(0.25f);
+
+    return g_scrollingTextUpdateDispatchCount == 2 &&
+                   HudFloatNear(g_scrollingTextUpdateLastDelta, 0.25f) &&
+                   g_scrollingTextUpdateFirstSelf == &entries[0].panel &&
+                   g_scrollingTextUpdateSecondSelf == &entries[1].panel
+               ? 0
+               : 1;
+}
+
+extern "C" int zhud_scrolling_text_on_activate_reset_owner_fade_smoke(void) {
+    HudUiCreditsPanel owner{};
+    owner.fadeProgress = 0.75f;
+
+    HudUiZrdScrollingText text{};
+    text.base.owner = &owner;
+    text.OnActivateResetOwnerFade();
+
+    return HudFloatNear(owner.fadeProgress, 0.0f) ? 0 : 1;
 }
 
 extern "C" int zhud_scrolling_text_update_scroll_positions_smoke(void) {

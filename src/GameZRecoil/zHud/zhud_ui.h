@@ -1233,6 +1233,7 @@ struct HudUiPanel {
     void RECOIL_THISCALL Draw();
     void RECOIL_THISCALL Destructor();
     RECOIL_NOINLINE void RECOIL_THISCALL DestructorThunk();
+    static void RECOIL_STDCALL DestructorCallback(HudUiPanel *panel);
     unsigned int RECOIL_THISCALL SetTextColor(unsigned int color);
     void RECOIL_THISCALL SetTextColorsAndMarkDirty(unsigned int color0, unsigned int color1);
     unsigned int RECOIL_THISCALL SetShadow(unsigned int shadowEnabled, int shadowOffsetX,
@@ -1436,7 +1437,10 @@ struct HudUiZrdScrollingText {
     int totalHeight;
 
     void RECOIL_THISCALL OnActivateResetOwnerFade();
+    void RECOIL_THISCALL Update(float deltaSeconds);
     void RECOIL_THISCALL UpdateScrollPositions(float scrollProgress);
+    void RECOIL_THISCALL Destructor();
+    HudUiZrdScrollingText *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudUiCreditsPanel {

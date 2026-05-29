@@ -46,6 +46,8 @@ source-readiness, or coherent binary-safe groups currently being coordinated.
 - Anchor: 0x409040 HudUiCreditsPanel::Constructor
 - Reason: class/vtable cluster / shared ABI layout
 - Source blockers:
+  - 0x4b59f0 HudUiZrdWidget::LoadFromZrd dependency marker audit for scrolling-text override
+  - 0x409570 HudUiZrdScrollingText::LoadFromZrd
   - 0x409040 HudUiCreditsPanel::Constructor vtable/scrolling-text owner audit
 - Next action:
-  - python tools/recoil_status.py 0x409040
+  - python tools/recoil_status.py 0x4b59f0
