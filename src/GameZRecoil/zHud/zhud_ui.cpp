@@ -8643,6 +8643,13 @@ static void HudCmdDialog_DestroyMouseButton(HudCmdBindButtonBase *button)
     button->base.DestructorCore();
 }
 
+// Restores repeated inline binding-vector clearing observed in 0x40b680; no
+// standalone helper exists in the retail executable.
+static void HudCmdDialog_ClearBindButtonEntries(HudCmdBindButtonBase *button)
+{
+    button->ClearBindingEntries();
+}
+
 // Reimplements 0x40adf0: HudCmdDialog::Destructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::Destructor()
@@ -8664,6 +8671,56 @@ void RECOIL_THISCALL HudCmdDialog::Destructor()
     resetButton.base.DestructorCore();
     resumeButton.base.DestructorCore();
     base.Destructor();
+}
+
+// Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)
+{
+    HudCmdDialog_ClearBindButtonEntries(&commandList.base);
+    HudCmdDialog_ClearBindButtonEntries(&keyAButton.base);
+    HudCmdDialog_ClearBindButtonEntries(&keyBButton.base);
+    HudCmdDialog_ClearBindButtonEntries(&joyButton.base);
+    HudCmdDialog_ClearBindButtonEntries(&mouseButton.base);
+
+    int commandIndex;
+    for (commandIndex = 0;
+         commandIndex < zInput::BindGroupList_GetGroupCommandCount(groupIndex);
+         ++commandIndex)
+    {
+        const int commandId =
+            zInput::BindGroupList_GetGroupCommandId(groupIndex, commandIndex);
+        char labelBuffer[40];
+        zInput::BindMapCurrent_CopyCommandLabel(commandId, labelBuffer,
+                                                sizeof(labelBuffer));
+        if (strlen(labelBuffer) != 0)
+        {
+            commandList.base.AddBindingEntry(zInput::BindMap_GetCommandLabel(commandId),
+                                             commandId);
+            keyAButton.base.AddBindingEntry(
+                zInput::BindMapCurrent_FormatKeyComboName(
+                    zInput::BindMapCurrent_GetPrimaryKeyboardKey(commandId),
+                    labelBuffer, sizeof(labelBuffer)),
+                commandId);
+            keyBButton.base.AddBindingEntry(
+                zInput::BindMapCurrent_FormatKeyComboName(
+                    zInput::BindMapCurrent_GetSecondaryKeyboardKey(commandId),
+                    labelBuffer, sizeof(labelBuffer)),
+                commandId);
+            joyButton.base.AddBindingEntry(
+                zInput::BindMapCurrent_CopyJoystickButtonName(
+                    zInput::BindMapCurrent_GetJoystickButtonSlot(commandId),
+                    labelBuffer, sizeof(labelBuffer)),
+                commandId);
+            mouseButton.base.AddBindingEntry(
+                zInput::BindMapCurrent_CopyMouseButtonName(
+                    zInput::BindMapCurrent_GetMouseButtonSlot(commandId),
+                    labelBuffer, sizeof(labelBuffer)),
+                commandId);
+        }
+    }
+
+    OnCommandSelectionChanged(0);
 }
 
 // Reimplements 0x40b980: HudCmdDialog::OnCommandSelectionChanged

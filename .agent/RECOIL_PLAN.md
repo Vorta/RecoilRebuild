@@ -1853,9 +1853,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40b680:
   - [☑️] Reconstructed (Name: HudCmdDialog::RebuildCommandBindingListsForGroup)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialog::RebuildCommandBindingListsForGroup File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_rebuild_command_binding_lists)
   - [❌] Binary-safe
 - 0x40b930:
   - [✅] Reconstructed (Name: HudCmdResetButton::OnActivate)

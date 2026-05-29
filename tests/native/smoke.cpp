@@ -529,6 +529,7 @@ extern "C" int zhud_fill_bitmap_core_smoke(void);
 extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void);
 extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void);
 extern "C" int zhud_cmd_dialog_on_command_selection_changed_smoke(void);
+extern "C" int zhud_cmd_dialog_rebuild_command_binding_lists_smoke(void);
 extern "C" int zhud_message_box_leaf_handlers_smoke(void);
 extern "C" int zhud_message_box_constructor_fallback_smoke(void);
 extern "C" int zhud_message_box_run_modal_smoke(void);
@@ -2399,6 +2400,8 @@ int main(int argc, char **argv) {
          zhud_cmd_bind_button_base_constructor_smoke},
         {"zhud_cmd_dialog_on_command_selection_changed_smoke",
          zhud_cmd_dialog_on_command_selection_changed_smoke},
+        {"zhud_cmd_dialog_rebuild_command_binding_lists_smoke",
+         zhud_cmd_dialog_rebuild_command_binding_lists_smoke},
         {"zhud_message_box_leaf_handlers_smoke", zhud_message_box_leaf_handlers_smoke},
         {"zhud_message_box_constructor_fallback_smoke",
          zhud_message_box_constructor_fallback_smoke},

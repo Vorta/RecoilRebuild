@@ -1468,6 +1468,7 @@ struct HudCmdDialog {
     HudCmdDescriptionPanel descriptionPanel;
 
     void RECOIL_THISCALL Destructor();
+    void RECOIL_THISCALL RebuildCommandBindingListsForGroup(int groupIndex);
     void RECOIL_THISCALL OnCommandSelectionChanged(int commandIndex);
 };
 
