@@ -19009,13 +19009,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: StdPtrVector::Clear)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_StdPtrVector_Clear File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: std_ptr_vector_clear)
   - [❌] Binary-safe
 - 0x40c1d0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::ClearBindingEntries)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindButtonBase::ClearBindingEntries File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_bind_button_base_clear_binding_entries)
   - [❌] Binary-safe
 - 0x42a9f0:
   - [✅] Reconstructed (Name: Player::AddScaledHudCounterValue)
@@ -19027,7 +19027,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: StdPtrVector::FreeBufferAndReset)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_StdPtrVector_FreeBufferAndReset File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: std_ptr_vector_free_buffer_and_reset)
   - [❌] Binary-safe
 - 0x42ecb0:
   - [✅] Reconstructed (Name: zUtil::SetMissionZrdrPathsAndMountZbd)
