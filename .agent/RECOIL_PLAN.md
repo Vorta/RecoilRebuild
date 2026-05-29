@@ -1587,8 +1587,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zStub::ReturnOneNoArgs)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zStub::ReturnOneNoArgs File: src/GameZRecoil/zClass/cls_stubs.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zstub_vtable_stubs)
+  - [✅] Binary-safe
 - 0x408c60:
   - [❌] Reconstructed (Name: HudUiOptionSelectorWidget::DestructorCoreThunk)
   - [❌] Source dependencies satisfied
@@ -21480,20 +21480,20 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zStub::ReturnZeroNoArgs)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zStub::ReturnZeroNoArgs File: src/GameZRecoil/zClass/cls_stubs.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zstub_vtable_stubs)
+  - [✅] Binary-safe
 - 0x407150:
   - [✅] Reconstructed (Name: zStub::NoOp1Arg)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zStub::NoOp1Arg File: src/GameZRecoil/zClass/cls_stubs.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zstub_vtable_stubs)
+  - [✅] Binary-safe
 - 0x407160:
   - [✅] Reconstructed (Name: zStub::ReturnOne2Args)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zStub::ReturnOne2Args File: src/GameZRecoil/zClass/cls_stubs.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zstub_vtable_stubs)
+  - [✅] Binary-safe
 
 ## M46. Non-Authored Functions Not Needed for Reimplementation
 
