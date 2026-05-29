@@ -2589,6 +2589,78 @@ extern "C" int zhud_scrolling_text_update_scroll_positions_smoke(void) {
     return positions && visibility ? 0 : 1;
 }
 
+void InitCreditsPanelUpdateForTest(HudUiCreditsPanel *panel, float progress, float step) {
+    panel->base.Constructor();
+    panel->creditsScreen.rows.begin = nullptr;
+    panel->creditsScreen.rows.end = nullptr;
+    panel->creditsScreen.rows.cap = nullptr;
+    panel->fadeProgress = progress;
+    panel->fadeStep = step;
+}
+
+RecoilApp_StateQueueItem *StateQueueItemAtForTest(RecoilApp_StateQueue *queue, int index) {
+    RecoilPtr32 cursor = queue->m_readBlock.m_cursor + static_cast<RecoilPtr32>(index * 4);
+    RecoilPtr32 item = *reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(cursor));
+    return reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(item));
+}
+
+struct TestCreditsLeaveNetworkState : RecoilApp_IState {
+    void RECOIL_THISCALL OnEnter() {}
+};
+
+extern "C" int zhud_credits_panel_update_fade_and_exit_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    const int oldQuitAfterCredits = g_RecoilApp_QuitAfterCredits;
+
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp_QuitAfterCredits = 0;
+
+    HudUiCreditsPanel belowPanel{};
+    InitCreditsPanelUpdateForTest(&belowPanel, 0.25f, 0.5f);
+    belowPanel.UpdateFadeAndExit(0.5f);
+    const bool belowThreshold =
+        HudFloatNear(belowPanel.fadeProgress, 0.5f) &&
+        g_RecoilApp.m_stateQueue_118.m_itemCount == 0;
+
+    HudUiCreditsPanel normalPanel{};
+    InitCreditsPanelUpdateForTest(&normalPanel, 1.0f, 0.0f);
+    normalPanel.UpdateFadeAndExit(0.25f);
+    RecoilApp_StateQueueItem *item = StateQueueItemAtForTest(&g_RecoilApp.m_stateQueue_118, 0);
+    const bool normalExit =
+        g_RecoilApp.m_stateQueue_118.m_itemCount == 1 &&
+        item->m_kind == RecoilApp_StateQueueKind_ExitCurrent && item->m_stateObj == 0 &&
+        item->m_param == 0;
+
+    std::memset(&g_RecoilApp.m_stateQueue_118, 0, sizeof(g_RecoilApp.m_stateQueue_118));
+
+    g_RecoilApp_QuitAfterCredits = 1;
+    RecoilApp_IState_Vtbl leaveNetworkVtable{};
+    leaveNetworkVtable.OnEnter = MethodAddress(&TestCreditsLeaveNetworkState::OnEnter);
+    g_RecoilApp.m_leaveNetworkState_1d0.base.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&leaveNetworkVtable));
+    HudUiCreditsPanel quitPanel{};
+    InitCreditsPanelUpdateForTest(&quitPanel, 1.0f, 0.0f);
+    quitPanel.UpdateFadeAndExit(0.25f);
+    RecoilApp_StateQueueItem *exitItem =
+        StateQueueItemAtForTest(&g_RecoilApp.m_stateQueue_118, 0);
+    RecoilApp_StateQueueItem *switchItem =
+        StateQueueItemAtForTest(&g_RecoilApp.m_stateQueue_118, 1);
+    const bool quitExit =
+        g_RecoilApp.m_stateQueue_118.m_itemCount == 2 &&
+        exitItem->m_kind == RecoilApp_StateQueueKind_ExitCurrent && exitItem->m_param == 1 &&
+        switchItem->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
+        switchItem->m_stateObj ==
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_RecoilApp.m_leaveNetworkState_1d0.base)) &&
+        switchItem->m_param == 0 &&
+        g_RecoilApp.m_missionShutdownMode == RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
+
+    g_RecoilApp = oldApp;
+    g_RecoilApp_QuitAfterCredits = oldQuitAfterCredits;
+    return belowThreshold && normalExit && quitExit ? 0 : 1;
+}
+
 extern "C" int zhud_composite_panel_vector_insert_copies_smoke(void) {
     HudUiCommon_FTable destructorTable{};
     destructorTable.slots[0] = MethodAddress(&TestCompositePanelEntry::ScalarDeletingDestructor);

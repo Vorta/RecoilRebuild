@@ -1642,10 +1642,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Functional-equivalent
   - [❌] Binary-safe
 - 0x409380:
-  - [☑️] Reconstructed (Name: HudUiCreditsPanel::UpdateFadeAndExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiCreditsPanel::UpdateFadeAndExit)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCreditsPanel::UpdateFadeAndExit File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_credits_panel_update_fade_and_exit)
   - [❌] Binary-safe
 - 0x409410:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::Update)

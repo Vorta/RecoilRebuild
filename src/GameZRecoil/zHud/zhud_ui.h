@@ -1447,6 +1447,7 @@ struct HudUiCreditsPanel {
     HudUiZrdScrollingText creditsScreen;
     float fadeProgress;
 
+    void RECOIL_THISCALL UpdateFadeAndExit(float deltaSeconds);
     void RECOIL_THISCALL Destructor();
     HudUiCreditsPanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
 };

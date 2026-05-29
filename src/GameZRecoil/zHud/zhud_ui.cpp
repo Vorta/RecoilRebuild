@@ -4733,6 +4733,30 @@ void RECOIL_THISCALL HudUiZrdScrollingText::UpdateScrollPositions(float scrollPr
     }
 }
 
+// Reimplements 0x409380: HudUiCreditsPanel::UpdateFadeAndExit
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void RECOIL_THISCALL HudUiCreditsPanel::UpdateFadeAndExit(float deltaSeconds)
+{
+    creditsScreen.UpdateScrollPositions(fadeProgress);
+    fadeProgress += fadeStep * deltaSeconds;
+    base.Update(deltaSeconds);
+
+    if (fadeProgress < 1.0f)
+    {
+        return;
+    }
+
+    if (g_RecoilApp_QuitAfterCredits != 0)
+    {
+        g_RecoilApp.QueueExitCurrentState(1);
+        g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
+        g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_leaveNetworkState_1d0.base, 0);
+        return;
+    }
+
+    g_RecoilApp.QueueExitCurrentState(0);
+}
+
 // Reimplements 0x4092a0: HudUiCreditsPanel::Destructor
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
 void RECOIL_THISCALL HudUiCreditsPanel::Destructor()
