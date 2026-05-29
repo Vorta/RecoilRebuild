@@ -723,6 +723,21 @@ extern "C" int zinput_bindmap_context_smoke(void) {
         return 4;
     }
 
+    zInput::BindMap_Current_SetBindingRecord(3, "Command Three", 0x40, 0x41, 0, 0);
+    zInput::BindMapCurrent_SetPrimaryKeyBinding(0x42, 3);
+    zInput::BindMapCurrent_SetSecondaryKeyBinding(0x43, 3);
+    if (zInput::BindMapCurrent_GetCommandByPrimaryKey(0x40) != 0 ||
+        zInput::BindMapCurrent_GetCommandBySecondaryKey(0x41) != 0 ||
+        zInput::BindMapCurrent_GetCommandByPrimaryKey(0x42) != 3 ||
+        zInput::BindMapCurrent_GetCommandBySecondaryKey(0x43) != 3 ||
+        zInput::BindMapCurrent_GetPrimaryKeyboardKey(3) != 0x42 ||
+        zInput::BindMapCurrent_GetSecondaryKeyboardKey(3) != 0x43) {
+        g_zInput_BindMap_Current = nullptr;
+        context.FreeNonOwnedBuffers();
+        FreeOptionList();
+        return 9;
+    }
+
     g_zInputKbdKeyDispatchTable[0x20].state = 1;
     g_zInputKbdKeyDispatchTable[0x21].state = 4;
     std::memset(g_zInput_JoystickCurrentState.rgbButtons, 0,

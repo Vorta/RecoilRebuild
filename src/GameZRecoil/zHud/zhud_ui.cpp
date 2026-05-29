@@ -8750,6 +8750,33 @@ void RECOIL_THISCALL HudCmdDialog::OnCommandSelectionChanged(int commandIndex)
     }
 }
 
+// Reimplements 0x40b3e0: HudCmdDialog::ApplyPrimaryKeyRebind
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+int RECOIL_THISCALL HudCmdDialog::ApplyPrimaryKeyRebind(int keyCode, int commandIndex)
+{
+    if (keyCode != 1)
+    {
+        const int primaryCommand =
+            zInput::BindMapCurrent_GetCommandByPrimaryKey(keyCode);
+        const int groupIndex = setList.base.selectedIndex;
+        const int commandId =
+            zInput::BindGroupList_GetGroupCommandId(groupIndex, commandIndex);
+        if (primaryCommand == 0 &&
+            zInput::BindMapCurrent_GetCommandBySecondaryKey(keyCode) != 0)
+        {
+            zInput::BindMapCurrent_SetSecondaryKeyBinding(keyCode, 0);
+        }
+
+        zInput::BindMapCurrent_SetPrimaryKeyBinding(keyCode, commandId);
+        RebuildCommandBindingListsForGroup(groupIndex);
+        OnCommandSelectionChanged(commandIndex);
+    }
+
+    descriptionPanel.captureState = 0;
+    zInput::ResetAllTransitionState();
+    return 1;
+}
+
 // Reimplements 0x4b90e0: HudCmdBindButtonBase::RebuildBindingSlotWidgets
 void RECOIL_THISCALL HudCmdBindButtonBase::RebuildBindingSlotWidgets(int totalCount,
                                                                      int visibleCount) {

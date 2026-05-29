@@ -1817,9 +1817,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40b3e0:
   - [✅] Reconstructed (Name: HudCmdDialog::ApplyPrimaryKeyRebind)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialog::ApplyPrimaryKeyRebind File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_apply_primary_key_rebind)
   - [❌] Binary-safe
 - 0x40b460:
   - [✅] Reconstructed (Name: HudCmdDialog::ApplySecondaryKeyRebind)
@@ -14791,14 +14791,14 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetCommandByPrimaryKey)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetCommandByPrimaryKey File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_get_command_by_primary_key)
+  - [✅] Binary-safe
 - 0x471720:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetCommandBySecondaryKey)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetCommandBySecondaryKey File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_get_command_by_secondary_key)
+  - [✅] Binary-safe
 - 0x471730:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetCommandByJoystickSlot)
   - [✅] Source dependencies satisfied
@@ -14815,14 +14815,14 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_SetPrimaryKeyBinding)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_SetPrimaryKeyBinding File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_set_primary_key_binding)
+  - [✅] Binary-safe
 - 0x471760:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_SetSecondaryKeyBinding)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_SetSecondaryKeyBinding File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_set_secondary_key_binding)
+  - [✅] Binary-safe
 - 0x471770:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_SetJoystickBinding)
   - [✅] Source dependencies satisfied
