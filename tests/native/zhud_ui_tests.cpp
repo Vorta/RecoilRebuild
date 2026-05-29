@@ -5309,10 +5309,15 @@ extern "C" int zhud_background_container_focus_smoke(void) {
     const bool focus =
         container.GetInputFocus() == &element && container.inputFocusElement == &element;
 
+    container.SetEnabled(1);
+    const bool enabled = container.base.enabled == 1;
+    container.SetEnabled(0);
+    const bool disabled = container.base.enabled == 0;
+
     container.Destructor();
     const bool destructed = container.base.vptr == &g_HudUiContainer_FTable;
 
-    return constructed && focus && destructed ? 0 : 1;
+    return constructed && focus && enabled && disabled && destructed ? 0 : 1;
 }
 
 extern "C" int zhud_background_update_input_focus_smoke(void) {

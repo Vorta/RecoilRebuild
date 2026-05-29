@@ -33,10 +33,10 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 - `0x403930` `HudUiBriefingRuntime::Constructor` -> `src/Battlesport/Briefing.cpp:368`
 - `0x403ed0` `HudUiBriefingRuntime::Destructor` -> `src/Battlesport/Briefing.cpp:469`
-- `0x404070` `HudUiBriefingRuntime::Update` -> `src/Battlesport/Briefing.cpp:902`
-- `0x404180` `Briefing::StartForMission` -> `src/Battlesport/Briefing.cpp:779`
-- `0x404280` `Briefing::ThreadMain` -> `src/Battlesport/Briefing.cpp:807`
-- `0x404bd0` `Briefing::StopAndShutdownThread` -> `src/Battlesport/Briefing.cpp:857`
+- `0x404070` `HudUiBriefingRuntime::Update` -> `src/Battlesport/Briefing.cpp:897`
+- `0x404180` `Briefing::StartForMission` -> `src/Battlesport/Briefing.cpp:774`
+- `0x404280` `Briefing::ThreadMain` -> `src/Battlesport/Briefing.cpp:802`
+- `0x404bd0` `Briefing::StopAndShutdownThread` -> `src/Battlesport/Briefing.cpp:852`
 
 ## Battlesport/CZRecoilFrame.cpp
 
@@ -340,30 +340,30 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x403550` `AINet::ResolveNeighborLinksAndBuildProbeFans` -> `src/Battlesport/ainet.cpp:290`
 - `0x403620` `AINetPathProbeFan::InitFromSegment` -> `src/Battlesport/ainet.cpp:270`
 - `0x403750` `Player::BuildAiPeerRingsByAiNetId` -> `src/Battlesport/player.cpp:1917`
-- `0x4038a0` `HudUiBriefingObjectivePicture::DrawWithNoiseOverlay` -> `src/Battlesport/Briefing.cpp:523`
-- `0x403c10` `HudUiBriefingLocatorPanel::Constructor` -> `src/Battlesport/Briefing.cpp:539`
-- `0x403c90` `HudUiBriefingLocatorPanel::BlitDirtyRect` -> `src/Battlesport/Briefing.cpp:550`
-- `0x403cb0` `HudUiBriefingLocatorPanel::Update` -> `src/Battlesport/Briefing.cpp:559`
+- `0x4038a0` `HudUiBriefingObjectivePicture::DrawWithNoiseOverlay` -> `src/Battlesport/Briefing.cpp:518`
+- `0x403c10` `HudUiBriefingLocatorPanel::Constructor` -> `src/Battlesport/Briefing.cpp:534`
+- `0x403c90` `HudUiBriefingLocatorPanel::BlitDirtyRect` -> `src/Battlesport/Briefing.cpp:545`
+- `0x403cb0` `HudUiBriefingLocatorPanel::Update` -> `src/Battlesport/Briefing.cpp:554`
 - `0x403d90` `HudUiBriefingRuntime::ScalarDeletingDestructor` -> `src/Battlesport/Briefing.cpp:458`
 - `0x404140` `zInput_WaitForAnyKeyPressWithTimeoutMs` -> `src/GameZRecoil/zInput/zInput.cpp:2280`
-- `0x404400` `Briefing::BuildObjectiveActionsFromIndex` -> `src/Battlesport/Briefing.cpp:928`
-- `0x4045b0` `Briefing_ActionQueue::AddHideElement` -> `src/Battlesport/Briefing.cpp:679`
-- `0x404620` `BriefingAction_HideElement::Tick` -> `src/Battlesport/Briefing.cpp:603`
-- `0x404640` `Briefing_ActionQueue::AddShowElement` -> `src/Battlesport/Briefing.cpp:689`
-- `0x4046b0` `BriefingAction_ShowElement::Tick` -> `src/Battlesport/Briefing.cpp:609`
-- `0x4046d0` `Briefing_ActionQueue::AddFadeInElement` -> `src/Battlesport/Briefing.cpp:699`
-- `0x404740` `BriefingAction_FadeInElement::Tick` -> `src/Battlesport/Briefing.cpp:616`
-- `0x404780` `Briefing_ActionQueue::AddSetPanelText` -> `src/Battlesport/Briefing.cpp:711`
-- `0x404850` `BriefingAction_SetPanelText::Tick` -> `src/Battlesport/Briefing.cpp:627`
-- `0x4048a0` `Briefing_ActionQueue::AddSetWidgetImageTimed` -> `src/Battlesport/Briefing.cpp:724`
-- `0x404960` `BriefingAction_SetWidgetImageTimed::Tick` -> `src/Battlesport/Briefing.cpp:636`
-- `0x4049d0` `Briefing_ActionQueue::AddPlaySampleByName` -> `src/Battlesport/Briefing.cpp:739`
-- `0x404aa0` `BriefingAction_PlaySample::Tick` -> `src/Battlesport/Briefing.cpp:649`
-- `0x404b30` `Briefing::SampleEventCallback` -> `src/Battlesport/Briefing.cpp:767`
-- `0x404b40` `Briefing_ActionQueue::AddDelayUntilProgress` -> `src/Battlesport/Briefing.cpp:754`
-- `0x404bb0` `BriefingAction_DelayUntilProgress::Tick` -> `src/Battlesport/Briefing.cpp:674`
-- `0x404c50` `Briefing::SetProgressAndSleep` -> `src/Battlesport/Briefing.cpp:888`
-- `0x404c80` `Briefing::BuildObjectiveActionsGlobal` -> `src/Battlesport/Briefing.cpp:772`
+- `0x404400` `Briefing::BuildObjectiveActionsFromIndex` -> `src/Battlesport/Briefing.cpp:923`
+- `0x4045b0` `Briefing_ActionQueue::AddHideElement` -> `src/Battlesport/Briefing.cpp:674`
+- `0x404620` `BriefingAction_HideElement::Tick` -> `src/Battlesport/Briefing.cpp:598`
+- `0x404640` `Briefing_ActionQueue::AddShowElement` -> `src/Battlesport/Briefing.cpp:684`
+- `0x4046b0` `BriefingAction_ShowElement::Tick` -> `src/Battlesport/Briefing.cpp:604`
+- `0x4046d0` `Briefing_ActionQueue::AddFadeInElement` -> `src/Battlesport/Briefing.cpp:694`
+- `0x404740` `BriefingAction_FadeInElement::Tick` -> `src/Battlesport/Briefing.cpp:611`
+- `0x404780` `Briefing_ActionQueue::AddSetPanelText` -> `src/Battlesport/Briefing.cpp:706`
+- `0x404850` `BriefingAction_SetPanelText::Tick` -> `src/Battlesport/Briefing.cpp:622`
+- `0x4048a0` `Briefing_ActionQueue::AddSetWidgetImageTimed` -> `src/Battlesport/Briefing.cpp:719`
+- `0x404960` `BriefingAction_SetWidgetImageTimed::Tick` -> `src/Battlesport/Briefing.cpp:631`
+- `0x4049d0` `Briefing_ActionQueue::AddPlaySampleByName` -> `src/Battlesport/Briefing.cpp:734`
+- `0x404aa0` `BriefingAction_PlaySample::Tick` -> `src/Battlesport/Briefing.cpp:644`
+- `0x404b30` `Briefing::SampleEventCallback` -> `src/Battlesport/Briefing.cpp:762`
+- `0x404b40` `Briefing_ActionQueue::AddDelayUntilProgress` -> `src/Battlesport/Briefing.cpp:749`
+- `0x404bb0` `BriefingAction_DelayUntilProgress::Tick` -> `src/Battlesport/Briefing.cpp:669`
+- `0x404c50` `Briefing::SetProgressAndSleep` -> `src/Battlesport/Briefing.cpp:883`
+- `0x404c80` `Briefing::BuildObjectiveActionsGlobal` -> `src/Battlesport/Briefing.cpp:767`
 - `0x404cd0` `HudUiElement::SetPos` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4000`
 - `0x404cf0` `HudUiElement::SetX` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4009`
 - `0x404d00` `HudUiElement::SetY` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4017`

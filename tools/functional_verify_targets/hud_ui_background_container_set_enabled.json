@@ -1,0 +1,17 @@
+{
+  "name": "hud_ui_background_container_set_enabled",
+  "description": "HudUiBackgroundContainer::SetEnabled stores the enabled value in the embedded HudUiContainer state.",
+  "address": "0x42ee40",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_background_container_focus_smoke"
+  ],
+  "vc6_attempt": "python tools/recoil_vc6_verify.py 0x42ee40",
+  "known_limits": [
+    "Binary-safe verification is covered by the existing hud_ui_p0_leaves VC target but was not rerun for this functional marker update."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x42ee40 validates loading the stack argument and storing it to self+4, the embedded container enabled field.",
+    "The native smoke calls SetEnabled(1) and SetEnabled(0) on a constructed background container and validates the stored enabled state."
+  ]
+}

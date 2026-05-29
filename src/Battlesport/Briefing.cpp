@@ -473,10 +473,8 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingRuntime::Destructor() {
         (const HudUiContainer_FTable *)(&g_HudUiBriefingRuntime_FTable);
 
     layout->base.SetEnabled(0);
-    {
     for (int index = 5; index >= 0; --index) {
         layout->locatorPanels[index].base.base.ResetCommonFTable();
-    }
     }
 
     HudUiCompositePanelEntry *entry = layout->messagesPanel.entryVector.begin;
@@ -501,19 +499,16 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingRuntime::Destructor() {
     layout->transportProgress.DestructorCore();
 
     BriefingActionNode *const head = layout->actionQueue.headSentinel;
-    if (head != 0) {
-        BriefingActionNode *node = head->prev;
-        while (node != head) {
-            BriefingActionNode *const prev = node->prev;
-            node->next->prev = node->prev;
-            node->prev->next = node->next;
-            ::operator delete(node);
-            --layout->actionQueue.nodeCount;
-            node = prev;
-        }
-
-        ::operator delete(head);
+    BriefingActionNode *node = head->prev;
+    while (node != head) {
+        BriefingActionNode *const prev = node->prev;
+        node->next->prev = node->prev;
+        node->prev->next = node->next;
+        ::operator delete(node);
+        --layout->actionQueue.nodeCount;
+        node = prev;
     }
+    ::operator delete(head);
 
     layout->actionQueue.headSentinel = 0;
     layout->actionQueue.nodeCount = 0;

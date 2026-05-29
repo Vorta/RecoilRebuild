@@ -1,0 +1,18 @@
+{
+  "name": "hud_ui_fill_bitmap_destructor_core",
+  "description": "HudUiFillBitmap::DestructorCore restores the fill-bitmap table, releases distinct preview/fill images, and chains to HudUiZrdWidget::DestructorCore.",
+  "address": "0x4b84d0",
+  "source_from": "src/GameZRecoil/zHud/zhud_ui.cpp",
+  "smoke_tests": [
+    "zhud_fill_bitmap_core_smoke"
+  ],
+  "vc6_attempt": "",
+  "known_limits": [
+    "The native smoke validates scalar destructor demotion with preview/fill pointers shared with the base image; distinct preview/fill release branches are source-reviewed against Binary Ninja and rely on the accepted zVid_Image::ReleaseIfNotDefault helper.",
+    "Binary-safe verification is deferred to a coherent HUD fill-bitmap/ZRD widget pass."
+  ],
+  "functional_evidence": [
+    "Binary Ninja assembly/decompilation for 0x4b84d0 validates restoring g_HudUiFillBitmap_FTable, releasing previewImage at offset 0x16c when non-null and distinct from base image, releasing fillImage at offset 0x150 under the same condition, clearing released fields, and chaining to HudUiZrdWidget::DestructorCore.",
+    "The native smoke validates scalar-deleting destructor demotion through the ZRD/widget base destructor path."
+  ]
+}

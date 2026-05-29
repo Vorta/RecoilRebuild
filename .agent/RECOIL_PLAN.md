@@ -1288,9 +1288,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x403ed0:
   - [☑️] Reconstructed (Name: HudUiBriefingRuntime::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiBriefingRuntime::Destructor File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_runtime_destructor)
   - [❌] Binary-safe
 - 0x404070:
   - [✅] Reconstructed (Name: HudUiBriefingRuntime::Update)
@@ -2805,7 +2805,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiElement::ResetCommonFTable)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::ResetCommonFTable File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_element_reset_common_ftable)
   - [❌] Binary-safe
 - 0x4b47b0:
   - [☑️] Reconstructed (Name: HudUiSliderBorder::Update)
@@ -3105,7 +3105,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiFillBitmap::DestructorCore)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFillBitmap::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_fill_bitmap_destructor_core)
   - [❌] Binary-safe
 - 0x4b8520:
   - [✅] Reconstructed (Name: HudUiFillBitmap::Draw)
@@ -4569,7 +4569,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackground::SetEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackground::SetEnabled File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_set_enabled)
   - [❌] Binary-safe
 - 0x4b98d0:
   - [✅] Reconstructed (Name: HudUiBackground::LoadFromZrd)
@@ -7137,7 +7137,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::SetEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundContainer::SetEnabled File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_background_container_set_enabled)
   - [❌] Binary-safe
 - 0x42ee50:
   - [✅] Reconstructed (Name: RecoilApp_MissionFmvState::OnDeactivate)

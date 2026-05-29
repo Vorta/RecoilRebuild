@@ -39,6 +39,9 @@ int g_briefingBlitY;
 int g_briefingBlitFlags;
 int g_briefingBlitHasRect;
 zVidRect32 g_briefingBlitRect;
+int g_briefingMessageEntryDtorCount;
+void *g_briefingMessageEntryDtorThis[4];
+unsigned int g_briefingMessageEntryDtorFlags[4];
 
 int RECOIL_FASTCALL TestVideoSurfaceDispatch(zVideo_SurfaceStatePartial *) {
     return 0;
@@ -115,6 +118,18 @@ struct TestBriefingVisibleElement {
     }
 };
 
+struct TestBriefingCompositePanelEntry : HudUiCompositePanelEntry {
+    HudUiCompositePanelEntry *RECOIL_THISCALL ScalarDeletingDtor(unsigned int flags) {
+        if (g_briefingMessageEntryDtorCount < 4) {
+            g_briefingMessageEntryDtorThis[g_briefingMessageEntryDtorCount] = this;
+            g_briefingMessageEntryDtorFlags[g_briefingMessageEntryDtorCount] = flags;
+        }
+
+        ++g_briefingMessageEntryDtorCount;
+        return this;
+    }
+};
+
 struct TestBriefingRuntime : HudUiBriefingRuntime {
     HudUiBriefingRuntime *RECOIL_THISCALL ScalarDeletingDtor(std::uint32_t flags) {
         ++g_deleteCount;
@@ -165,6 +180,18 @@ unsigned int MakeBriefingSetVisibleThunk() {
 
     MemberToFunction thunk{};
     thunk.member = &TestBriefingVisibleElement::SetVisible;
+    return thunk.fn;
+}
+
+unsigned int MakeBriefingCompositeEntryDtorThunk() {
+    union MemberToFunction {
+        HudUiCompositePanelEntry *(RECOIL_THISCALL TestBriefingCompositePanelEntry::*member)(
+            unsigned int);
+        unsigned int fn;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &TestBriefingCompositePanelEntry::ScalarDeletingDtor;
     return thunk.fn;
 }
 
@@ -702,6 +729,104 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
     RestoreConstructorGlobals(state);
     return visibleSkipped && clipAndShrink && baseUpdateAndInvalidate && minimumStep &&
                    clamped
+               ? 0
+               : 1;
+}
+
+extern "C" int briefing_runtime_destructor_smoke(void) {
+    constexpr std::size_t kRuntimeSize = 0xba70;
+    constexpr std::size_t kActionQueueHeadOffset = 0xa950;
+    constexpr std::size_t kActionQueueCountOffset = 0xa954;
+    constexpr std::size_t kTransportProgressOffset = 0xa960;
+    constexpr std::size_t kMessagesPanelOffset = 0xb638;
+    constexpr std::size_t kLocatorPanelsOffset = 0xb8f0;
+    constexpr std::size_t kLocatorPanelStride = 0x40;
+
+    struct ActionNode {
+        ActionNode *prev;
+        ActionNode *next;
+        void *action;
+    };
+
+    alignas(4) unsigned char storage[kRuntimeSize] = {};
+    HudUiBriefingRuntime *const runtime = reinterpret_cast<HudUiBriefingRuntime *>(storage);
+
+    HudUiCommon_FTable locatorTable{};
+    for (std::size_t index = 0; index < 6; ++index) {
+        auto *const locator =
+            reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset +
+                                            index * kLocatorPanelStride);
+        locator->base.ftable = &locatorTable;
+    }
+
+    HudUiCompositePanelEntry *const entries =
+        static_cast<HudUiCompositePanelEntry *>(
+            ::operator new(sizeof(HudUiCompositePanelEntry) * 2));
+    std::memset(entries, 0, sizeof(HudUiCompositePanelEntry) * 2);
+    static unsigned int messageEntryFTable[1];
+    messageEntryFTable[0] = MakeBriefingCompositeEntryDtorThunk();
+    *reinterpret_cast<unsigned int **>(&entries[0]) = messageEntryFTable;
+    *reinterpret_cast<unsigned int **>(&entries[1]) = messageEntryFTable;
+
+    auto *const messagesPanel =
+        reinterpret_cast<HudUiCompositePanel *>(storage + kMessagesPanelOffset);
+    messagesPanel->entryVector.begin = entries;
+    messagesPanel->entryVector.end = entries + 2;
+    messagesPanel->entryVector.capacityEnd = entries + 2;
+
+    ActionNode *const sentinel = static_cast<ActionNode *>(::operator new(sizeof(ActionNode)));
+    ActionNode *const first = static_cast<ActionNode *>(::operator new(sizeof(ActionNode)));
+    ActionNode *const second = static_cast<ActionNode *>(::operator new(sizeof(ActionNode)));
+    sentinel->prev = second;
+    sentinel->next = first;
+    sentinel->action = nullptr;
+    first->prev = sentinel;
+    first->next = second;
+    first->action = nullptr;
+    second->prev = first;
+    second->next = sentinel;
+    second->action = nullptr;
+    *reinterpret_cast<ActionNode **>(storage + kActionQueueHeadOffset) = sentinel;
+    *reinterpret_cast<int *>(storage + kActionQueueCountOffset) = 2;
+
+    g_briefingMessageEntryDtorCount = 0;
+    std::memset(g_briefingMessageEntryDtorThis, 0, sizeof(g_briefingMessageEntryDtorThis));
+    std::memset(g_briefingMessageEntryDtorFlags, 0xff,
+                sizeof(g_briefingMessageEntryDtorFlags));
+
+    runtime->Destructor();
+
+    bool locatorsReset = true;
+    for (std::size_t index = 0; index < 6; ++index) {
+        auto *const locator =
+            reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset +
+                                            index * kLocatorPanelStride);
+        locatorsReset = locatorsReset && locator->base.ftable == &g_HudUiCommon_FTable;
+    }
+
+    const bool messageEntriesDestroyed =
+        g_briefingMessageEntryDtorCount == 2 &&
+        g_briefingMessageEntryDtorThis[0] == &entries[0] &&
+        g_briefingMessageEntryDtorThis[1] == &entries[1] &&
+        g_briefingMessageEntryDtorFlags[0] == 0 &&
+        g_briefingMessageEntryDtorFlags[1] == 0 &&
+        messagesPanel->entryVector.begin == nullptr &&
+        messagesPanel->entryVector.end == nullptr &&
+        messagesPanel->entryVector.capacityEnd == nullptr;
+    const bool actionQueueReset =
+        *reinterpret_cast<ActionNode **>(storage + kActionQueueHeadOffset) == nullptr &&
+        *reinterpret_cast<int *>(storage + kActionQueueCountOffset) == 0;
+    const bool transportDestructed =
+        reinterpret_cast<HudUiFillBitmap *>(storage + kTransportProgressOffset)
+            ->base.base.ftable == reinterpret_cast<const HudUiWidget_FTable *>(
+                                    &g_HudUiCommon_FTable);
+    const bool baseDestructed =
+        reinterpret_cast<HudUiBackground *>(storage)->base.base.vptr ==
+            &g_HudUiContainer_FTable &&
+        reinterpret_cast<HudUiBackground *>(storage)->base.base.enabled == 0;
+
+    return locatorsReset && messageEntriesDestroyed && actionQueueReset &&
+                   transportDestructed && baseDestructed
                ? 0
                : 1;
 }
