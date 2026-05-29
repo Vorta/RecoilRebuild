@@ -951,6 +951,16 @@ struct TestBarSetPointReceiver {
     }
 };
 
+int g_optionSelectorRefreshCount = 0;
+void *g_optionSelectorRefreshThis = nullptr;
+
+struct TestOptionSelectorRefreshItem : HudUiZrdWidgetEx17C_Item {
+    void RECOIL_THISCALL RefreshState() {
+        ++g_optionSelectorRefreshCount;
+        g_optionSelectorRefreshThis = this;
+    }
+};
+
 template <typename Method> std::uintptr_t MethodAddress(Method method) {
     static_assert(sizeof(method) <= sizeof(std::uintptr_t));
     std::uintptr_t address = 0;
@@ -4679,6 +4689,27 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
                                   selector.selectedIndex == 1 && selectorItem0.selected == 0 &&
                                   selectorItem1.selected == 1;
 
+    HudUiZrdWidgetEx17C_Item_FTable refreshTable = g_HudUiZrdWidgetEx17C_Item_FTable;
+    refreshTable.slots[30] = MethodAddress(&TestOptionSelectorRefreshItem::RefreshState);
+    TestOptionSelectorRefreshItem refreshItem{};
+    refreshItem.base.base.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&refreshTable);
+    refreshItem.selected = 0;
+    selector.optionCount = 2;
+    selector.options[0] = &selectorItem0;
+    selector.options[1] = &refreshItem;
+    g_optionSelectorRefreshCount = 0;
+    g_optionSelectorRefreshThis = nullptr;
+    selector.EnableChildAtIndex(1);
+    selector.EnableChildAtIndex(2);
+    const bool childEnabled =
+        refreshItem.selected == 1 && g_optionSelectorRefreshCount == 1 &&
+        g_optionSelectorRefreshThis == &refreshItem &&
+        g_HudUiZrdWidgetEx17C_FTable.slots[24] ==
+            MethodAddress(&HudUiZrdWidgetEx17C::EnableChildAtIndex) &&
+        g_HudUiZrdWidgetEx17C_Item_FTable.slots[30] ==
+            MethodAddress(&HudUiZrdWidget::RefreshState);
+
     zVidImagePartial selectorItem0Image{};
     zVidImagePartial selectorItem0Rollover{};
     zVidImagePartial selectorItem1Image{};
@@ -4693,6 +4724,7 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
     selectorItem1.base.modeOrEnabled = 1;
     selectorItem1.ownerSelector = &selector;
     selectorItem1.itemIndex = 1;
+    selector.options[1] = &selectorItem1;
     selectorItem1.unselectedImage = &selectorItem1Image;
     selectorItem1.selectedImage = &selectorItem1Selected;
     selectorItem1.selectedRolloverImage = &selectorItem1Selected;
@@ -4728,7 +4760,8 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
 
     return constructed && selectedOn && selectedOff && boundsOk && showPreview && hidePreview &&
                    selectedSkipsPreview && loaded && selectorConstructed && selectorLoaded &&
-                   setSelectedIndex && activatedSelection && selectorDestructed && scalarDeleted
+                   setSelectedIndex && childEnabled && activatedSelection && selectorDestructed &&
+                   scalarDeleted
                ? 0
                : 1;
 }

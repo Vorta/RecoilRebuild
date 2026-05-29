@@ -134,6 +134,21 @@ template <typename FTable> FTable MakeHudUiFTableWithCommonInvalidate() {
     return table;
 }
 
+HudUiZrdWidgetEx17C_Item_FTable MakeHudUiZrdWidgetEx17CItemFTable() {
+    HudUiZrdWidgetEx17C_Item_FTable table =
+        MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidgetEx17C_Item_FTable>();
+    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
+    return table;
+}
+
+HudUiZrdWidgetEx17C_FTable MakeHudUiZrdWidgetEx17CFTable() {
+    HudUiZrdWidgetEx17C_FTable table =
+        MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidgetEx17C_FTable>();
+    table.slots[24] = MethodAddress(&HudUiZrdWidgetEx17C::EnableChildAtIndex);
+    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
+    return table;
+}
+
 HudUiTextInput_FTable MakeHudUiTextInputFTable() {
     HudUiTextInput_FTable table = {0};
     table.slots[0] = MethodAddress(&HudUiTextInput::InsertCharAtCursor);
@@ -346,9 +361,9 @@ const HudUiCycleSelectorWidget_FTable g_HudUiCycleSelectorWidget_FTable =
 const HudUiFillBitmap_FTable g_HudUiFillBitmap_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiFillBitmap_FTable>();
 const HudUiZrdWidgetEx17C_Item_FTable g_HudUiZrdWidgetEx17C_Item_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidgetEx17C_Item_FTable>();
+    MakeHudUiZrdWidgetEx17CItemFTable();
 const HudUiZrdWidgetEx17C_FTable g_HudUiZrdWidgetEx17C_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidgetEx17C_FTable>();
+    MakeHudUiZrdWidgetEx17CFTable();
 const HudCmdBindButtonBase_FTable g_HudCmdBindButtonBase_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudCmdBindButtonBase_FTable>();
 const HudUiMessageBoxDialog_FTable g_HudUiMessageBoxDialog_FTable =
@@ -7260,6 +7275,19 @@ int RECOIL_THISCALL HudUiZrdWidgetEx17C::LoadFromZrd(zReader::Node *zrdSection,
 
     SetSelectedIndex(0);
     return 1;
+}
+
+// Reimplements 0x409010: HudUiZrdWidgetEx17C::EnableChildAtIndex
+void RECOIL_THISCALL HudUiZrdWidgetEx17C::EnableChildAtIndex(int childIndex) {
+    typedef void (RECOIL_THISCALL *RefreshStateFn)(HudUiZrdWidgetEx17C_Item * self);
+
+    if (childIndex >= optionCount) {
+        return;
+    }
+
+    HudUiZrdWidgetEx17C_Item *const option = options[childIndex];
+    option->selected = 1;
+    ((RefreshStateFn)(option->base.base.ftable->slots[30]))(option);
 }
 
 // Reimplements 0x4b8cf0: HudUiZrdWidgetEx17C::SetSelectedIndex

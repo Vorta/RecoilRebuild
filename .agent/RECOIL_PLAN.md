@@ -1595,9 +1595,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Provider-boundary (Kind: compiler-generated forwarding thunk; Name: HudUiOptionSelectorWidget::DestructorCoreThunk; Origin: Binary Ninja assembly at 0x408c60 is a single tail jmp to HudUiOptionSelectorWidget::DestructorCore/HudUiZrdWidgetEx17C::DestructorCore at 0x4b8b60; no local authored behavior or state.; File: external; Target: HudUiZrdWidgetEx17C::DestructorCore)
 - 0x409010:
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::EnableChildAtIndex)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::EnableChildAtIndex File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_ex17c_enable_child_at_index)
   - [❌] Binary-safe
 - 0x409040:
   - [☑️] Reconstructed (Name: HudUiCreditsPanel::Constructor)

@@ -875,6 +875,7 @@ struct HudUiZrdWidgetEx17C {
     HudUiZrdWidgetEx17C *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     void RECOIL_THISCALL DestructorCore();
     int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
+    void RECOIL_THISCALL EnableChildAtIndex(int childIndex);
     int RECOIL_THISCALL SetSelectedIndex(int index);
 };
 
