@@ -5235,7 +5235,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Functional-equivalent
   - [❌] Binary-safe
 - 0x4bfcd0:
-  - [☑️] Reconstructed (Name: HudUiBackgroundVideoWidget::Destructor)
+  - [✅] Reconstructed (Name: HudUiBackgroundVideoWidget::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundVideoWidget::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [✅] Functional-equivalent (Target: HudUiBackgroundVideoWidget::Destructor)
