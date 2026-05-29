@@ -4701,6 +4701,23 @@ void RECOIL_THISCALL HudUiZrdScrollingText::OnActivateResetOwnerFade() {
     *ownerFadeProgress = 0.0f;
 }
 
+// Reimplements 0x409910: HudUiPanelSpan::Clear
+// (D:\Proj\Battlesport\HudUiPanel.cpp)
+void RECOIL_THISCALL HudUiPanelSpan::Clear()
+{
+    HudUiPanelLayoutEntry *entry = begin;
+    while (entry != end)
+    {
+        entry->panel.Destructor();
+        ++entry;
+    }
+
+    ::operator delete(begin);
+    begin = 0;
+    end = 0;
+    cap = 0;
+}
+
 // Reimplements 0x4bc510: HudUiBackgroundContainer::Constructor
 HudUiBackgroundContainer *RECOIL_THISCALL
 HudUiBackgroundContainer::Constructor(int initFlag) {

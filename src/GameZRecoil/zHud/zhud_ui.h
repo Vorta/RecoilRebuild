@@ -1401,8 +1401,33 @@ struct HudUiMessageBoxDialog : HudUiBackground {
     void RECOIL_THISCALL OnCancel();
 };
 
+struct HudUiPanelLayoutEntry {
+    HudUiPanel panel;
+    int layoutX;
+    int layoutY;
+};
+
+struct HudUiPanelSpan {
+    unsigned int allocatorProxy;
+    HudUiPanelLayoutEntry *begin;
+    HudUiPanelLayoutEntry *end;
+    HudUiPanelLayoutEntry *cap;
+
+    void RECOIL_THISCALL Clear();
+};
+
+struct HudUiPanelSpanVec {
+    unsigned int allocatorProxy;
+    HudUiPanelSpan *begin;
+    HudUiPanelSpan *end;
+    HudUiPanelSpan *cap;
+};
+
 struct HudUiZrdScrollingText {
     HudUiZrdWidget base;
+    HudUiPanelSpanVec rows;
+    HudUiRect rect;
+    int totalHeight;
 
     void RECOIL_THISCALL OnActivateResetOwnerFade();
 };
@@ -1757,6 +1782,21 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, titlePanel) == 0xacd8);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, okButton) == 0xaf7c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, cancelButton) == 0xb0c8);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxDialog) == 0xb214);
+RECOIL_STATIC_ASSERT(sizeof(HudUiPanelLayoutEntry) == 0x2ac);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelLayoutEntry, layoutX) == 0x2a4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelLayoutEntry, layoutY) == 0x2a8);
+RECOIL_STATIC_ASSERT(sizeof(HudUiPanelSpan) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpan, begin) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpan, end) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpan, cap) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(HudUiPanelSpanVec) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpanVec, begin) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpanVec, end) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpanVec, cap) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(HudUiZrdScrollingText) == 0x170);
+RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, rows) == 0x14c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, rect) == 0x15c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, totalHeight) == 0x16c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxOkButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxCancelButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTransitionTextPanel) == 0x2c0);

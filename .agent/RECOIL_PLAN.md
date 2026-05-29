@@ -1673,9 +1673,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x409910:
   - [✅] Reconstructed (Name: HudUiPanelSpan::Clear)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelSpan::Clear File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_span_clear)
   - [❌] Binary-safe
 - 0x409990:
   - [✅] Reconstructed (Name: RecoilStateCredits::Constructor)
