@@ -9246,6 +9246,32 @@ extern "C" int zhud_cmd_key_b_button_destructor_smoke(void) {
                : 1;
 }
 
+extern "C" int zhud_cmd_joy_button_destructor_smoke(void) {
+    HudCmdJoyButton button{};
+    button.base.Constructor();
+
+    HudCmdBindingEntry *const binding =
+        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
+    binding->displayText = (char *)(std::malloc(4));
+    std::strcpy(binding->displayText, "Joy");
+
+    HudCmdBindingEntry **const slots =
+        (HudCmdBindingEntry **)(::operator new(sizeof(HudCmdBindingEntry *)));
+    slots[0] = binding;
+    button.base.bindingVec.begin = slots;
+    button.base.bindingVec.end = slots + 1;
+    button.base.bindingVec.capacity = slots + 1;
+
+    button.Destructor();
+
+    return button.base.bindingVec.begin == 0 && button.base.bindingVec.end == 0 &&
+                   button.base.bindingVec.capacity == 0 &&
+                   button.base.base.base.base.ftable ==
+                       (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable)
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_panel_constructor_default_smoke(void) {
     alignas(HudUiPanel) std::uint8_t storage[0x2ac]{};
     auto *panel = reinterpret_cast<HudUiPanel *>(storage);
