@@ -8675,6 +8675,26 @@ void RECOIL_THISCALL HudCmdDialog::Destructor()
     base.Destructor();
 }
 
+// Reimplements 0x40b5e0: HudCmdDialog::SelectGroupRelative
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+int RECOIL_THISCALL HudCmdDialog::SelectGroupRelative(int delta)
+{
+    int groupIndex = setList.base.selectedIndex + delta;
+    if (groupIndex >= setList.base.itemCount)
+    {
+        groupIndex = 0;
+    }
+    else if (groupIndex < 0)
+    {
+        groupIndex = setList.base.itemCount - 1;
+    }
+
+    setList.base.SetIndexClamped(groupIndex);
+    const int selectedIndex = setList.base.selectedIndex;
+    RebuildCommandBindingListsForGroup(selectedIndex);
+    return selectedIndex;
+}
+
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)

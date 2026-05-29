@@ -1841,10 +1841,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x40b5e0:
   - [✅] Reconstructed (Name: HudCmdDialog::SelectGroupRelative)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialog::SelectGroupRelative File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_select_group_relative)
+  - [✅] Binary-safe
 - 0x40b630:
   - [✅] Reconstructed (Name: HudCmdDialog::SelectCommandRelative)
   - [❌] Source dependencies satisfied
@@ -3049,7 +3049,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::SetIndexClamped)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::SetIndexClamped File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_cycle_selector_widget_set_index_clamped)
   - [❌] Binary-safe
 - 0x4b7f80:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::SetVisibleRange)

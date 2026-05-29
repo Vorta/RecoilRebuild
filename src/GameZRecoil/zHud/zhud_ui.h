@@ -1470,6 +1470,7 @@ struct HudCmdDialog {
 
     void RECOIL_THISCALL Destructor();
     void RECOIL_THISCALL UpdateCaptureState(float deltaTime);
+    int RECOIL_THISCALL SelectGroupRelative(int delta);
     void RECOIL_THISCALL RebuildCommandBindingListsForGroup(int groupIndex);
     void RECOIL_THISCALL OnCommandSelectionChanged(int commandIndex);
     int RECOIL_THISCALL ApplyPrimaryKeyRebind(int keyCode, int commandIndex);
