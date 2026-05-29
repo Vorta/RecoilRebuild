@@ -19,6 +19,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+extern "C" void (__cdecl *__imp__free)(void *); // VC5 retail import-pointer call shape.
+#endif
+
 namespace {
 typedef void (RECOIL_CDECL *zVideo_FlushProc)();
 typedef void (RECOIL_FASTCALL *zVideo_ImageProc)(zVidImagePartial *image);
@@ -2108,7 +2112,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Destroy(zVidImagePartial *image) {
         }
 
         ReleaseOwnedBuffers(image);
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+        __imp__free(image);
+#else
         free(image);
+#endif
     }
 
     return 0;
@@ -2137,21 +2145,27 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BlitToActiveTarget(zVidImagePartial *image,
 
 // Reimplements 0x46ecf0: zVid_Image::ReleaseOwnedBuffers
 RECOIL_NOINLINE void RECOIL_FASTCALL ReleaseOwnedBuffers(zVidImagePartial *image) {
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+    void (__cdecl *freeProc)(void *) = __imp__free;
+#else
+    void (__cdecl *freeProc)(void *) = free;
+#endif
+
     if (image->pixels != 0 && (image->formatFlagsPacked & 0x20) != 0) {
-        free(image->pixels);
+        freeProc(image->pixels);
         image->pixels = 0;
         image->formatFlagsPacked &= static_cast<unsigned char>(~0x20);
     }
 
     if (image->alphaMap != 0 && (image->formatFlagsPacked & 0x40) != 0) {
-        free(image->alphaMap);
+        freeProc(image->alphaMap);
         image->alphaMap = 0;
         image->formatFlagsPacked &= static_cast<unsigned char>(~0x40);
     }
 
     if (image->palette != 0 && (image->formatFlagsPacked & 0x80) != 0 &&
         (image->formatFlagsPacked & 0x10) == 0) {
-        free(image->palette);
+        freeProc(image->palette);
         image->palette = 0;
         image->formatFlagsPacked &= static_cast<unsigned char>(~0x80);
     }

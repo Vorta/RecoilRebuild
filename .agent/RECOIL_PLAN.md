@@ -13921,13 +13921,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image::Destroy File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [✅] Functional-equivalent (Target: zvid_image_destroy)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x46ecf0:
   - [✅] Reconstructed (Name: zVid_Image::ReleaseOwnedBuffers)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image::ReleaseOwnedBuffers File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [✅] Functional-equivalent (Target: zvid_image_release_owned_buffers)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x46ed70:
   - [☑️] Reconstructed (Name: zVid_Image::ReadHeader)
   - [✅] Source dependencies satisfied
