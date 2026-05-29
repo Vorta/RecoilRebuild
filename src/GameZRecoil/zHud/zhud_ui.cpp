@@ -4701,6 +4701,120 @@ void RECOIL_THISCALL HudUiZrdScrollingText::OnActivateResetOwnerFade() {
     *ownerFadeProgress = 0.0f;
 }
 
+// Reimplements 0x409570: HudUiZrdScrollingText::LoadFromZrd
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+int RECOIL_THISCALL HudUiZrdScrollingText::LoadFromZrd(zReader::Node *zrdSection,
+                                                       void *ownerDialog)
+{
+    base.LoadFromZrd(zrdSection, ownerDialog);
+
+    zReader::Node *const rectNode = zReader_GetNamedNode(zrdSection, "RECT");
+    zReader::Node *const rectBase = ZrdArrayBase(rectNode);
+    if (rectBase != 0)
+    {
+        zReader::Node *const topLeft = ZrdArrayBase(&rectBase[1]);
+        zReader::Node *const bottomRight = ZrdArrayBase(&rectBase[2]);
+        rect.left = ZrdArrayInt(topLeft, 1, 0) + base.originX;
+        rect.top = ZrdArrayInt(topLeft, 2, 0) + base.originY;
+        rect.right = ZrdArrayInt(bottomRight, 1, 0) + base.originX;
+        rect.bottom = ZrdArrayInt(bottomRight, 2, 0) + base.originY;
+    }
+
+    zReader::Node *const scrollRateNode = zReader_GetNamedNode(zrdSection, "SCROLL_RATE");
+    if (scrollRateNode != 0)
+    {
+        OwnerField<float>(ownerDialog, 0xa94c) = scrollRateNode->value.f32;
+    }
+
+    zReader::Node *const scrollingTextNode =
+        zReader_GetNamedNode(zrdSection, "SCROLLING_TEXT");
+    zReader::Node *const scrollingTextBase = ZrdArrayBase(scrollingTextNode);
+    if (scrollingTextBase == 0)
+    {
+        return 1;
+    }
+
+    HudUiPanelSpan templateSpan;
+    templateSpan.allocatorProxy = 0;
+    templateSpan.begin = 0;
+    templateSpan.end = 0;
+    templateSpan.cap = 0;
+
+    const int rowCount = ZrdArrayCount(scrollingTextBase);
+    for (int rowIndex = 1; rowIndex < rowCount; ++rowIndex)
+    {
+        zReader::Node *const rowBase = ZrdArrayBase(&scrollingTextBase[rowIndex]);
+        const int labelCount = ZrdArrayCount(rowBase);
+
+        HudUiPanelLayoutEntry *const resetEnd =
+            HudUiPanelLayoutEntry::CopyAssignRange(templateSpan.end, templateSpan.end,
+                                                   templateSpan.begin);
+        HudUiPanelLayoutEntry::DestroyRange(resetEnd, templateSpan.end);
+        templateSpan.end = resetEnd;
+
+        for (int labelIndex = 1; labelIndex < labelCount; ++labelIndex)
+        {
+            zReader::Node *const labelBase = ZrdArrayBase(&rowBase[labelIndex]);
+            const char *const key = ZrdArrayString(labelBase, 1);
+            const char *const text = zLoc::ResolveMessageKeyOrFallback(key);
+            const int layoutX = ZrdArrayInt(labelBase, 2, 0);
+            const int layoutY = ZrdArrayInt(labelBase, 3, 0);
+            const int styleIndex = ZrdArrayInt(labelBase, 4, 0);
+
+            HudUiPanelLayoutEntry templateEntry;
+            templateEntry.panel.ConstructorDefault(0, 0, 0);
+            templateEntry.panel.SetTextFmt("%s", text);
+            templateEntry.layoutX = layoutX;
+            templateEntry.layoutY = layoutY;
+
+            ApplyHudFontStyleTextOnly(&templateEntry.panel,
+                                      HudUiZrdOwnerFontStyle(base.owner, styleIndex));
+            templateSpan.InsertN(templateSpan.end, 1, &templateEntry);
+            templateEntry.panel.Destructor();
+        }
+
+        rows.InsertN(rows.end, 1, &templateSpan);
+    }
+
+    totalHeight = 0;
+    HudUiPanelSpan *row = rows.begin;
+    while (row != rows.end)
+    {
+        int rowHeight = 0;
+        HudUiPanelLayoutEntry *entry = row->begin;
+        while (entry != row->end)
+        {
+            const int entryBottom = entry->panel.QueryTextHeight() + entry->layoutY;
+            if (entryBottom > rowHeight)
+            {
+                rowHeight = entryBottom;
+            }
+
+            ++entry;
+        }
+
+        entry = row->begin;
+        while (entry != row->end)
+        {
+            entry->layoutY += totalHeight;
+            ++entry;
+        }
+
+        totalHeight += rowHeight;
+        ++row;
+    }
+
+    HudUiPanelLayoutEntry *entry = templateSpan.begin;
+    while (entry != templateSpan.end)
+    {
+        entry->panel.Destructor();
+        ++entry;
+    }
+
+    ::operator delete(templateSpan.begin);
+    return 1;
+}
+
 // Reimplements 0x409410: HudUiZrdScrollingText::Update
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
 void RECOIL_THISCALL HudUiZrdScrollingText::Update(float deltaSeconds)
@@ -4890,6 +5004,40 @@ HudUiPanelLayoutEntry::CopyAssign(const HudUiPanelLayoutEntry *source)
     return this;
 }
 
+// Reimplements 0x40a170: HudUiPanelLayoutEntry::CopyAssignRange
+// (D:\Proj\Battlesport\HudUiPanel.cpp)
+HudUiPanelLayoutEntry *RECOIL_FASTCALL
+HudUiPanelLayoutEntry::CopyAssignRange(const HudUiPanelLayoutEntry *sourceStart,
+                                       const HudUiPanelLayoutEntry *sourceEnd,
+                                       HudUiPanelLayoutEntry *dest)
+{
+    HudUiPanelLayoutEntry *out = dest;
+    const HudUiPanelLayoutEntry *source = sourceStart;
+    while (source != sourceEnd)
+    {
+        out->panel.ConstructorCopy(&source->panel);
+        out->layoutX = source->layoutX;
+        out->layoutY = source->layoutY;
+        ++source;
+        ++out;
+    }
+
+    return out;
+}
+
+// Reimplements 0x409b60: HudUiPanelLayoutEntry::DestroyRange
+// (D:\Proj\Battlesport\HudUiPanel.cpp)
+void RECOIL_STDCALL HudUiPanelLayoutEntry::DestroyRange(HudUiPanelLayoutEntry *start,
+                                                        HudUiPanelLayoutEntry *end)
+{
+    HudUiPanelLayoutEntry *entry = start;
+    while (entry != end)
+    {
+        entry->panel.DestructorThunk();
+        ++entry;
+    }
+}
+
 // Reimplements 0x409910: HudUiPanelSpan::Clear
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
 void RECOIL_THISCALL HudUiPanelSpan::Clear()
@@ -4905,6 +5053,117 @@ void RECOIL_THISCALL HudUiPanelSpan::Clear()
     begin = 0;
     end = 0;
     cap = 0;
+}
+
+// Reimplements 0x40a240: HudUiPanelSpan::CopyInit
+// (D:\Proj\Battlesport\HudUiPanel.cpp)
+HudUiPanelSpan *RECOIL_THISCALL HudUiPanelSpan::CopyInit(const HudUiPanelSpan *source)
+{
+    allocatorProxy = (allocatorProxy & 0xffffff00) | (source->allocatorProxy & 0xff);
+
+    const size_t count = source->begin != 0 ? (size_t)(source->end - source->begin) : 0;
+    HudUiPanelLayoutEntry *const newBegin =
+        (HudUiPanelLayoutEntry *)(::operator new(count * sizeof(HudUiPanelLayoutEntry)));
+    HudUiPanelLayoutEntry *dest = newBegin;
+
+    const HudUiPanelLayoutEntry *sourceEntry = source->begin;
+    while (sourceEntry != source->end)
+    {
+        dest->panel.CopyConstructCore(&sourceEntry->panel);
+        dest->layoutX = sourceEntry->layoutX;
+        dest->layoutY = sourceEntry->layoutY;
+        ++sourceEntry;
+        ++dest;
+    }
+
+    begin = newBegin;
+    end = dest;
+    cap = dest;
+    return this;
+}
+
+// Reimplements 0x40a300: HudUiPanelSpan::CopyFrom
+// (D:\Proj\Battlesport\HudUiPanel.cpp)
+HudUiPanelSpan *RECOIL_THISCALL HudUiPanelSpan::CopyFrom(const HudUiPanelSpan *source)
+{
+    if (this == source)
+    {
+        return this;
+    }
+
+    const size_t sourceCount =
+        source->begin != 0 ? (size_t)(source->end - source->begin) : 0;
+    const size_t currentCount = begin != 0 ? (size_t)(end - begin) : 0;
+    const size_t capacity = begin != 0 ? (size_t)(cap - begin) : 0;
+
+    if (sourceCount <= currentCount)
+    {
+        HudUiPanelLayoutEntry *dest = begin;
+        const HudUiPanelLayoutEntry *sourceEntry = source->begin;
+        while (sourceEntry != source->end)
+        {
+            dest->CopyAssign(sourceEntry);
+            ++sourceEntry;
+            ++dest;
+        }
+
+        HudUiPanelLayoutEntry *oldEntry = dest;
+        while (oldEntry != end)
+        {
+            oldEntry->panel.ScalarDeletingDestructor(0);
+            ++oldEntry;
+        }
+
+        end = begin + sourceCount;
+        return this;
+    }
+
+    if (sourceCount <= capacity)
+    {
+        HudUiPanelLayoutEntry *dest = begin;
+        const HudUiPanelLayoutEntry *sourceEntry = source->begin;
+        for (size_t i = 0; i < currentCount; ++i)
+        {
+            dest->CopyAssign(sourceEntry);
+            ++sourceEntry;
+            ++dest;
+        }
+
+        while (sourceEntry != source->end)
+        {
+            dest->CopyConstruct(sourceEntry);
+            ++sourceEntry;
+            ++dest;
+        }
+
+        end = begin + sourceCount;
+        return this;
+    }
+
+    HudUiPanelLayoutEntry *oldEntry = begin;
+    while (oldEntry != end)
+    {
+        oldEntry->panel.DestructorThunk();
+        ++oldEntry;
+    }
+
+    ::operator delete(begin);
+
+    HudUiPanelLayoutEntry *const newBegin =
+        (HudUiPanelLayoutEntry *)(::operator new(sourceCount * sizeof(HudUiPanelLayoutEntry)));
+    HudUiPanelLayoutEntry *dest = newBegin;
+    const HudUiPanelLayoutEntry *sourceEntry = source->begin;
+    while (sourceEntry != source->end)
+    {
+        dest->CopyConstruct(sourceEntry);
+        ++sourceEntry;
+        ++dest;
+    }
+
+    begin = newBegin;
+    end = dest;
+    cap = dest;
+    return this;
 }
 
 // Reimplements 0x409b90: HudUiPanelSpan::InsertN
@@ -5002,6 +5261,108 @@ void RECOIL_THISCALL HudUiPanelSpan::InsertN(HudUiPanelLayoutEntry *insertPos,
     {
         entry->panel.DestructorThunk();
         ++entry;
+    }
+
+    ::operator delete(begin);
+    begin = newBegin;
+    end = newBegin + size + count;
+    cap = newBegin + newCapacity;
+}
+
+// Reimplements 0x409f00: HudUiPanelSpanVec::InsertN
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void RECOIL_THISCALL HudUiPanelSpanVec::InsertN(HudUiPanelSpan *insertPos,
+                                                unsigned int count,
+                                                const HudUiPanelSpan *templateSpan)
+{
+    if (count == 0)
+    {
+        return;
+    }
+
+    const size_t size = begin != 0 ? (size_t)(end - begin) : 0;
+    const size_t positionIndex =
+        begin != 0 && insertPos != 0 ? (size_t)(insertPos - begin) : 0;
+    const size_t capacity = begin != 0 ? (size_t)(cap - begin) : 0;
+    const size_t tailCount = size - positionIndex;
+
+    if (size + count <= capacity)
+    {
+        if (tailCount >= count)
+        {
+            HudUiPanelSpan *source = end - count;
+            HudUiPanelSpan *dest = end;
+            while (source != end)
+            {
+                dest->CopyInit(source);
+                ++source;
+                ++dest;
+            }
+
+            source = end - count;
+            dest = end;
+            while (source != begin + positionIndex)
+            {
+                --source;
+                --dest;
+                dest->CopyFrom(source);
+            }
+
+            for (unsigned int i = 0; i < count; ++i)
+            {
+                begin[positionIndex + i].CopyFrom(templateSpan);
+            }
+        }
+        else
+        {
+            HudUiPanelSpan *dest = end;
+            for (unsigned int i = 0; i < count - tailCount; ++i)
+            {
+                dest->CopyInit(templateSpan);
+                ++dest;
+            }
+
+            for (HudUiPanelSpan *source = begin + positionIndex; source != end; ++source, ++dest)
+            {
+                dest->CopyInit(source);
+            }
+
+            for (HudUiPanelSpan *span = begin + positionIndex; span != end; ++span)
+            {
+                span->CopyFrom(templateSpan);
+            }
+        }
+
+        end += count;
+        return;
+    }
+
+    const size_t growth = count < size ? size : count;
+    const size_t newCapacity = size + growth;
+    HudUiPanelSpan *const newBegin =
+        (HudUiPanelSpan *)(::operator new(newCapacity * sizeof(HudUiPanelSpan)));
+    HudUiPanelSpan *dest = newBegin;
+
+    for (size_t prefixIndex = 0; prefixIndex < positionIndex; ++prefixIndex, ++dest)
+    {
+        dest->CopyInit(&begin[prefixIndex]);
+    }
+
+    for (unsigned int insertIndex = 0; insertIndex < count; ++insertIndex, ++dest)
+    {
+        dest->CopyInit(templateSpan);
+    }
+
+    for (size_t suffixIndex = positionIndex; suffixIndex < size; ++suffixIndex, ++dest)
+    {
+        dest->CopyInit(&begin[suffixIndex]);
+    }
+
+    HudUiPanelSpan *span = begin;
+    while (span != end)
+    {
+        span->Clear();
+        ++span;
     }
 
     ::operator delete(begin);

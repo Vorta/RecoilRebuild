@@ -2338,6 +2338,42 @@ extern "C" int zhud_panel_layout_entry_copy_assign_smoke(void) {
     return copiedValues ? 0 : 1;
 }
 
+void InitPanelLayoutEntryForTest(HudUiPanelLayoutEntry *entry, const char *text, int x, int y);
+bool PanelLayoutEntryMatchesForTest(const HudUiPanelLayoutEntry &entry, const char *text, int x,
+                                    int y);
+
+extern "C" int zhud_panel_layout_entry_copy_assign_range_smoke(void) {
+    HudUiPanelLayoutEntry source[2]{};
+    InitPanelLayoutEntryForTest(&source[0], "range a", 18, 28);
+    InitPanelLayoutEntryForTest(&source[1], "range b", 38, 48);
+
+    HudUiPanelLayoutEntry dest[2]{};
+    HudUiPanelLayoutEntry *const result =
+        HudUiPanelLayoutEntry::CopyAssignRange(source, source + 2, dest);
+
+    const bool copiedValues =
+        result == dest + 2 && PanelLayoutEntryMatchesForTest(dest[0], "range a", 18, 28) &&
+        PanelLayoutEntryMatchesForTest(dest[1], "range b", 38, 48);
+
+    HudUiPanelLayoutEntry::DestroyRange(dest, dest + 2);
+    source[1].panel.Destructor();
+    source[0].panel.Destructor();
+    return copiedValues ? 0 : 1;
+}
+
+extern "C" int zhud_panel_layout_entry_destroy_range_smoke(void) {
+    HudUiPanelLayoutEntry entries[2]{};
+    InitPanelLayoutEntryForTest(&entries[0], "destroy a", 11, 12);
+    InitPanelLayoutEntryForTest(&entries[1], "destroy b", 13, 14);
+
+    HudUiPanelLayoutEntry::DestroyRange(entries, entries + 2);
+
+    return entries[0].panel.vtbl == &g_HudUiCommon_FTable &&
+                   entries[1].panel.vtbl == &g_HudUiCommon_FTable
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_panel_span_clear_smoke(void) {
     auto *entries = static_cast<HudUiPanelLayoutEntry *>(
         ::operator new(sizeof(HudUiPanelLayoutEntry) * 2));
@@ -2402,6 +2438,33 @@ bool PanelLayoutEntryMatchesForTest(const HudUiPanelLayoutEntry &entry, const ch
     return entry.layoutX == x && entry.layoutY == y &&
            std::strcmp(&TestFieldAt<char>(const_cast<HudUiPanel *>(&entry.panel), 0x34), text) ==
                0;
+}
+
+void InitSingleEntryPanelSpanForTest(HudUiPanelSpan *span, const char *text, int x, int y) {
+    span->allocatorProxy = 0;
+    span->begin = AllocatePanelLayoutEntriesForTest(1);
+    span->end = span->begin + 1;
+    span->cap = span->end;
+    InitPanelLayoutEntryForTest(&span->begin[0], text, x, y);
+}
+
+bool SingleEntryPanelSpanMatchesForTest(const HudUiPanelSpan &span, const char *text, int x,
+                                        int y) {
+    return span.end == span.begin + 1 && span.cap == span.end &&
+           PanelLayoutEntryMatchesForTest(span.begin[0], text, x, y);
+}
+
+void DestroyPanelSpanVecForTest(HudUiPanelSpanVec *rows) {
+    HudUiPanelSpan *row = rows->begin;
+    while (row != rows->end) {
+        row->Clear();
+        ++row;
+    }
+
+    ::operator delete(rows->begin);
+    rows->begin = nullptr;
+    rows->end = nullptr;
+    rows->cap = nullptr;
 }
 
 void InitCreditsPanelForDestructorTest(HudUiCreditsPanel *panel) {
@@ -2535,6 +2598,136 @@ extern "C" int zhud_panel_span_insert_n_smoke(void) {
     return growOk && longTailOk && shortTailOk ? 0 : 1;
 }
 
+extern "C" int zhud_panel_span_copy_init_smoke(void) {
+    HudUiPanelSpan source{};
+    source.allocatorProxy = 0x12345678;
+    source.begin = AllocatePanelLayoutEntriesForTest(2);
+    source.end = source.begin + 2;
+    source.cap = source.end;
+    InitPanelLayoutEntryForTest(&source.begin[0], "copy init a", 21, 31);
+    InitPanelLayoutEntryForTest(&source.begin[1], "copy init b", 41, 51);
+
+    HudUiPanelSpan copied{};
+    HudUiPanelSpan *const result = copied.CopyInit(&source);
+
+    const bool copiedOk =
+        result == &copied && copied.allocatorProxy == 0x78 && copied.begin != source.begin &&
+        copied.end == copied.begin + 2 && copied.cap == copied.end &&
+        PanelLayoutEntryMatchesForTest(copied.begin[0], "copy init a", 21, 31) &&
+        PanelLayoutEntryMatchesForTest(copied.begin[1], "copy init b", 41, 51);
+
+    copied.DestroyAndFree();
+    source.DestroyAndFree();
+    return copiedOk ? 0 : 1;
+}
+
+extern "C" int zhud_panel_span_copy_from_smoke(void) {
+    HudUiPanelSpan source{};
+    source.begin = AllocatePanelLayoutEntriesForTest(2);
+    source.end = source.begin + 2;
+    source.cap = source.end;
+    InitPanelLayoutEntryForTest(&source.begin[0], "copy from a", 22, 32);
+    InitPanelLayoutEntryForTest(&source.begin[1], "copy from b", 42, 52);
+
+    HudUiPanelSpan shrink{};
+    shrink.begin = AllocatePanelLayoutEntriesForTest(3);
+    shrink.end = shrink.begin + 3;
+    shrink.cap = shrink.end;
+    InitPanelLayoutEntryForTest(&shrink.begin[0], "old a", 1, 2);
+    InitPanelLayoutEntryForTest(&shrink.begin[1], "old b", 3, 4);
+    InitPanelLayoutEntryForTest(&shrink.begin[2], "old c", 5, 6);
+    shrink.CopyFrom(&source);
+    const bool shrinkOk =
+        shrink.end == shrink.begin + 2 && shrink.cap == shrink.begin + 3 &&
+        PanelLayoutEntryMatchesForTest(shrink.begin[0], "copy from a", 22, 32) &&
+        PanelLayoutEntryMatchesForTest(shrink.begin[1], "copy from b", 42, 52);
+    shrink.DestroyAndFree();
+
+    HudUiPanelSpan expand{};
+    expand.begin = AllocatePanelLayoutEntriesForTest(3);
+    expand.end = expand.begin + 1;
+    expand.cap = expand.begin + 3;
+    InitPanelLayoutEntryForTest(&expand.begin[0], "small", 7, 8);
+    expand.CopyFrom(&source);
+    const bool expandOk =
+        expand.end == expand.begin + 2 && expand.cap == expand.begin + 3 &&
+        PanelLayoutEntryMatchesForTest(expand.begin[0], "copy from a", 22, 32) &&
+        PanelLayoutEntryMatchesForTest(expand.begin[1], "copy from b", 42, 52);
+    expand.DestroyAndFree();
+
+    HudUiPanelSpan reallocate{};
+    reallocate.begin = AllocatePanelLayoutEntriesForTest(1);
+    reallocate.end = reallocate.begin + 1;
+    reallocate.cap = reallocate.end;
+    InitPanelLayoutEntryForTest(&reallocate.begin[0], "tiny", 9, 10);
+    reallocate.CopyFrom(&source);
+    const bool reallocateOk =
+        reallocate.end == reallocate.begin + 2 && reallocate.cap == reallocate.end &&
+        PanelLayoutEntryMatchesForTest(reallocate.begin[0], "copy from a", 22, 32) &&
+        PanelLayoutEntryMatchesForTest(reallocate.begin[1], "copy from b", 42, 52);
+    reallocate.DestroyAndFree();
+
+    source.DestroyAndFree();
+    return shrinkOk && expandOk && reallocateOk ? 0 : 1;
+}
+
+extern "C" int zhud_panel_span_vec_insert_n_smoke(void) {
+    HudUiPanelSpan templateSpan{};
+    InitSingleEntryPanelSpanForTest(&templateSpan, "span insert", 210, 211);
+
+    HudUiPanelSpanVec growVec{};
+    growVec.begin = static_cast<HudUiPanelSpan *>(::operator new(sizeof(HudUiPanelSpan) * 2));
+    growVec.end = growVec.begin + 2;
+    growVec.cap = growVec.end;
+    InitSingleEntryPanelSpanForTest(&growVec.begin[0], "vec before", 10, 11);
+    InitSingleEntryPanelSpanForTest(&growVec.begin[1], "vec after", 20, 21);
+    growVec.InsertN(growVec.begin + 1, 1, &templateSpan);
+    const bool growOk =
+        growVec.end == growVec.begin + 3 && growVec.cap == growVec.begin + 4 &&
+        SingleEntryPanelSpanMatchesForTest(growVec.begin[0], "vec before", 10, 11) &&
+        SingleEntryPanelSpanMatchesForTest(growVec.begin[1], "span insert", 210, 211) &&
+        SingleEntryPanelSpanMatchesForTest(growVec.begin[2], "vec after", 20, 21);
+    DestroyPanelSpanVecForTest(&growVec);
+
+    HudUiPanelSpanVec longTailVec{};
+    longTailVec.begin =
+        static_cast<HudUiPanelSpan *>(::operator new(sizeof(HudUiPanelSpan) * 4));
+    longTailVec.end = longTailVec.begin + 3;
+    longTailVec.cap = longTailVec.begin + 4;
+    InitSingleEntryPanelSpanForTest(&longTailVec.begin[0], "vec 0", 30, 31);
+    InitSingleEntryPanelSpanForTest(&longTailVec.begin[1], "vec 1", 40, 41);
+    InitSingleEntryPanelSpanForTest(&longTailVec.begin[2], "vec 2", 50, 51);
+    longTailVec.InsertN(longTailVec.begin + 1, 1, &templateSpan);
+    const bool longTailOk =
+        longTailVec.end == longTailVec.begin + 4 &&
+        SingleEntryPanelSpanMatchesForTest(longTailVec.begin[0], "vec 0", 30, 31) &&
+        SingleEntryPanelSpanMatchesForTest(longTailVec.begin[1], "span insert", 210, 211) &&
+        SingleEntryPanelSpanMatchesForTest(longTailVec.begin[2], "vec 1", 40, 41) &&
+        SingleEntryPanelSpanMatchesForTest(longTailVec.begin[3], "vec 2", 50, 51);
+    DestroyPanelSpanVecForTest(&longTailVec);
+
+    HudUiPanelSpanVec shortTailVec{};
+    shortTailVec.begin =
+        static_cast<HudUiPanelSpan *>(::operator new(sizeof(HudUiPanelSpan) * 5));
+    shortTailVec.end = shortTailVec.begin + 3;
+    shortTailVec.cap = shortTailVec.begin + 5;
+    InitSingleEntryPanelSpanForTest(&shortTailVec.begin[0], "vec base 0", 60, 61);
+    InitSingleEntryPanelSpanForTest(&shortTailVec.begin[1], "vec base 1", 70, 71);
+    InitSingleEntryPanelSpanForTest(&shortTailVec.begin[2], "vec base 2", 80, 81);
+    shortTailVec.InsertN(shortTailVec.begin + 2, 2, &templateSpan);
+    const bool shortTailOk =
+        shortTailVec.end == shortTailVec.begin + 5 &&
+        SingleEntryPanelSpanMatchesForTest(shortTailVec.begin[0], "vec base 0", 60, 61) &&
+        SingleEntryPanelSpanMatchesForTest(shortTailVec.begin[1], "vec base 1", 70, 71) &&
+        SingleEntryPanelSpanMatchesForTest(shortTailVec.begin[2], "span insert", 210, 211) &&
+        SingleEntryPanelSpanMatchesForTest(shortTailVec.begin[3], "span insert", 210, 211) &&
+        SingleEntryPanelSpanMatchesForTest(shortTailVec.begin[4], "vec base 2", 80, 81);
+    DestroyPanelSpanVecForTest(&shortTailVec);
+
+    templateSpan.DestroyAndFree();
+    return growOk && longTailOk && shortTailOk ? 0 : 1;
+}
+
 extern "C" int zhud_credits_panel_destructor_smoke(void) {
     char vmodeName[] = "VMode";
     zOptionEntryPartial vmodeOption{};
@@ -2618,6 +2811,148 @@ extern "C" int zhud_scrolling_text_scalar_deleting_destructor_smoke(void) {
     failure |= ScrollingTextDestructorFailureBits(text) << 1;
     g_zGame_Options_OptionListHead = oldOptionsHead;
     return failure;
+}
+
+extern "C" int zhud_scrolling_text_load_from_zrd_smoke(void) {
+    HudUiCreditsPanel owner{};
+    owner.base.base.base.ConstructorDefault();
+    owner.base.uiOriginX = 10;
+    owner.base.uiOriginY = 20;
+    owner.fadeStep = -1.0f;
+    owner.base.fontStyles[1].validMarker = 1;
+    owner.base.fontStyles[1].fontName = "Arial";
+    owner.base.fontStyles[1].fontSize = 12;
+    owner.base.fontStyles[1].fontWeight = FW_NORMAL;
+    owner.base.fontStyles[1].textColor = 0x00123456;
+    owner.base.fontStyles[1].shadowEnabled = 1;
+
+    zReader::Node positionItems[3] = {};
+    positionItems[0].value.i32 = 3;
+    positionItems[1].type = zReader::ZRDR_NODE_INT;
+    positionItems[1].value.i32 = 5;
+    positionItems[2].type = zReader::ZRDR_NODE_INT;
+    positionItems[2].value.i32 = 7;
+
+    zReader::Node topLeftItems[3] = {};
+    topLeftItems[0].value.i32 = 3;
+    topLeftItems[1].type = zReader::ZRDR_NODE_INT;
+    topLeftItems[1].value.i32 = 1;
+    topLeftItems[2].type = zReader::ZRDR_NODE_INT;
+    topLeftItems[2].value.i32 = 2;
+
+    zReader::Node bottomRightItems[3] = {};
+    bottomRightItems[0].value.i32 = 3;
+    bottomRightItems[1].type = zReader::ZRDR_NODE_INT;
+    bottomRightItems[1].value.i32 = 101;
+    bottomRightItems[2].type = zReader::ZRDR_NODE_INT;
+    bottomRightItems[2].value.i32 = 202;
+
+    zReader::Node rectItems[3] = {};
+    rectItems[0].value.i32 = 3;
+    rectItems[1].type = zReader::ZRDR_NODE_ARRAY;
+    rectItems[1].value.nodes = topLeftItems;
+    rectItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    rectItems[2].value.nodes = bottomRightItems;
+
+    zReader::Node labelAItems[5] = {};
+    labelAItems[0].value.i32 = 5;
+    labelAItems[1].type = zReader::ZRDR_NODE_STRING;
+    labelAItems[1].value.str = const_cast<char *>("CREDITS_A");
+    labelAItems[2].type = zReader::ZRDR_NODE_INT;
+    labelAItems[2].value.i32 = 3;
+    labelAItems[3].type = zReader::ZRDR_NODE_INT;
+    labelAItems[3].value.i32 = 4;
+    labelAItems[4].type = zReader::ZRDR_NODE_INT;
+    labelAItems[4].value.i32 = 1;
+
+    zReader::Node labelBItems[5] = {};
+    labelBItems[0].value.i32 = 5;
+    labelBItems[1].type = zReader::ZRDR_NODE_STRING;
+    labelBItems[1].value.str = const_cast<char *>("CREDITS_B");
+    labelBItems[2].type = zReader::ZRDR_NODE_INT;
+    labelBItems[2].value.i32 = 9;
+    labelBItems[3].type = zReader::ZRDR_NODE_INT;
+    labelBItems[3].value.i32 = 12;
+    labelBItems[4].type = zReader::ZRDR_NODE_INT;
+    labelBItems[4].value.i32 = 1;
+
+    zReader::Node labelCItems[5] = {};
+    labelCItems[0].value.i32 = 5;
+    labelCItems[1].type = zReader::ZRDR_NODE_STRING;
+    labelCItems[1].value.str = const_cast<char *>("CREDITS_C");
+    labelCItems[2].type = zReader::ZRDR_NODE_INT;
+    labelCItems[2].value.i32 = 7;
+    labelCItems[3].type = zReader::ZRDR_NODE_INT;
+    labelCItems[3].value.i32 = 6;
+    labelCItems[4].type = zReader::ZRDR_NODE_INT;
+    labelCItems[4].value.i32 = 1;
+
+    zReader::Node rowAItems[3] = {};
+    rowAItems[0].value.i32 = 3;
+    rowAItems[1].type = zReader::ZRDR_NODE_ARRAY;
+    rowAItems[1].value.nodes = labelAItems;
+    rowAItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    rowAItems[2].value.nodes = labelBItems;
+
+    zReader::Node rowBItems[2] = {};
+    rowBItems[0].value.i32 = 2;
+    rowBItems[1].type = zReader::ZRDR_NODE_ARRAY;
+    rowBItems[1].value.nodes = labelCItems;
+
+    zReader::Node scrollingItems[3] = {};
+    scrollingItems[0].value.i32 = 3;
+    scrollingItems[1].type = zReader::ZRDR_NODE_ARRAY;
+    scrollingItems[1].value.nodes = rowAItems;
+    scrollingItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    scrollingItems[2].value.nodes = rowBItems;
+
+    zReader::Node rootItems[9] = {};
+    rootItems[0].value.i32 = 9;
+    rootItems[1].type = zReader::ZRDR_NODE_STRING;
+    rootItems[1].value.str = const_cast<char *>("POSITION");
+    rootItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[2].value.nodes = positionItems;
+    rootItems[3].type = zReader::ZRDR_NODE_STRING;
+    rootItems[3].value.str = const_cast<char *>("RECT");
+    rootItems[4].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[4].value.nodes = rectItems;
+    rootItems[5].type = zReader::ZRDR_NODE_STRING;
+    rootItems[5].value.str = const_cast<char *>("SCROLL_RATE");
+    rootItems[6].type = zReader::ZRDR_NODE_FLOAT;
+    rootItems[6].value.f32 = 0.25f;
+    rootItems[7].type = zReader::ZRDR_NODE_STRING;
+    rootItems[7].value.str = const_cast<char *>("SCROLLING_TEXT");
+    rootItems[8].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[8].value.nodes = scrollingItems;
+
+    zReader::Node root{};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = rootItems;
+
+    HudUiZrdScrollingText text{};
+    text.base.Constructor();
+    const int result = text.LoadFromZrd(&root, &owner);
+
+    HudUiPanelSpan *const firstRow = text.rows.begin;
+    HudUiPanelSpan *const secondRow = text.rows.begin != nullptr ? text.rows.begin + 1 : nullptr;
+
+    const bool loaded =
+        result == 1 && text.base.owner == &owner && text.base.originX == 15 &&
+        text.base.originY == 27 && owner.fadeStep == 0.25f && text.rect.left == 16 &&
+        text.rect.top == 29 && text.rect.right == 116 && text.rect.bottom == 229 &&
+        text.rows.begin != nullptr && secondRow != nullptr && text.rows.end == text.rows.begin + 2 &&
+        firstRow->end == firstRow->begin + 2 && secondRow->end == secondRow->begin + 1 &&
+        PanelLayoutEntryMatchesForTest(firstRow->begin[0], "CREDITS_A", 3, 4) &&
+        PanelLayoutEntryMatchesForTest(firstRow->begin[1], "CREDITS_B", 9, 12) &&
+        secondRow->begin[0].layoutX == 7 && secondRow->begin[0].layoutY > 6 &&
+        std::strcmp(&TestFieldAt<char>(&secondRow->begin[0].panel, 0x34), "CREDITS_C") == 0 &&
+        TestFieldAt<std::uint32_t>(&firstRow->begin[0].panel, 0x14c) == 0x00123456 &&
+        TestFieldAt<std::uint32_t>(&firstRow->begin[0].panel, 0x150) == 0x00123456 &&
+        TestFieldAt<std::uint32_t>(&firstRow->begin[0].panel, 0x264) == 1 &&
+        text.totalHeight > secondRow->begin[0].layoutY;
+
+    text.Destructor();
+    return loaded ? 0 : 1;
 }
 
 void InitScrollingTextEntryForTest(HudUiPanelLayoutEntry *entry, int x, int y, int height) {

@@ -477,14 +477,20 @@ extern "C" int zhud_circle_constructor_and_hit_test_smoke(void);
 extern "C" int zhud_composite_panel_vector_clear_smoke(void);
 extern "C" int zhud_panel_layout_entry_copy_construct_smoke(void);
 extern "C" int zhud_panel_layout_entry_copy_assign_smoke(void);
+extern "C" int zhud_panel_layout_entry_copy_assign_range_smoke(void);
+extern "C" int zhud_panel_layout_entry_destroy_range_smoke(void);
 extern "C" int zhud_panel_span_clear_smoke(void);
+extern "C" int zhud_panel_span_copy_init_smoke(void);
+extern "C" int zhud_panel_span_copy_from_smoke(void);
 extern "C" int zhud_panel_span_destroy_and_free_smoke(void);
 extern "C" int zhud_panel_span_insert_n_smoke(void);
+extern "C" int zhud_panel_span_vec_insert_n_smoke(void);
 extern "C" int zhud_credits_panel_destructor_smoke(void);
 extern "C" int zhud_credits_panel_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_panel_destructor_callback_smoke(void);
 extern "C" int zhud_scrolling_text_destructor_smoke(void);
 extern "C" int zhud_scrolling_text_scalar_deleting_destructor_smoke(void);
+extern "C" int zhud_scrolling_text_load_from_zrd_smoke(void);
 extern "C" int zhud_scrolling_text_update_smoke(void);
 extern "C" int zhud_scrolling_text_on_activate_reset_owner_fade_smoke(void);
 extern "C" int zhud_scrolling_text_update_scroll_positions_smoke(void);
@@ -2303,9 +2309,16 @@ int main(int argc, char **argv) {
          zhud_panel_layout_entry_copy_construct_smoke},
         {"zhud_panel_layout_entry_copy_assign_smoke",
          zhud_panel_layout_entry_copy_assign_smoke},
+        {"zhud_panel_layout_entry_copy_assign_range_smoke",
+         zhud_panel_layout_entry_copy_assign_range_smoke},
+        {"zhud_panel_layout_entry_destroy_range_smoke",
+         zhud_panel_layout_entry_destroy_range_smoke},
         {"zhud_panel_span_clear_smoke", zhud_panel_span_clear_smoke},
+        {"zhud_panel_span_copy_init_smoke", zhud_panel_span_copy_init_smoke},
+        {"zhud_panel_span_copy_from_smoke", zhud_panel_span_copy_from_smoke},
         {"zhud_panel_span_destroy_and_free_smoke", zhud_panel_span_destroy_and_free_smoke},
         {"zhud_panel_span_insert_n_smoke", zhud_panel_span_insert_n_smoke},
+        {"zhud_panel_span_vec_insert_n_smoke", zhud_panel_span_vec_insert_n_smoke},
         {"zhud_credits_panel_destructor_smoke", zhud_credits_panel_destructor_smoke},
         {"zhud_credits_panel_scalar_deleting_destructor_smoke",
          zhud_credits_panel_scalar_deleting_destructor_smoke},
@@ -2313,6 +2326,7 @@ int main(int argc, char **argv) {
         {"zhud_scrolling_text_destructor_smoke", zhud_scrolling_text_destructor_smoke},
         {"zhud_scrolling_text_scalar_deleting_destructor_smoke",
          zhud_scrolling_text_scalar_deleting_destructor_smoke},
+        {"zhud_scrolling_text_load_from_zrd_smoke", zhud_scrolling_text_load_from_zrd_smoke},
         {"zhud_scrolling_text_update_smoke", zhud_scrolling_text_update_smoke},
         {"zhud_scrolling_text_on_activate_reset_owner_fade_smoke",
          zhud_scrolling_text_on_activate_reset_owner_fade_smoke},

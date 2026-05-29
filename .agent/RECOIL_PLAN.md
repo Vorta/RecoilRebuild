@@ -1667,9 +1667,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x409570:
   - [☑️] Reconstructed (Name: HudUiZrdScrollingText::LoadFromZrd)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdScrollingText::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_scrolling_text_load_from_zrd)
   - [❌] Binary-safe
 - 0x409910:
   - [✅] Reconstructed (Name: HudUiPanelSpan::Clear)
@@ -1715,9 +1715,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x409b60:
   - [✅] Reconstructed (Name: HudUiPanel::DestroyRange)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelLayoutEntry::DestroyRange File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_layout_entry_destroy_range)
   - [❌] Binary-safe
 - 0x409b90:
   - [✅] Reconstructed (Name: HudUiPanelSpan::InsertN)
@@ -1733,15 +1733,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x409f00:
   - [☑️] Reconstructed (Name: HudUiPanelSpanVec::InsertN)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelSpanVec::InsertN File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_span_vec_insert_n)
   - [❌] Binary-safe
 - 0x40a170:
   - [☑️] Reconstructed (Name: HudUiPanel::CopyAssignRange)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelLayoutEntry::CopyAssignRange File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_layout_entry_copy_assign_range)
   - [❌] Binary-safe
 - 0x40a1e0:
   - [✅] Reconstructed (Name: HudUiPanelLayoutEntry::CopyAssign)
@@ -1757,15 +1757,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40a240:
   - [☑️] Reconstructed (Name: HudUiPanelSpan::CopyInit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelSpan::CopyInit File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_span_copy_init)
   - [❌] Binary-safe
 - 0x40a300:
   - [✅] Reconstructed (Name: HudUiPanelSpan::CopyFrom)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelSpan::CopyFrom File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_span_copy_from)
   - [❌] Binary-safe
 - 0x40a590:
   - [✅] Reconstructed (Name: HudUiPanel::ScalarDeletingDestructor)
@@ -2951,9 +2951,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b59f0:
   - [✅] Reconstructed (Name: HudUiZrdWidget::LoadFromZrd)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidget::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_load_from_zrd)
   - [❌] Binary-safe
 - 0x4b6fc0:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::Constructor)
@@ -4663,7 +4663,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiPanelPtrVector::InsertN)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanelPtrVector::InsertN File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_panel_ptr_vector_insert_n)
   - [❌] Binary-safe
 - 0x4ba740:
   - [✅] Reconstructed (Name: HudUiPanel::ConstructorDefault)
@@ -4933,7 +4933,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiFlashPanel::ResetFlashState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTransitionTextPanel::ResetFlashState File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_flash_panel_reset_flash_state)
   - [❌] Binary-safe
 - 0x4bc980:
   - [✅] Reconstructed (Name: HudUiFlashPanel::SetFlashRate)
@@ -4945,7 +4945,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiFlashPanel::SetFlashColorAndRate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTransitionTextPanel::SetFlashColorAndRate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_flash_panel_set_flash_color_and_rate)
   - [❌] Binary-safe
 - 0x4bcb50:
   - [✅] Reconstructed (Name: HudUiTextLabel::ConstructorWithPosAndFlags)

@@ -1409,6 +1409,12 @@ struct HudUiPanelLayoutEntry {
 
     HudUiPanelLayoutEntry *RECOIL_THISCALL CopyConstruct(const HudUiPanelLayoutEntry *source);
     HudUiPanelLayoutEntry *RECOIL_THISCALL CopyAssign(const HudUiPanelLayoutEntry *source);
+    static HudUiPanelLayoutEntry *RECOIL_FASTCALL
+    CopyAssignRange(const HudUiPanelLayoutEntry *sourceStart,
+                    const HudUiPanelLayoutEntry *sourceEnd,
+                    HudUiPanelLayoutEntry *dest);
+    static void RECOIL_STDCALL DestroyRange(HudUiPanelLayoutEntry *start,
+                                            HudUiPanelLayoutEntry *end);
 };
 
 struct HudUiPanelSpan {
@@ -1418,6 +1424,8 @@ struct HudUiPanelSpan {
     HudUiPanelLayoutEntry *cap;
 
     void RECOIL_THISCALL Clear();
+    HudUiPanelSpan *RECOIL_THISCALL CopyInit(const HudUiPanelSpan *source);
+    HudUiPanelSpan *RECOIL_THISCALL CopyFrom(const HudUiPanelSpan *source);
     void RECOIL_THISCALL InsertN(HudUiPanelLayoutEntry *insertPos, unsigned int count,
                                  const HudUiPanelLayoutEntry *templatePanel);
     void RECOIL_THISCALL DestroyAndFree();
@@ -1428,6 +1436,9 @@ struct HudUiPanelSpanVec {
     HudUiPanelSpan *begin;
     HudUiPanelSpan *end;
     HudUiPanelSpan *cap;
+
+    void RECOIL_THISCALL InsertN(HudUiPanelSpan *insertPos, unsigned int count,
+                                 const HudUiPanelSpan *templateSpan);
 };
 
 struct HudUiZrdScrollingText {
@@ -1439,6 +1450,7 @@ struct HudUiZrdScrollingText {
     void RECOIL_THISCALL OnActivateResetOwnerFade();
     void RECOIL_THISCALL Update(float deltaSeconds);
     void RECOIL_THISCALL UpdateScrollPositions(float scrollProgress);
+    int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
     void RECOIL_THISCALL Destructor();
     HudUiZrdScrollingText *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
 };
