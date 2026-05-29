@@ -9034,8 +9034,17 @@ extern "C" int zhud_panel_scalar_deleting_destructor_smoke(void) {
     panel.hFont = nullptr;
 
     HudUiPanel *const result = panel.ScalarDeletingDestructor(0);
+    if (result != &panel || panel.vtbl != &g_HudUiCommon_FTable) {
+        return 1;
+    }
 
-    return result == &panel && panel.vtbl == &g_HudUiCommon_FTable ? 0 : 1;
+    HudUiPanel *const heapPanel = new HudUiPanel{};
+    heapPanel->vtbl = &g_HudUiPanel_FTable;
+    heapPanel->textPick = nullptr;
+    heapPanel->hFont = nullptr;
+    HudUiPanel *const heapResult = heapPanel->ScalarDeletingDestructor(1);
+
+    return heapResult == heapPanel ? 0 : 2;
 }
 
 extern "C" int zhud_panel_destructor_thunk_smoke(void) {
