@@ -6409,6 +6409,120 @@ extern "C" int zhud_cmd_dialog_apply_joystick_button_rebind_smoke(void) {
     return rebound ? 0 : 1;
 }
 
+extern "C" int zhud_cmd_dialog_apply_mouse_button_rebind_smoke(void) {
+    HudCmdDialog dialog{};
+    dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
+    dialog.descriptionPanel.captureState = 77;
+    dialog.setList.base.selectedIndex = 0;
+
+    SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyAButton.base, "OldKeyA0", "OldKeyA1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyBButton.base, "OldKeyB0", "OldKeyB1", 3, 7);
+    SetupCommandDialogButton(&dialog.joyButton.base, "OldJoy0", "OldJoy1", 3, 7);
+    SetupCommandDialogButton(&dialog.mouseButton.base, "OldMouse0", "OldMouse1", 3, 7);
+
+    zInput_BindMapContext *const oldCurrent = g_zInput_BindMap_Current;
+    zInput_BindGroupInfoList oldGroups = g_zInput_BindGroupInfoList;
+    const int oldLocId = g_zInput_CommandLocIdTable[5];
+    HMODULE const oldMessagesDll = g_zLoc_MessagesDllHandle;
+
+    zInput::BindMap_InitDikKeyNameTable();
+    zInput::BindMap_InitJoystickButtonNameTable();
+    zInput::BindMap_InitMouseButtonNameTable();
+
+    g_zLoc_MessagesDllHandle = GetModuleHandleA("kernel32.dll");
+    if (g_zLoc_MessagesDllHandle == nullptr || zLoc::GetMessageString(0) == nullptr ||
+        zLoc::GetMessageString(1) == nullptr) {
+        CleanupCommandDialogButton(&dialog.mouseButton.base);
+        CleanupCommandDialogButton(&dialog.joyButton.base);
+        CleanupCommandDialogButton(&dialog.keyBButton.base);
+        CleanupCommandDialogButton(&dialog.keyAButton.base);
+        CleanupCommandDialogButton(&dialog.commandList.base);
+        dialog.descriptionPanel.base.Destructor();
+        g_zLoc_MessagesDllHandle = oldMessagesDll;
+        return 2;
+    }
+
+    zInput_BindMapContext context{};
+    int packedBindings[16] = {};
+    zInputCommandCallbackFn callbacks[16] = {};
+    char commandFiveLabel[0x50] = {};
+    char commandThreeLabel[0x50] = {};
+    char *labels[16] = {};
+    labels[3] = commandThreeLabel;
+    labels[5] = commandFiveLabel;
+    context.m_commandCount = 16;
+    context.m_packedBindings = packedBindings;
+    context.m_commandCallbacks = callbacks;
+    context.m_commandLabels = labels;
+    context.SetBindingRecord(3, "MouseHolder", 0, 0, 0, 2);
+    context.SetBindingRecord(5, "CmdFiveCurrent", 0x1e, 0x30, 4, 1);
+    g_zInput_BindMap_Current = &context;
+
+    int commandIds[] = {5};
+    zInput_BindGroupInfo group{};
+    group.commandIdsBegin = commandIds;
+    group.commandIdsEnd = commandIds + 1;
+    group.commandIdsCapacity = commandIds + 1;
+    zInput_BindGroupInfo *groups[] = {&group};
+    g_zInput_BindGroupInfoList.begin = groups;
+    g_zInput_BindGroupInfoList.end = groups + 1;
+    g_zInput_BindGroupInfoList.capacity = groups + 1;
+    g_zInput_CommandLocIdTable[5] = 0;
+
+    const int reboundResult = dialog.ApplyMouseButtonRebind(2, 0);
+
+    HudCmdBindingEntry **const commandBegin =
+        static_cast<HudCmdBindingEntry **>(dialog.commandList.base.bindingVec.begin);
+    HudCmdBindingEntry **const mouseBegin =
+        static_cast<HudCmdBindingEntry **>(dialog.mouseButton.base.bindingVec.begin);
+    const bool rebound =
+        reboundResult == 1 && dialog.descriptionPanel.captureState == 0 &&
+        zInput::BindMapCurrent_GetMouseButtonSlot(3) == 0 &&
+        zInput::BindMapCurrent_GetCommandByMouseSlot(2) == 5 &&
+        zInput::BindMapCurrent_GetMouseButtonSlot(5) == 2 &&
+        dialog.commandList.base.bindingVec.end == commandBegin + 1 &&
+        dialog.mouseButton.base.bindingVec.end == mouseBegin + 1 &&
+        commandBegin[0]->commandId == 5 && mouseBegin[0]->commandId == 5 &&
+        std::strcmp(mouseBegin[0]->displayText, "Right") == 0 &&
+        dialog.commandList.base.selectedBindingIndex == 0 &&
+        dialog.mouseButton.base.selectedBindingIndex == 0 &&
+        TestFieldAt<char>(&dialog.descriptionPanel, 0x34) != '\0';
+
+    CleanupCommandDialogButton(&dialog.mouseButton.base);
+    CleanupCommandDialogButton(&dialog.joyButton.base);
+    CleanupCommandDialogButton(&dialog.keyBButton.base);
+    CleanupCommandDialogButton(&dialog.keyAButton.base);
+    CleanupCommandDialogButton(&dialog.commandList.base);
+    dialog.descriptionPanel.base.Destructor();
+
+    g_zInput_BindMap_Current = oldCurrent;
+    g_zInput_BindGroupInfoList = oldGroups;
+    g_zInput_CommandLocIdTable[5] = oldLocId;
+    g_zLoc_MessagesDllHandle = oldMessagesDll;
+
+    return rebound ? 0 : 1;
+}
+
+extern "C" int zhud_cmd_dialog_update_capture_state_idle_smoke(void) {
+    HudCmdDialog dialog{};
+    dialog.base.base.base.enabled = 0;
+    dialog.promptPanel.base.Constructor();
+    dialog.descriptionPanel.captureState = 0;
+
+    g_HudCmdMouseDebounceFrames = 3;
+    dialog.UpdateCaptureState(0.016f);
+
+    const HudUiElement *const promptElement =
+        reinterpret_cast<const HudUiElement *>(&dialog.promptPanel);
+    const bool idleUpdated =
+        g_HudCmdMouseDebounceFrames == 2 && (promptElement->flags & 0x10u) != 0;
+
+    reinterpret_cast<HudUiPanel *>(&dialog.promptPanel)->Destructor();
+    g_HudCmdMouseDebounceFrames = 0;
+    return idleUpdated ? 0 : 1;
+}
+
 extern "C" int zhud_message_box_leaf_handlers_smoke(void) {
     HudUiMessageBoxDialog dialog{};
     TestFieldAt<const HudUiMessageBoxDialog_FTable *>(&dialog, 0) = &g_HudUiMessageBoxDialog_FTable;

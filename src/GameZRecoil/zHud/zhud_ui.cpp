@@ -393,6 +393,8 @@ const HudUiZrdWidgetEx17C_FTable g_HudUiZrdWidgetEx17C_FTable =
     MakeHudUiZrdWidgetEx17CFTable();
 const HudCmdBindButtonBase_FTable g_HudCmdBindButtonBase_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudCmdBindButtonBase_FTable>();
+// Recovered global 0x4e5e00: HUD command-dialog mouse capture debounce frames.
+int g_HudCmdMouseDebounceFrames = 0;
 const HudUiMessageBoxDialog_FTable g_HudUiMessageBoxDialog_FTable =
     MakeHudUiMessageBoxDialogFTable();
 const HudUiZrdWidget_FTable g_HudUiMessageBoxOkButton_Vtbl =
@@ -8750,6 +8752,109 @@ void RECOIL_THISCALL HudCmdDialog::OnCommandSelectionChanged(int commandIndex)
     }
 }
 
+// Reimplements 0x40b140: HudCmdDialog::UpdateCaptureState
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdDialog::UpdateCaptureState(float deltaTime)
+{
+    base.Update(deltaTime);
+
+    switch (descriptionPanel.captureState)
+    {
+    case 0:
+        HudUiVirtualSetVisible(&promptPanel, 0);
+        --g_HudCmdMouseDebounceFrames;
+        break;
+
+    case 1:
+    {
+        HudUiVirtualSetVisible(&promptPanel, 1);
+        HudUiPanelVirtualSetTextFmtRequired((HudUiPanel *)(&promptPanel), "Press desired keyboard key.");
+        keyBButton.base.base.SetChecked(0);
+        joyButton.base.base.SetChecked(0);
+        mouseButton.base.base.SetChecked(0);
+
+        const int keyCode = zInput::Keyboard_WaitForAnyKeyPress(0);
+        if (keyCode != 0)
+        {
+            ApplyPrimaryKeyRebind(keyCode, keyAButton.base.selectedBindingIndex);
+            keyAButton.base.base.SetChecked(0);
+        }
+        break;
+    }
+
+    case 2:
+    {
+        HudUiVirtualSetVisible(&promptPanel, 1);
+        HudUiPanelVirtualSetTextFmtRequired((HudUiPanel *)(&promptPanel), "Press desired keyboard key.");
+        keyAButton.base.base.SetChecked(0);
+        joyButton.base.base.SetChecked(0);
+        mouseButton.base.base.SetChecked(0);
+
+        const int keyCode = zInput::Keyboard_WaitForAnyKeyPress(0);
+        if (keyCode != 0)
+        {
+            ApplySecondaryKeyRebind(keyCode, keyBButton.base.selectedBindingIndex);
+            keyBButton.base.base.SetChecked(0);
+        }
+        break;
+    }
+
+    case 3:
+    {
+        HudUiVirtualSetVisible(&promptPanel, 1);
+        HudUiPanelVirtualSetTextFmtRequired((HudUiPanel *)(&promptPanel), "Press desired joystick button.");
+        keyAButton.base.base.SetChecked(0);
+        keyBButton.base.base.SetChecked(0);
+        mouseButton.base.base.SetChecked(0);
+
+        if (zInput::Keyboard_WaitForAnyKeyPress(0) == 1)
+        {
+            descriptionPanel.captureState = 0;
+            zInput::ResetAllTransitionState();
+            joyButton.base.base.SetChecked(0);
+            return;
+        }
+
+        const int buttonCode = zInput::DI_WaitForButtonPress(0);
+        if (buttonCode != 0)
+        {
+            ApplyJoystickButtonRebind(buttonCode, joyButton.base.selectedBindingIndex);
+            joyButton.base.base.SetChecked(0);
+        }
+        break;
+    }
+
+    case 4:
+    {
+        HudUiVirtualSetVisible(&promptPanel, 1);
+        HudUiPanelVirtualSetTextFmtRequired((HudUiPanel *)(&promptPanel), "Press desired mouse button.");
+        keyAButton.base.base.SetChecked(0);
+        keyBButton.base.base.SetChecked(0);
+        joyButton.base.base.SetChecked(0);
+
+        if (zInput::Keyboard_WaitForAnyKeyPress(0) == 1)
+        {
+            descriptionPanel.captureState = 0;
+            zInput::ResetAllTransitionState();
+            joyButton.base.base.SetChecked(0);
+            return;
+        }
+
+        const int buttonCode = zInput::Mouse_WaitForButtonPress(0);
+        if (buttonCode != 0)
+        {
+            ApplyMouseButtonRebind(buttonCode, mouseButton.base.selectedBindingIndex);
+            mouseButton.base.base.SetChecked(0);
+            g_HudCmdMouseDebounceFrames = 10;
+        }
+        break;
+    }
+
+    default:
+        break;
+    }
+}
+
 // Reimplements 0x40b3e0: HudCmdDialog::ApplyPrimaryKeyRebind
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 int RECOIL_THISCALL HudCmdDialog::ApplyPrimaryKeyRebind(int keyCode, int commandIndex)
@@ -8820,6 +8925,29 @@ int RECOIL_THISCALL HudCmdDialog::ApplyJoystickButtonRebind(int buttonCode, int 
     }
 
     zInput::BindMapCurrent_SetJoystickBinding(buttonCode, commandId);
+    RebuildCommandBindingListsForGroup(groupIndex);
+    OnCommandSelectionChanged(commandIndex);
+    descriptionPanel.captureState = 0;
+    zInput::ResetAllTransitionState();
+    return 1;
+}
+
+// Reimplements 0x40b560: HudCmdDialog::ApplyMouseButtonRebind
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+int RECOIL_THISCALL HudCmdDialog::ApplyMouseButtonRebind(int buttonCode, int commandIndex)
+{
+    const int mouseCommand =
+        zInput::BindMapCurrent_GetCommandByMouseSlot(buttonCode);
+    const int groupIndex = setList.base.selectedIndex;
+    const int commandId =
+        zInput::BindGroupList_GetGroupCommandId(groupIndex, commandIndex);
+    if (mouseCommand == 0 &&
+        zInput::BindMapCurrent_GetCommandByMouseSlot(buttonCode) != 0)
+    {
+        zInput::BindMapCurrent_SetMouseBinding(buttonCode, 0);
+    }
+
+    zInput::BindMapCurrent_SetMouseBinding(buttonCode, commandId);
     RebuildCommandBindingListsForGroup(groupIndex);
     OnCommandSelectionChanged(commandIndex);
     descriptionPanel.captureState = 0;

@@ -200,6 +200,7 @@ extern const HudUiCounter_FTable g_HudUiCounter_FTable;
 extern const HudUiMessage_FTable g_HudUiMessage_FTable;
 extern const HudUiPanel_FTable g_HudUiPanel_FTable;
 extern const HudUiPanel_FTable g_HudUiTransitionTextPanel_FTable;
+extern int g_HudCmdMouseDebounceFrames;
 extern const HudUiCompositePanel_FTable g_HudUiCompositePanel_FTable;
 extern const HudUiListSelectorItem_FTable g_HudUiListSelectorItem_FTable;
 extern const HudUiTextLabel_FTable g_HudUiTextLabel_FTable;
@@ -1468,11 +1469,13 @@ struct HudCmdDialog {
     HudCmdDescriptionPanel descriptionPanel;
 
     void RECOIL_THISCALL Destructor();
+    void RECOIL_THISCALL UpdateCaptureState(float deltaTime);
     void RECOIL_THISCALL RebuildCommandBindingListsForGroup(int groupIndex);
     void RECOIL_THISCALL OnCommandSelectionChanged(int commandIndex);
     int RECOIL_THISCALL ApplyPrimaryKeyRebind(int keyCode, int commandIndex);
     int RECOIL_THISCALL ApplySecondaryKeyRebind(int keyCode, int commandIndex);
     int RECOIL_THISCALL ApplyJoystickButtonRebind(int buttonCode, int commandIndex);
+    int RECOIL_THISCALL ApplyMouseButtonRebind(int buttonCode, int commandIndex);
 };
 
 struct HudUiMessageBoxDialog : HudUiBackground {

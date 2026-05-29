@@ -727,6 +727,7 @@ extern "C" int zinput_bindmap_context_smoke(void) {
     zInput::BindMapCurrent_SetPrimaryKeyBinding(0x42, 3);
     zInput::BindMapCurrent_SetSecondaryKeyBinding(0x43, 3);
     zInput::BindMapCurrent_SetJoystickBinding(4, 3);
+    zInput::BindMapCurrent_SetMouseBinding(3, 3);
     if (zInput::BindMapCurrent_GetCommandByPrimaryKey(0x40) != 0 ||
         zInput::BindMapCurrent_GetCommandBySecondaryKey(0x41) != 0 ||
         zInput::BindMapCurrent_GetCommandByPrimaryKey(0x42) != 3 ||
@@ -734,7 +735,9 @@ extern "C" int zinput_bindmap_context_smoke(void) {
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(3) != 0x42 ||
         zInput::BindMapCurrent_GetSecondaryKeyboardKey(3) != 0x43 ||
         zInput::BindMapCurrent_GetCommandByJoystickSlot(4) != 3 ||
-        zInput::BindMapCurrent_GetJoystickButtonSlot(3) != 4) {
+        zInput::BindMapCurrent_GetJoystickButtonSlot(3) != 4 ||
+        zInput::BindMapCurrent_GetCommandByMouseSlot(3) != 3 ||
+        zInput::BindMapCurrent_GetMouseButtonSlot(3) != 3) {
         g_zInput_BindMap_Current = nullptr;
         context.FreeNonOwnedBuffers();
         FreeOptionList();

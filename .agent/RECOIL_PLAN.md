@@ -1811,9 +1811,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40b140:
   - [✅] Reconstructed (Name: HudCmdDialog::UpdateCaptureState)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialog::UpdateCaptureState File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_update_capture_state)
   - [❌] Binary-safe
 - 0x40b3e0:
   - [✅] Reconstructed (Name: HudCmdDialog::ApplyPrimaryKeyRebind)
@@ -1835,10 +1835,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x40b560:
   - [✅] Reconstructed (Name: HudCmdDialog::ApplyMouseButtonRebind)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialog::ApplyMouseButtonRebind File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_apply_mouse_button_rebind)
+  - [✅] Binary-safe
 - 0x40b5e0:
   - [✅] Reconstructed (Name: HudCmdDialog::SelectGroupRelative)
   - [❌] Source dependencies satisfied
@@ -14479,7 +14479,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zInput::Mouse_GetButtonTransitionState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_GetButtonTransitionState File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_mouse_get_button_transition_state)
   - [❌] Binary-safe
 - 0x470310:
   - [✅] Reconstructed (Name: zInput::Mouse_UpdateAcquireState)
@@ -14507,15 +14507,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4703c0:
   - [☑️] Reconstructed (Name: zInput::Mouse_PollState)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::Mouse_PollState File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_mouse_poll_state)
   - [❌] Binary-safe
 - 0x4704f0:
   - [✅] Reconstructed (Name: zInput::Mouse_ApplyAccumulatedDelta)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::Mouse_ApplyAccumulatedDelta File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_mouse_apply_accumulated_delta)
   - [❌] Binary-safe
 - 0x4705f0:
   - [✅] Reconstructed (Name: zInput::Mouse_GetStateSnapshot)
@@ -14537,9 +14537,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x470680:
   - [☑️] Reconstructed (Name: zInput::Mouse_WaitForButtonPress)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::Mouse_WaitForButtonPress File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_mouse_wait_for_button_press)
   - [❌] Binary-safe
 - 0x4706c0:
   - [☑️] Reconstructed (Name: zInput_BindMapContext::InitFromTemplate)
@@ -14635,8 +14635,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput_BindMapContext::GetCommandByMouseSlot)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::GetCommandByMouseSlot File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_context_get_command_by_mouse_slot)
+  - [✅] Binary-safe
 - 0x470b20:
   - [✅] Reconstructed (Name: zInput_BindMapContext::SetPrimaryKeyBinding)
   - [✅] Source dependencies satisfied
@@ -14659,8 +14659,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput_BindMapContext::SetMouseBinding)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::SetMouseBinding File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_context_set_mouse_binding)
+  - [✅] Binary-safe
 - 0x470cd0:
   - [✅] Reconstructed (Name: zInput_BindMapContext::SetBindingRecord)
   - [✅] Source dependencies satisfied
@@ -14669,9 +14669,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x470d40:
   - [☑️] Reconstructed (Name: zInput_BindMapContext::DispatchMouseButtonCallbacks)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput_BindMapContext::DispatchMouseButtonCallbacks File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_context_dispatch_mouse_button_callbacks)
   - [❌] Binary-safe
 - 0x470db0:
   - [✅] Reconstructed (Name: zInput_BindMapContext::DispatchJoystickButtonCallbacks)
@@ -14809,8 +14809,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetCommandByMouseSlot)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetCommandByMouseSlot File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_get_command_by_mouse_slot)
+  - [✅] Binary-safe
 - 0x471750:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_SetPrimaryKeyBinding)
   - [✅] Source dependencies satisfied
@@ -14833,8 +14833,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_SetMouseBinding)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_SetMouseBinding File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_set_mouse_binding)
+  - [✅] Binary-safe
 - 0x471790:
   - [✅] Reconstructed (Name: zInput::BindMap_Current_SetBindingRecord)
   - [✅] Source dependencies satisfied
