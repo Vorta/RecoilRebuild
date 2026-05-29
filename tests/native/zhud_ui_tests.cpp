@@ -2301,6 +2301,25 @@ extern "C" int zhud_composite_panel_vector_clear_smoke(void) {
                : 1;
 }
 
+extern "C" int zhud_panel_layout_entry_copy_construct_smoke(void) {
+    HudUiPanelLayoutEntry source{};
+    source.panel.ConstructorDefault("source row", 14, 24);
+    source.layoutX = 42;
+    source.layoutY = 84;
+
+    HudUiPanelLayoutEntry copied{};
+    HudUiPanelLayoutEntry *const result = copied.CopyConstruct(&source);
+
+    const bool copiedValues =
+        result == &copied && copied.layoutX == 42 && copied.layoutY == 84 &&
+        copied.panel.vtbl == &g_HudUiPanel_FTable &&
+        std::strcmp(&TestFieldAt<char>(&copied.panel, 0x34), "source row") == 0;
+
+    copied.panel.Destructor();
+    source.panel.Destructor();
+    return copiedValues ? 0 : 1;
+}
+
 extern "C" int zhud_panel_span_clear_smoke(void) {
     auto *entries = static_cast<HudUiPanelLayoutEntry *>(
         ::operator new(sizeof(HudUiPanelLayoutEntry) * 2));

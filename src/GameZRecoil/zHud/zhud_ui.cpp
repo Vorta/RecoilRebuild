@@ -4701,6 +4701,17 @@ void RECOIL_THISCALL HudUiZrdScrollingText::OnActivateResetOwnerFade() {
     *ownerFadeProgress = 0.0f;
 }
 
+// Reimplements 0x40a210: HudUiPanelLayoutEntry::CopyConstruct
+// (D:\Proj\Battlesport\HudUiPanel.cpp)
+HudUiPanelLayoutEntry *RECOIL_THISCALL
+HudUiPanelLayoutEntry::CopyConstruct(const HudUiPanelLayoutEntry *source)
+{
+    panel.CopyConstructCore(&source->panel);
+    layoutX = source->layoutX;
+    layoutY = source->layoutY;
+    return this;
+}
+
 // Reimplements 0x409910: HudUiPanelSpan::Clear
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
 void RECOIL_THISCALL HudUiPanelSpan::Clear()

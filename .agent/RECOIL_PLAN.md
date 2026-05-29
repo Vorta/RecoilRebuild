@@ -1750,10 +1750,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Functional-equivalent
   - [❌] Binary-safe
 - 0x40a210:
-  - [✅] Reconstructed (Name: HudUiPanel::CopyConstruct)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiPanelLayoutEntry::CopyConstruct)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelLayoutEntry::CopyConstruct File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_layout_entry_copy_construct)
   - [❌] Binary-safe
 - 0x40a240:
   - [☑️] Reconstructed (Name: HudUiPanelSpan::CopyInit)

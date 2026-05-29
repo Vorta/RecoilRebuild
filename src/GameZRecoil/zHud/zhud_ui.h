@@ -1405,6 +1405,8 @@ struct HudUiPanelLayoutEntry {
     HudUiPanel panel;
     int layoutX;
     int layoutY;
+
+    HudUiPanelLayoutEntry *RECOIL_THISCALL CopyConstruct(const HudUiPanelLayoutEntry *source);
 };
 
 struct HudUiPanelSpan {
