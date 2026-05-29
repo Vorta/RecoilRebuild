@@ -5937,7 +5937,8 @@ HudUiPanel **RECOIL_THISCALL HudUiPanelPtrVector::EraseRange(HudUiPanel **first,
                                                              HudUiPanel **last) {
     HudUiPanel **write = first;
     HudUiPanel **read = last;
-    while (read != end) {
+    HudUiPanel **const oldEnd = end;
+    while (read != oldEnd) {
         *write = *read;
         ++write;
         ++read;
