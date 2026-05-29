@@ -14287,8 +14287,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput_BindGroupInfoVec::Count)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindGroupInfoVec::Count File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bind_group_info_vec_count)
+  - [✅] Binary-safe
 - 0x42e170:
   - [☑️] Reconstructed (Name: zInput::DI_SetJoystickEnabled)
   - [✅] Source dependencies satisfied
