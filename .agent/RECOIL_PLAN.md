@@ -14629,7 +14629,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput_BindMapContext::GetCommandByJoystickSlot)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::GetCommandByJoystickSlot File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_bindmap_context_get_command_by_joystick_slot)
   - [❌] Binary-safe
 - 0x470b10:
   - [✅] Reconstructed (Name: zInput_BindMapContext::GetCommandByMouseSlot)
@@ -14675,9 +14675,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x470db0:
   - [✅] Reconstructed (Name: zInput_BindMapContext::DispatchJoystickButtonCallbacks)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput_BindMapContext::DispatchJoystickButtonCallbacks File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_context_dispatch_joystick_button_callbacks)
   - [❌] Binary-safe
 - 0x470df0:
   - [✅] Reconstructed (Name: zInput_BindMapContext::SetCommandCallback)
@@ -14803,7 +14803,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetCommandByJoystickSlot)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetCommandByJoystickSlot File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_get_command_by_joystick_slot)
   - [❌] Binary-safe
 - 0x471740:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetCommandByMouseSlot)
@@ -15029,9 +15029,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4722c0:
   - [✅] Reconstructed (Name: zInput::DI_PollJoystickState)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::DI_PollJoystickState File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_di_poll_joystick_state)
   - [❌] Binary-safe
 - 0x472390:
   - [✅] Reconstructed (Name: zInput::DI_GetCurrentState)
@@ -15059,9 +15059,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4723d0:
   - [☑️] Reconstructed (Name: zInput::DI_WaitForButtonPress)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::DI_WaitForButtonPress File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_di_wait_for_button_press)
   - [❌] Binary-safe
 - 0x472410:
   - [☑️] Reconstructed (Name: zInput::DI_ResetTransitionState)
