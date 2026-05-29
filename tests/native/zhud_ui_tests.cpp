@@ -2404,6 +2404,49 @@ bool PanelLayoutEntryMatchesForTest(const HudUiPanelLayoutEntry &entry, const ch
                0;
 }
 
+void InitCreditsPanelForDestructorTest(HudUiCreditsPanel *panel) {
+    panel->base.Constructor();
+    panel->backButton.Constructor();
+    panel->quitButton.Constructor();
+    panel->creditsScreen.base.Constructor();
+
+    panel->creditsScreen.rows.begin = static_cast<HudUiPanelSpan *>(
+        ::operator new(sizeof(HudUiPanelSpan) * 2));
+    panel->creditsScreen.rows.end = panel->creditsScreen.rows.begin + 2;
+    panel->creditsScreen.rows.cap = panel->creditsScreen.rows.end;
+
+    for (int rowIndex = 0; rowIndex < 2; ++rowIndex) {
+        HudUiPanelSpan &row = panel->creditsScreen.rows.begin[rowIndex];
+        row.allocatorProxy = 0;
+        row.begin = AllocatePanelLayoutEntriesForTest(1);
+        row.end = row.begin + 1;
+        row.cap = row.end;
+        InitPanelLayoutEntryForTest(&row.begin[0], rowIndex == 0 ? "row a" : "row b",
+                                    100 + rowIndex, 200 + rowIndex);
+    }
+}
+
+int CreditsPanelDestructorFailureBits(const HudUiCreditsPanel &panel) {
+    int failure = 0;
+    failure |= panel.creditsScreen.rows.begin == nullptr ? 0 : 1;
+    failure |= panel.creditsScreen.rows.end == nullptr ? 0 : 2;
+    failure |= panel.creditsScreen.rows.cap == nullptr ? 0 : 4;
+    failure |= panel.creditsScreen.base.base.ftable ==
+                       reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable)
+                   ? 0
+                   : 8;
+    failure |= panel.quitButton.base.ftable ==
+                       reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable)
+                   ? 0
+                   : 16;
+    failure |= panel.backButton.base.ftable ==
+                       reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable)
+                   ? 0
+                   : 32;
+    failure |= panel.base.base.base.vptr == &g_HudUiContainer_FTable ? 0 : 64;
+    return failure;
+}
+
 extern "C" int zhud_panel_span_insert_n_smoke(void) {
     HudUiPanelLayoutEntry templateEntry{};
     InitPanelLayoutEntryForTest(&templateEntry, "insert", 90, 91);
@@ -2459,6 +2502,45 @@ extern "C" int zhud_panel_span_insert_n_smoke(void) {
 
     templateEntry.panel.Destructor();
     return growOk && longTailOk && shortTailOk ? 0 : 1;
+}
+
+extern "C" int zhud_credits_panel_destructor_smoke(void) {
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 5;
+    vmodeOption.name = vmodeName;
+    vmodeOption.next = nullptr;
+
+    zOptionEntryPartial *const oldOptionsHead = g_zGame_Options_OptionListHead;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+
+    HudUiCreditsPanel panel{};
+    InitCreditsPanelForDestructorTest(&panel);
+    panel.Destructor();
+
+    const int failure = CreditsPanelDestructorFailureBits(panel);
+    g_zGame_Options_OptionListHead = oldOptionsHead;
+    return failure;
+}
+
+extern "C" int zhud_credits_panel_scalar_deleting_destructor_smoke(void) {
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 5;
+    vmodeOption.name = vmodeName;
+    vmodeOption.next = nullptr;
+
+    zOptionEntryPartial *const oldOptionsHead = g_zGame_Options_OptionListHead;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+
+    HudUiCreditsPanel panel{};
+    InitCreditsPanelForDestructorTest(&panel);
+    HudUiCreditsPanel *const result = panel.ScalarDeletingDestructor(0);
+
+    int failure = result == &panel ? 0 : 1;
+    failure |= CreditsPanelDestructorFailureBits(panel) << 1;
+    g_zGame_Options_OptionListHead = oldOptionsHead;
+    return failure;
 }
 
 extern "C" int zhud_composite_panel_vector_insert_copies_smoke(void) {

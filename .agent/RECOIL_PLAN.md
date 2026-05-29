@@ -1619,9 +1619,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4091c0:
   - [✅] Reconstructed (Name: HudUiCreditsPanel::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCreditsPanel::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_credits_panel_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x4091e0:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::Destructor)
@@ -1630,10 +1630,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Functional-equivalent
   - [❌] Binary-safe
 - 0x4092a0:
-  - [☑️] Reconstructed (Name: HudUiCreditsPanel::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiCreditsPanel::Destructor)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCreditsPanel::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_credits_panel_destructor)
   - [❌] Binary-safe
 - 0x409360:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::ScalarDeletingDestructor)

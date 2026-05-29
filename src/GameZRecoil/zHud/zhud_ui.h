@@ -1438,6 +1438,18 @@ struct HudUiZrdScrollingText {
     void RECOIL_THISCALL OnActivateResetOwnerFade();
 };
 
+struct HudUiCreditsPanel {
+    HudUiBackground base;
+    float fadeStep;
+    HudUiZrdWidget backButton;
+    HudUiZrdWidget quitButton;
+    HudUiZrdScrollingText creditsScreen;
+    float fadeProgress;
+
+    void RECOIL_THISCALL Destructor();
+    HudUiCreditsPanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+};
+
 struct HudUiPanelSimple {
     unsigned char storage[0x2a4];
 
@@ -1803,6 +1815,12 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiZrdScrollingText) == 0x170);
 RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, rows) == 0x14c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, rect) == 0x15c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, totalHeight) == 0x16c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, fadeStep) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, backButton) == 0xa950);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, quitButton) == 0xaa9c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, creditsScreen) == 0xabe8);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, fadeProgress) == 0xad58);
+RECOIL_STATIC_ASSERT(sizeof(HudUiCreditsPanel) == 0xad5c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxOkButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxCancelButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTransitionTextPanel) == 0x2c0);

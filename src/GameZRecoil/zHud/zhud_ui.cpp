@@ -4701,6 +4701,43 @@ void RECOIL_THISCALL HudUiZrdScrollingText::OnActivateResetOwnerFade() {
     *ownerFadeProgress = 0.0f;
 }
 
+// Reimplements 0x4092a0: HudUiCreditsPanel::Destructor
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void RECOIL_THISCALL HudUiCreditsPanel::Destructor()
+{
+    HudUiPanelSpan *row = creditsScreen.rows.begin;
+    while (row != creditsScreen.rows.end)
+    {
+        row->DestroyAndFree();
+        ++row;
+    }
+
+    ::operator delete(creditsScreen.rows.begin);
+    creditsScreen.rows.begin = 0;
+    creditsScreen.rows.end = 0;
+    creditsScreen.rows.cap = 0;
+
+    creditsScreen.base.DestructorCore();
+    quitButton.DestructorCore();
+    backButton.DestructorCore();
+    base.Destructor();
+}
+
+// Reimplements 0x4091c0: HudUiCreditsPanel::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+HudUiCreditsPanel *RECOIL_THISCALL
+HudUiCreditsPanel::ScalarDeletingDestructor(unsigned int flags)
+{
+    HudUiCreditsPanel *self = this;
+    Destructor();
+    if ((flags & 1) != 0)
+    {
+        ::operator delete(self);
+    }
+
+    return self;
+}
+
 // Reimplements 0x40a210: HudUiPanelLayoutEntry::CopyConstruct
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
 HudUiPanelLayoutEntry *RECOIL_THISCALL
