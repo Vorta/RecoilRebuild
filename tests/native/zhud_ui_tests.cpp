@@ -9104,6 +9104,17 @@ extern "C" int zhud_panel_text_color_shadow_smoke(void) {
                : 1;
 }
 
+extern "C" int zhud_util_free_field_ptr_smoke(void) {
+    HudUtil field{std::malloc(4)};
+    field.FreeFieldPtr();
+    if (field.fieldPtr != nullptr) {
+        return 1;
+    }
+
+    field.FreeFieldPtr();
+    return field.fieldPtr == nullptr ? 0 : 2;
+}
+
 extern "C" int zhud_panel_constructor_default_smoke(void) {
     alignas(HudUiPanel) std::uint8_t storage[0x2ac]{};
     auto *panel = reinterpret_cast<HudUiPanel *>(storage);

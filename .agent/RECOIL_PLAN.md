@@ -3566,9 +3566,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40bf00:
   - [✅] Reconstructed (Name: HudUtil::FreeFieldPtr)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUtil::FreeFieldPtr File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_util_free_field_ptr)
   - [❌] Binary-safe
 - 0x40d270:
   - [☑️] Reconstructed (Name: HudLayoutSW::GlobalInit)
