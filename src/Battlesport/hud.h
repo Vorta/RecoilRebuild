@@ -126,6 +126,10 @@ struct HudUiConfirmQuitOkButton : HudUiZrdWidget {
     void RECOIL_THISCALL OnActivate();
 };
 
+struct HudUiCreditsQuitButton : HudUiZrdWidget {
+    void RECOIL_THISCALL OnActivate();
+};
+
 struct HudUiBackgroundConfirmQuit : HudUiBackground {
     HudUiConfirmQuitOkButton okButton;
     HudUiZrdWidget cancelButton;

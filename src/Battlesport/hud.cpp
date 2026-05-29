@@ -376,6 +376,16 @@ void RECOIL_THISCALL HudUiZrdWidget::OnActivateQueueExitCurrentState()
     OnActivate();
 }
 
+// Reimplements 0x409180: HudUiCreditsQuitButton::OnActivate
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void RECOIL_THISCALL HudUiCreditsQuitButton::OnActivate()
+{
+    g_RecoilApp.QueueExitCurrentState(1);
+    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
+    g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_leaveNetworkState_1d0.base, 0);
+    HudUiZrdWidget::OnActivate();
+}
+
 // Reimplements 0x415810: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
 RECOIL_NOINLINE void RECOIL_CDECL RecoilStateConfirmQuit::StaticInitAndRegisterAtExit()

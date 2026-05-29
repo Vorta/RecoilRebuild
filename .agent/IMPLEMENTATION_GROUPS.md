@@ -40,3 +40,12 @@ source-readiness, or coherent binary-safe groups currently being coordinated.
 ```
 
 ## Active Groups
+
+### Group: credits panel activation callbacks
+
+- Anchor: 0x409040 HudUiCreditsPanel::Constructor
+- Reason: class/vtable cluster
+- Source blockers:
+  - 0x409040 HudUiCreditsPanel::Constructor vtable/scrolling-text owner audit
+- Next action:
+  - python tools/recoil_status.py 0x409040

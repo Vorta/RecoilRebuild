@@ -1438,6 +1438,18 @@ bool IsSingleExitCurrentQueueItem(RecoilApp_StateQueue &queue, int param) {
     return item->m_kind == RecoilApp_StateQueueKind_ExitCurrent && item->m_param == param;
 }
 
+RecoilApp_StateQueueItem *QueueItemAt(RecoilApp_StateQueue &queue, int index) {
+    if (index < 0 || index >= queue.m_itemCount || queue.m_chunkPtrList == 0) {
+        return nullptr;
+    }
+
+    const RecoilPtr32 firstSlotValue = queue.m_writeBlock.m_cursor -
+                                       static_cast<RecoilPtr32>(queue.m_itemCount * 4);
+    auto *const slot = reinterpret_cast<RecoilPtr32 *>(
+        static_cast<std::uintptr_t>(firstSlotValue + static_cast<RecoilPtr32>(index * 4)));
+    return reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+}
+
 bool IsSinglePushStateQueueItem(RecoilApp_StateQueue &queue, RecoilPtr32 state, int param) {
     if (queue.m_itemCount != 1 || queue.m_chunkPtrList == 0) {
         return false;
@@ -2216,6 +2228,54 @@ extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void
         result = 1;
     } else if (!IsSingleExitCurrentQueueItem(queue, 0)) {
         result = 2;
+    }
+
+    CleanupQueuedItems(queue);
+    widget.DestructorCore();
+    g_RecoilApp = oldApp;
+    return result;
+}
+
+extern "C" int hud_ui_credits_quit_button_on_activate_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    g_RecoilApp = RecoilApp{};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_RecoilApp.m_leaveNetworkState_1d0.base.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_ON_EXIT;
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiCreditsQuitButton widget{};
+    widget.Constructor();
+    widget.OnActivate();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueueItem *const exitItem = QueueItemAt(queue, 0);
+    RecoilApp_StateQueueItem *const switchItem = QueueItemAt(queue, 1);
+
+    int result = 0;
+    if (g_stateExitCount != 2 || g_stateEnterCount != 1 ||
+        g_RecoilApp.m_missionShutdownMode != RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY ||
+        queue.m_itemCount != 2) {
+        result = 1;
+    } else if (exitItem == nullptr || exitItem->m_kind != RecoilApp_StateQueueKind_ExitCurrent ||
+               exitItem->m_param != 1) {
+        result = 2;
+    } else if (switchItem == nullptr ||
+               switchItem->m_kind != RecoilApp_StateQueueKind_SwitchCurrent ||
+               switchItem->m_stateObj !=
+                   static_cast<RecoilPtr32>(
+                       reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_leaveNetworkState_1d0)) ||
+               switchItem->m_param != 0) {
+        result = 3;
     }
 
     CleanupQueuedItems(queue);

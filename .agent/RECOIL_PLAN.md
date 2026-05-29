@@ -1613,9 +1613,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x409180:
   - [✅] Reconstructed (Name: HudUiCreditsQuitButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCreditsQuitButton::OnActivate File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_credits_quit_button_on_activate)
   - [❌] Binary-safe
 - 0x4091c0:
   - [✅] Reconstructed (Name: HudUiCreditsPanel::ScalarDeletingDestructor)
