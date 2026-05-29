@@ -5919,6 +5919,19 @@ extern "C" int recoil_state_credits_destructor_smoke(void) {
     return state.vftable == kRecoilStateBase_VtblAddress ? 0 : 4;
 }
 
+extern "C" int recoil_state_credits_constructor_smoke(void) {
+    RecoilStateCredits state{};
+    state.vftable = 0x11111111;
+    state.dialog = 0x22222222;
+
+    RecoilStateCredits *const result = state.Constructor();
+
+    return result == &state && state.vftable != 0 && state.vftable != 0x11111111 &&
+                   state.dialog == 0
+               ? 0
+               : 1;
+}
+
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
     RecoilStateConfirmQuit constructed{};
     constructed.vftable = 0x11111111;
