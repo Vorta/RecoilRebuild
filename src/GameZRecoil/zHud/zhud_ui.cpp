@@ -4712,6 +4712,17 @@ HudUiPanelLayoutEntry::CopyConstruct(const HudUiPanelLayoutEntry *source)
     return this;
 }
 
+// Reimplements 0x40a1e0: HudUiPanelLayoutEntry::CopyAssign
+// (D:\Proj\Battlesport\HudUiPanel.cpp)
+HudUiPanelLayoutEntry *RECOIL_THISCALL
+HudUiPanelLayoutEntry::CopyAssign(const HudUiPanelLayoutEntry *source)
+{
+    panel.ConstructorCopy(&source->panel);
+    layoutX = source->layoutX;
+    layoutY = source->layoutY;
+    return this;
+}
+
 // Reimplements 0x409910: HudUiPanelSpan::Clear
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
 void RECOIL_THISCALL HudUiPanelSpan::Clear()

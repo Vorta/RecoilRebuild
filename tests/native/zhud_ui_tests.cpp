@@ -2320,6 +2320,24 @@ extern "C" int zhud_panel_layout_entry_copy_construct_smoke(void) {
     return copiedValues ? 0 : 1;
 }
 
+extern "C" int zhud_panel_layout_entry_copy_assign_smoke(void) {
+    HudUiPanelLayoutEntry source{};
+    source.panel.ConstructorDefault("assign row", 16, 26);
+    source.layoutX = 64;
+    source.layoutY = 96;
+
+    HudUiPanelLayoutEntry copied{};
+    HudUiPanelLayoutEntry *const result = copied.CopyAssign(&source);
+
+    const bool copiedValues =
+        result == &copied && copied.layoutX == 64 && copied.layoutY == 96 &&
+        std::strcmp(&TestFieldAt<char>(&copied.panel, 0x34), "assign row") == 0;
+
+    copied.panel.Destructor();
+    source.panel.Destructor();
+    return copiedValues ? 0 : 1;
+}
+
 extern "C" int zhud_panel_span_clear_smoke(void) {
     auto *entries = static_cast<HudUiPanelLayoutEntry *>(
         ::operator new(sizeof(HudUiPanelLayoutEntry) * 2));
