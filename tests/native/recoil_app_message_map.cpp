@@ -50,6 +50,8 @@ struct RecoilStateCredits {
     static void RECOIL_CDECL QueuePush();
 };
 
+extern RecoilStateCredits g_RecoilStateCredits;
+
 namespace {
 void AtexitProviderNoOp() {}
 
@@ -6164,6 +6166,45 @@ extern "C" int recoil_state_credits_on_deactivate_smoke(void) {
         return 2;
     }
     return activeOk ? 0 : 3;
+}
+
+extern "C" int recoil_state_credits_queue_push_smoke(void) {
+    RecoilApp oldApp = g_RecoilApp;
+    const RecoilPtr32 oldCreditsVtable = g_RecoilStateCredits.vftable;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    g_RecoilStateCredits.vftable = oldState.vftable;
+    g_stateEnterCount = 0;
+
+    g_RecoilApp = {};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+
+    RecoilStateCredits::QueuePush();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    bool itemOk = false;
+    if (queue.m_itemCount == 1) {
+        const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+        RecoilPtr32 *const slot =
+            (RecoilPtr32 *)static_cast<std::uintptr_t>(slotValue);
+        RecoilApp_StateQueueItem *const item =
+            (RecoilApp_StateQueueItem *)static_cast<std::uintptr_t>(*slot);
+        itemOk = item->m_type == 0 && item->m_kind == RecoilApp_StateQueueKind_PushState &&
+                 item->m_stateObj ==
+                     static_cast<RecoilPtr32>(
+                         reinterpret_cast<std::uintptr_t>(&g_RecoilStateCredits)) &&
+                 item->m_param == 0;
+        CleanupSingleQueuedItem(queue);
+    }
+
+    const bool enterOk = g_stateEnterCount == 1;
+    g_RecoilStateCredits.vftable = oldCreditsVtable;
+    g_RecoilApp = oldApp;
+    return itemOk && enterOk ? 0 : 1;
 }
 
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {

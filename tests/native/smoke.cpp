@@ -955,6 +955,7 @@ extern "C" int recoil_state_credits_constructor_smoke(void);
 extern "C" int recoil_state_credits_on_wnd_activate_smoke(void);
 extern "C" int recoil_state_credits_on_try_become_current_smoke(void);
 extern "C" int recoil_state_credits_on_deactivate_smoke(void);
+extern "C" int recoil_state_credits_queue_push_smoke(void);
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void);
 extern "C" int recoil_state_confirm_quit_queue_enter_smoke(void);
 extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void);
@@ -2955,6 +2956,7 @@ int main(int argc, char **argv) {
          recoil_state_credits_on_try_become_current_smoke},
         {"recoil_state_credits_on_deactivate_smoke",
          recoil_state_credits_on_deactivate_smoke},
+        {"recoil_state_credits_queue_push_smoke", recoil_state_credits_queue_push_smoke},
         {"recoil_state_confirm_quit_destructor_smoke",
          recoil_state_confirm_quit_destructor_smoke},
         {"recoil_state_confirm_quit_queue_enter_smoke",

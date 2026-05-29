@@ -1705,8 +1705,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilStateCredits::QueuePush)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateCredits::QueuePush File: src/Battlesport/RecoilStateCredits.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_state_credits_queue_push)
+  - [✅] Binary-safe
 - 0x409b20:
   - [✅] Reconstructed (Name: HudUiPanelSpan::DestroyAndFree)
   - [✅] Source dependencies satisfied
