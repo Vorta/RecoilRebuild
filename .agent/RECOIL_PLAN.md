@@ -1555,9 +1555,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x406f60:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::OnTryBecomeCurrent)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::OnTryBecomeCurrent File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_on_try_become_current)
   - [❌] Binary-safe
 - 0x407010:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::OnDeactivate)

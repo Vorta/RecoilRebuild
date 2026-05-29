@@ -34,6 +34,7 @@ extern "C" HWND g_RecoilApp_hWndMain;
 extern "C" HINSTANCE g_RecoilApp_hInstance;
 extern "C" const char *g_RecoilApp_WndClassNamePtr;
 extern "C" int g_RecoilApp_AttractFmvReloadMode;
+extern "C" unsigned int g_HudUi_InvalidateMask;
 BOOL RECOIL_STDCALL AfxWinInit(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine,
                                int showCommand);
 
@@ -108,8 +109,21 @@ bool g_confirmQuitBackgroundFreeArgsOk;
 int g_openFileNameCalls;
 bool g_openFileNameStructOk;
 char g_openFileNameSelectedPath[MAX_PATH];
+int g_cheatCodeBltDirectCalls;
 
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
+
+void RECOIL_FASTCALL TestCheatCodeBltSwToPrimaryRectDirect(zVidRect32 *srcRect,
+                                                           zVidRect32 *dstRect) {
+    if (srcRect == nullptr && dstRect == nullptr) {
+        ++g_cheatCodeBltDirectCalls;
+    }
+}
+
+int RECOIL_FASTCALL TestCheatCodeVideoSurfaceStateNoOp(
+    zVideo_SurfaceStatePartial *surfaceState) {
+    return surfaceState != nullptr ? 1 : 0;
+}
 
 struct TestCreditsPanel {
     virtual void RECOIL_THISCALL Update(float) {}
@@ -2515,6 +2529,102 @@ extern "C" int recoil_state_cheat_code_static_init_thunks_smoke(void) {
     }
 
     return 0;
+}
+
+extern "C" int recoil_state_cheat_code_on_try_become_current_smoke(void) {
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 6;
+    vmodeOption.name = vmodeName;
+    zOptionEntryPartial *const oldOptionsHead = g_zGame_Options_OptionListHead;
+
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const int oldRendererType = g_zVideo_RendererType;
+    const zVideo_BltRectDirectProc oldBltDirect = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    const int oldHalfResMode = g_zVideo_HalfResAdjustMode;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    const zSndSampleSetRegistry oldSampleSetRegistry = g_zSnd_SampleSetRegistry;
+    void *const oldGlobalVolumeScale = g_zSnd_GlobalVolumeScalePtr;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const int oldSndInitialized = g_zSnd_IsInitialized;
+    const int oldSndPreInitialized = g_zSnd_PreInitialized;
+
+    float globalVolumeScale = 1.0f;
+    char dialogSetName[] = "DIALOG";
+    zSndSampleSet dialogSet = {};
+    zSndSampleSet *sampleSetSlots[1] = {&dialogSet};
+    std::uint16_t pixels[4] = {};
+    dialogSet.setName = dialogSetName;
+
+    g_zGame_Options_OptionListHead = &vmodeOption;
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_RendererType = 1;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = TestCheatCodeBltSwToPrimaryRectDirect;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+    g_zVideo_HalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    g_HudUi_InvalidateMask = 0x80;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolumeScale;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_cheatCodeBltDirectCalls = 0;
+
+    RecoilStateCheatCode state{};
+    state.Constructor();
+
+    const int accepted = state.OnTryBecomeCurrent();
+    HudUiCheatCodeDialog *const dialog =
+        reinterpret_cast<HudUiCheatCodeDialog *>(static_cast<std::uintptr_t>(state.m_dialog));
+    zSndPlayHandleSnapshot *const snapshot =
+        reinterpret_cast<zSndPlayHandleSnapshot *>(static_cast<std::uintptr_t>(state.m_audioSnapshot));
+
+    int result = 0;
+    if (accepted != 1 || dialog == nullptr || snapshot == nullptr) {
+        result = 1;
+    } else if (g_cheatCodeBltDirectCalls != 1 ||
+               state.m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
+               g_zVideo_HalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_DISABLED ||
+               g_HudUi_InvalidateMask != 0x04u || dialog->base.base.enabled != 1 ||
+               dialogSet.resourcesLoaded != 1) {
+        result = 2;
+    }
+
+    if (dialog != nullptr) {
+        dialog->ScalarDeletingDestructor(1);
+        state.m_dialog = 0;
+    }
+    if (snapshot != nullptr) {
+        snapshot->Destroy();
+        state.m_audioSnapshot = 0;
+    }
+
+    g_zGame_Options_OptionListHead = oldOptionsHead;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_HalfResAdjustMode = oldHalfResMode;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    g_zSnd_SampleSetRegistry = oldSampleSetRegistry;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScale;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSnd_IsInitialized = oldSndInitialized;
+    g_zSnd_PreInitialized = oldSndPreInitialized;
+    return result;
 }
 
 extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {

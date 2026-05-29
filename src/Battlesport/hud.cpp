@@ -59,6 +59,11 @@ const float kHudWeatherFxDepthBase = 0.5f;
 const float kHudWeatherFxConeBase = -1.0f;
 const float kHudWeatherFxReflectBias = 1.5f;
 
+enum zVideoRendererBackend
+{
+    ZVID_RENDERER_BACKEND_SOFTWARE = 0,
+};
+
 struct HudUiBackgroundConfirmQuitVirtual
 {
     virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
@@ -559,6 +564,40 @@ RecoilStateCheatCode *RECOIL_THISCALL RecoilStateCheatCode::Constructor()
     vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCheatCode_Vtbl;
     m_dialog = 0;
     return this;
+}
+
+// Reimplements 0x406f60: RecoilStateCheatCode::OnTryBecomeCurrent
+// (D:\Proj\Battlesport\RecoilStateCheatCode.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateCheatCode::OnTryBecomeCurrent()
+{
+    if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE)
+    {
+        g_zVideo_pfnBltSwToPrimaryRectDirect(0, 0);
+    }
+
+    m_prevHalfResAdjustMode =
+        (zVideoHalfResAdjustMode)zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
+    HudUi::SetInvalidateMode(0);
+
+    zSndPlayHandleSnapshot *const audioSnapshot =
+        zSndPlayHandleSnapshot::CreateFromActiveSamples();
+    m_audioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
+    audioSnapshot->StopAllIfPlaying();
+
+    zSndSampleSet_InitByName("DIALOG");
+
+    HudUiCheatCodeDialog *dialog =
+        (HudUiCheatCodeDialog *)::operator new(sizeof(HudUiCheatCodeDialog));
+    if (dialog != 0)
+    {
+        dialog = dialog->Constructor();
+    }
+    m_dialog = (RecoilPtr32)(unsigned int)dialog;
+
+    HudUiCheatCodeDialogVirtual *const dialogView =
+        (HudUiCheatCodeDialogVirtual *)dialog;
+    dialogView->SetEnabled(1);
+    return 1;
 }
 
 // Reimplements 0x406f00: RecoilStateCheatCode::Destructor
