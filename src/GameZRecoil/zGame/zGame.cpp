@@ -117,21 +117,21 @@ zGame_OptionsRuntimeConfig::InitFromSystem() {
     cpuClass = zSys::GetCpuClass();
     cpuMhz = zSys::GetCpuMhz();
 
-    unsigned int probe = static_cast<unsigned int>(zSnd::HasMmxMixerSupport()) & 1u;
+    unsigned int probe = (unsigned int)(zSnd::HasMmxMixerSupport()) & 1u;
     unsigned int flags = defaultFlags;
     defaultFlags = ((flags ^ probe) & 1u) ^ flags;
 
-    probe = (static_cast<unsigned int>(zSys::ReturnZeroStub()) & 1u) << 1;
+    probe = ((unsigned int)(zSys::ReturnZeroStub()) & 1u) << 1;
     flags = defaultFlags;
     defaultFlags = (flags & ~2u) | probe;
 
     systemRamKb = zSys::GetTotalPhysKb();
 
-    probe = (static_cast<unsigned int>(zSys::ReturnZeroStub()) & 1u) << 2;
+    probe = ((unsigned int)(zSys::ReturnZeroStub()) & 1u) << 2;
     flags = defaultFlags;
     defaultFlags = (flags & ~4u) | probe;
 
-    probe = (static_cast<unsigned int>(zVid::HasAcceptedHardwareRenderer()) & 1u) << 6;
+    probe = ((unsigned int)(zVid::HasAcceptedHardwareRenderer()) & 1u) << 6;
     flags = defaultFlags;
     defaultFlags = (flags & ~0x40u) | probe;
 
@@ -260,7 +260,7 @@ RECOIL_NOINLINE zOptionEntryPartial *RECOIL_FASTCALL Options_GetOrCreateOption(
         return result;
     }
 
-    result = static_cast<zOptionEntryPartial *>(calloc(1, sizeof(zOptionEntryPartial)));
+    result = (zOptionEntryPartial *)(calloc(1, sizeof(zOptionEntryPartial)));
     result->name = _strdup(name);
     result->storageType = storageType;
     result->dataSize = dataSize;
@@ -316,7 +316,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_LoadFromRegistry() {
                                      strlen(g_zGame_Options_RegKeyCurrentUser) + 1 +
                                      strlen(g_zGame_Options_RegKeyGame) + 1;
     char *const subKey =
-        static_cast<char *>(_alloca((subKeyLength + 3u) & ~static_cast<size_t>(3u)));
+        (char *)(_alloca((subKeyLength + 3u) & ~(size_t)(3u)));
     strcpy(subKey, "SOFTWARE\\");
     strcat(subKey, g_zGame_Options_RegKeyRoot);
     strcat(subKey, "\\");
@@ -367,8 +367,8 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_LoadFromRegistry() {
         case 5:
         case 6:
         case 7:
-            expectedSize = static_cast<DWORD>(entry->dataSize);
-            payload = (BYTE *)(static_cast<unsigned int>(entry->payloadOrBuffer));
+            expectedSize = (DWORD)(entry->dataSize);
+            payload = (BYTE *)((unsigned int)(entry->payloadOrBuffer));
             break;
 
         default:
@@ -396,7 +396,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_SaveToRegistry() {
                                      strlen(g_zGame_Options_RegKeyCurrentUser) + 1 +
                                      strlen(g_zGame_Options_RegKeyGame) + 1;
     char *const subKey =
-        static_cast<char *>(_alloca((subKeyLength + 3u) & ~static_cast<size_t>(3u)));
+        (char *)(_alloca((subKeyLength + 3u) & ~(size_t)(3u)));
     strcpy(subKey, "SOFTWARE\\");
     strcat(subKey, g_zGame_Options_RegKeyRoot);
     strcat(subKey, "\\");
@@ -430,7 +430,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_SaveToRegistry() {
         }
 
         if (key == 0 ||
-            static_cast<unsigned int>(entry->storageType) > ZGAME_OPTION_STORAGE_MAX) {
+            (unsigned int)(entry->storageType) > ZGAME_OPTION_STORAGE_MAX) {
             continue;
         }
 
@@ -440,11 +440,11 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_SaveToRegistry() {
             valueType = REG_DWORD;
         } else if (entry->storageType >= ZGAME_OPTION_STRING_BUFFER) {
             payload =
-                (const BYTE *)(static_cast<unsigned int>(entry->payloadOrBuffer));
+                (const BYTE *)((unsigned int)(entry->payloadOrBuffer));
         }
 
         if (RegSetValueExA(*key, entry->name, 0, valueType, payload,
-                           static_cast<DWORD>(entry->dataSize)) != ERROR_SUCCESS) {
+                           (DWORD)(entry->dataSize)) != ERROR_SUCCESS) {
             return 0;
         }
     }
@@ -480,7 +480,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Options_ShutdownRegistryContext() {
             entry->storageType > ZGAME_OPTION_INLINE_BINARY8 &&
             entry->storageType <= ZGAME_OPTION_STORAGE_MAX) {
             void *const payload =
-                (void *)(static_cast<unsigned int>(entry->payloadOrBuffer));
+                (void *)((unsigned int)(entry->payloadOrBuffer));
             if (payload != 0) {
                 free(payload);
                 entry->payloadOrBuffer = 0;
@@ -821,9 +821,9 @@ const int ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON = 0x08;
 const double ZOPT_COMPARE_TOLERANCE_PCT = 0.02;
 
 int WrappedAbsDifference(int lhs, int rhs) {
-    const unsigned int diff = static_cast<unsigned int>(lhs) - static_cast<unsigned int>(rhs);
+    const unsigned int diff = (unsigned int)(lhs) - (unsigned int)(rhs);
     const unsigned int signMask = 0u - (diff >> 31);
-    return static_cast<int>((diff ^ signMask) - signMask);
+    return (int)((diff ^ signMask) - signMask);
 }
 
 } // namespace
@@ -847,7 +847,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadScalarValueAsInt(zReader::Node *scalarVa
         return scalarValueNode->value.i32;
     }
     if (scalarValueNode->type == zReader::ZRDR_NODE_FLOAT) {
-        return static_cast<int>(scalarValueNode->value.f32);
+        return (int)(scalarValueNode->value.f32);
     }
     if (scalarValueNode->type == zReader::ZRDR_NODE_STRING) {
         return LookupNamedValueAsInt(scalarValueNode->value.str);
@@ -883,12 +883,12 @@ EvaluateProfileMetricCondition(zReader::Node *metricConditionNode) {
         currentMetricValue = g_zGame_Options_RuntimeConfig.cpuMhz;
     } else if (strcmp(metricKey, "VIDEO_KB") == 0) {
         currentMetricValue =
-            static_cast<int>(g_zGame_Options_RuntimeConfig.soundHardwareMemKb);
+            (int)(g_zGame_Options_RuntimeConfig.soundHardwareMemKb);
     } else if (strcmp(metricKey, "RAM_KB") == 0) {
-        currentMetricValue = static_cast<int>(g_zGame_Options_RuntimeConfig.systemRamKb);
+        currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.systemRamKb);
     } else if (strcmp(metricKey, "HW_ACCEL") == 0) {
         currentMetricValue =
-            static_cast<int>((g_zGame_Options_RuntimeConfig.defaultFlags >> 6) & 1u);
+            (int)((g_zGame_Options_RuntimeConfig.defaultFlags >> 6) & 1u);
     } else {
         return 0;
     }
@@ -944,8 +944,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EvalIntCompareOp(const char *opString,
         return lhs != rhs;
     }
     if (strcmp(opString, "~=") == 0) {
-        return static_cast<double>(WrappedAbsDifference(lhs, rhs)) <
-               static_cast<double>(lhs) * ZOPT_COMPARE_TOLERANCE_PCT;
+        return (double)(WrappedAbsDifference(lhs, rhs)) <
+               (double)(lhs) * ZOPT_COMPARE_TOLERANCE_PCT;
     }
 
     return 0;
@@ -1111,7 +1111,7 @@ RECOIL_NOINLINE int RECOIL_CDECL GetTextureMemoryForCurrentHwMode() {
 // Reimplements 0x408120: zOpt::SetPlayerName
 RECOIL_NOINLINE void RECOIL_FASTCALL SetPlayerName(const char *name) {
     char *const buffer = (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
-    const unsigned int dataSize = static_cast<unsigned int>(ZOPT_PLAYER_NAME->dataSize);
+    const unsigned int dataSize = (unsigned int)(ZOPT_PLAYER_NAME->dataSize);
     const size_t nameLength = strlen(name);
 
     if (nameLength < dataSize) {
@@ -1266,16 +1266,16 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_SetSize(zOpt_ViewRectSectio
 // Reimplements 0x408430: zOpt::ViewRectSection_ClampPointToInclusiveBounds
 RECOIL_NOINLINE void RECOIL_FASTCALL
 ViewRectSection_ClampPointToInclusiveBounds(zOpt_ViewRectSection *section, float *pointXY) {
-    if (pointXY[0] < static_cast<float>(section->x)) {
-        pointXY[0] = static_cast<float>(section->x);
-    } else if (!(pointXY[0] <= static_cast<float>(section->maxXInclusive))) {
-        pointXY[0] = static_cast<float>(section->maxXInclusive);
+    if (pointXY[0] < (float)(section->x)) {
+        pointXY[0] = (float)(section->x);
+    } else if (!(pointXY[0] <= (float)(section->maxXInclusive))) {
+        pointXY[0] = (float)(section->maxXInclusive);
     }
 
-    if (pointXY[1] < static_cast<float>(section->y)) {
-        pointXY[1] = static_cast<float>(section->y);
-    } else if (!(pointXY[1] <= static_cast<float>(section->maxYInclusive))) {
-        pointXY[1] = static_cast<float>(section->maxYInclusive);
+    if (pointXY[1] < (float)(section->y)) {
+        pointXY[1] = (float)(section->y);
+    } else if (!(pointXY[1] <= (float)(section->maxYInclusive))) {
+        pointXY[1] = (float)(section->maxYInclusive);
     }
 }
 
@@ -1284,9 +1284,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetPosition(int x, int y) {
     zOpt_ViewRectSection *section = *g_zOpt_RenderSectionOption;
     ViewRectSection_SetPosition(section, x, y);
     if (section->target != 0) {
-        zClass_Window::gwWindowSetResolution(static_cast<zClass_NodePartial *>(section->target),
+        zClass_Window::gwWindowSetResolution((zClass_NodePartial *)(section->target),
                                              section->width, section->height);
-        zClass_Window::gwWindowSetSize(static_cast<zClass_NodePartial *>(section->target),
+        zClass_Window::gwWindowSetSize((zClass_NodePartial *)(section->target),
                                        section->x, section->y);
     }
 }
@@ -1297,7 +1297,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetSize(int width,
     zOpt_ViewRectSection *section = *g_zOpt_RenderSectionOption;
     ViewRectSection_SetSize(section, width, height);
     if (section->target != 0) {
-        zClass_Window::gwWindowSetResolution(static_cast<zClass_NodePartial *>(section->target),
+        zClass_Window::gwWindowSetResolution((zClass_NodePartial *)(section->target),
                                              section->width, section->height);
     }
 }
@@ -1308,7 +1308,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetTargetWindow(zClass_NodePa
     section->target = windowNode;
     if (windowNode != 0) {
         zClass_Window::gwWindowSetResolution(windowNode, section->width, section->height);
-        zClass_Window::gwWindowSetSize(static_cast<zClass_NodePartial *>(section->target),
+        zClass_Window::gwWindowSetSize((zClass_NodePartial *)(section->target),
                                        section->x, section->y);
     }
 }
@@ -1323,9 +1323,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetPosition(int x, int y) {
     zOpt_ViewRectSection *section = *g_zOpt_DisplaySectionOption;
     ViewRectSection_SetPosition(section, x, y);
     if (section->target != 0) {
-        zClass_Display::gwDisplaySetSize(static_cast<zClass_NodePartial *>(section->target),
+        zClass_Display::gwDisplaySetSize((zClass_NodePartial *)(section->target),
                                          section->width, section->height);
-        zClass_Display::gwDisplaySetPosition(static_cast<zClass_NodePartial *>(section->target),
+        zClass_Display::gwDisplaySetPosition((zClass_NodePartial *)(section->target),
                                              section->x, section->y);
     }
 }
@@ -1336,7 +1336,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetSize(int width,
     zOpt_ViewRectSection *section = *g_zOpt_DisplaySectionOption;
     ViewRectSection_SetSize(section, width, height);
     if (section->target != 0) {
-        zClass_Display::gwDisplaySetSize(static_cast<zClass_NodePartial *>(section->target),
+        zClass_Display::gwDisplaySetSize((zClass_NodePartial *)(section->target),
                                          section->width, section->height);
     }
 }
@@ -1348,7 +1348,7 @@ DisplaySection_SetTargetDisplay(zClass_NodePartial *displayNode) {
     section->target = displayNode;
     if (displayNode != 0) {
         zClass_Display::gwDisplaySetSize(displayNode, section->width, section->height);
-        zClass_Display::gwDisplaySetPosition(static_cast<zClass_NodePartial *>(section->target),
+        zClass_Display::gwDisplaySetPosition((zClass_NodePartial *)(section->target),
                                              section->x, section->y);
     }
 }
@@ -1383,7 +1383,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL CameraSection_SetActiveCamera(zClass_NodePa
     zClass_Camera::gwCameraGetFOV(camera, &fovX, &fovY);
 
     fovX =
-        static_cast<float>(renderSection->width) * fovY / static_cast<float>(renderSection->height);
+        (float)(renderSection->width) * fovY / (float)(renderSection->height);
     zClass_Camera::gwCameraSetFOV(cameraSection->m_pCamera, fovX, fovY);
     zOpt::SetObjectLODForCurrentHwMode(zOpt::GetObjectLODForCurrentHwMode());
 }

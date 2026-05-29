@@ -37,19 +37,19 @@ typedef void (RECOIL_THISCALL *RecoilStateWndActivateMethod)(RecoilApp_IState *,
 typedef void (RECOIL_THISCALL *CFrameWndDestructorProc)(CFrameWnd *);
 
 RecoilPtr32 Ptr32FromSymbol(const void *symbol) {
-    return static_cast<RecoilPtr32>((unsigned int)(symbol));
+    return (RecoilPtr32)((unsigned int)(symbol));
 }
 
 CRuntimeClass *RECOIL_STDCALL GetCZGameFrameBaseRuntimeClass() {
-    return const_cast<CRuntimeClass *>(&CFrameWnd::classCFrameWnd);
+    return (CRuntimeClass *)(&CFrameWnd::classCFrameWnd);
 }
 
 void CallStateWndActivate(RecoilPtr32 stateValue, unsigned int nState) {
-    RecoilApp_IState *const state = (RecoilApp_IState *)(static_cast<unsigned int>(stateValue));
+    RecoilApp_IState *const state = (RecoilApp_IState *)((unsigned int)(stateValue));
     const RecoilApp_IState_Vtbl *const vtable = (const RecoilApp_IState_Vtbl *)(
-        static_cast<unsigned int>(state->vftable));
+        (unsigned int)(state->vftable));
     RecoilStateWndActivateMethod const method = (RecoilStateWndActivateMethod)(
-        static_cast<unsigned int>(vtable->OnWndActivate));
+        (unsigned int)(vtable->OnWndActivate));
     method(state, nState);
 }
 
@@ -82,6 +82,7 @@ CRuntimeClass CZGameFrame::classCZGameFrame = {
     "CZGameFrame", sizeof(CZGameFrame), 0xffff, 0, &GetCZGameFrameBaseRuntimeClass, 0,
 };
 
+// Reimplements 0x443790: CZGameFrame::GetBaseRuntimeClass
 RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetBaseRuntimeClass() {
     return Ptr32FromSymbol(&CFrameWnd::classCFrameWnd);
 }
@@ -92,7 +93,7 @@ const AFX_MSGMAP *RECOIL_STDCALL CZGameFrame::GetBaseMessageMapForMfc() {
 
 // Reimplements 0x443730: CZGameFrame::CreateObject
 RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_CDECL CZGameFrame::CreateObject() {
-    CZGameFrame *const frame = static_cast<CZGameFrame *>(::operator new(sizeof(CZGameFrame)));
+    CZGameFrame *const frame = (CZGameFrame *)(::operator new(sizeof(CZGameFrame)));
     if (frame == 0) {
         return 0;
     }
@@ -105,14 +106,17 @@ RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_CDECL CZGameFrame::CreateObject()
     }
 }
 
+// Reimplements 0x4437a0: CZGameFrame::GetRuntimeClass
 RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetRuntimeClass() {
     return Ptr32FromSymbol(&CZGameFrame::classCZGameFrame);
 }
 
+// Reimplements 0x4437b0: CZGameFrame::GetBaseMessageMap
 RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetBaseMessageMap() {
     return Ptr32FromSymbol(&CFrameWnd::messageMap);
 }
 
+// Reimplements 0x4437c0: CZGameFrame::GetMessageMap
 RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetMessageMap() {
     return Ptr32FromSymbol(&CZGameFrame::messageMap);
 }
@@ -132,8 +136,8 @@ CZGameFrame::IsWindowValid(CZGameFrameMfcWindow *pWnd) {
 // Reimplements 0x4437d0: CZGameFrame::Constructor
 RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_THISCALL
 CZGameFrame::Constructor(const char *appId) {
-    new (static_cast<CFrameWnd *>(this)) CFrameWnd();
-    m_gameBitmap.vftable = const_cast<RecoilNamedVtable *>(&kCBitmap_Vtable);
+    new ((CFrameWnd *)(this)) CFrameWnd();
+    m_gameBitmap.vftable = (RecoilNamedVtable *)(&kCBitmap_Vtable);
     m_gameBitmap.m_hObject = 0;
     *(RecoilPtr32 *)(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
     RecoilApp::InitStdLogFiles(appId);
@@ -145,10 +149,10 @@ CZGameFrame::Constructor(const char *appId) {
 RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::Destructor() {
     *(RecoilPtr32 *)(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
     zVideo::ReturnSuccessStub();
-    m_gameBitmap.vftable = const_cast<RecoilNamedVtable *>(&kCGdiObject_Vtable);
+    m_gameBitmap.vftable = (RecoilNamedVtable *)(&kCGdiObject_Vtable);
     m_gameBitmap.DeleteObject();
-    m_gameBitmap.vftable = const_cast<RecoilNamedVtable *>(&kCObject_Vtable);
-    CallMfcCFrameWndDestructor(static_cast<CFrameWnd *>(this));
+    m_gameBitmap.vftable = (RecoilNamedVtable *)(&kCObject_Vtable);
+    CallMfcCFrameWndDestructor((CFrameWnd *)(this));
 }
 
 // Reimplements 0x4438c0: CZGameFrame::BuildWindowTitle

@@ -1,10 +1,14 @@
 #include "Battlesport/RecoilApp.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
 
 struct RecoilStateCredits {
     RecoilPtr32 vftable;
     RecoilPtr32 dialog;
 
     RecoilStateCredits *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnWndActivate(int activateCode);
+    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
     RECOIL_NOINLINE ~RecoilStateCredits();
     static void RECOIL_CDECL QueuePush();
 };
@@ -47,6 +51,60 @@ RecoilStateCredits *RECOIL_THISCALL RecoilStateCredits::Constructor()
     vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCredits_Vtbl;
     dialog = 0;
     return this;
+}
+
+// Reimplements 0x4099a0: RecoilStateCredits::OnWndActivate
+// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+RecoilStateCredits::OnWndActivate(int activateCode)
+{
+    if (activateCode == 0) {
+        return;
+    }
+
+    RecoilStateCredits *const state = this;
+    HudUiCreditsPanel *const creditsPanel =
+        (HudUiCreditsPanel *)(unsigned int)state->dialog;
+    if (creditsPanel != 0) {
+        ((HudUiDialogController *)creditsPanel)->BlitOwnedSurfaceToPrimary();
+        ((HudUiContainer *)(unsigned int)state->dialog)->InvalidateChildren();
+    }
+}
+
+// Reimplements 0x409a60: RecoilStateCredits::OnTryBecomeCurrent
+// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateCredits::OnTryBecomeCurrent()
+{
+    HudUiCreditsPanel *creditsPanel =
+        (HudUiCreditsPanel *)::operator new(sizeof(HudUiCreditsPanel));
+    if (creditsPanel != 0) {
+        creditsPanel = creditsPanel->Constructor();
+    }
+    dialog = (RecoilPtr32)(unsigned int)creditsPanel;
+
+    ((HudUiCreditsPanelVirtual *)creditsPanel)->SetEnabled(1);
+    return 1;
+}
+
+// Reimplements 0x409ad0: RecoilStateCredits::OnDeactivate
+// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCredits::OnDeactivate()
+{
+    HudUiCreditsPanelVirtual *dialogView =
+        (HudUiCreditsPanelVirtual *)dialog;
+    if (dialogView == 0) {
+        return;
+    }
+
+    dialogView->SetEnabled(0);
+    ((HudUiDialogController *)(unsigned int)dialog)->BlitOwnedSurfaceToPrimary();
+
+    dialogView = (HudUiCreditsPanelVirtual *)dialog;
+    if (dialogView != 0) {
+        dialogView->ScalarDeletingDestructor(1);
+    }
+
+    dialog = 0;
 }
 
 // Reimplements 0x4099f0: RecoilStateCredits::Destructor

@@ -270,11 +270,11 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndSample::DestroyOwnedData() {
     markerValues = 0;
     free(markerAux);
     markerAux = 0;
-    free(const_cast<char *>(highVariant.sampleName));
+    free((char *)(highVariant.sampleName));
     highVariant.sampleName = 0;
-    free(const_cast<char *>(medVariant.sampleName));
+    free((char *)(medVariant.sampleName));
     medVariant.sampleName = 0;
-    free(const_cast<char *>(lowVariant.sampleName));
+    free((char *)(lowVariant.sampleName));
     lowVariant.sampleName = 0;
 
     for (int i = 0; i < duplicateVoiceCount; ++i) {
@@ -346,7 +346,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireVoice() {
     }
 
     if (result == 0 && index < 5) {
-        result = static_cast<zSndPlayHandle *>(malloc(sizeof(zSndPlayHandle)));
+        result = (zSndPlayHandle *)(malloc(sizeof(zSndPlayHandle)));
         memset(result, 0, sizeof(zSndPlayHandle));
 
         BackendDevice *const device = (BackendDevice *)(g_zSnd_BackendDevice);
@@ -357,8 +357,8 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireVoice() {
             return 0;
         }
 
-        zSndPlayHandle **const voices = static_cast<zSndPlayHandle **>(
-            realloc(duplicateVoices, static_cast<size_t>(duplicateVoiceCount + 1) *
+        zSndPlayHandle **const voices = (zSndPlayHandle **)(
+            realloc(duplicateVoices, (size_t)(duplicateVoiceCount + 1) *
                                               sizeof(zSndPlayHandle *)));
         duplicateVoices = voices;
         voices[duplicateVoiceCount] = result;
@@ -389,7 +389,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireA3dVoice() {
     }
 
     if (result == 0 && index < 5) {
-        result = static_cast<zSndPlayHandle *>(malloc(sizeof(zSndPlayHandle)));
+        result = (zSndPlayHandle *)(malloc(sizeof(zSndPlayHandle)));
         memset(result, 0, sizeof(zSndPlayHandle));
 
         BackendDevice *const device = (BackendDevice *)(g_zSnd_BackendDevice);
@@ -401,8 +401,8 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireA3dVoice() {
             return 0;
         }
 
-        zSndPlayHandle **const voices = static_cast<zSndPlayHandle **>(
-            realloc(duplicateVoices, static_cast<size_t>(duplicateVoiceCount + 1) *
+        zSndPlayHandle **const voices = (zSndPlayHandle **)(
+            realloc(duplicateVoices, (size_t)(duplicateVoiceCount + 1) *
                                               sizeof(zSndPlayHandle *)));
         duplicateVoices = voices;
         voices[duplicateVoiceCount] = result;
@@ -425,7 +425,7 @@ zSnd::GainScaleToDirectSoundAttenuation(float gainScale) {
 
     const float kDirectSoundAttenuationScale = 602.059991f;
     const float attenuation = (log(gainScale) / log(2.0)) * kDirectSoundAttenuationScale;
-    return static_cast<int>(attenuation - 0.5f);
+    return (int)(attenuation - 0.5f);
 }
 
 // Reimplements 0x4a07a0: zSnd::IsMuted
@@ -440,7 +440,7 @@ RECOIL_NOINLINE int RECOIL_CDECL zSnd::IsMuted() {
 // Reimplements 0x4a1090: zSnd::SetGlobalVolumeScale
 RECOIL_NOINLINE float RECOIL_STDCALL zSnd::SetGlobalVolumeScale(float scale) {
     if (g_zSnd_GlobalVolumeScalePtr != 0) {
-        *static_cast<float *>(g_zSnd_GlobalVolumeScalePtr) = scale;
+        *(float *)(g_zSnd_GlobalVolumeScalePtr) = scale;
     }
 
     return scale;
@@ -449,7 +449,7 @@ RECOIL_NOINLINE float RECOIL_STDCALL zSnd::SetGlobalVolumeScale(float scale) {
 // Reimplements 0x4a10b0: zSnd::MulGlobalVolumeScaleAndGetPrev
 // (D:\Proj\GameZRecoil\zSound\zSound.cpp)
 RECOIL_NOINLINE float RECOIL_STDCALL zSnd::MulGlobalVolumeScaleAndGetPrev(float scale) {
-    float *const globalVolumeScale = static_cast<float *>(g_zSnd_GlobalVolumeScalePtr);
+    float *const globalVolumeScale = (float *)(g_zSnd_GlobalVolumeScalePtr);
     const float previousScale = *globalVolumeScale;
     *globalVolumeScale = previousScale * scale;
     return previousScale;
@@ -475,7 +475,7 @@ zSnd::ApplyMuteStateToActiveVoices(int enableMute) {
         --g_zSnd_MuteDepth;
     }
 
-    *static_cast<int *>(g_zSnd_MuteOptionValuePtr) = g_zSnd_MuteDepth > 0 ? 1 : 0;
+    *(int *)(g_zSnd_MuteOptionValuePtr) = g_zSnd_MuteDepth > 0 ? 1 : 0;
 
     zSndPlayHandleSnapshot *const snapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
     zSndPlayHandleSnapshotItem *const listHead = snapshot->listHead;
@@ -520,7 +520,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandleSnapshot::StopAllIfPlaying()
     zSndPlayHandleSnapshot *const snapshot = this;
     zSndPlayHandleSnapshotItem *const listHead = snapshot->listHead;
     zSndPlayHandleSnapshotItem *snapshotItem = listHead->next->next;
-    int hasItem = static_cast<unsigned char>(snapshotItem == listHead) == 0;
+    int hasItem = (unsigned char)(snapshotItem == listHead) == 0;
     // The byte mask keeps VC5's list-end compare as test dl,dl/test al,al.
     if ((hasItem & 0xff) != 0) {
         do {
@@ -546,7 +546,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandleSnapshot::StopAllIfPlaying()
             }
 
             snapshotItem = snapshotItem->next;
-            hasItem = static_cast<unsigned char>(snapshotItem == snapshot->listHead) == 0;
+            hasItem = (unsigned char)(snapshotItem == snapshot->listHead) == 0;
         } while ((hasItem & 0xff) != 0);
     }
 
@@ -558,7 +558,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandleSnapshot::StopAllIfPlaying()
 // two stack arguments and returns with ret 8.
 RECOIL_NOINLINE zSndPlayHandleSnapshotItem *RECOIL_THISCALL zSndPlayHandleSnapshot::NewNode(
     zSndPlayHandleSnapshotItem *listHead, zSndPlayHandleSnapshotItem *prev) {
-    zSndPlayHandleSnapshotItem *const result = static_cast<zSndPlayHandleSnapshotItem *>(
+    zSndPlayHandleSnapshotItem *const result = (zSndPlayHandleSnapshotItem *)(
         ::operator new(sizeof(zSndPlayHandleSnapshotItem)));
     result->next = listHead != 0 ? listHead : result;
     result->prev = prev != 0 ? prev : result;
@@ -578,10 +578,10 @@ zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(zSndPlayHandle *playHandle)
 
     switch (g_zSnd_ActiveBackend) {
     case 0:
-        volumeScaleRaw = static_cast<unsigned int>(sourceSample->primaryVoice.gainScaled);
+        volumeScaleRaw = (unsigned int)(sourceSample->primaryVoice.gainScaled);
         break;
     case 1:
-        volumeScaleRaw = static_cast<unsigned int>(sourceSample->primaryVoice.gainScaled);
+        volumeScaleRaw = (unsigned int)(sourceSample->primaryVoice.gainScaled);
         break;
     }
 
@@ -600,7 +600,7 @@ zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(zSndPlayHandle *playHandle)
 
 RECOIL_FORCEINLINE zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(unsigned char tag) {
     backendTag = tag;
-    zSndPlayHandleSnapshotItem *const head = static_cast<zSndPlayHandleSnapshotItem *>(
+    zSndPlayHandleSnapshotItem *const head = (zSndPlayHandleSnapshotItem *)(
         ::operator new(sizeof(zSndPlayHandleSnapshotItem)));
     head->next = head;
     head->prev = head;
@@ -629,11 +629,11 @@ zSndPlayHandleSnapshot::CreateFromActiveSamples() {
     snapshot->AppendPayload(payload);
 
     for (int sampleSetIndex = 0;
-         static_cast<unsigned int>(sampleSetIndex) < static_cast<unsigned int>(sampleSetCount);
+         (unsigned int)(sampleSetIndex) < (unsigned int)(sampleSetCount);
          ++sampleSetIndex) {
         zSndSampleSet *const sampleSet = zSndSampleSetRegistry_GetByIndex(sampleSetIndex);
-        for (int sampleIndex = 0; static_cast<unsigned int>(sampleIndex) <
-                                           static_cast<unsigned int>(sampleSet->sampleCount);
+        for (int sampleIndex = 0; (unsigned int)(sampleIndex) <
+                                           (unsigned int)(sampleSet->sampleCount);
              ++sampleIndex) {
             zSndSample *const sample = sampleSet->GetSampleAt(sampleIndex);
             switch (g_zSnd_ActiveBackend) {
@@ -713,7 +713,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSndPlayHandle::PlayWithDelta_A3D(
 
     A3dSource *const source = (A3dSource *)playHandle->backendBuffer;
     const int error = source->vtable->Play(
-        source, static_cast<unsigned char>(replayFields->flags) & 1);
+        source, (unsigned char)(replayFields->flags) & 1);
     if (error != 0) {
         zSnd::ReportA3DError(error, kZSndPlaySourceFile, 0x58a);
     }
@@ -745,7 +745,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSndPlayHandle::PlayWithDelta_DirectSound(
 
     DirectSoundBuffer *const buffer = (DirectSoundBuffer *)playHandle->backendBuffer;
     const int error = buffer->vtable->Play(
-        buffer, 0, 0, static_cast<unsigned char>(replayFields->flags) & 1);
+        buffer, 0, 0, (unsigned char)(replayFields->flags) & 1);
     if (error != 0) {
         zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x5b4);
     }
@@ -768,7 +768,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSndPlayHandle::PlayWithDelta_BackendDispat
 
     case 0: {
         const int directSoundGainDelta =
-            static_cast<int>(gainDelta * 10000.0f);
+            (int)(gainDelta * 10000.0f);
         if (playHandle->backendBuffer != 0) {
             PlayWithDelta_DirectSound(replayFields, playHandle, restartBeforePlay,
                                       directSoundGainDelta);
@@ -786,17 +786,17 @@ zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta()
     zSndPlayHandleSnapshot *const snapshot = this;
     zSndPlayHandleSnapshotItem *const volumeAnchor = snapshot->listHead->next;
 
-    const float gainDelta = *static_cast<float *>(g_zSnd_GlobalVolumeScalePtr) -
+    const float gainDelta = *(float *)(g_zSnd_GlobalVolumeScalePtr) -
                             *(float *)&volumeAnchor->payload.volumeScaleRaw;
 
     zSndPlayHandleSnapshotItem *item = volumeAnchor->next;
-    int hasItem = static_cast<unsigned char>(-(item == snapshot->listHead)) == 0;
+    int hasItem = (unsigned char)(-(item == snapshot->listHead)) == 0;
     if (hasItem != 0) {
         do {
             zSndPlayHandle::PlayWithDelta_BackendDispatch(item->payload.sourceSample,
                                                           item->payload.playHandle, 0, gainDelta);
             item = item->next;
-            hasItem = static_cast<unsigned char>(-(item == snapshot->listHead)) == 0;
+            hasItem = (unsigned char)(-(item == snapshot->listHead)) == 0;
         } while (hasItem != 0);
     }
 
@@ -808,7 +808,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandleSnapshot::Destroy() {
     if (this != 0) {
         zSndPlayHandleSnapshotItem *const head = listHead;
         zSndPlayHandleSnapshotItem *item = head->next;
-        int hasItem = static_cast<unsigned char>(-(item == head)) == 0;
+        int hasItem = (unsigned char)(-(item == head)) == 0;
         while (hasItem != 0) {
             zSndPlayHandleSnapshotItem *const node = item;
             item = item->next;
@@ -816,7 +816,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandleSnapshot::Destroy() {
             node->next->prev = node->prev;
             ::operator delete(node);
             --itemCount;
-            hasItem = static_cast<unsigned char>(-(item == head)) == 0;
+            hasItem = (unsigned char)(-(item == head)) == 0;
         }
 
         ::operator delete(listHead);
@@ -1109,7 +1109,7 @@ zSndPlayHandle::Update3D(zVec3 *worldPos, zVec3 *velocity, int velocityScaleMode
         if (distanceSquared != 0.0f) {
             distance = ApproximateDirectSoundDistance(distanceSquared);
             inverseDistance = 1.0f / distance;
-            pan = static_cast<int>(Dot(relativePos, g_zSnd_ListenerState.right) *
+            pan = (int)(Dot(relativePos, g_zSnd_ListenerState.right) *
                                             inverseDistance * 1600.0f);
         }
 
@@ -1119,7 +1119,7 @@ zSndPlayHandle::Update3D(zVec3 *worldPos, zVec3 *velocity, int velocityScaleMode
         }
 
         if (distance >= sample->rangeMin) {
-            gain += static_cast<int>(((distance / sample->rangeMin) - 1.0f) * -600.0f);
+            gain += (int)(((distance / sample->rangeMin) - 1.0f) * -600.0f);
             if (gain < -10000) {
                 gain = -10000;
             }
@@ -1137,7 +1137,7 @@ zSndPlayHandle::Update3D(zVec3 *worldPos, zVec3 *velocity, int velocityScaleMode
             buffer->vtable->GetFrequency(buffer, &baseFrequency);
             const __int64 baseFrequencyWide = baseFrequency;
             buffer->vtable->SetFrequency(
-                buffer, static_cast<int>(static_cast<float>(baseFrequencyWide) *
+                buffer, (int)((float)(baseFrequencyWide) *
                                                   dopplerPitchScale));
         }
     }
@@ -1327,7 +1327,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndSample::PlayA3D(zVec3 *world
 
     markerBaseTime = 0.0f;
     const float globalGain = g_zSnd_GlobalVolumeScalePtr != 0
-                                 ? *static_cast<float *>(g_zSnd_GlobalVolumeScalePtr)
+                                 ? *(float *)(g_zSnd_GlobalVolumeScalePtr)
                                  : 0.0f;
     return PlayOnActiveBackend(worldPos, replayFields.gain * globalGain * gainScale, velocity, 0);
 }
@@ -1341,14 +1341,14 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndSample::PlayDirectSound(
 
     int backendArg = 0;
     if (markerTimes != 0 &&
-        static_cast<unsigned int>(variantIndex) < static_cast<unsigned int>(markerCount)) {
+        (unsigned int)(variantIndex) < (unsigned int)(markerCount)) {
         markerBaseTime = markerTimes[variantIndex];
         g_zSndLastVoiceStopMarkerIndex = stopMarkerIndex;
         backendArg = markerAux[variantIndex * 2];
     }
 
     const float globalGain = g_zSnd_GlobalVolumeScalePtr != 0
-                                 ? *static_cast<float *>(g_zSnd_GlobalVolumeScalePtr)
+                                 ? *(float *)(g_zSnd_GlobalVolumeScalePtr)
                                  : 0.0f;
     return PlayOnActiveBackend(0, replayFields.gain * gainScale * globalGain, 0,
                                backendArg);

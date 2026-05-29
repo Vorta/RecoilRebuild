@@ -17,7 +17,7 @@ zUtil_SaveGameStateList_Init(zUtil_SaveGameState *self) {
     self->firstSaveState = 0;
 
     self->playerState =
-        static_cast<zUtil_PlayerStateStorage *>(malloc(sizeof(zUtil_PlayerStateStorage)));
+        (zUtil_PlayerStateStorage *)(malloc(sizeof(zUtil_PlayerStateStorage)));
     memset(self->playerState, 0, sizeof(zUtil_PlayerStateStorage));
 
     self->unknown_0c = 0;
@@ -30,7 +30,7 @@ zUtil_SaveGameStateList_Init(zUtil_SaveGameState *self) {
 RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_FASTCALL
 zUtil_SaveGameStateList_AllocAppend(zUtil_SaveGameState *self) {
     zUtil_SaveGameState *const saveState =
-        static_cast<zUtil_SaveGameState *>(malloc(sizeof(zUtil_SaveGameState)));
+        (zUtil_SaveGameState *)(malloc(sizeof(zUtil_SaveGameState)));
     memset(saveState, 0, sizeof(zUtil_SaveGameState));
 
     if (self->firstSaveState == 0) {

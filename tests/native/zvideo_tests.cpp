@@ -1749,7 +1749,33 @@ extern "C" int zvideo_dispatch_wrappers_smoke(void) {
         return 2;
     }
 
+    zVideo_SurfaceStateProc const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
     zVideo_SurfaceStateProc const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    const zVideo_SurfaceStatePartial savedDisplayModeSurfaceState =
+        g_zVideo_DisplayModeSurfaceState;
+
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_pfnLockSurfaceState = CaptureLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = CaptureUnlockSurfaceState;
+    g_zVideoTestLockSurfaceCount = 0;
+    g_zVideoTestLockSurfaceState = nullptr;
+    g_zVideoTestUnlockSurfaceCount = 0;
+    g_zVideoTestUnlockSurfaceState = nullptr;
+
+    const int displayLockResult = zVideo::Dispatch_LockDisplayModeSurfaceState();
+    const int displayUnlockResult = zVideo::Dispatch_UnlockDisplayModeSurfaceState();
+    const bool displayDispatchOk =
+        displayLockResult == 1 && displayUnlockResult == 0x6a5 &&
+        g_zVideoTestLockSurfaceCount == 1 &&
+        g_zVideoTestLockSurfaceState == &g_zVideo_DisplayModeSurfaceState &&
+        g_zVideoTestUnlockSurfaceCount == 1 &&
+        g_zVideoTestUnlockSurfaceState == &g_zVideo_DisplayModeSurfaceState &&
+        g_zVideo_DisplayModeSurfaceState.locked == 0;
+
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+    g_zVideo_DisplayModeSurfaceState = savedDisplayModeSurfaceState;
+
     const zVideo_SurfaceStatePartial savedSwSurfaceState = g_zVideo_SwSurfaceState;
     g_zVideo_SwSurfaceState = {};
     g_zVideo_SwSurfaceState.locked = 1;
@@ -1765,7 +1791,7 @@ extern "C" int zvideo_dispatch_wrappers_smoke(void) {
     g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
     g_zVideo_SwSurfaceState = savedSwSurfaceState;
 
-    return unlockOk ? 0 : 3;
+    return displayDispatchOk && unlockOk ? 0 : 3;
 }
 
 extern "C" int zvideo_bind_renderer_dispatch_smoke(void) {

@@ -12,12 +12,13 @@ Use the currently loaded `Recoil.bndb` as the behavioral/ABI source of truth and
 
 - Keep this file updated with each authored function's reconstruction, dependency, implementation, functional-equivalence, and binary-safety state. Non-authored compiler/runtime/import/framework entries use `Provider-boundary` instead of authored-source markers.
 - Addresses are stable identifiers. Function names may change as Binary Ninja reconstruction improves or as source implementation reveals a better source-level name.
+- In `Functional-equivalent (Target: ...)`, `Target` is the functional verification target id: the lowercase snake_case filename stem under `tools/functional_verify_targets/`, matching that manifest's `name` field. It is not the `Reimplemented` source symbol.
 - Use `python tools/recoil_plan_cli.py next/show/find/milestone` for normal plan navigation, `python tools/recoil_plan_cli.py set ...` for marker updates, and `python tools/recoil_plan_cli.py reclassify ...` when current evidence changes an entry between authored markers and `Provider-boundary`. Do not read the whole file as routine startup context.
 - Agents create a local git commit whenever they finish reimplementing a function or class. For a coherent batch completed together, one commit may cover multiple functions or a whole class. Do not push.
 - Do not use line-number dependent reads such as `Get-Content .agent\RECOIL_PLAN.md | Select-Object -Skip ...` except as a read-only fallback while diagnosing a broken plan CLI.
 - If Binary Ninja reconstruction improves, update only the affected `Reconstructed` name/status after following `AGENTS.md`.
 - If a function does not belong to the milestone it is under, confirm the correct placement with `find`, `show`, and `milestone`, then move the complete address entry while preserving its markers. Keep milestone moves separate from normal marker updates.
-- Do not add narrative progress notes here. Use `.agent/IMPLEMENTATION_GROUPS.md` for temporary group notes and README or narrow subsystem docs for durable contributor knowledge.
+- Do not add narrative progress notes here. Use `.agent/IMPLEMENTATION_GROUPS.md` for temporary group notes and `docs/reconstruction/` or narrow subsystem docs for durable contributor knowledge.
 
 ## Milestone Catalog
 
@@ -42,7 +43,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilStateBase::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateBase::ScalarDeletingDestructor File: src/GameZRecoil/RecoilApp/RecoilStateBase.cpp)
-  - [✅] Functional-equivalent (Target: RecoilStateBase::ScalarDeletingDestructor)
+  - [✅] Functional-equivalent (Target: recoil_state_base_scalar_deleting_destructor)
   - [✅] Binary-safe
 - 0x408f50:
   - [✅] Reconstructed (Name: RecoilStateDialogHost::OnWndActivate)
@@ -738,13 +739,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::OnTryBecomeCurrent File: src/Battlesport/RecoilApp.cpp)
-  - [✅] Functional-equivalent (Target: RecoilStateSaveLoadTransition::OnTryBecomeCurrent)
+  - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_on_try_become_current)
   - [❌] Binary-safe
 - 0x435e80:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::OnUpdateShouldQuit)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::OnUpdateShouldQuit File: src/Battlesport/RecoilApp.cpp)
-  - [✅] Functional-equivalent (Target: RecoilStateSaveLoadTransition::OnUpdateShouldQuit)
+  - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_on_update_should_quit)
   - [❌] Binary-safe
 - 0x435f50:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::QueueOpenSaveDialog)
@@ -780,7 +781,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilApp_MfcOleModule::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::MfcOleModuleScalarDeletingDestructor File: src/Battlesport/RecoilApp.cpp)
-  - [✅] Functional-equivalent (Target: RecoilApp::MfcOleModuleScalarDeletingDestructor)
+  - [✅] Functional-equivalent (Target: recoil_app_mfc_ole_module_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x4429d0:
   - [✅] Reconstructed (Name: RecoilApp::InitMainWindow)
@@ -792,13 +793,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilApp::TakeSkipWaitMessage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::TakeSkipWaitMessage File: src/Battlesport/RecoilApp.cpp)
-  - [✅] Functional-equivalent (Target: RecoilApp::TakeSkipWaitMessage)
+  - [✅] Functional-equivalent (Target: recoil_app_take_skip_wait_message)
   - [✅] Binary-safe
 - 0x442a30:
   - [✅] Reconstructed (Name: RecoilApp::MarkSkipWaitMessage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::MarkSkipWaitMessage File: src/Battlesport/RecoilApp.cpp)
-  - [✅] Functional-equivalent (Target: RecoilApp::MarkSkipWaitMessage)
+  - [✅] Functional-equivalent (Target: recoil_app_mark_skip_wait_message)
   - [✅] Binary-safe
 - 0x442a50:
   - [✅] Reconstructed (Name: RecoilApp::EngineInit)
@@ -834,7 +835,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: RecoilApp::Run)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilApp::Run File: src/Battlesport/RecoilApp.cpp)
-  - [✅] Functional-equivalent (Target: RecoilApp::Run)
+  - [✅] Functional-equivalent (Target: recoil_app_run)
   - [❌] Binary-safe
 - 0x443140:
   - [✅] Reconstructed (Name: RecoilApp::GetCurrentState)
@@ -1122,13 +1123,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zZbdSectionHandler::InvokePreLoad)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdSectionHandler::InvokePreLoad File: src/GameZRecoil/zUtil/zZbd.cpp)
-  - [✅] Functional-equivalent (Target: zZbdSectionHandler::InvokePreLoad)
+  - [✅] Functional-equivalent (Target: zutil_zbd_section_handler_invoke_pre_load)
   - [❌] Binary-safe
 - 0x4c06c0:
   - [✅] Reconstructed (Name: zZbdSectionHandler::InvokeDataReady)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdSectionHandler::InvokeDataReady File: src/GameZRecoil/zUtil/zZbd.cpp)
-  - [✅] Functional-equivalent (Target: zZbdSectionHandler::InvokeDataReady)
+  - [✅] Functional-equivalent (Target: zutil_zbd_section_handler_invoke_data_ready)
   - [❌] Binary-safe
 - 0x4c81c0:
   - [✅] Reconstructed (Name: WinMain)
@@ -1282,15 +1283,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x403cb0:
   - [✅] Reconstructed (Name: HudUiBriefingLocatorPanel::Update)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiBriefingLocatorPanel::Update File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_locator_panel_update)
   - [❌] Binary-safe
 - 0x403ed0:
   - [☑️] Reconstructed (Name: HudUiBriefingRuntime::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiBriefingRuntime::Destructor File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_runtime_destructor)
   - [❌] Binary-safe
 - 0x404070:
   - [✅] Reconstructed (Name: HudUiBriefingRuntime::Update)
@@ -1324,9 +1325,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x404620:
   - [✅] Reconstructed (Name: HudUiBriefingAction_HideElement::Tick)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: BriefingActionHideElement::Tick File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_action_hide_element_tick)
   - [❌] Binary-safe
 - 0x404640:
   - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddShowElement)
@@ -1336,9 +1337,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4046b0:
   - [✅] Reconstructed (Name: HudUiBriefingAction_ShowElement::Tick)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: BriefingActionShowElement::Tick File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_action_show_element_tick)
   - [❌] Binary-safe
 - 0x4046d0:
   - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddFadeInObjectivePictureNoise)
@@ -1348,9 +1349,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x404740:
   - [✅] Reconstructed (Name: HudUiBriefingAction_FadeObjectiveNoise::Tick)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: BriefingActionFadeInElement::Tick File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_action_fade_in_element_tick)
   - [❌] Binary-safe
 - 0x404780:
   - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddSetPanelText)
@@ -1360,9 +1361,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x404850:
   - [✅] Reconstructed (Name: HudUiBriefingAction_SetPanelText::Tick)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: BriefingActionSetPanelText::Tick File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_action_set_panel_text_tick)
   - [❌] Binary-safe
 - 0x4048a0:
   - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddSetObjectivePictureImageTimed)
@@ -1372,9 +1373,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x404960:
   - [✅] Reconstructed (Name: HudUiBriefingAction_SetObjectivePictureImageTimed::Tick)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: BriefingActionSetWidgetImageTimed::Tick File: src/Battlesport/Briefing.cpp)
+  - [✅] Functional-equivalent (Target: briefing_action_set_objective_picture_image_timed_tick)
   - [❌] Binary-safe
 - 0x4049d0:
   - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddPlaySampleByName)
@@ -1386,13 +1387,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBriefingAction_PlaySample::Tick)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: BriefingActionPlaySample::Tick File: src/Battlesport/Briefing.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: briefing_action_play_sample_tick)
   - [❌] Binary-safe
 - 0x404b30:
   - [✅] Reconstructed (Name: Briefing::SampleEventCallback)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: Briefing::SampleEventCallback File: src/Battlesport/Briefing.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: briefing_sample_event_callback)
   - [❌] Binary-safe
 - 0x404b40:
   - [✅] Reconstructed (Name: HudUiBriefingActionQueue::AddDelayUntilProgress)
@@ -1404,7 +1405,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBriefingAction_DelayUntilProgress::Tick)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: BriefingActionDelayUntilProgress::Tick File: src/Battlesport/Briefing.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: briefing_action_delay_until_progress_tick)
   - [❌] Binary-safe
 - 0x404bd0:
   - [✅] Reconstructed (Name: Briefing::StopThreadAndDestroyRuntime)
@@ -1435,147 +1436,147 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x406890:
   - [☑️] Reconstructed (Name: MfcThreeFloatDialog::OnKillFocusValue0)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnKillFocusValue0 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_kill_focus_value0)
   - [❌] Binary-safe
 - 0x4068c0:
   - [☑️] Reconstructed (Name: MfcThreeFloatDialog::OnKillFocusValue1)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnKillFocusValue1 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_kill_focus_value1)
   - [❌] Binary-safe
 - 0x4068f0:
   - [☑️] Reconstructed (Name: MfcThreeFloatDialog::OnKillFocusValue2)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnKillFocusValue2 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_kill_focus_value2)
   - [❌] Binary-safe
 - 0x406920:
   - [✅] Reconstructed (Name: MfcThreeFloatDialog::OnDeltaposSpinValue0)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnDeltaposSpinValue0 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_spin_value0)
   - [❌] Binary-safe
 - 0x406960:
   - [✅] Reconstructed (Name: MfcThreeFloatDialog::OnDeltaposSpinValue1)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnDeltaposSpinValue1 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_spin_value1)
   - [❌] Binary-safe
 - 0x4069a0:
   - [✅] Reconstructed (Name: MfcThreeFloatDialog::OnDeltaposSpinValue2)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnDeltaposSpinValue2 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_spin_value2)
   - [❌] Binary-safe
 - 0x4069e0:
   - [✅] Reconstructed (Name: MfcThreeFloatDialog::OnDeltaposSpin2)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnDeltaposSpin2 File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_spin2_default)
   - [❌] Binary-safe
 - 0x4069f0:
   - [☑️] Reconstructed (Name: MfcThreeFloatDialog::OnMove)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: MfcThreeFloatDialog::OnMove File: src/Battlesport/MfcThreeFloatDialog.cpp)
+  - [✅] Functional-equivalent (Target: mfc_three_float_dialog_on_move)
   - [❌] Binary-safe
 - 0x406a00:
   - [☑️] Reconstructed (Name: zStr::ContainsCaseInsensitive)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zStr::ContainsCaseInsensitive File: src/Battlesport/zStr.cpp)
+  - [✅] Functional-equivalent (Target: zstr_contains_case_insensitive)
   - [❌] Binary-safe
 - 0x406af0:
   - [✅] Reconstructed (Name: HudCheat::ExecuteCommandString)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCheat::ExecuteCommandString File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_cheat_execute_command_string)
   - [❌] Binary-safe
 - 0x406cf0:
   - [✅] Reconstructed (Name: HudCheat::ClearNanitePanelCheatSentinel)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCheat::ClearNanitePanelCheatSentinel File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_cheat_clear_nanite_panel_cheat_sentinel)
   - [❌] Binary-safe
 - 0x406d20:
   - [✅] Reconstructed (Name: HudUiCheatCodeDialog::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheatCodeDialog::Constructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_cheat_code_dialog_constructor)
   - [❌] Binary-safe
 - 0x406e10:
   - [✅] Reconstructed (Name: HudUiCheatCodeDialog::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheatCodeDialog::ScalarDeletingDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_cheat_code_dialog_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x406e30:
   - [☑️] Reconstructed (Name: HudUiCheatCodeDialog::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheatCodeDialog::Destructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_cheat_code_dialog_destructor)
   - [❌] Binary-safe
 - 0x406e90:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::StaticInitAndRegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::StaticInitAndRegisterAtExit File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_static_init_and_register_at_exit)
   - [❌] Binary-safe
 - 0x406eb0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::StaticInit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::StaticInit File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_static_init)
   - [❌] Binary-safe
 - 0x406ec0:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::AtExitDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::AtExitDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_at_exit_destructor)
   - [❌] Binary-safe
 - 0x406ed0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::Constructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_constructor)
   - [❌] Binary-safe
 - 0x406ee0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::ScalarDeletingDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x406f00:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::Destructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_destructor)
   - [❌] Binary-safe
 - 0x406f60:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::OnTryBecomeCurrent)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::OnTryBecomeCurrent File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_on_try_become_current)
   - [❌] Binary-safe
 - 0x407010:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::OnDeactivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCheatCode::OnDeactivate File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_cheat_code_on_deactivate)
   - [❌] Binary-safe
 - 0x4070e0:
   - [✅] Reconstructed (Name: HudUiCheatTextInputWidget::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheatTextInputWidget::OnActivate File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_cheat_text_input_on_activate)
   - [❌] Binary-safe
 - 0x407100:
   - [✅] Reconstructed (Name: HudUiCallback::QueueExitCurrentState)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCallback::QueueExitCurrentState File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_callback_queue_exit_current_state)
   - [❌] Binary-safe
 - 0x407110:
   - [✅] Reconstructed (Name: HudUiCallback::QueueCheatCodeState)
@@ -1587,25 +1588,22 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zStub::ReturnOneNoArgs)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zStub::ReturnOneNoArgs File: src/GameZRecoil/zClass/cls_stubs.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zstub_vtable_stubs)
+  - [✅] Binary-safe
 - 0x408c60:
-  - [❌] Reconstructed (Name: HudUiOptionSelectorWidget::DestructorCoreThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::DestructorCoreThunk)
+  - [✅] Provider-boundary (Kind: compiler-generated forwarding thunk; Name: HudUiOptionSelectorWidget::DestructorCoreThunk; Origin: Binary Ninja assembly at 0x408c60 is a single tail jmp to HudUiOptionSelectorWidget::DestructorCore/HudUiZrdWidgetEx17C::DestructorCore at 0x4b8b60; no local authored behavior or state.; File: external; Target: HudUiZrdWidgetEx17C::DestructorCore)
 - 0x409010:
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::EnableChildAtIndex)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::EnableChildAtIndex File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_ex17c_enable_child_at_index)
   - [❌] Binary-safe
 - 0x409040:
   - [☑️] Reconstructed (Name: HudUiCreditsPanel::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCreditsPanel::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_credits_panel_constructor)
   - [❌] Binary-safe
 - 0x409160:
   - [✅] Reconstructed (Name: HudUiZrdWidget::OnActivateQueueExitCurrentState)
@@ -1615,201 +1613,201 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x409180:
   - [✅] Reconstructed (Name: HudUiCreditsQuitButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCreditsQuitButton::OnActivate File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_credits_quit_button_on_activate)
   - [❌] Binary-safe
 - 0x4091c0:
   - [✅] Reconstructed (Name: HudUiCreditsPanel::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCreditsPanel::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_credits_panel_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x4091e0:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdScrollingText::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_scrolling_text_destructor)
   - [❌] Binary-safe
 - 0x4092a0:
-  - [☑️] Reconstructed (Name: HudUiCreditsPanel::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiCreditsPanel::Destructor)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCreditsPanel::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_credits_panel_destructor)
   - [❌] Binary-safe
 - 0x409360:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdScrollingText::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_scrolling_text_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x409380:
-  - [☑️] Reconstructed (Name: HudUiCreditsPanel::UpdateFadeAndExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiCreditsPanel::UpdateFadeAndExit)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCreditsPanel::UpdateFadeAndExit File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_credits_panel_update_fade_and_exit)
   - [❌] Binary-safe
 - 0x409410:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::Update)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdScrollingText::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_scrolling_text_update)
   - [❌] Binary-safe
 - 0x409470:
-  - [☑️] Reconstructed (Name: HudUiZrdScrollingText::UpdateScrollPositions)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiZrdScrollingText::UpdateScrollPositions)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdScrollingText::UpdateScrollPositions File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_scrolling_text_update_scroll_positions)
   - [❌] Binary-safe
 - 0x409550:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::OnActivateResetOwnerFade)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdScrollingText::OnActivateResetOwnerFade File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_scrolling_text_on_activate_reset_owner_fade)
   - [❌] Binary-safe
 - 0x409570:
   - [☑️] Reconstructed (Name: HudUiZrdScrollingText::LoadFromZrd)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdScrollingText::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_scrolling_text_load_from_zrd)
   - [❌] Binary-safe
 - 0x409910:
   - [✅] Reconstructed (Name: HudUiPanelSpan::Clear)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelSpan::Clear File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_span_clear)
   - [❌] Binary-safe
 - 0x409990:
   - [✅] Reconstructed (Name: RecoilStateCredits::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateCredits::Constructor File: src/Battlesport/RecoilStateCredits.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_state_credits_constructor)
+  - [✅] Binary-safe
 - 0x4099a0:
   - [✅] Reconstructed (Name: RecoilStateCredits::OnWndActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCredits::OnWndActivate File: src/Battlesport/RecoilStateCredits.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_credits_on_wnd_activate)
+  - [✅] Binary-safe
 - 0x409a60:
   - [☑️] Reconstructed (Name: RecoilStateCredits::OnTryBecomeCurrent)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCredits::OnTryBecomeCurrent File: src/Battlesport/RecoilStateCredits.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_credits_on_try_become_current)
   - [❌] Binary-safe
 - 0x409ad0:
   - [✅] Reconstructed (Name: RecoilStateCredits::OnDeactivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCredits::OnDeactivate File: src/Battlesport/RecoilStateCredits.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_credits_on_deactivate)
+  - [✅] Binary-safe
 - 0x409b00:
   - [✅] Reconstructed (Name: RecoilStateCredits::QueuePush)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: RecoilStateCredits::QueuePush File: src/Battlesport/RecoilStateCredits.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: recoil_state_credits_queue_push)
+  - [✅] Binary-safe
 - 0x409b20:
   - [✅] Reconstructed (Name: HudUiPanelSpan::DestroyAndFree)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelSpan::DestroyAndFree File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_span_destroy_and_free)
   - [❌] Binary-safe
 - 0x409b60:
   - [✅] Reconstructed (Name: HudUiPanel::DestroyRange)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelLayoutEntry::DestroyRange File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_layout_entry_destroy_range)
   - [❌] Binary-safe
 - 0x409b90:
-  - [☑️] Reconstructed (Name: HudUiPanelSpan::InsertN)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiPanelSpan::InsertN)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelSpan::InsertN File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_span_insert_n)
   - [❌] Binary-safe
 - 0x409ef0:
   - [✅] Reconstructed (Name: HudUiPanel::DestructorCallback)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanel::DestructorCallback File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_destructor_callback)
   - [❌] Binary-safe
 - 0x409f00:
   - [☑️] Reconstructed (Name: HudUiPanelSpanVec::InsertN)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelSpanVec::InsertN File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_span_vec_insert_n)
   - [❌] Binary-safe
 - 0x40a170:
   - [☑️] Reconstructed (Name: HudUiPanel::CopyAssignRange)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelLayoutEntry::CopyAssignRange File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_layout_entry_copy_assign_range)
   - [❌] Binary-safe
 - 0x40a1e0:
-  - [✅] Reconstructed (Name: HudUiPanel::CopyAssign)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiPanelLayoutEntry::CopyAssign)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelLayoutEntry::CopyAssign File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_layout_entry_copy_assign)
   - [❌] Binary-safe
 - 0x40a210:
-  - [✅] Reconstructed (Name: HudUiPanel::CopyConstruct)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiPanelLayoutEntry::CopyConstruct)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelLayoutEntry::CopyConstruct File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_layout_entry_copy_construct)
   - [❌] Binary-safe
 - 0x40a240:
   - [☑️] Reconstructed (Name: HudUiPanelSpan::CopyInit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelSpan::CopyInit File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_span_copy_init)
   - [❌] Binary-safe
 - 0x40a300:
   - [✅] Reconstructed (Name: HudUiPanelSpan::CopyFrom)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelSpan::CopyFrom File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_span_copy_from)
   - [❌] Binary-safe
 - 0x40a590:
   - [✅] Reconstructed (Name: HudUiPanel::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_panel_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x40a940:
   - [☑️] Reconstructed (Name: HudCmdCommandList::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdCommandList::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_command_list_destructor)
   - [❌] Binary-safe
 - 0x40aa30:
   - [☑️] Reconstructed (Name: HudCmdKeyAButton::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdKeyAButton::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_key_a_button_destructor)
   - [❌] Binary-safe
 - 0x40ab20:
   - [☑️] Reconstructed (Name: HudCmdKeyBButton::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdKeyBButton::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_key_b_button_destructor)
   - [❌] Binary-safe
 - 0x40ac10:
   - [☑️] Reconstructed (Name: HudCmdJoyButton::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdJoyButton::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_joy_button_destructor)
   - [❌] Binary-safe
 - 0x40ad00:
   - [☑️] Reconstructed (Name: HudCmdMouseButton::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdMouseButton::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_mouse_button_destructor)
   - [❌] Binary-safe
 - 0x40adf0:
   - [☑️] Reconstructed (Name: HudCmdDialog::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialog::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_destructor)
   - [❌] Binary-safe
 - 0x40b140:
   - [✅] Reconstructed (Name: HudCmdDialog::UpdateCaptureState)
@@ -1855,9 +1853,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40b680:
   - [☑️] Reconstructed (Name: HudCmdDialog::RebuildCommandBindingListsForGroup)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialog::RebuildCommandBindingListsForGroup File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_rebuild_command_binding_lists)
   - [❌] Binary-safe
 - 0x40b930:
   - [✅] Reconstructed (Name: HudCmdResetButton::OnActivate)
@@ -1873,9 +1871,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40b980:
   - [☑️] Reconstructed (Name: HudCmdDialog::OnCommandSelectionChanged)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialog::OnCommandSelectionChanged File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_on_command_selection_changed)
   - [❌] Binary-safe
 - 0x40ba30:
   - [✅] Reconstructed (Name: HudCmdKeyAButton::OnBeginCapture)
@@ -2011,33 +2009,33 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40be00:
   - [✅] Reconstructed (Name: HudCmdBinding::DestroyRange)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBinding::DestroyRange File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_binding_destroy_range)
   - [❌] Binary-safe
 - 0x40be60:
   - [✅] Reconstructed (Name: HudCmdBindingEntry::CopyRange)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindingEntry::CopyRange File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_binding_entry_copy_range)
+  - [✅] Binary-safe
 - 0x40bf20:
   - [✅] Reconstructed (Name: HudCmdBindingEntry::DeleteAndReturnNull)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindingEntry::DeleteAndReturnNull File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_binding_entry_delete_and_return_null)
   - [❌] Binary-safe
 - 0x40bf50:
   - [✅] Reconstructed (Name: HudCmdBindingEntry::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindingEntry::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_binding_entry_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x40bf80:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::AddBindingEntry)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindButtonBase::AddBindingEntry File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_bind_button_base_add_binding_entry)
   - [❌] Binary-safe
 - 0x40c280:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::DestructorCore)
@@ -2805,8 +2803,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiElement::ResetCommonFTable)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::ResetCommonFTable File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_element_reset_common_ftable)
+  - [✅] Binary-safe
 - 0x4b47b0:
   - [☑️] Reconstructed (Name: HudUiSliderBorder::Update)
   - [❌] Source dependencies satisfied
@@ -2841,7 +2839,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiNumericTextInput::Destructor)
   - [☑️] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudUiNumericTextInput::Destructor)
+  - [✅] Functional-equivalent (Target: hud_ui_numeric_text_input_destructor)
   - [❌] Binary-safe
 - 0x4b4b50:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::OnRawKeyboardChar)
@@ -2907,14 +2905,14 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiZrdWidget::DestructorCore)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidget::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudUiZrdWidget::DestructorCore)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_destructor_core)
   - [❌] Binary-safe
 - 0x4b52f0:
   - [✅] Reconstructed (Name: HudUiZrdWidget::DeleteChildIfPresent)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidget::DeleteChildIfPresent File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudUiZrdWidget::DeleteChildIfPresent)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_delete_child_if_present)
+  - [✅] Binary-safe
 - 0x4b5310:
   - [✅] Reconstructed (Name: HudUiZrdWidget::Invalidate)
   - [❌] Source dependencies satisfied
@@ -2953,9 +2951,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b59f0:
   - [✅] Reconstructed (Name: HudUiZrdWidget::LoadFromZrd)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidget::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_load_from_zrd)
   - [❌] Binary-safe
 - 0x4b6fc0:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::Constructor)
@@ -2971,9 +2969,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b7020:
   - [☑️] Reconstructed (Name: HudUiCheckToggleWidget::DestructorCore)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheckToggleWidget::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_check_toggle_widget_destructor_core)
   - [❌] Binary-safe
 - 0x4b70b0:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::GetBoundsRectOrNull)
@@ -3007,9 +3005,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b72c0:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::SetChecked)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheckToggleWidget::SetChecked File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_check_toggle_widget_set_checked)
   - [❌] Binary-safe
 - 0x4b7340:
   - [☑️] Reconstructed (Name: HudUiCheckToggleWidget::LoadFromZrd)
@@ -3031,9 +3029,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b7de0:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::DestructorCore)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_cycle_selector_widget_destructor_core)
   - [❌] Binary-safe
 - 0x4b7e60:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::Update)
@@ -3105,7 +3103,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiFillBitmap::DestructorCore)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFillBitmap::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_fill_bitmap_destructor_core)
   - [❌] Binary-safe
 - 0x4b8520:
   - [✅] Reconstructed (Name: HudUiFillBitmap::Draw)
@@ -3199,9 +3197,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b8b60:
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::DestructorCore)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: zhud_zrd_widget_ex17c_destructor_core)
   - [❌] Binary-safe
 - 0x4b8be0:
   - [☑️] Reconstructed (Name: HudUiOptionSelectorWidget::LoadFromZrd)
@@ -3339,25 +3337,25 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiSaveLoadDialog::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadGameDialog::Constructor File: src/Battlesport/RecoilApp.cpp)
-  - [✅] Functional-equivalent (Target: HudUiLoadGameDialog::Constructor)
+  - [✅] Functional-equivalent (Target: hud_ui_load_game_dialog_constructor)
   - [❌] Binary-safe
 - 0x434dc0:
   - [✅] Reconstructed (Name: HudUiLoadGameDialog::ProcessDialogResult)
   - [☑️] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadGameDialog::ProcessDialogResult File: src/Battlesport/RecoilApp.cpp)
-  - [✅] Functional-equivalent (Target: HudUiLoadGameDialog::ProcessDialogResult)
+  - [✅] Functional-equivalent (Target: hud_ui_load_game_dialog_process_dialog_result)
   - [❌] Binary-safe
 - 0x434dd0:
   - [✅] Reconstructed (Name: HudUiLoadGameDialog::ScalarDeletingDestructor)
   - [☑️] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadGameDialog::ScalarDeletingDestructor File: src/Battlesport/RecoilApp.cpp)
-  - [✅] Functional-equivalent (Target: HudUiLoadGameDialog::ScalarDeletingDestructor)
+  - [✅] Functional-equivalent (Target: hud_ui_load_game_dialog_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x434df0:
   - [☑️] Reconstructed (Name: HudUiLoadGameDialog::Destructor)
   - [☑️] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadGameDialog::Destructor File: src/Battlesport/RecoilApp.cpp)
-  - [✅] Functional-equivalent (Target: HudUiLoadGameDialog::Destructor)
+  - [✅] Functional-equivalent (Target: hud_ui_load_game_dialog_destructor)
   - [❌] Binary-safe
 - 0x434ee0:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::InitializeFileEntries)
@@ -3393,7 +3391,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiLoadGamePrimaryActionButton::OnActivate)
   - [☑️] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadGamePrimaryActionButton::OnActivate File: src/Battlesport/RecoilApp.cpp)
-  - [✅] Functional-equivalent (Target: HudUiLoadGamePrimaryActionButton::OnActivate)
+  - [✅] Functional-equivalent (Target: hud_ui_load_game_primary_action_button_on_activate)
   - [❌] Binary-safe
 - 0x435220:
   - [✅] Reconstructed (Name: HudUiSaveGamePrimaryActionButton::OnActivate)
@@ -3405,7 +3403,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiLoadGameDialog::OnPrimaryAction)
   - [☑️] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadGameDialog::OnPrimaryAction File: src/Battlesport/RecoilApp.cpp)
-  - [✅] Functional-equivalent (Target: HudUiLoadGameDialog::OnPrimaryAction)
+  - [✅] Functional-equivalent (Target: hud_ui_load_game_dialog_on_primary_action)
   - [❌] Binary-safe
 - 0x4353f0:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::SetSelectedEntryIndex)
@@ -3568,9 +3566,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40bf00:
   - [✅] Reconstructed (Name: HudUtil::FreeFieldPtr)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUtil::FreeFieldPtr File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_util_free_field_ptr)
   - [❌] Binary-safe
 - 0x40d270:
   - [☑️] Reconstructed (Name: HudLayoutSW::GlobalInit)
@@ -3702,8 +3700,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiContainer::SetEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::SetEnabled File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_container_set_enabled)
+  - [✅] Binary-safe
 - 0x40d9e0:
   - [✅] Reconstructed (Name: HudUiMeter::ConstructorEx)
   - [✅] Source dependencies satisfied
@@ -3987,7 +3985,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiMgr::TickLayoutDelay)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::TickLayoutDelay File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudUiMgr::TickLayoutDelay)
+  - [✅] Functional-equivalent (Target: hud_ui_mgr_tick_layout_delay)
   - [❌] Binary-safe
 - 0x410160:
   - [☑️] Reconstructed (Name: HudUiMgr::EnsureHudLoaded)
@@ -4431,7 +4429,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiWidget::DestructorCore)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudUiWidget::DestructorCore)
+  - [✅] Functional-equivalent (Target: hud_ui_widget_destructor_core)
   - [❌] Binary-safe
 - 0x4b3da0:
   - [✅] Reconstructed (Name: HudUiWidget::ReleaseImageIfOwned)
@@ -4515,7 +4513,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiElement::Update)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_element_update)
   - [❌] Binary-safe
 - 0x4b4280:
   - [☑️] Reconstructed (Name: HudUiElement::SetTimer)
@@ -4539,7 +4537,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiTextInput::DestructorCore)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudUiTextInput::DestructorCore)
+  - [✅] Functional-equivalent (Target: hud_ui_text_input_destructor_core)
   - [❌] Binary-safe
 - 0x4b4ab0:
   - [❌] Reconstructed (Name: HudUiTextInput::DestructorCoreThunk)
@@ -4563,25 +4561,25 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiBackground::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackground::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudUiBackground::Destructor)
+  - [✅] Functional-equivalent (Target: hud_ui_background_destructor)
   - [❌] Binary-safe
 - 0x4b9850:
   - [✅] Reconstructed (Name: HudUiBackground::SetEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackground::SetEnabled File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_set_enabled)
   - [❌] Binary-safe
 - 0x4b98d0:
   - [✅] Reconstructed (Name: HudUiBackground::LoadFromZrd)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackground::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_background_load_from_zrd)
   - [❌] Binary-safe
 - 0x4b9900:
   - [☑️] Reconstructed (Name: HudUiBackground::LoadZrdAndSection)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackground::LoadZrdAndSection File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_load_zrd_and_section)
   - [❌] Binary-safe
 - 0x4ba020:
   - [✅] Reconstructed (Name: HudUiTransitionTextPanel::Constructor)
@@ -4599,7 +4597,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackground::BindWidgetByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackground::BindWidgetByName File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_background_bind_widget_by_name)
   - [❌] Binary-safe
 - 0x4ba0e0:
   - [☑️] Reconstructed (Name: HudUiBackground::BindPrimitiveNodeToElement)
@@ -4653,19 +4651,19 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudFontStyle::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudFontStyle::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudFontStyle::Destructor)
+  - [✅] Functional-equivalent (Target: hud_font_style_destructor)
   - [❌] Binary-safe
 - 0x4ba4d0:
   - [☑️] Reconstructed (Name: StdPtrVector::EraseRange)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanelPtrVector::EraseRange File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudUiPanelPtrVector::EraseRange)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_ptr_vector_erase_range)
   - [❌] Binary-safe
 - 0x4ba510:
   - [✅] Reconstructed (Name: HudUiPanelPtrVector::InsertN)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanelPtrVector::InsertN File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_panel_ptr_vector_insert_n)
   - [❌] Binary-safe
 - 0x4ba740:
   - [✅] Reconstructed (Name: HudUiPanel::ConstructorDefault)
@@ -4857,13 +4855,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundContainer::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_background_container_constructor)
+  - [✅] Binary-safe
 - 0x4bc540:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundContainer::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudUiBackgroundContainer::Destructor)
+  - [✅] Functional-equivalent (Target: hud_ui_background_container_destructor)
   - [❌] Binary-safe
 - 0x4bc550:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::SetInputFocus)
@@ -4893,13 +4891,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiContainer::ConstructorDefault)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::ConstructorDefault File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_container_constructor_default)
+  - [✅] Binary-safe
 - 0x4bc7b0:
   - [✅] Reconstructed (Name: HudUiContainer::DestructorCore)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudUiContainer::DestructorCore)
+  - [✅] Functional-equivalent (Target: hud_ui_container_destructor_core)
   - [❌] Binary-safe
 - 0x4bc7c0:
   - [✅] Reconstructed (Name: HudUiContainer::AddChild)
@@ -4935,7 +4933,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiFlashPanel::ResetFlashState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTransitionTextPanel::ResetFlashState File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_flash_panel_reset_flash_state)
   - [❌] Binary-safe
 - 0x4bc980:
   - [✅] Reconstructed (Name: HudUiFlashPanel::SetFlashRate)
@@ -4947,7 +4945,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiFlashPanel::SetFlashColorAndRate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTransitionTextPanel::SetFlashColorAndRate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_flash_panel_set_flash_color_and_rate)
   - [❌] Binary-safe
 - 0x4bcb50:
   - [✅] Reconstructed (Name: HudUiTextLabel::ConstructorWithPosAndFlags)
@@ -5109,7 +5107,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudWeatherFx::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudWeatherFx::Constructor File: src/Battlesport/hud.cpp)
-  - [✅] Functional-equivalent (Target: HudWeatherFx::Constructor)
+  - [✅] Functional-equivalent (Target: hud_weather_fx_constructor)
   - [❌] Binary-safe
 - 0x4bde40:
   - [✅] Reconstructed (Name: HudWeatherFx::Destructor)
@@ -5121,7 +5119,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudWeatherFx::ResetParticleSlot)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudWeatherFx::ResetParticleSlot File: src/Battlesport/hud.cpp)
-  - [✅] Functional-equivalent (Target: HudWeatherFx::ResetParticleSlot)
+  - [✅] Functional-equivalent (Target: hud_weather_fx_reset_particle_slot)
   - [❌] Binary-safe
 - 0x4bdfd0:
   - [☑️] Reconstructed (Name: HudWeatherFx::DrawParticles)
@@ -5139,7 +5137,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudWeatherFxSnow::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudWeatherFxSnow::Constructor File: src/Battlesport/hud.cpp)
-  - [✅] Functional-equivalent (Target: HudWeatherFxSnow::Constructor)
+  - [✅] Functional-equivalent (Target: hud_weather_fx_snow_constructor)
   - [❌] Binary-safe
 - 0x4be2f0:
   - [☑️] Reconstructed (Name: HudWeatherFxSnow::Update)
@@ -5151,7 +5149,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudWeatherFxRain::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudWeatherFxRain::Constructor File: src/Battlesport/hud.cpp)
-  - [✅] Functional-equivalent (Target: HudWeatherFxRain::Constructor)
+  - [✅] Functional-equivalent (Target: hud_weather_fx_rain_constructor)
   - [❌] Binary-safe
 - 0x4be870:
   - [✅] Reconstructed (Name: HudWeatherFxRain::Destructor)
@@ -5181,7 +5179,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::DestructorCore)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudUiBackgroundCursorWidget::DestructorCore)
+  - [✅] Functional-equivalent (Target: hud_ui_background_cursor_widget_destructor_core)
   - [❌] Binary-safe
 - 0x4bfa70:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged)
@@ -5199,13 +5197,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetCaptureEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_cursor_set_capture_enabled)
   - [❌] Binary-safe
 - 0x4bfae0:
   - [☑️] Reconstructed (Name: HudUiBackgroundCursorWidget::RebuildCapturedImageForCurrentImage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_cursor_set_image_borrowed_refresh)
   - [❌] Binary-safe
 - 0x4bfb70:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetPos)
@@ -5217,7 +5215,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::CaptureBackgroundUnderCursorImage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::RebuildCapturedImage File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_cursor_rebuild_captured_image)
   - [❌] Binary-safe
 - 0x4bfc50:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::Draw)
@@ -5238,22 +5236,22 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Functional-equivalent
   - [❌] Binary-safe
 - 0x4bfcd0:
-  - [☑️] Reconstructed (Name: HudUiBackgroundVideoWidget::Destructor)
+  - [✅] Reconstructed (Name: HudUiBackgroundVideoWidget::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundVideoWidget::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [✅] Functional-equivalent (Target: HudUiBackgroundVideoWidget::Destructor)
+  - [✅] Functional-equivalent (Target: hud_ui_background_video_widget_destructor)
   - [❌] Binary-safe
 - 0x4bfd40:
   - [☑️] Reconstructed (Name: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_video_widget_set_media_path)
   - [❌] Binary-safe
 - 0x4bfe20:
   - [✅] Reconstructed (Name: HudUiBackgroundVideoWidget::SetColorKey565)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundVideoWidget::SetColorKey565 File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_video_widget_set_color_key565)
   - [❌] Binary-safe
 - 0x4bfe40:
   - [☑️] Reconstructed (Name: HudUiBackgroundVideoWidget::Update)
@@ -5317,9 +5315,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b9330:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::SetSelectedEntry)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindButtonBase::SetSelectedEntry File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_bind_button_base_set_selected_entry)
   - [❌] Binary-safe
 - 0x4ba9e0:
   - [✅] Reconstructed (Name: HudUiPanel::CopyConstructor)
@@ -5328,7 +5326,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: hud_ui_panel_constructor_copy)
   - [❌] Binary-safe
 - 0x4bab40:
-  - [☑️] Reconstructed (Name: HudUiPanel::Destructor)
+  - [✅] Reconstructed (Name: HudUiPanel::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [✅] Functional-equivalent (Target: hud_ui_panel_destructor)
@@ -6522,49 +6520,49 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudSensorMapNode::Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::Init File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorMapNode::Init)
+  - [✅] Functional-equivalent (Target: hud_sensor_map_node_init)
   - [❌] Binary-safe
 - 0x415ac0:
   - [✅] Reconstructed (Name: HudSensorMapNode::FreePointArray)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::FreePointArray File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorMapNode::FreePointArray)
+  - [✅] Functional-equivalent (Target: hud_sensor_map_node_free_point_array)
   - [❌] Binary-safe
 - 0x415ae0:
   - [✅] Reconstructed (Name: HudSensorMapNode::SetEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::SetEnabled File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorMapNode::SetEnabled)
+  - [✅] Functional-equivalent (Target: hud_sensor_map_node_set_enabled)
   - [❌] Binary-safe
 - 0x415b10:
   - [✅] Reconstructed (Name: HudSensorMapNode::SelectPoint)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::SelectPoint File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorMapNode::SelectPoint)
+  - [✅] Functional-equivalent (Target: hud_sensor_map_node_select_point)
   - [❌] Binary-safe
 - 0x415b40:
   - [✅] Reconstructed (Name: HudSensorMapNode::InitDefaults)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::InitDefaults File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorMapNode::InitDefaults)
+  - [✅] Functional-equivalent (Target: hud_sensor_map_node_init_defaults)
   - [❌] Binary-safe
 - 0x415b70:
   - [☑️] Reconstructed (Name: HudSensorMapNode::SetColorRgb)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::SetColorRgb File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorMapNode::SetColorRgb)
+  - [✅] Functional-equivalent (Target: hud_sensor_map_node_set_color_rgb)
   - [❌] Binary-safe
 - 0x415bd0:
   - [✅] Reconstructed (Name: HudSensorMapNode::LoadFromStream)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::LoadFromStream File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorMapNode::LoadFromStream)
+  - [✅] Functional-equivalent (Target: hud_sensor_map_node_load_from_stream)
   - [❌] Binary-safe
 - 0x415c90:
   - [☑️] Reconstructed (Name: HudSensorMapNode::GetOrRecomputeCachedBounds)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorMapNode::UpdateCachedBounds File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorMapNode::UpdateCachedBounds)
+  - [✅] Functional-equivalent (Target: hud_sensor_map_node_update_cached_bounds)
   - [❌] Binary-safe
 - 0x415d30:
   - [☑️] Reconstructed (Name: HudSensorMapNode::DrawOnTracker)
@@ -6702,19 +6700,19 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudSensorTracker::MapInsertNodeAndGrowBounds)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::MapInsertNodeAndGrowBounds File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::MapInsertNodeAndGrowBounds)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_map_insert_node_and_grow_bounds)
   - [❌] Binary-safe
 - 0x4168d0:
   - [☑️] Reconstructed (Name: HudSensorTracker::LoadMapFromStream)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::LoadMapFromStream File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::LoadMapFromStream)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_load_map_from_stream)
   - [❌] Binary-safe
 - 0x4169d0:
   - [✅] Reconstructed (Name: HudSensorTracker::LoadMapFromPath)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::LoadMapFromPath File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::LoadMapFromPath)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_load_map_from_path)
   - [❌] Binary-safe
 - 0x416a30:
   - [✅] Reconstructed (Name: HudSensorTracker::MapOverlayBeginShow)
@@ -6804,13 +6802,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudSensorTracker::LoadMissionMapAndSfx)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::LoadMissionMapAndSfx File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::LoadMissionMapAndSfx)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_load_mission_map_and_sfx)
   - [❌] Binary-safe
 - 0x4172c0:
   - [✅] Reconstructed (Name: HudSensorTracker::SetObjectiveMarkerEnabledAndColor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::SetObjectiveMarkerEnabledAndColor File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::SetObjectiveMarkerEnabledAndColor)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_set_objective_marker_enabled_and_color)
   - [❌] Binary-safe
 - 0x417300:
   - [✅] Reconstructed (Name: HudSensorTracker::SetObjectiveMarkerColorBlink)
@@ -6918,13 +6916,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudSensorTracker::LoadMissionCoreResources)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::LoadMissionCoreResources File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::LoadMissionCoreResources)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_load_mission_core_resources)
   - [❌] Binary-safe
 - 0x417a00:
   - [✅] Reconstructed (Name: HudSensorTracker::InitMissionGameplaySystems)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::InitMissionGameplaySystems File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::InitMissionGameplaySystems)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_init_mission_gameplay_systems)
   - [❌] Binary-safe
 - 0x417ca0:
   - [✅] Reconstructed (Name: HudSensorTracker::OnObjectiveCommand)
@@ -6960,7 +6958,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudSensorTracker::LoadObjectivesFromZrd)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::LoadObjectivesFromZrd File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::LoadObjectivesFromZrd)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_load_objectives_from_zrd)
   - [❌] Binary-safe
 - 0x4184e0:
   - [☑️] Reconstructed (Name: HudSensorTracker::AdvanceObjectiveState)
@@ -7008,13 +7006,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudSensorTracker::FindAndHighlightFirstIncompleteObjective)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::FindAndHighlightFirstIncompleteObjective File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::FindAndHighlightFirstIncompleteObjective)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_find_and_highlight_first_incomplete_objective)
   - [❌] Binary-safe
 - 0x418c70:
   - [☑️] Reconstructed (Name: HudSensorTracker::ResetHudForMissionStart)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::ResetHudForMissionStart File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::ResetHudForMissionStart)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_reset_hud_for_mission_start)
   - [❌] Binary-safe
 - 0x418d40:
   - [☑️] Reconstructed (Name: HudSensorTracker::UpdateObjectiveFlow)
@@ -7032,19 +7030,19 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudSensorTracker::LoadMissionWeatherFx)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::LoadMissionWeatherFx File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::LoadMissionWeatherFx)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_load_mission_weather_fx)
   - [❌] Binary-safe
 - 0x4192d0:
   - [✅] Reconstructed (Name: HudSensorTracker::RunStartAnimsFromZrd)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::RunStartAnimsFromZrd File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::RunStartAnimsFromZrd)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_run_start_anims_from_zrd)
   - [❌] Binary-safe
 - 0x419380:
   - [✅] Reconstructed (Name: HudSensorTracker::OnObjectiveReadSoundEvent)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudSensorTracker::OnObjectiveReadSoundEvent File: src/Battlesport/HudSensorTracker.cpp)
-  - [✅] Functional-equivalent (Target: HudSensorTracker::OnObjectiveReadSoundEvent)
+  - [✅] Functional-equivalent (Target: hud_sensor_tracker_on_objective_read_sound_event)
   - [❌] Binary-safe
 - 0x4193c0:
   - [☑️] Reconstructed (Name: HudSensorTracker::LoadRaceCheckpointMeta)
@@ -7137,8 +7135,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::SetEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundContainer::SetEnabled File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_background_container_set_enabled)
+  - [✅] Binary-safe
 - 0x42ee50:
   - [✅] Reconstructed (Name: RecoilApp_MissionFmvState::OnDeactivate)
   - [❌] Source dependencies satisfied
@@ -7188,7 +7186,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: Pickup::Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: Pickup::Init File: src/Battlesport/pickup.cpp)
-  - [✅] Functional-equivalent (Target: Pickup::Init)
+  - [✅] Functional-equivalent (Target: pickup_init)
   - [❌] Binary-safe
 - 0x41ceb0:
   - [✅] Reconstructed (Name: zClass_Node::ClearPickupFlagsRecursive)
@@ -7290,7 +7288,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: PickupType::FindByLogicalName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: PickupType::FindByLogicalName File: src/Battlesport/pickup.cpp)
-  - [✅] Functional-equivalent (Target: PickupType::FindByLogicalName)
+  - [✅] Functional-equivalent (Target: pickup_type_find_by_logical_name)
   - [❌] Binary-safe
 - 0x41ddf0:
   - [✅] Reconstructed (Name: Pickup::SelectPuppiesZrdByDifficulty)
@@ -7326,7 +7324,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: PickupSpawnList::Clear)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: PickupSpawnList::Clear File: src/Battlesport/pickup.cpp)
-  - [✅] Functional-equivalent (Target: PickupSpawnList::Clear)
+  - [✅] Functional-equivalent (Target: pickup_spawn_list_clear)
   - [❌] Binary-safe
 - 0x41e270:
   - [✅] Reconstructed (Name: PickupRespawnQueue::ClearAndFree)
@@ -7380,13 +7378,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: Pickup::ArchiveWriteAll)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: Pickup::ArchiveWriteAll File: src/Battlesport/pickup.cpp)
-  - [✅] Functional-equivalent (Target: Pickup::ArchiveWriteAll)
+  - [✅] Functional-equivalent (Target: pickup_archive_write_all)
   - [❌] Binary-safe
 - 0x41e840:
   - [☑️] Reconstructed (Name: Pickup::ArchiveReadRecord)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: Pickup::ArchiveReadRecord File: src/Battlesport/pickup.cpp)
-  - [✅] Functional-equivalent (Target: Pickup::ArchiveReadRecord)
+  - [✅] Functional-equivalent (Target: pickup_archive_read_record)
   - [❌] Binary-safe
 - 0x41e890:
   - [☑️] Reconstructed (Name: Pickup::ReconcilePrimaryAndNetworkCopySpawnLists)
@@ -10134,13 +10132,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zClass_TypeList::UpdateAllBuckets)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::UpdateAllBuckets File: src/GameZRecoil/zClass/List.c)
-  - [✅] Functional-equivalent (Target: zClass_TypeList::UpdateAllBuckets)
+  - [✅] Functional-equivalent (Target: zclass_typelist_update_all_buckets)
   - [❌] Binary-safe
 - 0x44eaa0:
   - [✅] Reconstructed (Name: zClass_TypeList::UpdateBucket)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zClass_TypeList::UpdateBucket File: src/GameZRecoil/zClass/List.c)
-  - [✅] Functional-equivalent (Target: zClass_TypeList::UpdateBucket)
+  - [✅] Functional-equivalent (Target: zclass_typelist_update_bucket)
   - [❌] Binary-safe
 - 0x44eb00:
   - [✅] Reconstructed (Name: gwNode::UpdateSubtree)
@@ -12459,7 +12457,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zEffectAnim::ResetActivationPrereqCount)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffectAnim::ResetActivationPrereqCount File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [✅] Functional-equivalent (Target: zEffectAnim::ResetActivationPrereqCount)
+  - [✅] Functional-equivalent (Target: zeffect_anim_reset_activation_prereq_count)
   - [❌] Binary-safe
 - 0x45d7b0:
   - [✅] Reconstructed (Name: zEffectAnim::SetTransformRotAndVelocity)
@@ -12543,7 +12541,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zEffect::SetWorldNode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::SetWorldNode File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [✅] Functional-equivalent (Target: zEffect::SetWorldNode)
+  - [✅] Functional-equivalent (Target: zeffect_set_world_node)
   - [❌] Binary-safe
 - 0x45e210:
   - [✅] Reconstructed (Name: zEffect_Anim::SetZbdFilename)
@@ -12555,7 +12553,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zEffect::SetResourceNode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::SetResourceNode File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [✅] Functional-equivalent (Target: zEffect::SetResourceNode)
+  - [✅] Functional-equivalent (Target: zeffect_set_resource_node)
   - [❌] Binary-safe
 - 0x45e280:
   - [✅] Reconstructed (Name: zEffectAnim::FindSoundRefIndexByName)
@@ -12675,7 +12673,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zEffect::InitFromPath)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zEffect::InitFromPath File: src/GameZRecoil/zEffect/zEffect.cpp)
-  - [✅] Functional-equivalent (Target: zEffect::InitFromPath)
+  - [✅] Functional-equivalent (Target: zeffect_init_from_path)
   - [❌] Binary-safe
 - 0x460330:
   - [✅] Reconstructed (Name: zEffect::Reset)
@@ -12939,7 +12937,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zFMV_Stream::OpenAudio)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Stream::OpenAudio File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zfmv_stream_open_audio)
   - [❌] Binary-safe
 - 0x4643a0:
   - [✅] Reconstructed (Name: zFMV_Stream::ReadAndDecodeFrame)
@@ -13248,13 +13246,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zFMV_Stream::Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Stream::Init File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zfmv_stream_init)
   - [❌] Binary-safe
 - 0x463dd0:
   - [✅] Reconstructed (Name: zFMV_Stream::Destructor)
   - [☑️] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Stream::Destructor File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [✅] Functional-equivalent (Target: zFMV_Stream::Destructor)
+  - [✅] Functional-equivalent (Target: zfmv_stream_destructor)
   - [❌] Binary-safe
 
 ## M26. zGeometry model/convex utilities
@@ -13881,7 +13879,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVid_Image::Create)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image::Create File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [✅] Functional-equivalent (Target: zVid_Image::Create)
+  - [✅] Functional-equivalent (Target: zvid_image_create)
   - [❌] Binary-safe
 - 0x46ec20:
   - [☑️] Reconstructed (Name: zVid_Image::QueryBytesPerPixel)
@@ -13905,32 +13903,32 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVid_Image::SetFormatCode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image::SetFormatCode File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [✅] Functional-equivalent (Target: zVid_Image::SetFormatCode)
+  - [✅] Functional-equivalent (Target: zvid_image_set_format_code)
   - [❌] Binary-safe
 - 0x46ec70:
   - [✅] Reconstructed (Name: zVid_Image::SetPixels)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image_SetPixels File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [✅] Functional-equivalent (Target: zVid_Image::SetPixels)
+  - [✅] Functional-equivalent (Target: zvid_image_set_pixels)
   - [❌] Binary-safe
 - 0x46ec90:
   - [✅] Reconstructed (Name: zVid_Image::SetSize)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image::SetSize File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [✅] Functional-equivalent (Target: zVid_Image::SetSize)
+  - [✅] Functional-equivalent (Target: zvid_image_set_size)
   - [❌] Binary-safe
 - 0x46ecc0:
   - [✅] Reconstructed (Name: zVid_Image::Destroy)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image::Destroy File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [✅] Functional-equivalent (Target: zvid_image_destroy)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x46ecf0:
   - [✅] Reconstructed (Name: zVid_Image::ReleaseOwnedBuffers)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_Image::ReleaseOwnedBuffers File: src/GameZRecoil/zVideo/zVideo.cpp)
   - [✅] Functional-equivalent (Target: zvid_image_release_owned_buffers)
-  - [❌] Binary-safe
+  - [✅] Binary-safe
 - 0x46ed70:
   - [☑️] Reconstructed (Name: zVid_Image::ReadHeader)
   - [✅] Source dependencies satisfied
@@ -14058,20 +14056,20 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetGroupCommandCount)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindGroupList_GetGroupCommandCount File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_bind_group_list_get_group_command_count)
   - [❌] Binary-safe
 - 0x42a4d0:
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetGroupCommandId)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindGroupList_GetGroupCommandId File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_bind_group_list_get_group_command_id)
   - [❌] Binary-safe
 - 0x42a4e0:
   - [✅] Reconstructed (Name: zInput::BindMap_GetCommandLabel)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_GetCommandLabel File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_get_command_label)
+  - [✅] Binary-safe
 - 0x4719e0:
   - [✅] Reconstructed (Name: zInput::GlobalStateStaticInitAndRegisterAtExit)
   - [❌] Source dependencies satisfied
@@ -14271,8 +14269,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindMap_GetCommandHint)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_GetCommandHint File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_get_command_hint)
+  - [✅] Binary-safe
 - 0x42a500:
   - [✅] Reconstructed (Name: zInput::BindMap_AddDefaultBinding)
   - [✅] Source dependencies satisfied
@@ -14289,8 +14287,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput_BindGroupInfoVec::Count)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindGroupInfoVec::Count File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bind_group_info_vec_count)
+  - [✅] Binary-safe
 - 0x42e170:
   - [☑️] Reconstructed (Name: zInput::DI_SetJoystickEnabled)
   - [✅] Source dependencies satisfied
@@ -14701,27 +14699,27 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x470f50:
   - [✅] Reconstructed (Name: zInput_BindMapContext::CopyCommandLabel)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput_BindMapContext::CopyCommandLabel File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_context_copy_command_label)
   - [❌] Binary-safe
 - 0x470f80:
   - [☑️] Reconstructed (Name: zInput::BindMap_FormatKeyComboName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMap_FormatKeyComboName File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_format_key_combo_name)
   - [❌] Binary-safe
 - 0x471040:
   - [✅] Reconstructed (Name: zInput::BindMap_CopyJoystickButtonName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMap_CopyJoystickButtonName File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_copy_joystick_button_name)
   - [❌] Binary-safe
 - 0x471070:
   - [✅] Reconstructed (Name: zInput::BindMap_CopyMouseButtonName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMap_CopyMouseButtonName File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_copy_mouse_button_name)
   - [❌] Binary-safe
 - 0x4710a0:
   - [☑️] Reconstructed (Name: zInput::BindMapSystem_Init)
@@ -14767,28 +14765,28 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4716d0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetPrimaryKeyboardKey)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetPrimaryKeyboardKey File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_get_primary_keyboard_key)
+  - [✅] Binary-safe
 - 0x4716e0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetSecondaryKeyboardKey)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetSecondaryKeyboardKey File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_get_secondary_keyboard_key)
+  - [✅] Binary-safe
 - 0x4716f0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetJoystickButtonSlot)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetJoystickButtonSlot File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_get_joystick_button_slot)
+  - [✅] Binary-safe
 - 0x471700:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetMouseButtonSlot)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_GetMouseButtonSlot File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_get_mouse_button_slot)
+  - [✅] Binary-safe
 - 0x471710:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetCommandByPrimaryKey)
   - [✅] Source dependencies satisfied
@@ -14847,7 +14845,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_SetCommandCallback)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMap_Current_SetCommandCallback File: src/GameZRecoil/zInput/zInput.cpp)
-  - [✅] Functional-equivalent (Target: zInput::BindMap_Current_SetCommandCallback)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_set_command_callback)
   - [❌] Binary-safe
 - 0x4717d0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_ReadCommandInputState)
@@ -14857,27 +14855,27 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4717e0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_CopyCommandLabel)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMapCurrent_CopyCommandLabel File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_copy_command_label)
+  - [✅] Binary-safe
 - 0x471800:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_FormatKeyComboName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMapCurrent_FormatKeyComboName File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_format_key_combo_name)
   - [❌] Binary-safe
 - 0x471820:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_CopyJoystickButtonName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMapCurrent_CopyJoystickButtonName File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_copy_joystick_button_name)
   - [❌] Binary-safe
 - 0x471840:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_CopyMouseButtonName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zInput::BindMapCurrent_CopyMouseButtonName File: src/GameZRecoil/zInput/zInput.cpp)
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_copy_mouse_button_name)
   - [❌] Binary-safe
 - 0x471860:
   - [☑️] Reconstructed (Name: zInput::PushBindMapContextOverlay)
@@ -15822,7 +15820,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zModel::Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zModel::Init File: src/GameZRecoil/zModel/zModel.cpp)
-  - [✅] Functional-equivalent (Target: zModel::Init)
+  - [✅] Functional-equivalent (Target: zmodel_init)
   - [❌] Binary-safe
 - 0x475f60:
   - [☑️] Reconstructed (Name: zModel_Display::Reset)
@@ -16968,13 +16966,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zReader::FindChildRecursive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader_FindChildRecursive File: src/GameZRecoil/zReader/zreader_lookup.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zreader_find_child_recursive)
   - [❌] Binary-safe
 - 0x48cf70:
   - [✅] Reconstructed (Name: zReader::GetNamedNode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader_GetNamedNode File: src/GameZRecoil/zReader/zreader_lookup.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: zreader_get_named_node)
   - [❌] Binary-safe
 - 0x48cf80:
   - [✅] Reconstructed (Name: zReader::ReadNamedString)
@@ -16986,7 +16984,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zReader::ReadNamedFloat)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader::ReadNamedFloat File: src/GameZRecoil/zReader/zreader_lookup.cpp)
-  - [✅] Functional-equivalent (Target: zReader::ReadNamedFloat)
+  - [✅] Functional-equivalent (Target: zreader_read_named_float)
   - [❌] Binary-safe
 - 0x48d030:
   - [✅] Reconstructed (Name: zReader::ReadNamedInt)
@@ -18081,7 +18079,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zSnd::ApplyMuteStateToActiveVoices)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSnd::ApplyMuteStateToActiveVoices File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [✅] Functional-equivalent (Target: zSnd::ApplyMuteStateToActiveVoices)
+  - [✅] Functional-equivalent (Target: zsnd_apply_mute_state_to_active_voices)
   - [❌] Binary-safe
 - 0x4a07a0:
   - [✅] Reconstructed (Name: zSnd::IsMuted)
@@ -18213,19 +18211,19 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndSample::DestroyOwnedData)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::DestroyOwnedData File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [✅] Functional-equivalent (Target: zSndSample::DestroyOwnedData)
+  - [✅] Functional-equivalent (Target: zsnd_sample_destroy_owned_data)
   - [❌] Binary-safe
 - 0x4a3850:
   - [✅] Reconstructed (Name: zSndSample::CreateQueuedStreamingSample)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample_CreateQueuedStreamingSample File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_create_queued_streaming_sample)
   - [❌] Binary-safe
 - 0x4a3910:
   - [✅] Reconstructed (Name: zSndSample::Destroy)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::Destroy File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [✅] Functional-equivalent (Target: zSndSample::Destroy)
+  - [✅] Functional-equivalent (Target: zsnd_sample_destroy)
   - [❌] Binary-safe
 - 0x4a3930:
   - [✅] Reconstructed (Name: zSndFadeLists::Init)
@@ -19011,13 +19009,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: StdPtrVector::Clear)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_StdPtrVector_Clear File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: std_ptr_vector_clear)
   - [❌] Binary-safe
 - 0x40c1d0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::ClearBindingEntries)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindButtonBase::ClearBindingEntries File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_bind_button_base_clear_binding_entries)
   - [❌] Binary-safe
 - 0x42a9f0:
   - [✅] Reconstructed (Name: Player::AddScaledHudCounterValue)
@@ -19029,7 +19027,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: StdPtrVector::FreeBufferAndReset)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil_StdPtrVector_FreeBufferAndReset File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: std_ptr_vector_free_buffer_and_reset)
   - [❌] Binary-safe
 - 0x42ecb0:
   - [✅] Reconstructed (Name: zUtil::SetMissionZrdrPathsAndMountZbd)
@@ -19365,7 +19363,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zIndexArchive::FindRecordByNameCI)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zIndexArchive::FindRecordByNameCI File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [✅] Functional-equivalent (Target: zIndexArchive::FindRecordByNameCI)
+  - [✅] Functional-equivalent (Target: zindex_archive_find_record_by_name_ci)
   - [❌] Binary-safe
 - 0x4a6630:
   - [✅] Reconstructed (Name: zIndexArchive::OpenFileByName)
@@ -19377,7 +19375,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zIndexArchive::ReadFileByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zIndexArchive::ReadFileByName File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [✅] Functional-equivalent (Target: zIndexArchive::ReadFileByName)
+  - [✅] Functional-equivalent (Target: zindex_archive_read_file_by_name)
   - [❌] Binary-safe
 - 0x4b2960:
   - [☑️] Reconstructed (Name: zGame::Options_LoadFromRegistry)
@@ -19443,13 +19441,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zUtil::ZBD_LoadEntriesGlobal)
   - [☑️] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil::ZBD_LoadEntriesGlobal File: src/GameZRecoil/zUtil/zZbd.cpp)
-  - [✅] Functional-equivalent (Target: zUtil::ZBD_LoadEntriesGlobal)
+  - [✅] Functional-equivalent (Target: zutil_zbd_load_entries_global)
   - [❌] Binary-safe
 - 0x4c0050:
   - [✅] Reconstructed (Name: zUtil::ZAR_LoadFileGlobal)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil::ZAR_LoadFileGlobal File: src/GameZRecoil/zUtil/zZbd.cpp)
-  - [✅] Functional-equivalent (Target: zUtil::ZAR_LoadFileGlobal)
+  - [✅] Functional-equivalent (Target: zutil_zar_load_file_global)
   - [❌] Binary-safe
 - 0x4c0070:
   - [✅] Reconstructed (Name: zUtil::ZAR_RequestStopGlobal)
@@ -19503,7 +19501,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zZbdSectionHandler::CompareSortOrderLessThan)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdSectionHandler::CompareSortOrderLessThan File: src/GameZRecoil/zUtil/zZbd.cpp)
-  - [✅] Functional-equivalent (Target: zZbdSectionHandler::CompareSortOrderLessThan)
+  - [✅] Functional-equivalent (Target: zzbd_section_handler_compare_sort_order_less_than)
   - [❌] Binary-safe
 - 0x4c0280:
   - [☑️] Reconstructed (Name: zZbdManager::RegisterSectionHandler)
@@ -19515,19 +19513,19 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zZbdManager::LoadEntries)
   - [☑️] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdManager::LoadEntries File: src/GameZRecoil/zUtil/zZbd.cpp)
-  - [✅] Functional-equivalent (Target: zZbdManager::LoadEntries)
+  - [✅] Functional-equivalent (Target: zzbd_manager_load_entries)
   - [❌] Binary-safe
 - 0x4c07d0:
   - [☑️] Reconstructed (Name: zZbdManager::SortSectionHandlers)
   - [☑️] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdManager::SortSectionHandlers File: src/GameZRecoil/zUtil/zZbd.cpp)
-  - [✅] Functional-equivalent (Target: zZbdManager::SortSectionHandlers)
+  - [✅] Functional-equivalent (Target: zzbd_manager_sort_section_handlers)
   - [❌] Binary-safe
 - 0x4c0400:
   - [☑️] Reconstructed (Name: zZbdManager::LoadZarFile)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdManager::LoadZarFile File: src/GameZRecoil/zUtil/zZbd.cpp)
-  - [✅] Functional-equivalent (Target: zZbdManager::LoadZarFile)
+  - [✅] Functional-equivalent (Target: zzbd_manager_load_zar_file)
   - [❌] Binary-safe
 - 0x4c0620:
   - [✅] Reconstructed (Name: zZbdManager::RequestStop)
@@ -20052,7 +20050,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideo::GetClearScreenBufferEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::GetClearScreenBufferEnabled File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [✅] Functional-equivalent (Target: zVideo::GetClearScreenBufferEnabled)
+  - [✅] Functional-equivalent (Target: zvideo_get_clear_screen_buffer_enabled)
   - [❌] Binary-safe
 - 0x4a7b60:
   - [☑️] Reconstructed (Name: zVideo_dd::PresentDisplayModeSurface)
@@ -20463,13 +20461,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideo::Dispatch_LockDisplayModeSurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Dispatch_LockDisplayModeSurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvideo_dispatch_lock_display_mode_surface_state)
   - [❌] Binary-safe
 - 0x4a68f0:
   - [✅] Reconstructed (Name: zVideo::Dispatch_UnlockDisplayModeSurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Dispatch_UnlockDisplayModeSurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvideo_dispatch_unlock_display_mode_surface_state)
   - [❌] Binary-safe
 - 0x4a6900:
   - [✅] Reconstructed (Name: zVideo::PresentOrAdjustSurfacesIfEnabled)
@@ -21096,13 +21094,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideoBuffer::CaptureSurfaceToImage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_buff_CaptureSurfaceToImage File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvideo_capture_surface_to_image)
   - [❌] Binary-safe
 - 0x4a6fe0:
   - [☑️] Reconstructed (Name: zVideo_buff::CopySurfaceRectToImage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_buff::CopySurfaceRectToImage File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvideo_buff_copy_surface_rect_to_image)
   - [❌] Binary-safe
 - 0x4bee60:
   - [✅] Reconstructed (Name: zVideoFxPass3Config::RegisterDestroyAtExit)
@@ -21480,20 +21478,20 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zStub::ReturnZeroNoArgs)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zStub::ReturnZeroNoArgs File: src/GameZRecoil/zClass/cls_stubs.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zstub_vtable_stubs)
+  - [✅] Binary-safe
 - 0x407150:
   - [✅] Reconstructed (Name: zStub::NoOp1Arg)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zStub::NoOp1Arg File: src/GameZRecoil/zClass/cls_stubs.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zstub_vtable_stubs)
+  - [✅] Binary-safe
 - 0x407160:
   - [✅] Reconstructed (Name: zStub::ReturnOne2Args)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zStub::ReturnOne2Args File: src/GameZRecoil/zClass/cls_stubs.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zstub_vtable_stubs)
+  - [✅] Binary-safe
 
 ## M46. Non-Authored Functions Not Needed for Reimplementation
 
@@ -21588,10 +21586,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40b0a0:
   - [✅] Reconstructed (Name: HudCmdCommandList::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdCommandList::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_command_list_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x40b0c0:
   - [✅] Reconstructed (Name: HudCmdKeyAButton::ScalarDeletingDestructor)
   - [❌] Source dependencies satisfied
@@ -22595,8 +22593,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: StdPtrVector::ClearNoOpDestroy)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: StdPtrVector::ClearNoOpDestroy File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: std_ptr_vector_clear_no_op_destroy)
+  - [✅] Binary-safe
 - 0x40c190:
   - [✅] Reconstructed (Name: zUtil::UninitializedFillDwordN)
   - [✅] Provider-boundary (Kind: compiler/template instantiation; Name: zUtil_UninitializedFillDwordN; Origin: compiler-generated; File: external; Target: pending)

@@ -228,7 +228,7 @@ template <typename T> bool ReadArray(FILE *stream, T **outData, unsigned int cou
         return false;
     }
 
-    *outData = static_cast<T *>(data);
+    *outData = (T *)(data);
     return true;
 }
 
@@ -253,7 +253,7 @@ struct MemoryReader {
 
 bool ReadMemory(MemoryReader *reader, void *data, size_t size) {
     if (reader->cursor > reader->end ||
-        size > static_cast<size_t>(reader->end - reader->cursor)) {
+        size > (size_t)(reader->end - reader->cursor)) {
         return false;
     }
 
@@ -300,7 +300,7 @@ int ResolveAnimEntryIndexByName(short *cachedIndex, const char *animName) {
         zEffectAnimEntry *entry = g_zEffectAnim_EntryList;
         for (int i = 0; i < g_zEffectAnim_EntryCount; ++i, ++entry) {
             if (strcmp(entry->name, animName) == 0) {
-                *cachedIndex = static_cast<short>(i);
+                *cachedIndex = (short)(i);
                 break;
             }
         }
@@ -331,8 +331,8 @@ void AdvanceVariantCycleDelay(zEffectAnimEntry *self) {
     self->variantCycleDelay = g_zEffect_VariantCycleId;
     ++g_zEffect_VariantCycleId;
 
-    const int maxCycleId = (static_cast<int>(self->priority) * 10 + 3) >> 2;
-    if (static_cast<int>(g_zEffect_VariantCycleId) > maxCycleId) {
+    const int maxCycleId = ((int)(self->priority) * 10 + 3) >> 2;
+    if ((int)(g_zEffect_VariantCycleId) > maxCycleId) {
         g_zEffect_VariantCycleId = 1;
     }
 }
@@ -382,7 +382,7 @@ float ClampUnitFloat(float value) {
 }
 
 unsigned char UnitFloatToByte(float value) {
-    return static_cast<unsigned char>(static_cast<int>(value * 255.0f + 0.5f));
+    return (unsigned char)((int)(value * 255.0f + 0.5f));
 }
 
 void SetNodeDiBlendScale(zClass_NodePartial *node, float blendScale) {
@@ -450,7 +450,7 @@ short ResolveNodeAnimRuntimeIndex(zEffectAnimEntry *self, zEffectNodeAnimEvent *
     if (event->packedRuntimeIndex < 0) {
         for (int i = 0; i < self->runtimeSequenceCount; ++i) {
             if (strcmp(self->runtimeList[i].sequenceName, event->targetName) == 0) {
-                event->packedRuntimeIndex = static_cast<short>(i);
+                event->packedRuntimeIndex = (short)(i);
                 break;
             }
         }
@@ -481,7 +481,7 @@ zVec3 LoadResetScratchVec(zEffectAnimEntry *entry, size_t firstIndex) {
 
 zClass_NodePartial *LoadResetScratchNode(zEffectAnimEntry *entry, size_t index) {
     return (zClass_NodePartial *)(
-        static_cast<unsigned int>(entry->resetScratch[index]));
+        (unsigned int)(entry->resetScratch[index]));
 }
 
 zClass_NodePartial *ResolveNodeRefOrResetScratch(zEffectAnimEntry *self,
@@ -1125,7 +1125,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetPositionRefAndVelocity(
 
     ResetActivatedBoundTransform(activatedEntry);
     activatedEntry->resetScratch[0] =
-        static_cast<unsigned int>((unsigned int)(refNode));
+        (unsigned int)((unsigned int)(refNode));
     StoreResetScratchVec(activatedEntry, 1, refVec);
     activatedEntry->resetScratch[4] = 0;
     activatedEntry->resetScratch[5] = 0;
@@ -1169,10 +1169,10 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetTransformRefs(
 
     ResetActivatedBoundTransform(activatedEntry);
     activatedEntry->resetScratch[0] =
-        static_cast<unsigned int>((unsigned int)(refNodeA));
+        (unsigned int)((unsigned int)(refNodeA));
     StoreResetScratchVec(activatedEntry, 1, refVecA);
     activatedEntry->resetScratch[4] =
-        static_cast<unsigned int>((unsigned int)(refNodeB));
+        (unsigned int)((unsigned int)(refNodeB));
     StoreResetScratchVec(activatedEntry, 5, refVecB);
 
     QueueCmdType4TransformRefs(self, boundNode, refNodeA, refVecA, refNodeB, refVecB);
@@ -1476,7 +1476,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL
 FindNextAsyncEntry(zEffectAnimEntry *currentEntry) {
     int index = 0;
     if (currentEntry != 0) {
-        index = static_cast<int>(currentEntry - g_zEffectAnim_EntryList) + 1;
+        index = (int)(currentEntry - g_zEffectAnim_EntryList) + 1;
     }
 
     for (; index < g_zEffectAnim_EntryCount; ++index) {
@@ -1531,8 +1531,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindOrCreateSoundRef(zEffectAnimEntry *self,
     zClass_Sound::SetSampleSetByName(node, name);
 
     if (self->soundRefList == 0) {
-        const int initialCount = static_cast<int>(self->soundRefCount) + 1;
-        self->soundRefList = static_cast<zEffectAnimRuntimeNodeRef *>(
+        const int initialCount = (int)(self->soundRefCount) + 1;
+        self->soundRefList = (zEffectAnimRuntimeNodeRef *)(
             realloc(0, initialCount * sizeof(zEffectAnimRuntimeNodeRef)));
         memset(self->soundRefList, 0, sizeof(zEffectAnimRuntimeNodeRef));
         ++self->soundRefCount;
@@ -1544,8 +1544,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindOrCreateSoundRef(zEffectAnimEntry *self,
         return -1;
     }
 
-    const int resizedCount = static_cast<int>(self->soundRefCount) + 1;
-    self->soundRefList = static_cast<zEffectAnimRuntimeNodeRef *>(
+    const int resizedCount = (int)(self->soundRefCount) + 1;
+    self->soundRefList = (zEffectAnimRuntimeNodeRef *)(
         realloc(self->soundRefList, resizedCount * sizeof(zEffectAnimRuntimeNodeRef)));
 
     zEffectAnimRuntimeNodeRef *const newRef = &self->soundRefList[self->soundRefCount];
@@ -1553,7 +1553,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindOrCreateSoundRef(zEffectAnimEntry *self,
     newRef->runtimeNode = node;
     newRef->isAttached = 0;
     ++self->soundRefCount;
-    return static_cast<int>(self->soundRefCount) - 1;
+    return (int)(self->soundRefCount) - 1;
 }
 
 // Reimplements 0x45e4a0: zEffectAnim::FindOrCreateLightRef (zeff_anim.c)
@@ -1572,8 +1572,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindOrCreateLightRef(zEffectAnimEntry *self,
     zClass_Class::gwNodeSetName(node, name);
 
     if (self->lightRefList == 0) {
-        const int initialCount = static_cast<int>(self->lightRefCount) + 1;
-        self->lightRefList = static_cast<zEffectAnimRuntimeNodeRef *>(
+        const int initialCount = (int)(self->lightRefCount) + 1;
+        self->lightRefList = (zEffectAnimRuntimeNodeRef *)(
             realloc(0, initialCount * sizeof(zEffectAnimRuntimeNodeRef)));
         memset(self->lightRefList, 0, sizeof(zEffectAnimRuntimeNodeRef));
         ++self->lightRefCount;
@@ -1585,8 +1585,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindOrCreateLightRef(zEffectAnimEntry *self,
         return -1;
     }
 
-    const int resizedCount = static_cast<int>(self->lightRefCount) + 1;
-    self->lightRefList = static_cast<zEffectAnimRuntimeNodeRef *>(
+    const int resizedCount = (int)(self->lightRefCount) + 1;
+    self->lightRefList = (zEffectAnimRuntimeNodeRef *)(
         realloc(self->lightRefList, resizedCount * sizeof(zEffectAnimRuntimeNodeRef)));
 
     zEffectAnimRuntimeNodeRef *const newRef = &self->lightRefList[self->lightRefCount];
@@ -1594,7 +1594,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindOrCreateLightRef(zEffectAnimEntry *self,
     newRef->runtimeNode = node;
     newRef->isAttached = 0;
     ++self->lightRefCount;
-    return static_cast<int>(self->lightRefCount) - 1;
+    return (int)(self->lightRefCount) - 1;
 }
 
 // Reimplements 0x45e5c0: zEffectAnim::ResolveNodeByName (zeff_anim.c)
@@ -1732,7 +1732,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL CloneEntryForNode(zEffectAnimE
     }
 
     zEffectAnimEntry *const clonedEntry =
-        static_cast<zEffectAnimEntry *>(calloc(1, sizeof(zEffectAnimEntry)));
+        (zEffectAnimEntry *)(calloc(1, sizeof(zEffectAnimEntry)));
     memcpy(clonedEntry, self, sizeof(zEffectAnimEntry));
 
     clonedEntry->runtimeNode = zClass_Object3D::gwObject3DInit();
@@ -1777,7 +1777,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL CloneEntryForNode(zEffectAnimE
 
     if (clonedEntry->lightRefCount > 0) {
         const int count = clonedEntry->lightRefCount;
-        clonedEntry->lightRefList = static_cast<zEffectAnimRuntimeNodeRef *>(
+        clonedEntry->lightRefList = (zEffectAnimRuntimeNodeRef *)(
             calloc(count, sizeof(zEffectAnimRuntimeNodeRef)));
         memcpy(clonedEntry->lightRefList, self->lightRefList,
                     sizeof(zEffectAnimRuntimeNodeRef) * count);
@@ -1795,7 +1795,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL CloneEntryForNode(zEffectAnimE
 
     if (clonedEntry->soundRefCount > 0) {
         const int count = clonedEntry->soundRefCount;
-        clonedEntry->soundRefList = static_cast<zEffectAnimRuntimeNodeRef *>(
+        clonedEntry->soundRefList = (zEffectAnimRuntimeNodeRef *)(
             calloc(count, sizeof(zEffectAnimRuntimeNodeRef)));
         memcpy(clonedEntry->soundRefList, self->soundRefList,
                     sizeof(zEffectAnimRuntimeNodeRef) * count);
@@ -1814,7 +1814,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL CloneEntryForNode(zEffectAnimE
 
     if (clonedEntry->trackedNodeCount > 0) {
         const int count = clonedEntry->trackedNodeCount;
-        clonedEntry->trackedNodeList = static_cast<zEffectAnimTrackedNode *>(
+        clonedEntry->trackedNodeList = (zEffectAnimTrackedNode *)(
             calloc(count, sizeof(zEffectAnimTrackedNode)));
         memcpy(clonedEntry->trackedNodeList, self->trackedNodeList,
                     sizeof(zEffectAnimTrackedNode) * count);
@@ -1830,7 +1830,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL CloneEntryForNode(zEffectAnimE
     if (clonedEntry->nodeRefCount > 0) {
         const int count = clonedEntry->nodeRefCount;
         clonedEntry->nodeRefList =
-            static_cast<zEffectAnimNodeRef28 *>(calloc(count, sizeof(zEffectAnimNodeRef28)));
+            (zEffectAnimNodeRef28 *)(calloc(count, sizeof(zEffectAnimNodeRef28)));
         memcpy(clonedEntry->nodeRefList, self->nodeRefList,
                     sizeof(zEffectAnimNodeRef28) * count);
 
@@ -1844,7 +1844,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL CloneEntryForNode(zEffectAnimE
 
     if (clonedEntry->runtimeSequenceCount > 0) {
         const int count = clonedEntry->runtimeSequenceCount;
-        clonedEntry->runtimeList = static_cast<zEffectAnimSurfaceRuntime *>(
+        clonedEntry->runtimeList = (zEffectAnimSurfaceRuntime *)(
             calloc(count, sizeof(zEffectAnimSurfaceRuntime)));
 
         for (int i = 0; i < count; ++i) {
@@ -1870,14 +1870,14 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL CloneEntryForNode(zEffectAnimE
     if (clonedEntry->sampleRefCount > 0) {
         const int count = clonedEntry->sampleRefCount;
         clonedEntry->sampleRefList =
-            static_cast<zEffectAnimSampleRef *>(calloc(count, sizeof(zEffectAnimSampleRef)));
+            (zEffectAnimSampleRef *)(calloc(count, sizeof(zEffectAnimSampleRef)));
         memcpy(clonedEntry->sampleRefList, self->sampleRefList,
                     sizeof(zEffectAnimSampleRef) * count);
     }
 
     if (clonedEntry->effectTemplateRefCount > 0) {
         const int count = clonedEntry->effectTemplateRefCount;
-        clonedEntry->effectTemplateRefList = static_cast<zEffectAnimTemplateIndexRef *>(
+        clonedEntry->effectTemplateRefList = (zEffectAnimTemplateIndexRef *)(
             calloc(count, sizeof(zEffectAnimTemplateIndexRef)));
         memcpy(clonedEntry->effectTemplateRefList, self->effectTemplateRefList,
                     sizeof(zEffectAnimTemplateIndexRef) * count);
@@ -1885,7 +1885,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL CloneEntryForNode(zEffectAnimE
 
     if (clonedEntry->activationPrereqCount > 0) {
         const int count = clonedEntry->activationPrereqCount;
-        clonedEntry->activationPrereqList = static_cast<zEffectAnimActivationPrereq *>(
+        clonedEntry->activationPrereqList = (zEffectAnimActivationPrereq *)(
             calloc(count, sizeof(zEffectAnimActivationPrereq)));
         memcpy(clonedEntry->activationPrereqList, self->activationPrereqList,
                     sizeof(zEffectAnimActivationPrereq) * count);
@@ -1894,7 +1894,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL CloneEntryForNode(zEffectAnimE
     if (clonedEntry->runtimeRefCount > 0) {
         const int count = clonedEntry->runtimeRefCount;
         clonedEntry->runtimeRefList =
-            static_cast<zEffectAnimRuntimeRef *>(calloc(count, sizeof(zEffectAnimRuntimeRef)));
+            (zEffectAnimRuntimeRef *)(calloc(count, sizeof(zEffectAnimRuntimeRef)));
         memcpy(clonedEntry->runtimeRefList, self->runtimeRefList,
                     sizeof(zEffectAnimRuntimeRef) * count);
 
@@ -1996,7 +1996,7 @@ RECOIL_NOINLINE int RECOIL_CDECL LoadZbd() {
 
     g_zEffectAnim_SourceFileStampCount = sourceFileStampCount;
     if (!ReadArray(stream, &g_zEffectAnim_SourceFileStampList,
-                   static_cast<unsigned int>(sourceFileStampCount))) {
+                   (unsigned int)(sourceFileStampCount))) {
         fclose(stream);
         return -1;
     }
@@ -2006,7 +2006,7 @@ RECOIL_NOINLINE int RECOIL_CDECL LoadZbd() {
         struct _stat statBuffer;
         zEffectAnimSourceFileStamp *const stamp = &g_zEffectAnim_SourceFileStampList[i];
         if (_stat(stamp->sourcePath, &statBuffer) == 0 &&
-            stamp->fileMtime != static_cast<int>(statBuffer.st_mtime)) {
+            stamp->fileMtime != (int)(statBuffer.st_mtime)) {
             stampMismatch = true;
             break;
         }
@@ -2048,7 +2048,7 @@ RECOIL_NOINLINE int RECOIL_CDECL LoadZbd() {
 
     const int entryCount = g_zEffectAnim_EntryCount;
     g_zEffectAnim_EntryList =
-        static_cast<zEffectAnimEntry *>(malloc(sizeof(zEffectAnimEntry) * entryCount));
+        (zEffectAnimEntry *)(malloc(sizeof(zEffectAnimEntry) * entryCount));
     if (entryCount > 0 && g_zEffectAnim_EntryList == 0) {
         fclose(stream);
         return -1;
@@ -2092,7 +2092,7 @@ RECOIL_NOINLINE int RECOIL_CDECL LoadZbd() {
         }
 
         if (entry->runtimeSequenceCount > 0) {
-            entry->runtimeList = static_cast<zEffectAnimSurfaceRuntime *>(
+            entry->runtimeList = (zEffectAnimSurfaceRuntime *)(
                 malloc(sizeof(zEffectAnimSurfaceRuntime) * entry->runtimeSequenceCount));
             if (entry->runtimeList == 0) {
                 fclose(stream);
@@ -2251,7 +2251,7 @@ RECOIL_NOINLINE int RECOIL_CDECL LoadZbd() {
 
     if (g_zEffectAnim_TextIdEntryCount > 0) {
         if (!ReadArray(stream, &g_zEffectAnim_TextIdEntryList,
-                       static_cast<unsigned int>(g_zEffectAnim_TextIdEntryCount))) {
+                       (unsigned int)(g_zEffectAnim_TextIdEntryCount))) {
             fclose(stream);
             return -1;
         }
@@ -2392,7 +2392,7 @@ SaveActivationRecords(zZbdSectionCallbackCtx *callbackCtx) {
         const size_t recordSize = offsetof(zEffectAnimActivationSaveRecord, trackedNodes) +
                                        sizeof(zEffectAnimTrackedNodeSaveRecord) * trackedNodeCount;
         zEffectAnimActivationSaveRecord *const saveRecord =
-            static_cast<zEffectAnimActivationSaveRecord *>(calloc(1, recordSize));
+            (zEffectAnimActivationSaveRecord *)(calloc(1, recordSize));
         if (saveRecord == 0) {
             return 0;
         }
@@ -2417,7 +2417,7 @@ SaveActivationRecords(zZbdSectionCallbackCtx *callbackCtx) {
                 savedTracked->activeFlag = (node->flags >> 2) & 1;
 
                 zClass_Object3DDataPartial *const objectData =
-                    static_cast<zClass_Object3DDataPartial *>(node->classData);
+                    (zClass_Object3DDataPartial *)(node->classData);
                 savedTracked->usesCachedMatrix = (objectData->flags >> 4) & 1;
                 if (savedTracked->usesCachedMatrix != 0) {
                     memcpy(savedTracked->transform,
@@ -2439,7 +2439,7 @@ SaveActivationRecords(zZbdSectionCallbackCtx *callbackCtx) {
                     unsigned int *const di =
                         (unsigned int *)(node->userDataOrDiRef);
                     savedTracked->diFlagBits = (savedTracked->diFlagBits & ~1) | ((di[1] >> 3) & 1);
-                    savedTracked->diUserValue = static_cast<int>(di[8]);
+                    savedTracked->diUserValue = (int)(di[8]);
                 } else {
                     savedTracked->diFlagBits &= ~1;
                 }
@@ -2452,7 +2452,7 @@ SaveActivationRecords(zZbdSectionCallbackCtx *callbackCtx) {
         char sectionName[0x14];
         sprintf(sectionName, "Activation%04d", i);
         result = zUtil_ZAR::WriteSectionBlob(callbackCtx, sectionName, saveRecord,
-                                             static_cast<unsigned int>(recordSize));
+                                             (unsigned int)(recordSize));
         free(saveRecord);
     }
 
@@ -2468,7 +2468,7 @@ static void QueueLoadedActivationRecord(const zEffectAnimActivationRecord *recor
 RECOIL_NOINLINE void RECOIL_FASTCALL LoadActivationRecords(void *, const char *sectionToken,
                                                            void *data, int, void *) {
     zEffectAnimActivationSaveRecord *const record =
-        static_cast<zEffectAnimActivationSaveRecord *>(data);
+        (zEffectAnimActivationSaveRecord *)(data);
     zEffectAnimEntry *entry = zEffectAnim::FindEntryByName(record->base.animName);
 
     if (strcmp(sectionToken, "Activation0000") == 0) {
@@ -2598,7 +2598,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LoadActivationRecords(void *, const char *s
         if (node->userDataOrDiRef != 0 && (tracked->diFlagBits & 1) != 0) {
             unsigned int *const di = (unsigned int *)(node->userDataOrDiRef);
             di[1] = (di[1] & ~0x08u) | 0x08u;
-            di[8] = static_cast<unsigned int>(tracked->diUserValue);
+            di[8] = (unsigned int)(tracked->diUserValue);
         }
     }
 }
@@ -2618,7 +2618,7 @@ SaveRunningAnimRecord(zZbdSectionCallbackCtx *callbackCtx, zEffectAnimEntry *ent
     totalSize += sizeof(zEffectAnimRuntimeNodeSaveRecord) * entry->lightRefCount;
     totalSize += sizeof(zEffectAnimSoundNodeSaveRecord) * entry->soundRefCount;
 
-    unsigned char *const buffer = static_cast<unsigned char *>(calloc(1, totalSize));
+    unsigned char *const buffer = (unsigned char *)(calloc(1, totalSize));
     if (buffer == 0) {
         return 0;
     }
@@ -2647,8 +2647,8 @@ SaveRunningAnimRecord(zZbdSectionCallbackCtx *callbackCtx, zEffectAnimEntry *ent
     for (int i_2646 = 0; i_2646 < entry->runtimeSequenceCount; ++i_2646) {
         zEffectAnimSurfaceRuntime runtimeCopy = entry->runtimeList[i_2646];
         runtimeCopy.currentEvent =
-            (void *)(static_cast<unsigned char *>(runtimeCopy.currentEvent) -
-                                     static_cast<unsigned char *>(runtimeCopy.eventStream));
+            (void *)((unsigned char *)(runtimeCopy.currentEvent) -
+                                     (unsigned char *)(runtimeCopy.eventStream));
         memcpy(cursor, &runtimeCopy, sizeof(runtimeCopy));
         cursor += sizeof(runtimeCopy);
         if (entry->runtimeList[i_2646].eventStreamSize > 0) {
@@ -2666,7 +2666,7 @@ SaveRunningAnimRecord(zZbdSectionCallbackCtx *callbackCtx, zEffectAnimEntry *ent
         zClass_NodePartial *const node = lightRef->runtimeNode;
         if (node != 0) {
             zClass_LightDataPartial *const lightData =
-                static_cast<zClass_LightDataPartial *>(node->classData);
+                (zClass_LightDataPartial *)(node->classData);
             record.posX = lightData->localPosition.x;
             record.posY = lightData->localPosition.y;
             record.posZ = lightData->localPosition.z;
@@ -2685,7 +2685,7 @@ SaveRunningAnimRecord(zZbdSectionCallbackCtx *callbackCtx, zEffectAnimEntry *ent
         zClass_NodePartial *const node = soundRef->runtimeNode;
         if (node != 0) {
             zClass_SoundDataPartial *const soundData =
-                static_cast<zClass_SoundDataPartial *>(node->classData);
+                (zClass_SoundDataPartial *)(node->classData);
             record.hasPosition = (soundData->runtimeFlags >> 1) & 1;
             record.posX = soundData->localPosition.x;
             record.posY = soundData->localPosition.y;
@@ -2700,7 +2700,7 @@ SaveRunningAnimRecord(zZbdSectionCallbackCtx *callbackCtx, zEffectAnimEntry *ent
     char sectionName[0x14];
     sprintf(sectionName, "Running%03d", runningIndex);
     const int result = zUtil_ZAR::WriteSectionBlob(callbackCtx, sectionName, buffer,
-                                                            static_cast<unsigned int>(totalSize));
+                                                            (unsigned int)(totalSize));
     free(buffer);
     return result;
 }
@@ -2713,7 +2713,7 @@ SaveRunningAnimRecords(zZbdSectionCallbackCtx *callbackCtx) {
     for (int i = 1; result != 0 && i < g_zEffectAnim_EntryCount; ++i) {
         zEffectAnimEntry *const entry = &g_zEffectAnim_EntryList[i];
         if (entry != 0 && (entry->activationState == 2 || entry->activationState == 6)) {
-            const unsigned short flags = static_cast<unsigned short>(entry->flags);
+            const unsigned short flags = (unsigned short)(entry->flags);
             if (((flags & 0x1000) == 0 || (flags & 0x2000) != 0) &&
                 g_zEffectAnim_RecordQueueEnabled != 0) {
                 result = SaveRunningAnimRecord(callbackCtx, entry, i, 1);
@@ -2745,8 +2745,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LoadRunningAnimRecords(void *unused, const 
         return;
     }
 
-    MemoryReader reader = {static_cast<const unsigned char *>(data),
-                           static_cast<const unsigned char *>(data) + dataSize};
+    MemoryReader reader = {(const unsigned char *)(data),
+                           (const unsigned char *)(data) + dataSize};
 
     zEffectAnimRunningSaveHeader header = {0};
     if (!ReadMemory(&reader, &header, sizeof(header))) {
@@ -2787,10 +2787,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LoadRunningAnimRecords(void *unused, const 
     }
 
     entry->flags |= 0x4000u;
-    entry->resetScratch[0] = static_cast<unsigned int>(
+    entry->resetScratch[0] = (unsigned int)(
         (unsigned int)(GameZ_ZBD::NodeIndexToPtr(header.nodeRefAIndex)));
     StoreResetScratchVec(entry, 1, &header.refVecA);
-    entry->resetScratch[4] = static_cast<unsigned int>(
+    entry->resetScratch[4] = (unsigned int)(
         (unsigned int)(GameZ_ZBD::NodeIndexToPtr(header.nodeRefBIndex)));
     StoreResetScratchVec(entry, 5, &header.refVecB);
     entry->activationState = header.activationState;
@@ -2821,7 +2821,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LoadRunningAnimRecords(void *unused, const 
                 return;
             }
 
-            runtime->currentEvent = static_cast<unsigned char *>(eventStream) + currentEventOffset;
+            runtime->currentEvent = (unsigned char *)(eventStream) + currentEventOffset;
             runtime->eventStream = eventStream;
             if (!ReadMemory(&reader, runtime->eventStream, runtime->eventStreamSize)) {
                 return;
@@ -2906,7 +2906,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SaveAnimRecords(zZbdSectionCallbackCtx *call
             continue;
         }
 
-        const unsigned short flags = static_cast<unsigned short>(entry->flags);
+        const unsigned short flags = (unsigned short)(entry->flags);
         if (((flags & 0x1000) != 0 && (flags & 0x2000) == 0) ||
             g_zEffectAnim_RecordQueueEnabled == 0) {
             continue;
@@ -2916,7 +2916,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SaveAnimRecords(zZbdSectionCallbackCtx *call
             entry->trackedNodeList != 0 ? entry->trackedNodeCount : 0;
         const size_t payloadSize = sizeof(zEffectAnimSaveHeader) +
                                         sizeof(zEffectAnimTrackedNodeSaveRecord) * trackedNodeCount;
-        unsigned char *const payload = static_cast<unsigned char *>(calloc(1, payloadSize));
+        unsigned char *const payload = (unsigned char *)(calloc(1, payloadSize));
         if (payload == 0) {
             return 0;
         }
@@ -2939,7 +2939,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SaveAnimRecords(zZbdSectionCallbackCtx *call
             }
 
             zClass_Object3DDataPartial *const objectData =
-                static_cast<zClass_Object3DDataPartial *>(node->classData);
+                (zClass_Object3DDataPartial *)(node->classData);
             record->nodeIndex = zClass::NodePtrToValidatedIndex(node);
             record->activeFlag = (node->flags >> 2) & 1;
             record->usesCachedMatrix = (objectData->flags >> 4) & 1;
@@ -2960,7 +2960,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SaveAnimRecords(zZbdSectionCallbackCtx *call
         char sectionName[0x14];
         sprintf(sectionName, "Anim%04d", i + g_zEffectAnim_ActivationRecordCount);
         result = zUtil_ZAR::WriteSectionBlob(callbackCtx, sectionName, payload,
-                                             static_cast<unsigned int>(payloadSize));
+                                             (unsigned int)(payloadSize));
         free(payload);
     }
 
@@ -2976,11 +2976,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LoadAnimRecords(void *unused, const char *s
     (void)sectionToken;
     (void)extraCtx;
 
-    if (data == 0 || dataSize < static_cast<int>(sizeof(zEffectAnimSaveHeader))) {
+    if (data == 0 || dataSize < (int)(sizeof(zEffectAnimSaveHeader))) {
         return;
     }
 
-    zEffectAnimSaveHeader *const header = static_cast<zEffectAnimSaveHeader *>(data);
+    zEffectAnimSaveHeader *const header = (zEffectAnimSaveHeader *)(data);
     zEffectAnimEntry *entry = &g_zEffectAnim_EntryList[header->entryTableIndex];
     if (entry == 0 || (entry->flags & 0x4000u) != 0) {
         return;
@@ -3005,12 +3005,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LoadAnimRecords(void *unused, const char *s
 
     const size_t requiredSize =
         sizeof(*header) + sizeof(zEffectAnimTrackedNodeSaveRecord) * header->trackedNodeCount;
-    if (dataSize < static_cast<int>(requiredSize)) {
+    if (dataSize < (int)(requiredSize)) {
         return;
     }
 
     zEffectAnimTrackedNodeSaveRecord *records =
-        (zEffectAnimTrackedNodeSaveRecord *)(static_cast<unsigned char *>(data) +
+        (zEffectAnimTrackedNodeSaveRecord *)((unsigned char *)(data) +
                                                              sizeof(*header));
     for (int i = 0; i < header->trackedNodeCount; ++i) {
         zEffectAnimTrackedNodeSaveRecord *const record = &records[i];
@@ -3107,7 +3107,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CaptureNodeStates(zEffectAnimEntry *self) {
         }
 
         zClass_Object3DDataPartial *const objectData =
-            static_cast<zClass_Object3DDataPartial *>(node->classData);
+            (zClass_Object3DDataPartial *)(node->classData);
         state->usesCachedMatrix = (objectData->flags >> 4) & 1;
         if (state->usesCachedMatrix != 0) {
             memcpy(state->transformSnapshot, zClass_Object3D::gwObject3DGetMatrixPtr(node),
@@ -3177,7 +3177,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AdvanceKeyframeSample(
     zEffectKeyframeSampleHeader *sampleHeader) {
     const int nextSampleOffset =
         keyframeEvent->currentKeyframeOffset +
-        static_cast<int>(sizeof(zEffectKeyframeSampleHeader));
+        (int)(sizeof(zEffectKeyframeSampleHeader));
 
     ++keyframeEvent->lookaheadAdvanceCount;
     keyframeEvent->currentKeyframeOffset = nextSampleOffset;
@@ -3185,21 +3185,21 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AdvanceKeyframeSample(
     const int channelFlags = sampleHeader->channelFlags;
     if ((channelFlags & 0x01) != 0) {
         keyframeEvent->currentKeyframeOffset =
-            nextSampleOffset + static_cast<int>(sizeof(zEffectKeyframeSampleChannel));
+            nextSampleOffset + (int)(sizeof(zEffectKeyframeSampleChannel));
     }
     if ((channelFlags & 0x02) != 0) {
         keyframeEvent->currentKeyframeOffset +=
-            static_cast<int>(sizeof(zEffectKeyframeSampleChannel));
+            (int)(sizeof(zEffectKeyframeSampleChannel));
     }
     if ((channelFlags & 0x04) != 0) {
         keyframeEvent->currentKeyframeOffset +=
-            static_cast<int>(sizeof(zEffectKeyframeSampleChannel));
+            (int)(sizeof(zEffectKeyframeSampleChannel));
     }
 
     keyframeEvent->keyframeLocalTime = 0.0f;
 
     zEffectAnimEventHeader *const currentEvent =
-        static_cast<zEffectAnimEventHeader *>(sequenceRuntime->currentEvent);
+        (zEffectAnimEventHeader *)(sequenceRuntime->currentEvent);
     return keyframeEvent->currentKeyframeOffset < currentEvent->recordSize ? 1 : 0;
 }
 
@@ -3321,7 +3321,7 @@ AdvanceKeyframe(zEffectAnimEntry *self, zEffectAnimSurfaceRuntime *sequenceRunti
         self->nodeRefList[keyframeEvent->targetNodeRefIndex].node;
     if (sequenceRuntime->runState == 0) {
         keyframeEvent->currentKeyframeOffset =
-            static_cast<int>(sizeof(zEffectKeyframeEvent));
+            (int)(sizeof(zEffectKeyframeEvent));
         keyframeEvent->keyframeLocalTime = 0.0f;
         keyframeEvent->lookaheadAdvanceCount = 0;
     }
@@ -3435,15 +3435,15 @@ RunSequenceEvents(zEffectAnimEntry *self, zEffectAnimSurfaceRuntime *sequenceRun
     }
 
     zEffectAnimEventHeader *currentEvent =
-        static_cast<zEffectAnimEventHeader *>(sequenceRuntime->currentEvent);
+        (zEffectAnimEventHeader *)(sequenceRuntime->currentEvent);
     if (sequenceRuntime->runState == 1 ||
-        currentEvent > static_cast<zEffectAnimEventHeader *>(sequenceRuntime->eventStream)) {
+        currentEvent > (zEffectAnimEventHeader *)(sequenceRuntime->eventStream)) {
         sequenceRuntime->sequenceElapsedSec += g_zEffect_FrameDeltaRemainingSec;
         sequenceRuntime->eventElapsedSec += g_zEffect_FrameDeltaRemainingSec;
     }
 
     while (true) {
-        currentEvent = static_cast<zEffectAnimEventHeader *>(sequenceRuntime->currentEvent);
+        currentEvent = (zEffectAnimEventHeader *)(sequenceRuntime->currentEvent);
 
         int startSatisfied = 0;
         switch (currentEvent->startMode) {
@@ -3467,7 +3467,7 @@ RunSequenceEvents(zEffectAnimEntry *self, zEffectAnimSurfaceRuntime *sequenceRun
         }
 
         sequenceRuntime->eventElapsedSec = g_zEffect_FrameDeltaRemainingSec;
-        if (currentEvent == static_cast<zEffectAnimEventHeader *>(sequenceRuntime->eventStream)) {
+        if (currentEvent == (zEffectAnimEventHeader *)(sequenceRuntime->eventStream)) {
             sequenceRuntime->sequenceElapsedSec = g_zEffect_FrameDeltaRemainingSec;
         }
 
@@ -3477,16 +3477,16 @@ RunSequenceEvents(zEffectAnimEntry *self, zEffectAnimSurfaceRuntime *sequenceRun
             return dispatchResult;
         }
 
-        sequenceRuntime->runState = static_cast<unsigned char>(dispatchResult);
+        sequenceRuntime->runState = (unsigned char)(dispatchResult);
         if (sequenceRuntime->runState == 2) {
             unsigned char *const currentEventBytes =
-                static_cast<unsigned char *>(sequenceRuntime->currentEvent);
+                (unsigned char *)(sequenceRuntime->currentEvent);
             sequenceRuntime->eventElapsedSec = 0.0f;
             unsigned char *const nextEvent = currentEventBytes + currentEvent->recordSize;
             sequenceRuntime->currentEvent = nextEvent;
 
             unsigned char *const eventStreamEnd =
-                static_cast<unsigned char *>(sequenceRuntime->eventStream) +
+                (unsigned char *)(sequenceRuntime->eventStream) +
                 sequenceRuntime->eventStreamSize;
             if (nextEvent < eventStreamEnd) {
                 sequenceRuntime->runState = 0;
@@ -3603,7 +3603,7 @@ RECOIL_NOINLINE zEffectAnimActivationRecord *RECOIL_CDECL AllocActivationRecord(
     int recordCapacity = 0;
 
     if (recordTable == 0) {
-        recordTable = static_cast<zEffectAnimActivationRecord *>(
+        recordTable = (zEffectAnimActivationRecord *)(
             malloc(sizeof(zEffectAnimActivationRecord) * kInitialActivationRecordCapacity));
         recordCapacity = kInitialActivationRecordCapacity;
         recordCount = 0;
@@ -3617,7 +3617,7 @@ RECOIL_NOINLINE zEffectAnimActivationRecord *RECOIL_CDECL AllocActivationRecord(
 
     if (recordCount >= recordCapacity) {
         zEffectAnimActivationRecord *const oldTable = recordTable;
-        recordTable = static_cast<zEffectAnimActivationRecord *>(
+        recordTable = (zEffectAnimActivationRecord *)(
             malloc(sizeof(zEffectAnimActivationRecord) * recordCapacity * 2));
         g_zEffectAnim_ActivationRecordTable = recordTable;
         memcpy(recordTable, oldTable, sizeof(zEffectAnimActivationRecord) * recordCapacity);
@@ -3628,7 +3628,7 @@ RECOIL_NOINLINE zEffectAnimActivationRecord *RECOIL_CDECL AllocActivationRecord(
 
     zEffectAnimActivationRecord *const record = &recordTable[recordCount];
     record->recordId =
-        (g_zEffectAnim_ActivationDispatchTagHigh & static_cast<unsigned int>(recordCount)) &
+        (g_zEffectAnim_ActivationDispatchTagHigh & (unsigned int)(recordCount)) &
         0x00ffffffu;
     g_zEffectAnim_ActivationRecordCount = recordCount + 1;
     return record;
@@ -3659,7 +3659,7 @@ RECOIL_NOINLINE void RECOIL_CDECL DiscardLastActivationRecord() {
 RECOIL_NOINLINE void RECOIL_FASTCALL SetActivationDispatchContext(
     void(RECOIL_FASTCALL *callback)(zEffectAnimActivationRecord *record), int context) {
     g_zEffectAnim_ActivationDispatchCallback = callback;
-    g_zEffectAnim_ActivationDispatchTagHigh = static_cast<unsigned int>(context) << 24;
+    g_zEffectAnim_ActivationDispatchTagHigh = (unsigned int)(context) << 24;
 }
 
 // Reimplements 0x45fe50: zEffect_Anim::Shutdown
@@ -3723,13 +3723,13 @@ RECOIL_NOINLINE int RECOIL_CDECL Init() {
     g_zEffect_FrameDeltaRemainingSec = 0.0f;
     g_zEffect_DefaultGravity = -9.8f;
 
-    srand(static_cast<unsigned int>(time(0)));
+    srand((unsigned int)(time(0)));
     *(unsigned int *)(&g_zEffect_RandUnitScale) = kRandUnitScaleBits;
     {
         int valueIndex1;
         for (valueIndex1 = 0; valueIndex1 < (int)(sizeof(g_zEffect_RandUnitTable) / sizeof((g_zEffect_RandUnitTable)[0])); ++valueIndex1) {
             float & value = (g_zEffect_RandUnitTable)[valueIndex1];
-        value = static_cast<float>(rand()) * g_zEffect_RandUnitScale;
+        value = (float)(rand()) * g_zEffect_RandUnitScale;
     }
     }
 
@@ -3781,7 +3781,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL InitFromPath(zClass_NodePartial *worldNode,
 
     zReader::Node *const effectsNode = zReader_GetNamedNode(rootNode, "EFFECTS");
     g_zEffect_RuntimeManager.templateCount = zReaderArrayCount(effectsNode) - 1;
-    g_zEffect_RuntimeManager.templates = static_cast<zEffect_RuntimeEntry *>(
+    g_zEffect_RuntimeManager.templates = (zEffect_RuntimeEntry *)(
         calloc(g_zEffect_RuntimeManager.templateCount, sizeof(zEffect_RuntimeEntry)));
     g_zEffect_RuntimeManager.parentNode = worldNode;
     g_zEffect_RuntimeManager.listenerNode = cameraNode;
@@ -3792,7 +3792,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL InitFromPath(zClass_NodePartial *worldNode,
         zEffect_RuntimeEntry *const runtimeEntry = &g_zEffect_RuntimeManager.templates[i];
         runtimeEntry->effectIndex = -1;
         runtimeEntry->modelNodeName = zReaderArrayStringAt(effectNode, 1);
-        runtimeEntry->effectName = const_cast<char *>(zReader::ReadNamedString(effectNode, "NAME"));
+        runtimeEntry->effectName = (char *)(zReader::ReadNamedString(effectNode, "NAME"));
 
         zClass_NodePartial *const templateNode =
             zClass::FindByTypeAndName(6, runtimeEntry->modelNodeName);
@@ -3818,7 +3818,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL InitFromPath(zClass_NodePartial *worldNode,
         runtimeEntry->effectGfxData = gfxData;
         zUtil::StoreInt32((int *)(gfxData), 1);
 
-        zModel_MaterialPartial *const material = static_cast<zModel_MaterialPartial *>(gfxData);
+        zModel_MaterialPartial *const material = (zModel_MaterialPartial *)(gfxData);
         const int textureCount = zReaderArrayCount(mapsNode) - 1;
         zModel_Material::SetCycleTextureCount(material, textureCount);
 
@@ -3992,7 +3992,7 @@ RECOIL_NOINLINE void *RECOIL_FASTCALL FindNodeUserDataRecursive(zClass_NodeParti
     unsigned int userDataValue = 0;
     zClass_Class::gwNodeGetUserData(node, &userDataValue);
     if (userDataValue != 0) {
-        return (void *)(static_cast<unsigned int>(userDataValue));
+        return (void *)((unsigned int)(userDataValue));
     }
 
     for (int i = 0; i < node->listCountB; ++i) {
@@ -4061,7 +4061,7 @@ ActivateRuntimeEntryAtPosition(zEffect_RuntimeEntry *runtimeEntry, const zVec3 *
                                         currentScale);
     zClass_Object3D::gwObject3DSetPosition(runtimeEntry->effectNode, worldPos->x, worldPos->y,
                                            worldPos->z);
-    zDi::ResetCurrentVariant(static_cast<zDiPartial *>(runtimeEntry->effectGfxData));
+    zDi::ResetCurrentVariant((zDiPartial *)(runtimeEntry->effectGfxData));
     zClass_Class::AddChild(g_zEffect_RuntimeManager.parentNode, runtimeEntry->effectNode);
     ++g_zEffect_RuntimeManager.activatedCount;
     return 1;
@@ -4088,8 +4088,8 @@ AcquireRuntimeEntryByIndex(int effectIndex) {
     }
 
     zEffect_RuntimeEntry *const payload =
-        static_cast<zEffect_RuntimeEntry *>(zArchiveList_FindPayloadByValue(
-            g_zEffect_RuntimeManager.freeList, static_cast<unsigned int>(effectIndex)));
+        (zEffect_RuntimeEntry *)(zArchiveList_FindPayloadByValue(
+            g_zEffect_RuntimeManager.freeList, (unsigned int)(effectIndex)));
     if (payload != 0) {
         ++g_zEffect_RuntimeManager.recycleCount;
         zArchiveList_RemovePayload(g_zEffect_RuntimeManager.freeList, payload);
@@ -4114,7 +4114,7 @@ CloneRuntimeEntryFromTemplate(int effectIndex) {
     }
 
     zEffect_RuntimeEntry *const clone =
-        static_cast<zEffect_RuntimeEntry *>(malloc(sizeof(zEffect_RuntimeEntry)));
+        (zEffect_RuntimeEntry *)(malloc(sizeof(zEffect_RuntimeEntry)));
     memcpy(clone, templateEntry, sizeof(zEffect_RuntimeEntry));
 
     zClass_NodePartial *const node = zClass_cls_util::CopyNodeWithCloneOptions(
@@ -4248,7 +4248,7 @@ HandleEffectTemplateOffsetEvent(zEffectAnimEntry *self, zEffectAnimRefOffsetEven
         node = self->nodeRefList[event->nodeRefIndex].node;
     } else if (event->nodeRefIndex == -200) {
         node = (zClass_NodePartial *)(
-            static_cast<unsigned int>(self->resetScratch[0]));
+            (unsigned int)(self->resetScratch[0]));
         memcpy(&worldPosition.x, &self->resetScratch[1], sizeof(worldPosition.x));
         memcpy(&worldPosition.y, &self->resetScratch[2], sizeof(worldPosition.y));
         memcpy(&worldPosition.z, &self->resetScratch[3], sizeof(worldPosition.z));
@@ -4369,7 +4369,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleLightEvent(zEffectAnimEntry *self,
             basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
         } else if (event->basisNodeRefIndex == -200) {
             basisNode = (zClass_NodePartial *)(
-                static_cast<unsigned int>(self->resetScratch[0]));
+                (unsigned int)(self->resetScratch[0]));
             memcpy(&worldPosition.x, &self->resetScratch[1], sizeof(worldPosition.x));
             memcpy(&worldPosition.y, &self->resetScratch[2], sizeof(worldPosition.y));
             memcpy(&worldPosition.z, &self->resetScratch[3], sizeof(worldPosition.z));
@@ -5164,7 +5164,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePositionEvent(zEffectAnimEntry *self,
         basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
     } else if (event->basisNodeRefIndex == kEffectAnimResetScratchRefIndex) {
         basisNode = (zClass_NodePartial *)(
-            static_cast<unsigned int>(self->resetScratch[0]));
+            (unsigned int)(self->resetScratch[0]));
         memcpy(&point.x, &self->resetScratch[1], sizeof(point.x));
         memcpy(&point.y, &self->resetScratch[2], sizeof(point.y));
         memcpy(&point.z, &self->resetScratch[3], sizeof(point.z));
@@ -5227,7 +5227,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleRotationEvent(zEffectAnimEntry *self,
                 basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
             } else if (event->basisNodeRefIndex == kEffectAnimResetScratchRefIndex) {
                 basisNode = (zClass_NodePartial *)(
-                    static_cast<unsigned int>(self->resetScratch[0]));
+                    (unsigned int)(self->resetScratch[0]));
             }
 
             if (basisNode != 0) {
@@ -5325,7 +5325,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleDetachEvent(zEffectAnimEntry *self,
     zClass_NodePartial *const beamNode = self->nodeRefList[event->beamNodeRefIndex].node;
 
     if (runtime->runState == 0) {
-        unsigned int flags = static_cast<unsigned int>(event->flags);
+        unsigned int flags = (unsigned int)(event->flags);
         if ((flags & 0x0800u) != 0) {
             event->segmentStartCurrent = event->segmentStartInitial;
         }
@@ -5335,16 +5335,16 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleDetachEvent(zEffectAnimEntry *self,
 
         if ((flags & 0x04u) != 0) {
             flags &= ~0x04u;
-            event->flags = static_cast<int>(flags);
+            event->flags = (int)(flags);
 
             zVec3 point = {0};
             if ((flags & 0x08u) != 0) {
                 flags &= ~0x08u;
-                event->flags = static_cast<int>(flags);
+                event->flags = (int)(flags);
                 point = event->pointA;
             } else if ((flags & 0x10u) != 0) {
                 flags &= ~0x10u;
-                event->flags = static_cast<int>(flags);
+                event->flags = (int)(flags);
                 point = LoadResetScratchVec(self, 1);
             }
 
@@ -5353,23 +5353,23 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleDetachEvent(zEffectAnimEntry *self,
                 gwNode::TransformPoint(refNode, &point);
             }
             event->pointA = point;
-            flags = static_cast<unsigned int>(event->flags) | 0x08u;
-            event->flags = static_cast<int>(flags);
+            flags = (unsigned int)(event->flags) | 0x08u;
+            event->flags = (int)(flags);
         }
 
-        flags = static_cast<unsigned int>(event->flags);
+        flags = (unsigned int)(event->flags);
         if ((flags & 0x80u) != 0) {
             flags &= ~0x80u;
-            event->flags = static_cast<int>(flags);
+            event->flags = (int)(flags);
 
             zVec3 point = {0};
             if ((flags & 0x0100u) != 0) {
                 flags &= ~0x0100u;
-                event->flags = static_cast<int>(flags);
+                event->flags = (int)(flags);
                 point = event->pointB;
             } else if ((flags & 0x0200u) != 0) {
                 flags &= ~0x0200u;
-                event->flags = static_cast<int>(flags);
+                event->flags = (int)(flags);
                 point = LoadResetScratchVec(self, 5);
             }
 
@@ -5378,8 +5378,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleDetachEvent(zEffectAnimEntry *self,
                 gwNode::TransformPoint(refNode, &point);
             }
             event->pointB = point;
-            flags = static_cast<unsigned int>(event->flags) | 0x0100u;
-            event->flags = static_cast<int>(flags);
+            flags = (unsigned int)(event->flags) | 0x0100u;
+            event->flags = (int)(flags);
         }
     }
 
@@ -5388,7 +5388,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleDetachEvent(zEffectAnimEntry *self,
             ? g_zEffect_FrameDeltaRemainingSec
             : g_zEffect_FrameDeltaRemainingSec - (runtime->eventElapsedSec - event->endTimeSec);
 
-    const unsigned int flags = static_cast<unsigned int>(event->flags);
+    const unsigned int flags = (unsigned int)(event->flags);
 
     zClass_NodePartial *pointANode = 0;
     if ((flags & 0x01u) != 0) {
@@ -5513,7 +5513,7 @@ HandleScreenColorFxEvent(zEffectAnimEntry *self, zEffectAnimSurfaceRuntime *sequ
 
     const unsigned int packedColor =
         zVid_PackColorRGB(UnitFloatToByte(red), UnitFloatToByte(green), UnitFloatToByte(blue));
-    zVideo::FxPass3_SetPrimaryElementParamsLocal(packedColor, static_cast<double>(alpha));
+    zVideo::FxPass3_SetPrimaryElementParamsLocal(packedColor, (double)(alpha));
     return result;
 }
 
@@ -5526,7 +5526,7 @@ HandleScreenOverlayFxEvent(zEffectAnimEntry *self, zEffectAnimSurfaceRuntime *se
         return 2;
     }
 
-    const unsigned char flags = static_cast<unsigned char>(event->flagsAndAnchorNodePacked);
+    const unsigned char flags = (unsigned char)(event->flagsAndAnchorNodePacked);
     if (sequenceRuntime->runState == 0 && (flags & 0x08u) != 0) {
         const float referenceDistance =
             BeamLengthFromLengthSq(GetConditionalRefPosDistanceSq(self->callbackNode));
@@ -5537,7 +5537,7 @@ HandleScreenOverlayFxEvent(zEffectAnimEntry *self, zEffectAnimSurfaceRuntime *se
         const int surfaceWidth = zVideo::GetSwSurfaceWidth();
         const int surfaceHeight = zVideo::GetSwSurfaceHeight();
         const float radiusCap =
-            static_cast<float>(surfaceWidth > surfaceHeight ? surfaceWidth : surfaceHeight) * 0.25f;
+            (float)(surfaceWidth > surfaceHeight ? surfaceWidth : surfaceHeight) * 0.25f;
         if (radiusCap < event->maxRadiusNearPixels) {
             event->maxRadiusNearPixels = radiusCap;
         }
@@ -5561,8 +5561,8 @@ HandleScreenOverlayFxEvent(zEffectAnimEntry *self, zEffectAnimSurfaceRuntime *se
     int rectLeftPixels = 0;
     int rectTopPixels = 0;
     if ((flags & 0x02u) != 0) {
-        const short anchorNodeRefIndex = static_cast<short>(
-            static_cast<unsigned int>(event->flagsAndAnchorNodePacked) >> 16);
+        const short anchorNodeRefIndex = (short)(
+            (unsigned int)(event->flagsAndAnchorNodePacked) >> 16);
         if (anchorNodeRefIndex > 0) {
             zVec3 anchorPoint = event->worldAnchor;
             gwNode::TransformPoint(self->nodeRefList[anchorNodeRefIndex].node, &anchorPoint);
@@ -5572,42 +5572,42 @@ HandleScreenOverlayFxEvent(zEffectAnimEntry *self, zEffectAnimSurfaceRuntime *se
                 return 1;
             }
 
-            rectLeftPixels = static_cast<int>(projectedPoint.x + 0.5f);
-            rectTopPixels = static_cast<int>(projectedPoint.y + 0.5f);
+            rectLeftPixels = (int)(projectedPoint.x + 0.5f);
+            rectTopPixels = (int)(projectedPoint.y + 0.5f);
         }
     } else if ((flags & 0x01u) != 0) {
         rectLeftPixels =
-            static_cast<int>(event->centerXSlope * overlayTime + event->centerXBase);
+            (int)(event->centerXSlope * overlayTime + event->centerXBase);
         rectTopPixels =
-            static_cast<int>(event->centerYSlope * overlayTime + event->centerYBase);
+            (int)(event->centerYSlope * overlayTime + event->centerYBase);
     }
 
-    int maxRadius = static_cast<int>(event->maxRadiusPixelsSlope * overlayTime +
+    int maxRadius = (int)(event->maxRadiusPixelsSlope * overlayTime +
                                                        event->maxRadiusNearPixels);
     int extent =
-        static_cast<int>(event->extentSlope * overlayTime + event->extentBase);
+        (int)(event->extentSlope * overlayTime + event->extentBase);
     int sinFreqInt =
-        static_cast<int>(event->sinFreqSlope * overlayTime + event->sinFreqBase);
+        (int)(event->sinFreqSlope * overlayTime + event->sinFreqBase);
     int sinPhaseInt =
-        static_cast<int>(event->sinPhaseSlope * overlayTime + event->sinPhaseBase);
+        (int)(event->sinPhaseSlope * overlayTime + event->sinPhaseBase);
 
     int result = 1;
     if (sequenceRuntime->eventElapsedSec > event->endTimeSec) {
         if ((flags & 0x01u) != 0) {
-            rectLeftPixels = static_cast<int>(event->centerXEnd);
-            rectTopPixels = static_cast<int>(event->centerYEnd);
+            rectLeftPixels = (int)(event->centerXEnd);
+            rectTopPixels = (int)(event->centerYEnd);
         }
 
-        maxRadius = static_cast<int>(event->maxRadiusFarPixels);
-        extent = static_cast<int>(event->extentEnd);
-        sinFreqInt = static_cast<int>(event->sinFreqEnd);
-        sinPhaseInt = static_cast<int>(event->sinPhaseEnd);
+        maxRadius = (int)(event->maxRadiusFarPixels);
+        extent = (int)(event->extentEnd);
+        sinFreqInt = (int)(event->sinFreqEnd);
+        sinPhaseInt = (int)(event->sinPhaseEnd);
         result = 2;
     }
 
     zVideo::FxPass3_QueueElementLocal(rectLeftPixels, rectTopPixels, 0, maxRadius, extent,
-                                      static_cast<float>(sinFreqInt),
-                                      static_cast<float>(sinPhaseInt));
+                                      (float)(sinFreqInt),
+                                      (float)(sinPhaseInt));
     return result;
 }
 
@@ -5651,7 +5651,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleSurfaceRefEvent(
                 boundNode = self->nodeRefList[event->boundNodeRefIndex].node;
             }
 
-            const unsigned short flags = static_cast<unsigned short>(event->flags);
+            const unsigned short flags = (unsigned short)(event->flags);
             zEffectAnimEntry *const targetEntry = &g_zEffectAnim_EntryList[event->animEntryIndex];
 
             if ((flags & 0x01u) != 0) {
@@ -5692,7 +5692,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleSurfaceRefEvent(
         runtime->runState = 1;
     }
 
-    if ((static_cast<unsigned short>(event->flags) & 0x10u) != 0 && event->runtimeRefIndex >= 0) {
+    if (((unsigned short)(event->flags) & 0x10u) != 0 && event->runtimeRefIndex >= 0) {
         zEffectAnimEntry *&childEntry =
             self->runtimeRefList[event->runtimeRefIndex].cachedChildEntry;
         if (childEntry != 0 &&
@@ -5711,7 +5711,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleSurfaceRefEvent(
 RECOIL_NOINLINE int RECOIL_FASTCALL
 HandleTransformRefsEvent(zEffectAnimEntry *self, zEffectTransformRefsEvent *event) {
     if (ResolveAnimEntryIndexByName(&event->animEntryIndex, event->animName) > 0) {
-        const unsigned int flags = static_cast<unsigned int>(event->flags);
+        const unsigned int flags = (unsigned int)(event->flags);
 
         zVec3 refPointA = {0};
         if ((flags & 0x10u) != 0) {
@@ -5786,7 +5786,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleEmitterLoopEvent(
     ++runtime->loopIterationCount;
     runtime->loopElapsedSec = loopElapsed;
 
-    const unsigned char stopModeFlags = static_cast<unsigned char>(loopEvent->stopModeFlags);
+    const unsigned char stopModeFlags = (unsigned char)(loopEvent->stopModeFlags);
     if ((stopModeFlags & 0x01) != 0) {
         const unsigned short loopCountLimit = loopEvent->stopValue.u16;
         if (loopCountLimit != 0xffffu && runtime->loopIterationCount == loopCountLimit) {
@@ -5902,9 +5902,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleConditionalChainEvent(
 
         cachedConditionMask = conditionMask;
         if (conditionMatched == 0) {
-            unsigned char *nextEvent = static_cast<unsigned char *>(runtime->currentEvent);
+            unsigned char *nextEvent = (unsigned char *)(runtime->currentEvent);
             unsigned char *const eventStreamEnd =
-                static_cast<unsigned char *>(runtime->eventStream) + runtime->eventStreamSize;
+                (unsigned char *)(runtime->eventStream) + runtime->eventStreamSize;
 
             do {
                 const zEffectAnimEventHeader *const header =
@@ -5941,9 +5941,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleConditionalChainEvent(
 // (zeff_anim_run.c)
 RECOIL_NOINLINE int RECOIL_FASTCALL SkipConditionalChainToEnd(
     zEffectAnimEntry * /*self*/, zEffectAnimSurfaceRuntime *runtime, void * /*event*/) {
-    unsigned char *currentEvent = static_cast<unsigned char *>(runtime->currentEvent);
+    unsigned char *currentEvent = (unsigned char *)(runtime->currentEvent);
     unsigned char *const eventStreamEnd =
-        static_cast<unsigned char *>(runtime->eventStream) + runtime->eventStreamSize;
+        (unsigned char *)(runtime->eventStream) + runtime->eventStreamSize;
 
     do {
         const zEffectAnimEventHeader *const header =
@@ -5983,7 +5983,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandleTopMessageEvent(zEffectAnimEntry * /*s
         const int messageId = textEntry->messageId;
         const char *message = textEntry->messageKey;
         if (messageId != 0) {
-            message = zLoc::GetMessageString(static_cast<unsigned int>(messageId));
+            message = zLoc::GetMessageString((unsigned int)(messageId));
         }
 
         HudUi::PushTopMessageLine(message, 3.0f);
@@ -6061,14 +6061,14 @@ RECOIL_NOINLINE int RECOIL_CDECL Reset() {
 
     zArchiveList *freeList = g_zEffect_RuntimeManager.freeList;
     if (freeList != 0) {
-        zEffect_RuntimeEntry * entry = static_cast<zEffect_RuntimeEntry *>(zArchiveList_PopFrontPayload(freeList));
+        zEffect_RuntimeEntry * entry = (zEffect_RuntimeEntry *)(zArchiveList_PopFrontPayload(freeList));
         while (entry != 0) {
             if (entry->effectNode != 0) {
                 zClass_Object3D::DeleteNode(entry->effectNode);
             }
 
             free(entry);
-            entry = static_cast<zEffect_RuntimeEntry *>(zArchiveList_PopFrontPayload(freeList));
+            entry = (zEffect_RuntimeEntry *)(zArchiveList_PopFrontPayload(freeList));
         }
 
         zArchiveList_Destroy(freeList);

@@ -13,7 +13,7 @@ int RegistrySize() {
         return 0;
     }
 
-    return static_cast<int>(g_zSnd_SampleSetRegistry.end - g_zSnd_SampleSetRegistry.begin);
+    return (int)(g_zSnd_SampleSetRegistry.end - g_zSnd_SampleSetRegistry.begin);
 }
 
 int RegistryCapacity() {
@@ -21,7 +21,7 @@ int RegistryCapacity() {
         return 0;
     }
 
-    return static_cast<int>(g_zSnd_SampleSetRegistry.capacityEnd -
+    return (int)(g_zSnd_SampleSetRegistry.capacityEnd -
                                      g_zSnd_SampleSetRegistry.begin);
 }
 
@@ -35,8 +35,8 @@ void RegistryAppend(zSndSampleSet *set) {
         }
 
         const int newCapacity = size + growBy;
-        zSndSampleSet **newBegin = static_cast<zSndSampleSet **>(
-            ::operator new(static_cast<size_t>(newCapacity) * sizeof(zSndSampleSet *)));
+        zSndSampleSet **newBegin = (zSndSampleSet **)(
+            ::operator new((size_t)(newCapacity) * sizeof(zSndSampleSet *)));
 
         for (int i = 0; i < size; ++i) {
             newBegin[i] = g_zSnd_SampleSetRegistry.begin[i];
@@ -61,7 +61,7 @@ void ClearSampleLoadedFlag(zSndSample *sample) {
 }
 
 void LoadSampleFromWavePath(zSndSample *sample, const char *path) {
-    zSndWaveData *waveData = static_cast<zSndWaveData *>(::operator new(sizeof(zSndWaveData)));
+    zSndWaveData *waveData = (zSndWaveData *)(::operator new(sizeof(zSndWaveData)));
     waveData = waveData != 0 ? waveData->ConstructorFromPath(path, 1) : 0;
 
     if (waveData != 0 && waveData->parsedOk != 0) {
@@ -118,7 +118,7 @@ zSndSampleSetRegistry_GetByIndex(int index) {
     }
 
     const int size = RegistrySize();
-    if (static_cast<unsigned int>(index) < static_cast<unsigned int>(size)) {
+    if ((unsigned int)(index) < (unsigned int)(size)) {
         return g_zSnd_SampleSetRegistry.begin[index];
     }
 
@@ -154,7 +154,7 @@ zSndSampleSet_InitByName(const char *setName) {
 RECOIL_NOINLINE zSndSampleSet *RECOIL_THISCALL zSndSampleSet::RegistryAddEntry(const char *name,
                                                                                int count) {
     samples =
-        static_cast<zSndSample *>(calloc(static_cast<size_t>(count), sizeof(zSndSample)));
+        (zSndSample *)(calloc((size_t)(count), sizeof(zSndSample)));
     sampleCount = count;
     resourcesLoaded = 0;
 
@@ -205,7 +205,7 @@ zSndSampleSet::LoadSamplesFromIndexArchive(zIndexArchive *archive) {
             continue;
         }
 
-        zSndWaveData *waveData = static_cast<zSndWaveData *>(::operator new(sizeof(zSndWaveData)));
+        zSndWaveData *waveData = (zSndWaveData *)(::operator new(sizeof(zSndWaveData)));
         waveData = waveData != 0
                        ? waveData->ConstructorFromPath(sample->replayFields.resourceName, 0)
                        : 0;
@@ -244,7 +244,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndSampleSet::Init() {
         const char *const archiveNames[3] = {"soundsH.zbd", "soundsM.zbd", "soundsL.zbd"};
         int archiveBankIndex = 0;
         if (g_zSnd_SoundLodValuePtr != 0) {
-            const int soundLod = *static_cast<int *>(g_zSnd_SoundLodValuePtr);
+            const int soundLod = *(int *)(g_zSnd_SoundLodValuePtr);
             if (soundLod == 1) {
                 archiveBankIndex = 1;
             } else if (soundLod == 2) {

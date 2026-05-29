@@ -570,6 +570,24 @@ extern "C" int zfmv_stream_constructor_missing_file_smoke(void) {
                : 1;
 }
 
+extern "C" int zfmv_stream_open_audio_missing_file_smoke(void) {
+    alignas(8) std::uint8_t storage[0x1e4] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(storage);
+
+    TestFieldAt<char *>(stream, 0x38) = const_cast<char *>("__missing_stream_audio__.avi");
+    TestFieldAt<void *>(stream, 0x134) = reinterpret_cast<void *>(0x11111111);
+    TestFieldAt<std::int32_t>(stream, 0x130) = 0x22222222;
+    TestFieldAt<std::int32_t>(stream, 0x1e0) = 5;
+
+    stream->OpenAudio();
+
+    return TestFieldAt<void *>(stream, 0x134) == nullptr &&
+                   TestFieldAt<std::int32_t>(stream, 0x130) == 0x22222222 &&
+                   TestFieldAt<std::int32_t>(stream, 0x1e0) == 5
+               ? 0
+               : 1;
+}
+
 extern "C" int zfmv_stream_init_missing_file_smoke(void) {
     alignas(8) std::uint8_t storage[0x1e4] = {};
     zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(storage);

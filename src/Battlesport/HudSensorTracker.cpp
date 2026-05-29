@@ -122,8 +122,8 @@ float ApproxSqrtScaleFromBits(float value) {
 }
 
 bool IsPointStrictlyInsideRect(const HudUiRect &rect, const zVec3 &point) {
-    return static_cast<float>(rect.left)<point.x &&static_cast<float>(rect.right)> point.x &&
-           static_cast<float>(rect.top)<point.y &&static_cast<float>(rect.bottom)> point.y;
+    return (float)(rect.left)<point.x &&(float)(rect.right)> point.x &&
+           (float)(rect.top)<point.y &&(float)(rect.bottom)> point.y;
 }
 
 void AppendPickupFeature(char *featureText, const char *feature) {
@@ -200,10 +200,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudLineClip::ClipEndpointToY(zVec3 *endpoin
 // Reimplements 0x4bd6f0: HudLineClip::SetCurrentBoundsFromRectI
 // (D:\Proj\Battlesport\hud.cpp)
 RECOIL_NOINLINE void RECOIL_FASTCALL HudLineClip::SetCurrentBoundsFromRectI(const HudRectI *rect) {
-    g_HudLineClip_CurrentLeft = static_cast<float>(rect->left);
-    g_HudLineClip_CurrentTop = static_cast<float>(rect->top);
-    g_HudLineClip_CurrentRight = static_cast<float>(rect->right);
-    g_HudLineClip_CurrentBottom = static_cast<float>(rect->bottom);
+    g_HudLineClip_CurrentLeft = (float)(rect->left);
+    g_HudLineClip_CurrentTop = (float)(rect->top);
+    g_HudLineClip_CurrentRight = (float)(rect->right);
+    g_HudLineClip_CurrentBottom = (float)(rect->bottom);
 }
 
 // Reimplements 0x4bd880: HudLineClip::ClipSegmentToCurrentXBounds
@@ -291,15 +291,15 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HudLineClip::ClipSegmentToCurrentBounds(
 // (D:\Proj\Battlesport\hud.cpp)
 RECOIL_NOINLINE int RECOIL_THISCALL HudRectI::CalcOutcode(const zVec3 *point) {
     int outcode = 0;
-    if (point->x < static_cast<float>(left)) {
+    if (point->x < (float)(left)) {
         outcode = 1;
-    } else if (point->x > static_cast<float>(right)) {
+    } else if (point->x > (float)(right)) {
         outcode = 2;
     }
 
-    if (point->y < static_cast<float>(top)) {
+    if (point->y < (float)(top)) {
         outcode |= 8;
-    } else if (point->x > static_cast<float>(bottom)) {
+    } else if (point->x > (float)(bottom)) {
         outcode |= 4;
     }
 
@@ -321,28 +321,28 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudRectI::SegmentIntersectsEdge(
 
     switch (edgeCode) {
     case 1:
-        edgeStart.x = static_cast<float>(left);
-        edgeStart.y = static_cast<float>(top);
-        edgeEnd.x = static_cast<float>(left);
-        edgeEnd.y = static_cast<float>(bottom);
+        edgeStart.x = (float)(left);
+        edgeStart.y = (float)(top);
+        edgeEnd.x = (float)(left);
+        edgeEnd.y = (float)(bottom);
         break;
     case 2:
-        edgeStart.x = static_cast<float>(right);
-        edgeStart.y = static_cast<float>(top);
-        edgeEnd.x = static_cast<float>(right);
-        edgeEnd.y = static_cast<float>(bottom);
+        edgeStart.x = (float)(right);
+        edgeStart.y = (float)(top);
+        edgeEnd.x = (float)(right);
+        edgeEnd.y = (float)(bottom);
         break;
     case 4:
-        edgeStart.x = static_cast<float>(left);
-        edgeStart.y = static_cast<float>(bottom);
-        edgeEnd.x = static_cast<float>(right);
-        edgeEnd.y = static_cast<float>(bottom);
+        edgeStart.x = (float)(left);
+        edgeStart.y = (float)(bottom);
+        edgeEnd.x = (float)(right);
+        edgeEnd.y = (float)(bottom);
         break;
     case 8:
-        edgeStart.x = static_cast<float>(left);
-        edgeStart.y = static_cast<float>(top);
-        edgeEnd.x = static_cast<float>(right);
-        edgeEnd.y = static_cast<float>(top);
+        edgeStart.x = (float)(left);
+        edgeStart.y = (float)(top);
+        edgeEnd.x = (float)(right);
+        edgeEnd.y = (float)(top);
         break;
     default:
         return 0;
@@ -391,19 +391,19 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudRectI::ClipOrSplitSegment(zVec3 *segmentS
         }
 
         if (SegmentIntersectsEdge(8, segmentStart, segmentEnd) != 0) {
-            HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, static_cast<float>(top));
+            HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, (float)(top));
             return 1;
         }
         if (SegmentIntersectsEdge(4, segmentStart, segmentEnd) != 0) {
-            HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, static_cast<float>(bottom));
+            HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, (float)(bottom));
             return 1;
         }
         if (SegmentIntersectsEdge(1, segmentStart, segmentEnd) != 0) {
-            HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, static_cast<float>(left));
+            HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(left));
             return 1;
         }
         if (SegmentIntersectsEdge(2, segmentStart, segmentEnd) != 0) {
-            HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, static_cast<float>(right));
+            HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(right));
             return 1;
         }
         return 0;
@@ -428,31 +428,31 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudRectI::ClipOrSplitSegment(zVec3 *segmentS
     }
 
     if ((startOutcode & 1) != 0) {
-        HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, static_cast<float>(left));
+        HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(left));
     } else if ((startOutcode & 2) != 0) {
-        HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, static_cast<float>(right));
+        HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(right));
     }
 
     if ((startOutcode & 8) != 0) {
-        HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, static_cast<float>(top));
+        HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, (float)(top));
     } else if ((startOutcode & 4) != 0) {
-        HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, static_cast<float>(bottom));
+        HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, (float)(bottom));
     }
 
     if ((endOutcode & 1) != 0) {
         HudLineClip::ClipEndpointToX(&g_HudSensor_ClipSegmentStart, &g_HudSensor_ClipSegmentEnd,
-                                     static_cast<float>(left));
+                                     (float)(left));
     } else if ((endOutcode & 2) != 0) {
         HudLineClip::ClipEndpointToX(&g_HudSensor_ClipSegmentStart, &g_HudSensor_ClipSegmentEnd,
-                                     static_cast<float>(right));
+                                     (float)(right));
     }
 
     if ((endOutcode & 8) != 0) {
         HudLineClip::ClipEndpointToY(&g_HudSensor_ClipSegmentStart, &g_HudSensor_ClipSegmentEnd,
-                                     static_cast<float>(top));
+                                     (float)(top));
     } else if ((endOutcode & 4) != 0) {
         HudLineClip::ClipEndpointToY(&g_HudSensor_ClipSegmentStart, &g_HudSensor_ClipSegmentEnd,
-                                     static_cast<float>(bottom));
+                                     (float)(bottom));
     }
 
     return 2;
@@ -497,9 +497,9 @@ HudSensorMapNode::SelectPoint(int pointIndex) {
 
 // Reimplements 0x415b40: HudSensorMapNode::InitDefaults (HudSensorMapNode.cpp)
 RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::InitDefaults() {
-    colorRgb[0] = static_cast<char>(0xff);
-    colorRgb[1] = static_cast<char>(0xff);
-    colorRgb[2] = static_cast<char>(0xff);
+    colorRgb[0] = (char)(0xff);
+    colorRgb[1] = (char)(0xff);
+    colorRgb[2] = (char)(0xff);
     pointCount = 0;
     points = 0;
     isEnabled = 0;
@@ -515,19 +515,19 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::InitDefaults() {
 RECOIL_NOINLINE int RECOIL_THISCALL
 HudSensorMapNode::SetColorRgb(const unsigned char *rgbOrNull) {
     if (rgbOrNull != 0) {
-        colorRgb[0] = static_cast<char>(rgbOrNull[0]);
-        colorRgb[1] = static_cast<char>(rgbOrNull[1]);
-        colorRgb[2] = static_cast<char>(rgbOrNull[2]);
+        colorRgb[0] = (char)(rgbOrNull[0]);
+        colorRgb[1] = (char)(rgbOrNull[1]);
+        colorRgb[2] = (char)(rgbOrNull[2]);
     }
 
-    const unsigned char red = static_cast<unsigned char>(colorRgb[0]);
-    const unsigned char green = static_cast<unsigned char>(colorRgb[2]);
-    const unsigned char blue = static_cast<unsigned char>(colorRgb[1]);
-    const unsigned short fullColor = static_cast<unsigned short>(zVid_PackColorRGB(red, green, blue));
-    const unsigned short halfColor = static_cast<unsigned short>(zVid_PackColorRGB(
-        static_cast<unsigned char>(red >> 1), static_cast<unsigned char>(green >> 1),
-        static_cast<unsigned char>(blue >> 1)));
-    packedColor565Pair = (static_cast<int>(halfColor) << 16) | fullColor;
+    const unsigned char red = (unsigned char)(colorRgb[0]);
+    const unsigned char green = (unsigned char)(colorRgb[2]);
+    const unsigned char blue = (unsigned char)(colorRgb[1]);
+    const unsigned short fullColor = (unsigned short)(zVid_PackColorRGB(red, green, blue));
+    const unsigned short halfColor = (unsigned short)(zVid_PackColorRGB(
+        (unsigned char)(red >> 1), (unsigned char)(green >> 1),
+        (unsigned char)(blue >> 1)));
+    packedColor565Pair = ((int)(halfColor) << 16) | fullColor;
     return 1;
 }
 
@@ -545,11 +545,11 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::LoadFromStream(FILE *strea
         return 0;
     }
 
-    const size_t byteCount = static_cast<size_t>(pointCount) * sizeof(HudSensorMapPoint);
-    points = static_cast<HudSensorMapPoint *>(malloc(byteCount));
+    const size_t byteCount = (size_t)(pointCount) * sizeof(HudSensorMapPoint);
+    points = (HudSensorMapPoint *)(malloc(byteCount));
 
-    if (fread(points, sizeof(HudSensorMapPoint), static_cast<size_t>(pointCount),
-                   stream) != static_cast<size_t>(pointCount)) {
+    if (fread(points, sizeof(HudSensorMapPoint), (size_t)(pointCount),
+                   stream) != (size_t)(pointCount)) {
         return 0;
     }
 
@@ -748,7 +748,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::MapOverlayBeginShow() {
     const int rectWidth = outerRect.right - outerRect.left;
     const int rectHeight = outerRect.bottom - outerRect.top;
     const int minExtent = rectWidth < rectHeight ? rectWidth : rectHeight;
-    const float scaleExtent = static_cast<float>(minExtent);
+    const float scaleExtent = (float)(minExtent);
 
     mapScaleLerpT = 0.0f;
     mapScaleLerpActive = 1;
@@ -832,9 +832,9 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::ProjectWorldPointsToOverla
         const float deltaZ =
             (inputWorldPoints[index].z - trackedPos->z) * mapScaleCurrent.z * mapZoom;
 
-        projectedOverlayPoints[index].x = static_cast<float>(mapOverlayCenterX) +
+        projectedOverlayPoints[index].x = (float)(mapOverlayCenterX) +
                                           trackedForward->x * deltaZ - trackedForward->z * deltaX;
-        projectedOverlayPoints[index].y = static_cast<float>(mapOverlayCenterY) -
+        projectedOverlayPoints[index].y = (float)(mapOverlayCenterY) -
                                           trackedForward->x * deltaX - trackedForward->z * deltaZ;
     }
     }
@@ -920,7 +920,7 @@ HudSensorMapNode::DrawProjectedPath(HudSensorTracker *tracker) {
 
     if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
         memcpy(g_HudSensor_ProjectScratch, points,
-                    static_cast<size_t>(pointCount) * sizeof(zVec3));
+                    (size_t)(pointCount) * sizeof(zVec3));
     } else {
         const zMat4x3 *const matrix =
             (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
@@ -954,13 +954,13 @@ HudSensorMapNode::DrawProjectedPath(HudSensorTracker *tracker) {
                                  2);
 
         zRndr_LinePoint2I linePoints[2];
-        linePoints[0].x = static_cast<int>(segmentPoints[0].x) << 1;
-        linePoints[0].y = static_cast<int>(segmentPoints[0].y) << 1;
-        linePoints[1].x = static_cast<int>(segmentPoints[1].x) << 1;
-        linePoints[1].y = static_cast<int>(segmentPoints[1].y) << 1;
+        linePoints[0].x = (int)(segmentPoints[0].x) << 1;
+        linePoints[0].y = (int)(segmentPoints[0].y) << 1;
+        linePoints[1].x = (int)(segmentPoints[1].x) << 1;
+        linePoints[1].y = (int)(segmentPoints[1].y) << 1;
 
         zRndr_DrawClippedImmediateLineStrip(linePoints, 1, tracker,
-                                            static_cast<unsigned int>(packedColor565Pair) >> 16);
+                                            (unsigned int)(packedColor565Pair) >> 16);
     }
 
     return 1;
@@ -973,9 +973,9 @@ HudSensorMapNode::DrawOnTracker(HudSensorTracker *tracker, const zVec3 *drawPath
     if (isEnabled != 0) {
         blinkTimerSec -= 0.075000003f;
         if (blinkTimerSec <= 0.0f) {
-            const unsigned int colorPair = static_cast<unsigned int>(packedColor565Pair);
+            const unsigned int colorPair = (unsigned int)(packedColor565Pair);
             blinkTimerSec = 0.25f;
-            packedColor565Pair = static_cast<int>((colorPair << 16) | (colorPair >> 16));
+            packedColor565Pair = (int)((colorPair << 16) | (colorPair >> 16));
         }
     }
 
@@ -1003,16 +1003,16 @@ HudSensorMapNode::DrawOnTracker(HudSensorTracker *tracker, const zVec3 *drawPath
         }
 
         const int color16 = packedColor565Pair & 0xffff;
-        zRndr_DrawImmediateLine(static_cast<int>(segmentStart.x),
-                                static_cast<int>(segmentStart.y),
-                                static_cast<int>(segmentEnd.x),
-                                static_cast<int>(segmentEnd.y), color16);
+        zRndr_DrawImmediateLine((int)(segmentStart.x),
+                                (int)(segmentStart.y),
+                                (int)(segmentEnd.x),
+                                (int)(segmentEnd.y), color16);
 
         if (splitResult == 2) {
-            zRndr_DrawImmediateLine(static_cast<int>(g_HudSensor_ClipSegmentStart.x),
-                                    static_cast<int>(g_HudSensor_ClipSegmentStart.y),
-                                    static_cast<int>(g_HudSensor_ClipSegmentEnd.x),
-                                    static_cast<int>(g_HudSensor_ClipSegmentEnd.y),
+            zRndr_DrawImmediateLine((int)(g_HudSensor_ClipSegmentStart.x),
+                                    (int)(g_HudSensor_ClipSegmentStart.y),
+                                    (int)(g_HudSensor_ClipSegmentEnd.x),
+                                    (int)(g_HudSensor_ClipSegmentEnd.y),
                                     color16);
         }
     }
@@ -1022,8 +1022,8 @@ HudSensorMapNode::DrawOnTracker(HudSensorTracker *tracker, const zVec3 *drawPath
         tracker->ProjectWorldPointsToOverlay(
             (const zVec3 *)(&points[selectedPointIndex]), &selectedPoint, 1);
         HudSensorTracker::DrawDiamondMarker(
-            static_cast<int>(selectedPoint.x), static_cast<int>(selectedPoint.y),
-            4, 4, static_cast<unsigned int>(packedColor565Pair) >> 16, tracker);
+            (int)(selectedPoint.x), (int)(selectedPoint.y),
+            4, 4, (unsigned int)(packedColor565Pair) >> 16, tracker);
     }
 
     if (drawPathWorldPos != 0) {
@@ -1040,17 +1040,17 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::DrawTrackedSaveStateMarker
     if (zOpt::GetNetworkEnabled() != 0) {
         zUtil_SaveGameState *const gameState =
             (zUtil_SaveGameState *)(g_GameStateOrMapTable);
-        markerColor = static_cast<unsigned short>(
+        markerColor = (unsigned short)(
             zVid_PackColor00RRGGBB(gameState->netPlayerRow->playerColorPackedRgb));
     } else {
-        markerColor = static_cast<unsigned short>(zVid_PackColorRGB(0, 0xff, 0));
+        markerColor = (unsigned short)(zVid_PackColorRGB(0, 0xff, 0));
     }
 
     zVec3 projectedScreenPoint;
     ProjectWorldPointsToOverlay(&trackedSaveStateSelection->playerState->worldPos,
                                 &projectedScreenPoint, 1);
-    DrawMarkerCross(static_cast<int>(projectedScreenPoint.x),
-                    static_cast<int>(projectedScreenPoint.y), 3, 3, markerColor, this);
+    DrawMarkerCross((int)(projectedScreenPoint.x),
+                    (int)(projectedScreenPoint.y), 3, 3, markerColor, this);
     return 1;
 }
 
@@ -1084,11 +1084,11 @@ HudSensorTracker::DrawSaveStateMarker(zUtil_SaveGameState *saveState) {
         markerPoint.z = localWorldPos->z + relativeDelta.z;
         ProjectWorldPointsToOverlay(&markerPoint, &markerPoint, 1);
 
-        const unsigned short markerColor = static_cast<unsigned short>(
+        const unsigned short markerColor = (unsigned short)(
             zVid_PackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb));
         if (IsPointStrictlyInsideRect(outerRect, markerPoint)) {
-            DrawMarkerCross(static_cast<int>(markerPoint.x),
-                            static_cast<int>(markerPoint.y), 3, 3, markerColor, this);
+            DrawMarkerCross((int)(markerPoint.x),
+                            (int)(markerPoint.y), 3, 3, markerColor, this);
         }
 
         return 1;
@@ -1098,15 +1098,15 @@ HudSensorTracker::DrawSaveStateMarker(zUtil_SaveGameState *saveState) {
 
     unsigned short markerColor;
     if (zOpt::GetNetworkEnabled() != 0) {
-        markerColor = static_cast<unsigned short>(
+        markerColor = (unsigned short)(
             zVid_PackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb));
     } else {
-        markerColor = static_cast<unsigned short>(zVid_PackColorRGB(0xff, 0, 0));
+        markerColor = (unsigned short)(zVid_PackColorRGB(0xff, 0, 0));
     }
 
     if (IsPointStrictlyInsideRect(outerRect, markerPoint)) {
-        zRndr_SpanOcclusion_TestSample(static_cast<int>(markerPoint.x),
-                                       static_cast<int>(markerPoint.y), markerColor);
+        zRndr_SpanOcclusion_TestSample((int)(markerPoint.x),
+                                       (int)(markerPoint.y), markerColor);
     }
 
     return 1;
@@ -1237,7 +1237,7 @@ HudSensorTracker::LoadMapFromStream(FILE *stream) {
 
     for (;;) {
         HudSensorMapNode *mapNode =
-            static_cast<HudSensorMapNode *>(::operator new(sizeof(HudSensorMapNode)));
+            (HudSensorMapNode *)(::operator new(sizeof(HudSensorMapNode)));
         mapNode = mapNode != 0 ? mapNode->Init() : 0;
         if (mapNode->LoadFromStream(stream) == 0) {
             if (mapNode != 0) {
@@ -1657,17 +1657,17 @@ HudSensorTracker::LoadMissionWeatherFx(const char *zrdPath) {
             const char *const weatherType = typeNode->value.str;
             if (strcmp(weatherType, "SNOW") == 0) {
                 HudWeatherFxSnow *const snow =
-                    static_cast<HudWeatherFxSnow *>(::operator new(sizeof(HudWeatherFxSnow)));
+                    (HudWeatherFxSnow *)(::operator new(sizeof(HudWeatherFxSnow)));
                 fxPass3Obj = snow != 0 ? snow->Constructor(particleCount) : 0;
             } else if (strcmp(weatherType, "RAIN") == 0) {
                 HudWeatherFxRain *const rain =
-                    static_cast<HudWeatherFxRain *>(::operator new(sizeof(HudWeatherFxRain)));
+                    (HudWeatherFxRain *)(::operator new(sizeof(HudWeatherFxRain)));
                 fxPass3Obj = rain != 0 ? rain->Constructor(particleCount) : 0;
             }
         }
 
         if (fxPass3Obj != 0) {
-            HudWeatherFx *const weatherFx = static_cast<HudWeatherFx *>(fxPass3Obj);
+            HudWeatherFx *const weatherFx = (HudWeatherFx *)(fxPass3Obj);
 
             zReader::Node *colorNode = zReader_GetNamedNode(missionNode, "COLOR");
             if (colorNode != 0) {
@@ -1753,13 +1753,13 @@ HudSensorTracker::LoadObjectivesFromPath(const char *path) {
     zReader::Node *readTimeNode = zReader_GetNamedNode(rootNode, "READ_TIME");
     if (readTimeNode != 0) {
         objectiveReadTimeSecRaw =
-            FloatToRawSeconds(static_cast<float>(readTimeNode->value.nodes[1].value.i32));
+            FloatToRawSeconds((float)(readTimeNode->value.nodes[1].value.i32));
     }
 
     zReader::Node *reviewDelayNode = zReader_GetNamedNode(rootNode, "REVIEW_DELAY");
     if (reviewDelayNode != 0) {
         objectiveReviewDelaySecRaw =
-            FloatToRawSeconds(static_cast<float>(reviewDelayNode->value.nodes[1].value.i32));
+            FloatToRawSeconds((float)(reviewDelayNode->value.nodes[1].value.i32));
     }
 
     if (zOpt::GetNetworkEnabled() != 0) {
@@ -2018,9 +2018,9 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetObjectiveMarkerColorBli
         if (mapNode->objectiveIndex == objectiveIndex) {
             mapNode->SetColorRgb(colorRgb24);
             const unsigned int packedColor =
-                static_cast<unsigned int>(mapNode->packedColor565Pair);
+                (unsigned int)(mapNode->packedColor565Pair);
             mapNode->packedColor565Pair =
-                static_cast<int>((packedColor << 16) | ((packedColor >> 16) & 0xffff));
+                (int)((packedColor << 16) | ((packedColor >> 16) & 0xffff));
         }
 
         mapNode = mapNode->next;
@@ -2238,10 +2238,10 @@ HudSensorTracker::SetObjectivePanelVisible(int visible) {
 
     float damageRatio = 1.0f;
     if (primaryGunDispatchCount > 0) {
-        damageRatio = static_cast<float>(g_OptCatalog_DamageFeedbackHitCount) /
-                      static_cast<float>(primaryGunDispatchCount);
+        damageRatio = (float)(g_OptCatalog_DamageFeedbackHitCount) /
+                      (float)(primaryGunDispatchCount);
     }
-    const int damagePercent = static_cast<int>(damageRatio * 100.0f);
+    const int damagePercent = (int)(damageRatio * 100.0f);
 
     char objectiveLine[0x80];
     zLoc::FormatMessage(objectiveLine, 0x40, 0x116, completedObjectiveCount, objectiveCount,
@@ -2256,7 +2256,7 @@ HudSensorTracker::SetObjectivePanelVisible(int visible) {
     zLoc::FormatMessage(statLine, 0x40, 0x117, cappedStat0, missionStat1, missionStat3,
                         weaponsFoundMask);
 
-    const int elapsedSeconds = static_cast<int>(objectiveMeterSeconds);
+    const int elapsedSeconds = (int)(objectiveMeterSeconds);
     char timeLine[0x80];
     zLoc::FormatMessage(timeLine, 0x40, 0x118, elapsedSeconds / 60, elapsedSeconds % 60);
 
@@ -2324,21 +2324,21 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::ShowObjectivePickupInfo(
     }
 
     const int fireRatePerMinute =
-        static_cast<int>(60.0f / optEntry->fireRateInterval + 0.5f);
-    const int maxRange = static_cast<int>(optEntry->range);
+        (int)(60.0f / optEntry->fireRateInterval + 0.5f);
+    const int maxRange = (int)(optEntry->range);
 
     char weaponStatsText[0x200];
     if (optEntry->impactProximity > 0.0f) {
         sprintf(weaponStatsText,
                      "Fire Rate: %d rds/min   Max. Range: %d m\n"
                      "Damage Power: %.1f      Damage Proximity: %d m\n%s",
-                     fireRatePerMinute, maxRange, static_cast<double>(optEntry->damage),
-                     static_cast<int>(optEntry->impactProximity), featureText);
+                     fireRatePerMinute, maxRange, (double)(optEntry->damage),
+                     (int)(optEntry->impactProximity), featureText);
     } else {
         sprintf(weaponStatsText,
                      "Fire Rate: %d rds/min   Max. Range: %d m\n"
                      "Damage Power: %.1f\n%s",
-                     fireRatePerMinute, maxRange, static_cast<double>(optEntry->damage),
+                     fireRatePerMinute, maxRange, (double)(optEntry->damage),
                      featureText);
     }
 

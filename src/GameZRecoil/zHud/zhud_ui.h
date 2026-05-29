@@ -41,6 +41,11 @@ struct HudUiZrdWidget_FTable {
     unsigned int slots[34];
 };
 
+struct HudUiCreditsPanel_FTable {
+    unsigned int primarySlots[4];
+    HudUiZrdWidget_FTable SecondaryAction;
+};
+
 struct HudUiCheckToggleWidget_FTable {
     unsigned int slots[34];
 };
@@ -181,6 +186,9 @@ extern const HudUiBackgroundCursorWidget_FTable g_HudUiBackgroundCursorWidget_FT
 extern const HudUiBackgroundCursorWidget_FTable g_HudUiBackgroundCursorWidget_MemberFTable;
 extern const HudUiBackgroundVideoWidget_FTable g_HudUiBackgroundVideoWidget_FTable;
 extern const HudUiZrdWidget_FTable g_HudUiZrdWidget_FTable;
+extern const HudUiZrdWidget_FTable g_HudUiCreditsButtonQueueExitOnly_Vtbl;
+extern const HudUiZrdWidget_FTable g_HudUiCreditsButtonQueueExitAndLeaveNetwork_Vtbl;
+extern const HudUiCreditsPanel_FTable g_HudUiCreditsPanel_FTable;
 extern const HudUiCheckToggleWidget_FTable g_HudUiCheckToggleWidget_FTable;
 extern const HudUiCycleSelectorWidget_FTable g_HudUiCycleSelectorWidget_FTable;
 extern const HudUiFillBitmap_FTable g_HudUiFillBitmap_FTable;
@@ -875,6 +883,7 @@ struct HudUiZrdWidgetEx17C {
     HudUiZrdWidgetEx17C *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     void RECOIL_THISCALL DestructorCore();
     int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
+    void RECOIL_THISCALL EnableChildAtIndex(int childIndex);
     int RECOIL_THISCALL SetSelectedIndex(int index);
 };
 
@@ -897,6 +906,21 @@ struct HudCmdBindingVector {
 
 struct HudCmdBindingEntry {
     char *displayText;
+    int commandId;
+
+    HudCmdBindingEntry *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    static HudCmdBindingEntry *RECOIL_STDCALL DeleteAndReturnNull(HudCmdBindingEntry *entry);
+    static HudCmdBindingEntry **RECOIL_FASTCALL
+    CopyRange(HudCmdBindingEntry **sourceBegin, HudCmdBindingEntry **sourceEnd,
+              HudCmdBindingEntry **dest);
+};
+
+struct HudCmdBinding {
+    char *displayText;
+
+    static HudCmdBinding **RECOIL_FASTCALL
+    DestroyRange(HudCmdBinding **first, HudCmdBinding **last,
+                 HudCmdBinding **dest, void *unusedAlloc);
 };
 
 struct HudCmdBindButtonBase {
@@ -916,10 +940,43 @@ struct HudCmdBindButtonBase {
     int listFontStyleRef;
 
     HudCmdBindButtonBase *RECOIL_THISCALL Constructor();
+    int RECOIL_THISCALL AddBindingEntry(const char *displayText, int commandId);
+    void RECOIL_THISCALL SetSelectedEntry(int selectedIndex);
     void RECOIL_THISCALL ClearBindingEntries();
     int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
     void RECOIL_THISCALL RebuildBindingSlotWidgets(int totalCount,
                                                    int visibleCount);
+};
+
+struct HudCmdCommandList {
+    HudCmdBindButtonBase base;
+
+    void RECOIL_THISCALL Destructor();
+    HudCmdCommandList *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+};
+
+struct HudCmdKeyAButton {
+    HudCmdBindButtonBase base;
+
+    void RECOIL_THISCALL Destructor();
+};
+
+struct HudCmdKeyBButton {
+    HudCmdBindButtonBase base;
+
+    void RECOIL_THISCALL Destructor();
+};
+
+struct HudCmdJoyButton {
+    HudCmdBindButtonBase base;
+
+    void RECOIL_THISCALL Destructor();
+};
+
+struct HudCmdMouseButton {
+    HudCmdBindButtonBase base;
+
+    void RECOIL_THISCALL Destructor();
 };
 
 RECOIL_NOINLINE void **RECOIL_FASTCALL zUtil_StdPtrVector_Clear(HudCmdBindingVector *self);
@@ -1232,6 +1289,7 @@ struct HudUiPanel {
     void RECOIL_THISCALL Draw();
     void RECOIL_THISCALL Destructor();
     RECOIL_NOINLINE void RECOIL_THISCALL DestructorThunk();
+    static void RECOIL_STDCALL DestructorCallback(HudUiPanel *panel);
     unsigned int RECOIL_THISCALL SetTextColor(unsigned int color);
     void RECOIL_THISCALL SetTextColorsAndMarkDirty(unsigned int color0, unsigned int color1);
     unsigned int RECOIL_THISCALL SetShadow(unsigned int shadowEnabled, int shadowOffsetX,
@@ -1375,6 +1433,45 @@ struct HudUiBackground {
     RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSeconds);
 };
 
+struct HudCmdSimpleWidget {
+    HudUiZrdWidget base;
+};
+
+struct HudCmdSetListWidget {
+    HudUiCycleSelectorWidget base;
+};
+
+struct HudCmdPromptPanel {
+    HudUiTransitionTextPanel base;
+};
+
+struct HudCmdDescriptionPanel {
+    HudUiPanel base;
+    int captureState;
+};
+
+struct HudCmdDialog {
+    HudUiBackground base;
+    HudCmdSimpleWidget resumeButton;
+    HudCmdSimpleWidget resetButton;
+    HudCmdCommandList commandList;
+    HudCmdKeyAButton keyAButton;
+    HudCmdKeyBButton keyBButton;
+    HudCmdJoyButton joyButton;
+    HudCmdMouseButton mouseButton;
+    HudCmdSetListWidget setList;
+    HudCmdSimpleWidget nextSetButton;
+    HudCmdSimpleWidget prevSetButton;
+    HudCmdSimpleWidget nextCommandButton;
+    HudCmdSimpleWidget prevCommandButton;
+    HudCmdPromptPanel promptPanel;
+    HudCmdDescriptionPanel descriptionPanel;
+
+    void RECOIL_THISCALL Destructor();
+    void RECOIL_THISCALL RebuildCommandBindingListsForGroup(int groupIndex);
+    void RECOIL_THISCALL OnCommandSelectionChanged(int commandIndex);
+};
+
 struct HudUiMessageBoxDialog : HudUiBackground {
     zVidRect32 blitRect;
     int modalResult;
@@ -1400,10 +1497,71 @@ struct HudUiMessageBoxDialog : HudUiBackground {
     void RECOIL_THISCALL OnCancel();
 };
 
+struct HudUiPanelLayoutEntry {
+    HudUiPanel panel;
+    int layoutX;
+    int layoutY;
+
+    HudUiPanelLayoutEntry *RECOIL_THISCALL CopyConstruct(const HudUiPanelLayoutEntry *source);
+    HudUiPanelLayoutEntry *RECOIL_THISCALL CopyAssign(const HudUiPanelLayoutEntry *source);
+    static HudUiPanelLayoutEntry *RECOIL_FASTCALL
+    CopyAssignRange(const HudUiPanelLayoutEntry *sourceStart,
+                    const HudUiPanelLayoutEntry *sourceEnd,
+                    HudUiPanelLayoutEntry *dest);
+    static void RECOIL_STDCALL DestroyRange(HudUiPanelLayoutEntry *start,
+                                            HudUiPanelLayoutEntry *end);
+};
+
+struct HudUiPanelSpan {
+    unsigned int allocatorProxy;
+    HudUiPanelLayoutEntry *begin;
+    HudUiPanelLayoutEntry *end;
+    HudUiPanelLayoutEntry *cap;
+
+    void RECOIL_THISCALL Clear();
+    HudUiPanelSpan *RECOIL_THISCALL CopyInit(const HudUiPanelSpan *source);
+    HudUiPanelSpan *RECOIL_THISCALL CopyFrom(const HudUiPanelSpan *source);
+    void RECOIL_THISCALL InsertN(HudUiPanelLayoutEntry *insertPos, unsigned int count,
+                                 const HudUiPanelLayoutEntry *templatePanel);
+    void RECOIL_THISCALL DestroyAndFree();
+};
+
+struct HudUiPanelSpanVec {
+    unsigned int allocatorProxy;
+    HudUiPanelSpan *begin;
+    HudUiPanelSpan *end;
+    HudUiPanelSpan *cap;
+
+    void RECOIL_THISCALL InsertN(HudUiPanelSpan *insertPos, unsigned int count,
+                                 const HudUiPanelSpan *templateSpan);
+};
+
 struct HudUiZrdScrollingText {
     HudUiZrdWidget base;
+    HudUiPanelSpanVec rows;
+    HudUiRect rect;
+    int totalHeight;
 
     void RECOIL_THISCALL OnActivateResetOwnerFade();
+    void RECOIL_THISCALL Update(float deltaSeconds);
+    void RECOIL_THISCALL UpdateScrollPositions(float scrollProgress);
+    int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
+    void RECOIL_THISCALL Destructor();
+    HudUiZrdScrollingText *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+};
+
+struct HudUiCreditsPanel {
+    HudUiBackground base;
+    float fadeStep;
+    HudUiZrdWidget backButton;
+    HudUiZrdWidget quitButton;
+    HudUiZrdScrollingText creditsScreen;
+    float fadeProgress;
+
+    HudUiCreditsPanel *RECOIL_THISCALL Constructor();
+    void RECOIL_THISCALL UpdateFadeAndExit(float deltaSeconds);
+    void RECOIL_THISCALL Destructor();
+    HudUiCreditsPanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudUiPanelSimple {
@@ -1707,6 +1865,8 @@ RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingVector, begin) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingVector, end) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingVector, capacity) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingEntry, displayText) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingEntry, commandId) == 0x04);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdBindingEntry) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdBindButtonBase) == 0x44c);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, bindingSlotTotalCount) == 0x164);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, visibleBindingSlotCount) == 0x168);
@@ -1721,6 +1881,30 @@ RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, overflowListOffsetX) == 0x43
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, overflowListOffsetY) == 0x440);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, selectedFontStyleRef) == 0x444);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, listFontStyleRef) == 0x448);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdCommandList) == 0x44c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdKeyAButton) == 0x44c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdKeyBButton) == 0x44c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdJoyButton) == 0x44c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdMouseButton) == 0x44c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdSimpleWidget) == 0x14c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdSetListWidget) == 0x208);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdPromptPanel) == 0x2c0);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdDescriptionPanel) == 0x2a8);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdDialog) == 0xce00);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, resumeButton) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, resetButton) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, commandList) == 0xabe4);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, keyAButton) == 0xb030);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, keyBButton) == 0xb47c);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, joyButton) == 0xb8c8);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, mouseButton) == 0xbd14);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, setList) == 0xc160);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, nextSetButton) == 0xc368);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, prevSetButton) == 0xc4b4);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, nextCommandButton) == 0xc600);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, prevCommandButton) == 0xc74c);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, promptPanel) == 0xc898);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, descriptionPanel) == 0xcb58);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundContainer) == 0x44);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundContainer, inputFocusElement) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundContainer, captureTransitionMask) == 0x40);
@@ -1756,6 +1940,28 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, titlePanel) == 0xacd8);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, okButton) == 0xaf7c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, cancelButton) == 0xb0c8);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxDialog) == 0xb214);
+RECOIL_STATIC_ASSERT(sizeof(HudUiPanelLayoutEntry) == 0x2ac);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelLayoutEntry, layoutX) == 0x2a4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelLayoutEntry, layoutY) == 0x2a8);
+RECOIL_STATIC_ASSERT(sizeof(HudUiPanelSpan) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpan, begin) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpan, end) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpan, cap) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(HudUiPanelSpanVec) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpanVec, begin) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpanVec, end) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpanVec, cap) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(HudUiZrdScrollingText) == 0x170);
+RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, rows) == 0x14c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, rect) == 0x15c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, totalHeight) == 0x16c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel_FTable, SecondaryAction) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, fadeStep) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, backButton) == 0xa950);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, quitButton) == 0xaa9c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, creditsScreen) == 0xabe8);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, fadeProgress) == 0xad58);
+RECOIL_STATIC_ASSERT(sizeof(HudUiCreditsPanel) == 0xad5c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxOkButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxCancelButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTransitionTextPanel) == 0x2c0);

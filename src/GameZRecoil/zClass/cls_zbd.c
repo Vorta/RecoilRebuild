@@ -36,11 +36,11 @@ namespace {
     }
 
     RECOIL_FORCEINLINE bool WriteZbdBlob(const void *data, size_t byteCount, void *stream) {
-        return fwrite(data, byteCount, 1, static_cast<FILE *>(stream)) == 1;
+        return fwrite(data, byteCount, 1, (FILE *)(stream)) == 1;
     }
 
     RECOIL_FORCEINLINE bool ReadZbdBlob(void *data, size_t byteCount, void *stream) {
-        return fread(data, byteCount, 1, static_cast<FILE *>(stream)) == 1;
+        return fread(data, byteCount, 1, (FILE *)(stream)) == 1;
     }
 }
 
@@ -58,7 +58,7 @@ namespace GameZ {
         } else {
             zError::ReportOld(0x200, kClsZbdSourceFile, 0x272,
                               "zbd_filename length %d exceeds storage string size %d.",
-                              static_cast<int>(filenameLength), 0x30);
+                              (int)(filenameLength), 0x30);
         }
 
         FILE *const file = fopen(filename, "wb");
@@ -106,7 +106,7 @@ namespace GameZ {
         } else {
             zError::ReportOld(0x200, kClsZbdSourceFile, 0x551,
                               "zbd_filename length %d exceeds storage string size %d.",
-                              static_cast<int>(filenameLength), 0x30);
+                              (int)(filenameLength), 0x30);
         }
 
         zClass_ZbdHeader header;
@@ -206,7 +206,7 @@ namespace GameZ_ZBD {
             return -1;
         }
 
-        return static_cast<int>((zClass_NodeFreeListSlot *)(node) -
+        return (int)((zClass_NodeFreeListSlot *)(node) -
                                          g_zClass_NodeArray);
     }
 
@@ -226,9 +226,9 @@ namespace GameZ_ZBD {
             return 0;
         }
 
-        const size_t byteCount = static_cast<size_t>(entryCount) * sizeof(unsigned int);
+        const size_t byteCount = (size_t)(entryCount) * sizeof(unsigned int);
         if (entryCount > g_GameZ_Zbd_NodeIndexScratchCapacity) {
-            g_GameZ_Zbd_NodeIndexScratch = static_cast<zClass_NodePartial **>(
+            g_GameZ_Zbd_NodeIndexScratch = (zClass_NodePartial **)(
                 realloc(g_GameZ_Zbd_NodeIndexScratch, byteCount));
             g_GameZ_Zbd_NodeIndexScratchCapacity = entryCount;
         }
@@ -240,7 +240,7 @@ namespace GameZ_ZBD {
         }
 
         if (fwrite(g_GameZ_Zbd_NodeIndexScratch, byteCount, 1,
-                        static_cast<FILE *>(stream)) != 1) {
+                        (FILE *)(stream)) != 1) {
             zError::ReportOld(0x200, kClsZbdSourceFile, 0xd7, "Error writing node data.");
             return -1;
         }
@@ -268,7 +268,7 @@ namespace GameZ_ZBD {
             zError::ReportOld(0x200, kClsZbdSourceFile, 0xfc,
                               "Writing sound node data: Must complete software.");
 
-            zClass_SoundDataPartial *data = static_cast<zClass_SoundDataPartial *>(node->classData);
+            zClass_SoundDataPartial *data = (zClass_SoundDataPartial *)(node->classData);
             if (!WriteZbdBlob(data, sizeof(zClass_SoundDataPartial), stream)) {
                 return ReportZbdWriteFailure(0x105, "Error writing node sound data.");
             }
@@ -295,7 +295,7 @@ namespace GameZ_ZBD {
 
         case kZClassNodeLight: {
             result = 1;
-            zClass_LightDataPartial *data = static_cast<zClass_LightDataPartial *>(node->classData);
+            zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
             if (!WriteZbdBlob(data, sizeof(zClass_LightDataPartial), stream)) {
                 return ReportZbdWriteFailure(0x137, "Error writing node light data.");
             }
@@ -311,13 +311,13 @@ namespace GameZ_ZBD {
             zClass_CameraDataPartial data;
             memcpy(&data, node->classData, sizeof(data));
             data.worldNode = (zClass_NodePartial *)(
-                static_cast<int>(NodePtrToIndex(data.worldNode)));
+                (int)(NodePtrToIndex(data.worldNode)));
             data.windowNode = (zClass_NodePartial *)(
-                static_cast<int>(NodePtrToIndex(data.windowNode)));
+                (int)(NodePtrToIndex(data.windowNode)));
             data.horizonNode = (zClass_NodePartial *)(
-                static_cast<int>(NodePtrToIndex(data.horizonNode)));
+                (int)(NodePtrToIndex(data.horizonNode)));
             data.horizonXZNode = (zClass_NodePartial *)(
-                static_cast<int>(NodePtrToIndex(data.horizonXZNode)));
+                (int)(NodePtrToIndex(data.horizonXZNode)));
 
             if (!WriteZbdBlob(&data, sizeof(data), stream)) {
                 return ReportZbdWriteFailure(0x15a, "Error writing node camera data.");
@@ -341,7 +341,7 @@ namespace GameZ_ZBD {
 
         case kZClassNodeWorld: {
             result = 1;
-            zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(node->classData);
+            zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(node->classData);
             if (!WriteZbdBlob(data, sizeof(zClass_WorldDataPartial), stream)) {
                 return ReportZbdWriteFailure(0x18c, "Error writing node world data.");
             }
@@ -403,9 +403,9 @@ namespace GameZ_ZBD {
         }
 
         const int byteCount =
-            result * static_cast<int>(sizeof(zClass_NodeFreeListSlot));
+            result * (int)(sizeof(zClass_NodeFreeListSlot));
         zClass_NodeFreeListSlot *nodeBuffer =
-            static_cast<zClass_NodeFreeListSlot *>(malloc(byteCount));
+            (zClass_NodeFreeListSlot *)(malloc(byteCount));
         memcpy(nodeBuffer, g_zClass_NodeArray, byteCount);
 
         for (int i = 0; i < result; ++i) {
@@ -417,12 +417,12 @@ namespace GameZ_ZBD {
                 node->listB = 0;
             }
             node->userDataOrDiRef =
-                static_cast<unsigned int>(zDi::PtrToIndexOrMinus1((zDiPartial *)(
-                    static_cast<unsigned int>(node->userDataOrDiRef))));
+                (unsigned int)(zDi::PtrToIndexOrMinus1((zDiPartial *)(
+                    (unsigned int)(node->userDataOrDiRef))));
             node->actionCallback = 0;
         }
 
-        FILE *file = static_cast<FILE *>(stream);
+        FILE *file = (FILE *)(stream);
         const long nodeTableOffset = ftell(file);
         if (fwrite(nodeBuffer, byteCount, 1, file) != 1) {
             zError::ReportOld(0x200, kClsZbdSourceFile, 0x218, "Error writing node data.");
@@ -435,7 +435,7 @@ namespace GameZ_ZBD {
                 if (WriteSingleNodeClassData(&nodeBuffer[i].node, stream) != 0) {
                     const unsigned int freeTag = nodeBuffer[i].freeTag;
                     nodeBuffer[i].freeTag =
-                        ((static_cast<unsigned int>(classDataOffset) ^ freeTag) & 0x00ffffffu) ^
+                        (((unsigned int)(classDataOffset) ^ freeTag) & 0x00ffffffu) ^
                         freeTag;
                 }
             }
@@ -467,15 +467,15 @@ namespace GameZ_ZBD {
             return 0;
         }
 
-        const size_t byteCount = static_cast<size_t>(entryCount) * sizeof(unsigned int);
-        if (fread(nodeRefList, byteCount, 1, static_cast<FILE *>(stream)) != 1) {
+        const size_t byteCount = (size_t)(entryCount) * sizeof(unsigned int);
+        if (fread(nodeRefList, byteCount, 1, (FILE *)(stream)) != 1) {
             zError::ReportOld(0x200, kClsZbdSourceFile, 0x2d0, "Error reading GameZ Node list.");
             return -1;
         }
 
         for (int i = 0; i < entryCount; ++i) {
             const int index =
-                static_cast<int>((int)(nodeRefList[i]));
+                (int)((int)(nodeRefList[i]));
             nodeRefList[i] = NodeIndexToPtr(index);
         }
 
@@ -496,7 +496,7 @@ namespace GameZ_ZBD {
             zError::ReportOld(0x200, kClsZbdSourceFile, 0x2f1,
                               "Reading sound node data: Must complete software.");
 
-            zClass_SoundDataPartial *data = static_cast<zClass_SoundDataPartial *>(
+            zClass_SoundDataPartial *data = (zClass_SoundDataPartial *)(
                 malloc(sizeof(zClass_SoundDataPartial)));
             node->classData = data;
             if (!ReadZbdBlob(data, sizeof(zClass_SoundDataPartial), stream)) {
@@ -506,7 +506,7 @@ namespace GameZ_ZBD {
             data->sample = 0;
             data->playHandle = 0;
             if (data->attachedWorldCount > 0) {
-                data->attachedWorlds = static_cast<zClass_NodePartial **>(
+                data->attachedWorlds = (zClass_NodePartial **)(
                     malloc(data->attachedWorldCount * sizeof(zClass_NodePartial *)));
                 ReadNodeRefListIndices(data->attachedWorlds, data->attachedWorldCount, stream);
             } else {
@@ -538,7 +538,7 @@ namespace GameZ_ZBD {
 
         case kZClassNodeLight: {
             result = 1;
-            zClass_LightDataPartial *data = static_cast<zClass_LightDataPartial *>(
+            zClass_LightDataPartial *data = (zClass_LightDataPartial *)(
                 malloc(sizeof(zClass_LightDataPartial)));
             node->classData = data;
             if (!ReadZbdBlob(data, sizeof(zClass_LightDataPartial), stream)) {
@@ -546,7 +546,7 @@ namespace GameZ_ZBD {
             }
 
             if (data->attachedWorldCount > 0) {
-                data->attachedWorlds = static_cast<zClass_NodePartial **>(
+                data->attachedWorlds = (zClass_NodePartial **)(
                     malloc(data->attachedWorldCount * sizeof(zClass_NodePartial *)));
                 ReadNodeRefListIndices(data->attachedWorlds, data->attachedWorldCount, stream);
             } else {
@@ -560,7 +560,7 @@ namespace GameZ_ZBD {
 
         case kZClassNodeCamera: {
             result = 1;
-            zClass_CameraDataPartial *data = static_cast<zClass_CameraDataPartial *>(
+            zClass_CameraDataPartial *data = (zClass_CameraDataPartial *)(
                 malloc(sizeof(zClass_CameraDataPartial)));
             node->classData = data;
             if (!ReadZbdBlob(data, sizeof(zClass_CameraDataPartial), stream)) {
@@ -568,13 +568,13 @@ namespace GameZ_ZBD {
             }
 
             data->worldNode = NodeIndexToPtr(
-                static_cast<int>((int)(data->worldNode)));
+                (int)((int)(data->worldNode)));
             data->windowNode = NodeIndexToPtr(
-                static_cast<int>((int)(data->windowNode)));
+                (int)((int)(data->windowNode)));
             data->horizonNode = NodeIndexToPtr(
-                static_cast<int>((int)(data->horizonNode)));
+                (int)((int)(data->horizonNode)));
             data->horizonXZNode = NodeIndexToPtr(
-                static_cast<int>((int)(data->horizonXZNode)));
+                (int)((int)(data->horizonXZNode)));
 
             zClass_TypeList::Insert(6, node);
             zClass_TypeList::Insert(8, node);
@@ -585,7 +585,7 @@ namespace GameZ_ZBD {
 
         case kZClassNodeDisplay: {
             result = 1;
-            zClass_DisplayDataPartial *data = static_cast<zClass_DisplayDataPartial *>(
+            zClass_DisplayDataPartial *data = (zClass_DisplayDataPartial *)(
                 malloc(sizeof(zClass_DisplayDataPartial)));
             node->classData = data;
             if (!ReadZbdBlob(data, sizeof(zClass_DisplayDataPartial), stream)) {
@@ -611,7 +611,7 @@ namespace GameZ_ZBD {
 
         case kZClassNodeWorld: {
             result = 1;
-            zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(
+            zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(
                 malloc(sizeof(zClass_WorldDataPartial)));
             node->classData = data;
             if (!ReadZbdBlob(data, sizeof(zClass_WorldDataPartial), stream)) {
@@ -619,10 +619,10 @@ namespace GameZ_ZBD {
             }
 
             if (data->lightCount > 0) {
-                data->lightNodes = static_cast<zClass_NodePartial **>(
+                data->lightNodes = (zClass_NodePartial **)(
                     malloc(data->lightCount * sizeof(zClass_NodePartial *)));
                 ReadNodeRefListIndices(data->lightNodes, data->lightCount, stream);
-                data->lightDataList = static_cast<zClass_LightDataPartial **>(
+                data->lightDataList = (zClass_LightDataPartial **)(
                     malloc(data->lightCount * sizeof(zClass_LightDataPartial *)));
             } else {
                 data->lightNodes = 0;
@@ -630,21 +630,21 @@ namespace GameZ_ZBD {
             }
 
             if (data->soundCount > 0) {
-                data->soundNodes = static_cast<zClass_NodePartial **>(
+                data->soundNodes = (zClass_NodePartial **)(
                     malloc(data->soundCount * sizeof(zClass_NodePartial *)));
                 ReadNodeRefListIndices(data->soundNodes, data->soundCount, stream);
-                data->soundDataList = static_cast<zClass_SoundDataPartial **>(
+                data->soundDataList = (zClass_SoundDataPartial **)(
                     malloc(data->soundCount * sizeof(zClass_SoundDataPartial *)));
             } else {
                 data->soundNodes = 0;
                 data->soundDataList = 0;
             }
 
-            data->areaGridRows = static_cast<zWorldAreaPartial **>(
+            data->areaGridRows = (zWorldAreaPartial **)(
                 calloc(data->areaGridRowCount, sizeof(zWorldAreaPartial *)));
             {
             for (int row = 0; row < data->areaGridRowCount; ++row) {
-                data->areaGridRows[row] = static_cast<zWorldAreaPartial *>(
+                data->areaGridRows[row] = (zWorldAreaPartial *)(
                     calloc(data->areaGridColCount, sizeof(zWorldAreaPartial)));
             }
             }
@@ -660,7 +660,7 @@ namespace GameZ_ZBD {
                     }
 
                     if (area->childCount > 0) {
-                        area->childList = static_cast<zClass_NodePartial **>(
+                        area->childList = (zClass_NodePartial **)(
                             malloc(area->childCount * sizeof(zClass_NodePartial *)));
                         ReadNodeRefListIndices(area->childList, area->childCount, stream);
                     } else {
@@ -697,7 +697,7 @@ namespace GameZ_ZBD {
 
         if (node->listCountA > 0) {
             result = 1;
-            node->listA = static_cast<zClass_NodePartial **>(
+            node->listA = (zClass_NodePartial **)(
                 malloc(node->listCountA * sizeof(zClass_NodePartial *)));
             ReadNodeRefListIndices(node->listA, node->listCountA, stream);
         } else {
@@ -705,7 +705,7 @@ namespace GameZ_ZBD {
         }
 
         if (node->listCountB > 0) {
-            node->listB = static_cast<zClass_NodePartial **>(
+            node->listB = (zClass_NodePartial **)(
                 malloc(node->listCountB * sizeof(zClass_NodePartial *)));
             ReadNodeRefListIndices(node->listB, node->listCountB, stream);
             return 1;
@@ -724,21 +724,21 @@ namespace GameZ_ZBD {
         }
 
         const size_t byteCount =
-            static_cast<size_t>(nodeCount) * sizeof(zClass_NodeFreeListSlot);
+            (size_t)(nodeCount) * sizeof(zClass_NodeFreeListSlot);
         if (g_zClass_NodeArray == 0) {
-            g_zClass_NodeArray = static_cast<zClass_NodeFreeListSlot *>(malloc(byteCount));
+            g_zClass_NodeArray = (zClass_NodeFreeListSlot *)(malloc(byteCount));
             g_zClass_NodeArraySize = nodeCount;
         } else if (nodeCount > g_zClass_NodeArraySize) {
             const int oldNodeCount = g_zClass_NodeArraySize;
             g_zClass_NodeArray =
-                static_cast<zClass_NodeFreeListSlot *>(realloc(g_zClass_NodeArray, byteCount));
+                (zClass_NodeFreeListSlot *)(realloc(g_zClass_NodeArray, byteCount));
             memset(&g_zClass_NodeArray[oldNodeCount], 0,
-                        static_cast<size_t>(nodeCount - oldNodeCount) *
+                        (size_t)(nodeCount - oldNodeCount) *
                             sizeof(zClass_NodeFreeListSlot));
             g_zClass_NodeArraySize = nodeCount;
         }
 
-        if (fread(g_zClass_NodeArray, byteCount, 1, static_cast<FILE *>(stream)) != 1) {
+        if (fread(g_zClass_NodeArray, byteCount, 1, (FILE *)(stream)) != 1) {
             zError::ReportOld(0x200, kClsZbdSourceFile, 0x4a9, "Error reading GameZ Node buffer.");
             return -1;
         }
@@ -746,8 +746,8 @@ namespace GameZ_ZBD {
         g_zClass_ActiveNodeCount = 0;
         for (int i = 0; i < g_zClass_NodeArraySize; ++i) {
             zClass_NodePartial *node = &g_zClass_NodeArray[i].node;
-            node->userDataOrDiRef = static_cast<unsigned int>((unsigned int)(
-                zDi::IndexToPtrOrNull(static_cast<int>(node->userDataOrDiRef))));
+            node->userDataOrDiRef = (unsigned int)((unsigned int)(
+                zDi::IndexToPtrOrNull((int)(node->userDataOrDiRef))));
             node->actionCallback = 0;
 
             if (ReadSingleNodeClassData(node, stream) > 0) {
@@ -765,16 +765,16 @@ namespace GameZ_ZBD {
                 continue;
             }
 
-            zClass_WorldDataPartial *data = static_cast<zClass_WorldDataPartial *>(node->classData);
+            zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(node->classData);
             for (int i = 0; i < data->lightCount; ++i) {
                 data->lightDataList[i] =
-                    static_cast<zClass_LightDataPartial *>(data->lightNodes[i]->classData);
+                    (zClass_LightDataPartial *)(data->lightNodes[i]->classData);
             }
 
-            data = static_cast<zClass_WorldDataPartial *>(node->classData);
+            data = (zClass_WorldDataPartial *)(node->classData);
             for (int i_775 = 0; i_775 < data->soundCount; ++i_775) {
                 data->soundDataList[i_775] =
-                    static_cast<zClass_SoundDataPartial *>(data->soundNodes[i_775]->classData);
+                    (zClass_SoundDataPartial *)(data->soundNodes[i_775]->classData);
             }
         }
 
@@ -818,10 +818,10 @@ namespace GameZ_ZBD {
             return 1;
         }
 
-        FILE *const file = static_cast<FILE *>(stream);
+        FILE *const file = (FILE *)(stream);
         fseek(file,
                    zbdHeader->nodeTableOffset +
-                       nodeIndex * static_cast<int>(sizeof(zClass_NodeFreeListSlot)),
+                       nodeIndex * (int)(sizeof(zClass_NodeFreeListSlot)),
                    SEEK_SET);
 
         zClass_NodeFreeListSlot serializedNode;
@@ -831,7 +831,7 @@ namespace GameZ_ZBD {
         }
 
         const int displayInstanceIndex =
-            static_cast<int>(serializedNode.node.userDataOrDiRef);
+            (int)(serializedNode.node.userDataOrDiRef);
         fseek(file, zbdHeader->model3dOffset, SEEK_SET);
 
         unsigned int oldDisplayInstanceValue;
@@ -843,11 +843,11 @@ namespace GameZ_ZBD {
         if (displayInstance == 0) {
             zClass_Class::gwNodeSetDisplayInstance(
                 node, (zDiPartial *)(
-                          static_cast<unsigned int>(oldDisplayInstanceValue)));
+                          (unsigned int)(oldDisplayInstanceValue)));
         } else {
             zClass_Class::gwNodeSetDisplayInstance(node, displayInstance);
             zDiPartial *const oldDisplayInstance = (zDiPartial *)(
-                static_cast<unsigned int>(oldDisplayInstanceValue));
+                (unsigned int)(oldDisplayInstanceValue));
             if (oldDisplayInstance != 0) {
                 zModel_DiPool::FreeIfUnreferenced(oldDisplayInstance);
             }

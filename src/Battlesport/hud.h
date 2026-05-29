@@ -40,6 +40,7 @@ struct HudUiCheatCodeDialog;
 struct zSndSample;
 struct zSndPlayHandleSnapshot;
 struct zClass_NodePartial;
+class CString;
 
 struct HudUiSaveLoadEntry : WIN32_FIND_DATAA {
     RECOIL_NOINLINE int RECOIL_FASTCALL IsNewerThan(const HudUiSaveLoadEntry *other) const;
@@ -122,6 +123,10 @@ struct HudUiLoadGamePrimaryActionButton : HudUiZrdWidget {
 };
 
 struct HudUiConfirmQuitOkButton : HudUiZrdWidget {
+    void RECOIL_THISCALL OnActivate();
+};
+
+struct HudUiCreditsQuitButton : HudUiZrdWidget {
     void RECOIL_THISCALL OnActivate();
 };
 
@@ -334,10 +339,45 @@ struct RecoilStateControls : RecoilApp_IState {
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateControls) == 0x08);
 
+struct HudUiCheatCodeTitleWidget : HudUiZrdWidget {
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiCheatCodeTitleWidget) == 0x14c);
+
+struct HudUiCheatTextInputWidget : HudUiNumericTextInput {
+    void RECOIL_THISCALL OnActivate();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiCheatTextInputWidget) == 0x374);
+
+struct HudUiCheatCodeDialog : HudUiBackground {
+    HudUiCheatCodeTitleWidget titleWidget;
+    HudUiCheatTextInputWidget cheatInputWidget;
+
+    HudUiCheatCodeDialog *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE HudUiCheatCodeDialog *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiCheatCodeDialog) == 0xae0c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCheatCodeDialog, titleWidget) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCheatCodeDialog, cheatInputWidget) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCheatCodeDialog, cheatInputWidget) +
+                     offsetof(HudUiNumericTextInput, textInput) == 0xabe4);
+
 struct RecoilStateCheatCode : RecoilApp_IState {
     RecoilPtr32 m_dialog; // HudUiCheatCodeDialog*
     zVideoHalfResAdjustMode m_prevHalfResAdjustMode;
     RecoilPtr32 m_audioSnapshot; // zSndPlayHandleSnapshot*
+
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    RECOIL_NOINLINE static RecoilStateCheatCode *RECOIL_CDECL ConstructGlobal();
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInit();
+    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
+    RecoilStateCheatCode *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
+    RECOIL_NOINLINE ~RecoilStateCheatCode();
+    RECOIL_NOINLINE RecoilStateCheatCode *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateCheatCode) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(RecoilStateCheatCode, m_prevHalfResAdjustMode) == 0x08);
@@ -356,9 +396,17 @@ extern float g_Hud_LowMeterNextBeepTime;
 extern const HudUiCommon_FTable g_HudWeatherFx_Vtable;
 extern const HudUiCommon_FTable g_HudWeatherFxSnow_Vtable;
 extern const HudUiCommon_FTable g_HudWeatherFxRain_Vtable;
+extern const HudUiZrdWidget_FTable g_HudUiCheatCodeTitleWidget_FTable;
+extern const HudUiNumericTextInput_Base_FTable g_HudUiCheatCodeInputWidget_FTable;
 
 namespace HudUiCallback {
+void RECOIL_CDECL QueueExitCurrentState();
 int RECOIL_CDECL QueueCheatCodeState();
+}
+
+namespace HudCheat {
+RECOIL_NOINLINE int RECOIL_FASTCALL ExecuteCommandString(CString *commandString);
+RECOIL_NOINLINE void RECOIL_CDECL ClearNanitePanelCheatSentinel();
 }
 
 namespace HudLowMeterLoopSound {

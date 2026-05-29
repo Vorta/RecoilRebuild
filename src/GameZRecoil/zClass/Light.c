@@ -27,7 +27,7 @@ namespace {
             return 0;
         }
 
-        return static_cast<zClass_LightDataPartial *>(node->classData);
+        return (zClass_LightDataPartial *)(node->classData);
     }
 
     zVec3 TransformPoint(const zVec3 &point) {
@@ -162,7 +162,7 @@ namespace zClass_Light {
         node->classId = kZClassNodeLight;
 
         zClass_LightDataPartial *data =
-            static_cast<zClass_LightDataPartial *>(calloc(1, sizeof(zClass_LightDataPartial)));
+            (zClass_LightDataPartial *)(calloc(1, sizeof(zClass_LightDataPartial)));
         node->classData = data;
 
         data->worldDir = zVec3_Make(0.0f, 1.0f, 0.0f);
@@ -198,7 +198,7 @@ namespace zClass_Light {
             return 5;
         }
 
-        zClass_LightDataPartial *data = static_cast<zClass_LightDataPartial *>(node->classData);
+        zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
             zError::ReportOld(0x400, kLightSourceFile, 0xf9, "Null class data pointer");
             return 5;
@@ -423,7 +423,7 @@ namespace zClass_Light {
             return 0;
         }
 
-        zClass_LightDataPartial *data = static_cast<zClass_LightDataPartial *>(node->classData);
+        zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
             zError::ReportOld(0x400, kLightSourceFile, 0x39b, "Null class data pointer");
             return 5;
@@ -492,7 +492,7 @@ namespace zClass_Light {
         }
 
         node->flags = flags & ~0x02000000;
-        zClass_LightDataPartial *data = static_cast<zClass_LightDataPartial *>(node->classData);
+        zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
         int clipMask = *gModel_ClipMaskStackTop;
         const int result = CullNodeForRender(node, siblingCountHint, &clipMask);
         if (g_zClass_RenderBoundsContextActive == 0) {

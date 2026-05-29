@@ -17,6 +17,14 @@ class CString {
     const CString &operator=(const char *text);
     void Empty();
     void Format(const char *format, ...);
+    char *GetBuffer(int minBufLength);
+    // MFC CStringData::nDataLength sits two integers before m_pchData.
+    int GetLength() const {
+        return ((const int *)m_pchData)[-2];
+    }
+    int IsEmpty() const {
+        return GetLength() == 0;
+    }
     operator const char *() const {
         return m_pchData;
     }

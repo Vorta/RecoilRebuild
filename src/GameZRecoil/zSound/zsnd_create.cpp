@@ -121,12 +121,12 @@ void InitWaveMarkers(zSndSample *sample, zSndWaveData *waveData) {
     }
 
     if (sample->markerCount > 0) {
-        sample->markerTimes = static_cast<float *>(malloc(
-            static_cast<size_t>(sample->markerCount) * sizeof(float) + sizeof(float)));
-        sample->markerValues = static_cast<float *>(malloc(
-            static_cast<size_t>(sample->markerCount) * sizeof(float) + sizeof(float)));
-        sample->markerAux = static_cast<int *>(
-            malloc(static_cast<size_t>(sample->markerCount) * 2 * sizeof(int) +
+        sample->markerTimes = (float *)(malloc(
+            (size_t)(sample->markerCount) * sizeof(float) + sizeof(float)));
+        sample->markerValues = (float *)(malloc(
+            (size_t)(sample->markerCount) * sizeof(float) + sizeof(float)));
+        sample->markerAux = (int *)(
+            malloc((size_t)(sample->markerCount) * 2 * sizeof(int) +
                         2 * sizeof(int)));
     } else {
         sample->markerTimes = 0;
@@ -138,15 +138,15 @@ void InitWaveMarkers(zSndSample *sample, zSndWaveData *waveData) {
     while (index < sample->markerCount) {
         const zSndCuePoint &cue = waveData->cuePoints[index];
         sample->markerAux[index * 2] = (waveData->fmt->wBitsPerSample >> 3) *
-                                       static_cast<int>(cue.position) *
+                                       (int)(cue.position) *
                                        waveData->fmt->nChannels;
         sample->markerTimes[index] =
-            static_cast<float>(cue.position) / static_cast<float>(waveData->fmt->nSamplesPerSec);
+            (float)(cue.position) / (float)(waveData->fmt->nSamplesPerSec);
         ++index;
     }
 
-    sample->markerTimes[index] = static_cast<float>(waveData->pcmByteCount) /
-                                 static_cast<float>(waveData->fmt->nAvgBytesPerSec);
+    sample->markerTimes[index] = (float)(waveData->pcmByteCount) /
+                                 (float)(waveData->fmt->nAvgBytesPerSec);
     ++sample->markerCount;
 }
 } // namespace
@@ -161,7 +161,7 @@ zSndSample::InitFromWaveData_DirectSound(zSndWaveData *waveData) {
     zSndDirectSoundBufferDesc desc = {0};
     desc.size = sizeof(desc);
     desc.flags = 0x80;
-    desc.bufferBytes = static_cast<unsigned int>(waveData->pcmByteCount);
+    desc.bufferBytes = (unsigned int)(waveData->pcmByteCount);
     desc.format = waveData->fmt;
 
     const int flags = replayFields.flags;
@@ -209,7 +209,7 @@ zSndSample::InitFromWaveData_DirectSound(zSndWaveData *waveData) {
     void *audioPtr2 = 0;
     int audioBytes1 = 0;
     int audioBytes2 = 0;
-    error = buffer->vtable->Lock(buffer, 0, static_cast<unsigned int>(waveData->pcmByteCount),
+    error = buffer->vtable->Lock(buffer, 0, (unsigned int)(waveData->pcmByteCount),
                                  &audioPtr1, &audioBytes1, &audioPtr2, &audioBytes2, 0);
     if (error != 0) {
         return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x11d);
@@ -217,7 +217,7 @@ zSndSample::InitFromWaveData_DirectSound(zSndWaveData *waveData) {
 
     memcpy(audioPtr1, waveData->pcmData, audioBytes1);
     if (audioBytes2 != 0) {
-        memcpy(audioPtr2, static_cast<unsigned char *>(waveData->pcmData) + audioBytes1,
+        memcpy(audioPtr2, (unsigned char *)(waveData->pcmData) + audioBytes1,
                     audioBytes2);
         audioBytes1 += audioBytes2;
     }
@@ -266,7 +266,7 @@ zSndSample::InitFromWaveData_A3D(zSndWaveData *waveData) {
     void *audioPtr2 = 0;
     int audioBytes1 = 0;
     int audioBytes2 = 0;
-    error = buffer->vtable->Lock(buffer, 0, static_cast<unsigned int>(waveData->pcmByteCount),
+    error = buffer->vtable->Lock(buffer, 0, (unsigned int)(waveData->pcmByteCount),
                                  &audioPtr1, &audioBytes1, &audioPtr2, &audioBytes2, 0);
     if (error != 0) {
         return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x5a);
@@ -274,7 +274,7 @@ zSndSample::InitFromWaveData_A3D(zSndWaveData *waveData) {
 
     memcpy(audioPtr1, waveData->pcmData, audioBytes1);
     if (audioBytes2 != 0) {
-        memcpy(audioPtr2, static_cast<unsigned char *>(waveData->pcmData) + audioBytes1,
+        memcpy(audioPtr2, (unsigned char *)(waveData->pcmData) + audioBytes1,
                     audioBytes2);
         audioBytes1 += audioBytes2;
     }
@@ -297,7 +297,7 @@ zSndSample::InitFromWaveData_A3D(zSndWaveData *waveData) {
         buffer->vtable->SetSpatializationEnabled(buffer, 1);
     }
 
-    sampleRate = static_cast<float>(waveData->fmt->nSamplesPerSec);
+    sampleRate = (float)(waveData->fmt->nSamplesPerSec);
     InitWaveMarkers(this, waveData);
     playbackEventHandler = 0;
     replayFields.flags &= ~0x80;
@@ -373,7 +373,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::InitFromWaveData(zSndWaveData *w
 // Reimplements 0x4a3850: zSndSample_CreateQueuedStreamingSample
 extern "C" RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSndSample_CreateQueuedStreamingSample(
     WAVEFORMATEX *audioFormat, void *audioBuffer, int bufferBytes) {
-    zSndSample *sample = static_cast<zSndSample *>(calloc(1, sizeof(zSndSample)));
+    zSndSample *sample = (zSndSample *)(calloc(1, sizeof(zSndSample)));
     if (sample == 0) {
         return 0;
     }
@@ -427,7 +427,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zSndWaveData::Destructor() {
 
 // Reimplements 0x4a5460: zSndWaveData::ParseLoadedWaveFile
 RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::ParseLoadedWaveFile() {
-    unsigned char *const bytes = static_cast<unsigned char *>(fileData);
+    unsigned char *const bytes = (unsigned char *)(fileData);
     if (bytes == 0) {
         return 0;
     }
@@ -450,7 +450,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::ParseLoadedWaveFile() {
 
             if (chunkId == kCueChunkMagic) {
                 if (cuePoints == 0 || cuePointCount == 0) {
-                    cuePointCount = static_cast<int>(ReadU32(body));
+                    cuePointCount = (int)(ReadU32(body));
                     cuePoints = (zSndCuePoint *)(body + 4);
                 }
             } else if (chunkId == kFmtChunkMagic) {
@@ -464,7 +464,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::ParseLoadedWaveFile() {
             } else if (chunkId == kDataChunkMagic) {
                 if (pcmData == 0 || pcmByteCount == 0) {
                     pcmData = body;
-                    pcmByteCount = static_cast<int>(chunkSize);
+                    pcmByteCount = (int)(chunkSize);
                 }
             }
 
@@ -510,11 +510,11 @@ zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded(zIndexArchive *archive) {
 
     unsigned int archiveFileSize = 0;
     archive->ReadFileByName(nameOrPath, 0, &archiveFileSize);
-    fileSize = static_cast<int>(archiveFileSize);
+    fileSize = (int)(archiveFileSize);
     if (archiveFileSize > 0) {
         fileData = calloc(archiveFileSize, 1);
         archive->ReadFileByName(nameOrPath, fileData, &archiveFileSize);
-        fileSize = static_cast<int>(archiveFileSize);
+        fileSize = (int)(archiveFileSize);
         parsedOk = ParseLoadedWaveFile();
     }
 

@@ -83,7 +83,7 @@ namespace zClass_Sound {
         node->classId = 10;
 
         zClass_SoundDataPartial *const soundData =
-            static_cast<zClass_SoundDataPartial *>(calloc(1, sizeof(zClass_SoundDataPartial)));
+            (zClass_SoundDataPartial *)(calloc(1, sizeof(zClass_SoundDataPartial)));
         node->classData = soundData;
         soundData->sample = 0;
         soundData->playHandle = 0;
@@ -110,7 +110,7 @@ namespace zClass_Sound {
         }
 
         zClass_SoundDataPartial *soundData =
-            static_cast<zClass_SoundDataPartial *>(node->classData);
+            (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
             zError::ReportOld(0x400, kSoundSourceFile, 0xc4, "Null class data pointer");
             return 5;
@@ -167,7 +167,7 @@ namespace zClass_Sound {
         }
 
         zClass_SoundDataPartial *const soundData =
-            static_cast<zClass_SoundDataPartial *>(node->classData);
+            (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
             zError::ReportOld(0x400, kSoundSourceFile, 0x11f, "Null class data pointer");
             return 5;
@@ -196,7 +196,7 @@ namespace zClass_Sound {
         }
 
         zClass_SoundDataPartial *const soundData =
-            static_cast<zClass_SoundDataPartial *>(node->classData);
+            (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
             zError::ReportOld(0x400, kSoundSourceFile, 0x14a, "Null class data pointer");
             return 5;
@@ -231,7 +231,7 @@ namespace zClass_Sound {
         }
 
         zClass_SoundDataPartial *const soundData =
-            static_cast<zClass_SoundDataPartial *>(node->classData);
+            (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
             zError::ReportOld(0x400, kSoundSourceFile, 0x17f, "Null class data pointer");
             return 5;
@@ -257,7 +257,7 @@ namespace zClass_Sound {
         }
 
         zClass_SoundDataPartial *soundData =
-            static_cast<zClass_SoundDataPartial *>(node->classData);
+            (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
             zError::ReportOld(0x400, kSoundSourceFile, 0x22a, "Null class data pointer");
             return 5;
@@ -336,7 +336,7 @@ namespace zClass_Sound {
         }
 
         node->flags = flags & ~0x02000000;
-        zClass_SoundDataPartial *data = static_cast<zClass_SoundDataPartial *>(node->classData);
+        zClass_SoundDataPartial *data = (zClass_SoundDataPartial *)(node->classData);
         int clipMask = *gModel_ClipMaskStackTop;
         const int result = CullNodeForRender(node, siblingCountHint, &clipMask);
         if (g_zClass_RenderBoundsContextActive == 0) {

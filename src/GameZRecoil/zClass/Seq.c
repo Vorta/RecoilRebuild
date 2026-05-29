@@ -44,7 +44,7 @@ namespace zClass_Sequence {
         }
 
         node->classId = 7;
-        zClass_SequenceDataPartial *data = static_cast<zClass_SequenceDataPartial *>(
+        zClass_SequenceDataPartial *data = (zClass_SequenceDataPartial *)(
             calloc(1, sizeof(zClass_SequenceDataPartial)));
         node->classData = data;
         data->step = 1;
@@ -85,8 +85,8 @@ namespace zClass_Sequence {
             return addResult;
         }
 
-        data = static_cast<zClass_SequenceDataPartial *>(parent->classData);
-        data = static_cast<zClass_SequenceDataPartial *>(
+        data = (zClass_SequenceDataPartial *)(parent->classData);
+        data = (zClass_SequenceDataPartial *)(
             realloc(data, data->entryCount * sizeof(zClass_SequenceEntryPartial) +
                                    sizeof(zClass_SequenceDataPartial)));
         parent->classData = data;
@@ -120,7 +120,7 @@ namespace zClass_Sequence {
             goto reportError;
         }
 
-        data = static_cast<zClass_SequenceDataPartial *>(node->classData);
+        data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
             line = 0x114;
             message = "Null class data pointer";
@@ -149,7 +149,7 @@ namespace zClass_Sequence {
             goto reportError;
         }
 
-        data = static_cast<zClass_SequenceDataPartial *>(node->classData);
+        data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
             line = 0x134;
             message = "Null class data pointer";
@@ -178,7 +178,7 @@ namespace zClass_Sequence {
             goto reportError;
         }
 
-        data = static_cast<zClass_SequenceDataPartial *>(node->classData);
+        data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
             line = 0x154;
             message = "Null class data pointer";
@@ -207,7 +207,7 @@ namespace zClass_Sequence {
             goto reportError;
         }
 
-        data = static_cast<zClass_SequenceDataPartial *>(node->classData);
+        data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
             line = 0x174;
             message = "Null class data pointer";
@@ -244,7 +244,7 @@ namespace zClass_Sequence {
         }
 
         zClass_SequenceDataPartial *data =
-            static_cast<zClass_SequenceDataPartial *>(parent->classData);
+            (zClass_SequenceDataPartial *)(parent->classData);
         int childIndex = -1;
         for (int i = 0; i < data->entryCount; ++i) {
             if (data->entries[i].node == child) {
@@ -276,7 +276,7 @@ namespace zClass_Sequence {
             return 5;
         }
 
-        data = static_cast<zClass_SequenceDataPartial *>(node->classData);
+        data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
             zError::ReportOld(0x400, kSequenceSourceFile, 0x194, "Null class data pointer");
             return 5;
@@ -341,7 +341,7 @@ namespace zClass_Sequence {
             return 0;
         }
 
-        data = static_cast<zClass_SequenceDataPartial *>(node->classData);
+        data = (zClass_SequenceDataPartial *)(node->classData);
         node->flags = flags & ~0x02000000;
         if (data->isActive == 0) {
             return 0;

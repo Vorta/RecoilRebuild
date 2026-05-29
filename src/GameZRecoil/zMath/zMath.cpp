@@ -1011,7 +1011,7 @@ RECOIL_NOINLINE float RECOIL_STDCALL ApproxExpNeg(float x) {
     if (g_zMath_ApproxExpNegDirty != 0) {
         g_zMath_ApproxExpNegScale = 51.0f;
         for (int i = 0; i < 256; ++i) {
-            g_zMath_ApproxExpNegTable[i] = expf(-static_cast<float>(i) * 0.0196078438f);
+            g_zMath_ApproxExpNegTable[i] = expf(-(float)(i) * 0.0196078438f);
         }
         g_zMath_ApproxExpNegDirty = 0;
     }
@@ -1023,7 +1023,7 @@ RECOIL_NOINLINE float RECOIL_STDCALL ApproxExpNeg(float x) {
         return 1.0f;
     }
 
-    const int tableIndex = static_cast<int>(g_zMath_ApproxExpNegScale * x);
+    const int tableIndex = (int)(g_zMath_ApproxExpNegScale * x);
     return g_zMath_ApproxExpNegTable[tableIndex];
 }
 } // namespace zMath

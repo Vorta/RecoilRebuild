@@ -152,7 +152,7 @@ float PlayerFastSqrtEstimate(float value) {
 }
 
 float PlayerDampingFromRate(float rate) {
-    return PlayerFloatFromBits(static_cast<int>(-rate * g_Player_DeltaTime * 12102200.0f) +
+    return PlayerFloatFromBits((int)(-rate * g_Player_DeltaTime * 12102200.0f) +
                                0x3f800000);
 }
 
@@ -422,7 +422,7 @@ void PlayerInitActionCallbackNode(void *callback) {
 
 PlayerMasterCommonData *PlayerAllocMasterCommonData() {
     PlayerMasterCommonData *const commonData =
-        static_cast<PlayerMasterCommonData *>(::operator new(sizeof(PlayerMasterCommonData)));
+        (PlayerMasterCommonData *)(::operator new(sizeof(PlayerMasterCommonData)));
     memset(commonData, 0, sizeof(PlayerMasterCommonData));
     commonData->next = 0;
     if (g_PlayerMasterCommonDataCount == 0) {
@@ -437,7 +437,7 @@ PlayerMasterCommonData *PlayerAllocMasterCommonData() {
 
 PlayerMasterModalData *PlayerAllocMasterModalData() {
     PlayerMasterModalData *const modalData =
-        static_cast<PlayerMasterModalData *>(::operator new(sizeof(PlayerMasterModalData)));
+        (PlayerMasterModalData *)(::operator new(sizeof(PlayerMasterModalData)));
     memset(modalData, 0, sizeof(PlayerMasterModalData));
     modalData->next = 0;
     if (g_PlayerMasterModalDataCount == 0) {
@@ -452,7 +452,7 @@ PlayerMasterModalData *PlayerAllocMasterModalData() {
 
 zUtil_SaveGameState *PlayerAllocLinkedSaveState() {
     zUtil_SaveGameState *saveState =
-        static_cast<zUtil_SaveGameState *>(::operator new(sizeof(zUtil_SaveGameState)));
+        (zUtil_SaveGameState *)(::operator new(sizeof(zUtil_SaveGameState)));
     saveState = zUtil_SaveGameStateList_Init(saveState);
     saveState->next = 0;
     if (g_PlayerSaveStateCount == 0) {
@@ -601,12 +601,12 @@ void TriggerZeroVelocityFxList(zEffectAnimEntry **entries, zClass_NodePartial *r
 
 void CopyNodeCachedWorldMatrix(zMat4x3 *outMatrix, zClass_NodePartial *node) {
     zClass_Object3DDataPartial *const objectData =
-        static_cast<zClass_Object3DDataPartial *>(node->classData);
+        (zClass_Object3DDataPartial *)(node->classData);
     memcpy(outMatrix, objectData->cachedWorldMatrix, sizeof(*outMatrix));
 }
 
 float ExtractYawFromMatrix(const zMat4x3 *matrix) {
-    return static_cast<float>(atan2(matrix->zx, matrix->zz));
+    return (float)(atan2(matrix->zx, matrix->zz));
 }
 
 const char *PlayerDebugMasterTypeName(int masterType) {
@@ -1191,7 +1191,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zUtil_SaveGameState::UpdateModalLoopSfx(int
     if (playerState->slipSfxActive != 0 || playerState->airborneFlag != 0 ||
         playerState->damageProtectionActive != 0) {
         const int smoothingBits =
-            static_cast<int>(g_FrameDeltaTimeSec * -2.5f * 12102200.0f) + 0x3f800000;
+            (int)(g_FrameDeltaTimeSec * -2.5f * 12102200.0f) + 0x3f800000;
         const float smoothingFactor = PlayerFloatFromBits(smoothingBits);
         saveState->modeLoopBlend =
             fabsf(playerState->throttleInputCopy) * (1.0f - smoothingFactor) +
@@ -1345,7 +1345,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CreateFromNamesAtPose(
     }
 
     zUtil_SaveGameState *saveState =
-        static_cast<zUtil_SaveGameState *>(::operator new(sizeof(zUtil_SaveGameState)));
+        (zUtil_SaveGameState *)(::operator new(sizeof(zUtil_SaveGameState)));
     saveState = zUtil_SaveGameStateList_Init(saveState);
     saveState->next = 0;
     if (g_PlayerSaveStateCount == 0) {
@@ -2075,7 +2075,7 @@ SampleGroundAndAlignRootToSurface(zUtil_SaveGameState *saveState, int updateRota
     zMath::Vec3RotateY(&yawRelativeNormal, &playerState->steerBasisRef,
                        -playerState->restartYawRad);
 
-    const float pitchAngleRad = static_cast<float>(asin(yawRelativeNormal.z));
+    const float pitchAngleRad = (float)(asin(yawRelativeNormal.z));
     float clampedPitchAngleRad = pitchAngleRad;
     if (clampedPitchAngleRad > 0.523599982f) {
         clampedPitchAngleRad = 0.523599982f;
@@ -2083,7 +2083,7 @@ SampleGroundAndAlignRootToSurface(zUtil_SaveGameState *saveState, int updateRota
         clampedPitchAngleRad = -0.523599982f;
     }
 
-    const float rollAngleRad = static_cast<float>(asin(-yawRelativeNormal.x));
+    const float rollAngleRad = (float)(asin(-yawRelativeNormal.x));
     playerState->vehiclePitchRad = clampedPitchAngleRad;
     playerState->vehicleRollRad = rollAngleRad;
     zClass_Object3D::gwObject3DSetRotation(playerState->rootNode,
@@ -2297,7 +2297,7 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData *commonData, zReader::Node *
 
     for (int index = 0; index < commonData->weaponNodeCount; ++index) {
         PlayerMasterWeaponSpec *const weaponSpec =
-            static_cast<PlayerMasterWeaponSpec *>(::operator new(sizeof(PlayerMasterWeaponSpec)));
+            (PlayerMasterWeaponSpec *)(::operator new(sizeof(PlayerMasterWeaponSpec)));
         memset(weaponSpec, 0, sizeof(PlayerMasterWeaponSpec));
         if (commonData->weaponSpecCount == 0) {
             commonData->weaponSpecHead = weaponSpec;
@@ -2312,7 +2312,7 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData *commonData, zReader::Node *
         strcpy(weaponSpec->optCatalogName, weaponFields[1].value.str);
         weaponSpec->missionRequirementOrGateId = weaponFields[2].value.i32;
         weaponSpec->mountLayoutFlags = weaponFields[3].value.i32;
-        weaponSpec->startAmmoOrCharge = static_cast<float>(weaponFields[4].value.i32);
+        weaponSpec->startAmmoOrCharge = (float)(weaponFields[4].value.i32);
         weaponSpec->dispatchRepeatDelay = weaponFields[5].value.f32;
         weaponSpec->aiAttackRangeMin = weaponFields[6].value.f32;
         weaponSpec->aiAttackRangeMax = weaponFields[7].value.f32;
@@ -2440,14 +2440,14 @@ LoadMasterModalDataFromNode(PlayerMasterModalData *modalData, zReader::Node *mod
 
     node = zReader_GetNamedNode(modalNode, "chas_smooth");
     modalData->chassisSmoothFactor =
-        node != 0 ? static_cast<float>(fabs(PlayerZrdArrayFloat(node, 1))) : 0.0f;
+        node != 0 ? (float)(fabs(PlayerZrdArrayFloat(node, 1))) : 0.0f;
 
     node = zReader_GetNamedNode(modalNode, "chas_pitch");
     if (node != 0) {
         modalData->chassisPitchRate = PlayerZrdArrayFloat(node, 1);
         modalData->chassisPitchMax = PlayerZrdArrayFloat(node, 2);
         modalData->chassisPitchDamping =
-            static_cast<float>(fabs(PlayerZrdArrayFloat(node, 3)));
+            (float)(fabs(PlayerZrdArrayFloat(node, 3)));
     } else {
         modalData->chassisPitchRate = 0.0f;
         modalData->chassisPitchMax = 0.0f;
@@ -2458,7 +2458,7 @@ LoadMasterModalDataFromNode(PlayerMasterModalData *modalData, zReader::Node *mod
     if (node != 0) {
         modalData->chassisRollRate = PlayerZrdArrayFloat(node, 1);
         modalData->chassisRollMax = PlayerZrdArrayFloat(node, 2);
-        modalData->chassisRollDamping = static_cast<float>(fabs(PlayerZrdArrayFloat(node, 3)));
+        modalData->chassisRollDamping = (float)(fabs(PlayerZrdArrayFloat(node, 3)));
     } else {
         // Retail code clears the pitch slots here when chas_roll is absent.
         modalData->chassisPitchRate = 0.0f;
@@ -2554,7 +2554,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ReactivateCopterSndNodesIfHealthy() {
             zClass_Class::gwNodeSetActive(sndNode1, 1);
 
             zClass_SoundDataPartial *const soundData =
-                static_cast<zClass_SoundDataPartial *>(sndNode1->classData);
+                (zClass_SoundDataPartial *)(sndNode1->classData);
             if (soundData != 0) {
                 zSndPlayHandle *const playHandle = soundData->playHandle;
                 if (playHandle != 0) {
@@ -2572,7 +2572,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ReactivateCopterSndNodesIfHealthy() {
             zClass_Class::gwNodeSetActive(sndNode2, 1);
 
             zClass_SoundDataPartial *const soundData =
-                static_cast<zClass_SoundDataPartial *>(sndNode2->classData);
+                (zClass_SoundDataPartial *)(sndNode2->classData);
             if (soundData != 0) {
                 zSndPlayHandle *const playHandle = soundData->playHandle;
                 if (playHandle != 0) {
@@ -2969,7 +2969,7 @@ HudSensorTracker::ParseCheckpointNumberFromNode(zClass_NodePartial *node) {
     }
 
     const long parsedNumber = atol(name + 10);
-    return parsedNumber < 0 ? 0 : static_cast<int>(parsedNumber);
+    return parsedNumber < 0 ? 0 : (int)(parsedNumber);
 }
 
 namespace {
@@ -3230,7 +3230,7 @@ void BuildModalAndRootProbeWorldCaches(zUtil_PlayerStateStorage *playerState,
 }
 
 float Vec3Length(const zVec3 &vec) {
-    return static_cast<float>(sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z));
+    return (float)(sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z));
 }
 
 float Vec3Dot(const zVec3 &a, const zVec3 &b) {
@@ -3254,11 +3254,11 @@ zVec3 Vec3Cross(const zVec3 &a, const zVec3 &b) {
 RECOIL_NOINLINE void RECOIL_FASTCALL AddScaledHudCounterValue(float value) {
     float scale = 1.0f;
     if (g_HudSensorTracker.primaryGunDispatchCount > 0) {
-        scale = static_cast<float>(g_OptCatalog_DamageFeedbackHitCount) /
-                static_cast<float>(g_HudSensorTracker.primaryGunDispatchCount);
+        scale = (float)(g_OptCatalog_DamageFeedbackHitCount) /
+                (float)(g_HudSensorTracker.primaryGunDispatchCount);
     }
 
-    g_Player_HudCounterValue += static_cast<int>(value * scale * 1000.0f);
+    g_Player_HudCounterValue += (int)(value * scale * 1000.0f);
 }
 
 // Reimplements 0x41bab0: Player::UpdateGunDispatchRequestsFromTriggerLatches
@@ -3556,7 +3556,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2PathFollow(zUtil_SaveGameState *
         playerState->throttleInput = 0.0f;
         playerState->steeringInput = steerCrossXZ < 0.0f ? -1.0f : 1.0f;
     } else {
-        float throttle = 1.0f - static_cast<float>(fabs(steerCrossXZ));
+        float throttle = 1.0f - (float)(fabs(steerCrossXZ));
         if (throttle <= kPlayerAiPathFollowMinThrottle) {
             throttle = kPlayerAiPathFollowMinThrottle;
         }
@@ -3687,14 +3687,14 @@ AiRebuildSyntheticPathToNodeIfFar(zUtil_SaveGameState *saveState, AINetNode *tar
         return;
     }
 
-    AINetNode *const syntheticNode = static_cast<AINetNode *>(malloc(sizeof(AINetNode)));
+    AINetNode *const syntheticNode = (AINetNode *)(malloc(sizeof(AINetNode)));
     memset(syntheticNode, 0, sizeof(*syntheticNode));
     syntheticNode->neighborNodes[0] = targetNode;
     syntheticNode->position = playerState->worldPos;
     syntheticNode->nodeIndex = -1;
 
     AINetPathProbeFan *const fan =
-        static_cast<AINetPathProbeFan *>(malloc(sizeof(AINetPathProbeFan)));
+        (AINetPathProbeFan *)(malloc(sizeof(AINetPathProbeFan)));
     memset(fan, 0, sizeof(*fan));
     syntheticNode->probeFans[0] = fan;
     fan->InitFromSegment(syntheticNode->position, currentPathNode->position,
@@ -4029,7 +4029,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SolveAltGunLeadTargetPoint(
     outTargetPos->y = targetPlayerState->fxOffsetWorld.y + scaledRelativeVelocity.y;
     outTargetPos->z = targetPlayerState->fxOffsetWorld.z + scaledRelativeVelocity.z;
     outTargetPos->y -=
-        (static_cast<float>(rand()) * 3.05185094e-05f - 0.5f) * -2.0f;
+        ((float)(rand()) * 3.05185094e-05f - 0.5f) * -2.0f;
 }
 
 // Reimplements 0x4026d0: Player::UpdateAiMode2MoveAndTurnTowardOffsetTarget
@@ -4084,7 +4084,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardOffsetTarget(
         playerState->throttleInput = 0.0f;
         playerState->steeringInput = turnCross < 0.0f ? -1.0f : 1.0f;
     } else {
-        float throttle = 1.0f - static_cast<float>(fabs(turnCross));
+        float throttle = 1.0f - (float)(fabs(turnCross));
         if (throttle <= kPlayerAiPathFollowMinThrottle) {
             throttle = kPlayerAiPathFollowMinThrottle;
         }
@@ -4161,7 +4161,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardDynamicOffset
         playerState->throttleInput = -1.0f;
         playerState->steeringInput = 0.0f;
     } else {
-        float throttle = 1.0f - static_cast<float>(fabs(turnCross));
+        float throttle = 1.0f - (float)(fabs(turnCross));
         if (throttle <= kPlayerAiPathFollowMinThrottle) {
             throttle = kPlayerAiPathFollowMinThrottle;
         }
@@ -4281,7 +4281,7 @@ AiSteerTowardPathNodeForward(zUtil_SaveGameState *saveState) {
         return;
     }
 
-    float throttle = 1.0f - static_cast<float>(fabs(turnCross));
+    float throttle = 1.0f - (float)(fabs(turnCross));
     if (throttle <= kPlayerAiPathFollowMinThrottle) {
         throttle = kPlayerAiPathFollowMinThrottle;
     }
@@ -4334,7 +4334,7 @@ AiSteerTowardPathNodeReverse(zUtil_SaveGameState *saveState) {
         return;
     }
 
-    float throttle = 1.0f - static_cast<float>(fabs(turnCross));
+    float throttle = 1.0f - (float)(fabs(turnCross));
     if (throttle <= kPlayerAiPathFollowMinThrottle) {
         throttle = kPlayerAiPathFollowMinThrottle;
     }
@@ -4586,8 +4586,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraVariantFromAnchor(
     (void)cameraPos;
 
     zUtil_PlayerStateStorage *const playerState =
-        static_cast<zUtil_PlayerStateStorage *>(
-            static_cast<void *>(g_GameStateOrMapTable->playerState));
+        (zUtil_PlayerStateStorage *)(
+            (void *)(g_GameStateOrMapTable->playerState));
     const zTag4Partial playerVariantTag = playerState->variantTag;
 
     zTag4Partial finalVariantTag = g_Player_LastValidCameraVariantTag;
@@ -4754,7 +4754,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraBySideProbes(
     const float dy = focusPos->y - cameraPos->y;
     const float dz = focusPos->z - cameraPos->z;
     const float invLength =
-        1.0f / static_cast<float>(sqrt(dx * dx + dy * dy + dz * dz));
+        1.0f / (float)(sqrt(dx * dx + dy * dy + dz * dz));
     cameraDirNext->x = dx * invLength;
     cameraDirNext->y = dy * invLength;
     cameraDirNext->z = dz * invLength;
@@ -4811,7 +4811,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClassifyPendingContactsForSegment(
                     queuedContact = AppendPendingContact(&playerState->preferredCollisionQueue);
                 } else {
                     PlayerContactSurfacePayload *const scenePayload =
-                        static_cast<PlayerContactSurfacePayload *>(candidate->scenePayload);
+                        (PlayerContactSurfacePayload *)(candidate->scenePayload);
                     const int impactSlot = scenePayload != 0 ? scenePayload->impactSlot : 0;
                     if (impactSlot == 5 && playerState->recentHitValid == 0) {
                         playerState->recentHitValid = 1;
@@ -4895,7 +4895,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PassesCollectionTest(
     zUtil_SaveGameState *saveState, PlayerPendingContact *contact) {
     (void)saveState;
     zUtil_PlayerStateStorage *const playerState =
-        static_cast<zUtil_PlayerStateStorage *>(static_cast<void *>(g_GameStateOrMapTable->playerState));
+        (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
     zClass_NodePartial *const pickupNode = contact->hit.node;
 
     g_Variant_CurrentTag = playerState->variantTag;
@@ -5227,7 +5227,7 @@ ResolvePendingCollisionContact(zUtil_SaveGameState *saveState, PlayerPendingCont
         reflectedSweepDir.x * contactToSweepEnd.z - reflectedSweepDir.z * contactToSweepEnd.x;
     const int yawImpulseSign = yawImpulseCross < 0.0f ? -1 : 1;
     playerState->angVelYaw +=
-        static_cast<float>(yawImpulseSign) * localSpeed * masterModalData->collisionDampingB;
+        (float)(yawImpulseSign) * localSpeed * masterModalData->collisionDampingB;
 
     if (saveState != (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         return;
@@ -5568,12 +5568,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EnterDestroyedState(
             }
 
             HitOwnerOrContextPartial *const hitOwner =
-                static_cast<HitOwnerOrContextPartial *>(ownerOrCtx);
+                (HitOwnerOrContextPartial *)(ownerOrCtx);
             if (hitOwner != 0 && hitOwner->ownerLink != 0 &&
                 hitOwner->ownerLink->ownerSaveState != 0) {
                 GameNet::SendPkt08_PlayerKillEvent(
                     hitOwner->ownerLink->ownerSaveState,
-                    static_cast<short>(killEventContext->ordinalIndex));
+                    (short)(killEventContext->ordinalIndex));
             } else {
                 GameNet::SendPkt08_PlayerKillEvent(saveState, 0);
             }
@@ -5767,7 +5767,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HitCallback_RecordContextAndTimedStatus(
 
     if (ownerOrCtx != 0) {
         HitOwnerOrContextPartial *const hitOwner =
-            static_cast<HitOwnerOrContextPartial *>(ownerOrCtx);
+            (HitOwnerOrContextPartial *)(ownerOrCtx);
         HitOwnerSaveStateLinkPartial *const ownerLink = hitOwner->ownerLink;
         if (ownerLink != 0 && ownerLink->ownerSaveState == saveState) {
             return 0;
@@ -6561,7 +6561,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickActiveCameraState(zUtil_SaveGameState *
         const float dirY = targetWorldPos.y - activeCameraTarget.y;
         const float dirZ = targetWorldPos.z - activeCameraTarget.z;
         const float invLength =
-            1.0f / static_cast<float>(sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ));
+            1.0f / (float)(sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ));
         playerState->cameraDirFlat.z = dirZ * invLength;
         playerState->cameraDirFlat.x = dirX * invLength;
         playerState->cameraDirFlat.y = dirY * invLength;
@@ -6637,7 +6637,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
     } else if (zOpt::GetSteeringMode() != 0) {
         if (zOpt::GetCursorMode() != 0) {
             if (playerState->cursorDeltaX == 0.0f && mouseState.deltaX != 0) {
-                yawDelta = static_cast<float>(mouseState.deltaX) * g_Player_MousePushX;
+                yawDelta = (float)(mouseState.deltaX) * g_Player_MousePushX;
             }
         } else if (playerState->cursorNormX > cameraZone) {
             yawDelta = (playerState->cursorNormX - cameraZone) * cameraZoneInvRange *
@@ -6650,11 +6650,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
     playerState->thirdPersonYawOffset += yawDelta;
 
     const float invertedCameraZoneInvRange = -cameraZoneInvRange;
-    if (static_cast<float>(fabs(playerState->localVel.z)) < kVerticalSpeedCameraInputCutoff) {
+    if ((float)(fabs(playerState->localVel.z)) < kVerticalSpeedCameraInputCutoff) {
         float elevationDelta = 0.0f;
         if (zOpt::GetCursorMode() != 0) {
             if (playerState->cursorDeltaY == 0.0f && mouseState.deltaY != 0) {
-                elevationDelta = static_cast<float>(mouseState.deltaY) * g_Player_MousePushY;
+                elevationDelta = (float)(mouseState.deltaY) * g_Player_MousePushY;
             }
         } else if (playerState->cursorNormY > cameraZone) {
             elevationDelta = (playerState->cursorNormY - cameraZone) *
@@ -6672,11 +6672,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
     const float thirdPersonBaseYOffset = playerState->thirdPersonBaseYOffset;
     const float cameraDistance = playerState->cameraDistance;
 
-    const float horizontalProjectileSpeed = static_cast<float>(
+    const float horizontalProjectileSpeed = (float)(
         sqrt(playerState->projectileSpawnVel.x * playerState->projectileSpawnVel.x +
              playerState->projectileSpawnVel.z * playerState->projectileSpawnVel.z));
     const float speedSwingFactor = PlayerFloatFromBits(
-        static_cast<int>(horizontalProjectileSpeed * kCameraVelocitySwingScale *
+        (int)(horizontalProjectileSpeed * kCameraVelocitySwingScale *
                          12102200.0f) +
         0x3f800000);
     float maxElevationOffset = masterCommonData->cameraUdSwing[0] * speedSwingFactor;
@@ -6695,22 +6695,22 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
                                       ? g_Player_CameraHeadingLerpBaseWhenFlagSet
                                       : g_Player_CameraHeadingLerpBaseWhenFlagClear;
     const float headingBlend = PlayerFloatFromBits(
-        static_cast<int>(-(headingLerpBase +
+        (int)(-(headingLerpBase +
                            1.0f / (g_Player_CameraHeadingDotAbs +
                                    kCameraHeadingDotEpsilon)) *
                          g_FrameDeltaTimeSec * 12102200.0f) +
         0x3f800000);
     zVec3 flatSteerBasis = playerState->steerBasisNorm;
     zMath::Vec3LerpNormalize(&playerState->cameraDirFlat, &flatSteerBasis, headingBlend);
-    g_Player_CameraHeadingDotAbs = static_cast<float>(
+    g_Player_CameraHeadingDotAbs = (float)(
         fabs(playerState->steerBasisNorm.x * playerState->cameraDirFlat.x +
              playerState->steerBasisNorm.z * playerState->cameraDirFlat.z));
 
     float cameraDirX = playerState->cameraDirFlat.x;
     float cameraDirZ = playerState->cameraDirFlat.z;
     if (playerState->thirdPersonYawOffset != 0.0f) {
-        const float yawSin = static_cast<float>(sin(playerState->thirdPersonYawOffset));
-        const float yawCos = static_cast<float>(cos(playerState->thirdPersonYawOffset));
+        const float yawSin = (float)(sin(playerState->thirdPersonYawOffset));
+        const float yawCos = (float)(cos(playerState->thirdPersonYawOffset));
         cameraDirX =
             yawCos * playerState->cameraDirFlat.x - yawSin * playerState->cameraDirFlat.z;
         cameraDirZ =
@@ -6723,7 +6723,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
     }
 
     const float distanceBlend = PlayerFloatFromBits(
-        static_cast<int>(g_FrameDeltaTimeSec * kCameraDistanceDampingRate * 12102200.0f) +
+        (int)(g_FrameDeltaTimeSec * kCameraDistanceDampingRate * 12102200.0f) +
         0x3f800000);
     playerState->cameraTargetDistance =
         (1.0f - distanceBlend) * targetDistance +
@@ -6739,7 +6739,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
                                   ? kTrackYOffsetDampingRate
                                   : kNonTrackYOffsetDampingRate;
     const float yOffsetBlend = PlayerFloatFromBits(
-        static_cast<int>(-yOffsetRate * g_FrameDeltaTimeSec * 12102200.0f) +
+        (int)(-yOffsetRate * g_FrameDeltaTimeSec * 12102200.0f) +
         0x3f800000);
     const float yOffsetInvBlend = 1.0f - yOffsetBlend;
     float targetYOffset =
@@ -6770,7 +6770,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
     const float dirY = focusPos.y - cameraPos.y;
     const float dirZ = focusPos.z - cameraPos.z;
     const float invDirLength =
-        1.0f / static_cast<float>(sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ));
+        1.0f / (float)(sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ));
     playerState->cameraDirNext.z = dirZ * invDirLength;
     playerState->cameraDirNext.x = dirX * invDirLength;
     playerState->cameraDirNext.y = dirY * invDirLength;
@@ -6826,7 +6826,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateFirstPersonCameraFromInput(
         zInput::MouseStateSnapshot mouseState = *zInput::Mouse_GetStateSnapshotPtr();
         if (playerState->cursorDeltaY == 0.0f && mouseState.deltaY != 0) {
             playerState->cameraElevationOffset -=
-                static_cast<float>(mouseState.deltaY) * g_Player_MousePushY;
+                (float)(mouseState.deltaY) * g_Player_MousePushY;
         }
     } else if (playerState->cursorNormY > cameraZone) {
         playerState->cameraElevationOffset +=
@@ -6841,14 +6841,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateFirstPersonCameraFromInput(
     float elevationMin = g_Player_FpCamElevationMin;
     float elevationMax = g_Player_FpCamElevationMax;
     const float forwardSpeed =
-        static_cast<float>(sqrt(playerState->projectileSpawnVel.x *
+        (float)(sqrt(playerState->projectileSpawnVel.x *
                                     playerState->projectileSpawnVel.x +
                                 playerState->projectileSpawnVel.z *
                                     playerState->projectileSpawnVel.z));
     const float speedOverThreshold = forwardSpeed - kForwardSpeedClampThreshold;
     if (speedOverThreshold > 0.0f) {
         const float elevationScale = PlayerFloatFromBits(
-            static_cast<int>(speedOverThreshold * kForwardSpeedClampScale * 12102200.0f) +
+            (int)(speedOverThreshold * kForwardSpeedClampScale * 12102200.0f) +
             0x3f800000);
         elevationMin *= elevationScale;
         elevationMax *= elevationScale;
@@ -6906,7 +6906,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraFromStoredTargetTowardPlayer(
     const float dirY = lookAt.y - cameraTarget.y;
     const float dirZ = lookAt.z - cameraTarget.z;
     const float invDirLength =
-        1.0f / static_cast<float>(sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ));
+        1.0f / (float)(sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ));
     playerState->cameraDirNext.z = dirZ * invDirLength;
     playerState->cameraDirNext.x = dirX * invDirLength;
     playerState->cameraDirNext.y = dirY * invDirLength;
@@ -7003,24 +7003,24 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickLocalPlayerControls(zUtil_SaveGameState
             playerState->cursorDeltaX = 0.0f;
             playerState->cursorDeltaY = 0.0f;
             playerState->cursorNormX =
-                static_cast<float>(joyState->lX) * g_zInput_JoystickAxisConfig_Gameplay.axes[0].normScale;
+                (float)(joyState->lX) * g_zInput_JoystickAxisConfig_Gameplay.axes[0].normScale;
             playerState->cursorNormY =
-                static_cast<float>(-joyState->lY) * g_zInput_JoystickAxisConfig_Gameplay.axes[1].normScale;
+                (float)(-joyState->lY) * g_zInput_JoystickAxisConfig_Gameplay.axes[1].normScale;
         } else {
             playerState->cursorNormX = 0.0f;
             const float joyCursorY =
-                static_cast<float>(-joyState->lY) * g_zInput_JoystickAxisConfig_Gameplay.axes[1].normScale;
+                (float)(-joyState->lY) * g_zInput_JoystickAxisConfig_Gameplay.axes[1].normScale;
             const float cursorBlend =
-                PlayerFloatFromBits(static_cast<int>(g_Player_DeltaTime * -3.2f * 12102200.0f) +
+                PlayerFloatFromBits((int)(g_Player_DeltaTime * -3.2f * 12102200.0f) +
                                     0x3f800000);
             playerState->cursorNormY =
                 cursorBlend * playerState->cursorNormY + (1.0f - cursorBlend) * joyCursorY;
             playerState->steeringInput =
-                static_cast<float>(-joyState->lX) * g_zInput_JoystickAxisConfig_Gameplay.axes[0].normScale;
+                (float)(-joyState->lX) * g_zInput_JoystickAxisConfig_Gameplay.axes[0].normScale;
             playerState->throttleInput =
-                static_cast<float>(-joyState->lZ) * g_zInput_JoystickAxisConfig_Gameplay.axes[2].normScale;
+                (float)(-joyState->lZ) * g_zInput_JoystickAxisConfig_Gameplay.axes[2].normScale;
             playerState->joyCameraYawInput =
-                static_cast<float>(joyState->lRz) * g_zInput_JoystickAxisConfig_Gameplay.axes[3].normScale;
+                (float)(joyState->lRz) * g_zInput_JoystickAxisConfig_Gameplay.axes[3].normScale;
         }
     } else if ((g_Player_RuntimeInputFlags & 2) != 0) {
         zInput::Mouse_GetStateSnapshot(&mouseState);
@@ -7068,7 +7068,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickLocalPlayerControls(zUtil_SaveGameState
             }
         } else if (playerState->cursorDeltaX == 0.0f && mouseState.deltaX != 0) {
             playerState->steeringInput =
-                static_cast<float>(-mouseState.deltaX) * g_Player_GameplayInputStepScale;
+                (float)(-mouseState.deltaX) * g_Player_GameplayInputStepScale;
         }
     }
 
@@ -7082,7 +7082,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickLocalPlayerControls(zUtil_SaveGameState
 
     playerState->subPitchInput = 0.0f;
     if (masterModalData->masterType == kPlayerMasterTypeSub &&
-        static_cast<float>(fabs(playerState->localVel.z)) >= 10.0f) {
+        (float)(fabs(playerState->localVel.z)) >= 10.0f) {
         if (playerState->cursorNormY > g_Player_CameraZone) {
             playerState->subPitchInput =
                 (playerState->cursorNormY - g_Player_CameraZone) *
@@ -7269,7 +7269,7 @@ UpdateAutoTurnAndSteerFromTarget(zUtil_SaveGameState *saveState) {
     if (playerState->steeringInput == 0.0f) {
         float dampingScale = masterModalData->yawDamping * g_Player_DeltaTime;
         dampingScale = -dampingScale;
-        int dampingBits = static_cast<int>(dampingScale * 12102200.0f);
+        int dampingBits = (int)(dampingScale * 12102200.0f);
         const int dampingFloatBits = dampingBits + 0x3f800000;
 
         float dampingFactor = 0.0f;
@@ -7303,7 +7303,7 @@ IntegrateYawAndWrapFromYawVelocity(zUtil_SaveGameState *saveState) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
 
     if (playerState->autoTurnActive != 0) {
-        playerState->restartYawRad = static_cast<float>(
+        playerState->restartYawRad = (float)(
             atan2(-playerState->autoTurnTargetDir.z, -playerState->autoTurnTargetDir.x));
         playerState->steeringInput = 0.0f;
         playerState->angVelYaw = 0.0f;
@@ -7366,7 +7366,7 @@ ApplyAmphibSpeedOscillation(zUtil_SaveGameState *saveState, zVec3 *inOutUpVector
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerMasterModalData *const masterModalData = saveState->primaryModalState->masterModalData;
 
-    const float speedAbs = static_cast<float>(fabs(playerState->localVel.z));
+    const float speedAbs = (float)(fabs(playerState->localVel.z));
     const float pitchArg =
         (masterModalData->hoverPitchWaveSpeedRate * speedAbs +
          masterModalData->hoverPitchWaveBaseRate) *
@@ -7377,9 +7377,9 @@ ApplyAmphibSpeedOscillation(zUtil_SaveGameState *saveState, zVec3 *inOutUpVector
         g_Time_AccumulatedTimeSec;
 
     const float pitchAngle =
-        static_cast<float>(sin(pitchArg)) * masterModalData->hoverPitchWaveAmplitude;
+        (float)(sin(pitchArg)) * masterModalData->hoverPitchWaveAmplitude;
     float rollAngle =
-        static_cast<float>(sin(rollArg)) * masterModalData->hoverRollWaveAmplitude;
+        (float)(sin(rollArg)) * masterModalData->hoverRollWaveAmplitude;
     if (includeYawCoupling != 0) {
         rollAngle += playerState->angVelYaw * masterModalData->hoverRollYawCoupleScale *
                      playerState->localVel.z;
@@ -7387,10 +7387,10 @@ ApplyAmphibSpeedOscillation(zUtil_SaveGameState *saveState, zVec3 *inOutUpVector
 
     const float yawSin = -playerState->steerBasisNorm.x;
     const float yawCos = -playerState->steerBasisNorm.z;
-    const float pitchSin = static_cast<float>(sin(pitchAngle));
-    const float pitchCos = static_cast<float>(cos(pitchAngle));
-    const float rollSin = static_cast<float>(sin(rollAngle));
-    const float rollCos = static_cast<float>(cos(rollAngle));
+    const float pitchSin = (float)(sin(pitchAngle));
+    const float pitchCos = (float)(cos(pitchAngle));
+    const float rollSin = (float)(sin(rollAngle));
+    const float rollCos = (float)(cos(rollAngle));
 
     zMat4x3 oscillationBasis = {0};
     oscillationBasis.xx = yawSin * pitchSin * rollSin + rollCos * yawCos;
@@ -7470,9 +7470,9 @@ RebuildSteerBasisFromMotionAxes(zUtil_SaveGameState *saveState) {
                         playerState->autoTurnTargetDir.z * playerState->steerBasisNorm.x;
     const float dot = playerState->steerBasisNorm.z * playerState->autoTurnTargetDir.z +
                       playerState->autoTurnTargetDir.x * playerState->steerBasisNorm.x;
-    if (dot < static_cast<float>(cos(g_Player_DeltaTime * masterModalData->yawRateMax))) {
+    if (dot < (float)(cos(g_Player_DeltaTime * masterModalData->yawRateMax))) {
         const int turnSign = cross < 0.0f ? -1 : 1;
-        const float turnSignFloat = static_cast<float>(turnSign);
+        const float turnSignFloat = (float)(turnSign);
         playerState->steeringInput = turnSignFloat;
         playerState->steeringInputCopy = turnSignFloat;
         playerState->angVelYaw = turnSignFloat * masterModalData->yawRateMax;
@@ -7486,7 +7486,7 @@ RebuildSteerBasisFromMotionAxes(zUtil_SaveGameState *saveState) {
             zInput::Mouse_SetNormalizedCursorPos(normalizedCursor.x, normalizedCursor.y);
 
             const int lerpBits =
-                static_cast<int>(g_FrameDeltaTimeSec * -2.0f * 12102200.0f) + 0x3f800000;
+                (int)(g_FrameDeltaTimeSec * -2.0f * 12102200.0f) + 0x3f800000;
             float lerpFactor = 0.0f;
             memcpy(&lerpFactor, &lerpBits, sizeof(lerpFactor));
             zMath::Vec3Lerp(&playerState->cameraLerpStart, &playerState->cameraLerpEnd,
@@ -7506,7 +7506,7 @@ RebuildSteerBasisFromMotionAxes(zUtil_SaveGameState *saveState) {
         zInput::Mouse_RecenterCursorX();
     }
 
-    playerState->restartYawRad = static_cast<float>(
+    playerState->restartYawRad = (float)(
         atan2(-playerState->autoTurnTargetDir.z, -playerState->autoTurnTargetDir.x));
     playerState->autoTurnActive = 0;
     playerState->steeringInputCopy = 0.0f;
@@ -7701,13 +7701,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RecordNodeFlagsForRestore(zClass_NodePartia
     PlayerNodeFlagRestoreEntry *begin = g_PlayerNodeFlagRestoreEntriesBegin;
     PlayerNodeFlagRestoreEntry *end = g_PlayerNodeFlagRestoreEntriesEnd;
     PlayerNodeFlagRestoreEntry *capacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
-    const int count = begin != 0 ? static_cast<int>(end - begin) : 0;
-    const int capacity = begin != 0 ? static_cast<int>(capacityEnd - begin) : 0;
+    const int count = begin != 0 ? (int)(end - begin) : 0;
+    const int capacity = begin != 0 ? (int)(capacityEnd - begin) : 0;
 
     if (count >= capacity) {
         const int newCapacity = count <= 1 ? count + 1 : count * 2;
         PlayerNodeFlagRestoreEntry *const newBegin =
-            static_cast<PlayerNodeFlagRestoreEntry *>(
+            (PlayerNodeFlagRestoreEntry *)(
                 ::operator new(sizeof(PlayerNodeFlagRestoreEntry) * newCapacity));
 
         for (int i = 0; i < count; ++i) {
@@ -8068,9 +8068,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateDebugOverlayHud(zUtil_SaveGameState *
 
     HudUiAuxOverlay::UpdateTextLine(2, 1, debugLine);
 
-    sprintf(debugLine, "POS %d %d %d YAW %d", static_cast<int>(playerState->worldPos.x),
-            static_cast<int>(playerState->worldPos.y), static_cast<int>(playerState->worldPos.z),
-            static_cast<int>(static_cast<double>(playerState->restartYawRad) *
+    sprintf(debugLine, "POS %d %d %d YAW %d", (int)(playerState->worldPos.x),
+            (int)(playerState->worldPos.y), (int)(playerState->worldPos.z),
+            (int)((double)(playerState->restartYawRad) *
                              kPlayerRadiansToDegrees));
     HudUiAuxOverlay::UpdateTextLine(2, 2, debugLine);
 }
@@ -8181,7 +8181,7 @@ UpdateStatusMeter(zUtil_SaveGameState *saveState, int mode, float delta) {
 
     char message[64];
     const int percentGain =
-        static_cast<int>((g_PlayerStatusMeterRatio - oldStatusMeterRatio) * 100.0f);
+        (int)((g_PlayerStatusMeterRatio - oldStatusMeterRatio) * 100.0f);
     zLoc::FormatMessage(message, sizeof(message), 0x903, percentGain);
     HudUi::ShowTopMessageLine(message, 5.0f);
     return 1;
@@ -8458,13 +8458,13 @@ UpdateBankAndTurnDynamics(zUtil_SaveGameState *saveState) {
         }
 
         const int sign = slipDelta < 0.0f ? -1 : 1;
-        residual = slipDelta - static_cast<float>(sign) * masterModalData->frictionStatic;
+        residual = slipDelta - (float)(sign) * masterModalData->frictionStatic;
         StartSlipSfx(saveState);
         return residual;
     }
 
     residual = slipDelta -
-               static_cast<float>(FloatSign(playerState->localVel.x)) *
+               (float)(FloatSign(playerState->localVel.x)) *
                    masterModalData->frictionDynamic;
 
     if (playerState->throttleInputCopy != 0.0f &&
@@ -8621,11 +8621,11 @@ UpdateSubModeWaterProbeState(zUtil_SaveGameState *saveState) {
     }
 
     const float rollDampingFactor =
-        PlayerFloatFromBits(static_cast<int>(-g_Player_DeltaTime * 12102200.0f) +
+        PlayerFloatFromBits((int)(-g_Player_DeltaTime * 12102200.0f) +
                             0x3f800000);
     playerState->angVelRoll = -(rollDampingFactor * playerState->vehicleRollRad);
 
-    const float speedAbs = static_cast<float>(fabs(playerState->localVel.z));
+    const float speedAbs = (float)(fabs(playerState->localVel.z));
     const float pitchWaveRate =
         speedAbs * masterModalData->hoverPitchWaveSpeedRate +
         masterModalData->hoverPitchWaveBaseRate;
@@ -8633,10 +8633,10 @@ UpdateSubModeWaterProbeState(zUtil_SaveGameState *saveState) {
         speedAbs * masterModalData->hoverRollWaveSpeedRate +
         masterModalData->hoverRollWaveBaseRate;
     const float pitchBobDelta =
-        static_cast<float>(sin(pitchWaveRate * g_Time_AccumulatedTimeSec)) *
+        (float)(sin(pitchWaveRate * g_Time_AccumulatedTimeSec)) *
         masterModalData->hoverPitchWaveAmplitude;
     const float rollBobDelta =
-        static_cast<float>(sin(rollWaveRate * g_Time_AccumulatedTimeSec)) *
+        (float)(sin(rollWaveRate * g_Time_AccumulatedTimeSec)) *
         masterModalData->hoverRollWaveAmplitude;
 
     playerState->vehiclePitchRad += g_Player_DeltaTime * pitchBobDelta;
@@ -8692,7 +8692,7 @@ UpdateSubVerticalDamping(zUtil_SaveGameState *saveState) {
             g_Time_AccumulatedTimeSec < playerState->primaryGunGateUntilTime ? 2.0f : 10.0f;
         float dampingScale = dampingRate * g_Player_DeltaTime;
         dampingScale = -dampingScale;
-        int dampingBits = static_cast<int>(dampingScale * 12102200.0f);
+        int dampingBits = (int)(dampingScale * 12102200.0f);
         const int dampingFloatBits = dampingBits + 0x3f800000;
 
         float dampingFactor = 0.0f;
@@ -8725,7 +8725,7 @@ UpdateYawVelocityFromSteerInput(zUtil_SaveGameState *saveState) {
     if (playerState->throttleInput != 0.0f) {
         float dampingScale = masterModalData->rateDampingDecel * g_Player_DeltaTime;
         dampingScale = -dampingScale;
-        int dampingBits = static_cast<int>(dampingScale * 12102200.0f);
+        int dampingBits = (int)(dampingScale * 12102200.0f);
         const int dampingFloatBits = dampingBits + 0x3f800000;
 
         float dampingFactor = 0.0f;
@@ -8736,7 +8736,7 @@ UpdateYawVelocityFromSteerInput(zUtil_SaveGameState *saveState) {
             (playerState->throttleInputCopy < 0.0f && playerState->localVel.z < 0.0f)) {
             float dampingScale = masterModalData->rateDampingDecel * g_Player_DeltaTime;
             dampingScale = -dampingScale;
-            int dampingBits = static_cast<int>(dampingScale * 12102200.0f);
+            int dampingBits = (int)(dampingScale * 12102200.0f);
             const int dampingFloatBits = dampingBits + 0x3f800000;
 
             float dampingFactor = 0.0f;
@@ -8746,7 +8746,7 @@ UpdateYawVelocityFromSteerInput(zUtil_SaveGameState *saveState) {
 
         playerState->localVel.z -=
             masterModalData->accelRate * g_Player_DeltaTime * playerState->throttleInputCopy;
-        const float velocityLimit = static_cast<float>(fabs(playerState->throttleInputCopy)) *
+        const float velocityLimit = (float)(fabs(playerState->throttleInputCopy)) *
                                     playerState->axisClampRuntime;
         if (playerState->localVel.z > velocityLimit) {
             playerState->localVel.z = velocityLimit;
@@ -8780,7 +8780,7 @@ UpdateYawVelocityFromSteerInput(zUtil_SaveGameState *saveState) {
     if (playerState->localVel.x != 0.0f) {
         float dampingScale = masterModalData->rateDampingAccel * g_Player_DeltaTime;
         dampingScale = -dampingScale;
-        int dampingBits = static_cast<int>(dampingScale * 12102200.0f);
+        int dampingBits = (int)(dampingScale * 12102200.0f);
         const int dampingFloatBits = dampingBits + 0x3f800000;
 
         float dampingFactor = 0.0f;
@@ -9108,7 +9108,7 @@ UpdateMasterTypeTrack(zUtil_SaveGameState *saveState) {
     if (primaryModalState->nodeRTracks != 0) {
         const float rightTrackSpeed =
             -playerState->localVel.z - playerState->angVelYaw * -2.25f;
-        const float rightTrackSpeedAbs = static_cast<float>(fabs(rightTrackSpeed));
+        const float rightTrackSpeedAbs = (float)(fabs(rightTrackSpeed));
         int variantIndex = 0;
         if (rightTrackSpeedAbs >= playerState->masterCommonData->trackSwitchDist2) {
             variantIndex = 3;
@@ -9147,7 +9147,7 @@ UpdateMasterTypeTrack(zUtil_SaveGameState *saveState) {
                                                 0.0f);
         } else {
             const float dustScale =
-                static_cast<float>(fabs(playerState->localVel.z)) /
+                (float)(fabs(playerState->localVel.z)) /
                 playerState->axisClampRuntime;
             zClass_Object3D::gwObject3DSetScale(primaryModalState->nodeDustL, dustScale,
                                                 dustScale, dustScale);
@@ -9471,8 +9471,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HandleAltWeaponBankSelectInput(int inputCod
     }
 
     zUtil_PlayerStateStorage *const displayPlayerState =
-        static_cast<zUtil_PlayerStateStorage *>(
-            static_cast<void *>(g_GameStateOrMapTable->playerState));
+        (zUtil_PlayerStateStorage *)(
+            (void *)(g_GameStateOrMapTable->playerState));
     PlayerGunFireController *const activeController =
         displayPlayerState->activeAltGunController;
     HudUiMessage::UpdateSelectedWeaponDisplay(
@@ -9514,8 +9514,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HandlePrimaryWeaponVariantToggleInput(int k
     HudUi::ShowTopMessageLine(newController->optCatalogEntry->description, 5.0f);
 
     zUtil_PlayerStateStorage *const displayPlayerState =
-        static_cast<zUtil_PlayerStateStorage *>(
-            static_cast<void *>(g_GameStateOrMapTable->playerState));
+        (zUtil_PlayerStateStorage *)(
+            (void *)(g_GameStateOrMapTable->playerState));
     PlayerGunFireController *const activeController =
         displayPlayerState->activePrimaryGunController;
     HudUiMessage::UpdateSelectedWeaponDisplay(
@@ -9725,7 +9725,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateThirdPersonCamera(zUtil_SaveGameState
         playerState->autoTurnTargetWorldPos.z - cameraTarget.z,
     };
     const float invLength =
-        1.0f / static_cast<float>(sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z));
+        1.0f / (float)(sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z));
     playerState->cameraDirNext.x = dir.x * invLength;
     playerState->cameraDirNext.y = dir.y * invLength;
     playerState->cameraDirNext.z = dir.z * invLength;
@@ -9877,7 +9877,7 @@ RECOIL_NOINLINE float RECOIL_FASTCALL SelectProbeSampleHeightFromCandidates(
             }
         }
 
-        const float absDelta = static_cast<float>(fabs(candidateHeight - sampleHeight));
+        const float absDelta = (float)(fabs(candidateHeight - sampleHeight));
         if (absDelta < bestAbsDelta) {
             bestAbsDelta = absDelta;
             nearestFallbackHeight = candidateHeight;
@@ -9910,7 +9910,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProbeModalSampleHeights(
     int *outAttachmentCandidateCount, zClass_NodePartial **outAttachmentNode) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     zUtil_PlayerStateStorage *const globalPlayerState =
-        static_cast<zUtil_PlayerStateStorage *>(static_cast<void *>(g_GameStateOrMapTable->playerState));
+        (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
     PlayerMasterModalData *const masterModalData = primaryModalState->masterModalData;
 
@@ -9999,7 +9999,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProbeModalSampleHeights(
             if (candidateNode != 0 && candidateNode->auxFlags != 0) {
                 *outAttachmentCandidateCount += 1;
                 *outAttachmentNode =
-                    static_cast<zClass_NodePartial *>(candidateNode->callbackContext);
+                    (zClass_NodePartial *)(candidateNode->callbackContext);
             }
         }
     }
@@ -10037,7 +10037,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildEnvironmentProbeResult(
     }
 
     zUtil_PlayerStateStorage *const globalPlayerState =
-        static_cast<zUtil_PlayerStateStorage *>(static_cast<void *>(g_GameStateOrMapTable->playerState));
+        (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
     zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 0);
     zClass_Class::gwNodeSetCellPickable(globalPlayerState->rootNode, 0);
 
@@ -10101,7 +10101,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildEnvironmentProbeResult(
             if (candidateNode != 0 && candidateNode->auxFlags != 0) {
                 outProbe->attachmentCandidateCount += 1;
                 outProbe->attachmentNode =
-                    static_cast<zClass_NodePartial *>(candidateNode->callbackContext);
+                    (zClass_NodePartial *)(candidateNode->callbackContext);
             }
         }
 
@@ -10224,7 +10224,7 @@ ApplyEnvironmentProbeResult(zUtil_SaveGameState *saveState, PlayerEnvProbeResult
         playerState->yawVelocityLimit =
             masterModalData->yawRateMax * masterModalData->lavaSlowdown;
         const float damage =
-            static_cast<float>(envProbe->hitHistogram.countByImpactSlot[4]) *
+            (float)(envProbe->hitHistogram.countByImpactSlot[4]) *
             g_Player_DeltaTime * 12.0f;
         if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
             EnterDestroyedState(saveState, g_Player_MakeHotOptEntry, 0, damage);
@@ -10274,7 +10274,7 @@ ResetTerrainContactImpulsesAndPlayImpactSfx(zUtil_SaveGameState *saveState) {
         return;
     }
 
-    float sfxVolume = static_cast<float>(fabs(playerState->projectileSpawnVel.y * 0.100000001f));
+    float sfxVolume = (float)(fabs(playerState->projectileSpawnVel.y * 0.100000001f));
     if (sfxVolume > 1.0f) {
         sfxVolume = 1.0f;
     } else if (sfxVolume < 0.0f) {
@@ -10659,7 +10659,7 @@ ProcessEnvProbeResults(zUtil_SaveGameState *saveState, PlayerEnvProbeResult *pro
                                                        : unclampedPitchRecoveryVel;
         const float targetRollRecoveryVel = playerState->vehicleRollRad * -0.699999988f;
         const float previousAngularVelocityBlendWeight =
-            PlayerFloatFromBits(static_cast<int>(-saveState->primaryModalState->masterModalData
+            PlayerFloatFromBits((int)(-saveState->primaryModalState->masterModalData
                                                       ->aDamping *
                                                   g_Player_DeltaTime * 12102200.0f) +
                                 0x3f800000);
@@ -10718,8 +10718,8 @@ RebuildOrientationFromNormal(zUtil_SaveGameState *saveState) {
     zVec3 yawRelativeNormal = {0};
     zMath::Vec3RotateY(&yawRelativeNormal, &playerState->steerBasisRef,
                        -playerState->restartYawRad);
-    playerState->vehiclePitchRad = static_cast<float>(asin(yawRelativeNormal.z));
-    playerState->vehicleRollRad = static_cast<float>(asin(-yawRelativeNormal.x));
+    playerState->vehiclePitchRad = (float)(asin(yawRelativeNormal.z));
+    playerState->vehicleRollRad = (float)(asin(-yawRelativeNormal.x));
     zMath::MatBuildEulerRotation3x3(&playerState->motionBasis, playerState->vehiclePitchRad,
                                     playerState->restartYawRad, playerState->vehicleRollRad);
     playerState->motionBasis.posX = playerState->worldPos.x;
@@ -10825,7 +10825,7 @@ UpdateVerticalVelocityAndTransform(zUtil_SaveGameState *saveState,
         playerState->projectileSpawnVel.y = measuredFrameDeltaY;
     } else {
         const float previousVerticalVelocityBlendWeight =
-            PlayerFloatFromBits(static_cast<int>(g_Player_DeltaTime * -5.0f * 12102200.0f) +
+            PlayerFloatFromBits((int)(g_Player_DeltaTime * -5.0f * 12102200.0f) +
                                 0x3f800000);
         playerState->projectileSpawnVel.y =
             previousVerticalVelocityBlendWeight * playerState->projectileSpawnVel.y +
@@ -10960,7 +10960,7 @@ UpdateMasterTypeHover_FromModalProbe(zUtil_SaveGameState *saveState) {
         TransformWorldVectorToLocal(playerState->projectileSpawnVel, playerState->motionBasis);
 
     const int normalLerpBits =
-        static_cast<int>(masterModalData->hoverNormalLerpRate * g_FrameDeltaTimeSec *
+        (int)(masterModalData->hoverNormalLerpRate * g_FrameDeltaTimeSec *
                          12102200.0f) +
         0x3f800000;
     zMath::Vec3LerpNormalize(&playerState->steerBasisRef, &probePlaneNormal,
@@ -10993,7 +10993,7 @@ UpdateMasterTypeHover_FromModalProbe(zUtil_SaveGameState *saveState) {
     }
 
     const int liftDampingBits =
-        static_cast<int>(masterModalData->hoverLiftDampingRate * g_Player_DeltaTime *
+        (int)(masterModalData->hoverLiftDampingRate * g_Player_DeltaTime *
                          12102200.0f) +
         0x3f800000;
     const float liftDamping = PlayerFloatFromBits(liftDampingBits);
@@ -11018,10 +11018,10 @@ UpdateMasterTypeHover_FromModalProbe(zUtil_SaveGameState *saveState) {
     zVec3 yawRelativeNormal = {0};
     zMath::Vec3RotateY(&yawRelativeNormal, &playerState->steerBasisRef,
                        -playerState->restartYawRad);
-    playerState->vehiclePitchRad = static_cast<float>(asin(yawRelativeNormal.z));
-    playerState->vehicleRollRad = static_cast<float>(asin(-yawRelativeNormal.x));
+    playerState->vehiclePitchRad = (float)(asin(yawRelativeNormal.z));
+    playerState->vehicleRollRad = (float)(asin(-yawRelativeNormal.x));
 
-    const float speedAbs = static_cast<float>(fabs(playerState->localVel.z));
+    const float speedAbs = (float)(fabs(playerState->localVel.z));
     const float pitchWaveArg =
         (masterModalData->hoverPitchWaveSpeedRate * speedAbs +
          masterModalData->hoverPitchWaveBaseRate) *
@@ -11031,9 +11031,9 @@ UpdateMasterTypeHover_FromModalProbe(zUtil_SaveGameState *saveState) {
          masterModalData->hoverRollWaveBaseRate) *
         g_Time_AccumulatedTimeSec;
     const float pitchWave =
-        static_cast<float>(sin(pitchWaveArg)) * masterModalData->hoverPitchWaveAmplitude;
+        (float)(sin(pitchWaveArg)) * masterModalData->hoverPitchWaveAmplitude;
     const float rollWave =
-        static_cast<float>(sin(rollWaveArg)) * masterModalData->hoverRollWaveAmplitude +
+        (float)(sin(rollWaveArg)) * masterModalData->hoverRollWaveAmplitude +
         masterModalData->hoverRollYawCoupleScale * playerState->angVelYaw *
             playerState->localVel.z;
     playerState->vehiclePitchRad += g_Player_DeltaTime * pitchWave;
@@ -11093,7 +11093,7 @@ UpdateMasterTypeAmphib_FromModalProbe(zUtil_SaveGameState *saveState) {
     ApplyAmphibSpeedOscillation(saveState, &amphibUpVector, 1);
 
     const int steerLerpBits =
-        static_cast<int>(-(g_FrameDeltaTimeSec * g_Player_AmphibSteerBasisLerpRate) *
+        (int)(-(g_FrameDeltaTimeSec * g_Player_AmphibSteerBasisLerpRate) *
                          12102200.0f) +
         0x3f800000;
     zMath::Vec3LerpNormalize(&playerState->steerBasisRef, &amphibUpVector,
@@ -11112,8 +11112,8 @@ UpdateMasterTypeAmphib_FromModalProbe(zUtil_SaveGameState *saveState) {
 
     zMath::Vec3RotateY(&amphibUpVector, &playerState->steerBasisRef,
                        -playerState->restartYawRad);
-    playerState->vehiclePitchRad = static_cast<float>(asin(amphibUpVector.z));
-    playerState->vehicleRollRad = static_cast<float>(asin(-amphibUpVector.x));
+    playerState->vehiclePitchRad = (float)(asin(amphibUpVector.z));
+    playerState->vehicleRollRad = (float)(asin(-amphibUpVector.x));
     playerState->vehiclePitchRad = PlayerClampSigned(playerState->vehiclePitchRad, 0.523599982f);
 }
 
@@ -11222,7 +11222,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeAmphib(zUtil_SaveGameState 
 
     if (primaryModalState->nodeWake != 0) {
         const float wakeScale =
-            static_cast<float>(fabs(playerState->localVel.z)) / playerState->axisClampRuntime;
+            (float)(fabs(playerState->localVel.z)) / playerState->axisClampRuntime;
         zClass_Object3D::gwObject3DSetScale(primaryModalState->nodeWake, wakeScale, wakeScale,
                                             wakeScale);
         zClass_Object3D::gwObject3DSetScale(primaryModalState->nodeSplashL, wakeScale,
@@ -11530,7 +11530,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAltGunAimDirection(zUtil_SaveGameStat
     aimDirection.z = playerState->storedTargetPos.z - playerState->aimBasisOrigin.z;
 
     const float aimLength =
-        static_cast<float>(sqrt(aimDirection.x * aimDirection.x +
+        (float)(sqrt(aimDirection.x * aimDirection.x +
                                 aimDirection.y * aimDirection.y +
                                 aimDirection.z * aimDirection.z));
     const float invAimLength = 1.0f / aimLength;
@@ -11571,7 +11571,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAltGunAimDirection(zUtil_SaveGameStat
     }
 
     const int smoothingBits =
-        static_cast<int>(g_FrameDeltaTimeSec * -8.0f * 12102200.0f) + 0x3f800000;
+        (int)(g_FrameDeltaTimeSec * -8.0f * 12102200.0f) + 0x3f800000;
     zMath::Vec3LerpNormalize(&playerState->altGunAimOrigin, &aimDirection,
                              PlayerFloatFromBits(smoothingBits));
     aimDirection = playerState->altGunAimOrigin;
@@ -11626,7 +11626,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ComposeAimBasisWorldMatrix(zUtil_SaveGameSt
 RECOIL_NOINLINE void RECOIL_FASTCALL DecayAndApplyAltFireSlotOffsetToNode(
     PlayerGunFireSlot *slot, zClass_NodePartial *slotNode, float slotAimY, int applyMatrix) {
     const int dampingBits =
-        static_cast<int>(g_FrameDeltaTimeSec * -8.09f * 12102200.0f) + 0x3f800000;
+        (int)(g_FrameDeltaTimeSec * -8.09f * 12102200.0f) + 0x3f800000;
     slot->offset *= PlayerFloatFromBits(dampingBits);
     if (fabsf(slot->offset) < 0.01f) {
         slot->offset = 0.0f;
@@ -11825,7 +11825,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EnsureGunAuxEffectActive(
         spawnDir.z = playerState->storedTargetPos.z - effectPos->z;
 
         const float length =
-            static_cast<float>(sqrt(spawnDir.x * spawnDir.x + spawnDir.y * spawnDir.y +
+            (float)(sqrt(spawnDir.x * spawnDir.x + spawnDir.y * spawnDir.y +
                                     spawnDir.z * spawnDir.z));
         const float invLength = 1.0f / length;
         spawnDir.x *= invLength;
@@ -11916,7 +11916,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AltGunFireSimpleProjectile(zUtil_SaveGameSta
         spawnDir.z = playerState->storedTargetPos.z - playerState->altFireOrigin.z;
 
         const float length =
-            static_cast<float>(sqrt(spawnDir.x * spawnDir.x + spawnDir.y * spawnDir.y +
+            (float)(sqrt(spawnDir.x * spawnDir.x + spawnDir.y * spawnDir.y +
                                     spawnDir.z * spawnDir.z));
         const float invLength = 1.0f / length;
         spawnDir.x *= invLength;

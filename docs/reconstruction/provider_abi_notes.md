@@ -47,9 +47,10 @@ per-target VC verification evidence.
   acceptance.
 - VC verification manifests should compile production source through
   `source_from`.
-- Passing binary-safe verification requires relocation-masked COFF object bytes
-  to match Binary Ninja/original bytes, or an explicitly accepted legacy text
-  target with documented limits.
+- Passing binary-safe verification normally requires relocation-masked COFF
+  object bytes to match Binary Ninja/original bytes. Legacy text comparison is
+  acceptable only for explicitly accepted `compare_mode: text` targets with
+  documented accepted differences.
 - Final executable comparison uses `tools/recoil_vc6_build.py` and
   `tools/recoil_pe_reference.py`, but whole-binary acceptance is expected to
   become useful only when the reconstructed source is substantially complete.

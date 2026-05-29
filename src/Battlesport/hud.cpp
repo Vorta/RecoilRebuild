@@ -1,7 +1,17 @@
 #include "Battlesport/hud.h"
 
+#include "Battlesport/GameNet.h"
+#include "Battlesport/Mfc42Abi.h"
+#include "Battlesport/pickup.h"
+#include "Battlesport/player.h"
+#include "Battlesport/zStr.h"
+#include "GameZRecoil/Time/Time.h"
+#include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zUtil/zSaveGame.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -49,6 +59,11 @@ const float kHudWeatherFxDepthBase = 0.5f;
 const float kHudWeatherFxConeBase = -1.0f;
 const float kHudWeatherFxReflectBias = 1.5f;
 
+enum zVideoRendererBackend
+{
+    ZVID_RENDERER_BACKEND_SOFTWARE = 0,
+};
+
 struct HudUiBackgroundConfirmQuitVirtual
 {
     virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
@@ -60,6 +75,19 @@ struct HudUiBackgroundConfirmQuitVirtual
 struct HudUiBackgroundConfirmQuit_FTable
 {
     unsigned int slots[3];
+};
+
+struct HudUiCheatCodeDialog_FTable
+{
+    unsigned int slots[3];
+};
+
+struct HudUiCheatCodeDialogVirtual
+{
+    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
+    virtual HudUiCheatCodeDialogVirtual *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags) = 0;
 };
 
 RECOIL_NOINLINE void RECOIL_CDECL HudUiConfirmQuitPostLoadNoOp()
@@ -98,6 +126,63 @@ HudUiBackgroundConfirmQuit_FTable MakeConfirmQuitDialogFTable()
     return table;
 }
 
+HudUiZrdWidget_FTable MakeCheatCodeTitleWidgetFTable()
+{
+    HudUiZrdWidget_FTable table = {0};
+    table.slots[0] = HudMethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
+    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
+    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
+    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
+    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
+    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
+    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
+    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
+    table.slots[12] = HudMethodAddress(&HudUiCheatTextInputWidget::OnActivate);
+    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
+    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
+    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
+    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
+    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
+    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
+    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
+    return table;
+}
+
+HudUiNumericTextInput_Base_FTable MakeCheatCodeInputWidgetFTable()
+{
+    HudUiNumericTextInput_Base_FTable table = {0};
+    table.slots[0] = HudMethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructor);
+    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
+    table.slots[2] = HudMethodAddress(&HudUiNumericTextInput::UpdateCaptureUiAndClip);
+    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
+    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
+    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
+    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
+    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
+    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
+    table.slots[12] = HudMethodAddress(&HudUiCheatTextInputWidget::OnActivate);
+    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
+    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
+    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
+    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
+    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
+    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
+    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
+    table.slots[34] = HudMethodAddress(&HudUiNumericTextInput::OnRawKeyboardChar);
+    return table;
+}
+
+HudUiCheatCodeDialog_FTable MakeCheatCodeDialogFTable()
+{
+    HudUiCheatCodeDialog_FTable table = {0};
+    table.slots[0] = HudMethodAddress(&HudUiBackground::Update);
+    table.slots[1] = HudMethodAddress(&HudUiBackground::SetEnabled);
+    table.slots[2] = HudMethodAddress(&HudUiCheatCodeDialog::ScalarDeletingDestructor);
+    return table;
+}
+
 const HudUiWidget_FTable g_HudUiConfirmQuitCancelButton_FTable =
     MakeConfirmQuitButtonFTable(
         HudMethodAddress(&HudUiZrdWidget::OnActivateQueueExitCurrentState));
@@ -105,8 +190,11 @@ const HudUiWidget_FTable g_HudUiConfirmQuitOkButton_FTable =
     MakeConfirmQuitButtonFTable(HudMethodAddress(&HudUiConfirmQuitOkButton::OnActivate));
 const HudUiBackgroundConfirmQuit_FTable g_HudUiBackgroundConfirmQuit_FTable =
     MakeConfirmQuitDialogFTable();
+const HudUiCheatCodeDialog_FTable g_HudUiCheatCodeDialog_FTable =
+    MakeCheatCodeDialogFTable();
 
 RecoilApp_IState_Vtbl g_RecoilStateConfirmQuit_Vtbl = {0};
+RecoilApp_IState_Vtbl g_RecoilStateCheatCode_Vtbl = {0};
 
 struct RecoilStateConfirmQuitBaseVtableGuard
 {
@@ -117,11 +205,25 @@ struct RecoilStateConfirmQuitBaseVtableGuard
         self->vftable = kRecoilStateBase_VtblAddress;
     }
 };
+
+struct RecoilStateCheatCodeBaseVtableGuard
+{
+    RecoilStateCheatCode *self;
+
+    ~RecoilStateCheatCodeBaseVtableGuard()
+    {
+        self->vftable = kRecoilStateBase_VtblAddress;
+    }
+};
 } // namespace
 
 const HudUiCommon_FTable g_HudWeatherFx_Vtable = MakeHudWeatherFxFTable();
 const HudUiCommon_FTable g_HudWeatherFxSnow_Vtable = MakeHudWeatherFxFTable();
 const HudUiCommon_FTable g_HudWeatherFxRain_Vtable = MakeHudWeatherFxFTable();
+extern const HudUiZrdWidget_FTable g_HudUiCheatCodeTitleWidget_FTable =
+    MakeCheatCodeTitleWidgetFTable();
+extern const HudUiNumericTextInput_Base_FTable g_HudUiCheatCodeInputWidget_FTable =
+    MakeCheatCodeInputWidgetFTable();
 
 // Reimplements 0x4bdc70: HudWeatherFx::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
@@ -132,7 +234,7 @@ RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL HudWeatherFx::Constructor(int newP
     ftable = &g_HudWeatherFx_Vtable;
     maxParticles = newParticleCount;
     particleCount = newParticleCount;
-    particleQuads = static_cast<HudWeatherFxParticleQuad *>(
+    particleQuads = (HudWeatherFxParticleQuad *)(
         ::operator new(sizeof(HudWeatherFxParticleQuad) * newParticleCount));
 
     for (int index = 0; index < newParticleCount; ++index)
@@ -153,9 +255,9 @@ RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL HudWeatherFx::Constructor(int newP
 
     const unsigned int positionBytes = sizeof(zVec3) * newParticleCount;
     particlePositions[sourceBufferIndex] =
-        static_cast<zVec3 *>(::operator new(positionBytes));
+        (zVec3 *)(::operator new(positionBytes));
     particlePositions[destBufferIndex] =
-        static_cast<zVec3 *>(::operator new(positionBytes));
+        (zVec3 *)(::operator new(positionBytes));
 
     for (int resetIndex = 0; resetIndex < newParticleCount; ++resetIndex)
     {
@@ -177,7 +279,7 @@ RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL HudWeatherFx::Constructor(int newP
         textureName = "SnowFX";
         softwareImage = zVid_Image::Create();
         zVid_Image::SetFormatCode(softwareImage, 0x0b);
-        char *const alphaMap = static_cast<char *>(malloc(0x80));
+        char *const alphaMap = (char *)(malloc(0x80));
         void *const surfacePixels = malloc(0x100);
         zVid_Image_SetPixels(softwareImage, surfacePixels, alphaMap);
         softwareImage->formatFlagsPacked |= 0x20;
@@ -198,10 +300,10 @@ HudWeatherFx::ResetParticleSlot(int particleIndex, int)
     zVec3 *const destPosition = &particlePositions[destBufferIndex][particleIndex];
 
     sourcePosition->z =
-        kHudWeatherFxDepthBase - static_cast<float>(rand()) * kHudWeatherFxDepthRandScale;
+        kHudWeatherFxDepthBase - (float)(rand()) * kHudWeatherFxDepthRandScale;
 
     sourcePosition->x =
-        kHudWeatherFxConeBase - static_cast<float>(rand()) * kHudWeatherFxConeRandScale;
+        kHudWeatherFxConeBase - (float)(rand()) * kHudWeatherFxConeRandScale;
     if (sourcePosition->x < -sourcePosition->z)
     {
         sourcePosition->x += kHudWeatherFxReflectBias;
@@ -209,7 +311,7 @@ HudWeatherFx::ResetParticleSlot(int particleIndex, int)
     }
 
     sourcePosition->y =
-        kHudWeatherFxConeBase - static_cast<float>(rand()) * kHudWeatherFxConeRandScale;
+        kHudWeatherFxConeBase - (float)(rand()) * kHudWeatherFxConeRandScale;
     if (sourcePosition->y < -sourcePosition->z)
     {
         sourcePosition->y += kHudWeatherFxReflectBias;
@@ -272,6 +374,16 @@ void RECOIL_THISCALL HudUiZrdWidget::OnActivateQueueExitCurrentState()
 {
     g_RecoilApp.QueueExitCurrentState(0);
     OnActivate();
+}
+
+// Reimplements 0x409180: HudUiCreditsQuitButton::OnActivate
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void RECOIL_THISCALL HudUiCreditsQuitButton::OnActivate()
+{
+    g_RecoilApp.QueueExitCurrentState(1);
+    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
+    g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_leaveNetworkState_1d0.base, 0);
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x415810: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit
@@ -353,6 +465,219 @@ RECOIL_NOINLINE HudUiBackgroundConfirmQuit *RECOIL_THISCALL
 HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(unsigned int flags)
 {
     Destructor();
+
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x4070e0: HudUiCheatTextInputWidget::OnActivate
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+void RECOIL_THISCALL HudUiCheatTextInputWidget::OnActivate()
+{
+    g_RecoilApp.QueueExitCurrentState(0);
+    base.OnActivate();
+}
+
+// Reimplements 0x406d20: HudUiCheatCodeDialog::Constructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+HudUiCheatCodeDialog *RECOIL_THISCALL HudUiCheatCodeDialog::Constructor()
+{
+    HudUiBackground::Constructor();
+
+    titleWidget.Constructor();
+    titleWidget.base.ftable = (const HudUiWidget_FTable *)&g_HudUiCheatCodeTitleWidget_FTable;
+
+    cheatInputWidget.BaseConstructor();
+    cheatInputWidget.base.base.ftable =
+        (const HudUiWidget_FTable *)&g_HudUiCheatCodeInputWidget_FTable;
+    cheatInputWidget.textInput.AllocTextBuffer(80);
+    cheatInputWidget.Update("");
+    cheatInputWidget.SetInputActive(1);
+    cheatInputWidget.SetRawKeyboardCapture(1);
+
+    base.base.vptr = (const HudUiContainer_FTable *)&g_HudUiCheatCodeDialog_FTable;
+
+    zReader::Node *const dialogRoot =
+        HudUiBackground::LoadFromZrd("dialog.zrd", "CHEAT_CODE_DIALOG", 0);
+    if (dialogRoot != 0)
+    {
+        HudUiBackground::BindWidgetByName(dialogRoot, &titleWidget.base, "GO");
+        HudUiBackground::BindWidgetByName(dialogRoot, &cheatInputWidget.base.base,
+                                          "CHEATCODE");
+        HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
+    }
+
+    return this;
+}
+
+// Reimplements 0x406e30: HudUiCheatCodeDialog::Destructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudUiCheatCodeDialog::Destructor()
+{
+    cheatInputWidget.Destructor();
+    titleWidget.DestructorCore();
+    HudUiBackground::Destructor();
+}
+
+// Reimplements 0x406e10: HudUiCheatCodeDialog::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE HudUiCheatCodeDialog *RECOIL_THISCALL
+HudUiCheatCodeDialog::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x406e90: RecoilStateCheatCode::StaticInitAndRegisterAtExit
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCheatCode::StaticInitAndRegisterAtExit()
+{
+    ConstructGlobal();
+    StaticInit();
+}
+
+// Reimplements 0x406ea0: RecoilStateCheatCode::ConstructGlobal
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE RecoilStateCheatCode *RECOIL_CDECL RecoilStateCheatCode::ConstructGlobal()
+{
+    return g_RecoilStateCheatCode.Constructor();
+}
+
+// Reimplements 0x406eb0: RecoilStateCheatCode::StaticInit
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCheatCode::StaticInit()
+{
+    atexit(AtExitDestructor);
+}
+
+// Reimplements 0x406ec0: RecoilStateCheatCode::AtExitDestructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCheatCode::AtExitDestructor()
+{
+    g_RecoilStateCheatCode.~RecoilStateCheatCode();
+}
+
+// Reimplements 0x406ed0: RecoilStateCheatCode::Constructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RecoilStateCheatCode *RECOIL_THISCALL RecoilStateCheatCode::Constructor()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCheatCode_Vtbl;
+    m_dialog = 0;
+    return this;
+}
+
+// Reimplements 0x406f60: RecoilStateCheatCode::OnTryBecomeCurrent
+// (D:\Proj\Battlesport\RecoilStateCheatCode.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateCheatCode::OnTryBecomeCurrent()
+{
+    if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE)
+    {
+        g_zVideo_pfnBltSwToPrimaryRectDirect(0, 0);
+    }
+
+    m_prevHalfResAdjustMode =
+        (zVideoHalfResAdjustMode)zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
+    HudUi::SetInvalidateMode(0);
+
+    zSndPlayHandleSnapshot *const audioSnapshot =
+        zSndPlayHandleSnapshot::CreateFromActiveSamples();
+    m_audioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
+    audioSnapshot->StopAllIfPlaying();
+
+    zSndSampleSet_InitByName("DIALOG");
+
+    HudUiCheatCodeDialog *dialog =
+        (HudUiCheatCodeDialog *)::operator new(sizeof(HudUiCheatCodeDialog));
+    if (dialog != 0)
+    {
+        dialog = dialog->Constructor();
+    }
+    m_dialog = (RecoilPtr32)(unsigned int)dialog;
+
+    HudUiCheatCodeDialogVirtual *const dialogView =
+        (HudUiCheatCodeDialogVirtual *)dialog;
+    dialogView->SetEnabled(1);
+    return 1;
+}
+
+// Reimplements 0x407010: RecoilStateCheatCode::OnDeactivate
+// (D:\Proj\Battlesport\RecoilStateCheatCode.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCheatCode::OnDeactivate()
+{
+    CString commandString;
+
+    HudUiCheatCodeDialog *dialog =
+        (HudUiCheatCodeDialog *)(unsigned int)m_dialog;
+    if (dialog != 0)
+    {
+        commandString = dialog->cheatInputWidget.GetBuffer();
+
+        zVideo::RunPostprocessOnPrimaryBuffer();
+
+        HudUiCheatCodeDialogVirtual *dialogView =
+            (HudUiCheatCodeDialogVirtual *)(unsigned int)m_dialog;
+        dialogView->SetEnabled(0);
+
+        ((HudUiDialogController *)(unsigned int)m_dialog)->BlitOwnedSurfaceToPrimary();
+        zVideo::Dispatch_UnlockPrimarySurfaceState();
+
+        dialogView = (HudUiCheatCodeDialogVirtual *)(unsigned int)m_dialog;
+        if (dialogView != 0)
+        {
+            dialogView->ScalarDeletingDestructor(1);
+        }
+
+        m_dialog = 0;
+    }
+
+    zSndSampleSet_DestroyByName("DIALOG");
+
+    zSndPlayHandleSnapshot *const audioSnapshot =
+        (zSndPlayHandleSnapshot *)(unsigned int)m_audioSnapshot;
+    if (audioSnapshot != 0)
+    {
+        audioSnapshot->RestoreAllWithGlobalVolumeDelta();
+    }
+
+    zVideo::SetHalfResAdjustMode(m_prevHalfResAdjustMode);
+    HudUi::SetInvalidateMode(m_prevHalfResAdjustMode);
+    HudUiMgr::TriggerCurrentLayoutOnActivated();
+    HudCheat::ExecuteCommandString(&commandString);
+}
+
+// Reimplements 0x406f00: RecoilStateCheatCode::Destructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE RecoilStateCheatCode::~RecoilStateCheatCode()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCheatCode_Vtbl;
+    RecoilStateCheatCodeBaseVtableGuard baseVtableOnExit = {this};
+
+    HudUiCheatCodeDialogVirtual *dialogView =
+        (HudUiCheatCodeDialogVirtual *)m_dialog;
+    if (dialogView != 0)
+    {
+        dialogView->ScalarDeletingDestructor(1);
+    }
+
+    m_dialog = 0;
+}
+
+// Reimplements 0x406ee0: RecoilStateCheatCode::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE RecoilStateCheatCode *RECOIL_THISCALL
+RecoilStateCheatCode::ScalarDeletingDestructor(unsigned int flags)
+{
+    this->~RecoilStateCheatCode();
 
     if ((flags & 1u) != 0)
     {
@@ -463,6 +788,13 @@ void RECOIL_CDECL RecoilStateControls::QueueEnter()
     g_RecoilApp.QueuePushState(&g_RecoilStateControls, 0);
 }
 
+// Reimplements 0x407100: HudUiCallback::QueueExitCurrentState
+// (D:\Proj\Battlesport\hud.cpp)
+void RECOIL_CDECL HudUiCallback::QueueExitCurrentState()
+{
+    g_RecoilApp.QueueExitCurrentState(0);
+}
+
 // Reimplements 0x407110: HudUiCallback::QueueCheatCodeState
 // (D:\Proj\Battlesport\hud.cpp)
 int RECOIL_CDECL HudUiCallback::QueueCheatCodeState()
@@ -470,6 +802,135 @@ int RECOIL_CDECL HudUiCallback::QueueCheatCodeState()
     g_RecoilApp.QueuePushState(&g_RecoilStateCheatCode, 0);
     return 1;
 }
+
+namespace HudCheat {
+
+const int kNanitePanelCheatSentinel = 123456789; // 0x075bcd15
+const unsigned int kHudCheatPickup901MessageId = 4096;
+const unsigned int kHudCheatRespawnMessageId = 4097;
+const unsigned int kHudCheatPickup903MessageId = 4098;
+const unsigned int kHudCheatBindCommand36MessageId = 4100;
+const unsigned int kHudCheatBindCommand31MessageId = 4101;
+const int kHudCheatPickup901TypeId = 901;
+const int kHudCheatRespawnPickupTypeId = 902;
+const int kHudCheatPickup903TypeId = 903;
+const int kHudCheatBindCommand31 = 31;
+const int kHudCheatBindCommand36 = 36;
+const int kHudCheatLifecycleLocal = 1;
+const int kHudCheatLifecycleInactive = 4;
+const int kHudCheatMasterTypeSub = 2;
+const int kHudCheatMasterTypeHover = 4;
+const int kHudCheatMasterTypeAmphib = 5;
+const int kHudCheatAltGunTransitionReset = 16;
+
+// Reimplements 0x406af0: HudCheat::ExecuteCommandString
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL ExecuteCommandString(CString *commandString)
+{
+    if (commandString->IsEmpty())
+    {
+        return 0;
+    }
+
+    char *const command = commandString->GetBuffer(1);
+    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
+
+    if (zStr::ContainsCaseInsensitive(command,
+                                      zLoc::GetMessageString(kHudCheatPickup901MessageId)) != 0)
+    {
+        return Pickup::ApplyEffect(kHudCheatPickup901TypeId, 0, saveState);
+    }
+
+    if (zStr::ContainsCaseInsensitive(command,
+                                      zLoc::GetMessageString(kHudCheatRespawnMessageId)) != 0)
+    {
+        zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+        if (playerState->recentHitValid != 0)
+        {
+            zEffectAnim::Stop(playerState->recentHitLightHandle);
+            playerState->recentHitLightHandle = 0;
+            playerState->recentHitValid = 0;
+        }
+
+        if (playerState->lifecycleState == kHudCheatLifecycleInactive)
+        {
+            playerState->lifecycleState = kHudCheatLifecycleLocal;
+            zOpt::SetSteeringMode(g_PlayerPrevSteeringMode);
+            Player::ApplyCameraState(g_PlayerPrevCameraState);
+            Player::ResetMouseControlStateAndRecenterCursor(saveState);
+            zEffect_Anim::NodeActionCallback(playerState->destroyedRespawnFxEntry,
+                                             playerState->rootNode);
+            Player::ResetDamageStateAndTimedHitStatus(saveState);
+
+            const int masterType = saveState->primaryModalState->masterModalData->masterType;
+            playerState->aiMode = 0;
+            playerState->nextModeSwitchAllowedTime = 0.0f;
+            playerState->autoTurnSign = 0;
+            playerState->motionInput = 0;
+            Player::TransitionToMasterTypeTrack(saveState, 1);
+            playerState->primaryGunGateUntilTime = g_Time_AccumulatedTimeSec;
+
+            if (masterType == kHudCheatMasterTypeSub)
+            {
+                Player::TransitionToMasterTypeAmphib(saveState, 0, 1);
+                playerState->primaryGunGateUntilTime = g_Time_AccumulatedTimeSec;
+                Player::TransitionToMasterTypeSub(saveState, 0);
+            }
+            else if (masterType == kHudCheatMasterTypeHover)
+            {
+                Player::TransitionToMasterTypeHover(saveState, 0);
+            }
+            else if (masterType == kHudCheatMasterTypeAmphib)
+            {
+                Player::TransitionToMasterTypeAmphib(saveState, 0, 0);
+            }
+        }
+
+        playerState->altGunTransitionState = kHudCheatAltGunTransitionReset;
+        return Pickup::ApplyEffect(kHudCheatRespawnPickupTypeId, 0, saveState);
+    }
+
+    if (zStr::ContainsCaseInsensitive(command,
+                                      zLoc::GetMessageString(kHudCheatPickup903MessageId)) != 0)
+    {
+        return Pickup::ApplyEffect(kHudCheatPickup903TypeId, 0, saveState);
+    }
+
+    if (zStr::ContainsCaseInsensitive(command,
+                                      zLoc::GetMessageString(kHudCheatBindCommand31MessageId)) != 0)
+    {
+        zInput::BindMap_Current_SetCommandCallback(
+            kHudCheatBindCommand31, (zInputCommandCallbackFn)(HudUi::HandleHotkeyCommand));
+    }
+
+    if (zStr::ContainsCaseInsensitive(command,
+                                      zLoc::GetMessageString(kHudCheatBindCommand36MessageId)) != 0)
+    {
+        zInput::BindMap_Current_SetCommandCallback(
+            kHudCheatBindCommand36, (zInputCommandCallbackFn)(HudUi::HandleHotkeyCommand));
+    }
+
+    return 0;
+}
+
+// Reimplements 0x406cf0: HudCheat::ClearNanitePanelCheatSentinel
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL ClearNanitePanelCheatSentinel()
+{
+    if (g_GameStateOrMapTable == 0)
+    {
+        return;
+    }
+
+    zUtil_PlayerStateStorage *const playerState =
+        (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
+    if (playerState->nanitePanelLevel == kNanitePanelCheatSentinel)
+    {
+        playerState->nanitePanelLevel = 0;
+    }
+}
+
+} // namespace HudCheat
 
 namespace zOpt {
 

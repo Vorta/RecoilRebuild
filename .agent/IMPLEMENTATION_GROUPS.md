@@ -13,7 +13,7 @@ source-readiness, or coherent binary-safe groups currently being coordinated.
 - Do not mark plan entries done from this file alone. Plan markers still require
   current source/build/Binary Ninja evidence.
 - Keep notes concise and temporary. Move durable facts into source comments,
-  Binary Ninja comments, tests, README, or `docs/reconstruction/` before
+  Binary Ninja comments, tests, `docs/reconstruction/`, or narrow subsystem docs before
   pruning.
 - Verification-only queues that no longer carry source blockers should not live
   in this active working file unless they are coordinating a current coherent

@@ -57,7 +57,7 @@ namespace {
             return 3;
         }
 
-        *outData = static_cast<zClass_CameraDataPartial *>(node->classData);
+        *outData = (zClass_CameraDataPartial *)(node->classData);
         return 0;
     }
 
@@ -196,7 +196,7 @@ namespace zClass_Camera {
         }
 
         node->classId = kZClassNodeCamera;
-        zClass_CameraDataPartial *data = static_cast<zClass_CameraDataPartial *>(
+        zClass_CameraDataPartial *data = (zClass_CameraDataPartial *)(
             calloc(1, sizeof(zClass_CameraDataPartial)));
         node->classData = data;
         data->viewportWidth = 1.0f;
@@ -311,20 +311,20 @@ namespace zClass_Camera {
             return 3;
         }
 
-        static_cast<zClass_CameraDataPartial *>(camera->classData)->worldNode = world;
+        ((zClass_CameraDataPartial *)(camera->classData))->worldNode = world;
         return 0;
     }
 
     // Reimplements 0x449e80: zClass_Camera::gwCameraGetWorld
     RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL gwCameraGetWorld(zClass_NodePartial *
                                                                          camera) {
-        return static_cast<zClass_CameraDataPartial *>(camera->classData)->worldNode;
+        return ((zClass_CameraDataPartial *)(camera->classData))->worldNode;
     }
 
     // Reimplements 0x449e90: zClass_Camera::gwCameraSetWindow
     RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetWindow(zClass_NodePartial * camera,
                                                                    zClass_NodePartial * window) {
-        static_cast<zClass_CameraDataPartial *>(camera->classData)->windowNode = window;
+        ((zClass_CameraDataPartial *)(camera->classData))->windowNode = window;
         return 0;
     }
 
@@ -504,8 +504,8 @@ namespace zClass_Camera {
 
         const float halfFovX = data->fovX * 0.5f;
         const float halfFovY = data->fovY * 0.5f;
-        const float tanHalfFovX = static_cast<float>(tan(static_cast<double>(halfFovX)));
-        const float tanHalfFovY = static_cast<float>(tan(static_cast<double>(halfFovY)));
+        const float tanHalfFovX = (float)(tan((double)(halfFovX)));
+        const float tanHalfFovY = (float)(tan((double)(halfFovY)));
 
         data->localFrustumNormalsDirty = 1;
         data->frustumVectorsDirty = 1;
@@ -557,8 +557,8 @@ namespace zClass_Camera {
         const float normalizedFovY = fovY / data->viewportHeight;
         const float halfFovX = normalizedFovX * 0.5f;
         const float halfFovY = normalizedFovY * 0.5f;
-        const float tanHalfFovX = static_cast<float>(tan(static_cast<double>(halfFovX)));
-        const float tanHalfFovY = static_cast<float>(tan(static_cast<double>(halfFovY)));
+        const float tanHalfFovX = (float)(tan((double)(halfFovX)));
+        const float tanHalfFovY = (float)(tan((double)(halfFovY)));
 
         data->localFrustumNormalsDirty = 1;
         data->frustumVectorsDirty = 1;
@@ -640,8 +640,8 @@ namespace zClass_Camera {
     // Reimplements 0x44c1b0: zClass_Camera::FastAngleXZ
     // (D:\Proj\GameZRecoil\zClass\Camera.c)
     RECOIL_NOINLINE float RECOIL_FASTCALL FastAngleXZ(zVec3 *point1, zVec3 *point2) {
-        const int deltaX = static_cast<int>(point2->x - point1->x);
-        const int deltaZ = static_cast<int>(point1->z - point2->z);
+        const int deltaX = (int)(point2->x - point1->x);
+        const int deltaZ = (int)(point1->z - point2->z);
 
         const int absX = deltaX < 0 ? -deltaX : deltaX;
         const int absZ = deltaZ < 0 ? -deltaZ : deltaZ;
@@ -649,7 +649,7 @@ namespace zClass_Camera {
 
         float angle = 0.0f;
         if (denom != 0) {
-            angle = static_cast<float>(deltaZ) / static_cast<float>(denom);
+            angle = (float)(deltaZ) / (float)(denom);
         }
 
         if (deltaX < 0) {
@@ -934,9 +934,9 @@ namespace zClass_Camera {
                 float posOffsetZ = 0.0f;
                 if (hasPosOffset != 0) {
                     posOffsetX =
-                        static_cast<float>(col - areaCol) * worldData->areaCellSizeX;
+                        (float)(col - areaCol) * worldData->areaCellSizeX;
                     posOffsetZ =
-                        static_cast<float>(row - areaRow) * worldData->areaCellSizeZ;
+                        (float)(row - areaRow) * worldData->areaCellSizeZ;
                 }
 
                 zWorldAreaPartial *area = &worldData->areaGridRows[areaRow][areaCol];
@@ -985,7 +985,7 @@ namespace zClass_Camera {
         zClass_NodePartial *world, zClass_NodePartial *camera,
         zClass_CameraDataPartial *cameraData) {
         zClass_WorldDataPartial *worldData =
-            static_cast<zClass_WorldDataPartial *>(world->classData);
+            (zClass_WorldDataPartial *)(world->classData);
         int result = 0;
 
         if (worldData->clampQueriesToBounds != 0) {
@@ -1152,11 +1152,11 @@ namespace zClass_Camera {
         zMath::MatStackPushPtr((float *)&slotBuffer);
 
         g_zVideo_pActiveViewContext =
-            static_cast<zClass_CameraDataPartial *>(camera->classData);
+            (zClass_CameraDataPartial *)(camera->classData);
         zClass_NodePartial *world = gwCameraGetWorld(camera);
         zClass_CameraDataPartial *viewContext = g_zVideo_pActiveViewContext;
         zClass_WindowDataPartial *windowData =
-            static_cast<zClass_WindowDataPartial *>(viewContext->windowNode->classData);
+            (zClass_WindowDataPartial *)(viewContext->windowNode->classData);
 
         if (g_zClass_CameraAutoClipDistanceAdjustEnabled != 0) {
             if (g_FrameDeltaTimeSec <= g_zClass_CameraAutoClipDistanceThreshold) {
@@ -1303,7 +1303,7 @@ namespace zClass_Camera {
     RECOIL_NOINLINE int RECOIL_FASTCALL UpdateImpl(zClass_NodePartial *camera,
                                                             zVec3 *posOffset) {
         zClass_CameraDataPartial *data =
-            static_cast<zClass_CameraDataPartial *>(camera->classData);
+            (zClass_CameraDataPartial *)(camera->classData);
 
         BuildWorldTransform(camera, data, posOffset);
 
@@ -1319,8 +1319,8 @@ namespace zClass_Camera {
 
         if (data->frustumVectorsDirty != 0) {
             const float farClip = data->farClip;
-            const float halfWidth = static_cast<float>(tan(data->fovX * 0.5f)) * farClip;
-            const float halfHeight = static_cast<float>(tan(data->fovY * 0.5f)) * farClip;
+            const float halfWidth = (float)(tan(data->fovX * 0.5f)) * farClip;
+            const float halfHeight = (float)(tan(data->fovY * 0.5f)) * farClip;
             const float negHalfHeight = -halfHeight;
             const float negFarClip = -farClip;
             const float negHalfWidth = -halfWidth;
@@ -1403,7 +1403,7 @@ namespace zClass_Camera {
         }
 
         node->flags = flags & ~0x02000000;
-        zClass_CameraDataPartial *data = static_cast<zClass_CameraDataPartial *>(node->classData);
+        zClass_CameraDataPartial *data = (zClass_CameraDataPartial *)(node->classData);
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if ((clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {

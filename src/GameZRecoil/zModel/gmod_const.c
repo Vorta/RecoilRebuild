@@ -65,7 +65,7 @@ namespace zModel_DiPool {
     // Reimplements 0x4815c0: zModel_DiPool::WriteToStream
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL WriteToStream(void *stream) {
-        FILE *const file = static_cast<FILE *>(stream);
+        FILE *const file = (FILE *)(stream);
 
         if (fwrite(&g_zModel_DiPoolCapacity, 4, 1, file) != 1) {
             ReportModel3DBufferWriteError(0x141);
@@ -84,7 +84,7 @@ namespace zModel_DiPool {
 
         int result = capacity;
         const long tableOffset = ftell(file);
-        const int tableBytes = capacity * static_cast<int>(sizeof(zDiPartial));
+        const int tableBytes = capacity * (int)(sizeof(zDiPartial));
         if (fwrite(g_zModel_DiPoolBase, tableBytes, 1, file) != 1) {
             ReportModel3DBufferWriteError(0x172);
             result = 0;
@@ -99,7 +99,7 @@ namespace zModel_DiPool {
             if (di->vertCount > 0) {
                 wroteDynamicData = true;
                 if (fwrite(di->verts, 0x0c, di->vertCount, file) !=
-                    static_cast<size_t>(di->vertCount)) {
+                    (size_t)(di->vertCount)) {
                     ReportModel3DBufferWriteError(0x18c);
                     result = 0;
                     break;
@@ -109,7 +109,7 @@ namespace zModel_DiPool {
             if (di->normalCount > 0) {
                 wroteDynamicData = true;
                 if (fwrite(di->normals, 0x0c, di->normalCount, file) !=
-                    static_cast<size_t>(di->normalCount)) {
+                    (size_t)(di->normalCount)) {
                     ReportModel3DBufferWriteError(0x19f);
                     result = 0;
                     break;
@@ -119,7 +119,7 @@ namespace zModel_DiPool {
             if (di->blendVertCount > 0) {
                 wroteDynamicData = true;
                 if (fwrite(di->blendVerts, 0x0c, di->blendVertCount, file) !=
-                    static_cast<size_t>(di->blendVertCount)) {
+                    (size_t)(di->blendVertCount)) {
                     ReportModel3DBufferWriteError(0x1b2);
                     result = 0;
                     break;
@@ -129,7 +129,7 @@ namespace zModel_DiPool {
             if (di->pointCount > 0) {
                 wroteDynamicData = true;
                 if (fwrite(di->pointEntries, sizeof(zModel_PointEntryPartial), di->pointCount,
-                                file) != static_cast<size_t>(di->pointCount)) {
+                                file) != (size_t)(di->pointCount)) {
                     ReportModel3DBufferWriteError(0x1c9);
                     result = 0;
                     break;
@@ -140,7 +140,7 @@ namespace zModel_DiPool {
                     zModel_PointEntryPartial *const point = &di->pointEntries[pointIndex];
                     if (point->pointCamCount > 0 &&
                         fwrite(point->pointCamList, sizeof(zVec3), point->pointCamCount,
-                                    file) != static_cast<size_t>(point->pointCamCount)) {
+                                    file) != (size_t)(point->pointCamCount)) {
                         ReportModel3DBufferWriteError(0x1dd);
                         result = 0;
                         break;
@@ -152,9 +152,9 @@ namespace zModel_DiPool {
             if (di->entryCount > 0) {
                 wroteDynamicData = true;
                 const int entryBytes =
-                    di->entryCount * static_cast<int>(sizeof(zDiEntryPartial));
+                    di->entryCount * (int)(sizeof(zDiEntryPartial));
                 zDiEntryPartial *serializedEntries =
-                    static_cast<zDiEntryPartial *>(malloc(entryBytes));
+                    (zDiEntryPartial *)(malloc(entryBytes));
                 memcpy(serializedEntries, di->entries, entryBytes);
 
                 {
@@ -164,7 +164,7 @@ namespace zModel_DiPool {
                             serializedEntries[entryIndex].material));
                     serializedEntries[entryIndex].material =
                         (zModel_MaterialPartial *)(
-                            static_cast<int>(materialIndex));
+                            (int)(materialIndex));
                 }
                 }
 
@@ -210,13 +210,13 @@ namespace zModel_DiPool {
 
                 free(serializedEntries);
                 if (entryWriteFailed) {
-                    di->nextFreeIndex = static_cast<int>(dynamicOffset);
+                    di->nextFreeIndex = (int)(dynamicOffset);
                     break;
                 }
             }
 
             if (wroteDynamicData) {
-                di->nextFreeIndex = static_cast<int>(dynamicOffset);
+                di->nextFreeIndex = (int)(dynamicOffset);
             }
         }
         }
@@ -236,7 +236,7 @@ namespace zModel_DiPool {
     RECOIL_NOINLINE int RECOIL_FASTCALL ReadHeaderFromStream(
         void *stream, int *outCapacity, int *outInUseCount,
         int *outFreeHeadIndex) {
-        FILE *const file = static_cast<FILE *>(stream);
+        FILE *const file = (FILE *)(stream);
 
         if (fread(outCapacity, 4, 1, file) != 1) {
             ReportModel3DBufferReadError(0x28b, kModel3DBufferReadError);
@@ -258,12 +258,12 @@ namespace zModel_DiPool {
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL ReadEntryDynamicDataFromStream(void *stream,
                                                                                 zDiPartial *entry) {
-        FILE *const file = static_cast<FILE *>(stream);
+        FILE *const file = (FILE *)(stream);
 
         if (entry->vertCount > 0) {
             const int byteCount =
-                entry->vertCount * static_cast<int>(sizeof(zVec3));
-            entry->verts = static_cast<zVec3 *>(malloc(byteCount));
+                entry->vertCount * (int)(sizeof(zVec3));
+            entry->verts = (zVec3 *)(malloc(byteCount));
             if (fread(entry->verts, byteCount, 1, file) != 1) {
                 ReportModel3DBufferReadError(0x31c, "Error reading GameZ Model3D vertex data.");
                 return -1;
@@ -272,8 +272,8 @@ namespace zModel_DiPool {
 
         if (entry->normalCount > 0) {
             const int byteCount =
-                entry->normalCount * static_cast<int>(sizeof(zVec3));
-            entry->normals = static_cast<zVec3 *>(malloc(byteCount));
+                entry->normalCount * (int)(sizeof(zVec3));
+            entry->normals = (zVec3 *)(malloc(byteCount));
             if (fread(entry->normals, byteCount, 1, file) != 1) {
                 ReportModel3DBufferReadError(0x32f,
                                              "Error reading GameZ Model3D vertex normal data.");
@@ -283,8 +283,8 @@ namespace zModel_DiPool {
 
         if (entry->blendVertCount > 0) {
             const int byteCount =
-                entry->blendVertCount * static_cast<int>(sizeof(zVec3));
-            entry->blendVerts = static_cast<zVec3 *>(malloc(byteCount));
+                entry->blendVertCount * (int)(sizeof(zVec3));
+            entry->blendVerts = (zVec3 *)(malloc(byteCount));
             if (fread(entry->blendVerts, byteCount, 1, file) != 1) {
                 ReportModel3DBufferReadError(0x342,
                                              "Error reading GameZ Model3D morph vertex data.");
@@ -294,8 +294,8 @@ namespace zModel_DiPool {
 
         if (entry->pointCount > 0) {
             const int byteCount =
-                entry->pointCount * static_cast<int>(sizeof(zModel_PointEntryPartial));
-            entry->pointEntries = static_cast<zModel_PointEntryPartial *>(malloc(byteCount));
+                entry->pointCount * (int)(sizeof(zModel_PointEntryPartial));
+            entry->pointEntries = (zModel_PointEntryPartial *)(malloc(byteCount));
             if (fread(entry->pointEntries, byteCount, 1, file) != 1) {
                 ReportModel3DBufferReadError(0x358,
                                              "Error reading GameZ Model3D point light data.");
@@ -305,16 +305,16 @@ namespace zModel_DiPool {
             {
             for (int pointIndex = 0; pointIndex < entry->pointCount; ++pointIndex) {
                 zModel_PointEntryPartial *const point = &entry->pointEntries[pointIndex];
-                const unsigned short packedColor = static_cast<unsigned short>(zVid_PackColorRGB(
-                    static_cast<unsigned char>(static_cast<int>(point->colorB + 0.5f)),
-                    static_cast<unsigned char>(static_cast<int>(point->colorG + 0.5f)),
-                    static_cast<unsigned char>(static_cast<int>(point->colorR + 0.5f))));
+                const unsigned short packedColor = (unsigned short)(zVid_PackColorRGB(
+                    (unsigned char)((int)(point->colorB + 0.5f)),
+                    (unsigned char)((int)(point->colorG + 0.5f)),
+                    (unsigned char)((int)(point->colorR + 0.5f))));
                 point->packedColor16 = (point->packedColor16 & 0xffff0000) | packedColor;
 
                 if (point->pointCamCount > 0) {
                     const int pointCamBytes =
-                        point->pointCamCount * static_cast<int>(sizeof(zVec3));
-                    point->pointCamList = static_cast<zVec3 *>(malloc(pointCamBytes));
+                        point->pointCamCount * (int)(sizeof(zVec3));
+                    point->pointCamList = (zVec3 *)(malloc(pointCamBytes));
                     if (fread(point->pointCamList, pointCamBytes, 1, file) != 1) {
                         ReportModel3DBufferReadError(
                             0x372, "Error reading GameZ Model3D point light data.");
@@ -330,8 +330,8 @@ namespace zModel_DiPool {
         }
 
         const int entryBytes =
-            entry->entryCount * static_cast<int>(sizeof(zDiEntryPartial));
-        entry->entries = static_cast<zDiEntryPartial *>(malloc(entryBytes));
+            entry->entryCount * (int)(sizeof(zDiEntryPartial));
+        entry->entries = (zDiEntryPartial *)(malloc(entryBytes));
         if (fread(entry->entries, entryBytes, 1, file) != 1) {
             ReportModel3DBufferReadError(0x38f, "Error reading GameZ Model3D polygon buffer.");
             return -1;
@@ -342,7 +342,7 @@ namespace zModel_DiPool {
             zDiEntryPartial *const diEntry = &entry->entries[entryIndex];
             diEntry->material =
                 (zModel_MaterialPartial *)(zModel_Matl::GetPoolEntry(
-                    static_cast<int>((int)(diEntry->material))));
+                    (int)((int)(diEntry->material))));
         }
         }
 
@@ -372,7 +372,7 @@ namespace zModel_DiPool {
 
             if ((diEntry->material->flags & 0x0100) != 0) {
                 const unsigned int uvBytes =
-                    indexCount * static_cast<unsigned int>(sizeof(zModel_Uv));
+                    indexCount * (unsigned int)(sizeof(zModel_Uv));
                 diEntry->uvPairs = malloc(uvBytes);
                 if (fread(diEntry->uvPairs, uvBytes, 1, file) != 1) {
                     ReportModel3DBufferReadError(
@@ -390,7 +390,7 @@ namespace zModel_DiPool {
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
     RECOIL_NOINLINE RECOIL_NO_GS zDiPartial *RECOIL_FASTCALL ReadEntryByIndexFromStream(
         void *stream, int index) {
-        FILE *const file = static_cast<FILE *>(stream);
+        FILE *const file = (FILE *)(stream);
 
         int serializedCapacity;
         int serializedInUseCount;
@@ -409,7 +409,7 @@ namespace zModel_DiPool {
             return 0;
         }
 
-        fseek(file, index * static_cast<int>(sizeof(zDiPartial)), SEEK_CUR);
+        fseek(file, index * (int)(sizeof(zDiPartial)), SEEK_CUR);
 
         zDiPartial serializedEntry;
         if (fread(&serializedEntry, sizeof(zDiPartial), 1, file) != 1) {
@@ -435,7 +435,7 @@ namespace zModel_DiPool {
     // Reimplements 0x481fa0: zModel_DiPool::ReadFromStream
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL ReadFromStream(void *stream) {
-        FILE *const file = static_cast<FILE *>(stream);
+        FILE *const file = (FILE *)(stream);
         const int oldCapacity = g_zModel_DiPoolCapacity;
 
         if (ReadHeaderFromStream(file, &g_zModel_DiPoolCapacity, &g_zModel_DiPoolInUseCount,
@@ -449,12 +449,12 @@ namespace zModel_DiPool {
         }
 
         const int poolBytes =
-            g_zModel_DiPoolCapacity * static_cast<int>(sizeof(zDiPartial));
+            g_zModel_DiPoolCapacity * (int)(sizeof(zDiPartial));
         if (g_zModel_DiPoolBase == 0) {
-            g_zModel_DiPoolBase = static_cast<zDiPartial *>(malloc(poolBytes));
+            g_zModel_DiPoolBase = (zDiPartial *)(malloc(poolBytes));
         } else if (g_zModel_DiPoolCapacity > oldCapacity) {
             g_zModel_DiPoolBase =
-                static_cast<zDiPartial *>(realloc(g_zModel_DiPoolBase, poolBytes));
+                (zDiPartial *)(realloc(g_zModel_DiPoolBase, poolBytes));
         }
 
         if (fread(g_zModel_DiPoolBase, poolBytes, 1, file) != 1) {

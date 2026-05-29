@@ -32,7 +32,7 @@ namespace {
             return 0;
         }
 
-        return static_cast<zClass_WindowDataPartial *>(node->classData);
+        return (zClass_WindowDataPartial *)(node->classData);
     }
 
     zClass_WindowDataPartial *GetWindowDataOldMessages(zClass_NodePartial * node, int nullLine,
@@ -60,7 +60,7 @@ namespace {
         }
 
         *result = 0;
-        return static_cast<zClass_WindowDataPartial *>(node->classData);
+        return (zClass_WindowDataPartial *)(node->classData);
     }
 }
 
@@ -75,7 +75,7 @@ namespace zClass_Window {
         }
 
         node->classId = kZClassNodeWindow;
-        zClass_WindowDataPartial *data = static_cast<zClass_WindowDataPartial *>(
+        zClass_WindowDataPartial *data = (zClass_WindowDataPartial *)(
             calloc(1, sizeof(zClass_WindowDataPartial)));
         node->classData = data;
         data->resolutionWidth = 1;
@@ -87,8 +87,8 @@ namespace zClass_Window {
             zRndr::GetActiveRegionState(&data->fbWidth, &data->fbHeight, &data->fbBpp, &pitchBytes);
         data->buffer = buffer;
         printf("Window (new %x) buffer: %x (%d x %d x %d)\n",
-                    static_cast<unsigned int>((unsigned int)(data)),
-                    static_cast<unsigned int>((unsigned int)(buffer)),
+                    (unsigned int)((unsigned int)(data)),
+                    (unsigned int)((unsigned int)(buffer)),
                     data->fbWidth, data->fbHeight, data->fbBpp);
 
         if (zClass_TypeList::Insert(14, node) != 0) {
@@ -179,7 +179,7 @@ namespace zClass_Window {
         }
 
         if (enabled == 1) {
-            data->clearPolyIndexFlags |= static_cast<int>(0x80000000u);
+            data->clearPolyIndexFlags |= (int)(0x80000000u);
         } else {
             data->clearPolyIndexFlags &= 0x7fffffff;
         }
@@ -214,7 +214,7 @@ namespace zClass_Window {
             return 1;
         }
 
-        poly->vertCount |= static_cast<int>(0x80000000u);
+        poly->vertCount |= (int)(0x80000000u);
         poly->vertices[vertIndex].x = point->x;
         poly->vertices[vertIndex].y = point->y;
         poly->vertices[vertIndex].z = point->z;
@@ -245,7 +245,7 @@ namespace zClass_Window {
         zClass_WindowClearPoly *poly = &data->clearPolys[polyIndex];
         zRndr::SpanOcclusionAddPolygon(poly->vertices, poly->vertCount & 0x7fffffff);
         data->clearPolyIndexFlags =
-            (data->clearPolyIndexFlags + 1) | static_cast<int>(0x80000000u);
+            (data->clearPolyIndexFlags + 1) | (int)(0x80000000u);
         return polyIndex;
     }
 }

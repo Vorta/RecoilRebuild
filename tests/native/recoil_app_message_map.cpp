@@ -34,6 +34,7 @@ extern "C" HWND g_RecoilApp_hWndMain;
 extern "C" HINSTANCE g_RecoilApp_hInstance;
 extern "C" const char *g_RecoilApp_WndClassNamePtr;
 extern "C" int g_RecoilApp_AttractFmvReloadMode;
+extern "C" unsigned int g_HudUi_InvalidateMask;
 BOOL RECOIL_STDCALL AfxWinInit(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine,
                                int showCommand);
 
@@ -42,9 +43,14 @@ struct RecoilStateCredits {
     RecoilPtr32 dialog;
 
     RecoilStateCredits *RECOIL_THISCALL Constructor();
+    void RECOIL_THISCALL OnWndActivate(int activateCode);
+    int RECOIL_THISCALL OnTryBecomeCurrent();
+    void RECOIL_THISCALL OnDeactivate();
     ~RecoilStateCredits();
     static void RECOIL_CDECL QueuePush();
 };
+
+extern RecoilStateCredits g_RecoilStateCredits;
 
 namespace {
 void AtexitProviderNoOp() {}
@@ -99,6 +105,14 @@ int g_confirmQuitBlitCalls;
 int g_confirmQuitUnlockCalls;
 int g_confirmQuitSleepCalls;
 DWORD g_confirmQuitSleepMilliseconds;
+int g_creditsOnWndActivateBlitCalls;
+int g_creditsOnWndActivateInvalidateCalls;
+int g_creditsOnWndActivateCallOrder;
+int g_creditsOnWndActivateBlitOrder;
+int g_creditsOnWndActivateInvalidateOrder;
+int g_creditsTryBecomeCurrentSetEnabledCalls;
+int g_creditsTryBecomeCurrentLastEnabled;
+void *g_creditsTryBecomeCurrentSetEnabledThis;
 int g_confirmQuitBackgroundLoadCalls;
 bool g_confirmQuitBackgroundLoadArgsOk;
 int g_confirmQuitBackgroundBindCalls;
@@ -108,8 +122,27 @@ bool g_confirmQuitBackgroundFreeArgsOk;
 int g_openFileNameCalls;
 bool g_openFileNameStructOk;
 char g_openFileNameSelectedPath[MAX_PATH];
+int g_cheatCodeBltDirectCalls;
 
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
+
+void RECOIL_FASTCALL TestCheatCodeBltSwToPrimaryRectDirect(zVidRect32 *srcRect,
+                                                           zVidRect32 *dstRect) {
+    if (srcRect == nullptr && dstRect == nullptr) {
+        ++g_cheatCodeBltDirectCalls;
+    }
+}
+
+int RECOIL_FASTCALL TestCheatCodeVideoSurfaceStateNoOp(
+    zVideo_SurfaceStatePartial *surfaceState) {
+    return surfaceState != nullptr ? 1 : 0;
+}
+
+template <typename Method> std::uintptr_t TestCheatCodeMethodAddress(Method method) {
+    std::uintptr_t address = 0;
+    std::memcpy(&address, &method, sizeof(method));
+    return address;
+}
 
 struct TestCreditsPanel {
     virtual void RECOIL_THISCALL Update(float) {}
@@ -271,6 +304,31 @@ struct FakeConfirmQuitBlitThunk {
 
 void RECOIL_THISCALL FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary() {
     ++g_confirmQuitBlitCalls;
+}
+
+struct FakeCreditsOnWndActivateThunk {
+    void RECOIL_THISCALL BlitOwnedSurfaceToPrimary();
+    void RECOIL_THISCALL InvalidateChildren();
+};
+
+void RECOIL_THISCALL FakeCreditsOnWndActivateThunk::BlitOwnedSurfaceToPrimary() {
+    ++g_creditsOnWndActivateBlitCalls;
+    g_creditsOnWndActivateBlitOrder = ++g_creditsOnWndActivateCallOrder;
+}
+
+void RECOIL_THISCALL FakeCreditsOnWndActivateThunk::InvalidateChildren() {
+    ++g_creditsOnWndActivateInvalidateCalls;
+    g_creditsOnWndActivateInvalidateOrder = ++g_creditsOnWndActivateCallOrder;
+}
+
+struct FakeCreditsTryBecomeCurrentSetEnabledThunk {
+    void RECOIL_THISCALL SetEnabled(int enabled);
+};
+
+void RECOIL_THISCALL FakeCreditsTryBecomeCurrentSetEnabledThunk::SetEnabled(int enabled) {
+    ++g_creditsTryBecomeCurrentSetEnabledCalls;
+    g_creditsTryBecomeCurrentLastEnabled = enabled;
+    g_creditsTryBecomeCurrentSetEnabledThis = this;
 }
 
 void WINAPI FakeConfirmQuitSleep(DWORD milliseconds) {
@@ -1418,6 +1476,18 @@ bool IsSingleExitCurrentQueueItem(RecoilApp_StateQueue &queue, int param) {
     return item->m_kind == RecoilApp_StateQueueKind_ExitCurrent && item->m_param == param;
 }
 
+RecoilApp_StateQueueItem *QueueItemAt(RecoilApp_StateQueue &queue, int index) {
+    if (index < 0 || index >= queue.m_itemCount || queue.m_chunkPtrList == 0) {
+        return nullptr;
+    }
+
+    const RecoilPtr32 firstSlotValue = queue.m_writeBlock.m_cursor -
+                                       static_cast<RecoilPtr32>(queue.m_itemCount * 4);
+    auto *const slot = reinterpret_cast<RecoilPtr32 *>(
+        static_cast<std::uintptr_t>(firstSlotValue + static_cast<RecoilPtr32>(index * 4)));
+    return reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+}
+
 bool IsSinglePushStateQueueItem(RecoilApp_StateQueue &queue, RecoilPtr32 state, int param) {
     if (queue.m_itemCount != 1 || queue.m_chunkPtrList == 0) {
         return false;
@@ -2204,6 +2274,116 @@ extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void
     return result;
 }
 
+extern "C" int hud_ui_credits_quit_button_on_activate_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    g_RecoilApp = RecoilApp{};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_RecoilApp.m_leaveNetworkState_1d0.base.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_ON_EXIT;
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiCreditsQuitButton widget{};
+    widget.Constructor();
+    widget.OnActivate();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueueItem *const exitItem = QueueItemAt(queue, 0);
+    RecoilApp_StateQueueItem *const switchItem = QueueItemAt(queue, 1);
+
+    int result = 0;
+    if (g_stateExitCount != 2 || g_stateEnterCount != 1 ||
+        g_RecoilApp.m_missionShutdownMode != RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY ||
+        queue.m_itemCount != 2) {
+        result = 1;
+    } else if (exitItem == nullptr || exitItem->m_kind != RecoilApp_StateQueueKind_ExitCurrent ||
+               exitItem->m_param != 1) {
+        result = 2;
+    } else if (switchItem == nullptr ||
+               switchItem->m_kind != RecoilApp_StateQueueKind_SwitchCurrent ||
+               switchItem->m_stateObj !=
+                   static_cast<RecoilPtr32>(
+                       reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_leaveNetworkState_1d0)) ||
+               switchItem->m_param != 0) {
+        result = 3;
+    }
+
+    CleanupQueuedItems(queue);
+    widget.DestructorCore();
+    g_RecoilApp = oldApp;
+    return result;
+}
+
+extern "C" int hud_ui_cheat_text_input_on_activate_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    g_RecoilApp = RecoilApp{};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiCheatTextInputWidget widget{};
+    widget.BaseConstructor();
+    widget.OnActivate();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    int result = 0;
+    if (g_stateExitCount != 1 || g_stateEnterCount != 0 ||
+        widget.sliderBorder.inputActive != 1) {
+        result = 1;
+    } else if (!IsSingleExitCurrentQueueItem(queue, 0)) {
+        result = 2;
+    }
+
+    CleanupQueuedItems(queue);
+    widget.Destructor();
+    g_RecoilApp = oldApp;
+    return result;
+}
+
+extern "C" int hud_ui_callback_queue_exit_current_state_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    g_RecoilApp = RecoilApp{};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiCallback::QueueExitCurrentState();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    int result = 0;
+    if (g_stateExitCount != 1 || g_stateEnterCount != 0) {
+        result = 1;
+    } else if (!IsSingleExitCurrentQueueItem(queue, 0)) {
+        result = 2;
+    }
+
+    CleanupQueuedItems(queue);
+    g_RecoilApp = oldApp;
+    return result;
+}
+
 extern "C" int hud_ui_background_confirm_quit_lifecycle_smoke(void) {
     CodeFunctionPatch loadPatch{};
     CodeFunctionPatch bindPatch{};
@@ -2346,6 +2526,349 @@ extern "C" int recoil_state_confirm_quit_static_init_smoke(void) {
     }
 
     return 0;
+}
+
+extern "C" int recoil_state_cheat_code_constructor_smoke(void) {
+    RecoilStateCheatCode state{};
+    state.vftable = 0x11111111;
+    state.m_dialog = 0x22222222;
+    state.m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    state.m_audioSnapshot = 0x33333333;
+
+    RecoilStateCheatCode *const returned = state.Constructor();
+    if (returned != &state || state.vftable == 0 || state.m_dialog != 0 ||
+        state.m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
+        state.m_audioSnapshot != 0x33333333) {
+        return 1;
+    }
+
+    return 0;
+}
+
+extern "C" int recoil_state_cheat_code_destructor_smoke(void) {
+    TestConfirmQuitDialog dialog{};
+
+    RecoilStateCheatCode state{};
+    state.vftable = 0x11111111;
+    state.m_dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    state.m_audioSnapshot = 0x33333333;
+
+    state.~RecoilStateCheatCode();
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0 ||
+        dialog.setEnabledCount != 0 || dialog.scalarDeletingCount != 1 ||
+        dialog.lastScalarDeletingFlags != 1 ||
+        state.m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
+        state.m_audioSnapshot != 0x33333333) {
+        return 1;
+    }
+
+    return 0;
+}
+
+extern "C" int recoil_state_cheat_code_scalar_deleting_destructor_smoke(void) {
+    RecoilStateCheatCode scalarState{};
+    scalarState.vftable = 0x11111111;
+    scalarState.m_dialog = 0;
+    scalarState.m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    scalarState.m_audioSnapshot = 0x33333333;
+
+    RecoilStateCheatCode *const scalarReturned =
+        scalarState.ScalarDeletingDestructor(0);
+    if (scalarReturned != &scalarState ||
+        scalarState.vftable != kRecoilStateBase_VtblAddress ||
+        scalarState.m_dialog != 0 ||
+        scalarState.m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
+        scalarState.m_audioSnapshot != 0x33333333) {
+        return 1;
+    }
+
+    RecoilStateCheatCode *const deletingState =
+        static_cast<RecoilStateCheatCode *>(::operator new(sizeof(RecoilStateCheatCode)));
+    deletingState->vftable = 0x11111111;
+    deletingState->m_dialog = 0;
+    deletingState->m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    deletingState->m_audioSnapshot = 0x33333333;
+    RecoilStateCheatCode *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+    return deletingReturned == deletingState ? 0 : 2;
+}
+
+extern "C" int recoil_state_cheat_code_static_init_thunks_smoke(void) {
+    TestConfirmQuitDialog dialog{};
+
+    g_RecoilStateCheatCode.vftable = 0x11111111;
+    g_RecoilStateCheatCode.m_dialog = 0x22222222;
+    g_RecoilStateCheatCode.m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    g_RecoilStateCheatCode.m_audioSnapshot = 0x33333333;
+    RecoilStateCheatCode *const constructReturned =
+        RecoilStateCheatCode::ConstructGlobal();
+    if (constructReturned != &g_RecoilStateCheatCode ||
+        g_RecoilStateCheatCode.vftable == 0 ||
+        g_RecoilStateCheatCode.m_dialog != 0 ||
+        g_RecoilStateCheatCode.m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
+        g_RecoilStateCheatCode.m_audioSnapshot != 0x33333333) {
+        return 1;
+    }
+
+    RecoilStateCheatCode::StaticInit();
+
+    g_RecoilStateCheatCode.m_dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    RecoilStateCheatCode::AtExitDestructor();
+    if (g_RecoilStateCheatCode.vftable != kRecoilStateBase_VtblAddress ||
+        g_RecoilStateCheatCode.m_dialog != 0 ||
+        dialog.setEnabledCount != 0 || dialog.scalarDeletingCount != 1 ||
+        dialog.lastScalarDeletingFlags != 1) {
+        return 2;
+    }
+
+    g_RecoilStateCheatCode.vftable = 0x44444444;
+    g_RecoilStateCheatCode.m_dialog = 0x55555555;
+    RecoilStateCheatCode::StaticInitAndRegisterAtExit();
+    if (g_RecoilStateCheatCode.vftable == 0 ||
+        g_RecoilStateCheatCode.m_dialog != 0) {
+        return 3;
+    }
+
+    return 0;
+}
+
+extern "C" int recoil_state_cheat_code_on_try_become_current_smoke(void) {
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 6;
+    vmodeOption.name = vmodeName;
+    zOptionEntryPartial *const oldOptionsHead = g_zGame_Options_OptionListHead;
+
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const int oldRendererType = g_zVideo_RendererType;
+    const zVideo_BltRectDirectProc oldBltDirect = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    const int oldHalfResMode = g_zVideo_HalfResAdjustMode;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    const zSndSampleSetRegistry oldSampleSetRegistry = g_zSnd_SampleSetRegistry;
+    void *const oldGlobalVolumeScale = g_zSnd_GlobalVolumeScalePtr;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const int oldSndInitialized = g_zSnd_IsInitialized;
+    const int oldSndPreInitialized = g_zSnd_PreInitialized;
+
+    float globalVolumeScale = 1.0f;
+    char dialogSetName[] = "DIALOG";
+    zSndSampleSet dialogSet = {};
+    zSndSampleSet *sampleSetSlots[1] = {&dialogSet};
+    std::uint16_t pixels[4] = {};
+    dialogSet.setName = dialogSetName;
+
+    g_zGame_Options_OptionListHead = &vmodeOption;
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_RendererType = 1;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = TestCheatCodeBltSwToPrimaryRectDirect;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+    g_zVideo_HalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    g_HudUi_InvalidateMask = 0x80;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolumeScale;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_cheatCodeBltDirectCalls = 0;
+
+    RecoilStateCheatCode state{};
+    state.Constructor();
+
+    const int accepted = state.OnTryBecomeCurrent();
+    HudUiCheatCodeDialog *const dialog =
+        reinterpret_cast<HudUiCheatCodeDialog *>(static_cast<std::uintptr_t>(state.m_dialog));
+    zSndPlayHandleSnapshot *const snapshot =
+        reinterpret_cast<zSndPlayHandleSnapshot *>(static_cast<std::uintptr_t>(state.m_audioSnapshot));
+
+    int result = 0;
+    if (accepted != 1 || dialog == nullptr || snapshot == nullptr) {
+        result = 1;
+    } else if (g_cheatCodeBltDirectCalls != 1 ||
+               state.m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
+               g_zVideo_HalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_DISABLED ||
+               g_HudUi_InvalidateMask != 0x04u || dialog->base.base.enabled != 1 ||
+               dialogSet.resourcesLoaded != 1) {
+        result = 2;
+    }
+
+    if (dialog != nullptr) {
+        dialog->ScalarDeletingDestructor(1);
+        state.m_dialog = 0;
+    }
+    if (snapshot != nullptr) {
+        snapshot->Destroy();
+        state.m_audioSnapshot = 0;
+    }
+
+    g_zGame_Options_OptionListHead = oldOptionsHead;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_HalfResAdjustMode = oldHalfResMode;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    g_zSnd_SampleSetRegistry = oldSampleSetRegistry;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScale;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSnd_IsInitialized = oldSndInitialized;
+    g_zSnd_PreInitialized = oldSndPreInitialized;
+    return result;
+}
+
+extern "C" int recoil_state_cheat_code_on_deactivate_smoke(void) {
+    CodeFunctionPatch postprocessPatch{};
+    CodeFunctionPatch blitPatch{};
+    CodeFunctionPatch unlockPatch{};
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                           reinterpret_cast<void *>(
+                               &FakeConfirmQuitRunPostprocessOnPrimaryBuffer),
+                           postprocessPatch)) {
+        return 1;
+    }
+
+    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+        &HudUiDialogController::BlitOwnedSurfaceToPrimary;
+    void (RECOIL_THISCALL FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
+        &FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(blitMember)),
+                           reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeBlitMember)),
+                           blitPatch)) {
+        RestoreFunctionPatch(postprocessPatch);
+        return 2;
+    }
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                           reinterpret_cast<void *>(&FakeConfirmQuitUnlockPrimarySurfaceState),
+                           unlockPatch)) {
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 3;
+    }
+
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 6;
+    vmodeOption.name = vmodeName;
+    zOptionEntryPartial *const oldOptionsHead = g_zGame_Options_OptionListHead;
+
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldUseHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_BltRectDirectProc oldBltDirect = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    const int oldHalfResMode = g_zVideo_HalfResAdjustMode;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    const zSndSampleSetRegistry oldSampleSetRegistry = g_zSnd_SampleSetRegistry;
+    void *const oldGlobalVolumeScale = g_zSnd_GlobalVolumeScalePtr;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const int oldSndInitialized = g_zSnd_IsInitialized;
+    const int oldSndPreInitialized = g_zSnd_PreInitialized;
+    HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
+
+    float globalVolumeScale = 1.0f;
+    char dialogSetName[] = "DIALOG";
+    zSndSampleSet dialogSet = {};
+    zSndSampleSet *sampleSetSlots[1] = {&dialogSet};
+    std::uint16_t pixels[4] = {};
+    HudLayoutBase_FTable layoutTable{};
+    HudLayoutBase layout{&layoutTable};
+    dialogSet.setName = dialogSetName;
+    layoutTable.OnActivated = TestPlayStateLayoutOnActivated;
+
+    g_zGame_Options_OptionListHead = &vmodeOption;
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_RendererType = 1;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = TestCheatCodeBltSwToPrimaryRectDirect;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+    g_zVideo_HalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    g_HudUi_InvalidateMask = 0x80;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolumeScale;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_HudUiMgrCurrentLayout = &layout;
+    g_cheatCodeBltDirectCalls = 0;
+    g_playStateLayoutActivatedCount = 0;
+
+    RecoilStateCheatCode state{};
+    state.Constructor();
+    int result = state.OnTryBecomeCurrent() == 1 ? 0 : 4;
+    if (result == 0 && state.m_dialog == 0) {
+        result = 13;
+    }
+    zSndPlayHandleSnapshot *const snapshot =
+        reinterpret_cast<zSndPlayHandleSnapshot *>(static_cast<std::uintptr_t>(state.m_audioSnapshot));
+
+    if (result == 0) {
+        state.OnDeactivate();
+        if (state.m_dialog != 0) {
+            result = 5;
+        } else if (g_zVideo_HalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED) {
+            result = 6;
+        } else if (g_HudUi_InvalidateMask != 0x0cu) {
+            result = 7;
+        } else if (dialogSet.resourcesLoaded != 0) {
+            result = 8;
+        } else if (g_playStateLayoutActivatedCount != 1) {
+            result = 9;
+        }
+    }
+
+    if (snapshot != nullptr) {
+        snapshot->Destroy();
+        state.m_audioSnapshot = 0;
+    }
+
+    g_zGame_Options_OptionListHead = oldOptionsHead;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldUseHalfResBackbuffer;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_HalfResAdjustMode = oldHalfResMode;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    g_zSnd_SampleSetRegistry = oldSampleSetRegistry;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScale;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSnd_IsInitialized = oldSndInitialized;
+    g_zSnd_PreInitialized = oldSndPreInitialized;
+    g_HudUiMgrCurrentLayout = oldLayout;
+
+    RestoreFunctionPatch(unlockPatch);
+    RestoreFunctionPatch(blitPatch);
+    RestoreFunctionPatch(postprocessPatch);
+    return result;
 }
 
 extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {
@@ -5432,6 +5955,256 @@ extern "C" int recoil_state_credits_destructor_smoke(void) {
     state.~RecoilStateCredits();
 
     return state.vftable == kRecoilStateBase_VtblAddress ? 0 : 4;
+}
+
+extern "C" int recoil_state_credits_constructor_smoke(void) {
+    RecoilStateCredits state{};
+    state.vftable = 0x11111111;
+    state.dialog = 0x22222222;
+
+    RecoilStateCredits *const result = state.Constructor();
+
+    return result == &state && state.vftable != 0 && state.vftable != 0x11111111 &&
+                   state.dialog == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int recoil_state_credits_on_wnd_activate_smoke(void) {
+    CodeFunctionPatch blitPatch{};
+    CodeFunctionPatch invalidatePatch{};
+
+    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+        &HudUiDialogController::BlitOwnedSurfaceToPrimary;
+    void (RECOIL_THISCALL FakeCreditsOnWndActivateThunk::*fakeBlitMember)() =
+        &FakeCreditsOnWndActivateThunk::BlitOwnedSurfaceToPrimary;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(blitMember)),
+                           reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeBlitMember)),
+                           blitPatch)) {
+        return 1;
+    }
+
+    void (RECOIL_THISCALL HudUiContainer::*invalidateMember)() =
+        &HudUiContainer::InvalidateChildren;
+    void (RECOIL_THISCALL FakeCreditsOnWndActivateThunk::*fakeInvalidateMember)() =
+        &FakeCreditsOnWndActivateThunk::InvalidateChildren;
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(TestCheatCodeMethodAddress(invalidateMember)),
+            reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeInvalidateMember)),
+            invalidatePatch)) {
+        RestoreFunctionPatch(blitPatch);
+        return 2;
+    }
+
+    TestCreditsPanel panel{};
+    RecoilStateCredits state{};
+    state.dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+
+    g_creditsOnWndActivateBlitCalls = 0;
+    g_creditsOnWndActivateInvalidateCalls = 0;
+    g_creditsOnWndActivateCallOrder = 0;
+    g_creditsOnWndActivateBlitOrder = 0;
+    g_creditsOnWndActivateInvalidateOrder = 0;
+
+    state.OnWndActivate(0);
+    const bool inactiveOk = g_creditsOnWndActivateBlitCalls == 0 &&
+                            g_creditsOnWndActivateInvalidateCalls == 0;
+
+    state.dialog = 0;
+    state.OnWndActivate(1);
+    const bool nullDialogOk = g_creditsOnWndActivateBlitCalls == 0 &&
+                              g_creditsOnWndActivateInvalidateCalls == 0;
+
+    state.dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+    state.OnWndActivate(1);
+    const bool activeOk = g_creditsOnWndActivateBlitCalls == 1 &&
+                          g_creditsOnWndActivateInvalidateCalls == 1 &&
+                          g_creditsOnWndActivateBlitOrder == 1 &&
+                          g_creditsOnWndActivateInvalidateOrder == 2;
+
+    RestoreFunctionPatch(invalidatePatch);
+    RestoreFunctionPatch(blitPatch);
+
+    if (!inactiveOk) {
+        return 3;
+    }
+    if (!nullDialogOk) {
+        return 4;
+    }
+    return activeOk ? 0 : 5;
+}
+
+extern "C" int recoil_state_credits_on_try_become_current_smoke(void) {
+    char oldDir[MAX_PATH] = {};
+    char tempBase[MAX_PATH] = {};
+    char tempDir[MAX_PATH] = {};
+    if (GetCurrentDirectoryA(sizeof(oldDir), oldDir) == 0 ||
+        GetTempPathA(sizeof(tempBase), tempBase) == 0) {
+        return 1;
+    }
+
+    std::snprintf(tempDir, sizeof(tempDir), "%srecoil_credits_state_%lu",
+                  tempBase, GetTickCount());
+    if (CreateDirectoryA(tempDir, nullptr) == 0 || SetCurrentDirectoryA(tempDir) == 0) {
+        RemoveDirectoryA(tempDir);
+        return 2;
+    }
+
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 5;
+    vmodeOption.name = vmodeName;
+    vmodeOption.next = nullptr;
+
+    zOptionEntryPartial *const oldOptionsHead = g_zGame_Options_OptionListHead;
+    const int oldQuitAfterCredits = g_RecoilApp_QuitAfterCredits;
+    std::uint16_t pixels[4] = {};
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial savedPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    g_zGame_Options_OptionListHead = &vmodeOption;
+    g_RecoilApp_QuitAfterCredits = 0;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    CodeFunctionPatch setEnabledPatch{};
+    void (RECOIL_THISCALL HudUiBackground::*setEnabledMember)(int) =
+        &HudUiBackground::SetEnabled;
+    void (RECOIL_THISCALL FakeCreditsTryBecomeCurrentSetEnabledThunk::*
+              fakeSetEnabledMember)(int) =
+        &FakeCreditsTryBecomeCurrentSetEnabledThunk::SetEnabled;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(setEnabledMember)),
+                           reinterpret_cast<void *>(
+                               TestCheatCodeMethodAddress(fakeSetEnabledMember)),
+                           setEnabledPatch)) {
+        g_zVideo_RendererType = savedRendererType;
+        g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+        g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+        g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+        g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+        g_RecoilApp_QuitAfterCredits = oldQuitAfterCredits;
+        g_zGame_Options_OptionListHead = oldOptionsHead;
+        SetCurrentDirectoryA(oldDir);
+        RemoveDirectoryA(tempDir);
+        return 3;
+    }
+
+    g_creditsTryBecomeCurrentSetEnabledCalls = 0;
+    g_creditsTryBecomeCurrentLastEnabled = -1;
+    g_creditsTryBecomeCurrentSetEnabledThis = nullptr;
+
+    RecoilStateCredits state{};
+    const int result = state.OnTryBecomeCurrent();
+    HudUiCreditsPanel *const dialog = (HudUiCreditsPanel *)static_cast<std::uintptr_t>(
+        state.dialog);
+
+    int failure = result == 1 ? 0 : 4;
+    failure |= dialog != nullptr ? 0 : 8;
+    if (dialog != nullptr) {
+        failure |= dialog->base.base.base.vptr ==
+                           (const HudUiContainer_FTable *)(&g_HudUiCreditsPanel_FTable)
+                       ? 0
+                       : 16;
+        failure |= g_creditsTryBecomeCurrentSetEnabledCalls == 1 ? 0 : 32;
+        failure |= g_creditsTryBecomeCurrentSetEnabledThis == dialog ? 0 : 64;
+        failure |= g_creditsTryBecomeCurrentLastEnabled == 1 ? 0 : 128;
+    }
+
+    RestoreFunctionPatch(setEnabledPatch);
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+    g_RecoilApp_QuitAfterCredits = oldQuitAfterCredits;
+    g_zGame_Options_OptionListHead = oldOptionsHead;
+    SetCurrentDirectoryA(oldDir);
+    RemoveDirectoryA(tempDir);
+    return failure;
+}
+
+extern "C" int recoil_state_credits_on_deactivate_smoke(void) {
+    CodeFunctionPatch blitPatch{};
+
+    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+        &HudUiDialogController::BlitOwnedSurfaceToPrimary;
+    void (RECOIL_THISCALL FakeCreditsOnWndActivateThunk::*fakeBlitMember)() =
+        &FakeCreditsOnWndActivateThunk::BlitOwnedSurfaceToPrimary;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(blitMember)),
+                           reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeBlitMember)),
+                           blitPatch)) {
+        return 1;
+    }
+
+    RecoilStateCredits state{};
+    g_creditsOnWndActivateBlitCalls = 0;
+
+    state.dialog = 0;
+    state.OnDeactivate();
+    const bool nullOk = state.dialog == 0 && g_creditsOnWndActivateBlitCalls == 0;
+
+    TestCreditsPanel panel{};
+    state.dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+    state.OnDeactivate();
+    const bool activeOk = state.dialog == 0 && panel.setEnabledCount == 1 &&
+                          panel.lastEnabled == 0 && panel.scalarDeletingCount == 1 &&
+                          panel.lastScalarDeletingFlags == 1 &&
+                          g_creditsOnWndActivateBlitCalls == 1;
+
+    RestoreFunctionPatch(blitPatch);
+    if (!nullOk) {
+        return 2;
+    }
+    return activeOk ? 0 : 3;
+}
+
+extern "C" int recoil_state_credits_queue_push_smoke(void) {
+    RecoilApp oldApp = g_RecoilApp;
+    const RecoilPtr32 oldCreditsVtable = g_RecoilStateCredits.vftable;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    g_RecoilStateCredits.vftable = oldState.vftable;
+    g_stateEnterCount = 0;
+
+    g_RecoilApp = {};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+
+    RecoilStateCredits::QueuePush();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    bool itemOk = false;
+    if (queue.m_itemCount == 1) {
+        const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+        RecoilPtr32 *const slot =
+            (RecoilPtr32 *)static_cast<std::uintptr_t>(slotValue);
+        RecoilApp_StateQueueItem *const item =
+            (RecoilApp_StateQueueItem *)static_cast<std::uintptr_t>(*slot);
+        itemOk = item->m_type == 0 && item->m_kind == RecoilApp_StateQueueKind_PushState &&
+                 item->m_stateObj ==
+                     static_cast<RecoilPtr32>(
+                         reinterpret_cast<std::uintptr_t>(&g_RecoilStateCredits)) &&
+                 item->m_param == 0;
+        CleanupSingleQueuedItem(queue);
+    }
+
+    const bool enterOk = g_stateEnterCount == 1;
+    g_RecoilStateCredits.vftable = oldCreditsVtable;
+    g_RecoilApp = oldApp;
+    return itemOk && enterOk ? 0 : 1;
 }
 
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
