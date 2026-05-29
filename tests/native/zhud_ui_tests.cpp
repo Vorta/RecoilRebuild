@@ -9115,6 +9115,27 @@ extern "C" int zhud_util_free_field_ptr_smoke(void) {
     return field.fieldPtr == nullptr ? 0 : 2;
 }
 
+extern "C" int zhud_cmd_binding_entry_copy_range_smoke(void) {
+    HudCmdBindingEntry first{};
+    HudCmdBindingEntry second{};
+    HudCmdBindingEntry third{};
+    HudCmdBindingEntry *source[3] = {&first, &second, &third};
+    HudCmdBindingEntry *dest[4] = {};
+
+    HudCmdBindingEntry **const emptyResult =
+        HudCmdBindingEntry::CopyRange(source, source, dest);
+    if (emptyResult != dest || dest[0] != nullptr) {
+        return 1;
+    }
+
+    HudCmdBindingEntry **const result =
+        HudCmdBindingEntry::CopyRange(source, source + 3, dest);
+    return result == dest + 3 && dest[0] == &first && dest[1] == &second &&
+                   dest[2] == &third && dest[3] == nullptr
+               ? 0
+               : 2;
+}
+
 extern "C" int zhud_panel_constructor_default_smoke(void) {
     alignas(HudUiPanel) std::uint8_t storage[0x2ac]{};
     auto *panel = reinterpret_cast<HudUiPanel *>(storage);

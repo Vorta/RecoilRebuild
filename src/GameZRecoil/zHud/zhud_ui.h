@@ -906,6 +906,10 @@ struct HudCmdBindingVector {
 
 struct HudCmdBindingEntry {
     char *displayText;
+
+    static HudCmdBindingEntry **RECOIL_FASTCALL
+    CopyRange(HudCmdBindingEntry **sourceBegin, HudCmdBindingEntry **sourceEnd,
+              HudCmdBindingEntry **dest);
 };
 
 struct HudCmdBindButtonBase {

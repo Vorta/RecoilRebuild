@@ -2015,10 +2015,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40be60:
   - [✅] Reconstructed (Name: HudCmdBindingEntry::CopyRange)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindingEntry::CopyRange File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_binding_entry_copy_range)
+  - [✅] Binary-safe
 - 0x40bf20:
   - [✅] Reconstructed (Name: HudCmdBindingEntry::DeleteAndReturnNull)
   - [❌] Source dependencies satisfied

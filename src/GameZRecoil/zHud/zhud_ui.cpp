@@ -8123,6 +8123,26 @@ void RECOIL_THISCALL StdPtrVector::ClearNoOpDestroy(int *begin, int *end) {
     (void)end;
 }
 
+// Reimplements 0x40be60: HudCmdBindingEntry::CopyRange
+// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+HudCmdBindingEntry **RECOIL_FASTCALL
+HudCmdBindingEntry::CopyRange(HudCmdBindingEntry **sourceBegin,
+                              HudCmdBindingEntry **sourceEnd,
+                              HudCmdBindingEntry **dest)
+{
+    if (sourceBegin != sourceEnd)
+    {
+        do
+        {
+            *dest = *sourceBegin;
+            ++sourceBegin;
+            ++dest;
+        } while (sourceBegin != sourceEnd);
+    }
+
+    return dest;
+}
+
 // Reimplements 0x40bdc0: zUtil_StdPtrVector_Clear
 RECOIL_NOINLINE void **RECOIL_FASTCALL zUtil_StdPtrVector_Clear(HudCmdBindingVector *self) {
     void **const oldEnd = (void **)(self->end);
