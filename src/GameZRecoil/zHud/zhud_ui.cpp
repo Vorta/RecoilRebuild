@@ -4740,6 +4740,109 @@ void RECOIL_THISCALL HudUiPanelSpan::Clear()
     cap = 0;
 }
 
+// Reimplements 0x409b90: HudUiPanelSpan::InsertN
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void RECOIL_THISCALL HudUiPanelSpan::InsertN(HudUiPanelLayoutEntry *insertPos,
+                                             unsigned int count,
+                                             const HudUiPanelLayoutEntry *templatePanel)
+{
+    if (count == 0)
+    {
+        return;
+    }
+
+    const size_t size = begin != 0 ? (size_t)(end - begin) : 0;
+    const size_t positionIndex =
+        begin != 0 && insertPos != 0 ? (size_t)(insertPos - begin) : 0;
+    const size_t capacity = begin != 0 ? (size_t)(cap - begin) : 0;
+    const size_t tailCount = size - positionIndex;
+
+    if (size + count <= capacity)
+    {
+        if (tailCount >= count)
+        {
+            HudUiPanelLayoutEntry *source = end - count;
+            HudUiPanelLayoutEntry *dest = end;
+            while (source != end)
+            {
+                dest->CopyConstruct(source);
+                ++source;
+                ++dest;
+            }
+
+            source = end - count;
+            dest = end;
+            while (source != begin + positionIndex)
+            {
+                --source;
+                --dest;
+                dest->CopyAssign(source);
+            }
+
+            for (unsigned int i = 0; i < count; ++i)
+            {
+                begin[positionIndex + i].CopyAssign(templatePanel);
+            }
+        }
+        else
+        {
+            HudUiPanelLayoutEntry *dest = end;
+            for (unsigned int i = 0; i < count - tailCount; ++i)
+            {
+                dest->CopyConstruct(templatePanel);
+                ++dest;
+            }
+
+            for (HudUiPanelLayoutEntry *source = begin + positionIndex; source != end;
+                 ++source, ++dest)
+            {
+                dest->CopyConstruct(source);
+            }
+
+            for (HudUiPanelLayoutEntry *entry = begin + positionIndex; entry != end; ++entry)
+            {
+                entry->CopyAssign(templatePanel);
+            }
+        }
+
+        end += count;
+        return;
+    }
+
+    const size_t growth = count < size ? size : count;
+    const size_t newCapacity = size + growth;
+    HudUiPanelLayoutEntry *const newBegin =
+        (HudUiPanelLayoutEntry *)(::operator new(newCapacity * sizeof(HudUiPanelLayoutEntry)));
+    HudUiPanelLayoutEntry *dest = newBegin;
+
+    for (size_t prefixIndex = 0; prefixIndex < positionIndex; ++prefixIndex, ++dest)
+    {
+        dest->CopyConstruct(&begin[prefixIndex]);
+    }
+
+    for (unsigned int insertIndex = 0; insertIndex < count; ++insertIndex, ++dest)
+    {
+        dest->CopyConstruct(templatePanel);
+    }
+
+    for (size_t suffixIndex = positionIndex; suffixIndex < size; ++suffixIndex, ++dest)
+    {
+        dest->CopyConstruct(&begin[suffixIndex]);
+    }
+
+    HudUiPanelLayoutEntry *entry = begin;
+    while (entry != end)
+    {
+        entry->panel.DestructorThunk();
+        ++entry;
+    }
+
+    ::operator delete(begin);
+    begin = newBegin;
+    end = newBegin + size + count;
+    cap = newBegin + newCapacity;
+}
+
 // Reimplements 0x409b20: HudUiPanelSpan::DestroyAndFree
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
 void RECOIL_THISCALL HudUiPanelSpan::DestroyAndFree()

@@ -1720,10 +1720,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Functional-equivalent
   - [❌] Binary-safe
 - 0x409b90:
-  - [☑️] Reconstructed (Name: HudUiPanelSpan::InsertN)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiPanelSpan::InsertN)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanelSpan::InsertN File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_span_insert_n)
   - [❌] Binary-safe
 - 0x409ef0:
   - [✅] Reconstructed (Name: HudUiPanel::DestructorCallback)

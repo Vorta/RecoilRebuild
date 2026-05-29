@@ -2386,6 +2386,81 @@ extern "C" int zhud_panel_span_destroy_and_free_smoke(void) {
                : 1;
 }
 
+HudUiPanelLayoutEntry *AllocatePanelLayoutEntriesForTest(std::size_t capacity) {
+    return static_cast<HudUiPanelLayoutEntry *>(
+        ::operator new(sizeof(HudUiPanelLayoutEntry) * capacity));
+}
+
+void InitPanelLayoutEntryForTest(HudUiPanelLayoutEntry *entry, const char *text, int x, int y) {
+    entry->panel.ConstructorDefault(text, x, y);
+    entry->layoutX = x;
+    entry->layoutY = y;
+}
+
+bool PanelLayoutEntryMatchesForTest(const HudUiPanelLayoutEntry &entry, const char *text, int x,
+                                    int y) {
+    return entry.layoutX == x && entry.layoutY == y &&
+           std::strcmp(&TestFieldAt<char>(const_cast<HudUiPanel *>(&entry.panel), 0x34), text) ==
+               0;
+}
+
+extern "C" int zhud_panel_span_insert_n_smoke(void) {
+    HudUiPanelLayoutEntry templateEntry{};
+    InitPanelLayoutEntryForTest(&templateEntry, "insert", 90, 91);
+
+    HudUiPanelSpan growSpan{};
+    growSpan.begin = AllocatePanelLayoutEntriesForTest(2);
+    growSpan.end = growSpan.begin + 2;
+    growSpan.cap = growSpan.end;
+    InitPanelLayoutEntryForTest(&growSpan.begin[0], "before", 10, 11);
+    InitPanelLayoutEntryForTest(&growSpan.begin[1], "after", 20, 21);
+    growSpan.InsertN(growSpan.begin + 1, 1, &templateEntry);
+    const bool growOk =
+        growSpan.end == growSpan.begin + 3 && growSpan.cap == growSpan.begin + 4 &&
+        PanelLayoutEntryMatchesForTest(growSpan.begin[0], "before", 10, 11) &&
+        PanelLayoutEntryMatchesForTest(growSpan.begin[1], "insert", 90, 91) &&
+        PanelLayoutEntryMatchesForTest(growSpan.begin[2], "after", 20, 21);
+    growSpan.DestroyAndFree();
+
+    HudUiPanelSpan longTailSpan{};
+    longTailSpan.begin = AllocatePanelLayoutEntriesForTest(4);
+    longTailSpan.end = longTailSpan.begin + 3;
+    longTailSpan.cap = longTailSpan.begin + 4;
+    InitPanelLayoutEntryForTest(&longTailSpan.begin[0], "row 0", 30, 31);
+    InitPanelLayoutEntryForTest(&longTailSpan.begin[1], "row 1", 40, 41);
+    InitPanelLayoutEntryForTest(&longTailSpan.begin[2], "row 2", 50, 51);
+    longTailSpan.InsertN(longTailSpan.begin + 1, 1, &templateEntry);
+    const bool longTailOk =
+        longTailSpan.end == longTailSpan.begin + 4 &&
+        longTailSpan.cap == longTailSpan.begin + 4 &&
+        PanelLayoutEntryMatchesForTest(longTailSpan.begin[0], "row 0", 30, 31) &&
+        PanelLayoutEntryMatchesForTest(longTailSpan.begin[1], "insert", 90, 91) &&
+        PanelLayoutEntryMatchesForTest(longTailSpan.begin[2], "row 1", 40, 41) &&
+        PanelLayoutEntryMatchesForTest(longTailSpan.begin[3], "row 2", 50, 51);
+    longTailSpan.DestroyAndFree();
+
+    HudUiPanelSpan shortTailSpan{};
+    shortTailSpan.begin = AllocatePanelLayoutEntriesForTest(5);
+    shortTailSpan.end = shortTailSpan.begin + 3;
+    shortTailSpan.cap = shortTailSpan.begin + 5;
+    InitPanelLayoutEntryForTest(&shortTailSpan.begin[0], "base 0", 60, 61);
+    InitPanelLayoutEntryForTest(&shortTailSpan.begin[1], "base 1", 70, 71);
+    InitPanelLayoutEntryForTest(&shortTailSpan.begin[2], "base 2", 80, 81);
+    shortTailSpan.InsertN(shortTailSpan.begin + 2, 2, &templateEntry);
+    const bool shortTailOk =
+        shortTailSpan.end == shortTailSpan.begin + 5 &&
+        shortTailSpan.cap == shortTailSpan.begin + 5 &&
+        PanelLayoutEntryMatchesForTest(shortTailSpan.begin[0], "base 0", 60, 61) &&
+        PanelLayoutEntryMatchesForTest(shortTailSpan.begin[1], "base 1", 70, 71) &&
+        PanelLayoutEntryMatchesForTest(shortTailSpan.begin[2], "insert", 90, 91) &&
+        PanelLayoutEntryMatchesForTest(shortTailSpan.begin[3], "insert", 90, 91) &&
+        PanelLayoutEntryMatchesForTest(shortTailSpan.begin[4], "base 2", 80, 81);
+    shortTailSpan.DestroyAndFree();
+
+    templateEntry.panel.Destructor();
+    return growOk && longTailOk && shortTailOk ? 0 : 1;
+}
+
 extern "C" int zhud_composite_panel_vector_insert_copies_smoke(void) {
     HudUiCommon_FTable destructorTable{};
     destructorTable.slots[0] = MethodAddress(&TestCompositePanelEntry::ScalarDeletingDestructor);

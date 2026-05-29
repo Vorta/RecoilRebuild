@@ -1417,6 +1417,8 @@ struct HudUiPanelSpan {
     HudUiPanelLayoutEntry *cap;
 
     void RECOIL_THISCALL Clear();
+    void RECOIL_THISCALL InsertN(HudUiPanelLayoutEntry *insertPos, unsigned int count,
+                                 const HudUiPanelLayoutEntry *templatePanel);
     void RECOIL_THISCALL DestroyAndFree();
 };
 
