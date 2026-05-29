@@ -1436,6 +1436,7 @@ struct HudUiZrdScrollingText {
     int totalHeight;
 
     void RECOIL_THISCALL OnActivateResetOwnerFade();
+    void RECOIL_THISCALL UpdateScrollPositions(float scrollProgress);
 };
 
 struct HudUiCreditsPanel {

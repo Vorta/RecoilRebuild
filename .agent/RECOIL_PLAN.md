@@ -1654,10 +1654,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Functional-equivalent
   - [❌] Binary-safe
 - 0x409470:
-  - [☑️] Reconstructed (Name: HudUiZrdScrollingText::UpdateScrollPositions)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiZrdScrollingText::UpdateScrollPositions)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdScrollingText::UpdateScrollPositions File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_scrolling_text_update_scroll_positions)
   - [❌] Binary-safe
 - 0x409550:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::OnActivateResetOwnerFade)

@@ -2543,6 +2543,52 @@ extern "C" int zhud_credits_panel_scalar_deleting_destructor_smoke(void) {
     return failure;
 }
 
+void InitScrollingTextEntryForTest(HudUiPanelLayoutEntry *entry, int x, int y, int height) {
+    entry->panel.vtbl = &g_HudUiPanel_FTable;
+    TestFieldAt<std::uint32_t>(&entry->panel, 0x0c) = 0;
+    TestFieldAt<std::int32_t>(&entry->panel, 0x260) = height;
+    TestFieldAt<std::int32_t>(&entry->panel, 0x274) = 0;
+    TestFieldAt<std::uint32_t>(&entry->panel, 0x270) = 0;
+    entry->layoutX = x;
+    entry->layoutY = y;
+}
+
+extern "C" int zhud_scrolling_text_update_scroll_positions_smoke(void) {
+    HudUiZrdScrollingText text{};
+    text.rect.left = 10;
+    text.rect.top = 100;
+    text.rect.bottom = 200;
+    text.totalHeight = 50;
+
+    HudUiPanelSpan row{};
+    row.begin = AllocatePanelLayoutEntriesForTest(3);
+    row.end = row.begin + 3;
+    row.cap = row.end;
+    InitScrollingTextEntryForTest(&row.begin[0], 1, -30, 20);
+    InitScrollingTextEntryForTest(&row.begin[1], 2, -10, 20);
+    InitScrollingTextEntryForTest(&row.begin[2], 3, 70, 20);
+
+    text.rows.begin = &row;
+    text.rows.end = &row + 1;
+    text.rows.cap = text.rows.end;
+
+    text.UpdateScrollPositions(0.5f);
+
+    const bool positions =
+        TestFieldAt<std::int32_t>(&row.begin[0].panel, 0x14) == 11 &&
+        TestFieldAt<std::int32_t>(&row.begin[0].panel, 0x18) == 95 &&
+        TestFieldAt<std::int32_t>(&row.begin[1].panel, 0x14) == 12 &&
+        TestFieldAt<std::int32_t>(&row.begin[1].panel, 0x18) == 115 &&
+        TestFieldAt<std::int32_t>(&row.begin[2].panel, 0x14) == 13 &&
+        TestFieldAt<std::int32_t>(&row.begin[2].panel, 0x18) == 195;
+    const bool visibility = (TestFieldAt<std::uint32_t>(&row.begin[0].panel, 0x0c) & 0x10u) != 0 &&
+                            (TestFieldAt<std::uint32_t>(&row.begin[1].panel, 0x0c) & 0x10u) == 0 &&
+                            (TestFieldAt<std::uint32_t>(&row.begin[2].panel, 0x0c) & 0x10u) != 0;
+
+    ::operator delete(row.begin);
+    return positions && visibility ? 0 : 1;
+}
+
 extern "C" int zhud_composite_panel_vector_insert_copies_smoke(void) {
     HudUiCommon_FTable destructorTable{};
     destructorTable.slots[0] = MethodAddress(&TestCompositePanelEntry::ScalarDeletingDestructor);

@@ -4701,6 +4701,38 @@ void RECOIL_THISCALL HudUiZrdScrollingText::OnActivateResetOwnerFade() {
     *ownerFadeProgress = 0.0f;
 }
 
+// Reimplements 0x409470: HudUiZrdScrollingText::UpdateScrollPositions
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void RECOIL_THISCALL HudUiZrdScrollingText::UpdateScrollPositions(float scrollProgress)
+{
+    const int left = rect.left;
+    const int scrollY = (int)((float)(rect.top - totalHeight) * scrollProgress +
+                              (1.0f - scrollProgress) * (float)(rect.bottom));
+
+    HudUiPanelSpan *row = rows.begin;
+    while (row != rows.end)
+    {
+        HudUiPanelLayoutEntry *entry = row->begin;
+        while (entry != row->end)
+        {
+            const int y = entry->layoutY + scrollY;
+            HudUiVirtualSetPosRequired(&entry->panel, entry->layoutX + left, y);
+            if (y > rect.top && y + entry->panel.QueryTextHeight() < rect.bottom)
+            {
+                HudUiVirtualSetVisibleRequired(&entry->panel, 1);
+            }
+            else
+            {
+                HudUiVirtualSetVisibleRequired(&entry->panel, 0);
+            }
+
+            ++entry;
+        }
+
+        ++row;
+    }
+}
+
 // Reimplements 0x4092a0: HudUiCreditsPanel::Destructor
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
 void RECOIL_THISCALL HudUiCreditsPanel::Destructor()
