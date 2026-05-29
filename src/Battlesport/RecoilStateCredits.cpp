@@ -8,6 +8,7 @@ struct RecoilStateCredits {
     RecoilStateCredits *RECOIL_THISCALL Constructor();
     RECOIL_NOINLINE void RECOIL_THISCALL OnWndActivate(int activateCode);
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
     RECOIL_NOINLINE ~RecoilStateCredits();
     static void RECOIL_CDECL QueuePush();
 };
@@ -83,6 +84,27 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateCredits::OnTryBecomeCurrent()
 
     ((HudUiCreditsPanelVirtual *)creditsPanel)->SetEnabled(1);
     return 1;
+}
+
+// Reimplements 0x409ad0: RecoilStateCredits::OnDeactivate
+// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCredits::OnDeactivate()
+{
+    HudUiCreditsPanelVirtual *dialogView =
+        (HudUiCreditsPanelVirtual *)dialog;
+    if (dialogView == 0) {
+        return;
+    }
+
+    dialogView->SetEnabled(0);
+    ((HudUiDialogController *)(unsigned int)dialog)->BlitOwnedSurfaceToPrimary();
+
+    dialogView = (HudUiCreditsPanelVirtual *)dialog;
+    if (dialogView != 0) {
+        dialogView->ScalarDeletingDestructor(1);
+    }
+
+    dialog = 0;
 }
 
 // Reimplements 0x4099f0: RecoilStateCredits::Destructor

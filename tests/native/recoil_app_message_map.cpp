@@ -45,6 +45,7 @@ struct RecoilStateCredits {
     RecoilStateCredits *RECOIL_THISCALL Constructor();
     void RECOIL_THISCALL OnWndActivate(int activateCode);
     int RECOIL_THISCALL OnTryBecomeCurrent();
+    void RECOIL_THISCALL OnDeactivate();
     ~RecoilStateCredits();
     static void RECOIL_CDECL QueuePush();
 };
@@ -6128,6 +6129,41 @@ extern "C" int recoil_state_credits_on_try_become_current_smoke(void) {
     SetCurrentDirectoryA(oldDir);
     RemoveDirectoryA(tempDir);
     return failure;
+}
+
+extern "C" int recoil_state_credits_on_deactivate_smoke(void) {
+    CodeFunctionPatch blitPatch{};
+
+    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+        &HudUiDialogController::BlitOwnedSurfaceToPrimary;
+    void (RECOIL_THISCALL FakeCreditsOnWndActivateThunk::*fakeBlitMember)() =
+        &FakeCreditsOnWndActivateThunk::BlitOwnedSurfaceToPrimary;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(blitMember)),
+                           reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeBlitMember)),
+                           blitPatch)) {
+        return 1;
+    }
+
+    RecoilStateCredits state{};
+    g_creditsOnWndActivateBlitCalls = 0;
+
+    state.dialog = 0;
+    state.OnDeactivate();
+    const bool nullOk = state.dialog == 0 && g_creditsOnWndActivateBlitCalls == 0;
+
+    TestCreditsPanel panel{};
+    state.dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+    state.OnDeactivate();
+    const bool activeOk = state.dialog == 0 && panel.setEnabledCount == 1 &&
+                          panel.lastEnabled == 0 && panel.scalarDeletingCount == 1 &&
+                          panel.lastScalarDeletingFlags == 1 &&
+                          g_creditsOnWndActivateBlitCalls == 1;
+
+    RestoreFunctionPatch(blitPatch);
+    if (!nullOk) {
+        return 2;
+    }
+    return activeOk ? 0 : 3;
 }
 
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
