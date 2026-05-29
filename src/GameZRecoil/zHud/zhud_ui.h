@@ -939,6 +939,7 @@ struct HudCmdCommandList {
     HudCmdBindButtonBase base;
 
     void RECOIL_THISCALL Destructor();
+    HudCmdCommandList *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
 };
 
 RECOIL_NOINLINE void **RECOIL_FASTCALL zUtil_StdPtrVector_Clear(HudCmdBindingVector *self);

@@ -21586,10 +21586,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40b0a0:
   - [✅] Reconstructed (Name: HudCmdCommandList::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdCommandList::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_command_list_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x40b0c0:
   - [✅] Reconstructed (Name: HudCmdKeyAButton::ScalarDeletingDestructor)
   - [❌] Source dependencies satisfied

@@ -9175,6 +9175,25 @@ extern "C" int zhud_cmd_command_list_destructor_smoke(void) {
                : 1;
 }
 
+extern "C" int zhud_cmd_command_list_scalar_deleting_destructor_smoke(void) {
+    HudCmdCommandList stackList{};
+    stackList.base.Constructor();
+    HudCmdCommandList *const stackResult =
+        stackList.ScalarDeletingDestructor(0);
+    const bool stackOk =
+        stackResult == &stackList &&
+        stackList.base.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable);
+
+    HudCmdCommandList *const heapList =
+        (HudCmdCommandList *)(::operator new(sizeof(HudCmdCommandList)));
+    heapList->base.Constructor();
+    HudCmdCommandList *const heapResult =
+        heapList->ScalarDeletingDestructor(1);
+
+    return stackOk && heapResult == heapList ? 0 : 1;
+}
+
 extern "C" int zhud_panel_constructor_default_smoke(void) {
     alignas(HudUiPanel) std::uint8_t storage[0x2ac]{};
     auto *panel = reinterpret_cast<HudUiPanel *>(storage);

@@ -8227,6 +8227,19 @@ void RECOIL_THISCALL HudCmdCommandList::Destructor()
     base.base.DestructorCore();
 }
 
+// Reimplements 0x40b0a0: HudCmdCommandList::ScalarDeletingDestructor
+HudCmdCommandList *RECOIL_THISCALL
+HudCmdCommandList::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
 // Reimplements 0x4b90e0: HudCmdBindButtonBase::RebuildBindingSlotWidgets
 void RECOIL_THISCALL HudCmdBindButtonBase::RebuildBindingSlotWidgets(int totalCount,
                                                                      int visibleCount) {
