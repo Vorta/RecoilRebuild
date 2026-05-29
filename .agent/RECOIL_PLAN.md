@@ -1685,10 +1685,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x4099a0:
   - [✅] Reconstructed (Name: RecoilStateCredits::OnWndActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateCredits::OnWndActivate File: src/Battlesport/RecoilStateCredits.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_credits_on_wnd_activate)
+  - [✅] Binary-safe
 - 0x409a60:
   - [☑️] Reconstructed (Name: RecoilStateCredits::OnTryBecomeCurrent)
   - [❌] Source dependencies satisfied

@@ -43,6 +43,7 @@ struct RecoilStateCredits {
     RecoilPtr32 dialog;
 
     RecoilStateCredits *RECOIL_THISCALL Constructor();
+    void RECOIL_THISCALL OnWndActivate(int activateCode);
     ~RecoilStateCredits();
     static void RECOIL_CDECL QueuePush();
 };
@@ -100,6 +101,11 @@ int g_confirmQuitBlitCalls;
 int g_confirmQuitUnlockCalls;
 int g_confirmQuitSleepCalls;
 DWORD g_confirmQuitSleepMilliseconds;
+int g_creditsOnWndActivateBlitCalls;
+int g_creditsOnWndActivateInvalidateCalls;
+int g_creditsOnWndActivateCallOrder;
+int g_creditsOnWndActivateBlitOrder;
+int g_creditsOnWndActivateInvalidateOrder;
 int g_confirmQuitBackgroundLoadCalls;
 bool g_confirmQuitBackgroundLoadArgsOk;
 int g_confirmQuitBackgroundBindCalls;
@@ -291,6 +297,21 @@ struct FakeConfirmQuitBlitThunk {
 
 void RECOIL_THISCALL FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary() {
     ++g_confirmQuitBlitCalls;
+}
+
+struct FakeCreditsOnWndActivateThunk {
+    void RECOIL_THISCALL BlitOwnedSurfaceToPrimary();
+    void RECOIL_THISCALL InvalidateChildren();
+};
+
+void RECOIL_THISCALL FakeCreditsOnWndActivateThunk::BlitOwnedSurfaceToPrimary() {
+    ++g_creditsOnWndActivateBlitCalls;
+    g_creditsOnWndActivateBlitOrder = ++g_creditsOnWndActivateCallOrder;
+}
+
+void RECOIL_THISCALL FakeCreditsOnWndActivateThunk::InvalidateChildren() {
+    ++g_creditsOnWndActivateInvalidateCalls;
+    g_creditsOnWndActivateInvalidateOrder = ++g_creditsOnWndActivateCallOrder;
 }
 
 void WINAPI FakeConfirmQuitSleep(DWORD milliseconds) {
@@ -5930,6 +5951,70 @@ extern "C" int recoil_state_credits_constructor_smoke(void) {
                    state.dialog == 0
                ? 0
                : 1;
+}
+
+extern "C" int recoil_state_credits_on_wnd_activate_smoke(void) {
+    CodeFunctionPatch blitPatch{};
+    CodeFunctionPatch invalidatePatch{};
+
+    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+        &HudUiDialogController::BlitOwnedSurfaceToPrimary;
+    void (RECOIL_THISCALL FakeCreditsOnWndActivateThunk::*fakeBlitMember)() =
+        &FakeCreditsOnWndActivateThunk::BlitOwnedSurfaceToPrimary;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(blitMember)),
+                           reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeBlitMember)),
+                           blitPatch)) {
+        return 1;
+    }
+
+    void (RECOIL_THISCALL HudUiContainer::*invalidateMember)() =
+        &HudUiContainer::InvalidateChildren;
+    void (RECOIL_THISCALL FakeCreditsOnWndActivateThunk::*fakeInvalidateMember)() =
+        &FakeCreditsOnWndActivateThunk::InvalidateChildren;
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(TestCheatCodeMethodAddress(invalidateMember)),
+            reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeInvalidateMember)),
+            invalidatePatch)) {
+        RestoreFunctionPatch(blitPatch);
+        return 2;
+    }
+
+    TestCreditsPanel panel{};
+    RecoilStateCredits state{};
+    state.dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+
+    g_creditsOnWndActivateBlitCalls = 0;
+    g_creditsOnWndActivateInvalidateCalls = 0;
+    g_creditsOnWndActivateCallOrder = 0;
+    g_creditsOnWndActivateBlitOrder = 0;
+    g_creditsOnWndActivateInvalidateOrder = 0;
+
+    state.OnWndActivate(0);
+    const bool inactiveOk = g_creditsOnWndActivateBlitCalls == 0 &&
+                            g_creditsOnWndActivateInvalidateCalls == 0;
+
+    state.dialog = 0;
+    state.OnWndActivate(1);
+    const bool nullDialogOk = g_creditsOnWndActivateBlitCalls == 0 &&
+                              g_creditsOnWndActivateInvalidateCalls == 0;
+
+    state.dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+    state.OnWndActivate(1);
+    const bool activeOk = g_creditsOnWndActivateBlitCalls == 1 &&
+                          g_creditsOnWndActivateInvalidateCalls == 1 &&
+                          g_creditsOnWndActivateBlitOrder == 1 &&
+                          g_creditsOnWndActivateInvalidateOrder == 2;
+
+    RestoreFunctionPatch(invalidatePatch);
+    RestoreFunctionPatch(blitPatch);
+
+    if (!inactiveOk) {
+        return 3;
+    }
+    if (!nullDialogOk) {
+        return 4;
+    }
+    return activeOk ? 0 : 5;
 }
 
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {

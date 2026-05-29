@@ -1,10 +1,12 @@
 #include "Battlesport/RecoilApp.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
 
 struct RecoilStateCredits {
     RecoilPtr32 vftable;
     RecoilPtr32 dialog;
 
     RecoilStateCredits *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnWndActivate(int activateCode);
     RECOIL_NOINLINE ~RecoilStateCredits();
     static void RECOIL_CDECL QueuePush();
 };
@@ -47,6 +49,24 @@ RecoilStateCredits *RECOIL_THISCALL RecoilStateCredits::Constructor()
     vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCredits_Vtbl;
     dialog = 0;
     return this;
+}
+
+// Reimplements 0x4099a0: RecoilStateCredits::OnWndActivate
+// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+RecoilStateCredits::OnWndActivate(int activateCode)
+{
+    if (activateCode == 0) {
+        return;
+    }
+
+    RecoilStateCredits *const state = this;
+    HudUiCreditsPanel *const creditsPanel =
+        (HudUiCreditsPanel *)(unsigned int)state->dialog;
+    if (creditsPanel != 0) {
+        ((HudUiDialogController *)creditsPanel)->BlitOwnedSurfaceToPrimary();
+        ((HudUiContainer *)(unsigned int)state->dialog)->InvalidateChildren();
+    }
 }
 
 // Reimplements 0x4099f0: RecoilStateCredits::Destructor
