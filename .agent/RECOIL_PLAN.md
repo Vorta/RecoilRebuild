@@ -2021,15 +2021,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x40bf20:
   - [✅] Reconstructed (Name: HudCmdBindingEntry::DeleteAndReturnNull)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindingEntry::DeleteAndReturnNull File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_binding_entry_delete_and_return_null)
   - [❌] Binary-safe
 - 0x40bf50:
   - [✅] Reconstructed (Name: HudCmdBindingEntry::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindingEntry::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_binding_entry_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x40bf80:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::AddBindingEntry)

@@ -9130,8 +9130,24 @@ extern "C" int zhud_cmd_binding_entry_copy_range_smoke(void) {
 
     HudCmdBindingEntry **const result =
         HudCmdBindingEntry::CopyRange(source, source + 3, dest);
+    HudCmdBindingEntry owned{};
+    owned.displayText = (char *)(std::malloc(6));
+    std::strcpy(owned.displayText, "Entry");
+    HudCmdBindingEntry *const scalarResult = owned.ScalarDeletingDestructor(0);
+
+    HudCmdBindingEntry *const deleteEntry =
+        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
+    deleteEntry->displayText = (char *)(std::malloc(7));
+    std::strcpy(deleteEntry->displayText, "Delete");
+    HudCmdBindingEntry *const deleteResult =
+        HudCmdBindingEntry::DeleteAndReturnNull(deleteEntry);
+    HudCmdBindingEntry *const nullDeleteResult =
+        HudCmdBindingEntry::DeleteAndReturnNull(0);
+
     return result == dest + 3 && dest[0] == &first && dest[1] == &second &&
-                   dest[2] == &third && dest[3] == nullptr
+                   dest[2] == &third && dest[3] == nullptr && scalarResult == &owned &&
+                   owned.displayText == nullptr && deleteResult == nullptr &&
+                   nullDeleteResult == nullptr
                ? 0
                : 2;
 }

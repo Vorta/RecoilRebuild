@@ -907,6 +907,8 @@ struct HudCmdBindingVector {
 struct HudCmdBindingEntry {
     char *displayText;
 
+    HudCmdBindingEntry *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    static HudCmdBindingEntry *RECOIL_STDCALL DeleteAndReturnNull(HudCmdBindingEntry *entry);
     static HudCmdBindingEntry **RECOIL_FASTCALL
     CopyRange(HudCmdBindingEntry **sourceBegin, HudCmdBindingEntry **sourceEnd,
               HudCmdBindingEntry **dest);

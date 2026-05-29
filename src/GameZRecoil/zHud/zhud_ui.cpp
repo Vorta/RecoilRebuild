@@ -8144,6 +8144,44 @@ HudCmdBindingEntry::CopyRange(HudCmdBindingEntry **sourceBegin,
     return dest;
 }
 
+// Reimplements 0x40bf50: HudCmdBindingEntry::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+HudCmdBindingEntry *RECOIL_THISCALL
+HudCmdBindingEntry::ScalarDeletingDestructor(unsigned int flags)
+{
+    if (displayText != 0)
+    {
+        free(displayText);
+        displayText = 0;
+    }
+
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x40bf20: HudCmdBindingEntry::DeleteAndReturnNull
+// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+HudCmdBindingEntry *RECOIL_STDCALL
+HudCmdBindingEntry::DeleteAndReturnNull(HudCmdBindingEntry *entry)
+{
+    if (entry != 0)
+    {
+        if (entry->displayText != 0)
+        {
+            free(entry->displayText);
+            entry->displayText = 0;
+        }
+
+        ::operator delete(entry);
+    }
+
+    return 0;
+}
+
 // Reimplements 0x40be00: HudCmdBinding::DestroyRange
 // (HudCmdDialog.cpp)
 HudCmdBinding **RECOIL_FASTCALL
