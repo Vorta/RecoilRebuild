@@ -385,6 +385,7 @@ extern const HudUiZrdWidget_FTable g_HudUiCheatCodeTitleWidget_FTable;
 extern const HudUiNumericTextInput_Base_FTable g_HudUiCheatCodeInputWidget_FTable;
 
 namespace HudUiCallback {
+void RECOIL_CDECL QueueExitCurrentState();
 int RECOIL_CDECL QueueCheatCodeState();
 }
 

@@ -1507,15 +1507,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x406e10:
   - [✅] Reconstructed (Name: HudUiCheatCodeDialog::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheatCodeDialog::ScalarDeletingDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_cheat_code_dialog_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x406e30:
   - [☑️] Reconstructed (Name: HudUiCheatCodeDialog::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheatCodeDialog::Destructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_cheat_code_dialog_destructor)
   - [❌] Binary-safe
 - 0x406e90:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::StaticInitAndRegisterAtExit)
@@ -1567,15 +1567,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4070e0:
   - [✅] Reconstructed (Name: HudUiCheatTextInputWidget::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheatTextInputWidget::OnActivate File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_cheat_text_input_on_activate)
   - [❌] Binary-safe
 - 0x407100:
   - [✅] Reconstructed (Name: HudUiCallback::QueueExitCurrentState)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCallback::QueueExitCurrentState File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_callback_queue_exit_current_state)
   - [❌] Binary-safe
 - 0x407110:
   - [✅] Reconstructed (Name: HudUiCallback::QueueCheatCodeState)

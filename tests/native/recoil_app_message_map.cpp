@@ -2204,6 +2204,68 @@ extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void
     return result;
 }
 
+extern "C" int hud_ui_cheat_text_input_on_activate_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    g_RecoilApp = RecoilApp{};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiCheatTextInputWidget widget{};
+    widget.BaseConstructor();
+    widget.OnActivate();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    int result = 0;
+    if (g_stateExitCount != 1 || g_stateEnterCount != 0 ||
+        widget.sliderBorder.inputActive != 1) {
+        result = 1;
+    } else if (!IsSingleExitCurrentQueueItem(queue, 0)) {
+        result = 2;
+    }
+
+    CleanupQueuedItems(queue);
+    widget.Destructor();
+    g_RecoilApp = oldApp;
+    return result;
+}
+
+extern "C" int hud_ui_callback_queue_exit_current_state_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    g_RecoilApp = RecoilApp{};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiCallback::QueueExitCurrentState();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    int result = 0;
+    if (g_stateExitCount != 1 || g_stateEnterCount != 0) {
+        result = 1;
+    } else if (!IsSingleExitCurrentQueueItem(queue, 0)) {
+        result = 2;
+    }
+
+    CleanupQueuedItems(queue);
+    g_RecoilApp = oldApp;
+    return result;
+}
+
 extern "C" int hud_ui_background_confirm_quit_lifecycle_smoke(void) {
     CodeFunctionPatch loadPatch{};
     CodeFunctionPatch bindPatch{};

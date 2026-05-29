@@ -524,6 +524,8 @@ extern "C" int zhud_background_bind_widget_by_name_smoke(void);
 extern "C" int zhud_background_load_zrd_and_section_null_root_smoke(void);
 extern "C" int zhud_background_load_from_zrd_missing_path_smoke(void);
 extern "C" int hud_ui_cheat_code_dialog_constructor_smoke(void);
+extern "C" int hud_ui_cheat_code_dialog_destructor_smoke(void);
+extern "C" int hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_background_free_loaded_tree_roots_smoke(void);
 extern "C" int zhud_background_video_widget_set_color_key_smoke(void);
 extern "C" int zhud_background_video_widget_set_media_path_missing_smoke(void);
@@ -931,6 +933,8 @@ extern "C" int recoil_state_credits_destructor_smoke(void);
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void);
 extern "C" int recoil_state_confirm_quit_queue_enter_smoke(void);
 extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void);
+extern "C" int hud_ui_cheat_text_input_on_activate_smoke(void);
+extern "C" int hud_ui_callback_queue_exit_current_state_smoke(void);
 extern "C" int hud_ui_background_confirm_quit_lifecycle_smoke(void);
 extern "C" int recoil_state_confirm_quit_on_try_become_current_smoke(void);
 extern "C" int recoil_state_confirm_quit_static_init_smoke(void);
@@ -2345,6 +2349,10 @@ int main(int argc, char **argv) {
          zhud_background_load_from_zrd_missing_path_smoke},
         {"hud_ui_cheat_code_dialog_constructor_smoke",
          hud_ui_cheat_code_dialog_constructor_smoke},
+        {"hud_ui_cheat_code_dialog_destructor_smoke",
+         hud_ui_cheat_code_dialog_destructor_smoke},
+        {"hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke",
+         hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke},
         {"zhud_background_free_loaded_tree_roots_smoke",
          zhud_background_free_loaded_tree_roots_smoke},
         {"zhud_background_video_widget_set_color_key_smoke",
@@ -2884,6 +2892,10 @@ int main(int argc, char **argv) {
          recoil_state_confirm_quit_queue_enter_smoke},
         {"hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke",
          hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke},
+        {"hud_ui_cheat_text_input_on_activate_smoke",
+         hud_ui_cheat_text_input_on_activate_smoke},
+        {"hud_ui_callback_queue_exit_current_state_smoke",
+         hud_ui_callback_queue_exit_current_state_smoke},
         {"hud_ui_background_confirm_quit_lifecycle_smoke",
          hud_ui_background_confirm_quit_lifecycle_smoke},
         {"recoil_state_confirm_quit_on_try_become_current_smoke",

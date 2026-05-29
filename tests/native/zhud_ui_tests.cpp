@@ -5922,6 +5922,98 @@ extern "C" int hud_ui_cheat_code_dialog_constructor_smoke(void) {
     return constructed ? 0 : 1;
 }
 
+extern "C" int hud_ui_cheat_code_dialog_destructor_smoke(void) {
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 6;
+    vmodeOption.name = vmodeName;
+    zOptionEntryPartial *const savedOptionsHead = g_zGame_Options_OptionListHead;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+
+    std::uint16_t pixels[4] = {};
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial savedPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    HudUiCheatCodeDialog dialog{};
+    dialog.Constructor();
+    dialog.Destructor();
+
+    const bool destructed =
+        dialog.base.base.vptr == &g_HudUiContainer_FTable &&
+        dialog.titleWidget.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
+        dialog.cheatInputWidget.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
+        dialog.cheatInputWidget.textInput.ftable == &g_HudUiTextInput_FTable &&
+        dialog.primaryClipImage == nullptr && dialog.capturedCompositeImage == nullptr;
+
+    g_zGame_Options_OptionListHead = savedOptionsHead;
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+
+    return destructed ? 0 : 1;
+}
+
+extern "C" int hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke(void) {
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 6;
+    vmodeOption.name = vmodeName;
+    zOptionEntryPartial *const savedOptionsHead = g_zGame_Options_OptionListHead;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+
+    std::uint16_t pixels[4] = {};
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial savedPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    void *const storage = ::operator new(sizeof(HudUiCheatCodeDialog));
+    HudUiCheatCodeDialog *const dialog = static_cast<HudUiCheatCodeDialog *>(storage);
+    dialog->Constructor();
+    HudUiCheatCodeDialog *const returned = dialog->ScalarDeletingDestructor(0);
+    const bool ok = returned == dialog && dialog->base.base.vptr == &g_HudUiContainer_FTable &&
+                    dialog->primaryClipImage == nullptr &&
+                    dialog->capturedCompositeImage == nullptr;
+    ::operator delete(storage);
+
+    g_zGame_Options_OptionListHead = savedOptionsHead;
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+
+    return ok ? 0 : 1;
+}
+
 extern "C" int zhud_background_set_enabled_smoke(void) {
     g_HudUi_InvalidateMask = 0x80;
     g_zSnd_IsInitialized = 0;

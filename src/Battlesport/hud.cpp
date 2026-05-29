@@ -605,6 +605,13 @@ void RECOIL_CDECL RecoilStateControls::QueueEnter()
     g_RecoilApp.QueuePushState(&g_RecoilStateControls, 0);
 }
 
+// Reimplements 0x407100: HudUiCallback::QueueExitCurrentState
+// (D:\Proj\Battlesport\hud.cpp)
+void RECOIL_CDECL HudUiCallback::QueueExitCurrentState()
+{
+    g_RecoilApp.QueueExitCurrentState(0);
+}
+
 // Reimplements 0x407110: HudUiCallback::QueueCheatCodeState
 // (D:\Proj\Battlesport\hud.cpp)
 int RECOIL_CDECL HudUiCallback::QueueCheatCodeState()
