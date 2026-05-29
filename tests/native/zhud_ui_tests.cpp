@@ -5435,6 +5435,108 @@ extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void) {
     return constructed && destructed ? 0 : 1;
 }
 
+extern "C" int zhud_background_cursor_widget_rebuild_captured_image_smoke(void) {
+    std::uint16_t surfacePixels[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    std::uint16_t capturedPixels[4] = {};
+    zVidImagePartial sourceImage{};
+    sourceImage.width = 2;
+    sourceImage.height = 2;
+    zVidImagePartial capturedImage{};
+    capturedImage.width = 2;
+    capturedImage.height = 2;
+    capturedImage.pixelCount = 4;
+    capturedImage.pixels = capturedPixels;
+
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 4;
+    g_zVideo_SwSurfaceState.height = 3;
+    g_zVideo_SwSurfaceState.pitch = 8;
+    g_zVideo_SwSurfaceState.pixels = surfacePixels;
+
+    HudUiBackgroundCursorWidget cursor{};
+    cursor.base.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiBackgroundCursorWidget_FTable);
+    cursor.base.image = &sourceImage;
+    cursor.capturedImage = &capturedImage;
+    cursor.captureSourceSelector = 0;
+
+    cursor.RebuildCapturedImage(1, 1);
+
+    return cursor.base.bltSource == &capturedImage && cursor.base.clipRect.left == 0 &&
+                   cursor.base.clipRect.top == 0 && cursor.base.clipRect.right == 2 &&
+                   cursor.base.clipRect.bottom == 2 && capturedPixels[0] == 6 &&
+                   capturedPixels[1] == 7 && capturedPixels[2] == 10 &&
+                   capturedPixels[3] == 11
+               ? 0
+               : 1;
+}
+
+extern "C" int zhud_background_cursor_widget_set_image_borrowed_refresh_smoke(void) {
+    std::uint16_t surfacePixels[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    zVidImagePartial sourceImage{};
+    sourceImage.width = 2;
+    sourceImage.height = 2;
+
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 4;
+    g_zVideo_SwSurfaceState.height = 3;
+    g_zVideo_SwSurfaceState.pitch = 8;
+    g_zVideo_SwSurfaceState.pixels = surfacePixels;
+
+    HudUiBackgroundCursorWidget cursor{};
+    cursor.base.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiBackgroundCursorWidget_FTable);
+    cursor.base.x = 1;
+    cursor.base.y = 1;
+    cursor.base.image = &sourceImage;
+    cursor.captureEnabled = 1;
+    cursor.captureSourceSelector = 0;
+
+    cursor.SetImageBorrowedAndRefresh();
+    std::uint16_t *const capturedPixels =
+        static_cast<std::uint16_t *>(cursor.capturedImage != nullptr
+                                         ? cursor.capturedImage->pixels
+                                         : nullptr);
+    const bool ok =
+        cursor.capturedImage != nullptr && cursor.capturedImage->width == 2 &&
+        cursor.capturedImage->height == 2 &&
+        (cursor.capturedImage->formatFlagsPacked & 0x20) != 0 &&
+        cursor.base.bltSource == cursor.capturedImage && cursor.base.clipRect.left == 0 &&
+        cursor.base.clipRect.top == 0 && cursor.base.clipRect.right == 2 &&
+        cursor.base.clipRect.bottom == 2 && capturedPixels != nullptr &&
+        capturedPixels[0] == 6 && capturedPixels[1] == 7 && capturedPixels[2] == 10 &&
+        capturedPixels[3] == 11;
+
+    if (cursor.capturedImage != nullptr) {
+        zVid_Image::Destroy(cursor.capturedImage);
+        cursor.capturedImage = nullptr;
+    }
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int zhud_background_cursor_widget_set_capture_enabled_smoke(void) {
+    HudUiBackgroundCursorWidget cursor{};
+    cursor.base.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiBackgroundCursorWidget_FTable);
+    cursor.base.bltSource = reinterpret_cast<void *>(0x11111111);
+    cursor.captureEnabled = 1;
+    cursor.capturedImage = zVid_Image::Create();
+    if (cursor.capturedImage == nullptr) {
+        return 1;
+    }
+
+    zVid_Image::SetSize(cursor.capturedImage, 2, 2);
+    zVid_Image_SetPixels(cursor.capturedImage, std::malloc(8), nullptr);
+
+    cursor.SetImageOwnedAndRefresh(0);
+
+    return cursor.captureEnabled == 0 && cursor.capturedImage == nullptr &&
+                   cursor.base.bltSource == nullptr
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_background_video_widget_destructor_smoke(void) {
     HudUiBackgroundVideoWidget widget{};
     widget.base.ftable = nullptr;
@@ -5541,6 +5643,39 @@ extern "C" int zhud_background_free_loaded_tree_roots_smoke(void) {
 
     background.FreeLoadedTreeRoots(0);
     return cleared ? 0 : 1;
+}
+
+extern "C" int zhud_background_video_widget_set_color_key_smoke(void) {
+    HudUiBackgroundVideoWidget widget{};
+    unsigned char streamStorage[32] = {};
+
+    widget.stream = reinterpret_cast<zFMV_Stream *>(streamStorage);
+    streamStorage[9] = 0x40;
+    widget.SetColorKey565(0x07e0);
+    const bool streamPresent =
+        streamStorage[9] == 0x42 && widget.colorKey565 == 0x07e0;
+
+    widget.stream = nullptr;
+    streamStorage[9] = 0x10;
+    widget.SetColorKey565(0x001f);
+    const bool streamAbsent =
+        streamStorage[9] == 0x10 && widget.colorKey565 == 0x001f;
+
+    return streamPresent && streamAbsent ? 0 : 1;
+}
+
+extern "C" int zhud_background_video_widget_set_media_path_missing_smoke(void) {
+    HudUiBackgroundVideoWidget widget{};
+    const char *const missingPath = "__missing_hud_video_widget__.avi";
+    std::remove(missingPath);
+
+    widget.stream = reinterpret_cast<zFMV_Stream *>(0x11111111);
+    std::memset(widget.mediaPath, 0x7f, sizeof(widget.mediaPath));
+    widget.mediaPath[sizeof(widget.mediaPath) - 1] = '\0';
+
+    widget.SetMediaPathOwnedAndRefresh(missingPath);
+
+    return widget.stream == nullptr && std::strcmp(widget.mediaPath, missingPath) == 0 ? 0 : 1;
 }
 
 extern "C" int zhud_play_powerup_sfx_smoke(void) {
@@ -5666,6 +5801,125 @@ extern "C" int zhud_background_bind_widget_by_name_smoke(void) {
                                 missingWidget.postLoadCount == 0;
 
     return directBound && wrapperBound && missingSkipped ? 0 : 1;
+}
+
+extern "C" int zhud_background_load_zrd_and_section_null_root_smoke(void) {
+    std::uint16_t pixels[4] = {};
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial savedPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    HudUiBackground background{};
+    background.cfgRoot = reinterpret_cast<zReader::Node *>(0x11111111);
+    zReader::Node *const result = background.LoadZrdAndSection(nullptr, "MISSING", 1);
+    const bool ok = result == nullptr && background.cfgRoot == nullptr;
+
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int zhud_background_load_from_zrd_missing_path_smoke(void) {
+    const char *const missingPath = "__missing_hud_background_load__.zrd";
+    std::remove(missingPath);
+
+    std::uint16_t pixels[4] = {};
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial savedPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    HudUiBackground background{};
+    background.loadedRoot = reinterpret_cast<zReader::Node *>(0x11111111);
+    background.cfgRoot = reinterpret_cast<zReader::Node *>(0x22222222);
+    zReader::Node *const result = background.LoadFromZrd(missingPath, "SECTION", 1);
+    const bool ok =
+        result == nullptr && background.loadedRoot == nullptr && background.cfgRoot == nullptr;
+
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int hud_ui_cheat_code_dialog_constructor_smoke(void) {
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 6;
+    vmodeOption.name = vmodeName;
+    zOptionEntryPartial *const savedOptionsHead = g_zGame_Options_OptionListHead;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+
+    std::uint16_t pixels[4] = {};
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial savedPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    HudUiCheatCodeDialog dialog{};
+    HudUiCheatCodeDialog *const result = dialog.Constructor();
+    const bool constructed =
+        result == &dialog &&
+        dialog.titleWidget.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCheatCodeTitleWidget_FTable) &&
+        dialog.cheatInputWidget.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCheatCodeInputWidget_FTable) &&
+        dialog.cheatInputWidget.textInput.capacity == 80 &&
+        dialog.cheatInputWidget.textInput.buffer != nullptr &&
+        std::strcmp(dialog.cheatInputWidget.textInput.buffer, "") == 0 &&
+        dialog.primaryClipImage != nullptr && dialog.cfgRoot == nullptr;
+
+    dialog.Destructor();
+
+    g_zGame_Options_OptionListHead = savedOptionsHead;
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+
+    return constructed ? 0 : 1;
 }
 
 extern "C" int zhud_background_set_enabled_smoke(void) {

@@ -100,6 +100,55 @@ extern "C" int zreader_named_int_lookup_smoke(void) {
     return zReader::ReadNamedInt(&root, "missingValue", &value) == 0 ? 0 : 4;
 }
 
+extern "C" int zreader_get_named_node_smoke(void) {
+    zReader::Node nestedChildren[4] = {};
+    nestedChildren[0].type = zReader::ZRDR_NODE_INT;
+    nestedChildren[0].value.i32 = 4;
+    nestedChildren[1].type = zReader::ZRDR_NODE_STRING;
+    nestedChildren[1].value.str = const_cast<char *>("nested");
+    nestedChildren[2].type = zReader::ZRDR_NODE_INT;
+    nestedChildren[2].value.i32 = 77;
+    nestedChildren[3].type = zReader::ZRDR_NODE_INT;
+    nestedChildren[3].value.i32 = 88;
+
+    zReader::Node rootChildren[6] = {};
+    rootChildren[0].type = zReader::ZRDR_NODE_INT;
+    rootChildren[0].value.i32 = 6;
+    rootChildren[1].type = zReader::ZRDR_NODE_STRING;
+    rootChildren[1].value.str = const_cast<char *>("direct");
+    rootChildren[2].type = zReader::ZRDR_NODE_INT;
+    rootChildren[2].value.i32 = 42;
+    rootChildren[3].type = zReader::ZRDR_NODE_ARRAY;
+    rootChildren[3].value.nodes = nestedChildren;
+    rootChildren[4].type = zReader::ZRDR_NODE_STRING;
+    rootChildren[4].value.str = const_cast<char *>("later");
+    rootChildren[5].type = zReader::ZRDR_NODE_FLOAT;
+    rootChildren[5].value.f32 = 3.5f;
+
+    zReader::Node root = {};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = rootChildren;
+
+    zReader::Node notArray = {};
+    notArray.type = zReader::ZRDR_NODE_INT;
+
+    const bool direct =
+        zReader_GetNamedNode(&root, "direct") == &rootChildren[2] &&
+        rootChildren[2].value.i32 == 42;
+    const bool nested =
+        zReader_GetNamedNode(&root, "nested") == &nestedChildren[2] &&
+        nestedChildren[2].value.i32 == 77;
+    const bool startIndex =
+        zReader_FindChildRecursive(&root, "direct", 3) == nullptr &&
+        zReader_FindChildRecursive(&root, "later", 3) == &rootChildren[5];
+    const bool guards =
+        zReader_GetNamedNode(nullptr, "direct") == nullptr &&
+        zReader_GetNamedNode(&notArray, "direct") == nullptr &&
+        zReader_GetNamedNode(&root, "missing") == nullptr;
+
+    return direct && nested && startIndex && guards ? 0 : 1;
+}
+
 extern "C" int zreader_named_string_float_lookup_smoke(void) {
     zReader::Node stringArray[2] = {};
     stringArray[0].type = zReader::ZRDR_NODE_INT;

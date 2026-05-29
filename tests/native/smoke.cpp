@@ -363,6 +363,7 @@ extern "C" int zfmv_playback_destructor_smoke(void);
 extern "C" int zfmv_playback_report_mci_error_smoke(void);
 extern "C" int zfmv_stream_destructor_empty_smoke(void);
 extern "C" int zfmv_stream_constructor_missing_file_smoke(void);
+extern "C" int zfmv_stream_open_audio_missing_file_smoke(void);
 extern "C" int zfmv_stream_init_missing_file_smoke(void);
 extern "C" int zfmv_action_play_avi_constructor_existing_file_smoke(void);
 extern "C" int zfmv_action_play_mci_constructor_smoke(void);
@@ -514,10 +515,18 @@ extern "C" int zhud_message_box_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_background_container_focus_smoke(void);
 extern "C" int zhud_background_update_input_focus_smoke(void);
 extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void);
+extern "C" int zhud_background_cursor_widget_rebuild_captured_image_smoke(void);
+extern "C" int zhud_background_cursor_widget_set_image_borrowed_refresh_smoke(void);
+extern "C" int zhud_background_cursor_widget_set_capture_enabled_smoke(void);
 extern "C" int zhud_background_video_widget_destructor_smoke(void);
 extern "C" int zhud_background_constructor_smoke(void);
 extern "C" int zhud_background_bind_widget_by_name_smoke(void);
+extern "C" int zhud_background_load_zrd_and_section_null_root_smoke(void);
+extern "C" int zhud_background_load_from_zrd_missing_path_smoke(void);
+extern "C" int hud_ui_cheat_code_dialog_constructor_smoke(void);
 extern "C" int zhud_background_free_loaded_tree_roots_smoke(void);
+extern "C" int zhud_background_video_widget_set_color_key_smoke(void);
+extern "C" int zhud_background_video_widget_set_media_path_missing_smoke(void);
 extern "C" int zhud_play_powerup_sfx_smoke(void);
 extern "C" int zhud_background_set_enabled_smoke(void);
 extern "C" int zhud_dialog_controller_blit_owned_surface_smoke(void);
@@ -813,6 +822,7 @@ extern "C" int pickup_send_pkt12_airdrop_spawn_chute_relay_smoke(void);
 extern "C" int znetwork_session_status_fields_smoke(void);
 extern "C" int znetwork_shutdown_session_runtime_smoke(void);
 extern "C" int zreader_named_int_lookup_smoke(void);
+extern "C" int zreader_get_named_node_smoke(void);
 extern "C" int zreader_named_string_float_lookup_smoke(void);
 extern "C" int zreader_global_string_prefix_index_smoke(void);
 extern "C" int zrndr_global_string_table_load_dynamic_entries_smoke(void);
@@ -965,6 +975,7 @@ extern "C" int zsnd_system_init_gate_and_missing_config_smoke(void);
 extern "C" int zsnd_preinitialize_runtime_state_smoke(void);
 extern "C" int zsnd_group_load_config_block_smoke(void);
 extern "C" int zsnd_group_load_and_queue_smoke(void);
+extern "C" int zsnd_create_queued_streaming_sample_smoke(void);
 extern "C" int zsnd_stream_mgr_ensure_init_smoke(void);
 extern "C" int zsnd_stream_request_queue_smoke(void);
 extern "C" int zsnd_stream_mgr_shutdown_lists_smoke(void);
@@ -2101,6 +2112,8 @@ int main(int argc, char **argv) {
         {"zfmv_playback_report_mci_error_smoke", zfmv_playback_report_mci_error_smoke},
         {"zfmv_stream_destructor_empty_smoke", zfmv_stream_destructor_empty_smoke},
         {"zfmv_stream_constructor_missing_file_smoke", zfmv_stream_constructor_missing_file_smoke},
+        {"zfmv_stream_open_audio_missing_file_smoke",
+         zfmv_stream_open_audio_missing_file_smoke},
         {"zfmv_stream_init_missing_file_smoke", zfmv_stream_init_missing_file_smoke},
         {"zfmv_action_play_avi_constructor_existing_file_smoke",
          zfmv_action_play_avi_constructor_existing_file_smoke},
@@ -2316,12 +2329,28 @@ int main(int argc, char **argv) {
         {"zhud_background_update_input_focus_smoke", zhud_background_update_input_focus_smoke},
         {"zhud_background_cursor_widget_member_constructor_smoke",
          zhud_background_cursor_widget_member_constructor_smoke},
+        {"zhud_background_cursor_widget_rebuild_captured_image_smoke",
+         zhud_background_cursor_widget_rebuild_captured_image_smoke},
+        {"zhud_background_cursor_widget_set_image_borrowed_refresh_smoke",
+         zhud_background_cursor_widget_set_image_borrowed_refresh_smoke},
+        {"zhud_background_cursor_widget_set_capture_enabled_smoke",
+         zhud_background_cursor_widget_set_capture_enabled_smoke},
         {"zhud_background_video_widget_destructor_smoke",
          zhud_background_video_widget_destructor_smoke},
         {"zhud_background_constructor_smoke", zhud_background_constructor_smoke},
         {"zhud_background_bind_widget_by_name_smoke", zhud_background_bind_widget_by_name_smoke},
+        {"zhud_background_load_zrd_and_section_null_root_smoke",
+         zhud_background_load_zrd_and_section_null_root_smoke},
+        {"zhud_background_load_from_zrd_missing_path_smoke",
+         zhud_background_load_from_zrd_missing_path_smoke},
+        {"hud_ui_cheat_code_dialog_constructor_smoke",
+         hud_ui_cheat_code_dialog_constructor_smoke},
         {"zhud_background_free_loaded_tree_roots_smoke",
          zhud_background_free_loaded_tree_roots_smoke},
+        {"zhud_background_video_widget_set_color_key_smoke",
+         zhud_background_video_widget_set_color_key_smoke},
+        {"zhud_background_video_widget_set_media_path_missing_smoke",
+         zhud_background_video_widget_set_media_path_missing_smoke},
         {"zhud_play_powerup_sfx_smoke", zhud_play_powerup_sfx_smoke},
         {"zhud_background_set_enabled_smoke", zhud_background_set_enabled_smoke},
         {"zhud_dialog_controller_blit_owned_surface_smoke",
@@ -2692,6 +2721,7 @@ int main(int argc, char **argv) {
         {"znetwork_session_status_fields_smoke", znetwork_session_status_fields_smoke},
         {"znetwork_shutdown_session_runtime_smoke", znetwork_shutdown_session_runtime_smoke},
         {"zreader_named_int_lookup_smoke", zreader_named_int_lookup_smoke},
+        {"zreader_get_named_node_smoke", zreader_get_named_node_smoke},
         {"zreader_named_string_float_lookup_smoke", zreader_named_string_float_lookup_smoke},
         {"zreader_global_string_prefix_index_smoke", zreader_global_string_prefix_index_smoke},
         {"zrndr_global_string_table_load_dynamic_entries_smoke",
@@ -2917,6 +2947,8 @@ int main(int argc, char **argv) {
         {"zsnd_preinitialize_runtime_state_smoke", zsnd_preinitialize_runtime_state_smoke},
         {"zsnd_group_load_config_block_smoke", zsnd_group_load_config_block_smoke},
         {"zsnd_group_load_and_queue_smoke", zsnd_group_load_and_queue_smoke},
+        {"zsnd_create_queued_streaming_sample_smoke",
+         zsnd_create_queued_streaming_sample_smoke},
         {"zsnd_stream_mgr_ensure_init_smoke", zsnd_stream_mgr_ensure_init_smoke},
         {"zsnd_stream_request_queue_smoke", zsnd_stream_request_queue_smoke},
         {"zsnd_stream_mgr_shutdown_lists_smoke", zsnd_stream_mgr_shutdown_lists_smoke},

@@ -1501,9 +1501,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x406d20:
   - [✅] Reconstructed (Name: HudUiCheatCodeDialog::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheatCodeDialog::Constructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_cheat_code_dialog_constructor)
   - [❌] Binary-safe
 - 0x406e10:
   - [✅] Reconstructed (Name: HudUiCheatCodeDialog::ScalarDeletingDestructor)
@@ -4575,13 +4575,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackground::LoadFromZrd)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackground::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_background_load_from_zrd)
   - [❌] Binary-safe
 - 0x4b9900:
   - [☑️] Reconstructed (Name: HudUiBackground::LoadZrdAndSection)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackground::LoadZrdAndSection File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_load_zrd_and_section)
   - [❌] Binary-safe
 - 0x4ba020:
   - [✅] Reconstructed (Name: HudUiTransitionTextPanel::Constructor)
@@ -4599,7 +4599,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackground::BindWidgetByName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackground::BindWidgetByName File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_background_bind_widget_by_name)
   - [❌] Binary-safe
 - 0x4ba0e0:
   - [☑️] Reconstructed (Name: HudUiBackground::BindPrimitiveNodeToElement)
@@ -5199,13 +5199,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetCaptureEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_cursor_set_capture_enabled)
   - [❌] Binary-safe
 - 0x4bfae0:
   - [☑️] Reconstructed (Name: HudUiBackgroundCursorWidget::RebuildCapturedImageForCurrentImage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_cursor_set_image_borrowed_refresh)
   - [❌] Binary-safe
 - 0x4bfb70:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetPos)
@@ -5217,7 +5217,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::CaptureBackgroundUnderCursorImage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::RebuildCapturedImage File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_cursor_rebuild_captured_image)
   - [❌] Binary-safe
 - 0x4bfc50:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::Draw)
@@ -5247,13 +5247,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_video_widget_set_media_path)
   - [❌] Binary-safe
 - 0x4bfe20:
   - [✅] Reconstructed (Name: HudUiBackgroundVideoWidget::SetColorKey565)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundVideoWidget::SetColorKey565 File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_video_widget_set_color_key565)
   - [❌] Binary-safe
 - 0x4bfe40:
   - [☑️] Reconstructed (Name: HudUiBackgroundVideoWidget::Update)
@@ -12939,7 +12939,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zFMV_Stream::OpenAudio)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Stream::OpenAudio File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zfmv_stream_open_audio)
   - [❌] Binary-safe
 - 0x4643a0:
   - [✅] Reconstructed (Name: zFMV_Stream::ReadAndDecodeFrame)
@@ -13248,7 +13248,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zFMV_Stream::Init)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Stream::Init File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zfmv_stream_init)
   - [❌] Binary-safe
 - 0x463dd0:
   - [✅] Reconstructed (Name: zFMV_Stream::Destructor)
@@ -16968,13 +16968,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zReader::FindChildRecursive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader_FindChildRecursive File: src/GameZRecoil/zReader/zreader_lookup.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zreader_find_child_recursive)
   - [❌] Binary-safe
 - 0x48cf70:
   - [✅] Reconstructed (Name: zReader::GetNamedNode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zReader_GetNamedNode File: src/GameZRecoil/zReader/zreader_lookup.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: zreader_get_named_node)
   - [❌] Binary-safe
 - 0x48cf80:
   - [✅] Reconstructed (Name: zReader::ReadNamedString)
@@ -18219,7 +18219,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndSample::CreateQueuedStreamingSample)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample_CreateQueuedStreamingSample File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_create_queued_streaming_sample)
   - [❌] Binary-safe
 - 0x4a3910:
   - [✅] Reconstructed (Name: zSndSample::Destroy)
@@ -20463,13 +20463,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideo::Dispatch_LockDisplayModeSurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Dispatch_LockDisplayModeSurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvideo_dispatch_lock_display_mode_surface_state)
   - [❌] Binary-safe
 - 0x4a68f0:
   - [✅] Reconstructed (Name: zVideo::Dispatch_UnlockDisplayModeSurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Dispatch_UnlockDisplayModeSurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvideo_dispatch_unlock_display_mode_surface_state)
   - [❌] Binary-safe
 - 0x4a6900:
   - [✅] Reconstructed (Name: zVideo::PresentOrAdjustSurfacesIfEnabled)
@@ -21096,13 +21096,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideoBuffer::CaptureSurfaceToImage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_buff_CaptureSurfaceToImage File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvideo_capture_surface_to_image)
   - [❌] Binary-safe
 - 0x4a6fe0:
   - [☑️] Reconstructed (Name: zVideo_buff::CopySurfaceRectToImage)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo_buff::CopySurfaceRectToImage File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvideo_buff_copy_surface_rect_to_image)
   - [❌] Binary-safe
 - 0x4bee60:
   - [✅] Reconstructed (Name: zVideoFxPass3Config::RegisterDestroyAtExit)

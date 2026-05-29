@@ -3726,6 +3726,57 @@ extern "C" int zsnd_sample_init_from_wave_data_directsound_smoke(void) {
     return ok && dispatchOk ? 0 : 1;
 }
 
+extern "C" int zsnd_create_queued_streaming_sample_smoke(void) {
+    g_testCreateSoundBufferCount = 0;
+    g_testLockCount = 0;
+    g_testUnlockCount = 0;
+    g_testGetStatusCount = 0;
+    g_testSetCurrentPositionCount = 0;
+    g_testCreateDescFlags = 0;
+    g_testCreateDescBytes = 0;
+    g_testCreateDescFormat = nullptr;
+    g_testStatusValue = 0;
+    std::memset(g_testLockedBytes, 0, sizeof(g_testLockedBytes));
+
+    TestCreateDirectSoundDeviceVTable deviceVTable = {};
+    deviceVTable.CreateSoundBuffer = &TestCreateSoundBuffer;
+    TestCreateDirectSoundDevice device{&deviceVTable};
+    g_zSnd_BackendDevice = &device;
+    g_zSnd_ActiveBackend = 0;
+
+    WAVEFORMATEX fmt = {};
+    fmt.wFormatTag = WAVE_FORMAT_PCM;
+    fmt.nChannels = 1;
+    fmt.nSamplesPerSec = 8000;
+    fmt.nAvgBytesPerSec = 16000;
+    fmt.nBlockAlign = 2;
+    fmt.wBitsPerSample = 16;
+
+    std::uint8_t pcmData[4] = {9, 8, 7, 6};
+    zSndSample *sample =
+        zSndSample_CreateQueuedStreamingSample(&fmt, pcmData, sizeof(pcmData));
+
+    const bool createdOk =
+        sample != nullptr && (sample->replayFields.flags & 0x101) == 0x101 &&
+        (sample->replayFields.flags & 0x08) != 0 && sample->replayFields.gain == 1.0f &&
+        sample->primaryVoice.handleKind == ZSND_PLAYHANDLE_BACKEND &&
+        sample->primaryVoice.backendBuffer != nullptr && sample->markerCount == 0 &&
+        sample->playbackEventHandler == nullptr && g_testCreateSoundBufferCount == 1 &&
+        g_testCreateDescFlags == 0x10080 && g_testCreateDescBytes == 4 &&
+        g_testCreateDescFormat == &fmt && g_testGetStatusCount == 1 &&
+        g_testLockCount == 1 && g_testUnlockCount == 1 && g_testSetCurrentPositionCount == 1 &&
+        std::memcmp(g_testLockedBytes, pcmData, sizeof(pcmData)) == 0;
+
+    std::free(sample);
+
+    g_zSnd_ActiveBackend = 2;
+    zSndSample *failed = zSndSample_CreateQueuedStreamingSample(&fmt, pcmData, sizeof(pcmData));
+    const bool failureOk = failed == nullptr;
+
+    g_zSnd_BackendDevice = nullptr;
+    return createdOk && failureOk ? 0 : 1;
+}
+
 extern "C" int zsnd_sample_init_from_wave_data_a3d_smoke(void) {
     ResetStopBackendCounters();
     g_testCreateSoundBufferCount = 0;

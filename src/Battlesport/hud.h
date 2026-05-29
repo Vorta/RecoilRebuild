@@ -335,6 +335,30 @@ struct RecoilStateControls : RecoilApp_IState {
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateControls) == 0x08);
 
+struct HudUiCheatCodeTitleWidget : HudUiZrdWidget {
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiCheatCodeTitleWidget) == 0x14c);
+
+struct HudUiCheatTextInputWidget : HudUiNumericTextInput {
+    void RECOIL_THISCALL OnActivate();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiCheatTextInputWidget) == 0x374);
+
+struct HudUiCheatCodeDialog : HudUiBackground {
+    HudUiCheatCodeTitleWidget titleWidget;
+    HudUiCheatTextInputWidget cheatInputWidget;
+
+    HudUiCheatCodeDialog *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE HudUiCheatCodeDialog *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiCheatCodeDialog) == 0xae0c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCheatCodeDialog, titleWidget) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCheatCodeDialog, cheatInputWidget) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCheatCodeDialog, cheatInputWidget) +
+                     offsetof(HudUiNumericTextInput, textInput) == 0xabe4);
+
 struct RecoilStateCheatCode : RecoilApp_IState {
     RecoilPtr32 m_dialog; // HudUiCheatCodeDialog*
     zVideoHalfResAdjustMode m_prevHalfResAdjustMode;
@@ -357,6 +381,8 @@ extern float g_Hud_LowMeterNextBeepTime;
 extern const HudUiCommon_FTable g_HudWeatherFx_Vtable;
 extern const HudUiCommon_FTable g_HudWeatherFxSnow_Vtable;
 extern const HudUiCommon_FTable g_HudWeatherFxRain_Vtable;
+extern const HudUiZrdWidget_FTable g_HudUiCheatCodeTitleWidget_FTable;
+extern const HudUiNumericTextInput_Base_FTable g_HudUiCheatCodeInputWidget_FTable;
 
 namespace HudUiCallback {
 int RECOIL_CDECL QueueCheatCodeState();

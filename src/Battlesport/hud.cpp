@@ -72,6 +72,11 @@ struct HudUiBackgroundConfirmQuit_FTable
     unsigned int slots[3];
 };
 
+struct HudUiCheatCodeDialog_FTable
+{
+    unsigned int slots[3];
+};
+
 RECOIL_NOINLINE void RECOIL_CDECL HudUiConfirmQuitPostLoadNoOp()
 {
 }
@@ -108,6 +113,63 @@ HudUiBackgroundConfirmQuit_FTable MakeConfirmQuitDialogFTable()
     return table;
 }
 
+HudUiZrdWidget_FTable MakeCheatCodeTitleWidgetFTable()
+{
+    HudUiZrdWidget_FTable table = {0};
+    table.slots[0] = HudMethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
+    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
+    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
+    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
+    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
+    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
+    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
+    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
+    table.slots[12] = HudMethodAddress(&HudUiCheatTextInputWidget::OnActivate);
+    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
+    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
+    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
+    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
+    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
+    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
+    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
+    return table;
+}
+
+HudUiNumericTextInput_Base_FTable MakeCheatCodeInputWidgetFTable()
+{
+    HudUiNumericTextInput_Base_FTable table = {0};
+    table.slots[0] = HudMethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructor);
+    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
+    table.slots[2] = HudMethodAddress(&HudUiNumericTextInput::UpdateCaptureUiAndClip);
+    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
+    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
+    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
+    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
+    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
+    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
+    table.slots[12] = HudMethodAddress(&HudUiCheatTextInputWidget::OnActivate);
+    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
+    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
+    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
+    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
+    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
+    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
+    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
+    table.slots[34] = HudMethodAddress(&HudUiNumericTextInput::OnRawKeyboardChar);
+    return table;
+}
+
+HudUiCheatCodeDialog_FTable MakeCheatCodeDialogFTable()
+{
+    HudUiCheatCodeDialog_FTable table = {0};
+    table.slots[0] = HudMethodAddress(&HudUiBackground::Update);
+    table.slots[1] = HudMethodAddress(&HudUiBackground::SetEnabled);
+    table.slots[2] = HudMethodAddress(&HudUiCheatCodeDialog::ScalarDeletingDestructor);
+    return table;
+}
+
 const HudUiWidget_FTable g_HudUiConfirmQuitCancelButton_FTable =
     MakeConfirmQuitButtonFTable(
         HudMethodAddress(&HudUiZrdWidget::OnActivateQueueExitCurrentState));
@@ -115,6 +177,8 @@ const HudUiWidget_FTable g_HudUiConfirmQuitOkButton_FTable =
     MakeConfirmQuitButtonFTable(HudMethodAddress(&HudUiConfirmQuitOkButton::OnActivate));
 const HudUiBackgroundConfirmQuit_FTable g_HudUiBackgroundConfirmQuit_FTable =
     MakeConfirmQuitDialogFTable();
+const HudUiCheatCodeDialog_FTable g_HudUiCheatCodeDialog_FTable =
+    MakeCheatCodeDialogFTable();
 
 RecoilApp_IState_Vtbl g_RecoilStateConfirmQuit_Vtbl = {0};
 
@@ -132,6 +196,10 @@ struct RecoilStateConfirmQuitBaseVtableGuard
 const HudUiCommon_FTable g_HudWeatherFx_Vtable = MakeHudWeatherFxFTable();
 const HudUiCommon_FTable g_HudWeatherFxSnow_Vtable = MakeHudWeatherFxFTable();
 const HudUiCommon_FTable g_HudWeatherFxRain_Vtable = MakeHudWeatherFxFTable();
+extern const HudUiZrdWidget_FTable g_HudUiCheatCodeTitleWidget_FTable =
+    MakeCheatCodeTitleWidgetFTable();
+extern const HudUiNumericTextInput_Base_FTable g_HudUiCheatCodeInputWidget_FTable =
+    MakeCheatCodeInputWidgetFTable();
 
 // Reimplements 0x4bdc70: HudWeatherFx::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
@@ -361,6 +429,70 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBackgroundConfirmQuit::Destructor()
 // (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
 RECOIL_NOINLINE HudUiBackgroundConfirmQuit *RECOIL_THISCALL
 HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x4070e0: HudUiCheatTextInputWidget::OnActivate
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+void RECOIL_THISCALL HudUiCheatTextInputWidget::OnActivate()
+{
+    g_RecoilApp.QueueExitCurrentState(0);
+    base.OnActivate();
+}
+
+// Reimplements 0x406d20: HudUiCheatCodeDialog::Constructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+HudUiCheatCodeDialog *RECOIL_THISCALL HudUiCheatCodeDialog::Constructor()
+{
+    HudUiBackground::Constructor();
+
+    titleWidget.Constructor();
+    titleWidget.base.ftable = (const HudUiWidget_FTable *)&g_HudUiCheatCodeTitleWidget_FTable;
+
+    cheatInputWidget.BaseConstructor();
+    cheatInputWidget.base.base.ftable =
+        (const HudUiWidget_FTable *)&g_HudUiCheatCodeInputWidget_FTable;
+    cheatInputWidget.textInput.AllocTextBuffer(80);
+    cheatInputWidget.Update("");
+    cheatInputWidget.SetInputActive(1);
+    cheatInputWidget.SetRawKeyboardCapture(1);
+
+    base.base.vptr = (const HudUiContainer_FTable *)&g_HudUiCheatCodeDialog_FTable;
+
+    zReader::Node *const dialogRoot =
+        HudUiBackground::LoadFromZrd("dialog.zrd", "CHEAT_CODE_DIALOG", 0);
+    if (dialogRoot != 0)
+    {
+        HudUiBackground::BindWidgetByName(dialogRoot, &titleWidget.base, "GO");
+        HudUiBackground::BindWidgetByName(dialogRoot, &cheatInputWidget.base.base,
+                                          "CHEATCODE");
+        HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
+    }
+
+    return this;
+}
+
+// Reimplements 0x406e30: HudUiCheatCodeDialog::Destructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudUiCheatCodeDialog::Destructor()
+{
+    cheatInputWidget.Destructor();
+    titleWidget.DestructorCore();
+    HudUiBackground::Destructor();
+}
+
+// Reimplements 0x406e10: HudUiCheatCodeDialog::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+RECOIL_NOINLINE HudUiCheatCodeDialog *RECOIL_THISCALL
+HudUiCheatCodeDialog::ScalarDeletingDestructor(unsigned int flags)
 {
     Destructor();
 
