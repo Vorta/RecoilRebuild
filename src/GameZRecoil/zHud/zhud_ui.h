@@ -960,6 +960,12 @@ struct HudCmdJoyButton {
     void RECOIL_THISCALL Destructor();
 };
 
+struct HudCmdMouseButton {
+    HudCmdBindButtonBase base;
+
+    void RECOIL_THISCALL Destructor();
+};
+
 RECOIL_NOINLINE void **RECOIL_FASTCALL zUtil_StdPtrVector_Clear(HudCmdBindingVector *self);
 RECOIL_NOINLINE void RECOIL_FASTCALL
 zUtil_StdPtrVector_FreeBufferAndReset(HudCmdBindingVector *self);
@@ -1825,6 +1831,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudCmdCommandList) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdKeyAButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdKeyBButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdJoyButton) == 0x44c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdMouseButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundContainer) == 0x44);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundContainer, inputFocusElement) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundContainer, captureTransitionMask) == 0x40);
