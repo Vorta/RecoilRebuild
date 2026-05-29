@@ -8804,6 +8804,29 @@ int RECOIL_THISCALL HudCmdDialog::ApplySecondaryKeyRebind(int keyCode, int comma
     return 1;
 }
 
+// Reimplements 0x40b4e0: HudCmdDialog::ApplyJoystickButtonRebind
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+int RECOIL_THISCALL HudCmdDialog::ApplyJoystickButtonRebind(int buttonCode, int commandIndex)
+{
+    const int joystickCommand =
+        zInput::BindMapCurrent_GetCommandByJoystickSlot(buttonCode);
+    const int groupIndex = setList.base.selectedIndex;
+    const int commandId =
+        zInput::BindGroupList_GetGroupCommandId(groupIndex, commandIndex);
+    if (joystickCommand == 0 &&
+        zInput::BindMapCurrent_GetCommandByJoystickSlot(buttonCode) != 0)
+    {
+        zInput::BindMapCurrent_SetJoystickBinding(buttonCode, 0);
+    }
+
+    zInput::BindMapCurrent_SetJoystickBinding(buttonCode, commandId);
+    RebuildCommandBindingListsForGroup(groupIndex);
+    OnCommandSelectionChanged(commandIndex);
+    descriptionPanel.captureState = 0;
+    zInput::ResetAllTransitionState();
+    return 1;
+}
+
 // Reimplements 0x4b90e0: HudCmdBindButtonBase::RebuildBindingSlotWidgets
 void RECOIL_THISCALL HudCmdBindButtonBase::RebuildBindingSlotWidgets(int totalCount,
                                                                      int visibleCount) {

@@ -1829,10 +1829,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40b4e0:
   - [✅] Reconstructed (Name: HudCmdDialog::ApplyJoystickButtonRebind)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialog::ApplyJoystickButtonRebind File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_apply_joystick_button_rebind)
+  - [✅] Binary-safe
 - 0x40b560:
   - [✅] Reconstructed (Name: HudCmdDialog::ApplyMouseButtonRebind)
   - [❌] Source dependencies satisfied
@@ -14653,8 +14653,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput_BindMapContext::SetJoystickBinding)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput_BindMapContext::SetJoystickBinding File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_context_set_joystick_binding)
+  - [✅] Binary-safe
 - 0x470c60:
   - [✅] Reconstructed (Name: zInput_BindMapContext::SetMouseBinding)
   - [✅] Source dependencies satisfied
@@ -14827,8 +14827,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_SetJoystickBinding)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_SetJoystickBinding File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_set_joystick_binding)
+  - [✅] Binary-safe
 - 0x471780:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_SetMouseBinding)
   - [✅] Source dependencies satisfied
