@@ -5325,7 +5325,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: hud_ui_panel_constructor_copy)
   - [❌] Binary-safe
 - 0x4bab40:
-  - [☑️] Reconstructed (Name: HudUiPanel::Destructor)
+  - [✅] Reconstructed (Name: HudUiPanel::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [✅] Functional-equivalent (Target: hud_ui_panel_destructor)
