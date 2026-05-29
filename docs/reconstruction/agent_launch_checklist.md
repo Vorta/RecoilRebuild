@@ -111,10 +111,10 @@ callers show the same helper-like code, restore the likely original inline
 helper or method and verify it through those callers or the smallest affected
 class/source cluster.
 
-Check `docs/reconstruction/original_class_candidates.md` before introducing or
-reshaping classes, inheritance, vtables, function tables, records, or
-namespace/module boundaries. Treat it as advisory generated evidence and confirm
-against current Binary Ninja facts.
+Check `docs/reconstruction/original_classes.md` before introducing or reshaping
+classes, inheritance, vtables, function tables, records, provider boundaries, or
+namespace/module boundaries. Use its class/table gate and boundary ledger, then
+confirm against current Binary Ninja facts.
 
 ## Source literals
 

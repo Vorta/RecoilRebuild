@@ -64,9 +64,9 @@ Current durable reconstruction notes:
 - `inlined_helpers.md` records likely original helpers and methods that were
   fully inlined by the retail compiler and must be verified through callers or
   source/class clusters.
-- `original_class_candidates.md` is a generated candidate map for likely
-  original class-like systems, records, vtables/function tables, and namespace
-  boundaries.
+- `original_classes.md` is the compact policy and ledger for likely original
+  class-like systems, records, vtables/function tables, provider boundaries, and
+  namespace boundaries.
 - `provider_abi_notes.md` summarizes workspace-level provider and ABI
   assumptions.
 - `source_file_map.md` maps recovered original source paths to current repo

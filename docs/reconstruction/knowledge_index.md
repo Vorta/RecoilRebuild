@@ -14,8 +14,8 @@ for function identity, types, markers, and acceptance state.
 - `inlined_helpers.md` - compact ledger for likely original helpers and methods
   that were fully inlined by the retail compiler, with caller evidence and
   verification limits.
-- `original_class_candidates.md` - generated candidate map for likely original
-  classes, records, vtables/function tables, and namespace-style subsystems.
+- `original_classes.md` - compact policy and ledger for class, record,
+  vtable/function-table, provider, and namespace-style subsystem boundaries.
 - `provider_abi_notes.md` - repo-local provider assumptions for VC5SP3/VC6, MFC42,
   legacy DirectX, imports, and runtime verification.
 - `source_file_map.md` - generated original-source placement map from
@@ -44,8 +44,8 @@ for function identity, types, markers, and acceptance state.
 - For compiler or provider questions, check `provider_abi_notes.md` and
   `compiler_linker_provenance.md` before adding one-off flags or stand-ins.
 - Before introducing or reshaping class, vtable, function-table, record, or
-  namespace/module boundaries, check `original_class_candidates.md` as advisory
-  generated evidence, then confirm against current Binary Ninja facts.
+  namespace/module boundaries, check `original_classes.md` for the class/table
+  gate and boundary ledger, then confirm against current Binary Ninja facts.
 - Before duplicating a small repeated decompiled body across callers, check
   `inlined_helpers.md` and consider restoring a likely original inline helper or
   method with caller-based verification evidence.
