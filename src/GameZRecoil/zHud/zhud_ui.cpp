@@ -8725,6 +8725,17 @@ int RECOIL_THISCALL HudCmdDialog::SelectCommandRelative(int delta)
     return currentIndex;
 }
 
+// Reimplements 0x40b930: HudCmdResetButton::OnActivate
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdResetButton::OnActivate()
+{
+    HudCmdDialog *const dialog = (HudCmdDialog *)(base.owner);
+    zInput::BindMap_InitDefaultBindings();
+    zInput::BindMap_Current_RebuildLookupIndices();
+    dialog->RebuildCommandBindingListsForGroup(dialog->setList.base.selectedIndex);
+    base.OnActivate();
+}
+
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)

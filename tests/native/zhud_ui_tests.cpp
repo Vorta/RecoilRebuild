@@ -6263,6 +6263,84 @@ extern "C" int zhud_cmd_dialog_select_command_relative_smoke(void) {
     return forward && positiveOutOfRange && backward && negativeOutOfRange ? 0 : 1;
 }
 
+extern "C" int zhud_cmd_reset_button_on_activate_smoke(void) {
+    HMODULE const oldMessagesDll = g_zLoc_MessagesDllHandle;
+    HMODULE messagesDll = LoadLibraryA("support\\messages.dll");
+    if (messagesDll == nullptr) {
+        messagesDll = LoadLibraryA("..\\..\\..\\..\\support\\messages.dll");
+    }
+    if (messagesDll == nullptr) {
+        return 2;
+    }
+    g_zLoc_MessagesDllHandle = messagesDll;
+
+    zInput::BindMapSystem_Init(0x30);
+
+    HudCmdDialog dialog{};
+    dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
+    dialog.setList.base.selectedIndex = 0;
+    SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyAButton.base, "OldKeyA0", "OldKeyA1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyBButton.base, "OldKeyB0", "OldKeyB1", 3, 7);
+    SetupCommandDialogButton(&dialog.joyButton.base, "OldJoy0", "OldJoy1", 3, 7);
+    SetupCommandDialogButton(&dialog.mouseButton.base, "OldMouse0", "OldMouse1", 3, 7);
+
+    HudCmdResetButton resetButton{};
+    zVidImagePartial activateImage{};
+    resetButton.base.base.ftable = &g_HudUiWidget_FTable;
+    resetButton.base.owner = &dialog;
+    resetButton.base.activateImage = &activateImage;
+    g_HudUi_InvalidateMask = 0x80;
+    resetButton.OnActivate();
+
+    HudCmdBindingEntry **const commandBegin =
+        static_cast<HudCmdBindingEntry **>(dialog.commandList.base.bindingVec.begin);
+    HudCmdBindingEntry **const keyABegin =
+        static_cast<HudCmdBindingEntry **>(dialog.keyAButton.base.bindingVec.begin);
+    int failure = 0;
+    if (zInput::BindGroupList_GetCount() != 5) {
+        failure = 10;
+    } else if (zInput::BindGroupList_GetGroupCommandCount(0) != 15) {
+        failure = 11;
+    } else if (g_zInput_BindMap_Current == nullptr) {
+        failure = 12;
+    } else if (g_zInput_BindMap_Current->GetPrimaryKeyboardKey(0x24) != 0x418) {
+        failure = 13;
+    } else if (dialog.commandList.base.bindingVec.end != commandBegin + 15) {
+        failure = 14;
+    } else if (dialog.keyAButton.base.bindingVec.end != keyABegin + 15) {
+        failure = 15;
+    } else if (dialog.commandList.base.selectedBindingIndex != 0) {
+        failure = 16;
+    } else if (dialog.keyAButton.base.selectedBindingIndex != 0) {
+        failure = 17;
+    } else if (resetButton.base.base.image != &activateImage) {
+        failure = 18;
+    } else if ((resetButton.base.base.flags & 0x80) == 0) {
+        failure = 19;
+    } else if (commandBegin[0]->displayText == nullptr || commandBegin[0]->displayText[0] == '\0') {
+        failure = 20;
+    }
+
+    CleanupCommandDialogButton(&dialog.mouseButton.base);
+    CleanupCommandDialogButton(&dialog.joyButton.base);
+    CleanupCommandDialogButton(&dialog.keyBButton.base);
+    CleanupCommandDialogButton(&dialog.keyAButton.base);
+    CleanupCommandDialogButton(&dialog.commandList.base);
+    dialog.descriptionPanel.base.Destructor();
+
+    zInput::BindGroupList_Clear();
+    ::operator delete(g_zInput_BindGroupInfoList.begin);
+    g_zInput_BindGroupInfoList = {};
+    zInput::BindMapSystem_Shutdown();
+    g_zInput_BindMap_Current = nullptr;
+    g_zLoc_MessagesDllHandle = oldMessagesDll;
+    g_HudUi_InvalidateMask = 0;
+    FreeLibrary(messagesDll);
+
+    return failure;
+}
+
 extern "C" int zhud_cmd_dialog_apply_primary_key_rebind_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);

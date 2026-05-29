@@ -1438,6 +1438,12 @@ struct HudCmdSimpleWidget {
     HudUiZrdWidget base;
 };
 
+struct HudCmdResetButton {
+    HudUiZrdWidget base;
+
+    void RECOIL_THISCALL OnActivate();
+};
+
 struct HudCmdSetListWidget {
     HudUiCycleSelectorWidget base;
 };
@@ -1454,7 +1460,7 @@ struct HudCmdDescriptionPanel {
 struct HudCmdDialog {
     HudUiBackground base;
     HudCmdSimpleWidget resumeButton;
-    HudCmdSimpleWidget resetButton;
+    HudCmdResetButton resetButton;
     HudCmdCommandList commandList;
     HudCmdKeyAButton keyAButton;
     HudCmdKeyBButton keyBButton;
