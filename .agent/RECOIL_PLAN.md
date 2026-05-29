@@ -22593,8 +22593,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: StdPtrVector::ClearNoOpDestroy)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: StdPtrVector::ClearNoOpDestroy File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: std_ptr_vector_clear_no_op_destroy)
+  - [✅] Binary-safe
 - 0x40c190:
   - [✅] Reconstructed (Name: zUtil::UninitializedFillDwordN)
   - [✅] Provider-boundary (Kind: compiler/template instantiation; Name: zUtil_UninitializedFillDwordN; Origin: compiler-generated; File: external; Target: pending)

@@ -9136,6 +9136,15 @@ extern "C" int zhud_cmd_binding_entry_copy_range_smoke(void) {
                : 2;
 }
 
+extern "C" int zhud_std_ptr_vector_clear_no_op_destroy_smoke(void) {
+    int values[3] = {11, 22, 33};
+    StdPtrVector vector{};
+    vector.ClearNoOpDestroy(values, values + 3);
+    vector.ClearNoOpDestroy(values + 1, values + 1);
+
+    return values[0] == 11 && values[1] == 22 && values[2] == 33 ? 0 : 1;
+}
+
 extern "C" int zhud_panel_constructor_default_smoke(void) {
     alignas(HudUiPanel) std::uint8_t storage[0x2ac]{};
     auto *panel = reinterpret_cast<HudUiPanel *>(storage);
