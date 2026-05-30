@@ -3085,10 +3085,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: hud_ui_fill_bitmap_constructor)
   - [✅] Binary-safe
 - 0x40cf50:
-  - [❌] Reconstructed (Name: HudUiFillBitmap::DestructorCoreThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiFillBitmap::DestructorCoreThunk)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiFillBitmap::DestructorCoreThunk File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_fill_bitmap_destructor_core_thunk)
   - [❌] Binary-safe
 - 0x4b84b0:
   - [✅] Reconstructed (Name: HudUiFillBitmap::ScalarDeletingDestructor)

@@ -897,6 +897,7 @@ struct HudUiFillBitmap {
     HudUiFillBitmap *RECOIL_THISCALL Constructor();
     HudUiFillBitmap *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     void RECOIL_THISCALL DestructorCore();
+    void RECOIL_THISCALL DestructorCoreThunk();
     void RECOIL_THISCALL Draw();
     int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
     void RECOIL_THISCALL UpdateNormalizedFromCursor();

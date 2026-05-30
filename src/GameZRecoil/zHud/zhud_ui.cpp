@@ -8092,6 +8092,11 @@ void RECOIL_THISCALL HudUiFillBitmap::DestructorCore() {
     base.DestructorCore();
 }
 
+// Reimplements 0x40cf50: HudUiFillBitmap::DestructorCoreThunk
+void RECOIL_THISCALL HudUiFillBitmap::DestructorCoreThunk() {
+    DestructorCore();
+}
+
 // Reimplements 0x4b84b0: HudUiFillBitmap::ScalarDeletingDestructor
 HudUiFillBitmap *RECOIL_THISCALL HudUiFillBitmap::ScalarDeletingDestructor(unsigned int flags) {
     DestructorCore();

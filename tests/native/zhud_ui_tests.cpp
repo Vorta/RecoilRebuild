@@ -5832,8 +5832,19 @@ extern "C" int zhud_fill_bitmap_core_smoke(void) {
                             destructorWidget.base.base.ftable ==
                                 reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
+    HudUiFillBitmap thunkWidget{};
+    thunkWidget.Constructor();
+    thunkWidget.base.base.image = &zVid_Image::g_zImage_DefaultImage;
+    thunkWidget.base.base.ownsImage = 0;
+    thunkWidget.previewImage = &zVid_Image::g_zImage_DefaultImage;
+    thunkWidget.fillImage = &zVid_Image::g_zImage_DefaultImage;
+    thunkWidget.DestructorCoreThunk();
+    const bool thunkDestructed =
+        thunkWidget.base.base.ftable ==
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+
     return constructed && normalized && setNormalized && drawn && dirtyDrawn && nullFillSkipped &&
-                   cursorUpdated && loaded && destructed
+                   cursorUpdated && loaded && destructed && thunkDestructed
                ? 0
                : 1;
 }
