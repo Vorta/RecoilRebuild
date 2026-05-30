@@ -4573,6 +4573,64 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
                                labelBounds->top == 20 && labelBounds->right == 42 &&
                                labelBounds->bottom == 32;
 
+    alignas(HudUiPanel) std::uint8_t centerLabelStorageA[0x2ac]{};
+    alignas(HudUiPanel) std::uint8_t centerLabelStorageB[0x2ac]{};
+    auto *const centerLabelA = reinterpret_cast<HudUiPanel *>(centerLabelStorageA);
+    auto *const centerLabelB = reinterpret_cast<HudUiPanel *>(centerLabelStorageB);
+    centerLabelA->vtbl = &g_HudUiPanel_FTable;
+    reinterpret_cast<HudUiElement *>(centerLabelA)->x = 20;
+    reinterpret_cast<HudUiElement *>(centerLabelA)->y = 30;
+    TestFieldAt<std::int32_t>(centerLabelA, 0x144) = 1;
+    TestFieldAt<std::int32_t>(centerLabelA, 0x25c) = 10;
+    TestFieldAt<std::int32_t>(centerLabelA, 0x260) = 4;
+    TestFieldAt<std::int32_t>(centerLabelA, 0x274) = 0;
+    TestFieldAt<std::uint32_t>(centerLabelA, 0x270) = 0;
+    centerLabelB->vtbl = &g_HudUiPanel_FTable;
+    reinterpret_cast<HudUiElement *>(centerLabelB)->x = 40;
+    reinterpret_cast<HudUiElement *>(centerLabelB)->y = 35;
+    TestFieldAt<std::int32_t>(centerLabelB, 0x144) = 1;
+    TestFieldAt<std::int32_t>(centerLabelB, 0x25c) = 16;
+    TestFieldAt<std::int32_t>(centerLabelB, 0x260) = 6;
+    TestFieldAt<std::int32_t>(centerLabelB, 0x274) = 0;
+    TestFieldAt<std::uint32_t>(centerLabelB, 0x270) = 0;
+    HudUiPanel *centerLabels[] = {centerLabelA, centerLabelB};
+    boundsWidget.boundsRect = {100, 0, 0, 0};
+    boundsWidget.labelPanels.begin = centerLabels;
+    boundsWidget.labelPanels.end = centerLabels + 2;
+    HudUiRect *centerBounds = boundsWidget.GetBoundsRectOrNull();
+    const bool centerBoundsOk =
+        centerBounds == &boundsWidget.boundsRect && centerBounds->left == 15 &&
+        centerBounds->top == 30 && centerBounds->right == 48 && centerBounds->bottom == 40;
+
+    alignas(HudUiPanel) std::uint8_t rightLabelStorageA[0x2ac]{};
+    alignas(HudUiPanel) std::uint8_t rightLabelStorageB[0x2ac]{};
+    auto *const rightLabelA = reinterpret_cast<HudUiPanel *>(rightLabelStorageA);
+    auto *const rightLabelB = reinterpret_cast<HudUiPanel *>(rightLabelStorageB);
+    rightLabelA->vtbl = &g_HudUiPanel_FTable;
+    reinterpret_cast<HudUiElement *>(rightLabelA)->x = 50;
+    reinterpret_cast<HudUiElement *>(rightLabelA)->y = 10;
+    TestFieldAt<std::int32_t>(rightLabelA, 0x144) = 2;
+    TestFieldAt<std::int32_t>(rightLabelA, 0x25c) = 12;
+    TestFieldAt<std::int32_t>(rightLabelA, 0x260) = 5;
+    TestFieldAt<std::int32_t>(rightLabelA, 0x274) = 0;
+    TestFieldAt<std::uint32_t>(rightLabelA, 0x270) = 0;
+    rightLabelB->vtbl = &g_HudUiPanel_FTable;
+    reinterpret_cast<HudUiElement *>(rightLabelB)->x = 55;
+    reinterpret_cast<HudUiElement *>(rightLabelB)->y = 17;
+    TestFieldAt<std::int32_t>(rightLabelB, 0x144) = 2;
+    TestFieldAt<std::int32_t>(rightLabelB, 0x25c) = 25;
+    TestFieldAt<std::int32_t>(rightLabelB, 0x260) = 7;
+    TestFieldAt<std::int32_t>(rightLabelB, 0x274) = 0;
+    TestFieldAt<std::uint32_t>(rightLabelB, 0x270) = 0;
+    HudUiPanel *rightLabels[] = {rightLabelA, rightLabelB};
+    boundsWidget.boundsRect = {100, 0, 0, 0};
+    boundsWidget.labelPanels.begin = rightLabels;
+    boundsWidget.labelPanels.end = rightLabels + 2;
+    HudUiRect *rightBounds = boundsWidget.GetBoundsRectOrNull();
+    const bool rightBoundsOk = rightBounds == &boundsWidget.boundsRect &&
+                               rightBounds->left == 30 && rightBounds->top == 10 &&
+                               rightBounds->right == 50 && rightBounds->bottom == 22;
+
     HudUiZrdWidget stateWidget{};
     stateWidget.base.ftable = &g_HudUiWidget_FTable;
     zVidImagePartial defaultImage{};
@@ -4696,8 +4754,8 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
 
     return erased && inserted && nullDelete && childDelete && destructed && scalarDeleted &&
                    scalarHeapDeleted && invalidated && disabledBounds && imageBoundsOk &&
-                   labelBoundsOk && refreshEnabled && refreshDisabled && previewHidden &&
-                   previewShown && activated
+                   labelBoundsOk && centerBoundsOk && rightBoundsOk && refreshEnabled &&
+                   refreshDisabled && previewHidden && previewShown && activated
                ? 0
                : 1;
 }
