@@ -3338,7 +3338,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x434dc0:
   - [✅] Reconstructed (Name: HudUiLoadGameDialog::ProcessDialogResult)
-  - [☑️] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadGameDialog::ProcessDialogResult File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: hud_ui_load_game_dialog_process_dialog_result)
   - [❌] Binary-safe
