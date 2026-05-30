@@ -8428,6 +8428,9 @@ HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk(unsigned int flags) {
 // Reimplements 0x4b8be0: HudUiZrdWidgetEx17C::LoadFromZrd
 int RECOIL_THISCALL HudUiZrdWidgetEx17C::LoadFromZrd(zReader::Node *zrdSection,
                                                               void *ownerDialog) {
+    typedef int (RECOIL_THISCALL *LoadFromZrdFn)(HudUiZrdWidgetEx17C_Item * self,
+                                                 zReader::Node *zrdSection, void *ownerDialog);
+
     base.owner = ownerDialog;
 
     zReader::Node *const radioNode = zReader_GetNamedNode(zrdSection, "RADIO");
@@ -8445,7 +8448,8 @@ int RECOIL_THISCALL HudUiZrdWidgetEx17C::LoadFromZrd(zReader::Node *zrdSection,
             option->Constructor();
             options[index] = option;
 
-            option->LoadFromZrd(&radioBase[index + 1], ownerDialog);
+            ((LoadFromZrdFn)(option->base.base.ftable->slots[31]))(option, &radioBase[index + 1],
+                                                                    ownerDialog);
             option->ownerSelector = this;
             option->itemIndex = index;
         }

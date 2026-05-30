@@ -3200,9 +3200,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b8be0:
   - [☑️] Reconstructed (Name: HudUiOptionSelectorWidget::LoadFromZrd)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_ex17c_load_from_zrd)
   - [❌] Binary-safe
 - 0x4b8cf0:
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::SetSelectedIndex)
