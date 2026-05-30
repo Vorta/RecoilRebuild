@@ -2812,7 +2812,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiSliderBorder::SetBounds)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiSliderBorder::SetBounds File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_slider_border_set_bounds)
   - [❌] Binary-safe
 - 0x4b49e0:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::BaseConstructor)
