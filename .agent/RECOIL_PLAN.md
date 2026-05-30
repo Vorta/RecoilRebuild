@@ -18721,7 +18721,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::GetSoundVolumeOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetSoundVolumeOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_get_sound_volume_option)
   - [❌] Binary-safe
 - 0x4080a0:
   - [✅] Reconstructed (Name: zSnd::SetAudioApiOption)
