@@ -3232,7 +3232,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiListSelectorItem::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiListSelectorItem::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_list_selector_item_constructor)
   - [❌] Binary-safe
 - 0x4ba410:
   - [✅] Reconstructed (Name: HudUiListSelectorItem::Draw)
