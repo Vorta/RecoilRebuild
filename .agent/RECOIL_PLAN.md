@@ -2534,9 +2534,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x41a190:
   - [☑️] Reconstructed (Name: HudUiNumericTextInput::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNumericTextInput::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_numeric_text_input_constructor_ftable)
   - [❌] Binary-safe
 - 0x41a200:
   - [☑️] Reconstructed (Name: HudUiClampedIntTextInput::Constructor)
@@ -2564,9 +2564,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41a3f0:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::DestructorThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNumericTextInput::DestructorThunk File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_numeric_text_input_constructor_ftable)
   - [❌] Binary-safe
 - 0x41a570:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk)
@@ -2588,9 +2588,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41a7b0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupTextInput::OnActivateFocusAndCursor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupTextInput::OnActivateFocusAndCursor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_numeric_text_input_constructor_ftable)
   - [❌] Binary-safe
 - 0x41c270:
   - [✅] Reconstructed (Name: HudUiNewGamePanel_StartButton::OnActivate)
@@ -2624,9 +2624,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41c4a0:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::ScalarDeletingDestructorThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNumericTextInput::ScalarDeletingDestructorThunk File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_numeric_text_input_constructor_ftable)
   - [❌] Binary-safe
 - 0x41c4c0:
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::ScalarDeletingDestructorThunk)

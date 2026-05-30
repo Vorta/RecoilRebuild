@@ -11,6 +11,7 @@
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/include/zDi.h"
 #include "GameZRecoil/include/zImage.h"
+#include "GameZRecoil/zClass/cls_stubs.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/zGame/zGame.h"
@@ -48,6 +49,7 @@ const int ZOPT_GRAPHICS_GLOBAL_LIGHT = 0x10;
 const int ZVID_HW_MODE_SOFTWARE = 0;
 const float ZSND_CD_VOLUME_TO_NORMALIZED = 1.52590219e-05f;
 const float ZSND_CD_NORMALIZED_TO_VOLUME = 65535.0f;
+const unsigned int HUD_UI_NET_GAME_SETUP_FOCUS_TEXT_INPUT_OFFSET = 0xa94c;
 
 template <typename Method> unsigned int MethodAddress(Method method) {
     RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
@@ -202,6 +204,15 @@ HudUiTripletPanel_FTable MakeHudUiTripletPanelFTable() {
     HudUiTripletPanel_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiTripletPanel_FTable>();
     table.slots[1] = MethodAddress(&HudUiTripletPanel::Draw);
     table.slots[2] = (unsigned int)(&HudUiNoOpMethodStub);
+    return table;
+}
+
+HudUiNumericTextInput_Base_FTable MakeHudUiNumericTextInputCtorFTable() {
+    HudUiNumericTextInput_Base_FTable table =
+        MakeHudUiFTableWithCommonInvalidate<HudUiNumericTextInput_Base_FTable>();
+    table.slots[0] = MethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructorThunk);
+    table.slots[12] = MethodAddress(&HudUiNetGameSetupTextInput::OnActivateFocusAndCursor);
+    table.slots[35] = MethodAddress(&zStub::ReturnZeroNoArgs);
     return table;
 }
 
@@ -657,6 +668,8 @@ const HudUiTextInput_FTable g_HudUiNumericTextInput_TextInputFTable =
     MakeHudUiTextInputFTable();
 const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_Base_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiNumericTextInput_Base_FTable>();
+const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_CtorTable_FTable =
+    MakeHudUiNumericTextInputCtorFTable();
 const HudUiSlot_FTable g_HudUiSlot_FTable = MakeHudUiFTableWithCommonInvalidate<HudUiSlot_FTable>();
 zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
 HudUiContainer g_HudUiMgr = {0};
@@ -11586,6 +11599,18 @@ HudUiNumericTextInput *RECOIL_THISCALL HudUiNumericTextInput::BaseConstructor() 
     return this;
 }
 
+// Reimplements 0x41a190: HudUiNumericTextInput::Constructor
+HudUiNumericTextInput *RECOIL_THISCALL
+HudUiNumericTextInput::Constructor(unsigned int maxDigits) {
+    BaseConstructor();
+    base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiNumericTextInput_CtorTable_FTable);
+    textInput.AllocTextBuffer(maxDigits);
+    Update("");
+    SetInputActive(0);
+    return this;
+}
+
 // Reimplements 0x4b4e40: HudUiNumericTextInput::AllocTextBuffer
 void RECOIL_THISCALL HudUiNumericTextInput::AllocTextBuffer(unsigned int bufferSize) {
     textInput.AllocTextBuffer(bufferSize);
@@ -11700,10 +11725,26 @@ void RECOIL_THISCALL HudUiNumericTextInput::Destructor() {
     base.DestructorCore();
 }
 
+// Reimplements 0x41a3f0: HudUiNumericTextInput::DestructorThunk
+void RECOIL_THISCALL HudUiNumericTextInput::DestructorThunk() {
+    Destructor();
+}
+
 // Reimplements 0x4b4a90: HudUiNumericTextInput::ScalarDeletingDestructor
 HudUiNumericTextInput *RECOIL_THISCALL
 HudUiNumericTextInput::ScalarDeletingDestructor(unsigned int flags) {
     Destructor();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x41c4a0: HudUiNumericTextInput::ScalarDeletingDestructorThunk
+HudUiNumericTextInput *RECOIL_THISCALL
+HudUiNumericTextInput::ScalarDeletingDestructorThunk(unsigned int flags) {
+    DestructorThunk();
     if ((flags & 1u) != 0) {
         ::operator delete(this);
     }
@@ -11758,6 +11799,33 @@ int RECOIL_THISCALL HudUiNumericTextInput::OnRawKeyboardChar(int key) {
     }
 
     return 0;
+}
+
+static HudUiNumericTextInput **HudUiNetGameSetupFocusTextInputSlot(void *owner) {
+    // BN shows the current network setup text input focus pointer at owner + 0xa94c.
+    return (HudUiNumericTextInput **)((unsigned char *)(owner) +
+                                      HUD_UI_NET_GAME_SETUP_FOCUS_TEXT_INPUT_OFFSET);
+}
+
+// Reimplements 0x41a7b0: HudUiNetGameSetupTextInput::OnActivateFocusAndCursor
+void RECOIL_THISCALL HudUiNetGameSetupTextInput::OnActivateFocusAndCursor() {
+    HudUiNumericTextInput **const focusTextInputSlot =
+        HudUiNetGameSetupFocusTextInputSlot(base.owner);
+    HudUiNumericTextInput *const previousFocusTextInput = *focusTextInputSlot;
+
+    if (previousFocusTextInput != 0) {
+        typedef int (RECOIL_THISCALL *FocusLostFn)(HudUiNumericTextInput * self);
+        const HudUiNumericTextInput_Base_FTable *const ftable =
+            (const HudUiNumericTextInput_Base_FTable *)(previousFocusTextInput->base.base.ftable);
+        ((FocusLostFn)(ftable->slots[35]))(previousFocusTextInput);
+        previousFocusTextInput->SetRawKeyboardCapture(0);
+    }
+
+    *focusTextInputSlot = this;
+    SetRawKeyboardCapture(1);
+    Update(GetBuffer());
+    textInput.SetCursorPosition((int)(strlen(GetBuffer())));
+    OnActivate();
 }
 
 // Reimplements 0x40fb70: HudUiMeter::Constructor

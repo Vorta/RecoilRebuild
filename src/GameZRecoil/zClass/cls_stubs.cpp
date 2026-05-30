@@ -1,11 +1,4 @@
-#include "recoil/recoil_callconv.h"
-
-struct zStub {
-    int RECOIL_THISCALL ReturnOneNoArgs();
-    int RECOIL_THISCALL ReturnZeroNoArgs();
-    void RECOIL_THISCALL NoOp1Arg(int);
-    int RECOIL_THISCALL ReturnOne2Args(int, int);
-};
+#include "GameZRecoil/zClass/cls_stubs.h"
 
 // Reimplements 0x407130: zStub::ReturnOneNoArgs
 // (GameZRecoil/zClass/cls_stubs.c)

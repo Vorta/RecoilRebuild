@@ -9464,6 +9464,27 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
         input.sliderBorder.rawKeyFilterEnabled == 0 && input.sliderBorder.inputActive == 1 &&
         input.sliderBorder.caretHalfWidth == 0 && input.sliderBorder.base.base.flags == 0x80;
 
+    const bool ctorTable =
+        g_HudUiNumericTextInput_CtorTable_FTable.slots[0] ==
+            static_cast<std::uint32_t>(
+                MethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructorThunk)) &&
+        g_HudUiNumericTextInput_CtorTable_FTable.slots[12] ==
+            static_cast<std::uint32_t>(
+                MethodAddress(&HudUiNetGameSetupTextInput::OnActivateFocusAndCursor)) &&
+        g_HudUiNumericTextInput_CtorTable_FTable.slots[35] != 0;
+
+    HudUiNumericTextInput constructed{};
+    HudUiNumericTextInput *const constructorResult = constructed.Constructor(6);
+    const bool constructedNumeric =
+        constructorResult == &constructed &&
+        constructed.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiNumericTextInput_CtorTable_FTable) &&
+        constructed.textInput.ftable == &g_HudUiNumericTextInput_TextInputFTable &&
+        constructed.textInput.capacity == 6 && std::strcmp(constructed.textInput.buffer, "") == 0 &&
+        constructed.textInput.cursor == 0 && constructed.sliderBorder.inputActive == 0 &&
+        (constructed.base.base.flags & 0x10) != 0 &&
+        (constructed.sliderBorder.base.base.flags & 0x10) != 0;
+
     input.SetRawKeyboardCapture(0);
     const bool rawNoChange = g_zInput_KbdRawEventCallback == reinterpret_cast<void *>(0x1111) &&
                              g_zInput_KbdRawEventCallbackCtx == reinterpret_cast<void *>(0x2222);
@@ -9602,13 +9623,50 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
                             destructInput.base.base.ftable ==
                                 reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
+    HudUiNumericTextInput thunkInput{};
+    thunkInput.Constructor(4);
+    thunkInput.SetRawKeyboardCapture(1);
+    HudUiNumericTextInput *const thunkResult = thunkInput.ScalarDeletingDestructorThunk(0);
+    const bool thunkDestructed =
+        thunkResult == &thunkInput && g_zInput_KbdRawEventCallback == nullptr &&
+        g_zInput_KbdRawEventCallbackCtx == nullptr &&
+        thunkInput.textInput.ftable == &g_HudUiTextInput_FTable &&
+        thunkInput.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+
+    alignas(void *) std::uint8_t focusOwnerStorage[0xa950]{};
+    HudUiNumericTextInput **const focusSlot =
+        reinterpret_cast<HudUiNumericTextInput **>(focusOwnerStorage + 0xa94c);
+    HudUiNumericTextInput previousFocus{};
+    previousFocus.Constructor(4);
+    previousFocus.SetRawKeyboardCapture(1);
+    HudUiNetGameSetupTextInput currentFocus{};
+    currentFocus.Constructor(8);
+    currentFocus.base.owner = focusOwnerStorage;
+    currentFocus.Update("123");
+    currentFocus.textInput.SetCursorPosition(0);
+    *focusSlot = &previousFocus;
+    currentFocus.OnActivateFocusAndCursor();
+    const bool focusActivated =
+        *focusSlot == &currentFocus && previousFocus.sliderBorder.sliderVisibleWhenInputActive == 0 &&
+        currentFocus.sliderBorder.sliderVisibleWhenInputActive == 1 &&
+        currentFocus.sliderBorder.inputActive == 1 && currentFocus.textInput.cursor == 3 &&
+        std::strcmp(currentFocus.textInput.buffer, "123") == 0 &&
+        g_zInput_KbdRawEventCallback ==
+            reinterpret_cast<void *>(&HudUiNumericTextInput::RawKeyboardCallback) &&
+        g_zInput_KbdRawEventCallbackCtx == &currentFocus;
+
+    currentFocus.Destructor();
+    previousFocus.Destructor();
+    constructed.Destructor();
     ::operator delete(input.textInput.buffer);
     input.textInput.buffer = nullptr;
     g_HudUi_InvalidateMask = 0;
-    return ok && rawNoChange && rawEnabled && rawDisabled && rawNull && rawDispatched &&
-                   rawFiltered && rawAccepted && acceptedNotify && deactivated && activated &&
-                   bufferAllocated && updated && captureUpdated && captureHidden &&
-                   numericActivated && destructed
+    return ok && ctorTable && constructedNumeric && rawNoChange && rawEnabled && rawDisabled &&
+                   rawNull && rawDispatched && rawFiltered && rawAccepted && acceptedNotify &&
+                   deactivated && activated && bufferAllocated && updated && captureUpdated &&
+                   captureHidden && numericActivated && destructed && thunkDestructed &&
+                   focusActivated
                ? 0
                : 1;
 }

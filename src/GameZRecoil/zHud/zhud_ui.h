@@ -153,7 +153,7 @@ struct HudUiTextInput_FTable {
 };
 
 struct HudUiNumericTextInput_Base_FTable {
-    unsigned int slots[35];
+    unsigned int slots[36];
 };
 
 struct HudUiSlot_FTable {
@@ -258,6 +258,7 @@ extern const HudUiTripletPanel_FTable g_HudUiTripletPanel_FTable;
 extern const HudUiTextInput_FTable g_HudUiTextInput_FTable;
 extern const HudUiTextInput_FTable g_HudUiNumericTextInput_TextInputFTable;
 extern const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_Base_FTable;
+extern const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_CtorTable_FTable;
 extern const HudUiSlot_FTable g_HudUiSlot_FTable;
 extern const HudUiZrdWidget_FTable g_HudUiMessageBoxOkButton_Vtbl;
 extern const HudUiZrdWidget_FTable g_HudUiMessageBoxCancelButton_Vtbl;
@@ -1267,9 +1268,12 @@ struct HudUiNumericTextInput {
     HudUiNumericTextInput *owner;
     HudUiSliderBorder sliderBorder;
 
+    HudUiNumericTextInput *RECOIL_THISCALL Constructor(unsigned int maxDigits);
     HudUiNumericTextInput *RECOIL_THISCALL BaseConstructor();
     HudUiNumericTextInput *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    HudUiNumericTextInput *RECOIL_THISCALL ScalarDeletingDestructorThunk(unsigned int flags);
     void RECOIL_THISCALL Destructor();
+    void RECOIL_THISCALL DestructorThunk();
     void RECOIL_THISCALL AllocTextBuffer(unsigned int bufferSize);
     char *RECOIL_THISCALL GetBuffer();
     void RECOIL_THISCALL Update(const char *text);
@@ -1280,6 +1284,10 @@ struct HudUiNumericTextInput {
     void RECOIL_THISCALL OnActivate();
     static int RECOIL_FASTCALL RawKeyboardCallback(int key,
                                                             HudUiNumericTextInput *callbackCtx);
+};
+
+struct HudUiNetGameSetupTextInput : HudUiNumericTextInput {
+    void RECOIL_THISCALL OnActivateFocusAndCursor();
 };
 
 struct HudUiSlot {
