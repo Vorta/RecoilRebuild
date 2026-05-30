@@ -2951,6 +2951,32 @@ extern "C" int hud_ui_options_panel_overlay_owner_destructor_core_smoke(void) {
     return 0;
 }
 
+extern "C" int hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smoke(void) {
+    TestConfirmQuitDialog panel{};
+
+    HudUiOptionsPanelOverlayOwner state{};
+    state.vftable = 0x11111111;
+    state.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+
+    HudUiOptionsPanelOverlayOwner *const returned =
+        state.ScalarDeletingDestructor(0);
+    if (returned != &state || state.vftable != kRecoilStateBase_VtblAddress ||
+        state.m_panel != 0 || panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
+        panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
+        return 1;
+    }
+
+    HudUiOptionsPanelOverlayOwner *const deletingState =
+        static_cast<HudUiOptionsPanelOverlayOwner *>(
+            ::operator new(sizeof(HudUiOptionsPanelOverlayOwner)));
+    deletingState->vftable = 0x22222222;
+    deletingState->m_panel = 0;
+    HudUiOptionsPanelOverlayOwner *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+
+    return deletingReturned == deletingState ? 0 : 2;
+}
+
 extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void) {
     TestConfirmQuitDialog panel{};
 

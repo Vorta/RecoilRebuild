@@ -2231,9 +2231,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40d0c0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_overlay_owner_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x40d150:
   - [☑️] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent)

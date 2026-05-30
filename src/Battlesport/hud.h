@@ -317,6 +317,8 @@ struct HudUiOptionsPanelOverlayOwner : RecoilApp_IState {
     RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
     HudUiOptionsPanelOverlayOwner *RECOIL_THISCALL Constructor();
     RECOIL_NOINLINE void RECOIL_THISCALL DestructorCore();
+    RECOIL_NOINLINE HudUiOptionsPanelOverlayOwner *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
     static void RECOIL_CDECL QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiOptionsPanelOverlayOwner) == 0x08);

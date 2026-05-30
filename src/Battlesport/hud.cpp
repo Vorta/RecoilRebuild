@@ -446,6 +446,20 @@ HudUiOptionsPanelOverlayOwner::DestructorCore()
     }
 }
 
+// Reimplements 0x40d0c0: HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+RECOIL_NOINLINE HudUiOptionsPanelOverlayOwner *RECOIL_THISCALL
+HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor(unsigned int flags)
+{
+    DestructorCore();
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
 // Reimplements 0x4159b0: RecoilStateConfirmQuit::QueueEnter
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
 void RECOIL_CDECL RecoilStateConfirmQuit::QueueEnter()

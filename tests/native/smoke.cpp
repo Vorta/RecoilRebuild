@@ -63,6 +63,7 @@ extern "C" int recoil_state_controls_queue_enter_smoke(void);
 extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void);
 extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void);
 extern "C" int hud_ui_options_panel_overlay_owner_destructor_core_smoke(void);
+extern "C" int hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smoke(void);
 extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void);
 extern "C" int briefing_stop_and_shutdown_thread_smoke(void);
 extern "C" int briefing_thread_main_one_iteration_smoke(void);
@@ -1727,6 +1728,8 @@ int main(int argc, char **argv) {
          hud_ui_options_panel_overlay_owner_constructor_smoke},
         {"hud_ui_options_panel_overlay_owner_destructor_core_smoke",
          hud_ui_options_panel_overlay_owner_destructor_core_smoke},
+        {"hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smoke",
+         hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smoke},
         {"hud_ui_options_panel_overlay_owner_static_init_thunks_smoke",
          hud_ui_options_panel_overlay_owner_static_init_thunks_smoke},
         {"briefing_stop_and_shutdown_thread_smoke", briefing_stop_and_shutdown_thread_smoke},
