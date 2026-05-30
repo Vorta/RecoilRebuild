@@ -12031,6 +12031,41 @@ extern "C" int zhud_options_panel_perspective_sync_from_options_smoke(void) {
     return setOk && clearOk && swOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void) {
+    int swHudType = ZOPT_HUD_TYPE_PERSPECTIVE;
+    int hwHudType = ZOPT_HUD_TYPE_STANDARD;
+    int *const oldSwHudType = ZOPT_HUD_TYPE_SW;
+    int *const oldHwHudType = ZOPT_HUD_TYPE_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    ZOPT_HUD_TYPE_SW = &swHudType;
+    ZOPT_HUD_TYPE_HW = &hwHudType;
+
+    HudUiOptionsPanel_FullHud fullHud{};
+    fullHud.base.Constructor();
+
+    g_zOpt_HwMode = 0;
+    fullHud.base.checked = 0;
+    fullHud.InitFromOptions();
+    const bool swPerspectiveOk = fullHud.base.checked == 1;
+
+    g_zOpt_HwMode = 1;
+    fullHud.base.checked = 9;
+    fullHud.InitFromOptions();
+    const bool hwStandardOk = fullHud.base.checked == 0;
+
+    hwHudType = ZOPT_HUD_TYPE_PERSPECTIVE;
+    fullHud.InitFromOptions();
+    const bool hwPerspectiveOk = fullHud.base.checked == 1;
+
+    fullHud.base.DestructorCore();
+    ZOPT_HUD_TYPE_SW = oldSwHudType;
+    ZOPT_HUD_TYPE_HW = oldHwHudType;
+    g_zOpt_HwMode = oldHwMode;
+
+    return swPerspectiveOk && hwStandardOk && hwPerspectiveOk ? 0 : 1;
+}
+
 namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;
