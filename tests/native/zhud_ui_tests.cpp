@@ -1175,6 +1175,18 @@ struct TestTripletContainerDispatch {
     }
 };
 
+int g_statsListDispatchUpdateCount = 0;
+float g_statsListDispatchUpdateDelta = 0.0f;
+void *g_statsListDispatchUpdateThis = nullptr;
+
+struct TestStatsListElementDispatch {
+    void RECOIL_THISCALL Update(float deltaSeconds) {
+        ++g_statsListDispatchUpdateCount;
+        g_statsListDispatchUpdateDelta = deltaSeconds;
+        g_statsListDispatchUpdateThis = this;
+    }
+};
+
 int g_widgetInvalidateRectGetCenterXCount = 0;
 int g_widgetInvalidateRectGetCenterYCount = 0;
 int g_widgetInvalidateRectInvalidateCount = 0;
@@ -14354,6 +14366,30 @@ extern "C" int zhud_scoreboard_set_scale_and_rebuild_smoke(void) {
     g_HudUiMgrStatsList = oldStatsList;
     triplet.DestructorCore();
     return interpolated && rowsHidden ? 0 : 1;
+}
+
+extern "C" int zhud_scoreboard_dispatch_set_scale_smoke(void) {
+    HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
+
+    HudUiCommon_FTable table{};
+    table.slots[9] = static_cast<unsigned int>(MethodAddress(&TestStatsListElementDispatch::Update));
+
+    HudUiStatsListElement statsList{};
+    statsList.base.ftable = &table;
+    g_HudUiMgrStatsList = &statsList;
+
+    g_statsListDispatchUpdateCount = 0;
+    g_statsListDispatchUpdateDelta = 0.0f;
+    g_statsListDispatchUpdateThis = nullptr;
+
+    HudScoreboard::DispatchSetScale(1.75f);
+
+    const bool dispatched = g_statsListDispatchUpdateCount == 1 &&
+                            g_statsListDispatchUpdateDelta == 1.75f &&
+                            g_statsListDispatchUpdateThis == &statsList;
+
+    g_HudUiMgrStatsList = oldStatsList;
+    return dispatched ? 0 : 1;
 }
 
 extern "C" int zhud_nanite_panel_init_layout_smoke(void) {

@@ -493,6 +493,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RemoveScoreboardEntryRow(GameNetPlayerRow *
 
 namespace HudScoreboard {
 RECOIL_NOINLINE void RECOIL_STDCALL SetScaleAndRebuild(float scale);
+RECOIL_NOINLINE void RECOIL_STDCALL DispatchSetScale(float deltaTime);
 } // namespace HudScoreboard
 
 extern int g_HudUiMgrObjectivePhase;

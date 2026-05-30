@@ -2318,9 +2318,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40eae0:
   - [✅] Reconstructed (Name: HudScoreboard::DispatchSetScale)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudScoreboard::DispatchSetScale File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_scoreboard_dispatch_set_scale)
   - [❌] Binary-safe
 - 0x40fac0:
   - [✅] Reconstructed (Name: HudUiPanelSimple::Constructor)
@@ -3908,9 +3908,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40fa10:
   - [☑️] Reconstructed (Name: HudUiStatsListElement::Update)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiStatsListElement::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_stats_list_element_update)
   - [❌] Binary-safe
 - 0x40fa20:
   - [✅] Reconstructed (Name: HudUiStatsListElement::ScalarDeletingDestructor)

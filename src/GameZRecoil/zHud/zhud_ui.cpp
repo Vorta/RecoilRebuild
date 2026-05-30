@@ -12887,6 +12887,15 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetScaleAndRebuild(float scale) {
     g_HudUiMgrStatsList->triplet->RebuildDisplay();
 }
 
+// Reimplements 0x40eae0: HudScoreboard::DispatchSetScale
+// (D:\Proj\Battlesport\HudScoreboard.cpp)
+RECOIL_NOINLINE void RECOIL_STDCALL DispatchSetScale(float deltaTime) {
+    typedef void (RECOIL_THISCALL *UpdateFn)(HudUiStatsListElement * self, float deltaTime);
+
+    HudUiStatsListElement *const statsList = g_HudUiMgrStatsList;
+    ((UpdateFn)(statsList->base.ftable->slots[9]))(statsList, deltaTime);
+}
+
 } // namespace HudScoreboard
 
 // Reimplements 0x4bd160: HudUiTextStack4::PushLine (D:\Proj\Battlesport\HudUiTextStack4.cpp)
