@@ -234,6 +234,38 @@ void TestWriteU32(HANDLE file, std::uint32_t value) {
     WriteFile(file, &value, sizeof(value), &written, nullptr);
 }
 
+void TestWriteBytes(HANDLE file, const void *bytes, std::uint32_t count) {
+    DWORD written = 0;
+    WriteFile(file, bytes, count, &written, nullptr);
+}
+
+void TestWriteZrdString(HANDLE file, const char *text) {
+    const std::uint32_t length = static_cast<std::uint32_t>(std::strlen(text));
+    TestWriteU32(file, zReader::ZRDR_NODE_STRING);
+    TestWriteU32(file, length);
+    TestWriteBytes(file, text, length);
+}
+
+void TestWriteZrdInt(HANDLE file, std::int32_t value) {
+    TestWriteU32(file, zReader::ZRDR_NODE_INT);
+    TestWriteU32(file, static_cast<std::uint32_t>(value));
+}
+
+void TestWriteZrdEmptyArray(HANDLE file) {
+    TestWriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    TestWriteU32(file, 1);
+}
+
+void TestWriteHudCmdBindButtonZrd(HANDLE file) {
+    TestWriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    TestWriteU32(file, 3);
+    TestWriteZrdString(file, "LISTSIZE");
+    TestWriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    TestWriteU32(file, 3);
+    TestWriteZrdInt(file, 1);
+    TestWriteZrdInt(file, 1);
+}
+
 void DeleteListSelectorItemArray(HudUiListSelectorItem *items) {
     if (items == nullptr) {
         return;
@@ -6152,6 +6184,228 @@ extern "C" int zhud_cmd_dialog_rebuild_command_binding_lists_smoke(void) {
     g_zLoc_MessagesDllHandle = oldMessagesDll;
 
     return rebuilt ? 0 : 1;
+}
+
+extern "C" int zhud_cmd_dialog_constructor_smoke(void) {
+    char tempDir[MAX_PATH] = {};
+    char tempPath[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "zcd", 0, tempPath) == 0) {
+        return 2;
+    }
+
+    HANDLE file = CreateFileA(tempPath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr,
+                              CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempPath);
+        return 3;
+    }
+
+    TestWriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    TestWriteU32(file, 3);
+    TestWriteZrdString(file, "COMMANDS_DIALOG");
+    TestWriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    TestWriteU32(file, 5);
+    TestWriteZrdString(file, "BUTTONS");
+    TestWriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    TestWriteU32(file, 25);
+    TestWriteZrdString(file, "CMD_RESUME_BTN");
+    TestWriteZrdEmptyArray(file);
+    TestWriteZrdString(file, "CMD_RESET_BTN");
+    TestWriteZrdEmptyArray(file);
+    TestWriteZrdString(file, "CMD_COMMAND_BTN");
+    TestWriteHudCmdBindButtonZrd(file);
+    TestWriteZrdString(file, "CMD_KEYA_BTN");
+    TestWriteHudCmdBindButtonZrd(file);
+    TestWriteZrdString(file, "CMD_KEYB_BTN");
+    TestWriteHudCmdBindButtonZrd(file);
+    TestWriteZrdString(file, "CMD_JOY_BTN");
+    TestWriteHudCmdBindButtonZrd(file);
+    TestWriteZrdString(file, "CMD_MOUSE_BTN");
+    TestWriteHudCmdBindButtonZrd(file);
+    TestWriteZrdString(file, "CMD_SET_BTN");
+    TestWriteZrdEmptyArray(file);
+    TestWriteZrdString(file, "CMD_NEXT_SET_BTN");
+    TestWriteZrdEmptyArray(file);
+    TestWriteZrdString(file, "CMD_PREV_SET_BTN");
+    TestWriteZrdEmptyArray(file);
+    TestWriteZrdString(file, "CMD_NEXT_CMD_BTN");
+    TestWriteZrdEmptyArray(file);
+    TestWriteZrdString(file, "CMD_PREV_CMD_BTN");
+    TestWriteZrdEmptyArray(file);
+    TestWriteZrdString(file, "PRIMITIVES");
+    TestWriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    TestWriteU32(file, 5);
+    TestWriteZrdString(file, "PRESS_A_KEY");
+    TestWriteZrdEmptyArray(file);
+    TestWriteZrdString(file, "CMD_DESCRIPTION");
+    TestWriteZrdEmptyArray(file);
+    FlushFileBuffers(file);
+
+    zZarFileRecord record = {};
+    record.fileOffset = 0;
+    record.fileSize = SetFilePointer(file, 0, nullptr, FILE_CURRENT);
+    std::strcpy(record.name, "dialog.zrd");
+
+    zIndexArchive archive = {};
+    archive.hFile = file;
+    archive.recordCount = 1;
+    archive.records = &record;
+
+    zArchiveListNode node = {};
+    node.payload = &archive;
+    node.next = &node;
+    node.prev = &node;
+
+    zArchiveList list = {};
+    list.count = 1;
+    list.head = &node;
+
+    zArchiveList *const oldMounted = g_zArchive_MountedList;
+    zInput_BindMapContext *const oldCurrent = g_zInput_BindMap_Current;
+    zInput_BindGroupInfoList oldGroups = g_zInput_BindGroupInfoList;
+    const int oldLocId = g_zInput_CommandLocIdTable[5];
+    HMODULE const oldMessagesDll = g_zLoc_MessagesDllHandle;
+    const zVideo_SurfaceStatePartial oldPrimaryState = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial oldSwState = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial oldDisplayState = g_zVideo_DisplayModeSurfaceState;
+    zVideo_SurfaceStateProc const oldLock = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlock = g_zVideo_pfnUnlockSurfaceState;
+    zVideo_BltSourceToPrimaryProc const oldBlit = g_zVideo_pfnBltSourceToPrimary;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldHalfRes = g_zVideo_UseHalfResBackbuffer;
+    void *const oldFrameBuffer = zRndr::g_frameBuffer;
+    const int oldPitchBytes = zRndr::g_pitchBytes;
+    const int oldBytesPerPixel = zRndr::g_bytesPerPixel;
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldFxPitchPixels = g_zVideo_FxSurfacePitchPixels16;
+    unsigned char oldFxPass3Config[0x1f0] = {};
+    std::memcpy(oldFxPass3Config, &g_zVideo_FxPass3ConfigLocal, sizeof(oldFxPass3Config));
+
+    zInput::BindMap_InitDikKeyNameTable();
+    zInput::BindMap_InitJoystickButtonNameTable();
+    zInput::BindMap_InitMouseButtonNameTable();
+
+    g_zLoc_MessagesDllHandle = GetModuleHandleA("kernel32.dll");
+    if (g_zLoc_MessagesDllHandle == nullptr || zLoc::GetMessageString(0) == nullptr) {
+        CloseHandle(file);
+        DeleteFileA(tempPath);
+        g_zLoc_MessagesDllHandle = oldMessagesDll;
+        return 4;
+    }
+
+    zInput_BindMapContext context = {};
+    int packedBindings[16] = {};
+    zInputCommandCallbackFn callbacks[16] = {};
+    char commandLabel[0x50] = {};
+    char *labels[16] = {};
+    labels[5] = commandLabel;
+    context.m_commandCount = 16;
+    context.m_packedBindings = packedBindings;
+    context.m_commandCallbacks = callbacks;
+    context.m_commandLabels = labels;
+    context.SetBindingRecord(5, "CmdFiveCurrent", 0x1e, 0x30, 2, 1);
+    g_zInput_BindMap_Current = &context;
+
+    int commandIds[] = {5};
+    zInput_BindGroupInfo group = {};
+    group.title = const_cast<char *>("Weapons");
+    group.commandIdsBegin = commandIds;
+    group.commandIdsEnd = commandIds + 1;
+    group.commandIdsCapacity = commandIds + 1;
+    zInput_BindGroupInfo *groups[] = {&group};
+    g_zInput_BindGroupInfoList.begin = groups;
+    g_zInput_BindGroupInfoList.end = groups + 1;
+    g_zInput_BindGroupInfoList.capacity = groups + 1;
+    g_zInput_CommandLocIdTable[5] = 0;
+
+    std::uint16_t primaryPixels[4] = {};
+    std::uint16_t swPixels[4] = {};
+    std::uint16_t displayPixels[4] = {};
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnBltSourceToPrimary = TestBltSourceToPrimary;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = primaryPixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.pixels = swPixels;
+    g_zVideo_SwSurfaceState.width = 2;
+    g_zVideo_SwSurfaceState.height = 2;
+    g_zVideo_SwSurfaceState.pitch = sizeof(std::uint16_t) * 2;
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState.pixels = displayPixels;
+    g_zVideo_DisplayModeSurfaceState.width = 2;
+    g_zVideo_DisplayModeSurfaceState.height = 2;
+    g_zVideo_DisplayModeSurfaceState.pitch = sizeof(std::uint16_t) * 2;
+    g_zArchive_MountedList = &list;
+
+    HudCmdDialog dialog = {};
+    HudCmdDialog *const result = dialog.Constructor();
+
+    HudCmdBindingEntry **const commandBegin =
+        static_cast<HudCmdBindingEntry **>(dialog.commandList.base.bindingVec.begin);
+    HudCmdBindingEntry **const keyABegin =
+        static_cast<HudCmdBindingEntry **>(dialog.keyAButton.base.bindingVec.begin);
+    const bool constructed =
+        result == &dialog &&
+        dialog.base.base.base.vptr ==
+            reinterpret_cast<const HudUiContainer_FTable *>(&g_HudCmdDialog_BackgroundPanelFTable) &&
+        reinterpret_cast<const HudUiPanel *>(&dialog.promptPanel)->vtbl ==
+            &g_HudCmdDialog_BackgroundPanelFTable.SecondaryAction &&
+        dialog.resumeButton.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudCmdResumeButton_FTable) &&
+        dialog.resetButton.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudCmdResetButton_FTable) &&
+        dialog.commandList.base.base.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudCmdCommandList_FTable) &&
+        dialog.keyAButton.base.base.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudCmdKeyAButton_FTable) &&
+        dialog.setList.base.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudCmdSetList_FTable) &&
+        dialog.setList.base.itemCount == 1 && dialog.setList.base.entriesA[0] != nullptr &&
+        (TestFieldAt<std::uint32_t>(&dialog.promptPanel, 0x0c) & 0x10) != 0 &&
+        dialog.descriptionPanel.captureState == 0 &&
+        dialog.commandList.base.bindingVec.end == commandBegin + 1 &&
+        dialog.keyAButton.base.bindingVec.end == keyABegin + 1 &&
+        commandBegin[0]->commandId == 5 && keyABegin[0]->commandId == 5 &&
+        dialog.commandList.base.selectedBindingIndex == 0 &&
+        dialog.keyAButton.base.selectedBindingIndex == 0 &&
+        TestFieldAt<char>(&dialog.descriptionPanel, 0x34) != '\0';
+
+    g_zArchive_MountedList = oldMounted;
+    g_zInput_BindMap_Current = oldCurrent;
+    g_zInput_BindGroupInfoList = oldGroups;
+    g_zInput_CommandLocIdTable[5] = oldLocId;
+    g_zLoc_MessagesDllHandle = oldMessagesDll;
+    g_zVideo_PrimarySurfaceState = oldPrimaryState;
+    g_zVideo_SwSurfaceState = oldSwState;
+    g_zVideo_DisplayModeSurfaceState = oldDisplayState;
+    g_zVideo_pfnLockSurfaceState = oldLock;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlock;
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldHalfRes;
+    zRndr::g_frameBuffer = oldFrameBuffer;
+    zRndr::g_pitchBytes = oldPitchBytes;
+    zRndr::g_bytesPerPixel = oldBytesPerPixel;
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels;
+    std::memcpy(&g_zVideo_FxPass3ConfigLocal, oldFxPass3Config, sizeof(oldFxPass3Config));
+    CloseHandle(file);
+    DeleteFileA(tempPath);
+
+    return constructed ? 0 : 1;
 }
 
 extern "C" int zhud_cmd_dialog_select_group_relative_smoke(void) {

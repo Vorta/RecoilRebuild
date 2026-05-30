@@ -226,6 +226,54 @@ HudUiZrdWidget_FTable MakeHudUiCreditsButtonFTable(unsigned int activateSlot)
     return MakeHudUiMessageBoxButtonFTable(activateSlot);
 }
 
+HudUiZrdWidget_FTable MakeHudCmdZrdButtonFTable(unsigned int activateSlot)
+{
+    return MakeHudUiMessageBoxButtonFTable(activateSlot);
+}
+
+HudUiCycleSelectorWidget_FTable MakeHudCmdSetListFTable()
+{
+    HudUiCycleSelectorWidget_FTable table =
+        MakeHudUiFTableWithCommonInvalidate<HudUiCycleSelectorWidget_FTable>();
+    table.slots[0] = MethodAddress(&HudUiCycleSelectorWidget::ScalarDeletingDestructor);
+    table.slots[9] = MethodAddress(&HudUiCycleSelectorWidget::Update);
+    table.slots[12] = MethodAddress(&HudCmdSetListWidget::OnActivate);
+    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = MethodAddress(&HudUiCycleSelectorWidget::LoadFromZrd);
+    table.slots[32] = (unsigned int)(&HudUiNoOpMethodStub);
+    return table;
+}
+
+HudCmdBindButtonBase_FTable
+MakeHudCmdBindButtonFTable(unsigned int scalarDeletingDestructor,
+                           unsigned int activateSlot,
+                           unsigned int clearBindingSlot)
+{
+    HudCmdBindButtonBase_FTable table =
+        MakeHudUiFTableWithCommonInvalidate<HudCmdBindButtonBase_FTable>();
+    table.slots[0] = scalarDeletingDestructor;
+    table.slots[12] = activateSlot;
+    table.slots[13] = clearBindingSlot;
+    table.slots[14] = (unsigned int)(&HudUiNoOpMethodStub);
+    table.slots[15] = MethodAddress(&HudUiCheckToggleWidget::ShowPreview);
+    table.slots[16] = MethodAddress(&HudUiCheckToggleWidget::HidePreview);
+    table.slots[30] = MethodAddress(&HudUiCheckToggleWidget::RefreshState);
+    table.slots[31] = MethodAddress(&HudCmdBindButtonBase::LoadFromZrd);
+    table.slots[32] = (unsigned int)(&HudUiNoOpMethodStub);
+    table.slots[33] = MethodAddress(&HudCmdBindButtonBase::OnSelectionChangedRefresh);
+    return table;
+}
+
+HudCmdDialog_BackgroundPanelFTable MakeHudCmdDialogFTable()
+{
+    HudCmdDialog_BackgroundPanelFTable table = {0};
+    table.primarySlots[0] = MethodAddress(&HudCmdDialog::UpdateCaptureState);
+    table.primarySlots[1] = MethodAddress(&HudUiBackground::SetEnabled);
+    table.primarySlots[2] = MethodAddress(&HudCmdDialog::ScalarDeletingDestructor);
+    table.SecondaryAction = MakeHudUiPanelFTable<HudUiPanel_FTable>();
+    return table;
+}
+
 HudUiCreditsPanel_FTable MakeHudUiCreditsPanelFTable()
 {
     HudUiCreditsPanel_FTable table = {0};
@@ -393,6 +441,41 @@ const HudUiZrdWidgetEx17C_FTable g_HudUiZrdWidgetEx17C_FTable =
     MakeHudUiZrdWidgetEx17CFTable();
 const HudCmdBindButtonBase_FTable g_HudCmdBindButtonBase_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudCmdBindButtonBase_FTable>();
+const HudUiZrdWidget_FTable g_HudCmdResumeButton_FTable =
+    MakeHudCmdZrdButtonFTable(MethodAddress(&HudUiZrdWidget::OnActivateQueueExitCurrentState));
+const HudUiZrdWidget_FTable g_HudCmdResetButton_FTable =
+    MakeHudCmdZrdButtonFTable(MethodAddress(&HudCmdResetButton::OnActivate));
+const HudCmdBindButtonBase_FTable g_HudCmdCommandList_FTable =
+    MakeHudCmdBindButtonFTable(MethodAddress(&HudCmdCommandList::ScalarDeletingDestructor),
+                               MethodAddress(&HudUiCheckToggleWidget::OnActivate),
+                               (unsigned int)(&HudUiNoOpMethodStub));
+const HudCmdBindButtonBase_FTable g_HudCmdKeyAButton_FTable =
+    MakeHudCmdBindButtonFTable(MethodAddress(&HudCmdKeyAButton::ScalarDeletingDestructor),
+                               MethodAddress(&HudCmdKeyAButton::OnBeginCapture),
+                               MethodAddress(&HudCmdKeyAButton::OnClearBinding));
+const HudCmdBindButtonBase_FTable g_HudCmdKeyBButton_FTable =
+    MakeHudCmdBindButtonFTable(MethodAddress(&HudCmdKeyBButton::ScalarDeletingDestructor),
+                               MethodAddress(&HudCmdKeyBButton::OnBeginCapture),
+                               MethodAddress(&HudCmdKeyBButton::OnClearBinding));
+const HudCmdBindButtonBase_FTable g_HudCmdJoyButton_FTable =
+    MakeHudCmdBindButtonFTable(MethodAddress(&HudCmdJoyButton::ScalarDeletingDestructor),
+                               MethodAddress(&HudCmdJoyButton::OnBeginCapture),
+                               MethodAddress(&HudCmdJoyButton::OnClearBinding));
+const HudCmdBindButtonBase_FTable g_HudCmdMouseButton_FTable =
+    MakeHudCmdBindButtonFTable(MethodAddress(&HudCmdMouseButton::ScalarDeletingDestructor),
+                               MethodAddress(&HudCmdMouseButton::OnBeginCapture),
+                               MethodAddress(&HudCmdMouseButton::OnClearBinding));
+const HudUiCycleSelectorWidget_FTable g_HudCmdSetList_FTable = MakeHudCmdSetListFTable();
+const HudUiZrdWidget_FTable g_HudCmdNextSetButton_FTable =
+    MakeHudCmdZrdButtonFTable(MethodAddress(&HudCmdDialogCallback::NextSet));
+const HudUiZrdWidget_FTable g_HudCmdPrevSetButton_FTable =
+    MakeHudCmdZrdButtonFTable(MethodAddress(&HudCmdDialogCallback::PrevSet));
+const HudUiZrdWidget_FTable g_HudCmdNextCommandButton_FTable =
+    MakeHudCmdZrdButtonFTable(MethodAddress(&HudCmdDialogCallback::NextCommand));
+const HudUiZrdWidget_FTable g_HudCmdPrevCommandButton_FTable =
+    MakeHudCmdZrdButtonFTable(MethodAddress(&HudCmdDialogCallback::PrevCommand));
+const HudCmdDialog_BackgroundPanelFTable g_HudCmdDialog_BackgroundPanelFTable =
+    MakeHudCmdDialogFTable();
 RecoilApp_IState_Vtbl g_HudCmdDialogState_Vtbl = {0};
 HudCmdDialogState g_HudCmdDialogState = {0};
 // Recovered global 0x4e5e00: HUD command-dialog mouse capture debounce frames.
@@ -8502,6 +8585,19 @@ void RECOIL_THISCALL HudCmdKeyAButton::Destructor()
     base.base.DestructorCore();
 }
 
+// Reimplements 0x40b0c0: HudCmdKeyAButton::ScalarDeletingDestructor
+HudCmdKeyAButton *RECOIL_THISCALL
+HudCmdKeyAButton::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
 // Reimplements 0x40ab20: HudCmdKeyBButton::Destructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
 void RECOIL_THISCALL HudCmdKeyBButton::Destructor()
@@ -8544,6 +8640,19 @@ void RECOIL_THISCALL HudCmdKeyBButton::Destructor()
 
     ((HudUiPanel *)(&base.bindPanel))->Destructor();
     base.base.DestructorCore();
+}
+
+// Reimplements 0x40b0e0: HudCmdKeyBButton::ScalarDeletingDestructor
+HudCmdKeyBButton *RECOIL_THISCALL
+HudCmdKeyBButton::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
 }
 
 // Reimplements 0x40ac10: HudCmdJoyButton::Destructor
@@ -8590,6 +8699,19 @@ void RECOIL_THISCALL HudCmdJoyButton::Destructor()
     base.base.DestructorCore();
 }
 
+// Reimplements 0x40b100: HudCmdJoyButton::ScalarDeletingDestructor
+HudCmdJoyButton *RECOIL_THISCALL
+HudCmdJoyButton::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
 // Reimplements 0x40ad00: HudCmdMouseButton::Destructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
 void RECOIL_THISCALL HudCmdMouseButton::Destructor()
@@ -8634,6 +8756,19 @@ void RECOIL_THISCALL HudCmdMouseButton::Destructor()
     base.base.DestructorCore();
 }
 
+// Reimplements 0x40b120: HudCmdMouseButton::ScalarDeletingDestructor
+HudCmdMouseButton *RECOIL_THISCALL
+HudCmdMouseButton::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
 // Restores repeated inline bind-button cleanup observed in 0x40adf0; no
 // standalone helper exists in the retail executable.
 static void HudCmdDialog_DestroyBindButtonRange(HudCmdBindButtonBase *button)
@@ -8668,6 +8803,99 @@ static void HudCmdDialog_DestroyMouseButton(HudCmdBindButtonBase *button)
 static void HudCmdDialog_ClearBindButtonEntries(HudCmdBindButtonBase *button)
 {
     button->ClearBindingEntries();
+}
+
+// Reimplements 0x40a5b0: HudCmdDialog::Constructor
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+HudCmdDialog *RECOIL_THISCALL HudCmdDialog::Constructor()
+{
+    base.Constructor();
+
+    resumeButton.base.Constructor();
+    resumeButton.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdResumeButton_FTable);
+    resetButton.base.Constructor();
+    resetButton.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdResetButton_FTable);
+
+    commandList.base.Constructor();
+    commandList.base.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdCommandList_FTable);
+    keyAButton.base.Constructor();
+    keyAButton.base.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdKeyAButton_FTable);
+    keyBButton.base.Constructor();
+    keyBButton.base.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdKeyBButton_FTable);
+    joyButton.base.Constructor();
+    joyButton.base.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdJoyButton_FTable);
+    mouseButton.base.Constructor();
+    mouseButton.base.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdMouseButton_FTable);
+
+    setList.base.Constructor();
+    setList.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdSetList_FTable);
+    nextSetButton.base.Constructor();
+    nextSetButton.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdNextSetButton_FTable);
+    prevSetButton.base.Constructor();
+    prevSetButton.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdPrevSetButton_FTable);
+    nextCommandButton.base.Constructor();
+    nextCommandButton.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdNextCommandButton_FTable);
+    prevCommandButton.base.Constructor();
+    prevCommandButton.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudCmdPrevCommandButton_FTable);
+
+    promptPanel.base.Constructor();
+    ((HudUiPanel *)(&promptPanel))->vtbl =
+        &g_HudCmdDialog_BackgroundPanelFTable.SecondaryAction;
+    descriptionPanel.base.ConstructorDefault(0, 0, 0);
+    base.base.base.vptr =
+        (const HudUiContainer_FTable *)(&g_HudCmdDialog_BackgroundPanelFTable);
+
+    zReader::Node *const loadedSection =
+        base.LoadFromZrd("dialog.zrd", "COMMANDS_DIALOG", 0);
+    if (loadedSection != 0)
+    {
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&resumeButton), "CMD_RESUME_BTN");
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&resetButton), "CMD_RESET_BTN");
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&commandList), "CMD_COMMAND_BTN");
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&keyAButton), "CMD_KEYA_BTN");
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&keyBButton), "CMD_KEYB_BTN");
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&joyButton), "CMD_JOY_BTN");
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&mouseButton), "CMD_MOUSE_BTN");
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&setList), "CMD_SET_BTN");
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&nextSetButton), "CMD_NEXT_SET_BTN");
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&prevSetButton), "CMD_PREV_SET_BTN");
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&nextCommandButton), "CMD_NEXT_CMD_BTN");
+        base.BindWidgetByName(loadedSection, (HudUiWidget *)(&prevCommandButton), "CMD_PREV_CMD_BTN");
+
+        base.BindPrimitiveNodeToElement(loadedSection, (HudUiElement *)(&promptPanel),
+                                        "PRESS_A_KEY");
+        base.BindPrimitiveNodeToElement(loadedSection, (HudUiElement *)(&descriptionPanel),
+                                        "CMD_DESCRIPTION");
+        base.FreeLoadedTreeRoots(0);
+        promptPanel.base.SetFlashRate(1.0f);
+    }
+
+    HudUiVirtualSetVisibleRequired(&promptPanel, 0);
+
+    const int groupCount = zInput::BindGroupList_GetCount();
+    for (int groupIndex = 0; groupIndex < groupCount; ++groupIndex)
+    {
+        setList.base.AddTextEntry(groupIndex, zInput::BindGroupList_GetGroupTitle(groupIndex),
+                                  setList.base.textOffsetX, setList.base.textOffsetY);
+        setList.base.ApplyFontStyleForEntry(
+            groupIndex, (int)((unsigned int)(setList.base.fontStyleRef)));
+    }
+
+    RebuildCommandBindingListsForGroup(0);
+    descriptionPanel.captureState = 0;
+    zInput::ResetAllTransitionState();
+    ((HudUiContainer *)(this))->SetChildFlags(0);
+    return this;
 }
 
 // Reimplements 0x40adf0: HudCmdDialog::Destructor

@@ -86,6 +86,11 @@ struct HudUiPanel_FTable {
     unsigned int slots[37];
 };
 
+struct HudCmdDialog_BackgroundPanelFTable {
+    unsigned int primarySlots[4];
+    HudUiPanel_FTable SecondaryAction;
+};
+
 struct HudUiCompositePanel_FTable {
     unsigned int slots[38];
 };
@@ -195,6 +200,19 @@ extern const HudUiFillBitmap_FTable g_HudUiFillBitmap_FTable;
 extern const HudUiZrdWidgetEx17C_Item_FTable g_HudUiZrdWidgetEx17C_Item_FTable;
 extern const HudUiZrdWidgetEx17C_FTable g_HudUiZrdWidgetEx17C_FTable;
 extern const HudCmdBindButtonBase_FTable g_HudCmdBindButtonBase_FTable;
+extern const HudUiZrdWidget_FTable g_HudCmdResumeButton_FTable;
+extern const HudUiZrdWidget_FTable g_HudCmdResetButton_FTable;
+extern const HudCmdBindButtonBase_FTable g_HudCmdCommandList_FTable;
+extern const HudCmdBindButtonBase_FTable g_HudCmdKeyAButton_FTable;
+extern const HudCmdBindButtonBase_FTable g_HudCmdKeyBButton_FTable;
+extern const HudCmdBindButtonBase_FTable g_HudCmdJoyButton_FTable;
+extern const HudCmdBindButtonBase_FTable g_HudCmdMouseButton_FTable;
+extern const HudUiCycleSelectorWidget_FTable g_HudCmdSetList_FTable;
+extern const HudUiZrdWidget_FTable g_HudCmdNextSetButton_FTable;
+extern const HudUiZrdWidget_FTable g_HudCmdPrevSetButton_FTable;
+extern const HudUiZrdWidget_FTable g_HudCmdNextCommandButton_FTable;
+extern const HudUiZrdWidget_FTable g_HudCmdPrevCommandButton_FTable;
+extern const HudCmdDialog_BackgroundPanelFTable g_HudCmdDialog_BackgroundPanelFTable;
 extern const HudUiMessageBoxDialog_FTable g_HudUiMessageBoxDialog_FTable;
 extern const HudUiCounter_FTable g_HudUiCounter_FTable;
 extern const HudUiMessage_FTable g_HudUiMessage_FTable;
@@ -961,6 +979,7 @@ struct HudCmdKeyAButton {
     HudCmdBindButtonBase base;
 
     void RECOIL_THISCALL Destructor();
+    HudCmdKeyAButton *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     void RECOIL_THISCALL OnBeginCapture();
     void RECOIL_THISCALL OnClearBinding();
 };
@@ -969,6 +988,7 @@ struct HudCmdKeyBButton {
     HudCmdBindButtonBase base;
 
     void RECOIL_THISCALL Destructor();
+    HudCmdKeyBButton *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     void RECOIL_THISCALL OnBeginCapture();
     void RECOIL_THISCALL OnClearBinding();
 };
@@ -977,6 +997,7 @@ struct HudCmdJoyButton {
     HudCmdBindButtonBase base;
 
     void RECOIL_THISCALL Destructor();
+    HudCmdJoyButton *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     void RECOIL_THISCALL OnBeginCapture();
     void RECOIL_THISCALL OnClearBinding();
 };
@@ -985,6 +1006,7 @@ struct HudCmdMouseButton {
     HudCmdBindButtonBase base;
 
     void RECOIL_THISCALL Destructor();
+    HudCmdMouseButton *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     void RECOIL_THISCALL OnBeginCapture();
     void RECOIL_THISCALL OnClearBinding();
 };
@@ -1495,6 +1517,7 @@ struct HudCmdDialog {
     HudCmdPromptPanel promptPanel;
     HudCmdDescriptionPanel descriptionPanel;
 
+    HudCmdDialog *RECOIL_THISCALL Constructor();
     void RECOIL_THISCALL Destructor();
     HudCmdDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     void RECOIL_THISCALL UpdateCaptureState(float deltaTime);

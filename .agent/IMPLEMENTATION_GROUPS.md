@@ -40,3 +40,12 @@ source-readiness, or coherent binary-safe groups currently being coordinated.
 ```
 
 ## Active Groups
+
+### Group: Hud command dialog constructor
+
+- Anchor: 0x40a5b0 HudCmdDialog::Constructor
+- Reason: class constructor/source-file cluster needed by 0x40bcf0 HudCmdDialogState::OnTryBecomeCurrent.
+- Source blockers:
+  - none visible; 0x40a5b0 is functional-equivalent and 0x40bcf0 dependencies are source-ready.
+- Next action:
+  - Implement `0x40bcf0` HudCmdDialogState::OnTryBecomeCurrent in `src/GameZRecoil/zHud/zhud_ui.cpp`.
