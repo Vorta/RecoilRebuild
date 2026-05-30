@@ -374,6 +374,31 @@ void RECOIL_CDECL HudUiNewGamePanelOverlayOwner::QueueEnter()
     g_RecoilApp.QueuePushState(&g_HudUiNewGamePanelOverlayOwner, 0);
 }
 
+// Reimplements 0x41c500: HudUiNewGamePanel::StartGameFromFields
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+void RECOIL_THISCALL HudUiNewGamePanel::StartGameFromFields()
+{
+    HudCheat::ClearNanitePanelCheatSentinel();
+    zOpt::SetPlayerName(nameInput.GetBuffer());
+    zOpt::SetGameDifficultyMode(intensity.selectedIndex);
+    ((HudUiBackgroundContainer *)(&g_RecoilApp.m_missionFmvState_1d8))->SetEnabled(1);
+    g_RecoilApp.QueueExitCurrentState(1);
+    g_RecoilApp.QueueExitCurrentState(1);
+    g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_missionFmvState_1d8.base, 0);
+}
+
+// Reimplements 0x41c270: HudUiNewGamePanel_StartButton::OnActivate
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+void RECOIL_THISCALL HudUiNewGamePanel_StartButton::OnActivate()
+{
+    HudUiNewGamePanel *const panel = (HudUiNewGamePanel *)(owner);
+    if (panel != 0) {
+        panel->StartGameFromFields();
+    }
+
+    HudUiZrdWidget::OnActivate();
+}
+
 // Reimplements 0x40d1c0: HudUiOptionsPanelOverlayOwner::QueueEnter
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
 void RECOIL_CDECL HudUiOptionsPanelOverlayOwner::QueueEnter()

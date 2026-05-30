@@ -301,6 +301,27 @@ RECOIL_STATIC_ASSERT(offsetof(RecoilStateSaveLoadTransition, m_transitionMode) =
 
 extern RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;
 
+struct HudUiNewGamePanel_StartButton : HudUiZrdWidget {
+    void RECOIL_THISCALL OnActivate();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_StartButton) == 0x14c);
+
+struct HudUiNewGamePanel : HudUiBackground {
+    HudUiZrdWidget backWidget;
+    HudUiNewGamePanel_StartButton startWidget;
+    HudUiNumericTextInput nameInput;
+    HudUiZrdWidgetEx17C intensity;
+
+    void RECOIL_THISCALL StartGameFromFields();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel) == 0xb0d4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, backWidget) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, startWidget) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, nameInput) == 0xabe4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, intensity) == 0xaf58);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, intensity) +
+                     offsetof(HudUiZrdWidgetEx17C, selectedIndex) == 0xb0d0);
+
 struct HudUiNewGamePanelOverlayOwner : RecoilApp_IState {
     RecoilPtr32 m_panel; // HudUiNewGamePanel*
 

@@ -62,6 +62,7 @@ extern "C" int czgame_frame_on_app_idle_dispatch_message_smoke(void);
 extern "C" int recoil_state_controls_queue_enter_smoke(void);
 extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void);
 extern "C" int hud_ui_new_game_panel_overlay_owner_queue_enter_smoke(void);
+extern "C" int hud_ui_new_game_panel_start_activation_smoke(void);
 extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void);
 extern "C" int hud_ui_options_panel_overlay_owner_destructor_core_smoke(void);
 extern "C" int hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smoke(void);
@@ -1741,6 +1742,8 @@ int main(int argc, char **argv) {
          hud_ui_options_panel_overlay_owner_queue_enter_smoke},
         {"hud_ui_new_game_panel_overlay_owner_queue_enter_smoke",
          hud_ui_new_game_panel_overlay_owner_queue_enter_smoke},
+        {"hud_ui_new_game_panel_start_activation_smoke",
+         hud_ui_new_game_panel_start_activation_smoke},
         {"hud_ui_options_panel_overlay_owner_constructor_smoke",
          hud_ui_options_panel_overlay_owner_constructor_smoke},
         {"hud_ui_options_panel_overlay_owner_destructor_core_smoke",

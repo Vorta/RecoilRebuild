@@ -2979,6 +2979,108 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_queue_enter_smoke(void) {
     return result;
 }
 
+extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    char inputName[16] = "Pilot";
+    char storedName[16] = "";
+    zOptionEntryPartial playerNameOption{};
+    playerNameOption.payloadOrBuffer =
+        static_cast<std::int32_t>(reinterpret_cast<std::uintptr_t>(storedName));
+    playerNameOption.dataSize = sizeof(storedName);
+    int difficulty = 0;
+    ZOPT_PLAYER_NAME = &playerNameOption;
+    g_zOpt_GameDifficultyOption = &difficulty;
+
+    zUtil_SaveGameState saveState{};
+    zUtil_PlayerStateStorage playerState{};
+    saveState.playerState = &playerState;
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
+
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_RecoilApp.m_missionFmvState_1d8.base.vftable = oldState.vftable;
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiNewGamePanel panel{};
+    panel.nameInput.textInput.buffer = inputName;
+    panel.nameInput.textInput.capacity = sizeof(inputName);
+    panel.intensity.selectedIndex = 3;
+    playerState.nanitePanelLevel = 123456789;
+
+    panel.StartGameFromFields();
+
+    RecoilApp_StateQueue &directQueue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueueItem *const directExit0 = QueueItemAt(directQueue, 0);
+    RecoilApp_StateQueueItem *const directExit1 = QueueItemAt(directQueue, 1);
+    RecoilApp_StateQueueItem *const directSwitch = QueueItemAt(directQueue, 2);
+    const bool directOk =
+        std::strcmp(storedName, "Pilot") == 0 && difficulty == 3 &&
+        playerState.nanitePanelLevel == 0 && g_RecoilApp.m_missionFmvState_1d8.m_missionId == 1 &&
+        g_stateExitCount == 3 && g_stateEnterCount == 1 && directQueue.m_itemCount == 3 &&
+        directExit0 != nullptr && directExit0->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
+        directExit0->m_param == 1 && directExit1 != nullptr &&
+        directExit1->m_kind == RecoilApp_StateQueueKind_ExitCurrent && directExit1->m_param == 1 &&
+        directSwitch != nullptr && directSwitch->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
+        directSwitch->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                                      &g_RecoilApp.m_missionFmvState_1d8.base)) &&
+        directSwitch->m_param == 0;
+    CleanupQueuedItems(directQueue);
+
+    std::memset(storedName, 0, sizeof(storedName));
+    difficulty = 0;
+    std::strcpy(inputName, "Scout");
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_RecoilApp.m_missionFmvState_1d8.base.vftable = oldState.vftable;
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+    playerState.nanitePanelLevel = 123456789;
+    panel.nameInput.textInput.buffer = inputName;
+    panel.nameInput.textInput.capacity = sizeof(inputName);
+    panel.intensity.selectedIndex = 2;
+
+    HudUiNewGamePanel_StartButton startButton{};
+    startButton.owner = &panel;
+    startButton.OnActivate();
+
+    RecoilApp_StateQueue &buttonQueue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueueItem *const buttonExit0 = QueueItemAt(buttonQueue, 0);
+    RecoilApp_StateQueueItem *const buttonExit1 = QueueItemAt(buttonQueue, 1);
+    RecoilApp_StateQueueItem *const buttonSwitch = QueueItemAt(buttonQueue, 2);
+    const bool buttonOk =
+        std::strcmp(storedName, "Scout") == 0 && difficulty == 2 &&
+        playerState.nanitePanelLevel == 0 && g_RecoilApp.m_missionFmvState_1d8.m_missionId == 1 &&
+        g_stateExitCount == 3 && g_stateEnterCount == 1 && buttonQueue.m_itemCount == 3 &&
+        buttonExit0 != nullptr && buttonExit0->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
+        buttonExit0->m_param == 1 && buttonExit1 != nullptr &&
+        buttonExit1->m_kind == RecoilApp_StateQueueKind_ExitCurrent && buttonExit1->m_param == 1 &&
+        buttonSwitch != nullptr && buttonSwitch->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
+        buttonSwitch->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                                      &g_RecoilApp.m_missionFmvState_1d8.base)) &&
+        buttonSwitch->m_param == 0;
+    CleanupQueuedItems(buttonQueue);
+
+    g_GameStateOrMapTable = oldGameState;
+    ZOPT_PLAYER_NAME = oldPlayerNameOption;
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_RecoilApp = oldApp;
+
+    return directOk && buttonOk ? 0 : 1;
+}
+
 extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void) {
     HudUiOptionsPanelOverlayOwner state{};
     state.vftable = 0x11111111;

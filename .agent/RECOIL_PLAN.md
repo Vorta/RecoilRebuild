@@ -2594,9 +2594,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41c270:
   - [✅] Reconstructed (Name: HudUiNewGamePanel_StartButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanel_StartButton::OnActivate File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_start_activation)
   - [❌] Binary-safe
 - 0x41c290:
   - [✅] Reconstructed (Name: HudUiNewGamePanel::Constructor)
@@ -2642,9 +2642,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41c500:
   - [✅] Reconstructed (Name: HudUiNewGamePanel::StartGameFromFields)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanel::StartGameFromFields File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_start_activation)
   - [❌] Binary-safe
 - 0x41c560:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent)
