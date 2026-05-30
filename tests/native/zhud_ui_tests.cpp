@@ -5076,6 +5076,26 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
                                (label.flags & 0x10) == 0 && (rollover.flags & 0x10) != 0 &&
                                (activate.flags & 0x10) != 0;
 
+    HudUiCheckToggleWidget checkedHideWidget{};
+    checkedHideWidget.base.modeOrEnabled = 1;
+    checkedHideWidget.checked = 1;
+    checkedHideWidget.base.rolloverPlayHandle =
+        reinterpret_cast<zSndPlayHandle *>(0x11112222);
+    checkedHideWidget.HidePreview();
+    const bool checkedHideSkipped =
+        checkedHideWidget.base.rolloverPlayHandle ==
+        reinterpret_cast<zSndPlayHandle *>(0x11112222);
+
+    HudUiCheckToggleWidget disabledHideWidget{};
+    disabledHideWidget.base.modeOrEnabled = 0;
+    disabledHideWidget.checked = 0;
+    disabledHideWidget.base.rolloverPlayHandle =
+        reinterpret_cast<zSndPlayHandle *>(0x33334444);
+    disabledHideWidget.HidePreview();
+    const bool disabledHideSkipped =
+        disabledHideWidget.base.rolloverPlayHandle ==
+        reinterpret_cast<zSndPlayHandle *>(0x33334444);
+
     const bool bounds = widget.GetBoundsRectOrNull() == &widget.base.boundsRect;
 
     HudUiWidget_FTable table{};
@@ -5134,8 +5154,8 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     return constructed && checkedState && uncheckedState && refreshEnabled && refreshDisabled &&
                    previewShown && checkedPreviewSkipped && disabledPreviewSkipped && activated &&
                    fullHudTableThunk && thunkActivated && disabledActivateSkipped &&
-                   previewHidden && bounds && destructed && scalarDeleted && scalarHeapDeleted &&
-                   thunkDeleted
+                   previewHidden && checkedHideSkipped && disabledHideSkipped && bounds &&
+                   destructed && scalarDeleted && scalarHeapDeleted && thunkDeleted
                ? 0
                : 1;
 }
