@@ -5503,6 +5503,17 @@ extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
         widget.entriesB[2] = nullptr;
     }
 
+    HudUiWidget *const skippedBitmapSentinel =
+        reinterpret_cast<HudUiWidget *>(0x12345678);
+    widget.itemCount = 4;
+    widget.visibleCount = 1;
+    widget.entriesB[2] = skippedBitmapSentinel;
+    widget.AddBitmapEntry(2, nullptr, 31, 32);
+    const bool bitmapEntrySkipped =
+        widget.itemCount == 4 && widget.visibleCount == 1 &&
+        widget.entriesB[2] == skippedBitmapSentinel;
+    widget.entriesB[2] = nullptr;
+
     HudUiWidget_FTable table{};
     table.slots[0] = MethodAddress(&TestZrdChildWidget::ScalarDeletingDestructor);
     TestZrdChildWidget entryA{&table, 0};
@@ -5543,7 +5554,7 @@ extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
     return constructed && clampLow && clampItemCount && clampVisible && clampInside && rangeLow &&
                    rangeInvalid && advanceWrap && advanceInside && updated && textEntryAdded &&
                    flashSet && flashAlreadySet && flashRateSet && flashRateAlreadySet &&
-                   flashTickSwap && bitmapEntryAdded && destructed &&
+                   flashTickSwap && bitmapEntryAdded && bitmapEntrySkipped && destructed &&
                    scalarDeleted && scalarHeapDeleted && thunkDeleted
                ? 0
                : 1;
