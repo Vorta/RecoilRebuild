@@ -2326,7 +2326,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiPanelSimple::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanelSimple::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_panel_simple_constructor)
   - [❌] Binary-safe
 - 0x40fb70:
   - [✅] Reconstructed (Name: HudUiMeter::Constructor)
