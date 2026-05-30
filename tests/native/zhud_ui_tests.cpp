@@ -6214,6 +6214,112 @@ extern "C" int zhud_cmd_dialog_select_group_relative_smoke(void) {
     return forward && wrapForward && wrapBackward ? 0 : 1;
 }
 
+extern "C" int zhud_cmd_set_list_widget_on_activate_smoke(void) {
+    HudCmdDialog dialog{};
+    dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
+    dialog.descriptionPanel.captureState = 77;
+    dialog.setList.base.selectedIndex = 0;
+    dialog.setList.base.itemCount = 2;
+    dialog.setList.base.firstIndex = 0;
+    dialog.setList.base.visibleCount = 2;
+    dialog.setList.base.base.owner = &dialog;
+
+    SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyAButton.base, "OldKeyA0", "OldKeyA1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyBButton.base, "OldKeyB0", "OldKeyB1", 3, 7);
+    SetupCommandDialogButton(&dialog.joyButton.base, "OldJoy0", "OldJoy1", 3, 7);
+    SetupCommandDialogButton(&dialog.mouseButton.base, "OldMouse0", "OldMouse1", 3, 7);
+
+    zInput_BindMapContext *const oldCurrent = g_zInput_BindMap_Current;
+    zInput_BindGroupInfoList oldGroups = g_zInput_BindGroupInfoList;
+    const int oldLocId5 = g_zInput_CommandLocIdTable[5];
+    const int oldLocId6 = g_zInput_CommandLocIdTable[6];
+    HMODULE const oldMessagesDll = g_zLoc_MessagesDllHandle;
+
+    zInput::BindMap_InitDikKeyNameTable();
+    zInput::BindMap_InitJoystickButtonNameTable();
+    zInput::BindMap_InitMouseButtonNameTable();
+
+    g_zLoc_MessagesDllHandle = GetModuleHandleA("kernel32.dll");
+    if (g_zLoc_MessagesDllHandle == nullptr || zLoc::GetMessageString(0) == nullptr ||
+        zLoc::GetMessageString(1) == nullptr) {
+        CleanupCommandDialogButton(&dialog.mouseButton.base);
+        CleanupCommandDialogButton(&dialog.joyButton.base);
+        CleanupCommandDialogButton(&dialog.keyBButton.base);
+        CleanupCommandDialogButton(&dialog.keyAButton.base);
+        CleanupCommandDialogButton(&dialog.commandList.base);
+        dialog.descriptionPanel.base.Destructor();
+        g_zLoc_MessagesDllHandle = oldMessagesDll;
+        return 2;
+    }
+
+    zInput_BindMapContext context{};
+    int packedBindings[16] = {};
+    zInputCommandCallbackFn callbacks[16] = {};
+    char commandFiveLabel[0x50] = {};
+    char commandSixLabel[0x50] = {};
+    char *labels[16] = {};
+    labels[5] = commandFiveLabel;
+    labels[6] = commandSixLabel;
+    context.m_commandCount = 16;
+    context.m_packedBindings = packedBindings;
+    context.m_commandCallbacks = callbacks;
+    context.m_commandLabels = labels;
+    context.SetBindingRecord(5, "CmdFiveCurrent", 0x1e, 0x30, 1, 1);
+    context.SetBindingRecord(6, "CmdSixCurrent", 0x20, 0x31, 2, 2);
+    g_zInput_BindMap_Current = &context;
+
+    int groupZeroCommandIds[] = {5};
+    int groupOneCommandIds[] = {6};
+    zInput_BindGroupInfo groupsStorage[2] = {};
+    groupsStorage[0].commandIdsBegin = groupZeroCommandIds;
+    groupsStorage[0].commandIdsEnd = groupZeroCommandIds + 1;
+    groupsStorage[0].commandIdsCapacity = groupZeroCommandIds + 1;
+    groupsStorage[1].commandIdsBegin = groupOneCommandIds;
+    groupsStorage[1].commandIdsEnd = groupOneCommandIds + 1;
+    groupsStorage[1].commandIdsCapacity = groupOneCommandIds + 1;
+    zInput_BindGroupInfo *groups[] = {&groupsStorage[0], &groupsStorage[1]};
+    g_zInput_BindGroupInfoList.begin = groups;
+    g_zInput_BindGroupInfoList.end = groups + 2;
+    g_zInput_BindGroupInfoList.capacity = groups + 2;
+    g_zInput_CommandLocIdTable[5] = 0;
+    g_zInput_CommandLocIdTable[6] = 0;
+
+    dialog.setList.OnActivate();
+    HudCmdBindingEntry **const groupOneCommandBegin =
+        static_cast<HudCmdBindingEntry **>(dialog.commandList.base.bindingVec.begin);
+    const bool advanced =
+        dialog.setList.base.selectedIndex == 1 &&
+        dialog.commandList.base.bindingVec.end == groupOneCommandBegin + 1 &&
+        groupOneCommandBegin[0]->commandId == 6 &&
+        dialog.commandList.base.selectedBindingIndex == 0 &&
+        TestFieldAt<char>(&dialog.descriptionPanel, 0x34) != '\0';
+
+    dialog.setList.OnActivate();
+    HudCmdBindingEntry **const groupZeroCommandBegin =
+        static_cast<HudCmdBindingEntry **>(dialog.commandList.base.bindingVec.begin);
+    const bool wrapped =
+        dialog.setList.base.selectedIndex == 0 &&
+        dialog.commandList.base.bindingVec.end == groupZeroCommandBegin + 1 &&
+        groupZeroCommandBegin[0]->commandId == 5 &&
+        dialog.keyAButton.base.selectedBindingIndex == 0;
+
+    CleanupCommandDialogButton(&dialog.mouseButton.base);
+    CleanupCommandDialogButton(&dialog.joyButton.base);
+    CleanupCommandDialogButton(&dialog.keyBButton.base);
+    CleanupCommandDialogButton(&dialog.keyAButton.base);
+    CleanupCommandDialogButton(&dialog.commandList.base);
+    dialog.descriptionPanel.base.Destructor();
+
+    g_zInput_BindMap_Current = oldCurrent;
+    g_zInput_BindGroupInfoList = oldGroups;
+    g_zInput_CommandLocIdTable[5] = oldLocId5;
+    g_zInput_CommandLocIdTable[6] = oldLocId6;
+    g_zLoc_MessagesDllHandle = oldMessagesDll;
+
+    return advanced && wrapped ? 0 : 1;
+}
+
 extern "C" int zhud_cmd_dialog_select_command_relative_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);

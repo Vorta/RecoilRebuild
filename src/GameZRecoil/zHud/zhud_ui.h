@@ -1446,6 +1446,8 @@ struct HudCmdResetButton {
 
 struct HudCmdSetListWidget {
     HudUiCycleSelectorWidget base;
+
+    void RECOIL_THISCALL OnActivate();
 };
 
 struct HudCmdPromptPanel {

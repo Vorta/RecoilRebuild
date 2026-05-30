@@ -8736,6 +8736,14 @@ void RECOIL_THISCALL HudCmdResetButton::OnActivate()
     base.OnActivate();
 }
 
+// Reimplements 0x40b960: HudCmdSetListWidget::OnActivate
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdSetListWidget::OnActivate()
+{
+    base.AdvanceSelectionAndActivate();
+    ((HudCmdDialog *)(base.base.owner))->RebuildCommandBindingListsForGroup(base.selectedIndex);
+}
+
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)
