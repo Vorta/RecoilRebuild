@@ -12405,6 +12405,32 @@ extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void) {
     return lowClampOk && selectionOk && visibleClampOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_sound_quality_sync_from_options_smoke(void) {
+    int soundLod = 0;
+    int *const oldSoundLod = ZOPT_SOUND_LOD;
+
+    ZOPT_SOUND_LOD = &soundLod;
+
+    HudUiOptionsPanel_SoundQuality soundQuality{};
+    soundQuality.base.Constructor();
+    soundQuality.base.itemCount = 3;
+    soundQuality.base.firstIndex = 0;
+    soundQuality.base.visibleCount = 3;
+
+    soundQuality.base.selectedIndex = 0;
+    soundQuality.SyncFromOptions();
+    const bool advanceOk = soundQuality.base.selectedIndex == 1 && soundLod == 1;
+
+    soundQuality.base.selectedIndex = 2;
+    soundQuality.SyncFromOptions();
+    const bool wrapOk = soundQuality.base.selectedIndex == 0 && soundLod == 0;
+
+    soundQuality.base.DestructorCore();
+    ZOPT_SOUND_LOD = oldSoundLod;
+
+    return advanceOk && wrapOk ? 0 : 1;
+}
+
 namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;
