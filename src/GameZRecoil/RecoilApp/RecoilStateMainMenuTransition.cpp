@@ -1,6 +1,29 @@
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 
+#include <stdlib.h>
+
 RecoilStateMainMenuTransition g_RecoilState_MainMenuTransition;
+
+// Reimplements 0x415100: RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit
+void RECOIL_CDECL RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit() {
+    StaticInit();
+    RegisterAtExit();
+}
+
+// Reimplements 0x415110: RecoilStateMainMenuTransition::StaticInit
+RecoilStateMainMenuTransition *RECOIL_CDECL RecoilStateMainMenuTransition::StaticInit() {
+    return g_RecoilState_MainMenuTransition.Constructor();
+}
+
+// Reimplements 0x415120: RecoilStateMainMenuTransition::RegisterAtExit
+void RECOIL_CDECL RecoilStateMainMenuTransition::RegisterAtExit() {
+    atexit(RecoilStateMainMenuTransition::AtExitDestructor);
+}
+
+// Reimplements 0x415130: RecoilStateMainMenuTransition::AtExitDestructor
+void RECOIL_CDECL RecoilStateMainMenuTransition::AtExitDestructor() {
+    g_RecoilState_MainMenuTransition.~RecoilStateMainMenuTransition();
+}
 
 // Reimplements 0x415170: RecoilStateMainMenuTransition::Constructor
 RecoilStateMainMenuTransition *RECOIL_THISCALL RecoilStateMainMenuTransition::Constructor() {

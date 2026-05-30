@@ -373,6 +373,35 @@ RECOIL_NOINLINE void RECOIL_CDECL BeginChatCompose() {
     RegisterChatComposeKey(0x39);
 }
 
+// Reimplements 0x414590: GameNet::EndChatComposeAndSend (D:\Proj\Battlesport\ai_net.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL EndChatComposeAndSend() {
+    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
+    GameNetPlayerRow *const playerRow = saveState->netPlayerRow;
+    char chatLine[0x51];
+    chatLine[0x50] = '\0';
+
+    g_HudUiMgrObjectiveChatComposeActive = 0;
+    zInput::BindMapContext_Pop();
+    HudUiMgrObjective::Begin();
+
+    if (strlen(g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer()) == 0) {
+        return;
+    }
+
+    strncpy(chatLine, playerRow->displayName, 0x50);
+    strncat(chatLine, ":", 0x50 - strlen(chatLine));
+    strncat(chatLine, g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer(),
+            0x50 - strlen(chatLine));
+    HudUi::ShowChatLine(chatLine, 5.0f);
+    SendPkt0B_ChatMessage(chatLine);
+}
+
+// Reimplements 0x414660: GameNet::EndChatComposeAndSendThunk
+// Pure forwarding callback thunk referenced by the chat-compose text input ftable.
+RECOIL_NOINLINE void RECOIL_CDECL EndChatComposeAndSendThunk() {
+    EndChatComposeAndSend();
+}
+
 // Reimplements 0x432830: GameNet::FindPlayerRowByKey (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
 RECOIL_NOINLINE GameNetPlayerRow *RECOIL_FASTCALL FindPlayerRowByKey(int playerKey) {
     GameNetPlayerRow *row = g_GameNetPlayerRowHead;
@@ -1321,6 +1350,26 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0B_ChatMessage(int,
     message[messageLength] = '\0';
     HudUi::ShowChatLine(message, 5.0f);
     return 1;
+}
+
+// Reimplements 0x433750: GameNet::SendPkt0B_ChatMessage
+// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt0B_ChatMessage(const char *message) {
+    const int messageLength = (int)(strlen(message));
+    const int packetSize = messageLength + 12;
+    NetPkt0B_ChatMessage *const packet = (NetPkt0B_ChatMessage *)(malloc((size_t)(packetSize)));
+    memset(packet, 0, (size_t)(packetSize));
+
+    packet->header.packetType = 0x0b;
+    packet->header.packetSizeBytes = (short)(packetSize);
+    packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    packet->messageLength = (short)(messageLength);
+    if (messageLength > 0) {
+        memcpy(packet->message, message, (size_t)(messageLength));
+    }
+
+    zNetwork_SendPacketReliable(&packet->header);
+    free(packet);
 }
 
 // Reimplements 0x433250: GameNet::HandlePkt0D_HudTimerPanelState

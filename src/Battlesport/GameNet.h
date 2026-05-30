@@ -243,6 +243,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL
 HandlePkt0C_HudTimerStatusBits(int senderPlayerId, NetPkt0C_HudTimerStatusBits *packet);
 RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0B_ChatMessage(int senderPlayerId,
                                                                      NetPkt0B_ChatMessage *packet);
+RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt0B_ChatMessage(const char *message);
 RECOIL_NOINLINE int RECOIL_FASTCALL
 HandlePkt0D_HudTimerPanelState(int senderPlayerId, NetPkt0D_HudTimerPanelState *packet);
 RECOIL_NOINLINE int RECOIL_FASTCALL
@@ -299,6 +300,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL
 UpdateRemotePlayerHudWidgetScreenPos(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL ChatComposeKeyCallback(int dikCodeWithMods);
 RECOIL_NOINLINE void RECOIL_CDECL BeginChatCompose();
+RECOIL_NOINLINE void RECOIL_CDECL EndChatComposeAndSend();
+RECOIL_NOINLINE void RECOIL_CDECL EndChatComposeAndSendThunk();
 } // namespace GameNet
 
 namespace Net {

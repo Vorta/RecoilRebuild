@@ -113,6 +113,7 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiBriefingObjectivePicture, noiseAlpha) ==
 
 HudUiCommon_FTable MakeBriefingLocatorPanelFTable() {
     HudUiCommon_FTable table = MakeBriefingHudUiFTableWithCommonSlots<HudUiCommon_FTable>();
+    table.slots[1] = MethodAddress(&HudUiCircle::DrawDirtyForwarder);
     table.slots[2] = MethodAddress(&HudUiBriefingLocatorPanel::BlitDirtyRect);
     table.slots[9] = MethodAddress(&HudUiBriefingLocatorPanel::Update);
     return table;
