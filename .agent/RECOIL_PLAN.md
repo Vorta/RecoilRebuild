@@ -3481,14 +3481,14 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiElement::GetX)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::GetX File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_element_get_x)
+  - [✅] Binary-safe
 - 0x404d60:
   - [✅] Reconstructed (Name: HudUiElement::GetY)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::GetY File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_element_get_y)
+  - [✅] Binary-safe
 - 0x404d70:
   - [☑️] Reconstructed (Name: HudUiCommon::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied

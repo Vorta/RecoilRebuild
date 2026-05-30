@@ -525,6 +525,7 @@ extern "C" int zhud_element_draw_dispatch_smoke(void);
 extern "C" int zhud_element_draw_base_smoke(void);
 extern "C" int zhud_element_update_smoke(void);
 extern "C" int zhud_element_position_mutators_smoke(void);
+extern "C" int zhud_element_get_xy_smoke(void);
 extern "C" int zhud_primitive_bind_target_set_segment_endpoints_smoke(void);
 extern "C" int zhud_background_bind_primitive_node_to_element_smoke(void);
 extern "C" int zhud_container_child_list_smoke(void);
@@ -2492,6 +2493,7 @@ int main(int argc, char **argv) {
         {"zhud_element_draw_base_smoke", zhud_element_draw_base_smoke},
         {"zhud_element_update_smoke", zhud_element_update_smoke},
         {"zhud_element_position_mutators_smoke", zhud_element_position_mutators_smoke},
+        {"zhud_element_get_xy_smoke", zhud_element_get_xy_smoke},
         {"zhud_primitive_bind_target_set_segment_endpoints_smoke",
          zhud_primitive_bind_target_set_segment_endpoints_smoke},
         {"zhud_background_bind_primitive_node_to_element_smoke",

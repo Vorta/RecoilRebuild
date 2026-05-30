@@ -4106,6 +4106,16 @@ extern "C" int zhud_element_position_mutators_smoke(void) {
     return pos && xOnly && yOnly ? 0 : 1;
 }
 
+extern "C" int zhud_element_get_xy_smoke(void) {
+    HudUiElement element{};
+    element.Constructor(-12, 345);
+
+    const bool initial = element.GetX() == -12 && element.GetY() == 345;
+    element.SetPos(78, -90);
+
+    return initial && element.GetX() == 78 && element.GetY() == -90 ? 0 : 1;
+}
+
 extern "C" int zhud_primitive_bind_target_set_segment_endpoints_smoke(void) {
     HudUiCommon_FTable table{};
     table.slots[0x0c / 4] = MethodAddress(&TestPrimitiveBindTarget::SetPos);
