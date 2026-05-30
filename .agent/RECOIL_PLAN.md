@@ -2764,7 +2764,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiTextInput::DeleteCharForward)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::DeleteCharForward File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_text_input_delete_char_forward)
   - [❌] Binary-safe
 - 0x4b4560:
   - [✅] Reconstructed (Name: HudUiTextInput::MoveCursorLeft)
