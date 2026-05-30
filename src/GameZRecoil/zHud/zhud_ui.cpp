@@ -8818,6 +8818,19 @@ void RECOIL_THISCALL HudCmdMouseButton::OnBeginCapture()
     base.base.OnActivate();
 }
 
+// Reimplements 0x40bb80: HudCmdMouseButton::OnClearBinding
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdMouseButton::OnClearBinding()
+{
+    if (g_HudCmdMouseDebounceFrames > 0)
+    {
+        return;
+    }
+
+    ((HudCmdDialog *)(base.base.base.owner))->ApplyMouseButtonRebind(
+        0, base.selectedBindingIndex);
+}
+
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)
