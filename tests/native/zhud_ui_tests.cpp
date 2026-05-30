@@ -1028,6 +1028,10 @@ struct TestBarSetPointReceiver {
 
 int g_optionSelectorRefreshCount = 0;
 void *g_optionSelectorRefreshThis = nullptr;
+std::int32_t g_musicEnablePlayTrackCount = 0;
+std::int32_t g_musicEnablePlayTrack = 0;
+std::int32_t g_musicEnablePlayMode = 0;
+std::int32_t g_musicEnableStopCount = 0;
 
 struct TestOptionSelectorRefreshItem : HudUiZrdWidgetEx17C_Item {
     void RECOIL_THISCALL RefreshState() {
@@ -1035,6 +1039,18 @@ struct TestOptionSelectorRefreshItem : HudUiZrdWidgetEx17C_Item {
         g_optionSelectorRefreshThis = this;
     }
 };
+
+int RECOIL_FASTCALL FakeMusicEnablePlayTrackWithMode(int trackIndex, int playbackMode) {
+    ++g_musicEnablePlayTrackCount;
+    g_musicEnablePlayTrack = trackIndex;
+    g_musicEnablePlayMode = playbackMode;
+    return 1;
+}
+
+int RECOIL_CDECL FakeMusicEnableStop() {
+    ++g_musicEnableStopCount;
+    return 1;
+}
 
 template <typename Method> std::uintptr_t MethodAddress(Method method) {
     static_assert(sizeof(method) <= sizeof(std::uintptr_t));
@@ -12392,6 +12408,56 @@ extern "C" int zhud_options_panel_music_enable_sync_from_options_smoke(void) {
     const bool disabledOk = musicEnable.base.checked == 0;
 
     musicEnable.base.DestructorCore();
+    ZOPT_SOUND_CDAUDIO = oldCdAudio;
+
+    return enabledOk && disabledOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_music_enable_on_activate_smoke(void) {
+    int cdAudio = -1;
+    int *const oldCdAudio = ZOPT_SOUND_CDAUDIO;
+    ZOPT_SOUND_CDAUDIO = &cdAudio;
+
+    CodeFunctionPatch playPatch{};
+    CodeFunctionPatch stopPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zSndCd::PlayTrackWithMode),
+                           reinterpret_cast<void *>(&FakeMusicEnablePlayTrackWithMode),
+                           playPatch)) {
+        ZOPT_SOUND_CDAUDIO = oldCdAudio;
+        return 1;
+    }
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zSndCd::Stop),
+                           reinterpret_cast<void *>(&FakeMusicEnableStop), stopPatch)) {
+        RestoreFunctionPatch(playPatch);
+        ZOPT_SOUND_CDAUDIO = oldCdAudio;
+        return 2;
+    }
+
+    HudUiOptionsPanel_MusicEnable musicEnable{};
+    musicEnable.base.Constructor();
+    musicEnable.base.base.modeOrEnabled = 1;
+
+    g_musicEnablePlayTrackCount = 0;
+    g_musicEnablePlayTrack = 0;
+    g_musicEnablePlayMode = 0;
+    g_musicEnableStopCount = 0;
+
+    musicEnable.base.checked = 0;
+    musicEnable.OnActivate();
+    const bool enabledOk = musicEnable.base.checked == 1 && cdAudio == 1 &&
+                           g_musicEnablePlayTrackCount == 1 &&
+                           g_musicEnablePlayTrack == 2 && g_musicEnablePlayMode == 5 &&
+                           g_musicEnableStopCount == 0;
+
+    musicEnable.OnActivate();
+    const bool disabledOk = musicEnable.base.checked == 0 && cdAudio == 0 &&
+                            g_musicEnablePlayTrackCount == 1 &&
+                            g_musicEnableStopCount == 1;
+
+    musicEnable.base.DestructorCore();
+    RestoreFunctionPatch(stopPatch);
+    RestoreFunctionPatch(playPatch);
     ZOPT_SOUND_CDAUDIO = oldCdAudio;
 
     return enabledOk && disabledOk ? 0 : 1;
