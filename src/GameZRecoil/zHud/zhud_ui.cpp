@@ -145,15 +145,26 @@ template <typename FTable> FTable MakeHudUiFTableWithCommonInvalidate() {
 HudUiZrdWidgetEx17C_Item_FTable MakeHudUiZrdWidgetEx17CItemFTable() {
     HudUiZrdWidgetEx17C_Item_FTable table =
         MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidgetEx17C_Item_FTable>();
+    table.slots[0] = MethodAddress(&HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor);
+    table.slots[11] = MethodAddress(&HudUiZrdWidgetEx17C_Item::SetSelected);
+    table.slots[12] = MethodAddress(&HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf);
+    table.slots[15] = MethodAddress(&HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected);
+    table.slots[16] = MethodAddress(&HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected);
     table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = MethodAddress(&HudUiZrdWidgetEx17C_Item::LoadFromZrd);
     return table;
 }
 
 HudUiZrdWidgetEx17C_FTable MakeHudUiZrdWidgetEx17CFTable() {
     HudUiZrdWidgetEx17C_FTable table =
         MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidgetEx17C_FTable>();
+    table.slots[0] = MethodAddress(&HudUiZrdWidgetEx17C::ScalarDeletingDestructor);
+    table.slots[12] = MethodAddress(&HudUiZrdWidget::OnActivate);
+    table.slots[15] = MethodAddress(&HudUiZrdWidget::ShowPreview);
+    table.slots[16] = MethodAddress(&HudUiZrdWidget::HidePreview);
     table.slots[24] = MethodAddress(&HudUiZrdWidgetEx17C::EnableChildAtIndex);
     table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = MethodAddress(&HudUiZrdWidgetEx17C::LoadFromZrd);
     return table;
 }
 
@@ -8254,13 +8265,17 @@ void RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected() {
 
 // Reimplements 0x4b87f0: HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf
 void RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf() {
+    typedef void (RECOIL_THISCALL *ActivateFn)(HudUiZrdWidgetEx17C * self);
+    typedef void (RECOIL_THISCALL *HidePreviewFn)(HudUiZrdWidgetEx17C_Item * self);
+
     ownerSelector->SetSelectedIndex(itemIndex);
-    ownerSelector->base.OnActivate();
+    ((ActivateFn)(ownerSelector->base.base.ftable->slots[12]))(ownerSelector);
     base.OnActivate();
 
     {
     for (int index = 0; index < ownerSelector->optionCount; ++index) {
-        ownerSelector->options[index]->HidePreviewIfNotSelected();
+        HudUiZrdWidgetEx17C_Item *const option = ownerSelector->options[index];
+        ((HidePreviewFn)(option->base.base.ftable->slots[16]))(option);
     }
     }
 }

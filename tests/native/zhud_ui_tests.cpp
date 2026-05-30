@@ -1029,6 +1029,10 @@ struct TestBarSetPointReceiver {
 
 int g_optionSelectorRefreshCount = 0;
 void *g_optionSelectorRefreshThis = nullptr;
+int g_optionSelectorActivateCount = 0;
+void *g_optionSelectorActivateThis = nullptr;
+int g_optionSelectorHideCount = 0;
+void *g_optionSelectorHideThis = nullptr;
 std::int32_t g_musicEnablePlayTrackCount = 0;
 std::int32_t g_musicEnablePlayTrack = 0;
 std::int32_t g_musicEnablePlayMode = 0;
@@ -1044,6 +1048,21 @@ struct TestOptionSelectorRefreshItem : HudUiZrdWidgetEx17C_Item {
     void RECOIL_THISCALL RefreshState() {
         ++g_optionSelectorRefreshCount;
         g_optionSelectorRefreshThis = this;
+    }
+};
+
+struct TestOptionSelectorActivate : HudUiZrdWidgetEx17C {
+    void RECOIL_THISCALL OnActivate() {
+        ++g_optionSelectorActivateCount;
+        g_optionSelectorActivateThis = this;
+    }
+};
+
+struct TestOptionSelectorHideItem : HudUiZrdWidgetEx17C_Item {
+    void RECOIL_THISCALL HidePreviewIfNotSelected() {
+        ++g_optionSelectorHideCount;
+        g_optionSelectorHideThis = this;
+        HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected();
     }
 };
 
@@ -6016,7 +6035,7 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
     item.selectedRolloverImage = nullptr;
     item.unselectedRolloverImage = nullptr;
 
-    HudUiZrdWidgetEx17C selector{};
+    TestOptionSelectorActivate selector{};
     selector.optionCount = 5;
     selector.selectedIndex = 9;
     selector.options[0] = reinterpret_cast<HudUiZrdWidgetEx17C_Item *>(0x1111);
@@ -6070,7 +6089,7 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
         loadedSelector.options[1]->selected == 0 && loadedSelector.options[2]->selected == 0;
     loadedSelector.DestructorCore();
 
-    HudUiZrdWidgetEx17C_Item selectorItem0{};
+    TestOptionSelectorHideItem selectorItem0{};
     HudUiZrdWidgetEx17C_Item selectorItem1{};
     selectorItem0.Constructor();
     selectorItem1.Constructor();
@@ -6114,6 +6133,14 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
     selectorItem0.base.defaultImage = &selectorItem0Image;
     selectorItem0.base.rolloverImage = &selectorItem0Rollover;
     selectorItem0.base.base.image = &selectorItem0Rollover;
+    HudUiZrdWidgetEx17C_Item_FTable hideTable = g_HudUiZrdWidgetEx17C_Item_FTable;
+    hideTable.slots[16] = MethodAddress(&TestOptionSelectorHideItem::HidePreviewIfNotSelected);
+    selectorItem0.base.base.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&hideTable);
+    HudUiZrdWidgetEx17C_FTable activateTable = g_HudUiZrdWidgetEx17C_FTable;
+    activateTable.slots[12] = MethodAddress(&TestOptionSelectorActivate::OnActivate);
+    selector.base.base.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&activateTable);
     selectorItem1.base.modeOrEnabled = 1;
     selectorItem1.ownerSelector = &selector;
     selectorItem1.itemIndex = 1;
@@ -6123,11 +6150,29 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
     selectorItem1.selectedRolloverImage = &selectorItem1Selected;
     selectorItem1.base.defaultImage = &selectorItem1Image;
     selectorItem1.base.base.image = &selectorItem1Image;
+    g_optionSelectorActivateCount = 0;
+    g_optionSelectorActivateThis = nullptr;
+    g_optionSelectorHideCount = 0;
+    g_optionSelectorHideThis = nullptr;
     selectorItem1.OnActivateSelectSelf();
     const bool activatedSelection = selector.selectedIndex == 1 && selectorItem0.selected == 0 &&
                                     selectorItem0.base.base.image == &selectorItem0Image &&
                                     selectorItem1.selected == 1 &&
-                                    selectorItem1.base.base.image == &selectorItem1Selected;
+                                    selectorItem1.base.base.image == &selectorItem1Selected &&
+                                    g_optionSelectorActivateCount == 1 &&
+                                    g_optionSelectorActivateThis == &selector &&
+                                    g_optionSelectorHideCount == 1 &&
+                                    g_optionSelectorHideThis == &selectorItem0 &&
+                                    g_HudUiZrdWidgetEx17C_FTable.slots[12] ==
+                                        MethodAddress(&HudUiZrdWidget::OnActivate) &&
+                                    g_HudUiZrdWidgetEx17C_Item_FTable.slots[12] ==
+                                        MethodAddress(&HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf) &&
+                                    g_HudUiZrdWidgetEx17C_Item_FTable.slots[15] ==
+                                        MethodAddress(&HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected) &&
+                                    g_HudUiZrdWidgetEx17C_Item_FTable.slots[16] ==
+                                        MethodAddress(&HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected) &&
+                                    g_HudUiZrdWidgetEx17C_Item_FTable.slots[31] ==
+                                        MethodAddress(&HudUiZrdWidgetEx17C_Item::LoadFromZrd);
     selector.options[0] = nullptr;
     selector.options[1] = nullptr;
 
