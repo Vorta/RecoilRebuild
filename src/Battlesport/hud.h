@@ -311,6 +311,12 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwner) == 0x08);
 struct HudUiOptionsPanelOverlayOwner : RecoilApp_IState {
     RecoilPtr32 m_panel; // HudUiOptionsPanel*
 
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    RECOIL_NOINLINE static HudUiOptionsPanelOverlayOwner *RECOIL_CDECL StaticInit();
+    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
+    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
+    HudUiOptionsPanelOverlayOwner *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL DestructorCore();
     static void RECOIL_CDECL QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiOptionsPanelOverlayOwner) == 0x08);
@@ -385,6 +391,7 @@ RECOIL_STATIC_ASSERT(offsetof(RecoilStateCheatCode, m_audioSnapshot) == 0x0c);
 
 extern HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 extern HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
+extern RecoilApp_IState_Vtbl g_HudUiOptionsPanelOverlayOwner_Vtbl;
 extern RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
 extern RecoilStateControls g_RecoilStateControls;
 extern RecoilStateCheatCode g_RecoilStateCheatCode;

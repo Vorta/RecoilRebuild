@@ -196,6 +196,14 @@ const HudUiCheatCodeDialog_FTable g_HudUiCheatCodeDialog_FTable =
 RecoilApp_IState_Vtbl g_RecoilStateConfirmQuit_Vtbl = {0};
 RecoilApp_IState_Vtbl g_RecoilStateCheatCode_Vtbl = {0};
 
+struct HudUiOptionsPanelOverlayVirtual
+{
+    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
+    virtual HudUiOptionsPanelOverlayVirtual *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags) = 0;
+};
+
 struct RecoilStateConfirmQuitBaseVtableGuard
 {
     RecoilStateConfirmQuit *self;
@@ -215,7 +223,19 @@ struct RecoilStateCheatCodeBaseVtableGuard
         self->vftable = kRecoilStateBase_VtblAddress;
     }
 };
+
+struct HudUiOptionsPanelOverlayOwnerBaseVtableGuard
+{
+    HudUiOptionsPanelOverlayOwner *self;
+
+    ~HudUiOptionsPanelOverlayOwnerBaseVtableGuard()
+    {
+        self->vftable = kRecoilStateBase_VtblAddress;
+    }
+};
 } // namespace
+
+RecoilApp_IState_Vtbl g_HudUiOptionsPanelOverlayOwner_Vtbl = {0};
 
 const HudUiCommon_FTable g_HudWeatherFx_Vtable = MakeHudWeatherFxFTable();
 const HudUiCommon_FTable g_HudWeatherFxSnow_Vtable = MakeHudWeatherFxFTable();
@@ -359,6 +379,71 @@ void RECOIL_CDECL HudUiNewGamePanelOverlayOwner::QueueEnter()
 void RECOIL_CDECL HudUiOptionsPanelOverlayOwner::QueueEnter()
 {
     g_RecoilApp.QueuePushState(&g_HudUiOptionsPanelOverlayOwner, 0);
+}
+
+// Reimplements 0x40d070: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit
+// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL
+HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit()
+{
+    StaticInit();
+    RegisterAtExit();
+}
+
+// Reimplements 0x40d080: HudUiOptionsPanelOverlayOwner::StaticInit
+// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+RECOIL_NOINLINE HudUiOptionsPanelOverlayOwner *RECOIL_CDECL
+HudUiOptionsPanelOverlayOwner::StaticInit()
+{
+    return g_HudUiOptionsPanelOverlayOwner.Constructor();
+}
+
+// Reimplements 0x40d090: HudUiOptionsPanelOverlayOwner::RegisterAtExit
+// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL HudUiOptionsPanelOverlayOwner::RegisterAtExit()
+{
+    atexit(AtExitDestructor);
+}
+
+// Reimplements 0x40d0a0: HudUiOptionsPanelOverlayOwner::AtExitDestructor
+// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL HudUiOptionsPanelOverlayOwner::AtExitDestructor()
+{
+    g_HudUiOptionsPanelOverlayOwner.DestructorCore();
+}
+
+// Reimplements 0x40d0b0: HudUiOptionsPanelOverlayOwner::Constructor
+// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+HudUiOptionsPanelOverlayOwner *RECOIL_THISCALL
+HudUiOptionsPanelOverlayOwner::Constructor()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_HudUiOptionsPanelOverlayOwner_Vtbl;
+    m_panel = 0;
+    return this;
+}
+
+// Reimplements 0x40d0e0: HudUiOptionsPanelOverlayOwner::DestructorCore
+// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+HudUiOptionsPanelOverlayOwner::DestructorCore()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_HudUiOptionsPanelOverlayOwner_Vtbl;
+    HudUiOptionsPanelOverlayOwnerBaseVtableGuard baseVtableOnExit = {this};
+
+    HudUiOptionsPanelOverlayVirtual *panel =
+        (HudUiOptionsPanelOverlayVirtual *)m_panel;
+    if (panel != 0)
+    {
+        panel->SetEnabled(0);
+
+        panel = (HudUiOptionsPanelOverlayVirtual *)m_panel;
+        if (panel != 0)
+        {
+            panel->ScalarDeletingDestructor(1);
+        }
+
+        m_panel = 0;
+    }
 }
 
 // Reimplements 0x4159b0: RecoilStateConfirmQuit::QueueEnter

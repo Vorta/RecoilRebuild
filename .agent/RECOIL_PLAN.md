@@ -2201,33 +2201,33 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40d070:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_overlay_owner_static_init_and_register_at_exit)
   - [❌] Binary-safe
 - 0x40d080:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::StaticInit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanelOverlayOwner::StaticInit File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_overlay_owner_static_init)
   - [❌] Binary-safe
 - 0x40d090:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::RegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanelOverlayOwner::RegisterAtExit File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_overlay_owner_register_at_exit)
   - [❌] Binary-safe
 - 0x40d0a0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::AtExitDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanelOverlayOwner::AtExitDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_overlay_owner_at_exit_destructor)
   - [❌] Binary-safe
 - 0x40d0b0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanelOverlayOwner::Constructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_overlay_owner_constructor)
   - [❌] Binary-safe
 - 0x40d0c0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor)
@@ -21622,7 +21622,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40d0e0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::DestructorCore)
-  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiOptionsPanelOverlayOwner::DestructorCore; Origin: compiler-generated; File: external; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanelOverlayOwner::DestructorCore File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_overlay_owner_destructor_core)
+  - [❌] Binary-safe
 - 0x40d1f0:
   - [✅] Reconstructed (Name: StaticInit_g_HudUiTripletWndClassName)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: StaticInit_g_HudUiTripletWndClassName; Origin: compiler-generated; File: external; Target: pending)

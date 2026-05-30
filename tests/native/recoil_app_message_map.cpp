@@ -2910,6 +2910,87 @@ extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {
     return result;
 }
 
+extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void) {
+    HudUiOptionsPanelOverlayOwner state{};
+    state.vftable = 0x11111111;
+    state.m_panel = 0x22222222;
+
+    HudUiOptionsPanelOverlayOwner *const returned = state.Constructor();
+    if (returned != &state ||
+        state.vftable !=
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiOptionsPanelOverlayOwner_Vtbl)) ||
+        state.m_panel != 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_destructor_core_smoke(void) {
+    TestConfirmQuitDialog panel{};
+
+    HudUiOptionsPanelOverlayOwner state{};
+    state.vftable = 0x11111111;
+    state.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+
+    state.DestructorCore();
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_panel != 0 ||
+        panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
+        panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
+        return 1;
+    }
+
+    state.vftable = 0x22222222;
+    state.m_panel = 0;
+    state.DestructorCore();
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_panel != 0) {
+        return 2;
+    }
+
+    return 0;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void) {
+    TestConfirmQuitDialog panel{};
+
+    g_HudUiOptionsPanelOverlayOwner.vftable = 0x11111111;
+    g_HudUiOptionsPanelOverlayOwner.m_panel = 0x22222222;
+    HudUiOptionsPanelOverlayOwner *const staticInitReturned =
+        HudUiOptionsPanelOverlayOwner::StaticInit();
+    if (staticInitReturned != &g_HudUiOptionsPanelOverlayOwner ||
+        g_HudUiOptionsPanelOverlayOwner.vftable !=
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiOptionsPanelOverlayOwner_Vtbl)) ||
+        g_HudUiOptionsPanelOverlayOwner.m_panel != 0) {
+        return 1;
+    }
+
+    g_HudUiOptionsPanelOverlayOwner.m_panel =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+    HudUiOptionsPanelOverlayOwner::AtExitDestructor();
+    if (g_HudUiOptionsPanelOverlayOwner.vftable != kRecoilStateBase_VtblAddress ||
+        g_HudUiOptionsPanelOverlayOwner.m_panel != 0 ||
+        panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
+        panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
+        return 2;
+    }
+
+    HudUiOptionsPanelOverlayOwner::RegisterAtExit();
+
+    g_HudUiOptionsPanelOverlayOwner.vftable = 0x33333333;
+    g_HudUiOptionsPanelOverlayOwner.m_panel = 0x44444444;
+    HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit();
+    if (g_HudUiOptionsPanelOverlayOwner.vftable !=
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiOptionsPanelOverlayOwner_Vtbl)) ||
+        g_HudUiOptionsPanelOverlayOwner.m_panel != 0) {
+        return 3;
+    }
+
+    return 0;
+}
+
 extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void) {
     const RecoilApp oldApp = g_RecoilApp;
     const int oldSkipExitDelay = g_RecoilState_MainMenuSkipExitDelay;

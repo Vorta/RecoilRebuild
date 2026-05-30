@@ -50,6 +50,15 @@ source-readiness, or coherent binary-safe groups currently being coordinated.
 - Next action:
   - Condense or close this options-dialog group before starting the next HUD dialog-flow cluster.
 
+### Group: HUD options panel overlay owner
+
+- Anchor: 0x40d070 HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit
+- Reason: overlay-owner state init/register/destructor cluster; 0x40d0e0 was reclassified from stale provider-boundary to authored source after current Binary Ninja audit.
+- Source blockers:
+  - none; 0x40d070, 0x40d080, 0x40d090, 0x40d0a0, 0x40d0b0, and 0x40d0e0 are functional-equivalent.
+- Next action:
+  - Continue with the next overlay-owner lifecycle function in M03.
+
 ### Group: Hud command dialog constructor
 
 - Anchor: 0x40a5b0 HudCmdDialog::Constructor
