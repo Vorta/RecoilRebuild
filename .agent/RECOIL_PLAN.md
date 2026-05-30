@@ -1907,10 +1907,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x40bb00:
   - [✅] Reconstructed (Name: HudCmdJoyButton::OnBeginCapture)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdJoyButton::OnBeginCapture File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_joy_button_on_begin_capture)
+  - [✅] Binary-safe
 - 0x40bb30:
   - [✅] Reconstructed (Name: HudCmdJoyButton::OnClearBinding)
   - [❌] Source dependencies satisfied

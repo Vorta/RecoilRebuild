@@ -8787,6 +8787,15 @@ void RECOIL_THISCALL HudCmdKeyBButton::OnClearBinding()
         0, base.selectedBindingIndex);
 }
 
+// Reimplements 0x40bb00: HudCmdJoyButton::OnBeginCapture
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdJoyButton::OnBeginCapture()
+{
+    ((HudCmdDialog *)(base.base.base.owner))->descriptionPanel.captureState = 3;
+    zInput::ResetAllTransitionState();
+    base.base.OnActivate();
+}
+
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)
