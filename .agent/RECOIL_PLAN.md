@@ -18757,7 +18757,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::GetTextureMemoryForCurrentHwMode)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetTextureMemoryForCurrentHwMode File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_get_texture_memory_for_current_hw_mode)
   - [❌] Binary-safe
 - 0x408120:
   - [☑️] Reconstructed (Name: zOpt::SetPlayerName)
