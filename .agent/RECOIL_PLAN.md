@@ -2183,9 +2183,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40ce80:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Resolution::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanel_Resolution::OnActivate File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_resolution_on_activate)
   - [❌] Binary-safe
 - 0x40cf00:
   - [✅] Reconstructed (Name: HudOptionsDialog::ScalarDeletingDestructor)

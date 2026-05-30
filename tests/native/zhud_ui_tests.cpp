@@ -5,6 +5,7 @@
 #include "Battlesport/hud.h"
 #include "Battlesport/pickup.h"
 #include "GameZRecoil/Time/Time.h"
+#include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/include/zClass.h"
 #include "GameZRecoil/include/zClipRect.h"
@@ -12620,6 +12621,79 @@ extern "C" int zhud_options_panel_resolution_sync_from_options_smoke(void) {
     ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
 
     return hardwareMode2Ok && softwareMode2Ok && commonMode7Ok && invalidModeOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_resolution_on_activate_smoke(void) {
+    const zVidModeIndex oldDeferredMode =
+        g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex;
+
+    HudUiOptionsPanel_Resolution resolution{};
+    resolution.base.Constructor();
+    resolution.base.itemCount = 7;
+    resolution.base.firstIndex = 0;
+    resolution.base.visibleCount = 6;
+
+    resolution.base.selectedIndex = 0;
+    RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_INVALID_COMPLEMENT);
+    resolution.OnActivate();
+    const bool case1Ok =
+        resolution.base.selectedIndex == 1 &&
+        g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex ==
+            ZVID_MODE_320X240_TO_640X480;
+
+    resolution.base.visibleCount = 1;
+    resolution.base.selectedIndex = 0;
+    RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_INVALID_COMPLEMENT);
+    resolution.OnActivate();
+    const bool case0WrapOk =
+        resolution.base.selectedIndex == 0 &&
+        g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex == ZVID_MODE_640X480;
+
+    resolution.base.visibleCount = 6;
+    resolution.base.selectedIndex = 1;
+    RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_INVALID_COMPLEMENT);
+    resolution.OnActivate();
+    const bool case2Ok =
+        resolution.base.selectedIndex == 2 &&
+        g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex == ZVID_MODE_640X400;
+
+    resolution.base.selectedIndex = 2;
+    RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_INVALID_COMPLEMENT);
+    resolution.OnActivate();
+    const bool case3Ok =
+        resolution.base.selectedIndex == 3 &&
+        g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex ==
+            ZVID_MODE_320X200_TO_640X400;
+
+    resolution.base.selectedIndex = 3;
+    RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_INVALID_COMPLEMENT);
+    resolution.OnActivate();
+    const bool case4Ok =
+        resolution.base.selectedIndex == 4 &&
+        g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex == ZVID_MODE_800X600;
+
+    resolution.base.selectedIndex = 4;
+    RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_INVALID_COMPLEMENT);
+    resolution.OnActivate();
+    const bool case5Ok =
+        resolution.base.selectedIndex == 5 &&
+        g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex == ZVID_MODE_1024X768;
+
+    resolution.base.visibleCount = 7;
+    resolution.base.selectedIndex = 5;
+    RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_640X480);
+    resolution.OnActivate();
+    const bool defaultOk =
+        resolution.base.selectedIndex == 6 &&
+        g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex == ZVID_MODE_640X480;
+
+    resolution.base.DestructorCore();
+    RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(oldDeferredMode);
+
+    return case0WrapOk && case1Ok && case2Ok && case3Ok && case4Ok && case5Ok &&
+                   defaultOk
+               ? 0
+               : 1;
 }
 
 extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void) {
