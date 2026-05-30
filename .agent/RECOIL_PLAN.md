@@ -2654,33 +2654,33 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41c5e0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_overlay_owner_lifecycle)
   - [❌] Binary-safe
 - 0x41c5f0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::StaticInit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanelOverlayOwner::StaticInit File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_overlay_owner_lifecycle)
   - [❌] Binary-safe
 - 0x41c630:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanelOverlayOwner::Destructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_overlay_owner_lifecycle)
   - [❌] Binary-safe
 - 0x41c6a0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::RegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanelOverlayOwner::RegisterAtExit File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_overlay_owner_lifecycle)
   - [❌] Binary-safe
 - 0x41c6b0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::AtExitDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanelOverlayOwner::AtExitDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_overlay_owner_lifecycle)
   - [❌] Binary-safe
 - 0x41c6c0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::QueueEnter)
@@ -21688,9 +21688,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41c610:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_overlay_owner_lifecycle)
   - [❌] Binary-safe
 - 0x41c7d0:
   - [✅] Reconstructed (Name: NetSessionConfigDialog::ScalarDeletingDestructor)

@@ -280,6 +280,14 @@ struct HudUiOptionsPanelOverlayVirtual
     ScalarDeletingDestructor(unsigned int flags) = 0;
 };
 
+struct HudUiNewGamePanelOverlayVirtual
+{
+    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
+    virtual HudUiNewGamePanelOverlayVirtual *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags) = 0;
+};
+
 struct RecoilStateConfirmQuitBaseVtableGuard
 {
     RecoilStateConfirmQuit *self;
@@ -309,8 +317,19 @@ struct HudUiOptionsPanelOverlayOwnerBaseVtableGuard
         self->vftable = kRecoilStateBase_VtblAddress;
     }
 };
+
+struct HudUiNewGamePanelOverlayOwnerBaseVtableGuard
+{
+    HudUiNewGamePanelOverlayOwner *self;
+
+    ~HudUiNewGamePanelOverlayOwnerBaseVtableGuard()
+    {
+        self->vftable = kRecoilStateBase_VtblAddress;
+    }
+};
 } // namespace
 
+RecoilApp_IState_Vtbl g_HudUiNewGamePanelOverlayOwner_Vtbl = {0};
 RecoilApp_IState_Vtbl g_HudUiOptionsPanelOverlayOwner_Vtbl = {0};
 
 const HudUiCommon_FTable g_HudWeatherFx_Vtable = MakeHudWeatherFxFTable();
@@ -456,6 +475,77 @@ void RECOIL_CDECL HudUiNewGamePanelOverlayOwner::QueueEnter()
     g_RecoilApp.QueuePushState(&g_HudUiNewGamePanelOverlayOwner, 0);
 }
 
+// Reimplements 0x41c5e0: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL
+HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit()
+{
+    StaticInit();
+    RegisterAtExit();
+}
+
+// Reimplements 0x41c5f0: HudUiNewGamePanelOverlayOwner::StaticInit
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+RECOIL_NOINLINE HudUiNewGamePanelOverlayOwner *RECOIL_CDECL
+HudUiNewGamePanelOverlayOwner::StaticInit()
+{
+    g_HudUiNewGamePanelOverlayOwner.vftable =
+        (RecoilPtr32)(unsigned int)&g_HudUiNewGamePanelOverlayOwner_Vtbl;
+    g_HudUiNewGamePanelOverlayOwner.m_panel = 0;
+    return &g_HudUiNewGamePanelOverlayOwner;
+}
+
+// Reimplements 0x41c6a0: HudUiNewGamePanelOverlayOwner::RegisterAtExit
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL HudUiNewGamePanelOverlayOwner::RegisterAtExit()
+{
+    atexit(AtExitDestructor);
+}
+
+// Reimplements 0x41c6b0: HudUiNewGamePanelOverlayOwner::AtExitDestructor
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL HudUiNewGamePanelOverlayOwner::AtExitDestructor()
+{
+    g_HudUiNewGamePanelOverlayOwner.Destructor();
+}
+
+// Reimplements 0x41c630: HudUiNewGamePanelOverlayOwner::Destructor
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudUiNewGamePanelOverlayOwner::Destructor()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_HudUiNewGamePanelOverlayOwner_Vtbl;
+    HudUiNewGamePanelOverlayOwnerBaseVtableGuard baseVtableOnExit = {this};
+
+    HudUiNewGamePanelOverlayVirtual *panel =
+        (HudUiNewGamePanelOverlayVirtual *)(unsigned int)m_panel;
+    if (panel != 0)
+    {
+        panel->SetEnabled(0);
+
+        panel = (HudUiNewGamePanelOverlayVirtual *)(unsigned int)m_panel;
+        if (panel != 0)
+        {
+            panel->ScalarDeletingDestructor(1);
+        }
+
+        m_panel = 0;
+    }
+}
+
+// Reimplements 0x41c610: HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+RECOIL_NOINLINE HudUiNewGamePanelOverlayOwner *RECOIL_THISCALL
+HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
 // Reimplements 0x41c560: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
 RECOIL_NOINLINE int RECOIL_THISCALL
@@ -470,7 +560,9 @@ HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent()
 
     m_panel = (RecoilPtr32)(unsigned int)panel;
     panel->SyncIntensityFromDifficulty();
-    ((HudUiBackground *)panel)->SetEnabled(1);
+    HudUiNewGamePanelOverlayVirtual *panelView =
+        (HudUiNewGamePanelOverlayVirtual *)panel;
+    panelView->SetEnabled(1);
     return 1;
 }
 

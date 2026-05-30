@@ -345,6 +345,13 @@ extern const HudUiNumericTextInput_Base_FTable g_HudUiNewGamePanel_NameInput_Vtb
 struct HudUiNewGamePanelOverlayOwner : RecoilApp_IState {
     RecoilPtr32 m_panel; // HudUiNewGamePanel*
 
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    RECOIL_NOINLINE static HudUiNewGamePanelOverlayOwner *RECOIL_CDECL StaticInit();
+    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
+    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE HudUiNewGamePanelOverlayOwner *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     static void RECOIL_CDECL QueueEnter();
 };
@@ -436,6 +443,7 @@ RECOIL_STATIC_ASSERT(offsetof(RecoilStateCheatCode, m_audioSnapshot) == 0x0c);
 
 extern HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 extern HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
+extern RecoilApp_IState_Vtbl g_HudUiNewGamePanelOverlayOwner_Vtbl;
 extern RecoilApp_IState_Vtbl g_HudUiOptionsPanelOverlayOwner_Vtbl;
 extern RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
 extern RecoilStateControls g_RecoilStateControls;

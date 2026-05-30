@@ -3264,6 +3264,127 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(v
     return ok ? 0 : 1;
 }
 
+extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
+    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldOptionListHead = g_zGame_Options_OptionListHead;
+    void *const oldRawCallback = g_zInput_KbdRawEventCallback;
+    void *const oldRawCallbackCtx = g_zInput_KbdRawEventCallbackCtx;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    std::uint16_t pixels[4] = {};
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 5;
+    vmodeOption.name = vmodeName;
+    char playerName[32] = "Ace";
+    zOptionEntryPartial playerNameOption{};
+    playerNameOption.payloadOrBuffer =
+        static_cast<std::int32_t>(reinterpret_cast<std::uintptr_t>(playerName));
+    playerNameOption.dataSize = sizeof(playerName);
+    int difficulty = 1;
+
+    g_zGame_Options_OptionListHead = &vmodeOption;
+    ZOPT_PLAYER_NAME = &playerNameOption;
+    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zInput_KbdRawEventCallback = nullptr;
+    g_zInput_KbdRawEventCallbackCtx = nullptr;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    g_HudUiNewGamePanelOverlayOwner.vftable = 0x11111111;
+    g_HudUiNewGamePanelOverlayOwner.m_panel = 0x22222222;
+    HudUiNewGamePanelOverlayOwner *const staticInitReturned =
+        HudUiNewGamePanelOverlayOwner::StaticInit();
+    const bool staticInitOk =
+        staticInitReturned == &g_HudUiNewGamePanelOverlayOwner &&
+        g_HudUiNewGamePanelOverlayOwner.vftable ==
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiNewGamePanelOverlayOwner_Vtbl)) &&
+        g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+
+    HudUiNewGamePanel *const atExitPanel =
+        static_cast<HudUiNewGamePanel *>(::operator new(sizeof(HudUiNewGamePanel)));
+    atExitPanel->Constructor();
+    atExitPanel->base.base.SetEnabled(1);
+    g_HudUiNewGamePanelOverlayOwner.m_panel =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(atExitPanel));
+    HudUiNewGamePanelOverlayOwner::AtExitDestructor();
+    const bool atExitOk =
+        g_HudUiNewGamePanelOverlayOwner.vftable == kRecoilStateBase_VtblAddress &&
+        g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+
+    HudUiNewGamePanel *const destructorPanel =
+        static_cast<HudUiNewGamePanel *>(::operator new(sizeof(HudUiNewGamePanel)));
+    destructorPanel->Constructor();
+    destructorPanel->base.base.SetEnabled(1);
+    HudUiNewGamePanelOverlayOwner state{};
+    state.vftable = 0x33333333;
+    state.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(destructorPanel));
+    state.Destructor();
+    const bool destructorOk =
+        state.vftable == kRecoilStateBase_VtblAddress && state.m_panel == 0;
+
+    HudUiNewGamePanel *const scalarPanel =
+        static_cast<HudUiNewGamePanel *>(::operator new(sizeof(HudUiNewGamePanel)));
+    scalarPanel->Constructor();
+    HudUiNewGamePanelOverlayOwner scalarState{};
+    scalarState.vftable = 0x44444444;
+    scalarState.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(scalarPanel));
+    HudUiNewGamePanelOverlayOwner *const scalarReturned =
+        scalarState.ScalarDeletingDestructor(0);
+    const bool scalarOk =
+        scalarReturned == &scalarState &&
+        scalarState.vftable == kRecoilStateBase_VtblAddress && scalarState.m_panel == 0;
+
+    HudUiNewGamePanelOverlayOwner *const deletingState =
+        static_cast<HudUiNewGamePanelOverlayOwner *>(
+            ::operator new(sizeof(HudUiNewGamePanelOverlayOwner)));
+    deletingState->vftable = 0x55555555;
+    deletingState->m_panel = 0;
+    HudUiNewGamePanelOverlayOwner *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+    const bool deletingOk = deletingReturned == deletingState;
+
+    HudUiNewGamePanelOverlayOwner::RegisterAtExit();
+
+    g_HudUiNewGamePanelOverlayOwner.vftable = 0x66666666;
+    g_HudUiNewGamePanelOverlayOwner.m_panel = 0x77777777;
+    HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit();
+    const bool staticInitRegisterOk =
+        g_HudUiNewGamePanelOverlayOwner.vftable ==
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiNewGamePanelOverlayOwner_Vtbl)) &&
+        g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+
+    ZOPT_PLAYER_NAME = oldPlayerNameOption;
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_OptionListHead = oldOptionListHead;
+    g_zInput_KbdRawEventCallback = oldRawCallback;
+    g_zInput_KbdRawEventCallbackCtx = oldRawCallbackCtx;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+
+    return staticInitOk && atExitOk && destructorOk && scalarOk && deletingOk &&
+                   staticInitRegisterOk
+               ? 0
+               : 1;
+}
+
 extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void) {
     HudUiOptionsPanelOverlayOwner state{};
     state.vftable = 0x11111111;
