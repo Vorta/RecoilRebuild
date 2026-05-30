@@ -5024,6 +5024,15 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     const bool checkedPreviewSkipped = checkedPreviewWidget.base.defaultImage == nullptr &&
                                        checkedPreviewWidget.base.base.image == &previewDefault;
 
+    HudUiCheckToggleWidget disabledPreviewWidget{};
+    disabledPreviewWidget.base.modeOrEnabled = 0;
+    disabledPreviewWidget.checked = 0;
+    disabledPreviewWidget.base.base.image = &previewDefault;
+    disabledPreviewWidget.base.rolloverImage = &previewRollover;
+    disabledPreviewWidget.ShowPreview();
+    const bool disabledPreviewSkipped = disabledPreviewWidget.base.defaultImage == nullptr &&
+                                        disabledPreviewWidget.base.base.image == &previewDefault;
+
     HudUiCheckToggleWidget activateToggle{};
     activateToggle.base.base.ftable = &g_HudUiWidget_FTable;
     zVidImagePartial activateImage{};
@@ -5123,9 +5132,10 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
 
     g_HudUi_InvalidateMask = 0;
     return constructed && checkedState && uncheckedState && refreshEnabled && refreshDisabled &&
-                   previewShown && checkedPreviewSkipped && activated && fullHudTableThunk &&
-                   thunkActivated && disabledActivateSkipped && previewHidden && bounds &&
-                   destructed && scalarDeleted && scalarHeapDeleted && thunkDeleted
+                   previewShown && checkedPreviewSkipped && disabledPreviewSkipped && activated &&
+                   fullHudTableThunk && thunkActivated && disabledActivateSkipped &&
+                   previewHidden && bounds && destructed && scalarDeleted && scalarHeapDeleted &&
+                   thunkDeleted
                ? 0
                : 1;
 }
