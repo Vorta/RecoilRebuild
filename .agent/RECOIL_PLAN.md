@@ -3236,9 +3236,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4ba410:
   - [✅] Reconstructed (Name: HudUiListSelectorItem::Draw)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiListSelectorItem::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_list_selector_item_draw)
   - [❌] Binary-safe
 - 0x4bc9f0:
   - [☑️] Reconstructed (Name: HudUiTransitionTextPanel::TickFlash)
@@ -4694,9 +4694,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bb460:
   - [✅] Reconstructed (Name: HudUiPanel::Draw)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanel::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_draw)
   - [❌] Binary-safe
 - 0x4bb540:
   - [✅] Reconstructed (Name: HudUiPanel::SetTextFmt)

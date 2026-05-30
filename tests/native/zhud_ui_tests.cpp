@@ -1189,11 +1189,21 @@ void RECOIL_FASTCALL TestBltSourceToPrimary(void *self, std::int32_t dstX, std::
 
 int g_hudUiWidgetDrawBaseCount = 0;
 void *g_hudUiWidgetDrawBaseThis = nullptr;
+int g_hudUiPanelRebuildTextRectCount = 0;
+void *g_hudUiPanelRebuildTextRectThis = nullptr;
 
 struct TestHudUiWidgetDrawDispatch {
     void RECOIL_THISCALL DrawBase() {
         ++g_hudUiWidgetDrawBaseCount;
         g_hudUiWidgetDrawBaseThis = this;
+    }
+};
+
+struct TestHudUiPanelRebuildDispatch {
+    void RECOIL_THISCALL RebuildTextRect() {
+        ++g_hudUiPanelRebuildTextRectCount;
+        g_hudUiPanelRebuildTextRectThis = this;
+        TestFieldAt<std::uint32_t>(this, 0x270) = 0;
     }
 };
 
@@ -13640,6 +13650,95 @@ extern "C" int zhud_panel_constructor_default_smoke(void) {
                    TestFieldAt<std::int32_t>(panel, 0x290) == 0 &&
                    TestFieldAt<std::int32_t>(panel, 0x294) == 0 &&
                    TestFieldAt<std::int32_t>(panel, 0x298) == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int zhud_panel_draw_smoke(void) {
+    zVideo_BltSourceToPrimaryProc oldBlit = g_zVideo_pfnBltSourceToPrimary;
+
+    HudUiPanel_FTable table = g_HudUiPanel_FTable;
+    table.slots[2] = MethodAddress(&TestHudUiWidgetDrawDispatch::DrawBase);
+    table.slots[36] = MethodAddress(&TestHudUiPanelRebuildDispatch::RebuildTextRect);
+
+    alignas(HudUiPanel) std::uint8_t storage[0x2ac]{};
+    auto *panel = reinterpret_cast<HudUiPanel *>(storage);
+    zVidImagePartial image{};
+
+    panel->ConstructorDefault("TXT", 100, 20);
+    panel->vtbl = &table;
+    panel->textPick = nullptr;
+    TestFieldAt<std::uint32_t>(panel, 0x270) = 1;
+    g_testBlitCount = 0;
+    g_hudUiWidgetDrawBaseCount = 0;
+    g_hudUiWidgetDrawBaseThis = nullptr;
+    g_hudUiPanelRebuildTextRectCount = 0;
+    g_hudUiPanelRebuildTextRectThis = nullptr;
+    g_zVideo_pfnBltSourceToPrimary = TestBltSourceToPrimary;
+    panel->Draw();
+    const bool dirtyNullTextPick =
+        g_hudUiPanelRebuildTextRectCount == 1 &&
+        g_hudUiPanelRebuildTextRectThis == panel && g_hudUiWidgetDrawBaseCount == 0 &&
+        g_testBlitCount == 0 && TestFieldAt<std::uint32_t>(panel, 0x270) == 0;
+
+    panel->textPick = &image;
+    TestFieldAt<char>(panel, 0x34) = '\0';
+    TestFieldAt<std::uint32_t>(panel, 0x270) = 0;
+    g_testBlitCount = 0;
+    g_hudUiWidgetDrawBaseCount = 0;
+    g_hudUiWidgetDrawBaseThis = nullptr;
+    panel->Draw();
+    const bool emptyTextDrawBase =
+        g_hudUiWidgetDrawBaseCount == 1 && g_hudUiWidgetDrawBaseThis == panel &&
+        g_testBlitCount == 0;
+
+    std::strcpy(&TestFieldAt<char>(panel, 0x34), "TXT");
+    TestFieldAt<zVidRect32>(panel, 0x28c) = {1, 2, 9, 10};
+    TestFieldAt<std::int32_t>(panel, 0x144) = 0;
+    TestFieldAt<std::int32_t>(panel, 0x14) = 100;
+    TestFieldAt<std::int32_t>(panel, 0x18) = 20;
+    TestFieldAt<std::uint32_t>(panel, 0x270) = 0;
+    g_testBlitCount = 0;
+    g_hudUiWidgetDrawBaseCount = 0;
+    g_hudUiWidgetDrawBaseThis = nullptr;
+    panel->Draw();
+    const bool leftAligned =
+        g_hudUiWidgetDrawBaseCount == 1 && g_hudUiWidgetDrawBaseThis == panel &&
+        g_testBlitCount == 1 && g_testBlitImages[0] == &image &&
+        g_testBlitX[0] == 100 && g_testBlitY[0] == 20 && g_testBlitFlags[0] == 0 &&
+        g_testBlitHasRect[0] == 1 && g_testBlitRects[0].left == 1 &&
+        g_testBlitRects[0].right == 9 && TestFieldAt<std::int32_t>(panel, 0x14) == 100;
+
+    TestFieldAt<std::int32_t>(panel, 0x144) = 1;
+    TestFieldAt<std::int32_t>(panel, 0x20) = 10;
+    TestFieldAt<std::int32_t>(panel, 0x28) = 70;
+    TestFieldAt<std::int32_t>(panel, 0x25c) = 20;
+    TestFieldAt<std::int32_t>(panel, 0x14) = 100;
+    g_testBlitCount = 0;
+    g_hudUiWidgetDrawBaseCount = 0;
+    panel->Draw();
+    const bool centerAligned =
+        g_hudUiWidgetDrawBaseCount == 1 && g_testBlitCount == 1 &&
+        g_testBlitX[0] == 90 && g_testBlitY[0] == 20 &&
+        TestFieldAt<std::int32_t>(panel, 0x14) == 100;
+
+    TestFieldAt<std::int32_t>(panel, 0x144) = 2;
+    TestFieldAt<std::int32_t>(panel, 0x14) = 100;
+    g_testBlitCount = 0;
+    g_hudUiWidgetDrawBaseCount = 0;
+    panel->Draw();
+    const bool rightAligned =
+        g_hudUiWidgetDrawBaseCount == 1 && g_testBlitCount == 1 &&
+        g_testBlitX[0] == 80 && g_testBlitY[0] == 20 &&
+        TestFieldAt<std::int32_t>(panel, 0x14) == 100;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    panel->vtbl = &g_HudUiPanel_FTable;
+    panel->textPick = nullptr;
+    panel->Destructor();
+
+    return dirtyNullTextPick && emptyTextDrawBase && leftAligned && centerAligned &&
+                   rightAligned
                ? 0
                : 1;
 }

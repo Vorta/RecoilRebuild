@@ -679,6 +679,7 @@ extern "C" int zhud_cmd_dialog_state_on_deactivate_smoke(void);
 extern "C" int zhud_panel_destructor_thunk_smoke(void);
 extern "C" int zhud_panel_text_color_shadow_smoke(void);
 extern "C" int zhud_panel_constructor_default_smoke(void);
+extern "C" int zhud_panel_draw_smoke(void);
 extern "C" int zhud_panel_copy_construct_core_smoke(void);
 extern "C" int zhud_text_label_constructor_and_extents_smoke(void);
 extern "C" int zhud_panel_set_font_smoke(void);
@@ -2734,6 +2735,7 @@ int main(int argc, char **argv) {
         {"zhud_panel_destructor_thunk_smoke", zhud_panel_destructor_thunk_smoke},
         {"zhud_panel_text_color_shadow_smoke", zhud_panel_text_color_shadow_smoke},
         {"zhud_panel_constructor_default_smoke", zhud_panel_constructor_default_smoke},
+        {"zhud_panel_draw_smoke", zhud_panel_draw_smoke},
         {"zhud_panel_copy_construct_core_smoke", zhud_panel_copy_construct_core_smoke},
         {"zhud_text_label_constructor_and_extents_smoke",
          zhud_text_label_constructor_and_extents_smoke},
