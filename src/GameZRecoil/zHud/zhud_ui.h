@@ -621,6 +621,8 @@ struct HudUiCircle {
     HudUiCircle *RECOIL_THISCALL Constructor(int x, int y,
                                              int circleRadius,
                                              unsigned int circleColor565);
+    void RECOIL_THISCALL DrawDirty();
+    void RECOIL_THISCALL DrawDirtyForwarder();
     int RECOIL_THISCALL HitTest(int px, int py);
     int RECOIL_THISCALL HitTestCore(int px, int py);
 };

@@ -2934,12 +2934,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawCircleOutline16_Framebuffer(int c
 
     zRndr_DrawCircleOctants16_Framebuffer(0, x, packedColor);
     do {
-        if (decisionVar >= 0) {
-            const int delta = y - x;
-            --x;
-            decisionVar += (delta << 1) + 5;
-        } else {
+        if (decisionVar < 0) {
             decisionVar += (y << 1) + 3;
+        } else {
+            decisionVar += ((y - x) << 1) + 5;
+            --x;
         }
 
         ++y;

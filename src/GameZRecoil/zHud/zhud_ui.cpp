@@ -144,6 +144,13 @@ template <typename FTable> FTable MakeHudUiFTableWithCommonInvalidate() {
     return table;
 }
 
+HudUiCommon_FTable MakeHudUiCircleFTable() {
+    HudUiCommon_FTable table = MakeHudUiCommonFTable();
+    table.slots[1] = MethodAddress(&HudUiCircle::DrawDirty);
+    table.slots[2] = MethodAddress(&HudUiElement::DrawBase);
+    return table;
+}
+
 HudUiZrdWidgetEx17C_Item_FTable MakeHudUiZrdWidgetEx17CItemFTable() {
     HudUiZrdWidgetEx17C_Item_FTable table =
         MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidgetEx17C_Item_FTable>();
@@ -522,8 +529,7 @@ zTimedTask *g_zTimedTask_ActiveTail = 0;
 int g_zTimedTask_ActiveCount = 0;
 
 const HudUiCommon_FTable g_HudUiCommon_FTable = MakeHudUiCommonFTable();
-const HudUiCommon_FTable g_HudUiCircle_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiCommon_FTable>();
+const HudUiCommon_FTable g_HudUiCircle_FTable = MakeHudUiCircleFTable();
 const HudUiContainer_FTable g_HudUiContainer_FTable = MakeHudUiContainerFTable();
 const HudUiBackgroundContainer_FTable g_HudUiBackgroundContainer_FTable = {0};
 const HudUiBackgroundContainer_FTable g_HudUiBackground_FTable = MakeHudUiBackgroundFTable();
@@ -4498,6 +4504,23 @@ HudUiCircle *RECOIL_THISCALL HudUiCircle::Constructor(int x, int y,
     radiusSquared = (int)(radiusBits * radiusBits);
     color565 = circleColor565;
     return this;
+}
+
+// Reimplements 0x4bc4c0: HudUiCircle::DrawDirty
+void RECOIL_THISCALL HudUiCircle::DrawDirty() {
+    struct DrawBaseFTable {
+        unsigned int slots[2];
+        void (HudUiCircle::*DrawBase)();
+    };
+
+    const DrawBaseFTable *const dispatch = (const DrawBaseFTable *)(base.ftable);
+    (this->*dispatch->DrawBase)();
+    zRndr_DrawCircleOutline16_Framebuffer(base.x, base.y, radius, color565, 0);
+}
+
+// Reimplements 0x403c80: HudUiCircle::DrawDirtyForwarder
+void RECOIL_THISCALL HudUiCircle::DrawDirtyForwarder() {
+    DrawDirty();
 }
 
 // Reimplements 0x404e60: HudUiCircle::HitTest

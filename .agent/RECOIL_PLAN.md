@@ -3514,11 +3514,11 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: hud_ui_widget_rebuild_blt_rect_from_image)
   - [❌] Binary-safe
 - 0x403c80:
-  - [❌] Reconstructed (Name: HudUiCircle::DrawDirtyForwarder)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Reconstructed (Name: HudUiCircle::DrawDirtyForwarder)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCircle::DrawDirtyForwarder File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_circle_draw_dirty_forwarder)
+  - [✅] Binary-safe
 - 0x404e60:
   - [☑️] Reconstructed (Name: HudUiCircle::HitTest)
   - [✅] Source dependencies satisfied
@@ -4838,10 +4838,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bc4c0:
   - [✅] Reconstructed (Name: HudUiCircle::DrawDirty)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCircle::DrawDirty File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_circle_draw_dirty)
+  - [✅] Binary-safe
 - 0x4bc4e0:
   - [☑️] Reconstructed (Name: HudUiCircle::HitTestCore)
   - [✅] Source dependencies satisfied
@@ -17327,16 +17327,16 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x498fb0:
   - [✅] Reconstructed (Name: zRndr::DrawCircleOutline16Framebuffer)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zRndr_DrawCircleOutline16_Framebuffer File: src/GameZRecoil/zRndr/zRndr.cpp)
+  - [✅] Functional-equivalent (Target: zrndr_draw_circle_outline16_framebuffer)
+  - [✅] Binary-safe
 - 0x499020:
   - [✅] Reconstructed (Name: zRndr::DrawCircleOctants16Framebuffer)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zRndr_DrawCircleOctants16_Framebuffer File: src/GameZRecoil/zRndr/zRndr.cpp)
+  - [✅] Functional-equivalent (Target: zrndr_draw_circle_octants16_framebuffer)
+  - [✅] Binary-safe
 - 0x499130:
   - [☑️] Reconstructed (Name: zRndr_TextureMip::SelectVariantImage)
   - [✅] Source dependencies satisfied

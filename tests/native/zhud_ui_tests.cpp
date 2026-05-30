@@ -141,6 +141,7 @@ int g_HudTestLineArgs[4][5] = {};
 int g_HudTestPointOpCount = 0;
 void *g_HudTestPointOpFrameBuffer = nullptr;
 int g_HudTestPointOpArgs[3] = {};
+int g_HudCircleDrawBaseCount = 0;
 
 std::int32_t __stdcall HudUiTestDirectSoundGetStatus(void *, std::int32_t *status) {
     *status = 0;
@@ -207,6 +208,14 @@ void RECOIL_FASTCALL HudTestPointOp(void *frameBuffer, int y, int x, int color16
     g_HudTestPointOpArgs[0] = y;
     g_HudTestPointOpArgs[1] = x;
     g_HudTestPointOpArgs[2] = color16;
+}
+
+struct TestCircleDrawDirtyOps : HudUiCircle {
+    void RECOIL_THISCALL DrawBase();
+};
+
+void RECOIL_THISCALL TestCircleDrawDirtyOps::DrawBase() {
+    ++g_HudCircleDrawBaseCount;
 }
 
 void DeletePanelAllocation(HudUiPanel *panel) {
@@ -2501,6 +2510,53 @@ extern "C" int zhud_circle_constructor_and_hit_test_smoke(void) {
     const bool hitWrapped = circle.HitTest(10, 20) == 1 && circle.HitTest(16, 20) == 0;
 
     return constructed && hitCore && hitWrapped ? 0 : 1;
+}
+
+extern "C" int zhud_circle_draw_dirty_smoke(void) {
+    void *const oldFrameBuffer = zRndr::g_frameBuffer;
+    zRndr::PointOpProc const oldPointOp = zRndr::g_pfnPointOpActive;
+    const int oldCircleCenterX = g_zRndr_CircleCenterX;
+    const int oldCircleCenterY = g_zRndr_CircleCenterY;
+    const int oldAuxArg = g_zRndr_CircleDrawAuxArg;
+
+    HudUiCommon_FTable table = g_HudUiCircle_FTable;
+    table.slots[2] = MethodAddress(&TestCircleDrawDirtyOps::DrawBase);
+
+    HudUiCircle circle{};
+    circle.Constructor(10, 20, 1, 0x07e0);
+    circle.base.ftable = &table;
+
+    zRndr::g_frameBuffer = reinterpret_cast<void *>(0x87651234);
+    zRndr::g_pfnPointOpActive = HudTestPointOp;
+    g_HudCircleDrawBaseCount = 0;
+    g_HudTestPointOpCount = 0;
+    g_HudTestPointOpFrameBuffer = nullptr;
+    g_HudTestPointOpArgs[0] = 0;
+    g_HudTestPointOpArgs[1] = 0;
+    g_HudTestPointOpArgs[2] = 0;
+
+    circle.DrawDirty();
+    const bool directOk =
+        g_HudCircleDrawBaseCount == 1 && g_HudTestPointOpCount == 16 &&
+        g_HudTestPointOpFrameBuffer == reinterpret_cast<void *>(0x87651234) &&
+        g_zRndr_CircleCenterX == 10 && g_zRndr_CircleCenterY == 20 &&
+        g_zRndr_CircleDrawAuxArg == 0 && g_HudTestPointOpArgs[2] == 0x07e0;
+
+    g_HudCircleDrawBaseCount = 0;
+    g_HudTestPointOpCount = 0;
+    g_HudTestPointOpArgs[2] = 0;
+
+    circle.DrawDirtyForwarder();
+    const bool forwarderOk = g_HudCircleDrawBaseCount == 1 && g_HudTestPointOpCount == 16 &&
+                             g_HudTestPointOpArgs[2] == 0x07e0;
+
+    zRndr::g_frameBuffer = oldFrameBuffer;
+    zRndr::g_pfnPointOpActive = oldPointOp;
+    g_zRndr_CircleCenterX = oldCircleCenterX;
+    g_zRndr_CircleCenterY = oldCircleCenterY;
+    g_zRndr_CircleDrawAuxArg = oldAuxArg;
+
+    return directOk && forwarderOk ? 0 : 1;
 }
 
 extern "C" int zhud_composite_panel_vector_clear_smoke(void) {
