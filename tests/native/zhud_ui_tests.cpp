@@ -5942,6 +5942,19 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
     zVidImagePartial unselectedRollover{};
     selectedImage.width = 11;
     selectedImage.height = 13;
+    item.base.modeOrEnabled = 0;
+    item.base.defaultImage = reinterpret_cast<zVidImagePartial *>(0x3333);
+    item.base.rolloverImage = reinterpret_cast<zVidImagePartial *>(0x4444);
+    item.base.base.image = reinterpret_cast<zVidImagePartial *>(0x5555);
+    item.SetSelected(1);
+    const bool selectedDisabled =
+        item.selected == 1 &&
+        item.base.defaultImage == reinterpret_cast<zVidImagePartial *>(0x3333) &&
+        item.base.rolloverImage == reinterpret_cast<zVidImagePartial *>(0x4444) &&
+        item.base.base.image == reinterpret_cast<zVidImagePartial *>(0x5555);
+    item.base.defaultImage = nullptr;
+    item.base.rolloverImage = nullptr;
+    item.base.base.image = nullptr;
     item.base.modeOrEnabled = 1;
     item.selectedImage = &selectedImage;
     item.unselectedImage = &unselectedImage;
@@ -6210,10 +6223,11 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
         heapScalarItem->ScalarDeletingDestructor(1);
     const bool scalarHeapDeleted = heapScalarResult == heapScalarItem;
 
-    return constructed && selectedOn && selectedOff && boundsOk && showPreview && hidePreview &&
-                   selectedSkipsPreview && loaded && selectorConstructed && selectorLoaded &&
-                   setSelectedIndex && childEnabled && activatedSelection && selectorDestructed &&
-                   itemDestructed && scalarNoDelete && scalarHeapDeleted
+    return constructed && selectedDisabled && selectedOn && selectedOff && boundsOk &&
+                   showPreview && hidePreview && selectedSkipsPreview && loaded &&
+                   selectorConstructed && selectorLoaded && setSelectedIndex && childEnabled &&
+                   activatedSelection && selectorDestructed && itemDestructed && scalarNoDelete &&
+                   scalarHeapDeleted
                ? 0
                : 1;
 }

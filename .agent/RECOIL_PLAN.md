@@ -3172,7 +3172,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::SetSelected)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::SetSelected File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_ex17c_item_set_selected)
   - [❌] Binary-safe
 - 0x4b8af0:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds)
