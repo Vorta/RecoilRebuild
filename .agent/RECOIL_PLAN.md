@@ -3344,13 +3344,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x434dd0:
   - [✅] Reconstructed (Name: HudUiLoadGameDialog::ScalarDeletingDestructor)
-  - [☑️] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadGameDialog::ScalarDeletingDestructor File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: hud_ui_load_game_dialog_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x434df0:
   - [☑️] Reconstructed (Name: HudUiLoadGameDialog::Destructor)
-  - [☑️] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadGameDialog::Destructor File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: hud_ui_load_game_dialog_destructor)
   - [❌] Binary-safe
