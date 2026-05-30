@@ -8973,6 +8973,22 @@ HudCmdDialogState *RECOIL_THISCALL HudCmdDialogState::Constructor()
     return this;
 }
 
+// Reimplements 0x40bcf0: HudCmdDialogState::OnTryBecomeCurrent
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+int RECOIL_THISCALL HudCmdDialogState::OnTryBecomeCurrent()
+{
+    HudCmdDialog *dialog = (HudCmdDialog *)::operator new(sizeof(HudCmdDialog));
+    if (dialog != 0)
+    {
+        dialog = dialog->Constructor();
+    }
+    m_dialog = (RecoilPtr32)(unsigned int)dialog;
+
+    ((HudCmdDialogVirtual *)dialog)->SetEnabled(1);
+    zInput::Keyboard_Suspend();
+    return 1;
+}
+
 struct HudCmdDialogStateBaseVtableGuard
 {
     HudCmdDialogState *self;

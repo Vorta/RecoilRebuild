@@ -1992,8 +1992,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x40bcf0:
   - [☑️] Reconstructed (Name: HudCmdDialogState::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reimplemented (Name: HudCmdDialogState::OnTryBecomeCurrent File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_state_on_try_become_current)
   - [❌] Binary-safe
 - 0x40bd60:
   - [✅] Reconstructed (Name: HudCmdDialogState::OnDeactivate)

@@ -44,8 +44,8 @@ source-readiness, or coherent binary-safe groups currently being coordinated.
 ### Group: Hud command dialog constructor
 
 - Anchor: 0x40a5b0 HudCmdDialog::Constructor
-- Reason: class constructor/source-file cluster needed by 0x40bcf0 HudCmdDialogState::OnTryBecomeCurrent.
+- Reason: class constructor/source-file cluster used by 0x40bcf0 HudCmdDialogState::OnTryBecomeCurrent; source work is functional-equivalent, binary-safe verification remains a later cluster pass.
 - Source blockers:
-  - none visible; 0x40a5b0 is functional-equivalent and 0x40bcf0 dependencies are source-ready.
+  - none; 0x40a5b0 and 0x40bcf0 are functional-equivalent.
 - Next action:
-  - Implement `0x40bcf0` HudCmdDialogState::OnTryBecomeCurrent in `src/GameZRecoil/zHud/zhud_ui.cpp`.
+  - Recompute the next HUD command-dialog caller with `python tools/recoil_plan_cli.py next` or queue a coherent binary-safe pass for the HudCmdDialog source-file/table cluster.
