@@ -12441,8 +12441,8 @@ void RECOIL_THISCALL HudUiPanel::SetFontHandle(HGDIOBJ fontHandle) {
 
 // Reimplements 0x40bec0: HudUiPanel::EnableWordWrapWithRect
 void RECOIL_THISCALL HudUiPanel::EnableWordWrapWithRect(const HudUiRect *rect) {
-    FieldAt<unsigned int>(this, 0x278) = 1;
-    FieldAt<HudUiRect>(this, 0x27c) = *rect;
+    wordWrapEnabled = 1;
+    wrapRect = *rect;
 }
 
 // Reimplements 0x40bf00: HudUtil::FreeFieldPtr

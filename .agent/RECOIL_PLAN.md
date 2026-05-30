@@ -3553,8 +3553,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiPanel::EnableWordWrapWithRect)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::EnableWordWrapWithRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_panel_enable_word_wrap_with_rect)
+  - [✅] Binary-safe
 - 0x40bef0:
   - [✅] Reconstructed (Name: HudUiPanel::DestructorThunk)
   - [✅] Source dependencies satisfied

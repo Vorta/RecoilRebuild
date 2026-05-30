@@ -1369,7 +1369,10 @@ struct HudUiPanel {
     HGDIOBJ hFont;
     unsigned char reserved158[0x118];
     unsigned int textDirty;
-    unsigned char reserved274[0x30];
+    unsigned char reserved274[0x04];
+    unsigned int wordWrapEnabled;
+    HudUiRect wrapRect;
+    unsigned char reserved28c[0x18];
 
     HudUiPanel *RECOIL_THISCALL ConstructorDefault(const char *text, int x,
                                                    int y);
@@ -2343,6 +2346,8 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, textPick) == 0x148);
 RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, hFont) == 0x154);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanel) == 0x2a4);
 RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, textDirty) == 0x270);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, wordWrapEnabled) == 0x278);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, wrapRect) == 0x27c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanelSimple) == 0x2a4);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTimerPanelFloat) == 0x2b0);
 RECOIL_STATIC_ASSERT(sizeof(HudUiStringMenu) == 0x3cdc);
