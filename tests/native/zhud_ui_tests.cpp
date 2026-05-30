@@ -11705,15 +11705,22 @@ extern "C" int zhud_cmd_dialog_scalar_deleting_destructor_smoke(void) {
 namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;
+int g_hudCmdDialogStateSetEnabledCount;
+int g_hudCmdDialogStateSetEnabledValue;
 
 struct HudCmdDialogStateTestDialog {
     virtual void RECOIL_THISCALL Update(float) {}
-    virtual void RECOIL_THISCALL SetEnabled(int) {}
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+        ++g_hudCmdDialogStateSetEnabledCount;
+        g_hudCmdDialogStateSetEnabledValue = enabled;
+    }
     virtual HudCmdDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags) {
         ++g_hudCmdDialogStateDeleteCount;
         g_hudCmdDialogStateDeleteFlags = flags;
         return reinterpret_cast<HudCmdDialog *>(this);
     }
+    unsigned char reserved04[0x110];
+    zVidImagePartial *capturedImage;
 };
 } // namespace
 
@@ -11784,6 +11791,68 @@ extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void) {
     }
 
     return 0;
+}
+
+extern "C" int zhud_cmd_dialog_state_on_deactivate_smoke(void) {
+    zInput_BindMapContext *const oldCurrent = g_zInput_BindMap_Current;
+    const unsigned char oldKeyboardSuspend = g_zInput_KeyboardSuspendFlags;
+    zVideo_BltSourceToPrimaryProc const oldBlit = g_zVideo_pfnBltSourceToPrimary;
+
+    HudCmdDialogState nullState{};
+    nullState.Constructor();
+    g_zInput_BindMap_Current = nullptr;
+    g_zInput_KeyboardSuspendFlags = 2;
+    nullState.OnDeactivate();
+    const bool nullPath =
+        nullState.m_dialog == 0 && (g_zInput_KeyboardSuspendFlags & 2u) == 0;
+
+    HudCmdDialogStateTestDialog dialog{};
+    zVidImagePartial image{};
+    dialog.capturedImage = &image;
+    g_hudCmdDialogStateSetEnabledCount = 0;
+    g_hudCmdDialogStateSetEnabledValue = 99;
+    g_hudCmdDialogStateDeleteCount = 0;
+    g_hudCmdDialogStateDeleteFlags = 0;
+    g_testBlitCount = 0;
+    g_zVideo_pfnBltSourceToPrimary = TestBltSourceToPrimary;
+
+    zInput_BindMapContext context{};
+    int packedBindings[2] = {};
+    zInputCommandCallbackFn callbacks[2] = {};
+    char label0[0x50] = {};
+    char label1[0x50] = {};
+    char *labels[2] = {label0, label1};
+    context.m_commandCount = 2;
+    context.m_packedBindings = packedBindings;
+    context.m_commandCallbacks = callbacks;
+    context.m_commandLabels = labels;
+    context.SetBindingRecord(1, "Deactivate", 0x1e, 0x30, 2, 1);
+    context.m_primaryKeyToCommand[0x1e] = 77;
+    context.m_secondaryKeyToCommand[0x30] = 88;
+    context.m_joystickToCommand[2] = 99;
+    context.m_mouseToCommand[1] = 100;
+    g_zInput_BindMap_Current = &context;
+    g_zInput_KeyboardSuspendFlags = 2;
+
+    HudCmdDialogState state{};
+    state.Constructor();
+    state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.OnDeactivate();
+
+    const bool deactivated =
+        state.m_dialog == 0 && (g_zInput_KeyboardSuspendFlags & 2u) == 0 &&
+        g_hudCmdDialogStateSetEnabledCount == 1 && g_hudCmdDialogStateSetEnabledValue == 0 &&
+        g_testBlitCount == 1 && g_testBlitImages[0] == &image &&
+        g_hudCmdDialogStateDeleteCount == 1 && g_hudCmdDialogStateDeleteFlags == 1 &&
+        context.m_primaryKeyToCommand[0x1e] == 1 &&
+        context.m_secondaryKeyToCommand[0x30] == 1 && context.m_joystickToCommand[2] == 1 &&
+        context.m_mouseToCommand[1] == 1;
+
+    g_zInput_BindMap_Current = oldCurrent;
+    g_zInput_KeyboardSuspendFlags = oldKeyboardSuspend;
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+
+    return nullPath && deactivated ? 0 : 1;
 }
 
 extern "C" int zhud_panel_constructor_default_smoke(void) {

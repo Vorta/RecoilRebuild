@@ -1543,6 +1543,7 @@ struct HudCmdDialogState {
     static void RECOIL_CDECL AtExitDestructor();
     HudCmdDialogState *RECOIL_THISCALL Constructor();
     int RECOIL_THISCALL OnTryBecomeCurrent();
+    void RECOIL_THISCALL OnDeactivate();
     void RECOIL_THISCALL DestructorCore();
     HudCmdDialogState *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
 };

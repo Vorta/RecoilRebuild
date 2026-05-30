@@ -8989,6 +8989,32 @@ int RECOIL_THISCALL HudCmdDialogState::OnTryBecomeCurrent()
     return 1;
 }
 
+// Reimplements 0x40bd60: HudCmdDialogState::OnDeactivate
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdDialogState::OnDeactivate()
+{
+    zInput::Keyboard_ResumeFromSuspend();
+
+    HudCmdDialogVirtual *dialogView =
+        (HudCmdDialogVirtual *)(unsigned int)m_dialog;
+    if (dialogView == 0)
+    {
+        return;
+    }
+
+    dialogView->SetEnabled(0);
+    ((HudUiDialogController *)(unsigned int)m_dialog)->BlitOwnedSurfaceToPrimary();
+
+    dialogView = (HudCmdDialogVirtual *)(unsigned int)m_dialog;
+    if (dialogView != 0)
+    {
+        dialogView->ScalarDeletingDestructor(1);
+    }
+
+    m_dialog = 0;
+    zInput::BindMap_Current_RebuildLookupIndices();
+}
+
 struct HudCmdDialogStateBaseVtableGuard
 {
     HudCmdDialogState *self;
