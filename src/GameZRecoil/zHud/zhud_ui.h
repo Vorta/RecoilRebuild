@@ -1367,7 +1367,9 @@ struct HudUiPanel {
     zVidImagePartial *textPick;
     unsigned char reserved14c[0x08];
     HGDIOBJ hFont;
-    unsigned char reserved158[0x14c];
+    unsigned char reserved158[0x118];
+    unsigned int textDirty;
+    unsigned char reserved274[0x30];
 
     HudUiPanel *RECOIL_THISCALL ConstructorDefault(const char *text, int x,
                                                    int y);
@@ -2340,6 +2342,7 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, counterTextPanel) == 0x538
 RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, textPick) == 0x148);
 RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, hFont) == 0x154);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanel) == 0x2a4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, textDirty) == 0x270);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanelSimple) == 0x2a4);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTimerPanelFloat) == 0x2b0);
 RECOIL_STATIC_ASSERT(sizeof(HudUiStringMenu) == 0x3cdc);

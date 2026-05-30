@@ -12425,7 +12425,7 @@ void RECOIL_THISCALL HudUiPanel::GetTextRect(HudUiRect *outRect) {
 
 // Reimplements 0x40be90: HudUiPanel::Invalidate
 void RECOIL_THISCALL HudUiPanel::Invalidate() {
-    FieldAt<unsigned int>(this, 0x270) = 1;
+    textDirty = 1;
     ((HudUiElement *)(this))->Invalidate();
 }
 

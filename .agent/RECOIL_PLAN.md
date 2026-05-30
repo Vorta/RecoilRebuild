@@ -3535,8 +3535,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiPanel::Invalidate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::Invalidate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_panel_invalidate)
+  - [✅] Binary-safe
 - 0x40bea0:
   - [✅] Reconstructed (Name: HudUiPanel::GetFont)
   - [✅] Source dependencies satisfied
