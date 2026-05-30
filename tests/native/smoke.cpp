@@ -654,6 +654,7 @@ extern "C" int zhud_options_panel_sound_active_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_sound_quality_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_sound_volume_sync_from_options_smoke(void);
+extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void);
 extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void);
 extern "C" int zhud_cmd_dialog_state_queue_enter_smoke(void);
 extern "C" int zhud_cmd_dialog_state_on_deactivate_smoke(void);
@@ -2651,6 +2652,8 @@ int main(int argc, char **argv) {
          zhud_options_panel_sound_quality_sync_from_options_smoke},
         {"zhud_options_panel_sound_volume_sync_from_options_smoke",
          zhud_options_panel_sound_volume_sync_from_options_smoke},
+        {"zhud_options_panel_sound_volume_on_activate_smoke",
+         zhud_options_panel_sound_volume_on_activate_smoke},
         {"zhud_cmd_dialog_state_lifecycle_smoke",
          zhud_cmd_dialog_state_lifecycle_smoke},
         {"zhud_cmd_dialog_state_queue_enter_smoke",

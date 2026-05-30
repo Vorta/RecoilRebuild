@@ -12455,6 +12455,57 @@ extern "C" int zhud_options_panel_sound_volume_sync_from_options_smoke(void) {
     return synced ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void) {
+    float soundVolume = 0.0f;
+    float globalVolume = 1.0f;
+    float *const oldSoundVolume = ZOPT_SOUND_VOLUME;
+    void *const oldGlobalVolumeScalePtr = g_zSnd_GlobalVolumeScalePtr;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+
+    ZOPT_SOUND_VOLUME = &soundVolume;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_HudUi_InvalidateMask = 0x80;
+
+    alignas(HudUiContainer) std::uint8_t ownerStorage[0xa94c] = {};
+    auto *owner = reinterpret_cast<HudUiContainer *>(ownerStorage);
+    owner->ConstructorDefault();
+    TestFieldAt<std::int32_t>(ownerStorage, 0x14) = 35;
+
+    zVidImagePartial baseImage{};
+    baseImage.width = 100;
+    zVidImagePartial fillImage{};
+    fillImage.width = 100;
+    fillImage.height = 8;
+
+    HudUiOptionsPanel_SoundVolume soundVolumeWidget{};
+    soundVolumeWidget.base.Constructor();
+    soundVolumeWidget.base.base.base.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiOptionsPanel_SoundVolumeWidget_Vtbl);
+    soundVolumeWidget.base.base.owner = owner;
+    soundVolumeWidget.base.base.base.x = 10;
+    soundVolumeWidget.base.base.base.image = &baseImage;
+    soundVolumeWidget.base.fillImage = &fillImage;
+    soundVolumeWidget.base.base.base.flags = 0;
+
+    soundVolumeWidget.OnActivate();
+
+    const bool activated =
+        soundVolumeWidget.base.normalizedValue == 0.25f && soundVolume == 0.25f &&
+        globalVolume == 0.25f && soundVolumeWidget.base.fillRect.right == 25 &&
+        soundVolumeWidget.base.fillRect.bottom == 8 &&
+        (soundVolumeWidget.base.base.base.flags & 0x80u) != 0;
+
+    soundVolumeWidget.base.fillImage = nullptr;
+    soundVolumeWidget.base.previewImage = nullptr;
+    soundVolumeWidget.base.base.base.image = nullptr;
+    soundVolumeWidget.base.DestructorCore();
+    ZOPT_SOUND_VOLUME = oldSoundVolume;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScalePtr;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+
+    return activated ? 0 : 1;
+}
+
 namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;

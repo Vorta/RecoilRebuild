@@ -2147,9 +2147,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40cc30:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_SoundVolume::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanel_SoundVolume::OnActivate File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_sound_volume_on_activate)
   - [❌] Binary-safe
 - 0x40cc60:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_MusicEnable::SyncFromOptions)
@@ -3119,15 +3119,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b8650:
   - [✅] Reconstructed (Name: HudUiFillBitmap::UpdateNormalizedFromCursor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiFillBitmap::UpdateNormalizedFromCursor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_fill_bitmap_update_normalized_from_cursor)
   - [❌] Binary-safe
 - 0x4b86b0:
   - [✅] Reconstructed (Name: HudUiFillBitmap::SetNormalizedValueAndRebuild)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiFillBitmap::SetNormalizedValueAndRebuild File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_fill_bitmap_set_normalized_value_and_rebuild)
   - [❌] Binary-safe
 - 0x4b8760:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::Constructor)
