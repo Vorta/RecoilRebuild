@@ -2872,7 +2872,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiNumericTextInput::AllocTextBuffer)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::AllocTextBuffer File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_numeric_text_input_alloc_text_buffer)
   - [❌] Binary-safe
 - 0x4b4e60:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::Update)
