@@ -160,6 +160,7 @@ struct HudUiSaveLoadDialog {
     HudUiSaveLoadEntries fileEntries;
     int selectedEntryIndex;
 
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
     RECOIL_NOINLINE void RECOIL_THISCALL InitializeFileEntries();
     RECOIL_NOINLINE void RECOIL_THISCALL DeleteSaveFile(int confirmDelete);
     RECOIL_NOINLINE void RECOIL_THISCALL RefreshSaveFileList();
@@ -197,6 +198,7 @@ struct HudUiSaveGameDialog : HudUiSaveLoadDialog {
     HudUiSaveGamePrimaryActionButton primaryActionButton;
 
     RECOIL_NOINLINE HudUiSaveGameDialog *RECOIL_THISCALL InitLayout();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
 };
 RECOIL_STATIC_ASSERT(offsetof(HudUiSaveGameDialog, primaryActionButton) == 0xca10);
 
@@ -289,6 +291,7 @@ struct RecoilStateSaveLoadTransition : RecoilApp_IState {
     ScalarDeletingDestructor(unsigned int flags);
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     RECOIL_NOINLINE int RECOIL_THISCALL OnUpdateShouldQuit();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
     static void RECOIL_FASTCALL
     QueueOpenSaveDialog(RecoilSaveLoadPresentationCaptureMode capturePresentationMode);
     static void RECOIL_FASTCALL
@@ -301,9 +304,58 @@ RECOIL_STATIC_ASSERT(offsetof(RecoilStateSaveLoadTransition, m_transitionMode) =
 
 extern RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;
 
+struct HudUiNewGamePanel_StartButton : HudUiZrdWidget {
+    void RECOIL_THISCALL OnActivate();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_StartButton) == 0x14c);
+
+struct HudUiNewGamePanel_NameInput : HudUiNumericTextInput {
+    void RECOIL_THISCALL OnActivate();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_NameInput) == 0x374);
+
+struct HudUiNewGamePanel : HudUiBackground {
+    HudUiZrdWidget backWidget;
+    HudUiNewGamePanel_StartButton startWidget;
+    HudUiNewGamePanel_NameInput nameInput;
+    HudUiZrdWidgetEx17C intensity;
+
+    HudUiNewGamePanel *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE HudUiNewGamePanel *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
+    void RECOIL_THISCALL SyncIntensityFromDifficulty();
+    void RECOIL_THISCALL StartGameFromFields();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel) == 0xb0d4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, backWidget) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, startWidget) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, nameInput) == 0xabe4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, intensity) == 0xaf58);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, intensity) +
+                     offsetof(HudUiZrdWidgetEx17C, selectedIndex) == 0xb0d0);
+
+struct HudUiNewGamePanel_FTableHeader {
+    unsigned int primarySlots[4];
+    HudUiZrdWidgetEx17C_FTable SecondaryAction;
+};
+
+extern const HudUiNewGamePanel_FTableHeader g_HudUiNewGamePanel_FTableHeader;
+extern const HudUiWidget_FTable g_HudUiMainMenu_BackButton_FTable;
+extern const HudUiWidget_FTable g_HudUiNewGamePanel_StartButton_Vtbl;
+extern const HudUiNumericTextInput_Base_FTable g_HudUiNewGamePanel_NameInput_Vtbl;
+
 struct HudUiNewGamePanelOverlayOwner : RecoilApp_IState {
     RecoilPtr32 m_panel; // HudUiNewGamePanel*
 
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    RECOIL_NOINLINE static HudUiNewGamePanelOverlayOwner *RECOIL_CDECL StaticInit();
+    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
+    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE HudUiNewGamePanelOverlayOwner *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
+    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     static void RECOIL_CDECL QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwner) == 0x08);
@@ -311,6 +363,15 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwner) == 0x08);
 struct HudUiOptionsPanelOverlayOwner : RecoilApp_IState {
     RecoilPtr32 m_panel; // HudUiOptionsPanel*
 
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    RECOIL_NOINLINE static HudUiOptionsPanelOverlayOwner *RECOIL_CDECL StaticInit();
+    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
+    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
+    HudUiOptionsPanelOverlayOwner *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL DestructorCore();
+    RECOIL_NOINLINE HudUiOptionsPanelOverlayOwner *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
+    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     static void RECOIL_CDECL QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiOptionsPanelOverlayOwner) == 0x08);
@@ -385,6 +446,8 @@ RECOIL_STATIC_ASSERT(offsetof(RecoilStateCheatCode, m_audioSnapshot) == 0x0c);
 
 extern HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 extern HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
+extern RecoilApp_IState_Vtbl g_HudUiNewGamePanelOverlayOwner_Vtbl;
+extern RecoilApp_IState_Vtbl g_HudUiOptionsPanelOverlayOwner_Vtbl;
 extern RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
 extern RecoilStateControls g_RecoilStateControls;
 extern RecoilStateCheatCode g_RecoilStateCheatCode;

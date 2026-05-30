@@ -32,6 +32,8 @@ extern "C" LPDIRECTSOUND g_zSnd_CachedDirectSound;
 extern "C" LPCGUID g_zSnd_CachedDirectSoundGuid;
 extern "C" zSndCdTrackNode *g_zSndCd_TrackListHead;
 extern "C" std::int32_t g_zSndCd_TrackCount;
+extern "C" unsigned short g_zSndCdAuxVolumePrimary;
+extern "C" unsigned short g_zSndCdAuxVolumeSecondary;
 extern "C" std::int32_t g_zSnd_UseArchiveBanksFlag;
 extern "C" float g_zSndSpeedOfSoundMps;
 extern "C" float g_zSndInvSpeedOfSoundMps;
@@ -63,6 +65,10 @@ std::int32_t RECOIL_FASTCALL PlayTrackWithMode(std::int32_t trackIndex, std::int
 void RECOIL_FASTCALL OnMciNotify(std::uint32_t wParam, std::uint32_t lParam);
 std::int32_t RECOIL_CDECL Stop();
 std::int32_t RECOIL_CDECL Shutdown();
+std::int32_t RECOIL_FASTCALL GetVolume(unsigned short *primaryVolumeOut,
+                                       unsigned short *secondaryVolumeOut);
+std::int32_t RECOIL_FASTCALL SetVolume(unsigned short primaryVolume,
+                                       unsigned short secondaryVolume);
 } // namespace zSndCd
 
 namespace {
@@ -128,6 +134,14 @@ DWORD_PTR g_fakeMciLastFlags;
 MCI_PLAY_PARMS g_fakeMciLastPlayParams;
 MCI_SEEK_PARMS g_fakeMciLastSeekParams;
 MCIERROR g_fakeMciReturn;
+std::int32_t g_fakeAuxGetVolumeCount;
+UINT g_fakeAuxGetVolumeDevice;
+DWORD g_fakeAuxVolume;
+MMRESULT g_fakeAuxReturn;
+std::int32_t g_fakeAuxSetVolumeCount;
+UINT g_fakeAuxSetVolumeDevice;
+DWORD g_fakeAuxSetVolume;
+MMRESULT g_fakeAuxSetReturn;
 
 std::int32_t RECOIL_FASTCALL FakePlayTrackWithMode(std::int32_t trackIndex,
                                                    std::int32_t playbackMode) {
@@ -149,6 +163,22 @@ MCIERROR WINAPI FakeMciSendCommandA(MCIDEVICEID deviceId, UINT message, DWORD_PT
         g_fakeMciLastSeekParams = *reinterpret_cast<const MCI_SEEK_PARMS *>(params);
     }
     return g_fakeMciReturn;
+}
+
+MMRESULT WINAPI FakeAuxGetVolume(UINT deviceId, LPDWORD volumeOut) {
+    ++g_fakeAuxGetVolumeCount;
+    g_fakeAuxGetVolumeDevice = deviceId;
+    if (volumeOut != nullptr) {
+        *volumeOut = g_fakeAuxVolume;
+    }
+    return g_fakeAuxReturn;
+}
+
+MMRESULT WINAPI FakeAuxSetVolume(UINT deviceId, DWORD volume) {
+    ++g_fakeAuxSetVolumeCount;
+    g_fakeAuxSetVolumeDevice = deviceId;
+    g_fakeAuxSetVolume = volume;
+    return g_fakeAuxSetReturn;
 }
 
 bool PatchFunctionJump(void *target, void *replacement, CodeFunctionPatch &patch) {
@@ -1044,6 +1074,104 @@ extern "C" int zsnd_cd_is_stereo_aux_enabled_smoke(void) {
 
     g_zSndCdAuxDeviceId = 3;
     return zSndCd::IsStereoAuxEnabled() == 1 ? 0 : 3;
+}
+
+extern "C" int zsnd_cd_get_volume_smoke(void) {
+    CodeFunctionPatch auxPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&auxGetVolume),
+                           reinterpret_cast<void *>(&FakeAuxGetVolume), auxPatch)) {
+        return 1;
+    }
+
+    unsigned short primary = 0xaaaa;
+    unsigned short secondary = 0xbbbb;
+    g_fakeAuxGetVolumeCount = 0;
+    g_fakeAuxVolume = 0x12345678;
+    g_fakeAuxReturn = 0;
+    g_zSndCdFlags = 0;
+    g_zSndCdAuxDeviceId = 5;
+    const bool notReadyOk = zSndCd::GetVolume(&primary, &secondary) == 0 &&
+                            g_fakeAuxGetVolumeCount == 0 && primary == 0xaaaa &&
+                            secondary == 0xbbbb;
+
+    g_zSndCdFlags = 2;
+    g_zSndCdAuxDeviceId = 5;
+    g_zSndCdAuxVolumePrimary = 0;
+    g_zSndCdAuxVolumeSecondary = 0;
+    primary = 0;
+    secondary = 0;
+    const bool monoOk = zSndCd::GetVolume(&primary, &secondary) == 1 &&
+                        g_fakeAuxGetVolumeCount == 1 && g_fakeAuxGetVolumeDevice == 5 &&
+                        primary == 0x5678 && secondary == 0x5678 &&
+                        g_zSndCdAuxVolumePrimary == 0x5678 &&
+                        g_zSndCdAuxVolumeSecondary == 0x5678;
+
+    g_zSndCdFlags = 3;
+    g_zSndCdAuxDeviceId = 5;
+    g_zSndCdAuxVolumePrimary = 0;
+    g_zSndCdAuxVolumeSecondary = 0;
+    primary = 0;
+    secondary = 0;
+    const bool stereoOk = zSndCd::GetVolume(&primary, &secondary) == 1 &&
+                          g_fakeAuxGetVolumeCount == 2 && primary == 0x5678 &&
+                          secondary == 0x1234 && g_zSndCdAuxVolumePrimary == 0x5678 &&
+                          g_zSndCdAuxVolumeSecondary == 0x1234;
+
+    g_fakeAuxReturn = 9;
+    primary = 0x1111;
+    secondary = 0x2222;
+    const bool errorOk = zSndCd::GetVolume(&primary, &secondary) == 0 &&
+                         g_fakeAuxGetVolumeCount == 3 && primary == 0x1111 &&
+                         secondary == 0x2222;
+
+    RestoreFunctionPatch(auxPatch);
+    return notReadyOk && monoOk && stereoOk && errorOk ? 0 : 2;
+}
+
+extern "C" int zsnd_cd_set_volume_smoke(void) {
+    CodeFunctionPatch auxPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&auxSetVolume),
+                           reinterpret_cast<void *>(&FakeAuxSetVolume), auxPatch)) {
+        return 1;
+    }
+
+    g_fakeAuxSetVolumeCount = 0;
+    g_fakeAuxSetReturn = 0;
+    g_zSndCdFlags = 0;
+    g_zSndCdAuxDeviceId = 7;
+    g_zSndCdAuxVolumePrimary = 0xaaaa;
+    g_zSndCdAuxVolumeSecondary = 0xbbbb;
+    const bool notReadyOk = zSndCd::SetVolume(0x1000, 0x3001) == 0 &&
+                            g_fakeAuxSetVolumeCount == 0 &&
+                            g_zSndCdAuxVolumePrimary == 0xaaaa &&
+                            g_zSndCdAuxVolumeSecondary == 0xbbbb;
+
+    g_zSndCdFlags = 2;
+    g_zSndCdAuxDeviceId = 7;
+    const bool monoOk = zSndCd::SetVolume(0x1000, 0x3001) == 1 &&
+                        g_fakeAuxSetVolumeCount == 1 && g_fakeAuxSetVolumeDevice == 7 &&
+                        g_fakeAuxSetVolume == 0x2000 &&
+                        g_zSndCdAuxVolumePrimary == 0x1000 &&
+                        g_zSndCdAuxVolumeSecondary == 0x3001;
+
+    g_zSndCdFlags = 3;
+    g_zSndCdAuxDeviceId = 7;
+    const bool stereoOk = zSndCd::SetVolume(0x4567, 0x1234) == 1 &&
+                          g_fakeAuxSetVolumeCount == 2 &&
+                          g_fakeAuxSetVolume == 0x12344567 &&
+                          g_zSndCdAuxVolumePrimary == 0x4567 &&
+                          g_zSndCdAuxVolumeSecondary == 0x1234;
+
+    g_fakeAuxSetReturn = 9;
+    g_zSndCdAuxVolumePrimary = 0x1111;
+    g_zSndCdAuxVolumeSecondary = 0x2222;
+    const bool errorOk = zSndCd::SetVolume(0x7777, 0x8888) == 0 &&
+                         g_fakeAuxSetVolumeCount == 3 &&
+                         g_zSndCdAuxVolumePrimary == 0x1111 &&
+                         g_zSndCdAuxVolumeSecondary == 0x2222;
+
+    RestoreFunctionPatch(auxPatch);
+    return notReadyOk && monoOk && stereoOk && errorOk ? 0 : 2;
 }
 
 extern "C" int zsnd_cd_not_ready_playback_smoke(void) {

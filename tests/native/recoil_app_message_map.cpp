@@ -100,6 +100,10 @@ int g_saveLoadUpdateAdjustBlit;
 float g_saveLoadUpdateDelta;
 zVidRect32 *g_saveLoadUpdateAdjustSrc;
 zVidRect32 *g_saveLoadUpdateAdjustDst;
+int g_saveLoadDeactivateDestroyCalls;
+bool g_saveLoadDeactivateDestroyNameOk;
+int g_saveLoadDeactivateMuteCalls;
+int g_saveLoadDeactivateMuteState;
 int g_confirmQuitPostprocessCalls;
 int g_confirmQuitBlitCalls;
 int g_confirmQuitUnlockCalls;
@@ -119,6 +123,8 @@ int g_confirmQuitBackgroundBindCalls;
 bool g_confirmQuitBackgroundBindArgsOk;
 int g_confirmQuitBackgroundFreeCalls;
 bool g_confirmQuitBackgroundFreeArgsOk;
+int g_optionsPanelBackgroundLoadCalls;
+bool g_optionsPanelBackgroundLoadArgsOk;
 int g_openFileNameCalls;
 bool g_openFileNameStructOk;
 char g_openFileNameSelectedPath[MAX_PATH];
@@ -182,7 +188,10 @@ struct TestConfirmQuitDialog {
 
 struct TestSaveLoadTransitionDialog {
     virtual void RECOIL_THISCALL Update(float) {}
-    virtual void RECOIL_THISCALL SetEnabled(int) {}
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+        ++setEnabledCount;
+        lastEnabled = enabled;
+    }
     virtual TestSaveLoadTransitionDialog *RECOIL_THISCALL
     ScalarDeletingDestructor(unsigned int flags) {
         ++scalarDeletingCount;
@@ -190,6 +199,8 @@ struct TestSaveLoadTransitionDialog {
         return this;
     }
 
+    int setEnabledCount = 0;
+    int lastEnabled = -1;
     int scalarDeletingCount = 0;
     unsigned int lastScalarDeletingFlags = 0;
 };
@@ -286,6 +297,19 @@ int RECOIL_FASTCALL FakeSaveLoadUpdateAdjustSurfaces(zVidRect32 *srcRect, zVidRe
     g_saveLoadUpdateAdjustWait = waitForPresent;
     g_saveLoadUpdateAdjustBlit = blitPrimaryToSwFirst;
     return 0;
+}
+
+int RECOIL_FASTCALL FakeSaveLoadDeactivateDestroySampleSetByName(const char *setName) {
+    ++g_saveLoadDeactivateDestroyCalls;
+    g_saveLoadDeactivateDestroyNameOk =
+        setName != nullptr && std::strcmp(setName, "DIALOG") == 0;
+    return 1;
+}
+
+int RECOIL_FASTCALL FakeSaveLoadDeactivateApplyMuteStateToActiveVoices(int enableMute) {
+    ++g_saveLoadDeactivateMuteCalls;
+    g_saveLoadDeactivateMuteState = enableMute;
+    return 1;
 }
 
 int RECOIL_CDECL FakeConfirmQuitRunPostprocessOnPrimaryBuffer() {
@@ -928,6 +952,12 @@ struct FakeConfirmQuitBackgroundThunk {
     void RECOIL_THISCALL FreeLoadedTreeRoots(int loadedRoot);
 };
 
+struct FakeOptionsPanelBackgroundThunk {
+    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *zrdPath,
+                                               const char *sectionName,
+                                               int capturePrimary);
+};
+
 zReader::Node *RECOIL_THISCALL FakeSaveGameInitLoadThunk::LoadFromZrd(
     const char *zrdPath, const char *sectionName, int capturePrimary) {
     ++g_saveGameInitLoadCalls;
@@ -950,6 +980,16 @@ zReader::Node *RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::LoadFromZrd(
         sectionName != nullptr && std::strcmp(sectionName, "CONFIRM_QUIT") == 0 &&
         capturePrimary == 0;
     return &g_confirmQuitBackgroundFakeNode;
+}
+
+zReader::Node *RECOIL_THISCALL FakeOptionsPanelBackgroundThunk::LoadFromZrd(
+    const char *zrdPath, const char *sectionName, int capturePrimary) {
+    ++g_optionsPanelBackgroundLoadCalls;
+    g_optionsPanelBackgroundLoadArgsOk =
+        this != nullptr && zrdPath != nullptr && std::strcmp(zrdPath, "dialog.zrd") == 0 &&
+        sectionName != nullptr && std::strcmp(sectionName, "OPTIONSPANEL") == 0 &&
+        capturePrimary == 0;
+    return nullptr;
 }
 
 int RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::BindWidgetByName(
@@ -1010,6 +1050,18 @@ void *FakeConfirmQuitBackgroundLoadFromZrdProc() {
 
     MemberToFunction thunk{};
     thunk.member = &FakeConfirmQuitBackgroundThunk::LoadFromZrd;
+    return thunk.function;
+}
+
+void *FakeOptionsPanelBackgroundLoadFromZrdProc() {
+    union MemberToFunction {
+        zReader::Node *(RECOIL_THISCALL FakeOptionsPanelBackgroundThunk::*member)(
+            const char *, const char *, int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &FakeOptionsPanelBackgroundThunk::LoadFromZrd;
     return thunk.function;
 }
 
@@ -2910,6 +2962,586 @@ extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {
     return result;
 }
 
+extern "C" int hud_ui_new_game_panel_overlay_owner_queue_enter_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    const HudUiNewGamePanelOverlayOwner oldNewGameState = g_HudUiNewGamePanelOverlayOwner;
+    g_RecoilApp = RecoilApp{};
+    g_HudUiNewGamePanelOverlayOwner = HudUiNewGamePanelOverlayOwner{};
+    g_HudUiNewGamePanelOverlayOwner.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiNewGamePanelOverlayOwner::QueueEnter();
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    int result = 0;
+    if (g_stateEnterCount != 1 || g_stateExitCount != 0) {
+        result = 1;
+    } else if (queue.m_itemCount != 1 || queue.m_chunkPtrCapacity != 2) {
+        result = 2;
+    } else {
+        const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+        auto *const slot = reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
+        auto *const item =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+        if (item->m_type != 0 || item->m_kind != RecoilApp_StateQueueKind_PushState ||
+            item->m_stateObj !=
+                static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                    &g_HudUiNewGamePanelOverlayOwner)) ||
+            item->m_param != 0) {
+            result = 3;
+        }
+    }
+
+    if (queue.m_itemCount == 1) {
+        CleanupSingleQueuedItem(queue);
+    }
+    g_HudUiNewGamePanelOverlayOwner = oldNewGameState;
+    g_RecoilApp = oldApp;
+    return result;
+}
+
+extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+
+    TestAppState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    char inputName[16] = "Pilot";
+    char storedName[16] = "";
+    zOptionEntryPartial playerNameOption{};
+    playerNameOption.payloadOrBuffer =
+        static_cast<std::int32_t>(reinterpret_cast<std::uintptr_t>(storedName));
+    playerNameOption.dataSize = sizeof(storedName);
+    int difficulty = 0;
+    ZOPT_PLAYER_NAME = &playerNameOption;
+    g_zOpt_GameDifficultyOption = &difficulty;
+
+    zUtil_SaveGameState saveState{};
+    zUtil_PlayerStateStorage playerState{};
+    saveState.playerState = &playerState;
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
+
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_RecoilApp.m_missionFmvState_1d8.base.vftable = oldState.vftable;
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+
+    HudUiNewGamePanel panel{};
+    panel.nameInput.textInput.buffer = inputName;
+    panel.nameInput.textInput.capacity = sizeof(inputName);
+    panel.intensity.selectedIndex = 3;
+    playerState.nanitePanelLevel = 123456789;
+
+    panel.StartGameFromFields();
+
+    RecoilApp_StateQueue &directQueue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueueItem *const directExit0 = QueueItemAt(directQueue, 0);
+    RecoilApp_StateQueueItem *const directExit1 = QueueItemAt(directQueue, 1);
+    RecoilApp_StateQueueItem *const directSwitch = QueueItemAt(directQueue, 2);
+    const bool directOk =
+        std::strcmp(storedName, "Pilot") == 0 && difficulty == 3 &&
+        playerState.nanitePanelLevel == 0 && g_RecoilApp.m_missionFmvState_1d8.m_missionId == 1 &&
+        g_stateExitCount == 3 && g_stateEnterCount == 1 && directQueue.m_itemCount == 3 &&
+        directExit0 != nullptr && directExit0->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
+        directExit0->m_param == 1 && directExit1 != nullptr &&
+        directExit1->m_kind == RecoilApp_StateQueueKind_ExitCurrent && directExit1->m_param == 1 &&
+        directSwitch != nullptr && directSwitch->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
+        directSwitch->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                                      &g_RecoilApp.m_missionFmvState_1d8.base)) &&
+        directSwitch->m_param == 0;
+    CleanupQueuedItems(directQueue);
+
+    std::memset(storedName, 0, sizeof(storedName));
+    difficulty = 0;
+    std::strcpy(inputName, "Scout");
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_RecoilApp.m_missionFmvState_1d8.base.vftable = oldState.vftable;
+    g_stateEnterCount = 0;
+    g_stateExitCount = 0;
+    playerState.nanitePanelLevel = 123456789;
+    panel.nameInput.textInput.buffer = inputName;
+    panel.nameInput.textInput.capacity = sizeof(inputName);
+    panel.intensity.selectedIndex = 2;
+
+    HudUiNewGamePanel_StartButton startButton{};
+    startButton.owner = &panel;
+    startButton.OnActivate();
+
+    RecoilApp_StateQueue &buttonQueue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueueItem *const buttonExit0 = QueueItemAt(buttonQueue, 0);
+    RecoilApp_StateQueueItem *const buttonExit1 = QueueItemAt(buttonQueue, 1);
+    RecoilApp_StateQueueItem *const buttonSwitch = QueueItemAt(buttonQueue, 2);
+    const bool buttonOk =
+        std::strcmp(storedName, "Scout") == 0 && difficulty == 2 &&
+        playerState.nanitePanelLevel == 0 && g_RecoilApp.m_missionFmvState_1d8.m_missionId == 1 &&
+        g_stateExitCount == 3 && g_stateEnterCount == 1 && buttonQueue.m_itemCount == 3 &&
+        buttonExit0 != nullptr && buttonExit0->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
+        buttonExit0->m_param == 1 && buttonExit1 != nullptr &&
+        buttonExit1->m_kind == RecoilApp_StateQueueKind_ExitCurrent && buttonExit1->m_param == 1 &&
+        buttonSwitch != nullptr && buttonSwitch->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
+        buttonSwitch->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                                      &g_RecoilApp.m_missionFmvState_1d8.base)) &&
+        buttonSwitch->m_param == 0;
+    CleanupQueuedItems(buttonQueue);
+
+    g_GameStateOrMapTable = oldGameState;
+    ZOPT_PLAYER_NAME = oldPlayerNameOption;
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_RecoilApp = oldApp;
+
+    return directOk && buttonOk ? 0 : 1;
+}
+
+extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
+    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldOptionListHead = g_zGame_Options_OptionListHead;
+    void *const oldRawCallback = g_zInput_KbdRawEventCallback;
+    void *const oldRawCallbackCtx = g_zInput_KbdRawEventCallbackCtx;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    std::uint16_t pixels[4] = {};
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 5;
+    vmodeOption.name = vmodeName;
+    vmodeOption.next = nullptr;
+    char playerName[32] = "Ace";
+    zOptionEntryPartial playerNameOption{};
+    playerNameOption.payloadOrBuffer =
+        static_cast<std::int32_t>(reinterpret_cast<std::uintptr_t>(playerName));
+    playerNameOption.dataSize = sizeof(playerName);
+    int difficulty = 2;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+    ZOPT_PLAYER_NAME = &playerNameOption;
+    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zInput_KbdRawEventCallback = nullptr;
+    g_zInput_KbdRawEventCallbackCtx = nullptr;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    HudUiNewGamePanel panel{};
+    HudUiNewGamePanel *const returned = panel.Constructor();
+    const bool constructed =
+        returned == &panel &&
+        panel.base.base.vptr ==
+            reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiNewGamePanel_FTableHeader) &&
+        panel.backWidget.base.ftable == &g_HudUiMainMenu_BackButton_FTable &&
+        panel.startWidget.base.ftable == &g_HudUiNewGamePanel_StartButton_Vtbl &&
+        panel.nameInput.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiNewGamePanel_NameInput_Vtbl) &&
+        panel.intensity.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(
+                &g_HudUiNewGamePanel_FTableHeader.SecondaryAction) &&
+        panel.loadedRoot == nullptr && panel.cfgRoot == nullptr &&
+        panel.nameInput.textInput.buffer != nullptr &&
+        std::strcmp(panel.nameInput.textInput.buffer, "Ace") == 0 &&
+        panel.nameInput.textInput.cursor == 3;
+
+    difficulty = 4;
+    panel.SyncIntensityFromDifficulty();
+    const bool synced = panel.intensity.selectedIndex == 4;
+
+    std::strcpy(playerName, "Ranger");
+    panel.nameInput.OnActivate();
+    const bool nameActivated =
+        panel.nameInput.textInput.capacity == 21 &&
+        std::strcmp(panel.nameInput.textInput.buffer, "Ranger") == 0 &&
+        panel.nameInput.textInput.cursor == 6 &&
+        panel.nameInput.sliderBorder.inputActive == 1 &&
+        panel.nameInput.sliderBorder.sliderVisibleWhenInputActive == 1 &&
+        g_zInput_KbdRawEventCallback ==
+            reinterpret_cast<void *>(&HudUiNumericTextInput::RawKeyboardCallback) &&
+        g_zInput_KbdRawEventCallbackCtx == &panel.nameInput;
+    panel.nameInput.SetRawKeyboardCapture(0);
+
+    HudUiNewGamePanel *const noDeleteResult = panel.ScalarDeletingDestructor(0);
+    const bool noDeleteScalar = noDeleteResult == &panel;
+
+    HudUiNewGamePanel *const heapPanel =
+        static_cast<HudUiNewGamePanel *>(::operator new(sizeof(HudUiNewGamePanel)));
+    heapPanel->Constructor();
+    HudUiNewGamePanel *const heapScalarResult = heapPanel->ScalarDeletingDestructor(1);
+    const bool heapScalar = heapScalarResult == heapPanel;
+
+    HudUiZrdWidget *const zrdWidget =
+        static_cast<HudUiZrdWidget *>(::operator new(sizeof(HudUiZrdWidget)));
+    zrdWidget->Constructor();
+    HudUiZrdWidget *const zrdThunkResult = zrdWidget->ScalarDeletingDestructorThunk(1);
+    const bool zrdThunk = zrdThunkResult == zrdWidget;
+
+    HudUiZrdWidgetEx17C *const selector =
+        static_cast<HudUiZrdWidgetEx17C *>(::operator new(sizeof(HudUiZrdWidgetEx17C)));
+    selector->Constructor();
+    HudUiZrdWidgetEx17C *const selectorThunkResult =
+        selector->ScalarDeletingDestructorThunk(1);
+    const bool selectorThunk = selectorThunkResult == selector;
+
+    ZOPT_PLAYER_NAME = oldPlayerNameOption;
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_OptionListHead = oldOptionListHead;
+    g_zInput_KbdRawEventCallback = oldRawCallback;
+    g_zInput_KbdRawEventCallbackCtx = oldRawCallbackCtx;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+
+    return constructed && synced && nameActivated && noDeleteScalar && heapScalar &&
+                   zrdThunk && selectorThunk
+               ? 0
+               : 1;
+}
+
+extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(void) {
+    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldOptionListHead = g_zGame_Options_OptionListHead;
+    void *const oldRawCallback = g_zInput_KbdRawEventCallback;
+    void *const oldRawCallbackCtx = g_zInput_KbdRawEventCallbackCtx;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    std::uint16_t pixels[4] = {};
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 5;
+    vmodeOption.name = vmodeName;
+    char playerName[32] = "Ace";
+    zOptionEntryPartial playerNameOption{};
+    playerNameOption.payloadOrBuffer =
+        static_cast<std::int32_t>(reinterpret_cast<std::uintptr_t>(playerName));
+    playerNameOption.dataSize = sizeof(playerName);
+    int difficulty = 3;
+
+    g_zGame_Options_OptionListHead = &vmodeOption;
+    ZOPT_PLAYER_NAME = &playerNameOption;
+    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zInput_KbdRawEventCallback = nullptr;
+    g_zInput_KbdRawEventCallbackCtx = nullptr;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    HudUiNewGamePanelOverlayOwner state{};
+    const int accepted = state.OnTryBecomeCurrent();
+    HudUiNewGamePanel *const panel =
+        reinterpret_cast<HudUiNewGamePanel *>(static_cast<std::uintptr_t>(state.m_panel));
+
+    const bool ok =
+        accepted == 1 && panel != nullptr && panel->base.base.enabled == 1 &&
+        panel->intensity.selectedIndex == 3 &&
+        panel->base.base.vptr ==
+            reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiNewGamePanel_FTableHeader) &&
+        std::strcmp(panel->nameInput.textInput.buffer, "Ace") == 0;
+
+    if (panel != nullptr) {
+        panel->ScalarDeletingDestructor(1);
+        state.m_panel = 0;
+    }
+
+    ZOPT_PLAYER_NAME = oldPlayerNameOption;
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_OptionListHead = oldOptionListHead;
+    g_zInput_KbdRawEventCallback = oldRawCallback;
+    g_zInput_KbdRawEventCallbackCtx = oldRawCallbackCtx;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
+    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldOptionListHead = g_zGame_Options_OptionListHead;
+    void *const oldRawCallback = g_zInput_KbdRawEventCallback;
+    void *const oldRawCallbackCtx = g_zInput_KbdRawEventCallbackCtx;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    std::uint16_t pixels[4] = {};
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 5;
+    vmodeOption.name = vmodeName;
+    char playerName[32] = "Ace";
+    zOptionEntryPartial playerNameOption{};
+    playerNameOption.payloadOrBuffer =
+        static_cast<std::int32_t>(reinterpret_cast<std::uintptr_t>(playerName));
+    playerNameOption.dataSize = sizeof(playerName);
+    int difficulty = 1;
+
+    g_zGame_Options_OptionListHead = &vmodeOption;
+    ZOPT_PLAYER_NAME = &playerNameOption;
+    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zInput_KbdRawEventCallback = nullptr;
+    g_zInput_KbdRawEventCallbackCtx = nullptr;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    g_HudUiNewGamePanelOverlayOwner.vftable = 0x11111111;
+    g_HudUiNewGamePanelOverlayOwner.m_panel = 0x22222222;
+    HudUiNewGamePanelOverlayOwner *const staticInitReturned =
+        HudUiNewGamePanelOverlayOwner::StaticInit();
+    const bool staticInitOk =
+        staticInitReturned == &g_HudUiNewGamePanelOverlayOwner &&
+        g_HudUiNewGamePanelOverlayOwner.vftable ==
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiNewGamePanelOverlayOwner_Vtbl)) &&
+        g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+
+    HudUiNewGamePanel *const atExitPanel =
+        static_cast<HudUiNewGamePanel *>(::operator new(sizeof(HudUiNewGamePanel)));
+    atExitPanel->Constructor();
+    atExitPanel->base.base.SetEnabled(1);
+    g_HudUiNewGamePanelOverlayOwner.m_panel =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(atExitPanel));
+    HudUiNewGamePanelOverlayOwner::AtExitDestructor();
+    const bool atExitOk =
+        g_HudUiNewGamePanelOverlayOwner.vftable == kRecoilStateBase_VtblAddress &&
+        g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+
+    HudUiNewGamePanel *const destructorPanel =
+        static_cast<HudUiNewGamePanel *>(::operator new(sizeof(HudUiNewGamePanel)));
+    destructorPanel->Constructor();
+    destructorPanel->base.base.SetEnabled(1);
+    HudUiNewGamePanelOverlayOwner state{};
+    state.vftable = 0x33333333;
+    state.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(destructorPanel));
+    state.Destructor();
+    const bool destructorOk =
+        state.vftable == kRecoilStateBase_VtblAddress && state.m_panel == 0;
+
+    HudUiNewGamePanel *const scalarPanel =
+        static_cast<HudUiNewGamePanel *>(::operator new(sizeof(HudUiNewGamePanel)));
+    scalarPanel->Constructor();
+    HudUiNewGamePanelOverlayOwner scalarState{};
+    scalarState.vftable = 0x44444444;
+    scalarState.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(scalarPanel));
+    HudUiNewGamePanelOverlayOwner *const scalarReturned =
+        scalarState.ScalarDeletingDestructor(0);
+    const bool scalarOk =
+        scalarReturned == &scalarState &&
+        scalarState.vftable == kRecoilStateBase_VtblAddress && scalarState.m_panel == 0;
+
+    HudUiNewGamePanelOverlayOwner *const deletingState =
+        static_cast<HudUiNewGamePanelOverlayOwner *>(
+            ::operator new(sizeof(HudUiNewGamePanelOverlayOwner)));
+    deletingState->vftable = 0x55555555;
+    deletingState->m_panel = 0;
+    HudUiNewGamePanelOverlayOwner *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+    const bool deletingOk = deletingReturned == deletingState;
+
+    HudUiNewGamePanelOverlayOwner::RegisterAtExit();
+
+    g_HudUiNewGamePanelOverlayOwner.vftable = 0x66666666;
+    g_HudUiNewGamePanelOverlayOwner.m_panel = 0x77777777;
+    HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit();
+    const bool staticInitRegisterOk =
+        g_HudUiNewGamePanelOverlayOwner.vftable ==
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiNewGamePanelOverlayOwner_Vtbl)) &&
+        g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+
+    ZOPT_PLAYER_NAME = oldPlayerNameOption;
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_OptionListHead = oldOptionListHead;
+    g_zInput_KbdRawEventCallback = oldRawCallback;
+    g_zInput_KbdRawEventCallbackCtx = oldRawCallbackCtx;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+
+    return staticInitOk && atExitOk && destructorOk && scalarOk && deletingOk &&
+                   staticInitRegisterOk
+               ? 0
+               : 1;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void) {
+    HudUiOptionsPanelOverlayOwner state{};
+    state.vftable = 0x11111111;
+    state.m_panel = 0x22222222;
+
+    HudUiOptionsPanelOverlayOwner *const returned = state.Constructor();
+    if (returned != &state ||
+        state.vftable !=
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiOptionsPanelOverlayOwner_Vtbl)) ||
+        state.m_panel != 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_destructor_core_smoke(void) {
+    TestConfirmQuitDialog panel{};
+
+    HudUiOptionsPanelOverlayOwner state{};
+    state.vftable = 0x11111111;
+    state.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+
+    state.DestructorCore();
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_panel != 0 ||
+        panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
+        panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
+        return 1;
+    }
+
+    state.vftable = 0x22222222;
+    state.m_panel = 0;
+    state.DestructorCore();
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_panel != 0) {
+        return 2;
+    }
+
+    return 0;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smoke(void) {
+    TestConfirmQuitDialog panel{};
+
+    HudUiOptionsPanelOverlayOwner state{};
+    state.vftable = 0x11111111;
+    state.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+
+    HudUiOptionsPanelOverlayOwner *const returned =
+        state.ScalarDeletingDestructor(0);
+    if (returned != &state || state.vftable != kRecoilStateBase_VtblAddress ||
+        state.m_panel != 0 || panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
+        panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
+        return 1;
+    }
+
+    HudUiOptionsPanelOverlayOwner *const deletingState =
+        static_cast<HudUiOptionsPanelOverlayOwner *>(
+            ::operator new(sizeof(HudUiOptionsPanelOverlayOwner)));
+    deletingState->vftable = 0x22222222;
+    deletingState->m_panel = 0;
+    HudUiOptionsPanelOverlayOwner *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+
+    return deletingReturned == deletingState ? 0 : 2;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void) {
+    TestConfirmQuitDialog panel{};
+
+    g_HudUiOptionsPanelOverlayOwner.vftable = 0x11111111;
+    g_HudUiOptionsPanelOverlayOwner.m_panel = 0x22222222;
+    HudUiOptionsPanelOverlayOwner *const staticInitReturned =
+        HudUiOptionsPanelOverlayOwner::StaticInit();
+    if (staticInitReturned != &g_HudUiOptionsPanelOverlayOwner ||
+        g_HudUiOptionsPanelOverlayOwner.vftable !=
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiOptionsPanelOverlayOwner_Vtbl)) ||
+        g_HudUiOptionsPanelOverlayOwner.m_panel != 0) {
+        return 1;
+    }
+
+    g_HudUiOptionsPanelOverlayOwner.m_panel =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+    HudUiOptionsPanelOverlayOwner::AtExitDestructor();
+    if (g_HudUiOptionsPanelOverlayOwner.vftable != kRecoilStateBase_VtblAddress ||
+        g_HudUiOptionsPanelOverlayOwner.m_panel != 0 ||
+        panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
+        panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
+        return 2;
+    }
+
+    HudUiOptionsPanelOverlayOwner::RegisterAtExit();
+
+    g_HudUiOptionsPanelOverlayOwner.vftable = 0x33333333;
+    g_HudUiOptionsPanelOverlayOwner.m_panel = 0x44444444;
+    HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit();
+    if (g_HudUiOptionsPanelOverlayOwner.vftable !=
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiOptionsPanelOverlayOwner_Vtbl)) ||
+        g_HudUiOptionsPanelOverlayOwner.m_panel != 0) {
+        return 3;
+    }
+
+    return 0;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_on_try_become_current_smoke(void) {
+    CodeFunctionPatch loadPatch{};
+    if (!PatchFunctionJump(HudUiBackgroundLoadFromZrdProc(),
+                           FakeOptionsPanelBackgroundLoadFromZrdProc(), loadPatch)) {
+        return 1;
+    }
+
+    g_optionsPanelBackgroundLoadCalls = 0;
+    g_optionsPanelBackgroundLoadArgsOk = false;
+
+    HudUiOptionsPanelOverlayOwner state{};
+    const int accepted = state.OnTryBecomeCurrent();
+    HudOptionsDialog *const dialog =
+        reinterpret_cast<HudOptionsDialog *>(static_cast<std::uintptr_t>(state.m_panel));
+
+    int result = 0;
+    if (accepted != 1 || dialog == nullptr ||
+        g_optionsPanelBackgroundLoadCalls != 1 ||
+        !g_optionsPanelBackgroundLoadArgsOk ||
+        dialog->base.base.base.enabled != 1) {
+        result = 2;
+    }
+
+    state.DestructorCore();
+    RestoreFunctionPatch(loadPatch);
+    return result;
+}
+
 extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void) {
     const RecoilApp oldApp = g_RecoilApp;
     const int oldSkipExitDelay = g_RecoilState_MainMenuSkipExitDelay;
@@ -3771,6 +4403,103 @@ extern "C" int hud_ui_save_load_list_item_constructor_smoke(void) {
     return result == &item && item.vftable == &g_HudUiSaveLoadListItem_Vtbl &&
                    item.vftable->OnActivate != nullptr && item.layoutY == 32767 &&
                    item.layoutX == -1
+               ? 0
+               : 1;
+}
+
+extern "C" int hud_ui_save_load_dialog_destructor_smoke(void) {
+    static HudUiSaveLoadDialog dialog;
+    std::memset(&dialog, 0, sizeof(dialog));
+
+    dialog.base.Constructor();
+    dialog.deleteButton.Constructor();
+    dialog.backButton.Constructor();
+    dialog.nextEntryButton.Constructor();
+    dialog.prevEntryButton.Constructor();
+    dialog.gameNameInput.BaseConstructor();
+    dialog.gameNameInput.textInput.AllocTextBuffer(8);
+    for (int index = 0; index < 9; ++index) {
+        dialog.entryWidgets[index].Constructor();
+    }
+
+    HudUiSaveLoadEntry *const entries =
+        static_cast<HudUiSaveLoadEntry *>(::operator new(2 * sizeof(HudUiSaveLoadEntry)));
+    dialog.fileEntries.begin = entries;
+    dialog.fileEntries.end = entries + 1;
+    dialog.fileEntries.capacityEnd = entries + 2;
+
+    dialog.Destructor();
+
+    bool entryPanelsDestroyed = true;
+    for (int index = 0; index < 9; ++index) {
+        entryPanelsDestroyed =
+            entryPanelsDestroyed &&
+            *reinterpret_cast<const void **>(&dialog.entryWidgets[index]) ==
+                &g_HudUiCommon_FTable;
+    }
+
+    const bool vectorCleared =
+        dialog.fileEntries.begin == nullptr && dialog.fileEntries.end == nullptr &&
+        dialog.fileEntries.capacityEnd == nullptr;
+    const bool gameNameDestroyed =
+        *reinterpret_cast<const void **>(&dialog.gameNameInput) == &g_HudUiCommon_FTable;
+    const bool buttonsDestroyed =
+        *reinterpret_cast<const void **>(&dialog.prevEntryButton) == &g_HudUiCommon_FTable &&
+        *reinterpret_cast<const void **>(&dialog.nextEntryButton) == &g_HudUiCommon_FTable &&
+        *reinterpret_cast<const void **>(&dialog.backButton) == &g_HudUiCommon_FTable &&
+        *reinterpret_cast<const void **>(&dialog.deleteButton) == &g_HudUiCommon_FTable;
+
+    return vectorCleared && entryPanelsDestroyed && gameNameDestroyed && buttonsDestroyed
+               ? 0
+               : 1;
+}
+
+extern "C" int hud_ui_save_game_dialog_destructor_smoke(void) {
+    static HudUiSaveGameDialog dialog;
+    std::memset(&dialog, 0, sizeof(dialog));
+
+    dialog.base.Constructor();
+    dialog.deleteButton.Constructor();
+    dialog.backButton.Constructor();
+    dialog.nextEntryButton.Constructor();
+    dialog.prevEntryButton.Constructor();
+    dialog.gameNameInput.BaseConstructor();
+    dialog.gameNameInput.textInput.AllocTextBuffer(8);
+    for (int index = 0; index < 9; ++index) {
+        dialog.entryWidgets[index].Constructor();
+    }
+    dialog.primaryActionButton.Constructor();
+
+    HudUiSaveLoadEntry *const entries =
+        static_cast<HudUiSaveLoadEntry *>(::operator new(2 * sizeof(HudUiSaveLoadEntry)));
+    dialog.fileEntries.begin = entries;
+    dialog.fileEntries.end = entries + 1;
+    dialog.fileEntries.capacityEnd = entries + 2;
+
+    dialog.Destructor();
+
+    bool entryPanelsDestroyed = true;
+    for (int index = 0; index < 9; ++index) {
+        entryPanelsDestroyed =
+            entryPanelsDestroyed &&
+            *reinterpret_cast<const void **>(&dialog.entryWidgets[index]) ==
+                &g_HudUiCommon_FTable;
+    }
+
+    const bool vectorCleared =
+        dialog.fileEntries.begin == nullptr && dialog.fileEntries.end == nullptr &&
+        dialog.fileEntries.capacityEnd == nullptr;
+    const bool gameNameDestroyed =
+        *reinterpret_cast<const void **>(&dialog.gameNameInput) == &g_HudUiCommon_FTable;
+    const bool buttonsDestroyed =
+        *reinterpret_cast<const void **>(&dialog.primaryActionButton) ==
+            &g_HudUiCommon_FTable &&
+        *reinterpret_cast<const void **>(&dialog.prevEntryButton) == &g_HudUiCommon_FTable &&
+        *reinterpret_cast<const void **>(&dialog.nextEntryButton) == &g_HudUiCommon_FTable &&
+        *reinterpret_cast<const void **>(&dialog.backButton) == &g_HudUiCommon_FTable &&
+        *reinterpret_cast<const void **>(&dialog.deleteButton) == &g_HudUiCommon_FTable;
+
+    return vectorCleared && entryPanelsDestroyed && gameNameDestroyed && buttonsDestroyed
                ? 0
                : 1;
 }
@@ -4852,6 +5581,156 @@ extern "C" int recoil_state_save_load_transition_on_update_should_quit_smoke(voi
     g_FrameDeltaTimeSec = oldFrameDelta;
 
     return emptyOk && dialogOk ? 0 : 6;
+}
+
+extern "C" int recoil_state_save_load_transition_on_deactivate_smoke(void) {
+    CodeFunctionPatch postprocessPatch{};
+    CodeFunctionPatch blitPatch{};
+    CodeFunctionPatch unlockPatch{};
+    CodeFunctionPatch destroySampleSetPatch{};
+    CodeFunctionPatch applyMutePatch{};
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                           reinterpret_cast<void *>(
+                               &FakeConfirmQuitRunPostprocessOnPrimaryBuffer),
+                           postprocessPatch)) {
+        return 1;
+    }
+
+    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+        &HudUiDialogController::BlitOwnedSurfaceToPrimary;
+    void (RECOIL_THISCALL FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
+        &FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestSaveLoadMethodAddress(blitMember)),
+                           reinterpret_cast<void *>(TestSaveLoadMethodAddress(fakeBlitMember)),
+                           blitPatch)) {
+        RestoreFunctionPatch(postprocessPatch);
+        return 2;
+    }
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                           reinterpret_cast<void *>(&FakeConfirmQuitUnlockPrimarySurfaceState),
+                           unlockPatch)) {
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 3;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zSndSampleSet_DestroyByName),
+                           reinterpret_cast<void *>(
+                               &FakeSaveLoadDeactivateDestroySampleSetByName),
+                           destroySampleSetPatch)) {
+        RestoreFunctionPatch(unlockPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 4;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zSnd::ApplyMuteStateToActiveVoices),
+                           reinterpret_cast<void *>(
+                               &FakeSaveLoadDeactivateApplyMuteStateToActiveVoices),
+                           applyMutePatch)) {
+        RestoreFunctionPatch(destroySampleSetPatch);
+        RestoreFunctionPatch(unlockPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 5;
+    }
+
+    const int oldHalfResMode = g_zVideo_HalfResAdjustMode;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    const zSndSampleSetRegistry oldSampleSetRegistry = g_zSnd_SampleSetRegistry;
+    void *const oldGlobalVolumeScale = g_zSnd_GlobalVolumeScalePtr;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const int oldSndInitialized = g_zSnd_IsInitialized;
+    const int oldSndPreInitialized = g_zSnd_PreInitialized;
+    HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
+
+    float globalVolumeScale = 1.0f;
+    zSndSampleSet *sampleSetSlots[1] = {};
+    HudLayoutBase_FTable layoutTable{};
+    HudLayoutBase layout{&layoutTable};
+    layoutTable.OnActivated = TestPlayStateLayoutOnActivated;
+
+    g_zVideo_HalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_DISABLED;
+    g_HudUi_InvalidateMask = 0x04;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolumeScale;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_HudUiMgrCurrentLayout = &layout;
+
+    TestSaveLoadTransitionDialog dialog{};
+    RecoilStateSaveLoadTransition disabledTransition = {};
+    disabledTransition.m_dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    disabledTransition.m_capturePresentationMode = RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED;
+
+    g_confirmQuitPostprocessCalls = 0;
+    g_confirmQuitBlitCalls = 0;
+    g_confirmQuitUnlockCalls = 0;
+    g_playStateLayoutActivatedCount = 0;
+    g_saveLoadDeactivateDestroyCalls = 0;
+    g_saveLoadDeactivateDestroyNameOk = false;
+    g_saveLoadDeactivateMuteCalls = 0;
+    g_saveLoadDeactivateMuteState = -1;
+    disabledTransition.OnDeactivate();
+
+    bool disabledOk =
+        disabledTransition.m_dialog == 0 && dialog.setEnabledCount == 1 &&
+        dialog.lastEnabled == 0 && dialog.scalarDeletingCount == 1 &&
+        dialog.lastScalarDeletingFlags == 1 && g_confirmQuitPostprocessCalls == 1 &&
+        g_confirmQuitBlitCalls == 1 && g_confirmQuitUnlockCalls == 1 &&
+        g_saveLoadDeactivateDestroyCalls == 0 && g_saveLoadDeactivateMuteCalls == 0 &&
+        g_playStateLayoutActivatedCount == 0;
+
+    zSndPlayHandleSnapshot *snapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
+    RecoilStateSaveLoadTransition capturedTransition = {};
+    capturedTransition.m_capturePresentationMode = RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED;
+    capturedTransition.m_savedHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    capturedTransition.m_pausedAudioSnapshot =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(snapshot));
+
+    g_confirmQuitPostprocessCalls = 0;
+    g_confirmQuitBlitCalls = 0;
+    g_confirmQuitUnlockCalls = 0;
+    g_playStateLayoutActivatedCount = 0;
+    g_saveLoadDeactivateDestroyCalls = 0;
+    g_saveLoadDeactivateDestroyNameOk = false;
+    g_saveLoadDeactivateMuteCalls = 0;
+    g_saveLoadDeactivateMuteState = -1;
+    capturedTransition.OnDeactivate();
+
+    bool capturedOk =
+        capturedTransition.m_dialog == 0 && g_saveLoadDeactivateDestroyCalls == 1 &&
+        g_saveLoadDeactivateDestroyNameOk && g_saveLoadDeactivateMuteCalls == 1 &&
+        g_saveLoadDeactivateMuteState == 0 &&
+        g_zVideo_HalfResAdjustMode == ZVIDEO_HALFRES_ADJUST_ENABLED &&
+        g_HudUi_InvalidateMask == 0x0c && g_playStateLayoutActivatedCount == 1 &&
+        g_confirmQuitPostprocessCalls == 0 && g_confirmQuitBlitCalls == 0 &&
+        g_confirmQuitUnlockCalls == 0;
+
+    if (snapshot != nullptr) {
+        snapshot->Destroy();
+    }
+
+    g_zVideo_HalfResAdjustMode = oldHalfResMode;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    g_zSnd_SampleSetRegistry = oldSampleSetRegistry;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScale;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSnd_IsInitialized = oldSndInitialized;
+    g_zSnd_PreInitialized = oldSndPreInitialized;
+    g_HudUiMgrCurrentLayout = oldLayout;
+
+    RestoreFunctionPatch(applyMutePatch);
+    RestoreFunctionPatch(destroySampleSetPatch);
+    RestoreFunctionPatch(unlockPatch);
+    RestoreFunctionPatch(blitPatch);
+    RestoreFunctionPatch(postprocessPatch);
+
+    return disabledOk && capturedOk ? 0 : 6;
 }
 
 extern "C" int recoil_state_save_load_transition_lifecycle_smoke(void) {

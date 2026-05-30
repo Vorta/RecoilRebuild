@@ -82,6 +82,87 @@ RECOIL_NOINLINE bool RECOIL_FASTCALL zZbdSectionHandler::CompareSortOrderLessTha
     return nodeA->sortOrder < nodeB->sortOrder;
 }
 
+// Reimplements 0x4c0b70: zZbdSectionHandlerList::Constructor
+// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support)
+RECOIL_NOINLINE void RECOIL_THISCALL zZbdSectionHandlerList::Constructor() {
+    allocatorByte = 0;
+    sentinel = new zZbdSectionHandlerNode;
+    sentinel->next = sentinel;
+    sentinel->prev = sentinel;
+    count = 0;
+}
+
+// Reimplements 0x4c0b60: zZbdSectionHandlerList::Front
+// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support)
+RECOIL_NOINLINE void RECOIL_THISCALL
+zZbdSectionHandlerList::Front(zZbdSectionHandlerNode **outIter) {
+    *outIter = sentinel->next;
+}
+
+// Reimplements 0x4c0ba0: zZbdSectionHandlerList::Swap
+// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support)
+RECOIL_NOINLINE void RECOIL_THISCALL
+zZbdSectionHandlerList::Swap(zZbdSectionHandlerList *other) {
+    zZbdSectionHandlerNode *const oldSentinel = sentinel;
+    sentinel = other->sentinel;
+    other->sentinel = oldSentinel;
+
+    const int oldCount = count;
+    count = other->count;
+    other->count = oldCount;
+}
+
+// Reimplements 0x4c0ce0: zZbdSectionHandlerList::SpliceThreeNodes
+// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support)
+RECOIL_NOINLINE void RECOIL_THISCALL
+zZbdSectionHandlerList::SpliceThreeNodes(zZbdSectionHandlerNode *position,
+                                         zZbdSectionHandlerList *source,
+                                         zZbdSectionHandlerNode *first,
+                                         zZbdSectionHandlerNode *last) {
+    (void)source;
+
+    zZbdSectionHandlerNode *const lastPrev = last->prev;
+    zZbdSectionHandlerNode *const firstPrev = first->prev;
+    zZbdSectionHandlerNode *const positionPrev = position->prev;
+
+    lastPrev->next = position;
+    firstPrev->next = last;
+    positionPrev->next = first;
+
+    first->prev = positionPrev;
+    last->prev = firstPrev;
+    position->prev = lastPrev;
+}
+
+// Reimplements 0x4c0bd0: zZbdSectionHandlerList::Merge
+// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support)
+RECOIL_NOINLINE void RECOIL_THISCALL
+zZbdSectionHandlerList::Merge(zZbdSectionHandlerList *source) {
+    if (source == this) {
+        return;
+    }
+
+    zZbdSectionHandlerNode *destNode = sentinel->next;
+    zZbdSectionHandlerNode *sourceNode = source->sentinel->next;
+    while (destNode != sentinel && sourceNode != source->sentinel) {
+        if (zZbdSectionHandler::CompareSortOrderLessThan(&sourceNode->sectionHandler,
+                                                         &destNode->sectionHandler)) {
+            zZbdSectionHandlerNode *const nextSourceNode = sourceNode->next;
+            SpliceThreeNodes(destNode, source, sourceNode, nextSourceNode);
+            sourceNode = nextSourceNode;
+        } else {
+            destNode = destNode->next;
+        }
+    }
+
+    if (sourceNode != source->sentinel) {
+        SpliceThreeNodes(sentinel, source, sourceNode, source->sentinel);
+    }
+
+    count += source->count;
+    source->count = 0;
+}
+
 // Reimplements 0x4c01b0: zZbdManager::Destroy
 RECOIL_NOINLINE void RECOIL_THISCALL zZbdManager::Destroy() {
     if (tempBuffer != 0) {

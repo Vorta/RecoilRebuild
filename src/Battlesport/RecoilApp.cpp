@@ -1060,6 +1060,30 @@ HudUiSaveGameDialog::InitLayout()
     return this;
 }
 
+// Reimplements 0x434a80: HudUiSaveGameDialog::Destructor
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+HudUiSaveGameDialog::Destructor()
+{
+    primaryActionButton.DestructorCore();
+
+    ::operator delete(fileEntries.begin);
+    fileEntries.begin = 0;
+    fileEntries.end = 0;
+    fileEntries.capacityEnd = 0;
+
+    for (int index = 9; index > 0; --index) {
+        ((HudUiPanel *)(&entryWidgets[index - 1]))->Destructor();
+    }
+
+    gameNameInput.Destructor();
+    prevEntryButton.DestructorCore();
+    nextEntryButton.DestructorCore();
+    backButton.DestructorCore();
+    deleteButton.DestructorCore();
+    base.Destructor();
+}
+
 // Reimplements 0x434b90: HudUiLoadGameDialog::Constructor
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
 RECOIL_NOINLINE HudUiLoadGameDialog *RECOIL_THISCALL
@@ -1122,6 +1146,28 @@ HudUiLoadGameDialog::Constructor()
     SetSelectedEntryIndex(0);
 
     return this;
+}
+
+// Reimplements 0x4349a0: HudUiSaveLoadDialog::Destructor
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+HudUiSaveLoadDialog::Destructor()
+{
+    ::operator delete(fileEntries.begin);
+    fileEntries.begin = 0;
+    fileEntries.end = 0;
+    fileEntries.capacityEnd = 0;
+
+    for (int index = 9; index > 0; --index) {
+        ((HudUiPanel *)(&entryWidgets[index - 1]))->Destructor();
+    }
+
+    gameNameInput.Destructor();
+    prevEntryButton.DestructorCore();
+    nextEntryButton.DestructorCore();
+    backButton.DestructorCore();
+    deleteButton.DestructorCore();
+    base.Destructor();
 }
 
 // Reimplements 0x434df0: HudUiLoadGameDialog::Destructor
@@ -1234,6 +1280,47 @@ RecoilStateSaveLoadTransition::OnUpdateShouldQuit()
     zOpt_ViewRectSection *const srcRect = zOpt::GetWindowSection();
     zVideo::AdjustSurfacesIfEnabled((zVidRect32 *)srcRect, (zVidRect32 *)dstRect, 1, 1);
     return 0;
+}
+
+// Reimplements 0x435ed0: RecoilStateSaveLoadTransition::OnDeactivate
+// (D:\Proj\Battlesport\RecoilApp.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+RecoilStateSaveLoadTransition::OnDeactivate()
+{
+    if (m_dialog != 0) {
+        zVideo::RunPostprocessOnPrimaryBuffer();
+
+        RecoilStateSaveLoadDialogVirtual *dialog =
+            (RecoilStateSaveLoadDialogVirtual *)((unsigned int)m_dialog);
+        dialog->SetEnabled(0);
+
+        ((HudUiDialogController *)((unsigned int)m_dialog))->BlitOwnedSurfaceToPrimary();
+        zVideo::Dispatch_UnlockPrimarySurfaceState();
+
+        dialog = (RecoilStateSaveLoadDialogVirtual *)((unsigned int)m_dialog);
+        if (dialog != 0) {
+            dialog->ScalarDeletingDestructor(1);
+        }
+
+        m_dialog = 0;
+    }
+
+    if (m_capturePresentationMode == RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED) {
+        return;
+    }
+
+    zSndSampleSet_DestroyByName("DIALOG");
+
+    zSndPlayHandleSnapshot *const audioSnapshot =
+        (zSndPlayHandleSnapshot *)((unsigned int)m_pausedAudioSnapshot);
+    if (audioSnapshot != 0) {
+        audioSnapshot->RestoreAllWithGlobalVolumeDelta();
+    }
+
+    zSnd::ApplyMuteStateToActiveVoices(0);
+    zVideo::SetHalfResAdjustMode(m_savedHalfResAdjustMode);
+    HudUi::SetInvalidateMode(m_savedHalfResAdjustMode);
+    HudUiMgr::TriggerCurrentLayoutOnActivated();
 }
 
 // Reimplements 0x435f50: RecoilStateSaveLoadTransition::QueueOpenSaveDialog

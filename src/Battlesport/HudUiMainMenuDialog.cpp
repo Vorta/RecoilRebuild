@@ -162,8 +162,6 @@ void RECOIL_THISCALL HudUiMainMenuDialog_ControlsButton::OnActivate()
 
 const HudUiWidget_FTable g_HudUiMainMenu_CreditsButton_FTable =
     MakeMainMenuButtonFTable(MethodAddress(&HudUiMainMenuDialog_CreditsButton::OnActivate));
-const HudUiWidget_FTable g_HudUiMainMenu_BackButton_FTable =
-    MakeMainMenuButtonFTable(MethodAddress(&HudUiMenuBackButton::OnActivate));
 const HudUiWidget_FTable g_HudUiMainMenu_SaveGameButton_FTable =
     MakeMainMenuButtonFTable(MethodAddress(&HudUiMainMenuDialog_SaveButton::OnActivate));
 const HudUiWidget_FTable g_HudUiMainMenu_LoadGameButton_FTable =
@@ -242,6 +240,9 @@ void BindNetworkButtons(HudUiMainMenuDialog *dialog, zReader::Node *loadedSectio
     BindButton(dialog, loadedSection, &dialog->quitButton, "QUIT");
 }
 } // namespace
+
+extern const HudUiWidget_FTable g_HudUiMainMenu_BackButton_FTable =
+    MakeMainMenuButtonFTable(MethodAddress(&HudUiMenuBackButton::OnActivate));
 
 // Reimplements 0x414b60: HudUiMainMenuDialog::CanLoadGame
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)

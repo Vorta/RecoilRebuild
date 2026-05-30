@@ -18,6 +18,12 @@ enum RecoilMainMenuEntryRoute {
 
 enum zVidModeIndex {
     ZVID_MODE_INVALID_COMPLEMENT = -1,
+    ZVID_MODE_320X200_TO_640X400 = 2,
+    ZVID_MODE_320X240_TO_640X480 = 3,
+    ZVID_MODE_640X400 = 4,
+    ZVID_MODE_640X480 = 5,
+    ZVID_MODE_800X600 = 6,
+    ZVID_MODE_1024X768 = 7,
 };
 
 struct RecoilStateMainMenuTransition {
@@ -36,6 +42,10 @@ struct RecoilStateMainMenuTransition {
     void RECOIL_THISCALL OnResume(int param);
     void RECOIL_THISCALL OnDeactivate();
 
+    static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    static RecoilStateMainMenuTransition *RECOIL_CDECL StaticInit();
+    static void RECOIL_CDECL RegisterAtExit();
+    static void RECOIL_CDECL AtExitDestructor();
     static void RECOIL_CDECL ClearPausedAudioSnapshot();
     static void RECOIL_FASTCALL QueueEnter(RecoilMainMenuEntryRoute entryRoute);
     static void RECOIL_FASTCALL SetDeferredVideoModeIndex(zVidModeIndex modeIndex);

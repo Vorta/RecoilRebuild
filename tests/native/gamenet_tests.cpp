@@ -595,6 +595,133 @@ extern "C" int gamenet_begin_chat_compose_smoke(void) {
     return disabledOk && stateOk && keyOk ? 0 : 1;
 }
 
+extern "C" int gamenet_end_chat_compose_and_send_smoke(void) {
+    int networkEnabled = 1;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const std::int32_t oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const std::int32_t oldTcpIpAsync = g_zNetwork_TcpIpAsyncSendEnabled;
+    HudUiTextStack4 *const oldChatStack = g_HudUiChatMessageStack;
+    HudUiTextInput oldInput = g_HudUiMgrObjectiveChatComposeTextInput;
+    HudUiPanel *const oldSummaryPanel = g_HudUiMgrObjectiveSummaryTextPanel;
+    HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
+    const int oldPhase = g_HudUiMgrObjectivePhase;
+    const int oldState = g_HudUiMgrObjectiveState;
+    const int oldChatComposeActive = g_HudUiMgrObjectiveChatComposeActive;
+    const int oldOverlayDepth = g_zInput_BindMapOverlayDepth;
+
+    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_PlayerRecord localPlayer{};
+    localPlayer.playerKey = 0x10203040;
+    g_zNetwork_pDirectPlay4 = &dplay;
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x10203040;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+
+    GameNetPlayerRow row{};
+    std::strcpy(row.displayName, "Pilot");
+    zUtil_SaveGameState saveState{};
+    saveState.netPlayerRow = &row;
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
+
+    HudUiChatMessageStack chat{};
+    chat.Constructor();
+    chat.base.enabled = 1;
+    g_HudUiChatMessageStack = &chat;
+
+    HudUiPanel_FTable panelTable{};
+    panelTable.slots[0x74 / 4] = reinterpret_cast<unsigned int>(&ChatComposeSetTextFmtFake);
+    HudUiPanel summaryPanel{};
+    HudUiPanel descPanel{};
+    summaryPanel.vtbl = &panelTable;
+    descPanel.vtbl = &panelTable;
+    g_HudUiMgrObjectiveSummaryTextPanel = &summaryPanel;
+    g_HudUiMgrObjectiveDescTextPanel = &descPanel;
+    g_HudUiMgrObjectiveWidget.ftable = &g_HudUiWidget_FTable;
+    g_HudUiMgrObjectiveSensorRect.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiWidget_FTable);
+    g_HudUiMgrSensorOverlay.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiWidget_FTable);
+    g_HudUiMgrObjectiveBar.ftable = &g_HudUiBar_FTable;
+    g_HudUiMgrObjectivePhase = 0;
+    g_HudUiMgrObjectiveState = 0;
+    g_HudUiMgrObjectiveChatComposeActive = 0;
+
+    g_HudUiMgrObjectiveChatComposeTextInput = {};
+    g_HudUiMgrObjectiveChatComposeTextInput.Constructor(8);
+    char *const initialBuffer = g_HudUiMgrObjectiveChatComposeTextInput.buffer;
+    zInput::BindMapSystem_Init(1);
+    GameNet::BeginChatCompose();
+    g_HudUiMgrObjectiveChatComposeTextInput.SetContents("go");
+
+    g_sendCalls = 0;
+    g_sendFlags = 0;
+    g_sendPacket = nullptr;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+    std::memset(g_sendPacketBytes, 0, sizeof(g_sendPacketBytes));
+
+    GameNet::EndChatComposeAndSendThunk();
+
+    HudUiPanel *const firstLine = reinterpret_cast<HudUiPanel *>(&chat.lines[0][0]);
+    const NetPkt0B_ChatMessage *const sentPacket =
+        reinterpret_cast<const NetPkt0B_ChatMessage *>(g_sendPacketBytes);
+    const bool sent = g_HudUiMgrObjectiveChatComposeActive == 0 &&
+                      g_zInput_BindMapOverlayDepth == 0 && g_sendCalls == 1 &&
+                      g_sendFlags == 1 && g_sendPacketSize == 20 &&
+                      sentPacket->header.packetType == 0x0b &&
+                      sentPacket->header.packetSizeBytes == 20 &&
+                      sentPacket->header.payloadDword0 == 0x10203040 &&
+                      sentPacket->messageLength == 8 &&
+                      std::memcmp(sentPacket->message, "Pilot:go", 8) == 0 &&
+                      std::strcmp(firstLine->GetLastTextPtr(), "Pilot:go") == 0 &&
+                      FieldAt<float>(firstLine, 0x10) == 5.0f;
+
+    g_HudUiMgrObjectiveChatComposeTextInput.SetContents("");
+    g_HudUiMgrObjectiveChatComposeActive = 1;
+    zInput::BindMapContext_Push(0);
+    g_sendCalls = 0;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+    std::memset(g_sendPacketBytes, 0, sizeof(g_sendPacketBytes));
+
+    GameNet::EndChatComposeAndSend();
+
+    const bool emptySkipped = g_HudUiMgrObjectiveChatComposeActive == 0 &&
+                              g_zInput_BindMapOverlayDepth == 0 && g_sendCalls == 0 &&
+                              std::strcmp(firstLine->GetLastTextPtr(), "Pilot:go") == 0;
+
+    for (int index = 0; index < 4; ++index) {
+        HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(&chat.lines[index][0]);
+        DeleteObject(panel->hFont);
+        panel->hFont = nullptr;
+    }
+
+    ::operator delete(initialBuffer);
+    g_HudUiMgrObjectiveChatComposeTextInput.DestructorCore();
+    zInput::BindMapSystem_Shutdown();
+
+    g_HudUiMgrObjectiveChatComposeTextInput = oldInput;
+    g_HudUiMgrObjectiveSummaryTextPanel = oldSummaryPanel;
+    g_HudUiMgrObjectiveDescTextPanel = oldDescPanel;
+    g_HudUiMgrObjectivePhase = oldPhase;
+    g_HudUiMgrObjectiveState = oldState;
+    g_HudUiMgrObjectiveChatComposeActive = oldChatComposeActive;
+    g_zInput_BindMapOverlayDepth = oldOverlayDepth;
+    g_HudUiChatMessageStack = oldChatStack;
+    g_GameStateOrMapTable = oldGameState;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldTcpIpAsync;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+
+    return sent && emptySkipped ? 0 : 1;
+}
+
 extern "C" int hud_ui_handle_hotkey_command_begin_chat_smoke(void) {
     int networkEnabled = 1;
     int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
@@ -1857,6 +1984,12 @@ extern "C" int gamenet_lap_progress_packet_smoke(void) {
 }
 
 extern "C" int gamenet_chat_message_packet_smoke(void) {
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const std::int32_t oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const std::int32_t oldTcpIpAsync = g_zNetwork_TcpIpAsyncSendEnabled;
+    HudUiTextStack4 *const oldChatStack = g_HudUiChatMessageStack;
+
     HudUiChatMessageStack chat{};
     chat.Constructor();
     chat.base.enabled = 1;
@@ -1882,14 +2015,64 @@ extern "C" int gamenet_chat_message_packet_smoke(void) {
     const bool clamped = std::strlen(text) == sizeof(longPacket.message) &&
                          std::memcmp(text, longPacket.message, sizeof(longPacket.message)) == 0;
 
+    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_PlayerRecord localPlayer{};
+    localPlayer.playerKey = 0x10203040;
+    g_zNetwork_pDirectPlay4 = &dplay;
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x10203040;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_sendCalls = 0;
+    g_sendFlags = 0;
+    g_sendPacket = nullptr;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+    std::memset(g_sendPacketBytes, 0, sizeof(g_sendPacketBytes));
+
+    GameNet::SendPkt0B_ChatMessage("hello");
+
+    const NetPkt0B_ChatMessage *const sentPacket =
+        reinterpret_cast<const NetPkt0B_ChatMessage *>(g_sendPacketBytes);
+    const bool sentShort = g_sendCalls == 1 && g_sendFlags == 1 &&
+                           g_sendPacketSize == 17 && g_sendPacketBytesSize == 17 &&
+                           sentPacket->header.packetType == 0x0b &&
+                           sentPacket->header.packetSizeBytes == 17 &&
+                           sentPacket->header.payloadDword0 == 0x10203040 &&
+                           sentPacket->messageLength == 5 &&
+                           std::memcmp(sentPacket->message, "hello", 5) == 0 &&
+                           g_sendPacketBytes[15] == 0 && g_sendPacketBytes[16] == 0;
+
+    g_sendCalls = 0;
+    g_sendFlags = 0;
+    g_sendPacket = nullptr;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+    std::memset(g_sendPacketBytes, 0xff, sizeof(g_sendPacketBytes));
+
+    GameNet::SendPkt0B_ChatMessage("");
+
+    const NetPkt0B_ChatMessage *const emptyPacket =
+        reinterpret_cast<const NetPkt0B_ChatMessage *>(g_sendPacketBytes);
+    const bool sentEmpty = g_sendCalls == 1 && g_sendFlags == 1 &&
+                           g_sendPacketSize == 12 && g_sendPacketBytesSize == 12 &&
+                           emptyPacket->header.packetType == 0x0b &&
+                           emptyPacket->header.packetSizeBytes == 12 &&
+                           emptyPacket->header.payloadDword0 == 0x10203040 &&
+                           emptyPacket->messageLength == 0 &&
+                           g_sendPacketBytes[10] == 0 && g_sendPacketBytes[11] == 0;
+
     for (int index = 0; index < 4; ++index) {
         HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(&chat.lines[index][0]);
         DeleteObject(panel->hFont);
         panel->hFont = nullptr;
     }
 
-    g_HudUiChatMessageStack = nullptr;
-    return shortMessage && clamped ? 0 : 1;
+    g_HudUiChatMessageStack = oldChatStack;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldTcpIpAsync;
+    return shortMessage && clamped && sentShort && sentEmpty ? 0 : 1;
 }
 
 extern "C" int gamenet_show_player_kill_message_smoke(void) {

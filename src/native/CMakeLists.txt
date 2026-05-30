@@ -14,6 +14,7 @@ add_library(recoil_native STATIC
     ../Battlesport/RecoilStateCredits.cpp
     ../Battlesport/HudUiNetExitPanel.cpp
     ../Battlesport/HudSensorTracker.cpp
+    ../Battlesport/WestwoodOnlineUpgradeConfigDialog.cpp
     ../Battlesport/player.cpp
     ../Battlesport/pickup.cpp
     ../Battlesport/zUtil/zutil.cpp

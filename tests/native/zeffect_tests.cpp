@@ -406,6 +406,51 @@ void ClearRegisteredHandlers(zZbdSectionHandlerNode &sentinel) {
     sentinel.prev = &sentinel;
 }
 
+zZbdSectionHandlerList MakeSectionHandlerList(zZbdSectionHandlerNode &sentinel) {
+    sentinel.next = &sentinel;
+    sentinel.prev = &sentinel;
+    sentinel.sectionHandler = {};
+
+    zZbdSectionHandlerList list = {};
+    list.sentinel = &sentinel;
+    return list;
+}
+
+zZbdSectionHandlerNode *AppendSectionHandlerNode(zZbdSectionHandlerList &list,
+                                                 zZbdSectionHandlerNode &node,
+                                                 const char *sectionName,
+                                                 int sortOrder) {
+    node.sectionHandler = {};
+    node.sectionHandler.sectionName = sectionName;
+    node.sectionHandler.sortOrder = sortOrder;
+
+    zZbdSectionHandlerNode *const sentinel = list.sentinel;
+    zZbdSectionHandlerNode *const previous = sentinel->prev;
+    node.next = sentinel;
+    node.prev = previous;
+    previous->next = &node;
+    sentinel->prev = &node;
+    ++list.count;
+    return &node;
+}
+
+bool SectionHandlerListOrderOk(const zZbdSectionHandlerList &list, const char **names,
+                               int count) {
+    zZbdSectionHandlerNode *node = list.sentinel->next;
+    for (int i = 0; i < count; ++i) {
+        if (node == list.sentinel ||
+            std::strcmp(node->sectionHandler.sectionName, names[i]) != 0) {
+            return false;
+        }
+        if (node->next->prev != node || node->prev->next != node) {
+            return false;
+        }
+        node = node->next;
+    }
+
+    return node == list.sentinel && list.sentinel->prev->next == list.sentinel;
+}
+
 void StoreFloatBits(std::uint32_t &target, float value) {
     std::memcpy(&target, &value, sizeof(value));
 }
@@ -1227,6 +1272,105 @@ extern "C" int zutil_zbd_section_handler_compare_sort_order_smoke(void) {
     const bool ok = zZbdSectionHandler::CompareSortOrderLessThan(&low, &high) &&
                     !zZbdSectionHandler::CompareSortOrderLessThan(&high, &low) &&
                     !zZbdSectionHandler::CompareSortOrderLessThan(&low, &equal);
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int zutil_zbd_section_handler_list_constructor_smoke(void) {
+    zZbdSectionHandlerList list = {};
+    list.Constructor();
+
+    const bool ok = list.sentinel != nullptr && list.sentinel->next == list.sentinel &&
+                    list.sentinel->prev == list.sentinel && list.count == 0;
+
+    delete list.sentinel;
+    return ok ? 0 : 1;
+}
+
+extern "C" int zutil_zbd_section_handler_list_front_smoke(void) {
+    zZbdSectionHandlerNode sentinel = {};
+    zZbdSectionHandlerNode first = {};
+    zZbdSectionHandlerNode second = {};
+    zZbdSectionHandlerList list = MakeSectionHandlerList(sentinel);
+    AppendSectionHandlerNode(list, first, "First", 1);
+    AppendSectionHandlerNode(list, second, "Second", 2);
+
+    zZbdSectionHandlerNode *front = nullptr;
+    list.Front(&front);
+
+    return front == &first ? 0 : 1;
+}
+
+extern "C" int zutil_zbd_section_handler_list_swap_smoke(void) {
+    zZbdSectionHandlerNode sentinelA = {};
+    zZbdSectionHandlerNode sentinelB = {};
+    zZbdSectionHandlerNode nodeA = {};
+    zZbdSectionHandlerNode nodeB = {};
+    zZbdSectionHandlerList listA = MakeSectionHandlerList(sentinelA);
+    zZbdSectionHandlerList listB = MakeSectionHandlerList(sentinelB);
+    AppendSectionHandlerNode(listA, nodeA, "A", 1);
+    AppendSectionHandlerNode(listB, nodeB, "B", 2);
+
+    listA.Swap(&listB);
+
+    const char *orderA[] = {"B"};
+    const char *orderB[] = {"A"};
+    const bool ok = listA.count == 1 && listB.count == 1 &&
+                    SectionHandlerListOrderOk(listA, orderA, 1) &&
+                    SectionHandlerListOrderOk(listB, orderB, 1);
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int zutil_zbd_section_handler_list_splice_three_nodes_smoke(void) {
+    zZbdSectionHandlerNode destSentinel = {};
+    zZbdSectionHandlerNode sourceSentinel = {};
+    zZbdSectionHandlerNode destA = {};
+    zZbdSectionHandlerNode destB = {};
+    zZbdSectionHandlerNode sourceA = {};
+    zZbdSectionHandlerNode sourceB = {};
+    zZbdSectionHandlerNode sourceC = {};
+    zZbdSectionHandlerList dest = MakeSectionHandlerList(destSentinel);
+    zZbdSectionHandlerList source = MakeSectionHandlerList(sourceSentinel);
+    AppendSectionHandlerNode(dest, destA, "DestA", 10);
+    AppendSectionHandlerNode(dest, destB, "DestB", 40);
+    AppendSectionHandlerNode(source, sourceA, "SourceA", 20);
+    AppendSectionHandlerNode(source, sourceB, "SourceB", 30);
+    AppendSectionHandlerNode(source, sourceC, "SourceC", 50);
+
+    dest.SpliceThreeNodes(&destB, &source, &sourceA, &sourceC);
+
+    const char *destOrder[] = {"DestA", "SourceA", "SourceB", "DestB"};
+    const char *sourceOrder[] = {"SourceC"};
+    const bool ok = SectionHandlerListOrderOk(dest, destOrder, 4) &&
+                    SectionHandlerListOrderOk(source, sourceOrder, 1);
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int zutil_zbd_section_handler_list_merge_smoke(void) {
+    zZbdSectionHandlerNode destSentinel = {};
+    zZbdSectionHandlerNode sourceSentinel = {};
+    zZbdSectionHandlerNode destA = {};
+    zZbdSectionHandlerNode destB = {};
+    zZbdSectionHandlerNode sourceA = {};
+    zZbdSectionHandlerNode sourceB = {};
+    zZbdSectionHandlerNode sourceTie = {};
+    zZbdSectionHandlerList dest = MakeSectionHandlerList(destSentinel);
+    zZbdSectionHandlerList source = MakeSectionHandlerList(sourceSentinel);
+    AppendSectionHandlerNode(dest, destA, "DestA", 10);
+    AppendSectionHandlerNode(dest, destB, "DestB", 30);
+    AppendSectionHandlerNode(source, sourceA, "SourceA", 5);
+    AppendSectionHandlerNode(source, sourceTie, "SourceTie", 30);
+    AppendSectionHandlerNode(source, sourceB, "SourceB", 40);
+
+    dest.Merge(&source);
+
+    const char *destOrder[] = {"SourceA", "DestA", "DestB", "SourceTie", "SourceB"};
+    const bool ok = dest.count == 5 && source.count == 0 &&
+                    source.sentinel->next == source.sentinel &&
+                    source.sentinel->prev == source.sentinel &&
+                    SectionHandlerListOrderOk(dest, destOrder, 5);
 
     return ok ? 0 : 1;
 }

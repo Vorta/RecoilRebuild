@@ -1849,6 +1849,38 @@ extern "C" int zrndr_span_occlusion_add_polygon_smoke(void) {
                : 3;
 }
 
+extern "C" int zrndr_span_occlusion_submit_rect_smoke(void) {
+    zRndr::g_spanOccluderPolyCount = 0;
+    for (int slot = 0; slot < 8; ++slot) {
+        zRndr::g_spanOccluderPolys[slot] = {};
+    }
+
+    HudUiRect rect{2, 4, 10, 14};
+    zRndr::SpanOcclusionSubmitOccluderRect(&rect, 0, 0.25f);
+    const zRndr::SpanOccluderPolyPartial &poly = zRndr::g_spanOccluderPolys[0];
+    if (zRndr::g_spanOccluderPolyCount != 1 || poly.vertCount != 4 ||
+        poly.vertices[0][0] != 2.0f || poly.vertices[0][1] != 4.0f ||
+        poly.vertices[0][2] != 0.25f || poly.vertices[1][0] != 2.0f ||
+        poly.vertices[1][1] != 14.0f || poly.vertices[1][2] != 0.25f ||
+        poly.vertices[2][0] != 10.0f || poly.vertices[2][1] != 14.0f ||
+        poly.vertices[2][2] != 0.25f || poly.vertices[3][0] != 10.0f ||
+        poly.vertices[3][1] != 4.0f || poly.vertices[3][2] != 0.25f) {
+        return 1;
+    }
+
+    zRndr::g_spanOccluderPolyCount = 0;
+    zRndr::SpanOcclusionSubmitOccluderRect(&rect, 1, 0.5f);
+    const zRndr::SpanOccluderPolyPartial &halvedPoly = zRndr::g_spanOccluderPolys[0];
+    return zRndr::g_spanOccluderPolyCount == 1 && halvedPoly.vertCount == 4 &&
+                   halvedPoly.vertices[0][0] == 1.0f && halvedPoly.vertices[0][1] == 2.0f &&
+                   halvedPoly.vertices[1][0] == 1.0f && halvedPoly.vertices[1][1] == 7.0f &&
+                   halvedPoly.vertices[2][0] == 5.0f && halvedPoly.vertices[2][1] == 7.0f &&
+                   halvedPoly.vertices[3][0] == 5.0f && halvedPoly.vertices[3][1] == 2.0f &&
+                   halvedPoly.vertices[3][2] == 0.5f
+               ? 0
+               : 2;
+}
+
 extern "C" int zcliprect_clip_poly_near_z_smoke(void) {
     zClipUV uvs[0x40] = {};
     g_Clip_PolyUvs = uvs;
