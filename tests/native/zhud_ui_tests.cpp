@@ -4116,6 +4116,23 @@ extern "C" int zhud_element_get_xy_smoke(void) {
     return initial && element.GetX() == 78 && element.GetY() == -90 ? 0 : 1;
 }
 
+extern "C" int zhud_element_scalar_deleting_destructor_smoke(void) {
+    HudUiCommon_FTable alternateTable{};
+    HudUiElement element{};
+    element.ftable = &alternateTable;
+
+    HudUiElement *const result = element.ScalarDeletingDestructor(0);
+    if (result != &element || element.ftable != &g_HudUiCommon_FTable) {
+        return 1;
+    }
+
+    HudUiElement *const heapElement = new HudUiElement{};
+    heapElement->ftable = &alternateTable;
+    HudUiElement *const heapResult = heapElement->ScalarDeletingDestructor(1);
+
+    return heapResult == heapElement ? 0 : 2;
+}
+
 extern "C" int zhud_primitive_bind_target_set_segment_endpoints_smoke(void) {
     HudUiCommon_FTable table{};
     table.slots[0x0c / 4] = MethodAddress(&TestPrimitiveBindTarget::SetPos);
