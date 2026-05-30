@@ -1271,6 +1271,11 @@ extern "C" int zutil_zar_register_section_handler_smoke(void);
 extern "C" int zutil_zbd_init_smoke(void);
 extern "C" int zutil_zbd_destroy_global_manager_smoke(void);
 extern "C" int zutil_zbd_section_handler_compare_sort_order_smoke(void);
+extern "C" int zutil_zbd_section_handler_list_constructor_smoke(void);
+extern "C" int zutil_zbd_section_handler_list_front_smoke(void);
+extern "C" int zutil_zbd_section_handler_list_swap_smoke(void);
+extern "C" int zutil_zbd_section_handler_list_splice_three_nodes_smoke(void);
+extern "C" int zutil_zbd_section_handler_list_merge_smoke(void);
 extern "C" int zutil_zbd_section_handler_invoke_pre_load_smoke(void);
 extern "C" int zutil_zbd_section_handler_invoke_data_ready_smoke(void);
 extern "C" int zutil_zbd_manager_sort_section_handlers_smoke(void);
@@ -3545,6 +3550,16 @@ int main(int argc, char **argv) {
         {"zutil_zbd_destroy_global_manager_smoke", zutil_zbd_destroy_global_manager_smoke},
         {"zutil_zbd_section_handler_compare_sort_order_smoke",
          zutil_zbd_section_handler_compare_sort_order_smoke},
+        {"zutil_zbd_section_handler_list_constructor_smoke",
+         zutil_zbd_section_handler_list_constructor_smoke},
+        {"zutil_zbd_section_handler_list_front_smoke",
+         zutil_zbd_section_handler_list_front_smoke},
+        {"zutil_zbd_section_handler_list_swap_smoke",
+         zutil_zbd_section_handler_list_swap_smoke},
+        {"zutil_zbd_section_handler_list_splice_three_nodes_smoke",
+         zutil_zbd_section_handler_list_splice_three_nodes_smoke},
+        {"zutil_zbd_section_handler_list_merge_smoke",
+         zutil_zbd_section_handler_list_merge_smoke},
         {"zutil_zbd_section_handler_invoke_pre_load_smoke",
          zutil_zbd_section_handler_invoke_pre_load_smoke},
         {"zutil_zbd_section_handler_invoke_data_ready_smoke",

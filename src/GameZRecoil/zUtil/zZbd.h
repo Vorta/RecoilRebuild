@@ -30,6 +30,21 @@ struct zZbdSectionHandlerNode {
     zZbdSectionHandler sectionHandler;
 };
 
+struct zZbdSectionHandlerList {
+    unsigned char allocatorByte;
+    unsigned char unknown_01[0x03];
+    zZbdSectionHandlerNode *sentinel;
+    int count;
+
+    RECOIL_NOINLINE void RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Front(zZbdSectionHandlerNode **outIter);
+    RECOIL_NOINLINE void RECOIL_THISCALL Swap(zZbdSectionHandlerList *other);
+    RECOIL_NOINLINE void RECOIL_THISCALL Merge(zZbdSectionHandlerList *source);
+    RECOIL_NOINLINE void RECOIL_THISCALL
+    SpliceThreeNodes(zZbdSectionHandlerNode *position, zZbdSectionHandlerList *source,
+                     zZbdSectionHandlerNode *first, zZbdSectionHandlerNode *last);
+};
+
 struct zZbdManager;
 
 struct zZbdSectionCallbackCtx {
@@ -65,6 +80,9 @@ struct zZbdManager {
 
 RECOIL_STATIC_ASSERT(sizeof(zZbdSectionHandler) == 0x14);
 RECOIL_STATIC_ASSERT(sizeof(zZbdSectionHandlerNode) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zZbdSectionHandlerList, sentinel) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zZbdSectionHandlerList, count) == 0x08);
+RECOIL_STATIC_ASSERT(sizeof(zZbdSectionHandlerList) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(zZbdManager, sectionHandlerListSentinel) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zZbdManager, sectionHandlerCount) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zZbdManager, stopRequested) == 0x30);

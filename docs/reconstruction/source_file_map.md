@@ -4,7 +4,7 @@ Generated from `Reimplements 0xNNNNNN: Name (original/source/path)` comments in 
 Binary Ninja remains authoritative; this map is an agent navigation aid.
 It only contains address-backed provenance comments and excludes helpers fully inlined by the retail compiler.
 
-Entries: 3117
+Entries: 3122
 
 ## Case-insensitive source path collisions
 
@@ -3198,23 +3198,28 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4bfe90` `HudUiBackgroundVideoWidget::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6783`
 - `0x4bfec0` `HudUiBackgroundVideoWidget::DrawBase` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6796`
 - `0x4bff00` `HudUiBackgroundVideoWidget::RebuildBltRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6808`
-- `0x4bffe0` `zUtil_ZAR::RegisterSectionHandler` -> `src/GameZRecoil/zUtil/zZbd.cpp:294`
-- `0x4c0010` `zUtil_ZAR::WriteSectionBlob` -> `src/GameZRecoil/zUtil/zZbd.cpp:306`
+- `0x4bffe0` `zUtil_ZAR::RegisterSectionHandler` -> `src/GameZRecoil/zUtil/zZbd.cpp:375`
+- `0x4c0010` `zUtil_ZAR::WriteSectionBlob` -> `src/GameZRecoil/zUtil/zZbd.cpp:387`
 - `0x4c0030` `zUtil::ZBD_LoadEntriesGlobal` -> `src/GameZRecoil/zUtil/zZbd.cpp:12`
 - `0x4c0050` `zUtil::ZAR_LoadFileGlobal` -> `src/GameZRecoil/zUtil/zZbd.cpp:23`
 - `0x4c0070` `zUtil::ZAR_RequestStopGlobal` -> `src/GameZRecoil/zUtil/zZbd.cpp:34`
 - `0x4c0100` `zUtil::ZBD_Init` -> `src/GameZRecoil/zUtil/zZbd.cpp:43`
 - `0x4c0180` `zUtil::ZBD_DestroyGlobalManager` -> `src/GameZRecoil/zUtil/zZbd.cpp:65`
-- `0x4c01b0` `zZbdManager::Destroy` -> `src/GameZRecoil/zUtil/zZbd.cpp:85`
+- `0x4c01b0` `zZbdManager::Destroy` -> `src/GameZRecoil/zUtil/zZbd.cpp:166`
 - `0x4c0260` `zZbdSectionHandler::CompareSortOrderLessThan` -> `src/GameZRecoil/zUtil/zZbd.cpp:78`
-- `0x4c0280` `zZbdManager::RegisterSectionHandler` -> `src/GameZRecoil/zUtil/zZbd.cpp:110`
-- `0x4c0370` `zZbdManager::LoadEntries` -> `src/GameZRecoil/zUtil/zZbd.cpp:140`
-- `0x4c0400` `zZbdManager::LoadZarFile` -> `src/GameZRecoil/zUtil/zZbd.cpp:162`
-- `0x4c0620` `zZbdManager::RequestStop` -> `src/GameZRecoil/zUtil/zZbd.cpp:214`
-- `0x4c0630` `zZbdManager::WriteSectionRecord` -> `src/GameZRecoil/zUtil/zZbd.cpp:220`
-- `0x4c06a0` `zZbdSectionHandler::InvokePreLoad` -> `src/GameZRecoil/zUtil/zZbd.cpp:229`
-- `0x4c06c0` `zZbdSectionHandler::InvokeDataReady` -> `src/GameZRecoil/zUtil/zZbd.cpp:241`
-- `0x4c07d0` `zZbdManager::SortSectionHandlers` -> `src/GameZRecoil/zUtil/zZbd.cpp:254`
+- `0x4c0280` `zZbdManager::RegisterSectionHandler` -> `src/GameZRecoil/zUtil/zZbd.cpp:191`
+- `0x4c0370` `zZbdManager::LoadEntries` -> `src/GameZRecoil/zUtil/zZbd.cpp:221`
+- `0x4c0400` `zZbdManager::LoadZarFile` -> `src/GameZRecoil/zUtil/zZbd.cpp:243`
+- `0x4c0620` `zZbdManager::RequestStop` -> `src/GameZRecoil/zUtil/zZbd.cpp:295`
+- `0x4c0630` `zZbdManager::WriteSectionRecord` -> `src/GameZRecoil/zUtil/zZbd.cpp:301`
+- `0x4c06a0` `zZbdSectionHandler::InvokePreLoad` -> `src/GameZRecoil/zUtil/zZbd.cpp:310`
+- `0x4c06c0` `zZbdSectionHandler::InvokeDataReady` -> `src/GameZRecoil/zUtil/zZbd.cpp:322`
+- `0x4c07d0` `zZbdManager::SortSectionHandlers` -> `src/GameZRecoil/zUtil/zZbd.cpp:335`
+- `0x4c0b60` `zZbdSectionHandlerList::Front` -> `src/GameZRecoil/zUtil/zZbd.cpp:95`
+- `0x4c0b70` `zZbdSectionHandlerList::Constructor` -> `src/GameZRecoil/zUtil/zZbd.cpp:85`
+- `0x4c0ba0` `zZbdSectionHandlerList::Swap` -> `src/GameZRecoil/zUtil/zZbd.cpp:102`
+- `0x4c0bd0` `zZbdSectionHandlerList::Merge` -> `src/GameZRecoil/zUtil/zZbd.cpp:137`
+- `0x4c0ce0` `zZbdSectionHandlerList::SpliceThreeNodes` -> `src/GameZRecoil/zUtil/zZbd.cpp:115`
 - `0x4c0d20` `zInterp_Context::Constructor` -> `src/GameZRecoil/zInterp/zinterp_parse.cpp:253`
 - `0x4c0e50` `zInterp_Context::Destructor` -> `src/GameZRecoil/zInterp/zinterp_parse.cpp:340`
 - `0x4c0f70` `zInterp_Context::Destroy` -> `src/GameZRecoil/zInterp/zinterp_parse.cpp:306`

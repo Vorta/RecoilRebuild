@@ -3386,7 +3386,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x435200:
   - [✅] Reconstructed (Name: HudUiLoadGamePrimaryActionButton::OnActivate)
-  - [☑️] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadGamePrimaryActionButton::OnActivate File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: hud_ui_load_game_primary_action_button_on_activate)
   - [❌] Binary-safe
@@ -3398,7 +3398,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x435240:
   - [☑️] Reconstructed (Name: HudUiLoadGameDialog::OnPrimaryAction)
-  - [☑️] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiLoadGameDialog::OnPrimaryAction File: src/Battlesport/RecoilApp.cpp)
   - [✅] Functional-equivalent (Target: hud_ui_load_game_dialog_on_primary_action)
   - [❌] Binary-safe
@@ -19433,7 +19433,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4c0030:
   - [✅] Reconstructed (Name: zUtil::ZBD_LoadEntriesGlobal)
-  - [☑️] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zUtil::ZBD_LoadEntriesGlobal File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [✅] Functional-equivalent (Target: zutil_zbd_load_entries_global)
   - [❌] Binary-safe
@@ -19505,13 +19505,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4c0370:
   - [☑️] Reconstructed (Name: zZbdManager::LoadEntries)
-  - [☑️] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdManager::LoadEntries File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [✅] Functional-equivalent (Target: zzbd_manager_load_entries)
   - [❌] Binary-safe
 - 0x4c07d0:
   - [☑️] Reconstructed (Name: zZbdManager::SortSectionHandlers)
-  - [☑️] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zZbdManager::SortSectionHandlers File: src/GameZRecoil/zUtil/zZbd.cpp)
   - [✅] Functional-equivalent (Target: zzbd_manager_sort_section_handlers)
   - [❌] Binary-safe
@@ -19553,33 +19553,33 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4c0b60:
   - [✅] Reconstructed (Name: zZbdSectionHandlerList::Front)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zZbdSectionHandlerList::Front File: src/GameZRecoil/zUtil/zZbd.cpp)
+  - [✅] Functional-equivalent (Target: zzbd_section_handler_list_front)
   - [❌] Binary-safe
 - 0x4c0b70:
   - [☑️] Reconstructed (Name: zZbdSectionHandlerList::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zZbdSectionHandlerList::Constructor File: src/GameZRecoil/zUtil/zZbd.cpp)
+  - [✅] Functional-equivalent (Target: zzbd_section_handler_list_constructor)
   - [❌] Binary-safe
 - 0x4c0ba0:
   - [✅] Reconstructed (Name: zZbdSectionHandlerList::Swap)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zZbdSectionHandlerList::Swap File: src/GameZRecoil/zUtil/zZbd.cpp)
+  - [✅] Functional-equivalent (Target: zzbd_section_handler_list_swap)
   - [❌] Binary-safe
 - 0x4c0bd0:
   - [☑️] Reconstructed (Name: zZbdSectionHandlerList::Merge)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zZbdSectionHandlerList::Merge File: src/GameZRecoil/zUtil/zZbd.cpp)
+  - [✅] Functional-equivalent (Target: zzbd_section_handler_list_merge)
   - [❌] Binary-safe
 - 0x4c0ce0:
   - [✅] Reconstructed (Name: zZbdSectionHandlerList::SpliceThreeNodes)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zZbdSectionHandlerList::SpliceThreeNodes File: src/GameZRecoil/zUtil/zZbd.cpp)
+  - [✅] Functional-equivalent (Target: zzbd_section_handler_list_splice_three_nodes)
   - [❌] Binary-safe
 
 ## M41. zVideo init and display/mode management
