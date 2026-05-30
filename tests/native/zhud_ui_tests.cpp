@@ -6416,6 +6416,62 @@ extern "C" int zhud_cmd_key_a_button_on_begin_capture_smoke(void) {
     return failure;
 }
 
+extern "C" int zhud_cmd_key_b_button_on_begin_capture_smoke(void) {
+    HudCmdDialog dialog{};
+    dialog.descriptionPanel.captureState = 77;
+
+    HudCmdKeyBButton button{};
+    zVidImagePartial activateImage{};
+    zVidImagePartial checkedImage{};
+    HudUiElement checkedLabel{};
+    checkedLabel.ftable = &g_HudUiCommon_FTable;
+    button.base.base.base.base.ftable = &g_HudUiWidget_FTable;
+    button.base.base.base.owner = &dialog;
+    button.base.base.base.modeOrEnabled = 1;
+    button.base.base.base.activateImage = &activateImage;
+    button.base.base.checked = 0;
+    button.base.base.checkedImage = &checkedImage;
+    button.base.base.checkedLabelPanel = (HudUiPanel *)(&checkedLabel);
+
+    const int oldMouseInitialized = g_zInput_MouseInitialized;
+    const zInput::MouseDeviceState oldMouseCurrent = g_zInput_MouseCurrentState;
+    const zInput::MouseDeviceState oldMousePrevious = g_zInput_MousePreviousState;
+    g_zInput_MouseInitialized = 1;
+    g_zInput_MouseCurrentState = {};
+    g_zInput_MousePreviousState = {};
+    g_HudUi_InvalidateMask = 0x80;
+    g_zInput_MouseStateSnapshot.button1Transition = 7;
+    g_zInput_MouseStateSnapshot.button2Transition = 8;
+    g_zInput_MouseStateSnapshot.button3Transition = 9;
+
+    button.OnBeginCapture();
+
+    int failure = 0;
+    if (dialog.descriptionPanel.captureState != 2) {
+        failure = 10;
+    } else if (button.base.base.checked != 1) {
+        failure = 11;
+    } else if (button.base.base.base.base.image != &activateImage) {
+        failure = 12;
+    } else if ((button.base.base.base.base.flags & 0x80) == 0) {
+        failure = 13;
+    } else if ((checkedLabel.flags & 0x10) != 0) {
+        failure = 14;
+    } else if (g_zInput_MouseStateSnapshot.button1Transition != 0) {
+        failure = 15;
+    } else if (g_zInput_MouseStateSnapshot.button2Transition != 0) {
+        failure = 16;
+    } else if (g_zInput_MouseStateSnapshot.button3Transition != 0) {
+        failure = 17;
+    }
+
+    g_HudUi_InvalidateMask = 0;
+    g_zInput_MouseInitialized = oldMouseInitialized;
+    g_zInput_MouseCurrentState = oldMouseCurrent;
+    g_zInput_MousePreviousState = oldMousePrevious;
+    return failure;
+}
+
 extern "C" int zhud_cmd_key_a_button_on_clear_binding_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);

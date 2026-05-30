@@ -8770,6 +8770,15 @@ HudCmdBindButtonBase::OnSelectionChangedRefresh(int selectedIndex)
     ((HudCmdDialog *)(base.base.owner))->OnCommandSelectionChanged(selectedIndex);
 }
 
+// Reimplements 0x40bab0: HudCmdKeyBButton::OnBeginCapture
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdKeyBButton::OnBeginCapture()
+{
+    ((HudCmdDialog *)(base.base.base.owner))->descriptionPanel.captureState = 2;
+    zInput::ResetAllTransitionState();
+    base.base.OnActivate();
+}
+
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)

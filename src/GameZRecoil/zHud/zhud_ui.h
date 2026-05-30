@@ -969,6 +969,7 @@ struct HudCmdKeyBButton {
     HudCmdBindButtonBase base;
 
     void RECOIL_THISCALL Destructor();
+    void RECOIL_THISCALL OnBeginCapture();
 };
 
 struct HudCmdJoyButton {
