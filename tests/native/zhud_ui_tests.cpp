@@ -9709,6 +9709,14 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
                             destructInput.base.base.ftable ==
                                 reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
+    HudUiNumericTextInput *const deletingInput = new HudUiNumericTextInput{};
+    deletingInput->Constructor(4);
+    deletingInput->SetRawKeyboardCapture(1);
+    HudUiNumericTextInput *const deletingResult = deletingInput->ScalarDeletingDestructor(1);
+    const bool deletingDestructed = deletingResult == deletingInput &&
+                                    g_zInput_KbdRawEventCallback == nullptr &&
+                                    g_zInput_KbdRawEventCallbackCtx == nullptr;
+
     HudUiNumericTextInput thunkInput{};
     thunkInput.Constructor(4);
     thunkInput.SetRawKeyboardCapture(1);
@@ -9755,7 +9763,7 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
                    rawDisabled && rawNull && rawDispatched && rawFiltered && rawAccepted &&
                    acceptedNotify && deactivated && activated && bufferAllocated && updated &&
                    captureUpdated && captureHidden && numericActivated && destructed &&
-                   thunkDestructed && focusActivated
+                   deletingDestructed && thunkDestructed && focusActivated
                ? 0
                : 1;
 }

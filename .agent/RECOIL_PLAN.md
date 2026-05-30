@@ -2824,7 +2824,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiNumericTextInput::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_numeric_text_input_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x4b4b30:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::RawKeyboardCallback)
