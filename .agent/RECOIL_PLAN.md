@@ -3547,8 +3547,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiPanel::SetFontHandle)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::SetFontHandle File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_panel_set_font_handle)
+  - [✅] Binary-safe
 - 0x40bec0:
   - [✅] Reconstructed (Name: HudUiPanel::EnableWordWrapWithRect)
   - [✅] Source dependencies satisfied
