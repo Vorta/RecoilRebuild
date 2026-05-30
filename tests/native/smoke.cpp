@@ -1053,6 +1053,7 @@ extern "C" int recoil_state_main_menu_transition_clear_paused_audio_snapshot_smo
 extern "C" int recoil_state_main_menu_transition_queue_enter_smoke(void);
 extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke(void);
 extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void);
+extern "C" int hud_ui_main_menu_dialog_destructor_smoke(void);
 extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void);
 extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void);
 extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void);
@@ -3229,6 +3230,8 @@ int main(int argc, char **argv) {
          recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke},
         {"hud_ui_main_menu_dialog_constructor_smoke",
          hud_ui_main_menu_dialog_constructor_smoke},
+        {"hud_ui_main_menu_dialog_destructor_smoke",
+         hud_ui_main_menu_dialog_destructor_smoke},
         {"hud_ui_main_menu_credits_button_on_activate_smoke",
          hud_ui_main_menu_credits_button_on_activate_smoke},
         {"hud_ui_main_menu_save_button_on_activate_smoke",

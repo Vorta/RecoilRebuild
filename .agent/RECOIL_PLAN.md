@@ -2440,7 +2440,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiMainMenuDialog::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMainMenuDialog::Destructor File: src/Battlesport/HudUiMainMenuDialog.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_main_menu_dialog_destructor)
   - [❌] Binary-safe
 - 0x415100:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit)

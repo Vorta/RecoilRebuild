@@ -273,6 +273,63 @@ extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void) {
     return 0;
 }
 
+extern "C" int hud_ui_main_menu_dialog_destructor_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const zVideo_BltRectDirectProc oldBltDirect = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    const zVideo_SurfaceStatePartial oldSwSurface = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
+    auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+
+    int networkEnabled = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = nullptr;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_GameStateOrMapTable = nullptr;
+
+    HudUiMainMenuDialog dialog{};
+    dialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+    dialog.Destructor();
+
+    const bool buttonsDestroyed =
+        dialog.controlsButton.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
+        dialog.quitButton.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
+        dialog.optionsButton.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
+        dialog.newGameButton.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
+        dialog.loadGameButton.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
+        dialog.saveGameButton.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
+        dialog.backButton.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
+        dialog.creditsButton.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+    const bool baseDestroyed = dialog.base.base.base.vptr == &g_HudUiContainer_FTable;
+
+    g_GameStateOrMapTable = oldGameState;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+    g_zVideo_SwSurfaceState = oldSwSurface;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_DisplayModeSurfaceState = oldDisplaySurface;
+    return buttonsDestroyed && baseDestroyed ? 0 : 1;
+}
+
 extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void) {
     const int oldRendererPath = g_zVideo_ActiveRendererPath;
     const zVideo_BltRectDirectProc oldBltDirect = g_zVideo_pfnBltSwToPrimaryRectDirect;
