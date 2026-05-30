@@ -2936,9 +2936,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b5860:
   - [✅] Reconstructed (Name: HudUiZrdWidget::HidePreview)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidget::HidePreview File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_hide_preview)
   - [❌] Binary-safe
 - 0x4b5900:
   - [✅] Reconstructed (Name: HudUiZrdWidget::OnActivate)
