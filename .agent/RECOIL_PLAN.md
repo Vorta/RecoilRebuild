@@ -3094,7 +3094,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiFillBitmap::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFillBitmap::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_fill_bitmap_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x4b84d0:
   - [✅] Reconstructed (Name: HudUiFillBitmap::DestructorCore)

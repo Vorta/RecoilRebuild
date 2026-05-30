@@ -5832,6 +5832,10 @@ extern "C" int zhud_fill_bitmap_core_smoke(void) {
                             destructorWidget.base.base.ftable ==
                                 reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
+    HudUiFillBitmap *const scalarHeapWidget = new HudUiFillBitmap{};
+    HudUiFillBitmap *const scalarHeapResult = scalarHeapWidget->ScalarDeletingDestructor(1);
+    const bool scalarHeapDeleted = scalarHeapResult == scalarHeapWidget;
+
     HudUiFillBitmap thunkWidget{};
     thunkWidget.Constructor();
     thunkWidget.base.base.image = &zVid_Image::g_zImage_DefaultImage;
@@ -5844,7 +5848,7 @@ extern "C" int zhud_fill_bitmap_core_smoke(void) {
         reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
     return constructed && normalized && setNormalized && drawn && dirtyDrawn && nullFillSkipped &&
-                   cursorUpdated && loaded && destructed && thunkDestructed
+                   cursorUpdated && loaded && destructed && scalarHeapDeleted && thunkDestructed
                ? 0
                : 1;
 }
