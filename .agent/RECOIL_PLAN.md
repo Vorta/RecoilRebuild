@@ -2422,7 +2422,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiMainMenuDialog_OptionsButton::OnActivate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMainMenuDialog_OptionsButton::OnActivate File: src/Battlesport/HudUiMainMenuDialog.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_main_menu_options_button_on_activate)
   - [❌] Binary-safe
 - 0x414fe0:
   - [✅] Reconstructed (Name: HudUiMainMenuDialog_QuitButton::OnActivate)
