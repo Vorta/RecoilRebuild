@@ -9689,6 +9689,12 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
     const bool captureHidden = (TestFieldAt<std::uint32_t>(measureLabel, 0x0c) & 0x10) != 0 &&
                                (input.sliderBorder.base.base.flags & 0x10) != 0;
 
+    input.base.base.flags = 0x82;
+    input.sliderBorder.base.base.flags = 0x80;
+    input.sliderBorder.sliderVisibleWhenInputActive = 0;
+    input.UpdateCaptureUiAndClip(0.05f);
+    const bool captureSliderDisabled = (input.sliderBorder.base.base.flags & 0x10) != 0;
+
     DeleteObject(measureLabel->hFont);
     measureLabel->hFont = nullptr;
 
@@ -9762,8 +9768,9 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
                    clampedDigitAccepted && clampedMinusFiltered && rawNoChange && rawEnabled &&
                    rawDisabled && rawNull && rawDispatched && rawFiltered && rawAccepted &&
                    acceptedNotify && deactivated && activated && bufferAllocated && updated &&
-                   captureUpdated && captureHidden && numericActivated && destructed &&
-                   deletingDestructed && thunkDestructed && focusActivated
+                   captureUpdated && captureHidden && captureSliderDisabled &&
+                   numericActivated && destructed && deletingDestructed && thunkDestructed &&
+                   focusActivated
                ? 0
                : 1;
 }

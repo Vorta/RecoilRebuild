@@ -2864,9 +2864,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b4ca0:
   - [☑️] Reconstructed (Name: HudUiNumericTextInput::UpdateCaptureUiAndClip)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNumericTextInput::UpdateCaptureUiAndClip File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_numeric_text_input_update_capture_ui_and_clip)
   - [❌] Binary-safe
 - 0x4b4e40:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::AllocTextBuffer)
