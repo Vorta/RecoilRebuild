@@ -8753,6 +8753,15 @@ void RECOIL_THISCALL HudCmdKeyAButton::OnBeginCapture()
     base.base.OnActivate();
 }
 
+// Reimplements 0x40ba60: HudCmdKeyAButton::OnClearBinding
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdKeyAButton::OnClearBinding()
+{
+    const int selectedIndex = base.selectedBindingIndex;
+    ((HudCmdDialog *)(base.base.base.owner))->ApplyPrimaryKeyRebind(0, selectedIndex);
+    base.SetSelectedEntry(selectedIndex);
+}
+
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)

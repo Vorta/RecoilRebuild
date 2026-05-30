@@ -6376,6 +6376,104 @@ extern "C" int zhud_cmd_key_a_button_on_begin_capture_smoke(void) {
     return failure;
 }
 
+extern "C" int zhud_cmd_key_a_button_on_clear_binding_smoke(void) {
+    HudCmdDialog dialog{};
+    dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
+    dialog.descriptionPanel.captureState = 77;
+    dialog.setList.base.selectedIndex = 0;
+
+    SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyAButton.base, "OldKeyA0", "OldKeyA1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyBButton.base, "OldKeyB0", "OldKeyB1", 3, 7);
+    SetupCommandDialogButton(&dialog.joyButton.base, "OldJoy0", "OldJoy1", 3, 7);
+    SetupCommandDialogButton(&dialog.mouseButton.base, "OldMouse0", "OldMouse1", 3, 7);
+    dialog.keyAButton.base.base.base.owner = &dialog;
+    dialog.keyAButton.base.selectedBindingIndex = 0;
+
+    zInput_BindMapContext *const oldCurrent = g_zInput_BindMap_Current;
+    zInput_BindGroupInfoList oldGroups = g_zInput_BindGroupInfoList;
+    const int oldLocId = g_zInput_CommandLocIdTable[5];
+    HMODULE const oldMessagesDll = g_zLoc_MessagesDllHandle;
+
+    zInput::BindMap_InitDikKeyNameTable();
+    zInput::BindMap_InitJoystickButtonNameTable();
+    zInput::BindMap_InitMouseButtonNameTable();
+
+    g_zLoc_MessagesDllHandle = GetModuleHandleA("kernel32.dll");
+    if (g_zLoc_MessagesDllHandle == nullptr || zLoc::GetMessageString(0) == nullptr ||
+        zLoc::GetMessageString(1) == nullptr) {
+        CleanupCommandDialogButton(&dialog.mouseButton.base);
+        CleanupCommandDialogButton(&dialog.joyButton.base);
+        CleanupCommandDialogButton(&dialog.keyBButton.base);
+        CleanupCommandDialogButton(&dialog.keyAButton.base);
+        CleanupCommandDialogButton(&dialog.commandList.base);
+        dialog.descriptionPanel.base.Destructor();
+        g_zLoc_MessagesDllHandle = oldMessagesDll;
+        return 2;
+    }
+
+    zInput_BindMapContext context{};
+    int packedBindings[16] = {};
+    zInputCommandCallbackFn callbacks[16] = {};
+    char commandFiveLabel[0x50] = {};
+    char *labels[16] = {};
+    labels[5] = commandFiveLabel;
+    context.m_commandCount = 16;
+    context.m_packedBindings = packedBindings;
+    context.m_commandCallbacks = callbacks;
+    context.m_commandLabels = labels;
+    context.SetBindingRecord(5, "CmdFiveCurrent", 0x1e, 0x30, 2, 1);
+    g_zInput_BindMap_Current = &context;
+
+    int commandIds[] = {5};
+    zInput_BindGroupInfo group{};
+    group.commandIdsBegin = commandIds;
+    group.commandIdsEnd = commandIds + 1;
+    group.commandIdsCapacity = commandIds + 1;
+    zInput_BindGroupInfo *groups[] = {&group};
+    g_zInput_BindGroupInfoList.begin = groups;
+    g_zInput_BindGroupInfoList.end = groups + 1;
+    g_zInput_BindGroupInfoList.capacity = groups + 1;
+    g_zInput_CommandLocIdTable[5] = 0;
+
+    dialog.keyAButton.OnClearBinding();
+
+    HudCmdBindingEntry **const commandBegin =
+        static_cast<HudCmdBindingEntry **>(dialog.commandList.base.bindingVec.begin);
+    HudCmdBindingEntry **const keyABegin =
+        static_cast<HudCmdBindingEntry **>(dialog.keyAButton.base.bindingVec.begin);
+    HudCmdBindingEntry **const keyBBegin =
+        static_cast<HudCmdBindingEntry **>(dialog.keyBButton.base.bindingVec.begin);
+    const bool cleared =
+        dialog.descriptionPanel.captureState == 0 &&
+        zInput::BindMapCurrent_GetPrimaryKeyboardKey(5) == 0 &&
+        zInput::BindMapCurrent_GetSecondaryKeyboardKey(5) == 0x30 &&
+        dialog.commandList.base.bindingVec.end == commandBegin + 1 &&
+        dialog.keyAButton.base.bindingVec.end == keyABegin + 1 &&
+        dialog.keyBButton.base.bindingVec.end == keyBBegin + 1 &&
+        commandBegin[0]->commandId == 5 && keyABegin[0]->commandId == 5 &&
+        keyBBegin[0]->commandId == 5 &&
+        keyABegin[0]->displayText[0] == '\0' &&
+        std::strcmp(keyBBegin[0]->displayText, "B") == 0 &&
+        dialog.commandList.base.selectedBindingIndex == 0 &&
+        dialog.keyAButton.base.selectedBindingIndex == 0 &&
+        TestFieldAt<char>(&dialog.descriptionPanel, 0x34) != '\0';
+
+    CleanupCommandDialogButton(&dialog.mouseButton.base);
+    CleanupCommandDialogButton(&dialog.joyButton.base);
+    CleanupCommandDialogButton(&dialog.keyBButton.base);
+    CleanupCommandDialogButton(&dialog.keyAButton.base);
+    CleanupCommandDialogButton(&dialog.commandList.base);
+    dialog.descriptionPanel.base.Destructor();
+
+    g_zInput_BindMap_Current = oldCurrent;
+    g_zInput_BindGroupInfoList = oldGroups;
+    g_zInput_CommandLocIdTable[5] = oldLocId;
+    g_zLoc_MessagesDllHandle = oldMessagesDll;
+
+    return cleared ? 0 : 1;
+}
+
 extern "C" int zhud_cmd_dialog_select_command_relative_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
