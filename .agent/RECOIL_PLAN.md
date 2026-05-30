@@ -2260,8 +2260,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiPanel::SetTextColorsAndMarkDirty)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::SetTextColorsAndMarkDirty File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_panel_set_text_colors_and_mark_dirty)
+  - [✅] Binary-safe
 - 0x40e040:
   - [✅] Reconstructed (Name: HudUiPanel::SetShadow)
   - [✅] Source dependencies satisfied
