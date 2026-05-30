@@ -676,6 +676,85 @@ extern "C" int hud_ui_main_menu_options_button_on_activate_smoke(void) {
     return itemOk && activated ? 0 : 1;
 }
 
+extern "C" int hud_ui_main_menu_quit_button_on_activate_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const zVideo_BltRectDirectProc oldBltDirect = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    const zVideo_SurfaceStatePartial oldSwSurface = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
+    auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    RecoilApp oldApp = g_RecoilApp;
+    const RecoilStateConfirmQuit oldConfirmQuitState = g_RecoilState_ConfirmQuit;
+
+    int networkEnabled = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = nullptr;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_GameStateOrMapTable = nullptr;
+
+    g_RecoilState_ConfirmQuit = RecoilStateConfirmQuit{};
+    g_RecoilState_ConfirmQuit.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+    g_queueEnterOnEnterCalls = 0;
+
+    TestQueueEnterState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+    g_RecoilApp = {};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+
+    HudUiMainMenuDialog dialog{};
+    dialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+
+    zVidImagePartial activateImage{};
+    dialog.quitButton.activateImage = &activateImage;
+
+    typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
+    ((ActivateFn)(dialog.quitButton.base.ftable->slots[12]))(&dialog.quitButton);
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    bool itemOk = false;
+    if (queue.m_itemCount == 1) {
+        const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+        auto *const slot =
+            reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
+        auto *const item =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+        itemOk = item->m_type == 0 && item->m_kind == RecoilApp_StateQueueKind_PushState &&
+                 item->m_stateObj ==
+                     static_cast<RecoilPtr32>(
+                         reinterpret_cast<std::uintptr_t>(&g_RecoilState_ConfirmQuit)) &&
+                 item->m_param == 0;
+        CleanupGlobalAppQueue();
+    }
+
+    const bool activated =
+        dialog.quitButton.base.image == &activateImage && g_queueEnterOnEnterCalls == 1;
+
+    g_RecoilState_ConfirmQuit = oldConfirmQuitState;
+    g_RecoilApp = oldApp;
+    g_GameStateOrMapTable = oldGameState;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+    g_zVideo_SwSurfaceState = oldSwSurface;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_DisplayModeSurfaceState = oldDisplaySurface;
+    return itemOk && activated ? 0 : 1;
+}
+
 // Reimplements 0x415220: RecoilStateMainMenuTransition::OnTryBecomeCurrent (frontend path).
 extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(void) {
     const int oldRendererPath = g_zVideo_ActiveRendererPath;
