@@ -1905,6 +1905,7 @@ struct HudUiTriplet {
     RECOIL_NOINLINE void RECOIL_THISCALL AddEntry(GameNetPlayerRow *entryData);
     RECOIL_NOINLINE void RECOIL_THISCALL UpdateEntryData(GameNetPlayerRow *entryData);
     RECOIL_NOINLINE void RECOIL_THISCALL RemoveEntry(GameNetPlayerRow *entryKey);
+    RECOIL_NOINLINE int RECOIL_THISCALL IsLocalPlayerFirstEntry();
 };
 
 struct HudUiTextStack4 {

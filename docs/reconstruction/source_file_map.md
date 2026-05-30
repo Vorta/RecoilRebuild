@@ -4,7 +4,7 @@ Generated from `Reimplements 0xNNNNNN: Name (original/source/path)` comments in 
 Binary Ninja remains authoritative; this map is an agent navigation aid.
 It only contains address-backed provenance comments and excludes helpers fully inlined by the retail compiler.
 
-Entries: 3076
+Entries: 3077
 
 ## Case-insensitive source path collisions
 
@@ -51,13 +51,13 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x404d10` `HudUiElement::HitTestTrue` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4406`
 - `0x410fe0` `HudUiMgr::UpdateFrame` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3771`
 - `0x411270` `HudUiMgr::UpdateTargetReticleFromCursor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3527`
-- `0x4138d0` `HudUi::ShowTopMessageLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13136`
-- `0x4138f0` `HudUi::ShowChatLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13144`
+- `0x4138d0` `HudUi::ShowTopMessageLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13152`
+- `0x4138f0` `HudUi::ShowChatLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13160`
 - `0x414300` `HudUiMgrSensor::GetFxRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:2584`
-- `0x4bd280` `HudUi::PushTopMessageLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13162`
-- `0x4bd470` `zTimedTask::RemoveFromActiveList` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12897`
-- `0x4bd4d0` `zTimedTask::RunImmediateAction` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12927`
-- `0x4bd660` `zTimedTask::TickActiveList` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13003`
+- `0x4bd280` `HudUi::PushTopMessageLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13178`
+- `0x4bd470` `zTimedTask::RemoveFromActiveList` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12913`
+- `0x4bd4d0` `zTimedTask::RunImmediateAction` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12943`
+- `0x4bd660` `zTimedTask::TickActiveList` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13019`
 
 ## Battlesport/HudSensorTracker.cpp
 
@@ -67,13 +67,13 @@ These original-source labels differ only by case on Windows; confirm placement a
 ## Battlesport/HudUi.cpp
 
 - `0x414330` `GameNet::ShowPlayerKillMessage` -> `src/Battlesport/GameNet.cpp:1173`
-- `0x4143b0` `HudUi::RefreshScoreboardEntryRow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13152`
-- `0x4143c0` `HudUi::RemoveScoreboardEntryRow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13157`
+- `0x4143b0` `HudUi::RefreshScoreboardEntryRow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13168`
+- `0x4143c0` `HudUi::RemoveScoreboardEntryRow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13173`
 
 ## Battlesport/hudui.cpp
 
-- `0x426150` `HudUi::HandleHotkeyCommand` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13046`
-- `0x4bc760` `HudUi::SetInvalidateMode` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13030`
+- `0x426150` `HudUi::HandleHotkeyCommand` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13062`
+- `0x4bc760` `HudUi::SetInvalidateMode` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13046`
 
 ## Battlesport/HudUi_Background.cpp
 
@@ -81,11 +81,11 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/HudUiMessageBoxDialog.cpp
 
-- `0x438350` `HudUi::ShowMessageBox` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13035`
+- `0x438350` `HudUi::ShowMessageBox` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13051`
 
 ## Battlesport/HudUiTextStack4.cpp
 
-- `0x4bd160` `HudUiTextStack4::PushLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12865`
+- `0x4bd160` `HudUiTextStack4::PushLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12881`
 
 ## Battlesport/HudUiTriplet.cpp
 
@@ -666,6 +666,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x40e040` `HudUiPanel::SetShadow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12145`
 - `0x40e070` `HudUiTriplet::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12691`
 - `0x40e910` `HudUiTriplet::InterpolateLayout` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10726`
+- `0x40ea60` `HudUiTriplet::IsLocalPlayerFirstEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12865`
 - `0x40eb00` `HudUiShieldMessageWidget::ApplyLayout` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11343`
 - `0x40ec90` `HudLayoutBase::Shutdown_Stub` -> `src/GameZRecoil/zHud/zhud_ui.cpp:751`
 - `0x40eca0` `HudUiTimerPanel::SetRunning` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12542`
@@ -676,7 +677,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x40ed80` `HudUiTimerPanel::ConstructorDefault` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12594`
 - `0x40ee60` `HudUiTimerPanel::UpdateHMSFromSeconds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12529`
 - `0x40ef00` `HudUiTimerPanel::SetTimeSeconds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12516`
-- `0x40ef60` `HudUiTimerPanelFloat::ConstructorDefault` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13301`
+- `0x40ef60` `HudUiTimerPanelFloat::ConstructorDefault` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13317`
 - `0x40f070` `HudUiCounter::ApplyFromLayoutNode` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11045`
 - `0x40f0f0` `HudUiCounter::ReleaseStateImages` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11034`
 - `0x40f130` `HudUiCounter::UpdateLayoutPosition` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11070`
@@ -701,8 +702,8 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x40fbd0` `HudUiMgr::ShutdownResources` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4117`
 - `0x40fdd0` `HudUiStringMenu::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11012`
 - `0x40fe30` `HudUiShieldMessageWidget::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11397`
-- `0x40fe90` `HudUiTopMessageStack::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13264`
-- `0x40fef0` `HudUiChatMessageStack::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13296`
+- `0x40fe90` `HudUiTopMessageStack::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13280`
+- `0x40fef0` `HudUiChatMessageStack::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13312`
 - `0x40ff50` `HudUiMgr::ActivateHud` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3986`
 - `0x40ff80` `HudUiMgr::OnViewportChanged` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3933`
 - `0x410140` `HudUiMgr::TickLayoutDelay` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3147`
@@ -1047,7 +1048,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x42be00` `Player::SetWorldPoseAndRestartAnchor` -> `src/Battlesport/player.cpp:6329`
 - `0x42be70` `Player::CaptureCurrentObjectPoseAsRestartAnchor` -> `src/Battlesport/player.cpp:6351`
 - `0x42bed0` `Player::ResetMotionTransientState` -> `src/Battlesport/player.cpp:7214`
-- `0x42bf40` `HudUi::PlayPowerupSfx` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13117`
+- `0x42bf40` `HudUi::PlayPowerupSfx` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13133`
 - `0x42bf90` `Player::UpdatePostMoveEnvironment` -> `src/Battlesport/player.cpp:10579`
 - `0x42c0d0` `Player::ProcessEnvProbeResults` -> `src/Battlesport/player.cpp:10624`
 - `0x42c2e0` `Player::UpdateVerticalVelocityAndTransform` -> `src/Battlesport/player.cpp:10815`
@@ -3098,13 +3099,13 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4bcdf0` `HudUiTextLabel::UpdateTextExtents` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11858`
 - `0x4bcf20` `HudUiBar::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11404`
 - `0x4bcf80` `HudUiBar::SetPointXY` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11414`
-- `0x4bd020` `HudUiTopMessageStack::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13241`
-- `0x4bd110` `HudUiTextStack4::SetFontAll` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13192`
-- `0x4bd2a0` `HudUiTextStack4::Clear` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13180`
-- `0x4bd2d0` `HudUiChatMessageStack::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13269`
-- `0x4bd3d0` `HudUiTextStack4::SetTextColors` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13168`
-- `0x4bd410` `HudUiTextStack4::SetXAll` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13213`
-- `0x4bd440` `HudUiTextStack4::SetYDescending` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13226`
+- `0x4bd020` `HudUiTopMessageStack::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13257`
+- `0x4bd110` `HudUiTextStack4::SetFontAll` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13208`
+- `0x4bd2a0` `HudUiTextStack4::Clear` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13196`
+- `0x4bd2d0` `HudUiChatMessageStack::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13285`
+- `0x4bd3d0` `HudUiTextStack4::SetTextColors` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13184`
+- `0x4bd410` `HudUiTextStack4::SetXAll` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13229`
+- `0x4bd440` `HudUiTextStack4::SetYDescending` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13242`
 - `0x4bd6f0` `HudLineClip::SetCurrentBoundsFromRectI` -> `src/Battlesport/HudSensorTracker.cpp:200`
 - `0x4bd720` `zMath::ClipLineSegmentToZRange` -> `src/GameZRecoil/zMath/zMath.cpp:914`
 - `0x4bd800` `zMath::ClipLineSegmentPointToZ` -> `src/GameZRecoil/zMath/zMath.cpp:903`

@@ -14289,6 +14289,32 @@ extern "C" int zhud_triplet_destructor_core_smoke(void) {
     return cleared ? 0 : 1;
 }
 
+extern "C" int zhud_triplet_is_local_player_first_entry_smoke(void) {
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+
+    HudUiTriplet triplet{};
+    HudUiScoreboardEntry entries[2] = {};
+    entries[0].playerKey = 1001;
+    entries[1].playerKey = 2002;
+
+    const bool emptyNull = triplet.IsLocalPlayerFirstEntry() == -1;
+
+    triplet.entries.begin = entries;
+    triplet.entries.end = entries;
+    triplet.entries.cap = entries + 2;
+    const bool emptyRange = triplet.IsLocalPlayerFirstEntry() == -1;
+
+    triplet.entries.end = entries + 2;
+    g_zNetwork_LocalPlayerKey = 1001;
+    const bool matchFirst = triplet.IsLocalPlayerFirstEntry() == 1;
+
+    g_zNetwork_LocalPlayerKey = 2002;
+    const bool otherEntryDoesNotMatch = triplet.IsLocalPlayerFirstEntry() == 0;
+
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    return emptyNull && emptyRange && matchFirst && otherEntryDoesNotMatch ? 0 : 1;
+}
+
 extern "C" int zhud_nanite_panel_init_layout_smoke(void) {
     zReader::Node clipItems[5] = {};
     clipItems[1].value.i32 = 8;

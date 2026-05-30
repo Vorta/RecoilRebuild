@@ -2306,9 +2306,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40ea60:
   - [☑️] Reconstructed (Name: HudUiTriplet::IsLocalPlayerFirstEntry)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiTriplet::IsLocalPlayerFirstEntry File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_triplet_is_local_player_first_entry)
   - [❌] Binary-safe
 - 0x40eab0:
   - [✅] Reconstructed (Name: HudScoreboard::SetScaleAndRebuild)

@@ -12862,6 +12862,22 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTriplet::RemoveEntry(GameNetPlayerRow 
     RebuildDisplay();
 }
 
+// Reimplements 0x40ea60: HudUiTriplet::IsLocalPlayerFirstEntry
+// (D:\Proj\Battlesport\HudUiTriplet.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL HudUiTriplet::IsLocalPlayerFirstEntry() {
+    HudUiScoreboardEntry *const begin = entries.begin;
+    int count = 0;
+    if (begin != 0) {
+        count = (int)(entries.end - begin);
+    }
+
+    if (count == 0) {
+        return -1;
+    }
+
+    return zNetwork_GetLocalPlayerKey() == entries.begin->playerKey ? 1 : 0;
+}
+
 // Reimplements 0x4bd160: HudUiTextStack4::PushLine (D:\Proj\Battlesport\HudUiTextStack4.cpp)
 HudUiPanel *RECOIL_THISCALL HudUiTextStack4::PushLine(const char *message, float duration) {
     HudUiVirtualSetContainerEnabled(&base, 1);
