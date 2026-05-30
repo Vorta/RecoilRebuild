@@ -12566,6 +12566,62 @@ extern "C" int zhud_options_panel_music_volume_on_activate_smoke(void) {
     return activated ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_resolution_sync_from_options_smoke(void) {
+    int videoMode = 2;
+    int videoAcceleration = 1;
+    int *const oldVideoMode = ZOPT_VIDEO_MODE;
+    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+
+    ZOPT_VIDEO_MODE = &videoMode;
+    ZOPT_VIDEO_ACCELERATION = &videoAcceleration;
+
+    HudUiOptionsPanel_Resolution resolution{};
+    resolution.base.Constructor();
+    resolution.base.itemCount = 20;
+    resolution.base.firstIndex = 0;
+    resolution.base.visibleCount = 20;
+
+    resolution.SyncFromOptions();
+    const bool hardwareMode2Ok = resolution.base.selectedIndex == 3 &&
+                                 resolution.base.firstIndex == 3 &&
+                                 resolution.base.visibleCount == 4;
+
+    videoAcceleration = 0;
+    videoMode = 2;
+    resolution.base.selectedIndex = 0;
+    resolution.base.firstIndex = 0;
+    resolution.base.visibleCount = 20;
+    resolution.SyncFromOptions();
+    const bool softwareMode2Ok = resolution.base.selectedIndex == 3 &&
+                                 resolution.base.firstIndex == 2 &&
+                                 resolution.base.visibleCount == 4;
+
+    videoAcceleration = 1;
+    videoMode = 7;
+    resolution.base.selectedIndex = 0;
+    resolution.base.firstIndex = 0;
+    resolution.base.visibleCount = 20;
+    resolution.SyncFromOptions();
+    const bool commonMode7Ok = resolution.base.selectedIndex == 5 &&
+                               resolution.base.firstIndex == 5 &&
+                               resolution.base.visibleCount == 6;
+
+    videoMode = 99;
+    resolution.base.selectedIndex = 2;
+    resolution.base.firstIndex = 1;
+    resolution.base.visibleCount = 3;
+    resolution.SyncFromOptions();
+    const bool invalidModeOk = resolution.base.selectedIndex == 2 &&
+                               resolution.base.firstIndex == 1 &&
+                               resolution.base.visibleCount == 3;
+
+    resolution.base.DestructorCore();
+    ZOPT_VIDEO_MODE = oldVideoMode;
+    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+
+    return hardwareMode2Ok && softwareMode2Ok && commonMode7Ok && invalidModeOk ? 0 : 1;
+}
+
 extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void) {
     int soundLod = 2;
     int *const oldSoundLod = ZOPT_SOUND_LOD;
