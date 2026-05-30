@@ -12066,6 +12066,44 @@ extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void) {
     return swPerspectiveOk && hwStandardOk && hwPerspectiveOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_object_detail_init_from_options_smoke(void) {
+    int swObjectLod = 0;
+    int hwObjectLod = 2;
+    int *const oldSwObjectLod = ZOPT_OBJECT_LOD_SW;
+    int *const oldHwObjectLod = ZOPT_OBJECT_LOD_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    ZOPT_OBJECT_LOD_SW = &swObjectLod;
+    ZOPT_OBJECT_LOD_HW = &hwObjectLod;
+
+    HudUiOptionsPanel_ObjectDetail objectDetail{};
+    objectDetail.base.Constructor();
+    objectDetail.base.itemCount = 4;
+    objectDetail.base.firstIndex = 1;
+    objectDetail.base.visibleCount = 3;
+
+    g_zOpt_HwMode = 0;
+    objectDetail.base.selectedIndex = 9;
+    objectDetail.InitFromOptions();
+    const bool swClampLowOk = objectDetail.base.selectedIndex == 1;
+
+    g_zOpt_HwMode = 1;
+    objectDetail.base.selectedIndex = 9;
+    objectDetail.InitFromOptions();
+    const bool hwSelectionOk = objectDetail.base.selectedIndex == 2;
+
+    hwObjectLod = 3;
+    objectDetail.InitFromOptions();
+    const bool hwVisibleClampOk = objectDetail.base.selectedIndex == 2;
+
+    objectDetail.base.DestructorCore();
+    ZOPT_OBJECT_LOD_SW = oldSwObjectLod;
+    ZOPT_OBJECT_LOD_HW = oldHwObjectLod;
+    g_zOpt_HwMode = oldHwMode;
+
+    return swClampLowOk && hwSelectionOk && hwVisibleClampOk ? 0 : 1;
+}
+
 namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;
