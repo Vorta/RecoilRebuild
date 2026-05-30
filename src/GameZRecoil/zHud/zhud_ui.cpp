@@ -4529,8 +4529,8 @@ int RECOIL_THISCALL HudUiCircle::HitTest(int px, int py) {
 }
 
 // Reimplements 0x4bc4e0: HudUiCircle::HitTestCore
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiCircle::HitTestCore(int px,
-                                                                      int py) {
+RECOIL_NOINLINE unsigned char RECOIL_THISCALL HudUiCircle::HitTestCore(int px,
+                                                                       int py) {
     const unsigned int dx = (unsigned int)(px) - (unsigned int)(base.x);
     const unsigned int dy = (unsigned int)(py) - (unsigned int)(base.y);
     const unsigned int distanceSquared = dx * dx + dy * dy;

@@ -3520,11 +3520,11 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: hud_ui_circle_draw_dirty_forwarder)
   - [✅] Binary-safe
 - 0x404e60:
-  - [☑️] Reconstructed (Name: HudUiCircle::HitTest)
+  - [✅] Reconstructed (Name: HudUiCircle::HitTest)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCircle::HitTest File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_circle_hit_test)
+  - [✅] Binary-safe
 - 0x4089c0:
   - [☑️] Reconstructed (Name: HudUiMgr::MapReplicatedScreenToRenderPoint)
   - [✅] Source dependencies satisfied
@@ -4843,11 +4843,11 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: hud_ui_circle_draw_dirty)
   - [✅] Binary-safe
 - 0x4bc4e0:
-  - [☑️] Reconstructed (Name: HudUiCircle::HitTestCore)
+  - [✅] Reconstructed (Name: HudUiCircle::HitTestCore)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCircle::HitTestCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_circle_hit_test_core)
+  - [✅] Binary-safe
 - 0x4bc510:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::Constructor)
   - [✅] Source dependencies satisfied

@@ -624,7 +624,7 @@ struct HudUiCircle {
     void RECOIL_THISCALL DrawDirty();
     void RECOIL_THISCALL DrawDirtyForwarder();
     int RECOIL_THISCALL HitTest(int px, int py);
-    int RECOIL_THISCALL HitTestCore(int px, int py);
+    unsigned char RECOIL_THISCALL HitTestCore(int px, int py);
 };
 
 struct HudUiContainer {
