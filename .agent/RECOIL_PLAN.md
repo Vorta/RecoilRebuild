@@ -18745,7 +18745,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::GetSoundLODOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetSoundLODOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_get_sound_lod_option)
   - [❌] Binary-safe
 - 0x4080e0:
   - [✅] Reconstructed (Name: zOpt::SetTextureMemoryForCurrentHwMode)
