@@ -456,6 +456,24 @@ void RECOIL_CDECL HudUiNewGamePanelOverlayOwner::QueueEnter()
     g_RecoilApp.QueuePushState(&g_HudUiNewGamePanelOverlayOwner, 0);
 }
 
+// Reimplements 0x41c560: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL
+HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent()
+{
+    HudUiNewGamePanel *panel =
+        (HudUiNewGamePanel *)::operator new(sizeof(HudUiNewGamePanel));
+    if (panel != 0)
+    {
+        panel = panel->Constructor();
+    }
+
+    m_panel = (RecoilPtr32)(unsigned int)panel;
+    panel->SyncIntensityFromDifficulty();
+    ((HudUiBackground *)panel)->SetEnabled(1);
+    return 1;
+}
+
 // Reimplements 0x41c290: HudUiNewGamePanel::Constructor
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
 HudUiNewGamePanel *RECOIL_THISCALL HudUiNewGamePanel::Constructor()

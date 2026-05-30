@@ -2648,9 +2648,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41c560:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_overlay_owner_on_try_become_current)
   - [❌] Binary-safe
 - 0x41c5e0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit)

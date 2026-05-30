@@ -345,6 +345,7 @@ extern const HudUiNumericTextInput_Base_FTable g_HudUiNewGamePanel_NameInput_Vtb
 struct HudUiNewGamePanelOverlayOwner : RecoilApp_IState {
     RecoilPtr32 m_panel; // HudUiNewGamePanel*
 
+    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     static void RECOIL_CDECL QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwner) == 0x08);
