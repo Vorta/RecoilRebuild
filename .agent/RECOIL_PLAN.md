@@ -3320,9 +3320,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x4349a0:
   - [☑️] Reconstructed (Name: HudUiSaveLoadDialog::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiSaveLoadDialog::Destructor File: src/Battlesport/RecoilApp.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_save_load_dialog_destructor)
   - [❌] Binary-safe
 - 0x434a80:
   - [☑️] Reconstructed (Name: HudUiSaveGameDialog::Destructor)

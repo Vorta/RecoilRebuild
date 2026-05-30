@@ -47,6 +47,7 @@ extern "C" int czrecoil_frame_toggle_archive_banks_smoke(void);
 extern "C" int czrecoil_frame_toggle_texture_packs_smoke(void);
 extern "C" int hud_ui_save_load_entry_is_newer_than_smoke(void);
 extern "C" int hud_ui_save_load_list_item_constructor_smoke(void);
+extern "C" int hud_ui_save_load_dialog_destructor_smoke(void);
 extern "C" int hud_ui_save_load_list_item_on_activate_smoke(void);
 extern "C" int hud_ui_save_load_insert_entry_sorted_prefix_smoke(void);
 extern "C" int hud_ui_save_load_partition_entries_by_pivot_smoke(void);
@@ -1722,6 +1723,8 @@ int main(int argc, char **argv) {
          hud_ui_save_load_entry_is_newer_than_smoke},
         {"hud_ui_save_load_list_item_constructor_smoke",
          hud_ui_save_load_list_item_constructor_smoke},
+        {"hud_ui_save_load_dialog_destructor_smoke",
+         hud_ui_save_load_dialog_destructor_smoke},
         {"hud_ui_save_load_list_item_on_activate_smoke",
          hud_ui_save_load_list_item_on_activate_smoke},
         {"hud_ui_save_load_insert_entry_sorted_prefix_smoke",

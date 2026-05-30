@@ -160,6 +160,7 @@ struct HudUiSaveLoadDialog {
     HudUiSaveLoadEntries fileEntries;
     int selectedEntryIndex;
 
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
     RECOIL_NOINLINE void RECOIL_THISCALL InitializeFileEntries();
     RECOIL_NOINLINE void RECOIL_THISCALL DeleteSaveFile(int confirmDelete);
     RECOIL_NOINLINE void RECOIL_THISCALL RefreshSaveFileList();

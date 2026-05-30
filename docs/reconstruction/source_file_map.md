@@ -4,7 +4,7 @@ Generated from `Reimplements 0xNNNNNN: Name (original/source/path)` comments in 
 Binary Ninja remains authoritative; this map is an agent navigation aid.
 It only contains address-backed provenance comments and excludes helpers fully inlined by the retail compiler.
 
-Entries: 3115
+Entries: 3116
 
 ## Case-insensitive source path collisions
 
@@ -145,7 +145,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 ## Battlesport/RecoilApp.cpp
 
 - `0x42f280` `RecoilApp_PlayState::TickAndRenderFrame` -> `src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp:29`
-- `0x430c90` `RecoilApp::FatalErrorAndExit` -> `src/Battlesport/RecoilApp.cpp:1318`
+- `0x430c90` `RecoilApp::FatalErrorAndExit` -> `src/Battlesport/RecoilApp.cpp:1340`
 
 ## Battlesport/zModel/gdi.c
 
@@ -1107,52 +1107,52 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x42db50` `zCom::QueryInterfaceFromInterfaceMap` -> `src/GameZRecoil/zCom/zCom.cpp:16`
 - `0x42dc30` `zCom::ConnectionPointContainer_Advise` -> `src/GameZRecoil/zCom/zCom.cpp:67`
 - `0x42dcf0` `zCom::ConnectionPointContainer_Unadvise` -> `src/GameZRecoil/zCom/zCom.cpp:85`
-- `0x42de10` `RecoilApp::GetMessageMap` -> `src/Battlesport/RecoilApp.cpp:1891`
-- `0x42de20` `RecoilApp::StaticInitAndRegisterAtExit` -> `src/Battlesport/RecoilApp.cpp:1742`
-- `0x42de30` `RecoilApp::StaticInit` -> `src/Battlesport/RecoilApp.cpp:1748`
-- `0x42de40` `RecoilApp::RegisterAtExit` -> `src/Battlesport/RecoilApp.cpp:1753`
-- `0x42de50` `RecoilApp::AtExitDestructor` -> `src/Battlesport/RecoilApp.cpp:1758`
-- `0x42de60` `RecoilApp::Destructor` -> `src/Battlesport/RecoilApp.cpp:1817`
-- `0x42df10` `RecoilApp_AttractFmvState::Destructor` -> `src/Battlesport/RecoilApp.cpp:2819`
-- `0x42df50` `RecoilApp_IntroFmvState::Destructor` -> `src/Battlesport/RecoilApp.cpp:2825`
-- `0x42df90` `RecoilApp_IState::Destructor` -> `src/Battlesport/RecoilApp.cpp:2804`
-- `0x42dfa0` `RecoilApp::Constructor` -> `src/Battlesport/RecoilApp.cpp:1796`
-- `0x42e070` `RecoilApp_MissionFmvState::Destructor` -> `src/Battlesport/RecoilApp.cpp:2853`
-- `0x42e0b0` `RecoilApp::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:1836`
-- `0x42e0d0` `RecoilApp_IntroFmvState::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:2842`
-- `0x42e0f0` `RecoilApp_IState::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:2809`
-- `0x42e110` `RecoilApp::CreateMainWnd` -> `src/Battlesport/RecoilApp.cpp:1465`
+- `0x42de10` `RecoilApp::GetMessageMap` -> `src/Battlesport/RecoilApp.cpp:1913`
+- `0x42de20` `RecoilApp::StaticInitAndRegisterAtExit` -> `src/Battlesport/RecoilApp.cpp:1764`
+- `0x42de30` `RecoilApp::StaticInit` -> `src/Battlesport/RecoilApp.cpp:1770`
+- `0x42de40` `RecoilApp::RegisterAtExit` -> `src/Battlesport/RecoilApp.cpp:1775`
+- `0x42de50` `RecoilApp::AtExitDestructor` -> `src/Battlesport/RecoilApp.cpp:1780`
+- `0x42de60` `RecoilApp::Destructor` -> `src/Battlesport/RecoilApp.cpp:1839`
+- `0x42df10` `RecoilApp_AttractFmvState::Destructor` -> `src/Battlesport/RecoilApp.cpp:2841`
+- `0x42df50` `RecoilApp_IntroFmvState::Destructor` -> `src/Battlesport/RecoilApp.cpp:2847`
+- `0x42df90` `RecoilApp_IState::Destructor` -> `src/Battlesport/RecoilApp.cpp:2826`
+- `0x42dfa0` `RecoilApp::Constructor` -> `src/Battlesport/RecoilApp.cpp:1818`
+- `0x42e070` `RecoilApp_MissionFmvState::Destructor` -> `src/Battlesport/RecoilApp.cpp:2875`
+- `0x42e0b0` `RecoilApp::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:1858`
+- `0x42e0d0` `RecoilApp_IntroFmvState::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:2864`
+- `0x42e0f0` `RecoilApp_IState::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:2831`
+- `0x42e110` `RecoilApp::CreateMainWnd` -> `src/Battlesport/RecoilApp.cpp:1487`
 - `0x42e170` `zInput::DI_SetJoystickEnabled` -> `src/GameZRecoil/zInput/zInput.cpp:2593`
-- `0x42e220` `RecoilApp::StartEngine` -> `src/Battlesport/RecoilApp.cpp:1604`
-- `0x42e330` `RecoilApp::InitializeDisplay` -> `src/Battlesport/RecoilApp.cpp:1568`
-- `0x42e430` `RecoilApp::ShutdownEngine` -> `src/Battlesport/RecoilApp.cpp:1684`
-- `0x42e490` `RecoilApp::LoadZbdAndStartEngine` -> `src/Battlesport/RecoilApp.cpp:1709`
-- `0x42e4d0` `RecoilApp::LoadZbdAndSetupSensorTracker` -> `src/Battlesport/RecoilApp.cpp:1720`
-- `0x42e520` `RecoilApp::InitInstance` -> `src/Battlesport/RecoilApp.cpp:1362`
-- `0x42e930` `RecoilApp::ExitInstance` -> `src/Battlesport/RecoilApp.cpp:1342`
-- `0x42e990` `RecoilApp::ActivateExistingInstance` -> `src/Battlesport/RecoilApp.cpp:1631`
-- `0x42e9f0` `RecoilApp::PreTranslateMessage` -> `src/Battlesport/RecoilApp.cpp:1648`
-- `0x42ea20` `RecoilApp_IntroFmvState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:2678`
-- `0x42eac0` `RecoilApp_IntroFmvState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:2708`
-- `0x42eb00` `RecoilApp_FmvState::OnIdleOrDispatch` -> `src/Battlesport/RecoilApp.cpp:2724`
-- `0x42eb10` `RecoilApp_IntroFmvState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:2730`
-- `0x42eb20` `RecoilApp_MainMenuPrepState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:2735`
-- `0x42eb60` `RecoilApp_MainMenuPrepState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:2745`
-- `0x42eb70` `RecoilApp_AttractFmvState::Constructor` -> `src/Battlesport/RecoilApp.cpp:2662`
-- `0x42ebd0` `RecoilApp_AttractFmvState::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:2831`
-- `0x42ebf0` `RecoilApp_AttractFmvState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:2751`
-- `0x42ec80` `RecoilApp_AttractFmvState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:2777`
-- `0x42eca0` `RecoilApp_AttractFmvState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:2788`
-- `0x42ed30` `RecoilApp_MissionFmvState::Constructor` -> `src/Battlesport/RecoilApp.cpp:2793`
-- `0x42ed90` `RecoilApp_MissionFmvState::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:2859`
+- `0x42e220` `RecoilApp::StartEngine` -> `src/Battlesport/RecoilApp.cpp:1626`
+- `0x42e330` `RecoilApp::InitializeDisplay` -> `src/Battlesport/RecoilApp.cpp:1590`
+- `0x42e430` `RecoilApp::ShutdownEngine` -> `src/Battlesport/RecoilApp.cpp:1706`
+- `0x42e490` `RecoilApp::LoadZbdAndStartEngine` -> `src/Battlesport/RecoilApp.cpp:1731`
+- `0x42e4d0` `RecoilApp::LoadZbdAndSetupSensorTracker` -> `src/Battlesport/RecoilApp.cpp:1742`
+- `0x42e520` `RecoilApp::InitInstance` -> `src/Battlesport/RecoilApp.cpp:1384`
+- `0x42e930` `RecoilApp::ExitInstance` -> `src/Battlesport/RecoilApp.cpp:1364`
+- `0x42e990` `RecoilApp::ActivateExistingInstance` -> `src/Battlesport/RecoilApp.cpp:1653`
+- `0x42e9f0` `RecoilApp::PreTranslateMessage` -> `src/Battlesport/RecoilApp.cpp:1670`
+- `0x42ea20` `RecoilApp_IntroFmvState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:2700`
+- `0x42eac0` `RecoilApp_IntroFmvState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:2730`
+- `0x42eb00` `RecoilApp_FmvState::OnIdleOrDispatch` -> `src/Battlesport/RecoilApp.cpp:2746`
+- `0x42eb10` `RecoilApp_IntroFmvState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:2752`
+- `0x42eb20` `RecoilApp_MainMenuPrepState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:2757`
+- `0x42eb60` `RecoilApp_MainMenuPrepState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:2767`
+- `0x42eb70` `RecoilApp_AttractFmvState::Constructor` -> `src/Battlesport/RecoilApp.cpp:2684`
+- `0x42ebd0` `RecoilApp_AttractFmvState::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:2853`
+- `0x42ebf0` `RecoilApp_AttractFmvState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:2773`
+- `0x42ec80` `RecoilApp_AttractFmvState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:2799`
+- `0x42eca0` `RecoilApp_AttractFmvState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:2810`
+- `0x42ed30` `RecoilApp_MissionFmvState::Constructor` -> `src/Battlesport/RecoilApp.cpp:2815`
+- `0x42ed90` `RecoilApp_MissionFmvState::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:2881`
 - `0x42ee40` `HudUiBackgroundContainer::SetEnabled` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4991`
-- `0x42eea0` `RecoilApp_PlayState::Constructor` -> `src/Battlesport/RecoilApp.cpp:2384`
-- `0x42eec0` `RecoilApp_PlayState::OnWndActivate` -> `src/Battlesport/RecoilApp.cpp:2392`
-- `0x42eed0` `RecoilApp_PlayState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:2399`
-- `0x42f5e0` `RecoilApp_PlayState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:2528`
-- `0x42f8a0` `RecoilApp_PlayState::OnResume` -> `src/Battlesport/RecoilApp.cpp:2608`
-- `0x42f8e0` `RecoilApp_PlayState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:2617`
-- `0x42f9d0` `RecoilApp_LeaveNetworkState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:2654`
+- `0x42eea0` `RecoilApp_PlayState::Constructor` -> `src/Battlesport/RecoilApp.cpp:2406`
+- `0x42eec0` `RecoilApp_PlayState::OnWndActivate` -> `src/Battlesport/RecoilApp.cpp:2414`
+- `0x42eed0` `RecoilApp_PlayState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:2421`
+- `0x42f5e0` `RecoilApp_PlayState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:2550`
+- `0x42f8a0` `RecoilApp_PlayState::OnResume` -> `src/Battlesport/RecoilApp.cpp:2630`
+- `0x42f8e0` `RecoilApp_PlayState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:2639`
+- `0x42f9d0` `RecoilApp_LeaveNetworkState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:2676`
 - `0x42f9f0` `zInput_DI_InitForceFeedbackEffectSet` -> `src/GameZRecoil/zInput/zInput.cpp:742`
 - `0x42fa80` `zInput_DI_IsForceFeedbackEnabled` -> `src/GameZRecoil/zInput/zInput.cpp:542`
 - `0x42faa0` `zInput_DI_RestartPrimaryFireEffect` -> `src/GameZRecoil/zInput/zInput.cpp:698`
@@ -1283,10 +1283,11 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4348b0` `HudUiSaveLoadGameNameInput::OnActivate` -> `src/Battlesport/RecoilApp.cpp:465`
 - `0x4348f0` `HudUiSaveLoadGameNameInput::OnRawKeyboardEvent` -> `src/Battlesport/RecoilApp.cpp:474`
 - `0x434920` `HudUiSaveLoadListItem::Constructor` -> `src/Battlesport/RecoilApp.cpp:399`
+- `0x4349a0` `HudUiSaveLoadDialog::Destructor` -> `src/Battlesport/RecoilApp.cpp:1127`
 - `0x434b90` `HudUiLoadGameDialog::Constructor` -> `src/Battlesport/RecoilApp.cpp:1063`
 - `0x434dc0` `HudUiLoadGameDialog::ProcessDialogResult` -> `src/Battlesport/RecoilApp.cpp:952`
-- `0x434dd0` `HudUiLoadGameDialog::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:1151`
-- `0x434df0` `HudUiLoadGameDialog::Destructor` -> `src/Battlesport/RecoilApp.cpp:1127`
+- `0x434dd0` `HudUiLoadGameDialog::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:1173`
+- `0x434df0` `HudUiLoadGameDialog::Destructor` -> `src/Battlesport/RecoilApp.cpp:1149`
 - `0x434ee0` `HudUiSaveLoadDialog::InitializeFileEntries` -> `src/Battlesport/RecoilApp.cpp:820`
 - `0x434fb0` `HudUiSaveLoadDialog::DeleteSaveFile` -> `src/Battlesport/RecoilApp.cpp:420`
 - `0x435140` `HudUiSaveLoadDeleteButton::OnActivate` -> `src/Battlesport/RecoilApp.cpp:485`
@@ -1306,11 +1307,11 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x435c80` `RecoilStateSaveLoadTransition::Constructor` -> `src/Battlesport/RecoilApp.cpp:351`
 - `0x435ca0` `RecoilStateSaveLoadTransition::ScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:362`
 - `0x435cc0` `RecoilStateSaveLoadTransition::Destructor` -> `src/Battlesport/RecoilApp.cpp:376`
-- `0x435d20` `RecoilStateSaveLoadTransition::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:1164`
-- `0x435e80` `RecoilStateSaveLoadTransition::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:1215`
-- `0x435ed0` `RecoilStateSaveLoadTransition::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:1239`
-- `0x435f50` `RecoilStateSaveLoadTransition::QueueOpenSaveDialog` -> `src/Battlesport/RecoilApp.cpp:1280`
-- `0x435f80` `RecoilStateSaveLoadTransition::QueueOpenLoadDialog` -> `src/Battlesport/RecoilApp.cpp:1295`
+- `0x435d20` `RecoilStateSaveLoadTransition::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:1186`
+- `0x435e80` `RecoilStateSaveLoadTransition::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:1237`
+- `0x435ed0` `RecoilStateSaveLoadTransition::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:1261`
+- `0x435f50` `RecoilStateSaveLoadTransition::QueueOpenSaveDialog` -> `src/Battlesport/RecoilApp.cpp:1302`
+- `0x435f80` `RecoilStateSaveLoadTransition::QueueOpenLoadDialog` -> `src/Battlesport/RecoilApp.cpp:1317`
 - `0x4362f0` `HudUiSaveLoadDialog::SortEntryRange` -> `src/Battlesport/RecoilApp.cpp:604`
 - `0x436530` `HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix` -> `src/Battlesport/RecoilApp.cpp:553`
 - `0x436580` `HudUiSaveLoadDialog::PartitionEntriesByPivot` -> `src/Battlesport/RecoilApp.cpp:571`
@@ -1407,24 +1408,24 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x43cc70` `Player::WriteMinesZarSection` -> `src/Battlesport/player.cpp:7967`
 - `0x43cdf0` `Player::Mines_ZAR_ReadEntryOrReset` -> `src/Battlesport/player.cpp:7936`
 - `0x441a10` `WestwoodOnlineUpgradeConfigDialog::GetMessageMap` -> `src/Battlesport/WestwoodOnlineUpgradeConfigDialog.cpp:33`
-- `0x4428b0` `RecoilApp::MfcOleModuleDestructor` -> `src/Battlesport/RecoilApp.cpp:2199`
-- `0x4429b0` `RecoilApp::MfcOleModuleScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:2237`
-- `0x4429d0` `RecoilApp::InitMainWindow` -> `src/Battlesport/RecoilApp.cpp:1475`
-- `0x442a10` `RecoilApp::TakeSkipWaitMessage` -> `src/Battlesport/RecoilApp.cpp:2168`
-- `0x442a30` `RecoilApp::MarkSkipWaitMessage` -> `src/Battlesport/RecoilApp.cpp:2175`
-- `0x442a50` `RecoilApp::EngineInit` -> `src/Battlesport/RecoilApp.cpp:1541`
-- `0x442bc0` `RecoilApp::ShutdownSubsystems` -> `src/Battlesport/RecoilApp.cpp:1668`
-- `0x442c00` `RecoilApp::GetMainWnd` -> `src/Battlesport/RecoilApp.cpp:1896`
-- `0x442c10` `RecoilApp::StartEngineAndQueueStartupState` -> `src/Battlesport/RecoilApp.cpp:2124`
-- `0x442c70` `RecoilApp::MfcOleModuleConstructor` -> `src/Battlesport/RecoilApp.cpp:2182`
-- `0x442d00` `RecoilApp::Run` -> `src/Battlesport/RecoilApp.cpp:2247`
-- `0x443140` `RecoilApp::GetCurrentState` -> `src/Battlesport/RecoilApp.cpp:1901`
-- `0x443160` `RecoilApp::QueueSwitchCurrentState` -> `src/Battlesport/RecoilApp.cpp:1915`
-- `0x443310` `RecoilApp::QueuePushState` -> `src/Battlesport/RecoilApp.cpp:1987`
-- `0x4434b0` `RecoilApp::QueueExitCurrentState` -> `src/Battlesport/RecoilApp.cpp:2055`
-- `0x443650` `RecoilApp::OnIdleOrDispatch` -> `src/Battlesport/RecoilApp.cpp:2151`
-- `0x443690` `RecoilApp_StateQueue::GrowAndCenterChunkBaseList` -> `src/Battlesport/RecoilApp.cpp:1862`
-- `0x443700` `RecoilApp_StateQueueBlock::InitFromCursor` -> `src/Battlesport/RecoilApp.cpp:1847`
+- `0x4428b0` `RecoilApp::MfcOleModuleDestructor` -> `src/Battlesport/RecoilApp.cpp:2221`
+- `0x4429b0` `RecoilApp::MfcOleModuleScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:2259`
+- `0x4429d0` `RecoilApp::InitMainWindow` -> `src/Battlesport/RecoilApp.cpp:1497`
+- `0x442a10` `RecoilApp::TakeSkipWaitMessage` -> `src/Battlesport/RecoilApp.cpp:2190`
+- `0x442a30` `RecoilApp::MarkSkipWaitMessage` -> `src/Battlesport/RecoilApp.cpp:2197`
+- `0x442a50` `RecoilApp::EngineInit` -> `src/Battlesport/RecoilApp.cpp:1563`
+- `0x442bc0` `RecoilApp::ShutdownSubsystems` -> `src/Battlesport/RecoilApp.cpp:1690`
+- `0x442c00` `RecoilApp::GetMainWnd` -> `src/Battlesport/RecoilApp.cpp:1918`
+- `0x442c10` `RecoilApp::StartEngineAndQueueStartupState` -> `src/Battlesport/RecoilApp.cpp:2146`
+- `0x442c70` `RecoilApp::MfcOleModuleConstructor` -> `src/Battlesport/RecoilApp.cpp:2204`
+- `0x442d00` `RecoilApp::Run` -> `src/Battlesport/RecoilApp.cpp:2269`
+- `0x443140` `RecoilApp::GetCurrentState` -> `src/Battlesport/RecoilApp.cpp:1923`
+- `0x443160` `RecoilApp::QueueSwitchCurrentState` -> `src/Battlesport/RecoilApp.cpp:1937`
+- `0x443310` `RecoilApp::QueuePushState` -> `src/Battlesport/RecoilApp.cpp:2009`
+- `0x4434b0` `RecoilApp::QueueExitCurrentState` -> `src/Battlesport/RecoilApp.cpp:2077`
+- `0x443650` `RecoilApp::OnIdleOrDispatch` -> `src/Battlesport/RecoilApp.cpp:2173`
+- `0x443690` `RecoilApp_StateQueue::GrowAndCenterChunkBaseList` -> `src/Battlesport/RecoilApp.cpp:1884`
+- `0x443700` `RecoilApp_StateQueueBlock::InitFromCursor` -> `src/Battlesport/RecoilApp.cpp:1869`
 - `0x443730` `CZGameFrame::CreateObject` -> `src/Battlesport/CZGameFrame.cpp:94`
 - `0x443790` `CZGameFrame::GetBaseRuntimeClass` -> `src/Battlesport/CZGameFrame.cpp:85`
 - `0x4437a0` `CZGameFrame::GetRuntimeClass` -> `src/Battlesport/CZGameFrame.cpp:109`
@@ -2675,7 +2676,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4a55c0` `zSndWaveData::Reset` -> `src/GameZRecoil/zSound/zsnd_create.cpp:524`
 - `0x4a5600` `zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded` -> `src/GameZRecoil/zSound/zsnd_create.cpp:504`
 - `0x4a5670` `Time::Reset` -> `src/GameZRecoil/Time/Time.cpp:20`
-- `0x4a5780` `RecoilApp::InitStdLogFiles` -> `src/Battlesport/RecoilApp.cpp:1763`
+- `0x4a5780` `RecoilApp::InitStdLogFiles` -> `src/Battlesport/RecoilApp.cpp:1785`
 - `0x4a5980` `zSys::ExitProcessWithCleanup` -> `src/GameZRecoil/zSys/zSys.cpp:528`
 - `0x4a59a0` `zVid::SetCachedClientRectUpdateMask` -> `src/GameZRecoil/zVideo/zVideo.cpp:973`
 - `0x4a59b0` `zVid_QueryCachedClientRectUpdateMaskIf3dfx` -> `src/GameZRecoil/zVideo/zVideo.cpp:714`
