@@ -11940,6 +11940,41 @@ extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void) {
     return setOk && clearOk && swOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void) {
+    int swFlags = 8;
+    int hwFlags = 0;
+    int *const oldSwFlags = ZOPT_GFX_FLAGS_SW;
+    int *const oldHwFlags = ZOPT_GFX_FLAGS_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    ZOPT_GFX_FLAGS_SW = &swFlags;
+    ZOPT_GFX_FLAGS_HW = &hwFlags;
+
+    HudUiOptionsPanel_Perspective perspective{};
+    perspective.base.Constructor();
+
+    g_zOpt_HwMode = 0;
+    perspective.base.checked = 0;
+    perspective.InitFromOptions();
+    const bool swOk = perspective.base.checked == 8;
+
+    g_zOpt_HwMode = 1;
+    perspective.base.checked = 7;
+    perspective.InitFromOptions();
+    const bool hwClearOk = perspective.base.checked == 0;
+
+    hwFlags = 0x2a;
+    perspective.InitFromOptions();
+    const bool hwSetOk = perspective.base.checked == 8;
+
+    perspective.base.DestructorCore();
+    ZOPT_GFX_FLAGS_SW = oldSwFlags;
+    ZOPT_GFX_FLAGS_HW = oldHwFlags;
+    g_zOpt_HwMode = oldHwMode;
+
+    return swOk && hwClearOk && hwSetOk ? 0 : 1;
+}
+
 namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;
