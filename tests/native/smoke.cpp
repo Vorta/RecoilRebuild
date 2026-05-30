@@ -1053,6 +1053,7 @@ extern "C" int recoil_state_main_menu_transition_queue_enter_smoke(void);
 extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke(void);
 extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void);
 extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void);
+extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void);
 extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(void);
 extern "C" int zsnd_set_use_archive_banks_flag_smoke(void);
 extern "C" int zsnd_sample_set_registry_init_shutdown_smoke(void);
@@ -3222,6 +3223,8 @@ int main(int argc, char **argv) {
          hud_ui_main_menu_dialog_constructor_smoke},
         {"hud_ui_main_menu_credits_button_on_activate_smoke",
          hud_ui_main_menu_credits_button_on_activate_smoke},
+        {"hud_ui_main_menu_save_button_on_activate_smoke",
+         hud_ui_main_menu_save_button_on_activate_smoke},
         {"recoil_state_main_menu_transition_on_try_become_current_smoke",
          recoil_state_main_menu_transition_on_try_become_current_smoke},
         {"zsnd_set_use_archive_banks_flag_smoke", zsnd_set_use_archive_banks_flag_smoke},
