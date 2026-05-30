@@ -5524,6 +5524,11 @@ extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
         scalarWidget.base.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
+    HudUiCycleSelectorWidget *const scalarHeapWidget = new HudUiCycleSelectorWidget{};
+    HudUiCycleSelectorWidget *const scalarHeapResult =
+        scalarHeapWidget->ScalarDeletingDestructor(1);
+    const bool scalarHeapDeleted = scalarHeapResult == scalarHeapWidget;
+
     HudUiCycleSelectorWidget thunkWidget{};
     TestZrdChildWidget thunkEntry{&table, 0};
     thunkWidget.entriesA[4] = reinterpret_cast<HudUiWidget *>(&thunkEntry);
@@ -5539,7 +5544,7 @@ extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
                    rangeInvalid && advanceWrap && advanceInside && updated && textEntryAdded &&
                    flashSet && flashAlreadySet && flashRateSet && flashRateAlreadySet &&
                    flashTickSwap && bitmapEntryAdded && destructed &&
-                   scalarDeleted && thunkDeleted
+                   scalarDeleted && scalarHeapDeleted && thunkDeleted
                ? 0
                : 1;
 }
