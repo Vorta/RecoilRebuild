@@ -653,6 +653,7 @@ extern "C" int zhud_options_panel_sound_active_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_sound_active_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_music_enable_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_music_enable_on_activate_smoke(void);
+extern "C" int zhud_options_panel_music_volume_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_sound_quality_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_sound_volume_sync_from_options_smoke(void);
@@ -1051,6 +1052,7 @@ extern "C" int zsnd_cached_directsound_get_caps_smoke(void);
 extern "C" int zsnd_options_cpu_and_cached_directsound_smoke(void);
 extern "C" int zsnd_cd_reset_track_state_smoke(void);
 extern "C" int zsnd_cd_is_stereo_aux_enabled_smoke(void);
+extern "C" int zsnd_cd_get_volume_smoke(void);
 extern "C" int zsnd_cd_not_ready_playback_smoke(void);
 extern "C" int zsnd_cd_playback_mci_commands_smoke(void);
 extern "C" int zsnd_cd_on_mci_notify_loop_smoke(void);
@@ -2652,6 +2654,8 @@ int main(int argc, char **argv) {
          zhud_options_panel_music_enable_sync_from_options_smoke},
         {"zhud_options_panel_music_enable_on_activate_smoke",
          zhud_options_panel_music_enable_on_activate_smoke},
+        {"zhud_options_panel_music_volume_sync_from_options_smoke",
+         zhud_options_panel_music_volume_sync_from_options_smoke},
         {"zhud_options_panel_sound_quality_init_from_options_smoke",
          zhud_options_panel_sound_quality_init_from_options_smoke},
         {"zhud_options_panel_sound_quality_sync_from_options_smoke",
@@ -3194,6 +3198,7 @@ int main(int argc, char **argv) {
          zsnd_options_cpu_and_cached_directsound_smoke},
         {"zsnd_cd_reset_track_state_smoke", zsnd_cd_reset_track_state_smoke},
         {"zsnd_cd_is_stereo_aux_enabled_smoke", zsnd_cd_is_stereo_aux_enabled_smoke},
+        {"zsnd_cd_get_volume_smoke", zsnd_cd_get_volume_smoke},
         {"zsnd_cd_not_ready_playback_smoke", zsnd_cd_not_ready_playback_smoke},
         {"zsnd_cd_playback_mci_commands_smoke", zsnd_cd_playback_mci_commands_smoke},
         {"zsnd_cd_on_mci_notify_loop_smoke", zsnd_cd_on_mci_notify_loop_smoke},

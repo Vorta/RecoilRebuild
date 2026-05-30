@@ -9273,7 +9273,10 @@ void RECOIL_THISCALL HudUiOptionsPanel_MusicEnable::OnActivate()
 // Reimplements 0x40ccc0: HudUiOptionsPanel_MusicVolume::SyncFromOptions
 void RECOIL_THISCALL HudUiOptionsPanel_MusicVolume::SyncFromOptions()
 {
-    base.SetNormalizedValue((float)(g_zSndCdAuxVolumePrimary) * ZSND_CD_VOLUME_TO_NORMALIZED);
+    unsigned short primaryVolume = 0;
+    unsigned short secondaryVolume = 0;
+    zSndCd::GetVolume(&primaryVolume, &secondaryVolume);
+    base.SetNormalizedValue((float)(primaryVolume) * ZSND_CD_VOLUME_TO_NORMALIZED);
 }
 
 // Reimplements 0x40cd00: HudUiOptionsPanel_MusicVolume::OnActivate

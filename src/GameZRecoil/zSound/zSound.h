@@ -421,6 +421,8 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
 RECOIL_NOINLINE int RECOIL_CDECL GetTrackCount();
 RECOIL_NOINLINE int RECOIL_FASTCALL PlayTrackWithMode(int trackIndex,
                                                                int playbackMode);
+RECOIL_NOINLINE int RECOIL_FASTCALL GetVolume(unsigned short *primaryVolumeOut,
+                                                       unsigned short *secondaryVolumeOut);
 } // namespace zSndCd
 
 extern "C" RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSndSample_CreateQueuedStreamingSample(

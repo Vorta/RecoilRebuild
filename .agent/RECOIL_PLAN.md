@@ -2165,9 +2165,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40ccc0:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_MusicVolume::SyncFromOptions)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanel_MusicVolume::SyncFromOptions File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_music_volume_sync_from_options)
   - [❌] Binary-safe
 - 0x40cd00:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_MusicVolume::OnActivate)
@@ -18532,13 +18532,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndCd::IsStereoAuxEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndCd::IsStereoAuxEnabled File: src/GameZRecoil/zSound/zsnd_cd.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_cd_is_stereo_aux_enabled)
   - [❌] Binary-safe
 - 0x4a27f0:
   - [☑️] Reconstructed (Name: zSndCd::GetVolume)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zSndCd::GetVolume File: src/GameZRecoil/zSound/zsnd_cd.cpp)
+  - [✅] Functional-equivalent (Target: zsnd_cd_get_volume)
   - [❌] Binary-safe
 - 0x4a2880:
   - [☑️] Reconstructed (Name: zSndCd::SetVolume)

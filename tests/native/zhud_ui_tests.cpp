@@ -1032,6 +1032,9 @@ std::int32_t g_musicEnablePlayTrackCount = 0;
 std::int32_t g_musicEnablePlayTrack = 0;
 std::int32_t g_musicEnablePlayMode = 0;
 std::int32_t g_musicEnableStopCount = 0;
+std::int32_t g_musicVolumeGetVolumeCount = 0;
+unsigned short g_musicVolumePrimary = 0;
+unsigned short g_musicVolumeSecondary = 0;
 
 struct TestOptionSelectorRefreshItem : HudUiZrdWidgetEx17C_Item {
     void RECOIL_THISCALL RefreshState() {
@@ -1049,6 +1052,14 @@ int RECOIL_FASTCALL FakeMusicEnablePlayTrackWithMode(int trackIndex, int playbac
 
 int RECOIL_CDECL FakeMusicEnableStop() {
     ++g_musicEnableStopCount;
+    return 1;
+}
+
+int RECOIL_FASTCALL FakeMusicVolumeGetVolume(unsigned short *primaryVolumeOut,
+                                             unsigned short *secondaryVolumeOut) {
+    ++g_musicVolumeGetVolumeCount;
+    *primaryVolumeOut = g_musicVolumePrimary;
+    *secondaryVolumeOut = g_musicVolumeSecondary;
     return 1;
 }
 
@@ -12461,6 +12472,37 @@ extern "C" int zhud_options_panel_music_enable_on_activate_smoke(void) {
     ZOPT_SOUND_CDAUDIO = oldCdAudio;
 
     return enabledOk && disabledOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_music_volume_sync_from_options_smoke(void) {
+    CodeFunctionPatch getVolumePatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zSndCd::GetVolume),
+                           reinterpret_cast<void *>(&FakeMusicVolumeGetVolume),
+                           getVolumePatch)) {
+        return 1;
+    }
+
+    g_musicVolumeGetVolumeCount = 0;
+    g_musicVolumePrimary = 32768;
+    g_musicVolumeSecondary = 1234;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+    g_HudUi_InvalidateMask = 0x80;
+
+    HudUiOptionsPanel_MusicVolume musicVolume{};
+    musicVolume.base.Constructor();
+    musicVolume.base.base.base.flags = 0;
+    musicVolume.SyncFromOptions();
+
+    const float expected = (float)(g_musicVolumePrimary) * 1.52590219e-05f;
+    const bool synced = g_musicVolumeGetVolumeCount == 1 &&
+                        HudFloatNear(musicVolume.base.normalizedValue, expected) &&
+                        (musicVolume.base.base.base.flags & 0x80u) != 0;
+
+    musicVolume.base.DestructorCore();
+    RestoreFunctionPatch(getVolumePatch);
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+
+    return synced ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void) {
