@@ -46,7 +46,7 @@ source-readiness, or coherent binary-safe groups currently being coordinated.
 - Anchor: 0x40c720 HudOptionsDialog::Constructor
 - Reason: options-dialog class/table cluster; constructor installs authored option-widget ftables and owns the dialog layout binding sequence.
 - Source blockers:
-  - none; 0x40c720, 0x40c9c0, 0x40c9e0, 0x40ca20, 0x40ca40, 0x40ca80, 0x40cab0, 0x40cad0, 0x40caf0, 0x40cb10, 0x40cb30, 0x40cb70, 0x40cb90, and 0x40cbb0 are functional-equivalent.
+  - none; 0x40c720, 0x40c9c0, 0x40c9e0, 0x40ca20, 0x40ca40, 0x40ca80, 0x40cab0, 0x40cad0, 0x40caf0, 0x40cb10, 0x40cb30, 0x40cb70, 0x40cb90, 0x40cbb0, and 0x40cbd0 are functional-equivalent.
 - Next action:
   - Verify the small HudUiOptionsPanel option-sync methods already modeled in `src/GameZRecoil/zHud/zhud_ui.cpp`, then recompute 0x40cf60 destructor/source-file follow-up.
 
