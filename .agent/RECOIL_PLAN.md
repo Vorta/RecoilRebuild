@@ -2266,8 +2266,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiPanel::SetShadow)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::SetShadow File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_panel_set_shadow)
+  - [✅] Binary-safe
 - 0x40e070:
   - [☑️] Reconstructed (Name: HudUiTriplet::DestructorCore)
   - [❌] Source dependencies satisfied
