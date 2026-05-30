@@ -393,6 +393,8 @@ const HudUiZrdWidgetEx17C_FTable g_HudUiZrdWidgetEx17C_FTable =
     MakeHudUiZrdWidgetEx17CFTable();
 const HudCmdBindButtonBase_FTable g_HudCmdBindButtonBase_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudCmdBindButtonBase_FTable>();
+RecoilApp_IState_Vtbl g_HudCmdDialogState_Vtbl = {0};
+HudCmdDialogState g_HudCmdDialogState = {0};
 // Recovered global 0x4e5e00: HUD command-dialog mouse capture debounce frames.
 int g_HudCmdMouseDebounceFrames = 0;
 const HudUiMessageBoxDialog_FTable g_HudUiMessageBoxDialog_FTable =
@@ -6814,6 +6816,12 @@ struct HudUiScalarDeletingDestructorDispatch {
     virtual void *ScalarDeletingDestructor(unsigned int flags);
 };
 
+struct HudCmdDialogVirtual {
+    virtual void RECOIL_THISCALL Update(float deltaSeconds);
+    virtual void RECOIL_THISCALL SetEnabled(int enabled);
+    virtual HudCmdDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+};
+
 // Reimplements 0x4b52f0: HudUiZrdWidget::DeleteChildIfPresent
 void *RECOIL_STDCALL HudUiZrdWidget::DeleteChildIfPresent(void *childWidgetOrNull) {
     if (childWidgetOrNull != 0) {
@@ -8673,6 +8681,98 @@ void RECOIL_THISCALL HudCmdDialog::Destructor()
     resetButton.base.DestructorCore();
     resumeButton.base.DestructorCore();
     base.Destructor();
+}
+
+// Reimplements 0x40a920: HudCmdDialog::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+HudCmdDialog *RECOIL_THISCALL HudCmdDialog::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x40bc20: HudCmdDialogState::StaticInitAndRegisterAtExit
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_CDECL HudCmdDialogState::StaticInitAndRegisterAtExit()
+{
+    StaticInit();
+    RegisterAtExit();
+}
+
+// Reimplements 0x40bc30: HudCmdDialogState::StaticInit
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+HudCmdDialogState *RECOIL_CDECL HudCmdDialogState::StaticInit()
+{
+    return g_HudCmdDialogState.Constructor();
+}
+
+// Reimplements 0x40bc40: HudCmdDialogState::RegisterAtExit
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_CDECL HudCmdDialogState::RegisterAtExit()
+{
+    atexit(AtExitDestructor);
+}
+
+// Reimplements 0x40bc50: HudCmdDialogState::AtExitDestructor
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_CDECL HudCmdDialogState::AtExitDestructor()
+{
+    g_HudCmdDialogState.DestructorCore();
+}
+
+// Reimplements 0x40bc60: HudCmdDialogState::Constructor
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+HudCmdDialogState *RECOIL_THISCALL HudCmdDialogState::Constructor()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_HudCmdDialogState_Vtbl;
+    m_dialog = 0;
+    return this;
+}
+
+struct HudCmdDialogStateBaseVtableGuard
+{
+    HudCmdDialogState *self;
+
+    ~HudCmdDialogStateBaseVtableGuard()
+    {
+        self->vftable = kRecoilStateBase_VtblAddress;
+    }
+};
+
+// Reimplements 0x40bc90: HudCmdDialogState::DestructorCore
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdDialogState::DestructorCore()
+{
+    vftable = (RecoilPtr32)(unsigned int)&g_HudCmdDialogState_Vtbl;
+    HudCmdDialogStateBaseVtableGuard baseVtableOnExit = {this};
+
+    HudCmdDialogVirtual *const dialogView = (HudCmdDialogVirtual *)(unsigned int)m_dialog;
+    if (dialogView != 0)
+    {
+        dialogView->ScalarDeletingDestructor(1);
+        m_dialog = 0;
+    }
+}
+
+// Reimplements 0x40bc70: HudCmdDialogState::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+HudCmdDialogState *RECOIL_THISCALL
+HudCmdDialogState::ScalarDeletingDestructor(unsigned int flags)
+{
+    DestructorCore();
+
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
 }
 
 // Reimplements 0x40b5e0: HudCmdDialog::SelectGroupRelative

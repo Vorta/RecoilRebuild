@@ -11224,6 +11224,122 @@ extern "C" int zhud_cmd_dialog_destructor_smoke(void) {
     return bindingsCleared && ftableReset ? 0 : 1;
 }
 
+extern "C" int zhud_cmd_dialog_scalar_deleting_destructor_smoke(void) {
+    HudCmdDialog *const dialog =
+        (HudCmdDialog *)(::operator new(sizeof(HudCmdDialog)));
+    std::memset(dialog, 0, sizeof(HudCmdDialog));
+
+    InstallDialogBinding(dialog->commandList.base, "Command");
+    InstallDialogBinding(dialog->keyAButton.base, "KeyA");
+    InstallDialogBinding(dialog->keyBButton.base, "KeyB");
+    InstallDialogBinding(dialog->joyButton.base, "Joy");
+    InstallDialogBinding(dialog->mouseButton.base, "Mouse");
+
+    HudCmdDialog *const returned = dialog->ScalarDeletingDestructor(0);
+
+    const bool noDeletePath =
+        returned == dialog &&
+        dialog->commandList.base.bindingVec.begin == 0 &&
+        dialog->keyAButton.base.bindingVec.begin == 0 &&
+        dialog->keyBButton.base.bindingVec.begin == 0 &&
+        dialog->joyButton.base.bindingVec.begin == 0 &&
+        dialog->mouseButton.base.bindingVec.begin == 0 &&
+        dialog->descriptionPanel.base.vtbl == &g_HudUiCommon_FTable;
+    ::operator delete(dialog);
+
+    HudCmdDialog *const deletingDialog =
+        (HudCmdDialog *)(::operator new(sizeof(HudCmdDialog)));
+    std::memset(deletingDialog, 0, sizeof(HudCmdDialog));
+    InstallDialogBinding(deletingDialog->commandList.base, "DeleteCommand");
+    deletingDialog->ScalarDeletingDestructor(1);
+
+    return noDeletePath ? 0 : 1;
+}
+
+namespace {
+int g_hudCmdDialogStateDeleteCount;
+unsigned int g_hudCmdDialogStateDeleteFlags;
+
+struct HudCmdDialogStateTestDialog {
+    virtual void RECOIL_THISCALL Update(float) {}
+    virtual void RECOIL_THISCALL SetEnabled(int) {}
+    virtual HudCmdDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags) {
+        ++g_hudCmdDialogStateDeleteCount;
+        g_hudCmdDialogStateDeleteFlags = flags;
+        return reinterpret_cast<HudCmdDialog *>(this);
+    }
+};
+} // namespace
+
+extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void) {
+    HudCmdDialogState state{};
+    state.vftable = 0x11111111;
+    state.m_dialog = 0x22222222;
+    HudCmdDialogState *const constructed = state.Constructor();
+    if (constructed != &state || state.vftable == 0 || state.m_dialog != 0) {
+        return 1;
+    }
+
+    state.DestructorCore();
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0) {
+        return 2;
+    }
+
+    HudCmdDialogStateTestDialog dialog;
+    g_hudCmdDialogStateDeleteCount = 0;
+    g_hudCmdDialogStateDeleteFlags = 0;
+
+    state.Constructor();
+    state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.DestructorCore();
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0 ||
+        g_hudCmdDialogStateDeleteCount != 1 || g_hudCmdDialogStateDeleteFlags != 1) {
+        return 3;
+    }
+
+    HudCmdDialogState scalarState{};
+    scalarState.vftable = 0x33333333;
+    HudCmdDialogState *const scalarReturned = scalarState.ScalarDeletingDestructor(0);
+    if (scalarReturned != &scalarState ||
+        scalarState.vftable != kRecoilStateBase_VtblAddress ||
+        scalarState.m_dialog != 0) {
+        return 4;
+    }
+
+    HudCmdDialogState *const deletingState =
+        static_cast<HudCmdDialogState *>(::operator new(sizeof(HudCmdDialogState)));
+    deletingState->vftable = 0x44444444;
+    deletingState->m_dialog = 0;
+    HudCmdDialogState *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+    if (deletingReturned != deletingState) {
+        return 5;
+    }
+
+    g_HudCmdDialogState.vftable = 0x55555555;
+    g_HudCmdDialogState.m_dialog = 0x66666666;
+    HudCmdDialogState *const staticReturned = HudCmdDialogState::StaticInit();
+    if (staticReturned != &g_HudCmdDialogState ||
+        g_HudCmdDialogState.vftable == 0 || g_HudCmdDialogState.m_dialog != 0) {
+        return 6;
+    }
+
+    HudCmdDialogState::AtExitDestructor();
+    if (g_HudCmdDialogState.vftable != kRecoilStateBase_VtblAddress ||
+        g_HudCmdDialogState.m_dialog != 0) {
+        return 7;
+    }
+
+    g_HudCmdDialogState.vftable = 0x77777777;
+    g_HudCmdDialogState.m_dialog = 0x88888888;
+    HudCmdDialogState::StaticInitAndRegisterAtExit();
+    if (g_HudCmdDialogState.vftable == 0 || g_HudCmdDialogState.m_dialog != 0) {
+        return 8;
+    }
+
+    return 0;
+}
+
 extern "C" int zhud_panel_constructor_default_smoke(void) {
     alignas(HudUiPanel) std::uint8_t storage[0x2ac]{};
     auto *panel = reinterpret_cast<HudUiPanel *>(storage);

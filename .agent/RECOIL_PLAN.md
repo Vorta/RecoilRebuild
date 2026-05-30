@@ -1955,40 +1955,40 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x40bc20:
   - [✅] Reconstructed (Name: HudCmdDialogState::StaticInitAndRegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialogState::StaticInitAndRegisterAtExit File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_state_static_init_and_register_at_exit)
+  - [✅] Binary-safe
 - 0x40bc30:
   - [✅] Reconstructed (Name: HudCmdDialogState::StaticInit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialogState::StaticInit File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_state_static_init)
+  - [✅] Binary-safe
 - 0x40bc40:
   - [✅] Reconstructed (Name: HudCmdDialogState::RegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialogState::RegisterAtExit File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_state_register_at_exit)
+  - [✅] Binary-safe
 - 0x40bc50:
   - [✅] Reconstructed (Name: HudCmdDialogState::AtExitDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialogState::AtExitDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_state_at_exit_destructor)
+  - [✅] Binary-safe
 - 0x40bc60:
   - [✅] Reconstructed (Name: HudCmdDialogState::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialogState::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_state_constructor)
+  - [✅] Binary-safe
 - 0x40bc90:
   - [☑️] Reconstructed (Name: HudCmdDialogState::DestructorCore)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialogState::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_state_destructor_core)
+  - [✅] Binary-safe
 - 0x40bcf0:
   - [☑️] Reconstructed (Name: HudCmdDialogState::OnTryBecomeCurrent)
   - [❌] Source dependencies satisfied
@@ -3311,16 +3311,16 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40a920:
   - [✅] Reconstructed (Name: HudCmdDialog::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialog::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x40bc70:
   - [☑️] Reconstructed (Name: HudCmdDialogState::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialogState::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_state_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x4349a0:
   - [☑️] Reconstructed (Name: HudUiSaveLoadDialog::Destructor)
   - [❌] Source dependencies satisfied

@@ -1495,6 +1495,7 @@ struct HudCmdDialog {
     HudCmdDescriptionPanel descriptionPanel;
 
     void RECOIL_THISCALL Destructor();
+    HudCmdDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     void RECOIL_THISCALL UpdateCaptureState(float deltaTime);
     int RECOIL_THISCALL SelectGroupRelative(int delta);
     int RECOIL_THISCALL SelectCommandRelative(int delta);
@@ -1505,6 +1506,26 @@ struct HudCmdDialog {
     int RECOIL_THISCALL ApplyJoystickButtonRebind(int buttonCode, int commandIndex);
     int RECOIL_THISCALL ApplyMouseButtonRebind(int buttonCode, int commandIndex);
 };
+
+struct RecoilApp_IState_Vtbl;
+
+struct HudCmdDialogState {
+    unsigned int vftable;  // RecoilApp_IState_Vtbl*
+    unsigned int m_dialog; // HudCmdDialog*
+
+    static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    static HudCmdDialogState *RECOIL_CDECL StaticInit();
+    static void RECOIL_CDECL RegisterAtExit();
+    static void RECOIL_CDECL AtExitDestructor();
+    HudCmdDialogState *RECOIL_THISCALL Constructor();
+    void RECOIL_THISCALL DestructorCore();
+    HudCmdDialogState *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+};
+RECOIL_STATIC_ASSERT(sizeof(HudCmdDialogState) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(HudCmdDialogState, m_dialog) == 0x04);
+
+extern RecoilApp_IState_Vtbl g_HudCmdDialogState_Vtbl;
+extern HudCmdDialogState g_HudCmdDialogState;
 
 struct HudUiMessageBoxDialog : HudUiBackground {
     zVidRect32 blitRect;
