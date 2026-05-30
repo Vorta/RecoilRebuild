@@ -2912,9 +2912,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x4b5310:
   - [✅] Reconstructed (Name: HudUiZrdWidget::Invalidate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidget::Invalidate File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_invalidate)
   - [❌] Binary-safe
 - 0x4b5350:
   - [☑️] Reconstructed (Name: HudUiZrdWidget::GetBoundsRectOrNull)
