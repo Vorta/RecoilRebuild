@@ -4720,6 +4720,26 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
         (previewLabel.flags & 0x10) != 0 && (previewRolloverLabel.flags & 0x10) == 0 &&
         (previewActivateLabel.flags & 0x10) != 0;
 
+    HudUiZrdWidget previewNoRolloverWidget{};
+    HudUiElement previewNoRolloverLabel{};
+    HudUiElement previewNoRolloverActivateLabel{};
+    previewNoRolloverLabel.ftable = &g_HudUiCommon_FTable;
+    previewNoRolloverActivateLabel.ftable = &g_HudUiCommon_FTable;
+    HudUiPanel *previewNoRolloverLabels[] = {
+        reinterpret_cast<HudUiPanel *>(&previewNoRolloverLabel),
+    };
+    HudUiPanel *previewNoRolloverActivateLabels[] = {
+        reinterpret_cast<HudUiPanel *>(&previewNoRolloverActivateLabel),
+    };
+    previewNoRolloverWidget.labelPanels.begin = previewNoRolloverLabels;
+    previewNoRolloverWidget.labelPanels.end = previewNoRolloverLabels + 1;
+    previewNoRolloverWidget.activateLabelPanels.begin = previewNoRolloverActivateLabels;
+    previewNoRolloverWidget.activateLabelPanels.end = previewNoRolloverActivateLabels + 1;
+    previewNoRolloverWidget.ShowPreview();
+    const bool previewNoRolloverShown =
+        (previewNoRolloverLabel.flags & 0x10) == 0 &&
+        (previewNoRolloverActivateLabel.flags & 0x10) != 0;
+
     HudUiZrdWidget activateWidget{};
     activateWidget.base.ftable = &g_HudUiWidget_FTable;
     zVidImagePartial activateImage{};
@@ -4755,7 +4775,8 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     return erased && inserted && nullDelete && childDelete && destructed && scalarDeleted &&
                    scalarHeapDeleted && invalidated && disabledBounds && imageBoundsOk &&
                    labelBoundsOk && centerBoundsOk && rightBoundsOk && refreshEnabled &&
-                   refreshDisabled && previewHidden && previewShown && activated
+                   refreshDisabled && previewHidden && previewShown && previewNoRolloverShown &&
+                   activated
                ? 0
                : 1;
 }
