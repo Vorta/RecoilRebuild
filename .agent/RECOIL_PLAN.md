@@ -3242,9 +3242,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bc9f0:
   - [☑️] Reconstructed (Name: HudUiTransitionTextPanel::TickFlash)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiTransitionTextPanel::TickFlash File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_transition_text_panel_tick_flash)
   - [❌] Binary-safe
 - 0x4bf060:
   - [☑️] Reconstructed (Name: HudUiMessageBoxDialog::Constructor)

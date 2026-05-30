@@ -1191,6 +1191,9 @@ int g_hudUiWidgetDrawBaseCount = 0;
 void *g_hudUiWidgetDrawBaseThis = nullptr;
 int g_hudUiPanelRebuildTextRectCount = 0;
 void *g_hudUiPanelRebuildTextRectThis = nullptr;
+int g_transitionTextPanelSetVisibleCount = 0;
+void *g_transitionTextPanelSetVisibleThis = nullptr;
+int g_transitionTextPanelSetVisibleValue = 0;
 
 struct TestHudUiWidgetDrawDispatch {
     void RECOIL_THISCALL DrawBase() {
@@ -1204,6 +1207,19 @@ struct TestHudUiPanelRebuildDispatch {
         ++g_hudUiPanelRebuildTextRectCount;
         g_hudUiPanelRebuildTextRectThis = this;
         TestFieldAt<std::uint32_t>(this, 0x270) = 0;
+    }
+};
+
+struct TestTransitionTextPanelVisibleDispatch {
+    void RECOIL_THISCALL SetVisible(int visible) {
+        ++g_transitionTextPanelSetVisibleCount;
+        g_transitionTextPanelSetVisibleThis = this;
+        g_transitionTextPanelSetVisibleValue = visible;
+        if (visible != 0) {
+            TestFieldAt<std::uint32_t>(this, 0x0c) &= ~0x10u;
+        } else {
+            TestFieldAt<std::uint32_t>(this, 0x0c) |= 0x10u;
+        }
     }
 };
 
@@ -5598,6 +5614,99 @@ extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
                    flashSet && flashAlreadySet && flashRateSet && flashRateAlreadySet &&
                    flashTickSwap && bitmapEntryAdded && bitmapEntrySkipped && destructed &&
                    scalarDeleted && scalarHeapDeleted && thunkDeleted
+               ? 0
+               : 1;
+}
+
+extern "C" int zhud_transition_text_panel_tick_flash_smoke(void) {
+    HudUiPanel_FTable table = g_HudUiTransitionTextPanel_FTable;
+    table.slots[2] = MethodAddress(&TestHudUiWidgetDrawDispatch::DrawBase);
+    table.slots[24] = MethodAddress(&TestTransitionTextPanelVisibleDispatch::SetVisible);
+    table.slots[36] = MethodAddress(&TestHudUiPanelRebuildDispatch::RebuildTextRect);
+
+    HudUiTransitionTextPanel panel{};
+    panel.Constructor();
+    auto *const panelBase = reinterpret_cast<HudUiPanel *>(&panel);
+    panelBase->vtbl = &table;
+    zVidImagePartial textImage{};
+    panelBase->textPick = &textImage;
+    TestFieldAt<char>(&panel, 0x34) = '\0';
+    TestFieldAt<std::uint32_t>(&panel, 0x270) = 0;
+
+    TestFieldAt<std::uint32_t>(&panel, 0x0c) = 0x10;
+    panel.flashEnabled = 1;
+    g_hudUiWidgetDrawBaseCount = 0;
+    g_transitionTextPanelSetVisibleCount = 0;
+    panel.TickFlash(0.25f);
+    const bool hiddenSkipped =
+        g_hudUiWidgetDrawBaseCount == 0 && g_transitionTextPanelSetVisibleCount == 0;
+
+    TestFieldAt<std::uint32_t>(&panel, 0x0c) = 1;
+    TestFieldAt<float>(&panel, 0x10) = 0.25f;
+    panel.flashEnabled = 0;
+    g_hudUiWidgetDrawBaseCount = 0;
+    g_hudUiWidgetDrawBaseThis = nullptr;
+    g_transitionTextPanelSetVisibleCount = 0;
+    g_transitionTextPanelSetVisibleThis = nullptr;
+    g_transitionTextPanelSetVisibleValue = 1;
+    panel.TickFlash(0.5f);
+    const bool timerHide =
+        g_transitionTextPanelSetVisibleCount == 1 &&
+        g_transitionTextPanelSetVisibleThis == &panel &&
+        g_transitionTextPanelSetVisibleValue == 0 &&
+        (TestFieldAt<std::uint32_t>(&panel, 0x0c) & 0x10u) != 0 &&
+        g_hudUiWidgetDrawBaseCount == 1 && g_hudUiWidgetDrawBaseThis == &panel;
+
+    TestFieldAt<std::uint32_t>(&panel, 0x0c) = 0;
+    panel.flashEnabled = 1;
+    panel.flashMode = 0;
+    panel.flashCountdown = 0.25f;
+    panel.flashResetValue = 0.5f;
+    panel.flashDirectionSign = 1;
+    TestFieldAt<std::uint32_t>(&panel, 0x270) = 0;
+    g_hudUiWidgetDrawBaseCount = 0;
+    panel.TickFlash(0.1f);
+    const bool mode0DrawsTwice =
+        g_hudUiWidgetDrawBaseCount == 2 && panel.flashCountdown == 0.15f &&
+        panel.flashDirectionSign == 1 && TestFieldAt<std::uint32_t>(&panel, 0x270) == 0;
+
+    panel.flashMode = 1;
+    panel.flashCountdown = 0.25f;
+    panel.flashResetValue = 0.5f;
+    panel.flashDirectionSign = 1;
+    TestFieldAt<std::uint32_t>(&panel, 0x270) = 0;
+    g_hudUiWidgetDrawBaseCount = 0;
+    panel.TickFlash(0.5f);
+    const bool mode1ExpiredNoDraw =
+        g_hudUiWidgetDrawBaseCount == 0 && panel.flashCountdown == 0.25f &&
+        panel.flashDirectionSign == -1 && TestFieldAt<std::uint32_t>(&panel, 0x270) == 1;
+
+    panel.flashMode = 2;
+    panel.flashCountdown = 0.25f;
+    panel.flashResetValue = 0.5f;
+    panel.flashDirectionSign = 1;
+    panel.flashAltColor0 = 0x00070809;
+    panel.flashAltColor1 = 0x000a0b0c;
+    TestFieldAt<std::uint32_t>(&panel, 0x14c) = 0x00010203;
+    TestFieldAt<std::uint32_t>(&panel, 0x150) = 0x00040506;
+    TestFieldAt<std::uint32_t>(&panel, 0x270) = 0;
+    g_hudUiWidgetDrawBaseCount = 0;
+    g_hudUiPanelRebuildTextRectCount = 0;
+    panel.TickFlash(0.5f);
+    const bool mode2Swap =
+        g_hudUiWidgetDrawBaseCount == 1 && g_hudUiPanelRebuildTextRectCount == 1 &&
+        panel.flashCountdown == 0.5f && panel.flashDirectionSign == -1 &&
+        TestFieldAt<std::uint32_t>(&panel, 0x270) == 0 &&
+        TestFieldAt<std::uint32_t>(&panel, 0x14c) == 0x00070809 &&
+        TestFieldAt<std::uint32_t>(&panel, 0x150) == 0x000a0b0c &&
+        panel.flashAltColor0 == 0x00010203 && panel.flashAltColor1 == 0x00040506;
+
+    panelBase->vtbl = &g_HudUiTransitionTextPanel_FTable;
+    panelBase->textPick = nullptr;
+    panelBase->Destructor();
+
+    return hiddenSkipped && timerHide && mode0DrawsTwice && mode1ExpiredNoDraw &&
+                   mode2Swap
                ? 0
                : 1;
 }

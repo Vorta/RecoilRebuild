@@ -531,6 +531,7 @@ extern "C" int hud_ui_widget_draw_smoke(void);
 extern "C" int zhud_zrd_widget_constructor_smoke(void);
 extern "C" int zhud_zrd_widget_helpers_smoke(void);
 extern "C" int zhud_zrd_widget_load_from_zrd_smoke(void);
+extern "C" int zhud_transition_text_panel_tick_flash_smoke(void);
 extern "C" int zhud_check_toggle_widget_helpers_smoke(void);
 extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void);
 extern "C" int zhud_cycle_selector_widget_constructor_smoke(void);
@@ -2487,6 +2488,8 @@ int main(int argc, char **argv) {
         {"zhud_zrd_widget_constructor_smoke", zhud_zrd_widget_constructor_smoke},
         {"zhud_zrd_widget_helpers_smoke", zhud_zrd_widget_helpers_smoke},
         {"zhud_zrd_widget_load_from_zrd_smoke", zhud_zrd_widget_load_from_zrd_smoke},
+        {"zhud_transition_text_panel_tick_flash_smoke",
+         zhud_transition_text_panel_tick_flash_smoke},
         {"zhud_check_toggle_widget_helpers_smoke", zhud_check_toggle_widget_helpers_smoke},
         {"zhud_check_toggle_widget_load_from_zrd_smoke",
          zhud_check_toggle_widget_load_from_zrd_smoke},

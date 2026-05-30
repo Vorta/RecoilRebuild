@@ -7848,7 +7848,7 @@ void RECOIL_THISCALL HudUiTransitionTextPanel::TickFlash(float deltaSeconds) {
     if ((elementFlags & 1u) != 0) {
         element->timer -= deltaSeconds;
         if (element->timer <= 0.0f) {
-            element->SetVisible(0);
+            HudUiVirtualSetVisibleRequired(element, 0);
         }
     }
 
