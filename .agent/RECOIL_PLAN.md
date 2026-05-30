@@ -2249,10 +2249,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40d1e0:
   - [✅] Reconstructed (Name: g_HudUiTripletWndClassName_StaticInitAndRegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiTriplet::StaticInitWndClassNameAndRegisterAtExit; Origin: compiler-generated; File: external; Target: pending)
 - 0x40d220:
   - [☑️] Reconstructed (Name: HudUiListMenuEntry::CompareSortKey)
   - [✅] Source dependencies satisfied
