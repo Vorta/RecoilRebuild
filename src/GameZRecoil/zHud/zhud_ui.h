@@ -1541,6 +1541,7 @@ struct HudCmdDialogState {
     static HudCmdDialogState *RECOIL_CDECL StaticInit();
     static void RECOIL_CDECL RegisterAtExit();
     static void RECOIL_CDECL AtExitDestructor();
+    static void RECOIL_CDECL QueueEnter();
     HudCmdDialogState *RECOIL_THISCALL Constructor();
     int RECOIL_THISCALL OnTryBecomeCurrent();
     void RECOIL_THISCALL OnDeactivate();

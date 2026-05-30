@@ -3242,6 +3242,24 @@ RecoilApp_StateQueueItem *StateQueueItemAtForTest(RecoilApp_StateQueue *queue, i
     return reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(item));
 }
 
+void CleanupSingleQueuedItemForTest(RecoilApp_StateQueue *queue) {
+    if (queue->m_itemCount == 0 || queue->m_chunkPtrList == 0) {
+        return;
+    }
+
+    const RecoilPtr32 slotValue = queue->m_writeBlock.m_cursor - 4;
+    RecoilPtr32 *const slot =
+        reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
+    RecoilPtr32 *const chunkList =
+        reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(queue->m_chunkPtrList));
+    void *const item = reinterpret_cast<void *>(static_cast<std::uintptr_t>(*slot));
+    void *const chunk = reinterpret_cast<void *>(static_cast<std::uintptr_t>(chunkList[1]));
+    ::operator delete(item);
+    ::operator delete(chunk);
+    ::operator delete(chunkList);
+    *queue = {};
+}
+
 struct TestCreditsLeaveNetworkState : RecoilApp_IState {
     void RECOIL_THISCALL OnEnter() {}
 };
@@ -11722,6 +11740,14 @@ struct HudCmdDialogStateTestDialog {
     unsigned char reserved04[0x110];
     zVidImagePartial *capturedImage;
 };
+
+int g_hudCmdDialogStateQueueEnterOnEnterCount;
+
+struct HudCmdDialogStateQueueEnterTestState {
+    void RECOIL_THISCALL OnEnter() {
+        ++g_hudCmdDialogStateQueueEnterOnEnterCount;
+    }
+};
 } // namespace
 
 extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void) {
@@ -11791,6 +11817,38 @@ extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void) {
     }
 
     return 0;
+}
+
+extern "C" int zhud_cmd_dialog_state_queue_enter_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    const RecoilPtr32 oldStateVtable = g_HudCmdDialogState.vftable;
+    const RecoilPtr32 oldDialog = g_HudCmdDialogState.m_dialog;
+
+    RecoilApp_IState_Vtbl vtable{};
+    vtable.OnEnter = MethodAddress(&HudCmdDialogStateQueueEnterTestState::OnEnter);
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_HudCmdDialogState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&vtable));
+    g_hudCmdDialogStateQueueEnterOnEnterCount = 0;
+
+    HudCmdDialogState::QueueEnter();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueueItem *const item = StateQueueItemAtForTest(&queue, 0);
+    const bool queued =
+        queue.m_itemCount == 1 && g_hudCmdDialogStateQueueEnterOnEnterCount == 1 &&
+        item->m_kind == RecoilApp_StateQueueKind_PushState &&
+        item->m_stateObj == static_cast<RecoilPtr32>(
+                                reinterpret_cast<std::uintptr_t>(&g_HudCmdDialogState)) &&
+        item->m_param == 0;
+
+    CleanupSingleQueuedItemForTest(&queue);
+    g_RecoilApp = oldApp;
+    g_HudCmdDialogState.vftable = oldStateVtable;
+    g_HudCmdDialogState.m_dialog = oldDialog;
+
+    return queued ? 0 : 1;
 }
 
 extern "C" int zhud_cmd_dialog_state_on_deactivate_smoke(void) {

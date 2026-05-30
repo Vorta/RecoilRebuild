@@ -637,6 +637,7 @@ extern "C" int zhud_cmd_mouse_button_destructor_smoke(void);
 extern "C" int zhud_cmd_dialog_destructor_smoke(void);
 extern "C" int zhud_cmd_dialog_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void);
+extern "C" int zhud_cmd_dialog_state_queue_enter_smoke(void);
 extern "C" int zhud_cmd_dialog_state_on_deactivate_smoke(void);
 extern "C" int zhud_panel_destructor_thunk_smoke(void);
 extern "C" int zhud_panel_text_color_shadow_smoke(void);
@@ -2598,6 +2599,8 @@ int main(int argc, char **argv) {
          zhud_cmd_dialog_scalar_deleting_destructor_smoke},
         {"zhud_cmd_dialog_state_lifecycle_smoke",
          zhud_cmd_dialog_state_lifecycle_smoke},
+        {"zhud_cmd_dialog_state_queue_enter_smoke",
+         zhud_cmd_dialog_state_queue_enter_smoke},
         {"zhud_cmd_dialog_state_on_deactivate_smoke",
          zhud_cmd_dialog_state_on_deactivate_smoke},
         {"zhud_panel_destructor_thunk_smoke", zhud_panel_destructor_thunk_smoke},

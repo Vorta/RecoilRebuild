@@ -8964,6 +8964,13 @@ void RECOIL_CDECL HudCmdDialogState::AtExitDestructor()
     g_HudCmdDialogState.DestructorCore();
 }
 
+// Reimplements 0x40bda0: HudCmdDialogState::QueueEnter
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_CDECL HudCmdDialogState::QueueEnter()
+{
+    g_RecoilApp.QueuePushState((RecoilApp_IState *)&g_HudCmdDialogState, 0);
+}
+
 // Reimplements 0x40bc60: HudCmdDialogState::Constructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 HudCmdDialogState *RECOIL_THISCALL HudCmdDialogState::Constructor()
