@@ -2171,9 +2171,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40cd00:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_MusicVolume::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanel_MusicVolume::OnActivate File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_music_volume_on_activate)
   - [❌] Binary-safe
 - 0x40cd30:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Resolution::SyncFromOptions)
@@ -18542,9 +18542,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4a2880:
   - [☑️] Reconstructed (Name: zSndCd::SetVolume)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zSndCd::SetVolume File: src/GameZRecoil/zSound/zsnd_cd.cpp)
+  - [✅] Functional-equivalent (Target: zsnd_cd_set_volume)
   - [❌] Binary-safe
 - 0x4a2930:
   - [✅] Reconstructed (Name: zSndCd::GetTrackCount)

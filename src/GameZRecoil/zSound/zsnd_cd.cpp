@@ -318,6 +318,31 @@ RECOIL_NOINLINE int RECOIL_FASTCALL GetVolume(unsigned short *primaryVolumeOut,
     return 1;
 }
 
+// Reimplements 0x4a2880: zSndCd::SetVolume
+RECOIL_NOINLINE int RECOIL_FASTCALL SetVolume(unsigned short primaryVolume,
+                                                       unsigned short secondaryVolume) {
+    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
+        return 0;
+    }
+
+    DWORD volume;
+    if (IsStereoAuxEnabled() == 0) {
+        volume = (DWORD)(((int)(primaryVolume) + (int)(secondaryVolume)) / 2);
+    } else {
+        volume = ((DWORD)(secondaryVolume) << 16) | (DWORD)(primaryVolume);
+    }
+
+    const DWORD mciError = auxSetVolume((UINT)(g_zSndCdAuxDeviceId), volume);
+    if (mciError != 0) {
+        zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x1b2);
+        return 0;
+    }
+
+    g_zSndCdAuxVolumePrimary = primaryVolume;
+    g_zSndCdAuxVolumeSecondary = secondaryVolume;
+    return 1;
+}
+
 // Reimplements 0x4a2600: zSndCd::ApplyPlaybackMode
 RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL
 ApplyPlaybackMode(int playbackMode) {

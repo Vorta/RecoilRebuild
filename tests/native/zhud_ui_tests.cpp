@@ -1035,6 +1035,9 @@ std::int32_t g_musicEnableStopCount = 0;
 std::int32_t g_musicVolumeGetVolumeCount = 0;
 unsigned short g_musicVolumePrimary = 0;
 unsigned short g_musicVolumeSecondary = 0;
+std::int32_t g_musicVolumeSetVolumeCount = 0;
+unsigned short g_musicVolumeSetPrimary = 0;
+unsigned short g_musicVolumeSetSecondary = 0;
 
 struct TestOptionSelectorRefreshItem : HudUiZrdWidgetEx17C_Item {
     void RECOIL_THISCALL RefreshState() {
@@ -1060,6 +1063,14 @@ int RECOIL_FASTCALL FakeMusicVolumeGetVolume(unsigned short *primaryVolumeOut,
     ++g_musicVolumeGetVolumeCount;
     *primaryVolumeOut = g_musicVolumePrimary;
     *secondaryVolumeOut = g_musicVolumeSecondary;
+    return 1;
+}
+
+int RECOIL_FASTCALL FakeMusicVolumeSetVolume(unsigned short primaryVolume,
+                                             unsigned short secondaryVolume) {
+    ++g_musicVolumeSetVolumeCount;
+    g_musicVolumeSetPrimary = primaryVolume;
+    g_musicVolumeSetSecondary = secondaryVolume;
     return 1;
 }
 
@@ -12503,6 +12514,56 @@ extern "C" int zhud_options_panel_music_volume_sync_from_options_smoke(void) {
     g_HudUi_InvalidateMask = oldInvalidateMask;
 
     return synced ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_music_volume_on_activate_smoke(void) {
+    CodeFunctionPatch setVolumePatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zSndCd::SetVolume),
+                           reinterpret_cast<void *>(&FakeMusicVolumeSetVolume),
+                           setVolumePatch)) {
+        return 1;
+    }
+
+    alignas(HudUiContainer) std::uint8_t ownerStorage[0xa94c] = {};
+    auto *owner = reinterpret_cast<HudUiContainer *>(ownerStorage);
+    owner->ConstructorDefault();
+    TestFieldAt<std::int32_t>(ownerStorage, 0x14) = 35;
+
+    zVidImagePartial baseImage{};
+    baseImage.width = 100;
+    zVidImagePartial fillImage{};
+    fillImage.width = 100;
+    fillImage.height = 8;
+
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+    g_HudUi_InvalidateMask = 0x80;
+    g_musicVolumeSetVolumeCount = 0;
+    g_musicVolumeSetPrimary = 0;
+    g_musicVolumeSetSecondary = 0;
+
+    HudUiOptionsPanel_MusicVolume musicVolume{};
+    musicVolume.base.Constructor();
+    musicVolume.base.base.owner = owner;
+    musicVolume.base.base.base.x = 10;
+    musicVolume.base.base.base.image = &baseImage;
+    musicVolume.base.fillImage = &fillImage;
+    musicVolume.OnActivate();
+
+    const unsigned short expectedVolume = (unsigned short)(0.25f * 65535.0f);
+    const bool activated =
+        musicVolume.base.normalizedValue == 0.25f &&
+        g_musicVolumeSetVolumeCount == 1 && g_musicVolumeSetPrimary == expectedVolume &&
+        g_musicVolumeSetSecondary == expectedVolume && musicVolume.base.fillRect.right == 25 &&
+        musicVolume.base.fillRect.bottom == 8;
+
+    musicVolume.base.fillImage = nullptr;
+    musicVolume.base.previewImage = nullptr;
+    musicVolume.base.base.base.image = nullptr;
+    musicVolume.base.DestructorCore();
+    RestoreFunctionPatch(setVolumePatch);
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+
+    return activated ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void) {

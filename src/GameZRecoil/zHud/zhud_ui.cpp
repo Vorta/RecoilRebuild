@@ -9285,8 +9285,7 @@ void RECOIL_THISCALL HudUiOptionsPanel_MusicVolume::OnActivate()
     base.UpdateNormalizedFromCursor();
     const unsigned short volume =
         (unsigned short)(base.normalizedValue * ZSND_CD_NORMALIZED_TO_VOLUME);
-    g_zSndCdAuxVolumePrimary = volume;
-    g_zSndCdAuxVolumeSecondary = volume;
+    zSndCd::SetVolume(volume, volume);
 }
 
 // Reimplements 0x40cd30: HudUiOptionsPanel_Resolution::SyncFromOptions
