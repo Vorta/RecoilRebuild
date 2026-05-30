@@ -13534,12 +13534,16 @@ extern "C" int zhud_panel_measure_text_prefix_rect_smoke(void) {
     RECT prefix{10, 20, 10, 20};
     const std::int32_t prefixResult = panel->MeasureTextPrefixRect(1, &prefix);
 
+    RECT tooLong{10, 20, 77, 20};
+    const std::int32_t tooLongResult = panel->MeasureTextPrefixRect(4, &tooLong);
+
     RECT empty{10, 20, 99, 20};
     const std::int32_t emptyResult = panel->MeasureTextPrefixRect(0, &empty);
 
-    const bool measured = wholeResult == 1 && prefixResult == 1 && emptyResult == 1 &&
-                          whole.right > prefix.right && prefix.right > prefix.left &&
-                          empty.right == empty.left;
+    const bool measured =
+        wholeResult == 1 && prefixResult == 1 && tooLongResult == 0 && emptyResult == 1 &&
+        whole.right > prefix.right && prefix.right > prefix.left && tooLong.right == 77 &&
+        empty.right == empty.left;
 
     DeleteObject(panel->hFont);
     panel->hFont = nullptr;
