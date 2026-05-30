@@ -5099,6 +5099,11 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
         scalarWidget.base.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
+    HudUiCheckToggleWidget *const scalarHeapWidget = new HudUiCheckToggleWidget{};
+    HudUiCheckToggleWidget *const scalarHeapResult =
+        scalarHeapWidget->ScalarDeletingDestructor(1);
+    const bool scalarHeapDeleted = scalarHeapResult == scalarHeapWidget;
+
     HudUiCheckToggleWidget thunkWidget{};
     TestZrdChildWidget thunkLabelChild{&table, 0};
     auto *const thunkCheckedImage =
@@ -5120,7 +5125,7 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     return constructed && checkedState && uncheckedState && refreshEnabled && refreshDisabled &&
                    previewShown && checkedPreviewSkipped && activated && fullHudTableThunk &&
                    thunkActivated && disabledActivateSkipped && previewHidden && bounds &&
-                   destructed && scalarDeleted && thunkDeleted
+                   destructed && scalarDeleted && scalarHeapDeleted && thunkDeleted
                ? 0
                : 1;
 }
