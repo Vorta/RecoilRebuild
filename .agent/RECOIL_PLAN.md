@@ -2758,7 +2758,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiTextInput::BackspaceDeleteChar)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::BackspaceDeleteChar File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_text_input_backspace_delete_char)
   - [❌] Binary-safe
 - 0x4b4550:
   - [✅] Reconstructed (Name: HudUiTextInput::DeleteCharForward)
@@ -2788,7 +2788,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiTextInput::ShiftTextLeft)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::ShiftTextLeft File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_text_input_shift_text_left)
   - [❌] Binary-safe
 - 0x4b4620:
   - [✅] Reconstructed (Name: HudUiSliderBorder::Constructor)
