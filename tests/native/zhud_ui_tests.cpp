@@ -5842,6 +5842,32 @@ extern "C" int zhud_fill_bitmap_core_smoke(void) {
                         loadedWidget.base.base.x == 107 && loadedWidget.base.base.y == 208;
     loadedWidget.ScalarDeletingDestructor(0);
 
+    zReader::Node emptyRootItems[1] = {};
+    emptyRootItems[0].value.i32 = 1;
+    zReader::Node emptyRoot{};
+    emptyRoot.type = zReader::ZRDR_NODE_ARRAY;
+    emptyRoot.value.nodes = emptyRootItems;
+
+    zVidImagePartial resetFillImage{};
+    resetFillImage.width = 80;
+    resetFillImage.height = 9;
+    zVidImagePartial resetPreviewImage{};
+    resetPreviewImage.width = 100;
+    HudUiFillBitmap resetWidget{};
+    resetWidget.Constructor();
+    resetWidget.fillImage = &resetFillImage;
+    resetWidget.previewImage = &resetPreviewImage;
+    resetWidget.normalizedValue = 0.5f;
+    const std::int32_t resetResult = resetWidget.LoadFromZrd(&emptyRoot, owner);
+    const bool resetLoaded =
+        resetResult == 1 && resetWidget.normalizedValue == 0.0f &&
+        resetWidget.fillRect.left == 0 && resetWidget.fillRect.right == 0 &&
+        resetWidget.fillRect.bottom == 9 && resetWidget.previewRect.left == 0 &&
+        resetWidget.previewRect.right == 100 && resetWidget.previewOffsetX == 0;
+    resetWidget.fillImage = nullptr;
+    resetWidget.previewImage = nullptr;
+    resetWidget.ScalarDeletingDestructor(0);
+
     HudUiFillBitmap destructorWidget{};
     destructorWidget.Constructor();
     destructorWidget.base.base.image = &zVid_Image::g_zImage_DefaultImage;
@@ -5870,7 +5896,8 @@ extern "C" int zhud_fill_bitmap_core_smoke(void) {
 
     return constructed && normalized && setNormalized && drawn && drawNullSkipped &&
                    drawEmptyRectsSkipped && dirtyDrawn && nullFillSkipped &&
-                   cursorUpdated && loaded && destructed && scalarHeapDeleted && thunkDestructed
+                   cursorUpdated && loaded && resetLoaded && destructed && scalarHeapDeleted &&
+                   thunkDestructed
                ? 0
                : 1;
 }
