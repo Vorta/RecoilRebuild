@@ -3496,17 +3496,17 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: hud_ui_element_scalar_deleting_destructor)
   - [✅] Binary-safe
 - 0x404d90:
-  - [☑️] Reconstructed (Name: HudUiWidget::GetCenterX)
+  - [✅] Reconstructed (Name: HudUiWidget::GetCenterX)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::GetCenterX File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_widget_get_center_x)
+  - [✅] Binary-safe
 - 0x404dd0:
   - [✅] Reconstructed (Name: HudUiWidget::GetCenterY)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::GetCenterY File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_widget_get_center_y)
+  - [✅] Binary-safe
 - 0x404e10:
   - [✅] Reconstructed (Name: HudUiWidget::RebuildBltRectFromImage)
   - [❌] Source dependencies satisfied
