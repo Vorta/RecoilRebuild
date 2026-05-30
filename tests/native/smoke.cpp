@@ -536,6 +536,7 @@ extern "C" int zhud_cmd_set_list_widget_on_activate_smoke(void);
 extern "C" int zhud_cmd_key_a_button_on_begin_capture_smoke(void);
 extern "C" int zhud_cmd_key_b_button_on_begin_capture_smoke(void);
 extern "C" int zhud_cmd_joy_button_on_begin_capture_smoke(void);
+extern "C" int zhud_cmd_mouse_button_on_begin_capture_smoke(void);
 extern "C" int zhud_cmd_key_a_button_on_clear_binding_smoke(void);
 extern "C" int zhud_cmd_key_b_button_on_clear_binding_smoke(void);
 extern "C" int zhud_cmd_joy_button_on_clear_binding_smoke(void);
@@ -2430,6 +2431,8 @@ int main(int argc, char **argv) {
          zhud_cmd_key_b_button_on_begin_capture_smoke},
         {"zhud_cmd_joy_button_on_begin_capture_smoke",
          zhud_cmd_joy_button_on_begin_capture_smoke},
+        {"zhud_cmd_mouse_button_on_begin_capture_smoke",
+         zhud_cmd_mouse_button_on_begin_capture_smoke},
         {"zhud_cmd_key_a_button_on_clear_binding_smoke",
          zhud_cmd_key_a_button_on_clear_binding_smoke},
         {"zhud_cmd_key_b_button_on_clear_binding_smoke",

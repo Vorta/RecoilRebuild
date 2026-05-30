@@ -985,6 +985,7 @@ struct HudCmdMouseButton {
     HudCmdBindButtonBase base;
 
     void RECOIL_THISCALL Destructor();
+    void RECOIL_THISCALL OnBeginCapture();
 };
 
 RECOIL_NOINLINE void **RECOIL_FASTCALL zUtil_StdPtrVector_Clear(HudCmdBindingVector *self);

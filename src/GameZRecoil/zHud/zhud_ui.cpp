@@ -8804,6 +8804,20 @@ void RECOIL_THISCALL HudCmdJoyButton::OnClearBinding()
         0, base.selectedBindingIndex);
 }
 
+// Reimplements 0x40bb50: HudCmdMouseButton::OnBeginCapture
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdMouseButton::OnBeginCapture()
+{
+    if (g_HudCmdMouseDebounceFrames > 0)
+    {
+        return;
+    }
+
+    ((HudCmdDialog *)(base.base.base.owner))->descriptionPanel.captureState = 4;
+    zInput::ResetAllTransitionState();
+    base.base.OnActivate();
+}
+
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)
