@@ -3146,15 +3146,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b87d0:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_ex17c_item_show_preview_if_not_selected)
   - [❌] Binary-safe
 - 0x4b87e0:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_ex17c_item_hide_preview_if_not_selected)
   - [❌] Binary-safe
 - 0x4b87f0:
   - [☑️] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf)
