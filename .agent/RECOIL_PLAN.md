@@ -3466,11 +3466,11 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: hud_ui_element_set_y)
   - [✅] Binary-safe
 - 0x404d10:
-  - [☑️] Reconstructed (Name: HudUiElement::HitTestTrue)
+  - [✅] Reconstructed (Name: HudUiElement::HitTestTrue)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::HitTestTrue File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_element_hit_test_true)
+  - [✅] Binary-safe
 - 0x404d20:
   - [✅] Reconstructed (Name: HudUiElement::SetVisible)
   - [✅] Source dependencies satisfied

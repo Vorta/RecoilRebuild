@@ -2482,6 +2482,12 @@ extern "C" int zhud_element_set_timer_smoke(void) {
     return active && expired ? 0 : 1;
 }
 
+extern "C" int zhud_element_hit_test_true_smoke(void) {
+    HudUiElement element{};
+
+    return element.HitTestTrue(-100, 200) == 1 && element.HitTestTrue(999, -999) == 1 ? 0 : 1;
+}
+
 extern "C" int zhud_circle_constructor_and_hit_test_smoke(void) {
     HudUiCircle circle{};
     HudUiCircle *const result = circle.Constructor(10, 20, 5, 0x07e0);
