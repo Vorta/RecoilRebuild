@@ -10660,13 +10660,27 @@ int RECOIL_THISCALL HudUiWidget::GetCenterY() {
     return y;
 }
 
+// Reimplements 0x404e10: HudUiWidget::RebuildBltRectFromImage
 RECOIL_NO_GS void RECOIL_THISCALL HudUiWidget::RebuildBltRectFromImage() {
-    typedef void (RECOIL_THISCALL *SetClipRectFn)(HudUiWidget * self, const HudUiRect *rect);
+    struct SetClipRectFTable {
+        unsigned int slots[7];
+        void (HudUiWidget::*SetClipRect)(const HudUiRect *rect);
+    };
 
-    const int width = image != 0 ? image->width : 0;
-    const int height = image != 0 ? image->height : 0;
-    const HudUiRect rect = {x, y, x + width, y + height};
-    ((SetClipRectFn)(ftable->slots[7]))(this, &rect);
+    zVidImagePartial *const sourceImage = image;
+    int right = x;
+    int bottom = y;
+    HudUiRect rect;
+
+    rect.left = right;
+    rect.top = bottom;
+    right += sourceImage != 0 ? sourceImage->width : 0;
+    rect.right = right;
+    bottom += sourceImage != 0 ? sourceImage->height : 0;
+    rect.bottom = bottom;
+
+    const SetClipRectFTable *const dispatch = (const SetClipRectFTable *)ftable;
+    (this->*dispatch->SetClipRect)(&rect);
 }
 
 // Reimplements 0x4b3fb0: HudUiWidget::Draw

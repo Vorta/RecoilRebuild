@@ -3509,9 +3509,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x404e10:
   - [✅] Reconstructed (Name: HudUiWidget::RebuildBltRectFromImage)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiWidget::RebuildBltRectFromImage File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_widget_rebuild_blt_rect_from_image)
   - [❌] Binary-safe
 - 0x403c80:
   - [❌] Reconstructed (Name: HudUiCircle::DrawDirtyForwarder)

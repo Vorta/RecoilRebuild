@@ -4361,13 +4361,20 @@ extern "C" int zhud_widget_constructor_smoke(void) {
     const bool rebuiltNullRect = widget.clipRect.left == 10 && widget.clipRect.top == 20 &&
                                  widget.clipRect.right == 10 && widget.clipRect.bottom == 20;
 
+    widget.image = &image;
+    image.width = -5;
+    image.height = -3;
+    widget.RebuildBltRectFromImage();
+    const bool rebuiltNegativeRect = widget.clipRect.left == 10 && widget.clipRect.top == 20 &&
+                                     widget.clipRect.right == 5 && widget.clipRect.bottom == 17;
+
     widget.alignFlags = 0x55aa;
 
     return widget.ftable == &g_HudUiWidget_FTable && widget.alignFlags == 0x55aa &&
                    widget.ownsImage == 0 && widget.bltClipRectOrNull == nullptr &&
                    widget.imageStateWord == 0xabcd0000 && widget.dirtyRectCount == 0 &&
                    dirtyFramesCleared && unalignedCenter && alignedCenter && negativeCenter &&
-                   rebuiltImageRect && rebuiltNullRect
+                   rebuiltImageRect && rebuiltNullRect && rebuiltNegativeRect
                ? 0
                : 1;
 }
