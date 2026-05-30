@@ -12104,6 +12104,47 @@ extern "C" int zhud_options_panel_object_detail_init_from_options_smoke(void) {
     return swClampLowOk && hwSelectionOk && hwVisibleClampOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_object_detail_sync_from_options_smoke(void) {
+    int swObjectLod = 0;
+    int hwObjectLod = 0;
+    int *const oldSwObjectLod = ZOPT_OBJECT_LOD_SW;
+    int *const oldHwObjectLod = ZOPT_OBJECT_LOD_HW;
+    zOpt_CameraSection **const oldCameraSection = g_zOpt_CameraSectionOption;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    ZOPT_OBJECT_LOD_SW = &swObjectLod;
+    ZOPT_OBJECT_LOD_HW = &hwObjectLod;
+    g_zOpt_CameraSectionOption = nullptr;
+
+    HudUiOptionsPanel_ObjectDetail objectDetail{};
+    objectDetail.base.Constructor();
+    objectDetail.base.itemCount = 3;
+    objectDetail.base.firstIndex = 0;
+    objectDetail.base.visibleCount = 3;
+
+    g_zOpt_HwMode = 0;
+    objectDetail.base.selectedIndex = 0;
+    objectDetail.SyncFromOptions();
+    const bool swAdvanceOk = objectDetail.base.selectedIndex == 1 && swObjectLod == 1;
+
+    objectDetail.base.selectedIndex = 2;
+    objectDetail.SyncFromOptions();
+    const bool swWrapOk = objectDetail.base.selectedIndex == 0 && swObjectLod == 0;
+
+    g_zOpt_HwMode = 1;
+    objectDetail.base.selectedIndex = 1;
+    objectDetail.SyncFromOptions();
+    const bool hwAdvanceOk = objectDetail.base.selectedIndex == 2 && hwObjectLod == 2;
+
+    objectDetail.base.DestructorCore();
+    ZOPT_OBJECT_LOD_SW = oldSwObjectLod;
+    ZOPT_OBJECT_LOD_HW = oldHwObjectLod;
+    g_zOpt_CameraSectionOption = oldCameraSection;
+    g_zOpt_HwMode = oldHwMode;
+
+    return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
+}
+
 namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;
