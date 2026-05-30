@@ -26,10 +26,16 @@ extern RecoilStateCredits g_RecoilStateCredits;
 
 namespace {
 int g_queueEnterOnEnterCalls;
+int g_queueEnterOnExitCalls;
+int g_mainMenuLayoutActivatedCount;
 
 struct TestQueueEnterState : RecoilApp_IState {
     void RECOIL_THISCALL OnEnter() {
         ++g_queueEnterOnEnterCalls;
+    }
+
+    void RECOIL_THISCALL OnExit() {
+        ++g_queueEnterOnExitCalls;
     }
 };
 
@@ -47,10 +53,15 @@ RecoilFn32 QueueEnterMethodToFn(void (RECOIL_THISCALL TestQueueEnterState::*meth
 RecoilApp_IState_Vtbl MakeQueueEnterVtable() {
     RecoilApp_IState_Vtbl vtable{};
     vtable.OnEnter = QueueEnterMethodToFn(&TestQueueEnterState::OnEnter);
+    vtable.OnExit = QueueEnterMethodToFn(&TestQueueEnterState::OnExit);
     return vtable;
 }
 
 RecoilApp_IState_Vtbl g_queueEnterVtable = MakeQueueEnterVtable();
+
+void RECOIL_FASTCALL TestMainMenuLayoutOnActivated(HudLayoutBase *) {
+    ++g_mainMenuLayoutActivatedCount;
+}
 
 int RECOIL_FASTCALL TestVideoSurfaceStateNoOp(zVideo_SurfaceStatePartial *surfaceState) {
     (void)surfaceState;
@@ -492,6 +503,87 @@ extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void) {
         dialog.newGameButton.base.image == &activateImage && g_queueEnterOnEnterCalls == 1;
 
     g_HudUiNewGamePanelOverlayOwner = oldNewGameState;
+    g_RecoilApp = oldApp;
+    g_GameStateOrMapTable = oldGameState;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+    g_zVideo_SwSurfaceState = oldSwSurface;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_DisplayModeSurfaceState = oldDisplaySurface;
+    return itemOk && activated ? 0 : 1;
+}
+
+extern "C" int hud_ui_menu_back_button_on_activate_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const zVideo_BltRectDirectProc oldBltDirect = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    const zVideo_SurfaceStatePartial oldSwSurface = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
+    auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
+    RecoilApp oldApp = g_RecoilApp;
+
+    int networkEnabled = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = nullptr;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_GameStateOrMapTable = nullptr;
+
+    TestQueueEnterState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+    g_queueEnterOnEnterCalls = 0;
+    g_queueEnterOnExitCalls = 0;
+    g_RecoilApp = {};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+
+    HudLayoutBase_FTable layoutTable{};
+    layoutTable.OnActivated = TestMainMenuLayoutOnActivated;
+    HudLayoutBase layout{};
+    layout.ftable = &layoutTable;
+    g_mainMenuLayoutActivatedCount = 0;
+    g_HudUiMgrCurrentLayout = &layout;
+
+    HudUiMainMenuDialog dialog{};
+    dialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+
+    zVidImagePartial activateImage{};
+    dialog.backButton.activateImage = &activateImage;
+
+    typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
+    ((ActivateFn)(dialog.backButton.base.ftable->slots[12]))(&dialog.backButton);
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    bool itemOk = false;
+    if (queue.m_itemCount == 1) {
+        const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
+        auto *const slot =
+            reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
+        auto *const item =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+        itemOk = item->m_type == 0 && item->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
+                 item->m_stateObj == 0 && item->m_param == 0;
+        CleanupGlobalAppQueue();
+    }
+
+    const bool activated = dialog.backButton.base.image == &activateImage &&
+                           g_queueEnterOnExitCalls == 1 && g_queueEnterOnEnterCalls == 0 &&
+                           g_mainMenuLayoutActivatedCount == 1;
+
+    g_HudUiMgrCurrentLayout = oldLayout;
     g_RecoilApp = oldApp;
     g_GameStateOrMapTable = oldGameState;
     ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
