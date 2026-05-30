@@ -5744,6 +5744,27 @@ extern "C" int zhud_fill_bitmap_core_smoke(void) {
                        g_testBlitY[2] == 20 && g_testBlitHasRect[2] == 1 &&
                        g_testBlitRects[2].left == 25 && g_testBlitRects[2].right == 120;
 
+    bitmap.previewImage = nullptr;
+    g_testBlitCount = 0;
+    g_zVideo_pfnBltSourceToPrimary = TestBltSourceToPrimary;
+    bitmap.Draw();
+    g_zVideo_pfnBltSourceToPrimary = nullptr;
+    const bool drawNullSkipped = g_testBlitCount == 0;
+
+    bitmap.previewImage = &previewImage;
+    bitmap.fillRect.left = 3;
+    bitmap.fillRect.right = 3;
+    bitmap.previewRect.left = 4;
+    bitmap.previewRect.right = 4;
+    bitmap.base.base.dirtyRectCount = 0;
+    g_testBlitCount = 0;
+    g_zVideo_pfnBltSourceToPrimary = TestBltSourceToPrimary;
+    bitmap.Draw();
+    g_zVideo_pfnBltSourceToPrimary = nullptr;
+    const bool drawEmptyRectsSkipped =
+        g_testBlitCount == 1 && g_testBlitImages[0] == &baseImage &&
+        g_testBlitHasRect[0] == 0;
+
     bitmap.base.base.dirtyRectCount = 1;
     bitmap.base.base.dirtyRects[0].framesRemaining = 1;
     bitmap.base.base.dirtyRects[0].drawX = 3;
@@ -5847,7 +5868,8 @@ extern "C" int zhud_fill_bitmap_core_smoke(void) {
         thunkWidget.base.base.ftable ==
         reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
-    return constructed && normalized && setNormalized && drawn && dirtyDrawn && nullFillSkipped &&
+    return constructed && normalized && setNormalized && drawn && drawNullSkipped &&
+                   drawEmptyRectsSkipped && dirtyDrawn && nullFillSkipped &&
                    cursorUpdated && loaded && destructed && scalarHeapDeleted && thunkDestructed
                ? 0
                : 1;

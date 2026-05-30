@@ -3104,9 +3104,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b8520:
   - [✅] Reconstructed (Name: HudUiFillBitmap::Draw)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiFillBitmap::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_fill_bitmap_draw)
   - [❌] Binary-safe
 - 0x4b85c0:
   - [☑️] Reconstructed (Name: HudUiFillBitmap::LoadFromZrd)
