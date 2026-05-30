@@ -18709,7 +18709,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::GetMuteSoundOption)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetMuteSoundOption File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_get_mute_sound_option)
   - [❌] Binary-safe
 - 0x408070:
   - [☑️] Reconstructed (Name: zOpt::SetSoundVolumeOption)
