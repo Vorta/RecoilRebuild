@@ -847,6 +847,7 @@ struct HudUiCheckToggleWidget {
     void RECOIL_THISCALL ShowPreview();
     void RECOIL_THISCALL HidePreview();
     void RECOIL_THISCALL OnActivate();
+    void RECOIL_THISCALL OnActivateThunk();
     int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
     RECOIL_NOINLINE int RECOIL_THISCALL SetChecked(int newChecked);
 };

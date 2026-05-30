@@ -589,7 +589,7 @@ const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_PerspectiveToggle_Vtbl =
         MethodAddress(&HudUiOptionsPanel_Perspective::InitFromOptions));
 const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_FullHudToggle_Vtbl =
     MakeHudUiOptionsPanelCheckToggleFTable(
-        MethodAddress(&HudUiCheckToggleWidget::OnActivate),
+        MethodAddress(&HudUiCheckToggleWidget::OnActivateThunk),
         MethodAddress(&HudUiOptionsPanel_FullHud::InitFromOptions));
 const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_ObjectDetailSelector_Vtbl =
     MakeHudUiOptionsPanelCycleSelectorFTable(
@@ -7516,6 +7516,11 @@ void RECOIL_THISCALL HudUiCheckToggleWidget::OnActivate() {
 
     SetChecked(checked == 0 ? 1 : 0);
     base.OnActivate();
+}
+
+// Reimplements 0x40caa0: HudUiCheckToggleWidget::OnActivateThunk
+void RECOIL_THISCALL HudUiCheckToggleWidget::OnActivateThunk() {
+    OnActivate();
 }
 
 // Reimplements 0x4b7340: HudUiCheckToggleWidget::LoadFromZrd

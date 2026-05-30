@@ -4954,6 +4954,17 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
                            activateToggle.base.base.image == &activateImage &&
                            (activateCheckedLabel.flags & 0x10) == 0;
 
+    const bool fullHudTableThunk =
+        g_HudUiOptionsPanel_FullHudToggle_Vtbl.slots[12] ==
+        static_cast<std::uint32_t>(MethodAddress(&HudUiCheckToggleWidget::OnActivateThunk));
+
+    HudUiCheckToggleWidget thunkActivateToggle{};
+    thunkActivateToggle.base.base.ftable = &g_HudUiWidget_FTable;
+    thunkActivateToggle.base.modeOrEnabled = 1;
+    thunkActivateToggle.checked = 0;
+    thunkActivateToggle.OnActivateThunk();
+    const bool thunkActivated = thunkActivateToggle.checked == 1;
+
     HudUiCheckToggleWidget disabledActivateToggle{};
     disabledActivateToggle.base.modeOrEnabled = 0;
     disabledActivateToggle.checked = 0;
@@ -5022,8 +5033,9 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
 
     g_HudUi_InvalidateMask = 0;
     return constructed && checkedState && uncheckedState && refreshEnabled && refreshDisabled &&
-                   previewShown && checkedPreviewSkipped && activated && disabledActivateSkipped &&
-                   previewHidden && bounds && destructed && scalarDeleted && thunkDeleted
+                   previewShown && checkedPreviewSkipped && activated && fullHudTableThunk &&
+                   thunkActivated && disabledActivateSkipped && previewHidden && bounds &&
+                   destructed && scalarDeleted && thunkDeleted
                ? 0
                : 1;
 }
