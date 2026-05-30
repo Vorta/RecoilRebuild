@@ -100,6 +100,10 @@ int g_saveLoadUpdateAdjustBlit;
 float g_saveLoadUpdateDelta;
 zVidRect32 *g_saveLoadUpdateAdjustSrc;
 zVidRect32 *g_saveLoadUpdateAdjustDst;
+int g_saveLoadDeactivateDestroyCalls;
+bool g_saveLoadDeactivateDestroyNameOk;
+int g_saveLoadDeactivateMuteCalls;
+int g_saveLoadDeactivateMuteState;
 int g_confirmQuitPostprocessCalls;
 int g_confirmQuitBlitCalls;
 int g_confirmQuitUnlockCalls;
@@ -184,7 +188,10 @@ struct TestConfirmQuitDialog {
 
 struct TestSaveLoadTransitionDialog {
     virtual void RECOIL_THISCALL Update(float) {}
-    virtual void RECOIL_THISCALL SetEnabled(int) {}
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+        ++setEnabledCount;
+        lastEnabled = enabled;
+    }
     virtual TestSaveLoadTransitionDialog *RECOIL_THISCALL
     ScalarDeletingDestructor(unsigned int flags) {
         ++scalarDeletingCount;
@@ -192,6 +199,8 @@ struct TestSaveLoadTransitionDialog {
         return this;
     }
 
+    int setEnabledCount = 0;
+    int lastEnabled = -1;
     int scalarDeletingCount = 0;
     unsigned int lastScalarDeletingFlags = 0;
 };
@@ -288,6 +297,19 @@ int RECOIL_FASTCALL FakeSaveLoadUpdateAdjustSurfaces(zVidRect32 *srcRect, zVidRe
     g_saveLoadUpdateAdjustWait = waitForPresent;
     g_saveLoadUpdateAdjustBlit = blitPrimaryToSwFirst;
     return 0;
+}
+
+int RECOIL_FASTCALL FakeSaveLoadDeactivateDestroySampleSetByName(const char *setName) {
+    ++g_saveLoadDeactivateDestroyCalls;
+    g_saveLoadDeactivateDestroyNameOk =
+        setName != nullptr && std::strcmp(setName, "DIALOG") == 0;
+    return 1;
+}
+
+int RECOIL_FASTCALL FakeSaveLoadDeactivateApplyMuteStateToActiveVoices(int enableMute) {
+    ++g_saveLoadDeactivateMuteCalls;
+    g_saveLoadDeactivateMuteState = enableMute;
+    return 1;
 }
 
 int RECOIL_CDECL FakeConfirmQuitRunPostprocessOnPrimaryBuffer() {
@@ -5462,6 +5484,156 @@ extern "C" int recoil_state_save_load_transition_on_update_should_quit_smoke(voi
     g_FrameDeltaTimeSec = oldFrameDelta;
 
     return emptyOk && dialogOk ? 0 : 6;
+}
+
+extern "C" int recoil_state_save_load_transition_on_deactivate_smoke(void) {
+    CodeFunctionPatch postprocessPatch{};
+    CodeFunctionPatch blitPatch{};
+    CodeFunctionPatch unlockPatch{};
+    CodeFunctionPatch destroySampleSetPatch{};
+    CodeFunctionPatch applyMutePatch{};
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                           reinterpret_cast<void *>(
+                               &FakeConfirmQuitRunPostprocessOnPrimaryBuffer),
+                           postprocessPatch)) {
+        return 1;
+    }
+
+    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+        &HudUiDialogController::BlitOwnedSurfaceToPrimary;
+    void (RECOIL_THISCALL FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
+        &FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestSaveLoadMethodAddress(blitMember)),
+                           reinterpret_cast<void *>(TestSaveLoadMethodAddress(fakeBlitMember)),
+                           blitPatch)) {
+        RestoreFunctionPatch(postprocessPatch);
+        return 2;
+    }
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                           reinterpret_cast<void *>(&FakeConfirmQuitUnlockPrimarySurfaceState),
+                           unlockPatch)) {
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 3;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zSndSampleSet_DestroyByName),
+                           reinterpret_cast<void *>(
+                               &FakeSaveLoadDeactivateDestroySampleSetByName),
+                           destroySampleSetPatch)) {
+        RestoreFunctionPatch(unlockPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 4;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zSnd::ApplyMuteStateToActiveVoices),
+                           reinterpret_cast<void *>(
+                               &FakeSaveLoadDeactivateApplyMuteStateToActiveVoices),
+                           applyMutePatch)) {
+        RestoreFunctionPatch(destroySampleSetPatch);
+        RestoreFunctionPatch(unlockPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 5;
+    }
+
+    const int oldHalfResMode = g_zVideo_HalfResAdjustMode;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    const zSndSampleSetRegistry oldSampleSetRegistry = g_zSnd_SampleSetRegistry;
+    void *const oldGlobalVolumeScale = g_zSnd_GlobalVolumeScalePtr;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const int oldSndInitialized = g_zSnd_IsInitialized;
+    const int oldSndPreInitialized = g_zSnd_PreInitialized;
+    HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
+
+    float globalVolumeScale = 1.0f;
+    zSndSampleSet *sampleSetSlots[1] = {};
+    HudLayoutBase_FTable layoutTable{};
+    HudLayoutBase layout{&layoutTable};
+    layoutTable.OnActivated = TestPlayStateLayoutOnActivated;
+
+    g_zVideo_HalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_DISABLED;
+    g_HudUi_InvalidateMask = 0x04;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolumeScale;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_HudUiMgrCurrentLayout = &layout;
+
+    TestSaveLoadTransitionDialog dialog{};
+    RecoilStateSaveLoadTransition disabledTransition = {};
+    disabledTransition.m_dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    disabledTransition.m_capturePresentationMode = RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED;
+
+    g_confirmQuitPostprocessCalls = 0;
+    g_confirmQuitBlitCalls = 0;
+    g_confirmQuitUnlockCalls = 0;
+    g_playStateLayoutActivatedCount = 0;
+    g_saveLoadDeactivateDestroyCalls = 0;
+    g_saveLoadDeactivateDestroyNameOk = false;
+    g_saveLoadDeactivateMuteCalls = 0;
+    g_saveLoadDeactivateMuteState = -1;
+    disabledTransition.OnDeactivate();
+
+    bool disabledOk =
+        disabledTransition.m_dialog == 0 && dialog.setEnabledCount == 1 &&
+        dialog.lastEnabled == 0 && dialog.scalarDeletingCount == 1 &&
+        dialog.lastScalarDeletingFlags == 1 && g_confirmQuitPostprocessCalls == 1 &&
+        g_confirmQuitBlitCalls == 1 && g_confirmQuitUnlockCalls == 1 &&
+        g_saveLoadDeactivateDestroyCalls == 0 && g_saveLoadDeactivateMuteCalls == 0 &&
+        g_playStateLayoutActivatedCount == 0;
+
+    zSndPlayHandleSnapshot *snapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
+    RecoilStateSaveLoadTransition capturedTransition = {};
+    capturedTransition.m_capturePresentationMode = RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED;
+    capturedTransition.m_savedHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
+    capturedTransition.m_pausedAudioSnapshot =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(snapshot));
+
+    g_confirmQuitPostprocessCalls = 0;
+    g_confirmQuitBlitCalls = 0;
+    g_confirmQuitUnlockCalls = 0;
+    g_playStateLayoutActivatedCount = 0;
+    g_saveLoadDeactivateDestroyCalls = 0;
+    g_saveLoadDeactivateDestroyNameOk = false;
+    g_saveLoadDeactivateMuteCalls = 0;
+    g_saveLoadDeactivateMuteState = -1;
+    capturedTransition.OnDeactivate();
+
+    bool capturedOk =
+        capturedTransition.m_dialog == 0 && g_saveLoadDeactivateDestroyCalls == 1 &&
+        g_saveLoadDeactivateDestroyNameOk && g_saveLoadDeactivateMuteCalls == 1 &&
+        g_saveLoadDeactivateMuteState == 0 &&
+        g_zVideo_HalfResAdjustMode == ZVIDEO_HALFRES_ADJUST_ENABLED &&
+        g_HudUi_InvalidateMask == 0x0c && g_playStateLayoutActivatedCount == 1 &&
+        g_confirmQuitPostprocessCalls == 0 && g_confirmQuitBlitCalls == 0 &&
+        g_confirmQuitUnlockCalls == 0;
+
+    if (snapshot != nullptr) {
+        snapshot->Destroy();
+    }
+
+    g_zVideo_HalfResAdjustMode = oldHalfResMode;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    g_zSnd_SampleSetRegistry = oldSampleSetRegistry;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScale;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSnd_IsInitialized = oldSndInitialized;
+    g_zSnd_PreInitialized = oldSndPreInitialized;
+    g_HudUiMgrCurrentLayout = oldLayout;
+
+    RestoreFunctionPatch(applyMutePatch);
+    RestoreFunctionPatch(destroySampleSetPatch);
+    RestoreFunctionPatch(unlockPatch);
+    RestoreFunctionPatch(blitPatch);
+    RestoreFunctionPatch(postprocessPatch);
+
+    return disabledOk && capturedOk ? 0 : 6;
 }
 
 extern "C" int recoil_state_save_load_transition_lifecycle_smoke(void) {

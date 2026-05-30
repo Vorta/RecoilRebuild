@@ -1236,6 +1236,47 @@ RecoilStateSaveLoadTransition::OnUpdateShouldQuit()
     return 0;
 }
 
+// Reimplements 0x435ed0: RecoilStateSaveLoadTransition::OnDeactivate
+// (D:\Proj\Battlesport\RecoilApp.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+RecoilStateSaveLoadTransition::OnDeactivate()
+{
+    if (m_dialog != 0) {
+        zVideo::RunPostprocessOnPrimaryBuffer();
+
+        RecoilStateSaveLoadDialogVirtual *dialog =
+            (RecoilStateSaveLoadDialogVirtual *)((unsigned int)m_dialog);
+        dialog->SetEnabled(0);
+
+        ((HudUiDialogController *)((unsigned int)m_dialog))->BlitOwnedSurfaceToPrimary();
+        zVideo::Dispatch_UnlockPrimarySurfaceState();
+
+        dialog = (RecoilStateSaveLoadDialogVirtual *)((unsigned int)m_dialog);
+        if (dialog != 0) {
+            dialog->ScalarDeletingDestructor(1);
+        }
+
+        m_dialog = 0;
+    }
+
+    if (m_capturePresentationMode == RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED) {
+        return;
+    }
+
+    zSndSampleSet_DestroyByName("DIALOG");
+
+    zSndPlayHandleSnapshot *const audioSnapshot =
+        (zSndPlayHandleSnapshot *)((unsigned int)m_pausedAudioSnapshot);
+    if (audioSnapshot != 0) {
+        audioSnapshot->RestoreAllWithGlobalVolumeDelta();
+    }
+
+    zSnd::ApplyMuteStateToActiveVoices(0);
+    zVideo::SetHalfResAdjustMode(m_savedHalfResAdjustMode);
+    HudUi::SetInvalidateMode(m_savedHalfResAdjustMode);
+    HudUiMgr::TriggerCurrentLayoutOnActivated();
+}
+
 // Reimplements 0x435f50: RecoilStateSaveLoadTransition::QueueOpenSaveDialog
 // (D:\Proj\Battlesport\RecoilApp.cpp)
 void RECOIL_FASTCALL

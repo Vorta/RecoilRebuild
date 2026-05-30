@@ -2696,9 +2696,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x435ed0:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::OnDeactivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateSaveLoadTransition::OnDeactivate File: src/Battlesport/RecoilApp.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_save_load_transition_on_deactivate)
   - [❌] Binary-safe
 - 0x436530:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix)

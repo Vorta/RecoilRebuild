@@ -289,6 +289,7 @@ struct RecoilStateSaveLoadTransition : RecoilApp_IState {
     ScalarDeletingDestructor(unsigned int flags);
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     RECOIL_NOINLINE int RECOIL_THISCALL OnUpdateShouldQuit();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
     static void RECOIL_FASTCALL
     QueueOpenSaveDialog(RecoilSaveLoadPresentationCaptureMode capturePresentationMode);
     static void RECOIL_FASTCALL
