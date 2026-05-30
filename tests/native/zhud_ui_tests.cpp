@@ -6360,6 +6360,180 @@ extern "C" int zhud_cmd_set_list_widget_on_activate_smoke(void) {
     return advanced && wrapped ? 0 : 1;
 }
 
+extern "C" int zhud_cmd_dialog_callback_navigation_smoke(void) {
+    HudCmdDialog dialog{};
+    dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
+    dialog.descriptionPanel.captureState = 77;
+    dialog.setList.base.selectedIndex = 0;
+    dialog.setList.base.itemCount = 3;
+    dialog.setList.base.firstIndex = 0;
+    dialog.setList.base.visibleCount = 3;
+
+    SetupCommandDialogButton(&dialog.commandList.base, "OldCommand0", "OldCommand1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyAButton.base, "OldKeyA0", "OldKeyA1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyBButton.base, "OldKeyB0", "OldKeyB1", 3, 7);
+    SetupCommandDialogButton(&dialog.joyButton.base, "OldJoy0", "OldJoy1", 3, 7);
+    SetupCommandDialogButton(&dialog.mouseButton.base, "OldMouse0", "OldMouse1", 3, 7);
+
+    zVidImagePartial nextSetImage{};
+    zVidImagePartial prevSetImage{};
+    zVidImagePartial nextCommandImage{};
+    zVidImagePartial prevCommandImage{};
+    dialog.nextSetButton.base.base.ftable = &g_HudUiWidget_FTable;
+    dialog.prevSetButton.base.base.ftable = &g_HudUiWidget_FTable;
+    dialog.nextCommandButton.base.base.ftable = &g_HudUiWidget_FTable;
+    dialog.prevCommandButton.base.base.ftable = &g_HudUiWidget_FTable;
+    dialog.nextSetButton.base.owner = &dialog;
+    dialog.prevSetButton.base.owner = &dialog;
+    dialog.nextCommandButton.base.owner = &dialog;
+    dialog.prevCommandButton.base.owner = &dialog;
+    dialog.nextSetButton.base.activateImage = &nextSetImage;
+    dialog.prevSetButton.base.activateImage = &prevSetImage;
+    dialog.nextCommandButton.base.activateImage = &nextCommandImage;
+    dialog.prevCommandButton.base.activateImage = &prevCommandImage;
+    g_HudUi_InvalidateMask = 0x80;
+
+    zInput_BindMapContext *const oldCurrent = g_zInput_BindMap_Current;
+    zInput_BindGroupInfoList oldGroups = g_zInput_BindGroupInfoList;
+    const int oldLocId5 = g_zInput_CommandLocIdTable[5];
+    const int oldLocId6 = g_zInput_CommandLocIdTable[6];
+    const int oldLocId7 = g_zInput_CommandLocIdTable[7];
+    HMODULE const oldMessagesDll = g_zLoc_MessagesDllHandle;
+    const int oldMouseInitialized = g_zInput_MouseInitialized;
+    const zInput::MouseDeviceState oldMouseCurrent = g_zInput_MouseCurrentState;
+    const zInput::MouseDeviceState oldMousePrevious = g_zInput_MousePreviousState;
+    g_zInput_MouseInitialized = 1;
+    g_zInput_MouseCurrentState = {};
+    g_zInput_MousePreviousState = {};
+
+    zInput::BindMap_InitDikKeyNameTable();
+    zInput::BindMap_InitJoystickButtonNameTable();
+    zInput::BindMap_InitMouseButtonNameTable();
+
+    g_zLoc_MessagesDllHandle = GetModuleHandleA("kernel32.dll");
+    if (g_zLoc_MessagesDllHandle == nullptr || zLoc::GetMessageString(0) == nullptr ||
+        zLoc::GetMessageString(1) == nullptr) {
+        CleanupCommandDialogButton(&dialog.mouseButton.base);
+        CleanupCommandDialogButton(&dialog.joyButton.base);
+        CleanupCommandDialogButton(&dialog.keyBButton.base);
+        CleanupCommandDialogButton(&dialog.keyAButton.base);
+        CleanupCommandDialogButton(&dialog.commandList.base);
+        dialog.descriptionPanel.base.Destructor();
+        g_zLoc_MessagesDllHandle = oldMessagesDll;
+        g_zInput_MouseInitialized = oldMouseInitialized;
+        g_zInput_MouseCurrentState = oldMouseCurrent;
+        g_zInput_MousePreviousState = oldMousePrevious;
+        g_HudUi_InvalidateMask = 0;
+        return 2;
+    }
+
+    zInput_BindMapContext context{};
+    int packedBindings[16] = {};
+    zInputCommandCallbackFn callbacks[16] = {};
+    char commandFiveLabel[0x50] = {};
+    char commandSixLabel[0x50] = {};
+    char commandSevenLabel[0x50] = {};
+    char *labels[16] = {};
+    labels[5] = commandFiveLabel;
+    labels[6] = commandSixLabel;
+    labels[7] = commandSevenLabel;
+    context.m_commandCount = 16;
+    context.m_packedBindings = packedBindings;
+    context.m_commandCallbacks = callbacks;
+    context.m_commandLabels = labels;
+    context.SetBindingRecord(5, "CmdFiveCurrent", 0x1e, 0x30, 1, 1);
+    context.SetBindingRecord(6, "CmdSixCurrent", 0x20, 0x31, 2, 2);
+    context.SetBindingRecord(7, "CmdSevenCurrent", 0x21, 0x32, 3, 3);
+    g_zInput_BindMap_Current = &context;
+
+    int groupZeroCommandIds[] = {5, 6, 7};
+    int groupOneCommandIds[] = {6};
+    zInput_BindGroupInfo groupsStorage[3] = {};
+    groupsStorage[0].commandIdsBegin = groupZeroCommandIds;
+    groupsStorage[0].commandIdsEnd = groupZeroCommandIds + 3;
+    groupsStorage[0].commandIdsCapacity = groupZeroCommandIds + 3;
+    groupsStorage[1].commandIdsBegin = groupOneCommandIds;
+    groupsStorage[1].commandIdsEnd = groupOneCommandIds + 1;
+    groupsStorage[1].commandIdsCapacity = groupOneCommandIds + 1;
+    groupsStorage[2].commandIdsBegin = &groupZeroCommandIds[2];
+    groupsStorage[2].commandIdsEnd = groupZeroCommandIds + 3;
+    groupsStorage[2].commandIdsCapacity = groupZeroCommandIds + 3;
+    zInput_BindGroupInfo *groups[] = {&groupsStorage[0], &groupsStorage[1], &groupsStorage[2]};
+    g_zInput_BindGroupInfoList.begin = groups;
+    g_zInput_BindGroupInfoList.end = groups + 3;
+    g_zInput_BindGroupInfoList.capacity = groups + 3;
+    g_zInput_CommandLocIdTable[5] = 0;
+    g_zInput_CommandLocIdTable[6] = 0;
+    g_zInput_CommandLocIdTable[7] = 0;
+
+    dialog.RebuildCommandBindingListsForGroup(0);
+    dialog.nextSetButton.NextSet();
+    HudCmdBindingEntry **const nextSetBegin =
+        static_cast<HudCmdBindingEntry **>(dialog.commandList.base.bindingVec.begin);
+    const bool nextSet =
+        dialog.setList.base.selectedIndex == 1 &&
+        dialog.commandList.base.bindingVec.end == nextSetBegin + 1 &&
+        nextSetBegin[0]->commandId == 6 &&
+        dialog.nextSetButton.base.base.image == &nextSetImage &&
+        (dialog.nextSetButton.base.base.flags & 0x80) != 0;
+
+    dialog.prevSetButton.PrevSet();
+    HudCmdBindingEntry **const prevSetBegin =
+        static_cast<HudCmdBindingEntry **>(dialog.commandList.base.bindingVec.begin);
+    const bool prevSet =
+        dialog.setList.base.selectedIndex == 0 &&
+        dialog.commandList.base.bindingVec.end == prevSetBegin + 3 &&
+        prevSetBegin[0]->commandId == 5 &&
+        dialog.prevSetButton.base.base.image == &prevSetImage &&
+        (dialog.prevSetButton.base.base.flags & 0x80) != 0;
+
+    dialog.nextCommandButton.NextCommand();
+    const bool nextCommand =
+        dialog.commandList.base.selectedBindingIndex == 1 &&
+        dialog.keyAButton.base.selectedBindingIndex == 1 &&
+        dialog.nextCommandButton.base.base.image == &nextCommandImage &&
+        (dialog.nextCommandButton.base.base.flags & 0x80) != 0;
+
+    dialog.prevCommandButton.PrevCommand();
+    const bool prevCommand =
+        dialog.commandList.base.selectedBindingIndex == 0 &&
+        dialog.keyBButton.base.selectedBindingIndex == 0 &&
+        dialog.prevCommandButton.base.base.image == &prevCommandImage &&
+        (dialog.prevCommandButton.base.base.flags & 0x80) != 0;
+
+    CleanupCommandDialogButton(&dialog.mouseButton.base);
+    CleanupCommandDialogButton(&dialog.joyButton.base);
+    CleanupCommandDialogButton(&dialog.keyBButton.base);
+    CleanupCommandDialogButton(&dialog.keyAButton.base);
+    CleanupCommandDialogButton(&dialog.commandList.base);
+    dialog.descriptionPanel.base.Destructor();
+
+    g_zInput_BindMap_Current = oldCurrent;
+    g_zInput_BindGroupInfoList = oldGroups;
+    g_zInput_CommandLocIdTable[5] = oldLocId5;
+    g_zInput_CommandLocIdTable[6] = oldLocId6;
+    g_zInput_CommandLocIdTable[7] = oldLocId7;
+    g_zLoc_MessagesDllHandle = oldMessagesDll;
+    g_zInput_MouseInitialized = oldMouseInitialized;
+    g_zInput_MouseCurrentState = oldMouseCurrent;
+    g_zInput_MousePreviousState = oldMousePrevious;
+    g_HudUi_InvalidateMask = 0;
+
+    if (!nextSet) {
+        return 10;
+    }
+    if (!prevSet) {
+        return 11;
+    }
+    if (!nextCommand) {
+        return 12;
+    }
+    if (!prevCommand) {
+        return 13;
+    }
+    return 0;
+}
+
 extern "C" int zhud_cmd_key_a_button_on_begin_capture_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.captureState = 77;

@@ -1931,28 +1931,28 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x40bba0:
   - [✅] Reconstructed (Name: HudCmdDialogCallback::NextSet)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialogCallback::NextSet File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_callback_next_set)
+  - [✅] Binary-safe
 - 0x40bbc0:
   - [✅] Reconstructed (Name: HudCmdDialogCallback::PrevSet)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialogCallback::PrevSet File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_callback_prev_set)
+  - [✅] Binary-safe
 - 0x40bbe0:
   - [✅] Reconstructed (Name: HudCmdDialogCallback::NextCommand)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialogCallback::NextCommand File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_callback_next_command)
+  - [✅] Binary-safe
 - 0x40bc00:
   - [✅] Reconstructed (Name: HudCmdDialogCallback::PrevCommand)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdDialogCallback::PrevCommand File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_dialog_callback_prev_command)
+  - [✅] Binary-safe
 - 0x40bc20:
   - [✅] Reconstructed (Name: HudCmdDialogState::StaticInitAndRegisterAtExit)
   - [❌] Source dependencies satisfied

@@ -1447,6 +1447,15 @@ struct HudCmdSimpleWidget {
     HudUiZrdWidget base;
 };
 
+struct HudCmdDialogCallback {
+    HudUiZrdWidget base;
+
+    void RECOIL_THISCALL NextSet();
+    void RECOIL_THISCALL PrevSet();
+    void RECOIL_THISCALL NextCommand();
+    void RECOIL_THISCALL PrevCommand();
+};
+
 struct HudCmdResetButton {
     HudUiZrdWidget base;
 
@@ -1478,10 +1487,10 @@ struct HudCmdDialog {
     HudCmdJoyButton joyButton;
     HudCmdMouseButton mouseButton;
     HudCmdSetListWidget setList;
-    HudCmdSimpleWidget nextSetButton;
-    HudCmdSimpleWidget prevSetButton;
-    HudCmdSimpleWidget nextCommandButton;
-    HudCmdSimpleWidget prevCommandButton;
+    HudCmdDialogCallback nextSetButton;
+    HudCmdDialogCallback prevSetButton;
+    HudCmdDialogCallback nextCommandButton;
+    HudCmdDialogCallback prevCommandButton;
     HudCmdPromptPanel promptPanel;
     HudCmdDescriptionPanel descriptionPanel;
 
@@ -1912,6 +1921,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudCmdKeyBButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdJoyButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdMouseButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdSimpleWidget) == 0x14c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdDialogCallback) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdSetListWidget) == 0x208);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdPromptPanel) == 0x2c0);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdDescriptionPanel) == 0x2a8);

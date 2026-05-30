@@ -533,6 +533,7 @@ extern "C" int zhud_cmd_bind_button_base_on_selection_changed_refresh_smoke(void
 extern "C" int zhud_cmd_dialog_rebuild_command_binding_lists_smoke(void);
 extern "C" int zhud_cmd_dialog_select_group_relative_smoke(void);
 extern "C" int zhud_cmd_set_list_widget_on_activate_smoke(void);
+extern "C" int zhud_cmd_dialog_callback_navigation_smoke(void);
 extern "C" int zhud_cmd_key_a_button_on_begin_capture_smoke(void);
 extern "C" int zhud_cmd_key_b_button_on_begin_capture_smoke(void);
 extern "C" int zhud_cmd_joy_button_on_begin_capture_smoke(void);
@@ -2426,6 +2427,8 @@ int main(int argc, char **argv) {
          zhud_cmd_dialog_select_group_relative_smoke},
         {"zhud_cmd_set_list_widget_on_activate_smoke",
          zhud_cmd_set_list_widget_on_activate_smoke},
+        {"zhud_cmd_dialog_callback_navigation_smoke",
+         zhud_cmd_dialog_callback_navigation_smoke},
         {"zhud_cmd_key_a_button_on_begin_capture_smoke",
          zhud_cmd_key_a_button_on_begin_capture_smoke},
         {"zhud_cmd_key_b_button_on_begin_capture_smoke",

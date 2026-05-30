@@ -8831,6 +8831,38 @@ void RECOIL_THISCALL HudCmdMouseButton::OnClearBinding()
         0, base.selectedBindingIndex);
 }
 
+// Reimplements 0x40bba0: HudCmdDialogCallback::NextSet
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdDialogCallback::NextSet()
+{
+    ((HudCmdDialog *)(base.owner))->SelectGroupRelative(1);
+    base.OnActivate();
+}
+
+// Reimplements 0x40bbc0: HudCmdDialogCallback::PrevSet
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdDialogCallback::PrevSet()
+{
+    ((HudCmdDialog *)(base.owner))->SelectGroupRelative(-1);
+    base.OnActivate();
+}
+
+// Reimplements 0x40bbe0: HudCmdDialogCallback::NextCommand
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdDialogCallback::NextCommand()
+{
+    ((HudCmdDialog *)(base.owner))->SelectCommandRelative(1);
+    base.OnActivate();
+}
+
+// Reimplements 0x40bc00: HudCmdDialogCallback::PrevCommand
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdDialogCallback::PrevCommand()
+{
+    ((HudCmdDialog *)(base.owner))->SelectCommandRelative(-1);
+    base.OnActivate();
+}
+
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)
