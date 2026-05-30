@@ -2540,27 +2540,27 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41a200:
   - [☑️] Reconstructed (Name: HudUiClampedIntTextInput::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiClampedIntTextInput::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_clamped_int_text_input_constructor_ftable)
   - [❌] Binary-safe
 - 0x41a290:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::OnAcceptForwardToCommit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNumericTextInput::OnAcceptForwardToCommit File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_clamped_int_text_input_constructor_ftable)
   - [❌] Binary-safe
 - 0x41a2a0:
   - [✅] Reconstructed (Name: HudUiClampedIntTextInput::OnRawKeyboardDigitOnly)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiClampedIntTextInput::OnRawKeyboardDigitOnly File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_clamped_int_text_input_constructor_ftable)
   - [❌] Binary-safe
 - 0x41a2d0:
   - [✅] Reconstructed (Name: HudUiClampedIntTextInput::CommitAndGetValue)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiClampedIntTextInput::CommitAndGetValue File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_clamped_int_text_input_constructor_ftable)
   - [❌] Binary-safe
 - 0x41a3f0:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::DestructorThunk)

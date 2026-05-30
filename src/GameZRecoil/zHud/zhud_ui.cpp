@@ -216,6 +216,17 @@ HudUiNumericTextInput_Base_FTable MakeHudUiNumericTextInputCtorFTable() {
     return table;
 }
 
+HudUiClampedIntTextInput_FTable MakeHudUiClampedIntTextInputCtorFTable() {
+    HudUiClampedIntTextInput_FTable table =
+        MakeHudUiFTableWithCommonInvalidate<HudUiClampedIntTextInput_FTable>();
+    table.slots[0] = MethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructorThunk);
+    table.slots[12] = MethodAddress(&HudUiNetGameSetupTextInput::OnActivateFocusAndCursor);
+    table.slots[33] = MethodAddress(&HudUiClampedIntTextInput::OnRawKeyboardDigitOnly);
+    table.slots[34] = MethodAddress(&HudUiNumericTextInput::OnAcceptForwardToCommit);
+    table.slots[35] = MethodAddress(&HudUiClampedIntTextInput::CommitAndGetValue);
+    return table;
+}
+
 HudUiMessageBoxDialog_FTable MakeHudUiMessageBoxDialogFTable() {
     HudUiMessageBoxDialog_FTable table = {0};
     table.slots[0] = MethodAddress(&HudUiBackground::Update);
@@ -670,6 +681,8 @@ const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_Base_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiNumericTextInput_Base_FTable>();
 const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_CtorTable_FTable =
     MakeHudUiNumericTextInputCtorFTable();
+const HudUiClampedIntTextInput_FTable g_HudUiClampedIntTextInput_CtorTable_FTable =
+    MakeHudUiClampedIntTextInputCtorFTable();
 const HudUiSlot_FTable g_HudUiSlot_FTable = MakeHudUiFTableWithCommonInvalidate<HudUiSlot_FTable>();
 zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
 HudUiContainer g_HudUiMgr = {0};
@@ -1143,6 +1156,7 @@ unsigned int g_HudUi_InvalidateMask = 0;
 
 namespace {
 const char kNumericTextInputAcceptedRawKeyChars[] = "0123456789.-\x1b\r\x08\x7f\x02\x06";
+const char kClampedIntTextInputAcceptedRawKeyChars[] = "0123456789\x1b\r\x08\x7f\x02\x06";
 
 #if defined(_MSC_VER) && _MSC_VER < 1200
 // VC5 misparses explicit function-template calls such as FieldAt<unsigned int>(...).
@@ -11611,6 +11625,22 @@ HudUiNumericTextInput::Constructor(unsigned int maxDigits) {
     return this;
 }
 
+// Reimplements 0x41a200: HudUiClampedIntTextInput::Constructor
+HudUiClampedIntTextInput *RECOIL_THISCALL
+HudUiClampedIntTextInput::Constructor(unsigned int maxDigits) {
+    BaseConstructor();
+    base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiNumericTextInput_CtorTable_FTable);
+    textInput.AllocTextBuffer(maxDigits + 1);
+    Update("");
+    SetInputActive(0);
+    base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiClampedIntTextInput_CtorTable_FTable);
+    minValue = -2147483647 - 1;
+    maxValue = 2147483647;
+    return this;
+}
+
 // Reimplements 0x4b4e40: HudUiNumericTextInput::AllocTextBuffer
 void RECOIL_THISCALL HudUiNumericTextInput::AllocTextBuffer(unsigned int bufferSize) {
     textInput.AllocTextBuffer(bufferSize);
@@ -11799,6 +11829,57 @@ int RECOIL_THISCALL HudUiNumericTextInput::OnRawKeyboardChar(int key) {
     }
 
     return 0;
+}
+
+// Reimplements 0x41a290: HudUiNumericTextInput::OnAcceptForwardToCommit
+int RECOIL_THISCALL HudUiNumericTextInput::OnAcceptForwardToCommit() {
+    typedef int (RECOIL_THISCALL *CommitFn)(HudUiNumericTextInput * self);
+    const HudUiNumericTextInput_Base_FTable *const ftable =
+        (const HudUiNumericTextInput_Base_FTable *)(base.base.ftable);
+    return ((CommitFn)(ftable->slots[35]))(this);
+}
+
+// Reimplements 0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardDigitOnly
+int RECOIL_THISCALL HudUiClampedIntTextInput::OnRawKeyboardDigitOnly(int key) {
+    if (strchr(kClampedIntTextInputAcceptedRawKeyChars, key) != 0) {
+        textInput.DispatchKeyAction(key);
+    }
+
+    return 0;
+}
+
+// Reimplements 0x41a2d0: HudUiClampedIntTextInput::CommitAndGetValue
+int RECOIL_THISCALL HudUiClampedIntTextInput::CommitAndGetValue() {
+    char *const text = GetBuffer();
+    int value;
+
+    if (text == 0 || *text == 0) {
+        value = minValue;
+    } else {
+        value = atoi(text);
+    }
+
+    if (value < minValue) {
+        value = minValue;
+    }
+
+    if (value > maxValue) {
+        value = maxValue;
+    }
+
+    int displayValue = value;
+    if (displayValue < minValue) {
+        displayValue = minValue;
+    }
+
+    if (displayValue > maxValue) {
+        displayValue = maxValue;
+    }
+
+    char valueText[20];
+    sprintf(valueText, "%d", displayValue);
+    Update(valueText);
+    return value;
 }
 
 static HudUiNumericTextInput **HudUiNetGameSetupFocusTextInputSlot(void *owner) {

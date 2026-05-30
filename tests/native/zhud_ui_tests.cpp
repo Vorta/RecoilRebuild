@@ -9485,6 +9485,52 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
         (constructed.base.base.flags & 0x10) != 0 &&
         (constructed.sliderBorder.base.base.flags & 0x10) != 0;
 
+    const bool clampedTable =
+        g_HudUiClampedIntTextInput_CtorTable_FTable.slots[33] ==
+            static_cast<std::uint32_t>(
+                MethodAddress(&HudUiClampedIntTextInput::OnRawKeyboardDigitOnly)) &&
+        g_HudUiClampedIntTextInput_CtorTable_FTable.slots[34] ==
+            static_cast<std::uint32_t>(
+                MethodAddress(&HudUiNumericTextInput::OnAcceptForwardToCommit)) &&
+        g_HudUiClampedIntTextInput_CtorTable_FTable.slots[35] ==
+            static_cast<std::uint32_t>(
+                MethodAddress(&HudUiClampedIntTextInput::CommitAndGetValue));
+
+    HudUiClampedIntTextInput clamped{};
+    HudUiClampedIntTextInput *const clampedConstructorResult = clamped.Constructor(6);
+    const bool clampedConstructed =
+        clampedConstructorResult == &clamped &&
+        clamped.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(
+                &g_HudUiClampedIntTextInput_CtorTable_FTable) &&
+        clamped.textInput.capacity == 7 && clamped.minValue == (-2147483647 - 1) &&
+        clamped.maxValue == 2147483647 && std::strcmp(clamped.textInput.buffer, "") == 0 &&
+        clamped.sliderBorder.inputActive == 0;
+
+    clamped.minValue = 5;
+    clamped.maxValue = 99;
+    clamped.Update("1234");
+    const int clampedHigh = clamped.CommitAndGetValue();
+    const bool clampedHighCommitted =
+        clampedHigh == 99 && std::strcmp(clamped.textInput.buffer, "99") == 0;
+
+    clamped.Update("");
+    const int clampedEmpty = clamped.CommitAndGetValue();
+    const bool clampedEmptyCommitted =
+        clampedEmpty == 5 && std::strcmp(clamped.textInput.buffer, "5") == 0;
+
+    clamped.Update("12");
+    const int clampedAccepted = clamped.OnAcceptForwardToCommit();
+    const bool clampedAcceptForwarded =
+        clampedAccepted == 12 && std::strcmp(clamped.textInput.buffer, "12") == 0;
+
+    clamped.textInput.buffer[0] = 0;
+    clamped.textInput.cursor = 0;
+    clamped.OnRawKeyboardDigitOnly('7');
+    const bool clampedDigitAccepted = std::strcmp(clamped.textInput.buffer, "7") == 0;
+    clamped.OnRawKeyboardDigitOnly('-');
+    const bool clampedMinusFiltered = std::strcmp(clamped.textInput.buffer, "7") == 0;
+
     input.SetRawKeyboardCapture(0);
     const bool rawNoChange = g_zInput_KbdRawEventCallback == reinterpret_cast<void *>(0x1111) &&
                              g_zInput_KbdRawEventCallbackCtx == reinterpret_cast<void *>(0x2222);
@@ -9658,15 +9704,18 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
 
     currentFocus.Destructor();
     previousFocus.Destructor();
+    clamped.Destructor();
     constructed.Destructor();
     ::operator delete(input.textInput.buffer);
     input.textInput.buffer = nullptr;
     g_HudUi_InvalidateMask = 0;
-    return ok && ctorTable && constructedNumeric && rawNoChange && rawEnabled && rawDisabled &&
-                   rawNull && rawDispatched && rawFiltered && rawAccepted && acceptedNotify &&
-                   deactivated && activated && bufferAllocated && updated && captureUpdated &&
-                   captureHidden && numericActivated && destructed && thunkDestructed &&
-                   focusActivated
+    return ok && ctorTable && constructedNumeric && clampedTable && clampedConstructed &&
+                   clampedHighCommitted && clampedEmptyCommitted && clampedAcceptForwarded &&
+                   clampedDigitAccepted && clampedMinusFiltered && rawNoChange && rawEnabled &&
+                   rawDisabled && rawNull && rawDispatched && rawFiltered && rawAccepted &&
+                   acceptedNotify && deactivated && activated && bufferAllocated && updated &&
+                   captureUpdated && captureHidden && numericActivated && destructed &&
+                   thunkDestructed && focusActivated
                ? 0
                : 1;
 }

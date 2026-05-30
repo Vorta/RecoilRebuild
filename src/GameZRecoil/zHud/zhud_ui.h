@@ -156,6 +156,10 @@ struct HudUiNumericTextInput_Base_FTable {
     unsigned int slots[36];
 };
 
+struct HudUiClampedIntTextInput_FTable {
+    unsigned int slots[36];
+};
+
 struct HudUiSlot_FTable {
     unsigned int slots[29];
 };
@@ -259,6 +263,7 @@ extern const HudUiTextInput_FTable g_HudUiTextInput_FTable;
 extern const HudUiTextInput_FTable g_HudUiNumericTextInput_TextInputFTable;
 extern const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_Base_FTable;
 extern const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_CtorTable_FTable;
+extern const HudUiClampedIntTextInput_FTable g_HudUiClampedIntTextInput_CtorTable_FTable;
 extern const HudUiSlot_FTable g_HudUiSlot_FTable;
 extern const HudUiZrdWidget_FTable g_HudUiMessageBoxOkButton_Vtbl;
 extern const HudUiZrdWidget_FTable g_HudUiMessageBoxCancelButton_Vtbl;
@@ -1281,6 +1286,7 @@ struct HudUiNumericTextInput {
     int RECOIL_THISCALL SetInputActive(int active);
     void RECOIL_THISCALL SetRawKeyboardCapture(int enable);
     int RECOIL_THISCALL OnRawKeyboardChar(int key);
+    int RECOIL_THISCALL OnAcceptForwardToCommit();
     void RECOIL_THISCALL OnActivate();
     static int RECOIL_FASTCALL RawKeyboardCallback(int key,
                                                             HudUiNumericTextInput *callbackCtx);
@@ -1288,6 +1294,15 @@ struct HudUiNumericTextInput {
 
 struct HudUiNetGameSetupTextInput : HudUiNumericTextInput {
     void RECOIL_THISCALL OnActivateFocusAndCursor();
+};
+
+struct HudUiClampedIntTextInput : HudUiNumericTextInput {
+    int minValue;
+    int maxValue;
+
+    HudUiClampedIntTextInput *RECOIL_THISCALL Constructor(unsigned int maxDigits);
+    int RECOIL_THISCALL OnRawKeyboardDigitOnly(int key);
+    int RECOIL_THISCALL CommitAndGetValue();
 };
 
 struct HudUiSlot {
@@ -2293,6 +2308,9 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiNumericTextInput) == 0x374);
 RECOIL_STATIC_ASSERT(offsetof(HudUiNumericTextInput, textInput) == 0x14c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiNumericTextInput, owner) == 0x25c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiNumericTextInput, sliderBorder) == 0x260);
+RECOIL_STATIC_ASSERT(sizeof(HudUiClampedIntTextInput) == 0x37c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiClampedIntTextInput, minValue) == 0x374);
+RECOIL_STATIC_ASSERT(offsetof(HudUiClampedIntTextInput, maxValue) == 0x378);
 RECOIL_STATIC_ASSERT(sizeof(HudUiSlot) == 0x1c0);
 RECOIL_STATIC_ASSERT(offsetof(HudUiSlot, screenEdgeCode) == 0x34);
 RECOIL_STATIC_ASSERT(offsetof(HudUiSlot, trackNode) == 0x38);
