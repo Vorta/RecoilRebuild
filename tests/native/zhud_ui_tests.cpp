@@ -12431,6 +12431,30 @@ extern "C" int zhud_options_panel_sound_quality_sync_from_options_smoke(void) {
     return advanceOk && wrapOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_sound_volume_sync_from_options_smoke(void) {
+    float soundVolume = 0.625f;
+    float *const oldSoundVolume = ZOPT_SOUND_VOLUME;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+
+    ZOPT_SOUND_VOLUME = &soundVolume;
+    g_HudUi_InvalidateMask = 0x80;
+
+    HudUiOptionsPanel_SoundVolume soundVolumeWidget{};
+    soundVolumeWidget.base.Constructor();
+    soundVolumeWidget.base.base.base.flags = 0;
+    soundVolumeWidget.SyncFromOptions();
+
+    const bool synced =
+        soundVolumeWidget.base.normalizedValue == 0.625f &&
+        (soundVolumeWidget.base.base.base.flags & 0x80u) != 0;
+
+    soundVolumeWidget.base.DestructorCore();
+    ZOPT_SOUND_VOLUME = oldSoundVolume;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+
+    return synced ? 0 : 1;
+}
+
 namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;
