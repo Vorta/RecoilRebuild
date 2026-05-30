@@ -30,6 +30,7 @@ add_executable(recoil_native_smoke
     zsnd_cd_tests.cpp
     zeffect_tests.cpp
     zcom_tests.cpp
+    westwood_online_upgrade_tests.cpp
     zdeclient_tests.cpp
     time_tests.cpp
     smoke.cpp

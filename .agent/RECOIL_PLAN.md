@@ -2714,10 +2714,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x441a10:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeConfigDialog::GetMessageMap)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeConfigDialog::GetMessageMap File: src/Battlesport/WestwoodOnlineUpgradeConfigDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_config_get_message_map)
+  - [✅] Binary-safe
 - 0x4b4390:
   - [✅] Reconstructed (Name: HudUiTextInput::AllocTextBuffer)
   - [✅] Source dependencies satisfied
@@ -6230,10 +6230,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x441a00:
   - [✅] Reconstructed (Name: Mfc42::GetBaseMessageMapThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: MFC42 message-map helper; Name: Mfc42::GetBaseMessageMapThunk; Origin: MFC42 import provider; File: external; Target: pending)
 - 0x441a20:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditSetFocusClear)
   - [❌] Source dependencies satisfied

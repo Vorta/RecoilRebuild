@@ -4,7 +4,7 @@ Generated from `Reimplements 0xNNNNNN: Name (original/source/path)` comments in 
 Binary Ninja remains authoritative; this map is an agent navigation aid.
 It only contains address-backed provenance comments and excludes helpers fully inlined by the retail compiler.
 
-Entries: 3113
+Entries: 3114
 
 ## Case-insensitive source path collisions
 
@@ -1405,6 +1405,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x43ca90` `Player::CheckMissionWeaponAvailability` -> `src/Battlesport/player.cpp:8365`
 - `0x43cc70` `Player::WriteMinesZarSection` -> `src/Battlesport/player.cpp:7967`
 - `0x43cdf0` `Player::Mines_ZAR_ReadEntryOrReset` -> `src/Battlesport/player.cpp:7936`
+- `0x441a10` `WestwoodOnlineUpgradeConfigDialog::GetMessageMap` -> `src/Battlesport/WestwoodOnlineUpgradeConfigDialog.cpp:33`
 - `0x4428b0` `RecoilApp::MfcOleModuleDestructor` -> `src/Battlesport/RecoilApp.cpp:2199`
 - `0x4429b0` `RecoilApp::MfcOleModuleScalarDeletingDestructor` -> `src/Battlesport/RecoilApp.cpp:2237`
 - `0x4429d0` `RecoilApp::InitMainWindow` -> `src/Battlesport/RecoilApp.cpp:1475`
