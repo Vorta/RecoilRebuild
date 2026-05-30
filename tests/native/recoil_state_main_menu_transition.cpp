@@ -123,6 +123,50 @@ extern "C" int recoil_state_main_menu_transition_constructor_smoke(void) {
     return 0;
 }
 
+extern "C" int recoil_state_main_menu_transition_static_init_smoke(void) {
+    g_RecoilState_MainMenuTransition.vftable = 0x11111111;
+    g_RecoilState_MainMenuTransition.m_mainMenuDialog = 0x22222222;
+    g_RecoilState_MainMenuTransition.m_entryRoute =
+        static_cast<RecoilMainMenuEntryRoute>(7);
+    g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex =
+        static_cast<zVidModeIndex>(5);
+    g_RecoilState_MainMenuTransition.m_pausedAudioSnapshot = 0x33333333;
+
+    RecoilStateMainMenuTransition *const staticInitReturned =
+        RecoilStateMainMenuTransition::StaticInit();
+    if (staticInitReturned != &g_RecoilState_MainMenuTransition ||
+        g_RecoilState_MainMenuTransition.vftable != kRecoilStateMainMenuTransition_VtblAddress ||
+        g_RecoilState_MainMenuTransition.m_mainMenuDialog != 0 ||
+        g_RecoilState_MainMenuTransition.m_entryRoute != RECOIL_MAINMENU_ROUTE_FRONTEND ||
+        g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex !=
+            ZVID_MODE_INVALID_COMPLEMENT ||
+        g_RecoilState_MainMenuTransition.m_pausedAudioSnapshot != 0) {
+        return 1;
+    }
+
+    g_RecoilState_MainMenuTransition.vftable = 0x44444444;
+    g_RecoilState_MainMenuTransition.m_mainMenuDialog = 0;
+    RecoilStateMainMenuTransition::AtExitDestructor();
+    if (g_RecoilState_MainMenuTransition.vftable != kRecoilStateBase_VtblAddress ||
+        g_RecoilState_MainMenuTransition.m_mainMenuDialog != 0) {
+        return 2;
+    }
+
+    g_RecoilState_MainMenuTransition.vftable = 0x55555555;
+    g_RecoilState_MainMenuTransition.m_mainMenuDialog = 0;
+    RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit();
+    if (g_RecoilState_MainMenuTransition.vftable != kRecoilStateMainMenuTransition_VtblAddress ||
+        g_RecoilState_MainMenuTransition.m_mainMenuDialog != 0 ||
+        g_RecoilState_MainMenuTransition.m_entryRoute != RECOIL_MAINMENU_ROUTE_FRONTEND ||
+        g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex !=
+            ZVID_MODE_INVALID_COMPLEMENT ||
+        g_RecoilState_MainMenuTransition.m_pausedAudioSnapshot != 0) {
+        return 3;
+    }
+
+    return 0;
+}
+
 extern "C" int recoil_state_main_menu_transition_clear_paused_audio_snapshot_smoke(void) {
     zSndPlayHandleSnapshot *const snapshot = NewEmptySnapshot();
     g_RecoilState_MainMenuTransition.m_pausedAudioSnapshot =

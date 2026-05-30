@@ -42,6 +42,10 @@ struct RecoilStateMainMenuTransition {
     void RECOIL_THISCALL OnResume(int param);
     void RECOIL_THISCALL OnDeactivate();
 
+    static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    static RecoilStateMainMenuTransition *RECOIL_CDECL StaticInit();
+    static void RECOIL_CDECL RegisterAtExit();
+    static void RECOIL_CDECL AtExitDestructor();
     static void RECOIL_CDECL ClearPausedAudioSnapshot();
     static void RECOIL_FASTCALL QueueEnter(RecoilMainMenuEntryRoute entryRoute);
     static void RECOIL_FASTCALL SetDeferredVideoModeIndex(zVidModeIndex modeIndex);

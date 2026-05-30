@@ -2444,27 +2444,27 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x415100:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_main_menu_transition_static_init_thunks)
   - [❌] Binary-safe
 - 0x415110:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::StaticInit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::StaticInit File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_main_menu_transition_static_init_thunks)
   - [❌] Binary-safe
 - 0x415120:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::RegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::RegisterAtExit File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_main_menu_transition_static_init_thunks)
   - [❌] Binary-safe
 - 0x415130:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::AtExitDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilStateMainMenuTransition::AtExitDestructor File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp)
+  - [✅] Functional-equivalent (Target: recoil_state_main_menu_transition_static_init_thunks)
   - [❌] Binary-safe
 - 0x415140:
   - [✅] Reconstructed (Name: HudUiMainMenuDialog_LoadButton::OnActivate)

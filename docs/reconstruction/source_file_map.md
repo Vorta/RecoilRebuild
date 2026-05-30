@@ -4,7 +4,7 @@ Generated from `Reimplements 0xNNNNNN: Name (original/source/path)` comments in 
 Binary Ninja remains authoritative; this map is an agent navigation aid.
 It only contains address-backed provenance comments and excludes helpers fully inlined by the retail compiler.
 
-Entries: 3079
+Entries: 3083
 
 ## Case-insensitive source path collisions
 
@@ -790,10 +790,14 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x414fe0` `HudUiMainMenuDialog_QuitButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:147`
 - `0x415000` `HudUiMainMenuDialog_ControlsButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:155`
 - `0x415040` `HudUiMainMenuDialog::Destructor` -> `src/Battlesport/HudUiMainMenuDialog.cpp:380`
+- `0x415100` `RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp:7`
+- `0x415110` `RecoilStateMainMenuTransition::StaticInit` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp:13`
+- `0x415120` `RecoilStateMainMenuTransition::RegisterAtExit` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp:18`
+- `0x415130` `RecoilStateMainMenuTransition::AtExitDestructor` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp:23`
 - `0x415140` `HudUiMainMenuDialog_LoadButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:119`
-- `0x415170` `RecoilStateMainMenuTransition::Constructor` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp:5`
-- `0x415190` `RecoilStateMainMenuTransition::ScalarDeletingDestructor` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp:43`
-- `0x4151b0` `RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp:25`
+- `0x415170` `RecoilStateMainMenuTransition::Constructor` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp:28`
+- `0x415190` `RecoilStateMainMenuTransition::ScalarDeletingDestructor` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp:66`
+- `0x4151b0` `RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp:48`
 - `0x415220` `RecoilStateMainMenuTransition::OnTryBecomeCurrent` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp:57`
 - `0x415370` `RecoilStateMainMenuTransition::OnResume` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnResume.cpp:5`
 - `0x4153d0` `RecoilStateMainMenuTransition::OnDeactivate` -> `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnDeactivate.cpp:65`

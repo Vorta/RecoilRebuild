@@ -1047,6 +1047,7 @@ extern "C" int recoil_state_cheat_code_on_try_become_current_smoke(void);
 extern "C" int recoil_state_cheat_code_on_deactivate_smoke(void);
 extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void);
 extern "C" int recoil_state_main_menu_transition_constructor_smoke(void);
+extern "C" int recoil_state_main_menu_transition_static_init_smoke(void);
 extern "C" int recoil_state_main_menu_transition_destructor_smoke(void);
 extern "C" int recoil_state_main_menu_transition_scalar_deleting_destructor_smoke(void);
 extern "C" int recoil_state_main_menu_transition_clear_paused_audio_snapshot_smoke(void);
@@ -3218,6 +3219,8 @@ int main(int argc, char **argv) {
          hud_ui_confirm_quit_ok_button_on_activate_smoke},
         {"recoil_state_main_menu_transition_constructor_smoke",
          recoil_state_main_menu_transition_constructor_smoke},
+        {"recoil_state_main_menu_transition_static_init_smoke",
+         recoil_state_main_menu_transition_static_init_smoke},
         {"recoil_state_main_menu_transition_destructor_smoke",
          recoil_state_main_menu_transition_destructor_smoke},
         {"recoil_state_main_menu_transition_scalar_deleting_destructor_smoke",
