@@ -1060,6 +1060,30 @@ HudUiSaveGameDialog::InitLayout()
     return this;
 }
 
+// Reimplements 0x434a80: HudUiSaveGameDialog::Destructor
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+HudUiSaveGameDialog::Destructor()
+{
+    primaryActionButton.DestructorCore();
+
+    ::operator delete(fileEntries.begin);
+    fileEntries.begin = 0;
+    fileEntries.end = 0;
+    fileEntries.capacityEnd = 0;
+
+    for (int index = 9; index > 0; --index) {
+        ((HudUiPanel *)(&entryWidgets[index - 1]))->Destructor();
+    }
+
+    gameNameInput.Destructor();
+    prevEntryButton.DestructorCore();
+    nextEntryButton.DestructorCore();
+    backButton.DestructorCore();
+    deleteButton.DestructorCore();
+    base.Destructor();
+}
+
 // Reimplements 0x434b90: HudUiLoadGameDialog::Constructor
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
 RECOIL_NOINLINE HudUiLoadGameDialog *RECOIL_THISCALL

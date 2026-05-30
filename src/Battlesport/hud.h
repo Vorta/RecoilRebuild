@@ -198,6 +198,7 @@ struct HudUiSaveGameDialog : HudUiSaveLoadDialog {
     HudUiSaveGamePrimaryActionButton primaryActionButton;
 
     RECOIL_NOINLINE HudUiSaveGameDialog *RECOIL_THISCALL InitLayout();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
 };
 RECOIL_STATIC_ASSERT(offsetof(HudUiSaveGameDialog, primaryActionButton) == 0xca10);
 

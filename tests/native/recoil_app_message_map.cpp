@@ -4454,6 +4454,56 @@ extern "C" int hud_ui_save_load_dialog_destructor_smoke(void) {
                : 1;
 }
 
+extern "C" int hud_ui_save_game_dialog_destructor_smoke(void) {
+    static HudUiSaveGameDialog dialog;
+    std::memset(&dialog, 0, sizeof(dialog));
+
+    dialog.base.Constructor();
+    dialog.deleteButton.Constructor();
+    dialog.backButton.Constructor();
+    dialog.nextEntryButton.Constructor();
+    dialog.prevEntryButton.Constructor();
+    dialog.gameNameInput.BaseConstructor();
+    dialog.gameNameInput.textInput.AllocTextBuffer(8);
+    for (int index = 0; index < 9; ++index) {
+        dialog.entryWidgets[index].Constructor();
+    }
+    dialog.primaryActionButton.Constructor();
+
+    HudUiSaveLoadEntry *const entries =
+        static_cast<HudUiSaveLoadEntry *>(::operator new(2 * sizeof(HudUiSaveLoadEntry)));
+    dialog.fileEntries.begin = entries;
+    dialog.fileEntries.end = entries + 1;
+    dialog.fileEntries.capacityEnd = entries + 2;
+
+    dialog.Destructor();
+
+    bool entryPanelsDestroyed = true;
+    for (int index = 0; index < 9; ++index) {
+        entryPanelsDestroyed =
+            entryPanelsDestroyed &&
+            *reinterpret_cast<const void **>(&dialog.entryWidgets[index]) ==
+                &g_HudUiCommon_FTable;
+    }
+
+    const bool vectorCleared =
+        dialog.fileEntries.begin == nullptr && dialog.fileEntries.end == nullptr &&
+        dialog.fileEntries.capacityEnd == nullptr;
+    const bool gameNameDestroyed =
+        *reinterpret_cast<const void **>(&dialog.gameNameInput) == &g_HudUiCommon_FTable;
+    const bool buttonsDestroyed =
+        *reinterpret_cast<const void **>(&dialog.primaryActionButton) ==
+            &g_HudUiCommon_FTable &&
+        *reinterpret_cast<const void **>(&dialog.prevEntryButton) == &g_HudUiCommon_FTable &&
+        *reinterpret_cast<const void **>(&dialog.nextEntryButton) == &g_HudUiCommon_FTable &&
+        *reinterpret_cast<const void **>(&dialog.backButton) == &g_HudUiCommon_FTable &&
+        *reinterpret_cast<const void **>(&dialog.deleteButton) == &g_HudUiCommon_FTable;
+
+    return vectorCleared && entryPanelsDestroyed && gameNameDestroyed && buttonsDestroyed
+               ? 0
+               : 1;
+}
+
 extern "C" int hud_ui_save_load_list_item_on_activate_smoke(void) {
     static HudUiSaveLoadDialog dialog;
     static HudUiSaveLoadEntry entries[4];
