@@ -12145,6 +12145,44 @@ extern "C" int zhud_options_panel_object_detail_sync_from_options_smoke(void) {
     return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_texture_memory_init_from_options_smoke(void) {
+    int swTextureMemory = 0;
+    int hwTextureMemory = 2;
+    int *const oldSwTextureMemory = ZOPT_TEXTURE_MEMORY_SW;
+    int *const oldHwTextureMemory = ZOPT_TEXTURE_MEMORY_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    ZOPT_TEXTURE_MEMORY_SW = &swTextureMemory;
+    ZOPT_TEXTURE_MEMORY_HW = &hwTextureMemory;
+
+    HudUiOptionsPanel_TextureMemory textureMemory{};
+    textureMemory.base.Constructor();
+    textureMemory.base.itemCount = 4;
+    textureMemory.base.firstIndex = 1;
+    textureMemory.base.visibleCount = 3;
+
+    g_zOpt_HwMode = 0;
+    textureMemory.base.selectedIndex = 9;
+    textureMemory.InitFromOptions();
+    const bool swClampLowOk = textureMemory.base.selectedIndex == 1;
+
+    g_zOpt_HwMode = 1;
+    textureMemory.base.selectedIndex = 9;
+    textureMemory.InitFromOptions();
+    const bool hwSelectionOk = textureMemory.base.selectedIndex == 2;
+
+    hwTextureMemory = 3;
+    textureMemory.InitFromOptions();
+    const bool hwVisibleClampOk = textureMemory.base.selectedIndex == 2;
+
+    textureMemory.base.DestructorCore();
+    ZOPT_TEXTURE_MEMORY_SW = oldSwTextureMemory;
+    ZOPT_TEXTURE_MEMORY_HW = oldHwTextureMemory;
+    g_zOpt_HwMode = oldHwMode;
+
+    return swClampLowOk && hwSelectionOk && hwVisibleClampOk ? 0 : 1;
+}
+
 namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;

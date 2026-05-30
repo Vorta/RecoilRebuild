@@ -2093,9 +2093,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40caf0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_TextureMemory::InitFromOptions)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanel_TextureMemory::InitFromOptions File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_texture_memory_init_from_options)
   - [❌] Binary-safe
 - 0x40cb10:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_TextureMemory::SyncFromOptions)
