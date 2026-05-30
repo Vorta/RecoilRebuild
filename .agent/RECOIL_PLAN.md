@@ -3055,7 +3055,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::SetVisibleRange)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::SetVisibleRange File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_cycle_selector_widget_set_visible_range)
   - [❌] Binary-safe
 - 0x4b7fd0:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::AddTextEntry)
