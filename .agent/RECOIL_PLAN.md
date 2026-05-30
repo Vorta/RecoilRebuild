@@ -2804,9 +2804,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x4b47b0:
   - [☑️] Reconstructed (Name: HudUiSliderBorder::Update)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiSliderBorder::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_slider_border_update)
   - [❌] Binary-safe
 - 0x4b4810:
   - [✅] Reconstructed (Name: HudUiSliderBorder::SetBounds)
@@ -5162,9 +5162,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bf900:
   - [☑️] Reconstructed (Name: HudUiPolyline::Draw)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPolyline::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_polyline_draw)
   - [❌] Binary-safe
 - 0x4bf980:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::MemberConstructorLocal)
@@ -17297,15 +17297,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x498bd0:
   - [✅] Reconstructed (Name: zRndr::DrawImmediateLine)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zRndr_DrawImmediateLine File: src/GameZRecoil/zRndr/zRndr.cpp)
+  - [✅] Functional-equivalent (Target: zrndr_draw_immediate_line)
   - [❌] Binary-safe
 - 0x498c00:
   - [☑️] Reconstructed (Name: zRndr::DrawClippedImmediateLineStrip)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zRndr_DrawClippedImmediateLineStrip File: src/GameZRecoil/zRndr/zRndr.cpp)
+  - [✅] Functional-equivalent (Target: zrndr_draw_clipped_immediate_line_strip)
   - [❌] Binary-safe
 - 0x498c40:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::TestPointVisibility)
