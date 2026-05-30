@@ -2978,9 +2978,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b70c0:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::RefreshState)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheckToggleWidget::RefreshState File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_check_toggle_widget_refresh_state)
   - [❌] Binary-safe
 - 0x4b7210:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::ShowPreview)
