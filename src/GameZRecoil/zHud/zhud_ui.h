@@ -1341,6 +1341,7 @@ struct HudUiTransitionTextPanel {
     HudUiTransitionTextPanel *RECOIL_THISCALL Constructor();
     void RECOIL_THISCALL TickFlash(float deltaSeconds);
     void RECOIL_THISCALL ResetFlashState(float flashRate);
+    void RECOIL_THISCALL SetFlashRate(float flashRate);
     void RECOIL_THISCALL SetFlashColorAndRate(unsigned int flashColor, float flashRate);
 };
 

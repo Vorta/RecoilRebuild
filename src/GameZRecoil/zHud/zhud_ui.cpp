@@ -7596,6 +7596,16 @@ void RECOIL_THISCALL HudUiTransitionTextPanel::ResetFlashState(float flashRate) 
     memcpy(&flashCountdown, &flashResetValue, sizeof(flashCountdown));
 }
 
+// Reimplements 0x4bc980: HudUiTransitionTextPanel::SetFlashRate
+void RECOIL_THISCALL HudUiTransitionTextPanel::SetFlashRate(float flashRate) {
+    if (flashMode == 1) {
+        return;
+    }
+
+    ResetFlashState(flashRate);
+    flashMode = 1;
+}
+
 // Reimplements 0x4bc9b0: HudUiTransitionTextPanel::SetFlashColorAndRate
 void RECOIL_THISCALL HudUiTransitionTextPanel::SetFlashColorAndRate(unsigned int flashColor,
                                                                     float flashRate) {

@@ -2959,8 +2959,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCheckToggleWidget::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_check_toggle_widget_constructor)
+  - [✅] Binary-safe
 - 0x4b7000:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::ScalarDeletingDestructor)
   - [❌] Source dependencies satisfied
@@ -3019,8 +3019,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_cycle_selector_widget_constructor)
+  - [✅] Binary-safe
 - 0x4b7dc0:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::ScalarDeletingDestructor)
   - [❌] Source dependencies satisfied
@@ -3059,15 +3059,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b7fd0:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::AddTextEntry)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::AddTextEntry File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_cycle_selector_widget_add_text_entry)
   - [❌] Binary-safe
 - 0x4b8100:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::ApplyFontStyleForEntry)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCycleSelectorWidget::ApplyFontStyleForEntry File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_cycle_selector_widget_apply_font_style_for_entry)
   - [❌] Binary-safe
 - 0x4b8200:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::AddBitmapEntry)
@@ -3217,7 +3217,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudCmdBindButtonBase::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_cmd_bind_button_base_constructor)
   - [❌] Binary-safe
 - 0x4b8de0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::LoadFromZrd)
@@ -4937,10 +4937,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bc980:
   - [✅] Reconstructed (Name: HudUiFlashPanel::SetFlashRate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiTransitionTextPanel::SetFlashRate File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_flash_panel_set_flash_rate)
+  - [✅] Binary-safe
 - 0x4bc9b0:
   - [✅] Reconstructed (Name: HudUiFlashPanel::SetFlashColorAndRate)
   - [✅] Source dependencies satisfied
@@ -5303,7 +5303,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40a5b0:
   - [☑️] Reconstructed (Name: HudCmdDialog::Constructor)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Reimplemented (Name: pending File: pending)
   - [❌] Functional-equivalent
   - [❌] Binary-safe
@@ -14044,13 +14044,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetCount)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindGroupList_GetCount File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zinput_bind_group_list_get_count)
+  - [✅] Binary-safe
 - 0x42a4a0:
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetGroupTitle)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindGroupList_GetGroupTitle File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_bind_group_list_get_group_title)
   - [❌] Binary-safe
 - 0x42a4b0:
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetGroupCommandCount)

@@ -5088,6 +5088,27 @@ extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
                                  flashPanel.flashAltColor1 == 2 &&
                                  flashPanel.flashResetValue == 0.75f;
 
+    HudUiTransitionTextPanel ratePanel{};
+    ratePanel.flashMode = 0;
+    ratePanel.SetFlashRate(4.0f);
+    std::uint32_t rawRateCountdown = 0;
+    const float flashRateHalf = 2.0f;
+    std::memcpy(&rawRateCountdown, &flashRateHalf, sizeof(rawRateCountdown));
+    std::uint32_t actualRateCountdown = 0;
+    std::memcpy(&actualRateCountdown, &ratePanel.flashCountdown, sizeof(actualRateCountdown));
+    const bool flashRateSet =
+        ratePanel.flashEnabled == 1 && ratePanel.flashMode == 1 &&
+        ratePanel.flashResetValue == 2.0f && actualRateCountdown == rawRateCountdown &&
+        ratePanel.flashDirectionSign == 1;
+    ratePanel.flashResetValue = 0.25f;
+    ratePanel.flashCountdown = 0.5f;
+    ratePanel.flashDirectionSign = -1;
+    ratePanel.flashMode = 1;
+    ratePanel.SetFlashRate(8.0f);
+    const bool flashRateAlreadySet =
+        ratePanel.flashMode == 1 && ratePanel.flashResetValue == 0.25f &&
+        ratePanel.flashCountdown == 0.5f && ratePanel.flashDirectionSign == -1;
+
     flashPanel.Constructor();
     TestFieldAt<std::uint32_t>(&flashPanel, 0x14c) = 0x00010203;
     TestFieldAt<std::uint32_t>(&flashPanel, 0x150) = 0x00040506;
@@ -5149,7 +5170,8 @@ extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
 
     return constructed && clampLow && clampItemCount && clampVisible && clampInside && rangeLow &&
                    rangeInvalid && advanceWrap && advanceInside && updated && textEntryAdded &&
-                   flashSet && flashAlreadySet && flashTickSwap && bitmapEntryAdded && destructed &&
+                   flashSet && flashAlreadySet && flashRateSet && flashRateAlreadySet &&
+                   flashTickSwap && bitmapEntryAdded && destructed &&
                    scalarDeleted
                ? 0
                : 1;
