@@ -8384,6 +8384,9 @@ HudUiZrdWidgetEx17C *RECOIL_THISCALL HudUiZrdWidgetEx17C::Constructor() {
 
 // Reimplements 0x4b8b60: HudUiZrdWidgetEx17C::DestructorCore
 void RECOIL_THISCALL HudUiZrdWidgetEx17C::DestructorCore() {
+    typedef HudUiZrdWidgetEx17C_Item *(RECOIL_THISCALL *ScalarDeleteFn)(
+        HudUiZrdWidgetEx17C_Item * self, unsigned int flags);
+
     base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiZrdWidgetEx17C_FTable);
 
     {
@@ -8391,7 +8394,7 @@ void RECOIL_THISCALL HudUiZrdWidgetEx17C::DestructorCore() {
         for (optionIndex = 0; optionIndex < 10; ++optionIndex) {
             HudUiZrdWidgetEx17C_Item *option = options[optionIndex];
             if (option != 0) {
-                option->ScalarDeletingDestructor(1);
+                ((ScalarDeleteFn)(option->base.base.ftable->slots[0]))(option, 1);
                 options[optionIndex] = 0;
             }
         }

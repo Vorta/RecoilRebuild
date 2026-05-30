@@ -1033,6 +1033,9 @@ int g_optionSelectorActivateCount = 0;
 void *g_optionSelectorActivateThis = nullptr;
 int g_optionSelectorHideCount = 0;
 void *g_optionSelectorHideThis = nullptr;
+int g_optionSelectorDeleteCount = 0;
+void *g_optionSelectorDeleteThis = nullptr;
+unsigned int g_optionSelectorDeleteFlags = 0;
 std::int32_t g_musicEnablePlayTrackCount = 0;
 std::int32_t g_musicEnablePlayTrack = 0;
 std::int32_t g_musicEnablePlayMode = 0;
@@ -1063,6 +1066,16 @@ struct TestOptionSelectorHideItem : HudUiZrdWidgetEx17C_Item {
         ++g_optionSelectorHideCount;
         g_optionSelectorHideThis = this;
         HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected();
+    }
+};
+
+struct TestOptionSelectorDeleteItem : HudUiZrdWidgetEx17C_Item {
+    HudUiZrdWidgetEx17C_Item *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags) {
+        ++g_optionSelectorDeleteCount;
+        g_optionSelectorDeleteThis = this;
+        g_optionSelectorDeleteFlags = flags;
+        HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor(0);
+        return this;
     }
 };
 
@@ -6194,10 +6207,22 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
     auto *const heapItem =
         static_cast<HudUiZrdWidgetEx17C_Item *>(::operator new(sizeof(HudUiZrdWidgetEx17C_Item)));
     heapItem->Constructor();
+    TestOptionSelectorDeleteItem deleteItem{};
+    deleteItem.Constructor();
+    HudUiZrdWidgetEx17C_Item_FTable deleteTable = g_HudUiZrdWidgetEx17C_Item_FTable;
+    deleteTable.slots[0] = MethodAddress(&TestOptionSelectorDeleteItem::ScalarDeletingDestructor);
+    deleteItem.base.base.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&deleteTable);
+    g_optionSelectorDeleteCount = 0;
+    g_optionSelectorDeleteThis = nullptr;
+    g_optionSelectorDeleteFlags = 0;
     destructorSelector.options[2] = heapItem;
+    destructorSelector.options[3] = &deleteItem;
     destructorSelector.DestructorCore();
     const bool selectorDestructed =
-        destructorSelector.options[2] == nullptr &&
+        destructorSelector.options[2] == nullptr && destructorSelector.options[3] == nullptr &&
+        g_optionSelectorDeleteCount == 1 && g_optionSelectorDeleteThis == &deleteItem &&
+        g_optionSelectorDeleteFlags == 1 &&
         destructorSelector.base.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
@@ -6223,11 +6248,27 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
         heapScalarItem->ScalarDeletingDestructor(1);
     const bool scalarHeapDeleted = heapScalarResult == heapScalarItem;
 
+    HudUiZrdWidgetEx17C scalarSelector{};
+    scalarSelector.Constructor();
+    HudUiZrdWidgetEx17C *const selectorScalarResult =
+        scalarSelector.ScalarDeletingDestructor(0);
+    const bool selectorScalarNoDelete =
+        selectorScalarResult == &scalarSelector &&
+        scalarSelector.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+
+    auto *heapScalarSelector =
+        static_cast<HudUiZrdWidgetEx17C *>(::operator new(sizeof(HudUiZrdWidgetEx17C)));
+    heapScalarSelector->Constructor();
+    HudUiZrdWidgetEx17C *const selectorHeapScalarResult =
+        heapScalarSelector->ScalarDeletingDestructor(1);
+    const bool selectorScalarHeapDeleted = selectorHeapScalarResult == heapScalarSelector;
+
     return constructed && selectedDisabled && selectedOn && selectedOff && boundsOk &&
                    showPreview && hidePreview && selectedSkipsPreview && loaded &&
                    selectorConstructed && selectorLoaded && setSelectedIndex && childEnabled &&
                    activatedSelection && selectorDestructed && itemDestructed && scalarNoDelete &&
-                   scalarHeapDeleted
+                   scalarHeapDeleted && selectorScalarNoDelete && selectorScalarHeapDeleted
                ? 0
                : 1;
 }
