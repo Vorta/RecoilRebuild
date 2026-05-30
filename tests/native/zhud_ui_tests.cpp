@@ -12373,6 +12373,30 @@ extern "C" int zhud_options_panel_sound_active_sync_from_options_smoke(void) {
     return unmutedOk && mutedOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_music_enable_sync_from_options_smoke(void) {
+    int cdAudio = 1;
+    int *const oldCdAudio = ZOPT_SOUND_CDAUDIO;
+
+    ZOPT_SOUND_CDAUDIO = &cdAudio;
+
+    HudUiOptionsPanel_MusicEnable musicEnable{};
+    musicEnable.base.Constructor();
+
+    musicEnable.base.checked = 0;
+    musicEnable.SyncFromOptions();
+    const bool enabledOk = musicEnable.base.checked == 1;
+
+    cdAudio = 0;
+    musicEnable.base.checked = 9;
+    musicEnable.SyncFromOptions();
+    const bool disabledOk = musicEnable.base.checked == 0;
+
+    musicEnable.base.DestructorCore();
+    ZOPT_SOUND_CDAUDIO = oldCdAudio;
+
+    return enabledOk && disabledOk ? 0 : 1;
+}
+
 extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void) {
     int soundLod = 2;
     int *const oldSoundLod = ZOPT_SOUND_LOD;

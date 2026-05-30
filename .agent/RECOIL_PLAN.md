@@ -2153,9 +2153,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40cc60:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_MusicEnable::SyncFromOptions)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanel_MusicEnable::SyncFromOptions File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_music_enable_sync_from_options)
   - [❌] Binary-safe
 - 0x40cc80:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_MusicEnable::OnActivate)
