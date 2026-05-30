@@ -7557,7 +7557,7 @@ int RECOIL_THISCALL HudUiCheckToggleWidget::LoadFromZrd(zReader::Node *zrdSectio
             checkedLabelPanel = CreateHudZrdTextPanel(&base, textNode, 0);
         }
 
-        LoadHudZrdLabelSection(&base, disabledUnselectedNode, base.disabledLabelPanels);
+        LoadHudZrdLabelSection(&base, zrdSection, base.disabledLabelPanels);
     }
 
     zReader::Node *const disabledSelectedNode = zReader_GetNamedNode(zrdSection, "DISABLE_SEL");
@@ -7575,7 +7575,25 @@ int RECOIL_THISCALL HudUiCheckToggleWidget::LoadFromZrd(zReader::Node *zrdSectio
         base.boundsRect.right = base.base.x + uncheckedImage->width;
         base.boundsRect.bottom = base.base.y + uncheckedImage->height;
     } else if (base.labelPanels.begin != 0) {
-        base.GetBoundsRectOrNull();
+        HudUiPanel **panelIt = base.labelPanels.begin;
+        HudUiPanel *const firstPanel = *panelIt;
+        base.boundsRect.top = HudUiVirtualGetYRequired(firstPanel);
+        base.boundsRect.left = HudUiVirtualGetXRequired(firstPanel);
+        base.boundsRect.bottom = firstPanel->QueryTextHeight() + base.boundsRect.top;
+
+        while (panelIt != base.labelPanels.end) {
+            HudUiPanel *const panel = *panelIt;
+            base.boundsRect.bottom += panel->QueryTextHeight();
+
+            const int right = HudUiPanelTextWidth(panel) + base.boundsRect.left;
+            if (right > base.boundsRect.right) {
+                base.boundsRect.right = right;
+            }
+
+            ++panelIt;
+        }
+
+        base.boundsRect.bottom -= firstPanel->QueryTextHeight();
     }
 
     return 1;

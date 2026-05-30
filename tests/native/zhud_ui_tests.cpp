@@ -5210,15 +5210,11 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
     disabledLabelItems[4].type = zReader::ZRDR_NODE_INT;
     disabledLabelItems[4].value.i32 = 1;
 
-    zReader::Node disabledItems[3] = {};
-    disabledItems[0].value.i32 = 3;
-    disabledItems[1].type = zReader::ZRDR_NODE_STRING;
-    disabledItems[1].value.str = const_cast<char *>("LABEL");
-    disabledItems[2].type = zReader::ZRDR_NODE_ARRAY;
-    disabledItems[2].value.nodes = disabledLabelItems;
+    zReader::Node disabledItems[1] = {};
+    disabledItems[0].value.i32 = 1;
 
-    zReader::Node rootItems[5] = {};
-    rootItems[0].value.i32 = 5;
+    zReader::Node rootItems[7] = {};
+    rootItems[0].value.i32 = 7;
     rootItems[1].type = zReader::ZRDR_NODE_STRING;
     rootItems[1].value.str = const_cast<char *>("CHECKED");
     rootItems[2].type = zReader::ZRDR_NODE_ARRAY;
@@ -5227,6 +5223,10 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
     rootItems[3].value.str = const_cast<char *>("DISABLE_UNSEL");
     rootItems[4].type = zReader::ZRDR_NODE_ARRAY;
     rootItems[4].value.nodes = disabledItems;
+    rootItems[5].type = zReader::ZRDR_NODE_STRING;
+    rootItems[5].value.str = const_cast<char *>("LABEL");
+    rootItems[6].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[6].value.nodes = disabledLabelItems;
 
     zReader::Node root{};
     root.type = zReader::ZRDR_NODE_ARRAY;
@@ -5242,6 +5242,13 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
                                     ? widget.base.disabledLabelPanels.begin[0]
                                     : nullptr;
     auto *const disabledElement = reinterpret_cast<HudUiElement *>(disabledPanel);
+    auto *const baseLabelPanel =
+        widget.base.labelPanels.begin != nullptr ? widget.base.labelPanels.begin[0] : nullptr;
+    auto *const baseLabelElement = reinterpret_cast<HudUiElement *>(baseLabelPanel);
+    const std::int32_t baseLabelHeight =
+        baseLabelPanel != nullptr ? baseLabelPanel->QueryTextHeight() : 0;
+    const std::int32_t baseLabelWidth =
+        baseLabelPanel != nullptr ? TestFieldAt<std::int32_t>(baseLabelPanel, 0x25c) : 0;
 
     const bool loaded =
         result == 1 && widget.base.originX == 30 && widget.base.originY == 40 &&
@@ -5249,6 +5256,14 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
         std::strcmp(&TestFieldAt<char>(checkedPanel, 0x34), "ON") == 0 && checkedElement->x == 34 &&
         checkedElement->y == 45 && (checkedElement->flags & 0x10) != 0 &&
         TestFieldAt<std::uint32_t>(checkedPanel, 0x14c) == 0x00010203 &&
+        widget.base.labelPanels.end == widget.base.labelPanels.begin + 1 &&
+        baseLabelPanel != nullptr &&
+        std::strcmp(&TestFieldAt<char>(baseLabelPanel, 0x34), "DISABLED") == 0 &&
+        baseLabelElement->x == 37 && baseLabelElement->y == 48 &&
+        TestFieldAt<std::uint32_t>(baseLabelPanel, 0x144) == 2 &&
+        baseLabelWidth > 0 && widget.base.boundsRect.left == 37 &&
+        widget.base.boundsRect.top == 48 && widget.base.boundsRect.right == 37 + baseLabelWidth &&
+        widget.base.boundsRect.bottom == 48 + baseLabelHeight &&
         widget.base.disabledLabelPanels.end == widget.base.disabledLabelPanels.begin + 1 &&
         disabledPanel != nullptr &&
         std::strcmp(&TestFieldAt<char>(disabledPanel, 0x34), "DISABLED") == 0 &&
@@ -5263,6 +5278,10 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
     if (disabledPanel != nullptr) {
         DeletePanelAllocation(disabledPanel);
     }
+    if (baseLabelPanel != nullptr) {
+        DeletePanelAllocation(baseLabelPanel);
+    }
+    ::operator delete(widget.base.labelPanels.begin);
     ::operator delete(widget.base.disabledLabelPanels.begin);
 
     g_HudUi_InvalidateMask = 0;

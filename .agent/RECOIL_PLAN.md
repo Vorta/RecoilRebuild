@@ -3008,9 +3008,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b7340:
   - [☑️] Reconstructed (Name: HudUiCheckToggleWidget::LoadFromZrd)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheckToggleWidget::LoadFromZrd File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_check_toggle_widget_load_from_zrd)
   - [❌] Binary-safe
 - 0x4b7d60:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::Constructor)
