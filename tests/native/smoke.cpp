@@ -1057,6 +1057,7 @@ extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void);
 extern "C" int hud_ui_main_menu_dialog_destructor_smoke(void);
 extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void);
 extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void);
+extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void);
 extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void);
 extern "C" int hud_ui_menu_back_button_on_activate_smoke(void);
 extern "C" int hud_ui_main_menu_options_button_on_activate_smoke(void);
@@ -3239,6 +3240,8 @@ int main(int argc, char **argv) {
          hud_ui_main_menu_credits_button_on_activate_smoke},
         {"hud_ui_main_menu_save_button_on_activate_smoke",
          hud_ui_main_menu_save_button_on_activate_smoke},
+        {"hud_ui_main_menu_load_button_on_activate_smoke",
+         hud_ui_main_menu_load_button_on_activate_smoke},
         {"hud_ui_main_menu_new_game_button_on_activate_smoke",
          hud_ui_main_menu_new_game_button_on_activate_smoke},
         {"hud_ui_menu_back_button_on_activate_smoke",

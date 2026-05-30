@@ -538,6 +538,128 @@ extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void) {
     return itemOk && saved && activated ? 0 : 1;
 }
 
+extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const zVideo_BltRectDirectProc oldBltDirect = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    const zVideo_SurfaceStatePartial oldSwSurface = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial oldDisplaySurface = g_zVideo_DisplayModeSurfaceState;
+    auto *const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    auto *const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    RecoilApp oldApp = g_RecoilApp;
+    const RecoilStateSaveLoadTransition oldTransition = g_RecoilStateSaveLoadTransition;
+    const RecoilMainMenuEntryRoute oldEntryRoute = g_RecoilState_MainMenuTransition.m_entryRoute;
+
+    int networkEnabled = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = nullptr;
+    g_zVideo_pfnLockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestVideoSurfaceStateNoOp;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    zUtil_PlayerStateStorage playerState{};
+    zInput_GameStateOrMapTablePartial gameState{};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    g_GameStateOrMapTable = &gameState;
+
+    TestQueueEnterState oldState{};
+    oldState.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+
+    HudUiMainMenuDialog dialog{};
+    dialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+
+    typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
+    ActivateFn activate = (ActivateFn)(dialog.loadGameButton.base.ftable->slots[12]);
+
+    g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
+    g_RecoilStateSaveLoadTransition.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+    g_queueEnterOnEnterCalls = 0;
+    g_RecoilApp = {};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_RecoilState_MainMenuTransition.m_entryRoute = RECOIL_MAINMENU_ROUTE_FRONTEND;
+
+    zVidImagePartial frontendImage{};
+    dialog.loadGameButton.base.image = 0;
+    dialog.loadGameButton.activateImage = &frontendImage;
+    activate(&dialog.loadGameButton);
+
+    bool frontendOk = false;
+    if (g_RecoilApp.m_stateQueue_118.m_itemCount == 1) {
+        const RecoilPtr32 slotValue = g_RecoilApp.m_stateQueue_118.m_writeBlock.m_cursor - 4;
+        auto *const slot =
+            reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
+        auto *const item =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+        frontendOk =
+            item->m_type == 0 && item->m_kind == RecoilApp_StateQueueKind_PushState &&
+            item->m_stateObj ==
+                static_cast<RecoilPtr32>(
+                    reinterpret_cast<std::uintptr_t>(&g_RecoilStateSaveLoadTransition)) &&
+            item->m_param == 0 &&
+            g_RecoilStateSaveLoadTransition.m_transitionMode == RECOIL_SAVELOAD_MODE_STANDARD &&
+            g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_LOAD &&
+            g_queueEnterOnEnterCalls == 1 && dialog.loadGameButton.base.image == &frontendImage;
+        CleanupGlobalAppQueue();
+    }
+
+    g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
+    g_RecoilStateSaveLoadTransition.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+    g_queueEnterOnEnterCalls = 0;
+    g_RecoilApp = {};
+    g_RecoilApp.m_currentStateIndex_0c8 = 0;
+    g_RecoilApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    g_RecoilState_MainMenuTransition.m_entryRoute = RECOIL_MAINMENU_ROUTE_INGAME;
+
+    zVidImagePartial ingameImage{};
+    dialog.loadGameButton.base.image = 0;
+    dialog.loadGameButton.activateImage = &ingameImage;
+    activate(&dialog.loadGameButton);
+
+    bool ingameOk = false;
+    if (g_RecoilApp.m_stateQueue_118.m_itemCount == 1) {
+        const RecoilPtr32 slotValue = g_RecoilApp.m_stateQueue_118.m_writeBlock.m_cursor - 4;
+        auto *const slot =
+            reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
+        auto *const item =
+            reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(*slot));
+        ingameOk =
+            item->m_type == 0 && item->m_kind == RecoilApp_StateQueueKind_PushState &&
+            item->m_stateObj ==
+                static_cast<RecoilPtr32>(
+                    reinterpret_cast<std::uintptr_t>(&g_RecoilStateSaveLoadTransition)) &&
+            item->m_param == 0 &&
+            g_RecoilStateSaveLoadTransition.m_transitionMode == RECOIL_SAVELOAD_MODE_FADE &&
+            g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_LOAD &&
+            g_queueEnterOnEnterCalls == 1 && dialog.loadGameButton.base.image == &ingameImage;
+        CleanupGlobalAppQueue();
+    }
+
+    g_RecoilState_MainMenuTransition.m_entryRoute = oldEntryRoute;
+    g_RecoilStateSaveLoadTransition = oldTransition;
+    g_RecoilApp = oldApp;
+    g_GameStateOrMapTable = oldGameState;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+    g_zVideo_SwSurfaceState = oldSwSurface;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_DisplayModeSurfaceState = oldDisplaySurface;
+    return frontendOk && ingameOk ? 0 : 1;
+}
+
 extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void) {
     const int oldRendererPath = g_zVideo_ActiveRendererPath;
     const zVideo_BltRectDirectProc oldBltDirect = g_zVideo_pfnBltSwToPrimaryRectDirect;
