@@ -2974,7 +2974,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::GetBoundsRectOrNull)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiCheckToggleWidget::GetBoundsRectOrNull File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_check_toggle_widget_get_bounds_rect_or_null)
   - [❌] Binary-safe
 - 0x4b70c0:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::RefreshState)
