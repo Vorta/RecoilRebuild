@@ -2410,7 +2410,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiMainMenuDialog_NewGameButton::OnActivate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMainMenuDialog_NewGameButton::OnActivate File: src/Battlesport/HudUiMainMenuDialog.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_main_menu_new_game_button_on_activate)
   - [❌] Binary-safe
 - 0x414fa0:
   - [✅] Reconstructed (Name: HudUiMenuBackButton::OnActivate)
@@ -2686,7 +2686,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::QueueEnter)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNewGamePanelOverlayOwner::QueueEnter File: src/Battlesport/hud.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_overlay_owner_queue_enter)
   - [❌] Binary-safe
 - 0x434680:
   - [☑️] Reconstructed (Name: HudUiSaveGameDialog::InitLayout)
