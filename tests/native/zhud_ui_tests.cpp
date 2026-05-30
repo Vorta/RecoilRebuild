@@ -14315,6 +14315,47 @@ extern "C" int zhud_triplet_is_local_player_first_entry_smoke(void) {
     return emptyNull && emptyRange && matchFirst && otherEntryDoesNotMatch ? 0 : 1;
 }
 
+extern "C" int zhud_scoreboard_set_scale_and_rebuild_smoke(void) {
+    HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
+
+    HudUiStatsListElement statsList{};
+    HudUiTriplet triplet{};
+    triplet.Constructor();
+    statsList.triplet = &triplet;
+    g_HudUiMgrStatsList = &statsList;
+
+    triplet.baseXStart = 10;
+    triplet.baseXEnd = 30;
+    triplet.baseYStart = 40;
+    triplet.baseYEnd = 20;
+    triplet.rowPitchYStart = 4;
+    triplet.rowPitchYEnd = 12;
+    triplet.lapsColumnOffsetXStart = 5;
+    triplet.lapsColumnOffsetXEnd = 15;
+    triplet.killsColumnOffsetXStart = 30;
+    triplet.killsColumnOffsetXEnd = 50;
+    triplet.fontSizeStart = 8;
+    triplet.fontSizeEnd = 12;
+    triplet.fontWeightStart = 200;
+    triplet.fontWeightEnd = 600;
+
+    HudScoreboard::SetScaleAndRebuild(0.5f);
+
+    const bool interpolated = triplet.baseX == 20 && triplet.baseY == 30 &&
+                              triplet.rowPitchY == 8 && triplet.lapsColumnOffsetX == 10 &&
+                              triplet.killsColumnOffsetX == 40 && triplet.fontSize == 10 &&
+                              triplet.fontWeight == 400;
+
+    bool rowsHidden = true;
+    for (HudUiPanel *rowCell : triplet.rowCells) {
+        rowsHidden = rowsHidden && (reinterpret_cast<HudUiElement *>(rowCell)->flags & 0x10) != 0;
+    }
+
+    g_HudUiMgrStatsList = oldStatsList;
+    triplet.DestructorCore();
+    return interpolated && rowsHidden ? 0 : 1;
+}
+
 extern "C" int zhud_nanite_panel_init_layout_smoke(void) {
     zReader::Node clipItems[5] = {};
     clipItems[1].value.i32 = 8;

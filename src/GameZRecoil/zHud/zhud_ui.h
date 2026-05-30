@@ -491,6 +491,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RefreshScoreboardEntryRow(GameNetPlayerRow 
 RECOIL_NOINLINE void RECOIL_FASTCALL RemoveScoreboardEntryRow(GameNetPlayerRow *entryKey);
 } // namespace HudUi
 
+namespace HudScoreboard {
+RECOIL_NOINLINE void RECOIL_STDCALL SetScaleAndRebuild(float scale);
+} // namespace HudScoreboard
+
 extern int g_HudUiMgrObjectivePhase;
 extern int g_HudUiMgrObjectiveState;
 extern int g_HudUiMgrObjectiveChatComposeActive;

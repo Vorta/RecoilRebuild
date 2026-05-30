@@ -703,6 +703,7 @@ extern "C" int zhud_triplet_constructor_smoke(void);
 extern "C" int zhud_triplet_interpolate_layout_smoke(void);
 extern "C" int zhud_triplet_destructor_core_smoke(void);
 extern "C" int zhud_triplet_is_local_player_first_entry_smoke(void);
+extern "C" int zhud_scoreboard_set_scale_and_rebuild_smoke(void);
 extern "C" int zhud_nanite_panel_init_layout_smoke(void);
 extern "C" int zhud_triplet_scoreboard_entry_update_smoke(void);
 extern "C" int zhud_stats_list_destructors_smoke(void);
@@ -2742,6 +2743,8 @@ int main(int argc, char **argv) {
         {"zhud_triplet_destructor_core_smoke", zhud_triplet_destructor_core_smoke},
         {"zhud_triplet_is_local_player_first_entry_smoke",
          zhud_triplet_is_local_player_first_entry_smoke},
+        {"zhud_scoreboard_set_scale_and_rebuild_smoke",
+         zhud_scoreboard_set_scale_and_rebuild_smoke},
         {"zhud_nanite_panel_init_layout_smoke", zhud_nanite_panel_init_layout_smoke},
         {"zhud_triplet_scoreboard_entry_update_smoke", zhud_triplet_scoreboard_entry_update_smoke},
         {"zhud_stats_list_destructors_smoke", zhud_stats_list_destructors_smoke},

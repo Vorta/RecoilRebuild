@@ -2312,9 +2312,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40eab0:
   - [✅] Reconstructed (Name: HudScoreboard::SetScaleAndRebuild)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudScoreboard::SetScaleAndRebuild File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_scoreboard_set_scale_and_rebuild)
   - [❌] Binary-safe
 - 0x40eae0:
   - [✅] Reconstructed (Name: HudScoreboard::DispatchSetScale)

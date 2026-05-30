@@ -12878,6 +12878,17 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiTriplet::IsLocalPlayerFirstEntry() {
     return zNetwork_GetLocalPlayerKey() == entries.begin->playerKey ? 1 : 0;
 }
 
+namespace HudScoreboard {
+
+// Reimplements 0x40eab0: HudScoreboard::SetScaleAndRebuild
+// (D:\Proj\Battlesport\HudScoreboard.cpp)
+RECOIL_NOINLINE void RECOIL_STDCALL SetScaleAndRebuild(float scale) {
+    g_HudUiMgrStatsList->triplet->InterpolateLayout(scale);
+    g_HudUiMgrStatsList->triplet->RebuildDisplay();
+}
+
+} // namespace HudScoreboard
+
 // Reimplements 0x4bd160: HudUiTextStack4::PushLine (D:\Proj\Battlesport\HudUiTextStack4.cpp)
 HudUiPanel *RECOIL_THISCALL HudUiTextStack4::PushLine(const char *message, float duration) {
     HudUiVirtualSetContainerEnabled(&base, 1);
