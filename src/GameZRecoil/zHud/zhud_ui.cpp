@@ -8762,6 +8762,14 @@ void RECOIL_THISCALL HudCmdKeyAButton::OnClearBinding()
     base.SetSelectedEntry(selectedIndex);
 }
 
+// Reimplements 0x40ba90: HudCmdBindButtonBase::OnSelectionChangedRefresh
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL
+HudCmdBindButtonBase::OnSelectionChangedRefresh(int selectedIndex)
+{
+    ((HudCmdDialog *)(base.base.owner))->OnCommandSelectionChanged(selectedIndex);
+}
+
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)

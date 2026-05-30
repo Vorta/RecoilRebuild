@@ -5987,6 +5987,46 @@ extern "C" int zhud_cmd_dialog_on_command_selection_changed_smoke(void) {
     return selected && labels ? 0 : 1;
 }
 
+extern "C" int zhud_cmd_bind_button_base_on_selection_changed_refresh_smoke(void) {
+    HudCmdDialog dialog{};
+    dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);
+    dialog.descriptionPanel.captureState = 77;
+
+    SetupCommandDialogButton(&dialog.commandList.base, "CommandZero", "CommandSeven", 3, 7);
+    SetupCommandDialogButton(&dialog.keyAButton.base, "KeyA0", "KeyA1", 3, 7);
+    SetupCommandDialogButton(&dialog.keyBButton.base, "KeyB0", "KeyB1", 3, 7);
+    SetupCommandDialogButton(&dialog.joyButton.base, "Joy0", "Joy1", 3, 7);
+    SetupCommandDialogButton(&dialog.mouseButton.base, "Mouse0", "Mouse1", 3, 7);
+    dialog.keyAButton.base.base.base.owner = &dialog;
+
+    dialog.keyAButton.base.OnSelectionChangedRefresh(1);
+
+    const bool selected =
+        dialog.descriptionPanel.captureState == 0 &&
+        dialog.commandList.base.selectedBindingIndex == 1 &&
+        dialog.keyAButton.base.selectedBindingIndex == 1 &&
+        dialog.keyBButton.base.selectedBindingIndex == 1 &&
+        dialog.joyButton.base.selectedBindingIndex == 1 &&
+        dialog.mouseButton.base.selectedBindingIndex == 1;
+    const bool labels =
+        std::strcmp(&TestFieldAt<char>(&dialog.commandList.base.bindPanel, 0x34),
+                    "CommandSeven") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&dialog.keyAButton.base.bindPanel, 0x34), "KeyA1") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&dialog.keyBButton.base.bindPanel, 0x34), "KeyB1") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&dialog.joyButton.base.bindPanel, 0x34), "Joy1") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&dialog.mouseButton.base.bindPanel, 0x34), "Mouse1") == 0 &&
+        TestFieldAt<char>(&dialog.descriptionPanel, 0x34) == '\0';
+
+    CleanupCommandDialogButton(&dialog.mouseButton.base);
+    CleanupCommandDialogButton(&dialog.joyButton.base);
+    CleanupCommandDialogButton(&dialog.keyBButton.base);
+    CleanupCommandDialogButton(&dialog.keyAButton.base);
+    CleanupCommandDialogButton(&dialog.commandList.base);
+    dialog.descriptionPanel.base.Destructor();
+
+    return selected && labels ? 0 : 1;
+}
+
 extern "C" int zhud_cmd_dialog_rebuild_command_binding_lists_smoke(void) {
     HudCmdDialog dialog{};
     dialog.descriptionPanel.base.ConstructorDefault("stale", 0, 0);

@@ -1889,10 +1889,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x40ba90:
   - [✅] Reconstructed (Name: HudCmdBindButtonBase::OnSelectionChangedRefresh)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindButtonBase::OnSelectionChangedRefresh File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_bind_button_base_on_selection_changed_refresh)
+  - [✅] Binary-safe
 - 0x40bab0:
   - [✅] Reconstructed (Name: HudCmdKeyBButton::OnBeginCapture)
   - [❌] Source dependencies satisfied
