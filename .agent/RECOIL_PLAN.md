@@ -3451,20 +3451,20 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiElement::SetPos)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetPos File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_element_set_pos)
+  - [✅] Binary-safe
 - 0x404cf0:
   - [✅] Reconstructed (Name: HudUiElement::SetX)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetX File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_element_set_x)
+  - [✅] Binary-safe
 - 0x404d00:
   - [✅] Reconstructed (Name: HudUiElement::SetY)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetY File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_element_set_y)
+  - [✅] Binary-safe
 - 0x404d10:
   - [☑️] Reconstructed (Name: HudUiElement::HitTestTrue)
   - [✅] Source dependencies satisfied
