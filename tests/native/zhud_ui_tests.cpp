@@ -4508,6 +4508,11 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
         scalarWidget.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
+    HudUiZrdWidget *const scalarHeapWidget = new HudUiZrdWidget{};
+    HudUiZrdWidget *const scalarHeapResult =
+        scalarHeapWidget->ScalarDeletingDestructor(1);
+    const bool scalarHeapDeleted = scalarHeapResult == scalarHeapWidget;
+
     HudUiZrdWidget invalidateWidget{};
     HudUiElement labelA{};
     HudUiElement labelB{};
@@ -4690,8 +4695,9 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     g_HudUi_InvalidateMask = 0;
 
     return erased && inserted && nullDelete && childDelete && destructed && scalarDeleted &&
-                   invalidated && disabledBounds && imageBoundsOk && labelBoundsOk &&
-                   refreshEnabled && refreshDisabled && previewHidden && previewShown && activated
+                   scalarHeapDeleted && invalidated && disabledBounds && imageBoundsOk &&
+                   labelBoundsOk && refreshEnabled && refreshDisabled && previewHidden &&
+                   previewShown && activated
                ? 0
                : 1;
 }

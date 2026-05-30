@@ -2896,7 +2896,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiZrdWidget::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidget::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x4b50c0:
   - [☑️] Reconstructed (Name: HudUiZrdWidget::DestructorCore)
