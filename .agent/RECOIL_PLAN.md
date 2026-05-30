@@ -2834,7 +2834,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b4ac0:
   - [☑️] Reconstructed (Name: HudUiNumericTextInput::Destructor)
-  - [☑️] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNumericTextInput::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
   - [✅] Functional-equivalent (Target: hud_ui_numeric_text_input_destructor)
   - [❌] Binary-safe
