@@ -11976,6 +11976,62 @@ extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void) {
 }
 
 namespace {
+int g_optionsPanelPerspectiveSelectSpanCount;
+
+void RECOIL_CDECL FakeOptionsPanelPerspectiveSelectSpanRoutines() {
+    ++g_optionsPanelPerspectiveSelectSpanCount;
+}
+} // namespace
+
+extern "C" int zhud_options_panel_perspective_sync_from_options_smoke(void) {
+    int swFlags = 0;
+    int hwFlags = 0x20;
+    int *const oldSwFlags = ZOPT_GFX_FLAGS_SW;
+    int *const oldHwFlags = ZOPT_GFX_FLAGS_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+    CodeFunctionPatch selectSpanPatch{};
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zRndr::SelectSpanRoutines),
+                           reinterpret_cast<void *>(&FakeOptionsPanelPerspectiveSelectSpanRoutines),
+                           selectSpanPatch)) {
+        return 1;
+    }
+
+    ZOPT_GFX_FLAGS_SW = &swFlags;
+    ZOPT_GFX_FLAGS_HW = &hwFlags;
+
+    HudUiOptionsPanel_Perspective perspective{};
+    perspective.base.Constructor();
+    perspective.base.base.modeOrEnabled = 1;
+    g_optionsPanelPerspectiveSelectSpanCount = 0;
+
+    g_zOpt_HwMode = 1;
+    perspective.base.checked = 0;
+    perspective.SyncFromOptions();
+    const bool setOk = perspective.base.checked == 1 && hwFlags == 0x28 && swFlags == 0 &&
+                       g_optionsPanelPerspectiveSelectSpanCount == 1;
+
+    perspective.SyncFromOptions();
+    const bool clearOk = perspective.base.checked == 0 && hwFlags == 0x20 && swFlags == 0 &&
+                         g_optionsPanelPerspectiveSelectSpanCount == 2;
+
+    g_zOpt_HwMode = 0;
+    perspective.base.checked = 0;
+    swFlags = 0x10;
+    perspective.SyncFromOptions();
+    const bool swOk = perspective.base.checked == 1 && swFlags == 0x18 && hwFlags == 0x20 &&
+                      g_optionsPanelPerspectiveSelectSpanCount == 3;
+
+    perspective.base.DestructorCore();
+    ZOPT_GFX_FLAGS_SW = oldSwFlags;
+    ZOPT_GFX_FLAGS_HW = oldHwFlags;
+    g_zOpt_HwMode = oldHwMode;
+    RestoreFunctionPatch(selectSpanPatch);
+
+    return setOk && clearOk && swOk ? 0 : 1;
+}
+
+namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;
 int g_hudCmdDialogStateSetEnabledCount;
