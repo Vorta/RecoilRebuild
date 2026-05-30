@@ -460,6 +460,25 @@ HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor(unsigned int flags)
     return this;
 }
 
+// Reimplements 0x40d150: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent
+// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL
+HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent()
+{
+    HudOptionsDialog *panel = (HudOptionsDialog *)::operator new(sizeof(HudOptionsDialog));
+    if (panel != 0)
+    {
+        panel = panel->Constructor();
+    }
+
+    m_panel = (RecoilPtr32)(unsigned int)panel;
+
+    HudUiOptionsPanelOverlayVirtual *panelView =
+        (HudUiOptionsPanelOverlayVirtual *)panel;
+    panelView->SetEnabled(1);
+    return 1;
+}
+
 // Reimplements 0x4159b0: RecoilStateConfirmQuit::QueueEnter
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
 void RECOIL_CDECL RecoilStateConfirmQuit::QueueEnter()

@@ -2237,9 +2237,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40d150:
   - [☑️] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_overlay_owner_on_try_become_current)
   - [❌] Binary-safe
 - 0x40d1c0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::QueueEnter)

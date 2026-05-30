@@ -119,6 +119,8 @@ int g_confirmQuitBackgroundBindCalls;
 bool g_confirmQuitBackgroundBindArgsOk;
 int g_confirmQuitBackgroundFreeCalls;
 bool g_confirmQuitBackgroundFreeArgsOk;
+int g_optionsPanelBackgroundLoadCalls;
+bool g_optionsPanelBackgroundLoadArgsOk;
 int g_openFileNameCalls;
 bool g_openFileNameStructOk;
 char g_openFileNameSelectedPath[MAX_PATH];
@@ -928,6 +930,12 @@ struct FakeConfirmQuitBackgroundThunk {
     void RECOIL_THISCALL FreeLoadedTreeRoots(int loadedRoot);
 };
 
+struct FakeOptionsPanelBackgroundThunk {
+    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *zrdPath,
+                                               const char *sectionName,
+                                               int capturePrimary);
+};
+
 zReader::Node *RECOIL_THISCALL FakeSaveGameInitLoadThunk::LoadFromZrd(
     const char *zrdPath, const char *sectionName, int capturePrimary) {
     ++g_saveGameInitLoadCalls;
@@ -950,6 +958,16 @@ zReader::Node *RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::LoadFromZrd(
         sectionName != nullptr && std::strcmp(sectionName, "CONFIRM_QUIT") == 0 &&
         capturePrimary == 0;
     return &g_confirmQuitBackgroundFakeNode;
+}
+
+zReader::Node *RECOIL_THISCALL FakeOptionsPanelBackgroundThunk::LoadFromZrd(
+    const char *zrdPath, const char *sectionName, int capturePrimary) {
+    ++g_optionsPanelBackgroundLoadCalls;
+    g_optionsPanelBackgroundLoadArgsOk =
+        this != nullptr && zrdPath != nullptr && std::strcmp(zrdPath, "dialog.zrd") == 0 &&
+        sectionName != nullptr && std::strcmp(sectionName, "OPTIONSPANEL") == 0 &&
+        capturePrimary == 0;
+    return nullptr;
 }
 
 int RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::BindWidgetByName(
@@ -1010,6 +1028,18 @@ void *FakeConfirmQuitBackgroundLoadFromZrdProc() {
 
     MemberToFunction thunk{};
     thunk.member = &FakeConfirmQuitBackgroundThunk::LoadFromZrd;
+    return thunk.function;
+}
+
+void *FakeOptionsPanelBackgroundLoadFromZrdProc() {
+    union MemberToFunction {
+        zReader::Node *(RECOIL_THISCALL FakeOptionsPanelBackgroundThunk::*member)(
+            const char *, const char *, int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &FakeOptionsPanelBackgroundThunk::LoadFromZrd;
     return thunk.function;
 }
 
@@ -3015,6 +3045,34 @@ extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void)
     }
 
     return 0;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_on_try_become_current_smoke(void) {
+    CodeFunctionPatch loadPatch{};
+    if (!PatchFunctionJump(HudUiBackgroundLoadFromZrdProc(),
+                           FakeOptionsPanelBackgroundLoadFromZrdProc(), loadPatch)) {
+        return 1;
+    }
+
+    g_optionsPanelBackgroundLoadCalls = 0;
+    g_optionsPanelBackgroundLoadArgsOk = false;
+
+    HudUiOptionsPanelOverlayOwner state{};
+    const int accepted = state.OnTryBecomeCurrent();
+    HudOptionsDialog *const dialog =
+        reinterpret_cast<HudOptionsDialog *>(static_cast<std::uintptr_t>(state.m_panel));
+
+    int result = 0;
+    if (accepted != 1 || dialog == nullptr ||
+        g_optionsPanelBackgroundLoadCalls != 1 ||
+        !g_optionsPanelBackgroundLoadArgsOk ||
+        dialog->base.base.base.enabled != 1) {
+        result = 2;
+    }
+
+    state.DestructorCore();
+    RestoreFunctionPatch(loadPatch);
+    return result;
 }
 
 extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void) {
