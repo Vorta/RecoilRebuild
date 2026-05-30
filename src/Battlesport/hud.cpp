@@ -174,6 +174,82 @@ HudUiNumericTextInput_Base_FTable MakeCheatCodeInputWidgetFTable()
     return table;
 }
 
+HudUiWidget_FTable MakeHudUiNewGamePanelStartButtonFTable()
+{
+    HudUiWidget_FTable table = {0};
+    table.slots[0] = HudMethodAddress(&HudUiZrdWidget::ScalarDeletingDestructorThunk);
+    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
+    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
+    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
+    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
+    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
+    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
+    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
+    table.slots[12] = HudMethodAddress(&HudUiNewGamePanel_StartButton::OnActivate);
+    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
+    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
+    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
+    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
+    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
+    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
+    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
+    return table;
+}
+
+HudUiNumericTextInput_Base_FTable MakeHudUiNewGamePanelNameInputFTable()
+{
+    HudUiNumericTextInput_Base_FTable table = {0};
+    table.slots[0] = HudMethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructorThunk);
+    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
+    table.slots[2] = HudMethodAddress(&HudUiNumericTextInput::UpdateCaptureUiAndClip);
+    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
+    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
+    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
+    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
+    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
+    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
+    table.slots[12] = HudMethodAddress(&HudUiNewGamePanel_NameInput::OnActivate);
+    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
+    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
+    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
+    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
+    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
+    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
+    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
+    table.slots[34] = HudMethodAddress(&HudUiNumericTextInput::OnRawKeyboardChar);
+    return table;
+}
+
+HudUiNewGamePanel_FTableHeader MakeHudUiNewGamePanelFTable()
+{
+    HudUiNewGamePanel_FTableHeader table = {0};
+    table.primarySlots[0] = HudMethodAddress(&HudUiBackground::Update);
+    table.primarySlots[1] = HudMethodAddress(&HudUiBackground::SetEnabled);
+    table.primarySlots[2] = HudMethodAddress(&HudUiNewGamePanel::ScalarDeletingDestructor);
+
+    table.SecondaryAction.slots[0] =
+        HudMethodAddress(&HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk);
+    table.SecondaryAction.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
+    table.SecondaryAction.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
+    table.SecondaryAction.slots[4] = HudMethodAddress(&HudUiElement::SetX);
+    table.SecondaryAction.slots[5] = HudMethodAddress(&HudUiElement::SetY);
+    table.SecondaryAction.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
+    table.SecondaryAction.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
+    table.SecondaryAction.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
+    table.SecondaryAction.slots[12] = HudMethodAddress(&HudUiZrdWidget::OnActivate);
+    table.SecondaryAction.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
+    table.SecondaryAction.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
+    table.SecondaryAction.slots[24] = HudMethodAddress(&HudUiZrdWidgetEx17C::EnableChildAtIndex);
+    table.SecondaryAction.slots[25] = HudMethodAddress(&HudUiElement::GetX);
+    table.SecondaryAction.slots[26] = HudMethodAddress(&HudUiElement::GetY);
+    table.SecondaryAction.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
+    table.SecondaryAction.slots[31] = HudMethodAddress(&HudUiZrdWidgetEx17C::LoadFromZrd);
+    table.SecondaryAction.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
+    return table;
+}
+
 HudUiCheatCodeDialog_FTable MakeCheatCodeDialogFTable()
 {
     HudUiCheatCodeDialog_FTable table = {0};
@@ -244,6 +320,12 @@ extern const HudUiZrdWidget_FTable g_HudUiCheatCodeTitleWidget_FTable =
     MakeCheatCodeTitleWidgetFTable();
 extern const HudUiNumericTextInput_Base_FTable g_HudUiCheatCodeInputWidget_FTable =
     MakeCheatCodeInputWidgetFTable();
+extern const HudUiNewGamePanel_FTableHeader g_HudUiNewGamePanel_FTableHeader =
+    MakeHudUiNewGamePanelFTable();
+extern const HudUiWidget_FTable g_HudUiNewGamePanel_StartButton_Vtbl =
+    MakeHudUiNewGamePanelStartButtonFTable();
+extern const HudUiNumericTextInput_Base_FTable g_HudUiNewGamePanel_NameInput_Vtbl =
+    MakeHudUiNewGamePanelNameInputFTable();
 
 // Reimplements 0x4bdc70: HudWeatherFx::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
@@ -372,6 +454,82 @@ HudWeatherFxRain::Constructor(int particleCount)
 void RECOIL_CDECL HudUiNewGamePanelOverlayOwner::QueueEnter()
 {
     g_RecoilApp.QueuePushState(&g_HudUiNewGamePanelOverlayOwner, 0);
+}
+
+// Reimplements 0x41c290: HudUiNewGamePanel::Constructor
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+HudUiNewGamePanel *RECOIL_THISCALL HudUiNewGamePanel::Constructor()
+{
+    HudUiBackground::Constructor();
+
+    backWidget.Constructor();
+    backWidget.base.ftable = &g_HudUiMainMenu_BackButton_FTable;
+    startWidget.Constructor();
+    startWidget.base.ftable = &g_HudUiNewGamePanel_StartButton_Vtbl;
+    nameInput.BaseConstructor();
+    nameInput.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiNewGamePanel_NameInput_Vtbl);
+    intensity.Constructor();
+    intensity.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiNewGamePanel_FTableHeader.SecondaryAction);
+
+    base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiNewGamePanel_FTableHeader);
+
+    zReader::Node *const loadedSection =
+        HudUiBackground::LoadFromZrd("dialog.zrd", "NEWGAMEPANEL", 0);
+    if (loadedSection != 0)
+    {
+        HudUiBackground::BindWidgetByName(loadedSection, &backWidget.base, "BACK");
+        HudUiBackground::BindWidgetByName(loadedSection, &startWidget.base, "START");
+        HudUiBackground::BindWidgetByName(loadedSection, &nameInput.base.base, "NAME");
+        HudUiBackground::BindWidgetByName(loadedSection, &intensity.base.base, "INTENSITY");
+        HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
+    }
+
+    nameInput.Update(zOpt_GetPlayerName());
+    return this;
+}
+
+// Reimplements 0x41c3b0: HudUiNewGamePanel_NameInput::OnActivate
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+void RECOIL_THISCALL HudUiNewGamePanel_NameInput::OnActivate()
+{
+    HudUiNumericTextInput::AllocTextBuffer(21);
+    HudUiNumericTextInput::Update(zOpt_GetPlayerName());
+    HudUiNumericTextInput::OnActivate();
+    HudUiNumericTextInput::SetRawKeyboardCapture(1);
+}
+
+// Reimplements 0x41c400: HudUiNewGamePanel::Destructor
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudUiNewGamePanel::Destructor()
+{
+    intensity.DestructorCore();
+    nameInput.Destructor();
+    startWidget.DestructorCore();
+    backWidget.DestructorCore();
+    HudUiBackground::Destructor();
+}
+
+// Reimplements 0x41c3e0: HudUiNewGamePanel::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+RECOIL_NOINLINE HudUiNewGamePanel *RECOIL_THISCALL
+HudUiNewGamePanel::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x41c4e0: HudUiNewGamePanel::SyncIntensityFromDifficulty
+// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+void RECOIL_THISCALL HudUiNewGamePanel::SyncIntensityFromDifficulty()
+{
+    intensity.SetSelectedIndex(zOpt::GetGameDifficultyMode());
 }
 
 // Reimplements 0x41c500: HudUiNewGamePanel::StartGameFromFields

@@ -2600,27 +2600,27 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41c290:
   - [✅] Reconstructed (Name: HudUiNewGamePanel::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanel::Constructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_constructor_cluster)
   - [❌] Binary-safe
 - 0x41c3b0:
   - [✅] Reconstructed (Name: HudUiNewGamePanel_NameInput::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanel_NameInput::OnActivate File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_constructor_cluster)
   - [❌] Binary-safe
 - 0x41c400:
   - [✅] Reconstructed (Name: HudUiNewGamePanel::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanel::Destructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_constructor_cluster)
   - [❌] Binary-safe
 - 0x41c480:
   - [✅] Reconstructed (Name: HudUiZrdWidget::ScalarDeletingDestructorThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidget::ScalarDeletingDestructorThunk File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_constructor_cluster)
   - [❌] Binary-safe
 - 0x41c4a0:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::ScalarDeletingDestructorThunk)
@@ -2630,15 +2630,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41c4c0:
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::ScalarDeletingDestructorThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_constructor_cluster)
   - [❌] Binary-safe
 - 0x41c4e0:
   - [✅] Reconstructed (Name: HudUiNewGamePanel::SyncIntensityFromDifficulty)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanel::SyncIntensityFromDifficulty File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_constructor_cluster)
   - [❌] Binary-safe
 - 0x41c500:
   - [✅] Reconstructed (Name: HudUiNewGamePanel::StartGameFromFields)
@@ -3184,7 +3184,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_constructor_cluster)
   - [❌] Binary-safe
 - 0x4b8b40:
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::ScalarDeletingDestructor)
@@ -3208,7 +3208,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::SetSelectedIndex)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C::SetSelectedIndex File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_constructor_cluster)
   - [❌] Binary-safe
 - 0x4b8d30:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::Constructor)
@@ -18766,7 +18766,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::GetPlayerName)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt_GetPlayerName File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_constructor_cluster)
   - [❌] Binary-safe
 - 0x4081a0:
   - [✅] Reconstructed (Name: zOpt::SetGraphicsFlagsForCurrentHwMode)
@@ -21682,9 +21682,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41c3e0:
   - [✅] Reconstructed (Name: HudUiNewGamePanel::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNewGamePanel::ScalarDeletingDestructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_new_game_panel_constructor_cluster)
   - [❌] Binary-safe
 - 0x41c610:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor)

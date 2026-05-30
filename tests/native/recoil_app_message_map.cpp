@@ -3081,6 +3081,119 @@ extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
     return directOk && buttonOk ? 0 : 1;
 }
 
+extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
+    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldOptionListHead = g_zGame_Options_OptionListHead;
+    void *const oldRawCallback = g_zInput_KbdRawEventCallback;
+    void *const oldRawCallbackCtx = g_zInput_KbdRawEventCallbackCtx;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    std::uint16_t pixels[4] = {};
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption{};
+    vmodeOption.payloadOrBuffer = 5;
+    vmodeOption.name = vmodeName;
+    vmodeOption.next = nullptr;
+    char playerName[32] = "Ace";
+    zOptionEntryPartial playerNameOption{};
+    playerNameOption.payloadOrBuffer =
+        static_cast<std::int32_t>(reinterpret_cast<std::uintptr_t>(playerName));
+    playerNameOption.dataSize = sizeof(playerName);
+    int difficulty = 2;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+    ZOPT_PLAYER_NAME = &playerNameOption;
+    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zInput_KbdRawEventCallback = nullptr;
+    g_zInput_KbdRawEventCallbackCtx = nullptr;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    HudUiNewGamePanel panel{};
+    HudUiNewGamePanel *const returned = panel.Constructor();
+    const bool constructed =
+        returned == &panel &&
+        panel.base.base.vptr ==
+            reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiNewGamePanel_FTableHeader) &&
+        panel.backWidget.base.ftable == &g_HudUiMainMenu_BackButton_FTable &&
+        panel.startWidget.base.ftable == &g_HudUiNewGamePanel_StartButton_Vtbl &&
+        panel.nameInput.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiNewGamePanel_NameInput_Vtbl) &&
+        panel.intensity.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(
+                &g_HudUiNewGamePanel_FTableHeader.SecondaryAction) &&
+        panel.loadedRoot == nullptr && panel.cfgRoot == nullptr &&
+        panel.nameInput.textInput.buffer != nullptr &&
+        std::strcmp(panel.nameInput.textInput.buffer, "Ace") == 0 &&
+        panel.nameInput.textInput.cursor == 3;
+
+    difficulty = 4;
+    panel.SyncIntensityFromDifficulty();
+    const bool synced = panel.intensity.selectedIndex == 4;
+
+    std::strcpy(playerName, "Ranger");
+    panel.nameInput.OnActivate();
+    const bool nameActivated =
+        panel.nameInput.textInput.capacity == 21 &&
+        std::strcmp(panel.nameInput.textInput.buffer, "Ranger") == 0 &&
+        panel.nameInput.textInput.cursor == 6 &&
+        panel.nameInput.sliderBorder.inputActive == 1 &&
+        panel.nameInput.sliderBorder.sliderVisibleWhenInputActive == 1 &&
+        g_zInput_KbdRawEventCallback ==
+            reinterpret_cast<void *>(&HudUiNumericTextInput::RawKeyboardCallback) &&
+        g_zInput_KbdRawEventCallbackCtx == &panel.nameInput;
+    panel.nameInput.SetRawKeyboardCapture(0);
+
+    HudUiNewGamePanel *const noDeleteResult = panel.ScalarDeletingDestructor(0);
+    const bool noDeleteScalar = noDeleteResult == &panel;
+
+    HudUiNewGamePanel *const heapPanel =
+        static_cast<HudUiNewGamePanel *>(::operator new(sizeof(HudUiNewGamePanel)));
+    heapPanel->Constructor();
+    HudUiNewGamePanel *const heapScalarResult = heapPanel->ScalarDeletingDestructor(1);
+    const bool heapScalar = heapScalarResult == heapPanel;
+
+    HudUiZrdWidget *const zrdWidget =
+        static_cast<HudUiZrdWidget *>(::operator new(sizeof(HudUiZrdWidget)));
+    zrdWidget->Constructor();
+    HudUiZrdWidget *const zrdThunkResult = zrdWidget->ScalarDeletingDestructorThunk(1);
+    const bool zrdThunk = zrdThunkResult == zrdWidget;
+
+    HudUiZrdWidgetEx17C *const selector =
+        static_cast<HudUiZrdWidgetEx17C *>(::operator new(sizeof(HudUiZrdWidgetEx17C)));
+    selector->Constructor();
+    HudUiZrdWidgetEx17C *const selectorThunkResult =
+        selector->ScalarDeletingDestructorThunk(1);
+    const bool selectorThunk = selectorThunkResult == selector;
+
+    ZOPT_PLAYER_NAME = oldPlayerNameOption;
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_OptionListHead = oldOptionListHead;
+    g_zInput_KbdRawEventCallback = oldRawCallback;
+    g_zInput_KbdRawEventCallbackCtx = oldRawCallbackCtx;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+
+    return constructed && synced && nameActivated && noDeleteScalar && heapScalar &&
+                   zrdThunk && selectorThunk
+               ? 0
+               : 1;
+}
+
 extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void) {
     HudUiOptionsPanelOverlayOwner state{};
     state.vftable = 0x11111111;

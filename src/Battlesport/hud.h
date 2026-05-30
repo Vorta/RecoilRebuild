@@ -306,12 +306,22 @@ struct HudUiNewGamePanel_StartButton : HudUiZrdWidget {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_StartButton) == 0x14c);
 
+struct HudUiNewGamePanel_NameInput : HudUiNumericTextInput {
+    void RECOIL_THISCALL OnActivate();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_NameInput) == 0x374);
+
 struct HudUiNewGamePanel : HudUiBackground {
     HudUiZrdWidget backWidget;
     HudUiNewGamePanel_StartButton startWidget;
-    HudUiNumericTextInput nameInput;
+    HudUiNewGamePanel_NameInput nameInput;
     HudUiZrdWidgetEx17C intensity;
 
+    HudUiNewGamePanel *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE HudUiNewGamePanel *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
+    void RECOIL_THISCALL SyncIntensityFromDifficulty();
     void RECOIL_THISCALL StartGameFromFields();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel) == 0xb0d4);
@@ -321,6 +331,16 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, nameInput) == 0xabe4);
 RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, intensity) == 0xaf58);
 RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, intensity) +
                      offsetof(HudUiZrdWidgetEx17C, selectedIndex) == 0xb0d0);
+
+struct HudUiNewGamePanel_FTableHeader {
+    unsigned int primarySlots[4];
+    HudUiZrdWidgetEx17C_FTable SecondaryAction;
+};
+
+extern const HudUiNewGamePanel_FTableHeader g_HudUiNewGamePanel_FTableHeader;
+extern const HudUiWidget_FTable g_HudUiMainMenu_BackButton_FTable;
+extern const HudUiWidget_FTable g_HudUiNewGamePanel_StartButton_Vtbl;
+extern const HudUiNumericTextInput_Base_FTable g_HudUiNewGamePanel_NameInput_Vtbl;
 
 struct HudUiNewGamePanelOverlayOwner : RecoilApp_IState {
     RecoilPtr32 m_panel; // HudUiNewGamePanel*

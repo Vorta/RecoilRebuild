@@ -7153,6 +7153,17 @@ HudUiZrdWidget *RECOIL_THISCALL HudUiZrdWidget::ScalarDeletingDestructor(unsigne
     return this;
 }
 
+// Reimplements 0x41c480: HudUiZrdWidget::ScalarDeletingDestructorThunk
+HudUiZrdWidget *RECOIL_THISCALL
+HudUiZrdWidget::ScalarDeletingDestructorThunk(unsigned int flags) {
+    DestructorCore();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
 // Reimplements 0x4b5310: HudUiZrdWidget::Invalidate
 void RECOIL_THISCALL HudUiZrdWidget::Invalidate() {
     typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiPanel * self);
@@ -8321,6 +8332,17 @@ void RECOIL_THISCALL HudUiZrdWidgetEx17C::DestructorCore() {
 // Reimplements 0x4b8b40: HudUiZrdWidgetEx17C::ScalarDeletingDestructor
 HudUiZrdWidgetEx17C *RECOIL_THISCALL
 HudUiZrdWidgetEx17C::ScalarDeletingDestructor(unsigned int flags) {
+    DestructorCore();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x41c4c0: HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk
+HudUiZrdWidgetEx17C *RECOIL_THISCALL
+HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk(unsigned int flags) {
     DestructorCore();
     if ((flags & 1u) != 0) {
         ::operator delete(this);

@@ -816,6 +816,7 @@ struct HudUiZrdWidget {
 
     HudUiZrdWidget *RECOIL_THISCALL Constructor();
     HudUiZrdWidget *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    HudUiZrdWidget *RECOIL_THISCALL ScalarDeletingDestructorThunk(unsigned int flags);
     RECOIL_NOINLINE void RECOIL_THISCALL DestructorCore();
     void RECOIL_THISCALL Invalidate();
     HudUiRect *RECOIL_THISCALL GetBoundsRectOrNull();
@@ -934,6 +935,7 @@ struct HudUiZrdWidgetEx17C {
 
     HudUiZrdWidgetEx17C *RECOIL_THISCALL Constructor();
     HudUiZrdWidgetEx17C *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    HudUiZrdWidgetEx17C *RECOIL_THISCALL ScalarDeletingDestructorThunk(unsigned int flags);
     void RECOIL_THISCALL DestructorCore();
     int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
     void RECOIL_THISCALL EnableChildAtIndex(int childIndex);
