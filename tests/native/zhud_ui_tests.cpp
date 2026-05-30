@@ -12350,6 +12350,29 @@ extern "C" int zhud_options_panel_sound_active_init_from_options_smoke(void) {
     return unmutedOk && mutedOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_sound_active_sync_from_options_smoke(void) {
+    int muteSound = 0;
+    int *const oldMuteSound = ZOPT_MUTE_SOUND;
+
+    ZOPT_MUTE_SOUND = &muteSound;
+
+    HudUiOptionsPanel_SoundActive soundActive{};
+    soundActive.base.Constructor();
+    soundActive.base.base.modeOrEnabled = 1;
+
+    soundActive.base.checked = 0;
+    soundActive.SyncFromOptions();
+    const bool unmutedOk = soundActive.base.checked == 1 && muteSound == 0;
+
+    soundActive.SyncFromOptions();
+    const bool mutedOk = soundActive.base.checked == 0 && muteSound == 1;
+
+    soundActive.base.DestructorCore();
+    ZOPT_MUTE_SOUND = oldMuteSound;
+
+    return unmutedOk && mutedOk ? 0 : 1;
+}
+
 namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;
