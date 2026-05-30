@@ -9,6 +9,7 @@
 #include "GameZRecoil/include/zClass.h"
 #include "GameZRecoil/include/zClipRect.h"
 #include "GameZRecoil/include/zDi.h"
+#include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
@@ -12276,6 +12277,52 @@ extern "C" int zhud_options_panel_effects_init_from_options_smoke(void) {
     g_zOpt_HwMode = oldHwMode;
 
     return swZeroForcedOk && swRangeOk && hwDirectOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_effects_sync_from_options_smoke(void) {
+    int swEffectsLevel = 0;
+    int hwEffectsLevel = 0;
+    int *const oldSwEffectsLevel = ZOPT_EFFECTS_LEVEL_SW;
+    int *const oldHwEffectsLevel = ZOPT_EFFECTS_LEVEL_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+    const int oldConditionalEffectLevel = g_zEffect_ConditionalEffectLevel;
+
+    ZOPT_EFFECTS_LEVEL_SW = &swEffectsLevel;
+    ZOPT_EFFECTS_LEVEL_HW = &hwEffectsLevel;
+
+    HudUiOptionsPanel_Effects effects{};
+    effects.base.Constructor();
+    effects.base.itemCount = 3;
+    effects.base.firstIndex = 0;
+    effects.base.visibleCount = 3;
+
+    g_zOpt_HwMode = 0;
+    effects.base.selectedIndex = 0;
+    effects.SyncFromOptions();
+    const bool swAdvanceOk =
+        effects.base.selectedIndex == 1 && swEffectsLevel == 1 &&
+        g_zEffect_ConditionalEffectLevel == 1;
+
+    effects.base.selectedIndex = 2;
+    effects.SyncFromOptions();
+    const bool swWrapOk =
+        effects.base.selectedIndex == 0 && swEffectsLevel == 0 &&
+        g_zEffect_ConditionalEffectLevel == 2;
+
+    g_zOpt_HwMode = 1;
+    effects.base.selectedIndex = 1;
+    effects.SyncFromOptions();
+    const bool hwAdvanceOk =
+        effects.base.selectedIndex == 2 && hwEffectsLevel == 2 &&
+        g_zEffect_ConditionalEffectLevel == 0;
+
+    effects.base.DestructorCore();
+    ZOPT_EFFECTS_LEVEL_SW = oldSwEffectsLevel;
+    ZOPT_EFFECTS_LEVEL_HW = oldHwEffectsLevel;
+    g_zOpt_HwMode = oldHwMode;
+    g_zEffect_ConditionalEffectLevel = oldConditionalEffectLevel;
+
+    return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
 }
 
 namespace {
