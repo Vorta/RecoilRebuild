@@ -963,6 +963,7 @@ struct HudCmdBindButtonBase {
     void RECOIL_THISCALL SetSelectedEntry(int selectedIndex);
     void RECOIL_THISCALL OnSelectionChangedRefresh(int selectedIndex);
     void RECOIL_THISCALL ClearBindingEntries();
+    void RECOIL_THISCALL DestructorCore();
     int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
     void RECOIL_THISCALL RebuildBindingSlotWidgets(int totalCount,
                                                    int visibleCount);

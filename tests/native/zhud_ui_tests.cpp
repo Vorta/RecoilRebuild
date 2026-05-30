@@ -11646,6 +11646,22 @@ static void InstallDialogBinding(HudCmdBindButtonBase &button, const char *text)
     button.bindingVec.capacity = slots + 1;
 }
 
+extern "C" int zhud_cmd_bind_button_base_destructor_core_smoke(void) {
+    HudCmdBindButtonBase button{};
+    button.Constructor();
+    InstallDialogBinding(button, "Command");
+
+    button.DestructorCore();
+
+    return button.bindingVec.begin == 0 && button.bindingVec.end == 0 &&
+                   button.bindingVec.capacity == 0 &&
+                   ((HudUiPanel *)(&button.bindPanel))->vtbl == &g_HudUiCommon_FTable &&
+                   button.base.base.base.ftable ==
+                       (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable)
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_cmd_dialog_destructor_smoke(void) {
     HudCmdDialog *const dialog =
         (HudCmdDialog *)(::operator new(sizeof(HudCmdDialog)));

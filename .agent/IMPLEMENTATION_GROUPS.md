@@ -49,3 +49,12 @@ source-readiness, or coherent binary-safe groups currently being coordinated.
   - none; 0x40a5b0, 0x40bcf0, 0x40bd60, and 0x40bda0 are functional-equivalent.
 - Next action:
   - Recompute the next HUD command-dialog caller with `python tools/recoil_plan_cli.py next` or queue a coherent binary-safe pass for the HudCmdDialog source-file/table cluster.
+
+### Group: Hud command bind button destructor
+
+- Anchor: 0x40c280 HudCmdBindButtonBase::DestructorCore
+- Reason: class destructor/source-file cluster shared by command/key/joystick/mouse bind buttons.
+- Source blockers:
+  - none; 0x40c280 is functional-equivalent.
+- Next action:
+  - Recompute the next HUD command-bind-button destructor dependency with `python tools/recoil_plan_cli.py next` or fold derived destructors into this recovered base owner when Binary Ninja evidence permits.
