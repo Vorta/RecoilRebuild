@@ -12221,6 +12221,63 @@ extern "C" int zhud_options_panel_texture_memory_sync_from_options_smoke(void) {
     return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_effects_init_from_options_smoke(void) {
+    int swEffectsLevel = 0;
+    int hwEffectsLevel = 0;
+    int videoAcceleration = 0;
+    int *const oldSwEffectsLevel = ZOPT_EFFECTS_LEVEL_SW;
+    int *const oldHwEffectsLevel = ZOPT_EFFECTS_LEVEL_HW;
+    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    ZOPT_EFFECTS_LEVEL_SW = &swEffectsLevel;
+    ZOPT_EFFECTS_LEVEL_HW = &hwEffectsLevel;
+    ZOPT_VIDEO_ACCELERATION = &videoAcceleration;
+
+    HudUiOptionsPanel_Effects effects{};
+    effects.base.Constructor();
+    effects.base.itemCount = 4;
+    effects.base.firstIndex = 0;
+    effects.base.visibleCount = 4;
+
+    g_zOpt_HwMode = 0;
+    videoAcceleration = 0;
+    swEffectsLevel = 0;
+    effects.base.selectedIndex = 0;
+    effects.InitFromOptions();
+    const bool swZeroForcedOk =
+        effects.base.firstIndex == 1 && effects.base.visibleCount == 3 &&
+        effects.base.selectedIndex == 1;
+
+    swEffectsLevel = 2;
+    effects.base.firstIndex = 0;
+    effects.base.visibleCount = 4;
+    effects.base.selectedIndex = 0;
+    effects.InitFromOptions();
+    const bool swRangeOk =
+        effects.base.firstIndex == 1 && effects.base.visibleCount == 3 &&
+        effects.base.selectedIndex == 2;
+
+    g_zOpt_HwMode = 1;
+    videoAcceleration = 1;
+    hwEffectsLevel = 0;
+    effects.base.firstIndex = 0;
+    effects.base.visibleCount = 4;
+    effects.base.selectedIndex = 9;
+    effects.InitFromOptions();
+    const bool hwDirectOk =
+        effects.base.firstIndex == 0 && effects.base.visibleCount == 4 &&
+        effects.base.selectedIndex == 0;
+
+    effects.base.DestructorCore();
+    ZOPT_EFFECTS_LEVEL_SW = oldSwEffectsLevel;
+    ZOPT_EFFECTS_LEVEL_HW = oldHwEffectsLevel;
+    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+    g_zOpt_HwMode = oldHwMode;
+
+    return swZeroForcedOk && swRangeOk && hwDirectOk ? 0 : 1;
+}
+
 namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;

@@ -647,6 +647,7 @@ extern "C" int zhud_options_panel_object_detail_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_object_detail_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_texture_memory_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_texture_memory_sync_from_options_smoke(void);
+extern "C" int zhud_options_panel_effects_init_from_options_smoke(void);
 extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void);
 extern "C" int zhud_cmd_dialog_state_queue_enter_smoke(void);
 extern "C" int zhud_cmd_dialog_state_on_deactivate_smoke(void);
@@ -2630,6 +2631,8 @@ int main(int argc, char **argv) {
          zhud_options_panel_texture_memory_init_from_options_smoke},
         {"zhud_options_panel_texture_memory_sync_from_options_smoke",
          zhud_options_panel_texture_memory_sync_from_options_smoke},
+        {"zhud_options_panel_effects_init_from_options_smoke",
+         zhud_options_panel_effects_init_from_options_smoke},
         {"zhud_cmd_dialog_state_lifecycle_smoke",
          zhud_cmd_dialog_state_lifecycle_smoke},
         {"zhud_cmd_dialog_state_queue_enter_smoke",
