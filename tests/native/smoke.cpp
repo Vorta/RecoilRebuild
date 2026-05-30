@@ -1168,6 +1168,7 @@ extern "C" int zrndr_lens_flare_draw_visible_sample_stages_smoke(void);
 extern "C" int zrndr_lens_flare_draw_visible_sample_smoke(void);
 extern "C" int zrndr_lens_flare_draw_visible_samples_smoke(void);
 extern "C" int zrndr_span_occlusion_add_polygon_smoke(void);
+extern "C" int zrndr_span_occlusion_submit_rect_smoke(void);
 extern "C" int zrndr_span_occlusion_test_depth_order_pair_smoke(void);
 extern "C" int zrndr_span_occlusion_insert_no_depth_smoke(void);
 extern "C" int zrndr_span_occlusion_build_span_list_smoke(void);
@@ -3415,6 +3416,7 @@ int main(int argc, char **argv) {
         {"zrndr_lens_flare_draw_visible_samples_smoke",
          zrndr_lens_flare_draw_visible_samples_smoke},
         {"zrndr_span_occlusion_add_polygon_smoke", zrndr_span_occlusion_add_polygon_smoke},
+        {"zrndr_span_occlusion_submit_rect_smoke", zrndr_span_occlusion_submit_rect_smoke},
         {"zrndr_span_occlusion_test_depth_order_pair_smoke",
          zrndr_span_occlusion_test_depth_order_pair_smoke},
         {"zrndr_span_occlusion_insert_no_depth_smoke", zrndr_span_occlusion_insert_no_depth_smoke},

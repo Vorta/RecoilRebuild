@@ -17191,13 +17191,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zRndr::SpanOcclusionResetFrame)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanOcclusionResetFrame File: src/GameZRecoil/zRndr/zRndr.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zrndr_span_occlusion_reset_frame)
   - [❌] Binary-safe
 - 0x490610:
-  - [☑️] Reconstructed (Name: zRndr::SpanOcclusionSubmitOccluderRect)
+  - [✅] Reconstructed (Name: zRndr::SpanOcclusionSubmitOccluderRect)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zRndr::SpanOcclusionSubmitOccluderRect File: src/GameZRecoil/zRndr/zRndr.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zrndr_span_occlusion_submit_occluder_rect)
   - [❌] Binary-safe
 - 0x490780:
   - [✅] Reconstructed (Name: zRndr::SpanOcclusionShutdown)
