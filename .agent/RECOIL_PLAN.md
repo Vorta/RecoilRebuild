@@ -2750,9 +2750,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b44e0:
   - [✅] Reconstructed (Name: HudUiTextInput::InsertCharAtCursor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiTextInput::InsertCharAtCursor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_text_input_insert_char_at_cursor)
   - [❌] Binary-safe
 - 0x4b4530:
   - [✅] Reconstructed (Name: HudUiTextInput::BackspaceDeleteChar)
@@ -2782,7 +2782,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiTextInput::ShiftTextRight)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::ShiftTextRight File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_text_input_shift_text_right)
   - [❌] Binary-safe
 - 0x4b45e0:
   - [✅] Reconstructed (Name: HudUiTextInput::ShiftTextLeft)
