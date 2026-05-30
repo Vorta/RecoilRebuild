@@ -41,6 +41,15 @@ source-readiness, or coherent binary-safe groups currently being coordinated.
 
 ## Active Groups
 
+### Group: HUD options panel constructor
+
+- Anchor: 0x40c720 HudOptionsDialog::Constructor
+- Reason: options-dialog class/table cluster; constructor installs authored option-widget ftables and owns the dialog layout binding sequence.
+- Source blockers:
+  - none; direct constructor callees are functional-equivalent and the option-widget table owner is classified as authored source.
+- Next action:
+  - Implement and verify 0x40c720, then recompute 0x40cf60 destructor/source-file follow-up.
+
 ### Group: Hud command dialog constructor
 
 - Anchor: 0x40a5b0 HudCmdDialog::Constructor

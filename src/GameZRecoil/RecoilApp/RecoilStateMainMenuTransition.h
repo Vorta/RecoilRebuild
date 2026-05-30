@@ -18,6 +18,12 @@ enum RecoilMainMenuEntryRoute {
 
 enum zVidModeIndex {
     ZVID_MODE_INVALID_COMPLEMENT = -1,
+    ZVID_MODE_320X200_TO_640X400 = 2,
+    ZVID_MODE_320X240_TO_640X480 = 3,
+    ZVID_MODE_640X400 = 4,
+    ZVID_MODE_640X480 = 5,
+    ZVID_MODE_800X600 = 6,
+    ZVID_MODE_1024X768 = 7,
 };
 
 struct RecoilStateMainMenuTransition {

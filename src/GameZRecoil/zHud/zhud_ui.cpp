@@ -43,6 +43,12 @@ class CWnd {
 };
 
 namespace {
+const int ZOPT_GRAPHICS_PERSPECTIVE = 8;
+const int ZOPT_GRAPHICS_GLOBAL_LIGHT = 0x10;
+const int ZVID_HW_MODE_SOFTWARE = 0;
+const float ZSND_CD_VOLUME_TO_NORMALIZED = 1.52590219e-05f;
+const float ZSND_CD_NORMALIZED_TO_VOLUME = 65535.0f;
+
 template <typename Method> unsigned int MethodAddress(Method method) {
     RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
     unsigned int address = 0;
@@ -274,6 +280,77 @@ HudCmdDialog_BackgroundPanelFTable MakeHudCmdDialogFTable()
     return table;
 }
 
+HudUiZrdWidget_FTable MakeHudUiOptionsPanelBackButtonFTable()
+{
+    HudUiZrdWidget_FTable table =
+        MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidget_FTable>();
+    table.slots[0] = MethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
+    table.slots[12] = MethodAddress(&HudUiOptionsPanelBackButton::OnActivate);
+    table.slots[15] = MethodAddress(&HudUiZrdWidget::ShowPreview);
+    table.slots[16] = MethodAddress(&HudUiZrdWidget::HidePreview);
+    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = MethodAddress(&HudUiZrdWidget::LoadFromZrd);
+    table.slots[32] = (unsigned int)(&HudUiNoOpMethodStub);
+    return table;
+}
+
+HudUiCheckToggleWidget_FTable
+MakeHudUiOptionsPanelCheckToggleFTable(unsigned int activateSlot,
+                                       unsigned int initSlot)
+{
+    HudUiCheckToggleWidget_FTable table =
+        MakeHudUiFTableWithCommonInvalidate<HudUiCheckToggleWidget_FTable>();
+    table.slots[0] = MethodAddress(&HudUiCheckToggleWidget::ScalarDeletingDestructor);
+    table.slots[12] = activateSlot;
+    table.slots[15] = MethodAddress(&HudUiCheckToggleWidget::ShowPreview);
+    table.slots[16] = MethodAddress(&HudUiCheckToggleWidget::HidePreview);
+    table.slots[30] = MethodAddress(&HudUiCheckToggleWidget::RefreshState);
+    table.slots[31] = MethodAddress(&HudUiCheckToggleWidget::LoadFromZrd);
+    table.slots[32] = initSlot;
+    return table;
+}
+
+HudUiCycleSelectorWidget_FTable
+MakeHudUiOptionsPanelCycleSelectorFTable(unsigned int activateSlot,
+                                         unsigned int initSlot)
+{
+    HudUiCycleSelectorWidget_FTable table =
+        MakeHudUiFTableWithCommonInvalidate<HudUiCycleSelectorWidget_FTable>();
+    table.slots[0] = MethodAddress(&HudUiCycleSelectorWidget::ScalarDeletingDestructor);
+    table.slots[9] = MethodAddress(&HudUiCycleSelectorWidget::Update);
+    table.slots[12] = activateSlot;
+    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
+    table.slots[31] = MethodAddress(&HudUiCycleSelectorWidget::LoadFromZrd);
+    table.slots[32] = initSlot;
+    return table;
+}
+
+HudUiFillBitmap_FTable
+MakeHudUiOptionsPanelFillBitmapFTable(unsigned int activateSlot,
+                                      unsigned int syncSlot)
+{
+    HudUiFillBitmap_FTable table =
+        MakeHudUiFTableWithCommonInvalidate<HudUiFillBitmap_FTable>();
+    table.slots[0] = MethodAddress(&HudUiFillBitmap::ScalarDeletingDestructor);
+    table.slots[12] = activateSlot;
+    table.slots[31] = MethodAddress(&HudUiFillBitmap::LoadFromZrd);
+    table.slots[32] = syncSlot;
+    table.slots[33] = MethodAddress(&HudUiFillBitmap::SetNormalizedValueAndRebuild);
+    return table;
+}
+
+HudUiOptionsPanel_BackgroundFTable MakeHudUiOptionsPanelFTable()
+{
+    HudUiOptionsPanel_BackgroundFTable table = {0};
+    table.primarySlots[0] = MethodAddress(&HudUiBackground::Update);
+    table.primarySlots[1] = MethodAddress(&HudUiBackground::SetEnabled);
+    table.primarySlots[2] = MethodAddress(&HudOptionsDialog::ScalarDeletingDestructor);
+    table.SecondaryAction = MakeHudUiOptionsPanelCycleSelectorFTable(
+        MethodAddress(&HudUiOptionsPanel_Resolution::OnActivate),
+        MethodAddress(&HudUiOptionsPanel_Resolution::SyncFromOptions));
+    return table;
+}
+
 HudUiCreditsPanel_FTable MakeHudUiCreditsPanelFTable()
 {
     HudUiCreditsPanel_FTable table = {0};
@@ -476,6 +553,54 @@ const HudUiZrdWidget_FTable g_HudCmdPrevCommandButton_FTable =
     MakeHudCmdZrdButtonFTable(MethodAddress(&HudCmdDialogCallback::PrevCommand));
 const HudCmdDialog_BackgroundPanelFTable g_HudCmdDialog_BackgroundPanelFTable =
     MakeHudCmdDialogFTable();
+const HudUiOptionsPanel_BackgroundFTable g_HudUiOptionsPanel_FTableHeader =
+    MakeHudUiOptionsPanelFTable();
+const HudUiZrdWidget_FTable g_HudUiOptionsPanel_BackButton_Vtbl =
+    MakeHudUiOptionsPanelBackButtonFTable();
+const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_LightingToggle_Vtbl =
+    MakeHudUiOptionsPanelCheckToggleFTable(
+        MethodAddress(&HudUiOptionsPanel_Lighting::SyncFromOptions),
+        MethodAddress(&HudUiOptionsPanel_Lighting::InitFromOptions));
+const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_PerspectiveToggle_Vtbl =
+    MakeHudUiOptionsPanelCheckToggleFTable(
+        MethodAddress(&HudUiOptionsPanel_Perspective::SyncFromOptions),
+        MethodAddress(&HudUiOptionsPanel_Perspective::InitFromOptions));
+const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_FullHudToggle_Vtbl =
+    MakeHudUiOptionsPanelCheckToggleFTable(
+        MethodAddress(&HudUiCheckToggleWidget::OnActivate),
+        MethodAddress(&HudUiOptionsPanel_FullHud::InitFromOptions));
+const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_ObjectDetailSelector_Vtbl =
+    MakeHudUiOptionsPanelCycleSelectorFTable(
+        MethodAddress(&HudUiOptionsPanel_ObjectDetail::SyncFromOptions),
+        MethodAddress(&HudUiOptionsPanel_ObjectDetail::InitFromOptions));
+const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_TextureMemorySelector_Vtbl =
+    MakeHudUiOptionsPanelCycleSelectorFTable(
+        MethodAddress(&HudUiOptionsPanel_TextureMemory::SyncFromOptions),
+        MethodAddress(&HudUiOptionsPanel_TextureMemory::InitFromOptions));
+const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_EffectsSelector_Vtbl =
+    MakeHudUiOptionsPanelCycleSelectorFTable(
+        MethodAddress(&HudUiOptionsPanel_Effects::SyncFromOptions),
+        MethodAddress(&HudUiOptionsPanel_Effects::InitFromOptions));
+const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_SoundActiveToggle_Vtbl =
+    MakeHudUiOptionsPanelCheckToggleFTable(
+        MethodAddress(&HudUiOptionsPanel_SoundActive::SyncFromOptions),
+        MethodAddress(&HudUiOptionsPanel_SoundActive::InitFromOptions));
+const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_SoundQualitySelector_Vtbl =
+    MakeHudUiOptionsPanelCycleSelectorFTable(
+        MethodAddress(&HudUiOptionsPanel_SoundQuality::SyncFromOptions),
+        MethodAddress(&HudUiOptionsPanel_SoundQuality::InitFromOptions));
+const HudUiFillBitmap_FTable g_HudUiOptionsPanel_SoundVolumeWidget_Vtbl =
+    MakeHudUiOptionsPanelFillBitmapFTable(
+        MethodAddress(&HudUiOptionsPanel_SoundVolume::OnActivate),
+        MethodAddress(&HudUiOptionsPanel_SoundVolume::SyncFromOptions));
+const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_MusicEnableToggle_Vtbl =
+    MakeHudUiOptionsPanelCheckToggleFTable(
+        MethodAddress(&HudUiOptionsPanel_MusicEnable::OnActivate),
+        MethodAddress(&HudUiOptionsPanel_MusicEnable::SyncFromOptions));
+const HudUiFillBitmap_FTable g_HudUiOptionsPanel_MusicVolumeWidget_Vtbl =
+    MakeHudUiOptionsPanelFillBitmapFTable(
+        MethodAddress(&HudUiOptionsPanel_MusicVolume::OnActivate),
+        MethodAddress(&HudUiOptionsPanel_MusicVolume::SyncFromOptions));
 RecoilApp_IState_Vtbl g_HudCmdDialogState_Vtbl = {0};
 HudCmdDialogState g_HudCmdDialogState = {0};
 // Recovered global 0x4e5e00: HUD command-dialog mouse capture debounce frames.
@@ -8970,6 +9095,399 @@ HudCmdDialog *RECOIL_THISCALL HudCmdDialog::ScalarDeletingDestructor(unsigned in
 {
     Destructor();
 
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x40c6e0: HudUiOptionsPanelBackButton::OnActivate
+// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+void RECOIL_THISCALL HudUiOptionsPanelBackButton::OnActivate()
+{
+    HudOptionsDialog *const ownerDialog = (HudOptionsDialog *)(base.owner);
+    if (ownerDialog != 0)
+    {
+        const int hudType =
+            ownerDialog->fullHudToggle.base.checked != 0 ? ZOPT_HUD_TYPE_PERSPECTIVE
+                                                         : ZOPT_HUD_TYPE_STANDARD;
+        zOpt::SetHudTypeForCurrentHwMode(hudType);
+    }
+
+    g_RecoilApp.QueueExitCurrentState(0);
+    base.OnActivate();
+}
+
+// Reimplements 0x40c9c0: HudUiOptionsPanel_Lighting::InitFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_Lighting::InitFromOptions()
+{
+    base.SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_GLOBAL_LIGHT);
+}
+
+// Reimplements 0x40c9e0: HudUiOptionsPanel_Lighting::SyncFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_Lighting::SyncFromOptions()
+{
+    const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
+    base.OnActivate();
+    zOpt::SetGraphicsFlagsForCurrentHwMode(
+        base.checked != 0 ? (flags | ZOPT_GRAPHICS_GLOBAL_LIGHT)
+                          : (flags & ~ZOPT_GRAPHICS_GLOBAL_LIGHT));
+}
+
+// Reimplements 0x40ca20: HudUiOptionsPanel_Perspective::InitFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_Perspective::InitFromOptions()
+{
+    base.SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_PERSPECTIVE);
+}
+
+// Reimplements 0x40ca40: HudUiOptionsPanel_Perspective::SyncFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_Perspective::SyncFromOptions()
+{
+    const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
+    base.OnActivate();
+    zOpt::SetGraphicsFlagsForCurrentHwMode(
+        base.checked != 0 ? (flags | ZOPT_GRAPHICS_PERSPECTIVE)
+                          : (flags & ~ZOPT_GRAPHICS_PERSPECTIVE));
+    zRndr::SelectSpanRoutines();
+}
+
+// Reimplements 0x40ca80: HudUiOptionsPanel_FullHud::InitFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_FullHud::InitFromOptions()
+{
+    base.SetChecked(zOpt::GetHudTypeForCurrentHwMode() == ZOPT_HUD_TYPE_PERSPECTIVE);
+}
+
+// Reimplements 0x40cab0: HudUiOptionsPanel_ObjectDetail::InitFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_ObjectDetail::InitFromOptions()
+{
+    base.SetIndexClamped(zOpt::GetObjectLODForCurrentHwMode());
+}
+
+// Reimplements 0x40cad0: HudUiOptionsPanel_ObjectDetail::SyncFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_ObjectDetail::SyncFromOptions()
+{
+    base.AdvanceSelectionAndActivate();
+    zOpt::SetObjectLODForCurrentHwMode(base.selectedIndex);
+}
+
+// Reimplements 0x40caf0: HudUiOptionsPanel_TextureMemory::InitFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_TextureMemory::InitFromOptions()
+{
+    base.SetIndexClamped(zOpt::GetTextureMemoryForCurrentHwMode());
+}
+
+// Reimplements 0x40cb10: HudUiOptionsPanel_TextureMemory::SyncFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_TextureMemory::SyncFromOptions()
+{
+    base.AdvanceSelectionAndActivate();
+    zOpt::SetTextureMemoryForCurrentHwMode(base.selectedIndex);
+}
+
+// Reimplements 0x40cb30: HudUiOptionsPanel_Effects::InitFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_Effects::InitFromOptions()
+{
+    int level = zOpt::GetEffectsLevelForCurrentHwMode();
+    if (zVid::GetAccelerationOption() == ZVID_HW_MODE_SOFTWARE)
+    {
+        if (level == 0)
+        {
+            level = 1;
+        }
+        base.SetVisibleRange(1, 3);
+    }
+
+    base.SetIndexClamped(level);
+}
+
+// Reimplements 0x40cb70: HudUiOptionsPanel_Effects::SyncFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_Effects::SyncFromOptions()
+{
+    base.AdvanceSelectionAndActivate();
+    zOpt::SetEffectsLevelForCurrentHwMode(base.selectedIndex);
+}
+
+// Reimplements 0x40cb90: HudUiOptionsPanel_SoundActive::InitFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_SoundActive::InitFromOptions()
+{
+    base.SetChecked(zOpt::GetMuteSoundOption() == 0);
+}
+
+// Reimplements 0x40cbb0: HudUiOptionsPanel_SoundActive::SyncFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_SoundActive::SyncFromOptions()
+{
+    base.OnActivate();
+    zOpt::SetMuteSoundOption(base.checked == 0);
+}
+
+// Reimplements 0x40cbd0: HudUiOptionsPanel_SoundQuality::InitFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_SoundQuality::InitFromOptions()
+{
+    base.SetIndexClamped(zOpt::GetSoundLODOption());
+}
+
+// Reimplements 0x40cbf0: HudUiOptionsPanel_SoundQuality::SyncFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_SoundQuality::SyncFromOptions()
+{
+    base.AdvanceSelectionAndActivate();
+    zOpt::SetSoundLODOption(base.selectedIndex);
+}
+
+// Reimplements 0x40cc10: HudUiOptionsPanel_SoundVolume::SyncFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_SoundVolume::SyncFromOptions()
+{
+    base.SetNormalizedValue(zOpt::GetSoundVolumeOption());
+}
+
+// Reimplements 0x40cc30: HudUiOptionsPanel_SoundVolume::OnActivate
+void RECOIL_THISCALL HudUiOptionsPanel_SoundVolume::OnActivate()
+{
+    base.UpdateNormalizedFromCursor();
+    zOpt::SetSoundVolumeOption(base.normalizedValue);
+    base.SetNormalizedValue(zOpt::GetSoundVolumeOption());
+}
+
+// Reimplements 0x40cc60: HudUiOptionsPanel_MusicEnable::SyncFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_MusicEnable::SyncFromOptions()
+{
+    base.SetChecked(zSnd::GetCDAudioOption());
+}
+
+// Reimplements 0x40cc80: HudUiOptionsPanel_MusicEnable::OnActivate
+void RECOIL_THISCALL HudUiOptionsPanel_MusicEnable::OnActivate()
+{
+    base.OnActivate();
+    if (base.checked == 0)
+    {
+        zSnd::SetCDAudioOption(0);
+        zSndCd::Stop();
+    }
+    else
+    {
+        zSnd::SetCDAudioOption(1);
+        zSndCd::PlayTrackWithMode(2, 5);
+    }
+}
+
+// Reimplements 0x40ccc0: HudUiOptionsPanel_MusicVolume::SyncFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_MusicVolume::SyncFromOptions()
+{
+    base.SetNormalizedValue((float)(g_zSndCdAuxVolumePrimary) * ZSND_CD_VOLUME_TO_NORMALIZED);
+}
+
+// Reimplements 0x40cd00: HudUiOptionsPanel_MusicVolume::OnActivate
+void RECOIL_THISCALL HudUiOptionsPanel_MusicVolume::OnActivate()
+{
+    base.UpdateNormalizedFromCursor();
+    const unsigned short volume =
+        (unsigned short)(base.normalizedValue * ZSND_CD_NORMALIZED_TO_VOLUME);
+    g_zSndCdAuxVolumePrimary = volume;
+    g_zSndCdAuxVolumeSecondary = volume;
+}
+
+// Reimplements 0x40cd30: HudUiOptionsPanel_Resolution::SyncFromOptions
+void RECOIL_THISCALL HudUiOptionsPanel_Resolution::SyncFromOptions()
+{
+    const int modeCase = zVid::GetVideoModeIndexFromOptions() - 2;
+    if ((unsigned int)(modeCase) > 5u)
+    {
+        return;
+    }
+
+    if (zVid::GetAccelerationOption() == ZVID_HW_MODE_SOFTWARE)
+    {
+        switch (modeCase)
+        {
+        case 0:
+            base.SetIndexClamped(3);
+            base.SetVisibleRange(2, 4);
+            return;
+        case 1:
+            base.SetIndexClamped(1);
+            base.SetVisibleRange(0, 2);
+            return;
+        case 2:
+            base.SetIndexClamped(2);
+            base.SetVisibleRange(2, 4);
+            return;
+        case 3:
+            base.SetIndexClamped(0);
+            base.SetVisibleRange(0, 2);
+            return;
+        case 4:
+            base.SetIndexClamped(4);
+            base.SetVisibleRange(4, 5);
+            return;
+        case 5:
+            base.SetIndexClamped(5);
+            base.SetVisibleRange(5, 6);
+            return;
+        }
+    }
+
+    switch (modeCase)
+    {
+    case 0:
+        base.SetIndexClamped(3);
+        base.SetVisibleRange(3, 4);
+        return;
+    case 1:
+        base.SetIndexClamped(1);
+        base.SetVisibleRange(1, 2);
+        return;
+    case 2:
+        base.SetIndexClamped(2);
+        base.SetVisibleRange(2, 3);
+        return;
+    case 3:
+        base.SetIndexClamped(0);
+        base.SetVisibleRange(0, 1);
+        return;
+    case 4:
+        base.SetIndexClamped(4);
+        base.SetVisibleRange(4, 5);
+        return;
+    case 5:
+        base.SetIndexClamped(5);
+        base.SetVisibleRange(5, 6);
+        return;
+    }
+}
+
+// Reimplements 0x40ce80: HudUiOptionsPanel_Resolution::OnActivate
+void RECOIL_THISCALL HudUiOptionsPanel_Resolution::OnActivate()
+{
+    base.AdvanceSelectionAndActivate();
+    switch (base.selectedIndex)
+    {
+    case 0:
+        RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_640X480);
+        return;
+    case 1:
+        RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(
+            ZVID_MODE_320X240_TO_640X480);
+        return;
+    case 2:
+        RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_640X400);
+        return;
+    case 3:
+        RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(
+            ZVID_MODE_320X200_TO_640X400);
+        return;
+    case 4:
+        RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_800X600);
+        return;
+    case 5:
+        RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_1024X768);
+        return;
+    }
+}
+
+// Reimplements 0x40c720: HudOptionsDialog::Constructor
+// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+HudOptionsDialog *RECOIL_THISCALL HudOptionsDialog::Constructor()
+{
+    base.Constructor();
+
+    backButton.base.Constructor();
+    backButton.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_BackButton_Vtbl);
+    lightingToggle.base.Constructor();
+    lightingToggle.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_LightingToggle_Vtbl);
+    perspectiveToggle.base.Constructor();
+    perspectiveToggle.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_PerspectiveToggle_Vtbl);
+    fullHudToggle.base.Constructor();
+    fullHudToggle.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_FullHudToggle_Vtbl);
+    objectDetailSelector.base.Constructor();
+    objectDetailSelector.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_ObjectDetailSelector_Vtbl);
+    textureMemorySelector.base.Constructor();
+    textureMemorySelector.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_TextureMemorySelector_Vtbl);
+    effectsSelector.base.Constructor();
+    effectsSelector.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_EffectsSelector_Vtbl);
+    soundActiveToggle.base.Constructor();
+    soundActiveToggle.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_SoundActiveToggle_Vtbl);
+    soundQualitySelector.base.Constructor();
+    soundQualitySelector.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_SoundQualitySelector_Vtbl);
+    soundVolumeWidget.base.Constructor();
+    soundVolumeWidget.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_SoundVolumeWidget_Vtbl);
+    musicEnableToggle.base.Constructor();
+    musicEnableToggle.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_MusicEnableToggle_Vtbl);
+    musicVolumeWidget.base.Constructor();
+    musicVolumeWidget.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_MusicVolumeWidget_Vtbl);
+    resolutionSelector.base.Constructor();
+    resolutionSelector.base.base.base.ftable =
+        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_FTableHeader.SecondaryAction);
+
+    base.base.base.vptr =
+        (const HudUiContainer_FTable *)(&g_HudUiOptionsPanel_FTableHeader);
+
+    zReader::Node *const loadedSection = base.LoadFromZrd("dialog.zrd", "OPTIONSPANEL", 0);
+    if (loadedSection != 0)
+    {
+        base.BindWidgetByName(loadedSection, &backButton.base.base, "BACK");
+        base.BindWidgetByName(loadedSection, &lightingToggle.base.base.base, "LIGHTING");
+        base.BindWidgetByName(loadedSection, &perspectiveToggle.base.base.base, "PERSPECTIVE");
+        base.BindWidgetByName(loadedSection, &fullHudToggle.base.base.base, "FULLHUD");
+        base.BindWidgetByName(loadedSection, &objectDetailSelector.base.base.base,
+                              "OBJECT_DETAIL");
+        base.BindWidgetByName(loadedSection, &textureMemorySelector.base.base.base,
+                              "TEXTURE_MEMORY");
+        base.BindWidgetByName(loadedSection, &effectsSelector.base.base.base, "EFFECTS");
+        base.BindWidgetByName(loadedSection, &soundActiveToggle.base.base.base, "SOUND_ACTIVE");
+        base.BindWidgetByName(loadedSection, &soundQualitySelector.base.base.base,
+                              "SOUND_QUALITY");
+        base.BindWidgetByName(loadedSection, &soundVolumeWidget.base.base.base,
+                              "SOUND_VOLUME");
+        base.BindWidgetByName(loadedSection, &musicEnableToggle.base.base.base,
+                              "MUSIC_ENABLE");
+        base.BindWidgetByName(loadedSection, &musicVolumeWidget.base.base.base,
+                              "MUSIC_VOLUME");
+        base.BindWidgetByName(loadedSection, &resolutionSelector.base.base.base,
+                              "RESOLUTION_CYCLE");
+        base.FreeLoadedTreeRoots(0);
+    }
+
+    return this;
+}
+
+// Reimplements 0x40cf60: HudOptionsDialog::DestructorCore
+// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+void RECOIL_THISCALL HudOptionsDialog::DestructorCore()
+{
+    resolutionSelector.base.DestructorCore();
+    musicVolumeWidget.base.DestructorCore();
+    musicEnableToggle.base.DestructorCore();
+    soundVolumeWidget.base.DestructorCore();
+    soundQualitySelector.base.DestructorCore();
+    soundActiveToggle.base.DestructorCore();
+    effectsSelector.base.DestructorCore();
+    textureMemorySelector.base.DestructorCore();
+    objectDetailSelector.base.DestructorCore();
+    fullHudToggle.base.DestructorCore();
+    perspectiveToggle.base.DestructorCore();
+    lightingToggle.base.DestructorCore();
+    backButton.base.DestructorCore();
+    base.Destructor();
+}
+
+// Reimplements 0x40cf00: HudOptionsDialog::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+HudOptionsDialog *RECOIL_THISCALL
+HudOptionsDialog::ScalarDeletingDestructor(unsigned int flags)
+{
+    DestructorCore();
     if ((flags & 1u) != 0)
     {
         ::operator delete(this);

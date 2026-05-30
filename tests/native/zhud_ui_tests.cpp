@@ -1047,6 +1047,50 @@ template <typename Slot, typename Method> void AssignMethodSlot(Slot &slot, Meth
     std::memcpy(&slot, &method, sizeof(slot));
 }
 
+struct CodeFunctionPatch {
+    void *target;
+    unsigned char original[5];
+    bool active;
+};
+
+bool PatchFunctionJump(void *target, void *replacement, CodeFunctionPatch &patch) {
+    DWORD oldProtect = 0;
+    if (!VirtualProtect(target, sizeof(patch.original), PAGE_EXECUTE_READWRITE, &oldProtect)) {
+        return false;
+    }
+
+    patch.target = target;
+    std::memcpy(patch.original, target, sizeof(patch.original));
+
+    unsigned char *const bytes = static_cast<unsigned char *>(target);
+    bytes[0] = 0xe9;
+    const std::intptr_t rel = reinterpret_cast<unsigned char *>(replacement) -
+                              (reinterpret_cast<unsigned char *>(target) + 5);
+    *reinterpret_cast<std::int32_t *>(bytes + 1) = static_cast<std::int32_t>(rel);
+
+    FlushInstructionCache(GetCurrentProcess(), target, sizeof(patch.original));
+    DWORD ignored = 0;
+    VirtualProtect(target, sizeof(patch.original), oldProtect, &ignored);
+    patch.active = true;
+    return true;
+}
+
+void RestoreFunctionPatch(CodeFunctionPatch &patch) {
+    if (!patch.active) {
+        return;
+    }
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(patch.target, sizeof(patch.original), PAGE_EXECUTE_READWRITE,
+                       &oldProtect)) {
+        std::memcpy(patch.target, patch.original, sizeof(patch.original));
+        FlushInstructionCache(GetCurrentProcess(), patch.target, sizeof(patch.original));
+        DWORD ignored = 0;
+        VirtualProtect(patch.target, sizeof(patch.original), oldProtect, &ignored);
+    }
+    patch.active = false;
+}
+
 int g_testBlitCount = 0;
 zVidImagePartial *g_testBlitImages[8] = {};
 std::int32_t g_testBlitX[8] = {};
@@ -11734,6 +11778,95 @@ extern "C" int zhud_cmd_dialog_scalar_deleting_destructor_smoke(void) {
     deletingDialog->ScalarDeletingDestructor(1);
 
     return noDeletePath ? 0 : 1;
+}
+
+namespace {
+int g_optionsDialogLoadCount;
+const char *g_optionsDialogLoadPath;
+const char *g_optionsDialogLoadSection;
+int g_optionsDialogLoadCapturePrimary;
+
+struct TestOptionsDialogBackgroundLoad {
+    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *zrdPath,
+                                               const char *sectionName,
+                                               int capturePrimary) {
+        ++g_optionsDialogLoadCount;
+        g_optionsDialogLoadPath = zrdPath;
+        g_optionsDialogLoadSection = sectionName;
+        g_optionsDialogLoadCapturePrimary = capturePrimary;
+        return nullptr;
+    }
+};
+} // namespace
+
+extern "C" int zhud_options_dialog_constructor_smoke(void) {
+    HudOptionsDialog *const dialog =
+        (HudOptionsDialog *)(::operator new(sizeof(HudOptionsDialog)));
+    std::memset(dialog, 0, sizeof(HudOptionsDialog));
+
+    CodeFunctionPatch loadPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::LoadFromZrd)),
+                           reinterpret_cast<void *>(
+                               MethodAddress(&TestOptionsDialogBackgroundLoad::LoadFromZrd)),
+                           loadPatch)) {
+        ::operator delete(dialog);
+        return 1;
+    }
+
+    g_optionsDialogLoadCount = 0;
+    g_optionsDialogLoadPath = nullptr;
+    g_optionsDialogLoadSection = nullptr;
+    g_optionsDialogLoadCapturePrimary = -1;
+
+    HudOptionsDialog *const returned = dialog->Constructor();
+
+    const bool constructorOk =
+        returned == dialog &&
+        g_optionsDialogLoadCount == 1 &&
+        std::strcmp(g_optionsDialogLoadPath, "dialog.zrd") == 0 &&
+        std::strcmp(g_optionsDialogLoadSection, "OPTIONSPANEL") == 0 &&
+        g_optionsDialogLoadCapturePrimary == 0 &&
+        dialog->base.base.base.vptr ==
+            (const HudUiContainer_FTable *)(&g_HudUiOptionsPanel_FTableHeader) &&
+        dialog->backButton.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_BackButton_Vtbl) &&
+        dialog->lightingToggle.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_LightingToggle_Vtbl) &&
+        dialog->perspectiveToggle.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_PerspectiveToggle_Vtbl) &&
+        dialog->fullHudToggle.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_FullHudToggle_Vtbl) &&
+        dialog->objectDetailSelector.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_ObjectDetailSelector_Vtbl) &&
+        dialog->textureMemorySelector.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_TextureMemorySelector_Vtbl) &&
+        dialog->effectsSelector.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_EffectsSelector_Vtbl) &&
+        dialog->soundActiveToggle.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_SoundActiveToggle_Vtbl) &&
+        dialog->soundQualitySelector.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_SoundQualitySelector_Vtbl) &&
+        dialog->soundVolumeWidget.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_SoundVolumeWidget_Vtbl) &&
+        dialog->musicEnableToggle.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_MusicEnableToggle_Vtbl) &&
+        dialog->musicVolumeWidget.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_MusicVolumeWidget_Vtbl) &&
+        dialog->resolutionSelector.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_FTableHeader.SecondaryAction);
+
+    dialog->DestructorCore();
+    RestoreFunctionPatch(loadPatch);
+    const bool destructorOk =
+        dialog->backButton.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->lightingToggle.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->resolutionSelector.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable);
+
+    ::operator delete(dialog);
+    return constructorOk && destructorOk ? 0 : 1;
 }
 
 namespace {

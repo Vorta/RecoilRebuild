@@ -91,6 +91,11 @@ struct HudCmdDialog_BackgroundPanelFTable {
     HudUiPanel_FTable SecondaryAction;
 };
 
+struct HudUiOptionsPanel_BackgroundFTable {
+    unsigned int primarySlots[4];
+    HudUiCycleSelectorWidget_FTable SecondaryAction;
+};
+
 struct HudUiCompositePanel_FTable {
     unsigned int slots[38];
 };
@@ -213,6 +218,19 @@ extern const HudUiZrdWidget_FTable g_HudCmdPrevSetButton_FTable;
 extern const HudUiZrdWidget_FTable g_HudCmdNextCommandButton_FTable;
 extern const HudUiZrdWidget_FTable g_HudCmdPrevCommandButton_FTable;
 extern const HudCmdDialog_BackgroundPanelFTable g_HudCmdDialog_BackgroundPanelFTable;
+extern const HudUiOptionsPanel_BackgroundFTable g_HudUiOptionsPanel_FTableHeader;
+extern const HudUiZrdWidget_FTable g_HudUiOptionsPanel_BackButton_Vtbl;
+extern const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_LightingToggle_Vtbl;
+extern const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_PerspectiveToggle_Vtbl;
+extern const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_FullHudToggle_Vtbl;
+extern const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_ObjectDetailSelector_Vtbl;
+extern const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_TextureMemorySelector_Vtbl;
+extern const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_EffectsSelector_Vtbl;
+extern const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_SoundActiveToggle_Vtbl;
+extern const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_SoundQualitySelector_Vtbl;
+extern const HudUiFillBitmap_FTable g_HudUiOptionsPanel_SoundVolumeWidget_Vtbl;
+extern const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_MusicEnableToggle_Vtbl;
+extern const HudUiFillBitmap_FTable g_HudUiOptionsPanel_MusicVolumeWidget_Vtbl;
 extern const HudUiMessageBoxDialog_FTable g_HudUiMessageBoxDialog_FTable;
 extern const HudUiCounter_FTable g_HudUiCounter_FTable;
 extern const HudUiMessage_FTable g_HudUiMessage_FTable;
@@ -1532,6 +1550,118 @@ struct HudCmdDialog {
     int RECOIL_THISCALL ApplyMouseButtonRebind(int buttonCode, int commandIndex);
 };
 
+struct HudOptionsDialog;
+
+struct HudUiOptionsPanelBackButton {
+    HudUiZrdWidget base;
+
+    void RECOIL_THISCALL OnActivate();
+};
+
+struct HudUiOptionsPanel_Lighting {
+    HudUiCheckToggleWidget base;
+
+    void RECOIL_THISCALL InitFromOptions();
+    void RECOIL_THISCALL SyncFromOptions();
+};
+
+struct HudUiOptionsPanel_Perspective {
+    HudUiCheckToggleWidget base;
+
+    void RECOIL_THISCALL InitFromOptions();
+    void RECOIL_THISCALL SyncFromOptions();
+};
+
+struct HudUiOptionsPanel_FullHud {
+    HudUiCheckToggleWidget base;
+
+    void RECOIL_THISCALL InitFromOptions();
+};
+
+struct HudUiOptionsPanel_ObjectDetail {
+    HudUiCycleSelectorWidget base;
+
+    void RECOIL_THISCALL InitFromOptions();
+    void RECOIL_THISCALL SyncFromOptions();
+};
+
+struct HudUiOptionsPanel_TextureMemory {
+    HudUiCycleSelectorWidget base;
+
+    void RECOIL_THISCALL InitFromOptions();
+    void RECOIL_THISCALL SyncFromOptions();
+};
+
+struct HudUiOptionsPanel_Effects {
+    HudUiCycleSelectorWidget base;
+
+    void RECOIL_THISCALL InitFromOptions();
+    void RECOIL_THISCALL SyncFromOptions();
+};
+
+struct HudUiOptionsPanel_SoundActive {
+    HudUiCheckToggleWidget base;
+
+    void RECOIL_THISCALL InitFromOptions();
+    void RECOIL_THISCALL SyncFromOptions();
+};
+
+struct HudUiOptionsPanel_SoundQuality {
+    HudUiCycleSelectorWidget base;
+
+    void RECOIL_THISCALL InitFromOptions();
+    void RECOIL_THISCALL SyncFromOptions();
+};
+
+struct HudUiOptionsPanel_SoundVolume {
+    HudUiFillBitmap base;
+
+    void RECOIL_THISCALL SyncFromOptions();
+    void RECOIL_THISCALL OnActivate();
+};
+
+struct HudUiOptionsPanel_MusicEnable {
+    HudUiCheckToggleWidget base;
+
+    void RECOIL_THISCALL SyncFromOptions();
+    void RECOIL_THISCALL OnActivate();
+};
+
+struct HudUiOptionsPanel_MusicVolume {
+    HudUiFillBitmap base;
+
+    void RECOIL_THISCALL SyncFromOptions();
+    void RECOIL_THISCALL OnActivate();
+};
+
+struct HudUiOptionsPanel_Resolution {
+    HudUiCycleSelectorWidget base;
+
+    void RECOIL_THISCALL SyncFromOptions();
+    void RECOIL_THISCALL OnActivate();
+};
+
+struct HudOptionsDialog {
+    HudUiBackground base;
+    HudUiOptionsPanelBackButton backButton;
+    HudUiOptionsPanel_Lighting lightingToggle;
+    HudUiOptionsPanel_Perspective perspectiveToggle;
+    HudUiOptionsPanel_FullHud fullHudToggle;
+    HudUiOptionsPanel_ObjectDetail objectDetailSelector;
+    HudUiOptionsPanel_TextureMemory textureMemorySelector;
+    HudUiOptionsPanel_Effects effectsSelector;
+    HudUiOptionsPanel_SoundActive soundActiveToggle;
+    HudUiOptionsPanel_SoundQuality soundQualitySelector;
+    HudUiOptionsPanel_SoundVolume soundVolumeWidget;
+    HudUiOptionsPanel_MusicEnable musicEnableToggle;
+    HudUiOptionsPanel_MusicVolume musicVolumeWidget;
+    HudUiOptionsPanel_Resolution resolutionSelector;
+
+    HudOptionsDialog *RECOIL_THISCALL Constructor();
+    void RECOIL_THISCALL DestructorCore();
+    HudOptionsDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+};
+
 struct RecoilApp_IState_Vtbl;
 
 struct HudCmdDialogState {
@@ -1989,6 +2119,20 @@ RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, nextCommandButton) == 0xc600);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, prevCommandButton) == 0xc74c);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, promptPanel) == 0xc898);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, descriptionPanel) == 0xcb58);
+RECOIL_STATIC_ASSERT(sizeof(HudOptionsDialog) == 0xbec4);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, backButton) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, lightingToggle) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, perspectiveToggle) == 0xabfc);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, fullHudToggle) == 0xad60);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, objectDetailSelector) == 0xaec4);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, textureMemorySelector) == 0xb0cc);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, effectsSelector) == 0xb2d4);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, soundActiveToggle) == 0xb4dc);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, soundQualitySelector) == 0xb640);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, soundVolumeWidget) == 0xb848);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, musicEnableToggle) == 0xb9d0);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, musicVolumeWidget) == 0xbb34);
+RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, resolutionSelector) == 0xbcbc);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundContainer) == 0x44);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundContainer, inputFocusElement) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundContainer, captureTransitionMask) == 0x40);
