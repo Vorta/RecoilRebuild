@@ -8290,21 +8290,54 @@ int RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::LoadFromZrd(zReader::Node *zrdSect
     selectedImage = base.activateImage;
     selectedRolloverImage = base.activateImage;
 
-    HudUiRect *const bounds = base.GetBoundsRectOrNull();
-    if (bounds != 0) {
-        mouseRect = *bounds;
+    base.boundsRect.top = HudUiVirtualGetYRequired(this);
+    base.boundsRect.left = HudUiVirtualGetXRequired(this);
+
+    if (base.base.image != 0) {
+        base.boundsRect.bottom = base.boundsRect.top + base.base.image->width;
+        base.boundsRect.right = base.boundsRect.left + base.base.image->height;
     } else {
-        memset(&mouseRect, 0, sizeof(mouseRect));
+        base.boundsRect.bottom = base.boundsRect.top;
+        base.boundsRect.right = base.boundsRect.left;
     }
+
+    if (unselectedImage != 0) {
+        base.boundsRect.top = base.base.y;
+        base.boundsRect.left = base.base.x;
+        base.boundsRect.bottom = base.base.y + unselectedImage->height;
+        base.boundsRect.right = base.base.x + unselectedImage->width;
+    } else if (base.labelPanels.begin != 0) {
+        HudUiPanel **panelIt = base.labelPanels.begin;
+        HudUiPanel *const firstPanel = *panelIt;
+        base.boundsRect.top = HudUiVirtualGetYRequired(firstPanel);
+        base.boundsRect.left = HudUiVirtualGetXRequired(firstPanel);
+        base.boundsRect.bottom = firstPanel->QueryTextHeight() + base.boundsRect.top;
+
+        while (panelIt != base.labelPanels.end) {
+            HudUiPanel *const panel = *panelIt;
+            base.boundsRect.bottom += panel->QueryTextHeight();
+
+            const int right = HudUiPanelTextWidth(panel) + base.boundsRect.left;
+            if (right > base.boundsRect.right) {
+                base.boundsRect.right = right;
+            }
+
+            ++panelIt;
+        }
+
+        base.boundsRect.bottom -= firstPanel->QueryTextHeight();
+    }
+
+    mouseRect = base.boundsRect;
     mouseRectValid = 1;
 
-    zReader::Node *const mouseOverNode = zReader_GetNamedNode(zrdSection, "MOUSEOVER");
-    zReader::Node *const mouseOverBase = ZrdArrayBase(mouseOverNode);
-    if (mouseOverBase != 0) {
-        mouseRect.top += ZrdArrayInt(mouseOverBase, 1, 0);
-        mouseRect.left += ZrdArrayInt(mouseOverBase, 2, 0);
-        mouseRect.bottom = mouseRect.top + ZrdArrayInt(mouseOverBase, 3, 0);
-        mouseRect.right = mouseRect.left + ZrdArrayInt(mouseOverBase, 4, 0);
+    zReader::Node *const mouseRectNode = zReader_GetNamedNode(zrdSection, "MOUSERECT");
+    zReader::Node *const mouseRectBase = ZrdArrayBase(mouseRectNode);
+    if (mouseRectBase != 0) {
+        mouseRect.top += ZrdArrayInt(mouseRectBase, 1, 0);
+        mouseRect.left += ZrdArrayInt(mouseRectBase, 2, 0);
+        mouseRect.bottom = mouseRect.top + ZrdArrayInt(mouseRectBase, 3, 0);
+        mouseRect.right = mouseRect.left + ZrdArrayInt(mouseRectBase, 4, 0);
     }
 
     return 1;

@@ -5990,23 +5990,23 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
     TestFieldAt<std::int32_t>(loadOwnerStorage, 0xa944) = 10;
     TestFieldAt<std::int32_t>(loadOwnerStorage, 0xa948) = 20;
 
-    zReader::Node mouseOverItems[5] = {};
-    mouseOverItems[0].value.i32 = 5;
-    mouseOverItems[1].type = zReader::ZRDR_NODE_INT;
-    mouseOverItems[1].value.i32 = 2;
-    mouseOverItems[2].type = zReader::ZRDR_NODE_INT;
-    mouseOverItems[2].value.i32 = 3;
-    mouseOverItems[3].type = zReader::ZRDR_NODE_INT;
-    mouseOverItems[3].value.i32 = 4;
-    mouseOverItems[4].type = zReader::ZRDR_NODE_INT;
-    mouseOverItems[4].value.i32 = 5;
+    zReader::Node mouseRectItems[5] = {};
+    mouseRectItems[0].value.i32 = 5;
+    mouseRectItems[1].type = zReader::ZRDR_NODE_INT;
+    mouseRectItems[1].value.i32 = 2;
+    mouseRectItems[2].type = zReader::ZRDR_NODE_INT;
+    mouseRectItems[2].value.i32 = 3;
+    mouseRectItems[3].type = zReader::ZRDR_NODE_INT;
+    mouseRectItems[3].value.i32 = 4;
+    mouseRectItems[4].type = zReader::ZRDR_NODE_INT;
+    mouseRectItems[4].value.i32 = 5;
 
     zReader::Node loadRootItems[3] = {};
     loadRootItems[0].value.i32 = 3;
     loadRootItems[1].type = zReader::ZRDR_NODE_STRING;
-    loadRootItems[1].value.str = const_cast<char *>("MOUSEOVER");
+    loadRootItems[1].value.str = const_cast<char *>("MOUSERECT");
     loadRootItems[2].type = zReader::ZRDR_NODE_ARRAY;
-    loadRootItems[2].value.nodes = mouseOverItems;
+    loadRootItems[2].value.nodes = mouseRectItems;
 
     zReader::Node loadRoot{};
     loadRoot.type = zReader::ZRDR_NODE_ARRAY;
