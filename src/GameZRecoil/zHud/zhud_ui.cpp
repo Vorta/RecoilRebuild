@@ -71,6 +71,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudUiNoOpMethodStub(void *) {}
 
 HudUiCommon_FTable MakeHudUiCommonFTable() {
     HudUiCommon_FTable table = {0};
+    table.slots[1] = MethodAddress(&HudUiElement::Draw);
+    table.slots[2] = MethodAddress(&HudUiElement::DrawBase);
     table.slots[8] = (unsigned int)(&HudUiCommonInvalidateThunk);
     table.slots[3] = MethodAddress(&HudUiElement::SetPos);
     table.slots[4] = MethodAddress(&HudUiElement::SetX);
@@ -4305,6 +4307,20 @@ HudUiElement *RECOIL_THISCALL HudUiElement::ScalarDeletingDestructor(unsigned in
     }
 
     return this;
+}
+
+// Reimplements 0x404ca0: HudUiElement::Draw
+void RECOIL_THISCALL HudUiElement::Draw() {
+    typedef void (RECOIL_FASTCALL *DrawBaseFn)(HudUiElement * self);
+    ((DrawBaseFn)(ftable->slots[2]))(this);
+}
+
+// Reimplements 0x404cb0: HudUiElement::DrawBase
+void RECOIL_THISCALL HudUiElement::DrawBase() {
+    if (bltSource != 0) {
+        zVid_Image::BlitToActiveTarget((zVidImagePartial *)(bltSource), x, y, 0,
+                                       (zVidRect32 *)(&clipRect));
+    }
 }
 
 // Reimplements 0x4b4180: HudUiElement::Invalidate

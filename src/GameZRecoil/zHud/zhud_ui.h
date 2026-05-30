@@ -558,6 +558,8 @@ struct HudUiElement {
     RECOIL_NOINLINE HudUiElement *RECOIL_THISCALL CopyConstructor(const HudUiElement *source);
     RECOIL_NOINLINE HudUiElement *RECOIL_THISCALL CopyFrom(const HudUiElement *source);
     HudUiElement *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    void RECOIL_THISCALL Draw();
+    void RECOIL_THISCALL DrawBase();
     RECOIL_NOINLINE void RECOIL_THISCALL Invalidate();
     void RECOIL_THISCALL SetPos(int x, int y);
     void RECOIL_THISCALL SetX(int x);

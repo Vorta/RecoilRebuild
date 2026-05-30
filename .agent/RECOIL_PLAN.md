@@ -3437,15 +3437,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 
 - 0x404ca0:
   - [✅] Reconstructed (Name: HudUiElement::Draw)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiElement::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_element_draw)
   - [❌] Binary-safe
 - 0x404cb0:
   - [✅] Reconstructed (Name: HudUiElement::DrawBase)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiElement::DrawBase File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_element_draw_base)
   - [❌] Binary-safe
 - 0x404cd0:
   - [✅] Reconstructed (Name: HudUiElement::SetPos)

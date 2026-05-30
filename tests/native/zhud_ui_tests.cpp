@@ -3987,6 +3987,50 @@ extern "C" int zhud_element_visible_smoke(void) {
     return reset && visible && hidden ? 0 : 1;
 }
 
+extern "C" int zhud_element_draw_dispatch_smoke(void) {
+    g_elementBaseDrawCount = 0;
+
+    HudUiCommon_FTable table = {};
+    table.slots[2] = reinterpret_cast<std::uintptr_t>(TestElementBaseDraw);
+
+    HudUiElement element{};
+    element.ftable = &table;
+    element.Draw();
+
+    const bool customDispatch = g_elementBaseDrawCount == 1;
+    const bool commonSlots = g_HudUiCommon_FTable.slots[1] != 0 &&
+                             g_HudUiCommon_FTable.slots[2] != 0;
+
+    return customDispatch && commonSlots ? 0 : 1;
+}
+
+extern "C" int zhud_element_draw_base_smoke(void) {
+    zVideo_BltSourceToPrimaryProc oldBlit = g_zVideo_pfnBltSourceToPrimary;
+    g_zVideo_pfnBltSourceToPrimary = TestBltSourceToPrimary;
+
+    HudUiElement element{};
+    element.x = 14;
+    element.y = 27;
+    element.clipRect = {2, 3, 18, 21};
+
+    g_testBlitCount = 0;
+    element.DrawBase();
+    const bool nullSkipped = g_testBlitCount == 0;
+
+    zVidImagePartial image{};
+    element.bltSource = &image;
+    element.DrawBase();
+    const bool blitted = g_testBlitCount == 1 && g_testBlitImages[0] == &image &&
+                         g_testBlitX[0] == 14 && g_testBlitY[0] == 27 &&
+                         g_testBlitFlags[0] == 0 && g_testBlitHasRect[0] != 0 &&
+                         g_testBlitRects[0].left == 2 && g_testBlitRects[0].top == 3 &&
+                         g_testBlitRects[0].right == 18 &&
+                         g_testBlitRects[0].bottom == 21;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    return nullSkipped && blitted ? 0 : 1;
+}
+
 extern "C" int zhud_element_update_smoke(void) {
     g_elementDrawCount = 0;
     g_elementBaseDrawCount = 0;
