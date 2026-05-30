@@ -2057,9 +2057,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40c9e0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Lighting::SyncFromOptions)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanel_Lighting::SyncFromOptions File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_lighting_sync_from_options)
   - [❌] Binary-safe
 - 0x40ca20:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Perspective::InitFromOptions)

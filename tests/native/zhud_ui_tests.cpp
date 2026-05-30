@@ -11904,6 +11904,42 @@ extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void) {
     return swOk && hwClearOk && hwSetOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void) {
+    int swFlags = 0;
+    int hwFlags = 0x20;
+    int *const oldSwFlags = ZOPT_GFX_FLAGS_SW;
+    int *const oldHwFlags = ZOPT_GFX_FLAGS_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    ZOPT_GFX_FLAGS_SW = &swFlags;
+    ZOPT_GFX_FLAGS_HW = &hwFlags;
+
+    HudUiOptionsPanel_Lighting lighting{};
+    lighting.base.Constructor();
+    lighting.base.base.modeOrEnabled = 1;
+
+    g_zOpt_HwMode = 1;
+    lighting.base.checked = 0;
+    lighting.SyncFromOptions();
+    const bool setOk = lighting.base.checked == 1 && hwFlags == 0x30 && swFlags == 0;
+
+    lighting.SyncFromOptions();
+    const bool clearOk = lighting.base.checked == 0 && hwFlags == 0x20 && swFlags == 0;
+
+    g_zOpt_HwMode = 0;
+    lighting.base.checked = 0;
+    swFlags = 4;
+    lighting.SyncFromOptions();
+    const bool swOk = lighting.base.checked == 1 && swFlags == 0x14 && hwFlags == 0x20;
+
+    lighting.base.DestructorCore();
+    ZOPT_GFX_FLAGS_SW = oldSwFlags;
+    ZOPT_GFX_FLAGS_HW = oldHwFlags;
+    g_zOpt_HwMode = oldHwMode;
+
+    return setOk && clearOk && swOk ? 0 : 1;
+}
+
 namespace {
 int g_hudCmdDialogStateDeleteCount;
 unsigned int g_hudCmdDialogStateDeleteFlags;
