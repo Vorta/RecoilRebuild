@@ -3176,9 +3176,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b8af0:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_ex17c_item_get_mouse_rect_or_bounds)
   - [❌] Binary-safe
 - 0x4b8b10:
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::Constructor)
