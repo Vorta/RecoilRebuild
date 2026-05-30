@@ -4495,7 +4495,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiElement::Invalidate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::Invalidate File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_element_invalidate)
   - [❌] Binary-safe
 - 0x4b4190:
   - [✅] Reconstructed (Name: HudUiElement::SetBltSourceAndClipRect)
