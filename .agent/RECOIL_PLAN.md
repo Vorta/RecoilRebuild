@@ -1877,10 +1877,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40ba30:
   - [✅] Reconstructed (Name: HudCmdKeyAButton::OnBeginCapture)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdKeyAButton::OnBeginCapture File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_key_a_button_on_begin_capture)
+  - [✅] Binary-safe
 - 0x40ba60:
   - [✅] Reconstructed (Name: HudCmdKeyAButton::OnClearBinding)
   - [❌] Source dependencies satisfied
@@ -2999,10 +2999,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b7290:
   - [☑️] Reconstructed (Name: HudUiCheckToggleWidget::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheckToggleWidget::OnActivate File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_check_toggle_widget_on_activate)
+  - [✅] Binary-safe
 - 0x4b72c0:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::SetChecked)
   - [✅] Source dependencies satisfied

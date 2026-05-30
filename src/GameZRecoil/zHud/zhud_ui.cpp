@@ -8744,6 +8744,15 @@ void RECOIL_THISCALL HudCmdSetListWidget::OnActivate()
     ((HudCmdDialog *)(base.base.owner))->RebuildCommandBindingListsForGroup(base.selectedIndex);
 }
 
+// Reimplements 0x40ba30: HudCmdKeyAButton::OnBeginCapture
+// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+void RECOIL_THISCALL HudCmdKeyAButton::OnBeginCapture()
+{
+    ((HudCmdDialog *)(base.base.base.owner))->descriptionPanel.captureState = 1;
+    zInput::ResetAllTransitionState();
+    base.base.OnActivate();
+}
+
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(int groupIndex)
