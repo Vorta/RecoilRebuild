@@ -11909,6 +11909,92 @@ extern "C" int zhud_options_dialog_constructor_smoke(void) {
     return constructorOk && destructorOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_dialog_destructor_core_smoke(void) {
+    HudOptionsDialog *const dialog =
+        (HudOptionsDialog *)(::operator new(sizeof(HudOptionsDialog)));
+    std::memset(dialog, 0, sizeof(HudOptionsDialog));
+
+    CodeFunctionPatch loadPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::LoadFromZrd)),
+                           reinterpret_cast<void *>(
+                               MethodAddress(&TestOptionsDialogBackgroundLoad::LoadFromZrd)),
+                           loadPatch)) {
+        ::operator delete(dialog);
+        return 1;
+    }
+
+    dialog->Constructor();
+    RestoreFunctionPatch(loadPatch);
+
+    dialog->DestructorCore();
+    const bool destroyed =
+        dialog->backButton.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->lightingToggle.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->perspectiveToggle.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->fullHudToggle.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->objectDetailSelector.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->textureMemorySelector.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->effectsSelector.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->soundActiveToggle.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->soundQualitySelector.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->soundVolumeWidget.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->musicEnableToggle.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->musicVolumeWidget.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->resolutionSelector.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable);
+
+    ::operator delete(dialog);
+    return destroyed ? 0 : 1;
+}
+
+extern "C" int zhud_options_dialog_scalar_deleting_destructor_smoke(void) {
+    HudOptionsDialog *const dialog =
+        (HudOptionsDialog *)(::operator new(sizeof(HudOptionsDialog)));
+    std::memset(dialog, 0, sizeof(HudOptionsDialog));
+    HudOptionsDialog *const deletingDialog =
+        (HudOptionsDialog *)(::operator new(sizeof(HudOptionsDialog)));
+    std::memset(deletingDialog, 0, sizeof(HudOptionsDialog));
+
+    CodeFunctionPatch loadPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::LoadFromZrd)),
+                           reinterpret_cast<void *>(
+                               MethodAddress(&TestOptionsDialogBackgroundLoad::LoadFromZrd)),
+                           loadPatch)) {
+        ::operator delete(deletingDialog);
+        ::operator delete(dialog);
+        return 1;
+    }
+
+    dialog->Constructor();
+    deletingDialog->Constructor();
+    RestoreFunctionPatch(loadPatch);
+
+    HudOptionsDialog *const returned = dialog->ScalarDeletingDestructor(0);
+    const bool noDeletePath =
+        returned == dialog &&
+        dialog->backButton.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable) &&
+        dialog->resolutionSelector.base.base.base.ftable ==
+            (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable);
+    ::operator delete(dialog);
+
+    deletingDialog->ScalarDeletingDestructor(1);
+
+    return noDeletePath ? 0 : 1;
+}
+
 extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void) {
     int swFlags = 0x10;
     int hwFlags = 0;

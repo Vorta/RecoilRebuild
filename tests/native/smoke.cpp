@@ -638,6 +638,8 @@ extern "C" int zhud_cmd_bind_button_base_destructor_core_smoke(void);
 extern "C" int zhud_cmd_dialog_destructor_smoke(void);
 extern "C" int zhud_cmd_dialog_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_options_dialog_constructor_smoke(void);
+extern "C" int zhud_options_dialog_destructor_core_smoke(void);
+extern "C" int zhud_options_dialog_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void);
@@ -2628,6 +2630,10 @@ int main(int argc, char **argv) {
          zhud_cmd_dialog_scalar_deleting_destructor_smoke},
         {"zhud_options_dialog_constructor_smoke",
          zhud_options_dialog_constructor_smoke},
+        {"zhud_options_dialog_destructor_core_smoke",
+         zhud_options_dialog_destructor_core_smoke},
+        {"zhud_options_dialog_scalar_deleting_destructor_smoke",
+         zhud_options_dialog_scalar_deleting_destructor_smoke},
         {"zhud_options_panel_lighting_init_from_options_smoke",
          zhud_options_panel_lighting_init_from_options_smoke},
         {"zhud_options_panel_lighting_sync_from_options_smoke",

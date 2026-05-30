@@ -2189,15 +2189,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40cf00:
   - [✅] Reconstructed (Name: HudOptionsDialog::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudOptionsDialog::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_options_dialog_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x40cf60:
   - [☑️] Reconstructed (Name: HudOptionsDialog::DestructorCore)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudOptionsDialog::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_options_dialog_destructor_core)
   - [❌] Binary-safe
 - 0x40d070:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit)
