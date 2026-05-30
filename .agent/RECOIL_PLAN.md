@@ -3136,13 +3136,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_ex17c_item_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x4b87c0:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::DestructorCore)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiZrdWidgetEx17C_Item::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_zrd_widget_ex17c_item_destructor_core)
   - [❌] Binary-safe
 - 0x4b87d0:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected)

@@ -6143,18 +6143,32 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
         destructorSelector.base.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
+    HudUiZrdWidgetEx17C_Item destructorItem{};
+    destructorItem.Constructor();
+    destructorItem.DestructorCore();
+    const bool itemDestructed =
+        destructorItem.base.base.ftable ==
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+
     HudUiZrdWidgetEx17C_Item scalarItem{};
     scalarItem.Constructor();
     HudUiZrdWidgetEx17C_Item *const scalarResult = scalarItem.ScalarDeletingDestructor(0);
-    const bool scalarDeleted =
+    const bool scalarNoDelete =
         scalarResult == &scalarItem &&
         scalarItem.base.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
+    auto *heapScalarItem =
+        static_cast<HudUiZrdWidgetEx17C_Item *>(::operator new(sizeof(HudUiZrdWidgetEx17C_Item)));
+    heapScalarItem->Constructor();
+    HudUiZrdWidgetEx17C_Item *const heapScalarResult =
+        heapScalarItem->ScalarDeletingDestructor(1);
+    const bool scalarHeapDeleted = heapScalarResult == heapScalarItem;
+
     return constructed && selectedOn && selectedOff && boundsOk && showPreview && hidePreview &&
                    selectedSkipsPreview && loaded && selectorConstructed && selectorLoaded &&
                    setSelectedIndex && childEnabled && activatedSelection && selectorDestructed &&
-                   scalarDeleted
+                   itemDestructed && scalarNoDelete && scalarHeapDeleted
                ? 0
                : 1;
 }
