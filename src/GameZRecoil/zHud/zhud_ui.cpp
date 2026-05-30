@@ -10287,11 +10287,11 @@ void RECOIL_THISCALL HudCmdBindButtonBase::RebuildBindingSlotWidgets(int totalCo
             (float)(base.base.originY +
                                (index - visibleBindingSlotCount) * bindingSlotSpacing) +
             visibleListOffsetY);
-        ((HudUiElement *)(&bindingSlotPanels[index]))->SetPos(x, y);
+        HudUiVirtualSetPosRequired(&bindingSlotPanels[index], x, y);
     }
     }
 
-    ((HudUiElement *)(&bindPanel))->SetPos(base.base.originX, base.base.originY);
+    HudUiVirtualSetPosRequired(&bindPanel, base.base.originX, base.base.originY);
 
     {
     for (int index = visibleBindingSlotCount; index < bindingSlotTotalCount; ++index) {
@@ -10301,7 +10301,7 @@ void RECOIL_THISCALL HudCmdBindButtonBase::RebuildBindingSlotWidgets(int totalCo
             (float)(base.base.originY +
                                (index - visibleBindingSlotCount + 1) * bindingSlotSpacing) +
             overflowListOffsetY);
-        ((HudUiElement *)(&bindingSlotPanels[index]))->SetPos(x, y);
+        HudUiVirtualSetPosRequired(&bindingSlotPanels[index], x, y);
     }
     }
 }

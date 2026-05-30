@@ -3224,9 +3224,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b90e0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::RebuildBindingSlotWidgets)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindButtonBase::RebuildBindingSlotWidgets File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_bind_button_base_rebuild_binding_slot_widgets)
   - [❌] Binary-safe
 - 0x4b92a0:
   - [✅] Reconstructed (Name: HudUiListSelectorItem::Constructor)
