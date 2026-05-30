@@ -10355,11 +10355,10 @@ int RECOIL_THISCALL HudCmdBindButtonBase::LoadFromZrd(zReader::Node *zrdSection,
         for (int index = 0; index < bindingSlotTotalCount; ++index) {
             HudUiListSelectorItem *const item = &bindingSlotPanels[index];
             ((HudUiContainer *)(ownerDialog))->AddChild((HudUiElement *)(item));
-            ((HudUiElement *)(item))->SetVisible(1);
+            HudUiVirtualSetVisibleRequired(item, 1);
             item->owner = this;
             if (clipSource != 0) {
-                ((HudUiElement *)(item))->SetBltSourceAndClipRect(clipSource,
-                                                                                &clipRect);
+                HudUiSetPanelClipWithSource(item, clipSource, &clipRect);
             }
 
             ApplyHudFontStyleTextOnly((HudUiPanel *)(item), listStyle);
@@ -10367,10 +10366,10 @@ int RECOIL_THISCALL HudCmdBindButtonBase::LoadFromZrd(zReader::Node *zrdSection,
         }
 
         ((HudUiContainer *)(ownerDialog))->AddChild((HudUiElement *)(&bindPanel));
-        ((HudUiElement *)(&bindPanel))->SetVisible(1);
+        HudUiVirtualSetVisibleRequired(&bindPanel, 1);
         bindPanel.owner = this;
         if (clipSource != 0) {
-            ((HudUiElement *)(&bindPanel))->SetBltSourceAndClipRect(clipSource, &clipRect);
+            HudUiSetPanelClipWithSource(&bindPanel, clipSource, &clipRect);
         }
     }
 
