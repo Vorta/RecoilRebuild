@@ -2770,13 +2770,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiTextInput::MoveCursorLeft)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::MoveCursorLeft File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_text_input_move_cursor_left)
   - [❌] Binary-safe
 - 0x4b4570:
   - [✅] Reconstructed (Name: HudUiTextInput::MoveCursorRight)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTextInput::MoveCursorRight File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_text_input_move_cursor_right)
   - [❌] Binary-safe
 - 0x4b4590:
   - [✅] Reconstructed (Name: HudUiTextInput::ShiftTextRight)
