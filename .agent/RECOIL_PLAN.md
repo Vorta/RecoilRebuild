@@ -2117,9 +2117,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40cb90:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_SoundActive::InitFromOptions)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOptionsPanel_SoundActive::InitFromOptions File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_options_panel_sound_active_init_from_options)
   - [❌] Binary-safe
 - 0x40cbb0:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_SoundActive::SyncFromOptions)
