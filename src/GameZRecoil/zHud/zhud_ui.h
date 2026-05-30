@@ -863,7 +863,9 @@ struct HudUiCycleSelectorWidget {
 
     HudUiCycleSelectorWidget *RECOIL_THISCALL Constructor();
     HudUiCycleSelectorWidget *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    HudUiCycleSelectorWidget *RECOIL_THISCALL ScalarDeletingDestructorThunk(unsigned int flags);
     void RECOIL_THISCALL DestructorCore();
+    void RECOIL_THISCALL DestructorCoreThunk();
     void RECOIL_THISCALL AdvanceSelectionAndActivate();
     void RECOIL_THISCALL SetIndexClamped(int index);
     void RECOIL_THISCALL SetVisibleRange(int first, int last);

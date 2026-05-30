@@ -5356,11 +5356,22 @@ extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
         scalarWidget.base.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
+    HudUiCycleSelectorWidget thunkWidget{};
+    TestZrdChildWidget thunkEntry{&table, 0};
+    thunkWidget.entriesA[4] = reinterpret_cast<HudUiWidget *>(&thunkEntry);
+    HudUiCycleSelectorWidget *const thunkResult =
+        thunkWidget.ScalarDeletingDestructorThunk(0);
+    const bool thunkDeleted =
+        thunkResult == &thunkWidget && thunkEntry.deleteFlags == 1 &&
+        thunkWidget.entriesA[4] == nullptr &&
+        thunkWidget.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+
     return constructed && clampLow && clampItemCount && clampVisible && clampInside && rangeLow &&
                    rangeInvalid && advanceWrap && advanceInside && updated && textEntryAdded &&
                    flashSet && flashAlreadySet && flashRateSet && flashRateAlreadySet &&
                    flashTickSwap && bitmapEntryAdded && destructed &&
-                   scalarDeleted
+                   scalarDeleted && thunkDeleted
                ? 0
                : 1;
 }

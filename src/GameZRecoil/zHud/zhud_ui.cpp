@@ -7619,10 +7619,26 @@ void RECOIL_THISCALL HudUiCycleSelectorWidget::DestructorCore() {
     base.DestructorCore();
 }
 
+// Reimplements 0x40cf40: HudUiCycleSelectorWidget::DestructorCoreThunk
+void RECOIL_THISCALL HudUiCycleSelectorWidget::DestructorCoreThunk() {
+    DestructorCore();
+}
+
 // Reimplements 0x4b7dc0: HudUiCycleSelectorWidget::ScalarDeletingDestructor
 HudUiCycleSelectorWidget *RECOIL_THISCALL
 HudUiCycleSelectorWidget::ScalarDeletingDestructor(unsigned int flags) {
     DestructorCore();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x41a570: HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk
+HudUiCycleSelectorWidget *RECOIL_THISCALL
+HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk(unsigned int flags) {
+    DestructorCoreThunk();
     if ((flags & 1u) != 0) {
         ::operator delete(this);
     }
