@@ -5003,10 +5003,27 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
         scalarWidget.base.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
+    HudUiCheckToggleWidget thunkWidget{};
+    TestZrdChildWidget thunkLabelChild{&table, 0};
+    auto *const thunkCheckedImage =
+        static_cast<zVidImagePartial *>(::operator new(sizeof(zVidImagePartial)));
+    thunkWidget.uncheckedImage = &zVid_Image::g_zImage_DefaultImage;
+    thunkWidget.checkedImage = thunkCheckedImage;
+    thunkWidget.checkedLabelPanel = reinterpret_cast<HudUiPanel *>(&thunkLabelChild);
+    HudUiCheckToggleWidget *const thunkResult =
+        thunkWidget.ScalarDeletingDestructorThunk(0);
+    const bool thunkDeleted =
+        thunkResult == &thunkWidget &&
+        thunkWidget.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
+        thunkWidget.base.base.image == &zVid_Image::g_zImage_DefaultImage &&
+        thunkWidget.checkedImage == nullptr && thunkWidget.checkedLabelPanel == nullptr &&
+        thunkLabelChild.deleteFlags == 1;
+
     g_HudUi_InvalidateMask = 0;
     return constructed && checkedState && uncheckedState && refreshEnabled && refreshDisabled &&
                    previewShown && checkedPreviewSkipped && activated && disabledActivateSkipped &&
-                   previewHidden && bounds && destructed && scalarDeleted
+                   previewHidden && bounds && destructed && scalarDeleted && thunkDeleted
                ? 0
                : 1;
 }

@@ -2576,9 +2576,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41a590:
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::ScalarDeletingDestructorThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCheckToggleWidget::ScalarDeletingDestructorThunk File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_check_toggle_widget_destructor_core)
   - [❌] Binary-safe
 - 0x40caa0:
   - [❌] Reconstructed (Name: HudUiCheckToggleWidget::OnActivateThunk)

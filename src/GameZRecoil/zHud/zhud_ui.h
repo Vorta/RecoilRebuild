@@ -839,7 +839,9 @@ struct HudUiCheckToggleWidget {
 
     RECOIL_NOINLINE HudUiCheckToggleWidget *RECOIL_THISCALL Constructor();
     HudUiCheckToggleWidget *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    HudUiCheckToggleWidget *RECOIL_THISCALL ScalarDeletingDestructorThunk(unsigned int flags);
     void RECOIL_THISCALL DestructorCore();
+    void RECOIL_THISCALL DestructorCoreThunk();
     HudUiRect *RECOIL_THISCALL GetBoundsRectOrNull();
     void RECOIL_THISCALL RefreshState();
     void RECOIL_THISCALL ShowPreview();

@@ -7413,10 +7413,26 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCheckToggleWidget::DestructorCore() {
     base.DestructorCore();
 }
 
+// Reimplements 0x40cf30: HudUiCheckToggleWidget::DestructorCoreThunk
+void RECOIL_THISCALL HudUiCheckToggleWidget::DestructorCoreThunk() {
+    DestructorCore();
+}
+
 // Reimplements 0x4b7000: HudUiCheckToggleWidget::ScalarDeletingDestructor
 HudUiCheckToggleWidget *RECOIL_THISCALL
 HudUiCheckToggleWidget::ScalarDeletingDestructor(unsigned int flags) {
     DestructorCore();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x41a590: HudUiCheckToggleWidget::ScalarDeletingDestructorThunk
+HudUiCheckToggleWidget *RECOIL_THISCALL
+HudUiCheckToggleWidget::ScalarDeletingDestructorThunk(unsigned int flags) {
+    DestructorCoreThunk();
     if ((flags & 1u) != 0) {
         ::operator delete(this);
     }
