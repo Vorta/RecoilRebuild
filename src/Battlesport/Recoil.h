@@ -2,21 +2,11 @@
 
 #include "recoil/recoil_types.h"
 
-#include <windows.h>
-
+#include "Battlesport/Mfc42Abi.h"
 #include "recoil/recoil_callconv.h"
 
-class CWnd;
-
-class CDialog {
-  public:
-    CDialog(UINT resourceId, CWnd *parentWnd);
-    virtual int DoModal();
-    virtual ~CDialog();
-
-    unsigned char reserved004[0x5c];
-};
-
+// Authored Recoil About dialog reconstructed over imported MFC42 CDialog;
+// MFC base behavior is not reimplemented here.
 class CAboutDlg : public CDialog {
   public:
     CAboutDlg(CWnd *parentWnd = 0);

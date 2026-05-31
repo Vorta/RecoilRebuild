@@ -20,6 +20,7 @@ struct HudUiTriplet_FTable;
 struct HudUiTextStack4_FTable;
 struct HudUiStringMenu_FTable;
 struct HudUiTextInput;
+struct RecoilApp_IState_Vtbl;
 
 struct HudUiCommon_FTable {
     unsigned int slots[29];
@@ -273,6 +274,7 @@ extern const HudUiZrdWidget_FTable g_HudUiMessageBoxCancelButton_Vtbl;
 struct HudUiWidget;
 struct HudUiMgrSensorTrackNode;
 struct PlayerProgressTargetSlotRuntime;
+struct HudUiNetGameSetupOverlayOwner;
 extern zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage;
 extern HudUiContainer g_HudUiMgr;
 extern HudUiTransitionTextPanel g_HudUiMgrHudRootPanel;
@@ -299,6 +301,7 @@ extern int g_HudUiMgrSensorTargetMarkerCount;
 extern int g_HudUiMgrWeaponState;
 extern int g_HudUiMgrHudOriginX;
 extern int g_HudUiMgrHudOriginY;
+extern HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
 
 struct HudUiRect {
     int left;
@@ -476,6 +479,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointToNormalizedClamped(
 void RECOIL_FASTCALL ScreenToWorld(float *pointXY);
 void RECOIL_CDECL TriggerCurrentLayoutOnActivated();
 int RECOIL_CDECL TickLayoutDelay();
+RECOIL_NOINLINE int RECOIL_CDECL IsLocalPlayerFirstInStatsList();
 void RECOIL_FASTCALL SetNanitePanelCount(int count);
 void RECOIL_FASTCALL SetModeCounterState(int counterIndex, int state);
 void RECOIL_CDECL ReticleStaticAtexitStub();
@@ -644,6 +648,8 @@ struct HudUiTextLabel {
     void SetTextFmt(const char *format, ...);
     RECOIL_NOINLINE void RECOIL_THISCALL RebuildTextBounds();
     RECOIL_NOINLINE int RECOIL_THISCALL MeasureTextWidth();
+    void RECOIL_THISCALL OnDraw();
+    int RECOIL_THISCALL HitTest(int px, int py);
     void RECOIL_THISCALL UpdateTextExtents();
 };
 
@@ -771,10 +777,12 @@ struct HudUiWidget {
     RECOIL_NOINLINE zVidImagePartial *RECOIL_THISCALL SetImageByPathOwned(const char *imagePath);
     RECOIL_NOINLINE zVidImagePartial *RECOIL_THISCALL
     SetImageBorrowedAndInvalidate(zVidImagePartial *image);
+    void RECOIL_THISCALL SetPos(int newX, int newY);
     void RECOIL_THISCALL InvalidateRect(const HudUiRect *dirtyRect);
     HudUiWidget *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     int RECOIL_THISCALL GetCenterX();
     int RECOIL_THISCALL GetCenterY();
+    int RECOIL_THISCALL HitTest(int px, int py);
     RECOIL_NO_GS void RECOIL_THISCALL RebuildBltRectFromImage();
     void RECOIL_THISCALL Draw();
 };
@@ -984,10 +992,11 @@ struct HudUiZrdWidgetEx17C {
 
 struct HudUiListSelectorItem {
     unsigned char panelStorage[0x2a4];
-    unsigned int unknown_2a4;
+    int entryIndex;
     void *owner;
 
     HudUiListSelectorItem *RECOIL_THISCALL Constructor();
+    void RECOIL_THISCALL OnActivate();
     void RECOIL_THISCALL Draw();
 };
 
@@ -1036,6 +1045,7 @@ struct HudCmdBindButtonBase {
 
     HudCmdBindButtonBase *RECOIL_THISCALL Constructor();
     int RECOIL_THISCALL AddBindingEntry(const char *displayText, int commandId);
+    void RECOIL_THISCALL OnSelectedIndexChanged(int selectedIndex);
     void RECOIL_THISCALL SetSelectedEntry(int selectedIndex);
     void RECOIL_THISCALL OnSelectionChangedRefresh(int selectedIndex);
     void RECOIL_THISCALL ClearBindingEntries();
@@ -1150,6 +1160,7 @@ struct HudUiMessage {
     void RECOIL_THISCALL Destructor();
     HudUiMessage *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     HudUiMessage *RECOIL_THISCALL Constructor();
+    void RECOIL_THISCALL Draw();
     void RECOIL_THISCALL ReleaseImages();
     RECOIL_NOINLINE void RECOIL_THISCALL RebuildWeaponLayout();
     RECOIL_NOINLINE int RECOIL_THISCALL
@@ -1244,6 +1255,7 @@ struct HudUiBar {
     float quadLeftX;
 
     HudUiBar *RECOIL_THISCALL Constructor();
+    void RECOIL_THISCALL Draw();
     RECOIL_NOINLINE void RECOIL_THISCALL SetPointXY(int pointIndex, float x, float y);
 };
 
@@ -1298,6 +1310,7 @@ struct HudUiTextInput {
     HudUiTextInput *RECOIL_THISCALL Constructor(unsigned int bufferSize);
     void RECOIL_THISCALL AllocTextBuffer(unsigned int bufferSize);
     void RECOIL_THISCALL DestructorCore();
+    void RECOIL_THISCALL DestructorCoreThunk();
     void RECOIL_THISCALL SetContents(const char *source);
     RECOIL_NOINLINE char *RECOIL_THISCALL GetBuffer();
     void RECOIL_THISCALL SetCursorPosition(int position);
@@ -1347,6 +1360,30 @@ struct HudUiNetGameSetupTextInput : HudUiNumericTextInput {
     void RECOIL_THISCALL OnActivateFocusAndCursor();
 };
 
+struct HudUiNetGameSetupOverlayOwner
+{
+    unsigned int vftable; // RecoilApp_IState_Vtbl*
+    unsigned int m_panel; // HudUiNetGameSetupDialog*
+    int m_reconfigureExistingSession;
+
+    static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    static HudUiNetGameSetupOverlayOwner *RECOIL_CDECL StaticInit();
+    static void RECOIL_CDECL RegisterAtExit();
+    static void RECOIL_CDECL AtExitDestructor();
+    HudUiNetGameSetupOverlayOwner *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE HudUiNetGameSetupOverlayOwner *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
+    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
+    static void RECOIL_CDECL QueueEnterWithReconfigureFlag(int reconfigureExistingSession);
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupOverlayOwner) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupOverlayOwner, m_panel) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupOverlayOwner, m_reconfigureExistingSession) == 0x08);
+
+extern RecoilApp_IState_Vtbl g_HudUiNetGameSetupOverlayOwner_Vtbl;
+
 struct HudUiClampedIntTextInput : HudUiNumericTextInput {
     int minValue;
     int maxValue;
@@ -1354,6 +1391,14 @@ struct HudUiClampedIntTextInput : HudUiNumericTextInput {
     HudUiClampedIntTextInput *RECOIL_THISCALL Constructor(unsigned int maxDigits);
     int RECOIL_THISCALL OnRawKeyboardDigitOnly(int key);
     int RECOIL_THISCALL CommitAndGetValue();
+};
+
+struct HudUiClampedIntStepButton {
+    HudUiZrdWidget base;
+    HudUiClampedIntTextInput *targetInput;
+    int stepDelta;
+
+    void RECOIL_THISCALL OnActivate();
 };
 
 struct HudUiSlot {
@@ -1415,8 +1460,11 @@ struct HudUiPanel {
 
     HudUiPanel *RECOIL_THISCALL ConstructorDefault(const char *text, int x,
                                                    int y);
+    HudUiPanel *RECOIL_THISCALL ConstructorDefaultThunk();
     HudUiPanel *RECOIL_THISCALL CopyConstructCore(const HudUiPanel *source);
     HudUiPanel *RECOIL_THISCALL ConstructorCopy(const HudUiPanel *source);
+    RECOIL_NOINLINE void RECOIL_THISCALL SetClip(void *bltSourceOrNull,
+                                                 const HudUiRect *rectOrNull);
     void RECOIL_THISCALL Invalidate();
     HGDIOBJ RECOIL_THISCALL GetFont();
     void RECOIL_THISCALL SetFontHandle(HGDIOBJ fontHandle);
@@ -1517,6 +1565,9 @@ struct HudUiCompositePanel {
                                                  int weight, int width,
                                                  int italic, int charSet,
                                                  int pitchAndFamily);
+    void RECOIL_THISCALL Update(float deltaSeconds);
+    void RECOIL_THISCALL Destructor();
+    HudUiCompositePanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudFontStyle {
@@ -1888,6 +1939,7 @@ struct HudUiTimerPanelFloat {
     unsigned char storage[0x2b0];
 
     HudUiTimerPanelFloat *RECOIL_THISCALL ConstructorDefault();
+    void RECOIL_THISCALL Draw();
 };
 
 struct HudUiStringMenu {
@@ -2165,6 +2217,7 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C, optionCount) == 0x14c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C, options) == 0x150);
 RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C, selectedIndex) == 0x178);
 RECOIL_STATIC_ASSERT(sizeof(HudUiListSelectorItem) == 0x2ac);
+RECOIL_STATIC_ASSERT(offsetof(HudUiListSelectorItem, entryIndex) == 0x2a4);
 RECOIL_STATIC_ASSERT(offsetof(HudUiListSelectorItem, owner) == 0x2a8);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdBindingVector) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingVector, begin) == 0x04);
@@ -2380,6 +2433,9 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiNumericTextInput, sliderBorder) == 0x260);
 RECOIL_STATIC_ASSERT(sizeof(HudUiClampedIntTextInput) == 0x37c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiClampedIntTextInput, minValue) == 0x374);
 RECOIL_STATIC_ASSERT(offsetof(HudUiClampedIntTextInput, maxValue) == 0x378);
+RECOIL_STATIC_ASSERT(sizeof(HudUiClampedIntStepButton) == 0x154);
+RECOIL_STATIC_ASSERT(offsetof(HudUiClampedIntStepButton, targetInput) == 0x14c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiClampedIntStepButton, stepDelta) == 0x150);
 RECOIL_STATIC_ASSERT(sizeof(HudUiSlot) == 0x1c0);
 RECOIL_STATIC_ASSERT(offsetof(HudUiSlot, screenEdgeCode) == 0x34);
 RECOIL_STATIC_ASSERT(offsetof(HudUiSlot, trackNode) == 0x38);

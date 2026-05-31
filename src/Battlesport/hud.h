@@ -40,7 +40,19 @@ struct HudUiCheatCodeDialog;
 struct zSndSample;
 struct zSndPlayHandleSnapshot;
 struct zClass_NodePartial;
+// Forward declaration for imported MFC42 CString. This is only a pointer
+// boundary here, not a local CString reimplementation.
 class CString;
+
+struct HudWeatherFxPointBatch {
+    float x;
+    float y;
+    float z;
+
+    RECOIL_NOINLINE int RECOIL_THISCALL
+    ArePointBatchInsideRect(int pointCount, const HudUiRect *viewportRect);
+};
+RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxPointBatch) == 0x0c);
 
 struct HudUiSaveLoadEntry : WIN32_FIND_DATAA {
     RECOIL_NOINLINE int RECOIL_FASTCALL IsNewerThan(const HudUiSaveLoadEntry *other) const;
@@ -61,6 +73,7 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadEntries, capacityEnd) == 0x0c);
 
 struct HudUiSaveLoadDialog;
 struct HudUiSaveLoadListItem;
+typedef void(RECOIL_THISCALL *HudUiSaveLoadDrawFn)(HudUiSaveLoadListItem *self);
 typedef void(RECOIL_THISCALL *HudUiSaveLoadInvalidateFn)(HudUiSaveLoadListItem *self);
 typedef void(RECOIL_THISCALL *HudUiSaveLoadOnActivateFn)(HudUiSaveLoadListItem *self);
 typedef void(RECOIL_THISCALL *HudUiSaveLoadSetVisibleFn)(HudUiSaveLoadListItem *self,
@@ -68,9 +81,13 @@ typedef void(RECOIL_THISCALL *HudUiSaveLoadSetVisibleFn)(HudUiSaveLoadListItem *
 typedef void(RECOIL_CDECL *HudUiSaveLoadSetTextFmtFn)(HudUiSaveLoadListItem *self,
                                                       const char *format,
                                                       const char *text);
+typedef void(RECOIL_THISCALL *HudUiSaveLoadUpdateTextBoundsFn)(
+    HudUiSaveLoadListItem *self);
 
 struct HudUiSaveLoadListItemVtable {
-    void *reserved00[8];
+    void *reserved00;
+    HudUiSaveLoadDrawFn Draw;
+    void *reserved08[6];
     HudUiSaveLoadInvalidateFn Invalidate;
     void *reserved24[3];
     HudUiSaveLoadOnActivateFn OnActivate;
@@ -78,11 +95,15 @@ struct HudUiSaveLoadListItemVtable {
     HudUiSaveLoadSetVisibleFn SetVisible;
     void *reserved64[4];
     HudUiSaveLoadSetTextFmtFn SetTextFmt;
+    HudUiSaveLoadUpdateTextBoundsFn UpdateTextBoundsFromContent;
 };
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItemVtable, Draw) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItemVtable, Invalidate) == 0x20);
 RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItemVtable, OnActivate) == 0x30);
 RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItemVtable, SetVisible) == 0x60);
 RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItemVtable, SetTextFmt) == 0x74);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItemVtable,
+                             UpdateTextBoundsFromContent) == 0x78);
 
 struct HudUiSaveLoadListItem {
     const HudUiSaveLoadListItemVtable *vftable;
@@ -93,6 +114,7 @@ struct HudUiSaveLoadListItem {
     int layoutY;
 
     RECOIL_NOINLINE HudUiSaveLoadListItem *RECOIL_THISCALL Constructor();
+    void RECOIL_THISCALL Draw();
     void RECOIL_THISCALL OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadListItem) == 0x2ac);
@@ -199,6 +221,8 @@ struct HudUiSaveGameDialog : HudUiSaveLoadDialog {
 
     RECOIL_NOINLINE HudUiSaveGameDialog *RECOIL_THISCALL InitLayout();
     RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE HudUiSaveGameDialog *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
 };
 RECOIL_STATIC_ASSERT(offsetof(HudUiSaveGameDialog, primaryActionButton) == 0xca10);
 
@@ -210,6 +234,7 @@ struct HudUiLoadGameDialog : HudUiSaveLoadDialog {
     RECOIL_NOINLINE HudUiLoadGameDialog *RECOIL_THISCALL
     ScalarDeletingDestructor(unsigned int flags);
     RECOIL_NOINLINE void RECOIL_THISCALL ProcessDialogResult();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnPrimaryActionThunk();
     RECOIL_NOINLINE void RECOIL_THISCALL OnPrimaryAction();
 };
 RECOIL_STATIC_ASSERT(offsetof(HudUiLoadGameDialog, primaryActionButton) == 0xca10);
@@ -219,9 +244,16 @@ struct HudWeatherFxParticleQuad {
     int y;
     int width;
     int height;
-    unsigned char reserved10[0x10];
+    unsigned short color16;
+    unsigned short reserved12;
+    float texCoordUStart;
+    float texCoordUEnd;
+    int slantOffset;
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxParticleQuad) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(HudWeatherFxParticleQuad, texCoordUStart) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(HudWeatherFxParticleQuad, texCoordUEnd) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(HudWeatherFxParticleQuad, slantOffset) == 0x1c);
 
 struct HudWeatherFx : HudUiElement {
     HudUiRect *viewportRect;
@@ -246,7 +278,9 @@ struct HudWeatherFx : HudUiElement {
     zVideo_TextureRecordPartial *textureRecord;
 
     RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL Constructor(int particleCount);
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
     RECOIL_NOINLINE void RECOIL_THISCALL ResetParticleSlot(int particleIndex, int unusedStack);
+    RECOIL_NOINLINE void RECOIL_THISCALL DrawParticles();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFx) == 0x8c);
 RECOIL_STATIC_ASSERT(offsetof(HudWeatherFx, particleQuads) == 0x38);
@@ -259,6 +293,7 @@ struct HudWeatherFxSnow : HudWeatherFx {
     float emitDepth;
 
     RECOIL_NOINLINE HudWeatherFxSnow *RECOIL_THISCALL Constructor(int particleCount);
+    RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSeconds);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxSnow) == 0x98);
 RECOIL_STATIC_ASSERT(offsetof(HudWeatherFxSnow, emitEnabled) == 0x8c);
@@ -269,6 +304,8 @@ struct HudWeatherFxRain : HudWeatherFx {
     float emitDepth;
 
     RECOIL_NOINLINE HudWeatherFxRain *RECOIL_THISCALL Constructor(int particleCount);
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSeconds);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxRain) == 0x98);
 RECOIL_STATIC_ASSERT(offsetof(HudWeatherFxRain, emitEnabled) == 0x8c);
@@ -459,6 +496,14 @@ extern float g_Hud_LowMeterNextBeepTime;
 extern const HudUiCommon_FTable g_HudWeatherFx_Vtable;
 extern const HudUiCommon_FTable g_HudWeatherFxSnow_Vtable;
 extern const HudUiCommon_FTable g_HudWeatherFxRain_Vtable;
+extern float g_HudWeatherFxSnow_LastCameraTargetX;
+extern float g_HudWeatherFxSnow_LastCameraTargetY;
+extern float g_HudWeatherFxSnow_LastCameraTargetZ;
+extern float g_HudWeatherFxSnow_TimeAccumulator;
+extern float g_HudWeatherFxRain_LastCameraTargetX;
+extern float g_HudWeatherFxRain_LastCameraTargetY;
+extern float g_HudWeatherFxRain_LastCameraTargetZ;
+extern float g_HudWeatherFxRain_TimeAccumulator;
 extern const HudUiZrdWidget_FTable g_HudUiCheatCodeTitleWidget_FTable;
 extern const HudUiNumericTextInput_Base_FTable g_HudUiCheatCodeInputWidget_FTable;
 

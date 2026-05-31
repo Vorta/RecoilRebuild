@@ -2,8 +2,10 @@
 
 #include "Battlesport/CZGameFrame.h"
 #include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/NetUi.h"
 #include "Battlesport/Recoil.h"
 #include "Battlesport/RecoilApp.h"
+#include "Battlesport/WestwoodOnlineUpgradeDialog.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
@@ -20,28 +22,11 @@
 
 HINSTANCE RECOIL_STDCALL AfxFindResourceHandle(LPCSTR resourceName, LPCSTR resourceType);
 
-class CWnd {
-  public:
-    BOOL CreateEx(DWORD dwExStyle, LPCSTR className, LPCSTR windowName, DWORD style, int x, int y,
-                  int width, int height, HWND parent, HMENU menu, LPVOID param);
-    void SetWindowTextA(LPCSTR text);
-    void CenterWindow(CWnd *alternateOwner);
-    int MessageBoxA(LPCSTR text, LPCSTR caption, UINT type);
-};
-
-class CMenu {
-  public:
-    BOOL Attach(HMENU menu);
-    static CMenu *RECOIL_STDCALL FromHandle(HMENU menu);
-
-    void *vftable;
-    HMENU m_hMenu;
-};
-
 extern "C" {
 extern HWND g_RecoilApp_hWndMain;
 HINSTANCE g_RecoilApp_hInstance = 0;
 int g_CZRecoilFrame_HasWolApi = 0;
+int g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 0;
 HudSensorTracker g_HudSensorTracker;
 }
 
@@ -56,16 +41,6 @@ const DWORD kMainWindowStyle = 0x82ca0000;
 const char *kRecoilWndClassName = "RecoilClass";
 const char *kMainMenuResourceName = "MYMENU";
 const RecoilNamedVtable kCZRecoilFrame_Vtable = {"CZRecoilFrame vtable"};
-const RecoilNamedVtable kCMenu_Vtable = {"CMenu vtable"};
-const RecoilNamedVtable kCObject_Vtable = {"CObject vtable"};
-
-typedef int (RECOIL_THISCALL *CMenuDestroyMenuProc)(void *);
-
-class MfcCmdUIView {
-  public:
-    virtual void Enable(int enable) = 0;
-    virtual void SetCheck(int check) = 0;
-};
 
 unsigned int Ptr32FromSymbol(const void *symbol) {
     return (unsigned int)((unsigned int)(symbol));
@@ -79,34 +54,19 @@ const AFX_MSGMAP *RECOIL_STDCALL GetCZRecoilFrameBaseMessageMap() {
     return &CZGameFrame::messageMap;
 }
 
-void CallMfcCMenuDestroyMenu(void *menu) {
-    HMODULE mfc42 = GetModuleHandleA("MFC42.DLL");
-    if (mfc42 == 0) {
-        mfc42 = LoadLibraryA("MFC42.DLL");
-    }
-
-    if (mfc42 != 0) {
-        CMenuDestroyMenuProc const destroyMenu = (CMenuDestroyMenuProc)(
-            GetProcAddress(mfc42, "?DestroyMenu@CMenu@@QAEHXZ"));
-        if (destroyMenu != 0) {
-            destroyMenu(menu);
-        }
-    }
-}
-
 int CommandCheckedIfMode(int currentMode, int targetMode) {
     return currentMode == targetMode ? kCmdUiChecked : 0;
 }
 
-void UpdateCmdUiFromState(CZRecoilCmdUI *cmdUi, int state) {
+void UpdateCmdUiFromState(CCmdUI *cmdUi, int state) {
     if (state == kCmdUiDisabled) {
-        cmdUi->vftable->Enable(cmdUi, 0);
-        cmdUi->vftable->SetCheck(cmdUi, 0);
+        cmdUi->Enable(0);
+        cmdUi->SetCheck(0);
         return;
     }
 
-    cmdUi->vftable->Enable(cmdUi, 1);
-    cmdUi->vftable->SetCheck(cmdUi, state == kCmdUiChecked ? 1 : 0);
+    cmdUi->Enable(1);
+    cmdUi->SetCheck(state == kCmdUiChecked ? 1 : 0);
 }
 
 HMENU SubMenuHandleOrNull(HMENU menu, int position) {
@@ -163,16 +123,15 @@ RECOIL_FRAME_NOINLINE unsigned int RECOIL_CDECL CZRecoilFrame::GetMessageMap() {
 
 namespace MfcCmdUI {
 // Reimplements 0x431a80: MfcCmdUI::EnableAlways
-RECOIL_FRAME_NOINLINE void RECOIL_STDCALL EnableAlways(CZRecoilCmdUI *cmdUi) {
-    ((MfcCmdUIView *)cmdUi)->Enable(1);
+RECOIL_FRAME_NOINLINE void RECOIL_STDCALL EnableAlways(CCmdUI *cmdUi) {
+    cmdUi->Enable(1);
 }
 } // namespace MfcCmdUI
 
 // Reimplements 0x430250: CZRecoilFrame::Constructor
 RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor() {
     ((CZGameFrame *)(this))->Constructor("recoil");
-    m_mainMenuVftable = Ptr32FromSymbol(&kCMenu_Vtable);
-    m_mainMenuHandle = 0;
+    new (&m_mainMenu) CMenu();
     vftable = Ptr32FromSymbol(&kCZRecoilFrame_Vtable);
 
     unsigned long titleStorage[(sizeof(CString) + sizeof(unsigned long) - 1) /
@@ -182,7 +141,7 @@ RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor(
     const int windowHeight = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYMENU) +
                              (GetSystemMetrics(SM_CYFRAME) << 1) + 0x1e0;
     const int windowWidth = (GetSystemMetrics(SM_CXFRAME) << 1) + 0x280;
-    ((CWnd *)(this))->CreateEx(0x20000, kRecoilWndClassName, title->m_pchData,
+    ((CWnd *)(this))->CreateEx(0x20000, kRecoilWndClassName, (const char *)(*title),
                                              kMainWindowStyle, CW_USEDEFAULT, CW_USEDEFAULT,
                                              windowWidth, windowHeight, 0, 0, 0);
     title->~CString();
@@ -201,20 +160,18 @@ RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor(
     free(commandLineCopy);
 
     zError::InitOutputContext(m_hWnd, 0xe00, "recoil.err");
-    CMenu *const mainMenu = (CMenu *)(&m_mainMenuVftable);
-    mainMenu->Attach(LoadMenuA(AfxFindResourceHandle(kMainMenuResourceName, MAKEINTRESOURCEA(4)),
+    m_mainMenu.Attach(LoadMenuA(AfxFindResourceHandle(kMainMenuResourceName, MAKEINTRESOURCEA(4)),
                                kMainMenuResourceName));
-    m_mainMenuHandle = mainMenu->m_hMenu;
-    SetMenu(m_hWnd, m_mainMenuHandle);
+    SetMenu(m_hWnd, m_mainMenu.m_hMenu);
 
     if (m_campaignsOnlyMode != 0) {
-        RemoveMenu(SubMenuHandleOrNull(m_mainMenuHandle, 1), 0x9c6b, MF_BYCOMMAND);
-        RemoveMenu(SubMenuHandleOrNull(m_mainMenuHandle, 1), 0x9c7b, MF_BYCOMMAND);
+        RemoveMenu(SubMenuHandleOrNull(m_mainMenu.m_hMenu, 1), 0x9c6b, MF_BYCOMMAND);
+        RemoveMenu(SubMenuHandleOrNull(m_mainMenu.m_hMenu, 1), 0x9c7b, MF_BYCOMMAND);
     } else {
-        RemoveMenu(m_mainMenuHandle, 1, MF_BYPOSITION);
+        RemoveMenu(m_mainMenu.m_hMenu, 1, MF_BYPOSITION);
     }
 
-    RemoveMenu(SubMenuHandleOrNull(m_mainMenuHandle, 2), kFullscreenMenuCommandId, MF_BYCOMMAND);
+    RemoveMenu(SubMenuHandleOrNull(m_mainMenu.m_hMenu, 2), kFullscreenMenuCommandId, MF_BYCOMMAND);
 
     g_RecoilApp_hInstance =
         (HINSTANCE)((unsigned int)(g_RecoilApp.m_hInstance_6c));
@@ -228,9 +185,9 @@ RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor(
                                    sizeof(unsigned long)];
     CString *titleCopy = (CString *)(titleCopyStorage);
     BuildWindowTitle(titleCopy);
-    formattedTitle->Format("%s", titleCopy->m_pchData);
+    formattedTitle->Format("%s", (const char *)(*titleCopy));
     titleCopy->~CString();
-    ((CWnd *)(this))->SetWindowTextA(formattedTitle->m_pchData);
+    ((CWnd *)(this))->SetWindowTextA((const char *)(*formattedTitle));
     formattedTitle->~CString();
 
     m_openZbdFilePath[0] = 0;
@@ -244,7 +201,7 @@ RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor(
     m_hwApiMenuCommandIds[2] = 0x9c75;
     m_hwApiMenuCommandIds[3] = 0x9c76;
 
-    CheckMenuItem(m_mainMenuHandle, 0x9c7b, zVid::GetTexturePackLoadState() == 0 ? 0 : MF_CHECKED);
+    CheckMenuItem(m_mainMenu.m_hMenu, 0x9c7b, zVid::GetTexturePackLoadState() == 0 ? 0 : MF_CHECKED);
 
     g_HudSensorTracker.missionFlags = m_useArchiveBanks;
     zSnd::SetUseArchiveBanksFlag(m_useArchiveBanks);
@@ -265,9 +222,8 @@ RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor(
 // Reimplements 0x430610: CZRecoilFrame::Destructor
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::Destructor() {
     vftable = Ptr32FromSymbol(&kCZRecoilFrame_Vtable);
-    m_mainMenuVftable = Ptr32FromSymbol(&kCMenu_Vtable);
-    CallMfcCMenuDestroyMenu(&m_mainMenuVftable);
-    m_mainMenuVftable = Ptr32FromSymbol(&kCObject_Vtable);
+    m_mainMenu.DestroyMenu();
+    m_mainMenu.CMenu::~CMenu();
     ((CZGameFrame *)(this))->Destructor();
 }
 
@@ -278,7 +234,7 @@ CZRecoilFrame::SetMenuBarVisibility(int visible) {
     HMENU menu = 0;
     if (visible != 0) {
         style |= (LONG)(0x82ca0000);
-        menu = m_mainMenuHandle;
+        menu = m_mainMenu.m_hMenu;
     } else {
         style &= (LONG)(0xfff7ffff);
     }
@@ -426,9 +382,9 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuToggleHud() {
 }
 
 // Reimplements 0x430a90: CZRecoilFrame::OnUpdateHudCmdUI
-RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnUpdateHudCmdUI(CZRecoilCmdUI *cmdUi) {
-    cmdUi->vftable->Enable(cmdUi, 1);
-    cmdUi->vftable->SetCheck(cmdUi, zOpt::GetHudVisibilityOption());
+RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnUpdateHudCmdUI(CCmdUI *cmdUi) {
+    cmdUi->Enable(1);
+    cmdUi->SetCheck(zOpt::GetHudVisibilityOption());
 }
 
 // Reimplements 0x430ab0: CZRecoilFrame::OnMenuToggleFullscreen
@@ -515,10 +471,42 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuStartCampaignMod
     g_RecoilApp.LoadZbdAndSetupSensorTracker(6, 0, 1, m_useArchiveBanks);
 }
 
+// Reimplements 0x4319a0: CZRecoilFrame::OnMenuWestwoodOnlineUpgrade
+// (D:\Proj\Battlesport\CZRecoilFrame.cpp)
+RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL
+CZRecoilFrame::OnMenuWestwoodOnlineUpgrade() {
+    int canShowUpgrade = 1;
+    if (g_CZRecoilFrame_WestwoodOnlineWinsockChecked == 0) {
+        char caption[0x100];
+        char messageFormat[0x200];
+
+        g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 1;
+        strcpy(caption, zLoc::GetMessageString(18));
+        strcpy(messageFormat, zLoc::GetMessageString(38));
+        if (NetUi::VerifyWinsock2OrPromptContinue(caption, messageFormat) == 0) {
+            canShowUpgrade = 0;
+        }
+    }
+
+    if (canShowUpgrade == 0) {
+        return;
+    }
+
+    g_RecoilApp.m_skipIntroFmv = 1;
+    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 1;
+
+    int selectedMissionIndex;
+    if (WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex(
+            &selectedMissionIndex) != 0) {
+        g_RecoilApp.LoadZbdAndSetupSensorTracker(selectedMissionIndex + 6, 0, 1,
+                                                 g_HudSensorTracker.missionFlags);
+    }
+}
+
 // Reimplements 0x431330: CZRecoilFrame::OnMenuToggleArchiveBanks
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuToggleArchiveBanks() {
     m_useArchiveBanks = m_useArchiveBanks == 0 ? 1 : 0;
-    CheckMenuItem(m_mainMenuHandle, 0x9c6b, m_useArchiveBanks == 0 ? MF_UNCHECKED : MF_CHECKED);
+    CheckMenuItem(m_mainMenu.m_hMenu, 0x9c6b, m_useArchiveBanks == 0 ? MF_UNCHECKED : MF_CHECKED);
     g_HudSensorTracker.missionFlags = m_useArchiveBanks;
     zSnd::SetUseArchiveBanksFlag(m_useArchiveBanks);
 }
@@ -527,47 +515,47 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuToggleArchiveBan
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuToggleTexturePacks() {
     if (zVid::GetTexturePackLoadState() != 0) {
         zVid::SetTexturePackLoadState(0);
-        CheckMenuItem(m_mainMenuHandle, 0x9c7b, MF_UNCHECKED);
+        CheckMenuItem(m_mainMenu.m_hMenu, 0x9c7b, MF_UNCHECKED);
         return;
     }
 
     zVid::SetTexturePackLoadState(1);
-    CheckMenuItem(m_mainMenuHandle, 0x9c7b, MF_CHECKED);
+    CheckMenuItem(m_mainMenu.m_hMenu, 0x9c7b, MF_CHECKED);
 }
 
 // Reimplements 0x4313d0: CZRecoilFrame::OnUpdateVideoMode2CmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateVideoMode2CmdUI(CZRecoilCmdUI *cmdUi) {
+CZRecoilFrame::OnUpdateVideoMode2CmdUI(CCmdUI *cmdUi) {
     UpdateCmdUiFromState(cmdUi, m_videoModeCmdUiState[0]);
 }
 
 // Reimplements 0x431430: CZRecoilFrame::OnUpdateVideoMode3CmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateVideoMode3CmdUI(CZRecoilCmdUI *cmdUi) {
+CZRecoilFrame::OnUpdateVideoMode3CmdUI(CCmdUI *cmdUi) {
     UpdateCmdUiFromState(cmdUi, m_videoModeCmdUiState[1]);
 }
 
 // Reimplements 0x431490: CZRecoilFrame::OnUpdateVideoMode4CmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateVideoMode4CmdUI(CZRecoilCmdUI *cmdUi) {
+CZRecoilFrame::OnUpdateVideoMode4CmdUI(CCmdUI *cmdUi) {
     UpdateCmdUiFromState(cmdUi, m_videoModeCmdUiState[2]);
 }
 
 // Reimplements 0x4314f0: CZRecoilFrame::OnUpdateVideoMode5CmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateVideoMode5CmdUI(CZRecoilCmdUI *cmdUi) {
+CZRecoilFrame::OnUpdateVideoMode5CmdUI(CCmdUI *cmdUi) {
     UpdateCmdUiFromState(cmdUi, m_videoModeCmdUiState[3]);
 }
 
 // Reimplements 0x431550: CZRecoilFrame::OnUpdateVideoMode6CmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateVideoMode6CmdUI(CZRecoilCmdUI *cmdUi) {
+CZRecoilFrame::OnUpdateVideoMode6CmdUI(CCmdUI *cmdUi) {
     UpdateCmdUiFromState(cmdUi, m_videoModeCmdUiState[4]);
 }
 
 // Reimplements 0x4315b0: CZRecoilFrame::OnUpdateVideoMode7CmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateVideoMode7CmdUI(CZRecoilCmdUI *cmdUi) {
+CZRecoilFrame::OnUpdateVideoMode7CmdUI(CCmdUI *cmdUi) {
     UpdateCmdUiFromState(cmdUi, m_videoModeCmdUiState[5]);
 }
 
@@ -593,49 +581,49 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuSelectHwApi3() {
 
 // Reimplements 0x4317d0: CZRecoilFrame::UpdateHwApiMenuItem
 RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL
-CZRecoilFrame::UpdateHwApiMenuItem(CZRecoilCmdUI *cmdUi, int apiIndex) {
+CZRecoilFrame::UpdateHwApiMenuItem(CCmdUI *cmdUi, int apiIndex) {
     if (m_acceptedD3DDeviceCount < apiIndex) {
-        RemoveMenu(cmdUi->m_menu_0c->m_hMenu, m_hwApiMenuCommandIds[apiIndex], MF_BYCOMMAND);
+        RemoveMenu(cmdUi->m_pMenu->m_hMenu, m_hwApiMenuCommandIds[apiIndex], MF_BYCOMMAND);
         return;
     }
 
-    cmdUi->vftable->SetCheck(cmdUi, m_hwApiCmdUiState[apiIndex] == kCmdUiChecked ? 1 : 0);
+    cmdUi->SetCheck(m_hwApiCmdUiState[apiIndex] == kCmdUiChecked ? 1 : 0);
 
     char menuLabelText[0x40];
     sprintf(menuLabelText, "Accelerator - %s (%s)", zVid::GetHwApiDescription(apiIndex - 1),
                  zVid::GetHwApiDriverName(apiIndex - 1));
-    cmdUi->vftable->SetText(cmdUi, menuLabelText);
+    cmdUi->SetText(menuLabelText);
 }
 
 // Reimplements 0x431870: CZRecoilFrame::OnUpdateHwApi0CmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateHwApi0CmdUI(CZRecoilCmdUI *cmdUi) {
-    cmdUi->vftable->Enable(cmdUi, 1);
-    cmdUi->vftable->SetCheck(cmdUi, m_hwApiCmdUiState[0] == kCmdUiChecked ? 1 : 0);
+CZRecoilFrame::OnUpdateHwApi0CmdUI(CCmdUI *cmdUi) {
+    cmdUi->Enable(1);
+    cmdUi->SetCheck(m_hwApiCmdUiState[0] == kCmdUiChecked ? 1 : 0);
 }
 
 // Reimplements 0x4318b0: CZRecoilFrame::OnUpdateHwApi1CmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateHwApi1CmdUI(CZRecoilCmdUI *cmdUi) {
+CZRecoilFrame::OnUpdateHwApi1CmdUI(CCmdUI *cmdUi) {
     UpdateHwApiMenuItem(cmdUi, 1);
 }
 
 // Reimplements 0x4318c0: CZRecoilFrame::OnUpdateHwApi2CmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateHwApi2CmdUI(CZRecoilCmdUI *cmdUi) {
+CZRecoilFrame::OnUpdateHwApi2CmdUI(CCmdUI *cmdUi) {
     UpdateHwApiMenuItem(cmdUi, 2);
 }
 
 // Reimplements 0x4318d0: CZRecoilFrame::OnUpdateHwApi3CmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateHwApi3CmdUI(CZRecoilCmdUI *cmdUi) {
+CZRecoilFrame::OnUpdateHwApi3CmdUI(CCmdUI *cmdUi) {
     UpdateHwApiMenuItem(cmdUi, 3);
 }
 
 // Reimplements 0x4318e0: CZRecoilFrame::OnUpdateFullscreenCmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateFullscreenCmdUI(CZRecoilCmdUI *cmdUi) {
-    RemoveMenu(cmdUi->m_menu_0c->m_hMenu, kFullscreenMenuCommandId, MF_BYCOMMAND);
+CZRecoilFrame::OnUpdateFullscreenCmdUI(CCmdUI *cmdUi) {
+    RemoveMenu(cmdUi->m_pMenu->m_hMenu, kFullscreenMenuCommandId, MF_BYCOMMAND);
 }
 
 // Reimplements 0x431900: CZRecoilFrame::OnMenuToggleCDAudio
@@ -645,9 +633,9 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuToggleCDAudio() 
 
 // Reimplements 0x431920: CZRecoilFrame::OnUpdateCDAudioCmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateCDAudioCmdUI(CZRecoilCmdUI *cmdUi) {
-    cmdUi->vftable->Enable(cmdUi, 1);
-    cmdUi->vftable->SetCheck(cmdUi, zSnd::GetCDAudioOption() != 0 ? 1 : 0);
+CZRecoilFrame::OnUpdateCDAudioCmdUI(CCmdUI *cmdUi) {
+    cmdUi->Enable(1);
+    cmdUi->SetCheck(zSnd::GetCDAudioOption() != 0 ? 1 : 0);
 }
 
 // Reimplements 0x431950: CZRecoilFrame::OnMenuToggleJoystick
@@ -657,9 +645,9 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuToggleJoystick()
 
 // Reimplements 0x431970: CZRecoilFrame::OnUpdateJoystickCmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateJoystickCmdUI(CZRecoilCmdUI *cmdUi) {
-    cmdUi->vftable->Enable(cmdUi, 1);
-    cmdUi->vftable->SetCheck(cmdUi, zInp::GetJoystickOption() != 0 ? 1 : 0);
+CZRecoilFrame::OnUpdateJoystickCmdUI(CCmdUI *cmdUi) {
+    cmdUi->Enable(1);
+    cmdUi->SetCheck(zInp::GetJoystickOption() != 0 ? 1 : 0);
 }
 
 // Reimplements 0x431a90: CZRecoilFrame::OnMenuSelectDirectSound
@@ -669,10 +657,9 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuSelectDirectSoun
 
 // Reimplements 0x431aa0: CZRecoilFrame::OnUpdateDirectSoundCmdUI
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL
-CZRecoilFrame::OnUpdateDirectSoundCmdUI(CZRecoilCmdUI *cmdUi) {
-    MfcCmdUIView *const cmdUiView = (MfcCmdUIView *)cmdUi;
-    cmdUiView->Enable(1);
-    cmdUiView->SetCheck(zSnd::GetAudioApiOption() == 0 ? 1 : 0);
+CZRecoilFrame::OnUpdateDirectSoundCmdUI(CCmdUI *cmdUi) {
+    cmdUi->Enable(1);
+    cmdUi->SetCheck(zSnd::GetAudioApiOption() == 0 ? 1 : 0);
 }
 
 // Reimplements 0x431ad0: CZRecoilFrame::OnMenuSelectA3D
@@ -681,10 +668,9 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuSelectA3D() {
 }
 
 // Reimplements 0x431ae0: CZRecoilFrame::OnUpdateA3DCmdUI
-RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnUpdateA3DCmdUI(CZRecoilCmdUI *cmdUi) {
-    MfcCmdUIView *const cmdUiView = (MfcCmdUIView *)cmdUi;
-    cmdUiView->Enable(1);
-    cmdUiView->SetCheck(zSnd::GetActiveBackend() == 1 ? 1 : 0);
+RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnUpdateA3DCmdUI(CCmdUI *cmdUi) {
+    cmdUi->Enable(1);
+    cmdUi->SetCheck(zSnd::GetActiveBackend() == 1 ? 1 : 0);
 }
 
 // Reimplements 0x431b10: CZRecoilFrame::OnSize

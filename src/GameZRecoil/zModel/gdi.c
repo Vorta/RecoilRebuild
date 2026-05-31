@@ -73,12 +73,12 @@ namespace zDi {
         return 0;
     }
 
-    // Reimplements 0x482710: zDi::GetRefCount (Battlesport/zModel/gdi.c)
+    // Reimplements 0x482710: zDi::GetRefCount (GameZRecoil/zModel/gdi.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL GetRefCount(zDiPartial * self) {
         return self->refCount;
     }
 
-    // Reimplements 0x482160: zDi::FreeContents (Battlesport/zModel/gdi.c)
+    // Reimplements 0x482160: zDi::FreeContents (GameZRecoil/zModel/gdi.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL FreeContents(zDiPartial * self) {
         if (self == 0) {
             return 5;
@@ -139,14 +139,14 @@ namespace zDi {
         }
     }
 
-    // Reimplements 0x4826b0: zDi::SetClonedFlag (Battlesport/zModel/gdi.c)
+    // Reimplements 0x4826b0: zDi::SetClonedFlag (GameZRecoil/zModel/gdi.c)
     RECOIL_NOINLINE void RECOIL_FASTCALL SetClonedFlag(zDiPartial * self, int isCloned) {
         if (self != 0) {
             self->flags = (self->flags & ~0x02) | ((isCloned & 1) << 1);
         }
     }
 
-    // Reimplements 0x482270: zDi::CloneToInstance (Battlesport/zModel/gdi.c)
+    // Reimplements 0x482270: zDi::CloneToInstance (GameZRecoil/zModel/gdi.c)
     RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL CloneToInstance(
         zDiPartial * self, int cloneMaterials, int cloneAuxOnly) {
         if (self == 0) {

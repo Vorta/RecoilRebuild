@@ -1606,6 +1606,250 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(void *pixels, int width,
     g_zVideo_FxSurfacePitchPixels16 = pitchBytes / 2;
 }
 
+static unsigned short RECOIL_FASTCALL zVideoBlendBlurPixel3(unsigned short before,
+                                                           unsigned short center,
+                                                           unsigned short after,
+                                                           unsigned int rbMask,
+                                                           unsigned int greenMask) {
+    const unsigned int rb =
+        (before & rbMask) + ((center & rbMask) << 1) + (after & rbMask);
+    const unsigned int green =
+        (before & greenMask) + ((center & greenMask) << 1) + (after & greenMask);
+    return (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
+}
+
+// Reimplements 0x48e380: zVideo::buff_BlurRegionCombined
+// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionCombined(zVidRect32 *rectOrNull,
+                                                             int) {
+    int left;
+    int top;
+    int right;
+    int bottom;
+    if (rectOrNull != 0) {
+        left = rectOrNull->left;
+        top = rectOrNull->top;
+        right = rectOrNull->right;
+        bottom = rectOrNull->bottom;
+        if (top < 1) {
+            top = 1;
+        }
+        if (left < 0) {
+            left = 0;
+        }
+        if (bottom > g_zVideo_FxSurfaceHeight - 1) {
+            bottom = g_zVideo_FxSurfaceHeight - 1;
+        }
+        if (right > g_zVideo_FxSurfaceWidth - 1) {
+            right = g_zVideo_FxSurfaceWidth - 1;
+        }
+    } else {
+        left = 0;
+        top = 1;
+        right = g_zVideo_FxSurfaceWidth - 1;
+        bottom = g_zVideo_FxSurfaceHeight - 1;
+    }
+
+    const int columnCount = right - left + 1;
+    unsigned int redMask;
+    unsigned int greenMask;
+    unsigned int blueMask;
+    PixelPack_GetRgbMasks(&redMask, &greenMask, &blueMask);
+    const unsigned int rbMask = redMask | blueMask;
+
+    if (columnCount > 0) {
+        unsigned short *src = g_zVideo_FxSurfacePixels16 +
+                              (top - 1) * g_zVideo_FxSurfacePitchPixels16 + left;
+        unsigned short *dst = g_zVideo_FxPass3_ScratchPixels16 +
+                              (top - 1) * g_zVideo_FxSurfaceWidth + left;
+        int count = columnCount;
+        while (count != 0) {
+            *dst++ = *src++;
+            --count;
+        }
+    }
+
+    int y;
+    for (y = top; y < bottom; ++y) {
+        unsigned short *dst = g_zVideo_FxPass3_ScratchPixels16 +
+                              y * g_zVideo_FxSurfaceWidth + left;
+        unsigned short *src = g_zVideo_FxSurfacePixels16 +
+                              y * g_zVideo_FxSurfacePitchPixels16 + left;
+        int x;
+        for (x = 0; x < columnCount; ++x) {
+            dst[x] = zVideoBlendBlurPixel3(src[x - g_zVideo_FxSurfacePitchPixels16],
+                                           src[x],
+                                           src[x + g_zVideo_FxSurfacePitchPixels16],
+                                           rbMask, greenMask);
+        }
+    }
+
+    if (columnCount > 0) {
+        unsigned short *src = g_zVideo_FxSurfacePixels16 +
+                              bottom * g_zVideo_FxSurfacePitchPixels16 + left;
+        unsigned short *dst = g_zVideo_FxPass3_ScratchPixels16 +
+                              bottom * g_zVideo_FxSurfaceWidth + left;
+        int count = columnCount;
+        while (count != 0) {
+            *dst++ = *src++;
+            --count;
+        }
+    }
+
+    for (y = top - 1; y <= bottom; ++y) {
+        unsigned short *src = g_zVideo_FxPass3_ScratchPixels16 +
+                              y * g_zVideo_FxSurfaceWidth + left;
+        unsigned short *dst = g_zVideo_FxSurfacePixels16 +
+                              y * g_zVideo_FxSurfacePitchPixels16 + left;
+        if (columnCount > 0) {
+            dst[0] = src[0];
+        }
+        int x;
+        for (x = 1; x < columnCount - 1; ++x) {
+            dst[x] = zVideoBlendBlurPixel3(src[x - 1], src[x], src[x + 1],
+                                           rbMask, greenMask);
+        }
+        if (columnCount > 1) {
+            dst[columnCount - 1] = src[columnCount - 1];
+        }
+    }
+}
+
+// Reimplements 0x48e670: zVideo::buff_BlurRegionVertical
+// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionVertical(zVidRect32 *rectOrNull,
+                                                             int) {
+    int left;
+    int top;
+    int right;
+    int bottom;
+    if (rectOrNull != 0) {
+        left = rectOrNull->left;
+        top = rectOrNull->top;
+        right = rectOrNull->right;
+        bottom = rectOrNull->bottom;
+        if (top < 1) {
+            top = 1;
+        }
+        if (left < 0) {
+            left = 0;
+        }
+        if (bottom > g_zVideo_FxSurfaceHeight - 1) {
+            bottom = g_zVideo_FxSurfaceHeight - 1;
+        }
+        if (right > g_zVideo_FxSurfaceWidth - 1) {
+            right = g_zVideo_FxSurfaceWidth - 1;
+        }
+    } else {
+        left = 0;
+        top = 1;
+        right = g_zVideo_FxSurfaceWidth - 1;
+        bottom = g_zVideo_FxSurfaceHeight - 1;
+    }
+
+    const int columnCount = right - left + 1;
+    unsigned int redMask;
+    unsigned int greenMask;
+    unsigned int blueMask;
+    PixelPack_GetRgbMasks(&redMask, &greenMask, &blueMask);
+    const unsigned int rbMask = redMask | blueMask;
+
+    int y;
+    for (y = top; y < bottom; ++y) {
+        unsigned short *dst = g_zVideo_FxPass3_ScratchPixels16 +
+                              y * g_zVideo_FxSurfaceWidth + left;
+        unsigned short *src = g_zVideo_FxSurfacePixels16 +
+                              y * g_zVideo_FxSurfacePitchPixels16 + left;
+        int x;
+        for (x = 0; x < columnCount; ++x) {
+            dst[x] = zVideoBlendBlurPixel3(src[x - g_zVideo_FxSurfacePitchPixels16],
+                                           src[x],
+                                           src[x + g_zVideo_FxSurfacePitchPixels16],
+                                           rbMask, greenMask);
+        }
+    }
+
+    for (y = top; y < bottom; ++y) {
+        unsigned short *src = g_zVideo_FxPass3_ScratchPixels16 +
+                              y * g_zVideo_FxSurfaceWidth + left;
+        unsigned short *dst = g_zVideo_FxSurfacePixels16 +
+                              y * g_zVideo_FxSurfacePitchPixels16 + left;
+        int x;
+        for (x = 0; x < columnCount; ++x) {
+            dst[x] = src[x];
+        }
+    }
+}
+
+// Reimplements 0x48e870: zVideo::buff_BlurRegionHorizontal
+// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionHorizontal(zVidRect32 *rectOrNull,
+                                                               int) {
+    int left;
+    int top;
+    int right;
+    int bottom;
+    if (rectOrNull != 0) {
+        left = rectOrNull->left;
+        top = rectOrNull->top;
+        right = rectOrNull->right;
+        bottom = rectOrNull->bottom;
+        if (top < 0) {
+            top = 0;
+        }
+        if (left < 1) {
+            left = 1;
+        }
+        if (bottom > g_zVideo_FxSurfaceHeight - 1) {
+            bottom = g_zVideo_FxSurfaceHeight - 1;
+        }
+        if (right > g_zVideo_FxSurfaceWidth - 1) {
+            right = g_zVideo_FxSurfaceWidth - 1;
+        }
+    } else {
+        left = 1;
+        top = 0;
+        right = g_zVideo_FxSurfaceWidth - 1;
+        bottom = g_zVideo_FxSurfaceHeight - 1;
+    }
+
+    const int columnCount = right - left;
+    unsigned int redMask;
+    unsigned int greenMask;
+    unsigned int blueMask;
+    PixelPack_GetRgbMasks(&redMask, &greenMask, &blueMask);
+    const unsigned int rbMask = redMask | blueMask;
+
+    int y;
+    for (y = top; y <= bottom; ++y) {
+        unsigned short *src = g_zVideo_FxSurfacePixels16 +
+                              y * g_zVideo_FxSurfacePitchPixels16 + left;
+        unsigned short *scratch = g_zVideo_FxPass3_ScratchPixels16 +
+                                  y * g_zVideo_FxSurfaceWidth + left;
+        int x;
+        for (x = 0; x < columnCount; ++x) {
+            scratch[x] = zVideoBlendBlurPixel3(src[x - 1], src[x], src[x + 1],
+                                               rbMask, greenMask);
+        }
+        for (x = 0; x < columnCount; ++x) {
+            src[x] = scratch[x];
+        }
+    }
+}
+
+// Reimplements 0x48ea00: zVideo::buff_BlurRegionByMode
+// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionByMode(zVidRect32 *rectOrNull,
+                                                           int mode) {
+    if (mode == 1) {
+        buff_BlurRegionHorizontal(rectOrNull, mode);
+    } else if (mode == 2) {
+        buff_BlurRegionVertical(rectOrNull, mode);
+    } else {
+        buff_BlurRegionCombined(rectOrNull, mode);
+    }
+}
+
 } // namespace zVideo
 
 // Reimplements 0x4bee20: zVideoFxPass3Config::QueuePrimitiveRaw
@@ -2089,6 +2333,304 @@ RECOIL_NOINLINE int RECOIL_CDECL ShutdownFrameScratchBuffers() {
     return 0;
 }
 } // namespace zVid
+
+namespace zVideo_FxSurface {
+static int TruncateFloat(float value)
+{
+    return (int)(value);
+}
+
+static int FxLineOutCode(int x, int y, int left, int top, int right, int bottom)
+{
+    int outCode = 0;
+    if (x < left) {
+        outCode |= 1;
+    }
+    if (x > right) {
+        outCode |= 2;
+    }
+    if (y < top) {
+        outCode |= 4;
+    }
+    if (y > bottom) {
+        outCode |= 8;
+    }
+    return outCode;
+}
+
+static unsigned short BlendFxSurfacePixel565(unsigned short dst, unsigned short color, int alpha)
+{
+    const int dstValue = (int)(dst);
+    const int colorValue = (int)(color);
+    const int redDelta = (((colorValue & 0xf800) - (dstValue & 0xf800)) * alpha) >> 8;
+    const int greenDelta = (((colorValue & 0x07e0) - (dstValue & 0x07e0)) * alpha) >> 8;
+    const int redApplied = dstValue + (redDelta & 0xfffff800);
+    const int blueDelta = (((colorValue & 0x001f) - (redApplied & 0x001f)) * alpha) >> 8;
+    return (unsigned short)(redApplied + (greenDelta & 0xffe0) + blueDelta);
+}
+
+static unsigned short BlendFxSurfacePixel555(unsigned short dst, unsigned short color, int alpha)
+{
+    const int dstValue = (int)(dst);
+    const int colorValue = (int)(color);
+    const int redDelta = (((colorValue & 0x7c00) - (dstValue & 0x7c00)) * alpha) >> 8;
+    const int greenDelta = (((colorValue & 0x03e0) - (dstValue & 0x03e0)) * alpha) >> 8;
+    const int blueDelta = (((colorValue & 0x001f) - (dstValue & 0x001f)) * alpha) >> 8;
+    return (unsigned short)(dstValue + (redDelta & 0xfc00) + (greenDelta & 0xffe0) + blueDelta);
+}
+
+static void DrawFxSurfaceSpanPixel(unsigned short *pixel, unsigned short color, int alpha)
+{
+    if (zRndr::g_pixelPackGreenBits == 5) {
+        if (alpha <= 7) {
+            return;
+        }
+        if (alpha >= 252) {
+            *pixel = color;
+            return;
+        }
+        *pixel = BlendFxSurfacePixel555(*pixel, color, alpha);
+        return;
+    }
+
+    if (alpha <= 3) {
+        return;
+    }
+    if (alpha >= 252) {
+        *pixel = color;
+        return;
+    }
+    *pixel = BlendFxSurfacePixel565(*pixel, color, alpha);
+}
+
+// Reimplements 0x48ed60: zVideo_FxSurface::DrawAlphaBlendedLine
+// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL DrawAlphaBlendedLine(zVidRect32 *clipRect, int x1,
+                                                          int y1, int x0, int y0,
+                                                          unsigned int color16,
+                                                          float alphaEnd,
+                                                          float alphaStart,
+                                                          int clipInset)
+{
+    int dx = x0 - x1;
+    int dy = y0 - y1;
+    const int left = clipRect->left + clipInset;
+    const int top = clipRect->top + clipInset;
+    const int right = clipRect->right - clipInset;
+    const int bottom = clipRect->bottom - clipInset;
+    int startOutCode = FxLineOutCode(x1, y1, left, top, right, bottom);
+    int endOutCode = FxLineOutCode(x0, y0, left, top, right, bottom);
+    if ((startOutCode & endOutCode) != 0) {
+        return;
+    }
+
+    if ((startOutCode | endOutCode) != 0) {
+        float slopeYPerX = 0.0f;
+        float slopeXPerY = 0.0f;
+        if (dx != 0) {
+            slopeYPerX = (float)(dy) / (float)(dx);
+        }
+        if (dy != 0) {
+            slopeXPerY = (float)(dx) / (float)(dy);
+        }
+
+        if (x1 < left) {
+            y1 += TruncateFloat((float)(left - x1) * slopeYPerX);
+            x1 = left;
+        }
+        dx = x0 - x1;
+        dy = y0 - y1;
+        if (dx != 0) {
+            slopeYPerX = (float)(dy) / (float)(dx);
+        } else {
+            slopeYPerX = 0.0f;
+        }
+        if (dy != 0) {
+            slopeXPerY = (float)(dx) / (float)(dy);
+        } else {
+            slopeXPerY = 0.0f;
+        }
+
+        if (x1 > right) {
+            y1 += TruncateFloat((float)(right - x1) * slopeYPerX);
+            x1 = right;
+        }
+        dx = x0 - x1;
+        dy = y0 - y1;
+        if (dx != 0) {
+            slopeYPerX = (float)(dy) / (float)(dx);
+        } else {
+            slopeYPerX = 0.0f;
+        }
+        if (dy != 0) {
+            slopeXPerY = (float)(dx) / (float)(dy);
+        } else {
+            slopeXPerY = 0.0f;
+        }
+
+        if (x0 < left) {
+            y0 += TruncateFloat((float)(left - x0) * slopeYPerX);
+            x0 = left;
+        }
+        dx = x0 - x1;
+        dy = y0 - y1;
+        if (dy != 0) {
+            slopeXPerY = (float)(dx) / (float)(dy);
+        } else {
+            slopeXPerY = 0.0f;
+        }
+
+        if (x0 > right) {
+            y0 += TruncateFloat((float)(right - x0) * slopeYPerX);
+            x0 = right;
+        }
+        dx = x0 - x1;
+        dy = y0 - y1;
+        if (dy != 0) {
+            slopeXPerY = (float)(dx) / (float)(dy);
+        } else {
+            slopeXPerY = 0.0f;
+        }
+
+        if (y1 < top) {
+            x1 += TruncateFloat((float)(top - y1) * slopeXPerY);
+            y1 = top;
+        } else if (y1 > bottom) {
+            x1 += TruncateFloat((float)(bottom - y1) * slopeXPerY);
+            y1 = bottom;
+        }
+        dx = x0 - x1;
+        dy = y0 - y1;
+        if (dy != 0) {
+            slopeXPerY = (float)(dx) / (float)(dy);
+        } else {
+            slopeXPerY = 0.0f;
+        }
+
+        if (y0 < top) {
+            x0 += TruncateFloat((float)(top - y0) * slopeXPerY);
+            y0 = top;
+        } else if (y0 > bottom) {
+            x0 += TruncateFloat((float)(bottom - y0) * slopeXPerY);
+            y0 = bottom;
+        }
+    }
+
+    dx = x0 - x1;
+    dy = y0 - y1;
+    const int pitchPixels = zRndr::g_pitchBytes >> 1;
+    unsigned short *pixel = g_zVideo_FxSurfacePixels16 + pitchPixels * y1 + x1;
+    int yStepPitch = pitchPixels;
+    int xStep = 1;
+    if (dy < 0) {
+        dy = -dy;
+        yStepPitch = -yStepPitch;
+    }
+    if (dx < 0) {
+        dx = -dx;
+        xStep = -1;
+    }
+
+    const unsigned short packedColor = (unsigned short)(color16);
+    int alphaFixed = TruncateFloat(alphaStart * 255.0f) << 16;
+    if (dx > dy) {
+        int err = dx >> 1;
+        int steps = dx + 1;
+        const int alphaStep =
+            TruncateFloat(((alphaEnd - alphaStart) / (float)(steps)) * 16777215.0f);
+        while (steps != 0) {
+            const int alpha = alphaFixed >> 16;
+            if (clipInset > 0) {
+                unsigned short *spanPixel = pixel;
+                int spanCount = clipInset;
+                while (spanCount != 0) {
+                    DrawFxSurfaceSpanPixel(spanPixel, packedColor, alpha);
+                    spanPixel += yStepPitch;
+                    --spanCount;
+                }
+            }
+
+            pixel += xStep;
+            err += dy;
+            alphaFixed += alphaStep;
+            if (err > dx) {
+                err -= dx;
+                pixel += yStepPitch;
+            }
+            --steps;
+        }
+        return;
+    }
+
+    {
+        int err = dy >> 1;
+        int steps = dy + 1;
+        const int alphaStep =
+            TruncateFloat(((alphaEnd - alphaStart) / (float)(steps)) * 16777215.0f);
+        while (steps != 0) {
+            const int alpha = alphaFixed >> 16;
+            if (clipInset > 0) {
+                unsigned short *spanPixel = pixel;
+                int spanCount = clipInset;
+                while (spanCount != 0) {
+                    DrawFxSurfaceSpanPixel(spanPixel, packedColor, alpha);
+                    spanPixel += xStep;
+                    --spanCount;
+                }
+            }
+
+            pixel += yStepPitch;
+            err += dx;
+            alphaFixed += alphaStep;
+            if (err > dy) {
+                err -= dy;
+                pixel += xStep;
+            }
+            --steps;
+        }
+    }
+}
+
+// Reimplements 0x48ec90: zVideo_FxSurface::DrawColoredLinesBatch
+// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL DrawColoredLinesBatch(zVideoFxColoredLineRecord *lines,
+                                                           int count,
+                                                           zVidRect32 *clipRectOrNull)
+{
+    zVidRect32 clipRect;
+    if (clipRectOrNull != 0) {
+        clipRect.left = clipRectOrNull->left;
+        clipRect.top = clipRectOrNull->top;
+        clipRect.right = clipRectOrNull->right;
+        clipRect.bottom = clipRectOrNull->bottom;
+    } else {
+        clipRect.left = 0;
+        clipRect.top = 0;
+        clipRect.right = g_zVideo_FxSurfaceWidth - 1;
+        clipRect.bottom = g_zVideo_FxSurfaceHeight - 1;
+    }
+
+    if (clipRect.top < 0) {
+        clipRect.top = 0;
+    }
+    if (clipRect.bottom > g_zVideo_FxSurfaceHeight - 1) {
+        clipRect.bottom = g_zVideo_FxSurfaceHeight - 1;
+    }
+    if (clipRect.left < 0) {
+        clipRect.left = 0;
+    }
+    if (clipRect.right > g_zVideo_FxSurfaceWidth - 1) {
+        clipRect.right = g_zVideo_FxSurfaceWidth - 1;
+    }
+
+    for (int index = 0; index < count; ++index) {
+        zVideoFxColoredLineRecord *line = &lines[index];
+        DrawAlphaBlendedLine(&clipRect, line->x + line->width, line->y + line->height,
+                             line->x, line->y, line->color16, line->alphaEnd,
+                             line->alphaStart, line->clipInset);
+    }
+}
+} // namespace zVideo_FxSurface
 
 namespace zVid_Image {
 zVidImagePartial g_zImage_DefaultImage = {0};

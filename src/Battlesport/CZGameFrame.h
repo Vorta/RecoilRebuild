@@ -3,10 +3,7 @@
 #include <stddef.h>
 #include "recoil/recoil_types.h"
 
-#include <windows.h>
-
 #include "Battlesport/CZRecoilFrame.h"
-#include "Battlesport/Mfc42Abi.h"
 #include "Battlesport/RecoilApp.h"
 #include "recoil/recoil_callconv.h"
 
@@ -17,10 +14,6 @@
 #else
 #define RECOIL_GAME_FRAME_NOINLINE
 #endif
-
-struct CZGameFrameMfcWindow {
-    void **vftable;
-};
 
 struct CZGameFrameApp;
 
@@ -37,37 +30,11 @@ struct CZGameFrameApp {
     CZGameFrameAppVtable *vftable;
 };
 
-class CWnd;
-
-class CGdiObject {
-  public:
-    void *vftable;
-    HGDIOBJ m_hObject;
-
-    BOOL Attach(HGDIOBJ hObject);
-    BOOL DeleteObject();
-};
-
-class CFrameWnd {
-  public:
-    CFrameWnd();
-
-    __declspec(dllimport) static const CRuntimeClass classCFrameWnd;
-
-  protected:
-    __declspec(dllimport) static const AFX_MSGMAP messageMap;
-
-    int OnCreate(CREATESTRUCTA *createStruct);
-    void OnClose();
-    void OnDestroy();
-    void OnActivate(unsigned int nState, CWnd *pWndOther, BOOL bMinimized);
-    void OnSize(unsigned int nType, int cx, int cy);
-};
-
+// Authored Recoil game frame reconstructed over imported MFC42 CFrameWnd and
+// GDI providers; MFC base behavior is not reimplemented here.
 struct CZGameFrame : CFrameWnd {
-    unsigned char reserved000[0xc0];
     CZGameFrameApp *m_app;
-    CGdiObject m_gameBitmap;
+    CBitmap m_gameBitmap;
 
     static CRuntimeClass classCZGameFrame;
     static const AFX_MSGMAP messageMap;
@@ -80,7 +47,7 @@ struct CZGameFrame : CFrameWnd {
     RECOIL_GAME_FRAME_NOINLINE static RecoilPtr32 RECOIL_CDECL GetBaseMessageMap();
     RECOIL_GAME_FRAME_NOINLINE static RecoilPtr32 RECOIL_CDECL GetMessageMap();
     RECOIL_GAME_FRAME_NOINLINE static int RECOIL_STDCALL
-    IsWindowValid(CZGameFrameMfcWindow *pWnd);
+    IsWindowValid(CWnd *pWnd);
     RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_THISCALL Constructor(const char *appId);
     RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL Destructor();
     RECOIL_GAME_FRAME_NOINLINE CString *RECOIL_THISCALL BuildWindowTitle(CString *outTitle);

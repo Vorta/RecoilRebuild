@@ -3001,7 +3001,7 @@ RECOIL_NOINLINE void RECOIL_CDECL InstantiateNamedObjects() {
     for (int checkpointNumber = 1; checkpointNumber <= checkpointCount; ++checkpointNumber) {
         searchName.Format("checkpoint%d", checkpointNumber);
         zClass_NodePartial *const checkpointNode =
-            zClass::FindByTypeAndName(6, searchName.m_pchData);
+            zClass::FindByTypeAndName(6, (const char *)searchName);
         if (checkpointNode != 0) {
             zClass_Node::PropagateExtraFlagsRecursive(checkpointNode,
                                                       kCheckpointNodeAuxFlagTracked);

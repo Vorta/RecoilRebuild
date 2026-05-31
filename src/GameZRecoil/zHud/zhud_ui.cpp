@@ -1,9 +1,12 @@
+#include "Battlesport/Mfc42Abi.h"
+
 #include "GameZRecoil/zHud/zhud_ui.h"
 
 #include "Battlesport/Briefing.h"
 #include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/GameNet.h"
 #include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/HudUiNetGameSetup.h"
 #include "Battlesport/hud.h"
 #include "Battlesport/player.h"
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
@@ -35,14 +38,6 @@
 LPCSTR RECOIL_STDCALL AfxRegisterWndClass(UINT classStyle, HCURSOR cursor, HBRUSH background,
                                           HICON icon);
 
-class CWnd {
-  public:
-    virtual BOOL RECOIL_THISCALL DestroyWindow();
-
-    unsigned char unknown_04[0x1c];
-    HWND m_hWnd;
-};
-
 namespace {
 const int ZOPT_GRAPHICS_PERSPECTIVE = 8;
 const int ZOPT_GRAPHICS_GLOBAL_LIGHT = 0x10;
@@ -57,6 +52,21 @@ template <typename Method> unsigned int MethodAddress(Method method) {
     memcpy(&address, &method, sizeof(method));
     return address;
 }
+
+struct HudUiNetGameSetupOverlayOwnerBaseVtableGuard {
+    HudUiNetGameSetupOverlayOwner *self;
+
+    ~HudUiNetGameSetupOverlayOwnerBaseVtableGuard() {
+        self->vftable = kRecoilStateBase_VtblAddress;
+    }
+};
+
+struct HudUiNetGameSetupPanelOverlayVirtual {
+    virtual void RECOIL_THISCALL Update(float deltaSeconds);
+    virtual void RECOIL_THISCALL SetEnabled(int enabled);
+    virtual HudUiNetGameSetupPanel *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
+};
 
 template <typename Slot, typename Method> void AssignMethodSlot(Slot &slot, Method method) {
     RECOIL_STATIC_ASSERT(sizeof(slot) == sizeof(method));
@@ -222,16 +232,34 @@ HudUiTextInput_FTable MakeHudUiChatComposeTextInputFTable() {
     return table;
 }
 
+HudUiTextInput_FTable MakeHudUiNumericTextInputTextInputFTable() {
+    HudUiTextInput_FTable table = MakeHudUiTextInputFTable();
+    table.slots[2] = MethodAddress(&HudUiOwnedTextInput::OnAcceptNotifyOwner);
+    table.slots[3] = (unsigned int)(&zGame::ReturnOnlyStub);
+    table.slots[8] = (unsigned int)(&zGame::ReturnOnlyStub);
+    return table;
+}
+
 HudUiWidget_FTable MakeHudUiWidgetFTable() {
     HudUiWidget_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiWidget_FTable>();
+    table.slots[3] = MethodAddress(&HudUiWidget::SetPos);
+    table.slots[0x5c / 4] = MethodAddress(&HudUiWidget::HitTest);
     table.slots[25] = MethodAddress(&HudUiWidget::GetCenterX);
     table.slots[26] = MethodAddress(&HudUiWidget::GetCenterY);
+    return table;
+}
+
+HudUiMessage_FTable MakeHudUiMessageFTable() {
+    HudUiMessage_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiMessage_FTable>();
+    table.slots[1] = MethodAddress(&HudUiMessage::Draw);
     return table;
 }
 
 template <typename FTable> FTable MakeHudUiPanelFTable() {
     FTable table = MakeHudUiFTableWithCommonInvalidate<FTable>();
     RECOIL_STATIC_ASSERT((sizeof(table.slots) / sizeof(table.slots[0])) > 36);
+    table.slots[0] = MethodAddress(&HudUiPanel::ScalarDeletingDestructor);
+    table.slots[6] = MethodAddress(&HudUiPanel::SetClip);
     table.slots[27] = MethodAddress(&HudUiPanel::EnableWordWrapWithRect);
     table.slots[29] = MethodAddress(&HudUiPanel::SetTextFmt);
     table.slots[32] = MethodAddress(&HudUiPanel::SetFont);
@@ -241,9 +269,44 @@ template <typename FTable> FTable MakeHudUiPanelFTable() {
     return table;
 }
 
+HudUiPanel_FTable MakeHudUiTransitionTextPanelFTable() {
+    HudUiPanel_FTable table = MakeHudUiPanelFTable<HudUiPanel_FTable>();
+    table.slots[9] = MethodAddress(&HudUiTransitionTextPanel::TickFlash);
+    return table;
+}
+
+HudUiListSelectorItem_FTable MakeHudUiListSelectorItemFTable() {
+    HudUiListSelectorItem_FTable table = MakeHudUiPanelFTable<HudUiListSelectorItem_FTable>();
+    table.slots[0] = MethodAddress(&HudUiListSelectorItem::OnActivate);
+    table.slots[1] = MethodAddress(&HudUiListSelectorItem::Draw);
+    return table;
+}
+
+HudUiTextLabel_FTable MakeHudUiTextLabelFTable() {
+    HudUiTextLabel_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiTextLabel_FTable>();
+    table.slots[1] = MethodAddress(&HudUiTextLabel::OnDraw);
+    table.slots[0x5c / 4] = MethodAddress(&HudUiTextLabel::HitTest);
+    table.slots[28] = MethodAddress(&HudUiTextLabel::SetTextFmt);
+    return table;
+}
+
+HudUiBar_FTable MakeHudUiBarFTable() {
+    HudUiBar_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiBar_FTable>();
+    table.slots[1] = MethodAddress(&HudUiBar::Draw);
+    return table;
+}
+
+HudUiTimerPanelFloat_FTable MakeHudUiTimerPanelFloatFTable() {
+    HudUiTimerPanelFloat_FTable table = MakeHudUiPanelFTable<HudUiTimerPanelFloat_FTable>();
+    table.slots[1] = MethodAddress(&HudUiTimerPanelFloat::Draw);
+    return table;
+}
+
 HudUiCompositePanel_FTable MakeHudUiCompositePanelFTable() {
     HudUiCompositePanel_FTable table = MakeHudUiPanelFTable<HudUiCompositePanel_FTable>();
+    table.slots[0] = MethodAddress(&HudUiCompositePanel::ScalarDeletingDestructor);
     table.slots[3] = MethodAddress(&HudUiCompositePanel::LayoutEntries);
+    table.slots[9] = MethodAddress(&HudUiCompositePanel::Update);
     table.slots[29] = MethodAddress(&HudUiCompositePanel::SetTextFmt);
     table.slots[32] = MethodAddress(&HudUiCompositePanel::SetFont);
     table.slots[34] = MethodAddress(&HudUiCompositePanel::SetTextFmtV);
@@ -340,6 +403,14 @@ MakeHudCmdBindButtonFTable(unsigned int scalarDeletingDestructor,
     table.slots[31] = MethodAddress(&HudCmdBindButtonBase::LoadFromZrd);
     table.slots[32] = (unsigned int)(&HudUiNoOpMethodStub);
     table.slots[33] = MethodAddress(&HudCmdBindButtonBase::OnSelectionChangedRefresh);
+    return table;
+}
+
+HudCmdBindButtonBase_FTable MakeHudCmdBindButtonBaseFTable()
+{
+    HudCmdBindButtonBase_FTable table =
+        MakeHudUiFTableWithCommonInvalidate<HudCmdBindButtonBase_FTable>();
+    table.slots[33] = MethodAddress(&HudCmdBindButtonBase::OnSelectedIndexChanged);
     return table;
 }
 
@@ -596,7 +667,7 @@ const HudUiZrdWidgetEx17C_Item_FTable g_HudUiZrdWidgetEx17C_Item_FTable =
 const HudUiZrdWidgetEx17C_FTable g_HudUiZrdWidgetEx17C_FTable =
     MakeHudUiZrdWidgetEx17CFTable();
 const HudCmdBindButtonBase_FTable g_HudCmdBindButtonBase_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudCmdBindButtonBase_FTable>();
+    MakeHudCmdBindButtonBaseFTable();
 const HudUiZrdWidget_FTable g_HudCmdResumeButton_FTable =
     MakeHudCmdZrdButtonFTable(MethodAddress(&HudUiZrdWidget::OnActivateQueueExitCurrentState));
 const HudUiZrdWidget_FTable g_HudCmdResetButton_FTable =
@@ -681,7 +752,19 @@ const HudUiFillBitmap_FTable g_HudUiOptionsPanel_MusicVolumeWidget_Vtbl =
         MethodAddress(&HudUiOptionsPanel_MusicVolume::OnActivate),
         MethodAddress(&HudUiOptionsPanel_MusicVolume::SyncFromOptions));
 RecoilApp_IState_Vtbl g_HudCmdDialogState_Vtbl = {0};
+RecoilApp_IState_Vtbl g_HudUiNetGameSetupOverlayOwner_Vtbl = {
+    MethodAddress(&HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor),
+    0,
+    0,
+    MethodAddress(&HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent),
+    0,
+    0,
+    MethodAddress(&HudUiNetGameSetupOverlayOwner::OnDeactivate),
+    0,
+    0,
+    0};
 HudCmdDialogState g_HudCmdDialogState = {0};
+HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner = {0};
 // Recovered global 0x4e5e00: HUD command-dialog mouse capture debounce frames.
 int g_HudCmdMouseDebounceFrames = 0;
 const HudUiMessageBoxDialog_FTable g_HudUiMessageBoxDialog_FTable =
@@ -692,20 +775,18 @@ const HudUiZrdWidget_FTable g_HudUiMessageBoxCancelButton_Vtbl =
     MakeHudUiMessageBoxButtonFTable(MethodAddress(&HudUiMessageBoxCancelButton::OnActivate));
 const HudUiCounter_FTable g_HudUiCounter_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiCounter_FTable>();
-const HudUiMessage_FTable g_HudUiMessage_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiMessage_FTable>();
+const HudUiMessage_FTable g_HudUiMessage_FTable = MakeHudUiMessageFTable();
 const HudUiPanel_FTable g_HudUiPanel_FTable = MakeHudUiPanelFTable<HudUiPanel_FTable>();
 const HudUiPanel_FTable g_HudUiTransitionTextPanel_FTable =
-    MakeHudUiPanelFTable<HudUiPanel_FTable>();
+    MakeHudUiTransitionTextPanelFTable();
 const HudUiCompositePanel_FTable g_HudUiCompositePanel_FTable =
     MakeHudUiCompositePanelFTable();
 const HudUiListSelectorItem_FTable g_HudUiListSelectorItem_FTable =
-    MakeHudUiPanelFTable<HudUiListSelectorItem_FTable>();
-const HudUiTextLabel_FTable g_HudUiTextLabel_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiTextLabel_FTable>();
+    MakeHudUiListSelectorItemFTable();
+const HudUiTextLabel_FTable g_HudUiTextLabel_FTable = MakeHudUiTextLabelFTable();
 const HudUiPanelSimple_FTable g_HudUiPanelSimple_FTable =
     MakeHudUiPanelFTable<HudUiPanelSimple_FTable>();
-const HudUiBar_FTable g_HudUiBar_FTable = MakeHudUiFTableWithCommonInvalidate<HudUiBar_FTable>();
+const HudUiBar_FTable g_HudUiBar_FTable = MakeHudUiBarFTable();
 const HudUiPolyline_FTable g_HudUiPolyline_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiPolyline_FTable>();
 const HudUiSliderBorder_FTable g_HudUiSliderBorder_FTable = MakeHudUiSliderBorderFTable();
@@ -714,7 +795,7 @@ const HudUiMeter_FTable g_HudUiMeter_FTable =
 const HudUiMeter_FTable g_HudUiMeterEx_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiMeter_FTable>();
 const HudUiTimerPanelFloat_FTable g_HudUiTimerPanelFloat_FTable =
-    MakeHudUiPanelFTable<HudUiTimerPanelFloat_FTable>();
+    MakeHudUiTimerPanelFloatFTable();
 const HudUiTimerPanel_FTable g_HudUiTimerPanel_FTable =
     MakeHudUiPanelFTable<HudUiTimerPanel_FTable>();
 const HudUiCounterTextPanel_FTable g_HudUiCounterTextPanel_FTable =
@@ -735,7 +816,7 @@ const HudUiTextInput_FTable g_HudUiTextInput_FTable =
 const HudUiTextInput_FTable g_HudUiChatComposeTextInput_FTable =
     MakeHudUiChatComposeTextInputFTable();
 const HudUiTextInput_FTable g_HudUiNumericTextInput_TextInputFTable =
-    MakeHudUiTextInputFTable();
+    MakeHudUiNumericTextInputTextInputFTable();
 const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_Base_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiNumericTextInput_Base_FTable>();
 const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_CtorTable_FTable =
@@ -804,7 +885,7 @@ unsigned int g_HudUiLoadingCheckpointMaxIndex = 0;
 unsigned int g_HudUiLoadingCheckpointCurrentIndex = 0;
 float g_HudUiLoadingCheckpointCurrentProgress = 0.0f;
 HudLayoutHW g_HudLayoutHW = {0};
-HudLayoutSW g_HudLayoutSW = {0};
+HudLayoutSW g_HudLayoutSW;
 HudUiTextStack4 *g_HudUiTopMessageStack = 0;
 HudUiTextStack4 *g_HudUiChatMessageStack = 0;
 zFMV_Playback *g_HudUiSensorWindowPlayback = 0;
@@ -3524,6 +3605,12 @@ int RECOIL_CDECL TickLayoutDelay() {
     return 1;
 }
 
+// Reimplements 0x4143a0: HudUiMgr::IsLocalPlayerFirstInStatsList
+// (D:\Proj\Battlesport\HudUi.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL IsLocalPlayerFirstInStatsList() {
+    return g_HudUiMgrStatsList->triplet->IsLocalPlayerFirstEntry();
+}
+
 // Reimplements 0x410160: HudUiMgr::EnsureHudLoaded
 // (D:\Proj\Battlesport\hud.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL EnsureHudLoaded(const char *entryPath) {
@@ -4774,6 +4861,20 @@ void RECOIL_THISCALL HudUiElement::SetClipRect(const HudUiRect *rect) {
     clipRect = *rect;
 }
 
+// Reimplements 0x4bcd40: HudUiPanel::SetClip
+RECOIL_NOINLINE void RECOIL_THISCALL
+HudUiPanel::SetClip(void *bltSourceOrNull, const HudUiRect *rectOrNull) {
+    HudUiElement *const element = (HudUiElement *)(this);
+    element->bltSource = bltSourceOrNull;
+    if (rectOrNull != 0) {
+        element->clipRect = *rectOrNull;
+    }
+
+    typedef void (RECOIL_FASTCALL *InvalidateFn)(void *self);
+    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(this);
+    ((InvalidateFn)(ftable->slots[8]))(this);
+}
+
 // Reimplements 0x4b42c0: HudUiElement::GetRect
 RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::GetRect(HudUiRect *outRect) {
     typedef int (RECOIL_THISCALL *GetCoordFn)(HudUiElement * self);
@@ -4994,6 +5095,51 @@ HudUiCompositePanel::ConstructorWithEntryCount(int entryCount) {
     return this;
 }
 
+// Reimplements 0x403e20: HudUiCompositePanel::Destructor
+void RECOIL_THISCALL HudUiCompositePanel::Destructor() {
+    typedef HudUiCompositePanelEntry * (RECOIL_THISCALL *ScalarDeletingDestructorFn)(HudUiCompositePanelEntry * self, unsigned int flags);
+
+    for (HudUiCompositePanelEntry *entry = entryVector.begin; entry != entryVector.end; ++entry) {
+        const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(entry);
+        ((ScalarDeletingDestructorFn)(ftable->slots[0]))(entry, 0);
+    }
+
+    ::operator delete(entryVector.begin);
+    entryVector.begin = 0;
+    entryVector.end = 0;
+    entryVector.capacityEnd = 0;
+
+    ((HudUiPanel *)(this))->Destructor();
+}
+
+// Reimplements 0x4bb960: HudUiCompositePanel::ScalarDeletingDestructor
+HudUiCompositePanel *RECOIL_THISCALL
+HudUiCompositePanel::ScalarDeletingDestructor(unsigned int flags) {
+    Destructor();
+    if ((flags & 1) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x4bb980: HudUiCompositePanel::Update
+void RECOIL_THISCALL HudUiCompositePanel::Update(float deltaSeconds) {
+    if ((FieldAt<unsigned int>(this, 0x0c) & 0x10u) != 0) {
+        return;
+    }
+
+    for (unsigned int index = 0;
+         index < (unsigned int)(HudUiCompositePanelVectorCount(entryVector));
+         ++index) {
+        HudUiCompositePanelEntry *const entry = &entryVector.begin[index];
+        typedef void (RECOIL_THISCALL *UpdateFn)(HudUiCompositePanelEntry * self,
+                                                 float deltaSeconds);
+        const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(entry);
+        ((UpdateFn)(ftable->slots[9]))(entry, deltaSeconds);
+    }
+}
+
 // Reimplements 0x4bb9f0: HudUiCompositePanel::LayoutEntries
 RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::LayoutEntries(int x,
                                                                         int y) {
@@ -5056,42 +5202,54 @@ HudUiCompositePanel::ResizeEntryCount(int oldCount, int entryCount) {
 void HudUiCompositePanel::SetTextFmt(const char *format, ...) {
     va_list args;
     va_start(args, format);
-    SetTextFmtV(format, args);
+    typedef void (RECOIL_THISCALL *SetTextFmtVFn)(HudUiCompositePanel * self,
+                                                  const char *format, va_list args);
+    const HudUiCompositePanel_FTable *const ftable =
+        *(const HudUiCompositePanel_FTable *const *)(this);
+    ((SetTextFmtVFn)(ftable->slots[34]))(this, format, args);
     va_end(args);
 }
 
 // Reimplements 0x4bbac0: HudUiCompositePanel::SetTextFmtV
 RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::SetTextFmtV(const char *format,
                                                                       va_list args) {
-    if (entryVector.begin == 0) {
-        return;
-    }
-
     HudUiCompositePanelEntry *const entry = &entryVector.begin[activeEntryCount];
-    ((HudUiPanel *)(entry))->SetTextFmtV(format, args);
+    typedef void (RECOIL_THISCALL *SetTextFmtVFn)(HudUiCompositePanelEntry * self,
+                                                  const char *format, va_list args);
+    const HudUiPanel_FTable *const entryFTable = *(const HudUiPanel_FTable *const *)(entry);
+    ((SetTextFmtVFn)(entryFTable->slots[34]))(entry, format, args);
     HudUiVirtualSetVisibleRequired(entry, 1);
-    ScrollHistory();
+
+    typedef void (RECOIL_THISCALL *ScrollHistoryFn)(HudUiCompositePanel * self);
+    const HudUiCompositePanel_FTable *const ftable =
+        *(const HudUiCompositePanel_FTable *const *)(this);
+    ((ScrollHistoryFn)(ftable->slots[37]))(this);
 }
 
 // Reimplements 0x4bbb20: HudUiCompositePanel::ScrollHistory
 RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::ScrollHistory() {
-    const int vectorCount =
-        (int)(HudUiCompositePanelVectorCount(entryVector));
     ++activeEntryCount;
 
-    if (activeEntryCount >= vectorCount) {
+    if ((unsigned int)(activeEntryCount) >=
+        (unsigned int)(HudUiCompositePanelVectorCount(entryVector))) {
         {
-        for (int index = 0; index < vectorCount - 1; ++index) {
+        for (unsigned int index = 0;
+             index < (unsigned int)(HudUiCompositePanelVectorCount(entryVector)) - 1;
+             ++index) {
             HudUiCompositePanelEntry *const current = &entryVector.begin[index];
             HudUiCompositePanelEntry *const next = &entryVector.begin[index + 1];
-            ((HudUiPanel *)(current))->SetText(
-                ((HudUiPanel *)(next))->GetLastTextPtr());
+            typedef void (RECOIL_THISCALL *SetTextFn)(HudUiCompositePanelEntry * self,
+                                                      const char *text);
+            const HudUiPanel_FTable *const currentFTable =
+                *(const HudUiPanel_FTable *const *)(current);
+            ((SetTextFn)(currentFTable->slots[35]))(
+                current, ((HudUiPanel *)(next))->GetLastTextPtr());
         }
         }
         --activeEntryCount;
     }
 
-    ((HudUiElement *)(this))->Invalidate();
+    HudUiVirtualInvalidate(this);
 }
 
 // Reimplements 0x4bbbe0: HudUiCompositePanel::SetFont
@@ -5099,16 +5257,23 @@ RECOIL_NOINLINE void RECOIL_THISCALL
 HudUiCompositePanel::SetFont(const char *faceName, int height, int weight,
                              int width, int italic, int charSet,
                              int pitchAndFamily) {
-    for (HudUiCompositePanelEntry *entry = entryVector.begin; entry != entryVector.end; ++entry) {
-        ((HudUiPanel *)(entry))->SetFont(faceName, height, weight, width, italic,
-                                                       charSet, pitchAndFamily);
+    for (unsigned int index = 0;
+         index < (unsigned int)(HudUiCompositePanelVectorCount(entryVector));
+         ++index) {
+        HudUiCompositePanelEntry *const entry = &entryVector.begin[index];
+        typedef void (RECOIL_THISCALL *SetFontFn)(HudUiCompositePanelEntry * self,
+                                                  const char *faceName, int height,
+                                                  int weight, int width, int italic,
+                                                  int charSet, int pitchAndFamily);
+        const HudUiPanel_FTable *const entryFTable = *(const HudUiPanel_FTable *const *)(entry);
+        ((SetFontFn)(entryFTable->slots[32]))(entry, faceName, height, weight, width, italic,
+                                              charSet, pitchAndFamily);
     }
 
     HudUiPanel *const panel = (HudUiPanel *)(this);
     panel->SetFont(faceName, height, weight, width, italic, charSet, pitchAndFamily);
 
-    HudUiElement *const element = (HudUiElement *)(this);
-    LayoutEntries(element->GetX(), element->GetY());
+    HudUiVirtualSetPosRequired(this, HudUiVirtualGetXRequired(this), HudUiVirtualGetYRequired(this));
 }
 
 // Reimplements 0x4bbca0: HudUiCompositePanel::ResizeEntryVectorAndRelayout
@@ -7013,7 +7178,7 @@ void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
 // Reimplements 0x4bfb70: HudUiBackgroundCursorWidget::SetPos
 // (D:\Proj\Battlesport\hudui_background.cpp)
 void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetPos(int newX, int newY) {
-    ((HudUiElement *)(&base))->SetPos(newX, newY);
+    base.SetPos(newX, newY);
     RebuildCapturedImage(base.x, base.y);
 }
 
@@ -8858,6 +9023,22 @@ HudUiListSelectorItem *RECOIL_THISCALL HudUiListSelectorItem::Constructor() {
     return this;
 }
 
+// Reimplements 0x4b9520: HudUiListSelectorItem::OnActivate
+void RECOIL_THISCALL HudUiListSelectorItem::OnActivate() {
+    typedef void (RECOIL_THISCALL *OnSelectedIndexChangedFn)(void *self, int selectedIndex);
+    struct HudUiListSelectionOwnerFTable {
+        unsigned int slots[33];
+        OnSelectedIndexChangedFn OnSelectedIndexChanged;
+    };
+
+    void *const selectionOwner = owner;
+    if (selectionOwner != 0) {
+        const HudUiListSelectionOwnerFTable *const ownerFTable =
+            *(const HudUiListSelectionOwnerFTable *const *)selectionOwner;
+        ownerFTable->OnSelectedIndexChanged(selectionOwner, entryIndex);
+    }
+}
+
 // Reimplements 0x4ba410: HudUiListSelectorItem::Draw
 void RECOIL_THISCALL HudUiListSelectorItem::Draw() {
     HudUiPanel *const panel = (HudUiPanel *)(this);
@@ -9005,6 +9186,14 @@ HudCmdBindButtonBase::AddBindingEntry(const char *displayText, int commandId)
     }
 
     return oldCount;
+}
+
+// Reimplements 0x4b9320: HudCmdBindButtonBase::OnSelectedIndexChanged
+// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+void RECOIL_THISCALL
+HudCmdBindButtonBase::OnSelectedIndexChanged(int selectedIndex)
+{
+    SetSelectedEntry(selectedIndex);
 }
 
 // Reimplements 0x4b9330: HudCmdBindButtonBase::SetSelectedEntry
@@ -11007,6 +11196,25 @@ int RECOIL_THISCALL HudUiWidget::GetCenterY() {
     return y;
 }
 
+// Reimplements 0x4b4030: HudUiWidget::HitTest
+int RECOIL_THISCALL HudUiWidget::HitTest(int px, int py) {
+    typedef HudUiRect * (RECOIL_THISCALL *GetBoundsRectFn)(HudUiWidget * self);
+
+    if ((flags & 0x10) != 0) {
+        return 0;
+    }
+
+    HudUiRect *const bounds = ((GetBoundsRectFn)(ftable->slots[0x2c / 4]))(this);
+    if (bounds == 0) {
+        return 0;
+    }
+
+    return px >= bounds->left && px <= bounds->right && py >= bounds->top &&
+                   py <= bounds->bottom
+               ? 1
+               : 0;
+}
+
 // Reimplements 0x404e10: HudUiWidget::RebuildBltRectFromImage
 RECOIL_NO_GS void RECOIL_THISCALL HudUiWidget::RebuildBltRectFromImage() {
     struct SetClipRectFTable {
@@ -11120,6 +11328,21 @@ HudUiWidget *RECOIL_THISCALL HudUiWidget::ScalarDeletingDestructor(unsigned int 
     }
 
     return this;
+}
+
+// Reimplements 0x4b3dd0: HudUiWidget::SetPos
+void RECOIL_THISCALL HudUiWidget::SetPos(int newX, int newY) {
+    typedef void (RECOIL_THISCALL *InvalidateFn)(HudUiWidget * self);
+
+    if (alignFlags != 0 && image != 0) {
+        x = newX - (image->width / 2);
+        y = newY - (image->height / 2);
+    } else {
+        x = newX;
+        y = newY;
+    }
+
+    ((InvalidateFn)(ftable->slots[8]))(this);
 }
 
 // Reimplements 0x40f200: HudUiTripletPanel::Constructor
@@ -11289,6 +11512,11 @@ void RECOIL_THISCALL HudUiTextInput::DestructorCore() {
     char *const ownedBuffer = buffer;
     ftable = &g_HudUiTextInput_FTable;
     ::operator delete(ownedBuffer);
+}
+
+// Reimplements 0x4b4ab0: HudUiTextInput::DestructorCoreThunk
+void RECOIL_THISCALL HudUiTextInput::DestructorCoreThunk() {
+    DestructorCore();
 }
 
 // Reimplements 0x4b4390: HudUiTextInput::AllocTextBuffer
@@ -11464,11 +11692,15 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTextInput::DispatchKeyAction(int key) 
 // Reimplements 0x4ba3e0: HudUiOwnedTextInput::OnAcceptNotifyOwner
 void RECOIL_THISCALL HudUiOwnedTextInput::OnAcceptNotifyOwner() {
     typedef void (RECOIL_THISCALL *AcceptFn)(void *self);
+    struct OwnerFTable {
+        unsigned int slots[34];
+        AcceptFn OnAccept;
+    };
 
     zGame::ReturnOnlyStub();
 
-    const unsigned int *const ownerFTable = *(const unsigned int *const *)(owner);
-    ((AcceptFn)(ownerFTable[34]))(owner);
+    const OwnerFTable *const ownerFTable = *(const OwnerFTable *const *)(owner);
+    ownerFTable->OnAccept(owner);
 }
 
 // Reimplements 0x40d660: HudUiMgrObjectiveBlock::Destructor
@@ -11619,6 +11851,18 @@ void RECOIL_THISCALL HudUiCounter::UpdateLayoutPosition() {
     clipViewportRect.top = localY;
     clipViewportRect.right = localX + image->width;
     clipViewportRect.bottom = localY + image->height;
+}
+
+// Reimplements 0x4134e0: HudUiMessage::Draw
+// (D:\Proj\Battlesport\hud.cpp)
+void RECOIL_THISCALL HudUiMessage::Draw() {
+    typedef void (RECOIL_THISCALL *DrawPanelFn)(HudUiPanel * self);
+
+    base.Draw();
+
+    HudUiPanel *const textPanel = (HudUiPanel *)(&panel);
+    const HudUiPanel_FTable *const dispatch = (const HudUiPanel_FTable *)(textPanel->vtbl);
+    ((DrawPanelFn)(dispatch->slots[1]))(textPanel);
 }
 
 // Reimplements 0x414070: HudUiMessage::RebuildWeaponLayout
@@ -11946,6 +12190,16 @@ HudUiBar *RECOIL_THISCALL HudUiBar::Constructor() {
     memset(points, 0, sizeof(points));
     ((HudUiElement *)(this))->Invalidate();
     return this;
+}
+
+// Reimplements 0x4bcff0: HudUiBar::Draw
+void RECOIL_THISCALL HudUiBar::Draw() {
+    typedef void (RECOIL_THISCALL *DrawBaseFn)(HudUiBar * self);
+
+    ((DrawBaseFn)(ftable->slots[2]))(this);
+    if (drawVertexCount != 0) {
+        zRndr_RasterizePoly((zVec3 *)(points), drawVertexCount, drawParam);
+    }
 }
 
 // Reimplements 0x4bcf80: HudUiBar::SetPointXY
@@ -12392,6 +12646,36 @@ int RECOIL_THISCALL HudUiClampedIntTextInput::CommitAndGetValue() {
     return value;
 }
 
+// Reimplements 0x41a350: HudUiClampedIntStepButton::OnActivate
+void RECOIL_THISCALL HudUiClampedIntStepButton::OnActivate() {
+    if (targetInput != 0) {
+        typedef int (RECOIL_THISCALL HudUiClampedIntTextInput::*CommitFn)();
+        typedef void (RECOIL_THISCALL HudUiClampedIntTextInput::*InvalidateFn)();
+
+        HudUiClampedIntTextInput *input = targetInput;
+        const HudUiClampedIntTextInput_FTable *const inputFTable =
+            (const HudUiClampedIntTextInput_FTable *)(input->base.base.ftable);
+        int value = (input->*((CommitFn *)(&inputFTable->slots[35]))[0])() + stepDelta;
+
+        if (value < input->minValue) {
+            value = input->minValue;
+        }
+
+        if (value > input->maxValue) {
+            value = input->maxValue;
+        }
+
+        char valueText[20];
+        sprintf(valueText, "%d", value);
+        input->Update(valueText);
+
+        input = targetInput;
+        (input->*((InvalidateFn *)(&input->base.base.ftable->slots[8]))[0])();
+    }
+
+    base.OnActivate();
+}
+
 static HudUiNumericTextInput **HudUiNetGameSetupFocusTextInputSlot(void *owner) {
     // BN shows the current network setup text input focus pointer at owner + 0xa94c.
     return (HudUiNumericTextInput **)((unsigned char *)(owner) +
@@ -12417,6 +12701,160 @@ void RECOIL_THISCALL HudUiNetGameSetupTextInput::OnActivateFocusAndCursor() {
     Update(GetBuffer());
     textInput.SetCursorPosition((int)(strlen(GetBuffer())));
     OnActivate();
+}
+
+// Reimplements 0x41ab60: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit
+// (D:\Proj\Battlesport\HudUi.cpp)
+void RECOIL_CDECL HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit()
+{
+    StaticInit();
+    RegisterAtExit();
+}
+
+// Reimplements 0x41ab70: HudUiNetGameSetupOverlayOwner::StaticInit
+// (D:\Proj\Battlesport\HudUi.cpp)
+HudUiNetGameSetupOverlayOwner *RECOIL_CDECL
+HudUiNetGameSetupOverlayOwner::StaticInit()
+{
+    return g_HudUiNetGameSetupOverlayOwner.Constructor();
+}
+
+// Reimplements 0x41ab80: HudUiNetGameSetupOverlayOwner::RegisterAtExit
+// (D:\Proj\Battlesport\HudUi.cpp)
+void RECOIL_CDECL HudUiNetGameSetupOverlayOwner::RegisterAtExit()
+{
+    atexit(AtExitDestructor);
+}
+
+// Reimplements 0x41ab90: HudUiNetGameSetupOverlayOwner::AtExitDestructor
+// (D:\Proj\Battlesport\HudUi.cpp)
+void RECOIL_CDECL HudUiNetGameSetupOverlayOwner::AtExitDestructor()
+{
+    g_HudUiNetGameSetupOverlayOwner.Destructor();
+}
+
+// Reimplements 0x41aba0: HudUiNetGameSetupOverlayOwner::Constructor
+// (D:\Proj\Battlesport\HudUi.cpp)
+HudUiNetGameSetupOverlayOwner *RECOIL_THISCALL
+HudUiNetGameSetupOverlayOwner::Constructor()
+{
+    vftable = (unsigned int)&g_HudUiNetGameSetupOverlayOwner_Vtbl;
+    m_panel = 0;
+    m_reconfigureExistingSession = 0;
+    return this;
+}
+
+// Reimplements 0x41abe0: HudUiNetGameSetupOverlayOwner::Destructor
+// (D:\Proj\Battlesport\HudUi.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudUiNetGameSetupOverlayOwner::Destructor()
+{
+    vftable = (unsigned int)&g_HudUiNetGameSetupOverlayOwner_Vtbl;
+    HudUiNetGameSetupOverlayOwnerBaseVtableGuard baseVtableOnExit = {this};
+
+    HudUiNetGameSetupPanelOverlayVirtual *panel =
+        (HudUiNetGameSetupPanelOverlayVirtual *)m_panel;
+    if (panel != 0)
+    {
+        panel->SetEnabled(0);
+
+        panel = (HudUiNetGameSetupPanelOverlayVirtual *)m_panel;
+        if (panel != 0)
+        {
+            panel->ScalarDeletingDestructor(1);
+        }
+
+        m_panel = 0;
+    }
+}
+
+// Reimplements 0x41abc0: HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\HudUi.cpp)
+RECOIL_NOINLINE HudUiNetGameSetupOverlayOwner *RECOIL_THISCALL
+HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+    if ((flags & 1u) != 0)
+    {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+// Reimplements 0x41ac50: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent
+// (D:\Proj\Battlesport\HudUi.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL
+HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent()
+{
+    zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
+    HudUi::SetInvalidateMode(0);
+
+    const int pitchBytes = zVideo::GetPrimarySurfacePitch();
+    const int bitsPerPixel = zOpt::GetDisplaySectionBitsPerPixel();
+    zOpt_ViewRectSection *const activeRegionRect = zOpt::GetWindowSection();
+    zRndr::SetFrameBufferRegion(zVideo::GetPrimarySurfacePixels(), activeRegionRect,
+                                bitsPerPixel, pitchBytes);
+
+    zSndSampleSet_InitByName("DIALOG");
+
+    HudUiNetGameSetupPanel *panel =
+        (HudUiNetGameSetupPanel *)::operator new(sizeof(HudUiNetGameSetupPanel));
+    if (panel != 0)
+    {
+        panel = panel->Constructor(m_reconfigureExistingSession);
+    }
+
+    m_panel = (unsigned int)panel;
+    ((HudUiNetGameSetupPanelOverlayVirtual *)panel)->SetEnabled(1);
+
+    if (zSnd::GetCDAudioOption() != 0)
+    {
+        zSndCd::PlayTrackWithMode(2, 5);
+    }
+
+    return 1;
+}
+
+// Reimplements 0x41ad20: HudUiNetGameSetupOverlayOwner::OnDeactivate
+// (D:\Proj\Battlesport\HudUi.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+HudUiNetGameSetupOverlayOwner::OnDeactivate()
+{
+    Sleep(1000);
+    zSndSampleSet_DestroyByName("DIALOG");
+
+    HudUiNetGameSetupPanelOverlayVirtual *panel =
+        (HudUiNetGameSetupPanelOverlayVirtual *)m_panel;
+    if (panel == 0)
+    {
+        return;
+    }
+
+    zVideo::RunPostprocessOnPrimaryBuffer();
+
+    panel = (HudUiNetGameSetupPanelOverlayVirtual *)m_panel;
+    panel->SetEnabled(0);
+
+    ((HudUiDialogController *)m_panel)->BlitOwnedSurfaceToPrimary();
+    zVideo::Dispatch_UnlockPrimarySurfaceState();
+
+    panel = (HudUiNetGameSetupPanelOverlayVirtual *)m_panel;
+    if (panel != 0)
+    {
+        panel->ScalarDeletingDestructor(1);
+    }
+
+    m_panel = 0;
+}
+
+// Reimplements 0x41ad80: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag
+// (D:\Proj\GameZRecoil\zHud\HudUiNetGameSetup.cpp)
+void RECOIL_CDECL HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
+    int reconfigureExistingSession)
+{
+    g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession =
+        reconfigureExistingSession;
+    g_RecoilApp.QueuePushState((RecoilApp_IState *)&g_HudUiNetGameSetupOverlayOwner, 0);
 }
 
 // Reimplements 0x40fb70: HudUiMeter::Constructor
@@ -12514,6 +12952,49 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiTextLabel::MeasureTextWidth() {
     return widthPx;
 }
 
+// Reimplements 0x4bce30: HudUiTextLabel::OnDraw
+void RECOIL_THISCALL HudUiTextLabel::OnDraw() {
+    typedef void (RECOIL_THISCALL *DrawBaseFn)(HudUiTextLabel * self);
+
+    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(this);
+    ((DrawBaseFn)(ftable->slots[2]))(this);
+
+    if (textBuffer[0] == '\0') {
+        return;
+    }
+
+    if (alignMode != 0) {
+        int xOffset = MeasureTextWidth();
+        if (alignMode == 1) {
+            xOffset >>= 1;
+        }
+
+        base.x -= xOffset;
+        zImage_Font::BlitStringToActiveTarget(textBuffer, base.x, base.y, fontHandle);
+        base.x += xOffset;
+        return;
+    }
+
+    zImage_Font::BlitStringToActiveTarget(textBuffer, base.x, base.y, fontHandle);
+}
+
+// Reimplements 0x4bcea0: HudUiTextLabel::HitTest
+int RECOIL_THISCALL HudUiTextLabel::HitTest(int px, int py) {
+    if ((base.flags & 0x10u) != 0 || base.x > px || base.y > py) {
+        return 0;
+    }
+
+    int textWidth = 0;
+    int lineAdvance = 0;
+    zImage_Font::MeasureString(textBuffer, fontHandle, &textWidth, &lineAdvance);
+
+    if (px > base.x + textWidth) {
+        return 0;
+    }
+
+    return py <= base.y + lineAdvance ? 1 : 0;
+}
+
 // Reimplements 0x4bcdf0: HudUiTextLabel::UpdateTextExtents
 void RECOIL_THISCALL HudUiTextLabel::UpdateTextExtents() {
     const int widthPx = MeasureTextWidth();
@@ -12555,6 +13036,11 @@ HudUiPanel *RECOIL_THISCALL HudUiPanel::ConstructorDefault(const char *text, int
     FieldAt<int>(this, 0x260) = 0;
     FieldAt<int>(this, 0x25c) = 0;
     return this;
+}
+
+// Reimplements 0x4bd100: HudUiPanel::ConstructorDefaultThunk
+HudUiPanel *RECOIL_THISCALL HudUiPanel::ConstructorDefaultThunk() {
+    return ConstructorDefault(0, 0, 0);
 }
 
 // Reimplements 0x4ba850: HudUiPanel::CopyConstructCore
@@ -12696,7 +13182,7 @@ void RECOIL_THISCALL HudUiPanel::Draw() {
 
 // Reimplements 0x4ba400: HudUiPanel::GetWrapRect
 HudUiRect *RECOIL_THISCALL HudUiPanel::GetWrapRect() {
-    return &FieldAt<HudUiRect>(this, 0x27c);
+    return &wrapRect;
 }
 
 // Reimplements 0x4bb3d0: HudUiPanel::HitTest
@@ -13991,6 +14477,19 @@ HudUiChatMessageStack *RECOIL_THISCALL HudUiChatMessageStack::Constructor() {
 // Reimplements 0x40fef0: HudUiChatMessageStack::DestructorCore
 void RECOIL_THISCALL HudUiChatMessageStack::DestructorCore() {
     DestroyTextStackLines(this);
+}
+
+// Reimplements 0x40f040: HudUiTimerPanelFloat::Draw
+void RECOIL_THISCALL HudUiTimerPanelFloat::Draw() {
+    typedef void (RECOIL_FASTCALL *InvalidateFn)(void *self);
+    typedef void (RECOIL_CDECL *SetTextFmtFn)(void *self, const char *format, ...);
+
+    const HudUiTimerPanelFloat_FTable *const ftable =
+        *(const HudUiTimerPanelFloat_FTable *const *)(this);
+    ((InvalidateFn)(ftable->slots[0x20 / 4]))(this);
+    ((SetTextFmtFn)(ftable->slots[0x74 / 4]))(this, "%2.1f",
+                                               (double)(FieldAt<float>(this, 0x2a8)));
+    ((HudUiPanel *)(this))->Draw();
 }
 
 // Reimplements 0x40ef60: HudUiTimerPanelFloat::ConstructorDefault

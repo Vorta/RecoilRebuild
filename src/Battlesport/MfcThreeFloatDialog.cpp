@@ -1,20 +1,7 @@
 #include "Battlesport/Mfc42Abi.h"
 
-#include <windows.h>
-
-class CWnd {
-  public:
-    int UpdateData(BOOL saveAndValidate);
-    long Default();
-};
-
-class CDialog : public CWnd {
-  public:
-    virtual void OnOK();
-
-    unsigned char reserved004[0x5c];
-};
-
+// Authored Recoil dialog reconstructed over imported MFC42 CDialog; MFC base
+// behavior is not reimplemented here.
 class MfcThreeFloatDialog : public CDialog {
   public:
     void OnKillFocusValue0();
@@ -25,6 +12,7 @@ class MfcThreeFloatDialog : public CDialog {
     void OnDeltaposSpinValue2(NMHDR *notify, long *result);
     void OnDeltaposSpin2(NMHDR *notify, long *result);
     long OnMove(unsigned int packedPos);
+    void CallBaseOnOK();
 
     int unknown060;
     float value0;
@@ -52,7 +40,7 @@ void OnKillFocusValue(float *value, MfcThreeFloatDialog *dialog)
     const float oldValue = *value;
     dialog->UpdateData(TRUE);
     if (*value != oldValue) {
-        dialog->CDialog::OnOK();
+        dialog->CallBaseOnOK();
     }
 }
 
@@ -67,9 +55,14 @@ void OnDeltaposSpinValue(float *value, MfcThreeFloatDialog *dialog, NMHDR *notif
     }
 
     dialog->UpdateData(FALSE);
-    dialog->CDialog::OnOK();
+    dialog->CallBaseOnOK();
     *result = 0;
 }
+}
+
+void MfcThreeFloatDialog::CallBaseOnOK()
+{
+    CDialog::OnOK();
 }
 
 // Reimplements 0x406890: MfcThreeFloatDialog::OnKillFocusValue0

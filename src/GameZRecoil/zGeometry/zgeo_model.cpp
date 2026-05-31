@@ -1,6 +1,6 @@
 #include "zGeometry.h"
 
-#include "zUtil/zutil.h"
+#include "GameZRecoil/zUtil/zutil.h"
 
 #include "GameZRecoil/zDEClient/zdec.h"
 #include "GameZRecoil/zError/zError.h"
