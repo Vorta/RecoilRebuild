@@ -298,11 +298,11 @@ HudUiCommon_FTable MakeHudSensorTestFTable() {
 }
 
 bool CStringIsEmpty(const CString &value) {
-    return value.m_pchData != nullptr && value.m_pchData[0] == '\0';
+    return (const char *)value != nullptr && ((const char *)value)[0] == '\0';
 }
 
 bool CStringEquals(const CString &value, const char *text) {
-    return value.m_pchData != nullptr && std::strcmp(value.m_pchData, text) == 0;
+    return (const char *)value != nullptr && std::strcmp((const char *)value, text) == 0;
 }
 
 void ResetZClassRuntimeForZEffectTest() {

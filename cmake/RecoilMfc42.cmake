@@ -31,9 +31,16 @@ target_include_directories(recoil_mfc42_legacy INTERFACE
 )
 
 target_compile_definitions(recoil_mfc42_legacy INTERFACE
+    _AFX_NOFORCE_LIBS
     _AFXDLL
     _MBCS
 )
+
+if(MSVC)
+    target_compile_options(recoil_mfc42_legacy INTERFACE
+        "/FI${PROJECT_SOURCE_DIR}/src/Battlesport/Mfc42Abi.h"
+    )
+endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 4)
     target_link_libraries(recoil_mfc42_legacy INTERFACE

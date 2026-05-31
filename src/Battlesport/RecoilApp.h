@@ -206,6 +206,11 @@ RECOIL_STATIC_ASSERT(sizeof(RecoilApp_PlayState) == 0x18);
 struct RecoilApp_MpExitDialogState {
     RecoilApp_IState base;
     int m_stateData04;
+
+    RECOIL_NOINLINE void RECOIL_THISCALL OnEnter();
+    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
+    RECOIL_NOINLINE int RECOIL_THISCALL OnUpdateShouldQuit();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_MpExitDialogState) == 0x08);
 

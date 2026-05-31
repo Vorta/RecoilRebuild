@@ -1625,6 +1625,351 @@ extern "C" int zvideo_draw_noise_rect_smoke(void) {
     return lowIntensityOk && rowOneOk && rowTwoOk && untouchedOk ? 0 : 1;
 }
 
+extern "C" int zvideo_fx_surface_alpha_line_smoke(void) {
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
+    const int oldPitchBytes = zRndr::g_pitchBytes;
+    const int oldGreenBits = zRndr::g_pixelPackGreenBits;
+
+    unsigned short pixels[36] = {};
+    for (int i = 0; i < 36; ++i) {
+        pixels[i] = 0x001f;
+    }
+
+    g_zVideo_FxSurfacePixels16 = pixels;
+    g_zVideo_FxSurfaceWidth = 6;
+    g_zVideo_FxSurfaceHeight = 6;
+    g_zVideo_FxSurfacePitchBytes = 12;
+    g_zVideo_FxSurfacePitchPixels16 = 6;
+    zRndr::g_pitchBytes = 12;
+    zRndr::g_pixelPackGreenBits = 6;
+
+    zVidRect32 clip{0, 0, 5, 5};
+    zVideo_FxSurface::DrawAlphaBlendedLine(&clip, 4, 1, 1, 1, 0xf800, 1.0f, 1.0f, 1);
+    const bool horizontalOk = pixels[1 + 1 * 6] == 0xf800 && pixels[2 + 1 * 6] == 0xf800 &&
+                              pixels[3 + 1 * 6] == 0xf800 && pixels[4 + 1 * 6] == 0xf800;
+
+    for (int i = 0; i < 36; ++i) {
+        pixels[i] = 0x07e0;
+    }
+    zVideo_FxSurface::DrawAlphaBlendedLine(&clip, 4, 2, 1, 2, 0xf800, 0.0f, 0.0f, 1);
+    bool lowAlphaOk = true;
+    for (int x = 1; x <= 4; ++x) {
+        lowAlphaOk = lowAlphaOk && pixels[x + 2 * 6] == 0x07e0;
+    }
+
+    for (int i = 0; i < 36; ++i) {
+        pixels[i] = 0x0000;
+    }
+    zVideo_FxSurface::DrawAlphaBlendedLine(&clip, 3, 3, 1, 3, 0xf800, 0.5f, 0.5f, 1);
+    const unsigned short blended565 = pixels[1 + 3 * 6];
+    const bool blendOk = blended565 != 0x0000 && blended565 != 0xf800 &&
+                         pixels[2 + 3 * 6] == blended565 && pixels[3 + 3 * 6] == blended565;
+
+    for (int i = 0; i < 36; ++i) {
+        pixels[i] = 0xaaaa;
+    }
+    zVidRect32 clipped{1, 0, 5, 5};
+    zVideo_FxSurface::DrawAlphaBlendedLine(&clipped, 5, 2, 0, 2, 0xf800, 1.0f, 1.0f, 1);
+    const bool clipOk = pixels[1 + 2 * 6] == 0xaaaa && pixels[2 + 2 * 6] == 0xf800 &&
+                        pixels[3 + 2 * 6] == 0xf800 && pixels[4 + 2 * 6] == 0xf800 &&
+                        pixels[5 + 2 * 6] == 0xaaaa;
+
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
+    zRndr::g_pitchBytes = oldPitchBytes;
+    zRndr::g_pixelPackGreenBits = oldGreenBits;
+
+    return horizontalOk && lowAlphaOk && blendOk && clipOk ? 0 : 1;
+}
+
+extern "C" int zvideo_fx_surface_colored_lines_batch_smoke(void) {
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
+    const int oldPitchBytes = zRndr::g_pitchBytes;
+    const int oldGreenBits = zRndr::g_pixelPackGreenBits;
+
+    unsigned short pixels[25] = {};
+    for (int i = 0; i < 25; ++i) {
+        pixels[i] = 0x0000;
+    }
+
+    g_zVideo_FxSurfacePixels16 = pixels;
+    g_zVideo_FxSurfaceWidth = 5;
+    g_zVideo_FxSurfaceHeight = 5;
+    g_zVideo_FxSurfacePitchBytes = 10;
+    g_zVideo_FxSurfacePitchPixels16 = 5;
+    zRndr::g_pitchBytes = 10;
+    zRndr::g_pixelPackGreenBits = 6;
+
+    zVideoFxColoredLineRecord lines[2] = {};
+    lines[0].x = 1;
+    lines[0].y = 1;
+    lines[0].width = 2;
+    lines[0].height = 0;
+    lines[0].color16 = 0xf800;
+    lines[0].alphaEnd = 1.0f;
+    lines[0].alphaStart = 1.0f;
+    lines[0].clipInset = 1;
+    lines[1].x = 0;
+    lines[1].y = 3;
+    lines[1].width = 4;
+    lines[1].height = 0;
+    lines[1].color16 = 0x07e0;
+    lines[1].alphaEnd = 1.0f;
+    lines[1].alphaStart = 1.0f;
+    lines[1].clipInset = 1;
+
+    zVidRect32 clip{-2, -1, 5, 6};
+    zVideo_FxSurface::DrawColoredLinesBatch(lines, 2, &clip);
+    const bool firstLineOk = pixels[1 + 1 * 5] == 0xf800 &&
+                             pixels[2 + 1 * 5] == 0xf800 &&
+                             pixels[3 + 1 * 5] == 0xf800;
+    const bool secondLineClippedOk = pixels[0 + 3 * 5] == 0x0000 &&
+                                     pixels[1 + 3 * 5] == 0x07e0 &&
+                                     pixels[2 + 3 * 5] == 0x07e0 &&
+                                     pixels[3 + 3 * 5] == 0x07e0 &&
+                                     pixels[4 + 3 * 5] == 0x0000;
+
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
+    zRndr::g_pitchBytes = oldPitchBytes;
+    zRndr::g_pixelPackGreenBits = oldGreenBits;
+
+    return firstLineOk && secondLineClippedOk ? 0 : 1;
+}
+
+namespace {
+unsigned short BlurTestAverage(unsigned short before, unsigned short center,
+                               unsigned short after) {
+    const unsigned int rbMask = 0xf81f;
+    const unsigned int greenMask = 0x07e0;
+    const unsigned int rb =
+        (before & rbMask) + ((center & rbMask) << 1) + (after & rbMask);
+    const unsigned int green =
+        (before & greenMask) + ((center & greenMask) << 1) + (after & greenMask);
+    return static_cast<unsigned short>(((rb >> 2) & rbMask) |
+                                       ((green >> 2) & greenMask));
+}
+
+void SaveBlurGlobals(unsigned short **oldFxPixels, unsigned short **oldScratch,
+                     int *oldWidth, int *oldHeight, int *oldPitchBytes,
+                     int *oldPitchPixels) {
+    *oldFxPixels = g_zVideo_FxSurfacePixels16;
+    *oldScratch = g_zVideo_FxPass3_ScratchPixels16;
+    *oldWidth = g_zVideo_FxSurfaceWidth;
+    *oldHeight = g_zVideo_FxSurfaceHeight;
+    *oldPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    *oldPitchPixels = g_zVideo_FxSurfacePitchPixels16;
+}
+
+void RestoreBlurGlobals(unsigned short *oldFxPixels, unsigned short *oldScratch,
+                        int oldWidth, int oldHeight, int oldPitchBytes,
+                        int oldPitchPixels) {
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxPass3_ScratchPixels16 = oldScratch;
+    g_zVideo_FxSurfaceWidth = oldWidth;
+    g_zVideo_FxSurfaceHeight = oldHeight;
+    g_zVideo_FxSurfacePitchBytes = oldPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldPitchPixels;
+}
+
+void SetupBlurSurface(unsigned short *pixels, unsigned short *scratch, int width,
+                      int height) {
+    g_zVideo_FxSurfacePixels16 = pixels;
+    g_zVideo_FxPass3_ScratchPixels16 = scratch;
+    g_zVideo_FxSurfaceWidth = width;
+    g_zVideo_FxSurfaceHeight = height;
+    g_zVideo_FxSurfacePitchBytes = width * 2;
+    g_zVideo_FxSurfacePitchPixels16 = width;
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+}
+} // namespace
+
+extern "C" int zvideo_blur_region_horizontal_smoke(void) {
+    unsigned short *oldFxPixels;
+    unsigned short *oldScratch;
+    int oldWidth;
+    int oldHeight;
+    int oldPitchBytes;
+    int oldPitchPixels;
+    SaveBlurGlobals(&oldFxPixels, &oldScratch, &oldWidth, &oldHeight, &oldPitchBytes,
+                    &oldPitchPixels);
+
+    unsigned short pixels[20];
+    unsigned short original[20];
+    unsigned short scratch[20] = {};
+    for (int i = 0; i < 20; ++i) {
+        pixels[i] = static_cast<unsigned short>(i);
+        original[i] = pixels[i];
+    }
+
+    SetupBlurSurface(pixels, scratch, 5, 4);
+    zVidRect32 rect{1, 1, 4, 2};
+    zVideo::buff_BlurRegionHorizontal(&rect, 1);
+
+    bool ok = true;
+    for (int i = 0; i < 20; ++i) {
+        unsigned short expected = original[i];
+        const int x = i % 5;
+        const int y = i / 5;
+        if (y >= 1 && y <= 2 && x >= 1 && x < 4) {
+            expected = BlurTestAverage(original[i - 1], original[i], original[i + 1]);
+        }
+        ok = ok && pixels[i] == expected;
+    }
+
+    RestoreBlurGlobals(oldFxPixels, oldScratch, oldWidth, oldHeight, oldPitchBytes,
+                       oldPitchPixels);
+    return ok ? 0 : 1;
+}
+
+extern "C" int zvideo_blur_region_vertical_smoke(void) {
+    unsigned short *oldFxPixels;
+    unsigned short *oldScratch;
+    int oldWidth;
+    int oldHeight;
+    int oldPitchBytes;
+    int oldPitchPixels;
+    SaveBlurGlobals(&oldFxPixels, &oldScratch, &oldWidth, &oldHeight, &oldPitchBytes,
+                    &oldPitchPixels);
+
+    unsigned short pixels[25];
+    unsigned short original[25];
+    unsigned short scratch[25] = {};
+    for (int i = 0; i < 25; ++i) {
+        pixels[i] = static_cast<unsigned short>(i);
+        original[i] = pixels[i];
+    }
+
+    SetupBlurSurface(pixels, scratch, 5, 5);
+    zVidRect32 rect{0, 1, 4, 3};
+    zVideo::buff_BlurRegionVertical(&rect, 2);
+
+    bool ok = true;
+    for (int i = 0; i < 25; ++i) {
+        unsigned short expected = original[i];
+        const int y = i / 5;
+        if (y >= 1 && y < 3) {
+            expected = BlurTestAverage(original[i - 5], original[i], original[i + 5]);
+        }
+        ok = ok && pixels[i] == expected;
+    }
+
+    RestoreBlurGlobals(oldFxPixels, oldScratch, oldWidth, oldHeight, oldPitchBytes,
+                       oldPitchPixels);
+    return ok ? 0 : 1;
+}
+
+extern "C" int zvideo_blur_region_combined_smoke(void) {
+    unsigned short *oldFxPixels;
+    unsigned short *oldScratch;
+    int oldWidth;
+    int oldHeight;
+    int oldPitchBytes;
+    int oldPitchPixels;
+    SaveBlurGlobals(&oldFxPixels, &oldScratch, &oldWidth, &oldHeight, &oldPitchBytes,
+                    &oldPitchPixels);
+
+    unsigned short pixels[25];
+    unsigned short expectedScratch[25];
+    unsigned short expected[25];
+    unsigned short scratch[25] = {};
+    for (int i = 0; i < 25; ++i) {
+        pixels[i] = static_cast<unsigned short>((i * 3) & 0xffff);
+        expected[i] = pixels[i];
+        expectedScratch[i] = pixels[i];
+    }
+
+    SetupBlurSurface(pixels, scratch, 5, 5);
+    zVideo::buff_BlurRegionCombined(0, 3);
+
+    for (int y = 1; y < 4; ++y) {
+        for (int x = 0; x < 5; ++x) {
+            const int index = y * 5 + x;
+            expectedScratch[index] =
+                BlurTestAverage(expected[index - 5], expected[index], expected[index + 5]);
+        }
+    }
+    for (int i = 0; i < 25; ++i) {
+        expected[i] = expectedScratch[i];
+    }
+    for (int y = 0; y < 5; ++y) {
+        for (int x = 1; x < 4; ++x) {
+            const int index = y * 5 + x;
+            expected[index] = BlurTestAverage(expectedScratch[index - 1],
+                                              expectedScratch[index],
+                                              expectedScratch[index + 1]);
+        }
+    }
+
+    bool ok = true;
+    for (int i = 0; i < 25; ++i) {
+        ok = ok && pixels[i] == expected[i];
+    }
+
+    RestoreBlurGlobals(oldFxPixels, oldScratch, oldWidth, oldHeight, oldPitchBytes,
+                       oldPitchPixels);
+    return ok ? 0 : 1;
+}
+
+extern "C" int zvideo_blur_region_by_mode_smoke(void) {
+    unsigned short *oldFxPixels;
+    unsigned short *oldScratch;
+    int oldWidth;
+    int oldHeight;
+    int oldPitchBytes;
+    int oldPitchPixels;
+    SaveBlurGlobals(&oldFxPixels, &oldScratch, &oldWidth, &oldHeight, &oldPitchBytes,
+                    &oldPitchPixels);
+
+    unsigned short pixelsA[25];
+    unsigned short pixelsB[25];
+    unsigned short scratch[25] = {};
+    bool ok = true;
+    for (int mode = 1; mode <= 3; ++mode) {
+        for (int i = 0; i < 25; ++i) {
+            pixelsA[i] = static_cast<unsigned short>((i * 5 + mode) & 0xffff);
+            pixelsB[i] = pixelsA[i];
+            scratch[i] = 0;
+        }
+
+        SetupBlurSurface(pixelsA, scratch, 5, 5);
+        zVideo::buff_BlurRegionByMode(0, mode);
+        for (int i = 0; i < 25; ++i) {
+            scratch[i] = 0;
+        }
+        SetupBlurSurface(pixelsB, scratch, 5, 5);
+        if (mode == 1) {
+            zVideo::buff_BlurRegionHorizontal(0, mode);
+        } else if (mode == 2) {
+            zVideo::buff_BlurRegionVertical(0, mode);
+        } else {
+            zVideo::buff_BlurRegionCombined(0, mode);
+        }
+
+        for (int i = 0; i < 25; ++i) {
+            ok = ok && pixelsA[i] == pixelsB[i];
+        }
+    }
+
+    RestoreBlurGlobals(oldFxPixels, oldScratch, oldWidth, oldHeight, oldPitchBytes,
+                       oldPitchPixels);
+    return ok ? 0 : 1;
+}
+
 namespace {
 int g_clearSwCalls;
 int g_clearPrimaryCalls;

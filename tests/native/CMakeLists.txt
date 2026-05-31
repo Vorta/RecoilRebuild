@@ -77,6 +77,54 @@ add_test(
 )
 
 add_test(
+    NAME recoil_provider_boundary_guard
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_provider_boundary_guard.py
+        --root src
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME recoil_provider_boundary_guard_selftest
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_provider_boundary_guard.py
+        --self-test
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME recoil_source_placement_guard
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_source_placement_guard.py
+        --root src
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME recoil_source_placement_guard_selftest
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_source_placement_guard.py
+        --self-test
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME recoil_multiline_style_guard
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_multiline_style_guard.py
+        --root src
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME recoil_multiline_style_guard_selftest
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_multiline_style_guard.py
+        --self-test
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
     NAME recoil_vc6_manifest_source_policy
     COMMAND ${Python3_EXECUTABLE}
         ${PROJECT_SOURCE_DIR}/tools/recoil_vc6_manifest_source_guard.py

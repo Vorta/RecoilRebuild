@@ -1,6 +1,9 @@
 #include "Battlesport/GameNet.h"
 #include "Battlesport/Briefing.h"
+#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/HudUiMpExitDialog.h"
+#include "Battlesport/HudUiNetGameSetup.h"
 #include "Battlesport/HudUiNetExitPanel.h"
 #include "Battlesport/hud.h"
 #include "Battlesport/pickup.h"
@@ -11,6 +14,7 @@
 #include "GameZRecoil/include/zClipRect.h"
 #include "GameZRecoil/include/zDi.h"
 #include "GameZRecoil/zEffect/zEffect.h"
+#include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/include/zClipAlt.h"
 #include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zGame/zGame.h"
@@ -19,8 +23,10 @@
 #include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zSys/zSys.h"
 #include "GameZRecoil/zTurret/zTurret.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 #include "GameZRecoil/zUtil/zZbd.h"
@@ -31,6 +37,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <mmsystem.h>
 #include <new>
 
 extern "C" std::uint32_t g_HudUi_InvalidateMask;
@@ -50,8 +57,10 @@ extern "C" float g_HudLineClip_CurrentRight;
 extern "C" float g_HudLineClip_CurrentBottom;
 extern "C" zVec3 g_HudSensor_ClipSegmentStart;
 extern "C" zVec3 g_HudSensor_ClipSegmentEnd;
+extern "C" HWND g_RecoilApp_hWndMain;
 extern float g_zMath_ClipZLowerBound;
 extern float g_zMath_ClipZUpperBound;
+extern zFMV_Playback *g_HudUiSensorWindowPlayback;
 
 struct zTimedTask {
     zTimedTask *next;
@@ -138,6 +147,34 @@ int g_HudTestLine4Args[4][5] = {};
 int g_HudTestLine5Count = 0;
 void *g_HudTestLineFrameBuffer = nullptr;
 const void *g_HudTestLineClipRect = nullptr;
+
+int g_hudSensorMciSendCommandCount = 0;
+MCIDEVICEID g_hudSensorMciDevices[4] = {};
+UINT g_hudSensorMciMessages[4] = {};
+DWORD_PTR g_hudSensorMciFlags[4] = {};
+DWORD_PTR g_hudSensorMciParams[4] = {};
+zFMV_Playback *g_hudSensorExpectedClosePlayback = nullptr;
+int g_hudSensorCloseParamOk = 0;
+
+MCIERROR WINAPI FakeHudSensorMciSendCommandA(MCIDEVICEID deviceId, UINT message,
+                                             DWORD_PTR flags, DWORD_PTR params) {
+    const int index = g_hudSensorMciSendCommandCount;
+    if (index < 4) {
+        g_hudSensorMciDevices[index] = deviceId;
+        g_hudSensorMciMessages[index] = message;
+        g_hudSensorMciFlags[index] = flags;
+        g_hudSensorMciParams[index] = params;
+        if (message == 0x804 && params != 0) {
+            zFMV_Playback *const *const playbackParam =
+                reinterpret_cast<zFMV_Playback *const *>(params);
+            if (*playbackParam == g_hudSensorExpectedClosePlayback) {
+                g_hudSensorCloseParamOk = 1;
+            }
+        }
+    }
+    ++g_hudSensorMciSendCommandCount;
+    return 0;
+}
 int g_HudTestLineArgs[4][5] = {};
 int g_HudTestPointOpCount = 0;
 void *g_HudTestPointOpFrameBuffer = nullptr;
@@ -396,6 +433,49 @@ struct TestReticlePlayerState {
 std::uint32_t g_testNetExitDeleteFlags = 0;
 float g_testNetExitUpdateDelta = -1.0f;
 std::int32_t g_testNetExitSetEnabled = -1;
+std::int32_t g_testNetExitQueueSwitchCount = 0;
+RecoilApp_IState *g_testNetExitQueueSwitchState = nullptr;
+std::int32_t g_testNetExitQueueSwitchParam = -1;
+std::int32_t g_testNetExitDestructorStep = 0;
+HudUiZrdWidget *g_testNetExitDestroyedWidgets[2] = {};
+HudUiBackground *g_testNetExitDestroyedBackground = nullptr;
+std::int32_t g_testNetExitResumeStep = 0;
+HudUiNetExitPanel_ResumeWidget *g_testNetExitResumeHideThis = nullptr;
+HudUiNetExitPanel *g_testNetExitResumeSetEnabledThis = nullptr;
+std::int32_t g_testNetExitResumeSetEnabledValue = -1;
+std::int32_t g_testNetExitResumeTriggerStep = 0;
+HudUiZrdWidget *g_testNetExitResumeActivateThis = nullptr;
+std::int32_t g_testNetExitShowPreviewStep = 0;
+std::int32_t g_testNetExitPushCount = 0;
+zInput_BindMapContext *g_testNetExitPushArg = nullptr;
+std::int32_t g_testNetExitMouseBindingCount = 0;
+std::int32_t g_testNetExitMouseSlot = -1;
+std::int32_t g_testNetExitMouseCommand = -1;
+std::int32_t g_testNetExitReticleCount = 0;
+std::int32_t g_testNetExitReticleMode = -1;
+zVec3 *g_testNetExitReticleHitPoint = nullptr;
+float g_testNetExitReticleX = -1.0f;
+float g_testNetExitReticleY = -1.0f;
+std::int32_t g_testNetExitSetInputFocusCount = 0;
+HudUiBackgroundContainer *g_testNetExitSetInputFocusThis = nullptr;
+HudUiElement *g_testNetExitSetInputFocusElement = nullptr;
+std::int32_t g_testNetExitShowPreviewCount = 0;
+HudUiZrdWidget *g_testNetExitShowPreviewThis = nullptr;
+std::int32_t g_testNetExitHidePreviewStep = 0;
+std::int32_t g_testNetExitPopCount = 0;
+std::int32_t g_testNetExitHideReticleCount = 0;
+std::int32_t g_testNetExitHideReticleMode = -1;
+zVec3 *g_testNetExitHideReticleHitPoint = nullptr;
+float g_testNetExitHideReticleX = -1.0f;
+float g_testNetExitHideReticleY = -1.0f;
+std::int32_t g_testNetExitGetInputFocusCount = 0;
+HudUiBackgroundContainer *g_testNetExitGetInputFocusThis = nullptr;
+HudUiElement *g_testNetExitGetInputFocusResult = nullptr;
+std::int32_t g_testNetExitHideSetInputFocusCount = 0;
+HudUiBackgroundContainer *g_testNetExitHideSetInputFocusThis = nullptr;
+HudUiElement *g_testNetExitHideSetInputFocusElement = nullptr;
+std::int32_t g_testNetExitHidePreviewCount = 0;
+HudUiZrdWidget *g_testNetExitHidePreviewThis = nullptr;
 
 struct TestNetExitPanel : HudUiNetExitPanel {
     void RECOIL_THISCALL UpdateAll(float deltaSeconds) {
@@ -412,6 +492,174 @@ struct TestNetExitPanel : HudUiNetExitPanel {
         return this;
     }
 };
+
+struct TestNetExitPatchOps {
+    RecoilPtr32 RECOIL_THISCALL QueueSwitchCurrentState(RecoilApp_IState *state,
+                                                        std::int32_t stateParam) {
+        ++g_testNetExitQueueSwitchCount;
+        g_testNetExitQueueSwitchState = state;
+        g_testNetExitQueueSwitchParam = stateParam;
+        return 0;
+    }
+
+    void RECOIL_THISCALL ZrdWidgetDestructorCore() {
+        const int index = g_testNetExitDestructorStep;
+        if (index < 2) {
+            g_testNetExitDestroyedWidgets[index] =
+                reinterpret_cast<HudUiZrdWidget *>(this);
+        }
+        ++g_testNetExitDestructorStep;
+    }
+
+    void RECOIL_THISCALL BackgroundDestructor() {
+        g_testNetExitDestroyedBackground = reinterpret_cast<HudUiBackground *>(this);
+        ++g_testNetExitDestructorStep;
+    }
+
+    void RECOIL_THISCALL HidePreview() {
+        ++g_testNetExitResumeStep;
+        g_testNetExitResumeHideThis =
+            reinterpret_cast<HudUiNetExitPanel_ResumeWidget *>(this);
+    }
+
+    std::int32_t RECOIL_THISCALL NetExitSetEnabled(std::int32_t enabled) {
+        ++g_testNetExitResumeStep;
+        g_testNetExitResumeSetEnabledThis =
+            reinterpret_cast<HudUiNetExitPanel *>(this);
+        g_testNetExitResumeSetEnabledValue = enabled;
+        return 0;
+    }
+
+    void RECOIL_THISCALL ZrdWidgetOnActivate() {
+        ++g_testNetExitResumeStep;
+        g_testNetExitResumeActivateThis = reinterpret_cast<HudUiZrdWidget *>(this);
+    }
+
+    void RECOIL_THISCALL BackgroundContainerSetInputFocus(HudUiElement *element) {
+        ++g_testNetExitShowPreviewStep;
+        ++g_testNetExitSetInputFocusCount;
+        g_testNetExitSetInputFocusThis =
+            reinterpret_cast<HudUiBackgroundContainer *>(this);
+        g_testNetExitSetInputFocusElement = element;
+    }
+
+    void RECOIL_THISCALL ZrdWidgetShowPreview() {
+        ++g_testNetExitShowPreviewStep;
+        ++g_testNetExitShowPreviewCount;
+        g_testNetExitShowPreviewThis = reinterpret_cast<HudUiZrdWidget *>(this);
+    }
+
+    HudUiElement *RECOIL_THISCALL BackgroundContainerGetInputFocus() {
+        ++g_testNetExitHidePreviewStep;
+        ++g_testNetExitGetInputFocusCount;
+        g_testNetExitGetInputFocusThis =
+            reinterpret_cast<HudUiBackgroundContainer *>(this);
+        return g_testNetExitGetInputFocusResult;
+    }
+
+    void RECOIL_THISCALL BackgroundContainerSetInputFocusForHide(
+        HudUiElement *element) {
+        ++g_testNetExitHidePreviewStep;
+        ++g_testNetExitHideSetInputFocusCount;
+        g_testNetExitHideSetInputFocusThis =
+            reinterpret_cast<HudUiBackgroundContainer *>(this);
+        g_testNetExitHideSetInputFocusElement = element;
+    }
+
+    void RECOIL_THISCALL ZrdWidgetHidePreview() {
+        ++g_testNetExitHidePreviewStep;
+        ++g_testNetExitHidePreviewCount;
+        g_testNetExitHidePreviewThis = reinterpret_cast<HudUiZrdWidget *>(this);
+    }
+};
+
+void RECOIL_CDECL FakeNetExitTriggerCurrentLayoutOnActivated() {
+    ++g_testNetExitResumeStep;
+    g_testNetExitResumeTriggerStep = g_testNetExitResumeStep;
+}
+
+void RECOIL_FASTCALL FakeNetExitBindMapContextPush(zInput_BindMapContext *bindMapOrNull) {
+    ++g_testNetExitShowPreviewStep;
+    ++g_testNetExitPushCount;
+    g_testNetExitPushArg = bindMapOrNull;
+}
+
+void RECOIL_FASTCALL FakeNetExitSetMouseBinding(int mouseSlot, int commandId) {
+    ++g_testNetExitShowPreviewStep;
+    ++g_testNetExitMouseBindingCount;
+    g_testNetExitMouseSlot = mouseSlot;
+    g_testNetExitMouseCommand = commandId;
+}
+
+int RECOIL_FASTCALL FakeNetExitUpdateTargetReticleFromCursor(
+    int reticleMode,
+    zVec3 *worldHitPoint,
+    float normalizedX,
+    float normalizedY) {
+    ++g_testNetExitShowPreviewStep;
+    ++g_testNetExitReticleCount;
+    g_testNetExitReticleMode = reticleMode;
+    g_testNetExitReticleHitPoint = worldHitPoint;
+    g_testNetExitReticleX = normalizedX;
+    g_testNetExitReticleY = normalizedY;
+    return 0;
+}
+
+void ResetNetExitShowPreviewProbe() {
+    g_testNetExitShowPreviewStep = 0;
+    g_testNetExitPushCount = 0;
+    g_testNetExitPushArg = nullptr;
+    g_testNetExitMouseBindingCount = 0;
+    g_testNetExitMouseSlot = -1;
+    g_testNetExitMouseCommand = -1;
+    g_testNetExitReticleCount = 0;
+    g_testNetExitReticleMode = -1;
+    g_testNetExitReticleHitPoint = nullptr;
+    g_testNetExitReticleX = -1.0f;
+    g_testNetExitReticleY = -1.0f;
+    g_testNetExitSetInputFocusCount = 0;
+    g_testNetExitSetInputFocusThis = nullptr;
+    g_testNetExitSetInputFocusElement = nullptr;
+    g_testNetExitShowPreviewCount = 0;
+    g_testNetExitShowPreviewThis = nullptr;
+}
+
+void RECOIL_CDECL FakeNetExitBindMapContextPop() {
+    ++g_testNetExitHidePreviewStep;
+    ++g_testNetExitPopCount;
+}
+
+int RECOIL_FASTCALL FakeNetExitHideUpdateTargetReticleFromCursor(
+    int reticleMode,
+    zVec3 *worldHitPoint,
+    float normalizedX,
+    float normalizedY) {
+    ++g_testNetExitHidePreviewStep;
+    ++g_testNetExitHideReticleCount;
+    g_testNetExitHideReticleMode = reticleMode;
+    g_testNetExitHideReticleHitPoint = worldHitPoint;
+    g_testNetExitHideReticleX = normalizedX;
+    g_testNetExitHideReticleY = normalizedY;
+    return 0;
+}
+
+void ResetNetExitHidePreviewProbe(HudUiElement *getInputFocusResult) {
+    g_testNetExitHidePreviewStep = 0;
+    g_testNetExitPopCount = 0;
+    g_testNetExitHideReticleCount = 0;
+    g_testNetExitHideReticleMode = -1;
+    g_testNetExitHideReticleHitPoint = nullptr;
+    g_testNetExitHideReticleX = -1.0f;
+    g_testNetExitHideReticleY = -1.0f;
+    g_testNetExitGetInputFocusCount = 0;
+    g_testNetExitGetInputFocusThis = nullptr;
+    g_testNetExitGetInputFocusResult = getInputFocusResult;
+    g_testNetExitHideSetInputFocusCount = 0;
+    g_testNetExitHideSetInputFocusThis = nullptr;
+    g_testNetExitHideSetInputFocusElement = nullptr;
+    g_testNetExitHidePreviewCount = 0;
+    g_testNetExitHidePreviewThis = nullptr;
+}
 
 int g_auxTextFmtCount[23] = {};
 int g_auxVisibleCount[23] = {};
@@ -547,6 +795,12 @@ void RECOIL_FASTCALL TestLayoutOnActivated(HudLayoutBase *) {
 
 int g_elementDrawCount = 0;
 int g_elementBaseDrawCount = 0;
+int g_messagePanelDrawCount = 0;
+void *g_messagePanelDrawThis = nullptr;
+int g_barDrawSpanOpCount = 0;
+int g_barDrawLastContext = 0;
+int g_barDrawLastPixelCount = 0;
+std::uint16_t *g_barDrawLastDst = nullptr;
 
 void RECOIL_FASTCALL TestElementDraw(HudUiElement *) {
     ++g_elementDrawCount;
@@ -555,6 +809,20 @@ void RECOIL_FASTCALL TestElementDraw(HudUiElement *) {
 void RECOIL_FASTCALL TestElementBaseDraw(HudUiElement *) {
     ++g_elementBaseDrawCount;
 }
+
+void RECOIL_FASTCALL TestBarDrawSpanOp(int spanOpContext, int pixelCount) {
+    ++g_barDrawSpanOpCount;
+    g_barDrawLastContext = spanOpContext;
+    g_barDrawLastPixelCount = pixelCount;
+    g_barDrawLastDst = zRndr::g_spanCurrentDst16;
+}
+
+struct TestMessagePanelDrawDispatch {
+    void RECOIL_THISCALL Draw() {
+        ++g_messagePanelDrawCount;
+        g_messagePanelDrawThis = this;
+    }
+};
 
 int g_elementInvalidateCount = 0;
 
@@ -886,6 +1154,20 @@ struct TestBackgroundInputElement {
     }
 };
 
+int g_listSelectorOwnerSelectedCount = 0;
+void *g_listSelectorOwnerSelectedThis = nullptr;
+int g_listSelectorOwnerSelectedIndex = -1;
+
+struct TestListSelectorOwner {
+    unsigned int *ftable;
+
+    void RECOIL_THISCALL OnSelectedIndexChanged(int selectedIndex) {
+        ++g_listSelectorOwnerSelectedCount;
+        g_listSelectorOwnerSelectedThis = this;
+        g_listSelectorOwnerSelectedIndex = selectedIndex;
+    }
+};
+
 struct TestLayoutSetActiveElement {
     const HudLayoutBase_FTable *ftable;
     std::int32_t activeValue;
@@ -978,6 +1260,32 @@ struct TestBackgroundBindWidget {
 int g_compositeEntryDestructorCount = 0;
 void *g_compositeEntryDestructorThis[4] = {};
 std::uint32_t g_compositeEntryDestructorFlags[4] = {};
+int g_compositeEntryUpdateCount = 0;
+void *g_compositeEntryUpdateThis[4] = {};
+float g_compositeEntryUpdateDelta[4] = {};
+int g_compositeEntrySetTextFmtVCount = 0;
+void *g_compositeEntrySetTextFmtVThis = nullptr;
+const char *g_compositeEntrySetTextFmtVFormat = nullptr;
+int g_compositeEntrySetTextFmtVArg = 0;
+void *g_compositeEntrySetVisibleThis = nullptr;
+int g_compositeEntrySetVisibleValue = 0;
+int g_compositeWrapperSetTextFmtVCount = 0;
+void *g_compositeWrapperSetTextFmtVThis = nullptr;
+const char *g_compositeWrapperSetTextFmtVFormat = nullptr;
+int g_compositeWrapperSetTextFmtVArg = 0;
+void *g_compositeScrollHistoryThis = nullptr;
+int g_compositeEntrySetFontCount = 0;
+void *g_compositeEntrySetFontThis[4] = {};
+const char *g_compositeEntrySetFontFace = nullptr;
+int g_compositeEntrySetFontHeight = 0;
+int g_compositeEntrySetFontWeight = 0;
+int g_compositeEntrySetFontWidth = 0;
+int g_compositeEntrySetFontItalic = 0;
+int g_compositeEntrySetFontCharSet = 0;
+int g_compositeEntrySetFontPitch = 0;
+void *g_compositeSetPosThis = nullptr;
+int g_compositeSetPosX = 0;
+int g_compositeSetPosY = 0;
 
 struct TestCompositePanelEntry {
     const HudUiCommon_FTable *ftable;
@@ -991,6 +1299,73 @@ struct TestCompositePanelEntry {
 
         ++g_compositeEntryDestructorCount;
         return this;
+    }
+
+    void RECOIL_THISCALL Update(float deltaSeconds) {
+        const int index = g_compositeEntryUpdateCount;
+        if (index < 4) {
+            g_compositeEntryUpdateThis[index] = this;
+            g_compositeEntryUpdateDelta[index] = deltaSeconds;
+        }
+
+        ++g_compositeEntryUpdateCount;
+    }
+
+    void RECOIL_THISCALL SetTextFmtV(const char *format, va_list args) {
+        ++g_compositeEntrySetTextFmtVCount;
+        g_compositeEntrySetTextFmtVThis = this;
+        g_compositeEntrySetTextFmtVFormat = format;
+        g_compositeEntrySetTextFmtVArg = va_arg(args, int);
+    }
+
+    void RECOIL_THISCALL SetVisible(int visible) {
+        g_compositeEntrySetVisibleThis = this;
+        g_compositeEntrySetVisibleValue = visible;
+    }
+
+    void RECOIL_THISCALL SetFont(const char *faceName, int height, int weight,
+                                 int width, int italic, int charSet,
+                                 int pitchAndFamily) {
+        const int index = g_compositeEntrySetFontCount;
+        if (index < 4) {
+            g_compositeEntrySetFontThis[index] = this;
+        }
+
+        ++g_compositeEntrySetFontCount;
+        g_compositeEntrySetFontFace = faceName;
+        g_compositeEntrySetFontHeight = height;
+        g_compositeEntrySetFontWeight = weight;
+        g_compositeEntrySetFontWidth = width;
+        g_compositeEntrySetFontItalic = italic;
+        g_compositeEntrySetFontCharSet = charSet;
+        g_compositeEntrySetFontPitch = pitchAndFamily;
+    }
+};
+
+struct TestCompositePanelDispatch {
+    void RECOIL_THISCALL SetTextFmtV(const char *format, va_list args) {
+        ++g_compositeWrapperSetTextFmtVCount;
+        g_compositeWrapperSetTextFmtVThis = this;
+        g_compositeWrapperSetTextFmtVFormat = format;
+        g_compositeWrapperSetTextFmtVArg = va_arg(args, int);
+    }
+
+    void RECOIL_THISCALL ScrollHistory() {
+        g_compositeScrollHistoryThis = this;
+    }
+
+    int RECOIL_THISCALL GetX() {
+        return 123;
+    }
+
+    int RECOIL_THISCALL GetY() {
+        return 456;
+    }
+
+    void RECOIL_THISCALL SetPos(int x, int y) {
+        g_compositeSetPosThis = this;
+        g_compositeSetPosX = x;
+        g_compositeSetPosY = y;
     }
 };
 
@@ -1201,6 +1576,12 @@ int g_hudUiWidgetDrawBaseCount = 0;
 void *g_hudUiWidgetDrawBaseThis = nullptr;
 int g_hudUiPanelRebuildTextRectCount = 0;
 void *g_hudUiPanelRebuildTextRectThis = nullptr;
+int g_timerPanelFloatInvalidateCount = 0;
+void *g_timerPanelFloatInvalidateThis = nullptr;
+int g_timerPanelFloatSetTextFmtCount = 0;
+void *g_timerPanelFloatSetTextFmtThis = nullptr;
+const char *g_timerPanelFloatSetTextFmtFormat = nullptr;
+double g_timerPanelFloatSetTextFmtValue = 0.0;
 int g_transitionTextPanelSetVisibleCount = 0;
 void *g_transitionTextPanelSetVisibleThis = nullptr;
 int g_transitionTextPanelSetVisibleValue = 0;
@@ -1219,6 +1600,21 @@ struct TestHudUiPanelRebuildDispatch {
         TestFieldAt<std::uint32_t>(this, 0x270) = 0;
     }
 };
+
+void RECOIL_FASTCALL TestTimerPanelFloatInvalidate(void *self) {
+    ++g_timerPanelFloatInvalidateCount;
+    g_timerPanelFloatInvalidateThis = self;
+}
+
+void RECOIL_CDECL TestTimerPanelFloatSetTextFmt(void *self, const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+    ++g_timerPanelFloatSetTextFmtCount;
+    g_timerPanelFloatSetTextFmtThis = self;
+    g_timerPanelFloatSetTextFmtFormat = format;
+    g_timerPanelFloatSetTextFmtValue = va_arg(args, double);
+    va_end(args);
+}
 
 struct TestTransitionTextPanelVisibleDispatch {
     void RECOIL_THISCALL SetVisible(int visible) {
@@ -1259,6 +1655,9 @@ int g_widgetInvalidateRectGetCenterXCount = 0;
 int g_widgetInvalidateRectGetCenterYCount = 0;
 int g_widgetInvalidateRectInvalidateCount = 0;
 void *g_widgetInvalidateRectInvalidateThis = nullptr;
+int g_widgetHitTestGetBoundsCount = 0;
+void *g_widgetHitTestGetBoundsThis = nullptr;
+HudUiRect *g_widgetHitTestBounds = nullptr;
 
 struct TestWidgetInvalidateRectDispatch {
     int RECOIL_THISCALL GetCenterX() {
@@ -1274,6 +1673,14 @@ struct TestWidgetInvalidateRectDispatch {
     void RECOIL_THISCALL Invalidate() {
         ++g_widgetInvalidateRectInvalidateCount;
         g_widgetInvalidateRectInvalidateThis = this;
+    }
+};
+
+struct TestWidgetHitTestDispatch {
+    HudUiRect *RECOIL_THISCALL GetBoundsRectOrNull() {
+        ++g_widgetHitTestGetBoundsCount;
+        g_widgetHitTestGetBoundsThis = this;
+        return g_widgetHitTestBounds;
     }
 };
 
@@ -1352,6 +1759,316 @@ extern "C" int hud_ui_net_exit_show_tick_smoke(void) {
     g_HudUiNetExitPanel = nullptr;
 
     return g_testNetExitSetEnabled == 1 && g_testNetExitUpdateDelta == 0.25f ? 0 : 1;
+}
+
+extern "C" int hud_ui_net_exit_exit_button_on_activate_smoke(void) {
+    CodeFunctionPatch patch{};
+    const bool installed =
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&RecoilApp::QueueSwitchCurrentState)),
+                          reinterpret_cast<void *>(
+                              MethodAddress(&TestNetExitPatchOps::QueueSwitchCurrentState)),
+                          patch);
+
+    HudUiNetExitPanel_ExitButton button{};
+    g_testNetExitQueueSwitchCount = 0;
+    g_testNetExitQueueSwitchState = nullptr;
+    g_testNetExitQueueSwitchParam = -1;
+    if (installed) {
+        button.OnActivate();
+    }
+
+    RestoreFunctionPatch(patch);
+    return installed && g_testNetExitQueueSwitchCount == 1 &&
+                   g_testNetExitQueueSwitchState ==
+                       &g_RecoilApp.m_leaveNetworkState_1d0.base &&
+                   g_testNetExitQueueSwitchParam == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int hud_ui_net_exit_destructor_smoke(void) {
+    CodeFunctionPatch patches[2] = {};
+    const bool installed =
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::DestructorCore)),
+                          reinterpret_cast<void *>(
+                              MethodAddress(&TestNetExitPatchOps::ZrdWidgetDestructorCore)),
+                          patches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::Destructor)),
+                          reinterpret_cast<void *>(
+                              MethodAddress(&TestNetExitPatchOps::BackgroundDestructor)),
+                          patches[1]);
+
+    HudUiNetExitPanel panel{};
+    g_testNetExitDestructorStep = 0;
+    g_testNetExitDestroyedWidgets[0] = nullptr;
+    g_testNetExitDestroyedWidgets[1] = nullptr;
+    g_testNetExitDestroyedBackground = nullptr;
+    if (installed) {
+        panel.Destructor();
+    }
+
+    for (int index = 1; index >= 0; --index) {
+        RestoreFunctionPatch(patches[index]);
+    }
+
+    return installed && g_testNetExitDestructorStep == 3 &&
+                   g_testNetExitDestroyedWidgets[0] == &panel.exitWidget.base &&
+                   g_testNetExitDestroyedWidgets[1] == &panel.resumeWidget.base &&
+                   g_testNetExitDestroyedBackground == &panel.base
+               ? 0
+               : 1;
+}
+
+extern "C" int hud_ui_net_exit_resume_widget_on_activate_smoke(void) {
+    HudUiWidget_FTable resumeFtable{};
+    resumeFtable.slots[0x40 / 4] =
+        MethodAddress(&TestNetExitPatchOps::HidePreview);
+
+    HudUiNetExitPanel_FTable panelFtable{};
+    panelFtable.setEnabled =
+        reinterpret_cast<decltype(panelFtable.setEnabled)>(
+            MethodAddress(&TestNetExitPatchOps::NetExitSetEnabled));
+
+    HudUiNetExitPanel panel{};
+    panel.base.base.base.vptr =
+        reinterpret_cast<const HudUiContainer_FTable *>(&panelFtable);
+
+    HudUiNetExitPanel_ResumeWidget widget{};
+    widget.base.base.ftable = &resumeFtable;
+
+    CodeFunctionPatch patches[2] = {};
+    const bool installed =
+        PatchFunctionJump(reinterpret_cast<void *>(&HudUiMgr::TriggerCurrentLayoutOnActivated),
+                          reinterpret_cast<void *>(
+                              &FakeNetExitTriggerCurrentLayoutOnActivated),
+                          patches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::OnActivate)),
+                          reinterpret_cast<void *>(
+                              MethodAddress(&TestNetExitPatchOps::ZrdWidgetOnActivate)),
+                          patches[1]);
+
+    HudUiNetExitPanel *const oldPanel = g_HudUiNetExitPanel;
+    g_HudUiNetExitPanel = &panel;
+    g_testNetExitResumeStep = 0;
+    g_testNetExitResumeHideThis = nullptr;
+    g_testNetExitResumeSetEnabledThis = nullptr;
+    g_testNetExitResumeSetEnabledValue = -1;
+    g_testNetExitResumeTriggerStep = 0;
+    g_testNetExitResumeActivateThis = nullptr;
+    if (installed) {
+        widget.OnActivate();
+    }
+    g_HudUiNetExitPanel = oldPanel;
+
+    for (int index = 1; index >= 0; --index) {
+        RestoreFunctionPatch(patches[index]);
+    }
+
+    return installed && g_testNetExitResumeStep == 4 &&
+                   g_testNetExitResumeHideThis == &widget &&
+                   g_testNetExitResumeSetEnabledThis == &panel &&
+                   g_testNetExitResumeSetEnabledValue == 0 &&
+                   g_testNetExitResumeTriggerStep == 3 &&
+                   g_testNetExitResumeActivateThis == &widget.base
+               ? 0
+               : 1;
+}
+
+extern "C" int hud_ui_net_exit_resume_widget_on_show_preview_smoke(void) {
+    CodeFunctionPatch patches[5] = {};
+    const bool installed =
+        PatchFunctionJump(reinterpret_cast<void *>(&zInput::BindMapContext_Push),
+                          reinterpret_cast<void *>(&FakeNetExitBindMapContextPush),
+                          patches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zInput::BindMapCurrent_SetMouseBinding),
+                          reinterpret_cast<void *>(&FakeNetExitSetMouseBinding),
+                          patches[1]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&HudUiMgr::UpdateTargetReticleFromCursor),
+                          reinterpret_cast<void *>(&FakeNetExitUpdateTargetReticleFromCursor),
+                          patches[2]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(
+                              MethodAddress(&HudUiBackgroundContainer::SetInputFocus)),
+                          reinterpret_cast<void *>(MethodAddress(
+                              &TestNetExitPatchOps::BackgroundContainerSetInputFocus)),
+                          patches[3]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::ShowPreview)),
+                          reinterpret_cast<void *>(
+                              MethodAddress(&TestNetExitPatchOps::ZrdWidgetShowPreview)),
+                          patches[4]);
+
+    int joystickOption = 0;
+    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
+    ZOPT_INPUT_JOYSTICK = &joystickOption;
+
+    HudUiBackgroundContainer owner{};
+    HudUiElement savedFocus{};
+    HudUiNetExitPanel_ResumeWidget widget{};
+    widget.base.owner = &owner;
+    widget.previewInputCaptureActive = 0;
+    g_HudUiNetExitPanel_SavedInputFocus = &savedFocus;
+
+    ResetNetExitShowPreviewProbe();
+    if (installed) {
+        widget.OnShowPreview();
+    }
+    const bool firstActivationOk =
+        installed && widget.previewInputCaptureActive == 1 &&
+        g_testNetExitShowPreviewStep == 5 &&
+        g_testNetExitPushCount == 1 &&
+        g_testNetExitPushArg == nullptr &&
+        g_testNetExitMouseBindingCount == 1 &&
+        g_testNetExitMouseSlot == 1 &&
+        g_testNetExitMouseCommand == 0 &&
+        g_testNetExitReticleCount == 1 &&
+        g_testNetExitReticleMode == 0 &&
+        g_testNetExitReticleHitPoint == nullptr &&
+        g_testNetExitReticleX == 0.0f &&
+        g_testNetExitReticleY == 0.0f &&
+        g_testNetExitSetInputFocusCount == 1 &&
+        g_testNetExitSetInputFocusThis == &owner &&
+        g_testNetExitSetInputFocusElement == &savedFocus &&
+        g_testNetExitShowPreviewCount == 1 &&
+        g_testNetExitShowPreviewThis == &widget.base;
+
+    if (installed) {
+        widget.OnShowPreview();
+    }
+    const bool alreadyActiveOk =
+        firstActivationOk && widget.previewInputCaptureActive == 1 &&
+        g_testNetExitShowPreviewStep == 6 &&
+        g_testNetExitPushCount == 1 &&
+        g_testNetExitMouseBindingCount == 1 &&
+        g_testNetExitReticleCount == 1 &&
+        g_testNetExitSetInputFocusCount == 1 &&
+        g_testNetExitShowPreviewCount == 2 &&
+        g_testNetExitShowPreviewThis == &widget.base;
+
+    HudUiNetExitPanel_ResumeWidget joystickWidget{};
+    joystickWidget.base.owner = &owner;
+    joystickWidget.previewInputCaptureActive = 0;
+    joystickOption = 1;
+    ResetNetExitShowPreviewProbe();
+    if (installed) {
+        joystickWidget.OnShowPreview();
+    }
+    const bool joystickPathOk =
+        installed && joystickWidget.previewInputCaptureActive == 1 &&
+        g_testNetExitShowPreviewStep == 3 &&
+        g_testNetExitPushCount == 1 &&
+        g_testNetExitMouseBindingCount == 1 &&
+        g_testNetExitReticleCount == 0 &&
+        g_testNetExitSetInputFocusCount == 0 &&
+        g_testNetExitShowPreviewCount == 1 &&
+        g_testNetExitShowPreviewThis == &joystickWidget.base;
+
+    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_HudUiNetExitPanel_SavedInputFocus = nullptr;
+    for (int index = 4; index >= 0; --index) {
+        RestoreFunctionPatch(patches[index]);
+    }
+
+    return alreadyActiveOk && joystickPathOk ? 0 : 1;
+}
+
+extern "C" int hud_ui_net_exit_resume_widget_on_hide_preview_smoke(void) {
+    CodeFunctionPatch patches[5] = {};
+    const bool installed =
+        PatchFunctionJump(reinterpret_cast<void *>(&zInput::BindMapContext_Pop),
+                          reinterpret_cast<void *>(&FakeNetExitBindMapContextPop),
+                          patches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&HudUiMgr::UpdateTargetReticleFromCursor),
+                          reinterpret_cast<void *>(
+                              &FakeNetExitHideUpdateTargetReticleFromCursor),
+                          patches[1]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(
+                              MethodAddress(&HudUiBackgroundContainer::GetInputFocus)),
+                          reinterpret_cast<void *>(MethodAddress(
+                              &TestNetExitPatchOps::BackgroundContainerGetInputFocus)),
+                          patches[2]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(
+                              MethodAddress(&HudUiBackgroundContainer::SetInputFocus)),
+                          reinterpret_cast<void *>(MethodAddress(
+                              &TestNetExitPatchOps::BackgroundContainerSetInputFocusForHide)),
+                          patches[3]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::HidePreview)),
+                          reinterpret_cast<void *>(
+                              MethodAddress(&TestNetExitPatchOps::ZrdWidgetHidePreview)),
+                          patches[4]);
+
+    int joystickOption = 0;
+    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
+    ZOPT_INPUT_JOYSTICK = &joystickOption;
+
+    HudUiBackgroundContainer owner{};
+    HudUiElement currentFocus{};
+    HudUiElement staleSavedFocus{};
+    HudUiNetExitPanel_ResumeWidget widget{};
+    widget.base.owner = &owner;
+    widget.previewInputCaptureActive = 1;
+    g_HudUiNetExitPanel_SavedInputFocus = &staleSavedFocus;
+
+    ResetNetExitHidePreviewProbe(&currentFocus);
+    if (installed) {
+        widget.OnHidePreview();
+    }
+    const bool firstHideOk =
+        installed && widget.previewInputCaptureActive == 0 &&
+        g_testNetExitHidePreviewStep == 5 &&
+        g_testNetExitPopCount == 1 &&
+        g_testNetExitHideReticleCount == 1 &&
+        g_testNetExitHideReticleMode == 1 &&
+        g_testNetExitHideReticleHitPoint == nullptr &&
+        g_testNetExitHideReticleX == 0.0f &&
+        g_testNetExitHideReticleY == 0.0f &&
+        g_testNetExitGetInputFocusCount == 1 &&
+        g_testNetExitGetInputFocusThis == &owner &&
+        g_HudUiNetExitPanel_SavedInputFocus == &currentFocus &&
+        g_testNetExitHideSetInputFocusCount == 1 &&
+        g_testNetExitHideSetInputFocusThis == &owner &&
+        g_testNetExitHideSetInputFocusElement == nullptr &&
+        g_testNetExitHidePreviewCount == 1 &&
+        g_testNetExitHidePreviewThis == &widget.base;
+
+    if (installed) {
+        widget.OnHidePreview();
+    }
+    const bool alreadyInactiveOk =
+        firstHideOk && widget.previewInputCaptureActive == 0 &&
+        g_testNetExitHidePreviewStep == 6 &&
+        g_testNetExitPopCount == 1 &&
+        g_testNetExitHideReticleCount == 1 &&
+        g_testNetExitGetInputFocusCount == 1 &&
+        g_testNetExitHideSetInputFocusCount == 1 &&
+        g_testNetExitHidePreviewCount == 2 &&
+        g_testNetExitHidePreviewThis == &widget.base;
+
+    HudUiNetExitPanel_ResumeWidget joystickWidget{};
+    joystickWidget.base.owner = &owner;
+    joystickWidget.previewInputCaptureActive = 1;
+    joystickOption = 1;
+    g_HudUiNetExitPanel_SavedInputFocus = &staleSavedFocus;
+    ResetNetExitHidePreviewProbe(&currentFocus);
+    if (installed) {
+        joystickWidget.OnHidePreview();
+    }
+    const bool joystickPathOk =
+        installed && joystickWidget.previewInputCaptureActive == 0 &&
+        g_testNetExitHidePreviewStep == 2 &&
+        g_testNetExitPopCount == 1 &&
+        g_testNetExitHideReticleCount == 0 &&
+        g_testNetExitGetInputFocusCount == 0 &&
+        g_testNetExitHideSetInputFocusCount == 0 &&
+        g_HudUiNetExitPanel_SavedInputFocus == &staleSavedFocus &&
+        g_testNetExitHidePreviewCount == 1 &&
+        g_testNetExitHidePreviewThis == &joystickWidget.base;
+
+    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_HudUiNetExitPanel_SavedInputFocus = nullptr;
+    for (int index = 4; index >= 0; --index) {
+        RestoreFunctionPatch(patches[index]);
+    }
+
+    return alreadyInactiveOk && joystickPathOk ? 0 : 1;
 }
 
 extern "C" int hud_ui_net_exit_constructor_smoke(void) {
@@ -1461,6 +2178,2947 @@ extern "C" int hud_ui_net_exit_create_global_smoke(void) {
     return created ? 0 : 1;
 }
 
+namespace {
+int g_mpExitLocalPlayerFirst;
+int g_mpExitCaptureSelector;
+zVidImagePartial *g_mpExitCaptureImage;
+void *g_mpExitFxPixels;
+int g_mpExitFxWidth;
+int g_mpExitFxHeight;
+int g_mpExitFxPitch;
+int g_mpExitBlurCount;
+int g_mpExitBlurModes[4];
+zVidRect32 *g_mpExitBlurRects[4];
+float g_mpExitScale;
+const char *g_mpExitLoadPath;
+const char *g_mpExitLoadSection;
+int g_mpExitLoadCapture;
+zReader::Node *g_mpExitLoadResult;
+int g_mpExitBindCount;
+const char *g_mpExitBindNames[4];
+HudUiWidget *g_mpExitBindWidgets[4];
+int g_mpExitFreeCount;
+int g_mpExitFreeArg;
+int g_mpExitChildFlags;
+int g_mpExitRefreshCount;
+HudUiZrdWidget *g_mpExitRefreshThis;
+int g_mpExitEnableTopCount;
+int g_mpExitPrimaryWidth;
+int g_mpExitTextStackX;
+HudUiTextStack4 *g_mpExitTextStackThis;
+int g_mpExitNetworkModem;
+unsigned int g_mpExitLocIds[4];
+int g_mpExitLocCount;
+char g_mpExitMessages[4][16];
+const char *g_mpExitShownMessages[4];
+float g_mpExitShownDurations[4];
+int g_mpExitShowCount;
+int g_mpExitBackgroundEnabled;
+HudUiBackground *g_mpExitBackgroundThis;
+
+void ResetMpExitLayoutProbe() {
+    g_mpExitCaptureSelector = -1;
+    g_mpExitFxPixels = nullptr;
+    g_mpExitFxWidth = -1;
+    g_mpExitFxHeight = -1;
+    g_mpExitFxPitch = -1;
+    g_mpExitBlurCount = 0;
+    for (int i = 0; i < 4; ++i) {
+        g_mpExitBlurModes[i] = -1;
+        g_mpExitBlurRects[i] = reinterpret_cast<zVidRect32 *>(1);
+        g_mpExitBindNames[i] = nullptr;
+        g_mpExitBindWidgets[i] = nullptr;
+        g_mpExitLocIds[i] = 0;
+        g_mpExitShownMessages[i] = nullptr;
+        g_mpExitShownDurations[i] = -1.0f;
+        std::sprintf(g_mpExitMessages[i], "msg%d", i);
+    }
+    g_mpExitScale = -1.0f;
+    g_mpExitLoadPath = nullptr;
+    g_mpExitLoadSection = nullptr;
+    g_mpExitLoadCapture = -1;
+    g_mpExitBindCount = 0;
+    g_mpExitFreeCount = 0;
+    g_mpExitFreeArg = 0;
+    g_mpExitChildFlags = -1;
+    g_mpExitRefreshCount = 0;
+    g_mpExitRefreshThis = nullptr;
+    g_mpExitEnableTopCount = 0;
+    g_mpExitTextStackX = -1;
+    g_mpExitTextStackThis = nullptr;
+    g_mpExitLocCount = 0;
+    g_mpExitShowCount = 0;
+    g_mpExitBackgroundEnabled = -1;
+    g_mpExitBackgroundThis = nullptr;
+}
+
+int RECOIL_CDECL FakeMpExitIsLocalPlayerFirstInStatsList() {
+    return g_mpExitLocalPlayerFirst;
+}
+
+zVidImagePartial *RECOIL_FASTCALL FakeMpExitCaptureSurfaceToImage(int selector) {
+    g_mpExitCaptureSelector = selector;
+    return g_mpExitCaptureImage;
+}
+
+void RECOIL_FASTCALL FakeMpExitFxSetSurfaceState(void *pixels, int width, int height,
+                                                int pitchBytes) {
+    g_mpExitFxPixels = pixels;
+    g_mpExitFxWidth = width;
+    g_mpExitFxHeight = height;
+    g_mpExitFxPitch = pitchBytes;
+}
+
+void RECOIL_FASTCALL FakeMpExitBlurRegionByMode(zVidRect32 *rectOrNull, int mode) {
+    const int index = g_mpExitBlurCount;
+    if (index < 4) {
+        g_mpExitBlurRects[index] = rectOrNull;
+        g_mpExitBlurModes[index] = mode;
+    }
+    ++g_mpExitBlurCount;
+}
+
+void RECOIL_STDCALL FakeMpExitSetScaleAndRebuild(float scale) {
+    g_mpExitScale = scale;
+}
+
+void RECOIL_CDECL FakeMpExitEnableTopAndChatStacks() {
+    ++g_mpExitEnableTopCount;
+}
+
+int RECOIL_CDECL FakeMpExitGetPrimarySurfaceWidth() {
+    return g_mpExitPrimaryWidth;
+}
+
+int RECOIL_CDECL FakeMpExitGetNetworkModemEnabled() {
+    return g_mpExitNetworkModem;
+}
+
+char *RECOIL_FASTCALL FakeMpExitGetMessageString(unsigned int messageId) {
+    const int index = g_mpExitLocCount;
+    if (index < 4) {
+        g_mpExitLocIds[index] = messageId;
+    }
+    ++g_mpExitLocCount;
+    return index < 4 ? g_mpExitMessages[index] : g_mpExitMessages[3];
+}
+
+void RECOIL_FASTCALL FakeMpExitShowTopMessageLine(const char *message, float duration) {
+    const int index = g_mpExitShowCount;
+    if (index < 4) {
+        g_mpExitShownMessages[index] = message;
+        g_mpExitShownDurations[index] = duration;
+    }
+    ++g_mpExitShowCount;
+}
+
+struct MpExitDialogPatchOps {
+    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *path, const char *section,
+                                               int capturePrimary) {
+        g_mpExitLoadPath = path;
+        g_mpExitLoadSection = section;
+        g_mpExitLoadCapture = capturePrimary;
+        return g_mpExitLoadResult;
+    }
+
+    int RECOIL_THISCALL BindWidgetByName(zReader::Node *, HudUiWidget *widget,
+                                         const char *name) {
+        const int index = g_mpExitBindCount;
+        if (index < 4) {
+            g_mpExitBindNames[index] = name;
+            g_mpExitBindWidgets[index] = widget;
+        }
+        ++g_mpExitBindCount;
+        return 1;
+    }
+
+    void RECOIL_THISCALL FreeLoadedTreeRoots(int rootArg) {
+        ++g_mpExitFreeCount;
+        g_mpExitFreeArg = rootArg;
+    }
+
+    void RECOIL_THISCALL SetChildFlags(unsigned int flags) {
+        g_mpExitChildFlags = (int)flags;
+    }
+
+    void RECOIL_THISCALL RefreshState() {
+        ++g_mpExitRefreshCount;
+        g_mpExitRefreshThis = (HudUiZrdWidget *)this;
+    }
+
+    void RECOIL_THISCALL SetXAll(int x) {
+        g_mpExitTextStackX = x;
+        g_mpExitTextStackThis = (HudUiTextStack4 *)this;
+    }
+
+    void RECOIL_THISCALL SetEnabled(int enabled) {
+        g_mpExitBackgroundEnabled = enabled;
+        g_mpExitBackgroundThis = (HudUiBackground *)this;
+    }
+};
+} // namespace
+
+extern "C" int hud_ui_mp_exit_dialog_load_layout_smoke(void) {
+    CodeFunctionPatch patches[15] = {};
+    int patchCount = 0;
+    bool installed = true;
+
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&HudUiMgr::IsLocalPlayerFirstInStatsList),
+                                  reinterpret_cast<void *>(&FakeMpExitIsLocalPlayerFirstInStatsList),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zVideo_buff_CaptureSurfaceToImage),
+                                  reinterpret_cast<void *>(&FakeMpExitCaptureSurfaceToImage),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Fx_SetSurfaceState),
+                                  reinterpret_cast<void *>(&FakeMpExitFxSetSurfaceState),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zVideo::buff_BlurRegionByMode),
+                                  reinterpret_cast<void *>(&FakeMpExitBlurRegionByMode),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&HudScoreboard::SetScaleAndRebuild),
+                                  reinterpret_cast<void *>(&FakeMpExitSetScaleAndRebuild),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::LoadFromZrd)),
+                                  reinterpret_cast<void *>(MethodAddress(&MpExitDialogPatchOps::LoadFromZrd)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::BindWidgetByName)),
+                                  reinterpret_cast<void *>(MethodAddress(&MpExitDialogPatchOps::BindWidgetByName)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::FreeLoadedTreeRoots)),
+                                  reinterpret_cast<void *>(MethodAddress(&MpExitDialogPatchOps::FreeLoadedTreeRoots)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiContainer::SetChildFlags)),
+                                  reinterpret_cast<void *>(MethodAddress(&MpExitDialogPatchOps::SetChildFlags)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::RefreshState)),
+                                  reinterpret_cast<void *>(MethodAddress(&MpExitDialogPatchOps::RefreshState)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&HudUiMgr::EnableTopAndChatStacks),
+                                  reinterpret_cast<void *>(&FakeMpExitEnableTopAndChatStacks),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zVideo::GetPrimarySurfaceWidth),
+                                  reinterpret_cast<void *>(&FakeMpExitGetPrimarySurfaceWidth),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiTextStack4::SetXAll)),
+                                  reinterpret_cast<void *>(MethodAddress(&MpExitDialogPatchOps::SetXAll)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zOpt::GetNetworkModemEnabled),
+                                  reinterpret_cast<void *>(&FakeMpExitGetNetworkModemEnabled),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zLoc::GetMessageString),
+                                  reinterpret_cast<void *>(&FakeMpExitGetMessageString),
+                                  patches[patchCount++]);
+
+    CodeFunctionPatch showPatch = {};
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&HudUi::ShowTopMessageLine),
+                                  reinterpret_cast<void *>(&FakeMpExitShowTopMessageLine),
+                                  showPatch);
+
+    CodeFunctionPatch enabledPatch = {};
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::SetEnabled)),
+                                  reinterpret_cast<void *>(MethodAddress(&MpExitDialogPatchOps::SetEnabled)),
+                                  enabledPatch);
+
+    zVidImagePartial image{};
+    unsigned short pixels[12] = {};
+    image.width = 4;
+    image.height = 3;
+    image.pixels = pixels;
+    g_mpExitCaptureImage = &image;
+
+    char fakeNodeStorage = 0;
+    g_mpExitLoadResult = reinterpret_cast<zReader::Node *>(&fakeNodeStorage);
+
+    HudUiTextStack4 savedTopStack{};
+    HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
+    g_HudUiTopMessageStack = &savedTopStack;
+
+    HudUiMpExitDialog newGameDialog{};
+    ResetMpExitLayoutProbe();
+    g_mpExitLocalPlayerFirst = 1;
+    g_mpExitNetworkModem = 1;
+    g_mpExitPrimaryWidth = 640;
+    if (installed) {
+        newGameDialog.LoadLayout();
+    }
+
+    const bool newGamePath =
+        installed && newGameDialog.m_mpNewGameButtonMode == 1 &&
+        newGameDialog.m_capturedBackgroundImage == &image &&
+        newGameDialog.m_fadeElapsedSeconds == 0.0f &&
+        g_mpExitCaptureSelector == 1 && g_mpExitFxPixels == pixels && g_mpExitFxWidth == 4 &&
+        g_mpExitFxHeight == 3 && g_mpExitFxPitch == 8 && g_mpExitBlurCount == 3 &&
+        g_mpExitBlurRects[0] == nullptr && g_mpExitBlurModes[0] == 3 &&
+        g_mpExitBlurRects[1] == nullptr && g_mpExitBlurModes[1] == 3 &&
+        g_mpExitBlurRects[2] == nullptr && g_mpExitBlurModes[2] == 3 &&
+        g_mpExitScale == 0.0f && std::strcmp(g_mpExitLoadPath, "dialog.zrd") == 0 &&
+        std::strcmp(g_mpExitLoadSection, "MPEXIT") == 0 && g_mpExitLoadCapture == 1 &&
+        g_mpExitBindCount == 2 && std::strcmp(g_mpExitBindNames[0], "MPNEWGAME") == 0 &&
+        g_mpExitBindWidgets[0] == &newGameDialog.m_mpNewGameButton.base &&
+        std::strcmp(g_mpExitBindNames[1], "MPEXITBTN") == 0 &&
+        g_mpExitBindWidgets[1] == &newGameDialog.m_mpExitButton.base &&
+        g_mpExitFreeCount == 1 && g_mpExitChildFlags == 0 &&
+        newGameDialog.m_mpNewGameButton.modeOrEnabled == 1 &&
+        g_mpExitRefreshCount == 1 && g_mpExitRefreshThis == &newGameDialog.m_mpNewGameButton &&
+        g_mpExitEnableTopCount == 0 && g_mpExitShowCount == 0 &&
+        g_mpExitBackgroundEnabled == 1 && g_mpExitBackgroundThis == &newGameDialog.base;
+
+    HudUiMpExitDialog messageDialog{};
+    ResetMpExitLayoutProbe();
+    g_mpExitLocalPlayerFirst = -1;
+    g_mpExitNetworkModem = 0;
+    g_mpExitPrimaryWidth = 641;
+    if (installed) {
+        messageDialog.LoadLayout();
+    }
+
+    const bool messagePath =
+        installed && messageDialog.m_mpNewGameButtonMode == -1 &&
+        messageDialog.m_capturedBackgroundImage == &image &&
+        g_mpExitBindCount == 1 && std::strcmp(g_mpExitBindNames[0], "MPEXITBTN") == 0 &&
+        g_mpExitBindWidgets[0] == &messageDialog.m_mpExitButton.base &&
+        g_mpExitRefreshCount == 0 && g_mpExitEnableTopCount == 1 &&
+        g_mpExitTextStackThis == &savedTopStack && g_mpExitTextStackX == 320 &&
+        g_mpExitLocCount == 2 && g_mpExitLocIds[0] == 0x39 && g_mpExitLocIds[1] == 0x40 &&
+        g_mpExitShowCount == 2 && g_mpExitShownMessages[0] == g_mpExitMessages[0] &&
+        g_mpExitShownMessages[1] == g_mpExitMessages[1] &&
+        g_mpExitShownDurations[0] == 300.0f && g_mpExitShownDurations[1] == 300.0f &&
+        g_mpExitBackgroundEnabled == 1 && g_mpExitBackgroundThis == &messageDialog.base;
+
+    RestoreFunctionPatch(enabledPatch);
+    RestoreFunctionPatch(showPatch);
+    while (patchCount > 0) {
+        --patchCount;
+        RestoreFunctionPatch(patches[patchCount]);
+    }
+    g_HudUiTopMessageStack = oldTopStack;
+
+    return newGamePath && messagePath ? 0 : 1;
+}
+
+namespace {
+RecoilApp_IState *g_netGameSetupQueuedState;
+int g_netGameSetupQueuedParam;
+int g_netGameSetupQueueCallCount;
+int g_netGameSetupOverlaySetEnabledCalls;
+int g_netGameSetupOverlaySetEnabledValue;
+int g_netGameSetupOverlayScalarCalls;
+unsigned int g_netGameSetupOverlayScalarFlags;
+int g_netGameSetupTryHalfResCalls;
+int g_netGameSetupTryHalfResMode;
+int g_netGameSetupTryInvalidateCalls;
+int g_netGameSetupTryInvalidateMode;
+int g_netGameSetupTryPitchCalls;
+int g_netGameSetupTryBppCalls;
+int g_netGameSetupTryWindowCalls;
+int g_netGameSetupTryPixelsCalls;
+void *g_netGameSetupTryPixels;
+zOpt_ViewRectSection *g_netGameSetupTryWindow;
+void *g_netGameSetupTryFramePixels;
+zOpt_ViewRectSection *g_netGameSetupTryFrameRect;
+int g_netGameSetupTryFrameBpp;
+int g_netGameSetupTryFramePitch;
+int g_netGameSetupTrySampleCalls;
+const char *g_netGameSetupTrySampleName;
+int g_netGameSetupTryConstructorCalls;
+HudUiNetGameSetupPanel *g_netGameSetupTryConstructorThis;
+int g_netGameSetupTryConstructorReconfigure;
+HudUiContainer_FTable g_netGameSetupTryPanelFTable;
+int g_netGameSetupTryPanelSetEnabledCalls;
+int g_netGameSetupTryPanelSetEnabledValue;
+int g_netGameSetupTryCdAudioOption;
+int g_netGameSetupTryCdOptionCalls;
+int g_netGameSetupTryCdPlayCalls;
+int g_netGameSetupTryCdTrack;
+int g_netGameSetupTryCdMode;
+DWORD g_netGameSetupDeactivateSleepMs;
+int g_netGameSetupDeactivateSampleCalls;
+const char *g_netGameSetupDeactivateSampleName;
+int g_netGameSetupDeactivatePostprocessCalls;
+HudUiDialogController *g_netGameSetupDeactivateBlitThis;
+int g_netGameSetupDeactivateBlitCalls;
+int g_netGameSetupDeactivateUnlockCalls;
+
+struct NetGameSetupQueuePatchOps {
+    RecoilPtr32 RECOIL_THISCALL QueuePushState(RecoilApp_IState *state, int suspendParam) {
+        ++g_netGameSetupQueueCallCount;
+        g_netGameSetupQueuedState = state;
+        g_netGameSetupQueuedParam = suspendParam;
+        return 0x12345678;
+    }
+};
+
+struct TestNetGameSetupOverlayPanel {
+    virtual void RECOIL_THISCALL Update(float) {}
+
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+        ++g_netGameSetupOverlaySetEnabledCalls;
+        g_netGameSetupOverlaySetEnabledValue = enabled;
+    }
+
+    virtual TestNetGameSetupOverlayPanel *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags) {
+        ++g_netGameSetupOverlayScalarCalls;
+        g_netGameSetupOverlayScalarFlags = flags;
+        return this;
+    }
+};
+
+void ResetNetGameSetupOverlayOwnerProbe() {
+    g_netGameSetupOverlaySetEnabledCalls = 0;
+    g_netGameSetupOverlaySetEnabledValue = -1;
+    g_netGameSetupOverlayScalarCalls = 0;
+    g_netGameSetupOverlayScalarFlags = 0;
+}
+
+void ResetNetGameSetupTryProbe() {
+    g_netGameSetupTryHalfResCalls = 0;
+    g_netGameSetupTryHalfResMode = -1;
+    g_netGameSetupTryInvalidateCalls = 0;
+    g_netGameSetupTryInvalidateMode = -1;
+    g_netGameSetupTryPitchCalls = 0;
+    g_netGameSetupTryBppCalls = 0;
+    g_netGameSetupTryWindowCalls = 0;
+    g_netGameSetupTryPixelsCalls = 0;
+    g_netGameSetupTryPixels = reinterpret_cast<void *>(0x12345678);
+    g_netGameSetupTryWindow = reinterpret_cast<zOpt_ViewRectSection *>(0x87654321);
+    g_netGameSetupTryFramePixels = nullptr;
+    g_netGameSetupTryFrameRect = nullptr;
+    g_netGameSetupTryFrameBpp = 0;
+    g_netGameSetupTryFramePitch = 0;
+    g_netGameSetupTrySampleCalls = 0;
+    g_netGameSetupTrySampleName = nullptr;
+    g_netGameSetupTryConstructorCalls = 0;
+    g_netGameSetupTryConstructorThis = nullptr;
+    g_netGameSetupTryConstructorReconfigure = -1;
+    g_netGameSetupTryPanelSetEnabledCalls = 0;
+    g_netGameSetupTryPanelSetEnabledValue = -1;
+    g_netGameSetupTryCdAudioOption = 1;
+    g_netGameSetupTryCdOptionCalls = 0;
+    g_netGameSetupTryCdPlayCalls = 0;
+    g_netGameSetupTryCdTrack = 0;
+    g_netGameSetupTryCdMode = 0;
+}
+
+void ResetNetGameSetupDeactivateProbe() {
+    g_netGameSetupDeactivateSleepMs = 0;
+    g_netGameSetupDeactivateSampleCalls = 0;
+    g_netGameSetupDeactivateSampleName = nullptr;
+    g_netGameSetupDeactivatePostprocessCalls = 0;
+    g_netGameSetupDeactivateBlitThis = nullptr;
+    g_netGameSetupDeactivateBlitCalls = 0;
+    g_netGameSetupDeactivateUnlockCalls = 0;
+}
+
+struct NetGameSetupTryPatchOps {
+    static int RECOIL_FASTCALL SetHalfResAdjustMode(int mode) {
+        ++g_netGameSetupTryHalfResCalls;
+        g_netGameSetupTryHalfResMode = mode;
+        return 3;
+    }
+
+    static void RECOIL_FASTCALL SetInvalidateMode(int mode) {
+        ++g_netGameSetupTryInvalidateCalls;
+        g_netGameSetupTryInvalidateMode = mode;
+    }
+
+    static int RECOIL_CDECL GetPrimarySurfacePitch() {
+        ++g_netGameSetupTryPitchCalls;
+        return 3200;
+    }
+
+    static int RECOIL_CDECL GetDisplaySectionBitsPerPixel() {
+        ++g_netGameSetupTryBppCalls;
+        return 16;
+    }
+
+    static zOpt_ViewRectSection *RECOIL_CDECL GetWindowSection() {
+        ++g_netGameSetupTryWindowCalls;
+        return g_netGameSetupTryWindow;
+    }
+
+    static void *RECOIL_CDECL GetPrimarySurfacePixels() {
+        ++g_netGameSetupTryPixelsCalls;
+        return g_netGameSetupTryPixels;
+    }
+
+    static void RECOIL_FASTCALL SetFrameBufferRegion(void *pixels,
+                                                     zOpt_ViewRectSection *region,
+                                                     int bitsPerPixel, int pitchBytes) {
+        g_netGameSetupTryFramePixels = pixels;
+        g_netGameSetupTryFrameRect = region;
+        g_netGameSetupTryFrameBpp = bitsPerPixel;
+        g_netGameSetupTryFramePitch = pitchBytes;
+    }
+
+    static int RECOIL_FASTCALL InitSampleSetByName(const char *setName) {
+        ++g_netGameSetupTrySampleCalls;
+        g_netGameSetupTrySampleName = setName;
+        return 1;
+    }
+
+    HudUiNetGameSetupPanel *RECOIL_THISCALL PanelConstructor(int reconfigure) {
+        ++g_netGameSetupTryConstructorCalls;
+        g_netGameSetupTryConstructorThis = (HudUiNetGameSetupPanel *)this;
+        g_netGameSetupTryConstructorReconfigure = reconfigure;
+        ((HudUiNetGameSetupPanel *)this)->base.base.vptr = &g_netGameSetupTryPanelFTable;
+        return (HudUiNetGameSetupPanel *)this;
+    }
+
+    void RECOIL_THISCALL PanelSetEnabled(int enabled) {
+        ++g_netGameSetupTryPanelSetEnabledCalls;
+        g_netGameSetupTryPanelSetEnabledValue = enabled;
+    }
+
+    static int RECOIL_CDECL GetCDAudioOption() {
+        ++g_netGameSetupTryCdOptionCalls;
+        return g_netGameSetupTryCdAudioOption;
+    }
+
+    static int RECOIL_FASTCALL PlayTrackWithMode(int track, int mode) {
+        ++g_netGameSetupTryCdPlayCalls;
+        g_netGameSetupTryCdTrack = track;
+        g_netGameSetupTryCdMode = mode;
+        return 1;
+    }
+};
+
+void WINAPI FakeNetGameSetupDeactivateSleep(DWORD milliseconds) {
+    g_netGameSetupDeactivateSleepMs = milliseconds;
+}
+
+int RECOIL_FASTCALL FakeNetGameSetupDeactivateSampleSetDestroyByName(
+    const char *setName) {
+    ++g_netGameSetupDeactivateSampleCalls;
+    g_netGameSetupDeactivateSampleName = setName;
+    return 1;
+}
+
+int RECOIL_CDECL FakeNetGameSetupDeactivateRunPostprocessOnPrimaryBuffer() {
+    ++g_netGameSetupDeactivatePostprocessCalls;
+    return 1;
+}
+
+int RECOIL_CDECL FakeNetGameSetupDeactivateUnlockPrimarySurfaceState() {
+    ++g_netGameSetupDeactivateUnlockCalls;
+    return 1;
+}
+
+struct NetGameSetupDeactivatePatchOps {
+    void RECOIL_THISCALL BlitOwnedSurfaceToPrimary() {
+        ++g_netGameSetupDeactivateBlitCalls;
+        g_netGameSetupDeactivateBlitThis = (HudUiDialogController *)this;
+    }
+};
+} // namespace
+
+extern "C" int hud_ui_net_game_setup_queue_enter_reconfigure_smoke(void) {
+    CodeFunctionPatch queuePatch{};
+    const bool installed =
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&RecoilApp::QueuePushState)),
+                          reinterpret_cast<void *>(MethodAddress(&NetGameSetupQueuePatchOps::QueuePushState)),
+                          queuePatch);
+
+    g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession = 0;
+    g_netGameSetupQueuedState = nullptr;
+    g_netGameSetupQueuedParam = -1;
+    g_netGameSetupQueueCallCount = 0;
+
+    if (installed) {
+        HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(1);
+    }
+
+    const bool ok =
+        installed && g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession == 1 &&
+        g_netGameSetupQueueCallCount == 1 &&
+        g_netGameSetupQueuedState ==
+            reinterpret_cast<RecoilApp_IState *>(&g_HudUiNetGameSetupOverlayOwner) &&
+        g_netGameSetupQueuedParam == 0;
+
+    RestoreFunctionPatch(queuePatch);
+    return ok ? 0 : 1;
+}
+
+extern "C" int hud_ui_net_game_setup_overlay_owner_lifecycle_smoke(void) {
+    HudUiNetGameSetupOverlayOwner state{};
+    state.vftable = 0x11111111;
+    state.m_panel = 0x22222222;
+    state.m_reconfigureExistingSession = 7;
+    HudUiNetGameSetupOverlayOwner *const constructed = state.Constructor();
+    const bool constructorOk =
+        constructed == &state &&
+        state.vftable ==
+            static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiNetGameSetupOverlayOwner_Vtbl)) &&
+        state.m_panel == 0 && state.m_reconfigureExistingSession == 0;
+
+    g_HudUiNetGameSetupOverlayOwner.vftable = 0x33333333;
+    g_HudUiNetGameSetupOverlayOwner.m_panel = 0x44444444;
+    g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession = 9;
+    HudUiNetGameSetupOverlayOwner *const staticReturned =
+        HudUiNetGameSetupOverlayOwner::StaticInit();
+    const bool staticInitOk =
+        staticReturned == &g_HudUiNetGameSetupOverlayOwner &&
+        g_HudUiNetGameSetupOverlayOwner.vftable ==
+            static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiNetGameSetupOverlayOwner_Vtbl)) &&
+        g_HudUiNetGameSetupOverlayOwner.m_panel == 0 &&
+        g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession == 0;
+
+    TestNetGameSetupOverlayPanel panel;
+    state.vftable = 0x55555555;
+    state.m_panel =
+        static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(&panel));
+    state.m_reconfigureExistingSession = 4;
+    ResetNetGameSetupOverlayOwnerProbe();
+    state.Destructor();
+    const bool destructorOk =
+        state.vftable == kRecoilStateBase_VtblAddress && state.m_panel == 0 &&
+        state.m_reconfigureExistingSession == 4 &&
+        g_netGameSetupOverlaySetEnabledCalls == 1 &&
+        g_netGameSetupOverlaySetEnabledValue == 0 &&
+        g_netGameSetupOverlayScalarCalls == 1 &&
+        g_netGameSetupOverlayScalarFlags == 1;
+
+    g_HudUiNetGameSetupOverlayOwner.vftable = 0x66666666;
+    g_HudUiNetGameSetupOverlayOwner.m_panel =
+        static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(&panel));
+    ResetNetGameSetupOverlayOwnerProbe();
+    HudUiNetGameSetupOverlayOwner::AtExitDestructor();
+    const bool atExitOk =
+        g_HudUiNetGameSetupOverlayOwner.vftable == kRecoilStateBase_VtblAddress &&
+        g_HudUiNetGameSetupOverlayOwner.m_panel == 0 &&
+        g_netGameSetupOverlaySetEnabledCalls == 1 &&
+        g_netGameSetupOverlayScalarCalls == 1;
+
+    HudUiNetGameSetupOverlayOwner scalarState{};
+    scalarState.vftable = 0x77777777;
+    scalarState.m_panel = 0;
+    HudUiNetGameSetupOverlayOwner *const scalarReturned =
+        scalarState.ScalarDeletingDestructor(0);
+    const bool scalarOk =
+        scalarReturned == &scalarState &&
+        scalarState.vftable == kRecoilStateBase_VtblAddress &&
+        scalarState.m_panel == 0;
+
+    HudUiNetGameSetupOverlayOwner *const deletingState =
+        static_cast<HudUiNetGameSetupOverlayOwner *>(
+            ::operator new(sizeof(HudUiNetGameSetupOverlayOwner)));
+    deletingState->vftable = 0x88888888;
+    deletingState->m_panel = 0;
+    HudUiNetGameSetupOverlayOwner *const deletingReturned =
+        deletingState->ScalarDeletingDestructor(1);
+    const bool deletingOk = deletingReturned == deletingState;
+
+    HudUiNetGameSetupOverlayOwner::RegisterAtExit();
+    g_HudUiNetGameSetupOverlayOwner.vftable = 0x99999999;
+    g_HudUiNetGameSetupOverlayOwner.m_panel = 0;
+    g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession = 3;
+    HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit();
+    const bool staticInitRegisterOk =
+        g_HudUiNetGameSetupOverlayOwner.vftable ==
+            static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(
+                &g_HudUiNetGameSetupOverlayOwner_Vtbl)) &&
+        g_HudUiNetGameSetupOverlayOwner.m_panel == 0 &&
+        g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession == 0;
+
+    return constructorOk && staticInitOk && destructorOk && atExitOk &&
+                   scalarOk && deletingOk && staticInitRegisterOk
+               ? 0
+               : 1;
+}
+
+extern "C" int hud_ui_net_game_setup_overlay_owner_on_try_smoke(void) {
+    CodeFunctionPatch patches[11] = {};
+    int patchCount = 0;
+    bool installed = true;
+
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zVideo::SetHalfResAdjustMode),
+                                  reinterpret_cast<void *>(&NetGameSetupTryPatchOps::SetHalfResAdjustMode),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&HudUi::SetInvalidateMode),
+                                  reinterpret_cast<void *>(&NetGameSetupTryPatchOps::SetInvalidateMode),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zVideo::GetPrimarySurfacePitch),
+                                  reinterpret_cast<void *>(&NetGameSetupTryPatchOps::GetPrimarySurfacePitch),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zOpt::GetDisplaySectionBitsPerPixel),
+                                  reinterpret_cast<void *>(&NetGameSetupTryPatchOps::GetDisplaySectionBitsPerPixel),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zOpt::GetWindowSection),
+                                  reinterpret_cast<void *>(&NetGameSetupTryPatchOps::GetWindowSection),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zVideo::GetPrimarySurfacePixels),
+                                  reinterpret_cast<void *>(&NetGameSetupTryPatchOps::GetPrimarySurfacePixels),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zRndr::SetFrameBufferRegion),
+                                  reinterpret_cast<void *>(&NetGameSetupTryPatchOps::SetFrameBufferRegion),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zSndSampleSet_InitByName),
+                                  reinterpret_cast<void *>(&NetGameSetupTryPatchOps::InitSampleSetByName),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiNetGameSetupPanel::Constructor)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupTryPatchOps::PanelConstructor)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zSnd::GetCDAudioOption),
+                                  reinterpret_cast<void *>(&NetGameSetupTryPatchOps::GetCDAudioOption),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zSndCd::PlayTrackWithMode),
+                                  reinterpret_cast<void *>(&NetGameSetupTryPatchOps::PlayTrackWithMode),
+                                  patches[patchCount++]);
+
+    g_netGameSetupTryPanelFTable = {};
+    const std::uintptr_t panelSetEnabled =
+        MethodAddress(&NetGameSetupTryPatchOps::PanelSetEnabled);
+    std::memcpy(&g_netGameSetupTryPanelFTable.setEnabled, &panelSetEnabled,
+                sizeof(g_netGameSetupTryPanelFTable.setEnabled));
+
+    HudUiNetGameSetupOverlayOwner state{};
+    state.m_reconfigureExistingSession = 1;
+    ResetNetGameSetupTryProbe();
+    g_netGameSetupTryCdAudioOption = 1;
+    const int result = installed ? state.OnTryBecomeCurrent() : 0;
+    void *const allocatedPanel = reinterpret_cast<void *>(
+        static_cast<std::uintptr_t>(state.m_panel));
+
+    const bool cdEnabledPath =
+        installed && result == 1 && state.m_panel != 0 &&
+        g_netGameSetupTryHalfResCalls == 1 &&
+        g_netGameSetupTryHalfResMode == ZVIDEO_HALFRES_ADJUST_DISABLED &&
+        g_netGameSetupTryInvalidateCalls == 1 &&
+        g_netGameSetupTryInvalidateMode == 0 &&
+        g_netGameSetupTryPitchCalls == 1 && g_netGameSetupTryBppCalls == 1 &&
+        g_netGameSetupTryWindowCalls == 1 && g_netGameSetupTryPixelsCalls == 1 &&
+        g_netGameSetupTryFramePixels == g_netGameSetupTryPixels &&
+        g_netGameSetupTryFrameRect == g_netGameSetupTryWindow &&
+        g_netGameSetupTryFrameBpp == 16 && g_netGameSetupTryFramePitch == 3200 &&
+        g_netGameSetupTrySampleCalls == 1 &&
+        std::strcmp(g_netGameSetupTrySampleName, "DIALOG") == 0 &&
+        g_netGameSetupTryConstructorCalls == 1 &&
+        g_netGameSetupTryConstructorThis == (HudUiNetGameSetupPanel *)allocatedPanel &&
+        g_netGameSetupTryConstructorReconfigure == 1 &&
+        g_netGameSetupTryPanelSetEnabledCalls == 1 &&
+        g_netGameSetupTryPanelSetEnabledValue == 1 &&
+        g_netGameSetupTryCdOptionCalls == 1 && g_netGameSetupTryCdPlayCalls == 1 &&
+        g_netGameSetupTryCdTrack == 2 && g_netGameSetupTryCdMode == 5 &&
+        g_HudUiNetGameSetupOverlayOwner_Vtbl.ScalarDeletingDtor ==
+            MethodAddress(&HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor) &&
+        g_HudUiNetGameSetupOverlayOwner_Vtbl.OnCanBecomeCurrent ==
+            MethodAddress(&HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent);
+    if (allocatedPanel != nullptr) {
+        ::operator delete(allocatedPanel);
+    }
+
+    state.m_panel = 0;
+    state.m_reconfigureExistingSession = 0;
+    ResetNetGameSetupTryProbe();
+    g_netGameSetupTryCdAudioOption = 0;
+    const int noCdResult = installed ? state.OnTryBecomeCurrent() : 0;
+    void *const noCdPanel = reinterpret_cast<void *>(
+        static_cast<std::uintptr_t>(state.m_panel));
+    const bool cdDisabledPath =
+        installed && noCdResult == 1 && state.m_panel != 0 &&
+        g_netGameSetupTryConstructorCalls == 1 &&
+        g_netGameSetupTryConstructorReconfigure == 0 &&
+        g_netGameSetupTryPanelSetEnabledCalls == 1 &&
+        g_netGameSetupTryCdOptionCalls == 1 && g_netGameSetupTryCdPlayCalls == 0;
+    if (noCdPanel != nullptr) {
+        ::operator delete(noCdPanel);
+    }
+
+    while (patchCount > 0) {
+        --patchCount;
+        RestoreFunctionPatch(patches[patchCount]);
+    }
+
+    if (!cdEnabledPath) {
+        return 2;
+    }
+    if (!cdDisabledPath) {
+        return 3;
+    }
+
+    return 0;
+}
+
+extern "C" int hud_ui_net_game_setup_overlay_owner_on_deactivate_smoke(void) {
+    CodeFunctionPatch patches[5] = {};
+    bool installed =
+        PatchFunctionJump(reinterpret_cast<void *>(&Sleep),
+                          reinterpret_cast<void *>(&FakeNetGameSetupDeactivateSleep),
+                          patches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zSndSampleSet_DestroyByName),
+                          reinterpret_cast<void *>(&FakeNetGameSetupDeactivateSampleSetDestroyByName),
+                          patches[1]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                          reinterpret_cast<void *>(&FakeNetGameSetupDeactivateRunPostprocessOnPrimaryBuffer),
+                          patches[2]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiDialogController::BlitOwnedSurfaceToPrimary)),
+                          reinterpret_cast<void *>(MethodAddress(&NetGameSetupDeactivatePatchOps::BlitOwnedSurfaceToPrimary)),
+                          patches[3]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                          reinterpret_cast<void *>(&FakeNetGameSetupDeactivateUnlockPrimarySurfaceState),
+                          patches[4]);
+
+    HudUiNetGameSetupOverlayOwner nullState{};
+    nullState.m_panel = 0;
+    ResetNetGameSetupOverlayOwnerProbe();
+    ResetNetGameSetupDeactivateProbe();
+    if (installed) {
+        nullState.OnDeactivate();
+    }
+    const bool nullPanelOk =
+        installed && nullState.m_panel == 0 &&
+        g_netGameSetupDeactivateSleepMs == 1000 &&
+        g_netGameSetupDeactivateSampleCalls == 1 &&
+        std::strcmp(g_netGameSetupDeactivateSampleName, "DIALOG") == 0 &&
+        g_netGameSetupDeactivatePostprocessCalls == 0 &&
+        g_netGameSetupOverlaySetEnabledCalls == 0 &&
+        g_netGameSetupDeactivateBlitCalls == 0 &&
+        g_netGameSetupDeactivateUnlockCalls == 0 &&
+        g_netGameSetupOverlayScalarCalls == 0;
+
+    HudUiNetGameSetupOverlayOwner state{};
+    TestNetGameSetupOverlayPanel panel;
+    state.m_panel =
+        static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(&panel));
+    ResetNetGameSetupOverlayOwnerProbe();
+    ResetNetGameSetupDeactivateProbe();
+    if (installed) {
+        state.OnDeactivate();
+    }
+    const bool ownedPanelOk =
+        installed && state.m_panel == 0 &&
+        g_netGameSetupDeactivateSleepMs == 1000 &&
+        g_netGameSetupDeactivateSampleCalls == 1 &&
+        std::strcmp(g_netGameSetupDeactivateSampleName, "DIALOG") == 0 &&
+        g_netGameSetupDeactivatePostprocessCalls == 1 &&
+        g_netGameSetupOverlaySetEnabledCalls == 1 &&
+        g_netGameSetupOverlaySetEnabledValue == 0 &&
+        g_netGameSetupDeactivateBlitCalls == 1 &&
+        g_netGameSetupDeactivateBlitThis == (HudUiDialogController *)&panel &&
+        g_netGameSetupDeactivateUnlockCalls == 1 &&
+        g_netGameSetupOverlayScalarCalls == 1 &&
+        g_netGameSetupOverlayScalarFlags == 1 &&
+        g_HudUiNetGameSetupOverlayOwner_Vtbl.OnDeactivate ==
+            MethodAddress(&HudUiNetGameSetupOverlayOwner::OnDeactivate);
+
+    for (int i = 4; i >= 0; --i) {
+        RestoreFunctionPatch(patches[i]);
+    }
+
+    if (!nullPanelOk) {
+        return 2;
+    }
+    if (!ownedPanelOk) {
+        return 3;
+    }
+
+    return 0;
+}
+
+namespace {
+const char *g_netSetupLoadPath;
+const char *g_netSetupLoadSection;
+int g_netSetupLoadCapture;
+zReader::Node *g_netSetupLoadResult;
+int g_netSetupPrimitiveBindCount;
+const char *g_netSetupPrimitiveBindNames[4];
+HudUiElement *g_netSetupPrimitiveBindElements[4];
+int g_netSetupWidgetBindCount;
+const char *g_netSetupWidgetBindNames[24];
+HudUiWidget *g_netSetupWidgetBindWidgets[24];
+int g_netSetupFreeCount;
+int g_netSetupFreeArg;
+int g_netSetupChildFlags;
+char g_netSetupPlayerName[32];
+int g_netSetupNetworkModem;
+int g_netSetupZrdActivateCalls;
+int g_netSetupCreateSessionCalls;
+int g_netSetupCreateSessionResult;
+zNetworkSessionDescStatusFields g_netSetupCapturedStatusFields;
+int g_netSetupSetNetworkEnabledCalls;
+int g_netSetupSetNetworkEnabledValue;
+int g_netSetupCreateLocalPlayerCalls;
+char *g_netSetupCreateLocalPlayerName;
+int g_netSetupSetStatusFlagsCalls;
+int g_netSetupSetStatusFlagsValue;
+int g_netSetupTimerCalls;
+int g_netSetupTimerRaw;
+int g_netSetupTimerGoal;
+int g_netSetupInitMissionCalls;
+int g_netSetupInitMissionId;
+int g_netSetupInitMissionFlags;
+int g_netSetupQueueExitCalls;
+int g_netSetupQueueExitParam;
+int g_netSetupQueueSwitchCalls;
+RecoilApp_IState *g_netSetupQueueSwitchState;
+int g_netSetupQueueSwitchParam;
+int g_netSetupDestructorCount;
+void *g_netSetupDestructorThis[24];
+int g_netSetupDestructorKind[24];
+int g_netSetupSetIndexCalls;
+int g_netSetupSetIndexArg;
+int g_netSetupSetVisibleCount;
+void *g_netSetupSetVisibleThis[4];
+int g_netSetupSetVisibleValue[4];
+int g_netSetupCommitCalls;
+int g_netSetupCommitValue;
+int g_netSetupUpdateCalls;
+char g_netSetupUpdateText[24];
+int g_netSetupRefreshCount;
+void *g_netSetupRefreshThis[8];
+int g_netSetupInvalidateCount;
+void *g_netSetupInvalidateThis[8];
+int g_netSetupSendPkt14Calls;
+int g_netSetupSendPkt14EventCode;
+unsigned int g_netSetupSendPkt14StatusFlags;
+int g_netSetupSendPkt14ValueOrTime;
+int g_netSetupSendPkt14AuxParam;
+int g_netSetupIsHostValue;
+int g_netSetupHostUpdateCalls;
+int g_netSetupHostUpdateEventCode;
+int g_netSetupHostUpdateAuxParam;
+int g_netSetupHostUpdateValueOrTime;
+int g_netSetupHostUpdateStatusFlags;
+int g_netSetupUnregisterCalls;
+int g_netSetupResetRemoteCalls;
+CZRecoilFrame g_netSetupFrame;
+
+void ResetNetGameSetupProbe() {
+    g_netSetupLoadPath = nullptr;
+    g_netSetupLoadSection = nullptr;
+    g_netSetupLoadCapture = -1;
+    g_netSetupLoadResult = nullptr;
+    g_netSetupPrimitiveBindCount = 0;
+    for (int i = 0; i < 4; ++i) {
+        g_netSetupPrimitiveBindNames[i] = nullptr;
+        g_netSetupPrimitiveBindElements[i] = nullptr;
+    }
+    g_netSetupWidgetBindCount = 0;
+    for (int j = 0; j < 24; ++j) {
+        g_netSetupWidgetBindNames[j] = nullptr;
+        g_netSetupWidgetBindWidgets[j] = nullptr;
+    }
+    g_netSetupFreeCount = 0;
+    g_netSetupFreeArg = 0;
+    g_netSetupChildFlags = -1;
+    std::strcpy(g_netSetupPlayerName, "Pilot");
+    g_netSetupNetworkModem = 0;
+    g_netSetupZrdActivateCalls = 0;
+    g_netSetupCreateSessionCalls = 0;
+    g_netSetupCreateSessionResult = 1;
+    g_netSetupCapturedStatusFields = {};
+    g_netSetupSetNetworkEnabledCalls = 0;
+    g_netSetupSetNetworkEnabledValue = 0;
+    g_netSetupCreateLocalPlayerCalls = 0;
+    g_netSetupCreateLocalPlayerName = nullptr;
+    g_netSetupSetStatusFlagsCalls = 0;
+    g_netSetupSetStatusFlagsValue = 0;
+    g_netSetupTimerCalls = 0;
+    g_netSetupTimerRaw = 0;
+    g_netSetupTimerGoal = 0;
+    g_netSetupInitMissionCalls = 0;
+    g_netSetupInitMissionId = 0;
+    g_netSetupInitMissionFlags = 0;
+    g_netSetupQueueExitCalls = 0;
+    g_netSetupQueueExitParam = -1;
+    g_netSetupQueueSwitchCalls = 0;
+    g_netSetupQueueSwitchState = nullptr;
+    g_netSetupQueueSwitchParam = -1;
+    g_netSetupDestructorCount = 0;
+    for (int k = 0; k < 24; ++k) {
+        g_netSetupDestructorThis[k] = nullptr;
+        g_netSetupDestructorKind[k] = 0;
+    }
+    g_netSetupSetIndexCalls = 0;
+    g_netSetupSetIndexArg = -1;
+    g_netSetupSetVisibleCount = 0;
+    for (int visibleIndex = 0; visibleIndex < 4; ++visibleIndex) {
+        g_netSetupSetVisibleThis[visibleIndex] = nullptr;
+        g_netSetupSetVisibleValue[visibleIndex] = -1;
+    }
+    g_netSetupCommitCalls = 0;
+    g_netSetupCommitValue = 0;
+    g_netSetupUpdateCalls = 0;
+    g_netSetupUpdateText[0] = '\0';
+    g_netSetupRefreshCount = 0;
+    for (int refreshIndex = 0; refreshIndex < 8; ++refreshIndex) {
+        g_netSetupRefreshThis[refreshIndex] = nullptr;
+    }
+    g_netSetupInvalidateCount = 0;
+    for (int invalidateIndex = 0; invalidateIndex < 8; ++invalidateIndex) {
+        g_netSetupInvalidateThis[invalidateIndex] = nullptr;
+    }
+    g_netSetupSendPkt14Calls = 0;
+    g_netSetupSendPkt14EventCode = 0;
+    g_netSetupSendPkt14StatusFlags = 0;
+    g_netSetupSendPkt14ValueOrTime = 0;
+    g_netSetupSendPkt14AuxParam = 0;
+    g_netSetupIsHostValue = 0;
+    g_netSetupHostUpdateCalls = 0;
+    g_netSetupHostUpdateEventCode = 0;
+    g_netSetupHostUpdateAuxParam = 0;
+    g_netSetupHostUpdateValueOrTime = 0;
+    g_netSetupHostUpdateStatusFlags = 0;
+    g_netSetupUnregisterCalls = 0;
+    g_netSetupResetRemoteCalls = 0;
+    g_netSetupFrame.m_useArchiveBanks = 7;
+}
+
+char *RECOIL_CDECL FakeNetGameSetupGetPlayerName() {
+    return g_netSetupPlayerName;
+}
+
+int RECOIL_CDECL FakeNetGameSetupGetNetworkModemEnabled() {
+    return g_netSetupNetworkModem;
+}
+
+void RECOIL_FASTCALL FakeNetGameSetupSetNetworkEnabled(int value) {
+    ++g_netSetupSetNetworkEnabledCalls;
+    g_netSetupSetNetworkEnabledValue = value;
+}
+
+int RECOIL_FASTCALL FakeNetGameSetupCreateSession(zNetworkSessionDescStatusFields *statusFields) {
+    ++g_netSetupCreateSessionCalls;
+    g_netSetupCapturedStatusFields = *statusFields;
+    return g_netSetupCreateSessionResult;
+}
+
+int RECOIL_FASTCALL FakeNetGameSetupCreateLocalPlayer(char *playerName) {
+    ++g_netSetupCreateLocalPlayerCalls;
+    g_netSetupCreateLocalPlayerName = playerName;
+    return 0x1234;
+}
+
+void RECOIL_FASTCALL FakeNetGameSetupSetStatusBits(unsigned int statusFlags) {
+    ++g_netSetupSetStatusFlagsCalls;
+    g_netSetupSetStatusFlagsValue = static_cast<int>(statusFlags);
+}
+
+int RECOIL_FASTCALL FakeNetGameSetupSendPkt14(int eventCode, unsigned int statusFlags,
+                                              int valueOrTime, int auxParam) {
+    ++g_netSetupSendPkt14Calls;
+    g_netSetupSendPkt14EventCode = eventCode;
+    g_netSetupSendPkt14StatusFlags = statusFlags;
+    g_netSetupSendPkt14ValueOrTime = valueOrTime;
+    g_netSetupSendPkt14AuxParam = auxParam;
+    return 0;
+}
+
+int RECOIL_CDECL FakeNetGameSetupIsHost() {
+    return g_netSetupIsHostValue;
+}
+
+int RECOIL_FASTCALL FakeNetGameSetupHostUpdate(int eventCode, int auxParam,
+                                               int valueOrTime, int statusFlags) {
+    ++g_netSetupHostUpdateCalls;
+    g_netSetupHostUpdateEventCode = eventCode;
+    g_netSetupHostUpdateAuxParam = auxParam;
+    g_netSetupHostUpdateValueOrTime = valueOrTime;
+    g_netSetupHostUpdateStatusFlags = statusFlags;
+    return 1;
+}
+
+void RECOIL_CDECL FakeNetGameSetupUnregisterHandlers() {
+    ++g_netSetupUnregisterCalls;
+}
+
+void RECOIL_CDECL FakeNetGameSetupResetRemotePlayers() {
+    ++g_netSetupResetRemoteCalls;
+}
+
+enum NetGameSetupDestructorKind {
+    kNetGameSetupDestroyWidget = 1,
+    kNetGameSetupDestroyCheckToggle = 2,
+    kNetGameSetupDestroyZrdWidget = 3,
+    kNetGameSetupDestroyNumericTextInput = 4,
+    kNetGameSetupDestroyCycleSelector = 5,
+    kNetGameSetupDestroyBackground = 6
+};
+
+void RecordNetGameSetupDestructor(void *object, int kind) {
+    const int index = g_netSetupDestructorCount;
+    if (index < 24) {
+        g_netSetupDestructorThis[index] = object;
+        g_netSetupDestructorKind[index] = kind;
+    }
+    ++g_netSetupDestructorCount;
+}
+
+struct NetGameSetupPatchOps {
+    void RECOIL_THISCALL ZrdOnActivate() {
+        ++g_netSetupZrdActivateCalls;
+    }
+
+    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *path, const char *section,
+                                               int capturePrimary) {
+        g_netSetupLoadPath = path;
+        g_netSetupLoadSection = section;
+        g_netSetupLoadCapture = capturePrimary;
+        return g_netSetupLoadResult;
+    }
+
+    int RECOIL_THISCALL BindPrimitiveNodeToElement(zReader::Node *, HudUiElement *element,
+                                                   const char *name) {
+        const int index = g_netSetupPrimitiveBindCount;
+        if (index < 4) {
+            g_netSetupPrimitiveBindNames[index] = name;
+            g_netSetupPrimitiveBindElements[index] = element;
+        }
+        ++g_netSetupPrimitiveBindCount;
+        return 1;
+    }
+
+    int RECOIL_THISCALL BindWidgetByName(zReader::Node *, HudUiWidget *widget,
+                                         const char *name) {
+        const int index = g_netSetupWidgetBindCount;
+        if (index < 24) {
+            g_netSetupWidgetBindNames[index] = name;
+            g_netSetupWidgetBindWidgets[index] = widget;
+        }
+        ++g_netSetupWidgetBindCount;
+        return 1;
+    }
+
+    void RECOIL_THISCALL FreeLoadedTreeRoots(int rootArg) {
+        ++g_netSetupFreeCount;
+        g_netSetupFreeArg = rootArg;
+    }
+
+    void RECOIL_THISCALL SetChildFlags(unsigned int flags) {
+        g_netSetupChildFlags = static_cast<int>(flags);
+    }
+
+    void RECOIL_THISCALL SetRuntimeTimerSecAndGoalValue(int timerSecRaw, int goalValue) {
+        ++g_netSetupTimerCalls;
+        g_netSetupTimerRaw = timerSecRaw;
+        g_netSetupTimerGoal = goalValue;
+    }
+
+    int RECOIL_THISCALL InitMissionIdAndFlags(int missionId, int flags) {
+        ++g_netSetupInitMissionCalls;
+        g_netSetupInitMissionId = missionId;
+        g_netSetupInitMissionFlags = flags;
+        return 1;
+    }
+
+    RecoilPtr32 RECOIL_THISCALL GetMainWnd() const {
+        return (RecoilPtr32)((unsigned int)(&g_netSetupFrame));
+    }
+
+    RecoilPtr32 RECOIL_THISCALL QueueExitCurrentState(int stateParam) {
+        ++g_netSetupQueueExitCalls;
+        g_netSetupQueueExitParam = stateParam;
+        return 0;
+    }
+
+    RecoilPtr32 RECOIL_THISCALL QueueSwitchCurrentState(RecoilApp_IState *state,
+                                                        int stateParam) {
+        ++g_netSetupQueueSwitchCalls;
+        g_netSetupQueueSwitchState = state;
+        g_netSetupQueueSwitchParam = stateParam;
+        return 0;
+    }
+
+    void RECOIL_THISCALL SetIndexClamped(int index) {
+        ++g_netSetupSetIndexCalls;
+        g_netSetupSetIndexArg = index;
+        ((HudUiCycleSelectorWidget *)(this))->selectedIndex = index;
+    }
+
+    void RECOIL_THISCALL SetVisible(int visible) {
+        const int index = g_netSetupSetVisibleCount;
+        if (index < 4) {
+            g_netSetupSetVisibleThis[index] = this;
+            g_netSetupSetVisibleValue[index] = visible;
+        }
+        ++g_netSetupSetVisibleCount;
+    }
+
+    int RECOIL_THISCALL CommitAndGetValue() {
+        ++g_netSetupCommitCalls;
+        return g_netSetupCommitValue;
+    }
+
+    void RECOIL_THISCALL NumericTextInputUpdate(const char *text) {
+        ++g_netSetupUpdateCalls;
+        std::strncpy(g_netSetupUpdateText, text, sizeof(g_netSetupUpdateText) - 1);
+        g_netSetupUpdateText[sizeof(g_netSetupUpdateText) - 1] = '\0';
+    }
+
+    void RECOIL_THISCALL RefreshState() {
+        const int index = g_netSetupRefreshCount;
+        if (index < 8) {
+            g_netSetupRefreshThis[index] = this;
+        }
+        ++g_netSetupRefreshCount;
+    }
+
+    void RECOIL_THISCALL Invalidate() {
+        const int index = g_netSetupInvalidateCount;
+        if (index < 8) {
+            g_netSetupInvalidateThis[index] = this;
+        }
+        ++g_netSetupInvalidateCount;
+    }
+
+    void RECOIL_THISCALL WidgetDestructorCore() {
+        RecordNetGameSetupDestructor(this, kNetGameSetupDestroyWidget);
+    }
+
+    void RECOIL_THISCALL CheckToggleDestructorCore() {
+        RecordNetGameSetupDestructor(this, kNetGameSetupDestroyCheckToggle);
+    }
+
+    void RECOIL_THISCALL ZrdWidgetDestructorCore() {
+        RecordNetGameSetupDestructor(this, kNetGameSetupDestroyZrdWidget);
+    }
+
+    void RECOIL_THISCALL NumericTextInputDestructor() {
+        RecordNetGameSetupDestructor(this, kNetGameSetupDestroyNumericTextInput);
+    }
+
+    void RECOIL_THISCALL CycleSelectorDestructorCore() {
+        RecordNetGameSetupDestructor(this, kNetGameSetupDestroyCycleSelector);
+    }
+
+    void RECOIL_THISCALL BackgroundDestructor() {
+        RecordNetGameSetupDestructor(this, kNetGameSetupDestroyBackground);
+    }
+};
+} // namespace
+
+extern "C" int hud_ui_net_game_setup_panel_constructor_smoke(void) {
+    CodeFunctionPatch patches[6] = {};
+    int patchCount = 0;
+    bool installed = true;
+
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::LoadFromZrd)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::LoadFromZrd)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::BindPrimitiveNodeToElement)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::BindPrimitiveNodeToElement)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::BindWidgetByName)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::BindWidgetByName)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::FreeLoadedTreeRoots)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::FreeLoadedTreeRoots)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiContainer::SetChildFlags)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::SetChildFlags)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zOpt_GetPlayerName),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupGetPlayerName),
+                                  patches[patchCount++]);
+
+    CodeFunctionPatch modemPatch{};
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zOpt::GetNetworkModemEnabled),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupGetNetworkModemEnabled),
+                                  modemPatch);
+
+    char fakeNodeStorage = 0;
+    g_netSetupLoadResult = reinterpret_cast<zReader::Node *>(&fakeNodeStorage);
+
+    ResetNetGameSetupProbe();
+    g_netSetupLoadResult = reinterpret_cast<zReader::Node *>(&fakeNodeStorage);
+    std::strcpy(g_netSetupPlayerName, "PilotOne");
+    g_netSetupNetworkModem = 0;
+
+    HudUiNetGameSetupPanel panel{};
+    const bool returnedSelf = installed && panel.Constructor(0) == &panel;
+    const bool commonInit =
+        returnedSelf &&
+        panel.base.base.vptr ==
+            reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiNetGameSetupPanel_FTable) &&
+        panel.playButton.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiNetGameSetupPanel_PlayButton_FTable) &&
+        panel.cancelButton.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiNetGameSetupPanel_CancelButton_FTable) &&
+        panel.gameNameInput.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiNetGameSetupPanel_GameNameInput_FTable) &&
+        panel.worldSelector.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiNetGameSetupPanel_WorldSelector_FTable) &&
+        panel.currentFocusWidget == nullptr && panel.reconfigureExistingSession == 0 &&
+        std::strcmp(g_netSetupLoadPath, "dialog.zrd") == 0 &&
+        std::strcmp(g_netSetupLoadSection, "MP_NEW_GAME") == 0 &&
+        g_netSetupLoadCapture == 0 && g_netSetupPrimitiveBindCount == 2 &&
+        std::strcmp(g_netSetupPrimitiveBindNames[0], "KILLS_SWITCH") == 0 &&
+        g_netSetupPrimitiveBindElements[0] == reinterpret_cast<HudUiElement *>(&panel.killsSwitch) &&
+        std::strcmp(g_netSetupPrimitiveBindNames[1], "LAPS_SWITCH") == 0 &&
+        g_netSetupPrimitiveBindElements[1] == reinterpret_cast<HudUiElement *>(&panel.lapsSwitch) &&
+        g_netSetupWidgetBindCount == 17 &&
+        std::strcmp(g_netSetupWidgetBindNames[0], "PLAY") == 0 &&
+        g_netSetupWidgetBindWidgets[0] == &panel.playButton.base &&
+        std::strcmp(g_netSetupWidgetBindNames[16], "NAME_TAGS") == 0 &&
+        g_netSetupWidgetBindWidgets[16] == &panel.nameTagsToggle.base.base &&
+        g_netSetupFreeCount == 1 && g_netSetupFreeArg == reinterpret_cast<int>(g_netSetupLoadResult) &&
+        g_netSetupChildFlags == 0;
+
+    const bool valueInit =
+        panel.gameNameInput.base.modeOrEnabled == 1 &&
+        std::strcmp(panel.gameNameInput.textInput.buffer, "PilotOne") == 0 &&
+        panel.gameNameInput.textInput.capacity == 22 &&
+        panel.timeLimitInput.minValue == 5 && panel.timeLimitInput.maxValue == 360 &&
+        std::strcmp(panel.timeLimitInput.textInput.buffer, "15") == 0 &&
+        panel.timeLimitInput.textInput.capacity == 4 &&
+        panel.incTimeLimitButton.targetInput == &panel.timeLimitInput &&
+        panel.incTimeLimitButton.stepDelta == 1 &&
+        panel.decTimeLimitButton.targetInput == &panel.timeLimitInput &&
+        panel.decTimeLimitButton.stepDelta == -1 && panel.killsInput.minValue == 1 &&
+        panel.killsInput.maxValue == 99 &&
+        std::strcmp(panel.killsInput.textInput.buffer, "10") == 0 &&
+        panel.killsInput.textInput.capacity == 3 &&
+        panel.maxPlayersInput.minValue == 2 && panel.maxPlayersInput.maxValue == 8 &&
+        std::strcmp(panel.maxPlayersInput.textInput.buffer, "8") == 0 &&
+        panel.maxPlayersInput.textInput.capacity == 3 &&
+        panel.maxPlayersInput.base.modeOrEnabled == 1 &&
+        panel.incMaxPlayersButton.targetInput == &panel.maxPlayersInput &&
+        panel.decMaxPlayersButton.targetInput == &panel.maxPlayersInput &&
+        panel.allowMapsToggle.checked == 1 && panel.nameTagsToggle.checked == 0;
+
+    panel.Destructor();
+
+    ResetNetGameSetupProbe();
+    g_netSetupLoadResult = nullptr;
+    g_netSetupNetworkModem = 1;
+    HudUiNetGameSetupPanel reconfigurePanel{};
+    const bool reconfigureReturned = installed && reconfigurePanel.Constructor(1) == &reconfigurePanel;
+    const bool reconfigureInit =
+        reconfigureReturned && reconfigurePanel.reconfigureExistingSession == 1 &&
+        reconfigurePanel.gameNameInput.base.modeOrEnabled == 0 &&
+        reconfigurePanel.maxPlayersInput.base.modeOrEnabled == 0 &&
+        reconfigurePanel.incMaxPlayersButton.base.modeOrEnabled == 0 &&
+        reconfigurePanel.decMaxPlayersButton.base.modeOrEnabled == 0 &&
+        g_netSetupPrimitiveBindCount == 0 && g_netSetupWidgetBindCount == 0 &&
+        g_netSetupFreeCount == 0;
+    reconfigurePanel.Destructor();
+
+    RestoreFunctionPatch(modemPatch);
+    while (patchCount > 0) {
+        --patchCount;
+        RestoreFunctionPatch(patches[patchCount]);
+    }
+
+    return commonInit && valueInit && reconfigureInit ? 0 : 1;
+}
+
+extern "C" int hud_ui_net_game_setup_cancel_button_smoke(void) {
+    CodeFunctionPatch patches[3] = {};
+    int patchCount = 0;
+    bool installed = true;
+
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::OnActivate)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::ZrdOnActivate)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&RecoilApp::QueueExitCurrentState)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::QueueExitCurrentState)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&RecoilApp::QueueSwitchCurrentState)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::QueueSwitchCurrentState)),
+                                  patches[patchCount++]);
+
+    ResetNetGameSetupProbe();
+    HudUiNetGameSetupPanel_CancelButton button{};
+    if (installed) {
+        button.OnActivate();
+    }
+
+    const bool ok =
+        installed && g_netSetupQueueExitCalls == 1 && g_netSetupQueueExitParam == 0 &&
+        g_netSetupQueueSwitchCalls == 1 &&
+        g_netSetupQueueSwitchState == &g_RecoilApp.m_leaveNetworkState_1d0.base &&
+        g_netSetupQueueSwitchParam == 0 && g_netSetupZrdActivateCalls == 1;
+
+    while (patchCount > 0) {
+        --patchCount;
+        RestoreFunctionPatch(patches[patchCount]);
+    }
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int hud_ui_net_game_setup_panel_destructor_smoke(void) {
+    CodeFunctionPatch patches[6] = {};
+    int patchCount = 0;
+    bool installed = true;
+
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiWidget::DestructorCore)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::WidgetDestructorCore)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiCheckToggleWidget::DestructorCore)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::CheckToggleDestructorCore)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::DestructorCore)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::ZrdWidgetDestructorCore)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiNumericTextInput::Destructor)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::NumericTextInputDestructor)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiCycleSelectorWidget::DestructorCore)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::CycleSelectorDestructorCore)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::Destructor)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::BackgroundDestructor)),
+                                  patches[patchCount++]);
+
+    ResetNetGameSetupProbe();
+    HudUiNetGameSetupPanel panel{};
+    if (installed) {
+        panel.Destructor();
+    }
+
+    void *expectedThis[20] = {
+        &panel.lapsSwitch,
+        &panel.killsSwitch,
+        &panel.nameTagsToggle,
+        &panel.allowMapsToggle,
+        &panel.decMaxPlayersButton.base,
+        &panel.incMaxPlayersButton.base,
+        &panel.maxPlayersInput,
+        &panel.decKillsButton.base,
+        &panel.incKillsButton.base,
+        &panel.killsInput,
+        &panel.decTimeLimitButton.base,
+        &panel.incTimeLimitButton.base,
+        &panel.timeLimitInput,
+        &panel.prevWorldButton,
+        &panel.nextWorldButton,
+        &panel.worldSelector,
+        &panel.gameNameInput,
+        &panel.cancelButton,
+        &panel.playButton,
+        &panel
+    };
+    const int expectedKind[20] = {
+        kNetGameSetupDestroyWidget,
+        kNetGameSetupDestroyWidget,
+        kNetGameSetupDestroyCheckToggle,
+        kNetGameSetupDestroyCheckToggle,
+        kNetGameSetupDestroyZrdWidget,
+        kNetGameSetupDestroyZrdWidget,
+        kNetGameSetupDestroyNumericTextInput,
+        kNetGameSetupDestroyZrdWidget,
+        kNetGameSetupDestroyZrdWidget,
+        kNetGameSetupDestroyNumericTextInput,
+        kNetGameSetupDestroyZrdWidget,
+        kNetGameSetupDestroyZrdWidget,
+        kNetGameSetupDestroyNumericTextInput,
+        kNetGameSetupDestroyZrdWidget,
+        kNetGameSetupDestroyZrdWidget,
+        kNetGameSetupDestroyCycleSelector,
+        kNetGameSetupDestroyNumericTextInput,
+        kNetGameSetupDestroyZrdWidget,
+        kNetGameSetupDestroyZrdWidget,
+        kNetGameSetupDestroyBackground
+    };
+
+    bool orderMatches = installed && g_netSetupDestructorCount == 20;
+    for (int i = 0; i < 20 && orderMatches; ++i) {
+        orderMatches = g_netSetupDestructorThis[i] == expectedThis[i] &&
+                       g_netSetupDestructorKind[i] == expectedKind[i];
+    }
+
+    while (patchCount > 0) {
+        --patchCount;
+        RestoreFunctionPatch(patches[patchCount]);
+    }
+
+    return orderMatches ? 0 : 1;
+}
+
+extern "C" int hud_ui_net_game_setup_next_world_button_smoke(void) {
+    CodeFunctionPatch patches[7] = {};
+    int patchCount = 0;
+    bool installed = true;
+
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiCycleSelectorWidget::SetIndexClamped)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::SetIndexClamped)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiElement::SetVisible)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::SetVisible)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiClampedIntTextInput::CommitAndGetValue)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::CommitAndGetValue)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiNumericTextInput::Update)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::NumericTextInputUpdate)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::RefreshState)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::RefreshState)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::Invalidate)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::Invalidate)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::OnActivate)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::ZrdOnActivate)),
+                                  patches[patchCount++]);
+
+    HudUiNetGameSetupPanel panel{};
+    HudUiNetGameSetupPanel_NextWorldButton button{};
+    button.owner = &panel;
+
+    ResetNetGameSetupProbe();
+    g_netSetupCommitValue = 1;
+    panel.worldSelector.selectedIndex = 1;
+    panel.killsInput.minValue = 1;
+    panel.killsInput.maxValue = 99;
+    if (installed) {
+        button.OnActivate();
+    }
+
+    const bool lapsPath =
+        installed && g_netSetupSetIndexCalls == 1 && g_netSetupSetIndexArg == 2 &&
+        panel.worldSelector.selectedIndex == 2 && g_netSetupSetVisibleCount == 2 &&
+        g_netSetupSetVisibleThis[0] == &panel.killsSwitch &&
+        g_netSetupSetVisibleValue[0] == 0 &&
+        g_netSetupSetVisibleThis[1] == &panel.lapsSwitch &&
+        g_netSetupSetVisibleValue[1] == 1 && g_netSetupCommitCalls == 1 &&
+        g_netSetupUpdateCalls == 1 && std::strcmp(g_netSetupUpdateText, "2") == 0 &&
+        panel.killsInput.minValue == 2 && panel.killsInput.maxValue == 99 &&
+        panel.timeLimitInput.base.modeOrEnabled == 0 &&
+        panel.incTimeLimitButton.base.modeOrEnabled == 0 &&
+        panel.decTimeLimitButton.base.modeOrEnabled == 0 &&
+        g_netSetupRefreshCount == 2 &&
+        g_netSetupRefreshThis[0] == &panel.incTimeLimitButton.base &&
+        g_netSetupRefreshThis[1] == &panel.decTimeLimitButton.base &&
+        g_netSetupInvalidateCount == 3 &&
+        g_netSetupInvalidateThis[0] == &panel.killsInput.base &&
+        g_netSetupInvalidateThis[1] == &panel.incKillsButton.base &&
+        g_netSetupInvalidateThis[2] == &panel.decKillsButton.base &&
+        g_netSetupZrdActivateCalls == 1;
+
+    ResetNetGameSetupProbe();
+    g_netSetupCommitValue = 7;
+    panel.worldSelector.selectedIndex = 2;
+    panel.killsInput.minValue = 2;
+    panel.killsInput.maxValue = 99;
+    panel.timeLimitInput.base.modeOrEnabled = 0;
+    panel.incTimeLimitButton.base.modeOrEnabled = 0;
+    panel.decTimeLimitButton.base.modeOrEnabled = 0;
+    if (installed) {
+        button.OnActivate();
+    }
+
+    const bool killsPath =
+        installed && g_netSetupSetIndexCalls == 1 && g_netSetupSetIndexArg == 3 &&
+        panel.worldSelector.selectedIndex == 3 && g_netSetupSetVisibleCount == 2 &&
+        g_netSetupSetVisibleThis[0] == &panel.killsSwitch &&
+        g_netSetupSetVisibleValue[0] == 1 &&
+        g_netSetupSetVisibleThis[1] == &panel.lapsSwitch &&
+        g_netSetupSetVisibleValue[1] == 0 && g_netSetupCommitCalls == 0 &&
+        g_netSetupUpdateCalls == 0 && panel.killsInput.minValue == 1 &&
+        panel.killsInput.maxValue == 99 &&
+        panel.timeLimitInput.base.modeOrEnabled == 1 &&
+        panel.incTimeLimitButton.base.modeOrEnabled == 1 &&
+        panel.decTimeLimitButton.base.modeOrEnabled == 1 &&
+        g_netSetupRefreshCount == 3 &&
+        g_netSetupRefreshThis[0] == &panel.timeLimitInput.base &&
+        g_netSetupRefreshThis[1] == &panel.incTimeLimitButton.base &&
+        g_netSetupRefreshThis[2] == &panel.decTimeLimitButton.base &&
+        g_netSetupInvalidateCount == 3 &&
+        g_netSetupInvalidateThis[0] == &panel.killsInput.base &&
+        g_netSetupInvalidateThis[1] == &panel.incKillsButton.base &&
+        g_netSetupInvalidateThis[2] == &panel.decKillsButton.base &&
+        g_netSetupZrdActivateCalls == 1;
+
+    while (patchCount > 0) {
+        --patchCount;
+        RestoreFunctionPatch(patches[patchCount]);
+    }
+
+    return lapsPath && killsPath ? 0 : 1;
+}
+
+extern "C" int hud_ui_net_game_setup_prev_world_button_smoke(void) {
+    CodeFunctionPatch patches[7] = {};
+    int patchCount = 0;
+    bool installed = true;
+
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiCycleSelectorWidget::SetIndexClamped)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::SetIndexClamped)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiElement::SetVisible)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::SetVisible)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiClampedIntTextInput::CommitAndGetValue)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::CommitAndGetValue)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiNumericTextInput::Update)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::NumericTextInputUpdate)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::RefreshState)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::RefreshState)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::Invalidate)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::Invalidate)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::OnActivate)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::ZrdOnActivate)),
+                                  patches[patchCount++]);
+
+    HudUiNetGameSetupPanel panel{};
+    HudUiNetGameSetupPanel_PrevWorldButton button{};
+    button.owner = &panel;
+
+    ResetNetGameSetupProbe();
+    g_netSetupCommitValue = 1;
+    panel.worldSelector.selectedIndex = 3;
+    panel.killsInput.minValue = 1;
+    panel.killsInput.maxValue = 99;
+    if (installed) {
+        button.OnActivate();
+    }
+
+    const bool lapsPath =
+        installed && g_netSetupSetIndexCalls == 1 && g_netSetupSetIndexArg == 2 &&
+        panel.worldSelector.selectedIndex == 2 && g_netSetupSetVisibleCount == 2 &&
+        g_netSetupSetVisibleThis[0] == &panel.killsSwitch &&
+        g_netSetupSetVisibleValue[0] == 0 &&
+        g_netSetupSetVisibleThis[1] == &panel.lapsSwitch &&
+        g_netSetupSetVisibleValue[1] == 1 && g_netSetupCommitCalls == 1 &&
+        g_netSetupUpdateCalls == 1 && std::strcmp(g_netSetupUpdateText, "2") == 0 &&
+        panel.killsInput.minValue == 2 && panel.killsInput.maxValue == 99 &&
+        panel.incTimeLimitButton.base.modeOrEnabled == 0 &&
+        panel.decTimeLimitButton.base.modeOrEnabled == 0 &&
+        g_netSetupRefreshCount == 2 &&
+        g_netSetupRefreshThis[0] == &panel.incTimeLimitButton.base &&
+        g_netSetupRefreshThis[1] == &panel.decTimeLimitButton.base &&
+        g_netSetupInvalidateCount == 3 &&
+        g_netSetupInvalidateThis[0] == &panel.killsInput.base &&
+        g_netSetupInvalidateThis[1] == &panel.incKillsButton.base &&
+        g_netSetupInvalidateThis[2] == &panel.decKillsButton.base &&
+        g_netSetupZrdActivateCalls == 1;
+
+    ResetNetGameSetupProbe();
+    g_netSetupCommitValue = 7;
+    panel.worldSelector.selectedIndex = 2;
+    panel.killsInput.minValue = 2;
+    panel.killsInput.maxValue = 99;
+    panel.timeLimitInput.base.modeOrEnabled = 0;
+    panel.incTimeLimitButton.base.modeOrEnabled = 0;
+    panel.decTimeLimitButton.base.modeOrEnabled = 0;
+    if (installed) {
+        button.OnActivate();
+    }
+
+    const bool killsPath =
+        installed && g_netSetupSetIndexCalls == 1 && g_netSetupSetIndexArg == 1 &&
+        panel.worldSelector.selectedIndex == 1 && g_netSetupSetVisibleCount == 2 &&
+        g_netSetupSetVisibleThis[0] == &panel.killsSwitch &&
+        g_netSetupSetVisibleValue[0] == 1 &&
+        g_netSetupSetVisibleThis[1] == &panel.lapsSwitch &&
+        g_netSetupSetVisibleValue[1] == 0 && g_netSetupCommitCalls == 0 &&
+        g_netSetupUpdateCalls == 0 && panel.killsInput.minValue == 1 &&
+        panel.killsInput.maxValue == 99 &&
+        panel.timeLimitInput.base.modeOrEnabled == 1 &&
+        panel.incTimeLimitButton.base.modeOrEnabled == 1 &&
+        panel.decTimeLimitButton.base.modeOrEnabled == 1 &&
+        g_netSetupRefreshCount == 3 &&
+        g_netSetupRefreshThis[0] == &panel.timeLimitInput.base &&
+        g_netSetupRefreshThis[1] == &panel.incTimeLimitButton.base &&
+        g_netSetupRefreshThis[2] == &panel.decTimeLimitButton.base &&
+        g_netSetupInvalidateCount == 3 &&
+        g_netSetupInvalidateThis[0] == &panel.killsInput.base &&
+        g_netSetupInvalidateThis[1] == &panel.incKillsButton.base &&
+        g_netSetupInvalidateThis[2] == &panel.decKillsButton.base &&
+        g_netSetupZrdActivateCalls == 1;
+
+    while (patchCount > 0) {
+        --patchCount;
+        RestoreFunctionPatch(patches[patchCount]);
+    }
+
+    return lapsPath && killsPath ? 0 : 1;
+}
+
+extern "C" int hud_ui_net_game_setup_launch_button_smoke(void) {
+    CodeFunctionPatch patches[18] = {};
+    int patchCount = 0;
+    bool installed = true;
+
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::OnActivate)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::ZrdOnActivate)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::LoadFromZrd)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::LoadFromZrd)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::BindPrimitiveNodeToElement)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::BindPrimitiveNodeToElement)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::BindWidgetByName)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::BindWidgetByName)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::FreeLoadedTreeRoots)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::FreeLoadedTreeRoots)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiContainer::SetChildFlags)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::SetChildFlags)),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zOpt_GetPlayerName),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupGetPlayerName),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zOpt::GetNetworkModemEnabled),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupGetNetworkModemEnabled),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zOpt::SetNetworkEnabled),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupSetNetworkEnabled),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zNetwork_DPlay::CreateSessionFromStatusFields),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupCreateSession),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zNetwork_DPlay::CreateLocalPlayerRecordAndRegister),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupCreateLocalPlayer),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&GameNet::SetStatusBitsFromFlags),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupSetStatusBits),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&GameNet::SendPkt14_HudTimerAndFlagsSync),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupSendPkt14),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zNetwork::IsHost),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupIsHost),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&GameNet::HostUpdateSessionDescStatusFields),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupHostUpdate),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&GameNet::UnregisterGameplayPacketHandlers),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupUnregisterHandlers),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&GameNet::ResetRemotePlayersAndSpawnLists),
+                                  reinterpret_cast<void *>(&FakeNetGameSetupResetRemotePlayers),
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudSensorTracker::SetRuntimeTimerSecAndGoalValue)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::SetRuntimeTimerSecAndGoalValue)),
+                                  patches[patchCount++]);
+
+    CodeFunctionPatch missionPatch{};
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudSensorTracker::InitMissionIdAndFlags)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::InitMissionIdAndFlags)),
+                                  missionPatch);
+    CodeFunctionPatch getMainWndPatch{};
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&RecoilApp::GetMainWnd)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::GetMainWnd)),
+                                  getMainWndPatch);
+    CodeFunctionPatch queueExitPatch{};
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&RecoilApp::QueueExitCurrentState)),
+                                  reinterpret_cast<void *>(MethodAddress(&NetGameSetupPatchOps::QueueExitCurrentState)),
+                                  queueExitPatch);
+
+    char fakeNodeStorage = 0;
+    ResetNetGameSetupProbe();
+    g_netSetupLoadResult = reinterpret_cast<zReader::Node *>(&fakeNodeStorage);
+    std::strcpy(g_netSetupPlayerName, "HostPilot");
+
+    HudUiNetGameSetupPanel panel{};
+    const bool constructed = installed && panel.Constructor(0) == &panel;
+    panel.playButton.owner = &panel;
+    panel.allowMapsToggle.checked = 1;
+    panel.nameTagsToggle.checked = 1;
+    panel.worldSelector.selectedIndex = 2;
+    panel.gameNameInput.Update("Arena");
+    panel.timeLimitInput.Update("15");
+    panel.killsInput.Update("10");
+    panel.maxPlayersInput.Update("6");
+    g_RecoilApp.m_skipIntroFmv = 0;
+
+    panel.playButton.OnActivate();
+
+    union ExpectedTimerRaw {
+        float seconds;
+        int raw;
+    } expectedTimer = {900.0f};
+    const bool newSessionOk =
+        constructed && g_netSetupZrdActivateCalls == 1 &&
+        g_netSetupCreateSessionCalls == 1 &&
+        g_netSetupCapturedStatusFields.eventCode == 3 &&
+        g_netSetupCapturedStatusFields.statusFlags == 3 &&
+        g_netSetupCapturedStatusFields.valueOrTime == 15 &&
+        g_netSetupCapturedStatusFields.auxParam == 10 &&
+        g_netSetupCapturedStatusFields.maxPlayers == 6 &&
+        std::strcmp(g_netSetupCapturedStatusFields.sessionNameBuf, "Arena") == 0 &&
+        g_netSetupSetNetworkEnabledCalls == 1 &&
+        g_netSetupSetNetworkEnabledValue == 1 &&
+        g_netSetupCreateLocalPlayerCalls == 1 &&
+        g_netSetupCreateLocalPlayerName == g_netSetupPlayerName &&
+        g_netSetupSendPkt14Calls == 0 && g_netSetupUnregisterCalls == 0 &&
+        g_netSetupResetRemoteCalls == 0 && g_netSetupSetStatusFlagsValue == 3 &&
+        g_netSetupTimerRaw == expectedTimer.raw && g_netSetupTimerGoal == 10 &&
+        g_netSetupInitMissionId == 9 && g_netSetupInitMissionFlags == 7 &&
+        g_netSetupQueueExitCalls == 1 && g_netSetupQueueExitParam == 0 &&
+        g_RecoilApp.m_skipIntroFmv == 1;
+
+    ResetNetGameSetupProbe();
+    g_netSetupNetworkModem = 1;
+    g_netSetupIsHostValue = 1;
+    g_netSetupFrame.m_useArchiveBanks = 11;
+    g_RecoilApp.m_skipIntroFmv = 0;
+    panel.playButton.OnActivate();
+
+    const bool reconfigureOk =
+        g_netSetupCreateSessionCalls == 0 && g_netSetupCreateLocalPlayerCalls == 0 &&
+        g_netSetupSendPkt14Calls == 1 && g_netSetupSendPkt14EventCode == 3 &&
+        g_netSetupSendPkt14StatusFlags == 3 &&
+        g_netSetupSendPkt14ValueOrTime == 15 &&
+        g_netSetupSendPkt14AuxParam == 10 &&
+        g_netSetupHostUpdateCalls == 1 &&
+        g_netSetupHostUpdateEventCode == 3 &&
+        g_netSetupHostUpdateAuxParam == 10 &&
+        g_netSetupHostUpdateValueOrTime == 15 &&
+        g_netSetupHostUpdateStatusFlags == 3 &&
+        g_netSetupUnregisterCalls == 1 && g_netSetupResetRemoteCalls == 1 &&
+        g_netSetupSetStatusFlagsValue == 3 &&
+        g_netSetupTimerRaw == expectedTimer.raw && g_netSetupTimerGoal == 10 &&
+        g_netSetupInitMissionId == 9 && g_netSetupInitMissionFlags == 11 &&
+        g_netSetupQueueExitCalls == 1 && g_netSetupQueueExitParam == 0 &&
+        g_RecoilApp.m_skipIntroFmv == 1;
+
+    panel.Destructor();
+
+    RestoreFunctionPatch(queueExitPatch);
+    RestoreFunctionPatch(getMainWndPatch);
+    RestoreFunctionPatch(missionPatch);
+    while (patchCount > 0) {
+        --patchCount;
+        RestoreFunctionPatch(patches[patchCount]);
+    }
+
+    return newSessionOk && reconfigureOk ? 0 : 1;
+}
+
+namespace {
+float g_mpExitClusterSetScales[4];
+int g_mpExitClusterSetScaleCount;
+float g_mpExitClusterDispatchScales[4];
+int g_mpExitClusterDispatchCount;
+int g_mpExitClusterRunPostCount;
+zVidImagePartial *g_mpExitClusterBlitImage;
+int g_mpExitClusterBlitDstX;
+int g_mpExitClusterBlitDstY;
+int g_mpExitClusterBlitClipFlags;
+zVidRect32 *g_mpExitClusterBlitRect;
+HudUiBackground *g_mpExitClusterUpdateThis;
+float g_mpExitClusterUpdateDelta;
+int g_mpExitClusterUpdateCount;
+int g_mpExitClusterTopUpdateCount;
+float g_mpExitClusterTopUpdateDelta;
+int g_mpExitClusterUnlockCount;
+int g_mpExitClusterGetWindowCount;
+zOpt_ViewRectSection g_mpExitClusterWindowA;
+zOpt_ViewRectSection g_mpExitClusterWindowB;
+zVidRect32 *g_mpExitClusterAdjustSrc;
+zVidRect32 *g_mpExitClusterAdjustDst;
+int g_mpExitClusterAdjustWait;
+int g_mpExitClusterAdjustBlit;
+int g_mpExitClusterAdjustCount;
+HudUiBackground *g_mpExitClusterSetEnabledThis;
+int g_mpExitClusterSetEnabledValue;
+int g_mpExitClusterUnloadUpdateCount;
+float g_mpExitClusterUnloadUpdateDelta;
+HudUiMpExitDialog *g_mpExitClusterUnloadUpdateThis;
+HudUiTextStack4 *g_mpExitClusterClearThis;
+int g_mpExitClusterClearCount;
+zVidImagePartial *g_mpExitClusterReleaseImage;
+int g_mpExitClusterQueueSwitchCount;
+RecoilApp_IState *g_mpExitClusterSwitchStates[4];
+int g_mpExitClusterSwitchParams[4];
+int g_mpExitClusterQueueEnterFlag;
+int g_mpExitClusterQueueEnterCount;
+HudUiZrdWidget *g_mpExitClusterActivateThis[4];
+int g_mpExitClusterActivateCount;
+HudUiZrdWidget *g_mpExitClusterDestroyedWidgets[4];
+int g_mpExitClusterWidgetDtorCount;
+HudUiBackground *g_mpExitClusterBackgroundDtorThis;
+int g_mpExitClusterBackgroundDtorCount;
+
+void ResetMpExitClusterProbe() {
+    g_mpExitClusterSetScaleCount = 0;
+    g_mpExitClusterDispatchCount = 0;
+    g_mpExitClusterRunPostCount = 0;
+    g_mpExitClusterBlitImage = nullptr;
+    g_mpExitClusterBlitDstX = -1;
+    g_mpExitClusterBlitDstY = -1;
+    g_mpExitClusterBlitClipFlags = -1;
+    g_mpExitClusterBlitRect = reinterpret_cast<zVidRect32 *>(1);
+    g_mpExitClusterUpdateThis = nullptr;
+    g_mpExitClusterUpdateDelta = -1.0f;
+    g_mpExitClusterUpdateCount = 0;
+    g_mpExitClusterTopUpdateCount = 0;
+    g_mpExitClusterTopUpdateDelta = -1.0f;
+    g_mpExitClusterUnlockCount = 0;
+    g_mpExitClusterGetWindowCount = 0;
+    g_mpExitClusterAdjustSrc = nullptr;
+    g_mpExitClusterAdjustDst = nullptr;
+    g_mpExitClusterAdjustWait = -1;
+    g_mpExitClusterAdjustBlit = -1;
+    g_mpExitClusterAdjustCount = 0;
+    g_mpExitClusterSetEnabledThis = nullptr;
+    g_mpExitClusterSetEnabledValue = -1;
+    g_mpExitClusterUnloadUpdateCount = 0;
+    g_mpExitClusterUnloadUpdateDelta = -1.0f;
+    g_mpExitClusterUnloadUpdateThis = nullptr;
+    g_mpExitClusterClearThis = nullptr;
+    g_mpExitClusterClearCount = 0;
+    g_mpExitClusterReleaseImage = nullptr;
+    g_mpExitClusterQueueSwitchCount = 0;
+    g_mpExitClusterQueueEnterFlag = -1;
+    g_mpExitClusterQueueEnterCount = 0;
+    g_mpExitClusterActivateCount = 0;
+    g_mpExitClusterWidgetDtorCount = 0;
+    g_mpExitClusterBackgroundDtorThis = nullptr;
+    g_mpExitClusterBackgroundDtorCount = 0;
+    for (int i = 0; i < 4; ++i) {
+        g_mpExitClusterSetScales[i] = -1.0f;
+        g_mpExitClusterDispatchScales[i] = -1.0f;
+        g_mpExitClusterSwitchStates[i] = nullptr;
+        g_mpExitClusterSwitchParams[i] = -1;
+        g_mpExitClusterActivateThis[i] = nullptr;
+        g_mpExitClusterDestroyedWidgets[i] = nullptr;
+    }
+}
+
+void RECOIL_STDCALL FakeMpExitClusterSetScaleAndRebuild(float scale) {
+    if (g_mpExitClusterSetScaleCount < 4) {
+        g_mpExitClusterSetScales[g_mpExitClusterSetScaleCount] = scale;
+    }
+    ++g_mpExitClusterSetScaleCount;
+}
+
+void RECOIL_STDCALL FakeMpExitClusterDispatchSetScale(float deltaSeconds) {
+    if (g_mpExitClusterDispatchCount < 4) {
+        g_mpExitClusterDispatchScales[g_mpExitClusterDispatchCount] = deltaSeconds;
+    }
+    ++g_mpExitClusterDispatchCount;
+}
+
+int RECOIL_CDECL FakeMpExitClusterRunPostprocessOnPrimaryBuffer() {
+    ++g_mpExitClusterRunPostCount;
+    return 1;
+}
+
+void RECOIL_FASTCALL FakeMpExitClusterBlitToActiveTarget(zVidImagePartial *image, int dstX,
+                                                        int dstY, int clipFlags,
+                                                        zVidRect32 *srcRect) {
+    g_mpExitClusterBlitImage = image;
+    g_mpExitClusterBlitDstX = dstX;
+    g_mpExitClusterBlitDstY = dstY;
+    g_mpExitClusterBlitClipFlags = clipFlags;
+    g_mpExitClusterBlitRect = srcRect;
+}
+
+int RECOIL_CDECL FakeMpExitClusterDispatchUnlockPrimarySurfaceState() {
+    ++g_mpExitClusterUnlockCount;
+    return 1;
+}
+
+zOpt_ViewRectSection *RECOIL_CDECL FakeMpExitClusterGetWindowSection() {
+    ++g_mpExitClusterGetWindowCount;
+    return g_mpExitClusterGetWindowCount == 1 ? &g_mpExitClusterWindowA
+                                              : &g_mpExitClusterWindowB;
+}
+
+int RECOIL_FASTCALL FakeMpExitClusterAdjustSurfacesIfEnabled(
+    zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForPresent,
+    int blitPrimaryToSwFirst) {
+    ++g_mpExitClusterAdjustCount;
+    g_mpExitClusterAdjustSrc = srcRect;
+    g_mpExitClusterAdjustDst = dstRect;
+    g_mpExitClusterAdjustWait = waitForPresent;
+    g_mpExitClusterAdjustBlit = blitPrimaryToSwFirst;
+    return 1;
+}
+
+void RECOIL_CDECL FakeMpExitClusterQueueEnterWithReconfigureFlag(int flag) {
+    ++g_mpExitClusterQueueEnterCount;
+    g_mpExitClusterQueueEnterFlag = flag;
+}
+
+struct MpExitClusterPatchOps {
+    void RECOIL_THISCALL BackgroundUpdate(float deltaSeconds) {
+        ++g_mpExitClusterUpdateCount;
+        g_mpExitClusterUpdateThis = (HudUiBackground *)this;
+        g_mpExitClusterUpdateDelta = deltaSeconds;
+    }
+
+    void RECOIL_THISCALL ContainerUpdateAll(float deltaSeconds) {
+        ++g_mpExitClusterTopUpdateCount;
+        g_mpExitClusterTopUpdateDelta = deltaSeconds;
+    }
+
+    void RECOIL_THISCALL BackgroundSetEnabled(int enabled) {
+        g_mpExitClusterSetEnabledThis = (HudUiBackground *)this;
+        g_mpExitClusterSetEnabledValue = enabled;
+    }
+
+    void RECOIL_THISCALL MpDialogUpdate(float deltaSeconds) {
+        ++g_mpExitClusterUnloadUpdateCount;
+        g_mpExitClusterUnloadUpdateThis = (HudUiMpExitDialog *)this;
+        g_mpExitClusterUnloadUpdateDelta = deltaSeconds;
+    }
+
+    void RECOIL_THISCALL TextStackClear() {
+        ++g_mpExitClusterClearCount;
+        g_mpExitClusterClearThis = (HudUiTextStack4 *)this;
+    }
+
+    int RECOIL_THISCALL ReleaseIfNotDefaultThunk() {
+        g_mpExitClusterReleaseImage = (zVidImagePartial *)this;
+        return 0;
+    }
+
+    RecoilPtr32 RECOIL_THISCALL QueueSwitchCurrentState(RecoilApp_IState *state,
+                                                        int stateParam) {
+        const int index = g_mpExitClusterQueueSwitchCount;
+        if (index < 4) {
+            g_mpExitClusterSwitchStates[index] = state;
+            g_mpExitClusterSwitchParams[index] = stateParam;
+        }
+        ++g_mpExitClusterQueueSwitchCount;
+        return 0;
+    }
+
+    void RECOIL_THISCALL ZrdWidgetOnActivate() {
+        const int index = g_mpExitClusterActivateCount;
+        if (index < 4) {
+            g_mpExitClusterActivateThis[index] = (HudUiZrdWidget *)this;
+        }
+        ++g_mpExitClusterActivateCount;
+    }
+
+    void RECOIL_THISCALL ZrdWidgetDestructorCore() {
+        const int index = g_mpExitClusterWidgetDtorCount;
+        if (index < 4) {
+            g_mpExitClusterDestroyedWidgets[index] = (HudUiZrdWidget *)this;
+        }
+        ++g_mpExitClusterWidgetDtorCount;
+    }
+
+    void RECOIL_THISCALL BackgroundDestructor() {
+        ++g_mpExitClusterBackgroundDtorCount;
+        g_mpExitClusterBackgroundDtorThis = (HudUiBackground *)this;
+    }
+};
+} // namespace
+
+extern "C" int hud_ui_mp_exit_dialog_table_cluster_smoke(void) {
+    const bool tablesOk =
+        g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl.slots[12] ==
+            MethodAddress(&HudUiMpExitDialog_NewGameButton::OnActivate) &&
+        g_HudUiZrdWidget_MpExitDialog_ExitButton_Vtbl.slots[12] ==
+            MethodAddress(&HudUiMpExitDialog_ExitButton::OnActivate) &&
+        g_HudUiMpExitDialog_Vtbl.slots[0] == MethodAddress(&HudUiMpExitDialog::Update) &&
+        g_HudUiMpExitDialog_Vtbl.slots[1] == MethodAddress(&HudUiBackground::SetEnabled) &&
+        g_HudUiMpExitDialog_Vtbl.slots[2] ==
+            MethodAddress(&HudUiMpExitDialog::ScalarDeletingDestructorThunk);
+
+    CodeFunctionPatch updatePatches[8] = {};
+    bool installed =
+        PatchFunctionJump(reinterpret_cast<void *>(&HudScoreboard::SetScaleAndRebuild),
+                          reinterpret_cast<void *>(&FakeMpExitClusterSetScaleAndRebuild),
+                          updatePatches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&HudScoreboard::DispatchSetScale),
+                          reinterpret_cast<void *>(&FakeMpExitClusterDispatchSetScale),
+                          updatePatches[1]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                          reinterpret_cast<void *>(&FakeMpExitClusterRunPostprocessOnPrimaryBuffer),
+                          updatePatches[2]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zVid_Image::BlitToActiveTarget),
+                          reinterpret_cast<void *>(&FakeMpExitClusterBlitToActiveTarget),
+                          updatePatches[3]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::Update)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitClusterPatchOps::BackgroundUpdate)),
+                          updatePatches[4]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiContainer::UpdateAll)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitClusterPatchOps::ContainerUpdateAll)),
+                          updatePatches[5]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                          reinterpret_cast<void *>(&FakeMpExitClusterDispatchUnlockPrimarySurfaceState),
+                          updatePatches[6]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zOpt::GetWindowSection),
+                          reinterpret_cast<void *>(&FakeMpExitClusterGetWindowSection),
+                          updatePatches[7]);
+    CodeFunctionPatch adjustPatch{};
+    installed = installed &&
+                PatchFunctionJump(reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+                                  reinterpret_cast<void *>(&FakeMpExitClusterAdjustSurfacesIfEnabled),
+                                  adjustPatch);
+
+    zVidImagePartial updateImage{};
+    HudUiTextStack4 savedTopStack{};
+    HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
+    g_HudUiTopMessageStack = &savedTopStack;
+
+    HudUiMpExitDialog fadeDialog{};
+    fadeDialog.m_mpNewGameButtonMode = 1;
+    fadeDialog.m_fadeElapsedSeconds = 0.25f;
+    fadeDialog.m_capturedBackgroundImage = &updateImage;
+    ResetMpExitClusterProbe();
+    if (installed) {
+        fadeDialog.Update(0.5f);
+    }
+    const bool updateFadeOk =
+        installed && fadeDialog.m_fadeElapsedSeconds == 0.75f &&
+        g_mpExitClusterSetScaleCount == 1 && g_mpExitClusterSetScales[0] == 0.75f &&
+        g_mpExitClusterRunPostCount == 1 && g_mpExitClusterBlitImage == &updateImage &&
+        g_mpExitClusterBlitDstX == 0 && g_mpExitClusterBlitDstY == 0 &&
+        g_mpExitClusterBlitClipFlags == 0 && g_mpExitClusterBlitRect == nullptr &&
+        g_mpExitClusterUpdateThis == &fadeDialog.base &&
+        g_mpExitClusterUpdateDelta == 0.5f && g_mpExitClusterDispatchCount == 1 &&
+        g_mpExitClusterDispatchScales[0] == 0.5f && g_mpExitClusterTopUpdateCount == 0 &&
+        g_mpExitClusterUnlockCount == 1 && g_mpExitClusterGetWindowCount == 2 &&
+        g_mpExitClusterAdjustCount == 1 &&
+        g_mpExitClusterAdjustSrc == reinterpret_cast<zVidRect32 *>(&g_mpExitClusterWindowB) &&
+        g_mpExitClusterAdjustDst == reinterpret_cast<zVidRect32 *>(&g_mpExitClusterWindowA) &&
+        g_mpExitClusterAdjustWait == 0 && g_mpExitClusterAdjustBlit == 1;
+
+    HudUiMpExitDialog messageDialog{};
+    messageDialog.m_mpNewGameButtonMode = -1;
+    messageDialog.m_capturedBackgroundImage = &updateImage;
+    g_Time_UnscaledDeltaTimeSec = 0.125f;
+    ResetMpExitClusterProbe();
+    if (installed) {
+        messageDialog.Update(0.25f);
+    }
+    const bool updateMessageOk =
+        installed && g_mpExitClusterSetScaleCount == 0 &&
+        g_mpExitClusterDispatchCount == 0 && g_mpExitClusterTopUpdateCount == 1 &&
+        g_mpExitClusterTopUpdateDelta == 0.125f && g_mpExitClusterRunPostCount == 1 &&
+        g_mpExitClusterUpdateThis == &messageDialog.base &&
+        g_mpExitClusterUpdateDelta == 0.25f;
+
+    RestoreFunctionPatch(adjustPatch);
+    for (int i = 7; i >= 0; --i) {
+        RestoreFunctionPatch(updatePatches[i]);
+    }
+
+    CodeFunctionPatch unloadPatches[5] = {};
+    installed =
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::SetEnabled)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitClusterPatchOps::BackgroundSetEnabled)),
+                          unloadPatches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiMpExitDialog::Update)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitClusterPatchOps::MpDialogUpdate)),
+                          unloadPatches[1]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&HudScoreboard::SetScaleAndRebuild),
+                          reinterpret_cast<void *>(&FakeMpExitClusterSetScaleAndRebuild),
+                          unloadPatches[2]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiTextStack4::Clear)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitClusterPatchOps::TextStackClear)),
+                          unloadPatches[3]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zVid_Image::ReleaseIfNotDefault),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitClusterPatchOps::ReleaseIfNotDefaultThunk)),
+                          unloadPatches[4]);
+
+    HudUiMpExitDialog unloadDialog{};
+    zVidImagePartial unloadImage{};
+    unloadDialog.m_capturedBackgroundImage = &unloadImage;
+    ResetMpExitClusterProbe();
+    if (installed) {
+        unloadDialog.UnloadLayout();
+    }
+    const bool unloadOk =
+        installed && g_mpExitClusterSetEnabledThis == &unloadDialog.base &&
+        g_mpExitClusterSetEnabledValue == 0 &&
+        g_mpExitClusterUnloadUpdateThis == &unloadDialog &&
+        g_mpExitClusterUnloadUpdateDelta == 0.0f && g_mpExitClusterSetScaleCount == 1 &&
+        g_mpExitClusterSetScales[0] == 0.0f && g_mpExitClusterClearThis == &savedTopStack &&
+        g_mpExitClusterClearCount == 1 && g_mpExitClusterReleaseImage == &unloadImage &&
+        unloadDialog.m_capturedBackgroundImage == nullptr;
+
+    for (int i = 4; i >= 0; --i) {
+        RestoreFunctionPatch(unloadPatches[i]);
+    }
+
+    CodeFunctionPatch activatePatches[3] = {};
+    installed =
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&RecoilApp::QueueSwitchCurrentState)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitClusterPatchOps::QueueSwitchCurrentState)),
+                          activatePatches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag),
+                          reinterpret_cast<void *>(&FakeMpExitClusterQueueEnterWithReconfigureFlag),
+                          activatePatches[1]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::OnActivate)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitClusterPatchOps::ZrdWidgetOnActivate)),
+                          activatePatches[2]);
+
+    HudUiMpExitDialog_NewGameButton newGameButton{};
+    HudUiMpExitDialog_ExitButton exitButton{};
+    ResetMpExitClusterProbe();
+    if (installed) {
+        newGameButton.OnActivate();
+        exitButton.OnActivate();
+    }
+    const bool activateOk =
+        installed && g_mpExitClusterQueueSwitchCount == 2 &&
+        g_mpExitClusterSwitchStates[0] == &g_RecoilApp.m_introFmvState_1a0.base &&
+        g_mpExitClusterSwitchParams[0] == 0 &&
+        g_mpExitClusterQueueEnterCount == 1 && g_mpExitClusterQueueEnterFlag == 1 &&
+        g_mpExitClusterActivateCount == 2 &&
+        g_mpExitClusterActivateThis[0] == &newGameButton &&
+        g_mpExitClusterActivateThis[1] == &exitButton &&
+        g_mpExitClusterSwitchStates[1] == &g_RecoilApp.m_leaveNetworkState_1d0.base &&
+        g_mpExitClusterSwitchParams[1] == 0;
+
+    for (int i = 2; i >= 0; --i) {
+        RestoreFunctionPatch(activatePatches[i]);
+    }
+
+    CodeFunctionPatch destructorPatches[2] = {};
+    installed =
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::DestructorCore)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitClusterPatchOps::ZrdWidgetDestructorCore)),
+                          destructorPatches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::Destructor)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitClusterPatchOps::BackgroundDestructor)),
+                          destructorPatches[1]);
+
+    HudUiMpExitDialog destructorDialog{};
+    ResetMpExitClusterProbe();
+    if (installed) {
+        destructorDialog.Destructor();
+    }
+    const bool destructorOk =
+        installed && g_mpExitClusterWidgetDtorCount == 2 &&
+        g_mpExitClusterDestroyedWidgets[0] == &destructorDialog.m_mpExitButton &&
+        g_mpExitClusterDestroyedWidgets[1] == &destructorDialog.m_mpNewGameButton &&
+        g_mpExitClusterBackgroundDtorCount == 1 &&
+        g_mpExitClusterBackgroundDtorThis == &destructorDialog.base;
+
+    HudUiMpExitDialog scalarDialog{};
+    ResetMpExitClusterProbe();
+    HudUiMpExitDialog *scalarReturned = nullptr;
+    if (installed) {
+        scalarReturned = scalarDialog.ScalarDeletingDestructorThunk(0);
+    }
+    const bool scalarOk =
+        installed && scalarReturned == &scalarDialog && g_mpExitClusterWidgetDtorCount == 2 &&
+        g_mpExitClusterDestroyedWidgets[0] == &scalarDialog.m_mpExitButton &&
+        g_mpExitClusterDestroyedWidgets[1] == &scalarDialog.m_mpNewGameButton &&
+        g_mpExitClusterBackgroundDtorThis == &scalarDialog.base;
+
+    for (int i = 1; i >= 0; --i) {
+        RestoreFunctionPatch(destructorPatches[i]);
+    }
+
+    g_HudUiTopMessageStack = oldTopStack;
+
+    return tablesOk && updateFadeOk && updateMessageOk && unloadOk && activateOk &&
+                   destructorOk && scalarOk
+               ? 0
+               : 1;
+}
+
+namespace {
+HudUiBackground *g_mpExitOnEnterBackgroundCtorThis;
+HudUiZrdWidget *g_mpExitOnEnterZrdCtorThis[4];
+int g_mpExitOnEnterZrdCtorCount;
+int g_mpExitOnEnterAccelerationMode;
+HudUiMpExitDialog *g_mpExitOnEnterLoadThis;
+int g_mpExitOnEnterLoadCount;
+
+void ResetMpExitOnEnterProbe() {
+    g_mpExitOnEnterBackgroundCtorThis = nullptr;
+    g_mpExitOnEnterZrdCtorCount = 0;
+    for (int i = 0; i < 4; ++i) {
+        g_mpExitOnEnterZrdCtorThis[i] = nullptr;
+    }
+    g_mpExitOnEnterLoadThis = nullptr;
+    g_mpExitOnEnterLoadCount = 0;
+}
+
+int RECOIL_CDECL FakeMpExitOnEnterGetAccelerationOption() {
+    return g_mpExitOnEnterAccelerationMode;
+}
+
+struct MpExitOnEnterPatchOps {
+    HudUiBackground *RECOIL_THISCALL BackgroundConstructor() {
+        g_mpExitOnEnterBackgroundCtorThis = (HudUiBackground *)this;
+        return (HudUiBackground *)this;
+    }
+
+    HudUiZrdWidget *RECOIL_THISCALL ZrdWidgetConstructor() {
+        const int index = g_mpExitOnEnterZrdCtorCount;
+        if (index < 4) {
+            g_mpExitOnEnterZrdCtorThis[index] = (HudUiZrdWidget *)this;
+        }
+        ++g_mpExitOnEnterZrdCtorCount;
+        return (HudUiZrdWidget *)this;
+    }
+
+    void RECOIL_THISCALL LoadLayout() {
+        ++g_mpExitOnEnterLoadCount;
+        g_mpExitOnEnterLoadThis = (HudUiMpExitDialog *)this;
+    }
+};
+} // namespace
+
+extern "C" int recoil_app_mp_exit_dialog_state_on_enter_smoke(void) {
+    CodeFunctionPatch patches[4] = {};
+    const bool installed =
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiBackground::Constructor)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitOnEnterPatchOps::BackgroundConstructor)),
+                          patches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::Constructor)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitOnEnterPatchOps::ZrdWidgetConstructor)),
+                          patches[1]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zVid::GetAccelerationOption),
+                          reinterpret_cast<void *>(&FakeMpExitOnEnterGetAccelerationOption),
+                          patches[2]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiMpExitDialog::LoadLayout)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitOnEnterPatchOps::LoadLayout)),
+                          patches[3]);
+
+    HudUiMpExitDialog *const oldDialog = g_HudUiMpExitDialog;
+    RecoilApp_MpExitDialogState state{};
+
+    g_HudUiMpExitDialog = nullptr;
+    g_mpExitOnEnterAccelerationMode = 0;
+    ResetMpExitOnEnterProbe();
+    if (installed) {
+        state.OnEnter();
+    }
+    HudUiMpExitDialog *const createdDialog = g_HudUiMpExitDialog;
+    const bool createdOk =
+        installed && createdDialog != nullptr &&
+        g_mpExitOnEnterBackgroundCtorThis == &createdDialog->base &&
+        g_mpExitOnEnterZrdCtorCount == 2 &&
+        g_mpExitOnEnterZrdCtorThis[0] == &createdDialog->m_mpNewGameButton &&
+        g_mpExitOnEnterZrdCtorThis[1] == &createdDialog->m_mpExitButton &&
+        createdDialog->m_mpNewGameButton.base.ftable ==
+            &g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl &&
+        createdDialog->m_mpExitButton.base.ftable ==
+            &g_HudUiZrdWidget_MpExitDialog_ExitButton_Vtbl &&
+        createdDialog->base.base.base.vptr ==
+            reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiMpExitDialog_Vtbl) &&
+        g_mpExitOnEnterLoadCount == 1 && g_mpExitOnEnterLoadThis == createdDialog;
+
+    HudUiMpExitDialog existingDialog{};
+    g_HudUiMpExitDialog = &existingDialog;
+    g_mpExitOnEnterAccelerationMode = 1;
+    ResetMpExitOnEnterProbe();
+    if (installed) {
+        state.OnEnter();
+    }
+    const bool existingHardwareOk =
+        installed && g_HudUiMpExitDialog == &existingDialog &&
+        g_mpExitOnEnterBackgroundCtorThis == nullptr &&
+        g_mpExitOnEnterZrdCtorCount == 0 && g_mpExitOnEnterLoadCount == 0;
+
+    g_mpExitOnEnterAccelerationMode = 0;
+    ResetMpExitOnEnterProbe();
+    if (installed) {
+        state.OnEnter();
+    }
+    const bool existingSoftwareOk =
+        installed && g_HudUiMpExitDialog == &existingDialog &&
+        g_mpExitOnEnterBackgroundCtorThis == nullptr &&
+        g_mpExitOnEnterZrdCtorCount == 0 && g_mpExitOnEnterLoadCount == 1 &&
+        g_mpExitOnEnterLoadThis == &existingDialog;
+
+    g_HudUiMpExitDialog = oldDialog;
+    if (createdDialog != nullptr) {
+        ::operator delete(createdDialog);
+    }
+    for (int i = 3; i >= 0; --i) {
+        RestoreFunctionPatch(patches[i]);
+    }
+
+    return createdOk && existingHardwareOk && existingSoftwareOk ? 0 : 1;
+}
+
+namespace {
+int g_mpExitTryHalfResMode;
+int g_mpExitTryInvalidateMode;
+int g_mpExitTryPitch = 1536;
+int g_mpExitTryBitsPerPixel = 16;
+zOpt_ViewRectSection g_mpExitTryRect;
+void *g_mpExitTryPixels = reinterpret_cast<void *>(0x12345678);
+void *g_mpExitTryFramePixels;
+zOpt_ViewRectSection *g_mpExitTryFrameRect;
+int g_mpExitTryFrameBitsPerPixel;
+int g_mpExitTryFramePitch;
+int g_mpExitTrySoundCount;
+const char *g_mpExitTrySoundName;
+zInput_BindMapContext *g_mpExitTryPushContext;
+int g_mpExitTryPushCount;
+int g_mpExitTryResetCount;
+int g_mpExitTryAccelerationMode;
+HudUiMpExitDialog *g_mpExitTryLoadThis;
+int g_mpExitTryLoadCount;
+
+void ResetMpExitTryProbe() {
+    g_mpExitTryHalfResMode = -1;
+    g_mpExitTryInvalidateMode = -1;
+    g_mpExitTryFramePixels = nullptr;
+    g_mpExitTryFrameRect = nullptr;
+    g_mpExitTryFrameBitsPerPixel = -1;
+    g_mpExitTryFramePitch = -1;
+    g_mpExitTrySoundCount = 0;
+    g_mpExitTrySoundName = nullptr;
+    g_mpExitTryPushContext = reinterpret_cast<zInput_BindMapContext *>(0x1);
+    g_mpExitTryPushCount = 0;
+    g_mpExitTryResetCount = 0;
+    g_mpExitTryLoadThis = nullptr;
+    g_mpExitTryLoadCount = 0;
+}
+
+int RECOIL_FASTCALL FakeMpExitTrySetHalfResAdjustMode(int mode) {
+    g_mpExitTryHalfResMode = mode;
+    return 0;
+}
+
+void RECOIL_FASTCALL FakeMpExitTrySetInvalidateMode(int mode) {
+    g_mpExitTryInvalidateMode = mode;
+}
+
+int RECOIL_CDECL FakeMpExitTryGetPrimarySurfacePitch() {
+    return g_mpExitTryPitch;
+}
+
+int RECOIL_CDECL FakeMpExitTryGetDisplaySectionBitsPerPixel() {
+    return g_mpExitTryBitsPerPixel;
+}
+
+zOpt_ViewRectSection *RECOIL_CDECL FakeMpExitTryGetWindowSection() {
+    return &g_mpExitTryRect;
+}
+
+void *RECOIL_CDECL FakeMpExitTryGetPrimarySurfacePixels() {
+    return g_mpExitTryPixels;
+}
+
+void RECOIL_FASTCALL FakeMpExitTrySetFrameBufferRegion(void *pixels,
+                                                       zOpt_ViewRectSection *activeRegionRect,
+                                                       int bitsPerPixel,
+                                                       int pitchBytes) {
+    g_mpExitTryFramePixels = pixels;
+    g_mpExitTryFrameRect = activeRegionRect;
+    g_mpExitTryFrameBitsPerPixel = bitsPerPixel;
+    g_mpExitTryFramePitch = pitchBytes;
+}
+
+int RECOIL_FASTCALL FakeMpExitTrySampleSetInitByName(const char *setName) {
+    ++g_mpExitTrySoundCount;
+    g_mpExitTrySoundName = setName;
+    return 1;
+}
+
+void RECOIL_FASTCALL FakeMpExitTryBindMapContextPush(zInput_BindMapContext *bindMapOrNull) {
+    ++g_mpExitTryPushCount;
+    g_mpExitTryPushContext = bindMapOrNull;
+}
+
+void RECOIL_CDECL FakeMpExitTryBindMapCurrentResetAllBindings() {
+    ++g_mpExitTryResetCount;
+}
+
+int RECOIL_CDECL FakeMpExitTryGetAccelerationOption() {
+    return g_mpExitTryAccelerationMode;
+}
+
+struct MpExitTryPatchOps {
+    void RECOIL_THISCALL LoadLayout() {
+        ++g_mpExitTryLoadCount;
+        g_mpExitTryLoadThis = (HudUiMpExitDialog *)this;
+    }
+};
+} // namespace
+
+extern "C" int recoil_app_mp_exit_dialog_state_on_try_become_current_smoke(void) {
+    CodeFunctionPatch patches[12] = {};
+    const bool installed =
+        PatchFunctionJump(reinterpret_cast<void *>(&zVideo::SetHalfResAdjustMode),
+                          reinterpret_cast<void *>(&FakeMpExitTrySetHalfResAdjustMode),
+                          patches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&HudUi::SetInvalidateMode),
+                          reinterpret_cast<void *>(&FakeMpExitTrySetInvalidateMode),
+                          patches[1]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zVideo::GetPrimarySurfacePitch),
+                          reinterpret_cast<void *>(&FakeMpExitTryGetPrimarySurfacePitch),
+                          patches[2]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zOpt::GetDisplaySectionBitsPerPixel),
+                          reinterpret_cast<void *>(&FakeMpExitTryGetDisplaySectionBitsPerPixel),
+                          patches[3]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zOpt::GetWindowSection),
+                          reinterpret_cast<void *>(&FakeMpExitTryGetWindowSection),
+                          patches[4]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zVideo::GetPrimarySurfacePixels),
+                          reinterpret_cast<void *>(&FakeMpExitTryGetPrimarySurfacePixels),
+                          patches[5]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zRndr::SetFrameBufferRegion),
+                          reinterpret_cast<void *>(&FakeMpExitTrySetFrameBufferRegion),
+                          patches[6]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zSndSampleSet_InitByName),
+                          reinterpret_cast<void *>(&FakeMpExitTrySampleSetInitByName),
+                          patches[7]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zInput::BindMapContext_Push),
+                          reinterpret_cast<void *>(&FakeMpExitTryBindMapContextPush),
+                          patches[8]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zInput::BindMapCurrent_ResetAllBindings),
+                          reinterpret_cast<void *>(&FakeMpExitTryBindMapCurrentResetAllBindings),
+                          patches[9]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zVid::GetAccelerationOption),
+                          reinterpret_cast<void *>(&FakeMpExitTryGetAccelerationOption),
+                          patches[10]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiMpExitDialog::LoadLayout)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitTryPatchOps::LoadLayout)),
+                          patches[11]);
+
+    HudUiMpExitDialog dialog{};
+    HudUiMpExitDialog *const oldDialog = g_HudUiMpExitDialog;
+    g_HudUiMpExitDialog = &dialog;
+    RecoilApp_MpExitDialogState state{};
+
+    g_mpExitTryAccelerationMode = 1;
+    ResetMpExitTryProbe();
+    int resultHardware = 0;
+    if (installed) {
+        resultHardware = state.OnTryBecomeCurrent();
+    }
+    const bool hardwareOk =
+        installed && resultHardware == 1 && g_mpExitTryHalfResMode == 0 &&
+        g_mpExitTryInvalidateMode == 0 && g_mpExitTryFramePixels == g_mpExitTryPixels &&
+        g_mpExitTryFrameRect == &g_mpExitTryRect &&
+        g_mpExitTryFrameBitsPerPixel == g_mpExitTryBitsPerPixel &&
+        g_mpExitTryFramePitch == g_mpExitTryPitch && g_mpExitTrySoundCount == 1 &&
+        std::strcmp(g_mpExitTrySoundName, "DIALOG") == 0 &&
+        g_mpExitTryPushCount == 1 && g_mpExitTryPushContext == nullptr &&
+        g_mpExitTryResetCount == 1 && g_mpExitTryLoadCount == 1 &&
+        g_mpExitTryLoadThis == &dialog;
+
+    g_mpExitTryAccelerationMode = 0;
+    ResetMpExitTryProbe();
+    int resultSoftware = 0;
+    if (installed) {
+        resultSoftware = state.OnTryBecomeCurrent();
+    }
+    const bool softwareOk =
+        installed && resultSoftware == 1 && g_mpExitTryHalfResMode == 0 &&
+        g_mpExitTryInvalidateMode == 0 && g_mpExitTryFramePixels == g_mpExitTryPixels &&
+        g_mpExitTryFrameRect == &g_mpExitTryRect &&
+        g_mpExitTryFrameBitsPerPixel == g_mpExitTryBitsPerPixel &&
+        g_mpExitTryFramePitch == g_mpExitTryPitch && g_mpExitTrySoundCount == 1 &&
+        std::strcmp(g_mpExitTrySoundName, "DIALOG") == 0 &&
+        g_mpExitTryPushCount == 1 && g_mpExitTryPushContext == nullptr &&
+        g_mpExitTryResetCount == 1 && g_mpExitTryLoadCount == 0 &&
+        g_mpExitTryLoadThis == nullptr;
+
+    g_HudUiMpExitDialog = oldDialog;
+    for (int i = 11; i >= 0; --i) {
+        RestoreFunctionPatch(patches[i]);
+    }
+
+    return hardwareOk && softwareOk ? 0 : 1;
+}
+
+namespace {
+HudUiMpExitDialog *g_mpExitDeactivateUnloadThis;
+int g_mpExitDeactivateUnloadCount;
+HudUiMpExitDialog *g_mpExitDeactivateDtorThis;
+unsigned int g_mpExitDeactivateDtorFlags;
+int g_mpExitDeactivateDtorCount;
+int g_mpExitDeactivatePopCount;
+DWORD g_mpExitDeactivateSleepMs;
+int g_mpExitDeactivateSoundCount;
+const char *g_mpExitDeactivateSoundName;
+float g_mpExitDeactivateScale;
+int g_mpExitDeactivateScaleCount;
+
+void ResetMpExitDeactivateProbe() {
+    g_mpExitDeactivateUnloadThis = nullptr;
+    g_mpExitDeactivateUnloadCount = 0;
+    g_mpExitDeactivateDtorThis = nullptr;
+    g_mpExitDeactivateDtorFlags = 0;
+    g_mpExitDeactivateDtorCount = 0;
+    g_mpExitDeactivatePopCount = 0;
+    g_mpExitDeactivateSleepMs = 0;
+    g_mpExitDeactivateSoundCount = 0;
+    g_mpExitDeactivateSoundName = nullptr;
+    g_mpExitDeactivateScale = -1.0f;
+    g_mpExitDeactivateScaleCount = 0;
+}
+
+void RECOIL_CDECL FakeMpExitDeactivateBindMapContextPop() {
+    ++g_mpExitDeactivatePopCount;
+}
+
+void WINAPI FakeMpExitDeactivateSleep(DWORD milliseconds) {
+    g_mpExitDeactivateSleepMs = milliseconds;
+}
+
+int RECOIL_FASTCALL FakeMpExitDeactivateSampleSetDestroyByName(const char *setName) {
+    ++g_mpExitDeactivateSoundCount;
+    g_mpExitDeactivateSoundName = setName;
+    return 1;
+}
+
+void RECOIL_FASTCALL FakeMpExitDeactivateSetScaleAndRebuild(float scale) {
+    ++g_mpExitDeactivateScaleCount;
+    g_mpExitDeactivateScale = scale;
+}
+
+struct MpExitDeactivatePatchOps {
+    void RECOIL_THISCALL UnloadLayout() {
+        ++g_mpExitDeactivateUnloadCount;
+        g_mpExitDeactivateUnloadThis = (HudUiMpExitDialog *)this;
+    }
+
+    HudUiMpExitDialog *RECOIL_THISCALL ScalarDeletingDtor(unsigned int flags) {
+        ++g_mpExitDeactivateDtorCount;
+        g_mpExitDeactivateDtorThis = (HudUiMpExitDialog *)this;
+        g_mpExitDeactivateDtorFlags = flags;
+        return (HudUiMpExitDialog *)this;
+    }
+};
+} // namespace
+
+extern "C" int recoil_app_mp_exit_dialog_state_on_deactivate_smoke(void) {
+    CodeFunctionPatch patches[5] = {};
+    const bool installed =
+        PatchFunctionJump(reinterpret_cast<void *>(MethodAddress(&HudUiMpExitDialog::UnloadLayout)),
+                          reinterpret_cast<void *>(MethodAddress(&MpExitDeactivatePatchOps::UnloadLayout)),
+                          patches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zInput::BindMapContext_Pop),
+                          reinterpret_cast<void *>(&FakeMpExitDeactivateBindMapContextPop),
+                          patches[1]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&Sleep),
+                          reinterpret_cast<void *>(&FakeMpExitDeactivateSleep),
+                          patches[2]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zSndSampleSet_DestroyByName),
+                          reinterpret_cast<void *>(&FakeMpExitDeactivateSampleSetDestroyByName),
+                          patches[3]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&HudScoreboard::SetScaleAndRebuild),
+                          reinterpret_cast<void *>(&FakeMpExitDeactivateSetScaleAndRebuild),
+                          patches[4]);
+
+    HudUiMpExitDialog_Vtbl table = {};
+    table.slots[2] =
+        (unsigned int)MethodAddress(&MpExitDeactivatePatchOps::ScalarDeletingDtor);
+    HudUiMpExitDialog dialog = {};
+    dialog.base.base.base.vptr = (const HudUiContainer_FTable *)&table;
+    HudUiMpExitDialog *const oldDialog = g_HudUiMpExitDialog;
+    g_HudUiMpExitDialog = &dialog;
+
+    RecoilApp_MpExitDialogState state{};
+    ResetMpExitDeactivateProbe();
+    if (installed) {
+        state.OnDeactivate();
+    }
+
+    const bool ok =
+        installed && g_mpExitDeactivateUnloadCount == 1 &&
+        g_mpExitDeactivateUnloadThis == &dialog && g_mpExitDeactivateDtorCount == 1 &&
+        g_mpExitDeactivateDtorThis == &dialog && g_mpExitDeactivateDtorFlags == 1 &&
+        g_HudUiMpExitDialog == nullptr && g_mpExitDeactivatePopCount == 1 &&
+        g_mpExitDeactivateSleepMs == 1000 && g_mpExitDeactivateSoundCount == 1 &&
+        std::strcmp(g_mpExitDeactivateSoundName, "DIALOG") == 0 &&
+        g_mpExitDeactivateScaleCount == 1 && g_mpExitDeactivateScale == 0.0f;
+
+    g_HudUiMpExitDialog = oldDialog;
+    for (int i = 4; i >= 0; --i) {
+        RestoreFunctionPatch(patches[i]);
+    }
+
+    return ok ? 0 : 1;
+}
+
+namespace {
+int g_mpExitUpdatePollDispatch;
+int g_mpExitUpdatePollCount;
+int g_mpExitUpdateTickCount;
+HudUiMpExitDialog *g_mpExitUpdateThis;
+float g_mpExitUpdateDelta;
+int g_mpExitUpdateCount;
+int g_mpExitUpdateLocIds[2];
+int g_mpExitUpdateLocCount;
+int g_mpExitUpdateStep;
+int g_mpExitUpdateStepError;
+DWORD g_mpExitUpdateSleepMs;
+UINT g_mpExitUpdateBeepType;
+HWND g_mpExitUpdateMessageHwnd;
+char g_mpExitUpdateMessageText[64];
+char g_mpExitUpdateMessageCaption[64];
+UINT g_mpExitUpdateMessageType;
+int g_mpExitUpdateExitCode;
+char g_mpExitUpdatePrintfCaption[64];
+char g_mpExitUpdatePrintfText[64];
+
+void ResetMpExitUpdateProbe() {
+    g_mpExitUpdatePollDispatch = -1;
+    g_mpExitUpdatePollCount = 0;
+    g_mpExitUpdateTickCount = 0;
+    g_mpExitUpdateThis = nullptr;
+    g_mpExitUpdateDelta = -1.0f;
+    g_mpExitUpdateCount = 0;
+    g_mpExitUpdateLocCount = 0;
+    g_mpExitUpdateStep = 0;
+    g_mpExitUpdateStepError = 0;
+    g_mpExitUpdateSleepMs = 0;
+    g_mpExitUpdateBeepType = 0;
+    g_mpExitUpdateMessageHwnd = 0;
+    g_mpExitUpdateMessageText[0] = 0;
+    g_mpExitUpdateMessageCaption[0] = 0;
+    g_mpExitUpdateMessageType = 0;
+    g_mpExitUpdateExitCode = -1;
+    g_mpExitUpdatePrintfCaption[0] = 0;
+    g_mpExitUpdatePrintfText[0] = 0;
+}
+
+void ExpectMpExitUpdateStep(int expected) {
+    ++g_mpExitUpdateStep;
+    if (g_mpExitUpdateStep != expected) {
+        g_mpExitUpdateStepError = 1;
+    }
+}
+
+void RECOIL_FASTCALL FakeMpExitUpdatePollActiveDevices(int dispatchCallbacks) {
+    g_mpExitUpdatePollDispatch = dispatchCallbacks;
+    ++g_mpExitUpdatePollCount;
+}
+
+void RECOIL_CDECL FakeMpExitUpdateTimeTick() {
+    ++g_mpExitUpdateTickCount;
+}
+
+char *RECOIL_FASTCALL FakeMpExitUpdateGetMessageString(int messageId) {
+    if (g_mpExitUpdateLocCount < 2) {
+        g_mpExitUpdateLocIds[g_mpExitUpdateLocCount] = messageId;
+    }
+    ++g_mpExitUpdateLocCount;
+    return messageId == 28 ? const_cast<char *>("Fatal caption")
+                           : const_cast<char *>("Fatal text");
+}
+
+void RECOIL_CDECL FakeMpExitUpdateFlipToGDI() {
+    ExpectMpExitUpdateStep(1);
+}
+
+int RECOIL_CDECL FakeMpExitUpdateSndShutdown() {
+    ExpectMpExitUpdateStep(2);
+    return 1;
+}
+
+int RECOIL_CDECL FakeMpExitUpdateNetworkShutdown() {
+    ExpectMpExitUpdateStep(3);
+    return 1;
+}
+
+int RECOIL_CDECL FakeMpExitUpdateVideoShutdown() {
+    ExpectMpExitUpdateStep(4);
+    return 1;
+}
+
+int RECOIL_CDECL FakeMpExitUpdatePrintf(const char *, const char *caption, const char *text) {
+    ExpectMpExitUpdateStep(5);
+    std::strncpy(g_mpExitUpdatePrintfCaption, caption,
+                 sizeof(g_mpExitUpdatePrintfCaption) - 1);
+    std::strncpy(g_mpExitUpdatePrintfText, text, sizeof(g_mpExitUpdatePrintfText) - 1);
+    return 0;
+}
+
+void WINAPI FakeMpExitUpdateSleep(DWORD milliseconds) {
+    ExpectMpExitUpdateStep(6);
+    g_mpExitUpdateSleepMs = milliseconds;
+}
+
+BOOL WINAPI FakeMpExitUpdateMessageBeep(UINT type) {
+    ExpectMpExitUpdateStep(7);
+    g_mpExitUpdateBeepType = type;
+    return TRUE;
+}
+
+int WINAPI FakeMpExitUpdateMessageBoxA(HWND hwnd, LPCSTR text, LPCSTR caption, UINT type) {
+    ExpectMpExitUpdateStep(8);
+    g_mpExitUpdateMessageHwnd = hwnd;
+    std::strncpy(g_mpExitUpdateMessageText, text, sizeof(g_mpExitUpdateMessageText) - 1);
+    std::strncpy(g_mpExitUpdateMessageCaption, caption,
+                 sizeof(g_mpExitUpdateMessageCaption) - 1);
+    g_mpExitUpdateMessageType = type;
+    return IDOK;
+}
+
+void RECOIL_FASTCALL FakeMpExitUpdateExitProcessWithCleanup(int exitCode) {
+    ExpectMpExitUpdateStep(9);
+    g_mpExitUpdateExitCode = exitCode;
+}
+
+struct MpExitUpdatePatchOps {
+    void RECOIL_THISCALL Update(float deltaSeconds) {
+        ++g_mpExitUpdateCount;
+        g_mpExitUpdateThis = (HudUiMpExitDialog *)this;
+        g_mpExitUpdateDelta = deltaSeconds;
+    }
+};
+} // namespace
+
+extern "C" int recoil_app_mp_exit_dialog_state_on_update_should_quit_smoke(void) {
+    CodeFunctionPatch patches[13] = {};
+    const bool installed =
+        PatchFunctionJump(reinterpret_cast<void *>(&zInput::PollActiveDevices),
+                          reinterpret_cast<void *>(&FakeMpExitUpdatePollActiveDevices),
+                          patches[0]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&Time::Tick),
+                          reinterpret_cast<void *>(&FakeMpExitUpdateTimeTick), patches[1]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zLoc::GetMessageString),
+                          reinterpret_cast<void *>(&FakeMpExitUpdateGetMessageString),
+                          patches[2]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zVideo_dd::FlipToGDIIfAttached),
+                          reinterpret_cast<void *>(&FakeMpExitUpdateFlipToGDI), patches[3]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zSndSystem::Shutdown),
+                          reinterpret_cast<void *>(&FakeMpExitUpdateSndShutdown), patches[4]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zNetwork::ShutdownSessionRuntime),
+                          reinterpret_cast<void *>(&FakeMpExitUpdateNetworkShutdown),
+                          patches[5]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zVideo::ShutdownVideoSystem),
+                          reinterpret_cast<void *>(&FakeMpExitUpdateVideoShutdown),
+                          patches[6]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&printf),
+                          reinterpret_cast<void *>(&FakeMpExitUpdatePrintf), patches[7]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&Sleep),
+                          reinterpret_cast<void *>(&FakeMpExitUpdateSleep), patches[8]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&MessageBeep),
+                          reinterpret_cast<void *>(&FakeMpExitUpdateMessageBeep), patches[9]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&MessageBoxA),
+                          reinterpret_cast<void *>(&FakeMpExitUpdateMessageBoxA), patches[10]) &&
+        PatchFunctionJump(reinterpret_cast<void *>(&zSys::ExitProcessWithCleanup),
+                          reinterpret_cast<void *>(&FakeMpExitUpdateExitProcessWithCleanup),
+                          patches[11]);
+
+    HudUiMpExitDialog_Vtbl table = {};
+    table.slots[0] = (unsigned int)MethodAddress(&MpExitUpdatePatchOps::Update);
+    HudUiMpExitDialog dialog = {};
+    dialog.base.base.base.vptr = (const HudUiContainer_FTable *)&table;
+    HudUiMpExitDialog *const oldDialog = g_HudUiMpExitDialog;
+    const float oldFrameDelta = g_FrameDeltaTimeSec;
+    const HWND oldMainHwnd = g_RecoilApp_hWndMain;
+    g_HudUiMpExitDialog = &dialog;
+    g_FrameDeltaTimeSec = 0.375f;
+    g_RecoilApp_hWndMain = (HWND)0x1234;
+
+    RecoilApp_MpExitDialogState state{};
+    dialog.m_fadeElapsedSeconds = 600.0f;
+    ResetMpExitUpdateProbe();
+    int resultNormal = 1;
+    if (installed) {
+        resultNormal = state.OnUpdateShouldQuit();
+    }
+    const bool normalOk =
+        installed && resultNormal == 0 && g_mpExitUpdatePollCount == 1 &&
+        g_mpExitUpdatePollDispatch == 0 && g_mpExitUpdateTickCount == 1 &&
+        g_mpExitUpdateCount == 1 && g_mpExitUpdateThis == &dialog &&
+        g_mpExitUpdateDelta == g_FrameDeltaTimeSec && g_mpExitUpdateStep == 0 &&
+        g_mpExitUpdateLocCount == 0;
+
+    dialog.m_fadeElapsedSeconds = 600.25f;
+    ResetMpExitUpdateProbe();
+    int resultFatal = 1;
+    if (installed) {
+        resultFatal = state.OnUpdateShouldQuit();
+    }
+    const bool fatalOk =
+        installed && resultFatal == 0 && g_mpExitUpdatePollCount == 1 &&
+        g_mpExitUpdatePollDispatch == 0 && g_mpExitUpdateTickCount == 1 &&
+        g_mpExitUpdateCount == 1 && g_mpExitUpdateLocCount == 2 &&
+        g_mpExitUpdateLocIds[0] == 28 && g_mpExitUpdateLocIds[1] == 29 &&
+        g_mpExitUpdateStep == 9 && g_mpExitUpdateStepError == 0 &&
+        std::strcmp(g_mpExitUpdatePrintfCaption, "Fatal caption") == 0 &&
+        std::strcmp(g_mpExitUpdatePrintfText, "Fatal text") == 0 &&
+        g_mpExitUpdateSleepMs == 1000 && g_mpExitUpdateBeepType == MB_ICONHAND &&
+        g_mpExitUpdateMessageHwnd == (HWND)0x1234 &&
+        std::strcmp(g_mpExitUpdateMessageText, "Fatal text") == 0 &&
+        std::strcmp(g_mpExitUpdateMessageCaption, "Fatal caption") == 0 &&
+        g_mpExitUpdateMessageType == MB_ICONHAND && g_mpExitUpdateExitCode == 0;
+
+    g_HudUiMpExitDialog = oldDialog;
+    g_FrameDeltaTimeSec = oldFrameDelta;
+    g_RecoilApp_hWndMain = oldMainHwnd;
+    for (int i = 11; i >= 0; --i) {
+        RestoreFunctionPatch(patches[i]);
+    }
+
+    return normalOk && fatalOk ? 0 : 1;
+}
+
 extern "C" int hud_ui_aux_overlay_text_lines_smoke(void) {
     HudUiPanel_FTable ftable{};
     ftable.slots[24] = MethodAddress(&TestAuxPanel::SetVisible);
@@ -1507,6 +5165,50 @@ extern "C" int hud_ui_aux_overlay_text_lines_smoke(void) {
 extern "C" int zhud_mgr_destroy_sensor_window_null_smoke(void) {
     HudUiMgr::DestroySensorWindow();
     return 0;
+}
+
+extern "C" int zhud_mgr_destroy_sensor_window_playback_smoke(void) {
+    CodeFunctionPatch mciPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&mciSendCommandA),
+                           reinterpret_cast<void *>(&FakeHudSensorMciSendCommandA), mciPatch)) {
+        return 1;
+    }
+
+    zFMV_Playback *const playback =
+        static_cast<zFMV_Playback *>(::operator new(sizeof(zFMV_Playback)));
+    std::memset(playback, 0, sizeof(*playback));
+    playback->mciDeviceId = 0x2345;
+    playback->mediaPathDup = static_cast<char *>(std::malloc(4));
+    if (playback->mediaPathDup == nullptr) {
+        ::operator delete(playback);
+        RestoreFunctionPatch(mciPatch);
+        return 2;
+    }
+    std::strcpy(playback->mediaPathDup, "x");
+
+    g_hudSensorMciSendCommandCount = 0;
+    g_hudSensorCloseParamOk = 0;
+    g_hudSensorExpectedClosePlayback = playback;
+    for (int index = 0; index < 4; ++index) {
+        g_hudSensorMciDevices[index] = 0;
+        g_hudSensorMciMessages[index] = 0;
+        g_hudSensorMciFlags[index] = 0;
+        g_hudSensorMciParams[index] = 0;
+    }
+
+    g_HudUiSensorWindowPlayback = playback;
+    HudUiMgr::DestroySensorWindow();
+
+    const bool stoppedAndClosed =
+        g_hudSensorMciSendCommandCount == 2 && g_hudSensorMciDevices[0] == 0x2345 &&
+        g_hudSensorMciMessages[0] == 0x808 && g_hudSensorMciFlags[0] == 2 &&
+        g_hudSensorMciParams[0] == 0 && g_hudSensorMciDevices[1] == 0x2345 &&
+        g_hudSensorMciMessages[1] == 0x804 && g_hudSensorMciFlags[1] == 2 &&
+        g_hudSensorCloseParamOk == 1;
+    const bool clearedGlobal = g_HudUiSensorWindowPlayback == nullptr;
+
+    RestoreFunctionPatch(mciPatch);
+    return stoppedAndClosed && clearedGlobal ? 0 : 3;
 }
 
 extern "C" int zhud_mgr_disable_hud_smoke(void) {
@@ -2581,15 +6283,35 @@ extern "C" int zhud_composite_panel_vector_clear_smoke(void) {
 
     vector.Clear();
 
-    return g_compositeEntryDestructorCount == 2 &&
-                   g_compositeEntryDestructorThis[0] == &entries[0] &&
-                   g_compositeEntryDestructorThis[1] == &entries[1] &&
-                   g_compositeEntryDestructorFlags[0] == 0 &&
-                   g_compositeEntryDestructorFlags[1] == 0 &&
-                   vector.allocatorStorage == 0x12345678 && vector.begin == nullptr &&
-                   vector.end == nullptr && vector.capacityEnd == nullptr
-               ? 0
-               : 1;
+    const bool customDispatch =
+        g_compositeEntryDestructorCount == 2 &&
+        g_compositeEntryDestructorThis[0] == &entries[0] &&
+        g_compositeEntryDestructorThis[1] == &entries[1] &&
+        g_compositeEntryDestructorFlags[0] == 0 &&
+        g_compositeEntryDestructorFlags[1] == 0 &&
+        vector.allocatorStorage == 0x12345678 && vector.begin == nullptr &&
+        vector.end == nullptr && vector.capacityEnd == nullptr;
+
+    auto *realEntries = static_cast<HudUiCompositePanelEntry *>(
+        ::operator new(sizeof(HudUiCompositePanelEntry) * 2));
+    realEntries[0].panel.Constructor();
+    realEntries[1].panel.Constructor();
+
+    HudUiCompositePanelVector realVector{};
+    realVector.allocatorStorage = 0x87654321;
+    realVector.begin = realEntries;
+    realVector.end = realEntries + 2;
+    realVector.capacityEnd = realEntries + 2;
+
+    realVector.Clear();
+
+    const bool realDispatch =
+        g_HudUiTransitionTextPanel_FTable.slots[0] ==
+            MethodAddress(&HudUiPanel::ScalarDeletingDestructor) &&
+        realVector.allocatorStorage == 0x87654321 && realVector.begin == nullptr &&
+        realVector.end == nullptr && realVector.capacityEnd == nullptr;
+
+    return customDispatch && realDispatch ? 0 : 1;
 }
 
 extern "C" int zhud_panel_layout_entry_copy_construct_smoke(void) {
@@ -3631,6 +7353,225 @@ extern "C" int zhud_composite_panel_constructor_with_entry_count_smoke(void) {
     return panelInitialized && entriesInitialized ? 0 : 1;
 }
 
+extern "C" int zhud_composite_panel_destructor_smoke(void) {
+    HudUiCommon_FTable destructorTable{};
+    destructorTable.slots[0] = MethodAddress(&TestCompositePanelEntry::ScalarDeletingDestructor);
+
+    g_compositeEntryDestructorCount = 0;
+    std::memset(g_compositeEntryDestructorThis, 0, sizeof(g_compositeEntryDestructorThis));
+    std::memset(g_compositeEntryDestructorFlags, 0xff, sizeof(g_compositeEntryDestructorFlags));
+
+    HudUiCompositePanel panel{};
+    auto *const panelAsPanel = reinterpret_cast<HudUiPanel *>(&panel);
+    panelAsPanel->vtbl = &g_HudUiCompositePanel_FTable;
+    panel.entryVector.begin = AllocateCompositePanelEntriesForTest(2);
+    panel.entryVector.end = panel.entryVector.begin + 2;
+    panel.entryVector.capacityEnd = panel.entryVector.end;
+    HudUiCompositePanelEntry *const entries = panel.entryVector.begin;
+    TestFieldAt<const HudUiCommon_FTable *>(&panel.entryVector.begin[0], 0) = &destructorTable;
+    TestFieldAt<const HudUiCommon_FTable *>(&panel.entryVector.begin[1], 0) = &destructorTable;
+
+    panel.Destructor();
+
+    const bool entryDestructors =
+        g_compositeEntryDestructorCount == 2 &&
+        g_compositeEntryDestructorThis[0] == &entries[0] &&
+        g_compositeEntryDestructorThis[1] == &entries[1] &&
+        g_compositeEntryDestructorFlags[0] == 0 && g_compositeEntryDestructorFlags[1] == 0;
+    const bool vectorCleared = panel.entryVector.begin == nullptr && panel.entryVector.end == nullptr &&
+                               panel.entryVector.capacityEnd == nullptr;
+    const bool baseDestroyed = panelAsPanel->vtbl == &g_HudUiCommon_FTable;
+    const bool tableSlot =
+        g_HudUiCompositePanel_FTable.slots[0] ==
+        MethodAddress(&HudUiCompositePanel::ScalarDeletingDestructor);
+
+    HudUiCompositePanel scalar{};
+    HudUiCompositePanel *const scalarResult = scalar.ScalarDeletingDestructor(0);
+    const bool scalarNoDelete = scalarResult == &scalar &&
+                                reinterpret_cast<HudUiPanel *>(&scalar)->vtbl ==
+                                    &g_HudUiCommon_FTable;
+
+    return entryDestructors && vectorCleared && baseDestroyed && tableSlot && scalarNoDelete ? 0 : 1;
+}
+
+extern "C" int zhud_composite_panel_update_smoke(void) {
+    HudUiCommon_FTable updateTable{};
+    updateTable.slots[9] = MethodAddress(&TestCompositePanelEntry::Update);
+
+    g_compositeEntryUpdateCount = 0;
+    std::memset(g_compositeEntryUpdateThis, 0, sizeof(g_compositeEntryUpdateThis));
+    std::memset(g_compositeEntryUpdateDelta, 0, sizeof(g_compositeEntryUpdateDelta));
+
+    HudUiCompositePanel panel{};
+    auto *const panelAsPanel = reinterpret_cast<HudUiPanel *>(&panel);
+    panelAsPanel->vtbl = &g_HudUiCompositePanel_FTable;
+    panel.entryVector.begin = AllocateCompositePanelEntriesForTest(2);
+    panel.entryVector.end = panel.entryVector.begin + 2;
+    panel.entryVector.capacityEnd = panel.entryVector.end;
+    TestFieldAt<const HudUiCommon_FTable *>(&panel.entryVector.begin[0], 0) = &updateTable;
+    TestFieldAt<const HudUiCommon_FTable *>(&panel.entryVector.begin[1], 0) = &updateTable;
+
+    panel.Update(0.5f);
+    const bool visibleUpdate =
+        g_compositeEntryUpdateCount == 2 &&
+        g_compositeEntryUpdateThis[0] == &panel.entryVector.begin[0] &&
+        g_compositeEntryUpdateThis[1] == &panel.entryVector.begin[1] &&
+        HudFloatNear(g_compositeEntryUpdateDelta[0], 0.5f) &&
+        HudFloatNear(g_compositeEntryUpdateDelta[1], 0.5f);
+    const bool tableSlot =
+        g_HudUiCompositePanel_FTable.slots[9] == MethodAddress(&HudUiCompositePanel::Update);
+    const bool transitionSlot =
+        g_HudUiTransitionTextPanel_FTable.slots[9] ==
+        MethodAddress(&HudUiTransitionTextPanel::TickFlash);
+
+    TestFieldAt<std::uint32_t>(&panel, 0x0c) = 0x10;
+    g_compositeEntryUpdateCount = 0;
+    panel.Update(0.25f);
+    const bool hiddenSkipped = g_compositeEntryUpdateCount == 0;
+
+    ::operator delete(panel.entryVector.begin);
+    panel.entryVector.begin = nullptr;
+    panel.entryVector.end = nullptr;
+    panel.entryVector.capacityEnd = nullptr;
+    return visibleUpdate && tableSlot && transitionSlot && hiddenSkipped ? 0 : 1;
+}
+
+void TestCompositePanelSetTextFmtV(HudUiCompositePanel *panel, const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+    panel->SetTextFmtV(format, args);
+    va_end(args);
+}
+
+extern "C" int zhud_composite_panel_set_text_fmt_smoke(void) {
+    HudUiPanel_FTable entryTable{};
+    entryTable.slots[24] = MethodAddress(&TestCompositePanelEntry::SetVisible);
+    entryTable.slots[34] = MethodAddress(&TestCompositePanelEntry::SetTextFmtV);
+
+    HudUiCompositePanel_FTable compositeTable{};
+    compositeTable.slots[34] = MethodAddress(&TestCompositePanelDispatch::SetTextFmtV);
+    compositeTable.slots[37] = MethodAddress(&TestCompositePanelDispatch::ScrollHistory);
+
+    g_compositeWrapperSetTextFmtVCount = 0;
+    g_compositeWrapperSetTextFmtVThis = nullptr;
+    g_compositeWrapperSetTextFmtVFormat = nullptr;
+    g_compositeWrapperSetTextFmtVArg = 0;
+
+    HudUiCompositePanel wrapperPanel{};
+    TestFieldAt<const HudUiCompositePanel_FTable *>(&wrapperPanel, 0) = &compositeTable;
+    wrapperPanel.SetTextFmt("W%d", 42);
+    const bool wrapperDispatch =
+        g_compositeWrapperSetTextFmtVCount == 1 &&
+        g_compositeWrapperSetTextFmtVThis == &wrapperPanel &&
+        std::strcmp(g_compositeWrapperSetTextFmtVFormat, "W%d") == 0 &&
+        g_compositeWrapperSetTextFmtVArg == 42;
+
+    g_compositeEntrySetTextFmtVCount = 0;
+    g_compositeEntrySetTextFmtVThis = nullptr;
+    g_compositeEntrySetTextFmtVFormat = nullptr;
+    g_compositeEntrySetTextFmtVArg = 0;
+    g_compositeEntrySetVisibleThis = nullptr;
+    g_compositeEntrySetVisibleValue = 0;
+    g_compositeScrollHistoryThis = nullptr;
+
+    HudUiCompositePanel panel{};
+    TestFieldAt<const HudUiCompositePanel_FTable *>(&panel, 0) = &compositeTable;
+    HudUiCompositePanelEntry entries[2]{};
+    TestFieldAt<const HudUiPanel_FTable *>(&entries[1], 0) = &entryTable;
+    panel.activeEntryCount = 1;
+    panel.entryVector.begin = entries;
+    panel.entryVector.end = entries + 2;
+    panel.entryVector.capacityEnd = entries + 2;
+    TestCompositePanelSetTextFmtV(&panel, "D%d", 7);
+
+    const bool directDispatch =
+        g_compositeEntrySetTextFmtVCount == 1 &&
+        g_compositeEntrySetTextFmtVThis == &entries[1] &&
+        std::strcmp(g_compositeEntrySetTextFmtVFormat, "D%d") == 0 &&
+        g_compositeEntrySetTextFmtVArg == 7 &&
+        g_compositeEntrySetVisibleThis == &entries[1] &&
+        g_compositeEntrySetVisibleValue == 1 &&
+        g_compositeScrollHistoryThis == &panel;
+
+    g_HudUi_InvalidateMask = 1;
+    HudUiCompositePanel historyPanel{};
+    TestFieldAt<const HudUiCompositePanel_FTable *>(&historyPanel, 0) =
+        &g_HudUiCompositePanel_FTable;
+    HudUiCompositePanelEntry *const historyEntries = AllocateCompositePanelEntriesForTest(2);
+    InitCompositePanelEntryForTest(&historyEntries[0], 50);
+    InitCompositePanelEntryForTest(&historyEntries[1], 51);
+    reinterpret_cast<HudUiPanel *>(&historyEntries[0])->SetText("old");
+    reinterpret_cast<HudUiPanel *>(&historyEntries[1])->SetText("new");
+    historyPanel.entryVector.begin = historyEntries;
+    historyPanel.entryVector.end = historyEntries + 2;
+    historyPanel.entryVector.capacityEnd = historyEntries + 2;
+    historyPanel.activeEntryCount = 1;
+    historyPanel.ScrollHistory();
+    const bool historyShift =
+        historyPanel.activeEntryCount == 1 &&
+        std::strcmp(&TestFieldAt<char>(&historyEntries[0], 0x34), "new") == 0 &&
+        (TestFieldAt<std::uint32_t>(&historyPanel, 0x0c) & 1u) != 0;
+
+    DestroyCompositePanelVectorEntriesForTest(&historyPanel.entryVector);
+    g_HudUi_InvalidateMask = 0;
+    return wrapperDispatch && directDispatch && historyShift ? 0 : 1;
+}
+
+extern "C" int zhud_composite_panel_set_font_smoke(void) {
+    HudUiPanel_FTable entryTable{};
+    entryTable.slots[32] = MethodAddress(&TestCompositePanelEntry::SetFont);
+
+    HudUiCompositePanel_FTable compositeTable{};
+    compositeTable.slots[3] = MethodAddress(&TestCompositePanelDispatch::SetPos);
+    compositeTable.slots[25] = MethodAddress(&TestCompositePanelDispatch::GetX);
+    compositeTable.slots[26] = MethodAddress(&TestCompositePanelDispatch::GetY);
+
+    g_compositeEntrySetFontCount = 0;
+    std::memset(g_compositeEntrySetFontThis, 0, sizeof(g_compositeEntrySetFontThis));
+    g_compositeEntrySetFontFace = nullptr;
+    g_compositeEntrySetFontHeight = 0;
+    g_compositeEntrySetFontWeight = 0;
+    g_compositeEntrySetFontWidth = 0;
+    g_compositeEntrySetFontItalic = 0;
+    g_compositeEntrySetFontCharSet = 0;
+    g_compositeEntrySetFontPitch = 0;
+    g_compositeSetPosThis = nullptr;
+    g_compositeSetPosX = 0;
+    g_compositeSetPosY = 0;
+
+    HudUiCompositePanel panel{};
+    TestFieldAt<const HudUiCompositePanel_FTable *>(&panel, 0) = &compositeTable;
+    HudUiCompositePanelEntry entries[2]{};
+    TestFieldAt<const HudUiPanel_FTable *>(&entries[0], 0) = &entryTable;
+    TestFieldAt<const HudUiPanel_FTable *>(&entries[1], 0) = &entryTable;
+    panel.entryVector.begin = entries;
+    panel.entryVector.end = entries + 2;
+    panel.entryVector.capacityEnd = entries + 2;
+
+    panel.SetFont("Arial", 11, FW_BOLD, 7, 1, ANSI_CHARSET, DEFAULT_PITCH);
+
+    const bool entryBroadcast =
+        g_compositeEntrySetFontCount == 2 &&
+        g_compositeEntrySetFontThis[0] == &entries[0] &&
+        g_compositeEntrySetFontThis[1] == &entries[1] &&
+        std::strcmp(g_compositeEntrySetFontFace, "Arial") == 0 &&
+        g_compositeEntrySetFontHeight == 11 &&
+        g_compositeEntrySetFontWeight == FW_BOLD &&
+        g_compositeEntrySetFontWidth == 7 &&
+        g_compositeEntrySetFontItalic == 1 &&
+        g_compositeEntrySetFontCharSet == ANSI_CHARSET &&
+        g_compositeEntrySetFontPitch == DEFAULT_PITCH;
+    const bool baseUpdated =
+        reinterpret_cast<HudUiPanel *>(&panel)->hFont != nullptr &&
+        TestFieldAt<std::uint32_t>(&panel, 0x270) == 1;
+    const bool relayout =
+        g_compositeSetPosThis == &panel && g_compositeSetPosX == 123 && g_compositeSetPosY == 456;
+
+    DeleteObject(reinterpret_cast<HudUiPanel *>(&panel)->hFont);
+    reinterpret_cast<HudUiPanel *>(&panel)->hFont = nullptr;
+    return entryBroadcast && baseUpdated && relayout ? 0 : 1;
+}
+
 extern "C" int zhud_composite_panel_layout_entries_smoke(void) {
     g_HudUi_InvalidateMask = 1;
 
@@ -4026,9 +7967,43 @@ extern "C" int zhud_element_clip_and_invalidate_smoke(void) {
 
     const bool updated = element.flags == 0x25 && element.bltSource == &element &&
                          std::memcmp(&element.clipRect, &rect, sizeof(rect)) == 0;
+    element.SetClipRect(nullptr);
+    const bool nullPreserved = std::memcmp(&element.clipRect, &rect, sizeof(rect)) == 0;
 
     g_HudUi_InvalidateMask = 0;
-    return updated ? 0 : 1;
+    return updated && nullPreserved ? 0 : 1;
+}
+
+extern "C" int zhud_panel_set_clip_smoke(void) {
+    HudUiPanel panel{};
+    TestFieldAt<const HudUiPanel_FTable *>(&panel, 0) = &g_HudUiPanel_FTable;
+    TestFieldAt<unsigned int>(&panel, 0x0c) = 0x01;
+    TestFieldAt<void *>(&panel, 0x1c) = reinterpret_cast<void *>(0x1111);
+    TestFieldAt<HudUiRect>(&panel, 0x20) = HudUiRect{10, 20, 30, 40};
+
+    HudUiRect rect{1, 2, 3, 4};
+    typedef void (RECOIL_THISCALL *SetClipFn)(HudUiPanel * self,
+                                              void *bltSourceOrNull,
+                                              const HudUiRect *rectOrNull);
+    g_HudUi_InvalidateMask = 0x24;
+    ((SetClipFn)(g_HudUiPanel_FTable.slots[6]))(&panel, &panel, &rect);
+
+    const bool copied =
+        g_HudUiPanel_FTable.slots[6] == MethodAddress(&HudUiPanel::SetClip) &&
+        TestFieldAt<void *>(&panel, 0x1c) == &panel &&
+        std::memcmp(&TestFieldAt<HudUiRect>(&panel, 0x20), &rect, sizeof(rect)) == 0 &&
+        TestFieldAt<unsigned int>(&panel, 0x0c) == 0x25;
+
+    g_HudUi_InvalidateMask = 0x80;
+    panel.SetClip(nullptr, nullptr);
+
+    const bool nullPreserved =
+        TestFieldAt<void *>(&panel, 0x1c) == nullptr &&
+        std::memcmp(&TestFieldAt<HudUiRect>(&panel, 0x20), &rect, sizeof(rect)) == 0 &&
+        TestFieldAt<unsigned int>(&panel, 0x0c) == 0xa5;
+
+    g_HudUi_InvalidateMask = 0;
+    return copied && nullPreserved ? 0 : 1;
 }
 
 extern "C" int zhud_element_visible_smoke(void) {
@@ -4169,8 +8144,12 @@ extern "C" int zhud_element_get_xy_smoke(void) {
 
     const bool initial = element.GetX() == -12 && element.GetY() == 345;
     element.SetPos(78, -90);
+    HudUiRect rect = {};
+    element.GetRect(&rect);
+    const bool rectMatches = rect.left == 78 && rect.right == 78 && rect.top == -90 &&
+                             rect.bottom == -90;
 
-    return initial && element.GetX() == 78 && element.GetY() == -90 ? 0 : 1;
+    return initial && element.GetX() == 78 && element.GetY() == -90 && rectMatches ? 0 : 1;
 }
 
 extern "C" int zhud_element_scalar_deleting_destructor_smoke(void) {
@@ -4322,10 +8301,21 @@ extern "C" int zhud_container_child_list_smoke(void) {
                         third.parent == &container;
 
     HudUiElement *previous = reinterpret_cast<HudUiElement *>(0x1234);
+    const bool foundHead =
+        container.FindChildWithPrev(&first, &previous) == 1 && previous == nullptr;
+    previous = reinterpret_cast<HudUiElement *>(0x1234);
     const bool foundSecond =
         container.FindChildWithPrev(&second, &previous) == 1 && previous == &first;
+    const bool foundThirdNoPrevious = container.FindChildWithPrev(&third, nullptr) == 1;
+    previous = reinterpret_cast<HudUiElement *>(0x9abc);
     const bool missing =
-        container.FindChildWithPrev(reinterpret_cast<HudUiElement *>(0x5678), &previous) == 0;
+        container.FindChildWithPrev(reinterpret_cast<HudUiElement *>(0x5678), &previous) == 0 &&
+        previous == reinterpret_cast<HudUiElement *>(0x9abc);
+    HudUiContainer emptyContainer{};
+    emptyContainer.ConstructorDefault();
+    previous = reinterpret_cast<HudUiElement *>(0xdef0);
+    const bool emptyMissing = emptyContainer.FindChildWithPrev(&first, &previous) == 0 &&
+                              previous == reinterpret_cast<HudUiElement *>(0xdef0);
 
     first.flags = 0;
     second.flags = 0x10;
@@ -4363,9 +8353,9 @@ extern "C" int zhud_container_child_list_smoke(void) {
     const bool updated = g_containerUpdateCount == 2 && g_containerUpdateDelta[0] == 0.5f &&
                          g_containerUpdateDelta[1] == 0.5f;
 
-    return firstResult == 1 && secondResult == 1 && thirdResult == 1 && linked && foundSecond &&
-                   missing && flagsSet && removedMiddle && removedHead && removedTail &&
-                   disabledSkipped && updated
+    return firstResult == 1 && secondResult == 1 && thirdResult == 1 && linked && foundHead &&
+                   foundSecond && foundThirdNoPrevious && missing && emptyMissing && flagsSet &&
+                   removedMiddle && removedHead && removedTail && disabledSkipped && updated
                ? 0
                : 1;
 }
@@ -4407,6 +8397,55 @@ extern "C" int zhud_widget_constructor_smoke(void) {
     image.height = -3;
     const bool negativeCenter = widget.GetCenterX() == 8 && widget.GetCenterY() == 19;
 
+    g_HudUi_InvalidateMask = 0x40;
+    widget.flags = 0;
+    widget.alignFlags = 0;
+    widget.SetPos(30, 40);
+    const bool unalignedSetPos =
+        widget.x == 30 && widget.y == 40 && (widget.flags & 0x40) != 0;
+
+    widget.flags = 0;
+    widget.alignFlags = 1;
+    image.width = 11;
+    image.height = 6;
+    widget.SetPos(30, 40);
+    const bool alignedSetPos =
+        widget.x == 25 && widget.y == 37 && (widget.flags & 0x40) != 0;
+
+    widget.flags = 0;
+    image.width = -5;
+    image.height = -3;
+    widget.SetPos(30, 40);
+    const bool negativeAlignedSetPos =
+        widget.x == 32 && widget.y == 41 && (widget.flags & 0x40) != 0;
+    g_HudUi_InvalidateMask = 0;
+
+    HudUiRect hitBounds = {10, 20, 30, 40};
+    HudUiWidget_FTable hitTable = g_HudUiWidget_FTable;
+    hitTable.slots[0x2c / 4] = MethodAddress(&TestWidgetHitTestDispatch::GetBoundsRectOrNull);
+    widget.ftable = &hitTable;
+    widget.flags = 0;
+    g_widgetHitTestBounds = &hitBounds;
+    g_widgetHitTestGetBoundsCount = 0;
+    g_widgetHitTestGetBoundsThis = nullptr;
+    const bool hitTestBounds =
+        widget.HitTest(10, 20) == 1 && widget.HitTest(30, 40) == 1 &&
+        widget.HitTest(9, 20) == 0 && widget.HitTest(30, 41) == 0;
+    const bool hitTestDispatched =
+        g_widgetHitTestGetBoundsCount == 4 && g_widgetHitTestGetBoundsThis == &widget;
+
+    g_widgetHitTestBounds = nullptr;
+    const bool nullBoundsMiss = widget.HitTest(20, 30) == 0;
+
+    widget.flags = 0x10;
+    g_widgetHitTestGetBoundsCount = 0;
+    const bool hiddenMissNoDispatch =
+        widget.HitTest(20, 30) == 0 && g_widgetHitTestGetBoundsCount == 0;
+    widget.flags = 0;
+
+    widget.x = 10;
+    widget.y = 20;
+    widget.ftable = &g_HudUiWidget_FTable;
     image.width = 11;
     image.height = 6;
     widget.RebuildBltRectFromImage();
@@ -4427,10 +8466,15 @@ extern "C" int zhud_widget_constructor_smoke(void) {
 
     widget.alignFlags = 0x55aa;
 
-    return widget.ftable == &g_HudUiWidget_FTable && widget.alignFlags == 0x55aa &&
+    return widget.ftable == &g_HudUiWidget_FTable &&
+                   g_HudUiWidget_FTable.slots[0x5c / 4] ==
+                       MethodAddress(&HudUiWidget::HitTest) &&
+                   widget.alignFlags == 0x55aa &&
                    widget.ownsImage == 0 && widget.bltClipRectOrNull == nullptr &&
                    widget.imageStateWord == 0xabcd0000 && widget.dirtyRectCount == 0 &&
                    dirtyFramesCleared && unalignedCenter && alignedCenter && negativeCenter &&
+                   unalignedSetPos && alignedSetPos && negativeAlignedSetPos &&
+                   hitTestBounds && hitTestDispatched && nullBoundsMiss && hiddenMissNoDispatch &&
                    rebuiltImageRect && rebuiltNullRect && rebuiltNegativeRect
                ? 0
                : 1;
@@ -5768,6 +9812,11 @@ extern "C" int zhud_transition_text_panel_tick_flash_smoke(void) {
     HudUiTransitionTextPanel panel{};
     panel.Constructor();
     auto *const panelBase = reinterpret_cast<HudUiPanel *>(&panel);
+    const bool constructed =
+        panelBase->vtbl == &g_HudUiTransitionTextPanel_FTable &&
+        panel.flashCountdown == 0.0f && panel.flashResetValue == 0.349999994f &&
+        panel.flashAltColor0 == 0 && panel.flashEnabled == 0 && panel.flashMode == 0 &&
+        panel.flashDirectionSign == 1;
     panelBase->vtbl = &table;
     zVidImagePartial textImage{};
     panelBase->textPick = &textImage;
@@ -5846,7 +9895,7 @@ extern "C" int zhud_transition_text_panel_tick_flash_smoke(void) {
     panelBase->textPick = nullptr;
     panelBase->Destructor();
 
-    return hiddenSkipped && timerHide && mode0DrawsTwice && mode1ExpiredNoDraw &&
+    return constructed && hiddenSkipped && timerHide && mode0DrawsTwice && mode1ExpiredNoDraw &&
                    mode2Swap
                ? 0
                : 1;
@@ -6546,11 +10595,31 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {
     item.Draw();
     const bool itemConstructed =
         TestFieldAt<const void *>(&item, 0x00) == &g_HudUiListSelectorItem_FTable &&
+        g_HudUiListSelectorItem_FTable.slots[0] ==
+            MethodAddress(&HudUiListSelectorItem::OnActivate) &&
         item.owner == reinterpret_cast<void *>(0xcccccccc) &&
         TestFieldAt<std::int32_t>(&item, 0x20) == 7 &&
         TestFieldAt<std::int32_t>(&item, 0x24) == 9 &&
         TestFieldAt<std::int32_t>(&item, 0x28) == 47 &&
         TestFieldAt<std::int32_t>(&item, 0x2c) == 19;
+
+    unsigned int listOwnerTable[34] = {};
+    listOwnerTable[33] = MethodAddress(&TestListSelectorOwner::OnSelectedIndexChanged);
+    TestListSelectorOwner listOwner = {listOwnerTable};
+    item.entryIndex = 42;
+    item.owner = &listOwner;
+    g_listSelectorOwnerSelectedCount = 0;
+    g_listSelectorOwnerSelectedThis = nullptr;
+    g_listSelectorOwnerSelectedIndex = -1;
+    item.OnActivate();
+    const bool itemActivate =
+        g_listSelectorOwnerSelectedCount == 1 &&
+        g_listSelectorOwnerSelectedThis == &listOwner &&
+        g_listSelectorOwnerSelectedIndex == 42;
+
+    item.owner = nullptr;
+    item.OnActivate();
+    const bool itemNullOwnerNoOp = g_listSelectorOwnerSelectedCount == 1;
     reinterpret_cast<HudUiPanel *>(&item)->Destructor();
 
     alignas(HudUiPanel) std::uint8_t drawPanelStorage[0x2ac] = {};
@@ -6563,7 +10632,8 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {
     g_testBlitCount = 0;
     g_zVideo_pfnBltSourceToPrimary = &TestBltSourceToPrimary;
     drawPanel->Draw();
-    const bool panelDraw = g_testBlitCount == 1 && g_testBlitImages[0] == &drawImage &&
+    const bool panelDraw = itemActivate && itemNullOwnerNoOp &&
+                           g_testBlitCount == 1 && g_testBlitImages[0] == &drawImage &&
                            g_testBlitX[0] == 3 && g_testBlitY[0] == 4 && g_testBlitFlags[0] == 0 &&
                            g_testBlitHasRect[0] != 0;
     g_zVideo_pfnBltSourceToPrimary = nullptr;
@@ -6674,6 +10744,16 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {
         std::strcmp(&TestFieldAt<char>(&rebuildButton.bindingSlotPanels[1], 0x34), "First") == 0 &&
         std::strcmp(&TestFieldAt<char>(&rebuildButton.bindingSlotPanels[2], 0x34), "Third") == 0 &&
         std::strcmp(&TestFieldAt<char>(&rebuildButton.bindPanel, 0x34), "Second") == 0;
+    rebuildButton.OnSelectedIndexChanged(2);
+    const bool selectedIndexChanged =
+        g_HudCmdBindButtonBase_FTable.slots[33] ==
+            MethodAddress(&HudCmdBindButtonBase::OnSelectedIndexChanged) &&
+        rebuildButton.selectedBindingIndex == 2 &&
+        TestFieldAt<std::int32_t>(&rebuildButton.bindPanel, 0x2a4) == 2 &&
+        std::strcmp(&TestFieldAt<char>(&rebuildButton.bindPanel, 0x34), "Third") == 0 &&
+        TestFieldAt<std::int32_t>(&rebuildButton.bindingSlotPanels[0], 0x2a4) == 0 &&
+        TestFieldAt<std::int32_t>(&rebuildButton.bindingSlotPanels[1], 0x2a4) == 1 &&
+        (TestFieldAt<std::uint32_t>(&rebuildButton.bindingSlotPanels[2], 0x0c) & 0x10) != 0;
     rebuildButton.ClearBindingEntries();
     zUtil_StdPtrVector_FreeBufferAndReset(&rebuildButton.bindingVec);
     DeleteListSelectorItemArray(rebuildButton.bindingSlotPanels);
@@ -6769,7 +10849,8 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {
     reinterpret_cast<HudUiPanel *>(&loadedButton.bindPanel)->Destructor();
 
     const bool ok = itemConstructed && panelDraw && buttonConstructed && bindingsCleared &&
-                    bindingsAdded && vectorCleared && vectorFreed && rebuilt && loaded;
+                    bindingsAdded && vectorCleared && vectorFreed && rebuilt &&
+                    selectedIndexChanged && loaded;
     return ok ? 0 : 1;
 }
 
@@ -9487,6 +13568,310 @@ extern "C" int zhud_background_cursor_widget_set_image_borrowed_refresh_smoke(vo
     return ok ? 0 : 1;
 }
 
+extern "C" int
+zhud_background_cursor_widget_set_image_borrowed_refresh_if_changed_smoke(void) {
+    std::uint16_t surfacePixels[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    zVidImagePartial sourceImage{};
+    sourceImage.width = 2;
+    sourceImage.height = 2;
+
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 4;
+    g_zVideo_SwSurfaceState.height = 3;
+    g_zVideo_SwSurfaceState.pitch = 8;
+    g_zVideo_SwSurfaceState.pixels = surfacePixels;
+
+    HudUiBackgroundCursorWidget cursor{};
+    cursor.base.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiBackgroundCursorWidget_FTable);
+    cursor.base.x = 1;
+    cursor.base.y = 1;
+    cursor.captureEnabled = 1;
+    cursor.captureSourceSelector = 0;
+
+    cursor.SetImageBorrowedAndRefreshIfChanged(&sourceImage);
+    std::uint16_t *const capturedPixels =
+        static_cast<std::uint16_t *>(cursor.capturedImage != nullptr
+                                         ? cursor.capturedImage->pixels
+                                         : nullptr);
+    const bool refreshed =
+        cursor.base.image == &sourceImage && cursor.capturedImage != nullptr &&
+        cursor.base.bltSource == cursor.capturedImage && capturedPixels != nullptr &&
+        capturedPixels[0] == 6 && capturedPixels[1] == 7 && capturedPixels[2] == 10 &&
+        capturedPixels[3] == 11;
+
+    zVidImagePartial *const capturedBeforeNull = cursor.capturedImage;
+    cursor.SetImageBorrowedAndRefreshIfChanged(nullptr);
+    const bool nullSkippedRefresh =
+        cursor.base.image == nullptr && cursor.capturedImage == capturedBeforeNull &&
+        cursor.base.bltSource == capturedBeforeNull;
+
+    if (cursor.capturedImage != nullptr) {
+        zVid_Image::Destroy(cursor.capturedImage);
+        cursor.capturedImage = nullptr;
+    }
+
+    return refreshed && nullSkippedRefresh ? 0 : 1;
+}
+
+extern "C" int
+zhud_background_cursor_widget_set_image_by_path_owned_refresh_smoke(void) {
+    char tempDir[MAX_PATH] = {};
+    char packPath[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "hcr", 0, packPath) == 0) {
+        return 1;
+    }
+
+    const char *const imageName = "cursor_path.tex";
+    zVidTexturePackHeader packHeader{};
+    packHeader.fileFormat = 1;
+    packHeader.recordCount = 1;
+
+    zVidTexturePackRecord record{};
+    std::strcpy(record.name, imageName);
+    record.fileOffset = sizeof(packHeader) + sizeof(record);
+    record.paletteIndex = -1;
+
+    FILE *out = std::fopen(packPath, "wb");
+    if (out == nullptr) {
+        DeleteFileA(packPath);
+        return 2;
+    }
+
+    unsigned char imageHeader[0x10] = {};
+    imageHeader[0] = 1;
+    *reinterpret_cast<std::int16_t *>(&imageHeader[4]) = 2;
+    *reinterpret_cast<std::int16_t *>(&imageHeader[6]) = 2;
+    const std::uint16_t imagePixels[4] = {0x1001, 0x1002, 0x1003, 0x1004};
+    std::fwrite(&packHeader, sizeof(packHeader), 1, out);
+    std::fwrite(&record, sizeof(record), 1, out);
+    std::fwrite(imageHeader, 1, sizeof(imageHeader), out);
+    std::fwrite(imagePixels, sizeof(imagePixels), 1, out);
+    std::fclose(out);
+
+    zVidTexturePackEntry entry{};
+    std::strcpy(entry.filePath, packPath);
+    zVidTexturePackEntry *const oldTexturePacks = g_zVid_TexturePacks;
+    const int oldTexturePackCount = g_zVid_TexturePackCount;
+    zVidTexturePackEntry *const oldBuiltinPacks = g_zVid_BuiltinTexturePacks;
+    const int oldBuiltinPackCount = g_zVid_BuiltinTexturePackCount;
+    const int oldTexturePackLoadState = g_zVid_TexturePackLoadState;
+    const zVideo_SurfaceStatePartial oldSwSurfaceState = g_zVideo_SwSurfaceState;
+
+    g_zVid_TexturePackLoadState = 1;
+    g_zVid_BuiltinTexturePacks = nullptr;
+    g_zVid_BuiltinTexturePackCount = 0;
+    if (zVid_TexturePackEntry_LoadFromFile(&entry) == nullptr) {
+        if (entry.fileHandle != nullptr) {
+            std::fclose(entry.fileHandle);
+        }
+        std::free(entry.records);
+        g_zVid_TexturePacks = oldTexturePacks;
+        g_zVid_TexturePackCount = oldTexturePackCount;
+        g_zVid_BuiltinTexturePacks = oldBuiltinPacks;
+        g_zVid_BuiltinTexturePackCount = oldBuiltinPackCount;
+        g_zVid_TexturePackLoadState = oldTexturePackLoadState;
+        DeleteFileA(packPath);
+        return 3;
+    }
+
+    g_zVid_TexturePacks = &entry;
+    g_zVid_TexturePackCount = 1;
+
+    std::uint16_t surfacePixels[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 4;
+    g_zVideo_SwSurfaceState.height = 3;
+    g_zVideo_SwSurfaceState.pitch = 8;
+    g_zVideo_SwSurfaceState.pixels = surfacePixels;
+
+    HudUiBackgroundCursorWidget cursor{};
+    cursor.base.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiBackgroundCursorWidget_FTable);
+    cursor.base.x = 1;
+    cursor.base.y = 1;
+    cursor.captureEnabled = 1;
+    cursor.captureSourceSelector = 0;
+
+    cursor.SetImageByPathOwnedAndRefresh(imageName);
+    std::uint16_t *const capturedPixels =
+        static_cast<std::uint16_t *>(cursor.capturedImage != nullptr
+                                         ? cursor.capturedImage->pixels
+                                         : nullptr);
+    const bool loadedAndRefreshed =
+        cursor.base.image != nullptr && cursor.base.image->width == 2 &&
+        cursor.base.image->height == 2 && cursor.base.ownsImage == 1 &&
+        cursor.capturedImage != nullptr && cursor.base.bltSource == cursor.capturedImage &&
+        cursor.base.clipRect.left == 0 && cursor.base.clipRect.top == 0 &&
+        cursor.base.clipRect.right == 2 && cursor.base.clipRect.bottom == 2 &&
+        capturedPixels != nullptr && capturedPixels[0] == 6 && capturedPixels[1] == 7 &&
+        capturedPixels[2] == 10 && capturedPixels[3] == 11;
+
+    zVidImagePartial *const capturedBeforeMissing = cursor.capturedImage;
+    void *const bltSourceBeforeMissing = cursor.base.bltSource;
+    cursor.SetImageByPathOwnedAndRefresh("__recoil_missing_cursor_path_image__");
+    const bool missingPathSkippedRefresh =
+        cursor.base.image == nullptr && cursor.base.ownsImage == 0 &&
+        cursor.capturedImage == capturedBeforeMissing &&
+        cursor.base.bltSource == bltSourceBeforeMissing;
+
+    if (cursor.capturedImage != nullptr) {
+        zVid_Image::Destroy(cursor.capturedImage);
+        cursor.capturedImage = nullptr;
+    }
+    cursor.base.ReleaseImageIfOwned();
+    std::fclose(entry.fileHandle);
+    std::free(entry.records);
+    g_zVid_TexturePacks = oldTexturePacks;
+    g_zVid_TexturePackCount = oldTexturePackCount;
+    g_zVid_BuiltinTexturePacks = oldBuiltinPacks;
+    g_zVid_BuiltinTexturePackCount = oldBuiltinPackCount;
+    g_zVid_TexturePackLoadState = oldTexturePackLoadState;
+    g_zVideo_SwSurfaceState = oldSwSurfaceState;
+    DeleteFileA(packPath);
+
+    return loadedAndRefreshed && missingPathSkippedRefresh ? 0 : 1;
+}
+
+extern "C" int zhud_background_cursor_widget_set_pos_smoke(void) {
+    std::uint16_t surfacePixels[20] = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                                       11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+    zVidImagePartial sourceImage{};
+    sourceImage.width = 2;
+    sourceImage.height = 2;
+
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 5;
+    g_zVideo_SwSurfaceState.height = 4;
+    g_zVideo_SwSurfaceState.pitch = 10;
+    g_zVideo_SwSurfaceState.pixels = surfacePixels;
+
+    HudUiBackgroundCursorWidget cursor{};
+    cursor.base.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiBackgroundCursorWidget_FTable);
+    cursor.base.image = &sourceImage;
+    cursor.base.alignFlags = 1;
+    cursor.captureEnabled = 1;
+    cursor.captureSourceSelector = 0;
+    cursor.capturedImage = zVid_Image::Create();
+    if (cursor.capturedImage == nullptr) {
+        return 1;
+    }
+
+    zVid_Image::SetSize(cursor.capturedImage, 2, 2);
+    zVid_Image_SetPixels(cursor.capturedImage, std::malloc(8), nullptr);
+    cursor.capturedImage->formatFlagsPacked =
+        static_cast<unsigned char>(cursor.capturedImage->formatFlagsPacked | 0x20u);
+
+    cursor.SetPos(4, 3);
+    std::uint16_t *const capturedPixels =
+        static_cast<std::uint16_t *>(cursor.capturedImage != nullptr
+                                         ? cursor.capturedImage->pixels
+                                         : nullptr);
+    const bool ok =
+        cursor.base.x == 3 && cursor.base.y == 2 &&
+        cursor.base.bltSource == cursor.capturedImage && cursor.base.clipRect.left == 0 &&
+        cursor.base.clipRect.top == 0 && cursor.base.clipRect.right == 2 &&
+        cursor.base.clipRect.bottom == 2 && capturedPixels != nullptr &&
+        capturedPixels[0] == 14 && capturedPixels[1] == 15 &&
+        capturedPixels[2] == 19 && capturedPixels[3] == 20;
+
+    if (cursor.capturedImage != nullptr) {
+        zVid_Image::Destroy(cursor.capturedImage);
+        cursor.capturedImage = nullptr;
+    }
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int zhud_background_cursor_widget_draw_smoke(void) {
+    zVideo_BltSourceToPrimaryProc oldBlit = g_zVideo_pfnBltSourceToPrimary;
+    zVidImagePartial *oldExclusiveImage = g_HudUiWidget_ExclusiveDrawImage;
+
+    zVidImagePartial image{};
+    zVidImagePartial capturedImage{};
+    HudUiRect foregroundClip = {1, 2, 7, 9};
+
+    HudUiBackgroundCursorWidget cursor{};
+    cursor.base.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiBackgroundCursorWidget_FTable);
+    cursor.base.image = &image;
+    cursor.base.x = 17;
+    cursor.base.y = 23;
+    cursor.base.bltSource = &capturedImage;
+    cursor.base.clipRect = {3, 4, 11, 13};
+    cursor.base.bltClipRectOrNull = &foregroundClip;
+
+    g_testBlitCount = 0;
+    g_zVideo_pfnBltSourceToPrimary = TestBltSourceToPrimary;
+    g_HudUiWidget_ExclusiveDrawImage = nullptr;
+
+    cursor.Draw();
+
+    const bool ok =
+        g_testBlitCount == 2 && g_testBlitImages[0] == &capturedImage &&
+        g_testBlitX[0] == 17 && g_testBlitY[0] == 23 && g_testBlitFlags[0] == 0 &&
+        g_testBlitHasRect[0] == 1 && g_testBlitRects[0].left == 3 &&
+        g_testBlitRects[0].top == 4 && g_testBlitRects[0].right == 11 &&
+        g_testBlitRects[0].bottom == 13 && g_testBlitImages[1] == &image &&
+        g_testBlitX[1] == 17 && g_testBlitY[1] == 23 && g_testBlitFlags[1] == 0 &&
+        g_testBlitHasRect[1] == 1 && g_testBlitRects[1].left == 1 &&
+        g_testBlitRects[1].top == 2 && g_testBlitRects[1].right == 7 &&
+        g_testBlitRects[1].bottom == 9;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    g_HudUiWidget_ExclusiveDrawImage = oldExclusiveImage;
+    return ok ? 0 : 1;
+}
+
+extern "C" int zhud_background_cursor_widget_draw_base_smoke(void) {
+    zVideo_BltSourceToPrimaryProc oldBlit = g_zVideo_pfnBltSourceToPrimary;
+
+    zVidImagePartial capturedImage{};
+
+    HudUiBackgroundCursorWidget cursor{};
+    cursor.base.x = 17;
+    cursor.base.y = 23;
+    cursor.base.clipRect = {3, 4, 11, 13};
+
+    g_testBlitCount = 0;
+    g_zVideo_pfnBltSourceToPrimary = TestBltSourceToPrimary;
+    cursor.DrawBase();
+    const bool nullSkipped = g_testBlitCount == 0;
+
+    cursor.base.bltSource = &capturedImage;
+    cursor.DrawBase();
+    const bool blitted =
+        g_testBlitCount == 1 && g_testBlitImages[0] == &capturedImage &&
+        g_testBlitX[0] == 17 && g_testBlitY[0] == 23 && g_testBlitFlags[0] == 0 &&
+        g_testBlitHasRect[0] == 1 && g_testBlitRects[0].left == 3 &&
+        g_testBlitRects[0].top == 4 && g_testBlitRects[0].right == 11 &&
+        g_testBlitRects[0].bottom == 13;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    return nullSkipped && blitted ? 0 : 1;
+}
+
+extern "C" int zhud_background_video_widget_constructor_smoke(void) {
+    HudUiBackgroundVideoWidget widget;
+    std::memset(&widget, 0x7f, sizeof(widget));
+
+    HudUiBackgroundVideoWidget *const result = widget.Constructor();
+
+    const bool ok =
+        result == &widget &&
+        widget.base.ftable ==
+            reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiBackgroundVideoWidget_FTable) &&
+        widget.base.x == 0 && widget.base.y == 0 && widget.stream == nullptr &&
+        widget.elapsedTimeSec == 0.0f && widget.mediaPath[0] == '\0' &&
+        static_cast<unsigned char>(widget.mediaPath[1]) == 0x7f &&
+        widget.colorKey565 == 0x7f7f;
+
+    widget.Destructor();
+    return ok ? 0 : 1;
+}
+
 extern "C" int zhud_background_cursor_widget_set_capture_enabled_smoke(void) {
     HudUiBackgroundCursorWidget cursor{};
     cursor.base.ftable =
@@ -9527,6 +13912,239 @@ extern "C" int zhud_background_video_widget_destructor_smoke(void) {
 
     widget.Destructor();
     return widget.stream == nullptr && widget.base.ftable == &g_HudUiCommon_FTable ? 0 : 1;
+}
+
+int g_backgroundVideoReadCount = 0;
+zFMV_Stream *g_backgroundVideoLastStream = nullptr;
+unsigned int g_backgroundVideoLastFrame = 0;
+
+int RECOIL_FASTCALL TestBackgroundVideoReadAndDecodeFrame(zFMV_Stream *stream, void *,
+                                                          unsigned int frame) {
+    ++g_backgroundVideoReadCount;
+    g_backgroundVideoLastStream = stream;
+    g_backgroundVideoLastFrame = frame;
+    return 1;
+}
+
+void ResetBackgroundVideoUpdateProbe() {
+    g_backgroundVideoReadCount = 0;
+    g_backgroundVideoLastStream = nullptr;
+    g_backgroundVideoLastFrame = 0;
+}
+
+extern "C" int zhud_background_video_widget_update_smoke(void) {
+    CodeFunctionPatch readPatch{};
+    const std::uintptr_t readAddress = MethodAddress(&zFMV_Stream::ReadAndDecodeFrame);
+    if (!PatchFunctionJump(reinterpret_cast<void *>(readAddress),
+                           reinterpret_cast<void *>(&TestBackgroundVideoReadAndDecodeFrame),
+                           readPatch)) {
+        return 1;
+    }
+
+    unsigned char streamStorage[0x100] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(streamStorage);
+    TestFieldAt<int>(stream, 0x4c) = 10;
+    TestFieldAt<int>(stream, 0xec) = 12;
+
+    HudUiBackgroundVideoWidget widget{};
+    widget.stream = stream;
+    widget.base.flags = 0x10;
+    widget.elapsedTimeSec = 3.0f;
+    ResetBackgroundVideoUpdateProbe();
+    widget.Update(0.25f);
+    const bool disabledSkipped =
+        g_backgroundVideoReadCount == 0 && widget.elapsedTimeSec == 3.0f;
+
+    widget.stream = nullptr;
+    widget.base.flags = 0x02;
+    widget.elapsedTimeSec = 1.0f;
+    ResetBackgroundVideoUpdateProbe();
+    widget.Update(0.25f);
+    const bool noStreamUpdatesBase =
+        g_backgroundVideoReadCount == 0 && widget.elapsedTimeSec == 1.25f;
+
+    widget.stream = stream;
+    widget.base.flags = 0x02;
+    widget.elapsedTimeSec = 1.25f;
+    ResetBackgroundVideoUpdateProbe();
+    widget.Update(0.5f);
+    const bool streamDecodesFrame =
+        g_backgroundVideoReadCount == 1 && g_backgroundVideoLastStream == stream &&
+        g_backgroundVideoLastFrame == 5 && widget.elapsedTimeSec == 1.75f;
+
+    RestoreFunctionPatch(readPatch);
+    return disabledSkipped && noStreamUpdatesBase && streamDecodesFrame ? 0 : 2;
+}
+
+int g_backgroundVideoDrawBaseCount = 0;
+void *g_backgroundVideoDrawBaseThis = nullptr;
+
+struct TestBackgroundVideoDrawDispatch {
+    void RECOIL_THISCALL DrawBase() {
+        ++g_backgroundVideoDrawBaseCount;
+        g_backgroundVideoDrawBaseThis = this;
+    }
+};
+
+extern "C" int zhud_background_video_widget_draw_smoke(void) {
+    zVideo_BltSourceToPrimaryProc oldBlit = g_zVideo_pfnBltSourceToPrimary;
+
+    HudUiBackgroundVideoWidget_FTable table = {};
+    table.slots[2] = MethodAddress(&TestBackgroundVideoDrawDispatch::DrawBase);
+
+    unsigned char streamStorage[0x100] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(streamStorage);
+    HudUiBackgroundVideoWidget widget{};
+    widget.base.ftable = reinterpret_cast<const HudUiCommon_FTable *>(&table);
+    widget.base.x = 17;
+    widget.base.y = 23;
+    widget.colorKey565 = 0x07e0;
+
+    g_testBlitCount = 0;
+    g_backgroundVideoDrawBaseCount = 0;
+    g_backgroundVideoDrawBaseThis = nullptr;
+    g_zVideo_pfnBltSourceToPrimary = TestBltSourceToPrimary;
+    widget.stream = nullptr;
+    widget.Draw();
+    const bool nullStream =
+        g_backgroundVideoDrawBaseCount == 1 && g_backgroundVideoDrawBaseThis == &widget &&
+        g_testBlitCount == 0;
+
+    g_testBlitCount = 0;
+    g_backgroundVideoDrawBaseCount = 0;
+    g_backgroundVideoDrawBaseThis = nullptr;
+    widget.stream = stream;
+    widget.Draw();
+    const bool streamBlitted =
+        g_backgroundVideoDrawBaseCount == 1 && g_backgroundVideoDrawBaseThis == &widget &&
+        g_testBlitCount == 1 &&
+        g_testBlitImages[0] == reinterpret_cast<zVidImagePartial *>(stream) &&
+        g_testBlitX[0] == 17 && g_testBlitY[0] == 23 &&
+        g_testBlitFlags[0] == 0x07e0 && g_testBlitHasRect[0] == 0;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    return nullStream && streamBlitted ? 0 : 1;
+}
+
+extern "C" int zhud_background_video_widget_draw_base_smoke(void) {
+    zVideo_BltSourceToPrimaryProc oldBlit = g_zVideo_pfnBltSourceToPrimary;
+
+    zVidImagePartial image{};
+    HudUiBackgroundVideoWidget widget{};
+    widget.base.x = -4;
+    widget.base.y = -9;
+    widget.base.clipRect = {3, 4, 11, 13};
+
+    g_testBlitCount = 0;
+    g_zVideo_pfnBltSourceToPrimary = TestBltSourceToPrimary;
+    widget.base.bltSource = nullptr;
+    widget.DrawBase();
+    const bool nullSkipped = g_testBlitCount == 0;
+
+    widget.base.bltSource = &image;
+    widget.DrawBase();
+    const bool negativeClamped =
+        g_testBlitCount == 1 && g_testBlitImages[0] == &image && g_testBlitX[0] == 0 &&
+        g_testBlitY[0] == 0 && g_testBlitFlags[0] == 0 && g_testBlitHasRect[0] == 1 &&
+        g_testBlitRects[0].left == 3 && g_testBlitRects[0].top == 4 &&
+        g_testBlitRects[0].right == 11 && g_testBlitRects[0].bottom == 13;
+
+    widget.base.x = 17;
+    widget.base.y = 23;
+    g_testBlitCount = 0;
+    widget.DrawBase();
+    const bool positivePassed =
+        g_testBlitCount == 1 && g_testBlitImages[0] == &image && g_testBlitX[0] == 17 &&
+        g_testBlitY[0] == 23 && g_testBlitFlags[0] == 0 && g_testBlitHasRect[0] == 1;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    return nullSkipped && negativeClamped && positivePassed ? 0 : 1;
+}
+
+int g_backgroundVideoRebuildGetXCount = 0;
+int g_backgroundVideoRebuildGetYCount = 0;
+int g_backgroundVideoRebuildSetClipCount = 0;
+int g_backgroundVideoRebuildGetXValue = 0;
+int g_backgroundVideoRebuildGetYValue = 0;
+void *g_backgroundVideoRebuildSetClipThis = nullptr;
+HudUiRect g_backgroundVideoRebuildSetClipRect = {};
+
+struct TestBackgroundVideoRebuildDispatch {
+    int RECOIL_THISCALL GetX() {
+        ++g_backgroundVideoRebuildGetXCount;
+        return g_backgroundVideoRebuildGetXValue;
+    }
+
+    int RECOIL_THISCALL GetY() {
+        ++g_backgroundVideoRebuildGetYCount;
+        return g_backgroundVideoRebuildGetYValue;
+    }
+
+    void RECOIL_THISCALL SetClipRect(const HudUiRect *rect) {
+        ++g_backgroundVideoRebuildSetClipCount;
+        g_backgroundVideoRebuildSetClipThis = this;
+        g_backgroundVideoRebuildSetClipRect = *rect;
+    }
+};
+
+void ResetBackgroundVideoRebuildProbe(int x, int y) {
+    g_backgroundVideoRebuildGetXCount = 0;
+    g_backgroundVideoRebuildGetYCount = 0;
+    g_backgroundVideoRebuildSetClipCount = 0;
+    g_backgroundVideoRebuildGetXValue = x;
+    g_backgroundVideoRebuildGetYValue = y;
+    g_backgroundVideoRebuildSetClipThis = nullptr;
+    g_backgroundVideoRebuildSetClipRect = {};
+}
+
+extern "C" int zhud_background_video_widget_rebuild_blt_rect_smoke(void) {
+    HudUiBackgroundVideoWidget_FTable table = {};
+    table.slots[7] = MethodAddress(&TestBackgroundVideoRebuildDispatch::SetClipRect);
+    table.slots[25] = MethodAddress(&TestBackgroundVideoRebuildDispatch::GetX);
+    table.slots[26] = MethodAddress(&TestBackgroundVideoRebuildDispatch::GetY);
+
+    zVidImagePartial source{};
+    source.width = 25;
+    source.height = 26;
+    unsigned char streamStorage[0x20] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(streamStorage);
+    TestFieldAt<short>(stream, 0x04) = 30;
+    TestFieldAt<short>(stream, 0x06) = 12;
+
+    HudUiBackgroundVideoWidget widget{};
+    widget.base.ftable = reinterpret_cast<const HudUiCommon_FTable *>(&table);
+
+    ResetBackgroundVideoRebuildProbe(5, 6);
+    widget.stream = nullptr;
+    widget.RebuildBltRect();
+    const bool streamNullSkipped =
+        g_backgroundVideoRebuildGetXCount == 2 && g_backgroundVideoRebuildGetYCount == 2 &&
+        g_backgroundVideoRebuildSetClipCount == 0;
+
+    ResetBackgroundVideoRebuildProbe(-4, 20);
+    widget.stream = stream;
+    widget.base.bltSource = nullptr;
+    widget.RebuildBltRect();
+    const bool noSource =
+        g_backgroundVideoRebuildSetClipCount == 1 &&
+        g_backgroundVideoRebuildSetClipThis == &widget &&
+        g_backgroundVideoRebuildSetClipRect.left == 0 &&
+        g_backgroundVideoRebuildSetClipRect.top == 20 &&
+        g_backgroundVideoRebuildSetClipRect.right == 30 &&
+        g_backgroundVideoRebuildSetClipRect.bottom == 32;
+
+    ResetBackgroundVideoRebuildProbe(10, 20);
+    widget.base.bltSource = &source;
+    widget.RebuildBltRect();
+    const bool sourceClamped =
+        g_backgroundVideoRebuildSetClipCount == 1 &&
+        g_backgroundVideoRebuildSetClipThis == &widget &&
+        g_backgroundVideoRebuildSetClipRect.left == 10 &&
+        g_backgroundVideoRebuildSetClipRect.top == 20 &&
+        g_backgroundVideoRebuildSetClipRect.right == 25 &&
+        g_backgroundVideoRebuildSetClipRect.bottom == 26;
+
+    return streamNullSkipped && noSource && sourceClamped ? 0 : 1;
 }
 
 extern "C" int zhud_background_constructor_smoke(void) {
@@ -10097,6 +14715,15 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
         input.sliderBorder.rawKeyFilterEnabled == 0 && input.sliderBorder.inputActive == 1 &&
         input.sliderBorder.caretHalfWidth == 0 && input.sliderBorder.base.base.flags == 0x80;
 
+    const bool textInputTable =
+        g_HudUiNumericTextInput_TextInputFTable.slots[2] ==
+            static_cast<std::uint32_t>(
+                MethodAddress(&HudUiOwnedTextInput::OnAcceptNotifyOwner)) &&
+        g_HudUiNumericTextInput_TextInputFTable.slots[3] ==
+            reinterpret_cast<std::uintptr_t>(&zGame::ReturnOnlyStub) &&
+        g_HudUiNumericTextInput_TextInputFTable.slots[8] ==
+            reinterpret_cast<std::uintptr_t>(&zGame::ReturnOnlyStub);
+
     const bool ctorTable =
         g_HudUiNumericTextInput_CtorTable_FTable.slots[0] ==
             static_cast<std::uint32_t>(
@@ -10186,6 +14813,9 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
     g_numericAcceptCount = 0;
     reinterpret_cast<HudUiOwnedTextInput *>(&input.textInput)->OnAcceptNotifyOwner();
     const bool acceptedNotify = g_numericAcceptCount == 1;
+
+    input.textInput.DispatchKeyAction(0x0d);
+    const bool acceptedNotifyFromTable = g_numericAcceptCount == 2;
 
     HudUiWidget_FTable baseTable{};
     baseTable.slots[8] = reinterpret_cast<std::uintptr_t>(TestElementInvalidate);
@@ -10356,16 +14986,60 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
     ::operator delete(input.textInput.buffer);
     input.textInput.buffer = nullptr;
     g_HudUi_InvalidateMask = 0;
-    return ok && ctorTable && constructedNumeric && clampedTable && clampedConstructed &&
+    return ok && textInputTable && ctorTable && constructedNumeric && clampedTable && clampedConstructed &&
                    clampedHighCommitted && clampedEmptyCommitted && clampedAcceptForwarded &&
                    clampedDigitAccepted && clampedMinusFiltered && rawNoChange && rawEnabled &&
                    rawDisabled && rawNull && rawDispatched && rawFiltered && rawAccepted &&
-                   acceptedNotify && deactivated && activated && bufferAllocated && updated &&
-                   captureUpdated && captureHidden && captureSliderDisabled &&
+                   acceptedNotify && acceptedNotifyFromTable && deactivated && activated &&
+                   bufferAllocated && updated && captureUpdated && captureHidden && captureSliderDisabled &&
                    numericActivated && destructed && deletingDestructed && thunkDestructed &&
                    focusActivated
                ? 0
                : 1;
+}
+
+extern "C" int zhud_clamped_int_step_button_on_activate_smoke(void) {
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+
+    HudUiClampedIntTextInput input{};
+    input.Constructor(6);
+    input.minValue = 5;
+    input.maxValue = 10;
+
+    HudUiClampedIntTextInput_FTable inputTable = g_HudUiClampedIntTextInput_CtorTable_FTable;
+    inputTable.slots[8] = reinterpret_cast<std::uintptr_t>(TestElementInvalidate);
+    input.base.base.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&inputTable);
+
+    HudUiClampedIntStepButton button{};
+    button.targetInput = &input;
+    g_HudUi_InvalidateMask = 0x80;
+
+    input.Update("7");
+    input.base.base.flags = 0;
+    g_elementInvalidateCount = 0;
+    button.stepDelta = 4;
+    button.OnActivate();
+    const bool clampedHigh = std::strcmp(input.textInput.buffer, "10") == 0 &&
+                             input.textInput.cursor == 2 && input.base.base.flags == 0x80 &&
+                             g_elementInvalidateCount == 1;
+
+    input.Update("6");
+    input.base.base.flags = 0;
+    g_elementInvalidateCount = 0;
+    button.stepDelta = -4;
+    button.OnActivate();
+    const bool clampedLow = std::strcmp(input.textInput.buffer, "5") == 0 &&
+                            input.textInput.cursor == 1 && input.base.base.flags == 0x80 &&
+                            g_elementInvalidateCount == 1;
+
+    g_elementInvalidateCount = 0;
+    button.targetInput = nullptr;
+    button.OnActivate();
+    const bool nullTarget = g_elementInvalidateCount == 0;
+
+    input.Destructor();
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    return clampedHigh && clampedLow && nullTarget ? 0 : 1;
 }
 
 extern "C" int zhud_widget_release_and_destructor_core_smoke(void) {
@@ -10435,8 +15109,13 @@ extern "C" int zhud_widget_release_and_destructor_core_smoke(void) {
         TestFieldAt<const void *>(&scalar, 0x00) == &g_HudUiCommon_FTable &&
         scalar.image == nullptr && scalar.ownsImage == 0;
 
+    HudUiWidget *heapScalar = new HudUiWidget{};
+    heapScalar->ftable = &g_HudUiWidget_FTable;
+    HudUiWidget *const heapScalarResult = heapScalar->ScalarDeletingDestructor(1);
+    const bool heapScalarDeleted = heapScalarResult == heapScalar;
+
     return borrowedKept && ownedCleared && borrowedImageSet && nullPathKept && missingPathReleased &&
-                   destructorRestoredBase && scalarDestructed
+                   destructorRestoredBase && scalarDestructed && heapScalarDeleted
                ? 0
                : 1;
 }
@@ -10862,6 +15541,27 @@ extern "C" int zhud_message_update_selected_weapon_display_smoke(void) {
     previous = {};
     selected = {};
     return 0;
+}
+
+extern "C" int zhud_message_draw_smoke(void) {
+    HudUiMessage_FTable messageTable = g_HudUiMessage_FTable;
+    HudUiPanel_FTable panelTable{};
+    panelTable.slots[1] = MethodAddress(&TestMessagePanelDrawDispatch::Draw);
+
+    HudUiMessage message{};
+    message.base.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&messageTable);
+    TestFieldAt<const void *>(&message.panel, 0) = &panelTable;
+    g_messagePanelDrawCount = 0;
+    g_messagePanelDrawThis = nullptr;
+
+    typedef void (RECOIL_THISCALL *DrawMessageFn)(HudUiMessage * self);
+    ((DrawMessageFn)(messageTable.slots[1]))(&message);
+
+    return messageTable.slots[1] == MethodAddress(&HudUiMessage::Draw) &&
+                   g_messagePanelDrawCount == 1 &&
+                   g_messagePanelDrawThis == &message.panel
+               ? 0
+               : 1;
 }
 
 extern "C" int zhud_message_constructor_smoke(void) {
@@ -11586,8 +16286,18 @@ extern "C" int zhud_triplet_panel_destructor_core_smoke(void) {
         scalar.items[0].image == nullptr && scalar.items[1].image == nullptr &&
         scalar.items[2].image == nullptr;
 
+    auto *heapScalar = static_cast<HudUiTripletPanel *>(::operator new(sizeof(HudUiTripletPanel)));
+    std::memset(heapScalar, 0, sizeof(*heapScalar));
+    for (HudUiWidget &item : heapScalar->items) {
+        item.ftable = &g_HudUiWidget_FTable;
+        item.image = &zVid_Image::g_zImage_DefaultImage;
+        item.ownsImage = 1;
+    }
+    HudUiTripletPanel *const heapScalarResult = heapScalar->ScalarDeletingDestructor(1);
+    const bool scalarDeleted = heapScalarResult == heapScalar;
+
     return panel.base.ftable == &g_HudUiCommon_FTable && itemsDestroyed && firstOnly &&
-                   scalarDestroyed
+                   scalarDestroyed && scalarDeleted
                ? 0
                : 1;
 }
@@ -11600,8 +16310,19 @@ extern "C" int zhud_text_input_destructor_core_smoke(void) {
     input.cursor = 4;
 
     input.DestructorCore();
+    const bool destructed = input.ftable == &g_HudUiTextInput_FTable && input.capacity == 16 &&
+                            input.cursor == 4;
 
-    return input.ftable == &g_HudUiTextInput_FTable && input.capacity == 16 && input.cursor == 4
+    HudUiTextInput thunkInput{};
+    thunkInput.ftable = nullptr;
+    thunkInput.buffer = static_cast<char *>(::operator new(8));
+    thunkInput.capacity = 8;
+    thunkInput.cursor = 2;
+
+    thunkInput.DestructorCoreThunk();
+
+    return destructed && thunkInput.ftable == &g_HudUiTextInput_FTable &&
+                   thunkInput.capacity == 8 && thunkInput.cursor == 2
                ? 0
                : 1;
 }
@@ -12125,6 +16846,69 @@ extern "C" int zhud_bar_and_meter_constructor_smoke(void) {
     return ok ? 0 : 1;
 }
 
+extern "C" int zhud_bar_draw_smoke(void) {
+    zRndr::SpanRoutineProc const oldSelectedSpanOp = zRndr::g_pfnSelectedSpanOp;
+    void *const oldFrameBuffer = zRndr::g_frameBuffer;
+    const int oldPitchBytes = zRndr::g_pitchBytes;
+    const int oldBytesPerPixel = zRndr::g_bytesPerPixel;
+    const int oldScanConvertMode = zRndr::g_scanConvertMode;
+
+    HudUiBar_FTable table = g_HudUiBar_FTable;
+    table.slots[2] = reinterpret_cast<std::uintptr_t>(TestElementBaseDraw);
+
+    HudUiBar bar{};
+    bar.ftable = &table;
+
+    g_elementBaseDrawCount = 0;
+    g_barDrawSpanOpCount = 0;
+    bar.drawVertexCount = 0;
+    bar.Draw();
+    const bool baseOnly =
+        g_elementBaseDrawCount == 1 && g_barDrawSpanOpCount == 0 &&
+        g_HudUiBar_FTable.slots[1] == MethodAddress(&HudUiBar::Draw);
+
+    std::uint16_t frame[8 * 8] = {};
+    zRndr::g_frameBuffer = frame;
+    zRndr::g_pitchBytes = 8 * static_cast<int>(sizeof(std::uint16_t));
+    zRndr::g_bytesPerPixel = static_cast<int>(sizeof(std::uint16_t));
+    zRndr::g_scanConvertMode = 1;
+    zRndr::g_pfnSelectedSpanOp = TestBarDrawSpanOp;
+
+    bar.points[0].x = 1.0f;
+    bar.points[0].y = 1.0f;
+    bar.points[1].x = 5.0f;
+    bar.points[1].y = 1.0f;
+    bar.points[2].x = 5.0f;
+    bar.points[2].y = 1.0f;
+    bar.points[3].x = 5.0f;
+    bar.points[3].y = 5.0f;
+    bar.points[4].x = 1.0f;
+    bar.points[4].y = 5.0f;
+    bar.points[5].x = 1.0f;
+    bar.points[5].y = 1.0f;
+    bar.drawVertexCount = 6;
+    bar.drawParam = 0x7788;
+
+    g_elementBaseDrawCount = 0;
+    g_barDrawSpanOpCount = 0;
+    g_barDrawLastContext = 0;
+    g_barDrawLastPixelCount = 0;
+    g_barDrawLastDst = nullptr;
+    bar.Draw();
+    const bool rasterized =
+        g_elementBaseDrawCount == 1 && g_barDrawSpanOpCount == 4 &&
+        g_barDrawLastContext == 0x7788 && g_barDrawLastPixelCount == 3 &&
+        g_barDrawLastDst == frame + 33;
+
+    zRndr::g_pfnSelectedSpanOp = oldSelectedSpanOp;
+    zRndr::g_frameBuffer = oldFrameBuffer;
+    zRndr::g_pitchBytes = oldPitchBytes;
+    zRndr::g_bytesPerPixel = oldBytesPerPixel;
+    zRndr::g_scanConvertMode = oldScanConvertMode;
+
+    return baseOnly && rasterized ? 0 : 1;
+}
+
 extern "C" int zhud_bar_set_point_xy_smoke(void) {
     HudUiBar_FTable table{};
     table.slots[3] = MethodAddress(&TestBarSetPointReceiver::SetPos);
@@ -12442,6 +17226,10 @@ extern "C" int zhud_panel_text_color_shadow_smoke(void) {
     TestFieldAt<std::uint32_t>(panel, 0x264) = 5;
 
     const std::uint32_t previousColor = panel->SetTextColor(0x223344);
+    const bool setTextColor =
+        previousColor == 0x111111 && TestFieldAt<std::uint32_t>(panel, 0x14c) == 0x223344 &&
+        TestFieldAt<std::uint32_t>(panel, 0x150) == 0x223344 &&
+        TestFieldAt<std::uint32_t>(panel, 0x270) == 1;
     panel->SetTextColorsAndMarkDirty(0x010203, 0x040506);
     const std::uint32_t previousShadow = panel->SetShadow(1, 7, -3);
 
@@ -12469,7 +17257,7 @@ extern "C" int zhud_panel_text_color_shadow_smoke(void) {
     field.FreeFieldPtr();
     const bool freeNull = field.fieldPtr == nullptr;
 
-    return previousColor == 0x111111 && TestFieldAt<std::uint32_t>(panel, 0x14c) == 0x010203 &&
+    return setTextColor && TestFieldAt<std::uint32_t>(panel, 0x14c) == 0x010203 &&
                    TestFieldAt<std::uint32_t>(panel, 0x150) == 0x040506 &&
                    TestFieldAt<std::uint32_t>(panel, 0x270) == 1 && previousShadow == 5 &&
                    TestFieldAt<std::uint32_t>(panel, 0x264) == 1 &&
@@ -14120,27 +18908,45 @@ extern "C" int zhud_panel_constructor_default_smoke(void) {
 
     panel->ConstructorDefault("TXT", 3, 28);
 
-    return panel->vtbl == &g_HudUiPanel_FTable &&
-                   std::strcmp(&TestFieldAt<char>(panel, 0x34), "TXT") == 0 &&
-                   TestFieldAt<std::int32_t>(panel, 0x14) == 3 &&
-                   TestFieldAt<std::int32_t>(panel, 0x18) == 28 &&
-                   TestFieldAt<void *>(panel, 0x148) == nullptr &&
-                   TestFieldAt<std::uint32_t>(panel, 0x14c) == 0x00ffffff &&
-                   TestFieldAt<std::uint32_t>(panel, 0x150) == 0x00ffffff &&
-                   TestFieldAt<void *>(panel, 0x154) != nullptr &&
-                   TestFieldAt<char>(panel, 0x15c) == 0 &&
-                   TestFieldAt<std::int32_t>(panel, 0x25c) == 0 &&
-                   TestFieldAt<std::int32_t>(panel, 0x260) == 0 &&
-                   TestFieldAt<std::uint32_t>(panel, 0x264) == 0 &&
-                   TestFieldAt<std::uint32_t>(panel, 0x268) == 1 &&
-                   TestFieldAt<std::uint32_t>(panel, 0x270) == 1 &&
-                   panel->GetWrapRect() == reinterpret_cast<HudUiRect *>(storage + 0x27c) &&
-                   TestFieldAt<std::int32_t>(panel, 0x28c) == 0 &&
-                   TestFieldAt<std::int32_t>(panel, 0x290) == 0 &&
-                   TestFieldAt<std::int32_t>(panel, 0x294) == 0 &&
-                   TestFieldAt<std::int32_t>(panel, 0x298) == 0
-               ? 0
-               : 1;
+    alignas(HudUiPanel) std::uint8_t thunkStorage[0x2ac]{};
+    auto *thunkPanel = reinterpret_cast<HudUiPanel *>(thunkStorage);
+    HudUiPanel *const thunkReturned = thunkPanel->ConstructorDefaultThunk();
+
+    const bool defaultCtor =
+        panel->vtbl == &g_HudUiPanel_FTable &&
+        std::strcmp(&TestFieldAt<char>(panel, 0x34), "TXT") == 0 &&
+        TestFieldAt<std::int32_t>(panel, 0x14) == 3 &&
+        TestFieldAt<std::int32_t>(panel, 0x18) == 28 &&
+        TestFieldAt<void *>(panel, 0x148) == nullptr &&
+        TestFieldAt<std::uint32_t>(panel, 0x14c) == 0x00ffffff &&
+        TestFieldAt<std::uint32_t>(panel, 0x150) == 0x00ffffff &&
+        TestFieldAt<void *>(panel, 0x154) != nullptr &&
+        TestFieldAt<char>(panel, 0x15c) == 0 &&
+        TestFieldAt<std::int32_t>(panel, 0x25c) == 0 &&
+        TestFieldAt<std::int32_t>(panel, 0x260) == 0 &&
+        TestFieldAt<std::uint32_t>(panel, 0x264) == 0 &&
+        TestFieldAt<std::uint32_t>(panel, 0x268) == 1 &&
+        TestFieldAt<std::uint32_t>(panel, 0x270) == 1 &&
+        panel->GetWrapRect() == reinterpret_cast<HudUiRect *>(storage + 0x27c) &&
+        TestFieldAt<std::int32_t>(panel, 0x28c) == 0 &&
+        TestFieldAt<std::int32_t>(panel, 0x290) == 0 &&
+        TestFieldAt<std::int32_t>(panel, 0x294) == 0 &&
+        TestFieldAt<std::int32_t>(panel, 0x298) == 0;
+
+    const bool thunkCtor =
+        thunkReturned == thunkPanel && thunkPanel->vtbl == &g_HudUiPanel_FTable &&
+        TestFieldAt<char>(thunkPanel, 0x34) == '\0' &&
+        TestFieldAt<std::int32_t>(thunkPanel, 0x14) == 0 &&
+        TestFieldAt<std::int32_t>(thunkPanel, 0x18) == 0 &&
+        TestFieldAt<void *>(thunkPanel, 0x148) == nullptr &&
+        TestFieldAt<std::uint32_t>(thunkPanel, 0x14c) == 0x00ffffff &&
+        TestFieldAt<std::uint32_t>(thunkPanel, 0x150) == 0x00ffffff &&
+        TestFieldAt<void *>(thunkPanel, 0x154) != nullptr &&
+        TestFieldAt<std::uint32_t>(thunkPanel, 0x264) == 0 &&
+        TestFieldAt<std::uint32_t>(thunkPanel, 0x268) == 1 &&
+        TestFieldAt<std::uint32_t>(thunkPanel, 0x270) == 1;
+
+    return defaultCtor && thunkCtor ? 0 : 1;
 }
 
 extern "C" int zhud_panel_draw_smoke(void) {
@@ -14391,6 +19197,125 @@ extern "C" int zhud_text_label_constructor_and_extents_smoke(void) {
     return constructed && assignedLabel && centered && copiedLabel && cleared ? 0 : 1;
 }
 
+extern "C" int zhud_text_label_on_draw_smoke(void) {
+    zVideo_BltSourceToPrimaryProc const oldBlit = g_zVideo_pfnBltSourceToPrimary;
+    zImage_Font *const oldFont1 = g_zImage_FontTable[1];
+    const int oldActiveHeight = zRndr::g_activeRegionHeight;
+
+    zVidImagePartial image{};
+    image.height = 6;
+
+    zImage_Font font{};
+    font.image = &image;
+    font.glyphRects['A' - 0x21].left = 2;
+    font.glyphRects['A' - 0x21].top = 3;
+    font.glyphRects['A' - 0x21].right = 8;
+    font.glyphRects['A' - 0x21].bottom = 9;
+
+    g_zVideo_pfnBltSourceToPrimary = TestBltSourceToPrimary;
+    g_zImage_FontTable[1] = &font;
+    zRndr::g_activeRegionHeight = 100;
+
+    HudUiTextLabel_FTable table = g_HudUiTextLabel_FTable;
+    table.slots[1] = MethodAddress(&HudUiTextLabel::OnDraw);
+    table.slots[2] = reinterpret_cast<std::uintptr_t>(TestElementBaseDraw);
+
+    HudUiTextLabel label{};
+    label.base.ftable = reinterpret_cast<const HudUiCommon_FTable *>(&table);
+    label.base.x = 20;
+    label.base.y = 30;
+    label.fontHandle = 1;
+
+    g_elementBaseDrawCount = 0;
+    g_testBlitCount = 0;
+    label.textBuffer[0] = 0;
+    label.OnDraw();
+    const bool emptyDraw =
+        g_elementBaseDrawCount == 1 && g_testBlitCount == 0 &&
+        g_HudUiTextLabel_FTable.slots[1] == MethodAddress(&HudUiTextLabel::OnDraw) &&
+        g_HudUiTextLabel_FTable.slots[28] == MethodAddress(&HudUiTextLabel::SetTextFmt);
+
+    g_elementBaseDrawCount = 0;
+    g_testBlitCount = 0;
+    std::memset(g_testBlitRects, 0, sizeof(g_testBlitRects));
+    std::strcpy(label.textBuffer, "A");
+    label.alignMode = 0;
+    label.base.x = 20;
+    label.OnDraw();
+    const bool leftAligned =
+        g_elementBaseDrawCount == 1 && g_testBlitCount == 1 &&
+        g_testBlitImages[0] == &image && g_testBlitX[0] == 20 &&
+        g_testBlitY[0] == 30 && g_testBlitFlags[0] == 0 &&
+        g_testBlitRects[0].left == 2 && g_testBlitRects[0].top == 3 &&
+        g_testBlitRects[0].right == 8 && g_testBlitRects[0].bottom == 9 &&
+        label.base.x == 20;
+
+    g_elementBaseDrawCount = 0;
+    g_testBlitCount = 0;
+    label.alignMode = 1;
+    label.base.x = 20;
+    label.OnDraw();
+    const bool centered =
+        g_elementBaseDrawCount == 1 && g_testBlitCount == 1 &&
+        g_testBlitX[0] == 17 && g_testBlitY[0] == 30 && label.base.x == 20;
+
+    g_elementBaseDrawCount = 0;
+    g_testBlitCount = 0;
+    label.alignMode = 2;
+    label.base.x = 20;
+    label.OnDraw();
+    const bool rightAligned =
+        g_elementBaseDrawCount == 1 && g_testBlitCount == 1 &&
+        g_testBlitX[0] == 14 && g_testBlitY[0] == 30 && label.base.x == 20;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    g_zImage_FontTable[1] = oldFont1;
+    zRndr::g_activeRegionHeight = oldActiveHeight;
+
+    return emptyDraw && leftAligned && centered && rightAligned ? 0 : 1;
+}
+
+extern "C" int zhud_text_label_hit_test_smoke(void) {
+    zImage_Font *const oldFont1 = g_zImage_FontTable[1];
+
+    zVidImagePartial image{};
+    image.height = 7;
+
+    zImage_Font font{};
+    font.image = &image;
+    font.spaceWidth = 3;
+    font.glyphRects['A' - 0x21].left = 2;
+    font.glyphRects['A' - 0x21].right = 8;
+    font.glyphRects['B' - 0x21].left = 4;
+    font.glyphRects['B' - 0x21].right = 9;
+    g_zImage_FontTable[1] = &font;
+
+    HudUiTextLabel label{};
+    label.base.x = 20;
+    label.base.y = 30;
+    label.fontHandle = 1;
+    std::strcpy(label.textBuffer, "AB");
+
+    const bool ftableSlot =
+        g_HudUiTextLabel_FTable.slots[0x5c / 4] == MethodAddress(&HudUiTextLabel::HitTest);
+    const bool inside = label.HitTest(20, 30) == 1 && label.HitTest(31, 37) == 1;
+    const bool outside = label.HitTest(19, 30) == 0 && label.HitTest(20, 29) == 0 &&
+                         label.HitTest(32, 37) == 0 && label.HitTest(31, 38) == 0;
+
+    label.base.flags = 0x10;
+    const bool hiddenMiss = label.HitTest(20, 30) == 0;
+
+    label.base.flags = 0;
+    std::strcpy(label.textBuffer, "A\nB");
+    const bool multilineBounds =
+        label.HitTest(26, 44) == 1 && label.HitTest(27, 44) == 0 &&
+        label.HitTest(26, 45) == 0;
+
+    g_zImage_FontTable[1] = oldFont1;
+
+    return ftableSlot && inside && outside && hiddenMiss && multilineBounds ? 0 : 1;
+}
+
 extern "C" int zhud_panel_set_font_smoke(void) {
     alignas(HudUiPanel) std::uint8_t storage[0x2ac]{};
     auto *panel = reinterpret_cast<HudUiPanel *>(storage);
@@ -14513,9 +19438,41 @@ extern "C" int zhud_panel_query_text_height_smoke(void) {
                                               TestFieldAt<std::int32_t>(panel, 0x274) &&
                          rebuiltHeight > 0;
 
+    HudUiPanel boundsPanel{};
+    boundsPanel.ConstructorDefault("Bounds", 10, 20);
+    TestFieldAt<std::uint32_t>(&boundsPanel, 0x278) = 1;
+    TestFieldAt<HudUiRect>(&boundsPanel, 0x27c) = {0, 0, 50, 12};
+    boundsPanel.UpdateTextBoundsFromContent();
+    const bool wrappedBounds =
+        TestFieldAt<std::int32_t>(&boundsPanel, 0x20) == 10 &&
+        TestFieldAt<std::int32_t>(&boundsPanel, 0x24) == 20 &&
+        TestFieldAt<std::int32_t>(&boundsPanel, 0x28) == 60 &&
+        TestFieldAt<std::int32_t>(&boundsPanel, 0x2c) == 32;
+
+    std::strcpy(&TestFieldAt<char>(&boundsPanel, 0x34), "WW");
+    TestFieldAt<std::uint32_t>(&boundsPanel, 0x278) = 0;
+    TestFieldAt<void *>(&boundsPanel, 0x148) = nullptr;
+    TestFieldAt<std::uint32_t>(&boundsPanel, 0x264) = 1;
+    TestFieldAt<std::int32_t>(&boundsPanel, 0x29c) = -3;
+    TestFieldAt<std::int32_t>(&boundsPanel, 0x2a0) = 4;
+    TestFieldAt<std::int32_t>(&boundsPanel, 0x20) = 7;
+    TestFieldAt<std::int32_t>(&boundsPanel, 0x24) = 9;
+    boundsPanel.UpdateTextBoundsFromContent();
+    const bool measuredBounds =
+        TestFieldAt<std::int32_t>(&boundsPanel, 0x20) == 7 &&
+        TestFieldAt<std::int32_t>(&boundsPanel, 0x24) == 9 &&
+        TestFieldAt<std::int32_t>(&boundsPanel, 0x28) > 10 &&
+        TestFieldAt<std::int32_t>(&boundsPanel, 0x2c) > 13;
+
+    DeleteObject(boundsPanel.hFont);
+    boundsPanel.hFont = nullptr;
+
     DeleteObject(panel->hFont);
     panel->hFont = nullptr;
-    return cached && lastText && textRectMatch && hitTest && hiddenMiss && rebuilt ? 0 : 1;
+    return cached && lastText && textRectMatch && hitTest && hiddenMiss && rebuilt &&
+                   wrappedBounds && measuredBounds
+               ? 0
+               : 1;
 }
 
 extern "C" int zhud_panel_simple_constructor_smoke(void) {
@@ -15235,6 +20192,14 @@ extern "C" int zhud_layout_sw_static_lifetime_smoke(void) {
 static int g_HudLayoutHWUpdateAllBlitCount;
 static zVidRect32 *g_HudLayoutHWUpdateAllBlitSrc;
 static zVidRect32 *g_HudLayoutHWUpdateAllBlitDst;
+static int g_HudLayoutHWSetActiveOnActivatedCount;
+static HudLayoutBase *g_HudLayoutHWSetActiveOnActivatedThis;
+static int g_HudLayoutHWSetActiveClearCount;
+static zVidRect32 *g_HudLayoutHWSetActiveClearRect;
+static zVideo_SurfaceStatePartial *g_HudLayoutHWSetActiveClearSurface;
+static int g_HudLayoutHWEnableSetEnabledCount;
+static HudLayoutHW *g_HudLayoutHWEnableSetEnabledThis;
+static int g_HudLayoutHWEnableSetEnabledValue;
 
 static void RECOIL_FASTCALL HudLayoutHWUpdateAllBlitCapture(zVidRect32 *srcRect,
                                                             zVidRect32 *dstRect) {
@@ -15242,6 +20207,26 @@ static void RECOIL_FASTCALL HudLayoutHWUpdateAllBlitCapture(zVidRect32 *srcRect,
     g_HudLayoutHWUpdateAllBlitSrc = srcRect;
     g_HudLayoutHWUpdateAllBlitDst = dstRect;
 }
+
+static void RECOIL_FASTCALL HudLayoutHWSetActiveOnActivatedCapture(HudLayoutBase *layout) {
+    ++g_HudLayoutHWSetActiveOnActivatedCount;
+    g_HudLayoutHWSetActiveOnActivatedThis = layout;
+}
+
+static void RECOIL_FASTCALL
+HudLayoutHWSetActiveClearCapture(zVidRect32 *rect, zVideo_SurfaceStatePartial *surfaceState) {
+    ++g_HudLayoutHWSetActiveClearCount;
+    g_HudLayoutHWSetActiveClearRect = rect;
+    g_HudLayoutHWSetActiveClearSurface = surfaceState;
+}
+
+struct TestHudLayoutHWEnableDispatch {
+    void RECOIL_THISCALL SetEnabled(int enabled) {
+        ++g_HudLayoutHWEnableSetEnabledCount;
+        g_HudLayoutHWEnableSetEnabledThis = reinterpret_cast<HudLayoutHW *>(this);
+        g_HudLayoutHWEnableSetEnabledValue = enabled;
+    }
+};
 
 extern "C" int zhud_layout_hw_update_all_smoke(void) {
     const HudUiContainer oldHudMgr = g_HudUiMgr;
@@ -15288,6 +20273,488 @@ extern "C" int zhud_layout_hw_update_all_smoke(void) {
     ZOPT_REPLICATE = oldReplicateOption;
 
     return blitted && phaseGuard && replicateGuard ? 0 : 1;
+}
+
+extern "C" int zhud_layout_hw_set_active_smoke(void) {
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    zClass_NodePartial *const oldMainCamera = g_MainCamera;
+    const HudSensorTracker oldTracker = g_HudSensorTracker;
+    const HudUiMgrSensorBlock oldSensorBlock = g_HudUiMgrSensorBlock;
+    const HudUiRect oldSensorFxRect = g_HudUiMgrSensorFxRect;
+    const int oldSensorFxViewportWidth = g_HudUiMgrSensorFxViewportWidth;
+    const int oldSensorFxViewportHeight = g_HudUiMgrSensorFxViewportHeight;
+    const HudUiRect oldHudRect = g_HudUiMgrHudRect;
+    const int oldHudOriginY = g_HudUiMgrHudOriginY;
+    const HudUiContainer oldHudMgr = g_HudUiMgr;
+    const int oldObjectivePhase = g_HudUiMgrObjectivePhase;
+    const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
+    const HudUiBar oldObjectiveBar = g_HudUiMgrObjectiveBar;
+    const HudUiWidget oldObjectiveSensorRect = g_HudUiMgrObjectiveSensorRect;
+    HudUiCounterTextPanel *const oldCounterPanel = g_HudUiMgrObjectiveCounterTextPanel;
+    HudUiTimerPanel *const oldTimerPanel = g_HudUiMgrTimerPanel;
+    const HudUiNanitePanel oldNanitePanel = g_HudUiMgrNanitePanel;
+    HudUiMessage oldMessages[10];
+    std::memcpy(oldMessages, g_HudUiMgrMessages, sizeof(oldMessages));
+    zVideo_ClearStateSurfaceAndZBufferProc const oldClearState =
+        g_zVideo_pfnClearStateSurfaceAndZBuffer;
+    const int oldClearEnabled = g_zVideo_ClearScreenBufferEnabled;
+    const int oldSpanPolyCount = zRndr::g_spanOccluderPolyCount;
+    zRndr::SpanOccluderPolyPartial oldSpanPolys[8];
+    for (int index = 0; index < 8; ++index) {
+        oldSpanPolys[index] = zRndr::g_spanOccluderPolys[index];
+    }
+    const int oldAltClipValid = gAltClipSourceRectValid;
+    const float oldAltSourceLeft = g_zClipAlt_SourceLeft;
+    const float oldAltSourceTop = g_zClipAlt_SourceTop;
+    const float oldAltSourceRight = g_zClipAlt_SourceRight;
+    const float oldAltSourceBottom = g_zClipAlt_SourceBottom;
+    const float oldAltSourceWidth = g_zClipAlt_SourceWidth;
+    const float oldAltSourceHeight = g_zClipAlt_SourceHeight;
+
+    int acceleration = 0;
+    std::int32_t replicate = 0;
+    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    ZOPT_REPLICATE = &replicate;
+
+    zOpt_ViewRectSection renderSection{};
+    zOpt_ViewRectSection displaySection{};
+    zOpt_ViewRectSection *renderSectionPtr = &renderSection;
+    zOpt_ViewRectSection *displaySectionPtr = &displaySection;
+    g_zOpt_RenderSectionOption = &renderSectionPtr;
+    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.nearClip = 2.0f;
+    cameraData.farClip = 500.0f;
+    zClass_NodePartial cameraNode{};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    g_MainCamera = &cameraNode;
+    g_HudSensorTracker = {};
+
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.width = 800;
+    g_zVideo_pfnClearStateSurfaceAndZBuffer = &HudLayoutHWSetActiveClearCapture;
+    g_zVideo_ClearScreenBufferEnabled = 3;
+    g_HudLayoutHWSetActiveClearCount = 0;
+    g_HudLayoutHWSetActiveClearRect = nullptr;
+    g_HudLayoutHWSetActiveClearSurface = nullptr;
+
+    g_HudUiMgr = {};
+    g_HudUiMgr.enabled = 1;
+    g_HudUiMgrHudOriginY = 5;
+    g_HudUiMgrHudRect = {0, 0, 320, 240};
+    g_HudUiMgrSensorBlock = {};
+    g_HudUiMgrSensorBlock.sensorViewportRect = {10, 20, 110, 120};
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect = {2.0f, 3.0f, 82.0f, 63.0f};
+    g_HudUiMgrSensorFxRect = {0, 0, 0, 0};
+    g_HudUiMgrSensorFxViewportWidth = 80;
+    g_HudUiMgrSensorFxViewportHeight = 60;
+    g_HudUiMgrObjectivePhase = 0;
+    g_HudUiMgrObjectiveWidget = {};
+    g_HudUiMgrObjectiveWidget.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+    g_HudUiMgrObjectiveBar = {};
+    g_HudUiMgrObjectiveBar.ftable =
+        reinterpret_cast<const HudUiBar_FTable *>(&g_HudUiCommon_FTable);
+    g_HudUiMgrObjectiveSensorRect = {};
+    g_HudUiMgrObjectiveSensorRect.ftable =
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+
+    HudUiCounterTextPanel counterPanel{};
+    HudUiTimerPanel timerPanel{};
+    TestFieldAt<const void *>(&counterPanel, 0) = &g_HudUiCounterTextPanel_FTable;
+    TestFieldAt<const void *>(&timerPanel, 0) = &g_HudUiTimerPanel_FTable;
+    TestFieldAt<const void *>(&g_HudUiMgrNanitePanel, 0) = &g_HudUiTripletPanel_FTable;
+    g_HudUiMgrObjectiveCounterTextPanel = &counterPanel;
+    g_HudUiMgrTimerPanel = &timerPanel;
+
+    void *const messageZeroBaseSentinel = reinterpret_cast<void *>(0x1111);
+    void *const messageZeroPanelSentinel = reinterpret_cast<void *>(0x2222);
+    for (int index = 0; index < 10; ++index) {
+        g_HudUiMgrMessages[index] = {};
+        g_HudUiMgrMessages[index].base.ftable =
+            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiMessage_FTable);
+        TestFieldAt<const void *>(&g_HudUiMgrMessages[index].panel, 0) = &g_HudUiPanel_FTable;
+        g_HudUiMgrMessages[index].base.bltSource =
+            index == 0 ? messageZeroBaseSentinel : nullptr;
+        TestFieldAt<void *>(&g_HudUiMgrMessages[index].panel, 0x1c) =
+            index == 0 ? messageZeroPanelSentinel : nullptr;
+    }
+
+    HudLayoutHW layout{};
+    HudLayoutBase_FTable table = {};
+    table.OnActivated = &HudLayoutHWSetActiveOnActivatedCapture;
+    layout.base.ftable = &table;
+    layout.base.layoutRect = {4, 6, 320, 200};
+    layout.base.activeRect = {4, 6, 0, 0};
+    zVidImagePartial widget1Image{};
+    zVidImagePartial widget2Image{};
+    TestFieldAt<HudUiWidget>(&layout, 0xec).image = &widget1Image;
+    TestFieldAt<HudUiWidget>(&layout, 0x1b4).image = &widget2Image;
+    g_HudLayoutHWSetActiveOnActivatedCount = 0;
+    g_HudLayoutHWSetActiveOnActivatedThis = nullptr;
+
+    zRndr::g_spanOccluderPolyCount = 7;
+    for (int index = 0; index < 8; ++index) {
+        zRndr::g_spanOccluderPolys[index] = {};
+    }
+    const int activeResult = layout.SetActive(1);
+    const zRndr::SpanOccluderPolyPartial &sensorPoly = zRndr::g_spanOccluderPolys[0];
+
+    bool activeImages =
+        activeResult == 1 && g_HudLayoutHWSetActiveOnActivatedCount == 1 &&
+        g_HudLayoutHWSetActiveOnActivatedThis == &layout.base &&
+        layout.base.activeRect.right == 800 && layout.base.activeRect.bottom == 205 &&
+        TestFieldAt<void *>(&counterPanel, 0x1c) == &widget1Image &&
+        TestFieldAt<void *>(&timerPanel, 0x1c) == &widget1Image &&
+        TestFieldAt<void *>(&g_HudUiMgrNanitePanel, 0x1c) == &widget2Image &&
+        g_HudUiMgrMessages[0].base.bltSource == messageZeroBaseSentinel &&
+        TestFieldAt<void *>(&g_HudUiMgrMessages[0].panel, 0x1c) ==
+            messageZeroPanelSentinel;
+    for (int index = 1; index < 10; ++index) {
+        activeImages =
+            activeImages && g_HudUiMgrMessages[index].base.bltSource == &widget2Image &&
+            TestFieldAt<void *>(&g_HudUiMgrMessages[index].panel, 0x1c) == &widget2Image;
+    }
+
+    const bool activeClipAndOccluder =
+        zRndr::g_spanOccluderPolyCount == 1 && sensorPoly.vertCount == 4 &&
+        sensorPoly.vertices[0][0] == 10.0f && sensorPoly.vertices[0][1] == 20.0f &&
+        sensorPoly.vertices[0][2] == 0.5f && sensorPoly.vertices[2][0] == 110.0f &&
+        sensorPoly.vertices[2][1] == 205.0f &&
+        g_zClipAlt_SourceLeft == 0.0f && g_zClipAlt_SourceTop == 0.0f &&
+        g_zClipAlt_SourceRight == 80.0f && g_zClipAlt_SourceBottom == 60.0f &&
+        gAltClipSourceRectValid == 1;
+
+    zRndr::g_spanOccluderPolyCount = 4;
+    const int inactiveResult = layout.SetActive(0);
+
+    bool inactiveCleared =
+        inactiveResult == 1 && g_HudLayoutHWSetActiveOnActivatedCount == 1 &&
+        zRndr::g_spanOccluderPolyCount == 0 && g_HudLayoutHWSetActiveClearCount == 1 &&
+        g_HudLayoutHWSetActiveClearRect == nullptr &&
+        g_HudLayoutHWSetActiveClearSurface == &g_zVideo_PrimarySurfaceState &&
+        g_zVideo_ClearScreenBufferEnabled == 3 &&
+        TestFieldAt<void *>(&counterPanel, 0x1c) == nullptr &&
+        TestFieldAt<void *>(&timerPanel, 0x1c) == nullptr &&
+        TestFieldAt<void *>(&g_HudUiMgrNanitePanel, 0x1c) == nullptr;
+    for (int index = 0; index < 10; ++index) {
+        inactiveCleared =
+            inactiveCleared && g_HudUiMgrMessages[index].base.bltSource == nullptr &&
+            TestFieldAt<void *>(&g_HudUiMgrMessages[index].panel, 0x1c) == nullptr;
+    }
+
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+    ZOPT_REPLICATE = oldReplicateOption;
+    g_zOpt_RenderSectionOption = oldRenderOption;
+    g_zOpt_DisplaySectionOption = oldDisplayOption;
+    g_MainCamera = oldMainCamera;
+    g_HudSensorTracker = oldTracker;
+    g_HudUiMgrSensorBlock = oldSensorBlock;
+    g_HudUiMgrSensorFxRect = oldSensorFxRect;
+    g_HudUiMgrSensorFxViewportWidth = oldSensorFxViewportWidth;
+    g_HudUiMgrSensorFxViewportHeight = oldSensorFxViewportHeight;
+    g_HudUiMgrHudRect = oldHudRect;
+    g_HudUiMgrHudOriginY = oldHudOriginY;
+    g_HudUiMgr = oldHudMgr;
+    g_HudUiMgrObjectivePhase = oldObjectivePhase;
+    g_HudUiMgrObjectiveWidget = oldObjectiveWidget;
+    g_HudUiMgrObjectiveBar = oldObjectiveBar;
+    g_HudUiMgrObjectiveSensorRect = oldObjectiveSensorRect;
+    g_HudUiMgrObjectiveCounterTextPanel = oldCounterPanel;
+    g_HudUiMgrTimerPanel = oldTimerPanel;
+    g_HudUiMgrNanitePanel = oldNanitePanel;
+    std::memcpy(g_HudUiMgrMessages, oldMessages, sizeof(oldMessages));
+    g_zVideo_pfnClearStateSurfaceAndZBuffer = oldClearState;
+    g_zVideo_ClearScreenBufferEnabled = oldClearEnabled;
+    zRndr::g_spanOccluderPolyCount = oldSpanPolyCount;
+    for (int index = 0; index < 8; ++index) {
+        zRndr::g_spanOccluderPolys[index] = oldSpanPolys[index];
+    }
+    gAltClipSourceRectValid = oldAltClipValid;
+    g_zClipAlt_SourceLeft = oldAltSourceLeft;
+    g_zClipAlt_SourceTop = oldAltSourceTop;
+    g_zClipAlt_SourceRight = oldAltSourceRight;
+    g_zClipAlt_SourceBottom = oldAltSourceBottom;
+    g_zClipAlt_SourceWidth = oldAltSourceWidth;
+    g_zClipAlt_SourceHeight = oldAltSourceHeight;
+
+    if (!activeImages) {
+        return 1;
+    }
+    if (!activeClipAndOccluder) {
+        return 2;
+    }
+    if (!inactiveCleared) {
+        return 3;
+    }
+    return 0;
+}
+
+extern "C" int zhud_layout_hw_on_activated_smoke(void) {
+    int *const oldReplicateOption = ZOPT_REPLICATE;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+    const HudUiContainer oldHudMgr = g_HudUiMgr;
+    const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
+    const HudUiMeter oldObjectiveMeter = g_HudUiMgrObjectiveMeter;
+    HudUiPanel *const oldObjectiveLabel = g_HudUiMgrObjectiveLabelTextPanel;
+    const HudUiWidget oldSensorOverlay = g_HudUiMgrSensorOverlay;
+    HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
+    const HudSensorTracker oldTracker = g_HudSensorTracker;
+    const HudUiMgrSensorBlock oldSensorBlock = g_HudUiMgrSensorBlock;
+    const int oldLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
+    const HudUiRect oldViewRect = g_HudUiMgrViewRect;
+    HudUiMessage oldMessages[10];
+    std::memcpy(oldMessages, g_HudUiMgrMessages, sizeof(oldMessages));
+
+    std::int32_t replicate = 0;
+    ZOPT_REPLICATE = &replicate;
+
+    HudUiElement mgrChild{};
+    HudUiElement layoutChild{};
+    mgrChild.flags = 0x91;
+    layoutChild.flags = 0x91;
+    g_HudUiMgr = {};
+    g_HudUiMgr.childHead = &mgrChild;
+    g_HudUiMgr.childTail = &mgrChild;
+
+    HudUiPanel objectiveLabel{};
+    g_HudUiMgrObjectiveLabelTextPanel = &objectiveLabel;
+    g_HudUiMgrObjectiveWidget = {};
+    g_HudUiMgrObjectiveMeter = {};
+    g_HudUiMgrSensorOverlay = {};
+    g_HudUiMgrObjectiveWidget.flags = 0x9f;
+    g_HudUiMgrObjectiveMeter.flags = 0x9f;
+    TestFieldAt<unsigned int>(&objectiveLabel, 0x0c) = 0x9f;
+    g_HudUiMgrSensorOverlay.flags = 0x9f;
+
+    HudUiStatsListElement statsList{};
+    HudUiTriplet triplet{};
+    triplet.Constructor();
+    statsList.triplet = &triplet;
+    g_HudUiMgrStatsList = &statsList;
+    TestFieldAt<unsigned int>(triplet.rowCells[0], 0x0c) = 0x7f;
+
+    g_HudSensorTracker = {};
+    g_HudUiMgrSensorBlock = {};
+    g_HudUiMgrSensorBlock.sensorViewportRect = {30, 40, 70, 90};
+
+    zVidImagePartial defaultWidget1{};
+    zVidImagePartial defaultWidget2{};
+    zVidImagePartial widget1Image320{};
+    zVidImagePartial widget2Image320{};
+    zVidImagePartial widget1Image400{};
+    zVidImagePartial widget2Image400{};
+    widget2Image320.width = 120;
+    widget2Image320.height = 80;
+
+    HudLayoutHW layout{};
+    layout.base.childHead = &layoutChild;
+    layout.base.childTail = &layoutChild;
+    layout.base.activeRect = {10, 20, 800, 160};
+    layout.widget1ImageDefault = &defaultWidget1;
+    layout.widget2ImageDefault = &defaultWidget2;
+    layout.widget1Image320 = &widget1Image320;
+    layout.widget2Image320 = &widget2Image320;
+    layout.widget1Image400 = &widget1Image400;
+    layout.widget2Image400 = &widget2Image400;
+    TestFieldAt<unsigned int>(&layout, 0x288) = 0x9f;
+
+    HudUiWidget *const widget1 = &TestFieldAt<HudUiWidget>(&layout, 0xec);
+    HudUiWidget *const widget2 = &TestFieldAt<HudUiWidget>(&layout, 0x1b4);
+    widget1->ftable = &g_HudUiWidget_FTable;
+    widget2->ftable = &g_HudUiWidget_FTable;
+    widget2->dirtyRectCount = 0;
+    for (HudUiRectDirty &dirtyRect : widget2->dirtyRects) {
+        dirtyRect = {};
+    }
+
+    for (int index = 0; index < 10; ++index) {
+        g_HudUiMgrMessages[index] = {};
+        g_HudUiMgrMessages[index].widget.flags = 0x9f;
+        g_HudUiMgrMessages[index].widget.image =
+            index == 5 ? nullptr : &zVid_Image::g_zImage_DefaultImage;
+    }
+
+    g_HudUiMgrHudLayoutsInitialized = 1;
+    g_HudUiMgrViewRect = {0, 0, 50, 40};
+    g_HudUi_InvalidateMask = 0;
+
+    layout.OnActivated();
+
+    bool messageFlags = g_HudUiMgrMessages[0].widget.flags == 0x9f &&
+                        g_HudUiMgrMessages[5].widget.flags == 0x9f;
+    for (int index = 1; index < 10; ++index) {
+        if (index != 5) {
+            messageFlags = messageFlags && g_HudUiMgrMessages[index].widget.flags == 0x10;
+        }
+    }
+
+    const HudUiRectDirty &dirtySlot = widget2->dirtyRects[0];
+    const bool flagsAndImages =
+        g_HudUi_InvalidateMask == 0x0c && mgrChild.flags == 0x1e &&
+        layoutChild.flags == 0x1e && TestFieldAt<unsigned int>(&layout, 0x288) == 0x10 &&
+        g_HudUiMgrObjectiveWidget.flags == 0x10 && g_HudUiMgrObjectiveMeter.flags == 0x10 &&
+        TestFieldAt<unsigned int>(&objectiveLabel, 0x0c) == 0x10 &&
+        g_HudUiMgrSensorOverlay.flags == 0x10 && widget1->image == &widget1Image320 &&
+        widget2->image == &widget2Image320 && widget1->ownsImage == 0 &&
+        widget2->ownsImage == 0;
+    const bool trackerBounds =
+        g_HudSensorTracker.outerRect.left == 11 && g_HudSensorTracker.outerRect.top == 21 &&
+        g_HudSensorTracker.outerRect.right == 799 && g_HudSensorTracker.outerRect.bottom == 159 &&
+        g_HudSensorTracker.innerRectExpanded.left == 29 &&
+        g_HudSensorTracker.innerRectExpanded.top == 39 &&
+        g_HudSensorTracker.innerRectExpanded.right == 71 &&
+        g_HudSensorTracker.innerRectExpanded.bottom == 91 &&
+        g_HudSensorTracker.mapOverlayCenterX == 405 &&
+        g_HudSensorTracker.mapOverlayCenterY == 90;
+    const bool invalidateRect =
+        widget2->dirtyRectCount == 1 && dirtySlot.framesRemaining == 2 &&
+        dirtySlot.drawX == 0 && dirtySlot.drawY == 0 && dirtySlot.srcLeft == 0 &&
+        dirtySlot.srcTop == 0 && dirtySlot.srcRight == 50 && dirtySlot.srcBottom == 40;
+    const bool scoreboardRebuilt =
+        (TestFieldAt<unsigned int>(triplet.rowCells[0], 0x0c) & 0x10) != 0;
+
+    ZOPT_REPLICATE = oldReplicateOption;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    g_HudUiMgr = oldHudMgr;
+    g_HudUiMgrObjectiveWidget = oldObjectiveWidget;
+    g_HudUiMgrObjectiveMeter = oldObjectiveMeter;
+    g_HudUiMgrObjectiveLabelTextPanel = oldObjectiveLabel;
+    g_HudUiMgrSensorOverlay = oldSensorOverlay;
+    g_HudUiMgrStatsList = oldStatsList;
+    g_HudSensorTracker = oldTracker;
+    g_HudUiMgrSensorBlock = oldSensorBlock;
+    g_HudUiMgrHudLayoutsInitialized = oldLayoutsInitialized;
+    g_HudUiMgrViewRect = oldViewRect;
+    std::memcpy(g_HudUiMgrMessages, oldMessages, sizeof(oldMessages));
+    triplet.DestructorCore();
+
+    if (!flagsAndImages) {
+        return 1;
+    }
+    if (!messageFlags) {
+        return 2;
+    }
+    if (!trackerBounds) {
+        return 3;
+    }
+    if (!invalidateRect) {
+        return 4;
+    }
+    if (!scoreboardRebuilt) {
+        return 5;
+    }
+    return 0;
+}
+
+extern "C" int zhud_layout_hw_enable_smoke(void) {
+    const HudUiContainer oldHudMgr = g_HudUiMgr;
+    const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
+    const HudUiMeter oldObjectiveMeter = g_HudUiMgrObjectiveMeter;
+    HudUiPanel *const oldObjectiveLabel = g_HudUiMgrObjectiveLabelTextPanel;
+    const HudUiWidget oldSensorOverlay = g_HudUiMgrSensorOverlay;
+    HudUiMessage oldMessages[10];
+    std::memcpy(oldMessages, g_HudUiMgrMessages, sizeof(oldMessages));
+
+    HudUiElement mgrChild{};
+    HudUiElement layoutChild{};
+    mgrChild.flags = 0x91;
+    layoutChild.flags = 0x91;
+    g_HudUiMgr = {};
+    g_HudUiMgr.childHead = &mgrChild;
+    g_HudUiMgr.childTail = &mgrChild;
+
+    HudUiPanel objectiveLabel{};
+    g_HudUiMgrObjectiveLabelTextPanel = &objectiveLabel;
+    g_HudUiMgrObjectiveWidget = {};
+    g_HudUiMgrObjectiveMeter = {};
+    g_HudUiMgrSensorOverlay = {};
+    g_HudUiMgrObjectiveWidget.flags = 0x9f;
+    g_HudUiMgrObjectiveMeter.flags = 0x9f;
+    TestFieldAt<unsigned int>(&objectiveLabel, 0x0c) = 0x9f;
+    g_HudUiMgrSensorOverlay.flags = 0x9f;
+
+    for (int index = 0; index < 10; ++index) {
+        g_HudUiMgrMessages[index] = {};
+        g_HudUiMgrMessages[index].widget.flags = 0x9f;
+        g_HudUiMgrMessages[index].widget.image =
+            index == 4 ? nullptr : &zVid_Image::g_zImage_DefaultImage;
+    }
+
+    HudLayoutHW layout{};
+    HudLayoutBase_FTable table = {};
+    table.slots[1] = MethodAddress(&TestHudLayoutHWEnableDispatch::SetEnabled);
+    layout.base.ftable = &table;
+    layout.base.childHead = &layoutChild;
+    layout.base.childTail = &layoutChild;
+    TestFieldAt<unsigned int>(&layout, 0x288) = 0x9f;
+    g_HudLayoutHWEnableSetEnabledCount = 0;
+    g_HudLayoutHWEnableSetEnabledThis = nullptr;
+    g_HudLayoutHWEnableSetEnabledValue = -1;
+
+    layout.Enable();
+
+    bool messageFlags = g_HudUiMgrMessages[0].widget.flags == 0x9f &&
+                        g_HudUiMgrMessages[4].widget.flags == 0x9f;
+    for (int index = 1; index < 10; ++index) {
+        if (index != 4) {
+            messageFlags = messageFlags && g_HudUiMgrMessages[index].widget.flags == 0x10;
+        }
+    }
+
+    const bool flags =
+        mgrChild.flags == 0x1e && layoutChild.flags == 0x1e &&
+        TestFieldAt<unsigned int>(&layout, 0x288) == 0x10 &&
+        g_HudUiMgrObjectiveWidget.flags == 0x10 && g_HudUiMgrObjectiveMeter.flags == 0x10 &&
+        TestFieldAt<unsigned int>(&objectiveLabel, 0x0c) == 0x10 &&
+        g_HudUiMgrSensorOverlay.flags == 0x10;
+    const bool enabledDispatch =
+        g_HudLayoutHWEnableSetEnabledCount == 1 &&
+        g_HudLayoutHWEnableSetEnabledThis == &layout &&
+        g_HudLayoutHWEnableSetEnabledValue == 1;
+
+    g_HudUiMgr = oldHudMgr;
+    g_HudUiMgrObjectiveWidget = oldObjectiveWidget;
+    g_HudUiMgrObjectiveMeter = oldObjectiveMeter;
+    g_HudUiMgrObjectiveLabelTextPanel = oldObjectiveLabel;
+    g_HudUiMgrSensorOverlay = oldSensorOverlay;
+    std::memcpy(g_HudUiMgrMessages, oldMessages, sizeof(oldMessages));
+
+    if (!flags) {
+        return 1;
+    }
+    if (!messageFlags) {
+        return 2;
+    }
+    if (!enabledDispatch) {
+        return 3;
+    }
+    return 0;
+}
+
+extern "C" int zhud_layout_hw_disable_smoke(void) {
+    HudLayoutHW layout{};
+    HudLayoutBase_FTable table = {};
+    table.slots[1] = MethodAddress(&TestHudLayoutHWEnableDispatch::SetEnabled);
+    layout.base.ftable = &table;
+    g_HudLayoutHWEnableSetEnabledCount = 0;
+    g_HudLayoutHWEnableSetEnabledThis = nullptr;
+    g_HudLayoutHWEnableSetEnabledValue = -1;
+
+    layout.Disable();
+
+    return g_HudLayoutHWEnableSetEnabledCount == 1 &&
+                   g_HudLayoutHWEnableSetEnabledThis == &layout &&
+                   g_HudLayoutHWEnableSetEnabledValue == 0
+               ? 0
+               : 1;
 }
 
 extern "C" int zhud_layout_hw_constructor_smoke(void) {
@@ -15705,6 +21172,47 @@ extern "C" int zhud_timer_panel_float_constructor_smoke(void) {
     return updated ? 0 : 1;
 }
 
+extern "C" int zhud_timer_panel_float_draw_smoke(void) {
+    HudUiTimerPanelFloat_FTable table = g_HudUiTimerPanelFloat_FTable;
+    table.slots[0x20 / 4] = reinterpret_cast<std::uintptr_t>(&TestTimerPanelFloatInvalidate);
+    table.slots[0x74 / 4] = reinterpret_cast<std::uintptr_t>(&TestTimerPanelFloatSetTextFmt);
+    table.slots[36] = MethodAddress(&TestHudUiPanelRebuildDispatch::RebuildTextRect);
+
+    HudUiTimerPanelFloat timer{};
+    auto *panel = reinterpret_cast<HudUiPanel *>(&timer);
+
+    timer.ConstructorDefault();
+    *reinterpret_cast<const HudUiTimerPanelFloat_FTable **>(&timer) = &table;
+    panel->textPick = nullptr;
+    TestFieldAt<float>(&timer, 0x2a8) = 12.25f;
+    TestFieldAt<std::uint32_t>(&timer, 0x270) = 1;
+
+    g_timerPanelFloatInvalidateCount = 0;
+    g_timerPanelFloatInvalidateThis = nullptr;
+    g_timerPanelFloatSetTextFmtCount = 0;
+    g_timerPanelFloatSetTextFmtThis = nullptr;
+    g_timerPanelFloatSetTextFmtFormat = nullptr;
+    g_timerPanelFloatSetTextFmtValue = 0.0;
+    g_hudUiPanelRebuildTextRectCount = 0;
+    g_hudUiPanelRebuildTextRectThis = nullptr;
+
+    timer.Draw();
+
+    const bool drawn =
+        g_HudUiTimerPanelFloat_FTable.slots[1] == MethodAddress(&HudUiTimerPanelFloat::Draw) &&
+        g_timerPanelFloatInvalidateCount == 1 && g_timerPanelFloatInvalidateThis == &timer &&
+        g_timerPanelFloatSetTextFmtCount == 1 && g_timerPanelFloatSetTextFmtThis == &timer &&
+        std::strcmp(g_timerPanelFloatSetTextFmtFormat, "%2.1f") == 0 &&
+        g_timerPanelFloatSetTextFmtValue == 12.25 &&
+        g_hudUiPanelRebuildTextRectCount == 1 && g_hudUiPanelRebuildTextRectThis == &timer &&
+        TestFieldAt<std::uint32_t>(&timer, 0x270) == 0;
+
+    *reinterpret_cast<const HudUiTimerPanelFloat_FTable **>(&timer) = &g_HudUiTimerPanelFloat_FTable;
+    DeleteObject(panel->hFont);
+    panel->hFont = nullptr;
+    return drawn ? 0 : 1;
+}
+
 extern "C" int zhud_triplet_constructor_smoke(void) {
     HudUiTriplet triplet{};
     triplet.Constructor();
@@ -15825,6 +21333,36 @@ extern "C" int zhud_triplet_is_local_player_first_entry_smoke(void) {
 
     g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
     return emptyNull && emptyRange && matchFirst && otherEntryDoesNotMatch ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_is_local_player_first_in_stats_list_smoke(void) {
+    HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+
+    HudUiStatsListElement statsList{};
+    HudUiTriplet triplet{};
+    HudUiScoreboardEntry entries[2] = {};
+    entries[0].playerKey = 1001;
+    entries[1].playerKey = 2002;
+
+    statsList.triplet = &triplet;
+    g_HudUiMgrStatsList = &statsList;
+
+    const bool emptyNull = HudUiMgr::IsLocalPlayerFirstInStatsList() == -1;
+
+    triplet.entries.begin = entries;
+    triplet.entries.end = entries + 2;
+    triplet.entries.cap = entries + 2;
+
+    g_zNetwork_LocalPlayerKey = 1001;
+    const bool matchFirst = HudUiMgr::IsLocalPlayerFirstInStatsList() == 1;
+
+    g_zNetwork_LocalPlayerKey = 2002;
+    const bool otherEntryDoesNotMatch = HudUiMgr::IsLocalPlayerFirstInStatsList() == 0;
+
+    g_HudUiMgrStatsList = oldStatsList;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    return emptyNull && matchFirst && otherEntryDoesNotMatch ? 0 : 1;
 }
 
 extern "C" int zhud_scoreboard_set_scale_and_rebuild_smoke(void) {
@@ -16113,7 +21651,13 @@ extern "C" int zhud_stats_list_destructors_smoke(void) {
     HudUiStatsListElement *const returned = stats.ScalarDeletingDestructor(0);
     const bool scalar = returned == &stats && stats.base.ftable == &g_HudUiCommon_FTable;
 
-    return core && scalar ? 0 : 1;
+    auto *heapStats =
+        static_cast<HudUiStatsListElement *>(::operator new(sizeof(HudUiStatsListElement)));
+    std::memset(heapStats, 0, sizeof(*heapStats));
+    HudUiStatsListElement *const heapReturned = heapStats->ScalarDeletingDestructor(1);
+    const bool scalarDeleted = heapReturned == heapStats;
+
+    return core && scalar && scalarDeleted ? 0 : 1;
 }
 
 extern "C" int zhud_string_menu_destructor_core_smoke(void) {
@@ -18650,7 +24194,21 @@ zVidImagePartial *g_weatherTextureImage = nullptr;
 int g_weatherTextureUseAlpha = 0;
 int g_weatherTextureArg3 = 0;
 int g_weatherTextureArg4 = 0;
+int g_weatherTextureDestroyCount = 0;
+zVideo_TextureRecordPartial *g_weatherTextureDestroyed = nullptr;
 zVideo_TextureRecordPartial g_weatherTextureRecord = {};
+int g_weatherFinalizeUploadCount = 0;
+zVideo_TextureRecordPartial *g_weatherFinalizeTextureRecord = nullptr;
+zVidImagePartial *g_weatherFinalizeImage = nullptr;
+int g_weatherSubmitPolyCount = 0;
+zVideo_XyzVertex g_weatherSubmittedVerts[4] = {};
+zVideo_TexCoord g_weatherSubmittedTexCoords[4] = {};
+int g_weatherSubmittedVertexCount = 0;
+zVideo_RenderClass *g_weatherSubmittedRenderClass = nullptr;
+unsigned int g_weatherSubmittedRenderParam = 0;
+float g_weatherSubmittedAlpha = 0.0f;
+int g_weatherSubmittedQueueMode = 0;
+int g_weatherFlushSortedCount = 0;
 
 zVideo_TextureRecordPartial *RECOIL_FASTCALL
 HudWeatherFxCreateTextureRecordStub(const char *textureName, zVidImagePartial *image,
@@ -18661,6 +24219,41 @@ HudWeatherFxCreateTextureRecordStub(const char *textureName, zVidImagePartial *i
     g_weatherTextureArg3 = arg3;
     g_weatherTextureArg4 = arg4;
     return &g_weatherTextureRecord;
+}
+
+void RECOIL_FASTCALL HudWeatherFxDestroyTextureRecordStub(
+    zVideo_TextureRecordPartial *textureRecord) {
+    ++g_weatherTextureDestroyCount;
+    g_weatherTextureDestroyed = textureRecord;
+}
+
+void RECOIL_FASTCALL HudWeatherFxFinalizeUploadStub(
+    zVideo_TextureRecordPartial *textureRecord, void *, zVidImagePartial *image) {
+    ++g_weatherFinalizeUploadCount;
+    g_weatherFinalizeTextureRecord = textureRecord;
+    g_weatherFinalizeImage = image;
+}
+
+void RECOIL_FASTCALL HudWeatherFxSubmitPolyStub(zVideo_XyzVertex *vertices,
+                                                zVideo_TexCoord *texCoords,
+                                                int vertexCount,
+                                                zVideo_RenderClass *renderClass,
+                                                unsigned int renderParam, float alpha,
+                                                int queueMode) {
+    ++g_weatherSubmitPolyCount;
+    g_weatherSubmittedVertexCount = vertexCount;
+    g_weatherSubmittedRenderClass = renderClass;
+    g_weatherSubmittedRenderParam = renderParam;
+    g_weatherSubmittedAlpha = alpha;
+    g_weatherSubmittedQueueMode = queueMode;
+    for (int index = 0; index < 4; ++index) {
+        g_weatherSubmittedVerts[index] = vertices[index];
+        g_weatherSubmittedTexCoords[index] = texCoords[index];
+    }
+}
+
+void RECOIL_CDECL HudWeatherFxFlushSortedStub() {
+    ++g_weatherFlushSortedCount;
 }
 } // namespace
 
@@ -18732,6 +24325,232 @@ extern "C" int hud_weather_fx_constructor_smoke(void) {
     return initialized && quadsInvalid && particlesCopied && imageOk ? 0 : 1;
 }
 
+extern "C" int hud_weather_fx_destructor_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    zVideo_CreateTextureRecordProc const oldCreateTextureRecord = g_zVideo_pfnCreateTextureRecord;
+    const std::uint32_t oldDestroyTextureRecord = g_zVideo_pfnTextureRecordDestroy;
+
+    g_weatherTextureDestroyCount = 0;
+    g_weatherTextureDestroyed = nullptr;
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_pfnCreateTextureRecord = HudWeatherFxCreateTextureRecordStub;
+    g_zVideo_pfnTextureRecordDestroy =
+        reinterpret_cast<std::uint32_t>(&HudWeatherFxDestroyTextureRecordStub);
+
+    std::srand(4);
+    HudWeatherFx hardwareWeather = {};
+    hardwareWeather.Constructor(2);
+    char *const hardwareAlphaMap = hardwareWeather.softwareImage != nullptr
+                                       ? hardwareWeather.softwareImage->alphaMap
+                                       : nullptr;
+    zVideo_TextureRecordPartial *const hardwareTextureRecord = hardwareWeather.textureRecord;
+    hardwareWeather.Destructor();
+
+    const bool hardwareDestroyed =
+        hardwareWeather.ftable == &g_HudUiCommon_FTable && hardwareWeather.softwareImage == nullptr &&
+        hardwareWeather.textureRecord == hardwareTextureRecord && g_weatherTextureDestroyCount == 1 &&
+        g_weatherTextureDestroyed == hardwareTextureRecord;
+    if (hardwareAlphaMap != nullptr) {
+        std::free(hardwareAlphaMap);
+    }
+
+    g_weatherTextureDestroyCount = 0;
+    g_weatherTextureDestroyed = nullptr;
+    g_zVideo_ActiveRendererPath = 0;
+
+    std::srand(5);
+    HudWeatherFx softwareWeather = {};
+    softwareWeather.Constructor(1);
+    softwareWeather.textureRecord = &g_weatherTextureRecord;
+    softwareWeather.Destructor();
+
+    const bool softwareSkipped =
+        softwareWeather.ftable == &g_HudUiCommon_FTable &&
+        softwareWeather.textureRecord == &g_weatherTextureRecord &&
+        softwareWeather.softwareImage == nullptr && g_weatherTextureDestroyCount == 0 &&
+        g_weatherTextureDestroyed == nullptr;
+
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_pfnCreateTextureRecord = oldCreateTextureRecord;
+    g_zVideo_pfnTextureRecordDestroy = oldDestroyTextureRecord;
+
+    return hardwareDestroyed && softwareSkipped ? 0 : 1;
+}
+
+extern "C" int hud_weather_fx_are_point_batch_inside_rect_smoke(void) {
+    HudUiRect viewport = {10, 20, 30, 40};
+    HudWeatherFxPointBatch inside[4] = {
+        {10.0f, 20.0f, 0.1f},
+        {30.0f, 40.0f, 0.2f},
+        {15.5f, 25.5f, 0.3f},
+        {29.9f, 39.9f, 0.4f},
+    };
+    HudWeatherFxPointBatch outsideLeft[1] = {{9.99f, 25.0f, 0.0f}};
+    HudWeatherFxPointBatch outsideRight[1] = {{30.01f, 25.0f, 0.0f}};
+    HudWeatherFxPointBatch outsideTop[1] = {{20.0f, 19.99f, 0.0f}};
+    HudWeatherFxPointBatch outsideBottom[1] = {{20.0f, 40.01f, 0.0f}};
+
+    const bool trivialAccepted =
+        inside->ArePointBatchInsideRect(4, nullptr) == 1 &&
+        inside->ArePointBatchInsideRect(0, &viewport) == 1 &&
+        inside->ArePointBatchInsideRect(-1, &viewport) == 1;
+    const bool inclusiveInside =
+        inside->ArePointBatchInsideRect(4, &viewport) == 1;
+    const bool outsideRejected =
+        outsideLeft->ArePointBatchInsideRect(1, &viewport) == 0 &&
+        outsideRight->ArePointBatchInsideRect(1, &viewport) == 0 &&
+        outsideTop->ArePointBatchInsideRect(1, &viewport) == 0 &&
+        outsideBottom->ArePointBatchInsideRect(1, &viewport) == 0;
+
+    return trivialAccepted && inclusiveInside && outsideRejected ? 0 : 1;
+}
+
+extern "C" int hud_weather_fx_draw_particles_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
+    const int oldPitchBytes = zRndr::g_pitchBytes;
+    const unsigned int oldFinalizeUpload = g_zVideo_pfnTextureRecordFinalizeUpload;
+    const unsigned int oldSubmitPoly = g_zVideo_pfnSubmitPolyRenderClass;
+    const unsigned int oldFlushSorted = g_zVideo_pfnFlushSortedPolys;
+    const int oldSceneDepth = g_zVideo_D3DSceneDepth;
+    const int oldSwLocked = g_zVideo_SwSurfaceState.locked;
+
+    unsigned short fxPixels[25] = {};
+    for (int index = 0; index < 25; ++index) {
+        fxPixels[index] = 0;
+    }
+
+    HudWeatherFx softwareWeather = {};
+    HudWeatherFxParticleQuad softwareQuad = {};
+    HudUiRect softwareViewport = {0, 0, 4, 4};
+    softwareQuad.x = 1;
+    softwareQuad.y = 2;
+    softwareQuad.width = 2;
+    softwareQuad.height = 0;
+    softwareQuad.color16 = 0xf800;
+    softwareQuad.texCoordUStart = 1.0f;
+    softwareQuad.texCoordUEnd = 1.0f;
+    softwareQuad.slantOffset = 1;
+    softwareWeather.viewportRect = &softwareViewport;
+    softwareWeather.particleQuads = &softwareQuad;
+    softwareWeather.particleCount = 1;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_FxSurfacePixels16 = fxPixels;
+    g_zVideo_FxSurfaceWidth = 5;
+    g_zVideo_FxSurfaceHeight = 5;
+    g_zVideo_FxSurfacePitchBytes = 10;
+    g_zVideo_FxSurfacePitchPixels16 = 5;
+    zRndr::g_pitchBytes = 10;
+    zRndr::g_pixelPackGreenBits = 6;
+    softwareWeather.DrawParticles();
+    const bool softwareOk = fxPixels[1 + 2 * 5] == 0xf800 &&
+                            fxPixels[2 + 2 * 5] == 0xf800 &&
+                            fxPixels[3 + 2 * 5] == 0xf800 &&
+                            fxPixels[0 + 2 * 5] == 0x0000 &&
+                            fxPixels[4 + 2 * 5] == 0x0000;
+
+    unsigned short imagePixels[16] = {};
+    char alphaMap[16] = {};
+    zVidImagePartial image = {};
+    image.pixels = imagePixels;
+    image.alphaMap = alphaMap;
+    zVideo_TextureRecordPartial textureRecord = {};
+    HudWeatherFxParticleQuad hardwareQuads[2] = {};
+    zVec3 positions[2] = {};
+    HudUiRect hardwareViewport = {0, 0, 100, 100};
+    HudWeatherFx hardwareWeather = {};
+    hardwareQuads[0].x = 10;
+    hardwareQuads[0].y = 20;
+    hardwareQuads[0].width = 10;
+    hardwareQuads[0].height = 2;
+    hardwareQuads[0].color16 = 0x1234;
+    hardwareQuads[0].texCoordUStart = 0.25f;
+    hardwareQuads[0].texCoordUEnd = 0.75f;
+    hardwareQuads[0].slantOffset = 3;
+    hardwareQuads[1].x = 200;
+    hardwareQuads[1].y = 200;
+    hardwareQuads[1].width = 4;
+    hardwareQuads[1].height = 12;
+    hardwareQuads[1].texCoordUStart = 0.1f;
+    hardwareQuads[1].texCoordUEnd = 0.9f;
+    hardwareQuads[1].slantOffset = 5;
+    positions[0].z = 0.6f;
+    positions[1].z = 0.7f;
+    hardwareWeather.viewportRect = &hardwareViewport;
+    hardwareWeather.particleQuads = hardwareQuads;
+    hardwareWeather.particleCount = 2;
+    hardwareWeather.packedColor16 = 0x1234;
+    hardwareWeather.softwareImage = &image;
+    hardwareWeather.textureRecord = &textureRecord;
+    hardwareWeather.sourceBufferIndex = 0;
+    hardwareWeather.particlePositions[0] = positions;
+    g_weatherFinalizeUploadCount = 0;
+    g_weatherSubmitPolyCount = 0;
+    g_weatherFlushSortedCount = 0;
+    g_weatherFinalizeTextureRecord = nullptr;
+    g_weatherFinalizeImage = nullptr;
+    g_weatherSubmittedVertexCount = 0;
+    g_weatherSubmittedRenderClass = nullptr;
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_pfnTextureRecordFinalizeUpload =
+        reinterpret_cast<std::uint32_t>(&HudWeatherFxFinalizeUploadStub);
+    g_zVideo_pfnSubmitPolyRenderClass =
+        reinterpret_cast<std::uint32_t>(&HudWeatherFxSubmitPolyStub);
+    g_zVideo_pfnFlushSortedPolys =
+        reinterpret_cast<std::uint32_t>(&HudWeatherFxFlushSortedStub);
+    g_zVideo_D3DSceneDepth = 2;
+    g_zVideo_SwSurfaceState.locked = 0;
+    hardwareWeather.DrawParticles();
+
+    bool uploadPatternOk = true;
+    for (int index = 0; index < 16; ++index) {
+        uploadPatternOk = uploadPatternOk && imagePixels[index] == 0x1234 &&
+                          static_cast<unsigned char>(alphaMap[index]) ==
+                              static_cast<unsigned char>((index * 255) >> 4);
+    }
+
+    const bool hardwareUploadOk =
+        g_weatherFinalizeUploadCount == 1 &&
+        g_weatherFinalizeTextureRecord == &textureRecord && g_weatherFinalizeImage == &image;
+    const bool hardwareSubmitOk =
+        g_weatherSubmitPolyCount == 1 && g_weatherSubmittedVertexCount == 4 &&
+        g_weatherSubmittedRenderClass == reinterpret_cast<zVideo_RenderClass *>(&textureRecord) &&
+        g_weatherSubmittedRenderParam == 1 && g_weatherSubmittedAlpha == 1.0f &&
+        g_weatherSubmittedQueueMode == 0 && g_weatherFlushSortedCount == 1 &&
+        g_zVideo_D3DSceneDepth == 1;
+    const bool vertexOk =
+        g_weatherSubmittedVerts[0].x == 10.0f && g_weatherSubmittedVerts[0].y == 20.0f &&
+        g_weatherSubmittedVerts[0].z == 0.6f && g_weatherSubmittedTexCoords[0].u == 0.25f &&
+        g_weatherSubmittedVerts[1].x == 13.0f && g_weatherSubmittedVerts[1].y == 20.0f &&
+        g_weatherSubmittedTexCoords[1].u == 0.25f &&
+        g_weatherSubmittedVerts[2].x == 23.0f && g_weatherSubmittedVerts[2].y == 22.0f &&
+        g_weatherSubmittedTexCoords[2].u == 0.75f &&
+        g_weatherSubmittedVerts[3].x == 20.0f && g_weatherSubmittedVerts[3].y == 22.0f &&
+        g_weatherSubmittedTexCoords[3].u == 0.75f &&
+        g_weatherSubmittedTexCoords[0].v == 0.0f && g_weatherSubmittedTexCoords[3].v == 0.0f;
+
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
+    zRndr::g_pitchBytes = oldPitchBytes;
+    g_zVideo_pfnTextureRecordFinalizeUpload = oldFinalizeUpload;
+    g_zVideo_pfnSubmitPolyRenderClass = oldSubmitPoly;
+    g_zVideo_pfnFlushSortedPolys = oldFlushSorted;
+    g_zVideo_D3DSceneDepth = oldSceneDepth;
+    g_zVideo_SwSurfaceState.locked = oldSwLocked;
+
+    return softwareOk && uploadPatternOk && hardwareUploadOk && hardwareSubmitOk && vertexOk
+               ? 0
+               : 1;
+}
+
 extern "C" int hud_weather_fx_derived_constructors_smoke(void) {
     const int oldRendererPath = g_zVideo_ActiveRendererPath;
     g_zVideo_ActiveRendererPath = 0;
@@ -18766,6 +24585,165 @@ extern "C" int hud_weather_fx_derived_constructors_smoke(void) {
 
     g_zVideo_ActiveRendererPath = oldRendererPath;
     return snowOk && rainOk ? 0 : 1;
+}
+
+extern "C" int hud_weather_fx_rain_destructor_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    g_zVideo_ActiveRendererPath = 0;
+
+    std::srand(7);
+    HudWeatherFxRain rain = {};
+    rain.Constructor(2);
+    const bool constructed =
+        rain.ftable == &g_HudWeatherFxRain_Vtable && rain.particleQuads != nullptr &&
+        rain.particlePositions[0] != nullptr && rain.particlePositions[1] != nullptr;
+
+    rain.Destructor();
+    const bool destroyed =
+        rain.ftable == &g_HudUiCommon_FTable && rain.softwareImage == nullptr &&
+        rain.textureRecord == nullptr;
+
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    return constructed && destroyed ? 0 : 1;
+}
+
+extern "C" int hud_weather_fx_rain_update_smoke(void) {
+    const float oldLastTargetX = g_HudWeatherFxRain_LastCameraTargetX;
+    const float oldLastTargetY = g_HudWeatherFxRain_LastCameraTargetY;
+    const float oldLastTargetZ = g_HudWeatherFxRain_LastCameraTargetZ;
+    const float oldTimeAccumulator = g_HudWeatherFxRain_TimeAccumulator;
+
+    zClass_NodePartial cameraNode = {};
+    zClass_CameraDataPartial cameraData = {};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    cameraData.targetOrEuler = zVec3_Make(0.0f, 0.0f, 0.0f);
+    cameraData.posOffset = zVec3_Make(0.0f, 0.0f, 0.0f);
+
+    HudUiRect viewport = {0, 0, 100, 80};
+    HudWeatherFxParticleQuad quads[1] = {};
+    zVec3 positionsA[1] = {{0.0f, 0.0f, 0.75f}};
+    zVec3 positionsB[1] = {};
+    HudWeatherFxRain rain = {};
+    rain.flags = 0x02;
+    rain.viewportRect = &viewport;
+    rain.particleQuads = quads;
+    rain.particleCount = 1;
+    rain.packedColor16 = 0x2468;
+    rain.alphaStartScale = 1.0f;
+    rain.alphaEndScale = 0.0500000007f;
+    rain.camera = &cameraNode;
+    rain.activeParticleCount = 0;
+    rain.particlePositions[0] = positionsA;
+    rain.particlePositions[1] = positionsB;
+    rain.sourceBufferIndex = 0;
+    rain.destBufferIndex = 1;
+    rain.windDirection = 0.0f;
+    rain.windVelocity = 0.0f;
+    rain.gravity = 0.0f;
+    rain.basisVector = zVec3_Make(0.0f, 0.0f, 0.0f);
+    g_HudWeatherFxRain_LastCameraTargetX = 0.0f;
+    g_HudWeatherFxRain_LastCameraTargetY = 0.0f;
+    g_HudWeatherFxRain_LastCameraTargetZ = 0.0f;
+    g_HudWeatherFxRain_TimeAccumulator = 0.0f;
+
+    std::srand(8);
+    rain.Update(0.5f);
+
+    const bool projected =
+        rain.sourceBufferIndex == 1 && rain.destBufferIndex == 0 && quads[0].x == 50 &&
+        quads[0].y == 40 && quads[0].width == 0 && quads[0].height == 0 &&
+        quads[0].color16 == 0x2468 && HudFloatNear(quads[0].texCoordUStart, 0.75f) &&
+        HudFloatNear(quads[0].texCoordUEnd, 0.0375000015f) &&
+        quads[0].slantOffset == 1;
+    const bool resetCopied =
+        positionsA[0].x == positionsB[0].x && positionsA[0].y == positionsB[0].y &&
+        positionsA[0].z == positionsB[0].z && positionsB[0].z >= 0.5f &&
+        positionsB[0].z <= 1.0f;
+    const bool globalsUpdated =
+        HudFloatNear(g_HudWeatherFxRain_TimeAccumulator, 0.5f) &&
+        g_HudWeatherFxRain_LastCameraTargetX == 0.0f &&
+        g_HudWeatherFxRain_LastCameraTargetY == 0.0f &&
+        g_HudWeatherFxRain_LastCameraTargetZ == 0.0f;
+
+    g_HudWeatherFxRain_LastCameraTargetX = oldLastTargetX;
+    g_HudWeatherFxRain_LastCameraTargetY = oldLastTargetY;
+    g_HudWeatherFxRain_LastCameraTargetZ = oldLastTargetZ;
+    g_HudWeatherFxRain_TimeAccumulator = oldTimeAccumulator;
+
+    return projected && resetCopied && globalsUpdated ? 0 : 1;
+}
+
+extern "C" int hud_weather_fx_snow_update_smoke(void) {
+    const float oldLastTargetX = g_HudWeatherFxSnow_LastCameraTargetX;
+    const float oldLastTargetY = g_HudWeatherFxSnow_LastCameraTargetY;
+    const float oldLastTargetZ = g_HudWeatherFxSnow_LastCameraTargetZ;
+    const float oldTimeAccumulator = g_HudWeatherFxSnow_TimeAccumulator;
+
+    zClass_NodePartial cameraNode = {};
+    zClass_CameraDataPartial cameraData = {};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    cameraData.targetOrEuler = zVec3_Make(0.0f, 0.0f, 0.0f);
+    cameraData.posOffset = zVec3_Make(0.0f, 0.0f, 0.0f);
+
+    HudUiRect viewport = {0, 0, 100, 80};
+    HudWeatherFxParticleQuad quads[2] = {};
+    zVec3 positionsA[2] = {
+        {0.0f, 0.0f, 0.75f},
+        {0.0f, 0.0f, 1.25f},
+    };
+    zVec3 positionsB[2] = {};
+    HudWeatherFxSnow snow = {};
+    snow.flags = 0x02;
+    snow.viewportRect = &viewport;
+    snow.particleQuads = quads;
+    snow.particleCount = 2;
+    snow.packedColor16 = 0x1357;
+    snow.alphaStartScale = 1.0f;
+    snow.alphaEndScale = 0.0500000007f;
+    snow.camera = &cameraNode;
+    snow.activeParticleCount = 0;
+    snow.particlePositions[0] = positionsA;
+    snow.particlePositions[1] = positionsB;
+    snow.sourceBufferIndex = 0;
+    snow.destBufferIndex = 1;
+    snow.windDirection = 0.0f;
+    snow.windVelocity = 0.0f;
+    snow.gravity = 0.0f;
+    snow.basisVector = zVec3_Make(0.0f, 0.0f, 0.0f);
+    g_HudWeatherFxSnow_LastCameraTargetX = 0.0f;
+    g_HudWeatherFxSnow_LastCameraTargetY = 0.0f;
+    g_HudWeatherFxSnow_LastCameraTargetZ = 0.0f;
+    g_HudWeatherFxSnow_TimeAccumulator = 0.0f;
+
+    std::srand(6);
+    snow.Update(0.25f);
+
+    const bool firstParticleProjected =
+        snow.sourceBufferIndex == 1 && snow.destBufferIndex == 0 &&
+        positionsB[0].x == 0.0f && positionsB[0].y == 0.0f &&
+        positionsB[0].z == 0.75f && quads[0].x == 50 && quads[0].y == 40 &&
+        quads[0].width == 0 && quads[0].height == 0 &&
+        quads[0].color16 == 0x1357 && HudFloatNear(quads[0].texCoordUStart, 0.75f) &&
+        HudFloatNear(quads[0].texCoordUEnd, 0.0375000015f) &&
+        quads[0].slantOffset == 2;
+    const bool resetParticleCopied =
+        positionsA[1].x == positionsB[1].x && positionsA[1].y == positionsB[1].y &&
+        positionsA[1].z == positionsB[1].z && positionsB[1].z >= 0.5f &&
+        positionsB[1].z <= 1.0f;
+    const bool globalsUpdated =
+        HudFloatNear(g_HudWeatherFxSnow_TimeAccumulator, 0.25f) &&
+        g_HudWeatherFxSnow_LastCameraTargetX == 0.0f &&
+        g_HudWeatherFxSnow_LastCameraTargetY == 0.0f &&
+        g_HudWeatherFxSnow_LastCameraTargetZ == 0.0f;
+
+    g_HudWeatherFxSnow_LastCameraTargetX = oldLastTargetX;
+    g_HudWeatherFxSnow_LastCameraTargetY = oldLastTargetY;
+    g_HudWeatherFxSnow_LastCameraTargetZ = oldLastTargetZ;
+    g_HudWeatherFxSnow_TimeAccumulator = oldTimeAccumulator;
+
+    return firstParticleProjected && resetParticleCopied && globalsUpdated ? 0 : 1;
 }
 
 extern "C" int zhud_mgr_viewport_activation_smoke(void) {

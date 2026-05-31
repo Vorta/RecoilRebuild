@@ -1,30 +1,11 @@
 #include "zSound.h"
 
+#include "GameZRecoil/zSound/zA3dProvider.h"
+
 #include <string.h>
 
 namespace {
 const char kZSndParmSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_parm.cpp";
-
-typedef int(__stdcall *BackendSetIntFn)(void *self, int value);
-typedef int(__stdcall *BackendSetFloatFn)(void *self, float value);
-
-struct DirectSoundBufferVTable {
-    void *slots00_40[17];
-    BackendSetIntFn SetFrequency;
-};
-
-struct DirectSoundBuffer {
-    DirectSoundBufferVTable *vtable;
-};
-
-struct A3dSourceVTable {
-    void *slots00_a4[42];
-    BackendSetFloatFn SetPitchScaled;
-};
-
-struct A3dSource {
-    A3dSourceVTable *vtable;
-};
 
 float Clamp01(float value) {
     if (value > 1.0f) {
@@ -61,12 +42,12 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::SetFreqScaled(float scale) {
         sample->playbackParam3;
 
     if (g_zSnd_ActiveBackend == 0) {
-        DirectSoundBuffer *const buffer = (DirectSoundBuffer *)(backendBuffer);
+        LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(backendBuffer);
         if (buffer == 0) {
             return -1;
         }
 
-        const int error = buffer->vtable->SetFrequency(buffer, (int)(playbackRate));
+        const int error = buffer->SetFrequency((int)(playbackRate));
         if (error != 0) {
             return zSnd::ReportDirectSoundError(error, kZSndParmSourceFile, 218);
         }
@@ -74,7 +55,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::SetFreqScaled(float scale) {
     }
 
     if (g_zSnd_ActiveBackend == 1) {
-        A3dSource *const source = (A3dSource *)(backendBuffer);
+        zA3dProviderSource *const source = (zA3dProviderSource *)(backendBuffer);
         if (source == 0) {
             return -1;
         }

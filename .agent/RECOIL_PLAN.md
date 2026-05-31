@@ -990,7 +990,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x476700:
   - [✅] Reconstructed (Name: zScene::TestProjectedSphereVisible)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zScene::TestProjectedSphereVisible File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zScene::TestProjectedSphereVisible File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zscene_test_projected_sphere_visible)
   - [❌] Binary-safe
 - 0x4803b0:
@@ -1002,7 +1002,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x4804c0:
   - [✅] Reconstructed (Name: zModel::UpdateSmallPolyRejectThresholds)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel::UpdateSmallPolyRejectThresholds File: src/Battlesport/zModel/gmod_scene.c)
+  - [✅] Reimplemented (Name: zModel::UpdateSmallPolyRejectThresholds File: src/GameZRecoil/zModel/gmod_scene.c)
   - [✅] Functional-equivalent (Target: zmodel_update_small_poly_reject_thresholds)
   - [❌] Binary-safe
 - 0x4804e0:
@@ -1014,43 +1014,43 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x482160:
   - [✅] Reconstructed (Name: zDi::FreeContents)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::FreeContents File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi::FreeContents File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_free_contents)
   - [❌] Binary-safe
 - 0x482270:
   - [✅] Reconstructed (Name: zDi::CloneToInstance)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::CloneToInstance File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi::CloneToInstance File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_clone_to_instance)
   - [❌] Binary-safe
 - 0x4826a0:
   - [✅] Reconstructed (Name: zUtil::StoreInt32)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zUtil::StoreInt32 File: src/Battlesport/zUtil/zutil.cpp)
+  - [✅] Reimplemented (Name: zUtil::StoreInt32 File: src/GameZRecoil/zUtil/zutil.cpp)
   - [✅] Functional-equivalent (Target: zutil_store_int32)
   - [❌] Binary-safe
 - 0x4826b0:
   - [✅] Reconstructed (Name: zDi::SetClonedFlag)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::SetClonedFlag File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi::SetClonedFlag File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_set_cloned_flag)
   - [✅] Binary-safe
 - 0x4826f0:
   - [✅] Reconstructed (Name: zDi::AddRef)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::AddRef File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi::AddRef File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_ref_count)
   - [✅] Binary-safe
 - 0x482700:
   - [✅] Reconstructed (Name: zDi::Release)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::Release File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi::Release File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_ref_count)
   - [✅] Binary-safe
 - 0x482710:
   - [✅] Reconstructed (Name: zDi::GetRefCount)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::GetRefCount File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi::GetRefCount File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_ref_count)
   - [✅] Binary-safe
 - 0x482720:
@@ -3667,20 +3667,17 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiTripletPanel::DestructorCore)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTripletPanel::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_triplet_panel_destructor_core)
   - [❌] Binary-safe
 - 0x40d660:
   - [☑️] Reconstructed (Name: HudUiMgrObjectiveBlock::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgrObjectiveBlock::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_mgr_objective_block_destructor)
   - [❌] Binary-safe
 - 0x40d760:
   - [✅] Reconstructed (Name: HudUiMgr::DestructModeCounterArray)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated EH array cleanup helper; Name: HudUiMgr::DestructModeCounterArray; Origin: compiler-generated EH cleanup glue; File: external; Target: pending)
 - 0x40d780:
   - [☑️] Reconstructed (Name: HudUiSlot::Destructor)
   - [✅] Source dependencies satisfied
@@ -3721,7 +3718,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiMessage::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessage::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_message_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x40db00:
   - [✅] Reconstructed (Name: HudUiMgr::DestructMessagesArray)
@@ -3734,15 +3731,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40db90:
   - [☑️] Reconstructed (Name: HudUiSlot::Draw)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiSlot::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_slot_draw)
   - [❌] Binary-safe
 - 0x40dbd0:
   - [✅] Reconstructed (Name: HudUiSlot::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiSlot::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_slot_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x40dbf0:
   - [✅] Reconstructed (Name: HudUiCounterTextPanel::Constructor)
@@ -3796,7 +3793,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiTimerPanel::Update)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTimerPanel::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_timer_panel_update)
   - [❌] Binary-safe
 - 0x40ed80:
   - [✅] Reconstructed (Name: HudUiTimerPanel::ConstructorDefault)
@@ -3824,9 +3821,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40f040:
   - [✅] Reconstructed (Name: HudUiTimerPanelFloat::Draw)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiTimerPanelFloat::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_timer_panel_float_draw)
   - [❌] Binary-safe
 - 0x40f070:
   - [✅] Reconstructed (Name: HudUiCounter::ApplyFromLayoutNode)
@@ -3862,7 +3859,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiTripletPanel::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTripletPanel::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_triplet_panel_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x40f2d0:
   - [✅] Reconstructed (Name: HudUiWidget::CtorDefaultThunk)
@@ -3904,7 +3901,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiPanel::SetTextColor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::SetTextColor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_set_text_color)
   - [❌] Binary-safe
 - 0x40fa10:
   - [☑️] Reconstructed (Name: HudUiStatsListElement::Update)
@@ -3914,33 +3911,33 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x40fa20:
   - [✅] Reconstructed (Name: HudUiStatsListElement::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiStatsListElement::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_stats_list_element_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x40fa40:
   - [☑️] Reconstructed (Name: HudUiStatsListElement::DestructorCore)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiStatsListElement::DestructorCore File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_stats_list_element_destructor_core)
   - [❌] Binary-safe
 - 0x40fab0:
   - [✅] Reconstructed (Name: HudUiPanelSimple::ConstructorDefaultThunk)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanelSimple::ConstructorDefaultThunk File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_panel_simple_constructor_default_thunk)
   - [❌] Binary-safe
 - 0x40fb90:
   - [☑️] Reconstructed (Name: HudUiTimerPanel::ZarWriteTimerDataCallback)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTimerPanel::ZarWriteTimerDataCallback File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_timer_panel_zar_write_timer_data_callback)
   - [❌] Binary-safe
 - 0x40fbb0:
   - [✅] Reconstructed (Name: HudUiTimerPanel::ZarReadTimerData)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTimerPanel::ZarReadTimerData File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_timer_panel_zar_read_timer_data)
   - [❌] Binary-safe
 - 0x40fbd0:
   - [☑️] Reconstructed (Name: HudUiMgr::ShutdownResources)
@@ -4102,25 +4099,25 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudLayout::SetActiveNoOp)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutBase::SetActiveNoOp File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_layout_base_set_active_no_op)
   - [❌] Binary-safe
 - 0x412be0:
   - [✅] Reconstructed (Name: HudLayout::UpdateAll)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutBase::UpdateAll File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_layout_base_update_all)
   - [❌] Binary-safe
 - 0x412bf0:
   - [✅] Reconstructed (Name: HudLayoutBase::Enable)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutBase::Enable File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_layout_base_enable)
   - [❌] Binary-safe
 - 0x412c00:
   - [✅] Reconstructed (Name: HudLayoutBase::Disable)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutBase::Disable File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_layout_base_disable)
   - [❌] Binary-safe
 - 0x412c10:
   - [✅] Reconstructed (Name: HudLayoutSW::LoadTypeIFromZarRoot)
@@ -4156,13 +4153,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudLayoutHW::ReleaseImages)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutHW::ReleaseImages File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_layout_hw_release_images)
   - [❌] Binary-safe
 - 0x4130d0:
   - [☑️] Reconstructed (Name: HudLayoutHW::SetActive)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutHW::SetActive File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_layout_hw_set_active)
   - [❌] Binary-safe
 - 0x4132b0:
   - [☑️] Reconstructed (Name: HudLayoutHW::UpdateObjectiveDirtyRect)
@@ -4174,13 +4171,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudLayoutHW::OnActivated)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutHW::OnActivated File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_layout_hw_on_activated)
   - [❌] Binary-safe
 - 0x4134e0:
   - [✅] Reconstructed (Name: HudUiMessage::Draw)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiMessage::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_message_draw)
   - [❌] Binary-safe
 - 0x413500:
   - [✅] Reconstructed (Name: HudLayoutHW::UpdateAll)
@@ -4192,13 +4189,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudLayoutHW::Enable)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutHW::Enable File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_layout_hw_enable)
   - [❌] Binary-safe
 - 0x4135f0:
   - [✅] Reconstructed (Name: HudLayoutHW::Disable)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudLayoutHW::Disable File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_layout_hw_disable)
   - [❌] Binary-safe
 - 0x413600:
   - [☑️] Reconstructed (Name: zOpt::ToggleHudTypeForCurrentHwMode)
@@ -4228,7 +4225,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiMgr::DestroySensorWindow)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMgr::DestroySensorWindow File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_mgr_destroy_sensor_window)
   - [❌] Binary-safe
 - 0x413770:
   - [✅] Reconstructed (Name: HudUiMgr::SetFloatTimerVisible)
@@ -4324,8 +4321,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiMessage::ReleaseImages)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiMessage::ReleaseImages File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_message_release_images)
+  - [✅] Binary-safe
 - 0x414070:
   - [✅] Reconstructed (Name: HudUiMessage::RebuildWeaponLayout)
   - [✅] Source dependencies satisfied
@@ -4364,9 +4361,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41a350:
   - [✅] Reconstructed (Name: HudUiClampedIntStepButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiClampedIntStepButton::OnActivate File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_clamped_int_step_button_on_activate)
   - [❌] Binary-safe
 - 0x4348b0:
   - [✅] Reconstructed (Name: HudUiSaveLoadGameNameInput::OnActivate)
@@ -4388,22 +4385,22 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x434950:
   - [✅] Reconstructed (Name: HudUiSaveLoadListItem::Draw)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiSaveLoadListItem::Draw File: src/Battlesport/RecoilApp.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_save_load_list_item_draw)
+  - [✅] Binary-safe
 - 0x434970:
   - [✅] Reconstructed (Name: HudUiLoadGameDialog::OnPrimaryActionThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiLoadGameDialog::OnPrimaryActionThunk File: src/Battlesport/RecoilApp.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_load_game_dialog_on_primary_action_thunk)
+  - [✅] Binary-safe
 - 0x434980:
   - [✅] Reconstructed (Name: HudUiSaveGameDialog::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiSaveGameDialog::ScalarDeletingDestructor File: src/Battlesport/RecoilApp.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_save_game_dialog_scalar_deleting_destructor)
+  - [✅] Binary-safe
 - 0x4362f0:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::SortEntryRange)
   - [✅] Source dependencies satisfied
@@ -4414,13 +4411,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zVid_TexturePack::EnsureDefaultImagePackLoaded)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVid_TexturePack_EnsureDefaultImagePackLoaded File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvid_texture_pack_ensure_default_image_pack_loaded)
   - [❌] Binary-safe
 - 0x4b3ce0:
   - [☑️] Reconstructed (Name: HudUiWidget::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiWidget::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_widget_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x4b3d50:
   - [☑️] Reconstructed (Name: HudUiWidget::DestructorCore)
@@ -4436,9 +4433,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b3dd0:
   - [✅] Reconstructed (Name: HudUiWidget::SetPos)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiWidget::SetPos File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_widget_set_pos)
   - [❌] Binary-safe
 - 0x4b3e30:
   - [✅] Reconstructed (Name: HudUiWidget::SetImageByPathOwned)
@@ -4466,9 +4463,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b4030:
   - [☑️] Reconstructed (Name: HudUiWidget::HitTest)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiWidget::HitTest File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_widget_hit_test)
   - [❌] Binary-safe
 - 0x4b4070:
   - [✅] Reconstructed (Name: HudUiElement::Constructor)
@@ -4498,13 +4495,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiElement::SetBltSourceAndClipRect)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetBltSourceAndClipRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
+  - [✅] Functional-equivalent (Target: hud_ui_element_set_blt_source_and_clip_rect)
   - [❌] Binary-safe
 - 0x4b41b0:
   - [✅] Reconstructed (Name: HudUiElement::SetClipRect)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiElement::SetClipRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_element_set_clip_rect)
   - [❌] Binary-safe
 - 0x4b41e0:
   - [☑️] Reconstructed (Name: HudUiElement::Update)
@@ -4520,9 +4517,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b42c0:
   - [✅] Reconstructed (Name: HudUiElement::GetRect)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiElement::GetRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_element_get_rect)
   - [❌] Binary-safe
 - 0x4b42f0:
   - [✅] Reconstructed (Name: HudUiTextInput::Constructor)
@@ -4537,16 +4534,16 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: hud_ui_text_input_destructor_core)
   - [❌] Binary-safe
 - 0x4b4ab0:
-  - [❌] Reconstructed (Name: HudUiTextInput::DestructorCoreThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiTextInput::DestructorCoreThunk)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiTextInput::DestructorCoreThunk File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_text_input_destructor_core_thunk)
   - [❌] Binary-safe
 - 0x4b9520:
   - [☑️] Reconstructed (Name: HudUiListSelectorItem::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiListSelectorItem::OnActivate File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_list_selector_item_on_activate)
   - [❌] Binary-safe
 - 0x4b9540:
   - [☑️] Reconstructed (Name: HudUiBackground::Constructor)
@@ -4582,7 +4579,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiTransitionTextPanel::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTransitionTextPanel::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_transition_text_panel_constructor)
   - [❌] Binary-safe
 - 0x4ba070:
   - [☑️] Reconstructed (Name: HudUiBackground::BindButtonsNodeToWidgetByName)
@@ -4628,22 +4625,22 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4ba3e0:
   - [✅] Reconstructed (Name: HudUiOwnedTextInput::OnAcceptNotifyOwner)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiOwnedTextInput::OnAcceptNotifyOwner File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_owned_text_input_on_accept_notify_owner)
   - [❌] Binary-safe
 - 0x4ba400:
   - [✅] Reconstructed (Name: HudUiPanel::GetWrapRect)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiPanel::GetWrapRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_panel_get_wrap_rect)
+  - [✅] Binary-safe
 - 0x4ba4a0:
   - [✅] Reconstructed (Name: HudFontStyle::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudFontStyle::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_font_style_constructor)
+  - [✅] Binary-safe
 - 0x4ba4c0:
   - [✅] Reconstructed (Name: HudFontStyle::Destructor)
   - [✅] Source dependencies satisfied
@@ -4676,15 +4673,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bb2a0:
   - [☑️] Reconstructed (Name: HudUiPanel::UpdateTextBoundsFromContent)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanel::UpdateTextBoundsFromContent File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_update_text_bounds_from_content)
   - [❌] Binary-safe
 - 0x4bb3d0:
   - [☑️] Reconstructed (Name: HudUiPanel::HitTest)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanel::HitTest File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_hit_test)
   - [❌] Binary-safe
 - 0x4bb440:
   - [✅] Reconstructed (Name: HudUiPanel::GetLastTextPtr)
@@ -4706,15 +4703,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bb5e0:
   - [✅] Reconstructed (Name: HudUiPanel::SetTextFmtV)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanel::SetTextFmtV File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_set_text_fmt_v)
   - [❌] Binary-safe
 - 0x4bb680:
   - [☑️] Reconstructed (Name: HudUiPanel::SetText)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanel::SetText File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_set_text)
   - [❌] Binary-safe
 - 0x4bb710:
   - [✅] Reconstructed (Name: HudUiPanel::QueryTextHeight)
@@ -4724,9 +4721,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bb740:
   - [✅] Reconstructed (Name: HudUiPanel::GetTextRect)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanel::GetTextRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_get_text_rect)
   - [❌] Binary-safe
 - 0x4bb790:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::ConstructorWithEntryCount)
@@ -4736,21 +4733,21 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bb960:
   - [✅] Reconstructed (Name: HudUiCompositePanel::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCompositePanel::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_composite_panel_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x4bb980:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::Update)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCompositePanel::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_composite_panel_update)
   - [❌] Binary-safe
 - 0x4bac10:
   - [☑️] Reconstructed (Name: HudUiPanel::RebuildTextRect)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanel::RebuildTextRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_rebuild_text_rect)
   - [❌] Binary-safe
 - 0x4bb9f0:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::LayoutEntries)
@@ -4760,27 +4757,27 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bbaa0:
   - [✅] Reconstructed (Name: HudUiCompositePanel::SetTextFmt)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCompositePanel::SetTextFmt File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_composite_panel_set_text_fmt)
   - [❌] Binary-safe
 - 0x4bbac0:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::SetTextFmtV)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCompositePanel::SetTextFmtV File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_composite_panel_set_text_fmt_v)
   - [❌] Binary-safe
 - 0x4bbb20:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::ScrollHistory)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCompositePanel::ScrollHistory File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_composite_panel_scroll_history)
   - [❌] Binary-safe
 - 0x4bbbe0:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::SetFont)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCompositePanel::SetFont File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_composite_panel_set_font)
   - [❌] Binary-safe
 - 0x4bbca0:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::ResizeEntryVectorAndRelayout)
@@ -4802,9 +4799,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bbfa0:
   - [✅] Reconstructed (Name: HudUiCompositePanelVector::Clear)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCompositePanelVector::Clear File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_composite_panel_vector_clear)
   - [❌] Binary-safe
 - 0x4bbff0:
   - [☑️] Reconstructed (Name: HudUiCompositePanelVector::InsertCopies)
@@ -4906,7 +4903,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiContainer::FindChildWithPrev)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiContainer::FindChildWithPrev File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_container_find_child_with_prev)
   - [❌] Binary-safe
 - 0x4bc860:
   - [✅] Reconstructed (Name: HudUiContainer::RemoveChild)
@@ -4970,9 +4967,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bcd40:
   - [✅] Reconstructed (Name: HudUiPanel::SetClip)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanel::SetClip File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_set_clip)
   - [❌] Binary-safe
 - 0x4bcd80:
   - [✅] Reconstructed (Name: HudUiTextLabel::RebuildTextBounds)
@@ -4994,15 +4991,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bce30:
   - [✅] Reconstructed (Name: HudUiTextLabel::OnDraw)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiTextLabel::OnDraw File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_text_label_on_draw)
   - [❌] Binary-safe
 - 0x4bcea0:
   - [☑️] Reconstructed (Name: HudUiTextLabel::HitTest)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiTextLabel::HitTest File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_text_label_hit_test)
   - [❌] Binary-safe
 - 0x4bcf20:
   - [✅] Reconstructed (Name: HudUiBar::Constructor)
@@ -5018,21 +5015,21 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bcff0:
   - [✅] Reconstructed (Name: HudUiBar::Draw)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiBar::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_bar_draw)
   - [❌] Binary-safe
 - 0x4bd020:
   - [✅] Reconstructed (Name: HudUiTopMessageStack::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiTopMessageStack::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_top_message_stack_constructor)
   - [❌] Binary-safe
 - 0x4bd100:
   - [✅] Reconstructed (Name: HudUiPanel::ConstructorDefaultThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiPanel::ConstructorDefaultThunk File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_panel_constructor_default_thunk)
   - [❌] Binary-safe
 - 0x4bd110:
   - [✅] Reconstructed (Name: HudUiTextStack4::SetFontAll)
@@ -5062,7 +5059,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiChatMessageStack::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiChatMessageStack::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_chat_message_stack_constructor)
   - [❌] Binary-safe
 - 0x4bd3d0:
   - [☑️] Reconstructed (Name: HudUiTextStack4::SetTextColors)
@@ -5108,9 +5105,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bde40:
   - [✅] Reconstructed (Name: HudWeatherFx::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudWeatherFx::Destructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_weather_fx_destructor)
   - [❌] Binary-safe
 - 0x4bdee0:
   - [☑️] Reconstructed (Name: HudWeatherFx::ResetParticleSlot)
@@ -5120,15 +5117,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4bdfd0:
   - [☑️] Reconstructed (Name: HudWeatherFx::DrawParticles)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudWeatherFx::DrawParticles File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_weather_fx_draw_particles)
   - [❌] Binary-safe
 - 0x4be210:
   - [☑️] Reconstructed (Name: HudWeatherFx::ArePointBatchInsideRect)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudWeatherFxPointBatch::ArePointBatchInsideRect File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_weather_fx_are_point_batch_inside_rect)
   - [❌] Binary-safe
 - 0x4be280:
   - [✅] Reconstructed (Name: HudWeatherFxSnow::Constructor)
@@ -5138,9 +5135,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4be2f0:
   - [☑️] Reconstructed (Name: HudWeatherFxSnow::Update)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudWeatherFxSnow::Update File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_weather_fx_snow_update)
   - [❌] Binary-safe
 - 0x4be810:
   - [✅] Reconstructed (Name: HudWeatherFxRain::Constructor)
@@ -5150,15 +5147,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4be870:
   - [✅] Reconstructed (Name: HudWeatherFxRain::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudWeatherFxRain::Destructor File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_weather_fx_rain_destructor)
   - [❌] Binary-safe
 - 0x4be880:
   - [☑️] Reconstructed (Name: HudWeatherFxRain::Update)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudWeatherFxRain::Update File: src/Battlesport/hud.cpp)
+  - [✅] Functional-equivalent (Target: hud_weather_fx_rain_update)
   - [❌] Binary-safe
 - 0x4bf900:
   - [☑️] Reconstructed (Name: HudUiPolyline::Draw)
@@ -5182,14 +5179,14 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_background_cursor_set_image_borrowed_refresh_if_changed)
   - [❌] Binary-safe
 - 0x4bfa50:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_background_cursor_widget_set_image_by_path_owned_and_refresh)
+  - [✅] Binary-safe
 - 0x4bfa90:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetCaptureEnabled)
   - [✅] Source dependencies satisfied
@@ -5206,8 +5203,8 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetPos)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::SetPos File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_background_cursor_widget_set_pos)
+  - [✅] Binary-safe
 - 0x4bfba0:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::CaptureBackgroundUnderCursorImage)
   - [✅] Source dependencies satisfied
@@ -5218,20 +5215,20 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::Draw)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_background_cursor_widget_draw)
+  - [✅] Binary-safe
 - 0x4bfc60:
   - [☑️] Reconstructed (Name: HudUiBackgroundCursorWidget::DrawBase)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundCursorWidget::DrawBase File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_background_cursor_widget_draw_base)
+  - [✅] Binary-safe
 - 0x4bfc80:
   - [✅] Reconstructed (Name: HudUiBackgroundVideoWidget::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundVideoWidget::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: hud_ui_background_video_widget_constructor)
+  - [✅] Binary-safe
 - 0x4bfcd0:
   - [✅] Reconstructed (Name: HudUiBackgroundVideoWidget::Destructor)
   - [✅] Source dependencies satisfied
@@ -5254,25 +5251,25 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiBackgroundVideoWidget::Update)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundVideoWidget::Update File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_video_widget_update)
   - [❌] Binary-safe
 - 0x4bfe90:
   - [☑️] Reconstructed (Name: HudUiBackgroundVideoWidget::Draw)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundVideoWidget::Draw File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_video_widget_draw)
   - [❌] Binary-safe
 - 0x4bfec0:
   - [☑️] Reconstructed (Name: HudUiBackgroundVideoWidget::DrawBase)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundVideoWidget::DrawBase File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_video_widget_draw_base)
   - [❌] Binary-safe
 - 0x4bff00:
   - [✅] Reconstructed (Name: HudUiBackgroundVideoWidget::RebuildBltRect)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiBackgroundVideoWidget::RebuildBltRect File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_background_video_widget_rebuild_blt_rect)
   - [❌] Binary-safe
 - 0x4bffb0:
   - [✅] Reconstructed (Name: HudUiPrimitiveBindTarget::SetSegmentEndpoints)
@@ -5294,9 +5291,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x403e20:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiCompositePanel::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_composite_panel_destructor)
   - [❌] Binary-safe
 - 0x40a5b0:
   - [☑️] Reconstructed (Name: HudCmdDialog::Constructor)
@@ -5306,10 +5303,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4b9320:
   - [✅] Reconstructed (Name: HudCmdBindButtonBase::OnSelectedIndexChanged)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudCmdBindButtonBase::OnSelectedIndexChanged File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_cmd_bind_button_base_on_selected_index_changed)
+  - [✅] Binary-safe
 - 0x4b9330:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::SetSelectedEntry)
   - [✅] Source dependencies satisfied
@@ -5338,7 +5335,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: HudUiFlashPanel::ComputeFlashBlendColor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiFlashPanel::ComputeFlashBlendColor File: src/GameZRecoil/zHud/zhud_ui.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_flash_panel_compute_flash_blend_color)
   - [❌] Binary-safe
 - 0x4bb1c0:
   - [☑️] Reconstructed (Name: HudUiPanel::MeasureTextPrefixRect)
@@ -5351,303 +5348,303 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 
 - 0x4143a0:
   - [✅] Reconstructed (Name: HudUiMgr::IsLocalPlayerFirstInStatsList)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiMgr::IsLocalPlayerFirstInStatsList File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_mgr_is_local_player_first_in_stats_list)
+  - [✅] Binary-safe
 - 0x419740:
   - [☑️] Reconstructed (Name: RecoilApp_MpExitDialogState::OnEnter)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilApp_MpExitDialogState::OnEnter File: src/Battlesport/HudUiMpExitDialog.cpp)
+  - [✅] Functional-equivalent (Target: recoil_app_mp_exit_dialog_state_on_enter)
   - [❌] Binary-safe
 - 0x4198d0:
   - [✅] Reconstructed (Name: RecoilApp_MpExitDialogState::OnTryBecomeCurrent)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilApp_MpExitDialogState::OnTryBecomeCurrent File: src/Battlesport/HudUiMpExitDialog.cpp)
+  - [✅] Functional-equivalent (Target: recoil_app_mp_exit_dialog_state_on_try_become_current)
   - [❌] Binary-safe
 - 0x419940:
   - [✅] Reconstructed (Name: RecoilApp_MpExitDialogState::OnDeactivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilApp_MpExitDialogState::OnDeactivate File: src/Battlesport/HudUiMpExitDialog.cpp)
+  - [✅] Functional-equivalent (Target: recoil_app_mp_exit_dialog_state_on_deactivate)
   - [❌] Binary-safe
 - 0x419990:
   - [☑️] Reconstructed (Name: RecoilApp_MpExitDialogState::OnUpdateShouldQuit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: RecoilApp_MpExitDialogState::OnUpdateShouldQuit File: src/Battlesport/HudUiMpExitDialog.cpp)
+  - [✅] Functional-equivalent (Target: recoil_app_mp_exit_dialog_state_on_update_should_quit)
   - [❌] Binary-safe
 - 0x419500:
   - [☑️] Reconstructed (Name: HudUiMpExitDialog::LoadLayout)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiMpExitDialog::LoadLayout File: src/Battlesport/HudUiMpExitDialog.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_mp_exit_dialog_load_layout)
   - [❌] Binary-safe
 - 0x419650:
   - [✅] Reconstructed (Name: HudUiMpExitDialog::UnloadLayout)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiMpExitDialog::UnloadLayout File: src/Battlesport/HudUiMpExitDialog.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_mp_exit_dialog_table_cluster)
   - [❌] Binary-safe
 - 0x419690:
   - [☑️] Reconstructed (Name: HudUiMpExitDialog::Update)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiMpExitDialog::Update File: src/Battlesport/HudUiMpExitDialog.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_mp_exit_dialog_table_cluster)
   - [❌] Binary-safe
 - 0x419800:
   - [✅] Reconstructed (Name: HudUiMpExitDialog_MpNewGameButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiMpExitDialog_NewGameButton::OnActivate File: src/Battlesport/HudUiMpExitDialog.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_mp_exit_dialog_table_cluster)
   - [❌] Binary-safe
 - 0x419830:
   - [✅] Reconstructed (Name: HudUiMpExitDialog_MpExitButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiMpExitDialog_ExitButton::OnActivate File: src/Battlesport/HudUiMpExitDialog.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_mp_exit_dialog_table_cluster)
   - [❌] Binary-safe
 - 0x419870:
   - [☑️] Reconstructed (Name: HudUiMpExitDialog::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiMpExitDialog::Destructor File: src/Battlesport/HudUiMpExitDialog.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_mp_exit_dialog_table_cluster)
   - [❌] Binary-safe
 - 0x419aa0:
   - [☑️] Reconstructed (Name: HudUiNetGameSetupPanel::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupPanel::Constructor File: src/Battlesport/HudUiNetGameSetup.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_panel_constructor)
   - [❌] Binary-safe
 - 0x41a160:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_CancelButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupPanel_CancelButton::OnActivate File: src/Battlesport/HudUiNetGameSetup.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_cancel_button)
   - [❌] Binary-safe
 - 0x41a400:
-  - [☑️] Reconstructed (Name: HudUiNetGameSetupPanel::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiNetGameSetupPanel::Destructor)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupPanel::Destructor File: src/Battlesport/HudUiNetGameSetup.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_panel_destructor)
   - [❌] Binary-safe
 - 0x41a5b0:
   - [☑️] Reconstructed (Name: HudUiNetGameSetupPanel_LaunchButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupPanel_LaunchButton::OnActivate File: src/Battlesport/HudUiNetGameSetup.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_launch_button)
   - [❌] Binary-safe
 - 0x41a820:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_NextWorldButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupPanel_NextWorldButton::OnActivate File: src/Battlesport/HudUiNetGameSetup.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_next_world_button)
   - [❌] Binary-safe
 - 0x41a9c0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate File: src/Battlesport/HudUiNetGameSetup.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_prev_world_button)
   - [❌] Binary-safe
 - 0x41ab60:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_overlay_owner_static_init_and_register_at_exit)
   - [❌] Binary-safe
 - 0x41ab70:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::StaticInit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupOverlayOwner::StaticInit File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_overlay_owner_static_init)
   - [❌] Binary-safe
 - 0x41ab80:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::RegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupOverlayOwner::RegisterAtExit File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_overlay_owner_register_at_exit)
   - [❌] Binary-safe
 - 0x41ab90:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::AtExitDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupOverlayOwner::AtExitDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_overlay_owner_at_exit_destructor)
   - [❌] Binary-safe
 - 0x41aba0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupOverlayOwner::Constructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_overlay_owner_constructor)
   - [❌] Binary-safe
 - 0x41abe0:
-  - [☑️] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::Destructor)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupOverlayOwner::Destructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_overlay_owner_destructor)
   - [❌] Binary-safe
 - 0x41ac50:
-  - [☑️] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_overlay_owner_on_try_become_current)
   - [❌] Binary-safe
 - 0x41ad20:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::OnDeactivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupOverlayOwner::OnDeactivate File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_overlay_owner_on_deactivate)
   - [❌] Binary-safe
 - 0x41ad80:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_queue_enter_reconfigure)
   - [❌] Binary-safe
 - 0x41ada0:
-  - [☑️] Reconstructed (Name: NetSessionBrowserDialog::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: NetSessionBrowserDialog::Constructor)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::Constructor File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_constructor)
   - [❌] Binary-safe
 - 0x41aeb0:
-  - [☑️] Reconstructed (Name: NetSessionBrowserDialog::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: NetSessionBrowserDialog::Destructor)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::Destructor File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_destructor)
   - [❌] Binary-safe
 - 0x41af50:
   - [✅] Reconstructed (Name: NetSessionBrowserDialog::DoDataExchange)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::DoDataExchange File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_do_data_exchange)
   - [❌] Binary-safe
 - 0x41afd0:
   - [✅] Reconstructed (Name: NetSessionBrowserDialog::GetMessageMap)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::GetMessageMap File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_get_message_map)
   - [❌] Binary-safe
 - 0x41afe0:
-  - [☑️] Reconstructed (Name: NetSessionBrowserDialog::OnInitDialog)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: NetSessionBrowserDialog::OnInitDialog)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::OnInitDialog File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_on_init_dialog)
   - [❌] Binary-safe
 - 0x41b150:
   - [☑️] Reconstructed (Name: NetSessionBrowserDialog::RefreshSessionList)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::RefreshSessionList File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_refresh_session_list)
   - [❌] Binary-safe
 - 0x41b2f0:
-  - [☑️] Reconstructed (Name: NetSessionBrowserDialog::ConnectSelectedProvider)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: NetSessionBrowserDialog::ConnectSelectedProvider)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::ConnectSelectedProvider File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_connect_selected_provider)
   - [❌] Binary-safe
 - 0x41b510:
   - [✅] Reconstructed (Name: NetSessionBrowserDialog::OnOK)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::OnOK File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_on_ok)
   - [❌] Binary-safe
 - 0x41b5a0:
   - [☑️] Reconstructed (Name: NetSessionBrowserDialog::OnCreateSession)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::OnCreateSession File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_on_create_session)
   - [❌] Binary-safe
 - 0x41b660:
   - [✅] Reconstructed (Name: NetSessionBrowserDialog::OnTimer)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::OnTimer File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_on_timer)
   - [❌] Binary-safe
 - 0x41b680:
   - [✅] Reconstructed (Name: NetSessionBrowserDialog::OnDestroy)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::OnDestroy File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_on_destroy)
   - [❌] Binary-safe
 - 0x41b6a0:
   - [☑️] Reconstructed (Name: NetSessionBrowserDialog::ValidatePlayerName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::ValidatePlayerName File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_validate_player_name)
   - [❌] Binary-safe
 - 0x41b780:
-  - [☑️] Reconstructed (Name: NetSessionBrowserDialog::OnHelpDocs)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: NetSessionBrowserDialog::OnHelpDocs)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::OnHelpDocs File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_on_help_docs)
   - [❌] Binary-safe
 - 0x41b8ac:
-  - [☑️] Reconstructed (Name: NetSessionBrowserDialog::kHelpDocsFindExecutableErrorClassTable)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: NetSessionBrowserDialog::kHelpDocsFindExecutableErrorClassTable)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::kHelpDocsFindExecutableErrorClassTable File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_help_docs_find_executable_error_class_table)
   - [❌] Binary-safe
 - 0x41c6e0:
-  - [☑️] Reconstructed (Name: NetSessionConfigDialog::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: NetSessionConfigDialog::Constructor)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionConfigDialog::Constructor File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_config_dialog_constructor)
   - [❌] Binary-safe
 - 0x41c7f0:
-  - [☑️] Reconstructed (Name: NetSessionConfigDialog::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: NetSessionConfigDialog::Destructor)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionConfigDialog::Destructor File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_config_dialog_destructor)
   - [❌] Binary-safe
 - 0x41c880:
   - [✅] Reconstructed (Name: NetSessionConfigDialog::DoDataExchange)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionConfigDialog::DoDataExchange File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_config_dialog_do_data_exchange)
   - [❌] Binary-safe
 - 0x41c970:
   - [✅] Reconstructed (Name: NetSessionConfigDialog::GetMessageMap)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionConfigDialog::GetMessageMap File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_config_dialog_get_message_map)
   - [❌] Binary-safe
 - 0x41c990:
   - [✅] Reconstructed (Name: NetSessionConfigDialog::InitMapNameStrings)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionConfigDialog::InitMapNameStrings File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_config_dialog_init_map_name_strings)
   - [❌] Binary-safe
 - 0x41ca00:
   - [✅] Reconstructed (Name: NetSessionConfigDialog::RegisterMapNameCleanup)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionConfigDialog::RegisterMapNameCleanup File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_config_dialog_register_map_name_cleanup)
   - [❌] Binary-safe
 - 0x41ca10:
   - [☑️] Reconstructed (Name: NetSessionConfigDialog::CleanupMapNameStringsOnExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionConfigDialog::CleanupMapNameStringsOnExit File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_config_dialog_cleanup_map_name_strings_on_exit)
   - [❌] Binary-safe
 - 0x41ca30:
   - [☑️] Reconstructed (Name: NetSessionConfigDialog::OnInitDialog)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionConfigDialog::OnInitDialog File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_config_dialog_on_init_dialog)
   - [❌] Binary-safe
 - 0x41cb50:
   - [✅] Reconstructed (Name: NetSessionConfigDialog::OnDestroy)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionConfigDialog::OnDestroy File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_config_dialog_on_destroy)
   - [❌] Binary-safe
 - 0x41cb90:
   - [✅] Reconstructed (Name: NetSessionConfigDialog::OnMapChanged)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionConfigDialog::OnMapChanged File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_config_dialog_on_map_changed)
   - [❌] Binary-safe
 - 0x41bd80:
   - [☑️] Reconstructed (Name: HudUiNetExitPanel::Constructor)
@@ -5659,31 +5656,31 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: HudUiNetExitPanel_ExitButton::OnActivate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNetExitPanel_ExitButton::OnActivate File: src/Battlesport/HudUiNetExitPanel.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_net_exit_exit_button_on_activate)
   - [❌] Binary-safe
 - 0x41beb0:
   - [☑️] Reconstructed (Name: HudUiNetExitPanel::Destructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNetExitPanel::Destructor File: src/Battlesport/HudUiNetExitPanel.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_net_exit_panel_destructor)
   - [❌] Binary-safe
 - 0x41bf10:
   - [☑️] Reconstructed (Name: HudUiNetExitPanel_ResumeWidget::OnActivate)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNetExitPanel_ResumeWidget::OnActivate File: src/Battlesport/HudUiNetExitPanel.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_net_exit_resume_widget_on_activate)
   - [❌] Binary-safe
 - 0x41bf40:
   - [✅] Reconstructed (Name: HudUiNetExitPanel_ResumeWidget::OnShowPreview)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNetExitPanel_ResumeWidget::OnShowPreview File: src/Battlesport/HudUiNetExitPanel.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_net_exit_resume_widget_on_show_preview)
   - [❌] Binary-safe
 - 0x41bfa0:
   - [✅] Reconstructed (Name: HudUiNetExitPanel_ResumeWidget::OnHidePreview)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: HudUiNetExitPanel_ResumeWidget::OnHidePreview File: src/Battlesport/HudUiNetExitPanel.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: hud_ui_net_exit_resume_widget_on_hide_preview)
   - [❌] Binary-safe
 - 0x41c000:
   - [☑️] Reconstructed (Name: HudUiNetExitPanel::CreateGlobal)
@@ -5711,354 +5708,348 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41ae90:
   - [✅] Reconstructed (Name: NetSessionBrowserDialog::ScalarDeletingDtor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetSessionBrowserDialog::ScalarDeletingDtor File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_session_browser_dialog_scalar_deleting_dtor)
   - [❌] Binary-safe
 
 ## M06. Westwood Online legacy integration
 
 - 0x414b50:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp File: src/GameZRecoil/wwonline/upgrade_download.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_download_callback_no_op)
   - [❌] Binary-safe
 - 0x4319a0:
   - [✅] Reconstructed (Name: CZRecoilFrame::OnMenuWestwoodOnlineUpgrade)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: CZRecoilFrame::OnMenuWestwoodOnlineUpgrade File: src/Battlesport/CZRecoilFrame.cpp)
+  - [✅] Functional-equivalent (Target: czrecoil_frame_on_menu_westwood_online_upgrade)
   - [❌] Binary-safe
 - 0x42dda0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeApiInitState::Init)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApiInitState::Init File: src/Battlesport/WestwoodOnlineUpgradeApi.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_init_state)
   - [❌] Binary-safe
 - 0x43d060:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::AppendStatusTextFmt)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::AppendStatusTextFmt File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_append_status_text_fmt)
   - [❌] Binary-safe
 - 0x43d130:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig File: src/Battlesport/WestwoodOnlineUpgradeApi.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_create_instance_load_config)
   - [❌] Binary-safe
 - 0x43d280:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeApi::Shutdown)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApi::Shutdown File: src/Battlesport/WestwoodOnlineUpgradeApi.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_shutdown)
   - [❌] Binary-safe
 - 0x43d2e0:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeApi::Init)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApi::Init File: src/Battlesport/WestwoodOnlineUpgradeApi.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_init)
   - [❌] Binary-safe
 - 0x43d650:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::AppendConnectStatusAndRefreshList)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::AppendConnectStatusAndRefreshList File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_append_connect_status)
   - [❌] Binary-safe
 - 0x43d6a0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::SetAbortAndClose)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::SetAbortAndClose File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_set_abort_and_close)
   - [❌] Binary-safe
 - 0x43d6b0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::EnableQueryControls)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::EnableQueryControls File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_enable_query_controls)
   - [❌] Binary-safe
 - 0x43d720:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::EnableConnectButton)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::EnableConnectButton File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_enable_connect_button)
   - [❌] Binary-safe
 - 0x43d740:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::Constructor File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_constructor)
   - [❌] Binary-safe
 - 0x43d980:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::ScalarDeletingDestructor File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x43d9a0:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::Destructor File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_destructor)
   - [❌] Binary-safe
 - 0x43db20:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::DoDataExchange)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::DoDataExchange File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_do_data_exchange)
   - [❌] Binary-safe
 - 0x43dcc0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::GetMessageMap)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::GetMessageMap File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_get_message_map)
   - [❌] Binary-safe
 - 0x43dcd0:
-  - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnInitDialogBootstrap)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnInitDialogBootstrap)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnInitDialogBootstrap File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_on_init_bootstrap)
   - [❌] Binary-safe
 - 0x43dfe0:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnRefreshListTimer)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnRefreshListTimer File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_refresh_list_timer)
   - [❌] Binary-safe
 - 0x43e040:
-  - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnBrowseRecordListDblClk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnBrowseRecordListDblClk)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnBrowseRecordListDblClk File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_browse_record_dblclk)
   - [❌] Binary-safe
 - 0x43e160:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnDestroy)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnDestroy File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_on_destroy)
   - [❌] Binary-safe
 - 0x43e1c0:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::SubmitVisibleSessionRequestsAndStatusText)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::SubmitVisibleSessionRequestsAndStatusText File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_submit_visible_session_requests_status)
   - [❌] Binary-safe
 - 0x43e3a0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgrade::DestroyPendingStatusText)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated static CString destructor; Name: WestwoodOnlineUpgrade::DestroyPendingStatusText; Origin: compiler-generated atexit destructor wrapper; File: external; Target: pending)
 - 0x43e3b0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::ResetSelectedBrowseRecordAndRefreshList)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::ResetSelectedBrowseRecordAndRefreshList File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_reset_selected_browse_record)
   - [❌] Binary-safe
 - 0x43e450:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::BeginDisconnectAndShowProgress)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::BeginDisconnectAndShowProgress File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_begin_disconnect)
   - [❌] Binary-safe
 - 0x43e4b0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::BeginConnect)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::BeginConnect File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_begin_connect)
   - [❌] Binary-safe
 - 0x43e520:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::CheckAndApplyUpgrade)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::CheckAndApplyUpgrade File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_check_and_apply_upgrade)
   - [❌] Binary-safe
 - 0x43e550:
-  - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::QueryStatus)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::QueryStatus)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::QueryStatus File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_query_status)
   - [❌] Binary-safe
 - 0x43e680:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::RequestActiveListMode)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::RequestActiveListMode File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_request_active_list_mode)
   - [❌] Binary-safe
 - 0x43e6a0:
-  - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnRefreshCurrentQuery)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnRefreshCurrentQuery)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnRefreshCurrentQuery File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_refresh_current_query)
   - [❌] Binary-safe
 - 0x43e900:
-  - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnQuerySessionsByName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnQuerySessionsByName)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnQuerySessionsByName File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_query_sessions_by_name)
   - [❌] Binary-safe
 - 0x43ebd0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::ClearStatusList)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::ClearStatusList File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_clear_status_list)
   - [❌] Binary-safe
 - 0x43ec00:
-  - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequests)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequests)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequests File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_queue_visible_session_requests)
   - [❌] Binary-safe
 - 0x43ed10:
-  - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseRecords)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseRecords)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseRecords File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_queue_visible_session_requests_lookup)
   - [❌] Binary-safe
 - 0x43ee40:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::RequestListMode0)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::RequestListMode0 File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_request_list_mode0)
   - [❌] Binary-safe
 - 0x43ee60:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::RequestListMode11)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::RequestListMode11 File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_request_list_mode11)
   - [❌] Binary-safe
 - 0x43ee80:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnSessionModeComboSelChange)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnSessionModeComboSelChange File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_session_mode_sel_change)
   - [❌] Binary-safe
 - 0x43ef10:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::SubmitPendingSessionListFromResults)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::SubmitPendingSessionListFromResults File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_submit_pending_session_list)
   - [❌] Binary-safe
 - 0x43efc0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnQueryControlsChanged)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnQueryControlsChanged File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_query_controls_changed)
   - [❌] Binary-safe
 - 0x43efd0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnMaxPlayersEditChange)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnMaxPlayersEditChange File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_max_players_edit_change)
   - [❌] Binary-safe
 - 0x43efe0:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_show_modal_and_get_selected_mission_index)
   - [❌] Binary-safe
 - 0x43f440:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeProgressDialog::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeProgressDialog::Destructor File: src/Battlesport/WestwoodOnlineUpgradeProgressDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_progress_dialog_destructor)
   - [❌] Binary-safe
 - 0x43f450:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnMaxPlayersEditKillFocus)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnMaxPlayersEditKillFocus File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_max_players_edit_kill_focus)
   - [❌] Binary-safe
 - 0x43f4d0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnAuxParamEditKillFocus)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnAuxParamEditKillFocus File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_aux_param_edit_kill_focus)
   - [❌] Binary-safe
 - 0x43f550:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnValueOrTimeEditKillFocus)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnValueOrTimeEditKillFocus File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_value_or_time_edit_kill_focus)
   - [❌] Binary-safe
 - 0x43f5d0:
-  - [☑️] Reconstructed (Name: WestwoodOnlineUpgrade::TruncateStringAtFirstSpace)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: WestwoodOnlineUpgrade::TruncateStringAtFirstSpace)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgrade::TruncateStringAtFirstSpace File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_truncate_string_at_first_space)
   - [❌] Binary-safe
 - 0x43f610:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::CreateInstance)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApiEventSink::CreateInstance File: src/Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_event_sink_create_instance)
   - [❌] Binary-safe
 - 0x43f6b0:
-  - [❌] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnBootstrapServerList)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::OnBootstrapServerList)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::OnBootstrapServerList File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_on_bootstrap_server_list)
   - [❌] Binary-safe
 - 0x43f682:
   - [✅] Reconstructed (Name: MsvcEh::FuncletJump_43F682)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Provider-boundary (Kind: compiler-generated C++ EH funclet jump; Name: MsvcEh::FuncletJump_43F682; Origin: MSVC exception handling funclet continuation provider; File: external; Target: pending)
 - 0x43f830:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::OnDownloadReadyResult)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApiEventSink::OnDownloadReadyResult File: src/Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_event_sink_on_download_ready_result)
   - [❌] Binary-safe
 - 0x43f9d0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::OnPendingSessionRequestRemoved)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApiEventSink::OnPendingSessionRequestRemoved File: src/Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_event_sink_on_pending_session_request_removed)
   - [❌] Binary-safe
 - 0x43fa70:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::OnServerError)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApiEventSink::OnServerError File: src/Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_event_sink_on_server_error)
   - [❌] Binary-safe
 - 0x43fa90:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::OnApiStatus)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApiEventSink::OnApiStatus File: src/Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_event_sink_on_api_status)
   - [❌] Binary-safe
 - 0x43fde0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived File: src/Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_event_sink_on_status_text_received)
   - [❌] Binary-safe
 - 0x43fe50:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded File: src/Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_event_sink_on_browse_record_added)
   - [❌] Binary-safe
 - 0x43ff80:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolved)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolved File: src/Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_event_sink_on_browse_record_and_session_resolved)
   - [❌] Binary-safe
 - 0x4401d0:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished File: src/Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_event_sink_on_session_query_finished)
   - [❌] Binary-safe
 - 0x4402c0:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated File: src/Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_api_event_sink_on_session_list_enumerated)
   - [❌] Binary-safe
 - 0x4404c0:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession)
@@ -6176,9 +6167,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x441600:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeRefCountAndLock::Init)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeRefCountAndLock::Init File: src/Battlesport/WestwoodOnlineUpgradeRefCountAndLock.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_ref_count_and_lock_init)
   - [❌] Binary-safe
 - 0x441620:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeApiEventSink::Release)
@@ -6200,21 +6191,21 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4416f0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::GetSelectedProfilePlayerName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::GetSelectedProfilePlayerName File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_get_selected_profile_player_name)
   - [❌] Binary-safe
 - 0x441720:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::GetSelectedProfileConnectString)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::GetSelectedProfileConnectString File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_get_selected_profile_connect_string)
   - [❌] Binary-safe
 - 0x441750:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeConfigDialog::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeConfigDialog::Constructor File: src/Battlesport/WestwoodOnlineUpgradeConfigDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_config_dialog_constructor)
   - [❌] Binary-safe
 - 0x4418b0:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeConfigDialog::Destructor)
@@ -6245,15 +6236,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x441c60:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues File: src/Battlesport/WestwoodOnlineUpgradeConfigDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_config_get_selected_profile_values)
   - [❌] Binary-safe
 - 0x441cb0:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues File: src/Battlesport/WestwoodOnlineUpgradeConfigDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_config_show_modal_apply)
   - [❌] Binary-safe
 - 0x441f40:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeConfigDialog::OnOK)
@@ -6299,15 +6290,21 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x442180:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_set_selected_profile_player_name)
+  - [❌] Binary-safe
+- 0x4421d0:
+  - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_set_selected_profile_connect_string)
   - [❌] Binary-safe
 - 0x442220:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeProgressDialog::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeProgressDialog::Constructor File: src/Battlesport/WestwoodOnlineUpgradeProgressDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_progress_dialog_constructor)
   - [❌] Binary-safe
 - 0x442240:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeProgressDialog::ScalarDeletingDestructor)
@@ -6329,33 +6326,33 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4422a0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise File: src/GameZRecoil/wwonline/upgrade_download.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_download_create_instance_and_advise)
   - [❌] Binary-safe
 - 0x4422f0:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDownload::UnadviseAndRelease)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDownload::UnadviseAndRelease File: src/GameZRecoil/wwonline/upgrade_download.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_download_unadvise_and_release)
   - [❌] Binary-safe
 - 0x442320:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeProgressDialog::DlgProc)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeProgressDialog::DlgProc File: src/Battlesport/WestwoodOnlineUpgradeProgressDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_progress_dialog_dlg_proc)
   - [❌] Binary-safe
 - 0x442530:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::ShowDownloadReadyList)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::ShowDownloadReadyList File: src/Battlesport/WestwoodOnlineUpgradeProgressDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_show_download_ready_list)
   - [❌] Binary-safe
 - 0x4425c0:
   - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDownloadEventSink::CreateInstance)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDownloadEventSink::CreateInstance File: src/GameZRecoil/wwonline/upgrade_download.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_download_event_sink_create_instance)
   - [❌] Binary-safe
 - 0x442632:
   - [☑️] Reconstructed (Name: MsvcEh::FuncletJump_442632)
@@ -6427,7 +6424,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::GetWolPasswordFlagValue)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt_GetWolPasswordFlagValue File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zopt_get_wol_password_flag_value)
   - [❌] Binary-safe
 
 ## M07. Map tracker, overlays, and objective presentation
@@ -8026,10 +8023,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: player_mines_zar_read_entry_or_reset)
   - [❌] Binary-safe
 - 0x43ce80:
-  - [☑️] Reconstructed (Name: NetUi::VerifyWinsock2OrPromptContinue)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: NetUi::VerifyWinsock2OrPromptContinue)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: NetUi::VerifyWinsock2OrPromptContinue File: src/Battlesport/NetUi.cpp)
+  - [✅] Functional-equivalent (Target: netui_verify_winsock2_or_prompt_continue)
   - [❌] Binary-safe
 
 ## M11. Player camera, pose, movement, and environment probes
@@ -8888,9 +8885,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x43cf40:
   - [✅] Reconstructed (Name: Net::FormatIpv4Address)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: Net::FormatIpv4Address File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: net_format_ipv4_address)
   - [❌] Binary-safe
 - 0x4b2900:
   - [✅] Reconstructed (Name: DamageFeedback::SetIntensityScalar)
@@ -9611,9 +9608,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x434460:
   - [☑️] Reconstructed (Name: GameNet::SendPkt14_HudTimerAndFlagsSync)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: GameNet::SendPkt14_HudTimerAndFlagsSync File: src/Battlesport/GameNet.cpp)
+  - [✅] Functional-equivalent (Target: gamenet_send_pkt14_hud_timer_and_flags_sync)
   - [❌] Binary-safe
 - 0x4344b0:
   - [☑️] Reconstructed (Name: GameNet::HandlePkt14_HudTimerAndFlagsSync)
@@ -12883,7 +12880,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zFMV_Playback::~zFMV_Playback)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Playback::Destructor File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zfmv_playback_destructor)
   - [❌] Binary-safe
 - 0x462370:
   - [✅] Reconstructed (Name: zFMV_Playback::OpenAndPlay)
@@ -12895,7 +12892,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zFMV_Playback::StopAndClose)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Playback::StopAndClose File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zfmv_playback_stop_and_close)
   - [❌] Binary-safe
 - 0x462540:
   - [✅] Reconstructed (Name: zFMV_Playback::SetDestRect)
@@ -12907,7 +12904,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zFMV_Playback::ReportMciError)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Playback::ReportMciError File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zfmv_playback_report_mci_error)
   - [❌] Binary-safe
 - 0x4625e0:
   - [✅] Reconstructed (Name: zFMV_Script::Init)
@@ -12937,13 +12934,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zFMV_Stream::ReadAndDecodeFrame)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Stream::ReadAndDecodeFrame File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zfmv_stream_read_and_decode_frame)
   - [❌] Binary-safe
 - 0x464540:
   - [✅] Reconstructed (Name: zFMV_Stream::FillAudioBuffer)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zFMV_Stream::FillAudioBuffer File: src/GameZRecoil/zFMV/fmv_script.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zfmv_stream_fill_audio_buffer)
   - [❌] Binary-safe
 - 0x415a80:
   - [✅] Reconstructed (Name: zFMV_ActionBase_ScalarDeletingDtor)
@@ -13975,7 +13972,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zImage_Font::BlitStringToActiveTarget)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zImage_Font::BlitStringToActiveTarget File: src/GameZRecoil/zImage/zimg_texture.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zimage_font_blit_string_to_active_target)
   - [❌] Binary-safe
 - 0x4902b0:
   - [✅] Reconstructed (Name: zVid_Image::CalcPow2ScratchFields)
@@ -14755,7 +14752,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_ResetAllBindings)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zInput::BindMapCurrent_ResetAllBindings File: src/GameZRecoil/zInput/zInput.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zinput_bindmap_current_reset_all_bindings)
   - [❌] Binary-safe
 - 0x4716d0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetPrimaryKeyboardKey)
@@ -15798,13 +15795,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x475c40:
   - [✅] Reconstructed (Name: zModel_Display::Init)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Display_Init File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel_Display_Init File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zmodel_display_init)
   - [❌] Binary-safe
 - 0x475e60:
   - [✅] Reconstructed (Name: zModel_Display::ShutdownThunk)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Display::ShutdownThunk File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel_Display::ShutdownThunk File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zmodel_display_shutdown_thunk)
   - [✅] Binary-safe
 
@@ -15819,13 +15816,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x475f60:
   - [☑️] Reconstructed (Name: zModel_Display::Reset)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Display::Reset File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel_Display::Reset File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zmodel_display_reset)
   - [❌] Binary-safe
 - 0x475fa0:
   - [✅] Reconstructed (Name: zModel_Display::Shutdown)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Display::Shutdown File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel_Display::Shutdown File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zmodel_display_shutdown)
   - [❌] Binary-safe
 - 0x475ff0:
@@ -15963,37 +15960,37 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x476300:
   - [✅] Reconstructed (Name: zRndr::SetInverseZTolerance)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zRndr::SetInverseZTolerance File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zRndr::SetInverseZTolerance File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zrndr_set_inverse_z_tolerance)
   - [❌] Binary-safe
 - 0x476320:
   - [✅] Reconstructed (Name: zTag4::Clear)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zTag4::Clear File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zTag4::Clear File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: ztag4_clear)
   - [❌] Binary-safe
 - 0x476370:
   - [☑️] Reconstructed (Name: VariantTag::TagsOverlap)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: VariantTag::TagsOverlap File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: VariantTag::TagsOverlap File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: variant_tag_tags_overlap)
   - [❌] Binary-safe
 - 0x476400:
   - [✅] Reconstructed (Name: VariantTag::CurrentAllowsId)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: VariantTag::CurrentAllowsId File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: VariantTag::CurrentAllowsId File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: variant_tag_current_allows_id)
   - [❌] Binary-safe
 - 0x476460:
   - [✅] Reconstructed (Name: zModel::SetBackfaceEliminationToleranceScalar)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel::SetBackfaceEliminationToleranceScalar File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel::SetBackfaceEliminationToleranceScalar File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zmodel_set_backface_elimination_tolerance_scalar)
   - [❌] Binary-safe
 - 0x476470:
   - [☑️] Reconstructed (Name: zModel::GetBackfaceEliminationToleranceScalar)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel::GetBackfaceEliminationToleranceScalar File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel::GetBackfaceEliminationToleranceScalar File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zmodel_get_backface_elimination_tolerance_scalar)
   - [❌] Binary-safe
 - 0x476480:
@@ -16041,43 +16038,43 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x479660:
   - [☑️] Reconstructed (Name: OptCatalog::ApplyDamageMaskStampOnHit)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: OptCatalog::ApplyDamageMaskStampOnHit File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: OptCatalog::ApplyDamageMaskStampOnHit File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: optcatalog_apply_damage_mask_stamp_on_hit)
   - [❌] Binary-safe
 - 0x479c50:
   - [✅] Reconstructed (Name: OptCatalog::SetDamageMaskSlotIndex)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: OptCatalog::SetDamageMaskSlotIndex File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: OptCatalog::SetDamageMaskSlotIndex File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: optcatalog_set_damage_mask_slot_index)
   - [❌] Binary-safe
 - 0x479c60:
   - [✅] Reconstructed (Name: OptCatalog::RegisterDamageMaskSlotPtr)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: OptCatalog::RegisterDamageMaskSlotPtr File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: OptCatalog::RegisterDamageMaskSlotPtr File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: optcatalog_register_damage_mask_slot_ptr)
   - [❌] Binary-safe
 - 0x479c80:
   - [✅] Reconstructed (Name: OptCatalog::IsDamageMaskEnabled)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: OptCatalog_IsDamageMaskEnabled File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: OptCatalog_IsDamageMaskEnabled File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: optcatalog_is_damage_mask_enabled)
   - [❌] Binary-safe
 - 0x479c90:
   - [✅] Reconstructed (Name: OptCatalog::SetDamageMaskUv)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: OptCatalog_SetDamageMaskUv File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: OptCatalog_SetDamageMaskUv File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: optcatalog_set_damage_mask_uv)
   - [❌] Binary-safe
 - 0x479cb0:
   - [✅] Reconstructed (Name: OptCatalog::SetDamageMaskEnabled)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: OptCatalog_SetDamageMaskEnabled File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: OptCatalog_SetDamageMaskEnabled File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: optcatalog_set_damage_mask_enabled)
   - [❌] Binary-safe
 - 0x479cc0:
   - [✅] Reconstructed (Name: OptCatalog::IsDamageMaskSlotPtrRegistered)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: OptCatalog_IsDamageMaskSlotPtrRegistered File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: OptCatalog_IsDamageMaskSlotPtrRegistered File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: optcatalog_is_damage_mask_slot_ptr_registered)
   - [❌] Binary-safe
 - 0x479f90:
@@ -16107,7 +16104,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x480ae0:
   - [☑️] Reconstructed (Name: zModel_Matl::InitGlobals)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Matl::InitGlobals File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel_Matl::InitGlobals File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zmodel_matl_init_globals)
   - [❌] Binary-safe
 - 0x480bf0:
@@ -16119,121 +16116,121 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x480c40:
   - [✅] Reconstructed (Name: zModel_Material::ResetDefaults)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::ResetDefaults File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::ResetDefaults File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_reset_defaults)
   - [❌] Binary-safe
 - 0x480c80:
   - [✅] Reconstructed (Name: zModel_Material::HasAuxData)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::HasAuxData File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::HasAuxData File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_has_aux_data)
   - [❌] Binary-safe
 - 0x480ca0:
   - [✅] Reconstructed (Name: zModel_Material::FindOrClone)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::FindOrClone File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::FindOrClone File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_find_or_clone)
   - [❌] Binary-safe
 - 0x480d20:
   - [☑️] Reconstructed (Name: zModel_Material::CompareForReuse)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::CompareForReuse File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::CompareForReuse File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_compare_for_reuse)
   - [❌] Binary-safe
 - 0x480d80:
   - [✅] Reconstructed (Name: zModel_MatlBuffer::ReleaseAllActive)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_MatlBuffer::ReleaseAllActive File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel_MatlBuffer::ReleaseAllActive File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [❌] Functional-equivalent
   - [❌] Binary-safe
 - 0x480dc0:
   - [✅] Reconstructed (Name: zModel_MatlSlot::Release)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_MatlSlot::Release File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel_MatlSlot::Release File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [❌] Functional-equivalent
   - [❌] Binary-safe
 - 0x480ec0:
   - [✅] Reconstructed (Name: zRndr::GlobalStringTable_ReleaseDynamicEntries)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zRndr::GlobalStringTable_ReleaseDynamicEntries File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zRndr::GlobalStringTable_ReleaseDynamicEntries File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [❌] Functional-equivalent
   - [❌] Binary-safe
 - 0x480f10:
   - [✅] Reconstructed (Name: zModel_MatlBuffer::Shutdown)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_MatlBuffer::Shutdown File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel_MatlBuffer::Shutdown File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zmodel_matlbuffer_shutdown)
   - [❌] Binary-safe
 - 0x480f80:
   - [☑️] Reconstructed (Name: zModel_Material::InvalidateImagesIfEligible)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::InvalidateImagesIfEligible File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::InvalidateImagesIfEligible File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_invalidate_images_if_eligible)
   - [❌] Binary-safe
 - 0x480fd0:
   - [☑️] Reconstructed (Name: zModel_MatlBuffer::ReleaseTextureSurfaces)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_MatlBuffer::ReleaseTextureSurfaces File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel_MatlBuffer::ReleaseTextureSurfaces File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zmodel_matlbuffer_release_texture_surfaces)
   - [❌] Binary-safe
 - 0x481040:
   - [✅] Reconstructed (Name: zModel_Material::SetUserTag)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::SetUserTag File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::SetUserTag File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_set_user_tag)
   - [❌] Binary-safe
 - 0x481050:
   - [✅] Reconstructed (Name: zModel_Material::SetCycleTextureCount)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::SetCycleTextureCount File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::SetCycleTextureCount File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_set_cycle_texture_count)
   - [❌] Binary-safe
 - 0x481100:
   - [✅] Reconstructed (Name: zModel_Material::AddCycleTexture)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::AddCycleTexture File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::AddCycleTexture File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_add_cycle_texture)
   - [❌] Binary-safe
 - 0x481140:
   - [☑️] Reconstructed (Name: zModel_Material::UpdateCycleIfNeeded)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::UpdateCycleIfNeeded File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::UpdateCycleIfNeeded File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_update_cycle_if_needed)
   - [❌] Binary-safe
 - 0x481220:
   - [✅] Reconstructed (Name: zModel_Material::SetCycleTextureLoop)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::SetCycleTextureLoop File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::SetCycleTextureLoop File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_set_cycle_texture_loop)
   - [❌] Binary-safe
 - 0x481260:
   - [✅] Reconstructed (Name: zModel_Material::SetCycleTextureSpeed)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::SetCycleTextureSpeed File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::SetCycleTextureSpeed File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_set_cycle_texture_speed)
   - [❌] Binary-safe
 - 0x4812b0:
   - [✅] Reconstructed (Name: zModel_Material::Clone)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::Clone File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::Clone File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_clone)
   - [✅] Binary-safe
 - 0x4812c0:
   - [☑️] Reconstructed (Name: zModel_MatlBuffer::CloneToActiveSlot)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_MatlBuffer::CloneToActiveSlot File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_MatlBuffer::CloneToActiveSlot File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_matlbuffer_clone_to_active_slot)
   - [❌] Binary-safe
 - 0x481420:
   - [☑️] Reconstructed (Name: zModel_Material::FindByTexDirEntry)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material::FindByTexDirEntry File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material::FindByTexDirEntry File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_find_by_tex_dir_entry)
   - [❌] Binary-safe
 - 0x481460:
   - [☑️] Reconstructed (Name: zRndr_GlobalStringTable::LoadDynamicEntriesFromPath)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zRndr_GlobalStringTable::LoadDynamicEntriesFromPath File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zRndr_GlobalStringTable::LoadDynamicEntriesFromPath File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zrndr_global_string_table_load_dynamic_entries_from_path)
   - [❌] Binary-safe
 - 0x481530:
@@ -16263,13 +16260,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x481570:
   - [☑️] Reconstructed (Name: zDi::PtrToIndexOrMinus1)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::PtrToIndexOrMinus1 File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zDi::PtrToIndexOrMinus1 File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zdi_ptr_to_index_or_minus1)
   - [❌] Binary-safe
 - 0x4815a0:
   - [✅] Reconstructed (Name: zDi::IndexToPtrOrNull)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::IndexToPtrOrNull File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zDi::IndexToPtrOrNull File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zdi_index_to_ptr_or_null)
   - [❌] Binary-safe
 - 0x4815c0:
@@ -16305,13 +16302,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x482080:
   - [☑️] Reconstructed (Name: zModel_DiPool::AllocFromFreeList)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_DiPool::AllocFromFreeList File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel_DiPool::AllocFromFreeList File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zmodel_dipool_alloc_from_free_list)
   - [✅] Binary-safe
 - 0x4820f0:
   - [✅] Reconstructed (Name: zModel_DiPool::FreeIfUnreferenced)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_DiPool::FreeIfUnreferenced File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel_DiPool::FreeIfUnreferenced File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zmodel_dipool_free_if_unreferenced)
   - [❌] Binary-safe
 - 0x482a10:
@@ -16377,25 +16374,25 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x483a60:
   - [☑️] Reconstructed (Name: zDi::HasSpecialFlagsOrAuxMaterialData)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::HasSpecialFlagsOrAuxMaterialData File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi::HasSpecialFlagsOrAuxMaterialData File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_has_special_flags_or_aux_material_data)
   - [❌] Binary-safe
 - 0x483ad0:
   - [✅] Reconstructed (Name: zDi::RebuildBounds)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::RebuildBounds File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi::RebuildBounds File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_rebuild_bounds)
   - [❌] Binary-safe
 - 0x483b80:
   - [☑️] Reconstructed (Name: zDi::BuildAabb)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::BuildAabb File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi::BuildAabb File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_build_aabb)
   - [❌] Binary-safe
 - 0x483e60:
   - [✅] Reconstructed (Name: zDi::BuildOriginSymmetricAabb)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::BuildOriginSymmetricAabb File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi::BuildOriginSymmetricAabb File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_build_origin_symmetric_aabb)
   - [❌] Binary-safe
 - 0x483f80:
@@ -16419,13 +16416,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x4841b0:
   - [✅] Reconstructed (Name: zDi::SetMaterialFlagBit9ForFlagBit0Entries)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi_SetMaterialFlagBit9ForFlagBit0Entries File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi_SetMaterialFlagBit9ForFlagBit0Entries File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_set_material_flag_bit9_for_flag_bit0_entries)
   - [❌] Binary-safe
 - 0x4841f0:
   - [☑️] Reconstructed (Name: zDi::InvalidateImagesForFlagBit8Materials)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::InvalidateImagesForFlagBit8Materials File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi::InvalidateImagesForFlagBit8Materials File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_invalidate_images_for_flag_bit8_materials)
   - [❌] Binary-safe
 - 0x484230:
@@ -16550,9 +16547,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x489d00:
   - [☑️] Reconstructed (Name: zNetwork::InitSessionRuntime)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetwork::InitSessionRuntime File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_init_session_runtime)
   - [❌] Binary-safe
 - 0x4903c0:
   - [✅] Reconstructed (Name: zRndr::SetActiveRegionSizeFromRect)
@@ -16564,10 +16561,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 ## M34. zNetwork DirectPlay/session runtime
 
 - 0x43cf90:
-  - [☑️] Reconstructed (Name: WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls File: src/Battlesport/WestwoodOnlineUpgradeDialog.cpp)
+  - [✅] Functional-equivalent (Target: westwood_online_upgrade_dialog_update_session_list_query)
   - [❌] Binary-safe
 - 0x489e10:
   - [☑️] Reconstructed (Name: zNetwork::ShutdownSessionRuntime)
@@ -16613,45 +16610,45 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x48a0d0:
   - [✅] Reconstructed (Name: zNetwork_DPlay::RefreshServiceProviderList)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetwork_DPlay::RefreshServiceProviderList File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_refresh_service_provider_list)
   - [❌] Binary-safe
 - 0x48a130:
   - [✅] Reconstructed (Name: zNetworkDPlay::RefreshAndGetServiceProviderList)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetworkDPlay::RefreshAndGetServiceProviderList File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_refresh_and_get_service_provider_list)
   - [❌] Binary-safe
 - 0x48a140:
   - [✅] Reconstructed (Name: zNetworkDPlay::InitializeConnectionFromProviderInfo)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetworkDPlay::InitializeConnectionFromProviderInfo File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_initialize_connection_from_provider_info)
   - [❌] Binary-safe
 - 0x48a180:
-  - [☑️] Reconstructed (Name: zNetworkDPlay::SelectServiceProviderAndInitConnection)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: zNetworkDPlay::SelectServiceProviderAndInitConnection)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetworkDPlay::SelectServiceProviderAndInitConnection File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_select_service_provider_and_init_connection)
   - [❌] Binary-safe
 - 0x48a220:
   - [☑️] Reconstructed (Name: zNetwork_DPlay::EnumSessions)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetwork_DPlay::EnumSessions File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_enum_sessions)
   - [❌] Binary-safe
 - 0x48a2c0:
   - [☑️] Reconstructed (Name: zNetworkDPlay::GetEnumeratedSessionNameByIndex)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetworkDPlay::GetEnumeratedSessionNameByIndex File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_get_enumerated_session_name_by_index)
   - [❌] Binary-safe
 - 0x48a2e0:
   - [✅] Reconstructed (Name: zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_get_enumerated_session_player_counts_by_index)
   - [❌] Binary-safe
 - 0x48a310:
   - [✅] Reconstructed (Name: zNetwork_DPlay::EnumPlayers)
@@ -16661,15 +16658,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x48a350:
   - [✅] Reconstructed (Name: zNetworkDPlay::QueryCapsAndConfigureSendMode)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetworkDPlay::QueryCapsAndConfigureSendMode File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_query_caps_configure_send_mode)
   - [❌] Binary-safe
 - 0x48a410:
   - [☑️] Reconstructed (Name: zNetwork_DPlay::CreateSessionFromStatusFields)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetwork_DPlay::CreateSessionFromStatusFields File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_create_session_from_status_fields)
   - [❌] Binary-safe
 - 0x48a520:
   - [☑️] Reconstructed (Name: zNetworkDPlay::OpenSelectedSessionAndReadStatusFields)
@@ -16685,9 +16682,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x48a9c0:
   - [☑️] Reconstructed (Name: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_create_local_player_record)
   - [❌] Binary-safe
 - 0x48acf0:
   - [✅] Reconstructed (Name: zNetworkDPlay::SendUnreliable)
@@ -16732,16 +16729,16 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: znetwork_dplay_pump_incoming_messages)
   - [❌] Binary-safe
 - 0x48b3a0:
-  - [☑️] Reconstructed (Name: zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_enum_connections_callback_add_service_provider_info)
   - [❌] Binary-safe
 - 0x48b5e0:
   - [☑️] Reconstructed (Name: zNetworkDPlay::EnumSessionCallback_AddSessionDescCache)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetworkDPlay::EnumSessionCallback_AddSessionDescCache File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_enum_session_callback_add_session_desc_cache)
   - [❌] Binary-safe
 - 0x48b660:
   - [☑️] Reconstructed (Name: zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord)
@@ -16750,10 +16747,10 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Functional-equivalent (Target: znetwork_dplay_enum_player_callback_add_player_record)
   - [❌] Binary-safe
 - 0x48b730:
-  - [☑️] Reconstructed (Name: zNetwork_DPlay::CreateInterfaceAndCoInitialize)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Reconstructed (Name: zNetwork_DPlay::CreateInterfaceAndCoInitialize)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zNetwork_DPlay::CreateInterfaceAndCoInitialize File: src/GameZRecoil/zNetwork/znet_dplay.cpp)
+  - [✅] Functional-equivalent (Target: znetwork_dplay_create_interface_and_coinitialize)
   - [❌] Binary-safe
 - 0x48b7f0:
   - [✅] Reconstructed (Name: zNetwork_DPlay::CloseReleaseAndCoUninitialize)
@@ -16923,13 +16920,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x4805e0:
   - [✅] Reconstructed (Name: zModel_Matl::GetPoolEntry)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Matl::GetPoolEntry File: src/Battlesport/zModel/zModel_Display.cpp)
+  - [✅] Reimplemented (Name: zModel_Matl::GetPoolEntry File: src/GameZRecoil/zModel/zModel_Display.cpp)
   - [✅] Functional-equivalent (Target: zmodel_matl_get_pool_entry)
   - [❌] Binary-safe
 - 0x480f60:
   - [✅] Reconstructed (Name: zModel_Material::SetFlagBit9)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zModel_Material_SetFlagBit9 File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zModel_Material_SetFlagBit9 File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zmodel_material_set_flag_bit9)
   - [❌] Binary-safe
 - 0x48cd40:
@@ -17261,9 +17258,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x4936d0:
   - [☑️] Reconstructed (Name: zRndr::RasterizePoly)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zRndr_RasterizePoly File: src/GameZRecoil/zRndr/zRndr.cpp)
+  - [✅] Functional-equivalent (Target: zrndr_rasterize_poly)
   - [❌] Binary-safe
 - 0x493df0:
   - [☑️] Reconstructed (Name: zRndr::DrawFlatQueued)
@@ -17902,13 +17899,13 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zSndSample::LockBackendBuffers)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::LockBackendBuffers File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_lock_backend_buffers)
   - [❌] Binary-safe
 - 0x4a3590:
   - [✅] Reconstructed (Name: zSndSample::UnlockBackendBuffers)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::UnlockBackendBuffers File: src/GameZRecoil/zSound/zsnd_create.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_unlock_backend_buffers)
   - [❌] Binary-safe
 - 0x4a44c0:
   - [✅] Reconstructed (Name: zSndPendingList::FindByName)
@@ -18199,7 +18196,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [☑️] Reconstructed (Name: zSndSample::GetPlayCursorBytes)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zSndSample::GetPlayCursorBytes File: src/GameZRecoil/zSound/zsnd_play.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zsnd_sample_get_play_cursor_bytes)
   - [❌] Binary-safe
 - 0x4a3690:
   - [✅] Reconstructed (Name: zSndSample::DestroyOwnedData)
@@ -18811,14 +18808,14 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zOpt::GetNetworkEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetNetworkEnabled File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent (Target: pending)
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zopt_get_network_enabled)
+  - [✅] Binary-safe
 - 0x408270:
   - [✅] Reconstructed (Name: zOpt::GetNetworkModemEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zOpt::GetNetworkModemEnabled File: src/GameZRecoil/zGame/zGame.cpp)
-  - [❌] Functional-equivalent
-  - [❌] Binary-safe
+  - [✅] Functional-equivalent (Target: zopt_get_network_modem_enabled)
+  - [✅] Binary-safe
 - 0x4082a0:
   - [✅] Reconstructed (Name: zOpt::SetFullscreenOption)
   - [✅] Source dependencies satisfied
@@ -19050,7 +19047,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
 - 0x4826d0:
   - [✅] Reconstructed (Name: zDi::SetFlagBit0)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented (Name: zDi::SetFlagBit0 File: src/Battlesport/zModel/gdi.c)
+  - [✅] Reimplemented (Name: zDi::SetFlagBit0 File: src/GameZRecoil/zModel/gdi.c)
   - [✅] Functional-equivalent (Target: zdi_set_flag_bit0)
   - [✅] Binary-safe
 - 0x48bfa0:
@@ -19147,7 +19144,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zArchiveList::GetAt)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_GetAt File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zarchive_list_get_at)
   - [❌] Binary-safe
 - 0x48cb70:
   - [✅] Reconstructed (Name: zArchiveList::PopFrontPayload)
@@ -19177,7 +19174,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zArchiveList::GetCount)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zArchiveList_GetCount File: src/GameZRecoil/zReader/zreader_load.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zarchive_list_get_count)
   - [❌] Binary-safe
 - 0x48cc70:
   - [✅] Reconstructed (Name: zUtil::ZRDR_Init)
@@ -19802,15 +19799,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x48ec90:
   - [☑️] Reconstructed (Name: zVideo_FxSurface::DrawColoredLinesBatch)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zVideo_FxSurface::DrawColoredLinesBatch File: src/GameZRecoil/zVideo/zVideo.cpp)
+  - [✅] Functional-equivalent (Target: zvideo_fx_surface_draw_colored_lines_batch)
   - [❌] Binary-safe
 - 0x48ed60:
   - [☑️] Reconstructed (Name: zVideo_FxSurface::DrawAlphaBlendedLine)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zVideo_FxSurface::DrawAlphaBlendedLine File: src/GameZRecoil/zVideo/zVideo.cpp)
+  - [✅] Functional-equivalent (Target: zvideo_fx_surface_draw_alpha_blended_line)
   - [❌] Binary-safe
 - 0x48f500:
   - [☑️] Reconstructed (Name: zVid_Image::BlitToActiveTarget)
@@ -19924,7 +19921,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideo::Dispatch_UnlockSwSurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::Dispatch_UnlockSwSurfaceState File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvideo_dispatch_unlock_sw_surface_state)
   - [❌] Binary-safe
 - 0x4a6830:
   - [✅] Reconstructed (Name: zVideo::CallClearPrimarySurfaceAndZBuffer)
@@ -20425,7 +20422,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Reconstructed (Name: zVideo::GetSwSurfaceLockedFlag)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::GetSwSurfaceLockedFlag File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvideo_get_sw_surface_locked_flag)
   - [❌] Binary-safe
 - 0x4a67f0:
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfacePixels)
@@ -20978,33 +20975,33 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x48e380:
   - [☑️] Reconstructed (Name: zVideo::buff_BlurRegionCombined)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zVideo::buff_BlurRegionCombined File: src/GameZRecoil/zVideo/zVideo.cpp)
+  - [✅] Functional-equivalent (Target: zvideo_blur_region_combined)
   - [❌] Binary-safe
 - 0x48e670:
   - [☑️] Reconstructed (Name: zVideo::buff_BlurRegionVertical)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zVideo::buff_BlurRegionVertical File: src/GameZRecoil/zVideo/zVideo.cpp)
+  - [✅] Functional-equivalent (Target: zvideo_blur_region_vertical)
   - [❌] Binary-safe
 - 0x48e870:
   - [☑️] Reconstructed (Name: zVideo::buff_BlurRegionHorizontal)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zVideo::buff_BlurRegionHorizontal File: src/GameZRecoil/zVideo/zVideo.cpp)
+  - [✅] Functional-equivalent (Target: zvideo_blur_region_horizontal)
   - [❌] Binary-safe
 - 0x48ea00:
   - [✅] Reconstructed (Name: zVideo::buff_BlurRegionByMode)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: zVideo::buff_BlurRegionByMode File: src/GameZRecoil/zVideo/zVideo.cpp)
+  - [✅] Functional-equivalent (Target: zvideo_blur_region_by_mode)
   - [❌] Binary-safe
 - 0x4a6770:
   - [✅] Reconstructed (Name: zVideo::RunPostprocessOnSwBuffer)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented (Name: zVideo::RunPostprocessOnSwBuffer File: src/GameZRecoil/zVideo/zVideo.cpp)
-  - [❌] Functional-equivalent
+  - [✅] Functional-equivalent (Target: zvideo_run_postprocess_on_sw_buffer)
   - [❌] Binary-safe
 - 0x4a6840:
   - [☑️] Reconstructed (Name: zVideo::RunPostprocessOnPrimaryBuffer)
@@ -21646,9 +21643,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [✅] Binary-safe
 - 0x419850:
   - [✅] Reconstructed (Name: HudUiMpExitDialog::ScalarDeletingDestructorThunk)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiMpExitDialog::ScalarDeletingDestructorThunk File: src/Battlesport/HudUiMpExitDialog.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_mp_exit_dialog_table_cluster)
   - [❌] Binary-safe
 - 0x41a3d0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_ScalarDeletingDtor)
@@ -21658,9 +21655,9 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, `Reim
   - [❌] Binary-safe
 - 0x41abc0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented (Name: pending File: pending)
-  - [❌] Functional-equivalent
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented (Name: HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor File: src/GameZRecoil/zHud/zhud_ui.cpp)
+  - [✅] Functional-equivalent (Target: hud_ui_net_game_setup_overlay_owner_scalar_deleting_destructor)
   - [❌] Binary-safe
 - 0x41b8f0:
   - [✅] Reconstructed (Name: CCheckListBox::ScalarDeletingDestructor)

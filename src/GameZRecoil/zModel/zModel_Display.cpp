@@ -186,7 +186,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetInverseZTolerance(float inverseZTolerance
 
 namespace zScene {
 // Reimplements 0x476700: zScene::TestProjectedSphereVisible
-// (Battlesport/zModel/gmod_scene.c)
+// (GameZRecoil/zModel/gmod_scene.c)
 RECOIL_NOINLINE int RECOIL_FASTCALL TestProjectedSphereVisible(zVec3 *center,
                                                                         float radius) {
     zMat4x3 slotBuffer = {0};

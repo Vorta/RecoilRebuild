@@ -234,9 +234,13 @@ std::int32_t RECOIL_STDCALL CraterNetRelaySendFake(zNetwork_DPlay4 *, std::uint3
     return 0;
 }
 
-const zNetwork_DPlay4Vtable kCraterNetRelayDPlayVtable = {
-    {}, nullptr, {}, nullptr, {}, nullptr, CraterNetRelaySendFake, {}, nullptr, {}, nullptr, {}, nullptr,
-};
+zNetwork_DPlay4Vtable MakeCraterNetRelayDPlayVtable() {
+    zNetwork_DPlay4Vtable vtable{};
+    vtable.Send_68 = CraterNetRelaySendFake;
+    return vtable;
+}
+
+const zNetwork_DPlay4Vtable kCraterNetRelayDPlayVtable = MakeCraterNetRelayDPlayVtable();
 } // namespace
 
 extern "C" int zdeclient_set_camera_node_smoke(void) {

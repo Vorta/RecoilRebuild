@@ -3,8 +3,6 @@
 #include <stddef.h>
 #include "recoil/recoil_types.h"
 
-#include <windows.h>
-
 #include "Battlesport/Mfc42Abi.h"
 #include "recoil/recoil_callconv.h"
 
@@ -16,31 +14,12 @@
 #define RECOIL_FRAME_NOINLINE
 #endif
 
-struct CZRecoilCmdUI;
-
-struct CZRecoilCmdUIVtable {
-    void(RECOIL_THISCALL *Enable)(CZRecoilCmdUI *self, int enable);
-    void(RECOIL_THISCALL *SetCheck)(CZRecoilCmdUI *self, int check);
-    void *reserved08;
-    void(RECOIL_THISCALL *SetText)(CZRecoilCmdUI *self, const char *text);
-};
-
-struct CZRecoilMenuProxy {
-    void *vftable;
-    HMENU m_hMenu;
-};
-
-struct CZRecoilCmdUI {
-    CZRecoilCmdUIVtable *vftable;
-    unsigned int m_nID;
-    unsigned int m_nIndex;
-    CZRecoilMenuProxy *m_menu_0c;
-};
-
 namespace MfcCmdUI {
-RECOIL_FRAME_NOINLINE void RECOIL_STDCALL EnableAlways(CZRecoilCmdUI *cmdUi);
+RECOIL_FRAME_NOINLINE void RECOIL_STDCALL EnableAlways(CCmdUI *cmdUi);
 }
 
+// Authored Recoil frame reconstructed over imported MFC42 frame/window
+// providers; MFC base behavior is not reimplemented here.
 struct CZRecoilFrame {
     unsigned int vftable;
     unsigned char reserved004[0x1c];
@@ -49,8 +28,7 @@ struct CZRecoilFrame {
     unsigned int m_app;
     unsigned char reserved0c4[0x08];
     char m_openZbdFilePath[0x104];
-    unsigned int m_mainMenuVftable;
-    HMENU m_mainMenuHandle;
+    CMenu m_mainMenu;
     int m_useArchiveBanks;
     int m_cmdlineFlag;
     int m_videoModeCmdUiState[6];
@@ -88,7 +66,7 @@ struct CZRecoilFrame {
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSetVideoMode7();
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuExitGame();
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuToggleHud();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHudCmdUI(CZRecoilCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHudCmdUI(CCmdUI *cmdUi);
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuToggleFullscreen();
     RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL OnMenuOpenHelpDocs();
     RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL OnMenuAbout();
@@ -98,33 +76,34 @@ struct CZRecoilFrame {
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuStartCampaignMode3();
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuStartCampaignMode4();
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuStartCampaignMode5();
+    RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL OnMenuWestwoodOnlineUpgrade();
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuToggleArchiveBanks();
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuToggleTexturePacks();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode2CmdUI(CZRecoilCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode3CmdUI(CZRecoilCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode4CmdUI(CZRecoilCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode5CmdUI(CZRecoilCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode6CmdUI(CZRecoilCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode7CmdUI(CZRecoilCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode2CmdUI(CCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode3CmdUI(CCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode4CmdUI(CCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode5CmdUI(CCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode6CmdUI(CCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode7CmdUI(CCmdUI *cmdUi);
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSelectHwApi0();
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSelectHwApi1();
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSelectHwApi2();
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSelectHwApi3();
     RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL
-    UpdateHwApiMenuItem(CZRecoilCmdUI *cmdUi, int apiIndex);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHwApi0CmdUI(CZRecoilCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHwApi1CmdUI(CZRecoilCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHwApi2CmdUI(CZRecoilCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHwApi3CmdUI(CZRecoilCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateFullscreenCmdUI(CZRecoilCmdUI *cmdUi);
+    UpdateHwApiMenuItem(CCmdUI *cmdUi, int apiIndex);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHwApi0CmdUI(CCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHwApi1CmdUI(CCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHwApi2CmdUI(CCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHwApi3CmdUI(CCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateFullscreenCmdUI(CCmdUI *cmdUi);
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuToggleCDAudio();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateCDAudioCmdUI(CZRecoilCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateCDAudioCmdUI(CCmdUI *cmdUi);
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuToggleJoystick();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateJoystickCmdUI(CZRecoilCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateJoystickCmdUI(CCmdUI *cmdUi);
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSelectDirectSound();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateDirectSoundCmdUI(CZRecoilCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateDirectSoundCmdUI(CCmdUI *cmdUi);
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSelectA3D();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateA3DCmdUI(CZRecoilCmdUI *cmdUi);
+    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateA3DCmdUI(CCmdUI *cmdUi);
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnSize(unsigned int nType, int cx,
                                                       int cy);
     RECOIL_FRAME_NOINLINE void RECOIL_THISCALL SetHwApiAndInitMode(int hwApiIndex);
@@ -136,14 +115,12 @@ RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_app) == 0x0c0);
 RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_openZbdFilePath) == 0x0cc);
 
 #if defined(_M_IX86) || defined(__i386__)
-RECOIL_STATIC_ASSERT(offsetof(CZRecoilCmdUIVtable, SetText) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(CZRecoilMenuProxy, m_hMenu) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(CZRecoilCmdUI, m_menu_0c) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(CCmdUI, m_pMenu) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(CZRecoilFrame) == 0x230);
 RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_hWnd) == 0x20);
 RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_openZbdFilePath) == 0xcc);
-RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_mainMenuVftable) == 0x1d0);
-RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_mainMenuHandle) == 0x1d4);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_mainMenu) == 0x1d0);
+RECOIL_STATIC_ASSERT(offsetof(CMenu, m_hMenu) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_useArchiveBanks) == 0x1d8);
 RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_cmdlineFlag) == 0x1dc);
 RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_videoModeCmdUiState) == 0x1e0);

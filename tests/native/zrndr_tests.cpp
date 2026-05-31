@@ -28,6 +28,9 @@ int g_rasterLastContext = 0;
 int g_rasterLastPixelCount = 0;
 zRndr::SpanNodePartial g_rasterLastNode = {};
 std::uint16_t *g_rasterLastDst = nullptr;
+int g_rasterTraceContext[16] = {};
+int g_rasterTracePixelCount[16] = {};
+std::uint16_t *g_rasterTraceDst[16] = {};
 int g_flatImmediateSpanOpCount = 0;
 int g_flatImmediateLastEcxArg = 0;
 int g_flatImmediateLastEdxArg = 0;
@@ -283,6 +286,12 @@ void RECOIL_FASTCALL TestRasterSelectedSpanOp(std::int32_t spanOpContext, std::i
     g_rasterLastContext = spanOpContext;
     g_rasterLastPixelCount = pixelCount;
     g_rasterLastDst = zRndr::g_spanCurrentDst16;
+    if (g_rasterSpanOpCount <= 16) {
+        const int index = g_rasterSpanOpCount - 1;
+        g_rasterTraceContext[index] = spanOpContext;
+        g_rasterTracePixelCount[index] = pixelCount;
+        g_rasterTraceDst[index] = zRndr::g_spanCurrentDst16;
+    }
 }
 
 void RECOIL_FASTCALL TestTexturedQueuedSpanOp(std::int32_t texU, std::int32_t texV,
@@ -2776,31 +2785,62 @@ extern "C" int zrndr_draw_flat_immediate_smoke(void) {
 }
 
 extern "C" int zrndr_rasterize_poly_smoke(void) {
+    zRndr::SpanRoutineProc const oldSelectedSpanOp = zRndr::g_pfnSelectedSpanOp;
+    const int oldScanConvertMode = zRndr::g_scanConvertMode;
+
     std::uint16_t frame[8 * 8] = {};
-    zVec3 vertices[4] = {
+    zVec3 vertices[6] = {
         {1.0f, 1.0f, 0.0f},
         {5.0f, 1.0f, 0.0f},
         {5.0f, 1.0f, 0.0f},
+        {5.0f, 5.0f, 0.0f},
         {1.0f, 5.0f, 0.0f},
+        {1.0f, 1.0f, 0.0f},
     };
 
     g_rasterSpanOpCount = 0;
     g_rasterLastContext = 0;
     g_rasterLastPixelCount = 0;
     g_rasterLastDst = nullptr;
+    std::memset(g_rasterTraceContext, 0, sizeof(g_rasterTraceContext));
+    std::memset(g_rasterTracePixelCount, 0, sizeof(g_rasterTracePixelCount));
+    std::memset(g_rasterTraceDst, 0, sizeof(g_rasterTraceDst));
 
     zRndr::g_frameBuffer = frame;
     zRndr::g_pitchBytes = 8 * static_cast<int>(sizeof(std::uint16_t));
     zRndr::g_bytesPerPixel = static_cast<int>(sizeof(std::uint16_t));
     zRndr::g_pfnSelectedSpanOp = TestRasterSelectedSpanOp;
+    zRndr::g_scanConvertMode = 1;
 
-    zRndr_RasterizePoly(vertices, 4, 0x3344);
-    zRndr::g_pfnSelectedSpanOp = nullptr;
+    zRndr_RasterizePoly(vertices, 6, 0x3344);
+    const bool forwardMode =
+        g_rasterSpanOpCount == 4 && g_rasterLastContext == 0x3344 &&
+        g_rasterTracePixelCount[0] == 3 && g_rasterTracePixelCount[1] == 3 &&
+        g_rasterTracePixelCount[2] == 3 && g_rasterTracePixelCount[3] == 3 &&
+        g_rasterTraceDst[0] == frame + 9 && g_rasterTraceDst[1] == frame + 17 &&
+        g_rasterTraceDst[2] == frame + 25 && g_rasterTraceDst[3] == frame + 33;
 
-    return g_rasterSpanOpCount > 0 && g_rasterLastContext == 0x3344 && g_rasterLastPixelCount > 0 &&
-                   g_rasterLastDst >= frame && g_rasterLastDst < frame + 64
-               ? 0
-               : 1;
+    g_rasterSpanOpCount = 0;
+    g_rasterLastContext = 0;
+    g_rasterLastPixelCount = 0;
+    g_rasterLastDst = nullptr;
+    std::memset(g_rasterTraceContext, 0, sizeof(g_rasterTraceContext));
+    std::memset(g_rasterTracePixelCount, 0, sizeof(g_rasterTracePixelCount));
+    std::memset(g_rasterTraceDst, 0, sizeof(g_rasterTraceDst));
+
+    zRndr::g_scanConvertMode = 0;
+    zRndr_RasterizePoly(vertices, 6, 0x5566);
+    const bool reverseMode =
+        g_rasterSpanOpCount == 4 && g_rasterLastContext == 0x5566 &&
+        g_rasterTracePixelCount[0] == 3 && g_rasterTracePixelCount[1] == 3 &&
+        g_rasterTracePixelCount[2] == 3 && g_rasterTracePixelCount[3] == 3 &&
+        g_rasterTraceDst[0] == frame + 9 && g_rasterTraceDst[1] == frame + 17 &&
+        g_rasterTraceDst[2] == frame + 25 && g_rasterTraceDst[3] == frame + 33;
+
+    zRndr::g_pfnSelectedSpanOp = oldSelectedSpanOp;
+    zRndr::g_scanConvertMode = oldScanConvertMode;
+
+    return forwardMode && reverseMode ? 0 : 1;
 }
 
 extern "C" int zrndr_submit_poly_with_span_list_smoke(void) {

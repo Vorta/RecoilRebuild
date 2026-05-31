@@ -831,6 +831,33 @@ extern "C" int zinput_bindmap_context_smoke(void) {
     return copyOk ? 0 : 3;
 }
 
+extern "C" int zinput_bindmap_current_reset_all_bindings_smoke(void) {
+    zInput_BindMapContext context = {};
+    context.InitCommandMap(3);
+    context.SetBindingRecord(1, "Resettable", 0x20, 0x21, 2, 1);
+    context.m_commandCallbacks[1] = BindMapContextCountingCallback;
+    context.RebuildLookupIndices();
+
+    zInput_BindMapContext *const oldCurrent = g_zInput_BindMap_Current;
+    g_zInput_BindMap_Current = &context;
+    zInput::BindMapCurrent_ResetAllBindings();
+
+    const bool resetOk =
+        context.GetPrimaryKeyboardKey(1) == 0 &&
+        context.GetSecondaryKeyboardKey(1) == 0 &&
+        context.GetJoystickButtonSlot(1) == 0 &&
+        context.GetMouseButtonSlot(1) == 0 &&
+        context.m_commandCallbacks[1] == nullptr &&
+        context.GetCommandByPrimaryKey(0x20) == 0 &&
+        context.GetCommandBySecondaryKey(0x21) == 0 &&
+        context.GetCommandByJoystickSlot(2) == 0 &&
+        context.GetCommandByMouseSlot(1) == 0;
+
+    g_zInput_BindMap_Current = oldCurrent;
+    context.FreeNonOwnedBuffers();
+    return resetOk ? 0 : 1;
+}
+
 extern "C" int zinput_bindmap_dispatch_mouse_callbacks_smoke(void) {
     FreeOptionList();
 

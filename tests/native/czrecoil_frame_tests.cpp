@@ -1,8 +1,12 @@
 #include "Battlesport/CZGameFrame.h"
 #include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/NetUi.h"
 #include "Battlesport/RecoilApp.h"
+#include "Battlesport/WestwoodOnlineUpgradeDialog.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zVideo/zVideo.h"
@@ -11,42 +15,31 @@
 #include <cstring>
 
 extern "C" int g_CZRecoilFrame_HasWolApi;
+extern "C" int g_CZRecoilFrame_WestwoodOnlineWinsockChecked;
 BOOL RECOIL_STDCALL AfxWinInit(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine,
                                int showCommand);
 HINSTANCE RECOIL_STDCALL AfxFindResourceHandle(LPCSTR resourceName, LPCSTR resourceType);
 
-class CWnd {
-  public:
-    BOOL CreateEx(DWORD dwExStyle, LPCSTR className, LPCSTR windowName, DWORD style, int x, int y,
-                  int width, int height, HWND parent, HMENU menu, LPVOID param);
-    void SetWindowTextA(LPCSTR text);
-    void CenterWindow(CWnd *alternateOwner);
-
-  private:
-    unsigned char reserved000[0x20];
-    HWND m_hWnd;
+namespace {
+struct CodeFunctionPatch {
+    unsigned char *address;
+    unsigned char original[5];
 };
 
-BOOL CWnd::CreateEx(DWORD dwExStyle, LPCSTR className, LPCSTR windowName, DWORD style, int x,
-                    int y, int width, int height, HWND parent, HMENU menu, LPVOID param) {
-    m_hWnd = CreateWindowExA(dwExStyle, className, windowName, style, x, y, width, height, parent,
-                             menu, GetModuleHandleA(nullptr), param);
-    return m_hWnd != nullptr ? 1 : 0;
-}
-
-void CWnd::SetWindowTextA(LPCSTR text) {
-    ::SetWindowTextA(m_hWnd, text);
-}
-
-void CWnd::CenterWindow(CWnd *alternateOwner) {
-    (void)alternateOwner;
-}
-
-namespace {
 int HandleFrameConstructorException(EXCEPTION_POINTERS *exceptionInfo) {
     (void)exceptionInfo;
     return EXCEPTION_EXECUTE_HANDLER;
 }
+
+BOOL RECOIL_FASTCALL FakeCWndCreateEx(CWnd *, void *, DWORD, LPCSTR, LPCSTR, DWORD, int, int,
+                                      int, int, HWND, HMENU, LPVOID);
+void RECOIL_FASTCALL FakeCWndSetWindowTextA(CWnd *, void *, LPCSTR);
+void RECOIL_FASTCALL FakeCWndCenterWindow(CWnd *, void *, CWnd *);
+void *CWndCreateExProc();
+void *CWndSetWindowTextAProc();
+void *CWndCenterWindowProc();
+bool PatchFunctionJump(void *target, void *replacement, CodeFunctionPatch &patch);
+void RestoreFunctionPatch(CodeFunctionPatch &patch);
 } // namespace
 
 extern "C" int czrecoil_frame_build_window_title_smoke(void) {
@@ -56,14 +49,14 @@ extern "C" int czrecoil_frame_build_window_title_smoke(void) {
 
     g_zVideo_ActiveRendererPath = 0;
     CString *returned = frame.BuildWindowTitle(title);
-    bool ok = returned == title && title->m_pchData != nullptr &&
-              std::strcmp(title->m_pchData, "RECOIL") == 0;
+    bool ok = returned == title && (const char *)(*title) != nullptr &&
+              std::strcmp((const char *)(*title), "RECOIL") == 0;
     title->~CString();
 
     g_zVideo_ActiveRendererPath = 2;
     returned = frame.BuildWindowTitle(title);
-    ok = ok && returned == title && title->m_pchData != nullptr &&
-         std::strcmp(title->m_pchData, "RECOIL (3Dfx)") == 0;
+    ok = ok && returned == title && (const char *)(*title) != nullptr &&
+         std::strcmp((const char *)(*title), "RECOIL (3Dfx)") == 0;
     title->~CString();
 
     return ok ? 0 : 1;
@@ -133,7 +126,7 @@ extern "C" int czrecoil_frame_set_menu_bar_visibility_smoke(void) {
 
     CZRecoilFrame frame{};
     frame.m_hWnd = hwnd;
-    frame.m_mainMenuHandle = menu;
+    frame.m_mainMenu.m_hMenu = menu;
 
     SetWindowLongA(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
     frame.SetMenuBarVisibility(0);
@@ -144,6 +137,7 @@ extern "C" int czrecoil_frame_set_menu_bar_visibility_smoke(void) {
     const LONG shownStyle = GetWindowLongA(hwnd, GWL_STYLE);
     const bool shownOk = (shownStyle & WS_SYSMENU) != 0 && GetMenu(hwnd) == menu;
 
+    frame.m_mainMenu.m_hMenu = nullptr;
     DestroyMenu(menu);
     DestroyWindow(hwnd);
     return hiddenOk && shownOk ? 0 : 3;
@@ -236,13 +230,7 @@ extern "C" int czrecoil_frame_video_mode_menu_handlers_smoke(void) {
 }
 
 namespace {
-int g_gameFrameValidityReturn;
-
-struct FakeGameFrameWindow : CZGameFrameMfcWindow {
-    std::int32_t RECOIL_THISCALL QueryValidity() {
-        return g_gameFrameValidityReturn;
-    }
-};
+HWND g_gameFrameValidityWindow;
 } // namespace
 
 extern "C" int czrecoil_frame_set_hw_api_and_init_mode_smoke(void) {
@@ -400,10 +388,10 @@ extern "C" int czrecoil_frame_init_startup_hw_api_from_options_smoke(void) {
     acceleration = 1;
     fullscreen = 1;
     mode = 4;
-    frame = {};
-    frame.InitStartupHwApiFromOptions();
-    return frame.m_hwApiCmdUiState[0] == 8 && frame.m_videoModeIndex == 5 &&
-                   frame.m_fullscreenOption == 1 && hwApi == 0 && acceleration == 0 &&
+    CZRecoilFrame fallbackFrame{};
+    fallbackFrame.InitStartupHwApiFromOptions();
+    return fallbackFrame.m_hwApiCmdUiState[0] == 8 && fallbackFrame.m_videoModeIndex == 5 &&
+                   fallbackFrame.m_fullscreenOption == 1 && hwApi == 0 && acceleration == 0 &&
                    fullscreen == 1 && mode == 5
                ? 0
                : 2;
@@ -414,43 +402,23 @@ std::int32_t g_lastCmdUiEnable;
 std::int32_t g_lastCmdUiCheck;
 char g_lastCmdUiText[0x80];
 
-struct FakeRecoilCmdUI : CZRecoilCmdUI {
-    void RECOIL_THISCALL Enable(std::int32_t enable) {
+struct FakeRecoilCmdUI : CCmdUI {
+    void Enable(BOOL enable) {
         g_lastCmdUiEnable = enable;
     }
 
-    void RECOIL_THISCALL SetCheck(std::int32_t check) {
+    void SetCheck(int check) {
         g_lastCmdUiCheck = check;
     }
 
-    void RECOIL_THISCALL SetText(const char *text) {
+    void SetText(LPCTSTR text) {
         std::strncpy(g_lastCmdUiText, text, sizeof(g_lastCmdUiText) - 1);
         g_lastCmdUiText[sizeof(g_lastCmdUiText) - 1] = '\0';
     }
 };
 
 void InitFakeRecoilCmdUI(FakeRecoilCmdUI &cmdUi) {
-    union MemberToFunction {
-        void (RECOIL_THISCALL FakeRecoilCmdUI::*member)(std::int32_t);
-        void(RECOIL_THISCALL *function)(CZRecoilCmdUI *, std::int32_t);
-    };
-
-    union TextMemberToFunction {
-        void (RECOIL_THISCALL FakeRecoilCmdUI::*member)(const char *);
-        void(RECOIL_THISCALL *function)(CZRecoilCmdUI *, const char *);
-    };
-
-    static CZRecoilCmdUIVtable vtable{};
-    MemberToFunction enableThunk{};
-    enableThunk.member = &FakeRecoilCmdUI::Enable;
-    MemberToFunction checkThunk{};
-    checkThunk.member = &FakeRecoilCmdUI::SetCheck;
-    TextMemberToFunction textThunk{};
-    textThunk.member = &FakeRecoilCmdUI::SetText;
-    vtable.Enable = enableThunk.function;
-    vtable.SetCheck = checkThunk.function;
-    vtable.SetText = textThunk.function;
-    cmdUi.vftable = &vtable;
+    cmdUi.m_pMenu = nullptr;
 }
 } // namespace
 
@@ -574,8 +542,9 @@ extern "C" int czrecoil_frame_hw_api_menu_cmd_ui_smoke(void) {
         return 4;
     }
 
-    CZRecoilMenuProxy menuProxy{nullptr, menu};
-    cmdUi.m_menu_0c = &menuProxy;
+    CMenu menuProxy;
+    menuProxy.m_hMenu = menu;
+    cmdUi.m_pMenu = &menuProxy;
     frame.m_acceptedD3DDeviceCount = 2;
     frame.m_hwApiMenuCommandIds[3] = 0x7003;
     AppendMenuA(menu, MF_STRING, frame.m_hwApiMenuCommandIds[3], "extra");
@@ -677,29 +646,26 @@ extern "C" int czrecoil_frame_menu_exit_game_smoke(void) {
 }
 
 extern "C" int czgame_frame_is_window_valid_smoke(void) {
-    union MemberToFunction {
-        std::int32_t (RECOIL_THISCALL FakeGameFrameWindow::*member)();
-        void *function;
-    };
-
-    MemberToFunction thunk{};
-    thunk.member = &FakeGameFrameWindow::QueryValidity;
-
-    void *vtable[5] = {};
-    vtable[4] = thunk.function;
-    FakeGameFrameWindow wnd{{vtable}};
-
     if (CZGameFrame::IsWindowValid(nullptr) != 0) {
         return 1;
     }
 
-    g_gameFrameValidityReturn = 0;
-    if (CZGameFrame::IsWindowValid(&wnd) != 1) {
+    g_gameFrameValidityWindow = CreateWindowExA(0, "STATIC", "recoil-validity-test",
+                                                WS_OVERLAPPEDWINDOW | WS_DISABLED, 0, 0, 10, 10,
+                                                nullptr, nullptr, GetModuleHandleA(nullptr),
+                                                nullptr);
+    alignas(CWnd) unsigned char storage[sizeof(CWnd)] = {};
+    CWnd *disabledWnd = reinterpret_cast<CWnd *>(storage);
+    disabledWnd->m_hWnd = g_gameFrameValidityWindow;
+    if (CZGameFrame::IsWindowValid(disabledWnd) != 1) {
+        DestroyWindow(g_gameFrameValidityWindow);
         return 2;
     }
 
-    g_gameFrameValidityReturn = 7;
-    return CZGameFrame::IsWindowValid(&wnd) == 0 ? 0 : 3;
+    EnableWindow(g_gameFrameValidityWindow, TRUE);
+    const int result = CZGameFrame::IsWindowValid(disabledWnd) == 0 ? 0 : 3;
+    DestroyWindow(g_gameFrameValidityWindow);
+    return result;
 }
 
 extern "C" int czgame_frame_build_window_title_smoke(void) {
@@ -708,8 +674,8 @@ extern "C" int czgame_frame_build_window_title_smoke(void) {
     auto *title = reinterpret_cast<CString *>(storage);
 
     CString *returned = frame.BuildWindowTitle(title);
-    const bool ok = returned == title && title->m_pchData != nullptr &&
-                    std::strcmp(title->m_pchData, "Zipper Interactive") == 0;
+    const bool ok = returned == title && (const char *)(*title) != nullptr &&
+                    std::strcmp((const char *)(*title), "Zipper Interactive") == 0;
     title->~CString();
 
     return ok ? 0 : 1;
@@ -719,15 +685,11 @@ extern "C" int czgame_frame_constructor_smoke(void) {
     CZGameFrame frame{};
     CZGameFrame *returned = frame.Constructor(nullptr);
     const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(&frame);
-    const auto constructedBitmapVtable = frame.m_gameBitmap.vftable;
     if (returned == &frame && constructedFrameVtable != 0 &&
         constructedFrameVtable != CZGameFrame::GetRuntimeClass() &&
-        constructedBitmapVtable != nullptr && frame.m_gameBitmap.m_hObject == nullptr) {
+        frame.m_gameBitmap.m_hObject == nullptr) {
         frame.Destructor();
-        return frame.m_gameBitmap.vftable != nullptr &&
-                       frame.m_gameBitmap.vftable != constructedBitmapVtable
-                   ? 0
-                   : 2;
+        return frame.m_gameBitmap.m_hObject == nullptr ? 0 : 2;
     }
 
     return 1;
@@ -740,10 +702,9 @@ extern "C" int czgame_frame_create_object_smoke(void) {
     }
 
     const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
-    const auto constructedBitmapVtable = frame->m_gameBitmap.vftable;
     const bool ok = constructedFrameVtable != 0 &&
                     constructedFrameVtable != CZGameFrame::GetRuntimeClass() &&
-                    constructedBitmapVtable != nullptr && frame->m_gameBitmap.m_hObject == nullptr;
+                    frame->m_gameBitmap.m_hObject == nullptr;
 
     frame->Destructor();
     ::operator delete(frame);
@@ -754,13 +715,9 @@ extern "C" int czgame_frame_destructor_smoke(void) {
     CZGameFrame frame{};
     frame.Constructor(nullptr);
 
-    const auto constructedBitmapVtable = frame.m_gameBitmap.vftable;
     frame.Destructor();
 
-    return frame.m_gameBitmap.vftable != nullptr &&
-                   frame.m_gameBitmap.vftable != constructedBitmapVtable
-               ? 0
-               : 1;
+    return frame.m_gameBitmap.m_hObject == nullptr ? 0 : 1;
 }
 
 extern "C" int czrecoil_frame_constructor_smoke(void) {
@@ -777,18 +734,29 @@ extern "C" int czrecoil_frame_constructor_smoke(void) {
     wndClass.lpszClassName = "RecoilClass";
     RegisterClassA(&wndClass);
 
+    CodeFunctionPatch createExPatch{};
+    CodeFunctionPatch setWindowTextPatch{};
+    CodeFunctionPatch centerWindowPatch{};
+    if (!PatchFunctionJump(CWndCreateExProc(), reinterpret_cast<void *>(&FakeCWndCreateEx),
+                           createExPatch) ||
+        !PatchFunctionJump(CWndSetWindowTextAProc(),
+                           reinterpret_cast<void *>(&FakeCWndSetWindowTextA),
+                           setWindowTextPatch) ||
+        !PatchFunctionJump(CWndCenterWindowProc(), reinterpret_cast<void *>(&FakeCWndCenterWindow),
+                           centerWindowPatch)) {
+        RestoreFunctionPatch(centerWindowPatch);
+        RestoreFunctionPatch(setWindowTextPatch);
+        RestoreFunctionPatch(createExPatch);
+        return 2;
+    }
+
     CZRecoilFrame frame{};
     g_zVid_AcceptedHardwareRendererCount = 5;
     g_zVid_TexturePackLoadState = 1;
     g_zSnd_UseArchiveBanksFlag = 0;
     g_CZRecoilFrame_HasWolApi = 0;
 
-    CZRecoilFrame *returned = nullptr;
-    __try {
-        returned = frame.Constructor();
-    } __except (HandleFrameConstructorException(GetExceptionInformation())) {
-        return 10;
-    }
+    CZRecoilFrame *returned = frame.Constructor();
 
     const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(&frame);
     const bool constructed = returned == &frame && constructedFrameVtable != 0 &&
@@ -805,7 +773,11 @@ extern "C" int czrecoil_frame_constructor_smoke(void) {
         frame.m_hwApiMenuCommandIds[3] == 0x9c76;
     const bool globalsOk = g_zSnd_UseArchiveBanksFlag == 1;
 
-    return !constructed ? 2 : (!fieldsOk ? 3 : (globalsOk ? 0 : 4));
+    const int failure = !constructed ? 2 : (!fieldsOk ? 3 : (globalsOk ? 0 : 4));
+    RestoreFunctionPatch(centerWindowPatch);
+    RestoreFunctionPatch(setWindowTextPatch);
+    RestoreFunctionPatch(createExPatch);
+    return failure;
 }
 
 extern "C" int czrecoil_frame_create_object_smoke(void) {
@@ -822,6 +794,22 @@ extern "C" int czrecoil_frame_create_object_smoke(void) {
     wndClass.lpszClassName = "RecoilClass";
     RegisterClassA(&wndClass);
 
+    CodeFunctionPatch createExPatch{};
+    CodeFunctionPatch setWindowTextPatch{};
+    CodeFunctionPatch centerWindowPatch{};
+    if (!PatchFunctionJump(CWndCreateExProc(), reinterpret_cast<void *>(&FakeCWndCreateEx),
+                           createExPatch) ||
+        !PatchFunctionJump(CWndSetWindowTextAProc(),
+                           reinterpret_cast<void *>(&FakeCWndSetWindowTextA),
+                           setWindowTextPatch) ||
+        !PatchFunctionJump(CWndCenterWindowProc(), reinterpret_cast<void *>(&FakeCWndCenterWindow),
+                           centerWindowPatch)) {
+        RestoreFunctionPatch(centerWindowPatch);
+        RestoreFunctionPatch(setWindowTextPatch);
+        RestoreFunctionPatch(createExPatch);
+        return 2;
+    }
+
     g_zVid_AcceptedHardwareRendererCount = 6;
     g_zVid_TexturePackLoadState = 1;
     g_zSnd_UseArchiveBanksFlag = 0;
@@ -829,6 +817,9 @@ extern "C" int czrecoil_frame_create_object_smoke(void) {
 
     CZRecoilFrame *const frame = CZRecoilFrame::CreateObject();
     if (frame == nullptr) {
+        RestoreFunctionPatch(centerWindowPatch);
+        RestoreFunctionPatch(setWindowTextPatch);
+        RestoreFunctionPatch(createExPatch);
         return 2;
     }
 
@@ -841,6 +832,9 @@ extern "C" int czrecoil_frame_create_object_smoke(void) {
 
     frame->Destructor();
     ::operator delete(frame);
+    RestoreFunctionPatch(centerWindowPatch);
+    RestoreFunctionPatch(setWindowTextPatch);
+    RestoreFunctionPatch(createExPatch);
     return ok ? 0 : 3;
 }
 
@@ -858,6 +852,22 @@ extern "C" int recoil_app_create_main_wnd_smoke(void) {
     wndClass.lpszClassName = "RecoilClass";
     RegisterClassA(&wndClass);
 
+    CodeFunctionPatch createExPatch{};
+    CodeFunctionPatch setWindowTextPatch{};
+    CodeFunctionPatch centerWindowPatch{};
+    if (!PatchFunctionJump(CWndCreateExProc(), reinterpret_cast<void *>(&FakeCWndCreateEx),
+                           createExPatch) ||
+        !PatchFunctionJump(CWndSetWindowTextAProc(),
+                           reinterpret_cast<void *>(&FakeCWndSetWindowTextA),
+                           setWindowTextPatch) ||
+        !PatchFunctionJump(CWndCenterWindowProc(), reinterpret_cast<void *>(&FakeCWndCenterWindow),
+                           centerWindowPatch)) {
+        RestoreFunctionPatch(centerWindowPatch);
+        RestoreFunctionPatch(setWindowTextPatch);
+        RestoreFunctionPatch(createExPatch);
+        return 2;
+    }
+
     g_zVid_AcceptedHardwareRendererCount = 4;
     g_zVid_TexturePackLoadState = 1;
     g_zSnd_UseArchiveBanksFlag = 0;
@@ -865,33 +875,43 @@ extern "C" int recoil_app_create_main_wnd_smoke(void) {
 
     CZRecoilFrame *frame = g_RecoilApp.CreateMainWnd();
     if (frame == nullptr) {
+        RestoreFunctionPatch(centerWindowPatch);
+        RestoreFunctionPatch(setWindowTextPatch);
+        RestoreFunctionPatch(createExPatch);
         return 2;
     }
 
     const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
-    return constructedFrameVtable != 0 &&
-                   constructedFrameVtable != CZRecoilFrame::GetRuntimeClass() &&
-                   frame->m_useArchiveBanks == 1 &&
-                   frame->m_acceptedD3DDeviceCount == g_zVid_AcceptedHardwareRendererCount &&
-                   g_zSnd_UseArchiveBanksFlag == 1
-               ? 0
-               : 3;
+    const int failure = constructedFrameVtable != 0 &&
+                                constructedFrameVtable != CZRecoilFrame::GetRuntimeClass() &&
+                                frame->m_useArchiveBanks == 1 &&
+                                frame->m_acceptedD3DDeviceCount ==
+                                    g_zVid_AcceptedHardwareRendererCount &&
+                                g_zSnd_UseArchiveBanksFlag == 1
+                            ? 0
+                            : 3;
+    RestoreFunctionPatch(centerWindowPatch);
+    RestoreFunctionPatch(setWindowTextPatch);
+    RestoreFunctionPatch(createExPatch);
+    return failure;
 }
 
 extern "C" int czrecoil_frame_destructor_smoke(void) {
-    CZRecoilFrame frame{};
-    reinterpret_cast<CZGameFrame *>(&frame)->Constructor(nullptr);
-    frame.m_mainMenuVftable = 0;
-    frame.m_mainMenuHandle = CreateMenu();
-    if (frame.m_mainMenuHandle == nullptr) {
+    void *storage = ::operator new(sizeof(CZRecoilFrame));
+    CZRecoilFrame *const frame = (CZRecoilFrame *)storage;
+    std::memset(frame, 0, sizeof(*frame));
+    reinterpret_cast<CZGameFrame *>(frame)->Constructor(nullptr);
+    new (&frame->m_mainMenu) CMenu();
+    frame->m_mainMenu.m_hMenu = CreateMenu();
+    if (frame->m_mainMenu.m_hMenu == nullptr) {
+        ::operator delete(storage);
         return 1;
     }
 
-    frame.Destructor();
-    return frame.m_mainMenuVftable != 0 &&
-                   frame.m_mainMenuVftable != CZRecoilFrame::GetRuntimeClass()
-               ? 0
-               : 2;
+    frame->Destructor();
+    const bool ok = frame->m_mainMenu.m_hMenu == nullptr;
+    ::operator delete(storage);
+    return ok ? 0 : 2;
 }
 
 namespace {
@@ -938,11 +958,23 @@ HGDIOBJ g_paintLastSelectedObject;
 RECT g_paintLastDestRect;
 RECT g_paintLastSourceRect;
 DWORD g_paintLastRasterOp;
-
-struct CodeFunctionPatch {
-    unsigned char *address;
-    unsigned char original[5];
-};
+std::int32_t g_wolMenuZlocCalls;
+std::int32_t g_wolMenuZlocIds[2];
+std::int32_t g_wolMenuVerifyCalls;
+std::int32_t g_wolMenuVerifyResult;
+bool g_wolMenuVerifyArgsOk;
+std::int32_t g_wolMenuModalCalls;
+std::int32_t g_wolMenuModalResult;
+std::int32_t g_wolMenuModalSelectedMissionIndex;
+std::int32_t g_wolMenuLoadCalls;
+RecoilApp *g_wolMenuLoadApp;
+std::int32_t g_wolMenuLoadMissionId;
+const char *g_wolMenuLoadZbdPath;
+std::int32_t g_wolMenuLoadSkipIntro;
+std::int32_t g_wolMenuLoadMissionFlags;
+std::int32_t g_cWndCreateExCalls;
+std::int32_t g_cWndSetWindowTextCalls;
+std::int32_t g_cWndCenterWindowCalls;
 
 struct ImportFunctionPatch {
     ULONG_PTR *slot;
@@ -1002,6 +1034,18 @@ struct CFrameWndOnCreateAccess : CFrameWnd {
 
 struct CFrameWndOnDestroyAccess : CFrameWnd {
     using CFrameWnd::OnDestroy;
+};
+
+struct CWndCreateExAccess : CWnd {
+    using CWnd::CreateEx;
+};
+
+struct CWndSetWindowTextAccess : CWnd {
+    using CWnd::SetWindowText;
+};
+
+struct CWndCenterWindowAccess : CWnd {
+    using CWnd::CenterWindow;
 };
 
 void RecordOnDestroyCall(std::int32_t callId) {
@@ -1146,6 +1190,68 @@ void RECOIL_FASTCALL FakeCFrameWndOnSize(CFrameWnd *, void *, unsigned int nType
     g_cFrameWndOnSizeArgsOk = g_cFrameWndOnSizeArgsOk && cx == 640 && cy == 480;
 }
 
+BOOL RECOIL_FASTCALL FakeCWndCreateEx(CWnd *self, void *, DWORD exStyle, LPCSTR className,
+                                      LPCSTR windowName, DWORD style, int x, int y, int width,
+                                      int height, HWND parent, HMENU menu, LPVOID param) {
+    ++g_cWndCreateExCalls;
+    HWND hwnd = CreateWindowExA(exStyle, className, windowName, style, x, y, width, height, parent,
+                                menu, GetModuleHandleA(nullptr), param);
+    self->m_hWnd = hwnd;
+    return hwnd != nullptr ? TRUE : FALSE;
+}
+
+void RECOIL_FASTCALL FakeCWndSetWindowTextA(CWnd *self, void *, LPCSTR text) {
+    ++g_cWndSetWindowTextCalls;
+    if (self->m_hWnd != nullptr) {
+        SetWindowTextA(self->m_hWnd, text);
+    }
+}
+
+void RECOIL_FASTCALL FakeCWndCenterWindow(CWnd *, void *, CWnd *) {
+    ++g_cWndCenterWindowCalls;
+}
+
+char *RECOIL_FASTCALL FakeWolMenuGetMessageString(unsigned int messageId) {
+    static char caption[] = "Network Caption";
+    static char messageFormat[] = "Need Winsock";
+
+    if (g_wolMenuZlocCalls < 2) {
+        g_wolMenuZlocIds[g_wolMenuZlocCalls] = static_cast<std::int32_t>(messageId);
+    }
+    ++g_wolMenuZlocCalls;
+    return messageId == 18 ? caption : messageFormat;
+}
+
+int RECOIL_FASTCALL FakeWolMenuVerifyWinsock(const char *caption, const char *messageFormat) {
+    ++g_wolMenuVerifyCalls;
+    g_wolMenuVerifyArgsOk =
+        std::strcmp(caption, "Network Caption") == 0 &&
+        std::strcmp(messageFormat, "Need Winsock") == 0;
+    return g_wolMenuVerifyResult;
+}
+
+int RECOIL_FASTCALL FakeWolMenuShowModal(int *selectedMissionIndexOut) {
+    ++g_wolMenuModalCalls;
+    if (g_wolMenuModalResult != 0) {
+        *selectedMissionIndexOut = g_wolMenuModalSelectedMissionIndex;
+    }
+    return g_wolMenuModalResult;
+}
+
+int RECOIL_FASTCALL FakeWolMenuLoadZbdAndSetupSensorTracker(RecoilApp *self, void *,
+                                                            int missionId,
+                                                            const char *zbdPath,
+                                                            int skipIntroFmvMode,
+                                                            int missionFlags) {
+    ++g_wolMenuLoadCalls;
+    g_wolMenuLoadApp = self;
+    g_wolMenuLoadMissionId = missionId;
+    g_wolMenuLoadZbdPath = zbdPath;
+    g_wolMenuLoadSkipIntro = skipIntroFmvMode;
+    g_wolMenuLoadMissionFlags = missionFlags;
+    return 1;
+}
+
 void *CFrameWndOnCloseProc() {
     union MemberToFunction {
         void (RECOIL_THISCALL CFrameWndOnCloseAccess::*member)();
@@ -1210,6 +1316,69 @@ void *CFrameWndOnSizeProc() {
     MemberToFunction thunk{};
     thunk.member = &CFrameWndOnSizeAccess::OnSize;
     return thunk.function;
+}
+
+void *CWndCreateExProc() {
+    union MemberToFunction {
+        BOOL (RECOIL_THISCALL CWndCreateExAccess::*member)(DWORD, LPCSTR, LPCSTR, DWORD, int,
+                                                           int, int, int, HWND, HMENU, LPVOID);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &CWndCreateExAccess::CreateEx;
+    return thunk.function;
+}
+
+void *CWndSetWindowTextAProc() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL CWndSetWindowTextAccess::*member)(LPCSTR);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &CWndSetWindowTextAccess::SetWindowText;
+    return thunk.function;
+}
+
+void *CWndCenterWindowProc() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL CWndCenterWindowAccess::*member)(CWnd *);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &CWndCenterWindowAccess::CenterWindow;
+    return thunk.function;
+}
+
+void *RecoilAppLoadZbdAndSetupSensorTrackerProc() {
+    union MemberToFunction {
+        int (RECOIL_THISCALL RecoilApp::*member)(int, const char *, int, int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &RecoilApp::LoadZbdAndSetupSensorTracker;
+    return thunk.function;
+}
+
+void ResetWolMenuProbe() {
+    g_wolMenuZlocCalls = 0;
+    g_wolMenuZlocIds[0] = -1;
+    g_wolMenuZlocIds[1] = -1;
+    g_wolMenuVerifyCalls = 0;
+    g_wolMenuVerifyResult = 1;
+    g_wolMenuVerifyArgsOk = true;
+    g_wolMenuModalCalls = 0;
+    g_wolMenuModalResult = 0;
+    g_wolMenuModalSelectedMissionIndex = -1;
+    g_wolMenuLoadCalls = 0;
+    g_wolMenuLoadApp = nullptr;
+    g_wolMenuLoadMissionId = -1;
+    g_wolMenuLoadZbdPath = reinterpret_cast<const char *>(static_cast<std::uintptr_t>(1));
+    g_wolMenuLoadSkipIntro = -1;
+    g_wolMenuLoadMissionFlags = -1;
 }
 
 bool PatchImportByName(const char *dllName, const char *functionName, void *replacement,
@@ -1317,6 +1486,97 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
     patch.address = nullptr;
 }
 } // namespace
+
+extern "C" int czrecoil_frame_on_menu_westwood_online_upgrade_smoke(void) {
+    CodeFunctionPatch zlocPatch{};
+    CodeFunctionPatch verifyPatch{};
+    CodeFunctionPatch modalPatch{};
+    CodeFunctionPatch loadPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zLoc::GetMessageString),
+                           reinterpret_cast<void *>(&FakeWolMenuGetMessageString), zlocPatch) ||
+        !PatchFunctionJump(reinterpret_cast<void *>(&NetUi::VerifyWinsock2OrPromptContinue),
+                           reinterpret_cast<void *>(&FakeWolMenuVerifyWinsock), verifyPatch) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&WestwoodOnlineUpgradeDialog::
+                                         ShowModalAndGetSelectedMissionIndex),
+            reinterpret_cast<void *>(&FakeWolMenuShowModal), modalPatch) ||
+        !PatchFunctionJump(RecoilAppLoadZbdAndSetupSensorTrackerProc(),
+                           reinterpret_cast<void *>(&FakeWolMenuLoadZbdAndSetupSensorTracker),
+                           loadPatch)) {
+        RestoreFunctionPatch(loadPatch);
+        RestoreFunctionPatch(modalPatch);
+        RestoreFunctionPatch(verifyPatch);
+        RestoreFunctionPatch(zlocPatch);
+        return 1;
+    }
+
+    const int oldChecked = g_CZRecoilFrame_WestwoodOnlineWinsockChecked;
+    const int oldSkipIntro = g_RecoilApp.m_skipIntroFmv;
+    const int oldSkipMissionFmv = g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv;
+    const int oldMissionFlags = g_HudSensorTracker.missionFlags;
+
+    CZRecoilFrame frame{};
+    int failure = 0;
+
+    ResetWolMenuProbe();
+    g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 0;
+    g_RecoilApp.m_skipIntroFmv = 7;
+    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 8;
+    g_wolMenuVerifyResult = 0;
+    frame.OnMenuWestwoodOnlineUpgrade();
+    if (g_CZRecoilFrame_WestwoodOnlineWinsockChecked != 1 || g_wolMenuZlocCalls != 2 ||
+        g_wolMenuZlocIds[0] != 18 || g_wolMenuZlocIds[1] != 38 ||
+        g_wolMenuVerifyCalls != 1 || !g_wolMenuVerifyArgsOk ||
+        g_wolMenuModalCalls != 0 || g_wolMenuLoadCalls != 0 ||
+        g_RecoilApp.m_skipIntroFmv != 7 ||
+        g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv != 8) {
+        failure = 2;
+    }
+
+    ResetWolMenuProbe();
+    g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 1;
+    g_RecoilApp.m_skipIntroFmv = 0;
+    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 0;
+    frame.OnMenuWestwoodOnlineUpgrade();
+    if (failure == 0 &&
+        (g_wolMenuZlocCalls != 0 || g_wolMenuVerifyCalls != 0 ||
+         g_wolMenuModalCalls != 1 || g_wolMenuLoadCalls != 0 ||
+         g_RecoilApp.m_skipIntroFmv != 1 ||
+         g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv != 1)) {
+        failure = 3;
+    }
+
+    ResetWolMenuProbe();
+    g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 0;
+    g_RecoilApp.m_skipIntroFmv = 0;
+    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 0;
+    g_HudSensorTracker.missionFlags = 0x55;
+    g_wolMenuVerifyResult = 1;
+    g_wolMenuModalResult = 1;
+    g_wolMenuModalSelectedMissionIndex = 4;
+    frame.OnMenuWestwoodOnlineUpgrade();
+    if (failure == 0 &&
+        (g_CZRecoilFrame_WestwoodOnlineWinsockChecked != 1 || g_wolMenuZlocCalls != 2 ||
+         g_wolMenuVerifyCalls != 1 || !g_wolMenuVerifyArgsOk ||
+         g_wolMenuModalCalls != 1 || g_wolMenuLoadCalls != 1 ||
+         g_wolMenuLoadApp != &g_RecoilApp || g_wolMenuLoadMissionId != 10 ||
+         g_wolMenuLoadZbdPath != nullptr || g_wolMenuLoadSkipIntro != 1 ||
+         g_wolMenuLoadMissionFlags != 0x55 || g_RecoilApp.m_skipIntroFmv != 1 ||
+         g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv != 1)) {
+        failure = 4;
+    }
+
+    g_CZRecoilFrame_WestwoodOnlineWinsockChecked = oldChecked;
+    g_RecoilApp.m_skipIntroFmv = oldSkipIntro;
+    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = oldSkipMissionFmv;
+    g_HudSensorTracker.missionFlags = oldMissionFlags;
+
+    RestoreFunctionPatch(loadPatch);
+    RestoreFunctionPatch(modalPatch);
+    RestoreFunctionPatch(verifyPatch);
+    RestoreFunctionPatch(zlocPatch);
+    return failure;
+}
 
 extern "C" int czgame_frame_on_app_idle_dispatch_message_smoke(void) {
     union MemberToFunction {

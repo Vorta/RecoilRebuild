@@ -448,9 +448,13 @@ std::int32_t RECOIL_STDCALL PlayerCheckpointSendFake(zNetwork_DPlay4 *, std::uin
     return 0;
 }
 
-const zNetwork_DPlay4Vtable kPlayerCheckpointDPlayVtable = {
-    {}, nullptr, {}, nullptr, {}, nullptr, PlayerCheckpointSendFake, {}, nullptr, {}, nullptr, {}, nullptr,
-};
+zNetwork_DPlay4Vtable MakePlayerCheckpointDPlayVtable() {
+    zNetwork_DPlay4Vtable vtable{};
+    vtable.Send_68 = PlayerCheckpointSendFake;
+    return vtable;
+}
+
+const zNetwork_DPlay4Vtable kPlayerCheckpointDPlayVtable = MakePlayerCheckpointDPlayVtable();
 
 std::int32_t __stdcall TestDirectSoundGetStatus(void *, std::int32_t *status) {
     *status = 0;

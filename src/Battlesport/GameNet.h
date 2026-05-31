@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include "recoil/recoil_types.h"
 
+#include "Battlesport/Mfc42Abi.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "recoil/recoil_callconv.h"
@@ -16,6 +17,105 @@ struct zSndPlayHandle;
 struct zEffectAnimActivationRecord;
 struct zUtil_PlayerStateStorage;
 struct zUtil_SaveGameState;
+
+// Authored Recoil dialog reconstructed over imported MFC42 CDialog and
+// control classes. MFC control behavior is provided by MFC42, not reimplemented
+// in this source tree.
+struct NetSessionBrowserDialog : CDialog {
+    int m_selectedSessionIndex;
+    int m_sessionCount;
+    int m_shouldEnterHostSetup;
+    int m_selectedProviderIsModem;
+    CEdit m_playerNameEdit;
+    CButton m_okButton;
+    CButton m_createSessionButton;
+    CListBox m_sessionList;
+    CComboBox m_providerCombo;
+    CString m_playerName;
+
+    static const AFX_MSGMAP messageMap;
+    static const AFX_MSGMAP_ENTRY messageEntries[];
+    static const AFX_MSGMAP *RECOIL_STDCALL GetBaseMessageMapForMfc();
+
+    RECOIL_NOINLINE const AFX_MSGMAP *RECOIL_THISCALL GetMessageMap() const;
+    RECOIL_NOINLINE BOOL RECOIL_THISCALL OnInitDialog();
+    RECOIL_NOINLINE NetSessionBrowserDialog *RECOIL_THISCALL
+    Constructor(CWnd *parentWnd);
+    RECOIL_NOINLINE NetSessionBrowserDialog *RECOIL_THISCALL
+    ScalarDeletingDestructor(unsigned int flags);
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL DoDataExchange(CDataExchange *dataExchange);
+    RECOIL_NOINLINE int RECOIL_THISCALL RefreshSessionList();
+    RECOIL_NOINLINE void RECOIL_THISCALL ConnectSelectedProvider();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnTimer(UINT_PTR timerId);
+    RECOIL_NOINLINE int RECOIL_THISCALL ValidatePlayerName();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnOK();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnCreateSession();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDestroy();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnHelpDocs();
+};
+RECOIL_STATIC_ASSERT(sizeof(NetSessionBrowserDialog) == 0x1b4);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_selectedSessionIndex) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_sessionCount) == 0x64);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_shouldEnterHostSetup) == 0x68);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_selectedProviderIsModem) == 0x6c);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_playerNameEdit) == 0x70);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_okButton) == 0xb0);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_createSessionButton) == 0xf0);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_sessionList) == 0x130);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_providerCombo) == 0x170);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_playerName) == 0x1b0);
+
+// Authored Recoil dialog reconstructed over imported MFC42 CDialog and
+// control classes. MFC control behavior is provided by MFC42, not reimplemented
+// in this source tree.
+struct NetSessionConfigDialog : CDialog {
+    int m_selectedMapIndex;
+    int m_defaultExerciseOrdinal;
+    CSpinButtonCtrl m_maxPlayersSpin;
+    CSpinButtonCtrl m_valueLimitSpin;
+    CSpinButtonCtrl m_timeLimitSpin;
+    CComboBox m_mapCombo;
+    CString m_sessionName;
+    unsigned int m_valueLimit;
+    unsigned int m_timeLimitMinutes;
+    unsigned int m_maxPlayers;
+    int m_unusedCheckboxEnabled;
+
+    static const AFX_MSGMAP messageMap;
+    static const AFX_MSGMAP_ENTRY messageEntries[];
+    static const AFX_MSGMAP *RECOIL_STDCALL GetBaseMessageMapForMfc();
+
+    RECOIL_NOINLINE const AFX_MSGMAP *RECOIL_THISCALL GetMessageMap() const;
+    RECOIL_NOINLINE BOOL RECOIL_THISCALL OnInitDialog();
+    RECOIL_NOINLINE NetSessionConfigDialog *RECOIL_THISCALL
+    Constructor(CWnd *parentWnd);
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL DoDataExchange(CDataExchange *dataExchange);
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDestroy();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnMapChanged();
+    RECOIL_NOINLINE static void RECOIL_CDECL InitMapNameStrings();
+    RECOIL_NOINLINE static void RECOIL_CDECL RegisterMapNameCleanup();
+    RECOIL_NOINLINE static void RECOIL_CDECL CleanupMapNameStringsOnExit();
+};
+RECOIL_STATIC_ASSERT(sizeof(NetSessionConfigDialog) == 0x17c);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_selectedMapIndex) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_defaultExerciseOrdinal) == 0x64);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_maxPlayersSpin) == 0x68);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_valueLimitSpin) == 0xa8);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_timeLimitSpin) == 0xe8);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_mapCombo) == 0x128);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_sessionName) == 0x168);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_valueLimit) == 0x16c);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_timeLimitMinutes) == 0x170);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_maxPlayers) == 0x174);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_unusedCheckboxEnabled) == 0x178);
+
+extern const RecoilNamedVtable kNetSessionBrowserDialog_Vtable;
+extern const RecoilNamedVtable kNetSessionConfigDialog_Vtable;
+extern CString *g_NetSessionConfigDialog_MapNameStrings;
+
+extern "C" int g_NetUiTcpIpProviderWarningShown;
 
 struct PlayerModalState {
     PlayerModalState *next;
@@ -294,6 +394,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL
 HandlePkt14_HudTimerAndFlagsSync(int senderPlayerId,
                                  NetPkt14_HudTimerAndFlagsSync *packet);
 RECOIL_NOINLINE int RECOIL_FASTCALL
+SendPkt14_HudTimerAndFlagsSync(int eventCode, unsigned int statusFlags,
+                               int valueOrTime, int auxParam);
+RECOIL_NOINLINE int RECOIL_FASTCALL
 HostUpdateSessionDescStatusFields(int eventCode, int auxParam,
                                   int valueOrTime, int statusFlags);
 RECOIL_NOINLINE int RECOIL_FASTCALL
@@ -306,6 +409,8 @@ RECOIL_NOINLINE void RECOIL_CDECL EndChatComposeAndSendThunk();
 
 namespace Net {
 RECOIL_NOINLINE void RECOIL_CDECL InitFromZrd();
+RECOIL_NOINLINE void RECOIL_FASTCALL
+FormatIpv4Address(char *outText, unsigned int ipAddress);
 }
 
 namespace GameNetSpawnPointList {
@@ -331,6 +436,7 @@ extern unsigned int g_GameNetPlayerRowStyleColors_00RRGGBB[9];
 extern HudTimerPanelNetState g_HudTimerPanelNetState;
 extern NetPkt0C_HudTimerStatusBits g_NetPkt0C_HudTimerStatusBitsBuf;
 extern NetPkt0D_HudTimerPanelState g_NetPkt0D_HudTimerPanelStateBuf;
+extern NetPkt14_HudTimerAndFlagsSync g_NetPkt14_HudTimerAndFlagsSyncBuf;
 extern NetPkt0A_RemoveRuntimeRelay g_NetPkt0A_RemoveRuntimeRelayBuf;
 extern NetPkt07_AltGunDispatch g_NetPkt07_AltGunDispatchBuf;
 extern int g_GameNetOneLapLeftMessageShown;

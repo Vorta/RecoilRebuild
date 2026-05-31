@@ -29,6 +29,19 @@ struct zVideo_SurfaceStatePartial;
 struct zVideo_TextureRecordPartial;
 struct zVidImagePartial;
 
+struct zVideoFxColoredLineRecord {
+    int x;
+    int y;
+    int width;
+    int height;
+    unsigned short color16;
+    unsigned short reserved12;
+    float alphaEnd;
+    float alphaStart;
+    int clipInset;
+};
+RECOIL_STATIC_ASSERT(sizeof(zVideoFxColoredLineRecord) == 0x20);
+
 typedef void (RECOIL_FASTCALL *zVideo_BltRectDirectProc)(zVidRect32 *srcRect, zVidRect32 *dstRect);
 typedef void (RECOIL_FASTCALL *zVideo_ClearZBufferRectProc)(zVidRect32 *rect);
 typedef void (RECOIL_FASTCALL *zVideo_ClearSwSurfaceAndZBufferProc)(zVidRect32 *surfaceRect,
@@ -443,6 +456,18 @@ RECOIL_NOINLINE int RECOIL_CDECL InitFrameScratchBuffers();
 RECOIL_NOINLINE int RECOIL_CDECL ShutdownFrameScratchBuffers();
 } // namespace zVid
 
+namespace zVideo_FxSurface {
+RECOIL_NOINLINE void RECOIL_FASTCALL DrawAlphaBlendedLine(zVidRect32 *clipRect, int x1,
+                                                          int y1, int x0, int y0,
+                                                          unsigned int color16,
+                                                          float alphaEnd,
+                                                          float alphaStart,
+                                                          int clipInset);
+RECOIL_NOINLINE void RECOIL_FASTCALL DrawColoredLinesBatch(zVideoFxColoredLineRecord *lines,
+                                                           int count,
+                                                           zVidRect32 *clipRectOrNull);
+} // namespace zVideo_FxSurface
+
 namespace zVideo_buff {
 RECOIL_NOINLINE int RECOIL_FASTCALL ClipCoordToRange(int *coordPtr,
                                                               int minCoord,
@@ -513,6 +538,14 @@ RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockPrimarySurfaceState();
 RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(void *pixels, int width,
                                                         int height,
                                                         int pitchBytes);
+RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionCombined(zVidRect32 *rectOrNull,
+                                                             int mode);
+RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionVertical(zVidRect32 *rectOrNull,
+                                                             int mode);
+RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionHorizontal(zVidRect32 *rectOrNull,
+                                                               int mode);
+RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionByMode(zVidRect32 *rectOrNull,
+                                                           int mode);
 RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_UpdateLocal(zVideoFxPass3Config *config,
                                                                float deltaTime);
 RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_SetPrimaryElementParamsLocal(

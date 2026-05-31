@@ -1,7 +1,7 @@
 #include "Battlesport/HudSensorTracker.h"
 #include "Battlesport/hud.h"
 #include "Battlesport/player.h"
-#include "Battlesport/zUtil/zutil.h"
+#include "GameZRecoil/zUtil/zutil.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/zClipRect.h"
 #include "GameZRecoil/zEffect/zEffect.h"
@@ -6409,6 +6409,21 @@ extern "C" int zopt_network_enabled_accessor_smoke() {
     return disabled && enabled && modemEnabled && listenEnabled ? 0 : 1;
 }
 
+extern "C" int zopt_wol_password_flag_accessor_smoke() {
+    int passwordFlag = 0;
+    int *const oldPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
+    g_zOpt_WolPasswordFlagOption = &passwordFlag;
+
+    const bool initial = zOpt_GetWolPasswordFlagValue() == 0;
+    zOpt::SetWolPasswordFlag(1);
+    const bool enabled = passwordFlag == 1 && zOpt_GetWolPasswordFlagValue() == 1;
+    zOpt::SetWolPasswordFlag(0);
+    const bool disabled = passwordFlag == 0 && zOpt_GetWolPasswordFlagValue() == 0;
+
+    g_zOpt_WolPasswordFlagOption = oldPasswordFlagOption;
+    return initial && enabled && disabled ? 0 : 1;
+}
+
 extern "C" int hud_sensor_objective_slot_reset_smoke() {
     HudSensorObjectiveSlot slot{};
     slot.completedFlag = 7;
@@ -6612,7 +6627,7 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     const int defaultResult = defaultTracker.LoadMissionCoreResources();
     const bool defaultOk =
         defaultResult == 1 && defaultTracker.missionId == 1 &&
-        std::strcmp(defaultTracker.zbdPath.m_pchData, "m1.gs") == 0 &&
+        std::strcmp((const char *)defaultTracker.zbdPath, "m1.gs") == 0 &&
         defaultTracker.missionLoaded == 1 && defaultTracker.raceCheckpointMode == 0 &&
         std::strcmp(g_HudSensor_MissionSoundSetName, "M1") == 0 &&
         defaultTracker.worldNode == nullptr && defaultTracker.cameraNode == nullptr &&
@@ -6626,7 +6641,7 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     const int customResult = customTracker.LoadMissionCoreResources();
     const bool customOk =
         customResult == 1 && customTracker.missionId == 3 &&
-        std::strcmp(customTracker.zbdPath.m_pchData, "custom_mission.gs") == 0 &&
+        std::strcmp((const char *)customTracker.zbdPath, "custom_mission.gs") == 0 &&
         customTracker.missionLoaded == 1 &&
         std::strcmp(g_HudSensor_MissionSoundSetName, "M3") == 0;
 

@@ -3378,6 +3378,62 @@ int SpanEndFromX(float x) {
     return (Fixed16FromFloat(x) - 0x8001) >> 16;
 }
 
+struct ScanConvertEdge {
+    int xStepFixed;
+    int yStart;
+    int currentXFixed;
+    int reserved;
+};
+
+int WrapPolygonIndex(int index, int vertexCount) {
+    if (index < 0) {
+        return index + vertexCount;
+    }
+
+    if (index >= vertexCount) {
+        return index - vertexCount;
+    }
+
+    return index;
+}
+
+int BuildScanConvertEdges(const zVec3 *vertices, int vertexCount, int startIndex,
+                          int stopIndex, int step, ScanConvertEdge *edges) {
+    int edgeCount = 0;
+    int vertexIndex = startIndex;
+    int yStart = ScanlineStartFromY(vertices[vertexIndex].y);
+    float sampleY = (float)(yStart) + 0.5f;
+
+    while (vertexIndex != stopIndex && edgeCount < 0x40) {
+        const int nextIndex = WrapPolygonIndex(vertexIndex + step, vertexCount);
+        const zVec3 &start = vertices[vertexIndex];
+        const zVec3 &end = vertices[nextIndex];
+
+        if (sampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edges[edgeCount].yStart = yStart;
+            edges[edgeCount].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                edges[edgeCount].xStepFixed = Fixed16FromFloat(xSlope);
+                edges[edgeCount].currentXFixed =
+                    Fixed16FromFloat(start.x + (sampleY - start.y) * xSlope);
+            } else {
+                edges[edgeCount].xStepFixed = 0;
+                edges[edgeCount].currentXFixed = Fixed16FromFloat(start.x);
+            }
+
+            ++edgeCount;
+            yStart = ScanlineStartFromY(end.y);
+            sampleY = (float)(yStart) + 0.5f;
+        }
+
+        vertexIndex = nextIndex;
+    }
+
+    return edgeCount;
+}
+
 Plane2f BuildPlaneFromTriangle(const zVec3 *triVerts, const float values[3]) {
     const float dx10 = triVerts[0].x - triVerts[1].x;
     const float dx12 = triVerts[2].x - triVerts[1].x;
@@ -3811,69 +3867,86 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePoly(zVec3 *vertices, int ve
 
     int topVertexIndex = 0;
     int bottomVertexIndex = 0;
-    for (int i_3724 = 1; i_3724 < reducedCount; ++i_3724) {
-        if (reducedVerts[i_3724].y < reducedVerts[topVertexIndex].y) {
-            topVertexIndex = i_3724;
+    for (int i = 1; i < reducedCount; ++i) {
+        if (reducedVerts[i].y < reducedVerts[topVertexIndex].y) {
+            topVertexIndex = i;
         }
-        if (reducedVerts[i_3724].y >= reducedVerts[bottomVertexIndex].y) {
-            bottomVertexIndex = i_3724;
+        if (reducedVerts[i].y >= reducedVerts[bottomVertexIndex].y) {
+            bottomVertexIndex = i;
         }
     }
 
-    const int firstScanline =
-        (int)(floor(reducedVerts[topVertexIndex].y + 0.5f));
-    const int lastScanline =
-        (int)(floor(reducedVerts[bottomVertexIndex].y - 0.5f));
+    ScanConvertEdge edgeTableA[0x40] = {0};
+    ScanConvertEdge edgeTableB[0x40] = {0};
+    int edgeCountA;
+    int edgeCountB;
+    if (zRndr::g_scanConvertMode != 0) {
+        edgeCountA = BuildScanConvertEdges(reducedVerts, reducedCount, topVertexIndex,
+                                           bottomVertexIndex, 1, edgeTableA);
+        edgeCountB = BuildScanConvertEdges(reducedVerts, reducedCount, topVertexIndex,
+                                           bottomVertexIndex, -1, edgeTableB);
+    } else {
+        edgeCountA = BuildScanConvertEdges(reducedVerts, reducedCount, topVertexIndex,
+                                           bottomVertexIndex, -1, edgeTableA);
+        edgeCountB = BuildScanConvertEdges(reducedVerts, reducedCount, topVertexIndex,
+                                           bottomVertexIndex, 1, edgeTableB);
+    }
+
+    if (edgeCountA == 0 || edgeCountB == 0) {
+        return;
+    }
+
+    const int firstScanline = ScanlineStartFromY(reducedVerts[topVertexIndex].y);
+    const int lastScanline = ScanlineEndFromY(reducedVerts[bottomVertexIndex].y);
     if (firstScanline > lastScanline) {
         return;
     }
 
-    unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
+    int edgeIndexA = 0;
+    int edgeIndexB = 0;
+    int currentXFixedA = edgeTableA[0].currentXFixed;
+    int currentXFixedB = edgeTableB[0].currentXFixed;
+    int xStepFixedA = edgeTableA[0].xStepFixed;
+    int xStepFixedB = edgeTableB[0].xStepFixed;
+    unsigned char *scanlineBase =
+        (unsigned char *)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
+
     for (int y = firstScanline; y <= lastScanline; ++y) {
-        float intersections[0x40] = {0};
-        int intersectionCount = 0;
-        const float sampleY = (float)(y) + 0.5f;
-        for (int i = 0; i < reducedCount; ++i) {
-            const zVec3 &a = reducedVerts[i];
-            const zVec3 &b = reducedVerts[(i + 1) % reducedCount];
-            if (a.y == b.y) {
-                continue;
-            }
+        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
+            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
+            currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
+            ++edgeIndexA;
+        }
 
-            const float minY = MinValue(a.y, b.y);
-            const float maxY = MaxValue(a.y, b.y);
-            if (sampleY < minY || sampleY >= maxY) {
-                continue;
-            }
+        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
+            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
+            currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
+            ++edgeIndexB;
+        }
 
-            const float t = (sampleY - a.y) / (b.y - a.y);
-            intersections[intersectionCount++] = a.x + (b.x - a.x) * t;
-            if (intersectionCount == 0x40) {
-                break;
+        int xStart;
+        int xEnd;
+        if (currentXFixedA > currentXFixedB) {
+            xStart = (currentXFixedB + 0x7fff) >> 16;
+            xEnd = (currentXFixedA - 0x8001) >> 16;
+        } else {
+            xStart = (currentXFixedA + 0x7fff) >> 16;
+            xEnd = (currentXFixedB - 0x8001) >> 16;
+        }
+
+        currentXFixedA += xStepFixedA;
+        currentXFixedB += xStepFixedB;
+
+        if (xStart <= xEnd) {
+            const int pixelCount = xEnd - xStart;
+            if (pixelCount > 0) {
+                zRndr::g_spanCurrentDst16 = (unsigned short *)(
+                    scanlineBase + xStart * zRndr::g_bytesPerPixel);
+                zRndr::g_pfnSelectedSpanOp(spanOpContext, pixelCount);
             }
         }
 
-        if (intersectionCount < 2) {
-            continue;
-        }
-
-        sort(intersections, intersections + intersectionCount);
-        unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
-        const int pairCount = intersectionCount & ~1;
-        for (int i_3773 = 0; i_3773 < pairCount; i_3773 += 2) {
-            const int xMin =
-                (int)(floor(intersections[i_3773] + 0.5f));
-            const int xMax =
-                (int)(ceil(intersections[i_3773 + 1] - 0.5f));
-            const int pixelCount = xMax - xMin;
-            if (pixelCount <= 0) {
-                continue;
-            }
-
-            zRndr::g_spanCurrentDst16 = (unsigned short *)(
-                scanlineBase + (int)(xMin) * zRndr::g_bytesPerPixel);
-            zRndr::g_pfnSelectedSpanOp(spanOpContext, pixelCount);
-        }
+        scanlineBase += zRndr::g_pitchBytes;
     }
 }
 

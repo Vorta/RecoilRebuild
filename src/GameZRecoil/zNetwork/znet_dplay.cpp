@@ -3,18 +3,26 @@
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zReader/zReader.h"
 
+#include <dplay.h>
 #include <objbase.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+extern "C" HWND g_RecoilApp_hWndMain;
+
 extern "C" {
 zNetwork_DPlay4 *g_zNetwork_pDirectPlay4 = 0;
 zNetwork_PlayerRecord *g_zNetwork_LocalPlayerRecord = 0;
 int g_zNetwork_IsHostFlag = 0;
 int g_zNetwork_LocalPlayerKey = 0;
+char g_zNetwork_LocalPlayerNameScratch[0x50] = {0};
 int g_zNetwork_TcpIpAsyncSendEnabled = 0;
+int g_zNetwork_ActiveProviderIsModem = 0;
+int g_zNetwork_ActiveProviderIsTcpIp = 0;
+zNetworkDPlayCaps g_zNetwork_DPlayCaps = {0};
+unsigned char *g_zNetwork_AppGuid = 0;
 unsigned int g_zNetwork_LastSendExHandle = 0;
 int g_zNetwork_LastSendExCompleted = 0;
 int g_zNetwork_SessionRuntimeInitialized = 0;
@@ -114,6 +122,32 @@ const char *GetDPlayErrorName(int hresult) {
     }
 
     return "UNKNOWN";
+}
+
+void AppendServiceProviderInfo(zNetworkDPlayServiceProviderInfo *info) {
+    zNetworkServiceProviderListVec *const list = g_zNetwork_ServiceProviderList;
+    if (list->end == list->cap) {
+        const int count = list->begin != 0 ? (int)(list->end - list->begin) : 0;
+        const int newCapacity = count <= 1 ? count + 1 : count * 2;
+        zNetworkDPlayServiceProviderInfo **const newBegin =
+            (zNetworkDPlayServiceProviderInfo **)(::operator new(
+                sizeof(zNetworkDPlayServiceProviderInfo *) * newCapacity));
+
+        int index;
+        for (index = 0; index < count; ++index) {
+            newBegin[index] = list->begin[index];
+        }
+
+        newBegin[count] = info;
+        ::operator delete(list->begin);
+        list->begin = newBegin;
+        list->end = newBegin + count + 1;
+        list->cap = newBegin + newCapacity;
+        return;
+    }
+
+    *list->end = info;
+    ++list->end;
 }
 } // namespace
 
@@ -417,6 +451,202 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HostSendPlayerColorAssignmentsPacket(int jo
 } // namespace zNetwork
 
 namespace zNetworkDPlay {
+// Reimplements 0x48b3a0: zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo
+// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+RECOIL_NOINLINE int RECOIL_STDCALL EnumConnectionsCallback_AddServiceProviderInfo(
+    unsigned char *serviceProviderGuid, void *connectionData, unsigned int connectionDataSize,
+    zNetworkDPlayName *providerName, unsigned int providerFlags, void *)
+{
+    zNetworkDPlayServiceProviderInfo *providerInfo =
+        (zNetworkDPlayServiceProviderInfo *)(::operator new(
+            sizeof(zNetworkDPlayServiceProviderInfo)));
+    if (providerInfo != 0)
+    {
+        memcpy(providerInfo->serviceProviderGuid, serviceProviderGuid,
+               sizeof(providerInfo->serviceProviderGuid));
+        providerInfo->displayName = _strdup(providerName->shortName);
+        providerInfo->connectionData = calloc(connectionDataSize, 1);
+        memcpy(providerInfo->connectionData, connectionData, connectionDataSize);
+        providerInfo->providerFlags = (int)(providerFlags);
+    }
+
+    AppendServiceProviderInfo(providerInfo);
+    return TRUE;
+}
+
+} // namespace zNetworkDPlay
+
+namespace zNetwork_DPlay {
+// Reimplements 0x48a0d0: zNetwork_DPlay::RefreshServiceProviderList
+// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL RefreshServiceProviderList()
+{
+    zNetwork::ClearServiceProviderList();
+
+    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
+    const int hresult = directPlay->vtbl_00->EnumConnections_8c(
+        directPlay, g_zNetwork_AppGuid,
+        zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo,
+        g_RecoilApp_hWndMain, 0);
+    if (hresult < 0)
+    {
+        return zNetwork_DPlay_ReportError(hresult, kZNetworkDPlaySourceFile, 0x6b);
+    }
+
+    zNetworkServiceProviderListVec *const list = g_zNetwork_ServiceProviderList;
+    if (list->begin == 0)
+    {
+        return 0;
+    }
+
+    return (int)(list->end - list->begin);
+}
+} // namespace zNetwork_DPlay
+
+namespace zNetworkDPlay {
+// Reimplements 0x48a130: zNetworkDPlay::RefreshAndGetServiceProviderList
+// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+RECOIL_NOINLINE zNetworkServiceProviderListVec *RECOIL_CDECL
+RefreshAndGetServiceProviderList()
+{
+    zNetwork_DPlay::RefreshServiceProviderList();
+    return g_zNetwork_ServiceProviderList;
+}
+
+// Reimplements 0x48a180: zNetworkDPlay::SelectServiceProviderAndInitConnection
+RECOIL_NOINLINE int RECOIL_FASTCALL
+SelectServiceProviderAndInitConnection(zNetworkDPlayServiceProviderInfo *providerInfo)
+{
+    zNetwork_DPlay::CloseReleaseAndCoUninitialize(g_zNetwork_pDirectPlay4);
+    g_zNetwork_pDirectPlay4 = 0;
+
+    if (providerInfo->connectionData == 0)
+    {
+        return 0;
+    }
+
+    const int hresult =
+        zNetwork_DPlay::CreateInterfaceAndCoInitialize(&g_zNetwork_pDirectPlay4);
+    if (hresult < 0)
+    {
+        return zNetwork_DPlay_ReportError(hresult, kZNetworkDPlaySourceFile, 0x8f);
+    }
+
+    if (g_zNetwork_pDirectPlay4 == 0)
+    {
+        return 0;
+    }
+
+    g_zNetwork_ActiveProviderIsModem =
+        strstr(providerInfo->displayName, "Modem") != 0;
+    g_zNetwork_ActiveProviderIsTcpIp =
+        strstr(providerInfo->displayName, "TCP/IP") != 0;
+    g_zNetwork_TcpIpAsyncSendEnabled = g_zNetwork_ActiveProviderIsTcpIp;
+
+    return InitializeConnectionFromProviderInfo(providerInfo);
+}
+
+// Reimplements 0x48a140: zNetworkDPlay::InitializeConnectionFromProviderInfo
+RECOIL_NOINLINE int RECOIL_FASTCALL
+InitializeConnectionFromProviderInfo(zNetworkDPlayServiceProviderInfo *providerInfo)
+{
+    const int kDPlayUserCancel = (int)(0x88770118);
+    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
+    const int hresult = directPlay->vtbl_00->InitializeConnection_98(
+        directPlay, providerInfo->connectionData, 0);
+
+    if (hresult >= 0)
+    {
+        return 1;
+    }
+
+    if (hresult == kDPlayUserCancel)
+    {
+        return 0;
+    }
+
+    return zNetwork_DPlay_ReportError(hresult, kZNetworkDPlaySourceFile, 0x7d);
+}
+
+// Reimplements 0x48a2c0: zNetworkDPlay::GetEnumeratedSessionNameByIndex
+RECOIL_NOINLINE char *RECOIL_FASTCALL GetEnumeratedSessionNameByIndex(int entryIndex)
+{
+    zNetworkDPlaySessionDescCache *const entry = (zNetworkDPlaySessionDescCache *)(
+        zArchiveList_GetAt(g_zNetwork_EnumeratedSessionList, entryIndex));
+    if (entry == 0)
+    {
+        return 0;
+    }
+
+    return entry->desc.sessionName;
+}
+
+// Reimplements 0x48a2e0: zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex
+RECOIL_NOINLINE void RECOIL_FASTCALL
+GetEnumeratedSessionPlayerCountsByIndex(int entryIndex, int *currentPlayersOut, int *maxPlayersOut)
+{
+    zNetworkDPlaySessionDescCache *const entry = (zNetworkDPlaySessionDescCache *)(
+        zArchiveList_GetAt(g_zNetwork_EnumeratedSessionList, entryIndex));
+    if (entry != 0)
+    {
+        *maxPlayersOut = entry->desc.maxPlayers;
+        *currentPlayersOut = entry->desc.currentPlayers;
+    }
+}
+
+// Reimplements 0x48b5e0: zNetworkDPlay::EnumSessionCallback_AddSessionDescCache
+RECOIL_NOINLINE int RECOIL_STDCALL EnumSessionCallback_AddSessionDescCache(
+    zNetworkDPlaySessionDesc *sessionDesc, unsigned int *, unsigned int, void *)
+{
+    if (sessionDesc == 0)
+    {
+        return 0;
+    }
+
+    zNetworkDPlaySessionDescCache *const cache =
+        (zNetworkDPlaySessionDescCache *)(malloc(sizeof(zNetworkDPlaySessionDescCache)));
+    memcpy(&cache->desc, sessionDesc, sizeof(zNetworkDPlaySessionDesc));
+    memcpy(cache->desc.instanceGuid, sessionDesc->instanceGuid, sizeof(cache->desc.instanceGuid));
+    cache->desc.sessionName = _strdup(sessionDesc->sessionName);
+    zArchiveList_PushBackPayload(g_zNetwork_EnumeratedSessionList, cache);
+    return 1;
+}
+
+// Reimplements 0x48a350: zNetworkDPlay::QueryCapsAndConfigureSendMode
+// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL QueryCapsAndConfigureSendMode()
+{
+    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
+    g_zNetwork_DPlayCaps.size = sizeof(zNetworkDPlayCaps);
+    const int hresult =
+        directPlay->vtbl_00->GetCaps_38(directPlay, &g_zNetwork_DPlayCaps, 1);
+    if (hresult < 0)
+    {
+        fprintf(stderr, "Failed to get network capabilities\n");
+        return zNetwork_DPlay_ReportError(hresult, kZNetworkDPlaySourceFile, 0xea);
+    }
+
+    if (g_zNetwork_ActiveProviderIsTcpIp != 0)
+    {
+        const int flags = g_zNetwork_DPlayCaps.flags;
+        if ((flags & 0x40) == 0)
+        {
+            fprintf(stderr, "Guaranteed TCP/IP not supported n");
+            return 0;
+        }
+
+        if ((flags & 0x10000) == 0)
+        {
+            g_zNetwork_TcpIpAsyncSendEnabled = 0;
+        }
+
+        printf("Network using TCP/IP %s\n",
+               g_zNetwork_TcpIpAsyncSendEnabled != 0 ? "ASYNCH" : "SYNCH");
+    }
+
+    return 1;
+}
+
 // Reimplements 0x48afe0: zNetworkDPlay::PumpIncomingMessages
 RECOIL_NOINLINE int RECOIL_FASTCALL
 PumpIncomingMessages(zNetworkDPlaySystemMessage *systemMessage) {
@@ -648,6 +878,37 @@ RECOIL_NOINLINE int RECOIL_STDCALL EnumPlayerCallback_AddPlayerRecord(
 } // namespace zNetworkDPlay
 
 namespace zNetwork_DPlay {
+// Reimplements 0x48a220: zNetwork_DPlay::EnumSessions
+RECOIL_NOINLINE int RECOIL_CDECL EnumSessions()
+{
+    zNetwork::ClearEnumeratedSessionList();
+
+    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
+    if (directPlay == 0)
+    {
+        return 0;
+    }
+
+    zNetworkDPlaySessionDesc desc;
+    memset(&desc, 0, sizeof(desc));
+    desc.size = sizeof(zNetworkDPlaySessionDesc);
+    memcpy(desc.appGuid, g_zNetwork_AppGuid, sizeof(desc.appGuid));
+
+    const int hresult = directPlay->vtbl_00->EnumSessions_34(
+        directPlay, &desc, 0, zNetworkDPlay::EnumSessionCallback_AddSessionDescCache, 0, 2);
+    if (hresult == (int)(0x88770118))
+    {
+        return -1;
+    }
+
+    if (hresult < 0)
+    {
+        return zNetwork_DPlay_ReportError(hresult, kZNetworkDPlaySourceFile, 0xb3);
+    }
+
+    return zArchiveList_GetCount(g_zNetwork_EnumeratedSessionList);
+}
+
 // Reimplements 0x48a310: zNetwork_DPlay::EnumPlayers
 RECOIL_NOINLINE int RECOIL_CDECL EnumPlayers() {
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
@@ -658,6 +919,159 @@ RECOIL_NOINLINE int RECOIL_CDECL EnumPlayers() {
     }
 
     return g_zNetwork_PlayerRecordList->count;
+}
+
+// Reimplements 0x48a9c0: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister
+// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+CreateLocalPlayerRecordAndRegister(char *playerName)
+{
+    zNetwork_PlayerRecord *const localPlayerRecord =
+        (zNetwork_PlayerRecord *)(::operator new(sizeof(zNetwork_PlayerRecord)));
+    if (localPlayerRecord != 0)
+    {
+        strncpy(localPlayerRecord->playerName, "noname", 0x50);
+        localPlayerRecord->playerName[0x4f] = 0;
+    }
+
+    EnumPlayers();
+    g_zNetwork_LocalPlayerRecord = localPlayerRecord;
+
+    memcpy(g_zNetwork_LocalPlayerNameScratch, playerName, strlen(playerName) + 1);
+    localPlayerRecord->playerNameInfo.shortName = g_zNetwork_LocalPlayerNameScratch;
+    localPlayerRecord->playerNameInfo.longName = g_zNetwork_LocalPlayerNameScratch;
+    localPlayerRecord->createPlayerEventHandle = 0;
+    localPlayerRecord->playerNameInfo.size = sizeof(zNetworkDPlayName);
+    localPlayerRecord->playerNameInfo.flags = 0;
+    memcpy(localPlayerRecord->playerName, g_zNetwork_LocalPlayerNameScratch,
+           strlen(g_zNetwork_LocalPlayerNameScratch) + 1);
+    memcpy(localPlayerRecord->altName, localPlayerRecord->playerNameInfo.shortName,
+           strlen(localPlayerRecord->playerNameInfo.shortName) + 1);
+
+    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
+    const int createResult = directPlay->vtbl_00->CreatePlayer_18(
+        directPlay, &localPlayerRecord->playerKey, &localPlayerRecord->playerNameInfo,
+        localPlayerRecord->createPlayerEventHandle, 0, 0, 0);
+    if (createResult < 0)
+    {
+        if (createResult == (int)(0x88770028))
+        {
+            MessageBoxA(g_RecoilApp_hWndMain, "Cannot Add Another Player",
+                        "Recoil Network Error", MB_OK);
+        }
+        else if (createResult == (int)(0x80070057) ||
+                 createResult == (int)(0x88770078))
+        {
+            MessageBoxA(g_RecoilApp_hWndMain, "Sorry, Invalid Player Parameters",
+                        "Recoil Network Error", MB_OK);
+        }
+        else if (createResult == (int)(0x8877003c))
+        {
+            MessageBoxA(g_RecoilApp_hWndMain, "Cannot Create Another Player",
+                        "Recoil Network Error", MB_OK);
+        }
+        else if (createResult == (int)(0x887700aa))
+        {
+            MessageBoxA(g_RecoilApp_hWndMain, "No Network Connection",
+                        "Recoil Network Error", MB_OK);
+        }
+        else if (createResult == (int)(0x88770168))
+        {
+            MessageBoxA(g_RecoilApp_hWndMain, "Your Network Connection Has Been Lost",
+                        "Recoil Network Error", MB_OK);
+        }
+        return 0;
+    }
+
+    memset(&localPlayerRecord->playerCaps, 0, sizeof(zNetworkDPlayCaps));
+    localPlayerRecord->playerCaps.size = sizeof(zNetworkDPlayCaps);
+    const int capsResult = directPlay->vtbl_00->GetPlayerCaps_4c(
+        directPlay, localPlayerRecord->playerKey, &localPlayerRecord->playerCaps, 0);
+    g_zNetwork_IsHostFlag = localPlayerRecord->playerCaps.flags & 2;
+    zNetworkDPlay::ReceivePendingMessages(-1);
+    if (capsResult < 0)
+    {
+        return zNetwork_DPlay_ReportError(capsResult, kZNetworkDPlaySourceFile, 0x20e);
+    }
+
+    zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
+    g_zNetworkCurrentPlayerCountCached =
+        g_zNetwork_CurrentSessionDescCache->desc.currentPlayers + 1;
+    g_zNetwork_LocalPlayerKey = localPlayerRecord->playerKey;
+
+    zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
+    zNetworkPlayerRecordListNode *prev = sentinel->prev;
+    zNetworkPlayerRecordListNode *const node =
+        (zNetworkPlayerRecordListNode *)(::operator new(sizeof(zNetworkPlayerRecordListNode)));
+    node->next = sentinel != 0 ? sentinel : node;
+    if (prev == 0)
+    {
+        prev = node;
+    }
+    node->prev = prev;
+    sentinel->prev = node;
+    node->prev->next = node;
+    node->playerRecord = localPlayerRecord;
+    ++list->count;
+
+    if (zNetwork::IsHost() != 0)
+    {
+        localPlayerRecord->colorIndex = zNetwork::AllocFreePlayerColorIndex();
+    }
+    else
+    {
+        localPlayerRecord->colorIndex = 0;
+    }
+
+    return localPlayerRecord->playerKey;
+}
+
+// Reimplements 0x48a410: zNetwork_DPlay::CreateSessionFromStatusFields
+// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+CreateSessionFromStatusFields(zNetworkSessionDescStatusFields *statusFields)
+{
+    memcpy(g_zNetwork_SessionNameCache, statusFields->sessionNameBuf,
+           strlen(statusFields->sessionNameBuf) + 1);
+
+    zNetworkDPlaySessionDescCache *const cache =
+        (zNetworkDPlaySessionDescCache *)(malloc(sizeof(zNetworkDPlaySessionDescCache)));
+    memset(cache, 0, sizeof(zNetworkDPlaySessionDescCache));
+    cache->desc.flags = 0x44;
+    cache->desc.size = sizeof(zNetworkDPlaySessionDesc);
+    memcpy(cache->desc.appGuid, g_zNetwork_AppGuid, sizeof(cache->desc.appGuid));
+    cache->desc.maxPlayers = statusFields->maxPlayers;
+    cache->desc.customEventCode = statusFields->eventCode;
+    cache->desc.customStatusFlags = statusFields->statusFlags;
+    cache->desc.customValueOrTime = statusFields->valueOrTime;
+    cache->desc.customAuxParam = statusFields->auxParam;
+    cache->desc.sessionName = _strdup(g_zNetwork_SessionNameCache);
+
+    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
+    const int hresult = directPlay->vtbl_00->Open_60(directPlay, &cache->desc, 2);
+    if (hresult == (int)(0x88770118))
+    {
+        return 0;
+    }
+
+    if (hresult < 0)
+    {
+        return zNetwork_DPlay_ReportError(hresult, kZNetworkDPlaySourceFile, 0x11e);
+    }
+
+    if (zNetworkDPlay::QueryCapsAndConfigureSendMode() == 0)
+    {
+        directPlay->vtbl_00->Close_10(directPlay);
+        return 0;
+    }
+
+    zNetworkDPlaySessionDescCache *const oldCache = g_zNetwork_CurrentSessionDescCache;
+    if (oldCache != 0)
+    {
+        free(oldCache);
+    }
+    g_zNetwork_CurrentSessionDescCache = cache;
+    return 1;
 }
 } // namespace zNetwork_DPlay
 
@@ -743,18 +1157,46 @@ zNetwork_ApplyPkt01_PlayerColorAssignments(int, zNetworkPacketHeader *packet) {
 }
 
 namespace zNetwork_DPlay {
+// Reimplements 0x48b730: zNetwork_DPlay::CreateInterfaceAndCoInitialize
+RECOIL_NOINLINE int RECOIL_FASTCALL
+CreateInterfaceAndCoInitialize(zNetwork_DPlay4 **outDirectPlay4) {
+    const int kClassNotRegistered = (int)(0x80040154);
+    const int kClassCannotBeCreated = (int)(0x80040110);
+    const int kCoCreateNotInitialized = (int)(0x800401f0);
+
+    zNetwork_DPlay4 *directPlay4 = 0;
+    CoInitialize(0);
+    const int hresult = CoCreateInstance(CLSID_DirectPlay, 0, CLSCTX_INPROC_SERVER,
+                                         IID_IDirectPlay4A, (void **)&directPlay4);
+    *outDirectPlay4 = directPlay4;
+
+    if (hresult == kClassNotRegistered) {
+        zError::ReportOld(0x400, kZNetworkDPlaySourceFile, 0x394,
+                          "Class not registered");
+    }
+
+    if (hresult == kClassCannotBeCreated) {
+        zError::ReportOld(0x400, kZNetworkDPlaySourceFile, 0x396,
+                          "Class cannot be created");
+    }
+
+    if (hresult == kCoCreateNotInitialized) {
+        zError::ReportOld(0x400, kZNetworkDPlaySourceFile, 0x398,
+                          "CoCreate not initialized");
+        return hresult;
+    }
+
+    zNetwork_DPlay_ReportError(hresult, kZNetworkDPlaySourceFile, 0x39a);
+    return hresult;
+}
+
 // Reimplements 0x48b7f0: zNetwork_DPlay::CloseReleaseAndCoUninitialize
 RECOIL_NOINLINE int RECOIL_FASTCALL
 CloseReleaseAndCoUninitialize(zNetwork_DPlay4 *directPlay4) {
     int releaseRefCount = 0;
     if (directPlay4 != 0) {
-        typedef int (RECOIL_STDCALL *DPlayMethod)(zNetwork_DPlay4 * self);
-        void *const *const vtbl = (void *const *)(directPlay4->vtbl_00);
-        DPlayMethod const close = (DPlayMethod)(vtbl[4]);
-        DPlayMethod const release = (DPlayMethod)(vtbl[2]);
-
-        close(directPlay4);
-        releaseRefCount = release(directPlay4);
+        directPlay4->vtbl_00->Close_10(directPlay4);
+        releaseRefCount = directPlay4->vtbl_00->Release_08(directPlay4);
     }
 
     CoUninitialize();
@@ -904,6 +1346,58 @@ RECOIL_NOINLINE void RECOIL_CDECL ClearPlayerRecordList() {
     sentinel->next = sentinel;
     sentinel->prev = sentinel;
     list->count = 0;
+}
+
+// Reimplements 0x489d00: zNetwork::InitSessionRuntime
+// (D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL InitSessionRuntime(unsigned char *appGuid) {
+    zNetwork_DPlay4 *directPlay4 = 0;
+    g_zNetwork_FatalDisconnectCallback = 0;
+    g_zNetwork_ReceiveBuffer = 0;
+
+    if (zNetwork_DPlay::CreateInterfaceAndCoInitialize(&directPlay4) >= 0) {
+        g_zNetwork_SessionRuntimeInitialized = 1;
+        g_zNetwork_FatalDisconnectTriggered = 0;
+        g_zNetwork_AppGuid = appGuid;
+        g_zNetwork_pDirectPlay4 = directPlay4;
+        g_zNetwork_CurrentSessionDescCache = 0;
+        g_zNetwork_LocalPlayerRecord = 0;
+        DeleteAllDispatchHandlers();
+    }
+
+    if (g_zNetwork_EnumeratedSessionList == 0) {
+        g_zNetwork_EnumeratedSessionList = zArchiveList_CreateEmpty();
+    }
+
+    zNetworkPlayerRecordList *playerRecordList =
+        (zNetworkPlayerRecordList *)(::operator new(sizeof(zNetworkPlayerRecordList)));
+    if (playerRecordList != 0) {
+        zNetworkPlayerRecordListNode *const sentinel =
+            (zNetworkPlayerRecordListNode *)(
+                ::operator new(sizeof(zNetworkPlayerRecordListNode)));
+        sentinel->next = sentinel;
+        sentinel->prev = sentinel;
+        playerRecordList->sentinelNode = sentinel;
+        playerRecordList->count = 0;
+    } else {
+        playerRecordList = 0;
+    }
+    g_zNetwork_PlayerRecordList = playerRecordList;
+
+    zNetworkServiceProviderListVec *serviceProviderList =
+        (zNetworkServiceProviderListVec *)(
+            ::operator new(sizeof(zNetworkServiceProviderListVec)));
+    if (serviceProviderList != 0) {
+        serviceProviderList->begin = 0;
+        serviceProviderList->end = 0;
+        serviceProviderList->cap = 0;
+    } else {
+        serviceProviderList = 0;
+    }
+    g_zNetwork_ServiceProviderList = serviceProviderList;
+
+    RegisterPacketHandler(1, zNetwork_ApplyPkt01_PlayerColorAssignments, 2);
+    return 0;
 }
 
 // Reimplements 0x489e10: zNetwork::ShutdownSessionRuntime

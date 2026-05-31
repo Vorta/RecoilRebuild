@@ -1,6 +1,7 @@
 #include "zSound.h"
 
 #include "GameZRecoil/Time/Time.h"
+#include "GameZRecoil/zSound/zA3dProvider.h"
 #include "GameZRecoil/zReader/zReader.h"
 
 #include <stdlib.h>
@@ -17,38 +18,6 @@ extern "C" zSndFadeListNode *g_zSndFadeDispatchListSentinel = 0;
 extern "C" int g_zSndFadeDispatchListCount = 0;
 
 namespace {
-typedef int(__stdcall *BackendSetIntFn)(void *self, int value);
-typedef int(__stdcall *BackendSetFloatFn)(void *self, float value);
-typedef int(__stdcall *BackendSimpleFn)(void *self);
-
-struct DirectSoundBufferVTable {
-    void *slots00_38[15];
-    BackendSetIntFn SetVolume;
-};
-
-struct DirectSoundBuffer {
-    DirectSoundBufferVTable *vtable;
-};
-
-struct A3dSourceVTable {
-    void *slots00_9c[40];
-    BackendSetFloatFn SetGain;
-};
-
-struct A3dSource {
-    A3dSourceVTable *vtable;
-};
-
-struct TickBackendDeviceVTable {
-    void *slots00_2c[12];
-    BackendSimpleFn Tick;
-    BackendSimpleFn CommitDeferredSettings;
-};
-
-struct TickBackendDevice {
-    TickBackendDeviceVTable *vtable;
-};
-
 zSndFadeList *ActiveFadeList() {
     return (zSndFadeList *)(&g_zSndFadeActiveListFlags);
 }
@@ -288,8 +257,9 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndFadeEntry::TickAndMaybeDispatch(float de
             currentValue = -10000.0f;
         }
 
-        DirectSoundBuffer *const buffer = (DirectSoundBuffer *)(handle->backendBuffer);
-        buffer->vtable->SetVolume(buffer, (int)(currentValue));
+        LPDIRECTSOUNDBUFFER const buffer =
+            (LPDIRECTSOUNDBUFFER)(handle->backendBuffer);
+        buffer->SetVolume((int)(currentValue));
     } else if (g_zSnd_ActiveBackend == 1) {
         if (currentValue > 1.0f) {
             currentValue = 1.0f;
@@ -297,7 +267,8 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndFadeEntry::TickAndMaybeDispatch(float de
             currentValue = 0.0f;
         }
 
-        A3dSource *const source = (A3dSource *)(handle->backendBuffer);
+        zA3dProviderSource *const source =
+            (zA3dProviderSource *)(handle->backendBuffer);
         source->vtable->SetGain(source, zSndSample_PlaySimple(currentValue));
     }
 
@@ -369,7 +340,8 @@ zSndFadeListCursor::PopFrontCursor(zSndFadeListNode **outNode, int unused) {
 // Reimplements 0x49f620: zSnd_Tick
 extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_Tick(int skipA3dCommit) {
     if (g_zSnd_ActiveBackend == 1 && skipA3dCommit == 0) {
-        TickBackendDevice *const device = (TickBackendDevice *)(g_zSnd_BackendDevice);
+        zA3dProviderDevice *const device =
+            (zA3dProviderDevice *)(g_zSnd_BackendDevice);
         device->vtable->CommitDeferredSettings(device);
         device->vtable->Tick(device);
     }

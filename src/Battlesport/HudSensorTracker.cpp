@@ -1447,7 +1447,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadMissionCoreResources()
     zClass::Init();
     zModel::Init();
 
-    if (zbdPath.m_pchData[0] == '\0') {
+    if (((const char *)zbdPath)[0] == '\0') {
         if (missionFlags != 0) {
             zbdPath.Format("m%d_zbd.gs", missionId);
         } else {

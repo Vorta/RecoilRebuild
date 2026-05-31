@@ -87,6 +87,9 @@ using TestBackendPlayDirectSoundFn = std::int32_t(__stdcall *)(void *self, std::
                                                                std::uint32_t reserved2,
                                                                std::uint32_t flags);
 using TestBackendPlayA3dFn = std::int32_t(__stdcall *)(void *self, std::uint32_t flags);
+using TestBackendGetCurrentPositionFn = std::int32_t(__stdcall *)(void *self,
+                                                                  std::uint32_t *playCursor,
+                                                                  std::uint32_t *writeCursor);
 using TestBackendLockFn = std::int32_t(__stdcall *)(void *self, std::uint32_t offset,
                                                     std::uint32_t bytes, void **outPtr1,
                                                     std::int32_t *outBytes1, void **outPtr2,
@@ -104,7 +107,9 @@ using TestA3dSetRangeFn = std::int32_t(__stdcall *)(void *self, float rangeMin, 
                                                     std::int32_t enabled);
 
 struct TestDirectSoundBufferVTable {
-    void *slots00_1c[8];
+    void *slots00_0c[4];
+    TestBackendGetCurrentPositionFn GetCurrentPosition;
+    void *slots14_1c[3];
     TestBackendGetUint32Fn GetFrequency;
     TestBackendGetStatusFn GetStatus;
     void *slot28;
@@ -262,7 +267,7 @@ struct TestA3dSourceVTable {
     TestBackendSimpleFn Stop;
     void *slots3c_44[3];
     TestBackendSetIntFn SetMode;
-    void *slot4c;
+    TestBackendGetUint32Fn GetCurrentPosition;
     TestBackendSetVecFn SetPosition;
     void *slots54_7c[11];
     TestBackendSetVecFn SetVelocity;
@@ -326,6 +331,7 @@ int g_testSetModeCount = 0;
 int g_testSetSpatializationEnabledCount = 0;
 int g_testA3dDeviceTickCount = 0;
 int g_testCommitDeferredSettingsCount = 0;
+int g_testGetCurrentPositionCount = 0;
 int g_testMarkerCallbackCount = 0;
 int g_testLastMarkerEvent = -1;
 int g_testListenerSetPositionCount = 0;
@@ -335,6 +341,9 @@ int g_testA3dCreateBufferCount = 0;
 int g_testA3dSetWaveFormatCount = 0;
 int g_testA3dSetSampleDataSizeCount = 0;
 int g_testA3dCommitWriteCount = 0;
+std::int32_t g_testLockResult = 0;
+std::int32_t g_testUnlockResult = 0;
+std::int32_t g_testCommitWriteResult = 0;
 int g_testA3dResetCount = 0;
 int g_testA3dSetRangeCount = 0;
 int g_testA3dSetDistanceScaleCount = 0;
@@ -421,6 +430,9 @@ std::int32_t g_testLastPan = 0;
 std::int32_t g_testLastVolume = 0;
 std::int32_t g_testLastFrequency = 0;
 std::int32_t g_testLastCurrentPosition = 0;
+std::uint32_t g_testPlayCursorValue = 0;
+std::uint32_t g_testWriteCursorValue = 0;
+std::int32_t g_testGetCurrentPositionResult = 0;
 std::int32_t g_testLastMode = 0;
 std::int32_t g_testLastSpatializationEnabled = 0;
 std::uint32_t g_testLastPlayFlags = 0;
@@ -494,6 +506,20 @@ std::int32_t __stdcall TestDirectSoundSetCurrentPosition(void *, std::int32_t va
     return 0;
 }
 
+std::int32_t __stdcall TestDirectSoundGetCurrentPosition(void *, std::uint32_t *playCursor,
+                                                         std::uint32_t *writeCursor) {
+    ++g_testGetCurrentPositionCount;
+    *playCursor = g_testPlayCursorValue;
+    *writeCursor = g_testWriteCursorValue;
+    return g_testGetCurrentPositionResult;
+}
+
+std::int32_t __stdcall TestA3dGetCurrentPosition(void *, std::uint32_t *playCursor) {
+    ++g_testGetCurrentPositionCount;
+    *playCursor = g_testPlayCursorValue;
+    return g_testGetCurrentPositionResult;
+}
+
 std::int32_t __stdcall TestDirectSoundPlay(void *, std::uint32_t, std::uint32_t,
                                            std::uint32_t flags) {
     ++g_testPlayDirectSoundCount;
@@ -560,7 +586,7 @@ std::int32_t __stdcall TestLockSoundBuffer(void *, std::uint32_t offset, std::ui
     *outBytes1 = 2;
     outPtr2[0] = &g_testLockedBytes[2];
     *outBytes2 = 2;
-    return 0;
+    return g_testLockResult;
 }
 
 std::int32_t __stdcall TestUnlockSoundBuffer(void *, void *, std::int32_t bytes1, void *,
@@ -568,7 +594,7 @@ std::int32_t __stdcall TestUnlockSoundBuffer(void *, void *, std::int32_t bytes1
     ++g_testUnlockCount;
     g_testUnlockBytes1 = bytes1;
     g_testUnlockBytes2 = bytes2;
-    return 0;
+    return g_testUnlockResult;
 }
 
 std::int32_t __stdcall TestA3dCommitWrite(void *, void *, std::int32_t bytes1, void *,
@@ -576,7 +602,7 @@ std::int32_t __stdcall TestA3dCommitWrite(void *, void *, std::int32_t bytes1, v
     ++g_testA3dCommitWriteCount;
     g_testUnlockBytes1 = bytes1;
     g_testUnlockBytes2 = bytes2;
-    return 0;
+    return g_testCommitWriteResult;
 }
 
 std::int32_t __stdcall TestA3dReset(void *) {
@@ -707,6 +733,7 @@ void ResetStopBackendCounters() {
     g_testSetSpatializationEnabledCount = 0;
     g_testA3dDeviceTickCount = 0;
     g_testCommitDeferredSettingsCount = 0;
+    g_testGetCurrentPositionCount = 0;
     g_testMarkerCallbackCount = 0;
     g_testLastMarkerEvent = -1;
     g_testListenerSetPositionCount = 0;
@@ -716,6 +743,9 @@ void ResetStopBackendCounters() {
     g_testA3dSetWaveFormatCount = 0;
     g_testA3dSetSampleDataSizeCount = 0;
     g_testA3dCommitWriteCount = 0;
+    g_testLockResult = 0;
+    g_testUnlockResult = 0;
+    g_testCommitWriteResult = 0;
     g_testA3dResetCount = 0;
     g_testA3dSetRangeCount = 0;
     g_testA3dSetDistanceScaleCount = 0;
@@ -734,6 +764,9 @@ void ResetStopBackendCounters() {
     g_testLastVolume = 0;
     g_testLastFrequency = 0;
     g_testLastCurrentPosition = 0;
+    g_testPlayCursorValue = 0;
+    g_testWriteCursorValue = 0;
+    g_testGetCurrentPositionResult = 0;
     g_testLastMode = 0;
     g_testLastSpatializationEnabled = 0;
     g_testLastPlayFlags = 0;
@@ -2293,7 +2326,7 @@ extern "C" int zsnd_backend_shutdown_release_smoke(void) {
     TestA3dDevice auxObject{&auxVTable};
 
     deviceVTable.slots00_08[2] = reinterpret_cast<void *>(&TestRelease);
-    listenerVTable.slots00_1c[2] = reinterpret_cast<void *>(&TestRelease);
+    listenerVTable.slots00_0c[2] = reinterpret_cast<void *>(&TestRelease);
     auxVTable.slots00_2c[2] = reinterpret_cast<void *>(&TestRelease);
 
     g_zSnd_IsInitialized = 0;
@@ -2447,6 +2480,59 @@ extern "C" int zsnd_sample_stop_active_voices_if_playing_smoke(void) {
     unsupported.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&primaryA3d);
     g_zSnd_ActiveBackend = 2;
     return unsupported.StopActiveVoicesIfPlaying() == 1 && g_testStopCount == 0 ? 0 : 5;
+}
+
+extern "C" int zsnd_sample_get_play_cursor_bytes_smoke(void) {
+    const int oldBackend = g_zSnd_ActiveBackend;
+
+    ResetStopBackendCounters();
+    zSndSample guarded{};
+    guarded.createGuard = 1;
+    guarded.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(0x12345678);
+    g_zSnd_ActiveBackend = 0;
+    const bool guardedSkipped =
+        guarded.GetPlayCursorBytes() == 0 && g_testGetCurrentPositionCount == 0;
+
+    TestDirectSoundBufferVTable directSoundVTable = {};
+    directSoundVTable.GetCurrentPosition = &TestDirectSoundGetCurrentPosition;
+    TestDirectSoundBuffer directSoundBuffer{&directSoundVTable};
+    zSndSample directSoundSample{};
+    directSoundSample.primaryVoice.backendBuffer =
+        reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+
+    ResetStopBackendCounters();
+    g_zSnd_ActiveBackend = 0;
+    g_testPlayCursorValue = 1234;
+    g_testWriteCursorValue = 5678;
+    g_testGetCurrentPositionResult = 0;
+    const bool directSoundOk =
+        directSoundSample.GetPlayCursorBytes() == 1234 &&
+        g_testGetCurrentPositionCount == 1;
+
+    ResetStopBackendCounters();
+    g_zSnd_ActiveBackend = 0;
+    g_testPlayCursorValue = 4321;
+    g_testWriteCursorValue = 8765;
+    g_testGetCurrentPositionResult = 0x80004005;
+    const bool directSoundFailure =
+        directSoundSample.GetPlayCursorBytes() == 0 &&
+        g_testGetCurrentPositionCount == 1;
+
+    TestA3dSourceVTable a3dVTable = {};
+    a3dVTable.GetCurrentPosition = &TestA3dGetCurrentPosition;
+    TestA3dSource a3dSource{&a3dVTable};
+    zSndSample a3dSample{};
+    a3dSample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&a3dSource);
+
+    ResetStopBackendCounters();
+    g_zSnd_ActiveBackend = 1;
+    g_testPlayCursorValue = 2468;
+    g_testGetCurrentPositionResult = 0x80004005;
+    const bool a3dIgnoredResult =
+        a3dSample.GetPlayCursorBytes() == 2468 && g_testGetCurrentPositionCount == 1;
+
+    g_zSnd_ActiveBackend = oldBackend;
+    return guardedSkipped && directSoundOk && directSoundFailure && a3dIgnoredResult ? 0 : 1;
 }
 
 extern "C" int zsnd_play_handle_update3d_a3d_smoke(void) {
@@ -3727,6 +3813,9 @@ extern "C" int zsnd_sample_backend_buffer_lock_unlock_smoke(void) {
     g_testLockCount = 0;
     g_testUnlockCount = 0;
     g_testA3dCommitWriteCount = 0;
+    g_testLockResult = 0;
+    g_testUnlockResult = 0;
+    g_testCommitWriteResult = 0;
     g_testLastLockOffset = 0;
     g_testLastLockBytes = 0;
     g_testLastLockFlags = 0xffffffffu;
@@ -3737,6 +3826,23 @@ extern "C" int zsnd_sample_backend_buffer_lock_unlock_smoke(void) {
         sample.UnlockBackendBuffers(ptr1, bytes1, ptr2, bytes2) == 1 && g_testLockCount == 1 &&
         g_testUnlockCount == 1 && g_testA3dCommitWriteCount == 0 && g_testLastLockOffset == 4 &&
         g_testLastLockBytes == 8 && g_testLastLockFlags == 0 && bytes1 == 2 && bytes2 == 2;
+
+    g_testLockCount = 0;
+    g_testUnlockCount = 0;
+    g_testLockResult = 0x12345678;
+    g_testUnlockResult = 0;
+    const bool directSoundLockFailure =
+        sample.LockBackendBuffers(4, 8, &ptr1, &bytes1, &ptr2, &bytes2) == 0 &&
+        g_testLockCount == 1 && g_testUnlockCount == 0;
+
+    g_testLockCount = 0;
+    g_testUnlockCount = 0;
+    g_testLockResult = 0;
+    g_testUnlockResult = 0x12345678;
+    const bool directSoundUnlockFailure =
+        sample.LockBackendBuffers(4, 8, &ptr1, &bytes1, &ptr2, &bytes2) == 1 &&
+        sample.UnlockBackendBuffers(ptr1, bytes1, ptr2, bytes2) == 0 &&
+        g_testLockCount == 1 && g_testUnlockCount == 1;
 
     TestA3dSourceVTable a3dVTable = {};
     a3dVTable.slots00_30[11] = reinterpret_cast<void *>(&TestLockSoundBuffer);
@@ -3751,6 +3857,9 @@ extern "C" int zsnd_sample_backend_buffer_lock_unlock_smoke(void) {
     g_testLockCount = 0;
     g_testUnlockCount = 0;
     g_testA3dCommitWriteCount = 0;
+    g_testLockResult = 0;
+    g_testUnlockResult = 0;
+    g_testCommitWriteResult = 0;
     g_testLastLockOffset = 0;
     g_testLastLockBytes = 0;
     g_zSnd_ActiveBackend = 1;
@@ -3761,7 +3870,27 @@ extern "C" int zsnd_sample_backend_buffer_lock_unlock_smoke(void) {
                        g_testA3dCommitWriteCount == 1 && g_testLastLockOffset == 12 &&
                        g_testLastLockBytes == 16 && bytes1 == 2 && bytes2 == 2;
 
+    g_testLockCount = 0;
+    g_testA3dCommitWriteCount = 0;
+    g_testLockResult = 7;
+    g_testCommitWriteResult = 0;
+    const bool a3dLockFailure =
+        sample.LockBackendBuffers(12, 16, &ptr1, &bytes1, &ptr2, &bytes2) == 0 &&
+        g_testLockCount == 1 && g_testA3dCommitWriteCount == 0;
+
+    g_testLockCount = 0;
+    g_testA3dCommitWriteCount = 0;
+    g_testLockResult = 0;
+    g_testCommitWriteResult = 7;
+    const bool a3dCommitFailure =
+        sample.LockBackendBuffers(12, 16, &ptr1, &bytes1, &ptr2, &bytes2) == 1 &&
+        sample.UnlockBackendBuffers(ptr1, bytes1, ptr2, bytes2) == 0 &&
+        g_testLockCount == 1 && g_testA3dCommitWriteCount == 1;
+
     sample.createGuard = 1;
+    g_testLockResult = 0;
+    g_testUnlockResult = 0;
+    g_testCommitWriteResult = 0;
     const bool guardOk = sample.LockBackendBuffers(0, 0, &ptr1, &bytes1, &ptr2, &bytes2) == 0 &&
                          sample.UnlockBackendBuffers(ptr1, bytes1, ptr2, bytes2) == 0;
 
@@ -3770,7 +3899,13 @@ extern "C" int zsnd_sample_backend_buffer_lock_unlock_smoke(void) {
     const bool fallbackOk = sample.LockBackendBuffers(0, 0, &ptr1, &bytes1, &ptr2, &bytes2) == 1 &&
                             sample.UnlockBackendBuffers(ptr1, bytes1, ptr2, bytes2) == 1;
 
-    return directSoundOk && a3dOk && guardOk && fallbackOk ? 0 : 1;
+    g_testLockResult = 0;
+    g_testUnlockResult = 0;
+    g_testCommitWriteResult = 0;
+    return directSoundOk && directSoundLockFailure && directSoundUnlockFailure && a3dOk &&
+                   a3dLockFailure && a3dCommitFailure && guardOk && fallbackOk
+               ? 0
+               : 1;
 }
 
 extern "C" int zsnd_sample_init_from_wave_data_directsound_smoke(void) {

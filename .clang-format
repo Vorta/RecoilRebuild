@@ -1,27 +1,28 @@
 BasedOnStyle: LLVM
+
 IndentWidth: 4
 ContinuationIndentWidth: 4
 ColumnLimit: 100
+
 AllowShortFunctionsOnASingleLine: Empty
 SortIncludes: CaseSensitive
 
-# Put wrapped argument/parameter lists in block form:
-# foo(
-#     a,
-#     b
-# )
-AlignAfterOpenBracket: BlockIndent
+# Use block-style continuation indentation instead of aligning later
+# parameters/arguments under the first one.
+AlignAfterOpenBracket: DontAlign
+BreakAfterOpenBracketFunction: true
+BreakBeforeCloseBracketFunction: true
 
-# Once a call/declaration wraps, do not pack multiple args/params on one line.
+# Once a call wraps, put one argument per line.
 BinPackArguments: false
-BinPackParameters: false
 AllowAllArgumentsOnNextLine: false
+
+# Function definitions: force a break before parameters.
+BreakFunctionDefinitionParameters: true
+
+# Parameters: always one per line.
+BinPackParameters: AlwaysOnePerLine
 AllowAllParametersOfDeclarationOnNextLine: false
 
-# Force function definitions like:
-# void f(
-#     int a,
-#     int b
-# )
-# even when they would fit on one line.
-BreakFunctionDefinitionParameters: true
+# Explicit, although LLVM already attaches function braces.
+BreakBeforeBraces: Attach

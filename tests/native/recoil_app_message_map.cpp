@@ -1113,11 +1113,11 @@ void *FakeConfirmQuitBackgroundFreeLoadedTreeRootsProc() {
 }
 
 bool CStringIsEmpty(const CString &value) {
-    return value.m_pchData != nullptr && value.m_pchData[0] == '\0';
+    return (const char *)value != nullptr && ((const char *)value)[0] == '\0';
 }
 
 bool CStringEquals(const CString &value, const char *text) {
-    return value.m_pchData != nullptr && std::strcmp(value.m_pchData, text) == 0;
+    return (const char *)value != nullptr && std::strcmp((const char *)value, text) == 0;
 }
 
 bool ReadFilePrefix(const char *path, char *buffer, DWORD bufferSize) {
@@ -1191,6 +1191,8 @@ HudUiSaveLoadDialog *g_saveLoadInitDialog = nullptr;
 int g_saveLoadInitTextCount = 0;
 int g_saveLoadInitVisibleCount = 0;
 int g_saveLoadInitInvalidateCount = 0;
+int g_saveLoadListItemPanelDrawCount = 0;
+int g_saveLoadListItemUpdateBoundsCount = 0;
 bool g_saveLoadInitFmtOk = false;
 bool g_saveLoadInitVisibleOk = false;
 char g_saveLoadInitTexts[9][MAX_PATH]{};
@@ -1198,6 +1200,8 @@ int g_saveLoadInitTextIndices[9]{};
 int g_saveLoadInitVisibleIndices[9]{};
 int g_saveLoadInitVisibleValues[9]{};
 int g_saveLoadInitInvalidateIndices[9]{};
+HudUiPanel *g_saveLoadListItemPanelDrawThis = nullptr;
+HudUiSaveLoadListItem *g_saveLoadListItemUpdateBoundsThis = nullptr;
 
 int SaveLoadInitListItemIndex(HudUiSaveLoadListItem *item) {
     return static_cast<int>(item - g_saveLoadInitDialog->entryWidgets);
@@ -1286,6 +1290,53 @@ HudUiSaveLoadInvalidateFn SaveLoadListItemInvalidateThunk() {
 
     MemberToFunction thunk{};
     thunk.member = &FakeSaveLoadListItemInvalidateThunk::Invalidate;
+    return thunk.function;
+}
+
+void ResetSaveLoadListItemDrawCapture() {
+    g_saveLoadListItemPanelDrawCount = 0;
+    g_saveLoadListItemUpdateBoundsCount = 0;
+    g_saveLoadListItemPanelDrawThis = nullptr;
+    g_saveLoadListItemUpdateBoundsThis = nullptr;
+}
+
+struct FakeSaveLoadListItemPanelDrawThunk {
+    void RECOIL_THISCALL Draw();
+};
+
+void RECOIL_THISCALL FakeSaveLoadListItemPanelDrawThunk::Draw() {
+    ++g_saveLoadListItemPanelDrawCount;
+    g_saveLoadListItemPanelDrawThis = (HudUiPanel *)(this);
+}
+
+void *SaveLoadListItemPanelDrawProc() {
+    void (RECOIL_THISCALL HudUiPanel::*member)() = &HudUiPanel::Draw;
+    return reinterpret_cast<void *>(TestCheatCodeMethodAddress(member));
+}
+
+void *FakeSaveLoadListItemPanelDrawProc() {
+    void (RECOIL_THISCALL FakeSaveLoadListItemPanelDrawThunk::*member)() =
+        &FakeSaveLoadListItemPanelDrawThunk::Draw;
+    return reinterpret_cast<void *>(TestCheatCodeMethodAddress(member));
+}
+
+struct FakeSaveLoadListItemUpdateBoundsThunk {
+    void RECOIL_THISCALL UpdateTextBoundsFromContent();
+};
+
+void RECOIL_THISCALL FakeSaveLoadListItemUpdateBoundsThunk::UpdateTextBoundsFromContent() {
+    ++g_saveLoadListItemUpdateBoundsCount;
+    g_saveLoadListItemUpdateBoundsThis = (HudUiSaveLoadListItem *)(this);
+}
+
+HudUiSaveLoadUpdateTextBoundsFn SaveLoadListItemUpdateBoundsThunk() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL FakeSaveLoadListItemUpdateBoundsThunk::*member)();
+        HudUiSaveLoadUpdateTextBoundsFn function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &FakeSaveLoadListItemUpdateBoundsThunk::UpdateTextBoundsFromContent;
     return thunk.function;
 }
 
@@ -4328,7 +4379,7 @@ extern "C" int czrecoil_frame_toggle_archive_banks_smoke(void) {
     }
 
     CZRecoilFrame frame{};
-    frame.m_mainMenuHandle = menu;
+    frame.m_mainMenu.m_hMenu = menu;
     frame.m_useArchiveBanks = 0;
     g_HudSensorTracker.missionFlags = 99;
     g_zSnd_UseArchiveBanksFlag = 99;
@@ -4345,6 +4396,7 @@ extern "C" int czrecoil_frame_toggle_archive_banks_smoke(void) {
 
     g_HudSensorTracker.missionFlags = oldMissionFlags;
     g_zSnd_UseArchiveBanksFlag = oldUseArchiveBanksFlag;
+    frame.m_mainMenu.m_hMenu = nullptr;
     DestroyMenu(menu);
     return enabledOk && disabledOk ? 0 : 1;
 }
@@ -4362,7 +4414,7 @@ extern "C" int czrecoil_frame_toggle_texture_packs_smoke(void) {
     }
 
     CZRecoilFrame frame{};
-    frame.m_mainMenuHandle = menu;
+    frame.m_mainMenu.m_hMenu = menu;
     g_zVid_TexturePackLoadState = 0;
 
     frame.OnMenuToggleTexturePacks();
@@ -4374,6 +4426,7 @@ extern "C" int czrecoil_frame_toggle_texture_packs_smoke(void) {
                             (GetMenuState(menu, 0x9c7b, MF_BYCOMMAND) & MF_CHECKED) == 0;
 
     g_zVid_TexturePackLoadState = oldTexturePackLoadState;
+    frame.m_mainMenu.m_hMenu = nullptr;
     DestroyMenu(menu);
     return enabledOk && disabledOk ? 0 : 1;
 }
@@ -4401,10 +4454,38 @@ extern "C" int hud_ui_save_load_list_item_constructor_smoke(void) {
     HudUiSaveLoadListItem *const result = item.Constructor();
 
     return result == &item && item.vftable == &g_HudUiSaveLoadListItem_Vtbl &&
-                   item.vftable->OnActivate != nullptr && item.layoutY == 32767 &&
-                   item.layoutX == -1
+                   item.vftable->Draw != nullptr && item.vftable->OnActivate != nullptr &&
+                   item.vftable->UpdateTextBoundsFromContent != nullptr &&
+                   item.layoutY == 32767 && item.layoutX == -1
                ? 0
                : 1;
+}
+
+extern "C" int hud_ui_save_load_list_item_draw_smoke(void) {
+    static HudUiSaveLoadListItemVtable itemVtable;
+    HudUiSaveLoadListItem item{};
+    CodeFunctionPatch drawPatch{};
+
+    std::memset(&itemVtable, 0, sizeof(itemVtable));
+    itemVtable.UpdateTextBoundsFromContent = SaveLoadListItemUpdateBoundsThunk();
+    item.vftable = &itemVtable;
+    ResetSaveLoadListItemDrawCapture();
+
+    if (!PatchFunctionJump(SaveLoadListItemPanelDrawProc(),
+                           FakeSaveLoadListItemPanelDrawProc(),
+                           drawPatch)) {
+        return 1;
+    }
+
+    item.Draw();
+    RestoreFunctionPatch(drawPatch);
+
+    return g_saveLoadListItemPanelDrawCount == 1 &&
+                   g_saveLoadListItemPanelDrawThis == (HudUiPanel *)(&item) &&
+                   g_saveLoadListItemUpdateBoundsCount == 1 &&
+                   g_saveLoadListItemUpdateBoundsThis == &item
+               ? 0
+               : 2;
 }
 
 extern "C" int hud_ui_save_load_dialog_destructor_smoke(void) {
@@ -4502,6 +4583,58 @@ extern "C" int hud_ui_save_game_dialog_destructor_smoke(void) {
     return vectorCleared && entryPanelsDestroyed && gameNameDestroyed && buttonsDestroyed
                ? 0
                : 1;
+}
+
+extern "C" int hud_ui_save_game_dialog_scalar_deleting_destructor_smoke(void) {
+    HudUiSaveGameDialog *dialog =
+        static_cast<HudUiSaveGameDialog *>(::operator new(sizeof(HudUiSaveGameDialog)));
+    std::memset(dialog, 0, sizeof(*dialog));
+
+    dialog->base.Constructor();
+    dialog->deleteButton.Constructor();
+    dialog->backButton.Constructor();
+    dialog->nextEntryButton.Constructor();
+    dialog->prevEntryButton.Constructor();
+    dialog->gameNameInput.BaseConstructor();
+    dialog->gameNameInput.textInput.AllocTextBuffer(8);
+    for (int index = 0; index < 9; ++index) {
+        dialog->entryWidgets[index].Constructor();
+    }
+    dialog->primaryActionButton.Constructor();
+
+    HudUiSaveLoadEntry *const entries =
+        static_cast<HudUiSaveLoadEntry *>(::operator new(2 * sizeof(HudUiSaveLoadEntry)));
+    dialog->fileEntries.begin = entries;
+    dialog->fileEntries.end = entries + 1;
+    dialog->fileEntries.capacityEnd = entries + 2;
+
+    HudUiSaveGameDialog *const returned = dialog->ScalarDeletingDestructor(0);
+    int result = returned == dialog && dialog->fileEntries.begin == nullptr &&
+                         dialog->fileEntries.end == nullptr &&
+                         dialog->fileEntries.capacityEnd == nullptr &&
+                         *reinterpret_cast<const void **>(&dialog->primaryActionButton) ==
+                             &g_HudUiCommon_FTable
+                     ? 0
+                     : 1;
+    ::operator delete(dialog);
+
+    HudUiSaveGameDialog *deleteDialog =
+        static_cast<HudUiSaveGameDialog *>(::operator new(sizeof(HudUiSaveGameDialog)));
+    std::memset(deleteDialog, 0, sizeof(*deleteDialog));
+    deleteDialog->base.Constructor();
+    deleteDialog->deleteButton.Constructor();
+    deleteDialog->backButton.Constructor();
+    deleteDialog->nextEntryButton.Constructor();
+    deleteDialog->prevEntryButton.Constructor();
+    deleteDialog->gameNameInput.BaseConstructor();
+    deleteDialog->gameNameInput.textInput.AllocTextBuffer(8);
+    for (int index = 0; index < 9; ++index) {
+        deleteDialog->entryWidgets[index].Constructor();
+    }
+    deleteDialog->primaryActionButton.Constructor();
+    deleteDialog->ScalarDeletingDestructor(1);
+
+    return result;
 }
 
 extern "C" int hud_ui_save_load_list_item_on_activate_smoke(void) {
@@ -5004,6 +5137,25 @@ extern "C" int hud_ui_load_game_dialog_on_primary_action_smoke(void) {
     dialog.gameNameInput.textInput.capacity = sizeof(gameNameBuffer);
 
     dialog.OnPrimaryAction();
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    const bool emptyNameQueuedExit = IsSingleExitCurrentQueueItem(queue, 0);
+    CleanupQueuedItems(queue);
+
+    g_RecoilApp = oldApp;
+    return emptyNameQueuedExit ? 0 : 1;
+}
+
+extern "C" int hud_ui_load_game_dialog_on_primary_action_thunk_smoke(void) {
+    const RecoilApp oldApp = g_RecoilApp;
+    g_RecoilApp = RecoilApp{};
+
+    static HudUiLoadGameDialog dialog;
+    char gameNameBuffer[1]{};
+    std::memset(&dialog, 0, sizeof(dialog));
+    dialog.gameNameInput.textInput.buffer = gameNameBuffer;
+    dialog.gameNameInput.textInput.capacity = sizeof(gameNameBuffer);
+
+    dialog.OnPrimaryActionThunk();
     RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
     const bool emptyNameQueuedExit = IsSingleExitCurrentQueueItem(queue, 0);
     CleanupQueuedItems(queue);

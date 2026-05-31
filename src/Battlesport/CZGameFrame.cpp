@@ -12,27 +12,11 @@ namespace zSndCd {
 int RECOIL_CDECL Stop();
 }
 
-class CPaintDC {
-  public:
-    CPaintDC(CWnd *pWnd);
-    virtual ~CPaintDC();
-
-    HDC m_hDC;
-    HDC m_hAttribDC;
-    HWND m_hWnd;
-    BOOL m_bPrinting;
-    PAINTSTRUCT m_ps;
-};
-
 RECOIL_STATIC_ASSERT(offsetof(CPaintDC, m_hDC) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(CPaintDC, m_ps) == 0x14);
 
 namespace {
 const RecoilNamedVtable kCZGameFrame_Vtable = {"CZGameFrame vtable"};
-const RecoilNamedVtable kCBitmap_Vtable = {"CBitmap vtable"};
-const RecoilNamedVtable kCGdiObject_Vtable = {"CGdiObject vtable"};
-const RecoilNamedVtable kCObject_Vtable = {"CObject vtable"};
-
 typedef void (RECOIL_THISCALL *RecoilStateWndActivateMethod)(RecoilApp_IState *, unsigned int);
 typedef void (RECOIL_THISCALL *CFrameWndDestructorProc)(CFrameWnd *);
 
@@ -123,22 +107,19 @@ RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetMessageMap()
 
 // Reimplements 0x4438a0: CZGameFrame::IsWindowValid
 RECOIL_GAME_FRAME_NOINLINE int RECOIL_STDCALL
-CZGameFrame::IsWindowValid(CZGameFrameMfcWindow *pWnd) {
+CZGameFrame::IsWindowValid(CWnd *pWnd) {
     if (pWnd == 0) {
         return 0;
     }
 
-    typedef int (RECOIL_THISCALL *QueryValidityMethod)(CZGameFrameMfcWindow *);
-    QueryValidityMethod const method = (QueryValidityMethod)(pWnd->vftable[4]);
-    return method(pWnd) == 0 ? 1 : 0;
+    return pWnd->IsWindowEnabled() == 0 ? 1 : 0;
 }
 
 // Reimplements 0x4437d0: CZGameFrame::Constructor
 RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_THISCALL
 CZGameFrame::Constructor(const char *appId) {
     new ((CFrameWnd *)(this)) CFrameWnd();
-    m_gameBitmap.vftable = (RecoilNamedVtable *)(&kCBitmap_Vtable);
-    m_gameBitmap.m_hObject = 0;
+    new (&m_gameBitmap) CBitmap();
     *(RecoilPtr32 *)(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
     RecoilApp::InitStdLogFiles(appId);
     zVideo::ModuleInit();
@@ -149,9 +130,8 @@ CZGameFrame::Constructor(const char *appId) {
 RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::Destructor() {
     *(RecoilPtr32 *)(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
     zVideo::ReturnSuccessStub();
-    m_gameBitmap.vftable = (RecoilNamedVtable *)(&kCGdiObject_Vtable);
     m_gameBitmap.DeleteObject();
-    m_gameBitmap.vftable = (RecoilNamedVtable *)(&kCObject_Vtable);
+    m_gameBitmap.CBitmap::~CBitmap();
     CallMfcCFrameWndDestructor((CFrameWnd *)(this));
 }
 

@@ -2,6 +2,7 @@
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zReader/zReader.h"
+#include "GameZRecoil/zRndr/zRndr.h"
 
 #include <cstdint>
 #include <cstdio>
@@ -18,6 +19,12 @@ zVideo_TextureRecordPartial g_existingTextureRecord = {};
 zVidImagePartial *g_lastCreatedImage = nullptr;
 const char *g_lastCreatedTextureName = nullptr;
 zVidImagePartial *g_lastFinalizedImage = nullptr;
+int g_fontBlitCount = 0;
+void *g_fontBlitImage[8] = {};
+std::int32_t g_fontBlitX[8] = {};
+std::int32_t g_fontBlitY[8] = {};
+std::int32_t g_fontBlitFlags[8] = {};
+zVidRect32 g_fontBlitRect[8] = {};
 
 void RECOIL_FASTCALL TextureRecordDestroyStub(zVideo_TextureRecordPartial *) {
     ++g_textureDestroyCount;
@@ -48,6 +55,20 @@ void RECOIL_FASTCALL TextureRecordFinalizeUploadStub(zVideo_TextureRecordPartial
     g_lastFinalizedImage = image;
 }
 
+void RECOIL_FASTCALL FontBlitCapture(void *image, std::int32_t dstX, std::int32_t dstY,
+                                     std::int32_t clipFlags, void *srcRect) {
+    const int index = g_fontBlitCount;
+    if (index < 8) {
+        g_fontBlitImage[index] = image;
+        g_fontBlitX[index] = dstX;
+        g_fontBlitY[index] = dstY;
+        g_fontBlitFlags[index] = clipFlags;
+        g_fontBlitRect[index] = *static_cast<zVidRect32 *>(srcRect);
+    }
+
+    ++g_fontBlitCount;
+}
+
 std::int32_t RECOIL_FASTCALL QueryTextureMemoryBytesStub(std::int32_t, std::int32_t *totalBytes,
                                                          std::int32_t *freeBytes) {
     *totalBytes = 6 << 20;
@@ -59,6 +80,38 @@ zVidImagePartial g_fallbackImage = {};
 
 zVidImagePartial *RECOIL_FASTCALL FallbackImageStub(char *) {
     return &g_fallbackImage;
+}
+
+bool WriteMinimalTexturePack(const char *path) {
+    zVidTexturePackHeader packHeader{};
+    packHeader.fileFormat = 1;
+    packHeader.recordCount = 0;
+
+    std::FILE *out = std::fopen(path, "wb");
+    if (out == nullptr) {
+        return false;
+    }
+
+    const bool ok = std::fwrite(&packHeader, sizeof(packHeader), 1, out) == 1;
+    std::fclose(out);
+    return ok;
+}
+
+void ResetDefaultTexturePackState() {
+    if (g_zVid_TexturePacks != nullptr) {
+        for (int i = 0; i < g_zVid_TexturePackCount; ++i) {
+            if (g_zVid_TexturePacks[i].fileHandle != nullptr) {
+                std::fclose(g_zVid_TexturePacks[i].fileHandle);
+                g_zVid_TexturePacks[i].fileHandle = nullptr;
+            }
+            std::free(g_zVid_TexturePacks[i].records);
+            g_zVid_TexturePacks[i].records = nullptr;
+        }
+        std::free(g_zVid_TexturePacks);
+    }
+
+    g_zVid_TexturePacks = nullptr;
+    g_zVid_TexturePackCount = 0;
 }
 } // namespace
 
@@ -132,6 +185,92 @@ extern "C" int zimage_font_measure_string_smoke(void) {
 
     g_zImage_FontTable[0] = nullptr;
     return measured && fallbackMeasured && width == 55 && lineAdvance == 66 ? 0 : 1;
+}
+
+extern "C" int zimage_font_blit_string_smoke(void) {
+    zVideo_BltSourceToPrimaryProc const oldBlit = g_zVideo_pfnBltSourceToPrimary;
+    zImage_Font *const oldFont0 = g_zImage_FontTable[0];
+    zImage_Font *const oldFont2 = g_zImage_FontTable[2];
+    const int oldActiveHeight = zRndr::g_activeRegionHeight;
+
+    zVidImagePartial image{};
+    image.height = 7;
+
+    zImage_Font font{};
+    font.image = &image;
+    font.spaceWidth = 3;
+    font.glyphRects[0].left = 20;
+    font.glyphRects[0].top = 1;
+    font.glyphRects[0].right = 24;
+    font.glyphRects[0].bottom = 6;
+    font.glyphRects['A' - 0x21].left = 2;
+    font.glyphRects['A' - 0x21].top = 3;
+    font.glyphRects['A' - 0x21].right = 7;
+    font.glyphRects['A' - 0x21].bottom = 9;
+    font.glyphRects['B' - 0x21].left = 9;
+    font.glyphRects['B' - 0x21].top = 4;
+    font.glyphRects['B' - 0x21].right = 11;
+    font.glyphRects['B' - 0x21].bottom = 12;
+
+    g_zVideo_pfnBltSourceToPrimary = FontBlitCapture;
+    g_zImage_FontTable[0] = nullptr;
+    g_zImage_FontTable[2] = &font;
+    zRndr::g_activeRegionHeight = 100;
+
+    g_fontBlitCount = 0;
+    std::memset(g_fontBlitImage, 0, sizeof(g_fontBlitImage));
+    std::memset(g_fontBlitX, 0, sizeof(g_fontBlitX));
+    std::memset(g_fontBlitY, 0, sizeof(g_fontBlitY));
+    std::memset(g_fontBlitFlags, 0xff, sizeof(g_fontBlitFlags));
+    std::memset(g_fontBlitRect, 0, sizeof(g_fontBlitRect));
+
+    const char text[] = {'A', ' ', 'B', '\r', '\n', '!', (char)(0x80), '\0'};
+    zImage_Font::BlitStringToActiveTarget(text, 10, 20, 2);
+
+    const bool drawSequence =
+        g_fontBlitCount == 4 &&
+        g_fontBlitImage[0] == &image && g_fontBlitX[0] == 10 &&
+        g_fontBlitY[0] == 20 && g_fontBlitFlags[0] == 0 &&
+        g_fontBlitRect[0].left == 2 && g_fontBlitRect[0].top == 3 &&
+        g_fontBlitRect[0].right == 7 && g_fontBlitRect[0].bottom == 9 &&
+        g_fontBlitImage[1] == &image && g_fontBlitX[1] == 18 &&
+        g_fontBlitY[1] == 20 && g_fontBlitFlags[1] == 0 &&
+        g_fontBlitRect[1].left == 9 && g_fontBlitRect[1].top == 4 &&
+        g_fontBlitRect[1].right == 11 && g_fontBlitRect[1].bottom == 12 &&
+        g_fontBlitImage[2] == &image && g_fontBlitX[2] == 10 &&
+        g_fontBlitY[2] == 27 && g_fontBlitFlags[2] == 0 &&
+        g_fontBlitRect[2].left == 20 && g_fontBlitRect[2].top == 1 &&
+        g_fontBlitRect[2].right == 24 && g_fontBlitRect[2].bottom == 6 &&
+        g_fontBlitImage[3] == &image && g_fontBlitX[3] == 14 &&
+        g_fontBlitY[3] == 27 && g_fontBlitFlags[3] == 0 &&
+        g_fontBlitRect[3].left == 20 && g_fontBlitRect[3].top == 1 &&
+        g_fontBlitRect[3].right == 24 && g_fontBlitRect[3].bottom == 6;
+
+    g_zImage_FontTable[0] = &font;
+    g_zImage_FontTable[2] = nullptr;
+    g_fontBlitCount = 0;
+    zImage_Font::BlitStringToActiveTarget("B", 5, 6, 2);
+    const bool fallbackDraw =
+        g_fontBlitCount == 1 && g_fontBlitX[0] == 5 && g_fontBlitY[0] == 6 &&
+        g_fontBlitRect[0].left == 9 && g_fontBlitRect[0].right == 11;
+
+    zRndr::g_activeRegionHeight = 13;
+    g_fontBlitCount = 0;
+    zImage_Font::BlitStringToActiveTarget("A", 5, 6, 0);
+    const bool clippedByHeight = g_fontBlitCount == 0;
+
+    g_zImage_FontTable[0] = nullptr;
+    g_fontBlitCount = 0;
+    zRndr::g_activeRegionHeight = 100;
+    zImage_Font::BlitStringToActiveTarget("A", 5, 6, 0);
+    const bool noFontSkipped = g_fontBlitCount == 0;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    g_zImage_FontTable[0] = oldFont0;
+    g_zImage_FontTable[2] = oldFont2;
+    zRndr::g_activeRegionHeight = oldActiveHeight;
+
+    return drawSequence && fallbackDraw && clippedByHeight && noFontSkipped ? 0 : 1;
 }
 
 extern "C" int zimage_fonts_load_missing_smoke(void) {
@@ -233,6 +372,49 @@ extern "C" int zvid_texture_pack_ensure_builtin_smoke(void) {
     g_zImage_TextureMemoryOption = nullptr;
 
     return allocatedFallback && existingPreserved ? 0 : 1;
+}
+
+extern "C" int zvid_texture_pack_ensure_default_smoke(void) {
+    zVidTexturePackEntry *const oldTexturePacks = g_zVid_TexturePacks;
+    const int oldTexturePackCount = g_zVid_TexturePackCount;
+    const int oldTexturePackLoadState = g_zVid_TexturePackLoadState;
+
+    std::remove("image.zbd");
+    std::remove("rimage.zbd");
+
+    zVidTexturePackEntry existingEntry{};
+    std::strcpy(existingEntry.filePath, "existing.zbd");
+    g_zVid_TexturePacks = &existingEntry;
+    g_zVid_TexturePackCount = 1;
+    g_zVid_TexturePackLoadState = 1;
+    zVid_TexturePack_EnsureDefaultImagePackLoaded();
+    const bool existingPreserved =
+        g_zVid_TexturePackCount == 1 && g_zVid_TexturePacks == &existingEntry &&
+        std::strcmp(existingEntry.filePath, "existing.zbd") == 0;
+
+    g_zVid_TexturePacks = nullptr;
+    g_zVid_TexturePackCount = 0;
+    zVid_TexturePack_EnsureDefaultImagePackLoaded();
+    const bool missingLeavesAllocatedSlot =
+        g_zVid_TexturePackCount == 0 && g_zVid_TexturePacks != nullptr &&
+        std::strcmp(g_zVid_TexturePacks[0].filePath, "rimage.zbd") == 0;
+    ResetDefaultTexturePackState();
+
+    bool fallbackLoaded = false;
+    if (WriteMinimalTexturePack("rimage.zbd")) {
+        zVid_TexturePack_EnsureDefaultImagePackLoaded();
+        fallbackLoaded = g_zVid_TexturePackCount == 1 && g_zVid_TexturePacks != nullptr &&
+                         std::strcmp(g_zVid_TexturePacks[0].filePath, "rimage.zbd") == 0 &&
+                         g_zVid_TexturePacks[0].fileHandle != nullptr;
+    }
+    ResetDefaultTexturePackState();
+    std::remove("rimage.zbd");
+
+    g_zVid_TexturePacks = oldTexturePacks;
+    g_zVid_TexturePackCount = oldTexturePackCount;
+    g_zVid_TexturePackLoadState = oldTexturePackLoadState;
+
+    return existingPreserved && missingLeavesAllocatedSlot && fallbackLoaded ? 0 : 1;
 }
 
 extern "C" int zimage_texdir_load_pending_entries_smoke(void) {

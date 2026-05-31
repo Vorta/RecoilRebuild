@@ -31,8 +31,6 @@
 #include "pickup.h"
 #include "zImage.h"
 
-#include <windows.h>
-
 #ifndef SPI_SETSCREENSAVERRUNNING
 #define SPI_SETSCREENSAVERRUNNING 0x0061
 #endif
@@ -46,33 +44,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-class CWinApp {
+// Access shim for imported MFC42 CWinApp protected members; this does not
+// reimplement CWinApp behavior.
+class RecoilMfcWinAppAccess : public CWinApp {
   public:
-    CWinApp(const char *appName);
-    virtual ~CWinApp();
-    BOOL RECOIL_THISCALL Enable3dControls();
-    virtual int ExitInstance();
+    BOOL CallEnable3dControls();
 };
 
-BOOL RECOIL_THISCALL CWinApp::Enable3dControls() {
-    return TRUE;
+BOOL RecoilMfcWinAppAccess::CallEnable3dControls() {
+    return Enable3dControls();
 }
-
-class CWnd {
-  public:
-    static CWnd *RECOIL_STDCALL FromHandle(HWND hwnd);
-    BOOL ShowWindow(int showCommand);
-
-    unsigned char unknown_00[0x20];
-    HWND m_hWnd;
-};
-
-class AFX_MODULE_STATE {
-  public:
-    void *m_pCurrentWinApp;
-    void *unknown_04;
-    HINSTANCE m_hCurrentInstanceHandle;
-};
 
 struct RecoilStateCredits {
     RecoilPtr32 vftable;
@@ -226,6 +207,8 @@ int SaveLoadEntryCount(const HudUiSaveLoadDialog *dialog)
 HudUiSaveLoadListItemVtable MakeHudUiSaveLoadListItemVtable()
 {
     HudUiSaveLoadListItemVtable table = {0};
+    table.Draw =
+        RecoilMethodFunction<HudUiSaveLoadDrawFn>(&HudUiSaveLoadListItem::Draw);
     table.Invalidate =
         RecoilMethodFunction<HudUiSaveLoadInvalidateFn>(&HudUiPanel::Invalidate);
     table.OnActivate =
@@ -234,6 +217,9 @@ HudUiSaveLoadListItemVtable MakeHudUiSaveLoadListItemVtable()
         RecoilMethodFunction<HudUiSaveLoadSetVisibleFn>(&HudUiElement::SetVisible);
     table.SetTextFmt =
         RecoilMethodFunction<HudUiSaveLoadSetTextFmtFn>(&HudUiPanel::SetTextFmt);
+    table.UpdateTextBoundsFromContent =
+        RecoilMethodFunction<HudUiSaveLoadUpdateTextBoundsFn>(
+            &HudUiPanel::UpdateTextBoundsFromContent);
     return table;
 }
 
@@ -406,6 +392,15 @@ HudUiSaveLoadListItem::Constructor()
     layoutY = 32767;
     layoutX = -1;
     return this;
+}
+
+// Reimplements 0x434950: HudUiSaveLoadListItem::Draw
+// (D:\Proj\Battlesport\hud.cpp)
+void RECOIL_THISCALL HudUiSaveLoadListItem::Draw()
+{
+    ((HudUiPanel *)(this))->Draw();
+    typedef void (RECOIL_THISCALL HudUiSaveLoadListItem::*UpdateTextBoundsFn)();
+    (this->*((UpdateTextBoundsFn *)(&vftable->UpdateTextBoundsFromContent))[0])();
 }
 
 // Reimplements 0x435a10: HudUiSaveLoadListItem::OnActivate
@@ -957,6 +952,14 @@ HudUiLoadGameDialog::ProcessDialogResult()
     HudUiSaveLoadDialog::ProcessDialogResult();
 }
 
+// Reimplements 0x434970: HudUiLoadGameDialog::OnPrimaryActionThunk
+// (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+HudUiLoadGameDialog::OnPrimaryActionThunk()
+{
+    OnPrimaryAction();
+}
+
 // Reimplements 0x435240: HudUiLoadGameDialog::OnPrimaryAction
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
 RECOIL_NOINLINE void RECOIL_THISCALL
@@ -1082,6 +1085,19 @@ HudUiSaveGameDialog::Destructor()
     backButton.DestructorCore();
     deleteButton.DestructorCore();
     base.Destructor();
+}
+
+// Reimplements 0x434980: HudUiSaveGameDialog::ScalarDeletingDestructor
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE HudUiSaveGameDialog *RECOIL_THISCALL
+HudUiSaveGameDialog::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
 }
 
 // Reimplements 0x434b90: HudUiLoadGameDialog::Constructor
@@ -1520,7 +1536,7 @@ RECOIL_NOINLINE CZRecoilFrame *RECOIL_THISCALL RecoilApp::CreateMainWnd() {
 
 // Reimplements 0x4429d0: RecoilApp::InitMainWindow
 RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::InitMainWindow() {
-    ((CWinApp *)(this))->Enable3dControls();
+    ((RecoilMfcWinAppAccess *)(this))->CallEnable3dControls();
 
     typedef CZRecoilFrame * (RECOIL_THISCALL *CreateMainWndMethod)(RecoilApp *);
     const CreateMainWndMethod *const createMainWnd = (const CreateMainWndMethod *)((unsigned int)(vftable + 0xb8));

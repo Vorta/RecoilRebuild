@@ -9,18 +9,22 @@ add_library(recoil_native STATIC
     ../Battlesport/zStr.cpp
     ../Battlesport/ainet.cpp
     ../Battlesport/GameNet.cpp
+    ../Battlesport/NetUi.cpp
     ../Battlesport/hud.cpp
     ../Battlesport/HudUiMainMenuDialog.cpp
+    ../Battlesport/HudUiMpExitDialog.cpp
+    ../Battlesport/HudUiNetGameSetup.cpp
     ../Battlesport/RecoilStateCredits.cpp
     ../Battlesport/HudUiNetExitPanel.cpp
     ../Battlesport/HudSensorTracker.cpp
+    ../Battlesport/WestwoodOnlineUpgradeApi.cpp
+    ../Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp
+    ../Battlesport/WestwoodOnlineUpgradeRefCountAndLock.cpp
+    ../Battlesport/WestwoodOnlineUpgradeDialog.cpp
+    ../Battlesport/WestwoodOnlineUpgradeProgressDialog.cpp
     ../Battlesport/WestwoodOnlineUpgradeConfigDialog.cpp
     ../Battlesport/player.cpp
     ../Battlesport/pickup.cpp
-    ../Battlesport/zUtil/zutil.cpp
-    ../Battlesport/zModel/gdi.c
-    ../Battlesport/zModel/gmod_scene.c
-    ../Battlesport/zModel/zModel_Display.cpp
     ../Battlesport/CZGameFrame.cpp
     ../Battlesport/CZRecoilFrame.cpp
     ../GameZRecoil/RecoilApp/RecoilStateBase.cpp
@@ -53,12 +57,16 @@ add_library(recoil_native STATIC
     ../GameZRecoil/zHud/zhud_ui.cpp
     ../GameZRecoil/zImage/zimg_texture.cpp
     ../GameZRecoil/zInterp/zinterp_parse.cpp
+    ../GameZRecoil/wwonline/upgrade_download.cpp
     ../GameZRecoil/zLoc/zLoc.cpp
     ../GameZRecoil/zMath/zMath.cpp
     ../GameZRecoil/zDEClient/zdec_init.cpp
     ../GameZRecoil/zReader/zreader_load.cpp
     ../GameZRecoil/zReader/zreader_lookup.cpp
+    ../GameZRecoil/zModel/gdi.c
+    ../GameZRecoil/zModel/gmod_scene.c
     ../GameZRecoil/zModel/zModel.cpp
+    ../GameZRecoil/zModel/zModel_Display.cpp
     ../GameZRecoil/zModel/gmod_const.c
     ../GameZRecoil/zModel/gmod_light.c
     ../GameZRecoil/zModel/gmod_matl.c
@@ -89,6 +97,7 @@ add_library(recoil_native STATIC
     ../GameZRecoil/zTurret/zTurret.cpp
     ../GameZRecoil/zUtil/zZbd.cpp
     ../GameZRecoil/zUtil/zSaveGame.cpp
+    ../GameZRecoil/zUtil/zutil.cpp
     ../GameZRecoil/zVideo/zVideo.cpp
     ../GameZRecoil/zCom/zCom.cpp
     ../GameZRecoil/zSys/zSys.cpp
@@ -96,8 +105,8 @@ add_library(recoil_native STATIC
 )
 
 set_source_files_properties(
-    ../Battlesport/zModel/gdi.c
-    ../Battlesport/zModel/gmod_scene.c
+    ../GameZRecoil/zModel/gdi.c
+    ../GameZRecoil/zModel/gmod_scene.c
     ../GameZRecoil/zModel/gmod_const.c
     ../GameZRecoil/zModel/gmod_light.c
     ../GameZRecoil/zModel/gmod_matl.c
@@ -146,6 +155,7 @@ target_link_libraries(recoil_native PUBLIC
     dxguid
     comdlg32
     ole32
+    ws2_32
 )
 
 target_include_directories(recoil_native PUBLIC

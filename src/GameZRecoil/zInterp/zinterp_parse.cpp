@@ -10,7 +10,7 @@
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zVideo/zVideo.h"
-#include "Battlesport/zUtil/zutil.h"
+#include "GameZRecoil/zUtil/zutil.h"
 
 #include <ctype.h>
 #include <direct.h>

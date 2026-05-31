@@ -1,20 +1,9 @@
 #include "recoil/recoil_callconv.h"
 #include "recoil/recoil_types.h"
 
-#include <windows.h>
+#include "Battlesport/Mfc42Abi.h"
 
-class CWnd {
-  public:
-    int UpdateData(BOOL saveAndValidate);
-    long Default();
-};
-
-class CDialog : public CWnd {
-  public:
-    virtual void OnOK();
-
-    unsigned char reserved004[0x5c];
-};
+#include <string.h>
 
 class MfcThreeFloatDialog : public CDialog {
   public:
@@ -26,6 +15,7 @@ class MfcThreeFloatDialog : public CDialog {
     void OnDeltaposSpinValue2(NMHDR *notify, long *result);
     void OnDeltaposSpin2(NMHDR *notify, long *result);
     long OnMove(unsigned int packedPos);
+    void CallBaseOnOK();
 
     int unknown060;
     float value0;
@@ -44,6 +34,19 @@ RECOIL_STATIC_ASSERT(offsetof(MfcThreeFloatDialog, value0) == 0x64);
 RECOIL_STATIC_ASSERT(offsetof(MfcThreeFloatDialog, value1) == 0x68);
 RECOIL_STATIC_ASSERT(offsetof(MfcThreeFloatDialog, value2) == 0x6c);
 RECOIL_STATIC_ASSERT(offsetof(TestNmUpDown, delta) == 0x10);
+
+struct CodeFunctionPatch
+{
+    unsigned char *address;
+    unsigned char original[5];
+};
+
+class MfcThreeFloatCWndAccess : public CWnd
+{
+  public:
+    using CWnd::Default;
+    using CWnd::UpdateData;
+};
 
 int g_threeFloatUpdateDataCount;
 int g_threeFloatUpdateDataSaveValue[8];
@@ -68,9 +71,80 @@ void ResetThreeFloatDialogLog()
     }
 }
 
-int CWnd::UpdateData(BOOL saveAndValidate)
+template <typename Method> void *MethodAddress(Method method)
 {
-    MfcThreeFloatDialog *const dialog = (MfcThreeFloatDialog *)this;
+    union
+    {
+        Method method;
+        void *address;
+    } value = {method};
+    return value.address;
+}
+
+void *CWndUpdateDataAddress()
+{
+    return MethodAddress(&MfcThreeFloatCWndAccess::UpdateData);
+}
+
+void *CWndDefaultAddress()
+{
+    return MethodAddress(&MfcThreeFloatCWndAccess::Default);
+}
+
+void *MfcThreeFloatCallBaseOnOKAddress()
+{
+    return MethodAddress(&MfcThreeFloatDialog::CallBaseOnOK);
+}
+
+bool PatchFunctionJump(void *target, void *replacement, CodeFunctionPatch &patch)
+{
+    if (target == 0) {
+        patch.address = 0;
+        return false;
+    }
+
+    patch.address = (unsigned char *)target;
+    memcpy(patch.original, patch.address, sizeof(patch.original));
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(patch.address, sizeof(patch.original), PAGE_EXECUTE_READWRITE,
+                       &oldProtect) == 0) {
+        patch.address = 0;
+        return false;
+    }
+
+    patch.address[0] = 0xe9;
+    const intptr_t relativeOffset =
+        (intptr_t)replacement - (intptr_t)(patch.address + sizeof(patch.original));
+    *(int *)(patch.address + 1) = (int)relativeOffset;
+
+    DWORD ignored = 0;
+    VirtualProtect(patch.address, sizeof(patch.original), oldProtect, &ignored);
+    FlushInstructionCache(GetCurrentProcess(), patch.address, sizeof(patch.original));
+    return true;
+}
+
+void RestoreFunctionPatch(CodeFunctionPatch &patch)
+{
+    if (patch.address == 0) {
+        return;
+    }
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(patch.address, sizeof(patch.original), PAGE_EXECUTE_READWRITE,
+                       &oldProtect) != 0) {
+        memcpy(patch.address, patch.original, sizeof(patch.original));
+        DWORD ignored = 0;
+        VirtualProtect(patch.address, sizeof(patch.original), oldProtect, &ignored);
+        FlushInstructionCache(GetCurrentProcess(), patch.address, sizeof(patch.original));
+    }
+
+    patch.address = 0;
+}
+
+int RECOIL_FASTCALL FakeThreeFloatUpdateData(MfcThreeFloatDialog *dialog, void *,
+                                             BOOL saveAndValidate)
+{
     if (g_threeFloatUpdateDataCount < 8) {
         g_threeFloatUpdateDataSaveValue[g_threeFloatUpdateDataCount] = saveAndValidate;
     }
@@ -89,12 +163,12 @@ int CWnd::UpdateData(BOOL saveAndValidate)
     return 1;
 }
 
-void CDialog::OnOK()
+void RECOIL_FASTCALL FakeThreeFloatOnOK(MfcThreeFloatDialog *, void *)
 {
     ++g_threeFloatOnOkCount;
 }
 
-long CWnd::Default()
+long RECOIL_FASTCALL FakeThreeFloatDefault(MfcThreeFloatDialog *, void *)
 {
     ++g_threeFloatDefaultCount;
     return g_threeFloatDefaultReturn;
@@ -102,6 +176,20 @@ long CWnd::Default()
 
 extern "C" int mfc_three_float_dialog_handlers_smoke(void)
 {
+    CodeFunctionPatch updateDataPatch = {};
+    CodeFunctionPatch onOkPatch = {};
+    CodeFunctionPatch defaultPatch = {};
+    if (!PatchFunctionJump(CWndUpdateDataAddress(), (void *)&FakeThreeFloatUpdateData,
+                           updateDataPatch) ||
+        !PatchFunctionJump(MfcThreeFloatCallBaseOnOKAddress(), (void *)&FakeThreeFloatOnOK,
+                           onOkPatch) ||
+        !PatchFunctionJump(CWndDefaultAddress(), (void *)&FakeThreeFloatDefault, defaultPatch)) {
+        RestoreFunctionPatch(defaultPatch);
+        RestoreFunctionPatch(onOkPatch);
+        RestoreFunctionPatch(updateDataPatch);
+        return 1;
+    }
+
     MfcThreeFloatDialog dialog = {};
     dialog.value0 = 1.0f;
     dialog.value1 = 2.0f;
@@ -163,8 +251,27 @@ extern "C" int mfc_three_float_dialog_handlers_smoke(void)
     const bool moveDefaultOther = dialog.OnMove(0x12345678) == 0 &&
                                   g_threeFloatDefaultCount == 1;
 
-    return killNoChange && killChanged && spinSubtract && spinValue1Subtract && spinAdd &&
-                   defaultSpin && moveDefaultMinusOne && moveDefaultOther
-               ? 0
-               : 1;
+    int failure = 0;
+    if (!killNoChange) {
+        failure = 2;
+    } else if (!killChanged) {
+        failure = 3;
+    } else if (!spinSubtract) {
+        failure = 4;
+    } else if (!spinValue1Subtract) {
+        failure = 5;
+    } else if (!spinAdd) {
+        failure = 6;
+    } else if (!defaultSpin) {
+        failure = 7;
+    } else if (!moveDefaultMinusOne) {
+        failure = 8;
+    } else if (!moveDefaultOther) {
+        failure = 9;
+    }
+
+    RestoreFunctionPatch(defaultPatch);
+    RestoreFunctionPatch(onOkPatch);
+    RestoreFunctionPatch(updateDataPatch);
+    return failure;
 }

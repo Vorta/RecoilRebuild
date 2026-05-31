@@ -6,13 +6,16 @@
 #include "Battlesport/player.h"
 #include "Battlesport/zStr.h"
 #include "GameZRecoil/Time/Time.h"
+#include "GameZRecoil/include/zClipRect.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -38,6 +41,13 @@ template <typename Method> unsigned int HudMethodAddress(Method method)
     return address;
 }
 
+typedef void (RECOIL_FASTCALL *HudWeatherFxTextureUploadProc)(
+    zVideo_TextureRecordPartial *textureRecord, void *reserved, zVidImagePartial *image);
+typedef void (RECOIL_FASTCALL *HudWeatherFxSubmitPolyProc)(
+    zVideo_XyzVertex *vertices, zVideo_TexCoord *texCoords, int vertexCount,
+    zVideo_RenderClass *renderClass, unsigned int renderParam, float alpha, int queueMode);
+typedef void (RECOIL_CDECL *HudWeatherFxFlushProc)();
+
 HudUiCommon_FTable MakeHudWeatherFxFTable()
 {
     HudUiCommon_FTable table = {0};
@@ -58,6 +68,42 @@ const float kHudWeatherFxConeRandScale = -0.0000457777642f;
 const float kHudWeatherFxDepthBase = 0.5f;
 const float kHudWeatherFxConeBase = -1.0f;
 const float kHudWeatherFxReflectBias = 1.5f;
+const float kHudWeatherFxCameraDriftScale = -0.100000001f;
+const float kHudWeatherFxForceScale = 0.100000001f;
+const float kHudWeatherFxConeDepthMax = 1.5f;
+const float kHudWeatherFxProjectionCenter = 0.5f;
+const float kHudWeatherFxProbeScale = 0.100000001f;
+const float kHudWeatherFxProbeVelocityMinSq = 0.0100000007f;
+const float kHudWeatherFxVelocityMaxSq = 1.0f;
+const float kHudWeatherFxSnowSlantScale = 3.5f;
+const int kHudWeatherFxRainSlantOffset = 1;
+
+float HudWeatherFxVec3LengthSq(const zVec3 *value)
+{
+    return value->x * value->x + value->y * value->y + value->z * value->z;
+}
+
+int HudWeatherFxSnowNeedsReset(const zVec3 *position)
+{
+    const float absZ = (float)(fabs(position->z));
+    if ((float)(fabs(position->y)) > absZ)
+    {
+        return 1;
+    }
+    if ((float)(fabs(position->x)) > absZ)
+    {
+        return 1;
+    }
+    if (position->z > 1.0f)
+    {
+        return 1;
+    }
+    if (position->z < 0.5f)
+    {
+        return 1;
+    }
+    return 0;
+}
 
 enum zVideoRendererBackend
 {
@@ -335,6 +381,14 @@ RecoilApp_IState_Vtbl g_HudUiOptionsPanelOverlayOwner_Vtbl = {0};
 const HudUiCommon_FTable g_HudWeatherFx_Vtable = MakeHudWeatherFxFTable();
 const HudUiCommon_FTable g_HudWeatherFxSnow_Vtable = MakeHudWeatherFxFTable();
 const HudUiCommon_FTable g_HudWeatherFxRain_Vtable = MakeHudWeatherFxFTable();
+float g_HudWeatherFxSnow_LastCameraTargetX = 0.0f;
+float g_HudWeatherFxSnow_LastCameraTargetY = 0.0f;
+float g_HudWeatherFxSnow_LastCameraTargetZ = 0.0f;
+float g_HudWeatherFxSnow_TimeAccumulator = 0.0f;
+float g_HudWeatherFxRain_LastCameraTargetX = 0.0f;
+float g_HudWeatherFxRain_LastCameraTargetY = 0.0f;
+float g_HudWeatherFxRain_LastCameraTargetZ = 0.0f;
+float g_HudWeatherFxRain_TimeAccumulator = 0.0f;
 extern const HudUiZrdWidget_FTable g_HudUiCheatCodeTitleWidget_FTable =
     MakeCheatCodeTitleWidgetFTable();
 extern const HudUiNumericTextInput_Base_FTable g_HudUiCheatCodeInputWidget_FTable =
@@ -412,6 +466,75 @@ RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL HudWeatherFx::Constructor(int newP
     return this;
 }
 
+// Reimplements 0x4bde40: HudWeatherFx::Destructor
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFx::Destructor()
+{
+    ftable = &g_HudWeatherFx_Vtable;
+
+    if (particleQuads != 0)
+    {
+        ::operator delete(particleQuads);
+    }
+    if (particlePositions[0] != 0)
+    {
+        ::operator delete(particlePositions[0]);
+    }
+    if (particlePositions[1] != 0)
+    {
+        ::operator delete(particlePositions[1]);
+    }
+
+    if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE)
+    {
+        if (textureRecord != 0)
+        {
+            ((zVideo_DestroyTextureRecordProc)(g_zVideo_pfnTextureRecordDestroy))(textureRecord);
+        }
+        if (softwareImage != 0)
+        {
+            zVid_Image::ReleaseIfNotDefault(softwareImage);
+            softwareImage = 0;
+        }
+    }
+
+    ftable = &g_HudUiCommon_FTable;
+}
+
+// Reimplements 0x4be210: HudWeatherFx::ArePointBatchInsideRect
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL
+HudWeatherFxPointBatch::ArePointBatchInsideRect(int pointCount,
+                                                const HudUiRect *viewportRect)
+{
+    if (viewportRect == 0 || pointCount <= 0)
+    {
+        return 1;
+    }
+
+    for (int index = 0; index < pointCount; ++index)
+    {
+        if (this[index].x < (float)(viewportRect->left))
+        {
+            return 0;
+        }
+        if ((float)(viewportRect->right) < this[index].x)
+        {
+            return 0;
+        }
+        if (this[index].y < (float)(viewportRect->top))
+        {
+            return 0;
+        }
+        if ((float)(viewportRect->bottom) < this[index].y)
+        {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
 // Reimplements 0x4bdee0: HudWeatherFx::ResetParticleSlot
 // (D:\Proj\Battlesport\hud.cpp)
 RECOIL_NOINLINE void RECOIL_THISCALL
@@ -442,6 +565,100 @@ HudWeatherFx::ResetParticleSlot(int particleIndex, int)
     *destPosition = *sourcePosition;
 }
 
+// Reimplements 0x4bdfd0: HudWeatherFx::DrawParticles
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFx::DrawParticles()
+{
+    if (g_zVideo_ActiveRendererPath == ZVID_RENDERER_BACKEND_SOFTWARE)
+    {
+        zVideo_FxSurface::DrawColoredLinesBatch(
+            (zVideoFxColoredLineRecord *)(particleQuads), particleCount,
+            (zVidRect32 *)(viewportRect));
+        return;
+    }
+
+    const int swSurfaceWasLocked = zVideo::GetSwSurfaceLockedFlag();
+    if (swSurfaceWasLocked != 0)
+    {
+        zVideo::Dispatch_UnlockSwSurfaceState();
+    }
+
+    unsigned short *surfacePixels = (unsigned short *)(softwareImage->pixels);
+    if (*surfacePixels != packedColor16)
+    {
+        char *surfaceAlphaMap = softwareImage->alphaMap;
+        int alphaValue = 0;
+        while (alphaValue < 4080)
+        {
+            *surfacePixels = packedColor16;
+            ++surfacePixels;
+            *surfaceAlphaMap = (char)(alphaValue >> 4);
+            ++surfaceAlphaMap;
+            alphaValue += 255;
+        }
+    }
+
+    ((HudWeatherFxTextureUploadProc)(g_zVideo_pfnTextureRecordFinalizeUpload))(
+        textureRecord, 0, softwareImage);
+    zVideoD3D::SceneEnter();
+
+    for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex)
+    {
+        HudWeatherFxParticleQuad *particleQuad = &particleQuads[particleIndex];
+        float xSlant = 0.0f;
+        float ySlant = 0.0f;
+        if (particleQuad->width > particleQuad->height)
+        {
+            xSlant = (float)(particleQuad->slantOffset);
+        }
+        else
+        {
+            ySlant = (float)(particleQuad->slantOffset);
+        }
+
+        const float depth =
+            particlePositions[sourceBufferIndex][particleIndex].z;
+        zVideo_XyzVertex clipVerts[4];
+        zVideo_TexCoord texCoords[4];
+        clipVerts[0].x = (float)(particleQuad->x);
+        clipVerts[0].y = (float)(particleQuad->y);
+        clipVerts[0].z = depth;
+        texCoords[0].u = particleQuad->texCoordUStart;
+        texCoords[0].v = 0.0f;
+
+        clipVerts[1].x = (float)(particleQuad->x) + xSlant;
+        clipVerts[1].y = (float)(particleQuad->y) + ySlant;
+        clipVerts[1].z = depth;
+        texCoords[1].u = particleQuad->texCoordUStart;
+        texCoords[1].v = 0.0f;
+
+        clipVerts[2].x = (float)(particleQuad->x + particleQuad->width) + xSlant;
+        clipVerts[2].y = (float)(particleQuad->y + particleQuad->height) + ySlant;
+        clipVerts[2].z = depth;
+        texCoords[2].u = particleQuad->texCoordUEnd;
+        texCoords[2].v = 0.0f;
+
+        clipVerts[3].x = (float)(particleQuad->x + particleQuad->width);
+        clipVerts[3].y = (float)(particleQuad->y + particleQuad->height);
+        clipVerts[3].z = depth;
+        texCoords[3].u = particleQuad->texCoordUEnd;
+        texCoords[3].v = 0.0f;
+
+        if (((HudWeatherFxPointBatch *)(clipVerts))->ArePointBatchInsideRect(4, viewportRect) != 0)
+        {
+            ((HudWeatherFxSubmitPolyProc)(g_zVideo_pfnSubmitPolyRenderClass))(
+                clipVerts, texCoords, 4, (zVideo_RenderClass *)(textureRecord), 1, 1.0f, 0);
+        }
+    }
+
+    ((HudWeatherFxFlushProc)(g_zVideo_pfnFlushSortedPolys))();
+    zVideoD3D::SceneLeave();
+    if (swSurfaceWasLocked != 0)
+    {
+        zVideo::RunPostprocessOnSwBuffer();
+    }
+}
+
 // Reimplements 0x4be280: HudWeatherFxSnow::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
 RECOIL_NOINLINE HudWeatherFxSnow *RECOIL_THISCALL
@@ -455,6 +672,163 @@ HudWeatherFxSnow::Constructor(int particleCount)
     return this;
 }
 
+// Reimplements 0x4be2f0: HudWeatherFxSnow::Update
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFxSnow::Update(float deltaSeconds)
+{
+    if ((flags & 0x10) != 0)
+    {
+        return;
+    }
+
+    g_HudWeatherFxSnow_TimeAccumulator += deltaSeconds;
+    if (camera == 0)
+    {
+        return;
+    }
+
+    int viewportWidth = 0;
+    int viewportHeight = 0;
+    if (viewportRect != 0)
+    {
+        viewportWidth = viewportRect->right - viewportRect->left;
+        viewportHeight = viewportRect->bottom - viewportRect->top;
+    }
+    else
+    {
+        const zVidRect32 *const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
+        viewportWidth = primaryRect->right - primaryRect->left;
+        viewportHeight = primaryRect->bottom - primaryRect->top;
+    }
+    const float viewportWidthF = (float)(viewportWidth);
+    const float viewportHeightF = (float)(viewportHeight);
+
+    zVec3 cameraTarget;
+    zClass_Camera::gwCameraGetTarget(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
+
+    zVec3 cameraAngles;
+    zClass_Camera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y,
+                                       &cameraAngles.z);
+
+    zVec3 cameraTargetDrift;
+    cameraTargetDrift.x =
+        (g_HudWeatherFxSnow_LastCameraTargetX - cameraTarget.x) *
+        kHudWeatherFxCameraDriftScale;
+    cameraTargetDrift.y =
+        (g_HudWeatherFxSnow_LastCameraTargetY - cameraTarget.y) *
+        kHudWeatherFxCameraDriftScale;
+    cameraTargetDrift.z =
+        (g_HudWeatherFxSnow_LastCameraTargetZ - cameraTarget.z) *
+        kHudWeatherFxCameraDriftScale;
+    g_HudWeatherFxSnow_LastCameraTargetX = cameraTarget.x;
+    g_HudWeatherFxSnow_LastCameraTargetY = cameraTarget.y;
+    g_HudWeatherFxSnow_LastCameraTargetZ = cameraTarget.z;
+
+    zMat4x3 slotBuffer;
+    zMath::MatStackPushPtr((float *)(&slotBuffer));
+    zMath::MatLoadIdentity();
+    zMath::MatRotateX(-cameraAngles.x);
+    zMath::MatRotateY(-cameraAngles.y);
+    zMath::MatTransformPointBatchInPlace(&cameraTargetDrift, 1);
+    zMath::MatStackPopPtr();
+
+    zMath::MatStackPushPtr((float *)(&slotBuffer));
+    zMath::MatLoadIdentity();
+    zMath::MatRotateZ(cameraAngles.z);
+    zMath::MatRotateY(cameraAngles.y);
+    zMath::MatRotateX(cameraAngles.x);
+
+    zVec3 gravityOffset;
+    const float gravityScale = gravity * kHudWeatherFxForceScale;
+    gravityOffset.x = basisVector.x * gravityScale;
+    gravityOffset.y = basisVector.y * gravityScale;
+    gravityOffset.z = basisVector.z * gravityScale;
+    zMath::MatTransformPointBatchInPlace(&gravityOffset, 1);
+
+    zVec3 windOffset;
+    const float windScale = windVelocity * kHudWeatherFxForceScale;
+    windOffset.x = (float)(sin(windDirection)) * windScale;
+    windOffset.y = 0.0f;
+    windOffset.z = (float)(cos(windDirection)) * windScale;
+    zMath::MatTransformPointBatchInPlace(&windOffset, 1);
+    zMath::MatStackPopPtr();
+
+    zVec3 particleVelocity;
+    particleVelocity.x = cameraTargetDrift.x + gravityOffset.x + windOffset.x;
+    particleVelocity.y = cameraTargetDrift.y + gravityOffset.y + windOffset.y;
+    particleVelocity.z = cameraTargetDrift.z + gravityOffset.z + windOffset.z;
+    if (HudWeatherFxVec3LengthSq(&particleVelocity) >= kHudWeatherFxVelocityMaxSq)
+    {
+        zMath::Vec3Normalize(&particleVelocity);
+    }
+
+    zVec3 probeVelocity = particleVelocity;
+    if (HudWeatherFxVec3LengthSq(&probeVelocity) >= kHudWeatherFxProbeVelocityMinSq)
+    {
+        zMath::Vec3Normalize(&probeVelocity);
+        probeVelocity.x *= kHudWeatherFxProbeScale;
+        probeVelocity.y *= kHudWeatherFxProbeScale;
+        probeVelocity.z *= kHudWeatherFxProbeScale;
+    }
+
+    for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex)
+    {
+        const zVec3 *const sourcePosition =
+            &particlePositions[sourceBufferIndex][particleIndex];
+        zVec3 *const destPosition =
+            &particlePositions[destBufferIndex][particleIndex];
+        destPosition->x = sourcePosition->x + particleVelocity.x;
+        destPosition->y = sourcePosition->y + particleVelocity.y;
+        destPosition->z = sourcePosition->z + particleVelocity.z;
+
+        zVec3 probePosition;
+        probePosition.x = sourcePosition->x + probeVelocity.x;
+        probePosition.y = sourcePosition->y + probeVelocity.y;
+        probePosition.z = sourcePosition->z + probeVelocity.z;
+
+        const float sourceDepthFactor =
+            kHudWeatherFxConeDepthMax - sourcePosition->z;
+        const float probeDepthFactor =
+            kHudWeatherFxConeDepthMax - probePosition.z;
+        HudWeatherFxParticleQuad *const particleQuad = &particleQuads[particleIndex];
+        particleQuad->x =
+            (int)(((probeDepthFactor * probePosition.x) +
+                   kHudWeatherFxProjectionCenter) *
+                  viewportWidthF);
+        particleQuad->y =
+            (int)(((probeDepthFactor * probePosition.y) +
+                   kHudWeatherFxProjectionCenter) *
+                  viewportHeightF);
+        particleQuad->width =
+            (int)(((sourceDepthFactor * sourcePosition->x) +
+                   kHudWeatherFxProjectionCenter) *
+                  viewportWidthF) -
+            particleQuad->x;
+        particleQuad->height =
+            (int)(((sourceDepthFactor * sourcePosition->y) +
+                   kHudWeatherFxProjectionCenter) *
+                  viewportHeightF) -
+            particleQuad->y;
+        particleQuad->color16 = packedColor16;
+        particleQuad->texCoordUStart = probeDepthFactor * alphaStartScale;
+        particleQuad->texCoordUEnd = sourceDepthFactor * alphaEndScale;
+        particleQuad->slantOffset =
+            (int)(((float)(activeParticleCount + 1)) * sourceDepthFactor *
+                  kHudWeatherFxSnowSlantScale);
+
+        if (HudWeatherFxSnowNeedsReset(destPosition) != 0)
+        {
+            ResetParticleSlot(particleIndex, 0);
+        }
+    }
+
+    HudUiElement::Update(deltaSeconds);
+
+    const int oldSourceBufferIndex = sourceBufferIndex;
+    sourceBufferIndex = destBufferIndex;
+    destBufferIndex = oldSourceBufferIndex;
+}
+
 // Reimplements 0x4be810: HudWeatherFxRain::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
 RECOIL_NOINLINE HudWeatherFxRain *RECOIL_THISCALL
@@ -466,6 +840,166 @@ HudWeatherFxRain::Constructor(int particleCount)
     emitRadius = 20.0f;
     emitDepth = 400.0f;
     return this;
+}
+
+// Reimplements 0x4be870: HudWeatherFxRain::Destructor
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFxRain::Destructor()
+{
+    ftable = &g_HudWeatherFxRain_Vtable;
+    HudWeatherFx::Destructor();
+}
+
+// Reimplements 0x4be880: HudWeatherFxRain::Update
+// (D:\Proj\Battlesport\hud.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFxRain::Update(float deltaSeconds)
+{
+    if ((flags & 0x10) != 0)
+    {
+        return;
+    }
+
+    g_HudWeatherFxRain_TimeAccumulator += deltaSeconds;
+    if (camera == 0)
+    {
+        return;
+    }
+
+    int viewportWidth = 0;
+    int viewportHeight = 0;
+    if (viewportRect != 0)
+    {
+        viewportWidth = viewportRect->right - viewportRect->left;
+        viewportHeight = viewportRect->bottom - viewportRect->top;
+    }
+    else
+    {
+        const zVidRect32 *const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
+        viewportWidth = primaryRect->right - primaryRect->left;
+        viewportHeight = primaryRect->bottom - primaryRect->top;
+    }
+    const float viewportWidthF = (float)(viewportWidth);
+    const float viewportHeightF = (float)(viewportHeight);
+
+    zVec3 cameraTarget;
+    zClass_Camera::gwCameraGetTarget(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
+
+    zVec3 cameraAngles;
+    zClass_Camera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y,
+                                       &cameraAngles.z);
+
+    zVec3 cameraTargetDrift;
+    cameraTargetDrift.x =
+        (g_HudWeatherFxRain_LastCameraTargetX - cameraTarget.x) *
+        kHudWeatherFxCameraDriftScale;
+    cameraTargetDrift.y =
+        (g_HudWeatherFxRain_LastCameraTargetY - cameraTarget.y) *
+        kHudWeatherFxCameraDriftScale;
+    cameraTargetDrift.z =
+        (g_HudWeatherFxRain_LastCameraTargetZ - cameraTarget.z) *
+        kHudWeatherFxCameraDriftScale;
+    g_HudWeatherFxRain_LastCameraTargetX = cameraTarget.x;
+    g_HudWeatherFxRain_LastCameraTargetY = cameraTarget.y;
+    g_HudWeatherFxRain_LastCameraTargetZ = cameraTarget.z;
+
+    zMat4x3 slotBuffer;
+    zMath::MatStackPushPtr((float *)(&slotBuffer));
+    zMath::MatLoadIdentity();
+    zMath::MatRotateX(-cameraAngles.x);
+    zMath::MatRotateY(-cameraAngles.y);
+    zMath::MatTransformPointBatchInPlace(&cameraTargetDrift, 1);
+    zMath::MatStackPopPtr();
+
+    zMath::MatStackPushPtr((float *)(&slotBuffer));
+    zMath::MatLoadIdentity();
+    zMath::MatRotateZ(cameraAngles.z);
+    zMath::MatRotateY(cameraAngles.y);
+    zMath::MatRotateX(cameraAngles.x);
+
+    zVec3 gravityOffset;
+    const float gravityScale = gravity * kHudWeatherFxForceScale;
+    gravityOffset.x = basisVector.x * gravityScale;
+    gravityOffset.y = basisVector.y * gravityScale;
+    gravityOffset.z = basisVector.z * gravityScale;
+    zMath::MatTransformPointBatchInPlace(&gravityOffset, 1);
+
+    zVec3 windOffset;
+    const float windScale = windVelocity * kHudWeatherFxForceScale;
+    windOffset.x = (float)(sin(windDirection)) * windScale;
+    windOffset.y = 0.0f;
+    windOffset.z = (float)(cos(windDirection)) * windScale;
+    zMath::MatTransformPointBatchInPlace(&windOffset, 1);
+    zMath::MatStackPopPtr();
+
+    zVec3 particleVelocity;
+    particleVelocity.x = cameraTargetDrift.x + gravityOffset.x + windOffset.x;
+    particleVelocity.y = cameraTargetDrift.y + gravityOffset.y + windOffset.y;
+    particleVelocity.z = cameraTargetDrift.z + gravityOffset.z + windOffset.z;
+    if (HudWeatherFxVec3LengthSq(&particleVelocity) >= kHudWeatherFxVelocityMaxSq)
+    {
+        zMath::Vec3Normalize(&particleVelocity);
+    }
+
+    zVec3 probeVelocity = particleVelocity;
+    if (HudWeatherFxVec3LengthSq(&probeVelocity) >= kHudWeatherFxProbeVelocityMinSq)
+    {
+        zMath::Vec3Normalize(&probeVelocity);
+        probeVelocity.x *= kHudWeatherFxProbeScale;
+        probeVelocity.y *= kHudWeatherFxProbeScale;
+        probeVelocity.z *= kHudWeatherFxProbeScale;
+    }
+
+    for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex)
+    {
+        const zVec3 *const sourcePosition =
+            &particlePositions[sourceBufferIndex][particleIndex];
+        zVec3 *const destPosition =
+            &particlePositions[destBufferIndex][particleIndex];
+        destPosition->x = sourcePosition->x + particleVelocity.x;
+        destPosition->y = sourcePosition->y + particleVelocity.y;
+        destPosition->z = sourcePosition->z + particleVelocity.z;
+
+        zVec3 probePosition;
+        probePosition.x = sourcePosition->x + probeVelocity.x;
+        probePosition.y = sourcePosition->y + probeVelocity.y;
+        probePosition.z = sourcePosition->z + probeVelocity.z;
+
+        const float sourceDepthFactor =
+            kHudWeatherFxConeDepthMax - sourcePosition->z;
+        const float probeDepthFactor =
+            kHudWeatherFxConeDepthMax - probePosition.z;
+        HudWeatherFxParticleQuad *const particleQuad = &particleQuads[particleIndex];
+        particleQuad->x =
+            (int)(((probeDepthFactor * probePosition.x) +
+                   kHudWeatherFxProjectionCenter) *
+                  viewportWidthF);
+        particleQuad->y =
+            (int)(((probeDepthFactor * probePosition.y) +
+                   kHudWeatherFxProjectionCenter) *
+                  viewportHeightF);
+        particleQuad->width =
+            (int)(((sourceDepthFactor * sourcePosition->x) +
+                   kHudWeatherFxProjectionCenter) *
+                  viewportWidthF) -
+            particleQuad->x;
+        particleQuad->height =
+            (int)(((sourceDepthFactor * sourcePosition->y) +
+                   kHudWeatherFxProjectionCenter) *
+                  viewportHeightF) -
+            particleQuad->y;
+        particleQuad->color16 = packedColor16;
+        particleQuad->texCoordUStart = probeDepthFactor * alphaStartScale;
+        particleQuad->texCoordUEnd = sourceDepthFactor * alphaEndScale;
+        particleQuad->slantOffset = kHudWeatherFxRainSlantOffset;
+
+        ResetParticleSlot(particleIndex, 0);
+    }
+
+    HudUiElement::Update(deltaSeconds);
+
+    const int oldSourceBufferIndex = sourceBufferIndex;
+    sourceBufferIndex = destBufferIndex;
+    destBufferIndex = oldSourceBufferIndex;
 }
 
 // Reimplements 0x41c6c0: HudUiNewGamePanelOverlayOwner::QueueEnter

@@ -3,6 +3,7 @@
 #include "Battlesport/Briefing.h"
 #include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/NetUi.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
 #include "Battlesport/RecoilApp.h"
@@ -23,9 +24,63 @@
 #include "GameZRecoil/zDEClient/zdec.h"
 #include "GameZRecoil/zModel/zModel.h"
 
+#include <shellapi.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <new>
+
+// Access shim for imported MFC42 CDialog metadata; this does not reimplement
+// CDialog behavior.
+class NetSessionBrowserCDialogMessageMapAccessor : public CDialog {
+  public:
+    static const AFX_MSGMAP *RECOIL_STDCALL GetMessageMap();
+};
+
+// Access shim for imported MFC42 CDialog metadata; this does not reimplement
+// CDialog behavior.
+class NetSessionConfigCDialogMessageMapAccessor : public CDialog {
+  public:
+    static const AFX_MSGMAP *RECOIL_STDCALL GetMessageMap();
+};
+
+// Access shim for imported MFC42 protected window/dialog members; this does
+// not reimplement provider behavior.
+class GameNetMfcWndAccess : public CWnd {
+  public:
+    long CallDefault();
+    void CallOnDestroy();
+};
+
+// Access shim for imported MFC42 protected dialog members; this does not
+// reimplement provider behavior.
+class GameNetMfcDialogAccess : public CDialog {
+  public:
+    void CallOnOK();
+};
+
+void RECOIL_STDCALL DDX_Control(CDataExchange *dataExchange, int controlId,
+                                CWnd &control);
+void RECOIL_STDCALL DDX_Text(CDataExchange *dataExchange, int controlId,
+                             CString &value);
+void RECOIL_STDCALL DDX_Text(CDataExchange *dataExchange, int controlId,
+                             unsigned int &value);
+void RECOIL_STDCALL DDX_Check(CDataExchange *dataExchange, int controlId,
+                              int &value);
+void RECOIL_STDCALL DDV_MaxChars(CDataExchange *dataExchange,
+                                 const CString &value, int maxChars);
+void RECOIL_STDCALL DDV_MinMaxUInt(CDataExchange *dataExchange,
+                                   unsigned int value, unsigned int minValue,
+                                   unsigned int maxValue);
+
+RECOIL_STATIC_ASSERT(sizeof(CWnd) == 0x40);
+RECOIL_STATIC_ASSERT(sizeof(CDialog) == 0x60);
+RECOIL_STATIC_ASSERT(sizeof(CEdit) == 0x40);
+RECOIL_STATIC_ASSERT(sizeof(CButton) == 0x40);
+RECOIL_STATIC_ASSERT(sizeof(CListBox) == 0x40);
+RECOIL_STATIC_ASSERT(sizeof(CComboBox) == 0x40);
+RECOIL_STATIC_ASSERT(sizeof(CSpinButtonCtrl) == 0x40);
 
 extern "C" {
 unsigned int g_GameNetPlayerRowList = 0;
@@ -47,6 +102,13 @@ NetPkt0C_HudTimerStatusBits g_NetPkt0C_HudTimerStatusBitsBuf = {
 NetPkt0D_HudTimerPanelState g_NetPkt0D_HudTimerPanelStateBuf = {
     {0x0d, sizeof(NetPkt0D_HudTimerPanelState), 0},
     0.0f,
+    0,
+    0,
+};
+NetPkt14_HudTimerAndFlagsSync g_NetPkt14_HudTimerAndFlagsSyncBuf = {
+    {0x14, sizeof(NetPkt14_HudTimerAndFlagsSync), 0},
+    0,
+    0,
     0,
     0,
 };
@@ -92,9 +154,19 @@ int g_GameNetHostHudTimerInitFlag = 0;
 int g_GameNetHudTimerTenSecondWarningArmed = 0;
 int g_GameNetHudTimerPendingSaveReminderArmed = 0;
 int g_GameNet_HandlersRegistered = 0;
+int g_NetUiTcpIpProviderWarningShown = 0;
 }
 
 extern "C" HWND g_RecoilApp_hWndMain;
+
+unsigned int g_NetSessionConfigDialog_MapNameStringStorage[7] = {0};
+CString *g_NetSessionConfigDialog_MapNameStrings =
+    (CString *)&g_NetSessionConfigDialog_MapNameStringStorage[0];
+
+const RecoilNamedVtable kNetSessionBrowserDialog_Vtable = {
+    "NetSessionBrowserDialog vtable"};
+const RecoilNamedVtable kNetSessionConfigDialog_Vtable = {
+    "NetSessionConfigDialog vtable"};
 
 namespace {
 const float kGameNetPkt06SendIntervalSec = 0.100000001f;
@@ -107,6 +179,64 @@ const unsigned int kGameNetPkt06ProgressTargetsFlag = 0x40000u;
 const unsigned int kGameNetRemoteAltGunDispatchFlag = 0x2000000u;
 const unsigned int kGameNetRemoteCloneNodeFlag = 0x400000u;
 const float kGameNetRemoteUnlimitedAmmo = 123456792.0f;
+const UINT kNetSessionBrowserDialogResourceId = 136;
+const int kNetSessionBrowserPlayerNameEditId = 1048;
+const int kNetSessionBrowserOkButtonId = 1;
+const int kNetSessionBrowserHelpButtonId = 1029;
+const int kNetSessionBrowserCreateSessionButtonId = 1030;
+const int kNetSessionBrowserSessionListId = 1040;
+const int kNetSessionBrowserProviderComboId = 1114;
+const int kNetSessionBrowserPlayerNameMaxChars = 21;
+const unsigned int kNetSessionBrowserHelpCaptionMessageId = 25;
+const unsigned int kNetSessionBrowserHelpNoAssociationMessageId = 32;
+const unsigned int kNetSessionBrowserHelpNoDdeAssociationMessageId = 33;
+const unsigned int kNetSessionBrowserHelpFileNotFoundMessageId = 34;
+const unsigned int kNetSessionBrowserHelpAssociationIncompleteMessageId = 36;
+const unsigned int kNetSessionBrowserPlayerNameRequiredMessageId = 23;
+const unsigned int kNetSessionBrowserPlayerNameCaptionMessageId = 24;
+const unsigned int kNetSessionBrowserNoProviderMessageId = 273;
+const unsigned int kNetSessionBrowserTcpIpWarningCaptionMessageId = 18;
+const unsigned int kNetSessionBrowserTcpIpWarningFormatMessageId = 38;
+const unsigned int kNetSessionBrowserModemOkButtonMessageId = 53;
+const unsigned int kNetSessionBrowserModemCreateButtonMessageId = 54;
+const unsigned int kNetSessionBrowserJoinButtonMessageId = 55;
+const unsigned int kNetSessionBrowserRefreshButtonMessageId = 56;
+const UINT kNetSessionConfigDialogResourceId = 146;
+const int kNetSessionConfigMaxPlayersSpinId = 1072;
+const int kNetSessionConfigSessionNameEditId = 1115;
+const int kNetSessionConfigMapComboId = 1116;
+const int kNetSessionConfigValueLimitEditId = 1117;
+const int kNetSessionConfigTimeLimitEditId = 1118;
+const int kNetSessionConfigMaxPlayersEditId = 1119;
+const int kNetSessionConfigTimeLimitSpinId = 1120;
+const int kNetSessionConfigValueLimitSpinId = 1121;
+const int kNetSessionConfigUnusedCheckboxId = 1122;
+const int kNetSessionConfigMaxPlayersLabelId = 1125;
+const int kNetSessionConfigSessionNameMaxChars = 80;
+const unsigned int kNetSessionConfigLimitMax = 10000;
+const unsigned int kNetSessionConfigMaxPlayersMin = 2;
+const unsigned int kNetSessionConfigMaxPlayersMax = 8;
+const unsigned int kNetSessionConfigMaxPlayersSpecialMapMessageId = 12352;
+const unsigned int kNetSessionConfigMaxPlayersDefaultMessageId = 12353;
+const int kNetSessionConfigSpecialMapIndex = 2;
+const int kNetSessionConfigMapNameCount = 7;
+const char kNetSessionConfigSessionNameFormat[] = "Exercise %03d";
+const UINT kNetSessionConfigSpinSetRangeMessage = 1125;
+const unsigned int kNetSessionConfigDefaultValueLimit = 5;
+const unsigned int kNetSessionConfigDefaultTimeLimitMinutes = 10;
+const unsigned int kNetSessionConfigDefaultMaxPlayers = 8;
+const int kNetSessionBrowserModemEventCode = 256;
+const int kNetSessionBrowserModemValueOrTime = 10;
+const int kNetSessionBrowserModemAuxParam = 10;
+const int kNetSessionBrowserModemMaxPlayers = 2;
+const char kNetSessionBrowserModemSessionName[] = "ModemSession";
+// Reimplements 0x41b8ac: NetSessionBrowserDialog::kHelpDocsFindExecutableErrorClassTable
+// (D:\Proj\Battlesport\GameNet.cpp)
+const unsigned char kNetSessionBrowserHelpDocsFindExecutableErrorClassTable[32] = {
+    0, 4, 1, 1, 4, 4, 4, 4, 4, 4, 4, 2, 4, 4, 4, 4,
+    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3,
+};
+RECOIL_STATIC_ASSERT(sizeof(kNetSessionBrowserHelpDocsFindExecutableErrorClassTable) == 32);
 
 struct GameNetReaderArray {
     int countTag;
@@ -188,6 +318,133 @@ PlayerGunFireController *GameNetPkt06DecodeWeaponController(zUtil_PlayerStateSto
     return &playerState->altWeaponBanks[bankIndex].controllerA + sideIndex;
 }
 } // namespace
+
+const AFX_MSGMAP *RECOIL_STDCALL
+NetSessionBrowserCDialogMessageMapAccessor::GetMessageMap()
+{
+    return &CDialog::messageMap;
+}
+
+const AFX_MSGMAP *RECOIL_STDCALL
+NetSessionBrowserDialog::GetBaseMessageMapForMfc()
+{
+    return NetSessionBrowserCDialogMessageMapAccessor::GetMessageMap();
+}
+
+AFX_MSGMAP_ENTRY const NetSessionBrowserDialog::messageEntries[] = {
+    {WM_COMMAND, CBN_SELCHANGE, kNetSessionBrowserProviderComboId,
+     kNetSessionBrowserProviderComboId, 12,
+     (AFX_PMSG)&NetSessionBrowserDialog::ConnectSelectedProvider},
+    {WM_COMMAND, BN_CLICKED, kNetSessionBrowserCreateSessionButtonId,
+     kNetSessionBrowserCreateSessionButtonId, 12,
+     (AFX_PMSG)&NetSessionBrowserDialog::OnCreateSession},
+    {WM_TIMER, 0, 0, 0, 13, (AFX_PMSG)&NetSessionBrowserDialog::OnTimer},
+    {WM_DESTROY, 0, 0, 0, 12, (AFX_PMSG)&NetSessionBrowserDialog::OnDestroy},
+    {WM_COMMAND, BN_CLICKED, kNetSessionBrowserHelpButtonId,
+     kNetSessionBrowserHelpButtonId, 12,
+     (AFX_PMSG)&NetSessionBrowserDialog::OnHelpDocs},
+    {0, 0, 0, 0, 0, 0},
+};
+
+const AFX_MSGMAP NetSessionBrowserDialog::messageMap = {
+    &NetSessionBrowserDialog::GetBaseMessageMapForMfc,
+    &NetSessionBrowserDialog::messageEntries[0],
+};
+
+const AFX_MSGMAP *RECOIL_STDCALL
+NetSessionConfigCDialogMessageMapAccessor::GetMessageMap()
+{
+    return &CDialog::messageMap;
+}
+
+long GameNetMfcWndAccess::CallDefault()
+{
+    return CWnd::Default();
+}
+
+void GameNetMfcWndAccess::CallOnDestroy()
+{
+    CWnd::OnDestroy();
+}
+
+void GameNetMfcDialogAccess::CallOnOK()
+{
+    CDialog::OnOK();
+}
+
+const AFX_MSGMAP *RECOIL_STDCALL
+NetSessionConfigDialog::GetBaseMessageMapForMfc()
+{
+    return NetSessionConfigCDialogMessageMapAccessor::GetMessageMap();
+}
+
+AFX_MSGMAP_ENTRY const NetSessionConfigDialog::messageEntries[] = {
+    {WM_DESTROY, 0, 0, 0, 12, (AFX_PMSG)&NetSessionConfigDialog::OnDestroy},
+    {WM_COMMAND, CBN_SELCHANGE, kNetSessionConfigMapComboId,
+     kNetSessionConfigMapComboId, 12,
+     (AFX_PMSG)&NetSessionConfigDialog::OnMapChanged},
+    {0, 0, 0, 0, 0, 0},
+};
+
+const AFX_MSGMAP NetSessionConfigDialog::messageMap = {
+    &NetSessionConfigDialog::GetBaseMessageMapForMfc,
+    &NetSessionConfigDialog::messageEntries[0],
+};
+
+// Reimplements 0x41afd0: NetSessionBrowserDialog::GetMessageMap
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE const AFX_MSGMAP *RECOIL_THISCALL
+NetSessionBrowserDialog::GetMessageMap() const
+{
+    return &NetSessionBrowserDialog::messageMap;
+}
+
+// Reimplements 0x41afe0: NetSessionBrowserDialog::OnInitDialog
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE BOOL RECOIL_THISCALL
+NetSessionBrowserDialog::OnInitDialog()
+{
+    ((CDialog *)this)->CDialog::OnInitDialog();
+    m_playerName = zOpt_GetPlayerName();
+    m_shouldEnterHostSetup = FALSE;
+    m_sessionCount = 0;
+
+    zNetworkServiceProviderListVec *const providerList =
+        zNetworkDPlay::RefreshAndGetServiceProviderList();
+    int providerCount = 0;
+    if (providerList->begin != 0)
+    {
+        providerCount = (int)(providerList->end - providerList->begin);
+    }
+
+    HWND providerComboHwnd = m_providerCombo.m_hWnd;
+    int providerIndex;
+    for (providerIndex = 0; providerIndex < providerCount; ++providerIndex)
+    {
+        zNetworkDPlayServiceProviderInfo *const providerInfo =
+            providerList->begin[providerIndex];
+        char *const displayName = providerInfo->displayName;
+        if (strstr(displayName, "IPX") != 0 ||
+            strstr(displayName, "TCP/IP") != 0 ||
+            strstr(displayName, "Modem") != 0)
+        {
+            const LRESULT comboIndex =
+                ::SendMessageA(providerComboHwnd, CB_ADDSTRING, 0, (LPARAM)displayName);
+            ::SendMessageA(providerComboHwnd, CB_SETITEMDATA, comboIndex,
+                         (LPARAM)providerInfo);
+        }
+    }
+
+    const LRESULT noProviderIndex = ::SendMessageA(
+        providerComboHwnd, CB_ADDSTRING, 0,
+        (LPARAM)zLoc::GetMessageString(kNetSessionBrowserNoProviderMessageId));
+    ::SendMessageA(providerComboHwnd, CB_SETITEMDATA, noProviderIndex, 0);
+    ::SendMessageA(providerComboHwnd, CB_SETCURSEL, 0, 0);
+    ((CWnd *)&m_okButton)->SetWindowTextA(
+        zLoc::GetMessageString(kNetSessionBrowserJoinButtonMessageId));
+    ((CWnd *)this)->UpdateData(FALSE);
+    return TRUE;
+}
 
 // Reimplements 0x433a50: GameNetPlayerRow::ApplyPlayerColorTint
 void RECOIL_THISCALL GameNetPlayerRow::ApplyPlayerColorTint() {
@@ -334,7 +591,575 @@ RECOIL_NOINLINE void RECOIL_CDECL InitFromZrd() {
     g_GameNetPkt06InitialSyncGate = 1;
     g_GameNetPkt06NextSendTimeSec = 0.0f;
 }
+
+// Reimplements 0x43cf40: Net::FormatIpv4Address
+// (D:\Proj\Battlesport\Net.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL
+FormatIpv4Address(char *outText, unsigned int ipAddress)
+{
+    int octets[4];
+    int index;
+    for (index = 0; index < 4; ++index)
+    {
+        octets[index] = (int)(ipAddress & 0xff);
+        ipAddress >>= 8;
+    }
+
+    sprintf(
+        outText,
+        "%d.%d.%d.%d",
+        octets[0],
+        octets[1],
+        octets[2],
+        octets[3]
+    );
+}
 } // namespace Net
+
+// Reimplements 0x41ada0: NetSessionBrowserDialog::Constructor
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE NetSessionBrowserDialog *RECOIL_THISCALL
+NetSessionBrowserDialog::Constructor(CWnd *parentWnd)
+{
+    new ((CDialog *)this) CDialog(kNetSessionBrowserDialogResourceId, parentWnd);
+
+    new (&m_playerNameEdit) CEdit();
+    new (&m_okButton) CButton();
+    new (&m_createSessionButton) CButton();
+    new (&m_sessionList) CListBox();
+    new (&m_providerCombo) CComboBox();
+
+    new (&m_playerName) CString();
+    m_playerName = "";
+
+    return this;
+}
+
+// Reimplements 0x41ae90: NetSessionBrowserDialog::ScalarDeletingDtor
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE NetSessionBrowserDialog *RECOIL_THISCALL
+NetSessionBrowserDialog::ScalarDeletingDestructor(unsigned int flags)
+{
+    Destructor();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+    return this;
+}
+
+// Reimplements 0x41aeb0: NetSessionBrowserDialog::Destructor
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+NetSessionBrowserDialog::Destructor()
+{
+    m_playerName.~CString();
+    ((CComboBox *)&m_providerCombo)->CComboBox::~CComboBox();
+    ((CListBox *)&m_sessionList)->CListBox::~CListBox();
+    ((CButton *)&m_createSessionButton)->CButton::~CButton();
+    ((CButton *)&m_okButton)->CButton::~CButton();
+    ((CEdit *)&m_playerNameEdit)->CEdit::~CEdit();
+    ((CDialog *)this)->CDialog::~CDialog();
+}
+
+// Reimplements 0x41af50: NetSessionBrowserDialog::DoDataExchange
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+NetSessionBrowserDialog::DoDataExchange(CDataExchange *dataExchange)
+{
+    DDX_Control(dataExchange, kNetSessionBrowserPlayerNameEditId,
+                *((CWnd *)&m_playerNameEdit));
+    DDX_Control(dataExchange, kNetSessionBrowserOkButtonId,
+                *((CWnd *)&m_okButton));
+    DDX_Control(dataExchange, kNetSessionBrowserCreateSessionButtonId,
+                *((CWnd *)&m_createSessionButton));
+    DDX_Control(dataExchange, kNetSessionBrowserSessionListId,
+                *((CWnd *)&m_sessionList));
+    DDX_Control(dataExchange, kNetSessionBrowserProviderComboId,
+                *((CWnd *)&m_providerCombo));
+    DDX_Text(dataExchange, kNetSessionBrowserPlayerNameEditId, m_playerName);
+    DDV_MaxChars(dataExchange, m_playerName,
+                 kNetSessionBrowserPlayerNameMaxChars);
+}
+
+// Reimplements 0x41b150: NetSessionBrowserDialog::RefreshSessionList
+RECOIL_NOINLINE int RECOIL_THISCALL
+NetSessionBrowserDialog::RefreshSessionList()
+{
+    CString selectedSessionText;
+    m_sessionCount = zNetwork_DPlay::EnumSessions();
+
+    HWND sessionListHwnd = m_sessionList.m_hWnd;
+    const int selectedIndex =
+        (int)(::SendMessageA(sessionListHwnd, LB_GETCURSEL, 0, 0));
+    if (selectedIndex != LB_ERR)
+    {
+        ((CListBox *)&m_sessionList)->GetText(selectedIndex, selectedSessionText);
+    }
+
+    ::SendMessageA(sessionListHwnd, LB_RESETCONTENT, 0, 0);
+    for (int index = 0; index < m_sessionCount; ++index)
+    {
+        int maxPlayers = 0;
+        int currentPlayers = 0;
+        zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex(index, &currentPlayers,
+                                                               &maxPlayers);
+
+        char sessionText[120];
+        zLoc::FormatMessage(sessionText, sizeof(sessionText), 0x112,
+                            zNetworkDPlay::GetEnumeratedSessionNameByIndex(index),
+                            maxPlayers, currentPlayers);
+
+        const int rowIndex =
+            (int)(::SendMessageA(sessionListHwnd, LB_ADDSTRING, 0, (LPARAM)sessionText));
+        ::SendMessageA(sessionListHwnd, LB_SETITEMDATA, rowIndex, index);
+    }
+
+    if (selectedIndex != LB_ERR)
+    {
+        const int restoredIndex = (int)(::SendMessageA(
+            sessionListHwnd, LB_FINDSTRINGEXACT, (WPARAM)-1,
+            (LPARAM)((const char *)selectedSessionText)));
+        if (restoredIndex != LB_ERR)
+        {
+            ::SendMessageA(sessionListHwnd, LB_SETCURSEL, restoredIndex, 0);
+            ((CWnd *)&m_okButton)->EnableWindow(TRUE);
+        }
+    }
+    else if (m_sessionCount > 0)
+    {
+        ::SendMessageA(sessionListHwnd, LB_SETCURSEL, 0, 0);
+        ((CWnd *)&m_okButton)->EnableWindow(TRUE);
+    }
+    else if (zOpt::GetNetworkModemEnabled() == 0)
+    {
+        ((CWnd *)&m_okButton)->EnableWindow(FALSE);
+    }
+
+    return m_sessionCount;
+}
+
+// Reimplements 0x41b2f0: NetSessionBrowserDialog::ConnectSelectedProvider
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+NetSessionBrowserDialog::ConnectSelectedProvider()
+{
+    ::KillTimer(m_hWnd, 2);
+
+    HWND providerComboHwnd = m_providerCombo.m_hWnd;
+    const LRESULT selectedProviderIndex =
+        ::SendMessageA(providerComboHwnd, CB_GETCURSEL, 0, 0);
+    if (selectedProviderIndex == CB_ERR)
+    {
+        return;
+    }
+
+    zNetworkDPlayServiceProviderInfo *providerInfo =
+        (zNetworkDPlayServiceProviderInfo *)(::SendMessageA(
+            providerComboHwnd, CB_GETITEMDATA, selectedProviderIndex, 0));
+    if (providerInfo == 0)
+    {
+        ((CWnd *)&m_okButton)->EnableWindow(FALSE);
+        ((CWnd *)&m_createSessionButton)->EnableWindow(FALSE);
+        return;
+    }
+
+    if (strstr(providerInfo->displayName, "TCP/IP") != 0 &&
+        g_NetUiTcpIpProviderWarningShown == 0)
+    {
+        g_NetUiTcpIpProviderWarningShown = 1;
+
+        char caption[256];
+        strcpy(caption,
+               zLoc::GetMessageString(kNetSessionBrowserTcpIpWarningCaptionMessageId));
+
+        char messageFormat[256];
+        strcpy(messageFormat,
+               zLoc::GetMessageString(kNetSessionBrowserTcpIpWarningFormatMessageId));
+
+        if (NetUi::VerifyWinsock2OrPromptContinue(caption, messageFormat) == 0)
+        {
+            ::SendMessageA(providerComboHwnd, CB_SETCURSEL, 0, 0);
+            ((CWnd *)&m_okButton)->EnableWindow(FALSE);
+            ((CWnd *)&m_createSessionButton)->EnableWindow(FALSE);
+            return;
+        }
+    }
+
+    zNetworkDPlay::SelectServiceProviderAndInitConnection(providerInfo);
+    if (strstr(providerInfo->displayName, "Modem") != 0)
+    {
+        ::SendMessageA(m_sessionList.m_hWnd, LB_RESETCONTENT, 0, 0);
+        ((CWnd *)&m_okButton)->EnableWindow(TRUE);
+        ((CWnd *)&m_okButton)->SetWindowTextA(
+            zLoc::GetMessageString(kNetSessionBrowserModemOkButtonMessageId));
+        ((CWnd *)&m_createSessionButton)->SetWindowTextA(
+            zLoc::GetMessageString(kNetSessionBrowserModemCreateButtonMessageId));
+        ((CWnd *)&m_createSessionButton)->EnableWindow(TRUE);
+        m_selectedProviderIsModem = TRUE;
+        return;
+    }
+
+    if (RefreshSessionList() >= 0)
+    {
+        ::SetTimer(m_hWnd, 2, 1000, 0);
+    }
+
+    ((CWnd *)&m_createSessionButton)->EnableWindow(TRUE);
+    ((CWnd *)&m_okButton)->SetWindowTextA(
+        zLoc::GetMessageString(kNetSessionBrowserJoinButtonMessageId));
+    ((CWnd *)&m_createSessionButton)->SetWindowTextA(
+        zLoc::GetMessageString(kNetSessionBrowserRefreshButtonMessageId));
+    m_selectedProviderIsModem = FALSE;
+}
+
+// Reimplements 0x41b660: NetSessionBrowserDialog::OnTimer
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+NetSessionBrowserDialog::OnTimer(UINT_PTR)
+{
+    RefreshSessionList();
+    ((GameNetMfcWndAccess *)this)->CallDefault();
+}
+
+// Reimplements 0x41b6a0: NetSessionBrowserDialog::ValidatePlayerName
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL
+NetSessionBrowserDialog::ValidatePlayerName()
+{
+    ((CWnd *)this)->UpdateData(TRUE);
+    m_playerName.TrimLeft();
+    m_playerName.TrimRight();
+    ((CWnd *)this)->UpdateData(FALSE);
+
+    if (!m_playerName.IsEmpty())
+    {
+        return TRUE;
+    }
+
+    char caption[128];
+    strcpy(caption, zLoc::GetMessageString(
+                        kNetSessionBrowserPlayerNameCaptionMessageId));
+
+    char messageText[128];
+    strcpy(messageText, zLoc::GetMessageString(
+                            kNetSessionBrowserPlayerNameRequiredMessageId));
+
+    ((CWnd *)this)->MessageBoxA(messageText, caption, MB_ICONHAND);
+    ((CWnd *)&m_playerNameEdit)->SetFocus();
+    return FALSE;
+}
+
+// Reimplements 0x41b510: NetSessionBrowserDialog::OnOK
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+NetSessionBrowserDialog::OnOK()
+{
+    int canCloseDialog = FALSE;
+    if (ValidatePlayerName() == 0)
+    {
+        return;
+    }
+
+    if (m_selectedProviderIsModem == 0)
+    {
+        zOpt::SetNetworkModemEnabled(FALSE);
+        ::KillTimer(m_hWnd, 2);
+
+        HWND sessionListHwnd = m_sessionList.m_hWnd;
+        const LRESULT selectedSessionRow =
+            ::SendMessageA(sessionListHwnd, LB_GETCURSEL, 0, 0);
+        if (selectedSessionRow != LB_ERR)
+        {
+            m_selectedSessionIndex = (int)(::SendMessageA(
+                sessionListHwnd, LB_GETITEMDATA, selectedSessionRow, 0));
+            canCloseDialog = TRUE;
+        }
+    }
+    else
+    {
+        zOpt::SetNetworkModemEnabled(TRUE);
+        if (RefreshSessionList() >= 0)
+        {
+            canCloseDialog = TRUE;
+            m_selectedSessionIndex = 0;
+        }
+    }
+
+    if (canCloseDialog != 0)
+    {
+        ((GameNetMfcDialogAccess *)this)->CallOnOK();
+    }
+}
+
+// Reimplements 0x41b5a0: NetSessionBrowserDialog::OnCreateSession
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+NetSessionBrowserDialog::OnCreateSession()
+{
+    if (ValidatePlayerName() == 0)
+    {
+        return;
+    }
+
+    if (m_selectedProviderIsModem == 0)
+    {
+        ::KillTimer(m_hWnd, 2);
+        m_shouldEnterHostSetup = TRUE;
+    }
+    else
+    {
+        zNetworkSessionDescStatusFields statusFields;
+        statusFields.eventCode = kNetSessionBrowserModemEventCode;
+        statusFields.statusFlags = 0;
+        statusFields.valueOrTime = kNetSessionBrowserModemValueOrTime;
+        statusFields.auxParam = kNetSessionBrowserModemAuxParam;
+        statusFields.maxPlayers = kNetSessionBrowserModemMaxPlayers;
+        strcpy(statusFields.sessionNameBuf, kNetSessionBrowserModemSessionName);
+
+        if (zNetwork_DPlay::CreateSessionFromStatusFields(&statusFields) != 0)
+        {
+            zOpt::SetNetworkEnabled(TRUE);
+            zOpt::SetNetworkModemEnabled(TRUE);
+            zNetwork_DPlay::CreateLocalPlayerRecordAndRegister(zOpt_GetPlayerName());
+            m_shouldEnterHostSetup = TRUE;
+        }
+    }
+
+    if (m_shouldEnterHostSetup != 0)
+    {
+        ((GameNetMfcDialogAccess *)this)->CallOnOK();
+    }
+}
+
+// Reimplements 0x41b680: NetSessionBrowserDialog::OnDestroy
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+NetSessionBrowserDialog::OnDestroy()
+{
+    ((GameNetMfcWndAccess *)this)->CallOnDestroy();
+    ::KillTimer(m_hWnd, 2);
+}
+
+// Reimplements 0x41b780: NetSessionBrowserDialog::OnHelpDocs
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+NetSessionBrowserDialog::OnHelpDocs()
+{
+    char caption[128];
+    strcpy(caption, zLoc::GetMessageString(kNetSessionBrowserHelpCaptionMessageId));
+
+    char executablePath[256];
+    HINSTANCE findResult = FindExecutableA("Docs\\Index.html", 0, executablePath);
+    const UINT resultCode = (UINT)((UINT_PTR)(findResult));
+    if (resultCode <= 31) {
+        switch (kNetSessionBrowserHelpDocsFindExecutableErrorClassTable[resultCode]) {
+        case 0:
+            ((CWnd *)this)->MessageBoxA(
+                zLoc::GetMessageString(kNetSessionBrowserHelpNoAssociationMessageId),
+                caption, MB_ICONEXCLAMATION);
+            return;
+
+        case 1:
+            ((CWnd *)this)->MessageBoxA(
+                zLoc::GetMessageString(kNetSessionBrowserHelpFileNotFoundMessageId),
+                caption, MB_ICONEXCLAMATION);
+            return;
+
+        case 2:
+            ((CWnd *)this)->MessageBoxA(
+                zLoc::GetMessageString(
+                    kNetSessionBrowserHelpAssociationIncompleteMessageId),
+                caption, MB_ICONEXCLAMATION);
+            return;
+
+        case 3:
+            ((CWnd *)this)->MessageBoxA(
+                zLoc::GetMessageString(kNetSessionBrowserHelpNoDdeAssociationMessageId),
+                caption, MB_ICONEXCLAMATION);
+            return;
+
+        default:
+            break;
+        }
+    }
+
+    ShellExecuteA(g_RecoilApp_hWndMain, "open", "Docs\\Index.html", 0, 0,
+                  SW_HIDE);
+}
+
+// Reimplements 0x41c6e0: NetSessionConfigDialog::Constructor
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE NetSessionConfigDialog *RECOIL_THISCALL
+NetSessionConfigDialog::Constructor(CWnd *parentWnd)
+{
+    new ((CDialog *)this) CDialog(kNetSessionConfigDialogResourceId, parentWnd);
+
+    new (&m_maxPlayersSpin) CSpinButtonCtrl();
+    new (&m_valueLimitSpin) CSpinButtonCtrl();
+    new (&m_timeLimitSpin) CSpinButtonCtrl();
+    new (&m_mapCombo) CComboBox();
+
+    new (&m_sessionName) CString();
+    m_sessionName = "";
+    m_valueLimit = 0;
+    m_timeLimitMinutes = 0;
+    m_maxPlayers = 0;
+    m_unusedCheckboxEnabled = 0;
+    return this;
+}
+
+// Reimplements 0x41c7f0: NetSessionConfigDialog::Destructor
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+NetSessionConfigDialog::Destructor()
+{
+    m_sessionName.~CString();
+    ((CComboBox *)&m_mapCombo)->CComboBox::~CComboBox();
+    ((CSpinButtonCtrl *)&m_timeLimitSpin)->CSpinButtonCtrl::~CSpinButtonCtrl();
+    ((CSpinButtonCtrl *)&m_valueLimitSpin)->CSpinButtonCtrl::~CSpinButtonCtrl();
+    ((CSpinButtonCtrl *)&m_maxPlayersSpin)->CSpinButtonCtrl::~CSpinButtonCtrl();
+    ((CDialog *)this)->CDialog::~CDialog();
+}
+
+// Reimplements 0x41c880: NetSessionConfigDialog::DoDataExchange
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+NetSessionConfigDialog::DoDataExchange(CDataExchange *dataExchange)
+{
+    DDX_Control(dataExchange, kNetSessionConfigMaxPlayersSpinId,
+                (CWnd &)m_maxPlayersSpin);
+    DDX_Control(dataExchange, kNetSessionConfigValueLimitSpinId,
+                (CWnd &)m_valueLimitSpin);
+    DDX_Control(dataExchange, kNetSessionConfigTimeLimitSpinId,
+                (CWnd &)m_timeLimitSpin);
+    DDX_Control(dataExchange, kNetSessionConfigMapComboId, (CWnd &)m_mapCombo);
+    DDX_Text(dataExchange, kNetSessionConfigSessionNameEditId, m_sessionName);
+    DDV_MaxChars(dataExchange, m_sessionName, kNetSessionConfigSessionNameMaxChars);
+    DDX_Text(dataExchange, kNetSessionConfigValueLimitEditId, m_valueLimit);
+    DDV_MinMaxUInt(dataExchange, m_valueLimit, 0, kNetSessionConfigLimitMax);
+    DDX_Text(dataExchange, kNetSessionConfigTimeLimitEditId, m_timeLimitMinutes);
+    DDV_MinMaxUInt(dataExchange, m_timeLimitMinutes, 0, kNetSessionConfigLimitMax);
+    DDX_Text(dataExchange, kNetSessionConfigMaxPlayersEditId, m_maxPlayers);
+    DDV_MinMaxUInt(dataExchange, m_maxPlayers, kNetSessionConfigMaxPlayersMin,
+                   kNetSessionConfigMaxPlayersMax);
+    DDX_Check(dataExchange, kNetSessionConfigUnusedCheckboxId,
+              m_unusedCheckboxEnabled);
+}
+
+// Reimplements 0x41c970: NetSessionConfigDialog::GetMessageMap
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE const AFX_MSGMAP *RECOIL_THISCALL
+NetSessionConfigDialog::GetMessageMap() const
+{
+    return &NetSessionConfigDialog::messageMap;
+}
+
+// Reimplements 0x41ca30: NetSessionConfigDialog::OnInitDialog
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE BOOL RECOIL_THISCALL
+NetSessionConfigDialog::OnInitDialog()
+{
+    ((CDialog *)this)->CDialog::OnInitDialog();
+
+    m_sessionName.Format(kNetSessionConfigSessionNameFormat,
+                         m_defaultExerciseOrdinal);
+
+    for (int mapIndex = 0; mapIndex < kNetSessionConfigMapNameCount; ++mapIndex) {
+        const LRESULT comboItemIndex =
+            ::SendMessageA(m_mapCombo.m_hWnd, CB_ADDSTRING, 0,
+                         (LPARAM)((const char *)g_NetSessionConfigDialog_MapNameStrings[mapIndex]));
+        ::SendMessageA(m_mapCombo.m_hWnd, CB_SETITEMDATA, comboItemIndex, mapIndex);
+    }
+
+    ::SendMessageA(m_mapCombo.m_hWnd, CB_SETCURSEL, 0, 0);
+    ::SendMessageA(m_timeLimitSpin.m_hWnd, kNetSessionConfigSpinSetRangeMessage, 0,
+                 MAKELPARAM(360, 0));
+    ::SendMessageA(m_valueLimitSpin.m_hWnd, kNetSessionConfigSpinSetRangeMessage, 0,
+                 MAKELPARAM(100, 0));
+
+    LPARAM maxPlayersRange = MAKELPARAM(kNetSessionConfigMaxPlayersMax,
+                                        kNetSessionConfigMaxPlayersMin);
+    if (zOpt::GetNetworkModemEnabled() != 0) {
+        maxPlayersRange = MAKELPARAM(kNetSessionConfigMaxPlayersMin,
+                                     kNetSessionConfigMaxPlayersMin);
+    }
+    ::SendMessageA(m_maxPlayersSpin.m_hWnd, kNetSessionConfigSpinSetRangeMessage, 0,
+                 maxPlayersRange);
+
+    m_valueLimit = kNetSessionConfigDefaultValueLimit;
+    m_timeLimitMinutes = kNetSessionConfigDefaultTimeLimitMinutes;
+    m_maxPlayers = kNetSessionConfigDefaultMaxPlayers;
+    m_unusedCheckboxEnabled = 1;
+    ((CWnd *)this)->UpdateData(FALSE);
+    ((CWnd *)this)->SetDlgItemTextA(
+        kNetSessionConfigMaxPlayersLabelId,
+        zLoc::GetMessageString(kNetSessionConfigMaxPlayersDefaultMessageId));
+    return TRUE;
+}
+
+// Reimplements 0x41cb50: NetSessionConfigDialog::OnDestroy
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+NetSessionConfigDialog::OnDestroy()
+{
+    ((GameNetMfcWndAccess *)this)->CallOnDestroy();
+    const LRESULT selectedMapComboIndex =
+        ::SendMessageA(m_mapCombo.m_hWnd, CB_GETCURSEL, 0, 0);
+    m_selectedMapIndex = (int)::SendMessageA(
+        m_mapCombo.m_hWnd, CB_GETITEMDATA, selectedMapComboIndex, 0);
+}
+
+// Reimplements 0x41cb90: NetSessionConfigDialog::OnMapChanged
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL
+NetSessionConfigDialog::OnMapChanged()
+{
+    const LRESULT selectedMapComboIndex =
+        ::SendMessageA(m_mapCombo.m_hWnd, CB_GETCURSEL, 0, 0);
+    const LRESULT selectedMapIndex =
+        ::SendMessageA(m_mapCombo.m_hWnd, CB_GETITEMDATA, selectedMapComboIndex, 0);
+    m_selectedMapIndex = (int)selectedMapIndex;
+
+    unsigned int messageId = kNetSessionConfigMaxPlayersSpecialMapMessageId;
+    if (selectedMapIndex != kNetSessionConfigSpecialMapIndex) {
+        messageId = kNetSessionConfigMaxPlayersDefaultMessageId;
+    }
+    ((CWnd *)this)->SetDlgItemTextA(
+        kNetSessionConfigMaxPlayersLabelId,
+        zLoc::GetMessageString(messageId));
+}
+
+// Reimplements 0x41c990: NetSessionConfigDialog::InitMapNameStrings
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL
+NetSessionConfigDialog::InitMapNameStrings()
+{
+    new (&g_NetSessionConfigDialog_MapNameStrings[0]) CString("RiverWorks");
+    new (&g_NetSessionConfigDialog_MapNameStrings[1]) CString("Crater Chaos");
+    new (&g_NetSessionConfigDialog_MapNameStrings[2]) CString("Beach Rally");
+    new (&g_NetSessionConfigDialog_MapNameStrings[3]) CString("Clone City");
+    new (&g_NetSessionConfigDialog_MapNameStrings[4]) CString("Frozen Tundra");
+    new (&g_NetSessionConfigDialog_MapNameStrings[5]) CString("Poison Valley");
+    new (&g_NetSessionConfigDialog_MapNameStrings[6]) CString("New Clone City");
+}
+
+// Reimplements 0x41ca00: NetSessionConfigDialog::RegisterMapNameCleanup
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL
+NetSessionConfigDialog::RegisterMapNameCleanup()
+{
+    atexit(&NetSessionConfigDialog::CleanupMapNameStringsOnExit);
+}
+
+// Reimplements 0x41ca10: NetSessionConfigDialog::CleanupMapNameStringsOnExit
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL
+NetSessionConfigDialog::CleanupMapNameStringsOnExit()
+{
+    for (int index = kNetSessionConfigMapNameCount - 1; index >= 0; --index) {
+        g_NetSessionConfigDialog_MapNameStrings[index].~CString();
+    }
+}
 
 namespace GameNet {
 // Reimplements 0x414550: GameNet::ChatComposeKeyCallback (D:\Proj\Battlesport\ai_net.cpp)
@@ -1717,6 +2542,19 @@ SendPkt0C_HudTimerStatusBits(HudTimerPanelNetState *timerState) {
     zNetwork_SendPacketReliable(&g_NetPkt0C_HudTimerStatusBitsBuf.header);
     return HandlePkt0C_HudTimerStatusBits(g_NetPkt0C_HudTimerStatusBitsBuf.header.payloadDword0,
                                           &g_NetPkt0C_HudTimerStatusBitsBuf);
+}
+
+// Reimplements 0x434460: GameNet::SendPkt14_HudTimerAndFlagsSync
+// (D:\Proj\Battlesport\GameNet.cpp)
+RECOIL_NOINLINE int RECOIL_FASTCALL
+SendPkt14_HudTimerAndFlagsSync(int eventCode, unsigned int statusFlags,
+                               int valueOrTime, int auxParam) {
+    g_NetPkt14_HudTimerAndFlagsSyncBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt14_HudTimerAndFlagsSyncBuf.valueOrTime = valueOrTime;
+    g_NetPkt14_HudTimerAndFlagsSyncBuf.eventCode = (short)(eventCode);
+    g_NetPkt14_HudTimerAndFlagsSyncBuf.auxParam = (short)(auxParam);
+    g_NetPkt14_HudTimerAndFlagsSyncBuf.statusFlags = statusFlags;
+    return zNetwork_SendPacketReliable(&g_NetPkt14_HudTimerAndFlagsSyncBuf.header);
 }
 
 // Reimplements 0x4344b0: GameNet::HandlePkt14_HudTimerAndFlagsSync

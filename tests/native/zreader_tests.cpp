@@ -461,6 +461,65 @@ extern "C" int zreader_file_exists_and_list_create_smoke(void) {
     return ok && zReader::FileExists(tempPath) == 0 ? 0 : 2;
 }
 
+extern "C" int zarchive_list_get_at_smoke(void) {
+    int payload0 = 10;
+    int payload1 = 20;
+    int payload2 = 30;
+
+    zArchiveListNode node0 = {};
+    zArchiveListNode node1 = {};
+    zArchiveListNode node2 = {};
+    node0.payload = &payload0;
+    node0.next = &node1;
+    node0.prev = &node2;
+    node1.payload = &payload1;
+    node1.next = &node2;
+    node1.prev = &node0;
+    node2.payload = &payload2;
+    node2.next = &node0;
+    node2.prev = &node1;
+
+    zArchiveList list = {};
+    list.count = 3;
+    list.head = &node0;
+
+    if (zArchiveList_GetAt(nullptr, 0) != nullptr) {
+        return 1;
+    }
+
+    if (zArchiveList_GetAt(&list, 3) != nullptr) {
+        return 2;
+    }
+
+    if (zArchiveList_GetAt(&list, 0) != &payload0 ||
+        zArchiveList_GetAt(&list, 1) != &payload1 ||
+        zArchiveList_GetAt(&list, 2) != &payload2) {
+        return 3;
+    }
+
+    if (zArchiveList_GetAt(&list, -1) != &payload0) {
+        return 4;
+    }
+
+    list.count = 5;
+    if (zArchiveList_GetAt(&list, 4) != &payload0) {
+        return 5;
+    }
+
+    return 0;
+}
+
+extern "C" int zarchive_list_get_count_smoke(void) {
+    zArchiveList list = {};
+    list.count = 4;
+
+    if (zArchiveList_GetCount(nullptr) != 0) {
+        return 1;
+    }
+
+    return zArchiveList_GetCount(&list) == 4 ? 0 : 2;
+}
+
 extern "C" int zreader_archive_list_and_search_paths_smoke(void) {
     if (g_zUtil_ZRDR_FreePool == nullptr) {
         g_zUtil_ZRDR_FreePool = zArchiveList_CreateEmpty();
