@@ -1,12 +1,12 @@
 #pragma once
 
-#include <stddef.h>
 #include "recoil/recoil_types.h"
+#include <stddef.h>
 
 #include "GameZRecoil/zReader/zReader.h"
 #include "recoil/recoil_callconv.h"
 
-typedef void * zZbdSectionCallback;
+typedef void *zZbdSectionCallback;
 struct zZbdSectionCallbackCtx;
 
 struct zZbdSectionHandler {
@@ -16,12 +16,17 @@ struct zZbdSectionHandler {
     int sortOrder;
     void *userData;
 
-    static RECOIL_NOINLINE bool RECOIL_FASTCALL
-    CompareSortOrderLessThan(const zZbdSectionHandler *nodeA, const zZbdSectionHandler *nodeB);
+    static RECOIL_NOINLINE bool RECOIL_FASTCALL CompareSortOrderLessThan(
+        const zZbdSectionHandler *nodeA,
+        const zZbdSectionHandler *nodeB
+    );
     RECOIL_NOINLINE int RECOIL_THISCALL InvokePreLoad(zZbdSectionCallbackCtx *callbackCtx);
-    RECOIL_NOINLINE void RECOIL_THISCALL InvokeDataReady(zZbdSectionCallbackCtx *callbackCtx,
-                                                         const char *sectionToken, void *buffer,
-                                                         unsigned int size);
+    RECOIL_NOINLINE void RECOIL_THISCALL InvokeDataReady(
+        zZbdSectionCallbackCtx *callbackCtx,
+        const char *sectionToken,
+        void *buffer,
+        unsigned int size
+    );
 };
 
 struct zZbdSectionHandlerNode {
@@ -40,9 +45,12 @@ struct zZbdSectionHandlerList {
     RECOIL_NOINLINE void RECOIL_THISCALL Front(zZbdSectionHandlerNode **outIter);
     RECOIL_NOINLINE void RECOIL_THISCALL Swap(zZbdSectionHandlerList *other);
     RECOIL_NOINLINE void RECOIL_THISCALL Merge(zZbdSectionHandlerList *source);
-    RECOIL_NOINLINE void RECOIL_THISCALL
-    SpliceThreeNodes(zZbdSectionHandlerNode *position, zZbdSectionHandlerList *source,
-                     zZbdSectionHandlerNode *first, zZbdSectionHandlerNode *last);
+    RECOIL_NOINLINE void RECOIL_THISCALL SpliceThreeNodes(
+        zZbdSectionHandlerNode *position,
+        zZbdSectionHandlerList *source,
+        zZbdSectionHandlerNode *first,
+        zZbdSectionHandlerNode *last
+    );
 };
 
 struct zZbdManager;
@@ -63,29 +71,69 @@ struct zZbdManager {
     unsigned int unknown_2c;
     int stopRequested;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL RegisterSectionHandler(const char *sectionName,
-                                                                zZbdSectionCallback onPreLoad,
-                                                                zZbdSectionCallback onDataReady,
-                                                                int sortOrder,
-                                                                void *userData);
+    RECOIL_NOINLINE void RECOIL_THISCALL RegisterSectionHandler(
+        const char *sectionName,
+        zZbdSectionCallback onPreLoad,
+        zZbdSectionCallback onDataReady,
+        int sortOrder,
+        void *userData
+    );
     RECOIL_NOINLINE int RECOIL_THISCALL LoadEntries(const char *filename);
     RECOIL_NOINLINE int RECOIL_THISCALL LoadZarFile(const char *filepath);
     RECOIL_NOINLINE void RECOIL_THISCALL RequestStop();
-    RECOIL_NOINLINE int RECOIL_THISCALL
-    WriteSectionRecord(zZbdSectionCallbackCtx *callbackCtx, const char *sectionToken,
-                       const void *data, unsigned int dataSize);
+    RECOIL_NOINLINE int RECOIL_THISCALL WriteSectionRecord(
+        zZbdSectionCallbackCtx *callbackCtx,
+        const char *sectionToken,
+        const void *data,
+        unsigned int dataSize
+    );
+    RECOIL_NOINLINE void RECOIL_THISCALL FlushTempStreamToSectionRecord(
+        FILE *tempStream,
+        zZbdSectionCallbackCtx *callbackCtx,
+        const char *sectionToken
+    );
+    RECOIL_NOINLINE FILE *RECOIL_THISCALL CreateTempReadStreamFromBuffer(
+        void *buffer,
+        unsigned int size
+    );
+    RECOIL_NOINLINE void RECOIL_THISCALL RemoveTempFiles(FILE *tempStream);
     RECOIL_NOINLINE void RECOIL_THISCALL SortSectionHandlers();
     RECOIL_NOINLINE void RECOIL_THISCALL Destroy();
 };
 
 RECOIL_STATIC_ASSERT(sizeof(zZbdSectionHandler) == 0x14);
 RECOIL_STATIC_ASSERT(sizeof(zZbdSectionHandlerNode) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(zZbdSectionHandlerList, sentinel) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zZbdSectionHandlerList, count) == 0x08);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zZbdSectionHandlerList,
+        sentinel
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zZbdSectionHandlerList,
+        count
+    ) == 0x08
+);
 RECOIL_STATIC_ASSERT(sizeof(zZbdSectionHandlerList) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(zZbdManager, sectionHandlerListSentinel) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zZbdManager, sectionHandlerCount) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zZbdManager, stopRequested) == 0x30);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zZbdManager,
+        sectionHandlerListSentinel
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zZbdManager,
+        sectionHandlerCount
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zZbdManager,
+        stopRequested
+    ) == 0x30
+);
 RECOIL_STATIC_ASSERT(sizeof(zZbdManager) == 0x34);
 
 extern "C" {
@@ -101,12 +149,31 @@ RECOIL_NOINLINE void RECOIL_CDECL ZBD_DestroyGlobalManager();
 } // namespace zUtil
 
 namespace zUtil_ZAR {
-RECOIL_NOINLINE void RECOIL_FASTCALL RegisterSectionHandler(const char *sectionName,
-                                                            zZbdSectionCallback onPreLoad,
-                                                            zZbdSectionCallback onDataReady,
-                                                            int sortOrder, void *userData);
-RECOIL_NOINLINE int RECOIL_FASTCALL WriteSectionBlob(zZbdSectionCallbackCtx *callbackCtx,
-                                                              const char *sectionToken,
-                                                              const void *data,
-                                                              unsigned int dataSize);
+RECOIL_NOINLINE void RECOIL_FASTCALL RegisterSectionHandler(
+    const char *sectionName,
+    zZbdSectionCallback onPreLoad,
+    zZbdSectionCallback onDataReady,
+    int sortOrder,
+    void *userData
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL WriteSectionBlob(
+    zZbdSectionCallbackCtx *callbackCtx,
+    const char *sectionToken,
+    const void *data,
+    unsigned int dataSize
+);
 } // namespace zUtil_ZAR
+
+namespace zUtil_ZBD {
+RECOIL_NOINLINE FILE *RECOIL_CDECL OpenTempWriteStream();
+RECOIL_NOINLINE FILE *RECOIL_FASTCALL OpenTempReadStream(
+    void *buffer,
+    unsigned int size
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL FlushTempWriteStreamToSectionRecord(
+    FILE *tempStream,
+    zZbdSectionCallbackCtx *callbackCtx,
+    const char *sectionToken
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL CloseTempReadStream(FILE *tempStream);
+} // namespace zUtil_ZBD

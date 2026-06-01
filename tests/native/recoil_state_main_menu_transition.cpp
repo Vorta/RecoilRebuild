@@ -253,15 +253,12 @@ extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void) {
     ZOPT_NETWORK_ENABLED = &networkEnabled;
     g_GameStateOrMapTable = nullptr;
 
-    HudUiMainMenuDialog frontendDialog{};
-    HudUiMainMenuDialog *const frontendResult =
-        frontendDialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+    HudUiMainMenuDialog frontendDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
     const bool frontendConstructed =
-        frontendResult == &frontendDialog &&
-        frontendDialog.base.base.base.vptr !=
+        frontendDialog.base.base.vptr !=
             reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiBackground_FTable) &&
-        frontendDialog.base.base.base.enabled == 0 &&
-        frontendDialog.base.base.captureTransitionMask == 1 &&
+        frontendDialog.base.base.enabled == 0 &&
+        frontendDialog.base.captureTransitionMask == 1 &&
         frontendDialog.creditsButton.base.ftable != nullptr &&
         frontendDialog.backButton.base.ftable != nullptr &&
         frontendDialog.saveGameButton.base.ftable != nullptr &&
@@ -279,21 +276,17 @@ extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void) {
     g_GameStateOrMapTable = &gameState;
 
     playerState.lifecycleState = 4;
-    HudUiMainMenuDialog resumeDialog{};
-    HudUiMainMenuDialog *const resumeResult =
-        resumeDialog.Constructor(RECOIL_MAINMENU_ROUTE_INGAME);
+    HudUiMainMenuDialog resumeDialog(RECOIL_MAINMENU_ROUTE_INGAME);
     const bool resumeConstructed =
-        resumeResult == &resumeDialog && resumeDialog.saveGameButton.modeOrEnabled == 1 &&
+        resumeDialog.saveGameButton.modeOrEnabled == 1 &&
         resumeDialog.loadGameButton.modeOrEnabled == 1 &&
         resumeDialog.quitButton.base.ftable != nullptr;
 
     playerState.lifecycleState = 3;
     *reinterpret_cast<int *>(playerState.bytes + 0x25c) = 1;
-    HudUiMainMenuDialog blockedDialog{};
-    HudUiMainMenuDialog *const blockedResult =
-        blockedDialog.Constructor(RECOIL_MAINMENU_ROUTE_INGAME);
+    HudUiMainMenuDialog blockedDialog(RECOIL_MAINMENU_ROUTE_INGAME);
     const bool blockedConstructed =
-        blockedResult == &blockedDialog && blockedDialog.saveGameButton.modeOrEnabled == 0 &&
+        blockedDialog.saveGameButton.modeOrEnabled == 0 &&
         blockedDialog.loadGameButton.modeOrEnabled == 0;
 
     g_GameStateOrMapTable = oldGameState;
@@ -339,28 +332,31 @@ extern "C" int hud_ui_main_menu_dialog_destructor_smoke(void) {
     ZOPT_NETWORK_ENABLED = &networkEnabled;
     g_GameStateOrMapTable = nullptr;
 
-    HudUiMainMenuDialog dialog{};
-    dialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
-    dialog.Destructor();
+    void *const storage = ::operator new(sizeof(HudUiMainMenuDialog));
+    HudUiMainMenuDialog *const dialog =
+        new (storage) HudUiMainMenuDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
+    dialog->~HudUiMainMenuDialog();
 
     const bool buttonsDestroyed =
-        dialog.controlsButton.base.ftable ==
+        dialog->controlsButton.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-        dialog.quitButton.base.ftable ==
+        dialog->quitButton.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-        dialog.optionsButton.base.ftable ==
+        dialog->optionsButton.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-        dialog.newGameButton.base.ftable ==
+        dialog->newGameButton.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-        dialog.loadGameButton.base.ftable ==
+        dialog->loadGameButton.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-        dialog.saveGameButton.base.ftable ==
+        dialog->saveGameButton.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-        dialog.backButton.base.ftable ==
+        dialog->backButton.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-        dialog.creditsButton.base.ftable ==
+        dialog->creditsButton.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
-    const bool baseDestroyed = dialog.base.base.base.vptr == &g_HudUiContainer_FTable;
+    const bool baseDestroyed =
+        *(const HudUiContainer_FTable *const *)dialog == &g_HudUiContainer_FTable;
+    ::operator delete(storage);
 
     g_GameStateOrMapTable = oldGameState;
     ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
@@ -409,8 +405,9 @@ extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void) {
     g_RecoilApp.m_stateStack_0d8[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
-    HudUiMainMenuDialog dialog{};
-    dialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+    void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
+    HudUiMainMenuDialog &dialog =
+        *new (dialogStorage) HudUiMainMenuDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
 
     zVidImagePartial activateImage{};
     dialog.creditsButton.activateImage = &activateImage;
@@ -492,8 +489,9 @@ extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void) {
     g_RecoilApp.m_stateStack_0d8[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
-    HudUiMainMenuDialog dialog{};
-    dialog.Constructor(RECOIL_MAINMENU_ROUTE_INGAME);
+    void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
+    HudUiMainMenuDialog &dialog =
+        *new (dialogStorage) HudUiMainMenuDialog(RECOIL_MAINMENU_ROUTE_INGAME);
 
     zVidImagePartial activateImage{};
     dialog.saveGameButton.activateImage = &activateImage;
@@ -571,8 +569,9 @@ extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
     oldState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
 
-    HudUiMainMenuDialog dialog{};
-    dialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+    void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
+    HudUiMainMenuDialog &dialog =
+        *new (dialogStorage) HudUiMainMenuDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
 
     typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
     ActivateFn activate = (ActivateFn)(dialog.loadGameButton.base.ftable->slots[12]);
@@ -697,8 +696,9 @@ extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void) {
     g_RecoilApp.m_stateStack_0d8[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
-    HudUiMainMenuDialog dialog{};
-    dialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+    void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
+    HudUiMainMenuDialog &dialog =
+        *new (dialogStorage) HudUiMainMenuDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
 
     zVidImagePartial activateImage{};
     dialog.newGameButton.activateImage = &activateImage;
@@ -780,8 +780,9 @@ extern "C" int hud_ui_menu_back_button_on_activate_smoke(void) {
     g_mainMenuLayoutActivatedCount = 0;
     g_HudUiMgrCurrentLayout = &layout;
 
-    HudUiMainMenuDialog dialog{};
-    dialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+    void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
+    HudUiMainMenuDialog &dialog =
+        *new (dialogStorage) HudUiMainMenuDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
 
     zVidImagePartial activateImage{};
     dialog.backButton.activateImage = &activateImage;
@@ -857,8 +858,9 @@ extern "C" int hud_ui_main_menu_options_button_on_activate_smoke(void) {
     g_RecoilApp.m_stateStack_0d8[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
-    HudUiMainMenuDialog dialog{};
-    dialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+    void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
+    HudUiMainMenuDialog &dialog =
+        *new (dialogStorage) HudUiMainMenuDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
 
     zVidImagePartial activateImage{};
     dialog.optionsButton.activateImage = &activateImage;
@@ -936,8 +938,9 @@ extern "C" int hud_ui_main_menu_quit_button_on_activate_smoke(void) {
     g_RecoilApp.m_stateStack_0d8[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
-    HudUiMainMenuDialog dialog{};
-    dialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+    void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
+    HudUiMainMenuDialog &dialog =
+        *new (dialogStorage) HudUiMainMenuDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
 
     zVidImagePartial activateImage{};
     dialog.quitButton.activateImage = &activateImage;
@@ -1015,8 +1018,9 @@ extern "C" int hud_ui_main_menu_controls_button_on_activate_smoke(void) {
     g_RecoilApp.m_stateStack_0d8[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
-    HudUiMainMenuDialog dialog{};
-    dialog.Constructor(RECOIL_MAINMENU_ROUTE_FRONTEND);
+    void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
+    HudUiMainMenuDialog &dialog =
+        *new (dialogStorage) HudUiMainMenuDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
 
     zVidImagePartial activateImage{};
     dialog.controlsButton.activateImage = &activateImage;

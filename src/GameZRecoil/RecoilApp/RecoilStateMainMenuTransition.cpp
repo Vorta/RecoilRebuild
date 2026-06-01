@@ -50,13 +50,13 @@ RECOIL_NOINLINE RECOIL_NO_GS RecoilStateMainMenuTransition::~RecoilStateMainMenu
     vftable = kRecoilStateMainMenuTransition_VtblAddress;
     RecoilStateMainMenuTransitionBaseVtableGuard baseVtableOnExit = {this};
 
-    HudUiMainMenuDialogVirtual *dialog = (HudUiMainMenuDialogVirtual *)m_mainMenuDialog;
+    HudUiMainMenuDialog *dialog = (HudUiMainMenuDialog *)m_mainMenuDialog;
     if (dialog != 0) {
         dialog->SetEnabled(0);
 
-        dialog = (HudUiMainMenuDialogVirtual *)m_mainMenuDialog;
+        dialog = (HudUiMainMenuDialog *)m_mainMenuDialog;
         if (dialog != 0) {
-            dialog->ScalarDeletingDestructor(1);
+            delete dialog;
         }
 
         m_mainMenuDialog = 0;
@@ -66,7 +66,9 @@ RECOIL_NOINLINE RECOIL_NO_GS RecoilStateMainMenuTransition::~RecoilStateMainMenu
 // Reimplements 0x415190: RecoilStateMainMenuTransition::ScalarDeletingDestructor
 // (D:\Proj\GameZRecoil\RecoilApp\RecoilStateMainMenuTransition.cpp)
 RECOIL_NOINLINE RecoilStateMainMenuTransition *RECOIL_THISCALL
-RecoilStateMainMenuTransition::ScalarDeletingDestructor(unsigned int flags) {
+RecoilStateMainMenuTransition::ScalarDeletingDestructor(
+    unsigned int flags
+) {
     this->~RecoilStateMainMenuTransition();
 
     if ((flags & 1u) != 0) {

@@ -3804,6 +3804,9 @@ extern "C" int zrndr_overlay_rect_submit_smoke(void) {
 }
 
 extern "C" int zrndr_overlay_and_mmx_masks_smoke(void) {
+    int *oldGraphicsFlags = zRndr::g_graphicsFlags;
+    int oldDefaultGraphicsFlags = zRndr::g_defaultGraphicsFlags;
+
     zRndr::g_swOverlayDstScale5 = 3;
     zRndr::g_swOverlayPremulPacked = 0x00200100;
     zRndr::g_swOverlayPremulPackedRot16 = 0x00010002;
@@ -3823,6 +3826,8 @@ extern "C" int zrndr_overlay_and_mmx_masks_smoke(void) {
     zRndr::g_pixelPackGreenMask = 0x07e0;
     zRndr::g_pixelPackBlueMask = 0x001f;
     zRndr::g_pixelPackGreenBits = 6;
+    zRndr::g_defaultGraphicsFlags = 0;
+    zRndr::g_graphicsFlags = &zRndr::g_defaultGraphicsFlags;
     g_zVideo_FxSurfacePixels16 = surface;
     g_zVideo_FxSurfacePitchPixels16 = 4;
     zRndr::g_overlayBlendEnabled = 1;
@@ -3838,14 +3843,38 @@ extern "C" int zrndr_overlay_and_mmx_masks_smoke(void) {
         return 2;
     }
 
-    zRndr::SpanMmxSetPixelFormatMasks(5);
-    if (zRndr::g_mmxMaskGreenBits[0] != 0x03e0 || zRndr::g_mmxMaskRedPacked[3] != 0xfc00 ||
-        zRndr::g_mmxMaskGreenPacked[2] != 0xffe0 || zRndr::g_mmxMaskBlueBits[1] != 0x001f) {
+    std::uint16_t mmxSurface[4] = {};
+    zRndr::g_defaultGraphicsFlags = 0x4;
+    g_zVideo_FxSurfacePixels16 = mmxSurface;
+    g_zVideo_FxSurfacePitchPixels16 = 4;
+    zRndr::g_overlayBlendEnabled = 1;
+    zRndr::g_overlayBlendRectLeft = 0;
+    zRndr::g_overlayBlendRectTop = 0;
+    zRndr::g_overlayBlendRectRight = 4;
+    zRndr::g_overlayBlendRectBottom = 1;
+    zRndr::g_overlayBlendPackedColor16 = 0x07e0;
+    zRndr::g_overlayBlendAlpha = 1.0;
+    zRndr_OverlayRect_FlushSw();
+    if (zRndr::g_pfnOverlayBlendRow != zRndr::OverlayBlendRow565_Mmx ||
+        mmxSurface[0] != 0x07e0 || mmxSurface[1] != 0x07e0 || mmxSurface[2] != 0x07e0 ||
+        mmxSurface[3] != 0x07e0) {
         return 3;
     }
 
+    zRndr::SpanMmxSetPixelFormatMasks(5);
+    if (zRndr::g_mmxMaskGreenBits[0] != 0x03e0 || zRndr::g_mmxMaskRedPacked[3] != 0xfc00 ||
+        zRndr::g_mmxMaskGreenPacked[2] != 0xffe0 || zRndr::g_mmxMaskBlueBits[1] != 0x001f) {
+        return 4;
+    }
+
     zRndr::SpanMmxSetPixelFormatMasks(6);
-    return zRndr::g_mmxMaskGreenBits[0] == 0x07e0 && zRndr::g_mmxMaskRedPacked[3] == 0xf800 ? 0 : 4;
+    const int result =
+        zRndr::g_mmxMaskGreenBits[0] == 0x07e0 && zRndr::g_mmxMaskRedPacked[3] == 0xf800
+            ? 0
+            : 5;
+    zRndr::g_graphicsFlags = oldGraphicsFlags;
+    zRndr::g_defaultGraphicsFlags = oldDefaultGraphicsFlags;
+    return result;
 }
 
 extern "C" int zrndr_span_alpha_blend_565_const_alpha_pal8_smoke(void) {

@@ -7,7 +7,7 @@
 namespace Time {
 RECOIL_NOINLINE void RECOIL_CDECL Reset();
 RECOIL_NOINLINE void RECOIL_CDECL Tick();
-}
+} // namespace Time
 
 extern "C" {
 extern float g_Time_MaximumDeltaTimeSec;

@@ -13,6 +13,7 @@
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
@@ -117,6 +118,10 @@ int g_creditsOnWndActivateInvalidateOrder;
 int g_creditsTryBecomeCurrentSetEnabledCalls;
 int g_creditsTryBecomeCurrentLastEnabled;
 void *g_creditsTryBecomeCurrentSetEnabledThis;
+int g_controlsResumeSetEnabledCalls;
+int g_controlsResumeLastEnabled;
+int g_controlsResumeUpdateCalls;
+float g_controlsResumeLastDelta;
 int g_confirmQuitBackgroundLoadCalls;
 bool g_confirmQuitBackgroundLoadArgsOk;
 int g_confirmQuitBackgroundBindCalls;
@@ -184,6 +189,20 @@ struct TestConfirmQuitDialog {
     int lastEnabled = -1;
     int scalarDeletingCount = 0;
     unsigned int lastScalarDeletingFlags = 0;
+};
+
+struct TestControlsResumeDialog {
+    virtual void RECOIL_THISCALL Update(float deltaSeconds) {
+        ++g_controlsResumeUpdateCalls;
+        g_controlsResumeLastDelta = deltaSeconds;
+    }
+    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+        ++g_controlsResumeSetEnabledCalls;
+        g_controlsResumeLastEnabled = enabled;
+    }
+    virtual TestControlsResumeDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int) {
+        return this;
+    }
 };
 
 struct TestSaveLoadTransitionDialog {
@@ -2306,6 +2325,232 @@ extern "C" int recoil_state_controls_queue_enter_smoke(void) {
     return result;
 }
 
+extern "C" int recoil_state_controls_lifecycle_smoke(void) {
+    RecoilStateControls state{};
+    state.vftable = 0x11111111;
+    state.m_dialog = 0x22222222;
+
+    RecoilStateControls *const constructed = state.Constructor();
+    if (constructed != &state || state.vftable == 0 || state.vftable == 0x11111111 ||
+        state.m_dialog != 0) {
+        return 1;
+    }
+
+    TestConfirmQuitDialog dialog{};
+    state.vftable = 0x33333333;
+    state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.~RecoilStateControls();
+    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0 ||
+        dialog.scalarDeletingCount != 1 || dialog.lastScalarDeletingFlags != 1) {
+        return 2;
+    }
+
+    RecoilStateControls *const heapState =
+        static_cast<RecoilStateControls *>(::operator new(sizeof(RecoilStateControls)));
+    heapState->Constructor();
+    RecoilStateControls *const deleted = heapState->ScalarDeletingDestructor(1);
+    return deleted == heapState ? 0 : 3;
+}
+
+extern "C" int recoil_state_controls_activation_smoke(void) {
+    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const oldInputJoystick = ZOPT_INPUT_JOYSTICK;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    CodeFunctionPatch blitPatch{};
+    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+        &HudUiDialogController::BlitOwnedSurfaceToPrimary;
+    void (RECOIL_THISCALL FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
+        &FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(blitMember)),
+                           reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeBlitMember)),
+                           blitPatch)) {
+        return 1;
+    }
+
+    std::uint16_t pixels[4] = {};
+    int gameControlOptions = 13;
+    int joystickOption = 1;
+    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    g_GameStateOrMapTable = nullptr;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    RecoilStateControls state{};
+    const int accepted = state.OnTryBecomeCurrent();
+    HudUiControlsDialog *const dialog =
+        reinterpret_cast<HudUiControlsDialog *>(static_cast<std::uintptr_t>(state.m_dialog));
+    const bool activationOk =
+        accepted == 1 && dialog != nullptr && dialog->base.base.enabled == 1 &&
+        dialog->mouseOrJoystickSelector.selectedIndex == 1 &&
+        dialog->throttleModeSelector.selectedIndex == 1 &&
+        dialog->steeringModeSelector.selectedIndex == 0 &&
+        dialog->cursorModeSelector.selectedIndex == 1 &&
+        dialog->cameraModeSelector.selectedIndex == 1;
+
+    if (dialog != nullptr) {
+        dialog->mouseOrJoystickSelector.selectedIndex = 0;
+        dialog->throttleModeSelector.selectedIndex = 0;
+        dialog->steeringModeSelector.selectedIndex = 1;
+        dialog->cursorModeSelector.selectedIndex = 0;
+        dialog->cameraModeSelector.selectedIndex = 0;
+    }
+
+    g_confirmQuitBlitCalls = 0;
+    state.OnDeactivate();
+    const bool deactivateOk = state.m_dialog == 0 && g_confirmQuitBlitCalls == 1 &&
+                              zInp::GetJoystickOption() == 0 &&
+                              zOpt::GetThrottleMode() == 0 &&
+                              zOpt::GetSteeringMode() == 1 &&
+                              zOpt::GetCursorMode() == 0 &&
+                              zOpt::GetCameraModePlayerState() == 3;
+
+    RestoreFunctionPatch(blitPatch);
+    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    ZOPT_INPUT_JOYSTICK = oldInputJoystick;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+
+    return activationOk && deactivateOk ? 0 : 2;
+}
+
+extern "C" int recoil_state_controls_on_resume_smoke(void) {
+    zOpt_ViewRectSection **const oldWindowOption = g_zOpt_WindowSectionOption;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    CodeFunctionPatch postprocessPatch{};
+    CodeFunctionPatch invalidatePatch{};
+    CodeFunctionPatch unlockPatch{};
+    CodeFunctionPatch adjustPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                           reinterpret_cast<void *>(
+                               &FakeSaveLoadUpdateRunPostprocessOnPrimaryBuffer),
+                           postprocessPatch)) {
+        return 1;
+    }
+    void (RECOIL_THISCALL HudUiContainer::*invalidateMember)() =
+        &HudUiContainer::InvalidateChildren;
+    void (RECOIL_THISCALL FakeCreditsOnWndActivateThunk::*fakeInvalidateMember)() =
+        &FakeCreditsOnWndActivateThunk::InvalidateChildren;
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(TestCheatCodeMethodAddress(invalidateMember)),
+            reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeInvalidateMember)),
+            invalidatePatch)) {
+        RestoreFunctionPatch(postprocessPatch);
+        return 2;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                           reinterpret_cast<void *>(
+                               &FakeSaveLoadUpdateUnlockPrimarySurfaceState),
+                           unlockPatch)) {
+        RestoreFunctionPatch(invalidatePatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 3;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+                           reinterpret_cast<void *>(&FakeSaveLoadUpdateAdjustSurfaces),
+                           adjustPatch)) {
+        RestoreFunctionPatch(unlockPatch);
+        RestoreFunctionPatch(invalidatePatch);
+        RestoreFunctionPatch(postprocessPatch);
+        return 4;
+    }
+
+    std::uint16_t pixels[4] = {};
+    zOpt_ViewRectSection windowSection = {};
+    zOpt_ViewRectSection *windowPtr = &windowSection;
+    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    TestControlsResumeDialog dialog{};
+
+    RecoilStateControls state{};
+    state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+
+    g_controlsResumeSetEnabledCalls = 0;
+    g_controlsResumeLastEnabled = 0;
+    g_controlsResumeUpdateCalls = 0;
+    g_controlsResumeLastDelta = 1.0f;
+    g_creditsOnWndActivateInvalidateCalls = 0;
+    g_saveLoadUpdatePostprocessCalls = 0;
+    g_saveLoadUpdateUnlockCalls = 0;
+    g_saveLoadUpdateAdjustCalls = 0;
+    g_saveLoadUpdateAdjustWait = 0;
+    g_saveLoadUpdateAdjustBlit = 0;
+    g_saveLoadUpdateAdjustSrc = nullptr;
+    g_saveLoadUpdateAdjustDst = nullptr;
+    state.OnResume(77);
+    const bool dialogOk = g_controlsResumeSetEnabledCalls == 1 &&
+                          g_controlsResumeLastEnabled == 1 &&
+                          g_creditsOnWndActivateInvalidateCalls == 1 &&
+                          g_controlsResumeUpdateCalls == 1 &&
+                          g_controlsResumeLastDelta == 0.0f &&
+                          g_saveLoadUpdatePostprocessCalls == 1 &&
+                          g_saveLoadUpdateUnlockCalls == 1 &&
+                          g_saveLoadUpdateAdjustCalls == 1 &&
+                          g_saveLoadUpdateAdjustSrc == (zVidRect32 *)(&windowSection) &&
+                          g_saveLoadUpdateAdjustDst == (zVidRect32 *)(&windowSection) &&
+                          g_saveLoadUpdateAdjustWait == 1 &&
+                          g_saveLoadUpdateAdjustBlit == 1;
+
+    state.m_dialog = 0;
+    g_controlsResumeSetEnabledCalls = 0;
+    g_controlsResumeUpdateCalls = 0;
+    g_creditsOnWndActivateInvalidateCalls = 0;
+    g_saveLoadUpdatePostprocessCalls = 0;
+    g_saveLoadUpdateUnlockCalls = 0;
+    g_saveLoadUpdateAdjustCalls = 0;
+    state.OnResume(99);
+    const bool nullOk = g_controlsResumeSetEnabledCalls == 0 &&
+                        g_controlsResumeUpdateCalls == 0 &&
+                        g_creditsOnWndActivateInvalidateCalls == 0 &&
+                        g_saveLoadUpdatePostprocessCalls == 0 &&
+                        g_saveLoadUpdateUnlockCalls == 0 &&
+                        g_saveLoadUpdateAdjustCalls == 0;
+
+    RestoreFunctionPatch(adjustPatch);
+    RestoreFunctionPatch(unlockPatch);
+    RestoreFunctionPatch(invalidatePatch);
+    RestoreFunctionPatch(postprocessPatch);
+    g_zOpt_WindowSectionOption = oldWindowOption;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+
+    return dialogOk && nullOk ? 0 : 5;
+}
+
 extern "C" int recoil_state_confirm_quit_queue_enter_smoke(void) {
     const RecoilApp oldApp = g_RecoilApp;
     const RecoilStateConfirmQuit oldConfirmQuitState = g_RecoilState_ConfirmQuit;
@@ -3265,6 +3510,83 @@ extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
                    zrdThunk && selectorThunk
                ? 0
                : 1;
+}
+
+extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
+    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const oldInputJoystick = ZOPT_INPUT_JOYSTICK;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    std::uint16_t pixels[4] = {};
+    int gameControlOptions = 13;
+    int joystickOption = 1;
+    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestCheatCodeVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    HudUiControlsDialog dialog{};
+    HudUiControlsDialog *const returned = dialog.Constructor();
+    const bool constructed =
+        returned == &dialog &&
+        dialog.base.base.vptr ==
+            reinterpret_cast<const HudUiContainer_FTable *>(&g_HudUiControlsDialog_FTableHeader) &&
+        dialog.resumeWidget.base.ftable == &g_HudUiControlsDialog_ResumeWidget_Vtbl &&
+        dialog.commandsWidget.base.ftable == &g_HudUiControlsDialog_CommandsWidget_Vtbl &&
+        dialog.mouseOrJoystickSelector.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(
+                &g_HudUiControlsDialog_MouseOrJoystickSelector_Vtbl) &&
+        dialog.throttleModeSelector.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(
+                &g_HudUiControlsDialog_ThrottleModeSelector_Vtbl) &&
+        dialog.steeringModeSelector.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(
+                &g_HudUiControlsDialog_SteeringModeSelector_Vtbl) &&
+        dialog.cursorModeSelector.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(
+                &g_HudUiControlsDialog_CursorModeSelector_Vtbl) &&
+        dialog.cameraModeSelector.base.base.ftable ==
+            reinterpret_cast<const HudUiWidget_FTable *>(
+                &g_HudUiControlsDialog_FTableHeader.cameraModeSelector) &&
+        dialog.resumeWidget.base.ftable->slots[12] ==
+            TestCheatCodeMethodAddress(&HudUiZrdWidget::OnActivateQueueExitCurrentState) &&
+        dialog.commandsWidget.base.ftable->slots[12] ==
+            TestCheatCodeMethodAddress(&HudUiControlsDialog_CommandsWidget::OnActivate) &&
+        dialog.mouseOrJoystickSelector.selectedIndex == 1 &&
+        dialog.throttleModeSelector.selectedIndex == 1 &&
+        dialog.steeringModeSelector.selectedIndex == 0 &&
+        dialog.cursorModeSelector.selectedIndex == 1 &&
+        dialog.cameraModeSelector.selectedIndex == 1;
+
+    HudUiControlsDialog *const noDeleteResult = dialog.ScalarDeletingDestructor(0);
+    const bool noDeleteScalar = noDeleteResult == &dialog;
+
+    HudUiControlsDialog *const heapDialog =
+        static_cast<HudUiControlsDialog *>(::operator new(sizeof(HudUiControlsDialog)));
+    heapDialog->Constructor();
+    HudUiControlsDialog *const heapScalarResult = heapDialog->ScalarDeletingDestructor(1);
+    const bool heapScalar = heapScalarResult == heapDialog;
+
+    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    ZOPT_INPUT_JOYSTICK = oldInputJoystick;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+
+    return constructed && noDeleteScalar && heapScalar ? 0 : 1;
 }
 
 extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(void) {
@@ -6895,6 +7217,181 @@ extern "C" int recoil_app_attract_fmv_on_deactivate_smoke(void) {
                    action1.next == &action2 && action2.next == nullptr
                ? 0
                : 1;
+}
+
+extern "C" int recoil_app_mission_fmv_on_try_become_current_skip_smoke(void) {
+    zArchiveList *const oldSearchPathList = g_zRdr_SearchPathList;
+    zArchiveList *const oldScratchSearchPathList = g_zRdr_ScratchSearchPathList;
+    zArchiveList *const oldMissionResourcePaths = g_zImage_MissionResourcePaths;
+    zArchiveList *const oldMountedList = g_zArchive_MountedList;
+    HWND const oldMainHwnd = g_RecoilApp_hWndMain;
+
+    g_zRdr_SearchPathList = nullptr;
+    g_zRdr_ScratchSearchPathList = nullptr;
+    g_zImage_MissionResourcePaths = nullptr;
+    g_zArchive_MountedList = zArchiveList_CreateEmpty();
+    g_RecoilApp_hWndMain = reinterpret_cast<HWND>(0x12345678);
+
+    g_HudSensorTracker.Constructor();
+    g_HudSensorTracker.missionFlags = 0;
+    g_HudSensorTracker.SetMissionId(6);
+
+    RecoilApp_MissionFmvState adoptedState{};
+    adoptedState.m_missionId = 0;
+    adoptedState.m_skipMissionFmv = 1;
+    zFMV_Script *const adoptedScript = reinterpret_cast<zFMV_Script *>(adoptedState.m_fmv_08);
+    adoptedScript->m_hWnd = nullptr;
+
+    const int adoptedResult = adoptedState.OnTryBecomeCurrent();
+    const bool adoptedOk =
+        adoptedResult == 1 && adoptedState.m_missionId == 6 &&
+        g_HudSensorTracker.GetMissionId() == 6 && adoptedScript->m_hWnd == nullptr &&
+        g_zRdr_SearchPathList != nullptr && g_zRdr_ScratchSearchPathList != nullptr &&
+        g_zImage_MissionResourcePaths != nullptr;
+
+    RecoilApp_MissionFmvState explicitState{};
+    explicitState.m_missionId = 4;
+    explicitState.m_skipMissionFmv = 1;
+    zFMV_Script *const explicitScript = reinterpret_cast<zFMV_Script *>(explicitState.m_fmv_08);
+    explicitScript->m_hWnd = nullptr;
+
+    const int explicitResult = explicitState.OnTryBecomeCurrent();
+    const bool explicitOk =
+        explicitResult == 1 && explicitState.m_missionId == 4 &&
+        g_HudSensorTracker.GetMissionId() == 4 && explicitScript->m_hWnd == nullptr;
+
+    if (g_zRdr_SearchPathList != nullptr) {
+        zUtil_ZRDR_FreeSearchPathList(g_zRdr_SearchPathList);
+    }
+    if (g_zRdr_ScratchSearchPathList != nullptr) {
+        zUtil_ZRDR_FreeSearchPathList(g_zRdr_ScratchSearchPathList);
+    }
+    if (g_zImage_MissionResourcePaths != nullptr) {
+        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionResourcePaths);
+    }
+    if (g_zArchive_MountedList != nullptr) {
+        zArchiveList_Destroy(g_zArchive_MountedList);
+    }
+
+    g_HudSensorTracker.Shutdown();
+    g_zRdr_SearchPathList = oldSearchPathList;
+    g_zRdr_ScratchSearchPathList = oldScratchSearchPathList;
+    g_zImage_MissionResourcePaths = oldMissionResourcePaths;
+    g_zArchive_MountedList = oldMountedList;
+    g_RecoilApp_hWndMain = oldMainHwnd;
+
+    return adoptedOk && explicitOk ? 0 : 1;
+}
+
+extern "C" int recoil_app_mission_fmv_on_deactivate_smoke(void) {
+    RecoilApp_MissionFmvState skippedState{};
+    skippedState.m_missionId = 9;
+    skippedState.m_skipMissionFmv = 1;
+    zFMV_Script *const skippedScript = reinterpret_cast<zFMV_Script *>(skippedState.m_fmv_08);
+    skippedScript->m_head = nullptr;
+    skippedScript->m_tail = reinterpret_cast<zFMV_Action *>(0x11111111);
+    skippedScript->m_cur = reinterpret_cast<zFMV_Action *>(0x22222222);
+
+    skippedState.OnDeactivate();
+    const bool skippedOk = skippedState.m_missionId == 0 && skippedScript->m_head == nullptr &&
+                           skippedScript->m_tail ==
+                               reinterpret_cast<zFMV_Action *>(0x11111111) &&
+                           skippedScript->m_cur ==
+                               reinterpret_cast<zFMV_Action *>(0x22222222);
+
+    RecoilApp_MissionFmvState activeState{};
+    activeState.m_missionId = 7;
+    activeState.m_skipMissionFmv = 0;
+    zFMV_Script *const activeScript = reinterpret_cast<zFMV_Script *>(activeState.m_fmv_08);
+    activeScript->m_head = nullptr;
+    activeScript->m_tail = reinterpret_cast<zFMV_Action *>(0x33333333);
+    activeScript->m_cur = reinterpret_cast<zFMV_Action *>(0x44444444);
+
+    activeState.OnDeactivate();
+    const bool activeOk =
+        activeState.m_missionId == 0 && activeScript->m_head == nullptr &&
+        activeScript->m_tail == nullptr && activeScript->m_cur == nullptr;
+
+    return skippedOk && activeOk ? 0 : 1;
+}
+
+extern "C" int recoil_app_mission_fmv_on_update_should_quit_smoke(void) {
+    RecoilApp oldApp = g_RecoilApp;
+
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp.m_playState_208.base.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    RecoilApp_MissionFmvState skippedState{};
+    skippedState.m_skipMissionFmv = 1;
+    zFMV_Script *const skippedScript = reinterpret_cast<zFMV_Script *>(skippedState.m_fmv_08);
+    skippedScript->m_cur = reinterpret_cast<zFMV_Action *>(0x12345678);
+
+    int result = skippedState.OnUpdateShouldQuit();
+    RecoilApp_StateQueueItem *item = QueueItemAt(g_RecoilApp.m_stateQueue_118, 0);
+    const bool skippedOk =
+        result == 0 && item != nullptr &&
+        item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent && item->m_param == 0 &&
+        item->m_stateObj == static_cast<RecoilPtr32>(
+                               reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_playState_208.base));
+    if (g_RecoilApp.m_stateQueue_118.m_itemCount == 1) {
+        CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue_118);
+    }
+    if (!skippedOk) {
+        g_RecoilApp = oldApp;
+        return 1;
+    }
+
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp.m_playState_208.base.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    RecoilApp_MissionFmvState activeState{};
+    zFMV_ActionWait waitAction{};
+    waitAction.vftable = &g_zFMV_ActionWait_Vtable;
+    waitAction.next = nullptr;
+    waitAction.durationSec = 1000000000.0f;
+    waitAction.startSec = 0.0f;
+    zFMV_Script *const activeScript = reinterpret_cast<zFMV_Script *>(activeState.m_fmv_08);
+    activeScript->m_head = &waitAction;
+    activeScript->m_tail = &waitAction;
+    activeScript->m_cur = &waitAction;
+
+    result = activeState.OnUpdateShouldQuit();
+    const bool activeOk =
+        result == 0 && g_RecoilApp.m_stateQueue_118.m_itemCount == 0 &&
+        activeScript->m_head == &waitAction && activeScript->m_tail == &waitAction &&
+        activeScript->m_cur == &waitAction;
+    if (!activeOk) {
+        g_RecoilApp = oldApp;
+        return 2;
+    }
+
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp.m_playState_208.base.vftable =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
+
+    RecoilApp_MissionFmvState finishedState{};
+    zFMV_Script *const finishedScript =
+        reinterpret_cast<zFMV_Script *>(finishedState.m_fmv_08);
+    finishedScript->m_cur = nullptr;
+
+    result = finishedState.OnUpdateShouldQuit();
+    item = QueueItemAt(g_RecoilApp.m_stateQueue_118, 0);
+    const bool finishedOk =
+        result == 0 && item != nullptr &&
+        item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent && item->m_param == 0 &&
+        item->m_stateObj == static_cast<RecoilPtr32>(
+                               reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_playState_208.base));
+    if (g_RecoilApp.m_stateQueue_118.m_itemCount == 1) {
+        CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue_118);
+    }
+
+    g_RecoilApp = oldApp;
+    return finishedOk ? 0 : 3;
 }
 
 extern "C" int recoil_app_constructor_destructor_smoke(void) {

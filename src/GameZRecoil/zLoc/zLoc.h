@@ -21,7 +21,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadMessagesDll(const char *dllPath);
 RECOIL_NOINLINE void RECOIL_CDECL UnloadMessagesDll();
 RECOIL_NOINLINE unsigned int RECOIL_FASTCALL GetMessageId(const char *key);
 RECOIL_NOINLINE char *RECOIL_FASTCALL ResolveMessageKeyOrFallback(const char *key);
-RECOIL_NOINLINE unsigned int RECOIL_CDECL FormatMessage(char *outBuffer, int maxChars,
-                                                         unsigned int messageId, ...);
+RECOIL_NOINLINE unsigned int RECOIL_CDECL FormatMessage(
+    char *outBuffer,
+    int maxChars,
+    unsigned int messageId,
+    ...
+);
 RECOIL_NOINLINE char *RECOIL_FASTCALL GetMessageString(unsigned int messageId);
 } // namespace zLoc

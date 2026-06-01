@@ -19,6 +19,8 @@ struct zSndPlayHandle;
 struct zSndSample;
 struct OptCatalogEntryDef;
 struct OptCatalogHitEventPartial;
+struct Player_ProjectileCameraFxPass3Ui;
+struct Player_UnderwaterFxPass3Ui;
 namespace zReader {
 struct Node;
 }
@@ -59,8 +61,10 @@ extern float g_Player_QuicksandSinkRate;
 extern float g_Player_LavaSinkRate;
 extern float g_Player_MaxSlope;
 extern float g_Player_CollisionContactResolveScale;
-extern HudUiElement g_Player_UnderwaterFxPass3Ui;
-extern HudUiElement g_Player_State7FxPass3Ui;
+extern Player_UnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
+extern Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
+extern HudUiPanel g_Player_TopMsgPanel1;
+extern HudUiPanel g_Player_TopMsgPanel2;
 extern OptCatalogEntryDef *g_Player_MakeHotOptEntry;
 extern zEffectAnimEntry *g_Player_BftSplashAnimEntry;
 extern zEffectAnimEntry *g_Player_ActiveDebugScriptAsyncEntry;
@@ -82,16 +86,43 @@ extern int g_PlayerEnvProbe_AboveGroundCount;
 extern zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry;
 }
 
+struct Player_UnderwaterFxPass3Ui : HudUiElement {
+    zVidRect32 *overlayRectOrNull;
+
+    RECOIL_NOINLINE Player_UnderwaterFxPass3Ui *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL ApplyBlueTint();
+};
+RECOIL_STATIC_ASSERT(sizeof(Player_UnderwaterFxPass3Ui) == 0x38);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        Player_UnderwaterFxPass3Ui,
+        overlayRectOrNull
+    ) == 0x34
+);
+extern const HudUiCommon_FTable g_Player_UnderwaterFxPass3Ui_Vtbl;
+
+struct Player_ProjectileCameraFxPass3Ui : HudUiElement {
+    zVidRect32 *overlayRectOrNull;
+
+    RECOIL_NOINLINE Player_ProjectileCameraFxPass3Ui *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL ApplyGreenMask();
+};
+RECOIL_STATIC_ASSERT(sizeof(Player_ProjectileCameraFxPass3Ui) == 0x38);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        Player_ProjectileCameraFxPass3Ui,
+        overlayRectOrNull
+    ) == 0x34
+);
+extern const HudUiCommon_FTable g_Player_State7FxPass3Ui_FTable;
+
 struct HudUiMgrSensorTrackNode {
     int trackKind;
     void *payload;
     HudUiMgrSensorTrackNode *next;
 };
 
-enum HudUiMgrSensorTrackKind {
-    HUD_SENSOR_TRACK_KIND_PLAYER = 2,
-    HUD_SENSOR_TRACK_KIND_TURRET = 3
-};
+enum HudUiMgrSensorTrackKind { HUD_SENSOR_TRACK_KIND_PLAYER = 2, HUD_SENSOR_TRACK_KIND_TURRET = 3 };
 
 struct HudUiMgrSensorTrackList {
     int trackListAux;
@@ -323,6 +354,7 @@ struct PlayerNodeFlagRestoreEntry {
 
 extern "C" {
 extern HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList;
+extern unsigned char g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
 extern PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesBegin;
 extern PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesEnd;
 extern PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesCapacityEnd;
@@ -360,587 +392,1591 @@ extern float g_Player_CameraHeadingLerpBaseWhenFlagSet;
 
 namespace Checkpoint {
 RECOIL_NOINLINE void RECOIL_CDECL InstantiateNamedObjects();
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdatePlayerLapProgressAndNotifyNet(zUtil_SaveGameState *saveState, int checkpointIndex);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdatePlayerLapProgressAndNotifyNet(
+    zUtil_SaveGameState *saveState,
+    int checkpointIndex
+);
 } // namespace Checkpoint
 
 namespace PlayerPickupContact {
-RECOIL_NOINLINE int RECOIL_FASTCALL
-PassesCollectionTest(zUtil_SaveGameState *saveState, PlayerPendingContact *contact);
+RECOIL_NOINLINE int RECOIL_FASTCALL PassesCollectionTest(
+    zUtil_SaveGameState *saveState,
+    PlayerPendingContact *contact
+);
 } // namespace PlayerPickupContact
 
 namespace zVehicle {
 RECOIL_NOINLINE const char *RECOIL_FASTCALL SelectZrdByDifficulty(const char *extraSearchPath);
 } // namespace zVehicle
 
+namespace Player_TopMsgPanel1 {
+RECOIL_NOINLINE void RECOIL_CDECL Constructor();
+RECOIL_NOINLINE void RECOIL_CDECL Destructor();
+} // namespace Player_TopMsgPanel1
+
+namespace Player_TopMsgPanel2 {
+RECOIL_NOINLINE void RECOIL_CDECL Constructor();
+RECOIL_NOINLINE void RECOIL_CDECL Destructor();
+} // namespace Player_TopMsgPanel2
+
+namespace PlayerNodeFlagRestore {
+RECOIL_NOINLINE void RECOIL_CDECL InitGlobals();
+RECOIL_NOINLINE void RECOIL_CDECL InitInstance();
+RECOIL_NOINLINE void RECOIL_CDECL RegisterAtExit();
+RECOIL_NOINLINE void RECOIL_CDECL ShutdownInstance();
+} // namespace PlayerNodeFlagRestore
+
 namespace Player {
+RECOIL_NOINLINE void RECOIL_CDECL InitMasterCommonDataList();
+RECOIL_NOINLINE void RECOIL_CDECL InitMasterModalDataList();
+RECOIL_NOINLINE void RECOIL_CDECL InitAndRegisterUnderwaterFxPass3UiSingleton();
+RECOIL_NOINLINE void RECOIL_CDECL InitUnderwaterFxPass3UiSingleton();
+RECOIL_NOINLINE void RECOIL_CDECL RegisterUnderwaterFxPass3UiOnExit();
+RECOIL_NOINLINE void RECOIL_CDECL ResetUnderwaterFxPass3UiSingleton();
+RECOIL_NOINLINE void RECOIL_CDECL InitAndRegisterProjectileCameraFxPass3UiSingleton();
+RECOIL_NOINLINE void RECOIL_CDECL InitProjectileCameraFxPass3UiSingleton();
+RECOIL_NOINLINE void RECOIL_CDECL RegisterProjectileCameraFxPass3UiCleanup();
+RECOIL_NOINLINE void RECOIL_CDECL ResetProjectileCameraFxPass3UiSingleton();
+RECOIL_NOINLINE void RECOIL_CDECL InitSaveStateList();
+RECOIL_NOINLINE void RECOIL_CDECL InitAndRegisterTopMsgPanel1();
+RECOIL_NOINLINE void RECOIL_CDECL RegisterTopMsgPanel1OnExit();
+RECOIL_NOINLINE void RECOIL_CDECL InitAndRegisterTopMsgPanel2();
+RECOIL_NOINLINE void RECOIL_CDECL RegisterTopMsgPanel2Cleanup();
 RECOIL_NOINLINE const char *RECOIL_CDECL GetAivZrdPath();
-RECOIL_NOINLINE void RECOIL_FASTCALL ExtractVehicleNameFromAivName(const char *aivName,
-                                                                   char *outVehicleName);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
-CloneType6NodeFromTemplateAndRename(const char *templateName, const char *newName);
+RECOIL_NOINLINE void RECOIL_FASTCALL ExtractVehicleNameFromAivName(
+    const char *aivName,
+    char *outVehicleName
+);
+RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CloneType6NodeFromTemplateAndRename(
+    const char *templateName,
+    const char *newName
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL CreateFromNamesAtPose(
-    const zVec3 *spawnPos, int aiNetId, float yawDeg, const char *templateName,
-    const char *objectName);
+    const zVec3 *spawnPos,
+    int aiNetId,
+    float yawDeg,
+    const char *templateName,
+    const char *objectName
+);
 RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_FASTCALL CreateFromNamesAtPoseGetState(
-    const zVec3 *spawnPos, const char *templateName, float yawDeg, const char *objectName);
+    const zVec3 *spawnPos,
+    const char *templateName,
+    float yawDeg,
+    const char *objectName
+);
 RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_CDECL GetSaveStateListHead();
 RECOIL_NOINLINE void RECOIL_CDECL UnbindCurrentSaveStateIfSinglePlayer();
 RECOIL_NOINLINE void RECOIL_CDECL BindActiveGameStateAsCurrentSaveState();
 RECOIL_NOINLINE void RECOIL_CDECL SyncLocalPoseFromRootNode();
-RECOIL_NOINLINE void RECOIL_FASTCALL
-CaptureCurrentObjectPoseAsRestartAnchor(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-CacheGunHardpointsAndDetachDisplays(zUtil_SaveGameState *saveState, int detachDisplays);
+RECOIL_NOINLINE void RECOIL_FASTCALL CaptureCurrentObjectPoseAsRestartAnchor(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL CacheGunHardpointsAndDetachDisplays(
+    zUtil_SaveGameState *saveState,
+    int detachDisplays
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL InitStateFromNameAndMasterCommonData(
-    zUtil_SaveGameState *saveState, const char *objectName,
-    const char *masterCommonDataName);
+    zUtil_SaveGameState *saveState,
+    const char *objectName,
+    const char *masterCommonDataName
+);
 RECOIL_NOINLINE void RECOIL_CDECL BuildAiPeerRingsByAiNetId();
 RECOIL_NOINLINE void RECOIL_FASTCALL AddScaledHudCounterValue(float value);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateGunDispatchRequestsFromTriggerLatches(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-AiDiscardNegativeBranchPathNodes(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-AiMode2ForwardProbeRequiresAutoTurn(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateGunDispatchRequestsFromTriggerLatches(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL AiDiscardNegativeBranchPathNodes(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL AiMode2ForwardProbeRequiresAutoTurn(
+    zUtil_SaveGameState *saveState
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL AiChooseNextPathBranchIndex(
-    zUtil_SaveGameState *saveState, AINetNode **currentNodeInOut, int *outBranchIndex,
-    int excludedBranchIndex);
+    zUtil_SaveGameState *saveState,
+    AINetNode **currentNodeInOut,
+    int *outBranchIndex,
+    int excludedBranchIndex
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL AiAdvancePathCursorAndComputeTargetVec(
-    zUtil_SaveGameState *saveState, AINetNode **currentNodeInOut,
-    AINetPathProbeFan **outProbeFan, zVec3 *outTargetVec);
+    zUtil_SaveGameState *saveState,
+    AINetNode **currentNodeInOut,
+    AINetPathProbeFan **outProbeFan,
+    zVec3 *outTargetVec
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2TopLevel(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2PathFollow(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-AiEnterMode2SteeringPursuit(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL AiEnterMode2SteeringPursuit(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL AiAlertAttackBuddies(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-AiTryEnterMode2AttackPursuitIfLineOfSight(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-AiRebuildSyntheticPathToNodeIfFar(zUtil_SaveGameState *saveState, AINetNode *targetNode);
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2SteeringSubstate(
-    zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE int RECOIL_FASTCALL AiTryEnterMode2AttackPursuitIfLineOfSight(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL AiRebuildSyntheticPathToNodeIfFar(
+    zUtil_SaveGameState *saveState,
+    AINetNode *targetNode
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2SteeringSubstate(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardTarget(
-    zUtil_SaveGameState *saveState, float forwardDot, float lateralDot,
-    float targetDistance);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateAiMode2TurnTowardPlayerNoThrottle(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateAiMode2TurnInPlaceTowardPlayer(zUtil_SaveGameState *saveState);
+    zUtil_SaveGameState *saveState,
+    float forwardDot,
+    float lateralDot,
+    float targetDistance
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2TurnTowardPlayerNoThrottle(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2TurnInPlaceTowardPlayer(
+    zUtil_SaveGameState *saveState
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2AltGunAttackWindow(
-    zUtil_SaveGameState *saveState, float targetDistance, float forwardDot);
+    zUtil_SaveGameState *saveState,
+    float targetDistance,
+    float forwardDot
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL SolveAltGunLeadTargetPoint(
-    zUtil_SaveGameState *saveState, zUtil_SaveGameState *targetSaveState,
-    zVec3 *outTargetPos);
+    zUtil_SaveGameState *saveState,
+    zUtil_SaveGameState *targetSaveState,
+    zVec3 *outTargetPos
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardOffsetTarget(
-    zUtil_SaveGameState *saveState, zUtil_SaveGameState *targetState);
+    zUtil_SaveGameState *saveState,
+    zUtil_SaveGameState *targetState
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
-    zUtil_SaveGameState *saveState, zUtil_SaveGameState *targetState, float targetDistance);
+    zUtil_SaveGameState *saveState,
+    zUtil_SaveGameState *targetState,
+    float targetDistance
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2OffsetTargetSteering(
-    zUtil_SaveGameState *saveState, float unusedForwardDot, float unusedLateralDot,
-    float unusedTargetDistance);
+    zUtil_SaveGameState *saveState,
+    float unusedForwardDot,
+    float unusedLateralDot,
+    float unusedTargetDistance
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2DynamicOffsetTargetSteering(
-    zUtil_SaveGameState *saveState, float unusedForwardDot, float unusedLateralDot,
-    float targetDistance);
+    zUtil_SaveGameState *saveState,
+    float unusedForwardDot,
+    float unusedLateralDot,
+    float targetDistance
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL AiRestoreSavedTopLevelState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL AiSteerTowardPathNodeForward(
-    zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL AiSteerTowardPathNodeReverse(
-    zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-TickAiMode2TimedPathSteering(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL AiSteerTowardPathNodeForward(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL AiSteerTowardPathNodeReverse(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2TimedPathSteering(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_CDECL AiFinalizeMode2State1ForAllPlayers();
 RECOIL_NOINLINE void RECOIL_FASTCALL SetWorldPoseAndRestartAnchor(
-    zUtil_SaveGameState *saveState, const zVec3 *position, float yawRad);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ResetMouseControlStateAndRecenterCursor(zUtil_SaveGameState *saveState);
+    zUtil_SaveGameState *saveState,
+    const zVec3 *position,
+    float yawRad
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ResetMouseControlStateAndRecenterCursor(
+    zUtil_SaveGameState *saveState
+);
 RECOIL_NOINLINE void RECOIL_CDECL TickAllPlayers();
-RECOIL_NOINLINE void RECOIL_FASTCALL AsyncCommandCallback(zEffectAnimEntry *animEntry,
-                                                          void *callbackContext, int eventCode);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-TickLocalPlayerControls(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL AsyncCommandCallback(
+    zEffectAnimEntry *animEntry,
+    void *callbackContext,
+    int eventCode
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL TickLocalPlayerControls(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_CDECL RegisterGameplayCommandCallbacksAndCreateFfEffects();
 RECOIL_NOINLINE void RECOIL_FASTCALL TickActiveCameraState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
-    zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTopDownCameraState(
-    zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTopDownCameraState(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL UpdateFirstPersonCameraFromInput(
-    zUtil_SaveGameState *saveState);
+    zUtil_SaveGameState *saveState
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraFromStoredTargetTowardPlayer(
-    zUtil_SaveGameState *saveState);
+    zUtil_SaveGameState *saveState
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL RestoreThirdPersonCameraFromObstructionState(
-    zUtil_SaveGameState *saveState);
+    zUtil_SaveGameState *saveState
+);
 RECOIL_NOINLINE void RECOIL_CDECL UpdateCameraWeatherFxEmitterVisibility();
 RECOIL_NOINLINE void RECOIL_CDECL ToggleSteeringModeAndResetMouseLook();
 RECOIL_NOINLINE void RECOIL_FASTCALL ResetMotionTransientState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateBankVelocityFromSteerInput(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateAutoTurnAndSteerFromTarget(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-IntegrateYawAndWrapFromYawVelocity(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-RebuildSteerBasisFromMotionBasis(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-RebuildSteerBasisRawFromRef(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-RebuildMotionBasisFromSteerBasis(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-RebuildSteerBasisFromMotionAxes(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateBankVelocityFromSteerInput(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAutoTurnAndSteerFromTarget(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL IntegrateYawAndWrapFromYawVelocity(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL RebuildSteerBasisFromMotionBasis(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL RebuildSteerBasisRawFromRef(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL RebuildMotionBasisFromSteerBasis(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL RebuildSteerBasisFromMotionAxes(
+    zUtil_SaveGameState *saveState
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL ClearPendingContactQueues(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-FilterCameraProbeBlockingHits(PlayerProbeSampleCandidateBuffer *batches, int batchCount);
+RECOIL_NOINLINE void RECOIL_FASTCALL FilterCameraProbeBlockingHits(
+    PlayerProbeSampleCandidateBuffer *batches,
+    int batchCount
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL FindNearestThirdPersonCameraProbePoint(
-    PlayerProbeSampleCandidateBuffer *batches, int batchCount, const zVec3 *referencePos,
-    zVec3 *outHitPos);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-AdjustSubCameraFocusForObstruction(zUtil_SaveGameState *saveState, zVec3 *focusPos);
+    PlayerProbeSampleCandidateBuffer *batches,
+    int batchCount,
+    const zVec3 *referencePos,
+    zVec3 *outHitPos
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL AdjustSubCameraFocusForObstruction(
+    zUtil_SaveGameState *saveState,
+    zVec3 *focusPos
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraByOffsetProbes(
-    zUtil_SaveGameState *saveState, zVec3 *cameraPos, const zVec3 *sideDir);
+    zUtil_SaveGameState *saveState,
+    zVec3 *cameraPos,
+    const zVec3 *sideDir
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraBySideProbes(
-    zUtil_SaveGameState *saveState, zVec3 *cameraPos, const zVec3 *focusPos,
-    zVec3 *cameraDirNext);
+    zUtil_SaveGameState *saveState,
+    zVec3 *cameraPos,
+    const zVec3 *focusPos,
+    zVec3 *cameraDirNext
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraVariantFromAnchor(
-    PlayerProbeSampleCandidateBuffer *candidates, zVec3 *cameraPos, int selectedCandidateIndex);
+    PlayerProbeSampleCandidateBuffer *candidates,
+    zVec3 *cameraPos,
+    int selectedCandidateIndex
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraVariantFromCameraPos(
-    zUtil_SaveGameState *saveState, zVec3 *cameraPos);
+    zUtil_SaveGameState *saveState,
+    zVec3 *cameraPos
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL ClassifyPendingContactsForSegment(
-    zUtil_SaveGameState *saveState, PlayerProbeSampleCandidateBuffer *sceneResults,
-    const zVec3 *segmentStart, const zVec3 *segmentEnd, int segmentTag);
+    zUtil_SaveGameState *saveState,
+    PlayerProbeSampleCandidateBuffer *sceneResults,
+    const zVec3 *segmentStart,
+    const zVec3 *segmentEnd,
+    int segmentTag
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL CollectPendingContactsForSegments(
-    zUtil_SaveGameState *saveState, zClass_DiSegmentEndpoints *segmentPairs, int endpointCount,
-    int *segmentTags);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-CollectPendingCollisionContactsForQuadProbe(zUtil_SaveGameState *saveState, float expandRadius);
+    zUtil_SaveGameState *saveState,
+    zClass_DiSegmentEndpoints *segmentPairs,
+    int endpointCount,
+    int *segmentTags
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL CollectPendingCollisionContactsForQuadProbe(
+    zUtil_SaveGameState *saveState,
+    float expandRadius
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL BuildPendingContactQueues(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPendingPickupContacts(
-    zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ApplyPendingCollisionProbeVelocity(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-TryResolvePendingCollisionProbeSweep(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-PreparePendingWorldCollisionResponse(zUtil_SaveGameState *saveState,
-                                     PlayerPendingContact *worldContacts);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ResolvePendingWorldCollisionContact(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ResolvePendingCollisionContact(zUtil_SaveGameState *saveState, PlayerPendingContact *contact);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ResolvePendingPlayerCollisionContact(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ProcessTransferContactQueue(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPendingPickupContacts(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL ApplyPendingCollisionProbeVelocity(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL TryResolvePendingCollisionProbeSweep(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL PreparePendingWorldCollisionResponse(
+    zUtil_SaveGameState *saveState,
+    PlayerPendingContact *worldContacts
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ResolvePendingWorldCollisionContact(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ResolvePendingCollisionContact(
+    zUtil_SaveGameState *saveState,
+    PlayerPendingContact *contact
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ResolvePendingPlayerCollisionContact(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ProcessTransferContactQueue(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPendingContactQueues(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-SelectAndResolvePreferredPendingCollisionContact(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL SelectAndResolvePreferredPendingCollisionContact(
+    zUtil_SaveGameState *saveState
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL ApplyPitchRollVelocityImpulseFromDirection(
-    zUtil_SaveGameState *saveState, const zVec3 *direction, float angleScale,
-    float velocityScale);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-RecordRecentHitFeedback(zUtil_SaveGameState *saveState, OptCatalogEntryDef *hitSource,
-                        float damage);
-RECOIL_NOINLINE float RECOIL_FASTCALL
-UpdateTimedHitStatusFromHitSource(zUtil_SaveGameState *saveState, OptCatalogEntryDef *hitSource,
-                                  float damage);
+    zUtil_SaveGameState *saveState,
+    const zVec3 *direction,
+    float angleScale,
+    float velocityScale
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL RecordRecentHitFeedback(
+    zUtil_SaveGameState *saveState,
+    OptCatalogEntryDef *hitSource,
+    float damage
+);
+RECOIL_NOINLINE float RECOIL_FASTCALL UpdateTimedHitStatusFromHitSource(
+    zUtil_SaveGameState *saveState,
+    OptCatalogEntryDef *hitSource,
+    float damage
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL HitCallback_RecordNetContextAndTimedStatus(
-    zUtil_SaveGameState *saveState, OptCatalogEntryDef *hitSource, void *hitRenderPointEntry,
-    float damage);
+    zUtil_SaveGameState *saveState,
+    OptCatalogEntryDef *hitSource,
+    void *hitRenderPointEntry,
+    float damage
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL ClearDestroyedRespawnEffectHandleCallback(
-    zEffectAnimEntry *entry, zUtil_SaveGameState *saveState, int value);
+    zEffectAnimEntry *entry,
+    zUtil_SaveGameState *saveState,
+    int value
+);
 RECOIL_NOINLINE void RECOIL_CDECL DestroyedStateResetLocalFinalize();
-RECOIL_NOINLINE void RECOIL_FASTCALL
-DestroyedStateResetFinalizeCallback(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-DestroyedStateResetCallback(zEffectAnimEntry *entry, zUtil_SaveGameState *saveState, int value);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-EnterLocalInactiveDestroyedLifecycle(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ClearRespawnTransitionFlagCallback(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-DestroyedStateRespawnCallback(zEffectAnimEntry *entry, zUtil_SaveGameState *saveState,
-                              int value);
+RECOIL_NOINLINE void RECOIL_FASTCALL DestroyedStateResetFinalizeCallback(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL DestroyedStateResetCallback(
+    zEffectAnimEntry *entry,
+    zUtil_SaveGameState *saveState,
+    int value
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL EnterLocalInactiveDestroyedLifecycle(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ClearRespawnTransitionFlagCallback(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL DestroyedStateRespawnCallback(
+    zEffectAnimEntry *entry,
+    zUtil_SaveGameState *saveState,
+    int value
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL EnterDestroyedState(
-    zUtil_SaveGameState *saveState, OptCatalogEntryDef *hitSource,
-    OptCatalogHitEventPartial *hitRenderPoint, float damage);
+    zUtil_SaveGameState *saveState,
+    OptCatalogEntryDef *hitSource,
+    OptCatalogHitEventPartial *hitRenderPoint,
+    float damage
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL ApplyDamageLocal(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL TickRemoteNetworkPlayer(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE int RECOIL_FASTCALL HitCallback_RecordContextAndTimedStatus(
-    zUtil_SaveGameState *saveState, OptCatalogEntryDef *hitSource, void *hitRenderPointEntry,
-    float damage);
+    zUtil_SaveGameState *saveState,
+    OptCatalogEntryDef *hitSource,
+    void *hitRenderPointEntry,
+    float damage
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL RecordNodeFlagsForRestore(zClass_NodePartial *node);
 RECOIL_NOINLINE void RECOIL_FASTCALL BuildMissionSaveData(PlayerMissionSaveData *outData);
 RECOIL_NOINLINE void RECOIL_FASTCALL ApplyMissionSaveData(PlayerMissionSaveData *saveData);
 RECOIL_NOINLINE void RECOIL_CDECL RestoreRecordedNodeFlags();
 RECOIL_NOINLINE void RECOIL_FASTCALL ZAR_ReadMissionSaveDataSection(
-    zZbdSectionCallbackCtx *reader, const char *sectionToken, PlayerMissionSaveData *saveData,
-    unsigned int byteCount, void *userData);
+    zZbdSectionCallbackCtx *reader,
+    const char *sectionToken,
+    PlayerMissionSaveData *saveData,
+    unsigned int byteCount,
+    void *userData
+);
 RECOIL_NOINLINE void RECOIL_CDECL ZAR_RegisterSections();
 RECOIL_NOINLINE int RECOIL_FASTCALL ZAR_WriteMissionSaveDataSection(
-    zZbdSectionCallbackCtx *writer, void *userData);
+    zZbdSectionCallbackCtx *writer,
+    void *userData
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL ZAR_ReadVehicleListSection(
-    zZbdSectionCallbackCtx *reader, const char *sectionToken,
-    PlayerVehicleListSaveEntry *saveData, unsigned int byteCount, void *userData);
+    zZbdSectionCallbackCtx *reader,
+    const char *sectionToken,
+    PlayerVehicleListSaveEntry *saveData,
+    unsigned int byteCount,
+    void *userData
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL ZAR_WriteVehicleListSection(
-    zZbdSectionCallbackCtx *writer, void *userData);
+    zZbdSectionCallbackCtx *writer,
+    void *userData
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL Mines_ZAR_ReadEntryOrReset(
-    zZbdSectionCallbackCtx *reader, const char *sectionToken, PlayerMineSaveEntry *mineData,
-    unsigned int byteCount, void *userData);
+    zZbdSectionCallbackCtx *reader,
+    const char *sectionToken,
+    PlayerMineSaveEntry *mineData,
+    unsigned int byteCount,
+    void *userData
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL WriteMinesZarSection(
-    zZbdSectionCallbackCtx *writer, void *userData);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateDebugOverlayHud(zUtil_SaveGameState *saveState, int unusedActiveMode2Count,
-                      int unusedTotalMode2Count);
+    zZbdSectionCallbackCtx *writer,
+    void *userData
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateDebugOverlayHud(
+    zUtil_SaveGameState *saveState,
+    int unusedActiveMode2Count,
+    int unusedTotalMode2Count
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL RefreshHudFromState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ApplyStatusMeterChange(zUtil_SaveGameState *saveState, int mode, float delta);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-UpdateStatusMeter(zUtil_SaveGameState *saveState, int mode, float delta);
+RECOIL_NOINLINE void RECOIL_FASTCALL ApplyStatusMeterChange(
+    zUtil_SaveGameState *saveState,
+    int mode,
+    float delta
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL UpdateStatusMeter(
+    zUtil_SaveGameState *saveState,
+    int mode,
+    float delta
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL IsMissionProbeType1EnabledById(int missionId);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-InitMissionRuntimeFromWorldAndCamera(zClass_NodePartial *worldNode,
-                                     zClass_NodePartial *cameraNode);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-LoadMasterCommonDataFromNode(PlayerMasterCommonData *commonData, zReader::Node *vehicleNode,
-                             const char *vehicleName);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-LoadMasterModalDataFromNode(PlayerMasterModalData *modalData, zReader::Node *modalNode,
-                            const char *modalName);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-BuildCollisionPointsFromModel(zUtil_SaveGameState *saveState, zClass_NodePartial *modelNode);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-BuildSupportPointsFromModel(zUtil_SaveGameState *saveState, zClass_NodePartial *modelNode);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-BindModalStateFromMasterModalData(zUtil_SaveGameState *saveState, PlayerModalState *modalState,
-                                  const char *modalName, const char *objectName);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-InitSpawnStateFromPrimaryModalData(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-SampleGroundAndAlignRootToSurface(zUtil_SaveGameState *saveState, int updateRotation);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-FreeAltWeaponTrailRuntimeStates(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-LoadWeaponBanksAndSelectDefaults(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-CheckMissionWeaponAvailability(zUtil_SaveGameState *saveState, int missionThreshold,
-                               int packedWeaponSlotId, int *availableOut);
+RECOIL_NOINLINE void RECOIL_FASTCALL InitMissionRuntimeFromWorldAndCamera(
+    zClass_NodePartial *worldNode,
+    zClass_NodePartial *cameraNode
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL LoadMasterCommonDataFromNode(
+    PlayerMasterCommonData *commonData,
+    zReader::Node *vehicleNode,
+    const char *vehicleName
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL LoadMasterModalDataFromNode(
+    PlayerMasterModalData *modalData,
+    zReader::Node *modalNode,
+    const char *modalName
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL BuildCollisionPointsFromModel(
+    zUtil_SaveGameState *saveState,
+    zClass_NodePartial *modelNode
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL BuildSupportPointsFromModel(
+    zUtil_SaveGameState *saveState,
+    zClass_NodePartial *modelNode
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL BindModalStateFromMasterModalData(
+    zUtil_SaveGameState *saveState,
+    PlayerModalState *modalState,
+    const char *modalName,
+    const char *objectName
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL InitSpawnStateFromPrimaryModalData(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SampleGroundAndAlignRootToSurface(
+    zUtil_SaveGameState *saveState,
+    int updateRotation
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL FreeAltWeaponTrailRuntimeStates(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL LoadWeaponBanksAndSelectDefaults(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL CheckMissionWeaponAvailability(
+    zUtil_SaveGameState *saveState,
+    int missionThreshold,
+    int packedWeaponSlotId,
+    int *availableOut
+);
 RECOIL_NOINLINE int RECOIL_STDCALL FloatSign(float value);
 RECOIL_NOINLINE void RECOIL_FASTCALL StartSlipSfx(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL StopSlipSfx(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_CDECL CacheDisableCopterSndNodesAndStopSample();
 RECOIL_NOINLINE void RECOIL_CDECL ReactivateCopterSndNodesIfHealthy();
 RECOIL_NOINLINE void RECOIL_FASTCALL StopBftBubbleFxHandle(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeFly(zUtil_SaveGameState *saveState,
-                                                              int flags);
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeTrack(zUtil_SaveGameState *saveState,
-                                                                int flags);
+RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeFly(
+    zUtil_SaveGameState *saveState,
+    int flags
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeTrack(
+    zUtil_SaveGameState *saveState,
+    int flags
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeAmphib(
-    zUtil_SaveGameState *saveState, int transitionFlags, int extraFlags);
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeSub(zUtil_SaveGameState *saveState,
-                                                              int flags);
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeHover(zUtil_SaveGameState *saveState,
-                                                                int flags);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-ApplyMasterTypeTransition(zUtil_SaveGameState *saveState, int masterType, int flags);
-RECOIL_NOINLINE float RECOIL_FASTCALL UpdateBankAndTurnDynamics(
-    zUtil_SaveGameState *saveState);
+    zUtil_SaveGameState *saveState,
+    int transitionFlags,
+    int extraFlags
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeSub(
+    zUtil_SaveGameState *saveState,
+    int flags
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeHover(
+    zUtil_SaveGameState *saveState,
+    int flags
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL ApplyMasterTypeTransition(
+    zUtil_SaveGameState *saveState,
+    int masterType,
+    int flags
+);
+RECOIL_NOINLINE float RECOIL_FASTCALL UpdateBankAndTurnDynamics(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE int RECOIL_FASTCALL Vec3_FastNormalize(zVec3 *vec);
-RECOIL_NOINLINE void RECOIL_FASTCALL ConstrainToUnitDistanceFrom(zVec3 *pos,
-                                                                 const zVec3 *center);
+RECOIL_NOINLINE void RECOIL_FASTCALL ConstrainToUnitDistanceFrom(
+    zVec3 *pos,
+    const zVec3 *center
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL ComputeTurnSlipDelta(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateSubModeWaterProbeState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateSubVerticalDamping(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateYawVelocityFromSteerInput(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ApplyAmphibSpeedOscillation(zUtil_SaveGameState *saveState, zVec3 *inOutUpVector,
-                            int includeYawCoupling);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-TickMasterTypeAndForceFeedback(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateMasterTypeSub(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateMasterTypeTrack(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE PlayerGunFireController *RECOIL_FASTCALL
-FindAltGunFireControllerForWeaponId(zUtil_SaveGameState *saveState, int weaponId);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-IsAltWeaponAllowedInCurrentMasterMode(zUtil_SaveGameState *saveState, OptCatalogEntryDef *entry);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-AutoSwitchToNextUsableAltWeapon(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-TestScenePathBetweenCameraTargetAndPoint(zClass_NodePartial *node, const zVec3 *point,
-                                         int directionMode);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-HasLineOfSightFromLocalPlayerFxOffset(zClass_NodePartial *node, const zVec3 *point,
-                                      int directionMode);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateSubModeWaterProbeState(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateSubVerticalDamping(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateYawVelocityFromSteerInput(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAmphibSpeedOscillation(
+    zUtil_SaveGameState *saveState,
+    zVec3 *inOutUpVector,
+    int includeYawCoupling
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL TickMasterTypeAndForceFeedback(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeSub(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeTrack(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE PlayerGunFireController *RECOIL_FASTCALL FindAltGunFireControllerForWeaponId(
+    zUtil_SaveGameState *saveState,
+    int weaponId
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL IsAltWeaponAllowedInCurrentMasterMode(
+    zUtil_SaveGameState *saveState,
+    OptCatalogEntryDef *entry
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL AutoSwitchToNextUsableAltWeapon(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL TestScenePathBetweenCameraTargetAndPoint(
+    zClass_NodePartial *node,
+    const zVec3 *point,
+    int directionMode
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL HasLineOfSightFromLocalPlayerFxOffset(
+    zClass_NodePartial *node,
+    const zVec3 *point,
+    int directionMode
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAltGunAimDirection(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateGunAndTurretAimNodes(const zVec3 *aimDirection, zClass_NodePartial *gunNode,
-                           zClass_NodePartial *turretNode);
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAimPitchToDirection(zVec3 *direction, float pitchY);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateGunAndTurretAimNodes(
+    const zVec3 *aimDirection,
+    zClass_NodePartial *gunNode,
+    zClass_NodePartial *turretNode
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAimPitchToDirection(
+    zVec3 *direction,
+    float pitchY
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL ApplyPrimaryWeaponSwitch(
-    zUtil_SaveGameState *saveState, PlayerGunFireController *previousController,
-    PlayerGunFireController *newController);
+    zUtil_SaveGameState *saveState,
+    PlayerGunFireController *previousController,
+    PlayerGunFireController *newController
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAltWeaponSwitch(
-    zUtil_SaveGameState *saveState, PlayerGunFireController *previousController,
-    PlayerGunFireController *newController);
+    zUtil_SaveGameState *saveState,
+    PlayerGunFireController *previousController,
+    PlayerGunFireController *newController
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL HandleAltWeaponBankSelectInput(int inputCode);
 RECOIL_NOINLINE void RECOIL_FASTCALL HandlePrimaryWeaponVariantToggleInput(int keyCode);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ResetDamageStateAndTimedHitStatus(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ResetDamageVisualsAndTimedStatus(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ResetAltGunDoorAnimationState(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL ResetDamageStateAndTimedHitStatus(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ResetDamageVisualsAndTimedStatus(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ResetAltGunDoorAnimationState(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL ResetAltGunRuntimeState(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL RemoveAllDeployedMines(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-StartDestroyedStateVehicleEffect(zUtil_SaveGameState *saveState, void *respawnCallback);
+RECOIL_NOINLINE void RECOIL_FASTCALL StartDestroyedStateVehicleEffect(
+    zUtil_SaveGameState *saveState,
+    void *respawnCallback
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL UpdateThirdPersonCamera(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL ApplyCameraState(int newState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-SetAutoTurnTargetDirFromWorldPoint(zUtil_SaveGameState *saveState, const zVec3 *worldPoint);
+RECOIL_NOINLINE void RECOIL_FASTCALL SetAutoTurnTargetDirFromWorldPoint(
+    zUtil_SaveGameState *saveState,
+    const zVec3 *worldPoint
+);
 RECOIL_NOINLINE float RECOIL_FASTCALL SelectProbeSampleHeightFromCandidates(
-    PlayerProbeSampleCandidateBuffer *candidateBuffer, int *outBestCandidateIndex,
-    float sampleHeight, float maxRiseWindow, int preferAttachmentSlot1,
-    int *outSelectedImpactSlot, float *outTaggedHeight);
+    PlayerProbeSampleCandidateBuffer *candidateBuffer,
+    int *outBestCandidateIndex,
+    float sampleHeight,
+    float maxRiseWindow,
+    int preferAttachmentSlot1,
+    int *outSelectedImpactSlot,
+    float *outTaggedHeight
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL ProbeModalSampleHeights(
-    zUtil_SaveGameState *saveState, float *outSampleHeightByPoint, float *outBestHeight,
-    int preferAttachmentSlot1, PlayerProbeTypeHistogram *outTypeHistogram,
-    int *outAttachmentCandidateCount, zClass_NodePartial **outAttachmentNode);
+    zUtil_SaveGameState *saveState,
+    float *outSampleHeightByPoint,
+    float *outBestHeight,
+    int preferAttachmentSlot1,
+    PlayerProbeTypeHistogram *outTypeHistogram,
+    int *outAttachmentCandidateCount,
+    zClass_NodePartial **outAttachmentNode
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL BuildEnvironmentProbeResult(
-    zUtil_SaveGameState *saveState, PlayerEnvProbeResult *outProbe);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-ApplyEnvironmentProbeResult(zUtil_SaveGameState *saveState, PlayerEnvProbeResult *envProbe);
-RECOIL_NOINLINE float RECOIL_FASTCALL
-SolveHeightOnSurface(zUtil_SaveGameState *saveState, float supportPlaneDot);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ResetTerrainContactImpulsesAndPlayImpactSfx(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ApplyTerrainTilt(zUtil_SaveGameState *saveState, const zVec3 *tiltVector, float tiltScale);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ComputeTriangleNormal(zUtil_SaveGameState *saveState, const zVec3 *pointA, const zVec3 *pointB,
-                      const zVec3 *pointC);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ComputeSurfaceFrom1Probe(zUtil_SaveGameState *saveState, PlayerEnvProbeResult *probeResult);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ComputeSurfaceFrom2Probes(zUtil_SaveGameState *saveState, PlayerEnvProbeResult *probeResult);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-CheckProbeSampleMaskOverlap(int sampleIndexA, int sampleIndexB, int sampleIndexC);
+    zUtil_SaveGameState *saveState,
+    PlayerEnvProbeResult *outProbe
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL ApplyEnvironmentProbeResult(
+    zUtil_SaveGameState *saveState,
+    PlayerEnvProbeResult *envProbe
+);
+RECOIL_NOINLINE float RECOIL_FASTCALL SolveHeightOnSurface(
+    zUtil_SaveGameState *saveState,
+    float supportPlaneDot
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ResetTerrainContactImpulsesAndPlayImpactSfx(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ApplyTerrainTilt(
+    zUtil_SaveGameState *saveState,
+    const zVec3 *tiltVector,
+    float tiltScale
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ComputeTriangleNormal(
+    zUtil_SaveGameState *saveState,
+    const zVec3 *pointA,
+    const zVec3 *pointB,
+    const zVec3 *pointC
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ComputeSurfaceFrom1Probe(
+    zUtil_SaveGameState *saveState,
+    PlayerEnvProbeResult *probeResult
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ComputeSurfaceFrom2Probes(
+    zUtil_SaveGameState *saveState,
+    PlayerEnvProbeResult *probeResult
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL CheckProbeSampleMaskOverlap(
+    int sampleIndexA,
+    int sampleIndexB,
+    int sampleIndexC
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL RebuildAboveGroundIndices();
-RECOIL_NOINLINE void RECOIL_FASTCALL
-SelectBestProbesByDotProduct(const zVec3 *referenceNormal, PlayerEnvProbeResult *probeResult);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ComputeSurfaceFrom3Probes(zUtil_SaveGameState *saveState, PlayerEnvProbeResult *probeResult);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdatePostMoveEnvironment(zUtil_SaveGameState *saveState, int probeSampleCount);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ProcessEnvProbeResults(zUtil_SaveGameState *saveState, PlayerEnvProbeResult *probeResult);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-RebuildOrientationFromNormal(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-FindThirdProbeAndComputeNormal(zUtil_SaveGameState *saveState,
-                               PlayerEnvProbeResult *probeResult);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-AccumulateSlopeForces(zUtil_SaveGameState *saveState, PlayerEnvProbeResult *probeResult);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateVerticalVelocityAndTransform(zUtil_SaveGameState *saveState,
-                                   PlayerEnvProbeResult *probeResult);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateMasterTypeBasicOrTrack_FromModalProbe(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateMasterTypeHover_FromModalProbe(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateMasterTypeHover(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateMasterTypeAmphib_FromModalProbe(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateMasterTypeAmphib(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateMasterTypeBasic(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL SelectBestProbesByDotProduct(
+    const zVec3 *referenceNormal,
+    PlayerEnvProbeResult *probeResult
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ComputeSurfaceFrom3Probes(
+    zUtil_SaveGameState *saveState,
+    PlayerEnvProbeResult *probeResult
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdatePostMoveEnvironment(
+    zUtil_SaveGameState *saveState,
+    int probeSampleCount
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ProcessEnvProbeResults(
+    zUtil_SaveGameState *saveState,
+    PlayerEnvProbeResult *probeResult
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL RebuildOrientationFromNormal(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL FindThirdProbeAndComputeNormal(
+    zUtil_SaveGameState *saveState,
+    PlayerEnvProbeResult *probeResult
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL AccumulateSlopeForces(
+    zUtil_SaveGameState *saveState,
+    PlayerEnvProbeResult *probeResult
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateVerticalVelocityAndTransform(
+    zUtil_SaveGameState *saveState,
+    PlayerEnvProbeResult *probeResult
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeBasicOrTrack_FromModalProbe(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeHover_FromModalProbe(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeHover(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeAmphib_FromModalProbe(
+    zUtil_SaveGameState *saveState
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeAmphib(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeBasic(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL BuildGunFireTransform(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateAltGunAimBasisOrigin(zUtil_SaveGameState *saveState, zVec3 *outBasisOrigin);
-RECOIL_NOINLINE void RECOIL_FASTCALL ComposeAimBasisWorldMatrix(zUtil_SaveGameState *saveState,
-                                                                zMat4x3 *outMatrix34);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAltGunAimBasisOrigin(
+    zUtil_SaveGameState *saveState,
+    zVec3 *outBasisOrigin
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ComposeAimBasisWorldMatrix(
+    zUtil_SaveGameState *saveState,
+    zMat4x3 *outMatrix34
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL DecayAndApplyAltFireSlotOffsetToNode(
-    PlayerGunFireSlot *slot, zClass_NodePartial *slotNode, float slotAimY, int applyMatrix);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ApplyGunFireSlotOffsetToNode(zUtil_SaveGameState *saveState);
+    PlayerGunFireSlot *slot,
+    zClass_NodePartial *slotNode,
+    float slotAimY,
+    int applyMatrix
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ApplyGunFireSlotOffsetToNode(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL SelectAltGunFirePointAndSlot(
-    zUtil_SaveGameState *saveState, PlayerGunFireSlot **outActiveFireSlotPtr);
+    zUtil_SaveGameState *saveState,
+    PlayerGunFireSlot **outActiveFireSlotPtr
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL SelectPrimaryGunFirePointAndSlot(
-    zUtil_SaveGameState *saveState, PlayerGunFireSlot **outActiveFireSlotPtr);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateContinuousAltGunFireController(zUtil_SaveGameState *saveState);
+    zUtil_SaveGameState *saveState,
+    PlayerGunFireSlot **outActiveFireSlotPtr
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateContinuousAltGunFireController(
+    zUtil_SaveGameState *saveState
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL EnsureGunAuxEffectActive(
-    zUtil_SaveGameState *saveState, PlayerGunFireController *gunController, zVec3 *effectPos);
+    zUtil_SaveGameState *saveState,
+    PlayerGunFireController *gunController,
+    zVec3 *effectPos
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL AltGunLaunchProjectile(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE int RECOIL_FASTCALL AltGunFireSimpleProjectile(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ProcessAltGunDispatchRequest(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ProcessPrimaryGunDispatchTick(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL ProcessAltGunDispatchRequest(zUtil_SaveGameState *saveState);
+RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPrimaryGunDispatchTick(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL TickAltGunRuntimeState(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_FASTCALL DestroySaveGameState(zUtil_SaveGameState *saveState);
 RECOIL_NOINLINE void RECOIL_CDECL ShutdownMissionRuntime();
 } // namespace Player
 
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorTrackNode, next) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorTrackNode, trackKind) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorTrackNode, payload) == 0x04);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackNode,
+        next
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackNode,
+        trackKind
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackNode,
+        payload
+    ) == 0x04
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMgrSensorTrackList) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorTrackList, trackListAux) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorTrackList, head) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorTrackList, tail) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorTrackList, count) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, next) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, optCatalogName) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, missionRequirementOrGateId) == 0x54);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, mountLayoutFlags) == 0x58);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, startAmmoOrCharge) == 0x5c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, dispatchRepeatDelay) == 0x60);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, aiAttackRangeMin) == 0x64);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, aiAttackRangeMax) == 0x68);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, fireSlotRecoilFlags) == 0x6c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, initialHardpointSelectState) == 0x70);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackList,
+        trackListAux
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackList,
+        head
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackList,
+        tail
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackList,
+        count
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterWeaponSpec,
+        next
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterWeaponSpec,
+        optCatalogName
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterWeaponSpec,
+        missionRequirementOrGateId
+    ) == 0x54
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterWeaponSpec,
+        mountLayoutFlags
+    ) == 0x58
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterWeaponSpec,
+        startAmmoOrCharge
+    ) == 0x5c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterWeaponSpec,
+        dispatchRepeatDelay
+    ) == 0x60
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterWeaponSpec,
+        aiAttackRangeMin
+    ) == 0x64
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterWeaponSpec,
+        aiAttackRangeMax
+    ) == 0x68
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterWeaponSpec,
+        fireSlotRecoilFlags
+    ) == 0x6c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterWeaponSpec,
+        initialHardpointSelectState
+    ) == 0x70
+);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMasterWeaponSpec) == 0x74);
-RECOIL_STATIC_ASSERT(offsetof(PlayerAiRuntimePartial, attackBuddyNetId) == 0x48);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, next) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, vehicleName) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, modalCount) == 0x54);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, naniteBuildRate) == 0x2d8);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, naniteSpawnCounter) == 0x2dc);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, naniteMaxLevel) == 0x2e0);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, sfxWeaponUp) == 0x2e4);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, activationRangeSq) == 0x2f4);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, notPursuitDwellTime) == 0x2f8);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, returnRangeSq) == 0x2fc);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, startAnimsName) == 0x300);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackSide0) == 0x350);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackBase0) == 0x354);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackDist0) == 0x358);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackSide1) == 0x35c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackBase1) == 0x360);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackDist1) == 0x364);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackSide2) == 0x368);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackBase2) == 0x36c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackDist2) == 0x370);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, aimYawRate) == 0x374);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, aimYawMax) == 0x378);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cameraUdSwing) == 0x37c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, pickupType) == 0x3a0);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, trackSwitchDist0) == 0x38c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, trackSwitchDist1) == 0x390);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, trackSwitchDist2) == 0x394);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, maxHealth) == 0x398);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, invMaxHealth) == 0x39c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, pickupCapacity) == 0x3a4);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecListAux) == 0x3a8);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecHead) == 0x3ac);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecTail) == 0x3b0);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecCount) == 0x3b4);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponNodeCount) == 0x3b8);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerAiRuntimePartial,
+        attackBuddyNetId
+    ) == 0x48
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        next
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        vehicleName
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        modalCount
+    ) == 0x54
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        naniteBuildRate
+    ) == 0x2d8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        naniteSpawnCounter
+    ) == 0x2dc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        naniteMaxLevel
+    ) == 0x2e0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        sfxWeaponUp
+    ) == 0x2e4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        activationRangeSq
+    ) == 0x2f4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        notPursuitDwellTime
+    ) == 0x2f8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        returnRangeSq
+    ) == 0x2fc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        startAnimsName
+    ) == 0x300
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        cambackSide0
+    ) == 0x350
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        cambackBase0
+    ) == 0x354
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        cambackDist0
+    ) == 0x358
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        cambackSide1
+    ) == 0x35c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        cambackBase1
+    ) == 0x360
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        cambackDist1
+    ) == 0x364
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        cambackSide2
+    ) == 0x368
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        cambackBase2
+    ) == 0x36c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        cambackDist2
+    ) == 0x370
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        aimYawRate
+    ) == 0x374
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        aimYawMax
+    ) == 0x378
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        cameraUdSwing
+    ) == 0x37c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        pickupType
+    ) == 0x3a0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        trackSwitchDist0
+    ) == 0x38c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        trackSwitchDist1
+    ) == 0x390
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        trackSwitchDist2
+    ) == 0x394
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        maxHealth
+    ) == 0x398
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        invMaxHealth
+    ) == 0x39c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        pickupCapacity
+    ) == 0x3a4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        weaponSpecListAux
+    ) == 0x3a8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        weaponSpecHead
+    ) == 0x3ac
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        weaponSpecTail
+    ) == 0x3b0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        weaponSpecCount
+    ) == 0x3b4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterCommonData,
+        weaponNodeCount
+    ) == 0x3b8
+);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMasterCommonData) == 0x3bc);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, next) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, modalName) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, modeName) == 0x54);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, masterType) == 0xa4);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, accelRate) == 0xa8);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, maxSpeed) == 0xac);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, yawAccel) == 0xb0);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, yawRateMax) == 0xb4);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, yawDamping) == 0xb8);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, rateDampingAccel) == 0xbc);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, rateDampingDecel) == 0xc0);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, gunPitchRate) == 0xc4);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, gunPitchMin) == 0xc8);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, frictionStatic) == 0xcc);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, frictionDynamic) == 0xd0);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, frictionSlide) == 0xd4);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, stoppingForce) == 0xd8);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisSmoothFactor) == 0xdc);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisPitchRate) == 0xe0);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisPitchMax) == 0xe4);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisPitchDamping) == 0xe8);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisRollRate) == 0xec);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisRollMax) == 0xf0);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisRollDamping) == 0xf4);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, quicksandSlowdown) == 0xf8);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, lavaSlowdown) == 0xfc);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, probePoints) == 0x100);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, probePointCount) == 0x214);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, platformPointCount) == 0x218);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, mass) == 0x21c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, invMass) == 0x220);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, aDamping) == 0x224);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, modeAltTransitionTime) == 0x228);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverLiftDampingRate) == 0x22c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverLiftScale) == 0x230);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverNormalLerpRate) == 0x234);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverPitchWaveBaseRate) == 0x238);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverPitchWaveSpeedRate) == 0x23c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverPitchWaveAmplitude) == 0x240);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverRollWaveBaseRate) == 0x244);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverRollWaveSpeedRate) == 0x248);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverRollWaveAmplitude) == 0x24c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverRollYawCoupleScale) == 0x250);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, collisionDampingA) == 0x254);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, collisionDampingB) == 0x258);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromTrackToAmphib) == 0x25c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromAmphibToTrack) == 0x264);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromTrackToHover) == 0x26c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromHoverToTrack) == 0x274);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromSubToAmphib) == 0x27c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromAmphibToSub) == 0x284);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromHoverToAmphib) == 0x28c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromAmphibToHover) == 0x294);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, sfxEngine) == 0x29c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, sfxCollide) == 0x2ac);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, sfxLand) == 0x2b0);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, sfxPitchScale) == 0x2b4);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, sfxVolumeScale) == 0x2b8);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        next
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        modalName
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        modeName
+    ) == 0x54
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        masterType
+    ) == 0xa4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        accelRate
+    ) == 0xa8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        maxSpeed
+    ) == 0xac
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        yawAccel
+    ) == 0xb0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        yawRateMax
+    ) == 0xb4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        yawDamping
+    ) == 0xb8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        rateDampingAccel
+    ) == 0xbc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        rateDampingDecel
+    ) == 0xc0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        gunPitchRate
+    ) == 0xc4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        gunPitchMin
+    ) == 0xc8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        frictionStatic
+    ) == 0xcc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        frictionDynamic
+    ) == 0xd0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        frictionSlide
+    ) == 0xd4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        stoppingForce
+    ) == 0xd8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        chassisSmoothFactor
+    ) == 0xdc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        chassisPitchRate
+    ) == 0xe0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        chassisPitchMax
+    ) == 0xe4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        chassisPitchDamping
+    ) == 0xe8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        chassisRollRate
+    ) == 0xec
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        chassisRollMax
+    ) == 0xf0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        chassisRollDamping
+    ) == 0xf4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        quicksandSlowdown
+    ) == 0xf8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        lavaSlowdown
+    ) == 0xfc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        probePoints
+    ) == 0x100
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        probePointCount
+    ) == 0x214
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        platformPointCount
+    ) == 0x218
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        mass
+    ) == 0x21c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        invMass
+    ) == 0x220
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        aDamping
+    ) == 0x224
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        modeAltTransitionTime
+    ) == 0x228
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        hoverLiftDampingRate
+    ) == 0x22c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        hoverLiftScale
+    ) == 0x230
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        hoverNormalLerpRate
+    ) == 0x234
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        hoverPitchWaveBaseRate
+    ) == 0x238
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        hoverPitchWaveSpeedRate
+    ) == 0x23c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        hoverPitchWaveAmplitude
+    ) == 0x240
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        hoverRollWaveBaseRate
+    ) == 0x244
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        hoverRollWaveSpeedRate
+    ) == 0x248
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        hoverRollWaveAmplitude
+    ) == 0x24c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        hoverRollYawCoupleScale
+    ) == 0x250
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        collisionDampingA
+    ) == 0x254
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        collisionDampingB
+    ) == 0x258
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        fxList_fromTrackToAmphib
+    ) == 0x25c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        fxList_fromAmphibToTrack
+    ) == 0x264
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        fxList_fromTrackToHover
+    ) == 0x26c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        fxList_fromHoverToTrack
+    ) == 0x274
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        fxList_fromSubToAmphib
+    ) == 0x27c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        fxList_fromAmphibToSub
+    ) == 0x284
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        fxList_fromHoverToAmphib
+    ) == 0x28c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        fxList_fromAmphibToHover
+    ) == 0x294
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        sfxEngine
+    ) == 0x29c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        sfxCollide
+    ) == 0x2ac
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        sfxLand
+    ) == 0x2b0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        sfxPitchScale
+    ) == 0x2b4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMasterModalData,
+        sfxVolumeScale
+    ) == 0x2b8
+);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMasterModalData) == 0x2bc);
 RECOIL_STATIC_ASSERT(sizeof(PlayerProbeTypeHistogram) == 0x190);
-RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, candidateScoreBySample) == 0x24);
-RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, highestSelectedHitY) == 0x48);
-RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, minProbeDepth) == 0x4c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, preferAttachmentSlot1) == 0x50);
-RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, attachmentCandidateCount) == 0x54);
-RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, attachmentNode) == 0x58);
-RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, impactSlotBySample) == 0x5c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, hitHistogram) == 0x80);
-RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, candidateBuffers) == 0x210);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerEnvProbeResult,
+        candidateScoreBySample
+    ) == 0x24
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerEnvProbeResult,
+        highestSelectedHitY
+    ) == 0x48
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerEnvProbeResult,
+        minProbeDepth
+    ) == 0x4c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerEnvProbeResult,
+        preferAttachmentSlot1
+    ) == 0x50
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerEnvProbeResult,
+        attachmentCandidateCount
+    ) == 0x54
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerEnvProbeResult,
+        attachmentNode
+    ) == 0x58
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerEnvProbeResult,
+        impactSlotBySample
+    ) == 0x5c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerEnvProbeResult,
+        hitHistogram
+    ) == 0x80
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerEnvProbeResult,
+        candidateBuffers
+    ) == 0x210
+);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMissionSaveWeaponSide) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMissionSaveWeaponBank) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, weaponBank) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, playerStatusMeterRatio) == 0xdc);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, playerMasterType) == 0x104);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, cameraTarget) == 0x108);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, cameraPosition) == 0x114);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, timedHitStatus) == 0x124);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMissionSaveData,
+        weaponBank
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMissionSaveData,
+        playerStatusMeterRatio
+    ) == 0xdc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMissionSaveData,
+        playerMasterType
+    ) == 0x104
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMissionSaveData,
+        cameraTarget
+    ) == 0x108
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMissionSaveData,
+        cameraPosition
+    ) == 0x114
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMissionSaveData,
+        timedHitStatus
+    ) == 0x124
+);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMissionSaveData) == 0x140);
-RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, worldPos) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiNetId) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiAttackRadiusSq) == 0x2c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiRestoreTarget) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiDynamicOffsetDir) == 0x40);
-RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiActivationRadiusSq) == 0x4c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiActive) == 0x5c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, masterType) == 0x6c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, localMasterType) == 0x7c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerVehicleListSaveEntry,
+        worldPos
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerVehicleListSaveEntry,
+        aiNetId
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerVehicleListSaveEntry,
+        aiAttackRadiusSq
+    ) == 0x2c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerVehicleListSaveEntry,
+        aiRestoreTarget
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerVehicleListSaveEntry,
+        aiDynamicOffsetDir
+    ) == 0x40
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerVehicleListSaveEntry,
+        aiActivationRadiusSq
+    ) == 0x4c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerVehicleListSaveEntry,
+        aiActive
+    ) == 0x5c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerVehicleListSaveEntry,
+        masterType
+    ) == 0x6c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerVehicleListSaveEntry,
+        localMasterType
+    ) == 0x7c
+);
 RECOIL_STATIC_ASSERT(sizeof(PlayerVehicleListSaveEntry) == 0x80);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMineSaveEntry, optCatalogName) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMineSaveEntry, spawnPos) == 0x24);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMineSaveEntry, scale) == 0x30);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMineSaveEntry, ownerNodeName) == 0x3c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMineSaveEntry,
+        optCatalogName
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMineSaveEntry,
+        spawnPos
+    ) == 0x24
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMineSaveEntry,
+        scale
+    ) == 0x30
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerMineSaveEntry,
+        ownerNodeName
+    ) == 0x3c
+);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMineSaveEntry) == 0x60);
 RECOIL_STATIC_ASSERT(sizeof(PlayerNodeFlagRestoreEntry) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(PlayerNodeFlagRestoreEntry, node) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(PlayerNodeFlagRestoreEntry, wasCellPickable) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(PlayerNodeFlagRestoreEntry, wasRaycastable) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(PlayerNodeFlagRestoreEntry, wasPickable) == 0x0c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerNodeFlagRestoreEntry,
+        node
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerNodeFlagRestoreEntry,
+        wasCellPickable
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerNodeFlagRestoreEntry,
+        wasRaycastable
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PlayerNodeFlagRestoreEntry,
+        wasPickable
+    ) == 0x0c
+);
 
 #endif // BATTLESPORT_PLAYER_H

@@ -42,6 +42,11 @@ If a task expands into a multi-function closure, identify every affected address
 before editing source, Binary Ninja state, plan markers, VC verification
 manifests, or group notes.
 
+Treat the selected address as an anchor, not necessarily the implementation
+unit. If the frontier exposes a class, table owner, provider boundary,
+source-file cluster, or strongly connected dependency group, plan and verify that
+owning boundary before marking individual functions complete.
+
 Generate a handoff report before ending a multi-step reconstruction session:
 
 ```powershell

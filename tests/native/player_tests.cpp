@@ -1348,6 +1348,579 @@ extern "C" int player_clone_type6_node_from_template_and_rename_smoke(void) {
     return ok ? 0 : 1;
 }
 
+extern "C" int player_init_master_common_data_list_smoke(void) {
+    PlayerMasterCommonData *const oldHead = g_PlayerMasterCommonDataHead;
+    PlayerMasterCommonData *const oldTail = g_PlayerMasterCommonDataTail;
+    const int oldAux = g_PlayerMasterCommonDataListAux;
+    const int oldCount = g_PlayerMasterCommonDataCount;
+
+    PlayerMasterCommonData head = {};
+    PlayerMasterCommonData tail = {};
+    g_PlayerMasterCommonDataListAux = 1;
+    g_PlayerMasterCommonDataHead = &head;
+    g_PlayerMasterCommonDataTail = &tail;
+    g_PlayerMasterCommonDataCount = 2;
+
+    Player::InitMasterCommonDataList();
+
+    const bool ok = g_PlayerMasterCommonDataListAux == 0 &&
+                    g_PlayerMasterCommonDataHead == nullptr &&
+                    g_PlayerMasterCommonDataTail == nullptr &&
+                    g_PlayerMasterCommonDataCount == 0;
+
+    g_PlayerMasterCommonDataHead = oldHead;
+    g_PlayerMasterCommonDataTail = oldTail;
+    g_PlayerMasterCommonDataListAux = oldAux;
+    g_PlayerMasterCommonDataCount = oldCount;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_init_master_modal_data_list_smoke(void) {
+    PlayerMasterModalData *const oldHead = g_PlayerMasterModalDataHead;
+    PlayerMasterModalData *const oldTail = g_PlayerMasterModalDataTail;
+    const int oldAux = g_PlayerMasterModalDataListAux;
+    const int oldCount = g_PlayerMasterModalDataCount;
+
+    PlayerMasterModalData head = {};
+    PlayerMasterModalData tail = {};
+    g_PlayerMasterModalDataListAux = 1;
+    g_PlayerMasterModalDataHead = &head;
+    g_PlayerMasterModalDataTail = &tail;
+    g_PlayerMasterModalDataCount = 2;
+
+    Player::InitMasterModalDataList();
+
+    const bool ok = g_PlayerMasterModalDataListAux == 0 &&
+                    g_PlayerMasterModalDataHead == nullptr &&
+                    g_PlayerMasterModalDataTail == nullptr &&
+                    g_PlayerMasterModalDataCount == 0;
+
+    g_PlayerMasterModalDataHead = oldHead;
+    g_PlayerMasterModalDataTail = oldTail;
+    g_PlayerMasterModalDataListAux = oldAux;
+    g_PlayerMasterModalDataCount = oldCount;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_init_save_state_list_smoke(void) {
+    zUtil_SaveGameState *const oldHead = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState *const oldTail = g_PlayerSaveStateListTail;
+    const int oldAux = g_PlayerSaveStateListAux;
+    const int oldCount = g_PlayerSaveStateCount;
+
+    zUtil_SaveGameState head = {};
+    zUtil_SaveGameState tail = {};
+    g_PlayerSaveStateListAux = 1;
+    g_PlayerSaveStateListHead = &head;
+    g_PlayerSaveStateListTail = &tail;
+    g_PlayerSaveStateCount = 2;
+
+    Player::InitSaveStateList();
+
+    const bool ok = g_PlayerSaveStateListAux == 0 &&
+                    g_PlayerSaveStateListHead == nullptr &&
+                    g_PlayerSaveStateListTail == nullptr &&
+                    g_PlayerSaveStateCount == 0;
+
+    g_PlayerSaveStateListHead = oldHead;
+    g_PlayerSaveStateListTail = oldTail;
+    g_PlayerSaveStateListAux = oldAux;
+    g_PlayerSaveStateCount = oldCount;
+    return ok ? 0 : 1;
+}
+
+static bool PlayerTopMsgPanelConstructed(const HudUiPanel *panel) {
+    const HudUiElement *const element = (const HudUiElement *)panel;
+    return panel->vtbl == &g_HudUiPanel_FTable && panel->textPick == nullptr &&
+           panel->hFont != nullptr && element->x == 0 && element->y == 0;
+}
+
+extern "C" int player_top_msg_panel1_constructor_smoke(void) {
+    const HudUiPanel oldPanel = g_Player_TopMsgPanel1;
+
+    g_Player_TopMsgPanel1 = {};
+    Player_TopMsgPanel1::Constructor();
+
+    const bool ok = PlayerTopMsgPanelConstructed(&g_Player_TopMsgPanel1);
+
+    g_Player_TopMsgPanel1 = oldPanel;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_top_msg_panel1_destructor_smoke(void) {
+    const HudUiPanel oldPanel = g_Player_TopMsgPanel1;
+
+    g_Player_TopMsgPanel1 = {};
+    g_Player_TopMsgPanel1.vtbl = &g_HudUiPanel_FTable;
+    Player_TopMsgPanel1::Destructor();
+
+    const bool ok = g_Player_TopMsgPanel1.vtbl == &g_HudUiCommon_FTable &&
+                    g_Player_TopMsgPanel1.textPick == nullptr;
+
+    g_Player_TopMsgPanel1 = oldPanel;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_register_top_msg_panel1_on_exit_smoke(void) {
+    const HudUiPanel oldPanel = g_Player_TopMsgPanel1;
+
+    g_Player_TopMsgPanel1 = {};
+    g_Player_TopMsgPanel1.vtbl = &g_HudUiPanel_FTable;
+    Player::RegisterTopMsgPanel1OnExit();
+
+    const bool ok = g_Player_TopMsgPanel1.vtbl == &g_HudUiPanel_FTable;
+
+    g_Player_TopMsgPanel1 = oldPanel;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_init_and_register_top_msg_panel1_smoke(void) {
+    const HudUiPanel oldPanel = g_Player_TopMsgPanel1;
+
+    g_Player_TopMsgPanel1 = {};
+    Player::InitAndRegisterTopMsgPanel1();
+
+    const bool ok = PlayerTopMsgPanelConstructed(&g_Player_TopMsgPanel1);
+
+    g_Player_TopMsgPanel1 = oldPanel;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_top_msg_panel2_constructor_smoke(void) {
+    const HudUiPanel oldPanel = g_Player_TopMsgPanel2;
+
+    g_Player_TopMsgPanel2 = {};
+    Player_TopMsgPanel2::Constructor();
+
+    const bool ok = PlayerTopMsgPanelConstructed(&g_Player_TopMsgPanel2);
+
+    g_Player_TopMsgPanel2 = oldPanel;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_top_msg_panel2_destructor_smoke(void) {
+    const HudUiPanel oldPanel = g_Player_TopMsgPanel2;
+
+    g_Player_TopMsgPanel2 = {};
+    g_Player_TopMsgPanel2.vtbl = &g_HudUiPanel_FTable;
+    Player_TopMsgPanel2::Destructor();
+
+    const bool ok = g_Player_TopMsgPanel2.vtbl == &g_HudUiCommon_FTable &&
+                    g_Player_TopMsgPanel2.textPick == nullptr;
+
+    g_Player_TopMsgPanel2 = oldPanel;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_register_top_msg_panel2_cleanup_smoke(void) {
+    const HudUiPanel oldPanel = g_Player_TopMsgPanel2;
+
+    g_Player_TopMsgPanel2 = {};
+    g_Player_TopMsgPanel2.vtbl = &g_HudUiPanel_FTable;
+    Player::RegisterTopMsgPanel2Cleanup();
+
+    const bool ok = g_Player_TopMsgPanel2.vtbl == &g_HudUiPanel_FTable;
+
+    g_Player_TopMsgPanel2 = oldPanel;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_init_and_register_top_msg_panel2_smoke(void) {
+    const HudUiPanel oldPanel = g_Player_TopMsgPanel2;
+
+    g_Player_TopMsgPanel2 = {};
+    Player::InitAndRegisterTopMsgPanel2();
+
+    const bool ok = PlayerTopMsgPanelConstructed(&g_Player_TopMsgPanel2);
+
+    g_Player_TopMsgPanel2 = oldPanel;
+    return ok ? 0 : 1;
+}
+
+static void PlayerNodeFlagRestoreClearAtExit(void) {
+    g_PlayerNodeFlagRestoreEntriesBegin = nullptr;
+    g_PlayerNodeFlagRestoreEntriesEnd = nullptr;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = nullptr;
+}
+
+extern "C" int player_node_flag_restore_init_instance_smoke(void) {
+    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
+    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
+    PlayerNodeFlagRestoreEntry *const oldCapacity =
+        g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+    const unsigned char oldAllocatorOrProxy =
+        g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
+
+    PlayerNodeFlagRestoreEntry entries[1] = {};
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0xffu;
+    g_PlayerNodeFlagRestoreEntriesBegin = entries;
+    g_PlayerNodeFlagRestoreEntriesEnd = entries + 1;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = entries + 1;
+
+    PlayerNodeFlagRestore::InitInstance();
+
+    const bool ok = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy == 0 &&
+                    g_PlayerNodeFlagRestoreEntriesBegin == nullptr &&
+                    g_PlayerNodeFlagRestoreEntriesEnd == nullptr &&
+                    g_PlayerNodeFlagRestoreEntriesCapacityEnd == nullptr;
+
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldAllocatorOrProxy;
+    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
+    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacity;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_node_flag_restore_shutdown_instance_smoke(void) {
+    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
+    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
+    PlayerNodeFlagRestoreEntry *const oldCapacity =
+        g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+
+    PlayerNodeFlagRestoreEntry *const entries =
+        (PlayerNodeFlagRestoreEntry *)::operator new(sizeof(PlayerNodeFlagRestoreEntry));
+    g_PlayerNodeFlagRestoreEntriesBegin = entries;
+    g_PlayerNodeFlagRestoreEntriesEnd = entries + 1;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = entries + 1;
+
+    PlayerNodeFlagRestore::ShutdownInstance();
+
+    const bool ok = g_PlayerNodeFlagRestoreEntriesBegin == nullptr &&
+                    g_PlayerNodeFlagRestoreEntriesEnd == nullptr &&
+                    g_PlayerNodeFlagRestoreEntriesCapacityEnd == nullptr;
+
+    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
+    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacity;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_node_flag_restore_register_at_exit_smoke(void) {
+    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
+    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
+    PlayerNodeFlagRestoreEntry *const oldCapacity =
+        g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+
+    PlayerNodeFlagRestoreEntry entries[1] = {};
+    g_PlayerNodeFlagRestoreEntriesBegin = entries;
+    g_PlayerNodeFlagRestoreEntriesEnd = entries + 1;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = entries + 1;
+
+    PlayerNodeFlagRestore::RegisterAtExit();
+    atexit(PlayerNodeFlagRestoreClearAtExit);
+
+    const bool ok = g_PlayerNodeFlagRestoreEntriesBegin == entries &&
+                    g_PlayerNodeFlagRestoreEntriesEnd == entries + 1 &&
+                    g_PlayerNodeFlagRestoreEntriesCapacityEnd == entries + 1;
+
+    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
+    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacity;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_node_flag_restore_init_globals_smoke(void) {
+    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
+    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
+    PlayerNodeFlagRestoreEntry *const oldCapacity =
+        g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+    const unsigned char oldAllocatorOrProxy =
+        g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
+
+    PlayerNodeFlagRestoreEntry entries[1] = {};
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0xffu;
+    g_PlayerNodeFlagRestoreEntriesBegin = entries;
+    g_PlayerNodeFlagRestoreEntriesEnd = entries + 1;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = entries + 1;
+
+    PlayerNodeFlagRestore::InitGlobals();
+    atexit(PlayerNodeFlagRestoreClearAtExit);
+
+    const bool ok = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy == 0 &&
+                    g_PlayerNodeFlagRestoreEntriesBegin == nullptr &&
+                    g_PlayerNodeFlagRestoreEntriesEnd == nullptr &&
+                    g_PlayerNodeFlagRestoreEntriesCapacityEnd == nullptr;
+
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldAllocatorOrProxy;
+    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
+    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacity;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_underwater_fx_pass3_ui_constructor_smoke(void) {
+    Player_UnderwaterFxPass3Ui ui = {};
+    ui.ftable = nullptr;
+    ui.next = (HudUiElement *)(&ui);
+    ui.parent = &ui;
+    ui.flags = 0xffffffffu;
+    ui.timer = 5.0f;
+    ui.x = 77;
+    ui.y = 88;
+    ui.overlayRectOrNull = (zVidRect32 *)(&ui);
+
+    Player_UnderwaterFxPass3Ui *const result = ui.Constructor();
+
+    const bool baseOk =
+        result == &ui && ui.ftable == &g_Player_UnderwaterFxPass3Ui_Vtbl &&
+        ui.next == nullptr && ui.parent == nullptr && ui.flags == 0 &&
+        ui.timer == 0.0f && ui.x == 0 && ui.y == 0 && ui.state == 0;
+    const bool overlayOk = ui.overlayRectOrNull == nullptr;
+    const bool ftableOk =
+        g_Player_UnderwaterFxPass3Ui_Vtbl.slots[9] != 0 &&
+        g_Player_UnderwaterFxPass3Ui_Vtbl.slots[24] == g_HudUiCommon_FTable.slots[24];
+
+    return baseOk && overlayOk && ftableOk ? 0 : 1;
+}
+
+extern "C" int player_reset_underwater_fx_pass3_ui_singleton_smoke(void) {
+    const Player_UnderwaterFxPass3Ui oldUnderwaterFxPass3Ui =
+        g_Player_UnderwaterFxPass3Ui;
+
+    g_Player_UnderwaterFxPass3Ui = {};
+    g_Player_UnderwaterFxPass3Ui.ftable = &g_Player_UnderwaterFxPass3Ui_Vtbl;
+    Player::ResetUnderwaterFxPass3UiSingleton();
+
+    const bool ok = g_Player_UnderwaterFxPass3Ui.ftable == &g_HudUiCommon_FTable;
+
+    g_Player_UnderwaterFxPass3Ui = oldUnderwaterFxPass3Ui;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_init_underwater_fx_pass3_ui_singleton_smoke(void) {
+    const Player_UnderwaterFxPass3Ui oldUnderwaterFxPass3Ui =
+        g_Player_UnderwaterFxPass3Ui;
+
+    g_Player_UnderwaterFxPass3Ui = {};
+    g_Player_UnderwaterFxPass3Ui.ftable = &g_HudUiCommon_FTable;
+    g_Player_UnderwaterFxPass3Ui.overlayRectOrNull =
+        (zVidRect32 *)(&g_Player_UnderwaterFxPass3Ui);
+
+    Player::InitUnderwaterFxPass3UiSingleton();
+
+    const bool ok =
+        g_Player_UnderwaterFxPass3Ui.ftable == &g_Player_UnderwaterFxPass3Ui_Vtbl &&
+        g_Player_UnderwaterFxPass3Ui.overlayRectOrNull == nullptr &&
+        g_Player_UnderwaterFxPass3Ui.x == 0 && g_Player_UnderwaterFxPass3Ui.y == 0;
+
+    g_Player_UnderwaterFxPass3Ui = oldUnderwaterFxPass3Ui;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_register_underwater_fx_pass3_ui_on_exit_smoke(void) {
+    const Player_UnderwaterFxPass3Ui oldUnderwaterFxPass3Ui =
+        g_Player_UnderwaterFxPass3Ui;
+
+    g_Player_UnderwaterFxPass3Ui = {};
+    g_Player_UnderwaterFxPass3Ui.ftable = &g_Player_UnderwaterFxPass3Ui_Vtbl;
+    Player::RegisterUnderwaterFxPass3UiOnExit();
+
+    const bool ok =
+        g_Player_UnderwaterFxPass3Ui.ftable == &g_Player_UnderwaterFxPass3Ui_Vtbl;
+
+    g_Player_UnderwaterFxPass3Ui = oldUnderwaterFxPass3Ui;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_init_and_register_underwater_fx_pass3_ui_singleton_smoke(void) {
+    const Player_UnderwaterFxPass3Ui oldUnderwaterFxPass3Ui =
+        g_Player_UnderwaterFxPass3Ui;
+
+    g_Player_UnderwaterFxPass3Ui = {};
+    g_Player_UnderwaterFxPass3Ui.ftable = &g_HudUiCommon_FTable;
+    g_Player_UnderwaterFxPass3Ui.overlayRectOrNull =
+        (zVidRect32 *)(&g_Player_UnderwaterFxPass3Ui);
+
+    Player::InitAndRegisterUnderwaterFxPass3UiSingleton();
+
+    const bool ok =
+        g_Player_UnderwaterFxPass3Ui.ftable == &g_Player_UnderwaterFxPass3Ui_Vtbl &&
+        g_Player_UnderwaterFxPass3Ui.overlayRectOrNull == nullptr &&
+        g_Player_UnderwaterFxPass3Ui.x == 0 && g_Player_UnderwaterFxPass3Ui.y == 0;
+
+    g_Player_UnderwaterFxPass3Ui = oldUnderwaterFxPass3Ui;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_underwater_fx_pass3_ui_apply_blue_tint_smoke(void) {
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+
+    unsigned short pixels[24] = {};
+    for (int i = 0; i < 24; ++i) {
+        pixels[i] = 0xffff;
+    }
+
+    g_zVideo_FxSurfacePixels16 = pixels;
+    g_zVideo_FxSurfaceWidth = 6;
+    g_zVideo_FxSurfaceHeight = 4;
+    g_zVideo_FxSurfacePitchBytes = 12;
+    g_zVideo_FxSurfacePitchPixels16 = 6;
+    g_zVideo_ActiveRendererPath = 0;
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+
+    zVidRect32 rect{1, 1, 5, 3};
+    Player_UnderwaterFxPass3Ui ui = {};
+    ui.overlayRectOrNull = &rect;
+    ui.ApplyBlueTint();
+
+    const bool tinted =
+        pixels[1 + 1 * 6] == 0x7bff && pixels[4 + 1 * 6] == 0x7bff &&
+        pixels[1 + 2 * 6] == 0x7bff && pixels[4 + 2 * 6] == 0x7bff;
+    const bool untouched =
+        pixels[0 + 1 * 6] == 0xffff && pixels[5 + 1 * 6] == 0xffff &&
+        pixels[1 + 3 * 6] == 0xffff;
+
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+
+    return tinted && untouched ? 0 : 1;
+}
+
+extern "C" int player_projectile_camera_fx_pass3_ui_apply_green_mask_smoke(void) {
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+
+    unsigned short pixels[24] = {};
+    for (int i = 0; i < 24; ++i) {
+        pixels[i] = 0xffff;
+    }
+
+    g_zVideo_FxSurfacePixels16 = pixels;
+    g_zVideo_FxSurfaceWidth = 6;
+    g_zVideo_FxSurfaceHeight = 4;
+    g_zVideo_FxSurfacePitchBytes = 12;
+    g_zVideo_FxSurfacePitchPixels16 = 6;
+    g_zVideo_ActiveRendererPath = 0;
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+
+    zVidRect32 rect{1, 1, 5, 3};
+    Player_ProjectileCameraFxPass3Ui ui = {};
+    ui.overlayRectOrNull = &rect;
+    ui.ApplyGreenMask();
+
+    const bool masked =
+        pixels[1 + 1 * 6] == 0x07e0 && pixels[4 + 1 * 6] == 0x07e0 &&
+        pixels[1 + 2 * 6] == 0x07e0 && pixels[4 + 2 * 6] == 0x07e0;
+    const bool untouched =
+        pixels[0 + 1 * 6] == 0xffff && pixels[5 + 1 * 6] == 0xffff &&
+        pixels[1 + 3 * 6] == 0xffff;
+
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+
+    return masked && untouched ? 0 : 1;
+}
+
+extern "C" int player_projectile_camera_fx_pass3_ui_constructor_smoke(void) {
+    Player_ProjectileCameraFxPass3Ui ui = {};
+    ui.ftable = nullptr;
+    ui.next = (HudUiElement *)(&ui);
+    ui.parent = &ui;
+    ui.flags = 0xffffffffu;
+    ui.timer = 5.0f;
+    ui.x = 77;
+    ui.y = 88;
+    ui.overlayRectOrNull = (zVidRect32 *)(&ui);
+
+    Player_ProjectileCameraFxPass3Ui *const result = ui.Constructor();
+
+    const bool baseOk =
+        result == &ui && ui.ftable == &g_Player_State7FxPass3Ui_FTable &&
+        ui.next == nullptr && ui.parent == nullptr && ui.flags == 0 &&
+        ui.timer == 0.0f && ui.x == 0 && ui.y == 0 && ui.state == 0;
+    const bool overlayOk = ui.overlayRectOrNull == nullptr;
+    const bool ftableOk =
+        g_Player_State7FxPass3Ui_FTable.slots[9] != 0 &&
+        g_Player_State7FxPass3Ui_FTable.slots[24] == g_HudUiCommon_FTable.slots[24];
+
+    return baseOk && overlayOk && ftableOk ? 0 : 1;
+}
+
+extern "C" int player_init_projectile_camera_fx_pass3_ui_singleton_smoke(void) {
+    const Player_ProjectileCameraFxPass3Ui oldState7FxPass3Ui =
+        g_Player_State7FxPass3Ui;
+
+    g_Player_State7FxPass3Ui = {};
+    g_Player_State7FxPass3Ui.ftable = &g_HudUiCommon_FTable;
+    g_Player_State7FxPass3Ui.overlayRectOrNull =
+        (zVidRect32 *)(&g_Player_State7FxPass3Ui);
+
+    Player::InitProjectileCameraFxPass3UiSingleton();
+
+    const bool ok =
+        g_Player_State7FxPass3Ui.ftable == &g_Player_State7FxPass3Ui_FTable &&
+        g_Player_State7FxPass3Ui.overlayRectOrNull == nullptr &&
+        g_Player_State7FxPass3Ui.x == 0 && g_Player_State7FxPass3Ui.y == 0;
+
+    g_Player_State7FxPass3Ui = oldState7FxPass3Ui;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_reset_projectile_camera_fx_pass3_ui_singleton_smoke(void) {
+    const Player_ProjectileCameraFxPass3Ui oldState7FxPass3Ui =
+        g_Player_State7FxPass3Ui;
+
+    g_Player_State7FxPass3Ui = {};
+    g_Player_State7FxPass3Ui.ftable = &g_Player_State7FxPass3Ui_FTable;
+    Player::ResetProjectileCameraFxPass3UiSingleton();
+
+    const bool ok = g_Player_State7FxPass3Ui.ftable == &g_HudUiCommon_FTable;
+
+    g_Player_State7FxPass3Ui = oldState7FxPass3Ui;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_register_projectile_camera_fx_pass3_ui_cleanup_smoke(void) {
+    const Player_ProjectileCameraFxPass3Ui oldState7FxPass3Ui =
+        g_Player_State7FxPass3Ui;
+
+    g_Player_State7FxPass3Ui = {};
+    g_Player_State7FxPass3Ui.ftable = &g_Player_State7FxPass3Ui_FTable;
+    Player::RegisterProjectileCameraFxPass3UiCleanup();
+
+    const bool ok = g_Player_State7FxPass3Ui.ftable == &g_Player_State7FxPass3Ui_FTable;
+
+    g_Player_State7FxPass3Ui = oldState7FxPass3Ui;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_init_and_register_projectile_camera_fx_pass3_ui_singleton_smoke(void) {
+    const Player_ProjectileCameraFxPass3Ui oldState7FxPass3Ui =
+        g_Player_State7FxPass3Ui;
+
+    g_Player_State7FxPass3Ui = {};
+    g_Player_State7FxPass3Ui.ftable = &g_HudUiCommon_FTable;
+    g_Player_State7FxPass3Ui.overlayRectOrNull =
+        (zVidRect32 *)(&g_Player_State7FxPass3Ui);
+
+    Player::InitAndRegisterProjectileCameraFxPass3UiSingleton();
+
+    const bool ok =
+        g_Player_State7FxPass3Ui.ftable == &g_Player_State7FxPass3Ui_FTable &&
+        g_Player_State7FxPass3Ui.overlayRectOrNull == nullptr &&
+        g_Player_State7FxPass3Ui.x == 0 && g_Player_State7FxPass3Ui.y == 0;
+
+    g_Player_State7FxPass3Ui = oldState7FxPass3Ui;
+    return ok ? 0 : 1;
+}
+
 extern "C" int player_create_from_names_at_pose_smoke(void) {
     zUtil_SaveGameState *const oldSaveHead = g_PlayerSaveStateListHead;
     zUtil_SaveGameState *const oldSaveTail = g_PlayerSaveStateListTail;
@@ -1578,8 +2151,10 @@ extern "C" int player_init_mission_runtime_missing_aiv_smoke(void) {
     HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
     const HudUiPanel oldTopPanel1 = g_Player_TopMsgPanel1;
     const HudUiPanel oldTopPanel2 = g_Player_TopMsgPanel2;
-    const HudUiElement oldUnderwaterFxPass3Ui = g_Player_UnderwaterFxPass3Ui;
-    const HudUiElement oldState7FxPass3Ui = g_Player_State7FxPass3Ui;
+    const Player_UnderwaterFxPass3Ui oldUnderwaterFxPass3Ui =
+        g_Player_UnderwaterFxPass3Ui;
+    const Player_ProjectileCameraFxPass3Ui oldState7FxPass3Ui =
+        g_Player_State7FxPass3Ui;
     HudUiContainer *const fxContainer =
         reinterpret_cast<HudUiContainer *>(&g_zVideo_FxPass3ConfigLocal);
     const HudUiContainer oldFxContainer = *fxContainer;
@@ -1892,8 +2467,10 @@ extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void) {
     HudUiTextStack4 *const oldChatStack = g_HudUiChatMessageStack;
     const HudUiPanel oldTopPanel1 = g_Player_TopMsgPanel1;
     const HudUiPanel oldTopPanel2 = g_Player_TopMsgPanel2;
-    const HudUiElement oldUnderwaterFxPass3Ui = g_Player_UnderwaterFxPass3Ui;
-    const HudUiElement oldState7FxPass3Ui = g_Player_State7FxPass3Ui;
+    const Player_UnderwaterFxPass3Ui oldUnderwaterFxPass3Ui =
+        g_Player_UnderwaterFxPass3Ui;
+    const Player_ProjectileCameraFxPass3Ui oldState7FxPass3Ui =
+        g_Player_State7FxPass3Ui;
     HudUiContainer *const fxContainer =
         reinterpret_cast<HudUiContainer *>(&g_zVideo_FxPass3ConfigLocal);
     const HudUiContainer oldFxContainer = *fxContainer;
@@ -13750,7 +14327,8 @@ extern "C" int player_apply_master_type_transition_smoke(void) {
 extern "C" int player_transition_to_master_type_track_smoke(void) {
     const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    const HudUiElement oldUnderwaterFxPass3Ui = g_Player_UnderwaterFxPass3Ui;
+    const Player_UnderwaterFxPass3Ui oldUnderwaterFxPass3Ui =
+        g_Player_UnderwaterFxPass3Ui;
     const int oldHorizonEnabled = g_Player_HorizonNodeFollowCameraEnabled;
     zClass_NodePartial *const oldHealthy1 = g_Player_CopterHealthyNode1;
     zClass_NodePartial *const oldHealthy2 = g_Player_CopterHealthyNode2;
@@ -13892,7 +14470,8 @@ restore:
 extern "C" int player_transition_to_master_type_amphib_smoke(void) {
     const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    const HudUiElement oldUnderwaterFxPass3Ui = g_Player_UnderwaterFxPass3Ui;
+    const Player_UnderwaterFxPass3Ui oldUnderwaterFxPass3Ui =
+        g_Player_UnderwaterFxPass3Ui;
     const int oldHorizonEnabled = g_Player_HorizonNodeFollowCameraEnabled;
     zClass_NodePartial *const oldHealthy1 = g_Player_CopterHealthyNode1;
     zClass_NodePartial *const oldHealthy2 = g_Player_CopterHealthyNode2;
@@ -14154,7 +14733,8 @@ restore:
 extern "C" int player_transition_to_master_type_hover_smoke(void) {
     const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
-    const HudUiElement oldUnderwaterFxPass3Ui = g_Player_UnderwaterFxPass3Ui;
+    const Player_UnderwaterFxPass3Ui oldUnderwaterFxPass3Ui =
+        g_Player_UnderwaterFxPass3Ui;
     const int oldHorizonEnabled = g_Player_HorizonNodeFollowCameraEnabled;
     zClass_NodePartial *const oldHealthy1 = g_Player_CopterHealthyNode1;
     zClass_NodePartial *const oldHealthy2 = g_Player_CopterHealthyNode2;
@@ -15496,7 +16076,8 @@ extern "C" int player_update_sub_mode_water_probe_state_smoke(void) {
     const float oldPlayerDeltaTimeScaled001 = g_Player_DeltaTimeScaled001;
     const float oldAccumulatedTimeSec = g_Time_AccumulatedTimeSec;
     const int oldHorizonFollow = g_Player_HorizonNodeFollowCameraEnabled;
-    const HudUiElement oldUnderwaterFx = g_Player_UnderwaterFxPass3Ui;
+    const Player_UnderwaterFxPass3Ui oldUnderwaterFx =
+        g_Player_UnderwaterFxPass3Ui;
     const zTag4Partial oldVariantCurrent = g_Variant_CurrentTag;
     const zTag4Partial oldVariantTagCurrent = g_VariantTag_Current;
 

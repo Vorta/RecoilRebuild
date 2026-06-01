@@ -1,8 +1,8 @@
 #include "GameZRecoil/zSound/zSound.h"
 
-#include "GameZRecoil/zSound/zA3dProvider.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zReader/zReader.h"
+#include "GameZRecoil/zSound/zA3dProvider.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,7 +20,9 @@ const unsigned int kFmtChunkMagic = 0x20746d66;
 const unsigned int kDataChunkMagic = 0x61746164;
 const unsigned int kCueChunkMagic = 0x20657563;
 
-char *DuplicateCString(const char *value) {
+char *DuplicateCString(
+    const char *value
+) {
 #if defined(_MSC_VER)
     return _strdup(value);
 #else
@@ -28,26 +30,34 @@ char *DuplicateCString(const char *value) {
 #endif
 }
 
-unsigned int ReadU32(const void *address) {
+unsigned int ReadU32(
+    const void *address
+) {
     unsigned int value = 0;
-    memcpy(&value, address, sizeof(value));
+    memcpy(
+        &value,
+        address,
+        sizeof(value)
+    );
     return value;
 }
 
-void InitWaveMarkers(zSndSample *sample, zSndWaveData *waveData) {
+void InitWaveMarkers(
+    zSndSample *sample,
+    zSndWaveData *waveData
+) {
     sample->markerCount = waveData->cuePointCount;
     if (sample->markerCount == 0) {
         return;
     }
 
     if (sample->markerCount > 0) {
-        sample->markerTimes = (float *)(malloc(
-            (size_t)(sample->markerCount) * sizeof(float) + sizeof(float)));
-        sample->markerValues = (float *)(malloc(
-            (size_t)(sample->markerCount) * sizeof(float) + sizeof(float)));
-        sample->markerAux = (int *)(
-            malloc((size_t)(sample->markerCount) * 2 * sizeof(int) +
-                        2 * sizeof(int)));
+        sample->markerTimes =
+            (float *)(malloc((size_t)(sample->markerCount) * sizeof(float) + sizeof(float)));
+        sample->markerValues =
+            (float *)(malloc((size_t)(sample->markerCount) * sizeof(float) + sizeof(float)));
+        sample->markerAux =
+            (int *)(malloc((size_t)(sample->markerCount) * 2 * sizeof(int) + 2 * sizeof(int)));
     } else {
         sample->markerTimes = 0;
         sample->markerValues = 0;
@@ -57,23 +67,22 @@ void InitWaveMarkers(zSndSample *sample, zSndWaveData *waveData) {
     int index = 0;
     while (index < sample->markerCount) {
         const zSndCuePoint &cue = waveData->cuePoints[index];
-        sample->markerAux[index * 2] = (waveData->fmt->wBitsPerSample >> 3) *
-                                       (int)(cue.position) *
-                                       waveData->fmt->nChannels;
-        sample->markerTimes[index] =
-            (float)(cue.position) / (float)(waveData->fmt->nSamplesPerSec);
+        sample->markerAux[index * 2] =
+            (waveData->fmt->wBitsPerSample >> 3) * (int)(cue.position) * waveData->fmt->nChannels;
+        sample->markerTimes[index] = (float)(cue.position) / (float)(waveData->fmt->nSamplesPerSec);
         ++index;
     }
 
-    sample->markerTimes[index] = (float)(waveData->pcmByteCount) /
-                                 (float)(waveData->fmt->nAvgBytesPerSec);
+    sample->markerTimes[index] =
+        (float)(waveData->pcmByteCount) / (float)(waveData->fmt->nAvgBytesPerSec);
     ++sample->markerCount;
 }
 } // namespace
 
 // Reimplements 0x4a3180: zSndSample::InitFromWaveData_DirectSound
-RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndSample::InitFromWaveData_DirectSound(zSndWaveData *waveData) {
+RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::InitFromWaveData_DirectSound(
+    zSndWaveData *waveData
+) {
     if (createGuard != 0) {
         return 0;
     }
@@ -102,29 +111,47 @@ zSndSample::InitFromWaveData_DirectSound(zSndWaveData *waveData) {
 
     LPDIRECTSOUND const device = (LPDIRECTSOUND)(g_zSnd_BackendDevice);
     int error =
-        device->CreateSoundBuffer(&desc,
-                                  (LPDIRECTSOUNDBUFFER *)&primaryVoice.backendBuffer,
-                                  0);
+        device->CreateSoundBuffer(
+            &desc,
+            (LPDIRECTSOUNDBUFFER *)&primaryVoice.backendBuffer,
+            0
+        );
     if (error != 0) {
-        zError::ReportOld(0x200, kZSndCreateSourceFile, 0xf5, kCreateSoundBufferError,
-                          waveData->nameOrPath);
-        zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0xf6);
+        zError::ReportOld(
+            0x200,
+            kZSndCreateSourceFile,
+            0xf5,
+            kCreateSoundBufferError,
+            waveData->nameOrPath
+        );
+        zSnd::ReportDirectSoundError(
+            error,
+            kZSndCreateSourceFile,
+            0xf6
+        );
         return 0;
     }
 
     primaryVoice.handleKind = ZSND_PLAYHANDLE_BACKEND;
-    LPDIRECTSOUNDBUFFER buffer =
-        (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
+    LPDIRECTSOUNDBUFFER buffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
 
     DWORD status = 0;
     error = buffer->GetStatus(&status);
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x10e);
+        return zSnd::ReportDirectSoundError(
+            error,
+            kZSndCreateSourceFile,
+            0x10e
+        );
     }
     if ((status & 0x02) != 0) {
         error = buffer->Restore();
         if (error != 0) {
-            return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x113);
+            return zSnd::ReportDirectSoundError(
+                error,
+                kZSndCreateSourceFile,
+                0x113
+            );
         }
     }
 
@@ -132,82 +159,166 @@ zSndSample::InitFromWaveData_DirectSound(zSndWaveData *waveData) {
     void *audioPtr2 = 0;
     DWORD audioBytes1 = 0;
     DWORD audioBytes2 = 0;
-    error = buffer->Lock(0, (unsigned int)(waveData->pcmByteCount),
-                         &audioPtr1, &audioBytes1, &audioPtr2, &audioBytes2, 0);
+    error = buffer->Lock(
+        0,
+        (unsigned int)(waveData->pcmByteCount),
+        &audioPtr1,
+        &audioBytes1,
+        &audioPtr2,
+        &audioBytes2,
+        0
+    );
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x11d);
+        return zSnd::ReportDirectSoundError(
+            error,
+            kZSndCreateSourceFile,
+            0x11d
+        );
     }
 
-    memcpy(audioPtr1, waveData->pcmData, audioBytes1);
+    memcpy(
+        audioPtr1,
+        waveData->pcmData,
+        audioBytes1
+    );
     if (audioBytes2 != 0) {
-        memcpy(audioPtr2, (unsigned char *)(waveData->pcmData) + audioBytes1,
-                    audioBytes2);
+        memcpy(
+            audioPtr2,
+            (unsigned char *)(waveData->pcmData) + audioBytes1,
+            audioBytes2
+        );
         audioBytes1 += audioBytes2;
     }
 
-    error = buffer->Unlock(audioPtr1, audioBytes1, audioPtr2, audioBytes2);
+    error = buffer->Unlock(
+        audioPtr1,
+        audioBytes1,
+        audioPtr2,
+        audioBytes2
+    );
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x12a);
+        return zSnd::ReportDirectSoundError(
+            error,
+            kZSndCreateSourceFile,
+            0x12a
+        );
     }
 
     error = buffer->SetCurrentPosition(0);
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x130);
+        return zSnd::ReportDirectSoundError(
+            error,
+            kZSndCreateSourceFile,
+            0x130
+        );
     }
 
-    InitWaveMarkers(this, waveData);
+    InitWaveMarkers(
+        this,
+        waveData
+    );
     playbackEventHandler = 0;
     replayFields.flags &= ~0x80;
     return 1;
 }
 
 // Reimplements 0x4a2ec0: zSndSample::InitFromWaveData_A3D
-RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndSample::InitFromWaveData_A3D(zSndWaveData *waveData) {
+RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::InitFromWaveData_A3D(
+    zSndWaveData *waveData
+) {
     if (createGuard != 0) {
         return 0;
     }
 
-    zA3dProviderDevice *const device =
-        (zA3dProviderDevice *)(g_zSnd_BackendDevice);
-    int error = device->vtable->CreateBufferByKind(device, 0, &primaryVoice.backendBuffer);
+    zA3dProviderDevice *const device = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
+    int error = device->vtable->CreateBufferByKind(
+        device,
+        0,
+        &primaryVoice.backendBuffer
+    );
     if (error != 0) {
-        return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x4e);
+        return zSnd::ReportA3DError(
+            error,
+            kZSndCreateSourceFile,
+            0x4e
+        );
     }
 
-    zA3dProviderSource *buffer =
-        (zA3dProviderSource *)(primaryVoice.backendBuffer);
-    error = buffer->vtable->SetWaveFormat(buffer, waveData->fmt);
+    zA3dProviderSource *buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
+    error = buffer->vtable->SetWaveFormat(
+        buffer,
+        waveData->fmt
+    );
     if (error != 0) {
-        return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x51);
+        return zSnd::ReportA3DError(
+            error,
+            kZSndCreateSourceFile,
+            0x51
+        );
     }
 
-    error = buffer->vtable->SetSampleDataSize(buffer, waveData->pcmByteCount);
+    error = buffer->vtable->SetSampleDataSize(
+        buffer,
+        waveData->pcmByteCount
+    );
     if (error != 0) {
-        return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x54);
+        return zSnd::ReportA3DError(
+            error,
+            kZSndCreateSourceFile,
+            0x54
+        );
     }
 
     void *audioPtr1 = 0;
     void *audioPtr2 = 0;
     int audioBytes1 = 0;
     int audioBytes2 = 0;
-    error = buffer->vtable->Lock(buffer, 0, (unsigned int)(waveData->pcmByteCount),
-                                 &audioPtr1, &audioBytes1, &audioPtr2, &audioBytes2, 0);
+    error = buffer->vtable->Lock(
+        buffer,
+        0,
+        (unsigned int)(waveData->pcmByteCount),
+        &audioPtr1,
+        &audioBytes1,
+        &audioPtr2,
+        &audioBytes2,
+        0
+    );
     if (error != 0) {
-        return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x5a);
+        return zSnd::ReportA3DError(
+            error,
+            kZSndCreateSourceFile,
+            0x5a
+        );
     }
 
-    memcpy(audioPtr1, waveData->pcmData, audioBytes1);
+    memcpy(
+        audioPtr1,
+        waveData->pcmData,
+        audioBytes1
+    );
     if (audioBytes2 != 0) {
-        memcpy(audioPtr2, (unsigned char *)(waveData->pcmData) + audioBytes1,
-                    audioBytes2);
+        memcpy(
+            audioPtr2,
+            (unsigned char *)(waveData->pcmData) + audioBytes1,
+            audioBytes2
+        );
         audioBytes1 += audioBytes2;
     }
 
     buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-    error = buffer->vtable->CommitWrite(buffer, audioPtr1, audioBytes1, audioPtr2, audioBytes2);
+    error = buffer->vtable->CommitWrite(
+        buffer,
+        audioPtr1,
+        audioBytes1,
+        audioPtr2,
+        audioBytes2
+    );
     if (error != 0) {
-        return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x66);
+        return zSnd::ReportA3DError(
+            error,
+            kZSndCreateSourceFile,
+            0x66
+        );
     }
 
     buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
@@ -215,15 +326,29 @@ zSndSample::InitFromWaveData_A3D(zSndWaveData *waveData) {
 
     buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
     if (((replayFields.flags >> 2) & 1) != 0) {
-        buffer->vtable->SetRange(buffer, rangeMin, rangeMax, 1);
+        buffer->vtable->SetRange(
+            buffer,
+            rangeMin,
+            rangeMax,
+            1
+        );
         buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-        buffer->vtable->SetA3DDistanceScale(buffer, a3dDistanceScale);
+        buffer->vtable->SetA3DDistanceScale(
+            buffer,
+            a3dDistanceScale
+        );
     } else {
-        buffer->vtable->SetSpatializationEnabled(buffer, 1);
+        buffer->vtable->SetSpatializationEnabled(
+            buffer,
+            1
+        );
     }
 
     sampleRate = (float)(waveData->fmt->nSamplesPerSec);
-    InitWaveMarkers(this, waveData);
+    InitWaveMarkers(
+        this,
+        waveData
+    );
     playbackEventHandler = 0;
     replayFields.flags &= ~0x80;
     return 1;
@@ -231,32 +356,59 @@ zSndSample::InitFromWaveData_A3D(zSndWaveData *waveData) {
 
 // Reimplements 0x4a34e0: zSndSample::LockBackendBuffers
 RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::LockBackendBuffers(
-    unsigned int offset, unsigned int bytes, void **buffer1, int *buffer1Bytes,
-    void **buffer2, int *buffer2Bytes) {
+    unsigned int offset,
+    unsigned int bytes,
+    void **buffer1,
+    int *buffer1Bytes,
+    void **buffer2,
+    int *buffer2Bytes
+) {
     if (createGuard != 0) {
         return 0;
     }
 
     int error = 0;
     if (g_zSnd_ActiveBackend == 0) {
-        LPDIRECTSOUNDBUFFER const buffer =
-            (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
+        LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
         DWORD lockedBytes1 = 0;
         DWORD lockedBytes2 = 0;
-        error = buffer->Lock(offset, bytes, buffer1, &lockedBytes1, buffer2,
-                             &lockedBytes2, 0);
+        error = buffer->Lock(
+            offset,
+            bytes,
+            buffer1,
+            &lockedBytes1,
+            buffer2,
+            &lockedBytes2,
+            0
+        );
         *buffer1Bytes = (int)lockedBytes1;
         *buffer2Bytes = (int)lockedBytes2;
         if (error != 0) {
-            return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x1ec);
+            return zSnd::ReportDirectSoundError(
+                error,
+                kZSndCreateSourceFile,
+                0x1ec
+            );
         }
     } else if (g_zSnd_ActiveBackend == 1) {
-        zA3dProviderSource *const buffer =
-            (zA3dProviderSource *)(primaryVoice.backendBuffer);
-        error = buffer->vtable->Lock(buffer, offset, bytes, buffer1, buffer1Bytes, buffer2,
-                                     buffer2Bytes, 0);
+        zA3dProviderSource *const buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
+        error = buffer->vtable
+                    ->Lock(
+                        buffer,
+                        offset,
+                        bytes,
+                        buffer1,
+                        buffer1Bytes,
+                        buffer2,
+                        buffer2Bytes,
+                        0
+                    );
         if (error != 0) {
-            return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x1e3);
+            return zSnd::ReportA3DError(
+                error,
+                kZSndCreateSourceFile,
+                0x1e3
+            );
         }
     }
 
@@ -265,25 +417,46 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::LockBackendBuffers(
 
 // Reimplements 0x4a3590: zSndSample::UnlockBackendBuffers
 RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::UnlockBackendBuffers(
-    void *buffer1, int buffer1Bytes, void *buffer2, int buffer2Bytes) {
+    void *buffer1,
+    int buffer1Bytes,
+    void *buffer2,
+    int buffer2Bytes
+) {
     if (createGuard != 0) {
         return 0;
     }
 
     int error = 0;
     if (g_zSnd_ActiveBackend == 0) {
-        LPDIRECTSOUNDBUFFER const buffer =
-            (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
-        error = buffer->Unlock(buffer1, buffer1Bytes, buffer2, buffer2Bytes);
+        LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
+        error = buffer->Unlock(
+            buffer1,
+            buffer1Bytes,
+            buffer2,
+            buffer2Bytes
+        );
         if (error != 0) {
-            return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x222);
+            return zSnd::ReportDirectSoundError(
+                error,
+                kZSndCreateSourceFile,
+                0x222
+            );
         }
     } else if (g_zSnd_ActiveBackend == 1) {
-        zA3dProviderSource *const buffer =
-            (zA3dProviderSource *)(primaryVoice.backendBuffer);
-        error = buffer->vtable->CommitWrite(buffer, buffer1, buffer1Bytes, buffer2, buffer2Bytes);
+        zA3dProviderSource *const buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
+        error = buffer->vtable->CommitWrite(
+            buffer,
+            buffer1,
+            buffer1Bytes,
+            buffer2,
+            buffer2Bytes
+        );
         if (error != 0) {
-            return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x21b);
+            return zSnd::ReportA3DError(
+                error,
+                kZSndCreateSourceFile,
+                0x21b
+            );
         }
     }
 
@@ -291,7 +464,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::UnlockBackendBuffers(
 }
 
 // Reimplements 0x4a2ea0: zSndSample::InitFromWaveData
-RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::InitFromWaveData(zSndWaveData *waveData) {
+RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::InitFromWaveData(
+    zSndWaveData *waveData
+) {
     if (g_zSnd_ActiveBackend == 0) {
         return InitFromWaveData_DirectSound(waveData);
     }
@@ -305,14 +480,23 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::InitFromWaveData(zSndWaveData *w
 
 // Reimplements 0x4a3850: zSndSample_CreateQueuedStreamingSample
 extern "C" RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSndSample_CreateQueuedStreamingSample(
-    WAVEFORMATEX *audioFormat, void *audioBuffer, int bufferBytes) {
-    zSndSample *sample = (zSndSample *)(calloc(1, sizeof(zSndSample)));
+    WAVEFORMATEX *audioFormat,
+    void *audioBuffer,
+    int bufferBytes
+) {
+    zSndSample *sample = (zSndSample *)(calloc(
+        1,
+        sizeof(zSndSample)
+    ));
     if (sample == 0) {
         return 0;
     }
 
     zSndWaveData waveData = {0};
-    waveData.ConstructorFromPath("", 0);
+    waveData.ConstructorFromPath(
+        "",
+        0
+    );
     waveData.fmt = audioFormat;
     waveData.pcmData = audioBuffer;
     waveData.pcmByteCount = bufferBytes;
@@ -331,8 +515,10 @@ extern "C" RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSndSample_CreateQueuedSt
 }
 
 // Reimplements 0x4a53f0: zSndWaveData::ConstructorFromPath
-RECOIL_NOINLINE zSndWaveData *RECOIL_THISCALL
-zSndWaveData::ConstructorFromPath(const char *path, int loadNow) {
+RECOIL_NOINLINE zSndWaveData *RECOIL_THISCALL zSndWaveData::ConstructorFromPath(
+    const char *path,
+    int loadNow
+) {
     nameOrPath = DuplicateCString(path);
     parsedOk = 0;
     fileSize = 0;
@@ -420,14 +606,25 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::LoadAndParseIfNeeded() {
         return 0;
     }
 
-    FILE *const file = fopen(nameOrPath, "rb");
+    FILE *const file = fopen(
+        nameOrPath,
+        "rb"
+    );
     if (file == 0) {
         return 0;
     }
 
     fileSize = zUtil::ZRDR_GetFileSize(file);
-    fileData = calloc(fileSize, 1);
-    fread(fileData, fileSize, 1, file);
+    fileData = calloc(
+        fileSize,
+        1
+    );
+    fread(
+        fileData,
+        fileSize,
+        1,
+        file
+    );
     fclose(file);
 
     parsedOk = ParseLoadedWaveFile();
@@ -435,18 +632,30 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::LoadAndParseIfNeeded() {
 }
 
 // Reimplements 0x4a5600: zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded
-RECOIL_NOINLINE int RECOIL_THISCALL
-zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded(zIndexArchive *archive) {
+RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded(
+    zIndexArchive *archive
+) {
     if (parsedOk != 0) {
         return 1;
     }
 
     unsigned int archiveFileSize = 0;
-    archive->ReadFileByName(nameOrPath, 0, &archiveFileSize);
+    archive->ReadFileByName(
+        nameOrPath,
+        0,
+        &archiveFileSize
+    );
     fileSize = (int)(archiveFileSize);
     if (archiveFileSize > 0) {
-        fileData = calloc(archiveFileSize, 1);
-        archive->ReadFileByName(nameOrPath, fileData, &archiveFileSize);
+        fileData = calloc(
+            archiveFileSize,
+            1
+        );
+        archive->ReadFileByName(
+            nameOrPath,
+            fileData,
+            &archiveFileSize
+        );
         fileSize = (int)(archiveFileSize);
         parsedOk = ParseLoadedWaveFile();
     }

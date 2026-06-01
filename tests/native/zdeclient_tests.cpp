@@ -32,6 +32,7 @@ void ReleaseTreeSentinels() {
     ::operator delete(g_zDEClient_FeatureMapTreeNil);
     g_zDEClient_FeatureMapTree = {};
     g_zDEClient_FeatureMapTreeNil = nullptr;
+    g_zDEClient_FeatureMapTreeNilRefCount = 0;
 }
 
 void SetupSingleNodeFeatureTree() {
@@ -964,6 +965,164 @@ extern "C" int zdeclient_map_tree_find_or_insert_key_smoke(void) {
 
     ReleaseTreeSentinels();
     return cleared ? 0 : 4;
+}
+
+extern "C" int zdeclient_map_tree_lifecycle_smoke(void) {
+    ReleaseTreeSentinels();
+
+    char mode = 5;
+    char flags = 7;
+    zDEClient_MapTreeState localTree = {};
+    if (localTree.InitState(&mode, &flags) != &localTree || localTree.mode != 5 ||
+        localTree.flags != 7 || localTree.allowInsert != 0 || localTree.nodeCount != 0 ||
+        localTree.header == nullptr || localTree.header->left != localTree.header ||
+        localTree.header->right != localTree.header ||
+        localTree.header->parent != g_zDEClient_FeatureMapTreeNil ||
+        g_zDEClient_FeatureMapTreeNil == nullptr || g_zDEClient_FeatureMapTreeNil->left != nullptr ||
+        g_zDEClient_FeatureMapTreeNil->parent != nullptr ||
+        g_zDEClient_FeatureMapTreeNil->right != nullptr ||
+        g_zDEClient_FeatureMapTreeNil->colorOrNil != 1 ||
+        g_zDEClient_FeatureMapTreeNilRefCount != 1) {
+        localTree.Destroy();
+        return 1;
+    }
+
+    zGeometry_ClipPatchNodeView keys[2] = {};
+    zGeometry_ClipPatchNodeDiPair pairs[2] = {};
+    pairs[0].node = &keys[0];
+    pairs[1].node = &keys[1];
+    zDEClient_MapTreeLocateResult result = {};
+    localTree.FindOrInsertKey(&result, &pairs[0]);
+    localTree.FindOrInsertKey(&result, &pairs[1]);
+    if (localTree.nodeCount != 2) {
+        localTree.Destroy();
+        return 2;
+    }
+
+    localTree.Destroy();
+    if (localTree.header != nullptr || localTree.nodeCount != 0 ||
+        g_zDEClient_FeatureMapTreeNil != nullptr || g_zDEClient_FeatureMapTreeNilRefCount != 0) {
+        ReleaseTreeSentinels();
+        return 3;
+    }
+
+    zDEClient::InitFeatureEntryListAndMapTree();
+    if (g_zDEClient_FeatureMapTree.header == nullptr ||
+        g_zDEClient_FeatureMapTree.header->parent != g_zDEClient_FeatureMapTreeNil ||
+        g_zDEClient_FeatureListBegin != nullptr || g_zDEClient_FeatureListEnd != nullptr ||
+        g_zDEClient_FeatureListCapacityEnd != nullptr) {
+        zDEClient::ShutdownFeatureSystem();
+        return 4;
+    }
+
+    g_zDEClient_FeatureListBegin =
+        static_cast<zDEClient_FeatureEntry *>(::operator new(sizeof(zDEClient_FeatureEntry) * 2));
+    g_zDEClient_FeatureListEnd = g_zDEClient_FeatureListBegin + 1;
+    g_zDEClient_FeatureListCapacityEnd = g_zDEClient_FeatureListBegin + 2;
+    g_zDEClient_FeatureMapTree.FindOrInsertKey(&result, &pairs[0]);
+    if (g_zDEClient_FeatureMapTree.nodeCount != 1) {
+        zDEClient::ShutdownFeatureSystem();
+        return 5;
+    }
+
+    zDEClient::ShutdownFeatureSystem();
+    return g_zDEClient_FeatureListBegin == nullptr && g_zDEClient_FeatureListEnd == nullptr &&
+                   g_zDEClient_FeatureListCapacityEnd == nullptr &&
+                   g_zDEClient_FeatureMapTree.header == nullptr &&
+                   g_zDEClient_FeatureMapTree.nodeCount == 0 &&
+                   g_zDEClient_FeatureMapTreeNil == nullptr &&
+                   g_zDEClient_FeatureMapTreeNilRefCount == 0
+               ? 0
+               : 6;
+}
+
+extern "C" int zdeclient_map_tree_erase_range_smoke(void) {
+    ReleaseTreeSentinels();
+
+    zGeometry_ClipPatchNodeView keys[5] = {};
+    zGeometry_ClipPatchNodeDiPair pairs[5] = {};
+    zDEClient_MapTreeLocateResult results[5] = {};
+    for (int i = 0; i < 5; ++i) {
+        pairs[i].node = &keys[i];
+        if (g_zDEClient_FeatureMapTree.FindOrInsertKey(&results[i], &pairs[i]) != &results[i] ||
+            results[i].inserted != 1 || results[i].node == nullptr) {
+            if (g_zDEClient_FeatureMapTree.header != nullptr) {
+                zDEClient_MapTreeNode *cleanupNext = nullptr;
+                g_zDEClient_FeatureMapTree.EraseRange(
+                    &cleanupNext,
+                    g_zDEClient_FeatureMapTree.header->left,
+                    g_zDEClient_FeatureMapTree.header
+                );
+            }
+            ReleaseTreeSentinels();
+            return 1;
+        }
+    }
+
+    zDEClient_MapTreeNode *outNext = nullptr;
+    if (g_zDEClient_FeatureMapTree.EraseRange(&outNext, results[1].node, results[3].node) !=
+            &outNext ||
+        outNext != results[3].node || g_zDEClient_FeatureMapTree.nodeCount != 3 ||
+        g_zDEClient_FeatureMapTree.header->left->key != &keys[0] ||
+        g_zDEClient_FeatureMapTree.header->right->key != &keys[4]) {
+        zDEClient_MapTreeNode *cleanupNext = nullptr;
+        g_zDEClient_FeatureMapTree.EraseRange(
+            &cleanupNext,
+            g_zDEClient_FeatureMapTree.header->left,
+            g_zDEClient_FeatureMapTree.header
+        );
+        ReleaseTreeSentinels();
+        return 2;
+    }
+
+    zDEClient_MapTreeNode *cursor = g_zDEClient_FeatureMapTree.header->left;
+    if (cursor->key != &keys[0] ||
+        g_zDEClient_FeatureMapTree.IterNextNodeRef(&cursor) != &cursor ||
+        cursor->key != &keys[3] ||
+        g_zDEClient_FeatureMapTree.IterNextNodeRef(&cursor) != &cursor ||
+        cursor->key != &keys[4] ||
+        g_zDEClient_FeatureMapTree.IterNextNodeRef(&cursor) != &cursor ||
+        cursor != g_zDEClient_FeatureMapTree.header) {
+        zDEClient_MapTreeNode *cleanupNext = nullptr;
+        g_zDEClient_FeatureMapTree.EraseRange(
+            &cleanupNext,
+            g_zDEClient_FeatureMapTree.header->left,
+            g_zDEClient_FeatureMapTree.header
+        );
+        ReleaseTreeSentinels();
+        return 3;
+    }
+
+    if (g_zDEClient_FeatureMapTree.EraseAndAdvance(&outNext, results[3].node) != &outNext ||
+        outNext != results[4].node || g_zDEClient_FeatureMapTree.nodeCount != 2 ||
+        g_zDEClient_FeatureMapTree.header->left->key != &keys[0] ||
+        g_zDEClient_FeatureMapTree.header->right->key != &keys[4]) {
+        zDEClient_MapTreeNode *cleanupNext = nullptr;
+        g_zDEClient_FeatureMapTree.EraseRange(
+            &cleanupNext,
+            g_zDEClient_FeatureMapTree.header->left,
+            g_zDEClient_FeatureMapTree.header
+        );
+        ReleaseTreeSentinels();
+        return 4;
+    }
+
+    if (g_zDEClient_FeatureMapTree.EraseRange(
+            &outNext,
+            g_zDEClient_FeatureMapTree.header->left,
+            g_zDEClient_FeatureMapTree.header
+        ) != &outNext ||
+        outNext != g_zDEClient_FeatureMapTree.header ||
+        g_zDEClient_FeatureMapTree.nodeCount != 0 ||
+        g_zDEClient_FeatureMapTree.header->parent != g_zDEClient_FeatureMapTreeNil ||
+        g_zDEClient_FeatureMapTree.header->left != g_zDEClient_FeatureMapTree.header ||
+        g_zDEClient_FeatureMapTree.header->right != g_zDEClient_FeatureMapTree.header) {
+        ReleaseTreeSentinels();
+        return 5;
+    }
+
+    ReleaseTreeSentinels();
+    return 0;
 }
 
 extern "C" int zdeclient_submit_feature_geometry_smoke(void) {

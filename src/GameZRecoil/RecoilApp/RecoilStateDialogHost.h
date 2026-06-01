@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stddef.h>
 #include "recoil/recoil_types.h"
+#include <stddef.h>
 
 #include "Battlesport/RecoilApp.h"
 #include "recoil/recoil_callconv.h"
@@ -19,7 +19,12 @@ struct RecoilStateDialogHost {
     void RECOIL_THISCALL OnWndActivate(int activateCode);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateDialogHost) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(RecoilStateDialogHost, dialog_04) == 0x04);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        RecoilStateDialogHost,
+        dialog_04
+    ) == 0x04
+);
 
 struct HudUiDialogController {
     RecoilPtr32 vftable; // HudUiDialogController_Vtbl*
@@ -29,7 +34,12 @@ struct HudUiDialogController {
     void RECOIL_THISCALL BlitOwnedSurfaceToPrimary();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiDialogController) == 0x118);
-RECOIL_STATIC_ASSERT(offsetof(HudUiDialogController, capturedImage_114) == 0x114);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiDialogController,
+        capturedImage_114
+    ) == 0x114
+);
 
 struct HudUiDialogController_Vtbl {
     RecoilFn32 Update;
@@ -46,10 +56,12 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiDialogControllerVirtual) == 0x04);
 namespace zVideo {
 int RECOIL_CDECL RunPostprocessOnPrimaryBuffer();
 int RECOIL_CDECL Dispatch_UnlockPrimarySurfaceState();
-int RECOIL_FASTCALL AdjustSurfacesIfEnabled(zVidRect32 *srcRect,
-                                            zVidRect32 *dstRect,
-                                            int waitForPresent,
-                                            int blitPrimaryToSwFirst);
+int RECOIL_FASTCALL AdjustSurfacesIfEnabled(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect,
+    int waitForPresent,
+    int blitPrimaryToSwFirst
+);
 } // namespace zVideo
 
 namespace zOpt {

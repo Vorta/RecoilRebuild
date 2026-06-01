@@ -5,6 +5,7 @@ add_library(recoil_native STATIC
     ../Battlesport/RecoilVersion.cpp
     ../Battlesport/WinMain.cpp
     ../Battlesport/Briefing.cpp
+    ../Battlesport/AiPropertyDlg.cpp
     ../Battlesport/MfcThreeFloatDialog.cpp
     ../Battlesport/zStr.cpp
     ../Battlesport/ainet.cpp
@@ -27,6 +28,7 @@ add_library(recoil_native STATIC
     ../Battlesport/pickup.cpp
     ../Battlesport/CZGameFrame.cpp
     ../Battlesport/CZRecoilFrame.cpp
+    ../GameZRecoil/mission.cpp
     ../GameZRecoil/RecoilApp/RecoilStateBase.cpp
     ../GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp
     ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp
@@ -149,6 +151,7 @@ target_link_libraries(recoil_native PUBLIC
     recoil_mfc42_legacy
     winmm
     vfw32
+    dplayx
     ddraw
     dinput
     dsound

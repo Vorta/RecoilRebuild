@@ -320,6 +320,68 @@ extern "C" int pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global_bloc
     return result == 0 ? 0 : 1;
 }
 
+extern "C" int pickup_spawn_list_primary_init_smoke(void) {
+    const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
+
+    PickupSpawnDef head = {};
+    PickupSpawnDef tail = {};
+    g_PickupSpawnList_Primary.unused = &tail;
+    g_PickupSpawnList_Primary.head = &head;
+    g_PickupSpawnList_Primary.tail = &tail;
+    g_PickupSpawnList_Primary.count = 17;
+
+    PickupSpawnList::Primary_Init();
+
+    const bool ok = g_PickupSpawnList_Primary.unused == nullptr &&
+                    g_PickupSpawnList_Primary.head == nullptr &&
+                    g_PickupSpawnList_Primary.tail == nullptr &&
+                    g_PickupSpawnList_Primary.count == 0;
+
+    g_PickupSpawnList_Primary = oldPrimary;
+    return ok ? 0 : 1;
+}
+
+extern "C" int pickup_spawn_list_net_copy_init_smoke(void) {
+    const PickupSpawnList oldNetworkCopy = g_PickupSpawnList_NetworkCopy;
+
+    PickupSpawnDef head = {};
+    PickupSpawnDef tail = {};
+    g_PickupSpawnList_NetworkCopy.unused = &tail;
+    g_PickupSpawnList_NetworkCopy.head = &head;
+    g_PickupSpawnList_NetworkCopy.tail = &tail;
+    g_PickupSpawnList_NetworkCopy.count = 23;
+
+    PickupSpawnList::NetCopy_Init();
+
+    const bool ok = g_PickupSpawnList_NetworkCopy.unused == nullptr &&
+                    g_PickupSpawnList_NetworkCopy.head == nullptr &&
+                    g_PickupSpawnList_NetworkCopy.tail == nullptr &&
+                    g_PickupSpawnList_NetworkCopy.count == 0;
+
+    g_PickupSpawnList_NetworkCopy = oldNetworkCopy;
+    return ok ? 0 : 1;
+}
+
+extern "C" int pickup_respawn_queue_init_smoke(void) {
+    const PickupRespawnQueue oldQueue = g_PickupRespawnQueue;
+
+    PickupRespawnEntry head = {};
+    PickupRespawnEntry tail = {};
+    g_PickupRespawnQueue.unused = &tail;
+    g_PickupRespawnQueue.head = &head;
+    g_PickupRespawnQueue.tail = &tail;
+    g_PickupRespawnQueue.count = 31;
+
+    PickupRespawnQueue::Init();
+
+    const bool ok = g_PickupRespawnQueue.unused == nullptr &&
+                    g_PickupRespawnQueue.head == nullptr &&
+                    g_PickupRespawnQueue.tail == nullptr && g_PickupRespawnQueue.count == 0;
+
+    g_PickupRespawnQueue = oldQueue;
+    return ok ? 0 : 1;
+}
+
 extern "C" int pickup_spawn_list_has_entry_near_xz_smoke(void) {
     const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
 

@@ -5,22 +5,39 @@
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
-
-HINSTANCE RECOIL_STDCALL AfxFindResourceHandle(LPCSTR resourceName, LPCSTR resourceType);
+HINSTANCE RECOIL_STDCALL AfxFindResourceHandle(
+    LPCSTR resourceName,
+    LPCSTR resourceType
+);
 
 namespace zSndCd {
 int RECOIL_CDECL Stop();
 }
 
-RECOIL_STATIC_ASSERT(offsetof(CPaintDC, m_hDC) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(CPaintDC, m_ps) == 0x14);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        CPaintDC,
+        m_hDC
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        CPaintDC,
+        m_ps
+    ) == 0x14
+);
 
 namespace {
 const RecoilNamedVtable kCZGameFrame_Vtable = {"CZGameFrame vtable"};
-typedef void (RECOIL_THISCALL *RecoilStateWndActivateMethod)(RecoilApp_IState *, unsigned int);
-typedef void (RECOIL_THISCALL *CFrameWndDestructorProc)(CFrameWnd *);
+typedef void(RECOIL_THISCALL *RecoilStateWndActivateMethod)(
+    RecoilApp_IState *,
+    unsigned int
+);
+typedef void(RECOIL_THISCALL *CFrameWndDestructorProc)(CFrameWnd *);
 
-RecoilPtr32 Ptr32FromSymbol(const void *symbol) {
+RecoilPtr32 Ptr32FromSymbol(
+    const void *symbol
+) {
     return (RecoilPtr32)((unsigned int)(symbol));
 }
 
@@ -28,24 +45,35 @@ CRuntimeClass *RECOIL_STDCALL GetCZGameFrameBaseRuntimeClass() {
     return (CRuntimeClass *)(&CFrameWnd::classCFrameWnd);
 }
 
-void CallStateWndActivate(RecoilPtr32 stateValue, unsigned int nState) {
+void CallStateWndActivate(
+    RecoilPtr32 stateValue,
+    unsigned int nState
+) {
     RecoilApp_IState *const state = (RecoilApp_IState *)((unsigned int)(stateValue));
-    const RecoilApp_IState_Vtbl *const vtable = (const RecoilApp_IState_Vtbl *)(
-        (unsigned int)(state->vftable));
-    RecoilStateWndActivateMethod const method = (RecoilStateWndActivateMethod)(
-        (unsigned int)(vtable->OnWndActivate));
-    method(state, nState);
+    const RecoilApp_IState_Vtbl *const vtable =
+        (const RecoilApp_IState_Vtbl *)((unsigned int)(state->vftable));
+    RecoilStateWndActivateMethod const method =
+        (RecoilStateWndActivateMethod)((unsigned int)(vtable->OnWndActivate));
+    method(
+        state,
+        nState
+    );
 }
 
-void CallMfcCFrameWndDestructor(CFrameWnd *frame) {
+void CallMfcCFrameWndDestructor(
+    CFrameWnd *frame
+) {
     HMODULE mfc42 = GetModuleHandleA("MFC42.DLL");
     if (mfc42 == 0) {
         mfc42 = LoadLibraryA("MFC42.DLL");
     }
 
     if (mfc42 != 0) {
-        CFrameWndDestructorProc const destructor = (CFrameWndDestructorProc)(
-            GetProcAddress(mfc42, "??1CFrameWnd@@UAE@XZ"));
+        CFrameWndDestructorProc const destructor =
+            (CFrameWndDestructorProc)(GetProcAddress(
+                mfc42,
+                "??1CFrameWnd@@UAE@XZ"
+            ));
         if (destructor != 0) {
             destructor(frame);
         }
@@ -63,7 +91,12 @@ const AFX_MSGMAP CZGameFrame::messageMap = {
 };
 
 CRuntimeClass CZGameFrame::classCZGameFrame = {
-    "CZGameFrame", sizeof(CZGameFrame), 0xffff, 0, &GetCZGameFrameBaseRuntimeClass, 0,
+    "CZGameFrame",
+    sizeof(CZGameFrame),
+    0xffff,
+    0,
+    &GetCZGameFrameBaseRuntimeClass,
+    0,
 };
 
 // Reimplements 0x443790: CZGameFrame::GetBaseRuntimeClass
@@ -106,8 +139,9 @@ RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetMessageMap()
 }
 
 // Reimplements 0x4438a0: CZGameFrame::IsWindowValid
-RECOIL_GAME_FRAME_NOINLINE int RECOIL_STDCALL
-CZGameFrame::IsWindowValid(CWnd *pWnd) {
+RECOIL_GAME_FRAME_NOINLINE int RECOIL_STDCALL CZGameFrame::IsWindowValid(
+    CWnd *pWnd
+) {
     if (pWnd == 0) {
         return 0;
     }
@@ -116,8 +150,9 @@ CZGameFrame::IsWindowValid(CWnd *pWnd) {
 }
 
 // Reimplements 0x4437d0: CZGameFrame::Constructor
-RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_THISCALL
-CZGameFrame::Constructor(const char *appId) {
+RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_THISCALL CZGameFrame::Constructor(
+    const char *appId
+) {
     new ((CFrameWnd *)(this)) CFrameWnd();
     new (&m_gameBitmap) CBitmap();
     *(RecoilPtr32 *)(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
@@ -136,22 +171,28 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::Destructor() {
 }
 
 // Reimplements 0x4438c0: CZGameFrame::BuildWindowTitle
-RECOIL_GAME_FRAME_NOINLINE CString *RECOIL_THISCALL
-CZGameFrame::BuildWindowTitle(CString *outTitle) {
+RECOIL_GAME_FRAME_NOINLINE CString *RECOIL_THISCALL CZGameFrame::BuildWindowTitle(
+    CString *outTitle
+) {
     new (outTitle) CString("Zipper Interactive");
     return outTitle;
 }
 
 // Reimplements 0x443a60: CZGameFrame::OnCreate
-RECOIL_GAME_FRAME_NOINLINE int RECOIL_THISCALL
-CZGameFrame::OnCreate(CREATESTRUCTA *createStruct) {
+RECOIL_GAME_FRAME_NOINLINE int RECOIL_THISCALL CZGameFrame::OnCreate(
+    CREATESTRUCTA *createStruct
+) {
     const int result = CFrameWnd::OnCreate(createStruct);
     if (result == -1) {
         return result;
     }
 
     m_gameBitmap.Attach(
-        LoadBitmapA(AfxFindResourceHandle("GAMEBMP", MAKEINTRESOURCEA(2)), "GAMEBMP"));
+        LoadBitmapA(AfxFindResourceHandle(
+            "GAMEBMP",
+            MAKEINTRESOURCEA(2)
+        ), "GAMEBMP")
+    );
     zInput::Mouse_ShutdownDevice();
     return 0;
 }
@@ -170,18 +211,41 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnPaint() {
 
     PAINTSTRUCT paintStruct = paintDc.m_ps;
     HDC compatibleDc = CreateCompatibleDC(paintDc.m_hDC);
-    SelectObject(compatibleDc, m_gameBitmap.m_hObject);
+    SelectObject(
+        compatibleDc,
+        m_gameBitmap.m_hObject
+    );
 
     const int paintLeft = paintStruct.rcPaint.left;
     const int paintTop = paintStruct.rcPaint.top;
     const int paintWidth = paintStruct.rcPaint.right - paintLeft;
     const int paintHeight = paintStruct.rcPaint.bottom - paintTop;
     if (paintHeight > 480) {
-        StretchBlt(paintDc.m_hDC, paintLeft, paintTop, paintWidth, paintHeight, compatibleDc,
-                   paintLeft, paintTop, 640, 480, SRCCOPY);
+        StretchBlt(
+            paintDc.m_hDC,
+            paintLeft,
+            paintTop,
+            paintWidth,
+            paintHeight,
+            compatibleDc,
+            paintLeft,
+            paintTop,
+            640,
+            480,
+            SRCCOPY
+        );
     } else {
-        BitBlt(paintDc.m_hDC, paintLeft, paintTop, paintWidth, paintHeight, compatibleDc,
-               paintLeft, paintTop, SRCCOPY);
+        BitBlt(
+            paintDc.m_hDC,
+            paintLeft,
+            paintTop,
+            paintWidth,
+            paintHeight,
+            compatibleDc,
+            paintLeft,
+            paintTop,
+            SRCCOPY
+        );
     }
 
     DeleteDC(compatibleDc);
@@ -197,15 +261,24 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnDestroy() {
 }
 
 // Reimplements 0x443ae0: CZGameFrame::OnActivate
-RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnActivate(unsigned int nState,
-                                                                        CWnd *pWndOther,
-                                                                        BOOL bMinimized) {
-    CFrameWnd::OnActivate(nState, pWndOther, bMinimized);
+RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnActivate(
+    unsigned int nState,
+    CWnd *pWndOther,
+    BOOL bMinimized
+) {
+    CFrameWnd::OnActivate(
+        nState,
+        pWndOther,
+        bMinimized
+    );
 
     RecoilApp *const app = (RecoilApp *)(m_app);
     const RecoilPtr32 currentState = app->GetCurrentState();
     if (currentState != 0) {
-        CallStateWndActivate(currentState, nState);
+        CallStateWndActivate(
+            currentState,
+            nState
+        );
     }
 
     if (nState == 0) {
@@ -220,15 +293,27 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnActivate(unsigned
 }
 
 // Reimplements 0x443a20: CZGameFrame::OnSize
-RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnSize(unsigned int nType,
-                                                                    int cx,
-                                                                    int cy) {
-    CFrameWnd::OnSize(nType, cx, cy);
+RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnSize(
+    unsigned int nType,
+    int cx,
+    int cy
+) {
+    CFrameWnd::OnSize(
+        nType,
+        cx,
+        cy
+    );
     zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
 }
 
 // Reimplements 0x443b50: CZGameFrame::OnAppIdleDispatchMessage
-RECOIL_GAME_FRAME_NOINLINE int RECOIL_THISCALL
-CZGameFrame::OnAppIdleDispatchMessage(unsigned int wParam, unsigned int lParam) {
-    return m_app->vftable->OnIdleOrDispatch(m_app, wParam, lParam);
+RECOIL_GAME_FRAME_NOINLINE int RECOIL_THISCALL CZGameFrame::OnAppIdleDispatchMessage(
+    unsigned int wParam,
+    unsigned int lParam
+) {
+    return m_app->vftable->OnIdleOrDispatch(
+        m_app,
+        wParam,
+        lParam
+    );
 }

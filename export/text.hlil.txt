@@ -3275,7 +3275,7 @@
 
 // Source file: D:\Proj\Battlesport\hud.cpp
 // BN limitation: this MSVC scalar-deleting destructor reads only the low byte of the 32-bit destructor flags argument (`mov al, [esp+4]`), so HLIL keeps `flags.b & 1`. The body resets g_HudUiCommon_FTable, conditionally deletes self when flags & 1, and returns self.
-0x404d70 struct HudUiElement* __thiscall HudUiCommon::ScalarDeletingDestructor(struct HudUiElement* self, uint32_t flags)
+0x404d70 struct HudUiElement* __thiscall HudUiElement::ScalarDeletingDestructor(struct HudUiElement* self, uint32_t flags)
 {
     self->ftable = &g_HudUiCommon_FTable
 
@@ -10654,7 +10654,7 @@
 {
     HudLayoutHW::GlobalInit()
     // BN limitation: static initializer tail-jumps to HudLayoutHW::GlobalConstructor after HudLayoutHW::GlobalInit; source-level wrapper returns void.
-    return HudLayoutHW::GlobalConstructor() __tailcall
+    return HudLayoutHW::RegisterAtExit() __tailcall
 }
 
 // Source: D:\Proj\Battlesport\hud.cpp -- HudLayoutHW::GlobalInit.
@@ -10666,14 +10666,14 @@
 }
 
 // Source: D:\Proj\Battlesport\hud.cpp -- HudLayoutHW::GlobalConstructor.
-0x40d310 void HudLayoutHW::GlobalConstructor()
+0x40d310 void HudLayoutHW::RegisterAtExit()
 {
-    atexit(HudLayoutHW::RegisterAtExit)
+    atexit(HudLayoutHW::AtExitDestructor)
 }
 
 // Source: D:\Proj\Battlesport\hud.cpp -- HudLayoutHW::RegisterAtExit.
 // BN limitation: tail jump to HudLayoutHW::GlobalDestructor renders as `return ... __tailcall` even though the atexit callback has no source-level return value.
-0x40d320 void HudLayoutHW::RegisterAtExit()
+0x40d320 void HudLayoutHW::AtExitDestructor()
 {
     // BN limitation: this is a tail jump to HudLayoutHW::GlobalDestructor(&g_HudLayoutHW); the atexit callback itself has no source-level return value.
     return HudLayoutHW::GlobalDestructor(&g_HudLayoutHW) __tailcall
@@ -22159,7 +22159,7 @@
     HudUiZrdWidget::OnActivate(self)
 }
 
-// Source: D:\Proj\Battlesport\GameNet.cpp -- HudUiNetExitPanel resume widget show-preview callback takes preview input capture, restores saved focus, and shows the base ZRD preview.
+// Source: D:\Proj\Battlesport\GameNet.cpp -- HudUiNetExitPanel resume widget show-preview callback claims preview input capture, restores saved focus, and shows the base ZRD preview.
 0x41bf40 void __thiscall HudUiNetExitPanel_ResumeWidget::OnShowPreview(struct HudUiZrdWidgetEx150* self)
 {
     if (self->previewInputCaptureActive == 0)
@@ -65644,13 +65644,15 @@
                 if (esi_1 == 0)
                     return zClass_Class::gwNodeSetDisplayInstance(dest, displayInstance_1)
 
-                struct zDi* displayInstance = zDi::CloneToInstance(outData, g_zClass_CopyNodeDiArg0, g_zClass_CopyNodeDiArg1)
+                struct zDi* displayInstance
+                struct zClass_Node* edi_1
+                displayInstance, edi_1 = zDi::CloneToInstance(outData, g_zClass_CopyNodeDiArg0, g_zClass_CopyNodeDiArg1)
 
                 if (displayInstance == 0)
                     return 1
 
                 displayInstance_1 = displayInstance
-                return zClass_Class::gwNodeSetDisplayInstance(dest, displayInstance)
+                return zClass_Class::gwNodeSetDisplayInstance(edi_1, displayInstance)
 
     return result
 }
@@ -98415,8 +98417,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, di->vertCount)
 
             int32_t vertIndex = 0
-            int32_t packedColor
-            packedColor.w = di->entries->materialRef->packedColor
+            uint32_t edi_2
+            edi_2.w = di->entries->materialRef->packedColor
 
             if (di->vertCount s> 0)
                 int32_t var_c = 0
@@ -98462,10 +98464,10 @@
 
                                     if ((((x87_r7_12 < temp19_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp19_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp19_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
-                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, packedColor, nullptr)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, edi_2, nullptr)
                                         else
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(1)
+                                            g_zVideo_pfnDrawPointColor16(&var_3c, edi_2, 1)
 
                     int32_t vertIndex = &di_1->mode + 1
                     int32_t var_c_1 = gTransformedVerts_1 + 0xc
@@ -98520,11 +98522,11 @@
                     while (i_1 != 1)
                     di = di_1
                 else
-                    int32_t ecx_19 = vertCount_1 * 0xc
+                    int32_t ecx_20 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_2
-                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_19 & 0xfffffffc)
-                    __builtin_memcpy(edi_2, esi_2, ecx_19 & 3)
+                    int32_t edi_3
+                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_20 & 0xfffffffc)
+                    __builtin_memcpy(edi_3, esi_2, ecx_20 & 3)
         else
             long double x87_r7_13 = di->blendScale
             gTransformedVerts_1 = x87_r7_13
@@ -98624,13 +98626,13 @@
                 int32_t eax_32 = *vertexIndices
                 vertexIndices = &vertexIndices[1]
                 int32_t eax_34 = gTransformedVerts_1 + eax_32 * 0xc
-                struct zClipVert* edi_6 = edx_24
+                struct zClipVert* edi_7 = edx_24
                 edx_24 = &edx_24[1]
                 i_2 = i_13
                 i_13 -= 1
-                edi_6->x = *eax_34
-                edi_6->y = *(eax_34 + 4)
-                edi_6->z = *(eax_34 + 8)
+                edi_7->x = *eax_34
+                edi_7->y = *(eax_34 + 4)
+                edi_7->z = *(eax_34 + 8)
             while (i_2 != 1)
             long double x87_r7_28 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r6_14 = g_Clip_PolyVertsScratch[2].y - g_Clip_PolyVertsScratch[1].y
@@ -98668,11 +98670,11 @@
                 struct zClipVert triClipVerts[0x3]
 
                 if ((outActiveLightState_1:1.b & 1) == 0)
-                    int32_t ecx_57
-                    ecx_57.w = materialRef->packedColor
+                    int32_t ecx_58
+                    ecx_58.w = materialRef->packedColor
                     int32_t esi_13 = 0
                     float outFade = 0f
-                    int32_t var_c_2 = ecx_57
+                    int32_t var_c_2 = ecx_58
 
                     if (outDepthFade != 0)
                         int32_t eax_78
@@ -98708,13 +98710,13 @@
                         struct zClipVert* eax_83 = &g_Clip_PolyVerts
                         long double x87_r7_80 = 0f
                         int32_t i_20 = i_23
-                        float* ecx_63 = &g_Clip_PolyVertsScratch[0x3f + i_23]
+                        float* ecx_64 = &g_Clip_PolyVertsScratch[0x3f + i_23]
                         int32_t i_3
 
                         do
-                            long double x87_r6_26 = eax_83->y * *ecx_63
-                            long double x87_r5_36 = ecx_63[1] * eax_83->x
-                            ecx_63 = eax_83
+                            long double x87_r6_26 = eax_83->y * *ecx_64
+                            long double x87_r5_36 = ecx_64[1] * eax_83->x
+                            ecx_64 = eax_83
                             eax_83 = &eax_83[1]
                             i_3 = i_20
                             i_20 -= 1
@@ -98820,15 +98822,15 @@
                         if (vertexCount_2 s> 0)
     // Attribute clear loop zeros g_Clip_PolyAttr0[i] and the adjacent g_Clip_PolyAttr1[i] array in one stride.
                             float* eax_38 = &g_Clip_PolyAttr0
-                            uint32_t ecx_32 = vertexCount_2
+                            uint32_t ecx_33 = vertexCount_2
                             uint32_t i_6
 
                             do
                                 eax_38[0x40] = 0
                                 *eax_38 = 0f
                                 eax_38 = &eax_38[1]
-                                i_6 = ecx_32
-                                ecx_32 -= 1
+                                i_6 = ecx_33
+                                ecx_33 -= 1
                             while (i_6 != 1)
 
                         int32_t outDepthFade_1 = outDepthFade
@@ -98863,12 +98865,12 @@
                             zRndr::CommitFogColorParamsIfChanged()
                             vertexCount_2 = var_8
 
-                    uint32_t ecx_39 = vertexCount_2 << 3
+                    uint32_t ecx_40 = vertexCount_2 << 3
                     materialRef.b = clipMask.b
                     int32_t esi_9
-                    int32_t edi_8
-                    edi_8, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_39 & 0xfffffffc)
-                    __builtin_memcpy(edi_8, esi_9, ecx_39 & 3)
+                    int32_t edi_9
+                    edi_9, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_40 & 0xfffffffc)
+                    __builtin_memcpy(edi_9, esi_9, ecx_40 & 3)
 
                     if (lightFlags == 0)
                         int32_t eax_65
@@ -98885,13 +98887,13 @@
                             struct zClipVert* eax_67 = &g_Clip_PolyVerts
                             long double x87_r7_60 = 0f
                             int32_t esi_11 = vertexCount
-                            float* ecx_50 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
+                            float* ecx_51 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
                             int32_t i_7
 
                             do
-                                long double x87_r6_23 = eax_67->y * *ecx_50
-                                long double x87_r5_34 = ecx_50[1] * eax_67->x
-                                ecx_50 = eax_67
+                                long double x87_r6_23 = eax_67->y * *ecx_51
+                                long double x87_r5_34 = ecx_51[1] * eax_67->x
+                                ecx_51 = eax_67
                                 eax_67 = &eax_67[1]
                                 i_7 = esi_11
                                 esi_11 -= 1
@@ -98941,14 +98943,14 @@
                                         if (vertexCount_1 s> 0)
     // Alt-clip remap loop walks zClipVert triplets as float x/y pairs; pointer arithmetic is the compiler's tight-loop form.
                                             float* eax_74 = &g_Clip_PolyVerts[0].y
-                                            int32_t ecx_53 = vertexCount_1
+                                            int32_t ecx_54 = vertexCount_1
                                             int32_t i_9
 
                                             do
                                                 long double x87_r7_72 = g_zClipAlt_RemapScaleX * eax_74[-1]
                                                 eax_74 = &eax_74[3]
-                                                i_9 = ecx_53
-                                                ecx_53 -= 1
+                                                i_9 = ecx_54
+                                                ecx_54 -= 1
                                                 eax_74[-4] = x87_r7_72 + g_zClipAlt_RemapBiasX
                                                 eax_74[-3] = g_zClipAlt_RemapScaleY * eax_74[-3] + g_zClipAlt_RemapBiasY
                                             while (i_9 != 1)
@@ -98973,13 +98975,13 @@
                             struct zClipVert* eax_50 = &g_Clip_PolyVerts
                             long double x87_r7_43 = 0f
                             int32_t i_19 = i_22
-                            float* ecx_45 = &g_Clip_PolyVertsScratch[0x3f + i_22]
+                            float* ecx_46 = &g_Clip_PolyVertsScratch[0x3f + i_22]
                             int32_t i_10
 
                             do
-                                long double x87_r6_20 = eax_50->y * *ecx_45
-                                long double x87_r5_32 = ecx_45[1] * eax_50->x
-                                ecx_45 = eax_50
+                                long double x87_r6_20 = eax_50->y * *ecx_46
+                                long double x87_r5_32 = ecx_46[1] * eax_50->x
+                                ecx_46 = eax_50
                                 eax_50 = &eax_50[1]
                                 i_10 = i_19
                                 i_19 -= 1
@@ -99156,8 +99158,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, index->vertCount)
 
             int32_t var_38_2 = 0
-            int32_t packedColor
-            packedColor.w = index->entries->materialRef->packedColor
+            uint32_t edi_2
+            edi_2.w = index->entries->materialRef->packedColor
 
             if (index->vertCount s> 0)
                 int32_t var_3c = 0
@@ -99205,11 +99207,11 @@
                                     if ((((x87_r7_12 < temp22_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp22_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp22_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
                                             gModel_RenderVertexAlphaEnabled_1 = nullptr
-                                            zRndr_LensFlare::QueueProjectedSample(&var_34, packedColor, gModel_RenderVertexAlphaEnabled_1)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_34, edi_2, gModel_RenderVertexAlphaEnabled_1)
                                         else
                                             gModel_RenderVertexAlphaEnabled_1 = 1
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(gModel_RenderVertexAlphaEnabled_1)
+                                            g_zVideo_pfnDrawPointColor16(&var_34, edi_2, gModel_RenderVertexAlphaEnabled_1)
 
                     cond:5_1 = var_38_2 + 1 s< index->vertCount
                     var_38_2 += 1
@@ -99229,7 +99231,7 @@
         zMath::MatLoadView()
         gRndr_PerspectiveTextureEnabled = 0
 
-    void* var_28
+    float* var_28
     int32_t i_32
     int32_t pointEntryByteOffset
 
@@ -99267,11 +99269,11 @@
                     while (i_1 != 1)
                     index = index_1
                 else
-                    int32_t ecx_17 = vertCount_1 * 0xc
+                    int32_t ecx_18 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_2
-                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_6, verts_2, ecx_17 & 0xfffffffc)
-                    __builtin_memcpy(edi_2, esi_2, ecx_17 & 3)
+                    int32_t edi_3
+                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_6, verts_2, ecx_18 & 0xfffffffc)
+                    __builtin_memcpy(edi_3, esi_2, ecx_18 & 3)
         else
             long double x87_r7_13 = index->blendScale
             long double temp4_1 = 0.0
@@ -99324,11 +99326,11 @@
                     while (i_2 != 1)
                     index = index_1
                 else
-                    int32_t ecx_22 = normalCount * 0xc
+                    int32_t ecx_23 = normalCount * 0xc
                     int32_t esi_3
-                    int32_t edi_3
-                    edi_3, esi_3 = __builtin_memcpy(gTransformedNormals_3, normals, ecx_22 & 0xfffffffc)
-                    __builtin_memcpy(edi_3, esi_3, ecx_22 & 3)
+                    int32_t edi_4
+                    edi_4, esi_3 = __builtin_memcpy(gTransformedNormals_3, normals, ecx_23 & 0xfffffffc)
+                    __builtin_memcpy(edi_4, esi_3, ecx_23 & 3)
 
                 zMath::MatTransformPointBatchInPlace(&var_34, 1)
                 struct zVec3* gTransformedNormals_2 = gTransformedNormals
@@ -99409,14 +99411,14 @@
     gClipRect_Primary.flags = arg2
     struct zDiEntry* entries = index->entries
     struct zDiEntry* __saved_edi = entries
-    struct zDiEntry* ecx_32 = &entries[index->entryCount]
+    struct zDiEntry* ecx_33 = &entries[index->entryCount]
 
-    if (entries u< ecx_32)
+    if (entries u< ecx_33)
         while (true)
             int32_t* vertexIndices = entries->vertexIndices
             struct zVec3* gTransformedVerts_1 = gTransformedVerts
             uint32_t i_27 = (entries->packedFlags).b
-            struct zClipVert* ecx_33 = &g_Clip_PolyVertsScratch
+            struct zClipVert* ecx_34 = &g_Clip_PolyVertsScratch
             uint32_t i_4
 
             do
@@ -99424,13 +99426,13 @@
                 vertexIndices = &vertexIndices[1]
     // Raw zVec3 copy loop: copies indexed gTransformedVerts entries into g_Clip_PolyVertsScratch as zClipVert xyz triples.
                 int32_t* eax_41 = &gTransformedVerts_1[eax_39]
-                struct zClipVert* edi_7 = ecx_33
-                ecx_33 = &ecx_33[1]
+                struct zClipVert* edi_8 = ecx_34
+                ecx_34 = &ecx_34[1]
                 i_4 = i_27
                 i_27 -= 1
-                edi_7->x = *eax_41
-                edi_7->y = eax_41[1]
-                edi_7->z = eax_41[2]
+                edi_8->x = *eax_41
+                edi_8->y = eax_41[1]
+                edi_8->z = eax_41[2]
             while (i_4 != 1)
             long double x87_r7_38 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r5_35 = g_Clip_PolyVertsScratch[2].z - g_Clip_PolyVertsScratch[1].z
@@ -99470,7 +99472,7 @@
                         g_zModel_CurrentPolyNormals = nullptr
                     else
                         struct zVec3* gTransformedNormals_1 = gTransformedNormals
-                        struct zVec3* ecx_35 = &g_zModel_CurrentPolyNormalsStorage
+                        struct zVec3* ecx_36 = &g_zModel_CurrentPolyNormalsStorage
                         g_zModel_CurrentPolyNormals = &g_zModel_CurrentPolyNormalsStorage
                         int32_t* normalIndices = __saved_edi->normalIndices
                         uint32_t i_28 = (__saved_edi->packedFlags).b
@@ -99482,13 +99484,13 @@
                             normalIndices = &normalIndices[1]
     // Raw zVec3 copy loop: copies indexed gTransformedNormals entries into g_zModel_CurrentPolyNormalsStorage.
                             int32_t* eax_46 = &gTransformedNormals_5[eax_44]
-                            struct zVec3* edi_10 = ecx_35
-                            ecx_35 = &ecx_35[1]
+                            struct zVec3* edi_11 = ecx_36
+                            ecx_36 = &ecx_36[1]
                             i_5 = i_28
                             i_28 -= 1
-                            edi_10->x = *eax_46
-                            edi_10->y = eax_46[1]
-                            edi_10->z = eax_46[2]
+                            edi_11->x = *eax_46
+                            edi_11->y = eax_46[1]
+                            edi_11->z = eax_46[2]
                         while (i_5 != 1)
 
                     struct zDiEntry* __saved_edi_1 = __saved_edi
@@ -99537,7 +99539,7 @@
 
                             vertexCount = var_8
 
-                        int32_t var_20_5
+                        int32_t alpha
                         int32_t vertexCount_4
 
                         if (gModel_RenderVertexAlphaEnabled_1 == 0)
@@ -99558,16 +99560,16 @@
                                     __saved_edi_1 = __saved_edi
                                 label_478b0f:
                                     int32_t drawFlags_4 = __saved_edi_1->drawFlags
-                                    int32_t ecx_73 = var_8
-                                    vertexCount_4 = ecx_73
+                                    int32_t ecx_68 = var_8
+                                    vertexCount_4 = ecx_68
 
                                     if (drawFlags_4 != 0)
                                         float var_c_7 = drawFlags_4 * g_zRndr_InverseZTolerance - -1f
 
-                                        if (ecx_73 s> 0)
+                                        if (ecx_68 s> 0)
     // Depth-bias loop: scales g_Clip_PolyVerts[i].z by the entry inverse-z bias before flat no-UV submission.
                                             float* eax_105 = &g_Clip_PolyVerts[0].z
-                                            int32_t i_24 = ecx_73
+                                            int32_t i_24 = ecx_68
                                             int32_t i_7
 
                                             do
@@ -99581,12 +99583,12 @@
                                     int32_t drawFlags_5 = __saved_edi_1->drawFlags
                                     gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
                                     var_18 = drawFlags_5
-                                    pointEntryByteOffset = ecx_73
-                                    ecx_73.b = materialRef->flags.b
-                                    var_20_5 = _ftol_import_thunk((ecx_73 & 0xff * gModel_RenderAlphaScaleCurrent).q)
-                                    int32_t edx_64
-                                    edx_64.w = materialRef->packedColor
-                                    g_zVideo_pfnSubmitPolyFlatColor16(var_20_5, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    pointEntryByteOffset = ecx_68
+                                    ecx_68.b = materialRef->flags.b
+                                    alpha = _ftol_import_thunk((ecx_68 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                    int32_t packedColor16_1
+                                    packedColor16_1.w = materialRef->packedColor
+                                    g_zVideo_pfnSubmitPolyFlatColor16(&g_Clip_PolyVerts, packedColor16_1, alpha, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                 label_478b83:
                                     int32_t gAltClipPassEnabled_1 = gAltClipPassEnabled
                                     var_8 = vertexCount_4
@@ -99610,14 +99612,14 @@
                                             while (i_8 != 1)
 
                                         gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
-                                        struct zDiEntry* ecx_76
-                                        ecx_76.b = *var_20_5
+                                        struct zDiEntry* ecx_70
+                                        ecx_70.b = *alpha
                                         var_18 = __saved_edi->drawFlags
                                         pointEntryByteOffset = pointEntryByteOffset_1
-                                        int32_t vertices = _ftol_import_thunk((ecx_76 & 0xff * gModel_RenderAlphaScaleCurrent).q)
-                                        int32_t edx_67
-                                        edx_67.w = *(var_20_5 + 2)
-                                        g_zVideo_pfnSubmitPolyFlatColor16(vertices, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        int32_t alpha_1 = _ftol_import_thunk((ecx_70 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                        int32_t packedColor16_2
+                                        packedColor16_2.w = *(alpha + 2)
+                                        g_zVideo_pfnSubmitPolyFlatColor16(&g_Clip_PolyVerts, packedColor16_2, alpha_1, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                         else
                             if ((ebx_8.b & 0x30) == 0)
                                 goto label_4789f4
@@ -99636,16 +99638,16 @@
                                     __saved_edi_1 = __saved_edi
                                 label_478a21:
                                     int32_t drawFlags_2 = __saved_edi_1->drawFlags
-                                    int32_t ecx_70 = var_8
-                                    vertexCount_4 = ecx_70
+                                    int32_t ecx_66 = var_8
+                                    vertexCount_4 = ecx_66
 
                                     if (drawFlags_2 != 0)
                                         float var_c_5 = drawFlags_2 * g_zRndr_InverseZTolerance - -1f
 
-                                        if (ecx_70 s> 0)
+                                        if (ecx_66 s> 0)
     // Depth-bias loop: scales g_Clip_PolyVerts[i].z by the entry inverse-z bias before no-UV color submission.
                                             float* eax_98 = &g_Clip_PolyVerts[0].z
-                                            int32_t i_23 = ecx_70
+                                            int32_t i_23 = ecx_66
                                             int32_t i_9
 
                                             do
@@ -99659,22 +99661,22 @@
                                     int32_t drawFlags_3 = __saved_edi_1->drawFlags
                                     gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
                                     var_18 = drawFlags_3
-                                    pointEntryByteOffset = ecx_70
-                                    ecx_70.b = materialRef->flags.b
-                                    var_20_5 = _ftol_import_thunk((ecx_70 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                    pointEntryByteOffset = ecx_66
+                                    ecx_66.b = materialRef->flags.b
+                                    alpha = _ftol_import_thunk((ecx_66 & 0xff * gModel_RenderAlphaScaleCurrent).q)
                                     int32_t* gModel_RenderVertexAlphaEnabled_5 = gModel_RenderVertexAlphaEnabled_1
-                                    int32_t* edx_57
-                                    edx_57.b = gModel_RenderVertexAlphaEnabled_5.b & 1
-                                    char temp23_1 = edx_57.b
-                                    edx_57.b = neg.b(edx_57.b)
+                                    int32_t* edx_62
+                                    edx_62.b = gModel_RenderVertexAlphaEnabled_5.b & 1
+                                    char temp23_1 = edx_62.b
+                                    edx_62.b = neg.b(edx_62.b)
                                     gModel_RenderVertexAlphaEnabled_5.b &= 4
                                     char temp24_1 = gModel_RenderVertexAlphaEnabled_5.b
                                     gModel_RenderVertexAlphaEnabled_5.b = neg.b(gModel_RenderVertexAlphaEnabled_5.b)
-                                    i_32 = sbb.d(edx_57, edx_57, temp23_1 != 0) & &g_Clip_PolyAttr2
-                                    int32_t edx_60
-                                    edx_60.w = materialRef->packedColor
+                                    i_32 = sbb.d(edx_62, edx_62, temp23_1 != 0) & &g_Clip_PolyAttr2
+                                    int32_t packedColor16
+                                    packedColor16.w = materialRef->packedColor
                                     var_28 = sbb.d(gModel_RenderVertexAlphaEnabled_5, gModel_RenderVertexAlphaEnabled_5, temp24_1 != 0) & &g_Clip_PolyAttr0
-                                    g_zVideo_pfnSubmitPolyColorAttr(&materialRef->colorRgb, &g_Clip_PolyAttr1, var_28, i_32, var_20_5, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    g_zVideo_pfnSubmitPolyColorAttr(&g_Clip_PolyVerts, packedColor16, &materialRef->colorRgb, &g_Clip_PolyAttr1, var_28, i_32, alpha, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                     goto label_478b83
                     else
                         if ((eax_43:1.b & 4) != 0)
@@ -99696,9 +99698,9 @@
                             pointEntryByteOffset = &gModel_RenderVertexAlphaEnabled_1
 
                             if (zModel_Light::SetActiveLights(&var_34, vertexCount, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1) != 0)
-                                int32_t ecx_40 = var_18 | pointEntryByteOffset
+                                int32_t ecx_41 = var_18 | pointEntryByteOffset
                                 gModel_RenderVertexAlphaEnabled_1 |= 2
-                                var_18 = ecx_40
+                                var_18 = ecx_41
 
                             vertexCount = var_8
 
@@ -99716,11 +99718,11 @@
                                 edx_27 -= 1
                             while (i_10 != 1)
 
-                        uint32_t ecx_41 = vertexCount << 3
+                        uint32_t ecx_42 = vertexCount << 3
                         int32_t esi_13
-                        int32_t edi_12
-                        edi_12, esi_13 = __builtin_memcpy(g_Clip_PolyUvs, __saved_edi_1->uvPairs, ecx_41 & 0xfffffffc)
-                        __builtin_memcpy(edi_12, esi_13, ecx_41 & 3)
+                        int32_t edi_13
+                        edi_13, esi_13 = __builtin_memcpy(g_Clip_PolyUvs, __saved_edi_1->uvPairs, ecx_42 & 0xfffffffc)
+                        __builtin_memcpy(edi_13, esi_13, ecx_42 & 3)
                         struct zClipUV perspectiveUvs[0x400]
                         struct zModel_Material* materialForAltTexture
                         int32_t __saved_ebp
@@ -99739,16 +99741,16 @@
                                 int32_t eax_81 = 0
 
                                 if (i_31 s> 0)
-                                    float* ecx_56 = &g_Clip_PolyVerts[0].z
+                                    float* ecx_54 = &g_Clip_PolyVerts[0].z
 
                                     do
                                         struct zClipUV* Clip_PolyUvs_5 = g_Clip_PolyUvs
                                         eax_81 += 1
-                                        long double x87_r7_67 = *ecx_56 * Clip_PolyUvs_5[eax_81 - 1].u
-                                        ecx_56 = &ecx_56[3]
+                                        long double x87_r7_67 = *ecx_54 * Clip_PolyUvs_5[eax_81 - 1].u
+                                        ecx_54 = &ecx_54[3]
                                         Clip_PolyUvs_5[eax_81 - 1].u = x87_r7_67
                                         struct zClipUV* Clip_PolyUvs_6 = g_Clip_PolyUvs
-                                        *(&Clip_PolyUvs_6[eax_81] - 4) = ecx_56[-3] * *(&Clip_PolyUvs_6[eax_81] - 4)
+                                        *(&Clip_PolyUvs_6[eax_81] - 4) = ecx_54[-3] * *(&Clip_PolyUvs_6[eax_81] - 4)
                                         i_31 = var_8
                                     while (eax_81 s< i_31)
 
@@ -99761,19 +99763,19 @@
 
                                     if (i_31 s> 0)
                                         struct zClipUV* Clip_PolyUvs_2 = g_Clip_PolyUvs
-                                        int32_t edx_46 = &perspectiveUvs - Clip_PolyUvs_2
-                                        float* ecx_57 = &g_Clip_PolyVerts[0].z
+                                        int32_t edx_49 = &perspectiveUvs - Clip_PolyUvs_2
+                                        float* ecx_55 = &g_Clip_PolyVerts[0].z
                                         int32_t esi_27 = &perspectiveUvs[0].v - Clip_PolyUvs_2
                                         int32_t i_26 = i_31
                                         int32_t i_11
 
                                         do
-                                            long double x87_r7_71 = 1f / *ecx_57
-                                            ecx_57 = &ecx_57[3]
+                                            long double x87_r7_71 = 1f / *ecx_55
+                                            ecx_55 = &ecx_55[3]
                                             Clip_PolyUvs_2 = &Clip_PolyUvs_2[1]
                                             i_11 = i_26
                                             i_26 -= 1
-                                            *(Clip_PolyUvs_2 + edx_46 - 8) = x87_r7_71 * Clip_PolyUvs_2->__offset(0xfffffffffffffff8).d
+                                            *(Clip_PolyUvs_2 + edx_49 - 8) = x87_r7_71 * Clip_PolyUvs_2->__offset(0xfffffffffffffff8).d
                                             *(Clip_PolyUvs_2 + esi_27 - 8) = Clip_PolyUvs_2->__offset(0xfffffffffffffffc).d * x87_r7_71
                                         while (i_11 != 1)
 
@@ -99809,27 +99811,27 @@
                                     pointEntryByteOffset = drawFlags_8
                                     materialForAltTexture = texture_2
                                     i_32 = i_31
-                                    g_zVideo_pfnSubmitPolyRenderClass(i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    g_zVideo_pfnSubmitPolyRenderClass(&g_Clip_PolyVerts, &perspectiveUvs, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
 
                                     if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, var_8) != 0 && zClipRect::ClipPoly(&gClipRect_Alt, &var_8) != 0)
                                         i_34 = var_8
-                                        int32_t ecx_62 = 0
+                                        int32_t ecx_59 = 0
 
                                         if (i_34 s> 0)
                                             float* eax_87 = &g_Clip_PolyVerts[0].y
 
                                             do
                                                 long double x87_r7_78 = 1f / eax_87[1]
-                                                float* edx_50 = &(&__saved_ebp)[ecx_62 * 2 - 0x81f]
-                                                ecx_62 += 1
+                                                float* edx_54 = &(&__saved_ebp)[ecx_59 * 2 - 0x81f]
+                                                ecx_59 += 1
                                                 eax_87 = &eax_87[3]
                                                 eax_87[-4] = g_zClipAlt_RemapScaleX * eax_87[-4] + g_zClipAlt_RemapBiasX
                                                 eax_87[-3] = g_zClipAlt_RemapScaleY * eax_87[-3] + g_zClipAlt_RemapBiasY
                                                 eax_87[-2] = eax_87[-2] - -1f / gClipRect_Primary.zMin
                                                 struct zClipUV* Clip_PolyUvs_8 = g_Clip_PolyUvs
-                                                edx_50[-1] = x87_r7_78 * Clip_PolyUvs_8[ecx_62 - 1].u
-                                                *edx_50 = *(&Clip_PolyUvs_8[ecx_62] - 4) * x87_r7_78
-                                            while (ecx_62 s< i_34)
+                                                edx_54[-1] = x87_r7_78 * Clip_PolyUvs_8[ecx_59 - 1].u
+                                                *edx_54 = *(&Clip_PolyUvs_8[ecx_59] - 4) * x87_r7_78
+                                            while (ecx_59 s< i_34)
 
                                         goto label_478937
                         else
@@ -99846,16 +99848,16 @@
 
                                 if (i_30 s> 0)
     // Perspective setup loop: premultiplies g_Clip_PolyUvs u/v by projected g_Clip_PolyVerts z before clipping.
-                                    float* ecx_46 = &g_Clip_PolyVerts[0].z
+                                    float* ecx_47 = &g_Clip_PolyVerts[0].z
 
                                     do
                                         struct zClipUV* Clip_PolyUvs_3 = g_Clip_PolyUvs
                                         eax_58 += 1
-                                        long double x87_r7_54 = *ecx_46 * Clip_PolyUvs_3[eax_58 - 1].u
-                                        ecx_46 = &ecx_46[3]
+                                        long double x87_r7_54 = *ecx_47 * Clip_PolyUvs_3[eax_58 - 1].u
+                                        ecx_47 = &ecx_47[3]
                                         Clip_PolyUvs_3[eax_58 - 1].u = x87_r7_54
                                         struct zClipUV* Clip_PolyUvs_4 = g_Clip_PolyUvs
-                                        *(&Clip_PolyUvs_4[eax_58] - 4) = ecx_46[-3] * *(&Clip_PolyUvs_4[eax_58] - 4)
+                                        *(&Clip_PolyUvs_4[eax_58] - 4) = ecx_47[-3] * *(&Clip_PolyUvs_4[eax_58] - 4)
                                         i_30 = var_8
                                     while (eax_58 s< i_30)
 
@@ -99865,20 +99867,20 @@
                                     if (i_30 s> 0)
                                         struct zClipUV* Clip_PolyUvs_1 = g_Clip_PolyUvs
                                         int32_t esi_21 = &perspectiveUvs - Clip_PolyUvs_1
-                                        int32_t edi_13 = &perspectiveUvs[0].v - Clip_PolyUvs_1
-                                        float* ecx_48 = &g_Clip_PolyVerts[0].z
+                                        int32_t edi_14 = &perspectiveUvs[0].v - Clip_PolyUvs_1
+                                        float* ecx_49 = &g_Clip_PolyVerts[0].z
                                         int32_t i_25 = i_30
                                         int32_t i_13
 
                                         do
     // Perspective UV loop: writes perspectiveUvs[i].u/v = g_Clip_PolyUvs[i].u/v / g_Clip_PolyVerts[i].z.
-                                            long double x87_r7_58 = 1f / *ecx_48
-                                            ecx_48 = &ecx_48[3]
+                                            long double x87_r7_58 = 1f / *ecx_49
+                                            ecx_49 = &ecx_49[3]
                                             Clip_PolyUvs_1 = &Clip_PolyUvs_1[1]
                                             i_13 = i_25
                                             i_25 -= 1
                                             *(esi_21 + Clip_PolyUvs_1 - 8) = x87_r7_58 * Clip_PolyUvs_1->__offset(0xfffffffffffffff8).d
-                                            *(edi_13 + Clip_PolyUvs_1 - 8) = Clip_PolyUvs_1->__offset(0xfffffffffffffffc).d * x87_r7_58
+                                            *(edi_14 + Clip_PolyUvs_1 - 8) = Clip_PolyUvs_1->__offset(0xfffffffffffffffc).d * x87_r7_58
                                         while (i_13 != 1)
 
                                     int32_t drawFlags = __saved_edi->drawFlags
@@ -99916,15 +99918,15 @@
                                         materialForAltTexture = texture_1
                                         int32_t* gModel_RenderVertexAlphaEnabled_3 = gModel_RenderVertexAlphaEnabled_1
                                         i_32 = i_30
-                                        int32_t* edx_32
-                                        edx_32.b = gModel_RenderVertexAlphaEnabled_3.b & 1
-                                        char temp34_1 = edx_32.b
-                                        edx_32.b = neg.b(edx_32.b)
+                                        int32_t* edx_33
+                                        edx_33.b = gModel_RenderVertexAlphaEnabled_3.b & 1
+                                        char temp34_1 = edx_33.b
+                                        edx_33.b = neg.b(edx_33.b)
                                         gModel_RenderVertexAlphaEnabled_3.b &= 4
                                         char temp35_1 = gModel_RenderVertexAlphaEnabled_3.b
                                         gModel_RenderVertexAlphaEnabled_3.b = neg.b(gModel_RenderVertexAlphaEnabled_3.b)
-                                        var_28 = sbb.d(edx_32, edx_32, temp34_1 != 0) & &g_Clip_PolyAttr2
-                                        g_zVideo_pfnSubmitPolygon(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_3, gModel_RenderVertexAlphaEnabled_3, temp35_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        var_28 = sbb.d(edx_33, edx_33, temp34_1 != 0) & &g_Clip_PolyAttr2
+                                        g_zVideo_pfnSubmitPolygon(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_3, gModel_RenderVertexAlphaEnabled_3, temp35_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                     else
                                         struct zVideo_TextureRecord* texture
 
@@ -99948,7 +99950,7 @@
                                         char temp37_1 = gModel_RenderVertexAlphaEnabled_2.b
                                         gModel_RenderVertexAlphaEnabled_2.b = neg.b(gModel_RenderVertexAlphaEnabled_2.b)
                                         var_28 = sbb.d(edx_29, edx_29, temp36_1 != 0) & &g_Clip_PolyAttr2
-                                        g_zVideo_pfnSubmitPolygonLit(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_2, gModel_RenderVertexAlphaEnabled_2, temp37_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        g_zVideo_pfnSubmitPolygonLit(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_2, gModel_RenderVertexAlphaEnabled_2, temp37_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
 
                                     if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, var_8) != 0)
                                         int32_t esi_26 = var_8
@@ -99977,7 +99979,7 @@
                                                     i_20 -= 1
                                                 while (i_15 != 1)
 
-                                            int32_t ecx_53 = 0
+                                            int32_t ecx_52 = 0
 
                                             if (i_34 s> 0)
     // Alternate textured pass remaps g_Clip_PolyVerts xyz and writes perspective UVs using 1 / remapped z.
@@ -99985,16 +99987,16 @@
 
                                                 do
                                                     long double x87_r7_65 = 1f / eax_76[1]
-                                                    float* edx_39 = &(&__saved_ebp)[ecx_53 * 2 - 0x81f]
-                                                    ecx_53 += 1
+                                                    float* edx_41 = &(&__saved_ebp)[ecx_52 * 2 - 0x81f]
+                                                    ecx_52 += 1
                                                     eax_76 = &eax_76[3]
                                                     eax_76[-4] = g_zClipAlt_RemapScaleX * eax_76[-4] + g_zClipAlt_RemapBiasX
                                                     eax_76[-3] = g_zClipAlt_RemapScaleY * eax_76[-3] + g_zClipAlt_RemapBiasY
                                                     eax_76[-2] = eax_76[-2] - -1f / gClipRect_Primary.zMin
                                                     struct zClipUV* Clip_PolyUvs_7 = g_Clip_PolyUvs
-                                                    edx_39[-1] = x87_r7_65 * Clip_PolyUvs_7[ecx_53 - 1].u
-                                                    *edx_39 = *(&Clip_PolyUvs_7[ecx_53] - 4) * x87_r7_65
-                                                while (ecx_53 s< i_34)
+                                                    edx_41[-1] = x87_r7_65 * Clip_PolyUvs_7[ecx_52 - 1].u
+                                                    *edx_41 = *(&Clip_PolyUvs_7[ecx_52] - 4) * x87_r7_65
+                                                while (ecx_52 s< i_34)
 
                                             int32_t* gModel_RenderVertexAlphaEnabled_4 = gModel_RenderVertexAlphaEnabled_1
 
@@ -100013,7 +100015,7 @@
                                                 var_18 = gModel_RenderAlphaScaleCurrent_1
                                                 pointEntryByteOffset = __saved_edi->drawFlags
                                                 i_32 = i_34
-                                                g_zVideo_pfnSubmitPolyRenderClass(i_32, texture_3, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                                g_zVideo_pfnSubmitPolyRenderClass(&g_Clip_PolyVerts, &perspectiveUvs, i_32, texture_3, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                             else
                                                 struct zImage_TexDirEntry* currentTextureDirectoryEntry_3 = materialForAltTexture->currentTextureDirectoryEntry
                                                 struct zVideo_TextureRecord* texture_4
@@ -100029,9 +100031,10 @@
                                                 char temp40_1 = gModel_RenderVertexAlphaEnabled_4.b
                                                 gModel_RenderVertexAlphaEnabled_4.b = neg.b(gModel_RenderVertexAlphaEnabled_4.b)
                                                 pointEntryByteOffset = __saved_edi->drawFlags
+                                                struct zVideo_RenderClass* renderClass = texture_4
                                                 i_32 = i_34
                                                 var_28 = nullptr
-                                                g_zVideo_pfnSubmitPolygon(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_4, gModel_RenderVertexAlphaEnabled_4, temp40_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, texture_4, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                                g_zVideo_pfnSubmitPolygon(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_4, gModel_RenderVertexAlphaEnabled_4, temp40_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, renderClass, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                 else
                                     int32_t i_33 = i_30
                                     int32_t* vertexCount_2 = &var_8
@@ -100094,7 +100097,7 @@
 
             __saved_edi = &__saved_edi[1]
 
-            if (&__saved_edi[1] u>= ecx_32)
+            if (&__saved_edi[1] u>= ecx_33)
                 break
 
             entries = __saved_edi
@@ -108554,7 +108557,7 @@
     return self->refCount
 }
 
-// Original file: D:\Proj\GameZRecoil\zModel\gmod_const.c. BN limitation: x87 epsilon/status-word comparisons and inline debug-buffer strlen/appending remain verbose in HLIL; vertex merge/realloc behavior is assembly-verified.
+// Original file: D:\Proj\GameZRecoil\zModel\gmod_const.c. Assembly verifies fastcall self/vertex arguments, x87 fabs comparisons against g_zModel_ConstVertexMergeEpsilon, warning threshold data at 0x4d2ab8 = 921.6, realloc append of a zVec3, vertCount increment, and -1 return on the warning path.
 0x482720 int32_t __fastcall zModel_Const::AddOrMergeVertex(struct zDi* self, struct zVec3* vertex)
 {
     int32_t i = 0
@@ -108622,7 +108625,7 @@
     return result
 }
 
-// Original file: D:\Proj\GameZRecoil\zModel\gmod_const.c. BN limitation: exact float equality tests, x87 status-word comparisons, and inline debug-buffer strlen/appending remain verbose in HLIL; vertex/blend-normal merge behavior is assembly-verified.
+// Original file: D:\Proj\GameZRecoil\zModel\gmod_const.c. Assembly verifies fastcall self/point ABI with normal on the stack, exact x87 equality checks for point and blend-normal delta, realloc append of zVec3 verts and blendVerts, blendVertCount mirroring vertCount, warning threshold data at 0x4d2ab8 = 921.6, and -1 return after the warning path.
 0x482860 int32_t __fastcall zModel_Const::AddOrMergeVertexAndNormal(struct zDi* self, struct zVec3* vertex, struct zVec3* vertex2)
 {
     float* vertex_1 = vertex
@@ -116702,7 +116705,7 @@
     return dst_1
 }
 
-// Original file: zNetwork.c. BN limitation: the sentinel-list empty test renders as the MSVC sete/neg/sbb boolean idiom, but the linked-list unlink/delete behavior and globals are typed.
+// Original file: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp. Assembly verifies traversal from g_zNetwork_DispatchHandlerListSentinel->next until the sentinel, unlinking each node through prev/next, deleting only the list node, decrementing g_zNetwork_DispatchHandlerListCount per node, and leaving the sentinel/global pointer allocated.
 0x48bf40 void zNetwork::DeleteAllDispatchHandlers()
 {
     struct zNetworkDispatchHandlerListNode* zNetwork_DispatchHandlerListSentinel_1 = g_zNetwork_DispatchHandlerListSentinel
@@ -138436,7 +138439,7 @@
     g_Time_AccumulatedTimeSec = x87_r6_5
 }
 
-// Likely original file: D:\Proj\Battlesport\RecoilApp.cpp. BN limitation: MSVC inline strcpy/strcat path construction for .err/.out log files renders as repeated repne-scas/memcpy loops; log-file fallback behavior is assembly-verified.
+// Original file: D:\Proj\Battlesport\RecoilApp.cpp. Assembly verifies clearing g_RecoilApp_hWndMain, null exePath early return, building .err/.out paths with MSVC inline strcpy/strcat loops, fallback through GetTempPathA to gamez.err/gamez.out, freopen on stderr/stdout, and writing/flushing the startup header when the stream opens.
 0x4a5780 void __fastcall RecoilApp::InitStdLogFiles(char const* exePath)
 {
     g_RecoilApp_hWndMain = nullptr
@@ -152976,7 +152979,7 @@
     struct HudUiZrdDialog* owner_30 = arg3
     struct HudUiWidget_FTable* ftable = self->base.ftable
     self->owner = owner_30
-    ftable->SetVisible(1)
+    ftable->SetVisible(self, 1)
     HudUiContainer::AddChild(owner_30, self)
     self->originX = owner_30->originX
     self->originY = owner_30->originY
@@ -153003,19 +153006,19 @@
             originX += u32_15->x.i32
             originY_8 += u32_15->y.i32
 
-    self->base.ftable->SetPos(originX, originY_8)
+    self->base.ftable->SetPos(self, originX, originY_8)
     struct zVideo_BltSourceHead* clipSource = arg3->clipSource
 
     if (clipSource != 0)
-        int32_t* eax_10 = self->base.ftable->GetBoundsRectOrNull()
+        struct HudUiRect* eax_10 = self->base.ftable->GetBoundsRectOrNull(self)
 
         if (eax_10 != 0)
-            int32_t edx_5 = eax_10[1]
-            int32_t bltSourceOrNull = *eax_10
-            int32_t var_14_1 = eax_10[2]
-            int32_t var_18_1 = edx_5
-            int32_t var_10_1 = eax_10[3]
-            self->base.ftable->SetClip(clipSource, &bltSourceOrNull)
+            int32_t top = eax_10->top
+            int32_t left = eax_10->left
+            int32_t right = eax_10->right
+            int32_t top_1 = top
+            int32_t bottom = eax_10->bottom
+            self->base.ftable->SetClip(self, clipSource, &left)
 
     struct zReader_Node* parentNode = zReader::GetNamedNode(zrdSection, "ROLLOVER")
 
@@ -153064,20 +153067,23 @@
                     owner_29->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_16 = owner_29
-                int32_t edx_15
-                edx_15.b = owner_29->base.elementFlags.b
+                int32_t edx_14
+                edx_14.b = owner_29->base.elementFlags.b
                 int32_t var_4_4 = 0xffffffff
-                owner_29->base.elementFlags = (edx_15 & 0x10) | 2
+                owner_29->base.elementFlags = (edx_14 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_1 = arg3->base.vptr
                 char* fmt_1 = zLoc::ResolveMessageKeyOrFallback(eax_17->list->items[0].payload)
                 vptr_1->SetTextFmt(arg3, fmt_1)
                 struct zReader_NodeArray_HudTextLabelSpec* u32_2 = eax_17->list
-                arg3->base.vptr->PrimaryAction(u32_2->x.i32 + originX_2, u32_2->y.i32 + originY_1)
+                struct HudUiZrdDialog* ecx_42 = arg3
+                int32_t var_44_9 = u32_2->y.i32 + originY_1
+                int32_t var_48_5 = u32_2->x.i32 + originX_2
+                ecx_42->base.vptr->PrimaryAction(ecx_42)
                 struct HudUiZrdDialog* owner_1 = self->owner
-                int32_t edx_20 = eax_17->list->__offset(0x24).d * 9
-                int32_t esi_10 = *(&owner_1->fontStyles + (edx_20 << 2))
+                int32_t edx_19 = eax_17->list->__offset(0x24).d * 9
+                int32_t esi_10 = *(&owner_1->fontStyles + (edx_19 << 2))
                 int32_t esi_11 = neg.d(esi_10)
-                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_20 << 2))
+                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_19 << 2))
 
                 if (esi_13 != 0)
                     struct HudUiZrdDialog* ecx_44 = arg3
@@ -153168,12 +153174,15 @@
                         char* fmt = zLoc::ResolveMessageKeyOrFallback(*((&eax_17->list->count)[var_30_1 * 2] + 0xc))
                         vptr->SetTextFmt(arg3, fmt)
                         struct zReader_NodeArray_HudTextLabelSpec* eax_25 = (&eax_17->list->count)[var_30_1 * 2]
-                        arg3->base.vptr->PrimaryAction(eax_25->x.i32 + originX_1, eax_25->y.i32 + originY_7)
+                        struct HudUiZrdDialog* ecx_28 = arg3
+                        int32_t var_44_5 = eax_25->y.i32 + originY_7
+                        int32_t var_48_3 = eax_25->x.i32 + originX_1
+                        ecx_28->base.vptr->PrimaryAction(ecx_28)
                         struct HudUiZrdDialog* owner = self->owner
-                        int32_t edx_13 = *((&eax_17->list->count)[var_30_1 * 2] + 0x24) * 9
-                        int32_t esi_4 = *(&owner->fontStyles + (edx_13 << 2))
+                        int32_t edx_12 = *((&eax_17->list->count)[var_30_1 * 2] + 0x24) * 9
+                        int32_t esi_4 = *(&owner->fontStyles + (edx_12 << 2))
                         int32_t esi_5 = neg.d(esi_4)
-                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_13 << 2))
+                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_12 << 2))
 
                         if (esi_7 != 0)
                             struct HudUiZrdDialog* ecx_30 = arg3
@@ -153311,20 +153320,23 @@
                     owner_33->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_18 = owner_33
-                int32_t edx_35
-                edx_35.b = owner_33->base.elementFlags.b
+                int32_t edx_34
+                edx_34.b = owner_33->base.elementFlags.b
                 int32_t var_4_8 = 0xffffffff
-                owner_33->base.elementFlags = (edx_35 & 0x10) | 2
+                owner_33->base.elementFlags = (edx_34 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_3 = arg3->base.vptr
                 char* fmt_3 = zLoc::ResolveMessageKeyOrFallback(eax_63->list->items[0].payload)
                 vptr_3->SetTextFmt(arg3, fmt_3)
                 struct zReader_NodeArray_HudTextLabelSpec* list_04_1 = eax_63->list
-                arg3->base.vptr->PrimaryAction(list_04_1->x.i32 + originX_4, list_04_1->y.i32 + originY_3)
+                struct HudUiZrdDialog* ecx_82 = arg3
+                int32_t var_44_18 = list_04_1->y.i32 + originY_3
+                int32_t var_48_10 = list_04_1->x.i32 + originX_4
+                ecx_82->base.vptr->PrimaryAction(ecx_82)
                 struct HudUiZrdDialog* owner_3 = self->owner
-                int32_t edx_40 = eax_63->list->__offset(0x24).d * 9
-                int32_t esi_24 = *(&owner_3->fontStyles + (edx_40 << 2))
+                int32_t edx_39 = eax_63->list->__offset(0x24).d * 9
+                int32_t esi_24 = *(&owner_3->fontStyles + (edx_39 << 2))
                 int32_t esi_25 = neg.d(esi_24)
-                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_40 << 2))
+                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_39 << 2))
 
                 if (esi_27 != 0)
                     struct HudUiZrdDialog* ecx_84 = arg3
@@ -153404,20 +153416,23 @@
                             owner_31->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* owner_17 = owner_31
-                        int32_t edx_26
-                        edx_26.b = owner_31->base.elementFlags.b
+                        int32_t edx_25
+                        edx_25.b = owner_31->base.elementFlags.b
                         int32_t var_4_6 = 0xffffffff
-                        owner_31->base.elementFlags = (edx_26 & 0x10) | 2
+                        owner_31->base.elementFlags = (edx_25 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_2 = arg3->base.vptr
                         char* fmt_2 = zLoc::ResolveMessageKeyOrFallback(*((&eax_63->list->count)[var_30_2 * 2] + 0xc))
                         vptr_2->SetTextFmt(arg3, fmt_2)
+                        struct HudUiZrdDialog* ecx_68 = arg3
                         struct zReader_NodeArray_HudTextLabelSpec* eax_70 = (&eax_63->list->count)[var_30_2 * 2]
-                        arg3->base.vptr->PrimaryAction(eax_70->x.i32 + originX_3, eax_70->y.i32 + originY_2)
+                        int32_t var_44_14 = eax_70->y.i32 + originY_2
+                        int32_t var_48_8 = eax_70->x.i32 + originX_3
+                        ecx_68->base.vptr->PrimaryAction(ecx_68)
                         struct HudUiZrdDialog* owner_2 = self->owner
-                        int32_t edx_33 = *((&eax_63->list->count)[var_30_2 * 2] + 0x24) * 9
-                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_33 << 2))
+                        int32_t edx_32 = *((&eax_63->list->count)[var_30_2 * 2] + 0x24) * 9
+                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_32 << 2))
                         int32_t esi_19 = neg.d(esi_18)
-                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_33 << 2))
+                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_32 << 2))
 
                         if (esi_21 != 0)
                             struct HudUiZrdDialog* ecx_70 = arg3
@@ -153555,20 +153570,23 @@
                     owner_39->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_20 = owner_39
-                int32_t edx_55
-                edx_55.b = owner_39->base.elementFlags.b
+                int32_t edx_54
+                edx_54.b = owner_39->base.elementFlags.b
                 int32_t var_4_12 = 0xffffffff
-                owner_39->base.elementFlags = (edx_55 & 0x10) | 2
+                owner_39->base.elementFlags = (edx_54 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_5 = arg3->base.vptr
                 char* fmt_5 = zLoc::ResolveMessageKeyOrFallback(eax_110->list->items[0].payload)
                 vptr_5->SetTextFmt(arg3, fmt_5)
                 struct zReader_NodeArray_HudTextLabelSpec* u32_7 = eax_110->list
-                arg3->base.vptr->PrimaryAction(u32_7->x.i32 + originX_6, u32_7->y.i32 + originY_5)
+                struct HudUiZrdDialog* ecx_122 = arg3
+                int32_t var_44_27 = u32_7->y.i32 + originY_5
+                int32_t var_48_15 = u32_7->x.i32 + originX_6
+                ecx_122->base.vptr->PrimaryAction(ecx_122)
                 struct HudUiZrdDialog* owner_5 = self->owner
-                int32_t edx_60 = eax_110->list->__offset(0x24).d * 9
-                int32_t esi_38 = *(&owner_5->fontStyles + (edx_60 << 2))
+                int32_t edx_59 = eax_110->list->__offset(0x24).d * 9
+                int32_t esi_38 = *(&owner_5->fontStyles + (edx_59 << 2))
                 int32_t esi_39 = neg.d(esi_38)
-                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_60 << 2))
+                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_59 << 2))
 
                 if (esi_41 != 0)
                     struct HudUiZrdDialog* ecx_124 = arg3
@@ -153648,20 +153666,23 @@
                             owner_35->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* owner_19 = owner_35
-                        int32_t edx_46
-                        edx_46.b = owner_35->base.elementFlags.b
+                        int32_t edx_45
+                        edx_45.b = owner_35->base.elementFlags.b
                         int32_t var_4_10 = 0xffffffff
-                        owner_35->base.elementFlags = (edx_46 & 0x10) | 2
+                        owner_35->base.elementFlags = (edx_45 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_4 = arg3->base.vptr
                         char* fmt_4 = zLoc::ResolveMessageKeyOrFallback(*((&eax_110->list->count)[var_30_3 * 2] + 0xc))
                         vptr_4->SetTextFmt(arg3, fmt_4)
+                        struct HudUiZrdDialog* ecx_108 = arg3
                         struct zReader_NodeArray_HudTextLabelSpec* eax_117 = (&eax_110->list->count)[var_30_3 * 2]
-                        arg3->base.vptr->PrimaryAction(eax_117->x.i32 + originX_5, eax_117->y.i32 + originY_4)
+                        int32_t var_44_23 = eax_117->y.i32 + originY_4
+                        int32_t var_48_13 = eax_117->x.i32 + originX_5
+                        ecx_108->base.vptr->PrimaryAction(ecx_108)
                         struct HudUiZrdDialog* owner_4 = self->owner
-                        int32_t edx_53 = *((&eax_110->list->count)[var_30_3 * 2] + 0x24) * 9
-                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_53 << 2))
+                        int32_t edx_52 = *((&eax_110->list->count)[var_30_3 * 2] + 0x24) * 9
+                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_52 << 2))
                         int32_t esi_33 = neg.d(esi_32)
-                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_53 << 2))
+                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_52 << 2))
 
                         if (esi_35 != 0)
                             struct HudUiZrdDialog* ecx_110 = arg3
@@ -153778,20 +153799,23 @@
                 owner_41->base.flash.flashDirectionSign = 1
 
             struct HudUiTransitionTextPanel* owner_22 = owner_41
-            int32_t edx_71
-            edx_71.b = owner_41->base.elementFlags.b
+            int32_t edx_70
+            edx_70.b = owner_41->base.elementFlags.b
             int32_t var_4_16 = 0xffffffff
-            owner_41->base.elementFlags = (edx_71 & 0x10) | 2
+            owner_41->base.elementFlags = (edx_70 & 0x10) | 2
             struct HudUiTransitionTextPanel_FTable* vptr_7 = arg3->base.vptr
             char* fmt_7 = zLoc::ResolveMessageKeyOrFallback(eax_142->list->items[0].payload)
             vptr_7->SetTextFmt(arg3, fmt_7)
             struct zReader_NodeArray_HudTextLabelSpec* u32_9 = eax_142->list
-            arg3->base.vptr->PrimaryAction(u32_9->x.i32 + originX_8, u32_9->y.i32 + originY_6)
+            struct HudUiZrdDialog* ecx_161 = arg3
+            int32_t var_44_36 = u32_9->y.i32 + originY_6
+            int32_t var_48_20 = u32_9->x.i32 + originX_8
+            ecx_161->base.vptr->PrimaryAction(ecx_161)
             struct HudUiZrdDialog* owner_7 = self->owner
-            int32_t edx_76 = eax_142->list->__offset(0x24).d * 9
-            int32_t esi_51 = *(&owner_7->fontStyles + (edx_76 << 2))
+            int32_t edx_75 = eax_142->list->__offset(0x24).d * 9
+            int32_t esi_51 = *(&owner_7->fontStyles + (edx_75 << 2))
             int32_t esi_52 = neg.d(esi_51)
-            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_76 << 2))
+            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_75 << 2))
 
             if (esi_54 != 0)
                 struct HudUiZrdDialog* ecx_163 = arg3
@@ -153861,10 +153885,10 @@
 
                     if (i != eax_192)
                         do
-                            struct HudUiFlashPanel* edx_91 = *(eax_192 - 4)
+                            struct HudUiFlashPanel* edx_90 = *(eax_192 - 4)
                             eax_192 -= 4
                             end_1 -= 4
-                            *end_1 = edx_91
+                            *end_1 = edx_90
                         while (eax_192 != i)
 
                     for (; i != &i[1]; i = &i[1])
@@ -154002,12 +154026,15 @@
                     char* fmt_6 = zLoc::ResolveMessageKeyOrFallback(*((&eax_142->list->count)[var_30_4 * 2] + 0xc))
                     vptr_6->SetTextFmt(arg3, fmt_6)
                     struct zReader_NodeArray_HudTextLabelSpec* eax_148 = (&eax_142->list->count)[var_30_4 * 2]
-                    arg3->base.vptr->PrimaryAction(eax_148->x.i32 + originX_7, eax_148->y.i32 + originY)
+                    struct HudUiZrdDialog* ecx_147 = arg3
+                    int32_t var_44_32 = eax_148->y.i32 + originY
+                    int32_t var_48_18 = eax_148->x.i32 + originX_7
+                    ecx_147->base.vptr->PrimaryAction(ecx_147)
                     struct HudUiZrdDialog* owner_6 = self->owner
-                    int32_t edx_69 = *((&eax_142->list->count)[var_30_4 * 2] + 0x24) * 9
-                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_69 << 2))
+                    int32_t edx_68 = *((&eax_142->list->count)[var_30_4 * 2] + 0x24) * 9
+                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_68 << 2))
                     int32_t esi_46 = neg.d(esi_45)
-                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_69 << 2))
+                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_68 << 2))
 
                     if (esi_48 != 0)
                         struct HudUiZrdDialog* ecx_149 = arg3

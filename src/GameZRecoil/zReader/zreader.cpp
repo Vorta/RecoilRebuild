@@ -66,17 +66,26 @@ extern void *zUtil_ZRDR_InitFileIndexList(void);
 extern void zUtil_ZRDR_SetSearchPath(const char *searchPath);
 extern void *zUtil_ZRDR_CreateSearchPathList(const char *pathText);
 extern void zUtil_ZRDR_FreeSearchPathList(void *list);
-extern const char *zUtil_ZRDR_ResolvePathInSearchPathList(void *list, const char *file);
+extern const char *zUtil_ZRDR_ResolvePathInSearchPathList(
+    void *list,
+    const char *file
+);
 
 extern int zReader_FileExists(const char *path);
-extern int zReader_ReadString(HANDLE hFile, zReader_Value *outValue); /* 0x4A6110 */
+extern int zReader_ReadString(
+    HANDLE hFile,
+    zReader_Value *outValue
+); /* 0x4A6110 */
 extern int zArchiveList_GetCount(void *list);
 extern void *zArchiveList_GetAt(void *list);
 extern int zIndexArchive_OpenFile(void *archive);
 
 /* ---- zReader core (implemented later in this file) ---- */
 int __cdecl zReader_OpenFileFromMountedArchives(const char *filename);
-int __cdecl zReader_ReadNode(HANDLE hFile, struct zReader_Node *outNode);
+int __cdecl zReader_ReadNode(
+    HANDLE hFile,
+    struct zReader_Node *outNode
+);
 void __cdecl zReader_FreeNodeRecursive(struct zReader_Node *node);
 
 /* ==================================================================
@@ -85,7 +94,9 @@ void __cdecl zReader_FreeNodeRecursive(struct zReader_Node *node);
  * if not already created, sets the search path, clears current archive.
  * Called from RecoilApp_EngineInit.
  * ================================================================== */
-int __cdecl zUtil_ZRDR_Init(const char *searchPath) {
+int __cdecl zUtil_ZRDR_Init(
+    const char *searchPath
+) {
     if (g_zArchive_MountedList == NULL) {
         g_zArchive_MountedList = zUtil_ZRDR_InitFileIndexList();
     }
@@ -99,8 +110,10 @@ int __cdecl zUtil_ZRDR_Init(const char *searchPath) {
  * Resolves a file path by checking: direct existence, optional search
  * path text, then the global search path list.
  * ================================================================== */
-const char *__cdecl zReader_TryResolvePath(const char *file,
-                                           const char *optionalSearchPathListText) {
+const char *__cdecl zReader_TryResolvePath(
+    const char *file,
+    const char *optionalSearchPathListText
+) {
     const char *result = NULL;
 
     if (zReader_FileExists(file)) {
@@ -110,12 +123,18 @@ const char *__cdecl zReader_TryResolvePath(const char *file,
     if (result == NULL) {
         if (optionalSearchPathListText != NULL && strlen(optionalSearchPathListText) > 0) {
             void *pathList = zUtil_ZRDR_CreateSearchPathList(optionalSearchPathListText);
-            result = zUtil_ZRDR_ResolvePathInSearchPathList(pathList, file);
+            result = zUtil_ZRDR_ResolvePathInSearchPathList(
+                pathList,
+                file
+            );
             zUtil_ZRDR_FreeSearchPathList(pathList);
         }
 
         if (result == NULL) {
-            return zUtil_ZRDR_ResolvePathInSearchPathList(g_zRdr_SearchPathList, file);
+            return zUtil_ZRDR_ResolvePathInSearchPathList(
+                g_zRdr_SearchPathList,
+                file
+            );
         }
     }
 
@@ -127,7 +146,10 @@ const char *__cdecl zReader_TryResolvePath(const char *file,
  * Allocates a block of zReader_Node(s). count is the number of nodes.
  * type is stored in the first node's type field.
  * ================================================================== */
-zReader_Node *__cdecl zReader_AllocateNode(int type, int count) {
+zReader_Node *__cdecl zReader_AllocateNode(
+    int type,
+    int count
+) {
     zReader_Node *result = (zReader_Node *)malloc(count * sizeof(zReader_Node));
     result->type_00 = type;
     return result;
@@ -139,18 +161,35 @@ zReader_Node *__cdecl zReader_AllocateNode(int type, int count) {
  * opens from mounted archives, reads the node tree.
  * Returns a root array node, or NULL if file not found.
  * ================================================================== */
-zReader_Node *__cdecl zReader_LoadNodeFromPath(const char *path) {
+zReader_Node *__cdecl zReader_LoadNodeFromPath(
+    const char *path
+) {
     zReader_Node *outNode = NULL;
 
-    _splitpath(path, NULL, NULL, g_zReader_FileNameBuf, g_zReader_FileExtBuf);
+    _splitpath(
+        path,
+        NULL,
+        NULL,
+        g_zReader_FileNameBuf,
+        g_zReader_FileExtBuf
+    );
 
     /* Append extension to filename (inline strlen + memcpy) */
-    strcat(g_zReader_FileNameBuf, g_zReader_FileExtBuf);
+    strcat(
+        g_zReader_FileNameBuf,
+        g_zReader_FileExtBuf
+    );
 
     HANDLE hFile = (HANDLE)zReader_OpenFileFromMountedArchives(g_zReader_FileNameBuf);
     if (hFile != INVALID_HANDLE_VALUE) {
-        outNode = zReader_AllocateNode(ZRDR_TYPE_ARRAY, 1);
-        zReader_ReadNode(hFile, outNode);
+        outNode = zReader_AllocateNode(
+            ZRDR_TYPE_ARRAY,
+            1
+        );
+        zReader_ReadNode(
+            hFile,
+            outNode
+        );
     }
 
     return outNode;
@@ -160,7 +199,9 @@ zReader_Node *__cdecl zReader_LoadNodeFromPath(const char *path) {
  * zReader_FreeLoadedTree — 0x48CE40
  * Frees a loaded ZRD node tree (recursive free + free root).
  * ================================================================== */
-void __cdecl zReader_FreeLoadedTree(zReader_Node *loaded) {
+void __cdecl zReader_FreeLoadedTree(
+    zReader_Node *loaded
+) {
     if (loaded != NULL) {
         zReader_FreeNodeRecursive(loaded);
         free(loaded);
@@ -172,7 +213,9 @@ void __cdecl zReader_FreeLoadedTree(zReader_Node *loaded) {
  * Recursively frees child nodes. For string nodes, frees the string.
  * For array nodes, recurses into children then frees the array block.
  * ================================================================== */
-void __cdecl zReader_FreeNodeRecursive(zReader_Node *node) {
+void __cdecl zReader_FreeNodeRecursive(
+    zReader_Node *node
+) {
     switch (node->type_00) {
     case ZRDR_TYPE_STRING:
         free(node->value_04.str);
@@ -197,31 +240,41 @@ void __cdecl zReader_FreeNodeRecursive(zReader_Node *node) {
  * If a child is an array, recurses into it.
  * startIndex is the first child index to search from.
  * ================================================================== */
-zReader_Node *__cdecl zReader_FindChildRecursive(zReader_Node *self, const char *name,
-                                                 int startIndex) {
+zReader_Node *__cdecl zReader_FindChildRecursive(
+    zReader_Node *self,
+    const char *name,
+    int startIndex
+) {
     if (self == NULL || self->type_00 != ZRDR_TYPE_ARRAY) {
         return NULL;
     }
 
     zReader_NodeArray *base = (zReader_NodeArray *)self->value_04.ptr;
     {
-    for (int idx = startIndex; idx < base->count_04; idx++) {
-        zReader_Node *childNode = (zReader_Node *)&base->nodes_08[idx - 1];
-        int type = childNode->type_00;
+        for (int idx = startIndex; idx < base->count_04; idx++) {
+            zReader_Node *childNode = (zReader_Node *)&base->nodes_08[idx - 1];
+            int type = childNode->type_00;
 
-        if (type == ZRDR_TYPE_ARRAY) {
-            zReader_Node *result = zReader_FindChildRecursive(childNode, name, 1);
-            if (result != NULL) {
-                return result;
+            if (type == ZRDR_TYPE_ARRAY) {
+                zReader_Node *result = zReader_FindChildRecursive(
+                    childNode,
+                    name,
+                    1
+                );
+                if (result != NULL) {
+                    return result;
+                }
+            }
+
+            if (type == ZRDR_TYPE_STRING) {
+                if (strcmp(
+                    childNode->value_04.str,
+                    name
+                ) == 0) {
+                    return &childNode[1]; /* return the value node after the name */
+                }
             }
         }
-
-        if (type == ZRDR_TYPE_STRING) {
-            if (strcmp(childNode->value_04.str, name) == 0) {
-                return &childNode[1]; /* return the value node after the name */
-            }
-        }
-    }
     }
 
     return NULL;
@@ -231,8 +284,15 @@ zReader_Node *__cdecl zReader_FindChildRecursive(zReader_Node *self, const char 
  * zReader_GetCurrentRootNode — 0x48CF70
  * Convenience wrapper: finds a named child starting at index 1.
  * ================================================================== */
-zReader_Node *__cdecl zReader_GetCurrentRootNode(zReader_Node *parent, const char *name) {
-    return zReader_FindChildRecursive(parent, name, 1);
+zReader_Node *__cdecl zReader_GetCurrentRootNode(
+    zReader_Node *parent,
+    const char *name
+) {
+    return zReader_FindChildRecursive(
+        parent,
+        name,
+        1
+    );
 }
 
 /* ==================================================================
@@ -241,8 +301,14 @@ zReader_Node *__cdecl zReader_GetCurrentRootNode(zReader_Node *parent, const cha
  * Handles both direct string nodes and arrays containing a string.
  * Returns NULL if not found or wrong type.
  * ================================================================== */
-const char *__cdecl zReader_ReadNamedString(zReader_Node *parent, const char *name) {
-    zReader_Node *node = zReader_GetCurrentRootNode(parent, name);
+const char *__cdecl zReader_ReadNamedString(
+    zReader_Node *parent,
+    const char *name
+) {
+    zReader_Node *node = zReader_GetCurrentRootNode(
+        parent,
+        name
+    );
     if (node == NULL)
         return NULL;
 
@@ -267,8 +333,15 @@ const char *__cdecl zReader_ReadNamedString(zReader_Node *parent, const char *na
  * and array[int] (converts to float).
  * Returns 1 on success, 0 on failure.
  * ================================================================== */
-int __cdecl zReader_ReadNamedFloat(zReader_Node *parent, const char *name, float *outValue) {
-    zReader_Node *node = zReader_GetCurrentRootNode(parent, name);
+int __cdecl zReader_ReadNamedFloat(
+    zReader_Node *parent,
+    const char *name,
+    float *outValue
+) {
+    zReader_Node *node = zReader_GetCurrentRootNode(
+        parent,
+        name
+    );
     if (node == NULL)
         return 0;
 
@@ -305,8 +378,15 @@ int __cdecl zReader_ReadNamedFloat(zReader_Node *parent, const char *name, float
  * Handles direct int and array[int].
  * Returns 1 on success, 0 on failure.
  * ================================================================== */
-int __cdecl zReader_ReadNamedInt(zReader_Node *parent, const char *name, int *outValue) {
-    zReader_Node *node = zReader_GetCurrentRootNode(parent, name);
+int __cdecl zReader_ReadNamedInt(
+    zReader_Node *parent,
+    const char *name,
+    int *outValue
+) {
+    zReader_Node *node = zReader_GetCurrentRootNode(
+        parent,
+        name
+    );
     if (node == NULL)
         return 0;
 
@@ -338,26 +418,56 @@ int __cdecl zReader_ReadNamedInt(zReader_Node *parent, const char *name, int *ou
  * Error string: "Invalid reader node type in zRdrRead()"
  * Source file:  "D:\Proj\GameZRecoil\zReader\zreader.cpp" line 0x40C (1036)
  * ================================================================== */
-int __cdecl zReader_ReadNode(HANDLE hFile, zReader_Node *outNode) {
+int __cdecl zReader_ReadNode(
+    HANDLE hFile,
+    zReader_Node *outNode
+) {
     DWORD bytesRead;
-    ReadFile(hFile, outNode, 4, &bytesRead, NULL); /* read type tag */
+    ReadFile(
+        hFile,
+        outNode,
+        4,
+        &bytesRead,
+        NULL
+    ); /* read type tag */
     DWORD totalBytes = bytesRead;
 
     switch (outNode->type_00) {
     case ZRDR_TYPE_INT:
-        ReadFile(hFile, &outNode->value_04, 4, &bytesRead, NULL);
+        ReadFile(
+            hFile,
+            &outNode->value_04,
+            4,
+            &bytesRead,
+            NULL
+        );
         return totalBytes + bytesRead;
 
     case ZRDR_TYPE_FLOAT:
-        ReadFile(hFile, &outNode->value_04, 4, &bytesRead, NULL);
+        ReadFile(
+            hFile,
+            &outNode->value_04,
+            4,
+            &bytesRead,
+            NULL
+        );
         return totalBytes + bytesRead;
 
     case ZRDR_TYPE_STRING:
-        return totalBytes + zReader_ReadString(hFile, &outNode->value_04);
+        return totalBytes + zReader_ReadString(
+            hFile,
+            &outNode->value_04
+        );
 
     case ZRDR_TYPE_ARRAY: {
         int nodeCount;
-        ReadFile(hFile, &nodeCount, 4, &bytesRead, NULL);
+        ReadFile(
+            hFile,
+            &nodeCount,
+            4,
+            &bytesRead,
+            NULL
+        );
         totalBytes += bytesRead;
 
         /* Allocate array: first node is header with count, rest are children */
@@ -367,7 +477,10 @@ int __cdecl zReader_ReadNode(HANDLE hFile, zReader_Node *outNode) {
         arr->type_00 = ZRDR_TYPE_INT;  /* header tag */
 
         for (int i = 1; i < nodeCount; i++) {
-            totalBytes += zReader_ReadNode(hFile, &arr[i]);
+            totalBytes += zReader_ReadNode(
+                hFile,
+                &arr[i]
+            );
         }
         return totalBytes;
     }
@@ -383,7 +496,9 @@ int __cdecl zReader_ReadNode(HANDLE hFile, zReader_Node *outNode) {
  * Iterates mounted archive list, attempting to open the file from each.
  * Returns a file handle or INVALID_HANDLE_VALUE (-1) if not found.
  * ================================================================== */
-int __cdecl zReader_OpenFileFromMountedArchives(const char *filename) {
+int __cdecl zReader_OpenFileFromMountedArchives(
+    const char *filename
+) {
     if (g_zArchive_MountedList == NULL) {
         return -1;
     }

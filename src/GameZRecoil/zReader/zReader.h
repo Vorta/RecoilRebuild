@@ -34,21 +34,36 @@ struct Node {
 RECOIL_STATIC_ASSERT(sizeof(Value) == 4);
 RECOIL_STATIC_ASSERT(sizeof(Node) == 8);
 
-RECOIL_NOINLINE Node *RECOIL_FASTCALL LoadNodeFromPath(const char *path,
-                                                       const char *extraSearchPath = 0,
-                                                       int unusedStack = 0);
+RECOIL_NOINLINE Node *RECOIL_FASTCALL LoadNodeFromPath(
+    const char *path,
+    const char *extraSearchPath = 0,
+    int unusedStack = 0
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL FreeLoadedTree(Node *loaded);
-RECOIL_NOINLINE const char *RECOIL_FASTCALL ReadNamedString(Node *parentNode, const char *name);
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedFloat(Node *parentNode, const char *name,
-                                                            float *outValue);
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedInt(Node *parentNode, const char *name,
-                                                          int *outValue);
+RECOIL_NOINLINE const char *RECOIL_FASTCALL ReadNamedString(
+    Node *parentNode,
+    const char *name
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedFloat(
+    Node *parentNode,
+    const char *name,
+    float *outValue
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedInt(
+    Node *parentNode,
+    const char *name,
+    int *outValue
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL FindGlobalStringPrefixIndex(const char *text);
 RECOIL_NOINLINE int RECOIL_FASTCALL FileExists(const char *path);
-RECOIL_NOINLINE const char *RECOIL_FASTCALL TryResolvePath(const char *filename,
-                                                           const char *extraSearchPath);
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildResolvedParentDir(const char *filename,
-                                                                    char *outParentDir);
+RECOIL_NOINLINE const char *RECOIL_FASTCALL TryResolvePath(
+    const char *filename,
+    const char *extraSearchPath
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL BuildResolvedParentDir(
+    const char *filename,
+    char *outParentDir
+);
 RECOIL_NOINLINE void RECOIL_CDECL LoadMoversFromZrd();
 } // namespace zReader
 
@@ -99,14 +114,23 @@ struct zIndexArchive {
     RECOIL_NOINLINE void RECOIL_THISCALL FlushIndexToTail();
     RECOIL_NOINLINE int RECOIL_THISCALL LoadIndexFromTail();
     RECOIL_NOINLINE void RECOIL_THISCALL EnsureCapacity(unsigned int requiredCount);
-    RECOIL_NOINLINE int RECOIL_THISCALL
-    AddFileRecord(const char *name, const void *data, unsigned int dataSize,
-                  const char *sourceTempPathOrNull, const zZarFileTime *sourceFileTimeOrNull);
+    RECOIL_NOINLINE int RECOIL_THISCALL AddFileRecord(
+        const char *name,
+        const void *data,
+        unsigned int dataSize,
+        const char *sourceTempPathOrNull,
+        const zZarFileTime *sourceFileTimeOrNull
+    );
     RECOIL_NOINLINE zZarFileRecord *RECOIL_THISCALL FindRecordByNameCI(const char *filename);
-    RECOIL_NOINLINE void *RECOIL_THISCALL OpenFileByName(const char *filename,
-                                                         unsigned int *outSize);
-    RECOIL_NOINLINE int RECOIL_THISCALL ReadFileByName(const char *filename, void *buffer,
-                                                                unsigned int *bufferSize);
+    RECOIL_NOINLINE void *RECOIL_THISCALL OpenFileByName(
+        const char *filename,
+        unsigned int *outSize
+    );
+    RECOIL_NOINLINE int RECOIL_THISCALL ReadFileByName(
+        const char *filename,
+        void *buffer,
+        unsigned int *bufferSize
+    );
 };
 
 RECOIL_STATIC_ASSERT(sizeof(zZarFileRecord) == 0x94);
@@ -132,22 +156,35 @@ extern zClass_NodePartial *g_Mover_LastLoadedNode;
 extern int g_zRndr_GlobalStringCount;
 extern char *g_zRndr_GlobalStringTable[100];
 
-typedef int (RECOIL_FASTCALL *zArchiveListPredicate)(void *, void *);
+typedef int(RECOIL_FASTCALL *zArchiveListPredicate)(
+    void *,
+    void *
+);
 
 RECOIL_NOINLINE zArchiveList *RECOIL_CDECL zArchiveList_CreateEmpty();
 RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_Destroy(zArchiveList *list);
-RECOIL_NOINLINE void RECOIL_FASTCALL zArchiveList_LinkNodeBetween(zArchiveListNode *after,
-                                                                  zArchiveListNode *newNode,
-                                                                  zArchiveListNode *before);
-RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_PushFrontPayload(zArchiveList *list,
-                                                                           void *payload);
-RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_PushBackPayload(zArchiveList *list,
-                                                                          void *payload);
-RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_RemovePayload(zArchiveList *list,
-                                                                        void *payload);
+RECOIL_NOINLINE void RECOIL_FASTCALL zArchiveList_LinkNodeBetween(
+    zArchiveListNode *after,
+    zArchiveListNode *newNode,
+    zArchiveListNode *before
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_PushFrontPayload(
+    zArchiveList *list,
+    void *payload
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_PushBackPayload(
+    zArchiveList *list,
+    void *payload
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_RemovePayload(
+    zArchiveList *list,
+    void *payload
+);
 RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FreeNode(zArchiveListNode *node);
-RECOIL_NOINLINE zArchiveListNode *RECOIL_FASTCALL zArchiveList_FindNodeByPayload(zArchiveList *list,
-                                                                                 void *payload);
+RECOIL_NOINLINE zArchiveListNode *RECOIL_FASTCALL zArchiveList_FindNodeByPayload(
+    zArchiveList *list,
+    void *payload
+);
 RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_PopFrontPayload(zArchiveList *list);
 RECOIL_NOINLINE zArchiveListNode *RECOIL_FASTCALL zUtil_ZRDR_AllocNodeWithPayload(void *payload);
 RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_SetSearchPath(const char *pathText);
@@ -156,55 +193,91 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_FreePathList(zArchiveList *list);
 RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_FreeSearchPathList(zArchiveList *list);
 RECOIL_NOINLINE void RECOIL_CDECL zUtil_ZRDR_FreeScratchSearchPathList();
 RECOIL_NOINLINE int RECOIL_CDECL zUtil_ZRDR_ShutdownWildcardPath();
-RECOIL_NOINLINE int RECOIL_FASTCALL
-zUtil_ZRDR_UnloadMountedArchives(int destroyCurrentToo);
+RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_UnloadMountedArchives(int destroyCurrentToo);
 RECOIL_NOINLINE int RECOIL_CDECL zUtil_ZRDR_Shutdown();
 RECOIL_NOINLINE void RECOIL_CDECL zUtil_ZRDR_FreeNodePool();
 RECOIL_NOINLINE void RECOIL_CDECL zUtil_ZRDR_GrowFreePool();
 RECOIL_NOINLINE void RECOIL_FASTCALL zUtil_ZRDR_PushFreeNode(zArchiveListNode *node);
 RECOIL_NOINLINE zArchiveListNode *RECOIL_FASTCALL zUtil_ZRDR_PopFreeNode(int allowGrow);
 RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FindPayloadByPredicate(
-    zArchiveList *list, zArchiveListPredicate predicate, void *userData);
-RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FindPayloadByValue(zArchiveList *list,
-                                                                      unsigned int value);
+    zArchiveList *list,
+    zArchiveListPredicate predicate,
+    void *userData
+);
+RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FindPayloadByValue(
+    zArchiveList *list,
+    unsigned int value
+);
 RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FindPayloadByPredicate_Thunk(
-    zArchiveList *list, zArchiveListPredicate predicate, void *userData);
-RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_StrCmpPredicate(void *str1, void *str2);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-zUtil_ZRDR_SearchPathContainsFilePredicate(void *searchDir, void *filename);
-RECOIL_NOINLINE char *RECOIL_FASTCALL
-zUtil_ZRDR_ResolvePathInSearchPathList(zArchiveList *searchPathList, const char *filename);
-RECOIL_NOINLINE FILE *RECOIL_FASTCALL zUtil_ZRDR_OpenFileResolved(zArchiveList *searchPathList,
-                                                                       const char *filename,
-                                                                       const char *mode);
+    zArchiveList *list,
+    zArchiveListPredicate predicate,
+    void *userData
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_StrCmpPredicate(
+    void *str1,
+    void *str2
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_SearchPathContainsFilePredicate(
+    void *searchDir,
+    void *filename
+);
+RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_ResolvePathInSearchPathList(
+    zArchiveList *searchPathList,
+    const char *filename
+);
+RECOIL_NOINLINE FILE *RECOIL_FASTCALL zUtil_ZRDR_OpenFileResolved(
+    zArchiveList *searchPathList,
+    const char *filename,
+    const char *mode
+);
 RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_InitWildcardPath(char *pattern);
 RECOIL_NOINLINE char *RECOIL_CDECL zUtil_ZRDR_NextWildcardPath();
 RECOIL_NOINLINE zArchiveList *RECOIL_FASTCALL zUtil_ZRDR_CreateSearchPathList(const char *pathText);
 RECOIL_NOINLINE int RECOIL_FASTCALL zReader_FileExists_Wrapper(const char *path);
-RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_FindChildRecursive(zReader::Node *node,
-                                                                          const char *searchName,
-                                                                          int startIndex);
-RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_GetNamedNode(zReader::Node *parentNode,
-                                                                    const char *name);
-RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_AllocateNode(int headerWord,
-                                                                    int fieldCount);
-RECOIL_NOINLINE int RECOIL_FASTCALL zReader_ReadString(void *hFile,
-                                                                zReader::Value *outString);
-RECOIL_NOINLINE int RECOIL_FASTCALL zReader_ReadNode(void *hFile, zReader::Node *outNode);
+RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_FindChildRecursive(
+    zReader::Node *node,
+    const char *searchName,
+    int startIndex
+);
+RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_GetNamedNode(
+    zReader::Node *parentNode,
+    const char *name
+);
+RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_AllocateNode(
+    int headerWord,
+    int fieldCount
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL zReader_ReadString(
+    void *hFile,
+    zReader::Value *outString
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL zReader_ReadNode(
+    void *hFile,
+    zReader::Node *outNode
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL zReader_FreeNodeRecursive(zReader::Node *node);
 RECOIL_NOINLINE void *RECOIL_FASTCALL zReader_OpenFileFromMountedArchives(const char *path);
 RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_GetCount(zArchiveList *list);
-RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_GetAt(zArchiveList *list, int index);
+RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_GetAt(
+    zArchiveList *list,
+    int index
+);
 }
 
 namespace zUtil {
 RECOIL_NOINLINE void RECOIL_FASTCALL ZRDR_PreallocNodePool(int count);
 RECOIL_NOINLINE int RECOIL_FASTCALL ZRDR_Init(const char *pathText);
 RECOIL_NOINLINE int RECOIL_FASTCALL ZRDR_GetFileSize(FILE *fileHandle);
-RECOIL_NOINLINE void RECOIL_FASTCALL ZRDR_AddSearchPaths(zArchiveList *list, const char *pathText);
+RECOIL_NOINLINE void RECOIL_FASTCALL ZRDR_AddSearchPaths(
+    zArchiveList *list,
+    const char *pathText
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL SetMissionZrdrPathsAndMountZbd(int missionId);
 } // namespace zUtil
 
 namespace zArchive {
-RECOIL_NOINLINE int RECOIL_FASTCALL MountIndexArchive(const char *path,
-                                                               int setCurrent);
+RECOIL_NOINLINE int RECOIL_FASTCALL MountIndexArchive(
+    const char *path,
+    int setCurrent
+);
 }

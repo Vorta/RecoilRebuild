@@ -1,9 +1,9 @@
 #include "zWeapon.h"
 
-#include "GameZRecoil/zUtil/zZbd.h"
-#include "GameZRecoil/zUtil/zSaveGame.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zMath/zMath.h"
+#include "GameZRecoil/zUtil/zSaveGame.h"
+#include "GameZRecoil/zUtil/zZbd.h"
 #include "OptCatalog.h"
 
 #include <math.h>
@@ -15,7 +15,10 @@ float g_zWeapon_MaxTetherAltitude = 0.0f;
 }
 
 namespace {
-template <typename T> zZbdSectionCallback ZbdCallbackPtr(T callback) {
+template <typename T>
+zZbdSectionCallback ZbdCallbackPtr(
+    T callback
+) {
     RECOIL_STATIC_ASSERT(sizeof(T) == sizeof(zZbdSectionCallback));
     union {
         T typed;
@@ -53,8 +56,12 @@ extern "C" RECOIL_NOINLINE int RECOIL_CDECL zWepInit() {
 
     if (shouldRegisterZarHandler != 0) {
         zUtil_ZAR::RegisterSectionHandler(
-            g_zWeapon_ArchiveName, ZbdCallbackPtr(&zWeapon::OnWeaponsSectionPreLoad),
-            ZbdCallbackPtr(&zWeapon::OnWeaponsSectionDataReady), 0x3e8, 0);
+            g_zWeapon_ArchiveName,
+            ZbdCallbackPtr(&zWeapon::OnWeaponsSectionPreLoad),
+            ZbdCallbackPtr(&zWeapon::OnWeaponsSectionDataReady),
+            0x3e8,
+            0
+        );
     }
 
     return 0;
@@ -63,25 +70,37 @@ extern "C" RECOIL_NOINLINE int RECOIL_CDECL zWepInit() {
 namespace zWeapon {
 // Reimplements 0x4b1140: zWeapon::OnWeaponsSectionPreLoad
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL OnWeaponsSectionPreLoad(zZbdSectionCallbackCtx *callbackCtx,
-                                                            void *) {
+RECOIL_NOINLINE int RECOIL_FASTCALL OnWeaponsSectionPreLoad(
+    zZbdSectionCallbackCtx *callbackCtx,
+    void *
+) {
     int weaponDataHitCount = g_OptCatalog_DamageFeedbackHitCount;
-    return zUtil_ZAR::WriteSectionBlob(callbackCtx, "WeaponData", &weaponDataHitCount,
-                                       sizeof(weaponDataHitCount));
+    return zUtil_ZAR::WriteSectionBlob(
+        callbackCtx,
+        "WeaponData",
+        &weaponDataHitCount,
+        sizeof(weaponDataHitCount)
+    );
 }
 
 // Reimplements 0x4b1160: zWeapon::OnWeaponsSectionDataReady
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-OnWeaponsSectionDataReady(zZbdSectionCallbackCtx *, const char *, void *weaponData,
-                          unsigned int, void *) {
+RECOIL_NOINLINE void RECOIL_FASTCALL OnWeaponsSectionDataReady(
+    zZbdSectionCallbackCtx *,
+    const char *,
+    void *weaponData,
+    unsigned int,
+    void *
+) {
     g_OptCatalogLockOnWarningGateTimeSec = 0.0f;
     g_OptCatalog_DamageFeedbackHitCount = *(int *)(weaponData);
 }
 
 // Reimplements 0x4b1d80: zWeapon::SetMaxTetherAltitude
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL SetMaxTetherAltitude(float altitude) {
+RECOIL_NOINLINE void RECOIL_STDCALL SetMaxTetherAltitude(
+    float altitude
+) {
     g_zWeapon_MaxTetherAltitude = altitude;
 }
 } // namespace zWeapon
@@ -100,7 +119,10 @@ RECOIL_NOINLINE void RECOIL_THISCALL PlayerTimedHitStatus::ResetFields() {
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
 RECOIL_NOINLINE void RECOIL_THISCALL PlayerTimedHitStatus::ClearLightAndReset() {
     if (lightNode != 0) {
-        zClass_Class::RemoveChild(lightParentNode, lightNode);
+        zClass_Class::RemoveChild(
+            lightParentNode,
+            lightNode
+        );
         Light::ReturnToFreeList(lightNode);
         ResetFields();
     }
@@ -108,7 +130,9 @@ RECOIL_NOINLINE void RECOIL_THISCALL PlayerTimedHitStatus::ClearLightAndReset() 
 
 // Reimplements 0x4b2300: PlayerTimedHitStatus::TickAndUpdateLight
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL PlayerTimedHitStatus::TickAndUpdateLight(float hitStatus) {
+RECOIL_NOINLINE int RECOIL_THISCALL PlayerTimedHitStatus::TickAndUpdateLight(
+    float hitStatus
+) {
     OptCatalogEntryDef *const source = hitSource;
 
     if ((runtimeFlags & 2u) != 0) {
@@ -135,16 +159,20 @@ RECOIL_NOINLINE int RECOIL_THISCALL PlayerTimedHitStatus::TickAndUpdateLight(flo
 
         if (lightNode != 0) {
             const float lightScale = fabsf(hitStatus * currentLevel);
-            zClass_Light::gwLightSetRange(lightNode,
-                                          source->timedStatusLightRangeMin * lightScale,
-                                          source->timedStatusLightRangeMax * lightScale);
+            zClass_Light::gwLightSetRange(
+                lightNode,
+                source->timedStatusLightRangeMin * lightScale,
+                source->timedStatusLightRangeMax * lightScale
+            );
 
             if ((previousLevel > 0.0f && currentLevel < 0.0f) ||
                 (previousLevel < 0.0f && currentLevel > 0.0f)) {
-                zClass_Light::gwLightSetSpecularColor(lightNode,
-                                                       source->timedStatusLightSpecularColor.red,
-                                                       source->timedStatusLightSpecularColor.green,
-                                                       source->timedStatusLightSpecularColor.blue);
+                zClass_Light::gwLightSetSpecularColor(
+                    lightNode,
+                    source->timedStatusLightSpecularColor.red,
+                    source->timedStatusLightSpecularColor.green,
+                    source->timedStatusLightSpecularColor.blue
+                );
             }
         }
     } else if (g_Time_AccumulatedTimeSec >= nextUpdateTime) {
@@ -156,9 +184,11 @@ RECOIL_NOINLINE int RECOIL_THISCALL PlayerTimedHitStatus::TickAndUpdateLight(flo
             ClearLightAndReset();
         } else if (lightNode != 0) {
             const float lightScale = fabsf(hitStatus * fadedLevel);
-            zClass_Light::gwLightSetRange(lightNode,
-                                          source->timedStatusLightRangeMin * lightScale,
-                                          source->timedStatusLightRangeMax * lightScale);
+            zClass_Light::gwLightSetRange(
+                lightNode,
+                source->timedStatusLightRangeMin * lightScale,
+                source->timedStatusLightRangeMax * lightScale
+            );
         }
     }
 
@@ -174,8 +204,11 @@ RECOIL_NOINLINE int RECOIL_THISCALL PlayerTimedHitStatus::TickAndUpdateLight(flo
 namespace HitSource {
 // Reimplements 0x4b2210: HitSource::UpdateTimedStatus
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-UpdateTimedStatus(OptCatalogEntryDef *self, PlayerTimedHitStatus *status, float amount) {
+RECOIL_NOINLINE int RECOIL_FASTCALL UpdateTimedStatus(
+    OptCatalogEntryDef *self,
+    PlayerTimedHitStatus *status,
+    float amount
+) {
     status->hitSource = self;
     status->runtimeFlags |= 3u;
 
@@ -196,7 +229,10 @@ UpdateTimedStatus(OptCatalogEntryDef *self, PlayerTimedHitStatus *status, float 
             Light::AllocFromFreeListAndAttach(&self->timedStatusLightSpecularColor);
         status->lightNode = light;
         if (light != 0) {
-            zClass_Class::AddChild(status->lightParentNode, light);
+            zClass_Class::AddChild(
+                status->lightParentNode,
+                light
+            );
         }
     }
 

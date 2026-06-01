@@ -7,10 +7,10 @@
 
 #include "GameZRecoil/zGame/zGame.h"
 
-#include <stdio.h>
-#include <string.h>
 #include <intrin.h>
 #include <limits>
+#include <stdio.h>
+#include <string.h>
 #include <sys/stat.h>
 
 #include <ddraw.h>
@@ -23,7 +23,11 @@
 #endif
 
 namespace {
-typedef HRESULT(WINAPI *zDirectDrawCreateFn)(GUID *, LPDIRECTDRAW *, IUnknown *);
+typedef HRESULT(WINAPI *zDirectDrawCreateFn)(
+    GUID *,
+    LPDIRECTDRAW *,
+    IUnknown *
+);
 typedef HMODULE(RECOIL_STDCALL *zLoadLibraryAFn)(const char *);
 
 const char kDdrawDll[] = "DDRAW.DLL";
@@ -39,30 +43,38 @@ const char kCouldNotLoadDinput[] = "Couldn't LoadLibrary DInput\r\n";
 const char kCouldNotQiDDraw2[] = "Couldn't QI DDraw2\r\n";
 const char kCouldNotSetCoopLevel[] = "Couldn't Set coop level\r\n";
 
-const unsigned int kCpuBenchmarkDurationTable[0x0c] = {0,    0,    0,    0x73, 0x2f, 0x2b,
-                                                            0x26, 0x26, 0x26, 0x26, 0x26, 0x26};
+const unsigned int kCpuBenchmarkDurationTable[0x0c] =
+    {0, 0, 0, 0x73, 0x2f, 0x2b, 0x26, 0x26, 0x26, 0x26, 0x26, 0x26};
 
 char g_zSys_DriveTypeSearchPathBuffer[MAX_PATH];
 
 struct CpuBenchmarkResolver {
-    RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL
-    ResolveCpuBenchmarkPacket(zSys::CpuBenchmarkResult *outBuffer);
+    RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL ResolveCpuBenchmarkPacket(
+        zSys::CpuBenchmarkResult *outBuffer
+    );
 
-    RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL
-    MeasureMhzViaBsfLoop_Qpc(zSys::CpuBenchmarkResult *outBuffer);
+    RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL MeasureMhzViaBsfLoop_Qpc(
+        zSys::CpuBenchmarkResult *outBuffer
+    );
 
-    RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL
-    MeasureCpuMhz_RdtscQpc(zSys::CpuBenchmarkResult *outBuffer);
+    RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL MeasureCpuMhz_RdtscQpc(
+        zSys::CpuBenchmarkResult *outBuffer
+    );
 
-    RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL
-    MeasureCpuMhz_CmosRtc(zSys::CpuBenchmarkResult *outBuffer);
+    RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL MeasureCpuMhz_CmosRtc(
+        zSys::CpuBenchmarkResult *outBuffer
+    );
 };
 
-CpuBenchmarkResolver *CpuBenchmarkResolverFromValue(unsigned int value) {
+CpuBenchmarkResolver *CpuBenchmarkResolverFromValue(
+    unsigned int value
+) {
     return (CpuBenchmarkResolver *)((unsigned int)(value));
 }
 
-unsigned long RecoilBitScanForward(unsigned long value) {
+unsigned long RecoilBitScanForward(
+    unsigned long value
+) {
     unsigned long index = 0;
     while (((value >> index) & 1u) == 0u && index < 31u) {
         ++index;
@@ -76,14 +88,19 @@ unsigned __int64 RecoilReadTimestampCounter() {
     return ((unsigned __int64)counter.HighPart << 32) | counter.LowPart;
 }
 
-void ZeroBenchmarkResult(zSys::CpuBenchmarkResult *outBuffer) {
+void ZeroBenchmarkResult(
+    zSys::CpuBenchmarkResult *outBuffer
+) {
     outBuffer->totalCycles = 0;
     outBuffer->totalMicroseconds = 0;
     outBuffer->cpuMhzRaw = 0;
     outBuffer->cpuMhzRounded = 0;
 }
 
-unsigned int DivideRoundedHalfUp(unsigned __int64 numerator, unsigned int denominator) {
+unsigned int DivideRoundedHalfUp(
+    unsigned __int64 numerator,
+    unsigned int denominator
+) {
     if (denominator == 0) {
         return 0;
     }
@@ -93,8 +110,11 @@ unsigned int DivideRoundedHalfUp(unsigned __int64 numerator, unsigned int denomi
     return remainder > (denominator >> 1) ? quotient + 1 : quotient;
 }
 
-unsigned int AbsDiffFromTripleAverage(unsigned int value, unsigned int previous,
-                                       unsigned int prior) {
+unsigned int AbsDiffFromTripleAverage(
+    unsigned int value,
+    unsigned int previous,
+    unsigned int prior
+) {
     const int delta = (int)(value * 3u - value - previous - prior);
     return delta < 0 ? (unsigned int)(-delta) : (unsigned int)(delta);
 }
@@ -106,20 +126,34 @@ extern "C" unsigned int g_zSys_CpuVendorNonIntelMarker = 0;
 #include "GameZRecoil/zSys/zSys_probe_platform.inl"
 
 // Reimplements 0x4a59e0: zSys::FindFileOnDriveType
-RECOIL_NOINLINE RECOIL_NO_GS char *RECOIL_FASTCALL
-zSys::FindFileOnDriveType(int driveType, const char *relativePath, int) {
+RECOIL_NOINLINE RECOIL_NO_GS char *RECOIL_FASTCALL zSys::FindFileOnDriveType(
+    int driveType,
+    const char *relativePath,
+    int
+) {
     char driveStrings[0x100];
-    GetLogicalDriveStringsA(sizeof(driveStrings), driveStrings);
+    GetLogicalDriveStringsA(
+        sizeof(driveStrings),
+        driveStrings
+    );
 
     for (const char *drive = driveStrings; *drive != '\0'; drive += strlen(drive) + 1) {
-        sprintf(g_zSys_DriveTypeSearchPathBuffer, "%s%s", drive, relativePath);
+        sprintf(
+            g_zSys_DriveTypeSearchPathBuffer,
+            "%s%s",
+            drive,
+            relativePath
+        );
         const UINT currentType = GetDriveTypeA(drive);
         if (currentType != (UINT)(driveType)) {
             continue;
         }
 
         struct stat statBuffer;
-        if (stat(g_zSys_DriveTypeSearchPathBuffer, &statBuffer) == 0) {
+        if (stat(
+            g_zSys_DriveTypeSearchPathBuffer,
+            &statBuffer
+        ) == 0) {
             return g_zSys_DriveTypeSearchPathBuffer;
         }
     }
@@ -130,7 +164,10 @@ zSys::FindFileOnDriveType(int driveType, const char *relativePath, int) {
 // Reimplements 0x4b3050: zSys::CheckCpuSignatureMask
 RECOIL_NOINLINE int RECOIL_CDECL zSys::CheckCpuSignatureMask() {
     int cpuInfo[4] = {0};
-    __cpuid(cpuInfo, 1);
+    __cpuid(
+        cpuInfo,
+        1
+    );
     return (cpuInfo[0] & 0x630) == 0x630 ? 1 : 0;
 }
 
@@ -151,16 +188,37 @@ RECOIL_NOINLINE int RECOIL_CDECL zSys::HasCpuidSupport() {
 // (D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp)
 RECOIL_NOINLINE int RECOIL_CDECL zSys::ReadCpuidVendorAndFamily() {
     int cpuInfo[4];
-    __cpuid(cpuInfo, 0);
+    __cpuid(
+        cpuInfo,
+        0
+    );
     const char genuineIntel[0x0c] = {'G', 'e', 'n', 'u', 'i', 'n', 'e', 'I', 'n', 't', 'e', 'l'};
     char vendor[0x0c];
-    memcpy(&vendor[0], &cpuInfo[1], 4);
-    memcpy(&vendor[4], &cpuInfo[3], 4);
-    memcpy(&vendor[8], &cpuInfo[2], 4);
-    g_zSys_CpuVendorNonIntelMarker =
-        memcmp(vendor, genuineIntel, sizeof(vendor)) == 0 ? 0u : 1u;
+    memcpy(
+        &vendor[0],
+        &cpuInfo[1],
+        4
+    );
+    memcpy(
+        &vendor[4],
+        &cpuInfo[3],
+        4
+    );
+    memcpy(
+        &vendor[8],
+        &cpuInfo[2],
+        4
+    );
+    g_zSys_CpuVendorNonIntelMarker = memcmp(
+        vendor,
+        genuineIntel,
+        sizeof(vendor)
+    ) == 0 ? 0u : 1u;
 
-    __cpuid(cpuInfo, 1);
+    __cpuid(
+        cpuInfo,
+        1
+    );
     int family = (cpuInfo[0] >> 8) & 0x0f;
     const int extendedFamily = (cpuInfo[0] >> 20) & 0xff;
     if (family == 0x0f) {
@@ -178,18 +236,40 @@ RECOIL_NOINLINE unsigned int RECOIL_CDECL zSys::ReadCpuidFeatureFlags() {
     }
 
     int cpuInfo[4];
-    __cpuid(cpuInfo, 0);
+    __cpuid(
+        cpuInfo,
+        0
+    );
 
     const char genuineIntel[0x0c] = {'G', 'e', 'n', 'u', 'i', 'n', 'e', 'I', 'n', 't', 'e', 'l'};
     char vendor[0x0c];
-    memcpy(&vendor[0], &cpuInfo[1], 4);
-    memcpy(&vendor[4], &cpuInfo[3], 4);
-    memcpy(&vendor[8], &cpuInfo[2], 4);
-    if (memcmp(vendor, genuineIntel, sizeof(vendor)) != 0) {
+    memcpy(
+        &vendor[0],
+        &cpuInfo[1],
+        4
+    );
+    memcpy(
+        &vendor[4],
+        &cpuInfo[3],
+        4
+    );
+    memcpy(
+        &vendor[8],
+        &cpuInfo[2],
+        4
+    );
+    if (memcmp(
+        vendor,
+        genuineIntel,
+        sizeof(vendor)
+    ) != 0) {
         g_zSys_CpuVendorNonIntelMarker = 1;
     }
 
-    __cpuid(cpuInfo, 1);
+    __cpuid(
+        cpuInfo,
+        1
+    );
     return (unsigned int)(cpuInfo[3]);
 }
 
@@ -201,8 +281,10 @@ RECOIL_NOINLINE unsigned int RECOIL_CDECL zSys::ReadCmosRtcSecondsBcd() {
 }
 
 // Reimplements 0x4b3b20: zSys::ReadTsc64
-RECOIL_NOINLINE void RECOIL_FASTCALL zSys::ReadTsc64(unsigned int *outHigh,
-                                                     unsigned int *outLow) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zSys::ReadTsc64(
+    unsigned int *outHigh,
+    unsigned int *outLow
+) {
     const unsigned __int64 counter = RecoilReadTimestampCounter();
     if (outHigh != 0) {
         *outHigh = (unsigned int)(counter >> 32);
@@ -213,14 +295,16 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSys::ReadTsc64(unsigned int *outHigh,
 }
 
 // Reimplements 0x4b3ca0: zSys::Sub64
-RECOIL_NOINLINE void RECOIL_FASTCALL zSys::Sub64(unsigned int subHigh, unsigned int subLow,
-                                                 unsigned int minuendHigh,
-                                                 unsigned int minuendLow, unsigned int *outHigh,
-                                                 unsigned int *outLow) {
-    const unsigned __int64 subtrahend =
-        ((unsigned __int64)(subHigh) << 32) | subLow;
-    const unsigned __int64 minuend =
-        ((unsigned __int64)(minuendHigh) << 32) | minuendLow;
+RECOIL_NOINLINE void RECOIL_FASTCALL zSys::Sub64(
+    unsigned int subHigh,
+    unsigned int subLow,
+    unsigned int minuendHigh,
+    unsigned int minuendLow,
+    unsigned int *outHigh,
+    unsigned int *outLow
+) {
+    const unsigned __int64 subtrahend = ((unsigned __int64)(subHigh) << 32) | subLow;
+    const unsigned __int64 minuend = ((unsigned __int64)(minuendHigh) << 32) | minuendLow;
     const unsigned __int64 result = minuend - subtrahend;
     if (outHigh != 0) {
         *outHigh = (unsigned int)(result >> 32);
@@ -264,7 +348,9 @@ RECOIL_NOINLINE int RECOIL_CDECL DetectIs80386ByAcFlag() {
 
 // Reimplements 0x4b37f0: CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc
 RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL
-CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(zSys::CpuBenchmarkResult *outBuffer) {
+CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(
+    zSys::CpuBenchmarkResult *outBuffer
+) {
     LARGE_INTEGER frequency;
     if (QueryPerformanceFrequency(&frequency) == 0) {
         ZeroBenchmarkResult(outBuffer);
@@ -273,31 +359,34 @@ CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(zSys::CpuBenchmarkResult *outBuff
 
     unsigned int minTicks = 0xffffffffu;
     {
-    for (int sample = 0; sample < 10; ++sample) {
-        LARGE_INTEGER start;
-        LARGE_INTEGER end;
-        QueryPerformanceCounter(&start);
+        for (int sample = 0; sample < 10; ++sample) {
+            LARGE_INTEGER start;
+            LARGE_INTEGER end;
+            QueryPerformanceCounter(&start);
 
-        for (unsigned short i = 0x0fa0; i != 1; --i) {
-            unsigned long bitIndex = RecoilBitScanForward(0x80000000u);
-            (void)bitIndex;
-        }
+            for (unsigned short i = 0x0fa0; i != 1; --i) {
+                unsigned long bitIndex = RecoilBitScanForward(0x80000000u);
+                (void)bitIndex;
+            }
 
-        QueryPerformanceCounter(&end);
-        const unsigned int ticks = (unsigned int)(end.LowPart - start.LowPart);
-        if (ticks < minTicks) {
-            minTicks = ticks;
+            QueryPerformanceCounter(&end);
+            const unsigned int ticks = (unsigned int)(end.LowPart - start.LowPart);
+            if (ticks < minTicks) {
+                minTicks = ticks;
+            }
         }
     }
-    }
 
-    const unsigned int expectedCycles =
-        (unsigned int)((unsigned int)(this));
-    const unsigned int microseconds =
-        DivideRoundedHalfUp((unsigned __int64)(minTicks) * 1000000ui64,
-                            (unsigned int)(frequency.LowPart));
+    const unsigned int expectedCycles = (unsigned int)((unsigned int)(this));
+    const unsigned int microseconds = DivideRoundedHalfUp(
+        (unsigned __int64)(minTicks) * 1000000ui64,
+        (unsigned int)(frequency.LowPart)
+    );
     const unsigned int cpuMhzRaw = microseconds == 0 ? 0 : expectedCycles / microseconds;
-    const unsigned int cpuMhzRounded = DivideRoundedHalfUp(expectedCycles, microseconds);
+    const unsigned int cpuMhzRounded = DivideRoundedHalfUp(
+        expectedCycles,
+        microseconds
+    );
 
     outBuffer->totalCycles = expectedCycles;
     outBuffer->totalMicroseconds = microseconds;
@@ -308,7 +397,9 @@ CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(zSys::CpuBenchmarkResult *outBuff
 
 // Reimplements 0x4b38e0: CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc
 RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL
-CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc(zSys::CpuBenchmarkResult *outBuffer) {
+CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc(
+    zSys::CpuBenchmarkResult *outBuffer
+) {
     HANDLE thread = GetCurrentThread();
 
     LARGE_INTEGER frequency;
@@ -323,65 +414,81 @@ CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc(zSys::CpuBenchmarkResult *outBuffer
     unsigned int totalMicroseconds = 0;
 
     {
-    for (int attempt = 1;; ++attempt) {
-        const unsigned int olderMhz = previousMhz;
-        previousMhz = priorMhz;
+        for (int attempt = 1;; ++attempt) {
+            const unsigned int olderMhz = previousMhz;
+            previousMhz = priorMhz;
 
-        LARGE_INTEGER outerStart;
-        LARGE_INTEGER current;
-        QueryPerformanceCounter(&outerStart);
-        current = outerStart;
+            LARGE_INTEGER outerStart;
+            LARGE_INTEGER current;
+            QueryPerformanceCounter(&outerStart);
+            current = outerStart;
 
-        const int oldPriority = GetThreadPriority(thread);
-        if (oldPriority != THREAD_PRIORITY_ERROR_RETURN) {
-            SetThreadPriority(thread, THREAD_PRIORITY_TIME_CRITICAL);
-        }
+            const int oldPriority = GetThreadPriority(thread);
+            if (oldPriority != THREAD_PRIORITY_ERROR_RETURN) {
+                SetThreadPriority(
+                    thread,
+                    THREAD_PRIORITY_TIME_CRITICAL
+                );
+            }
 
-        while ((unsigned int)(current.LowPart - outerStart.LowPart) < 0x32) {
-            QueryPerformanceCounter(&current);
-        }
+            while ((unsigned int)(current.LowPart - outerStart.LowPart) < 0x32) {
+                QueryPerformanceCounter(&current);
+            }
 
-        const unsigned int startTicks = (unsigned int)(RecoilReadTimestampCounter());
-        LARGE_INTEGER sampleStart = current;
-        do {
-            QueryPerformanceCounter(&current);
-        } while ((unsigned int)(current.LowPart - sampleStart.LowPart) < 0x3e8);
+            const unsigned int startTicks = (unsigned int)(RecoilReadTimestampCounter());
+            LARGE_INTEGER sampleStart = current;
+            do {
+                QueryPerformanceCounter(&current);
+            } while ((unsigned int)(current.LowPart - sampleStart.LowPart) < 0x3e8);
 
-        const unsigned int endTicks = (unsigned int)(RecoilReadTimestampCounter());
-        if (oldPriority != THREAD_PRIORITY_ERROR_RETURN) {
-            SetThreadPriority(thread, oldPriority);
-        }
+            const unsigned int endTicks = (unsigned int)(RecoilReadTimestampCounter());
+            if (oldPriority != THREAD_PRIORITY_ERROR_RETURN) {
+                SetThreadPriority(
+                    thread,
+                    oldPriority
+                );
+            }
 
-        const unsigned int elapsedTicks =
-            (unsigned int)(current.LowPart - sampleStart.LowPart);
-        const unsigned int sampleCycles = endTicks - startTicks;
-        const unsigned int sampleMicroseconds =
-            DivideRoundedHalfUp((unsigned __int64)(elapsedTicks) * 1000000ui64,
-                                (unsigned int)(frequency.LowPart));
-        totalCycles += sampleCycles;
-        totalMicroseconds += sampleMicroseconds;
+            const unsigned int elapsedTicks = (unsigned int)(current.LowPart - sampleStart.LowPart);
+            const unsigned int sampleCycles = endTicks - startTicks;
+            const unsigned int sampleMicroseconds = DivideRoundedHalfUp(
+                (unsigned __int64)(elapsedTicks) * 1000000ui64,
+                (unsigned int)(frequency.LowPart)
+            );
+            totalCycles += sampleCycles;
+            totalMicroseconds += sampleMicroseconds;
 
-        priorMhz = DivideRoundedHalfUp(sampleCycles, sampleMicroseconds);
-        if (attempt >= 3) {
-            if (AbsDiffFromTripleAverage(priorMhz, previousMhz, olderMhz) <= 3 &&
-                AbsDiffFromTripleAverage(previousMhz, olderMhz, priorMhz) <= 3 &&
-                AbsDiffFromTripleAverage(olderMhz, priorMhz, previousMhz) <= 3) {
+            priorMhz = DivideRoundedHalfUp(
+                sampleCycles,
+                sampleMicroseconds
+            );
+            if (attempt >= 3) {
+                if (AbsDiffFromTripleAverage(priorMhz, previousMhz, olderMhz) <= 3 &&
+                    AbsDiffFromTripleAverage(
+                        previousMhz,
+                        olderMhz,
+                        priorMhz
+                    ) <= 3 &&
+                    AbsDiffFromTripleAverage(
+                        olderMhz,
+                        priorMhz,
+                        previousMhz
+                    ) <= 3) {
+                    break;
+                }
+            }
+
+            if (attempt >= 0x14) {
                 break;
             }
         }
-
-        if (attempt >= 0x14) {
-            break;
-        }
-    }
     }
 
     const unsigned int cpuMhzRaw = totalMicroseconds == 0 ? 0 : totalCycles / totalMicroseconds;
     const unsigned int tenthMhz =
         totalMicroseconds == 0
             ? 0
-            : (unsigned int)(((unsigned __int64)(totalCycles) * 10ui64) /
-                                         totalMicroseconds);
+            : (unsigned int)(((unsigned __int64)(totalCycles) * 10ui64) / totalMicroseconds);
     unsigned int cpuMhzRounded = cpuMhzRaw;
     if (tenthMhz - cpuMhzRaw * 10u >= 6u) {
         cpuMhzRounded += 1;
@@ -396,11 +503,16 @@ CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc(zSys::CpuBenchmarkResult *outBuffer
 
 // Reimplements 0x4b3b50: CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc
 RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL
-CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(zSys::CpuBenchmarkResult *outBuffer) {
+CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(
+    zSys::CpuBenchmarkResult *outBuffer
+) {
     HANDLE thread = GetCurrentThread();
     const int oldPriority = GetThreadPriority(thread);
     if (oldPriority != THREAD_PRIORITY_ERROR_RETURN) {
-        SetThreadPriority(thread, oldPriority + 1);
+        SetThreadPriority(
+            thread,
+            oldPriority + 1
+        );
     }
 
     unsigned int previousSecond = zSys::ReadCmosRtcSecondsBcd();
@@ -411,7 +523,10 @@ CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(zSys::CpuBenchmarkResult *outBuffer)
 
     unsigned int startTscHigh = 0;
     unsigned int startTscLow = 0;
-    zSys::ReadTsc64(&startTscHigh, &startTscLow);
+    zSys::ReadTsc64(
+        &startTscHigh,
+        &startTscLow
+    );
     unsigned int endSecond;
     do {
         endSecond = zSys::ReadCmosRtcSecondsBcd();
@@ -419,9 +534,15 @@ CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(zSys::CpuBenchmarkResult *outBuffer)
 
     unsigned int endTscHigh = 0;
     unsigned int endTscLow = 0;
-    zSys::ReadTsc64(&endTscHigh, &endTscLow);
+    zSys::ReadTsc64(
+        &endTscHigh,
+        &endTscLow
+    );
     if (oldPriority != THREAD_PRIORITY_ERROR_RETURN) {
-        SetThreadPriority(thread, oldPriority);
+        SetThreadPriority(
+            thread,
+            oldPriority
+        );
     }
 
     const unsigned int elapsedSeconds =
@@ -429,7 +550,14 @@ CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(zSys::CpuBenchmarkResult *outBuffer)
     const unsigned int microseconds = elapsedSeconds * 1000000u;
     unsigned int elapsedHigh = 0;
     unsigned int elapsedLow = 0;
-    zSys::Sub64(startTscHigh, startTscLow, endTscHigh, endTscLow, &elapsedHigh, &elapsedLow);
+    zSys::Sub64(
+        startTscHigh,
+        startTscLow,
+        endTscHigh,
+        endTscLow,
+        &elapsedHigh,
+        &elapsedLow
+    );
     const unsigned int cycles = elapsedLow;
     const unsigned int cpuMhzRaw = cycles / 1000000u;
     unsigned int cpuMhzRounded = cpuMhzRaw;
@@ -446,11 +574,12 @@ CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(zSys::CpuBenchmarkResult *outBuffer)
 
 // Reimplements 0x4b36f0: CpuBenchmarkResolver::ResolveCpuBenchmarkPacket
 RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL
-CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(zSys::CpuBenchmarkResult *outBuffer) {
+CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
+    zSys::CpuBenchmarkResult *outBuffer
+) {
     const int cpuClass = zSys::DetectCpuClassAndFeatures();
     const unsigned int featureFlags = zSys::ReadCpuidFeatureFlags();
-    const int cpuClassHint =
-        (int)((unsigned int)(this));
+    const int cpuClassHint = (int)((unsigned int)(this));
 
     if ((cpuClass & 0x8000) != 0) {
         ZeroBenchmarkResult(outBuffer);
@@ -494,7 +623,10 @@ CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(zSys::CpuBenchmarkResult *outBuf
 // Reimplements 0x4b3020: zCpu::HasMmxSupport
 RECOIL_NOINLINE int RECOIL_CDECL zCpu::HasMmxSupport() {
     int cpuInfo[4] = {0};
-    __cpuid(cpuInfo, 1);
+    __cpuid(
+        cpuInfo,
+        1
+    );
     return (cpuInfo[3] & 0x800000) != 0 ? 1 : 0;
 }
 
@@ -526,7 +658,9 @@ RECOIL_NOINLINE RECOIL_NO_GS unsigned int RECOIL_CDECL zSys::GetTotalPhysKb() {
 }
 
 // Reimplements 0x4a5980: zSys::ExitProcessWithCleanup
-RECOIL_NOINLINE void RECOIL_FASTCALL zSys::ExitProcessWithCleanup(int exitCode) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zSys::ExitProcessWithCleanup(
+    int exitCode
+) {
     zGame::ReturnOnlyStub();
     _fcloseall();
     ExitProcess((UINT)(exitCode));

@@ -13,7 +13,9 @@ AlignAfterOpenBracket: DontAlign
 BreakAfterOpenBracketFunction: true
 BreakBeforeCloseBracketFunction: true
 
-# Once a call wraps, put one argument per line.
+# Formatter support for wrapped calls. Agent instructions are stricter for
+# touched multi-argument calls and require the expanded shape even when a call
+# would fit on one line.
 BinPackArguments: false
 AllowAllArgumentsOnNextLine: false
 

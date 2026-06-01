@@ -14,10 +14,11 @@ Tables are ABI evidence, not the source design.
 
 When Binary Ninja shows vtable or function-table dispatch, first recover the
 owning source boundary. Do not copy a decompiled ftable/vtable array as the main
-implementation of an authored class or custom table object. Model the class,
-interface, typed custom function-table object, provider boundary, callback table,
-or data system that owns the table, then use the table layout only as ABI
-evidence.
+implementation of an authored class or custom table object, and do not use raw
+slot arrays as the source substitute. Model the class, interface, typed custom
+function-table object, provider boundary, callback/data system, or
+namespace/record subsystem that owns the table, then use the table layout only as
+ABI evidence.
 
 Raw `slots[n]` dispatch is acceptable only when current evidence proves one of
 these cases:

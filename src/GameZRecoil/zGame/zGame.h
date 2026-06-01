@@ -103,13 +103,17 @@ enum zOptHudTypeOption {
 namespace zGame {
 void RECOIL_CDECL ReturnOnlyStub();
 zOptionEntryPartial *RECOIL_FASTCALL Options_FindOption(const char *name);
-zOptionEntryPartial *RECOIL_FASTCALL Options_GetOrCreateOption(const char *name,
-                                                               int storageType,
-                                                               int dataSize,
-                                                               int registryScope);
-RECOIL_NOINLINE void RECOIL_FASTCALL Options_InitRegistryContext(const char *regKeyRoot,
-                                                                 const char *regKeyCurrentUser,
-                                                                 const char *regKeyGame);
+zOptionEntryPartial *RECOIL_FASTCALL Options_GetOrCreateOption(
+    const char *name,
+    int storageType,
+    int dataSize,
+    int registryScope
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL Options_InitRegistryContext(
+    const char *regKeyRoot,
+    const char *regKeyCurrentUser,
+    const char *regKeyGame
+);
 RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_LoadGameOptions();
 RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_LoadFromRegistry();
 RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_SaveToRegistry();
@@ -120,13 +124,19 @@ RECOIL_NOINLINE void RECOIL_CDECL Options_ShutdownRegistryContext();
 namespace zOpt {
 RECOIL_NOINLINE int RECOIL_FASTCALL LookupNamedValueAsInt(const char *key);
 RECOIL_NOINLINE int RECOIL_FASTCALL ReadScalarValueAsInt(zReader::Node *scalarValueNode);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-EvaluateProfileMetricCondition(zReader::Node *metricConditionNode);
-RECOIL_NOINLINE int RECOIL_FASTCALL SelectProfileValueForSystem(zReader::Node *parentNode,
-                                                                         const char *profileName,
-                                                                         int defaultValue);
-RECOIL_NOINLINE int RECOIL_FASTCALL EvalIntCompareOp(const char *opString,
-                                                              int lhs, int rhs);
+RECOIL_NOINLINE int RECOIL_FASTCALL EvaluateProfileMetricCondition(
+    zReader::Node *metricConditionNode
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL SelectProfileValueForSystem(
+    zReader::Node *parentNode,
+    const char *profileName,
+    int defaultValue
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL EvalIntCompareOp(
+    const char *opString,
+    int lhs,
+    int rhs
+);
 RECOIL_NOINLINE zOpt_ViewRectSection *RECOIL_CDECL GetDisplaySection();
 RECOIL_NOINLINE int RECOIL_CDECL GetDisplaySectionBitsPerPixel();
 RECOIL_NOINLINE int RECOIL_CDECL GetVideoStrideValue();
@@ -141,25 +151,50 @@ RECOIL_NOINLINE int RECOIL_CDECL ToggleHudTypeForCurrentHwMode();
 RECOIL_NOINLINE void RECOIL_FASTCALL SetReplicateMode(int replicateMode);
 RECOIL_NOINLINE int RECOIL_CDECL GetReplicateMode();
 RECOIL_NOINLINE int RECOIL_CDECL GetNetworkEnabled();
-RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_SetPosition(zOpt_ViewRectSection *section,
-                                                                 int x, int y);
-RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_SetSize(zOpt_ViewRectSection *section,
-                                                             int width,
-                                                             int height);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ViewRectSection_ClampPointToInclusiveBounds(zOpt_ViewRectSection *section, float *pointXY);
-RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetPosition(int x, int y);
-RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetSize(int width, int height);
+RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_SetPosition(
+    zOpt_ViewRectSection *section,
+    int x,
+    int y
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_SetSize(
+    zOpt_ViewRectSection *section,
+    int width,
+    int height
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_ClampPointToInclusiveBounds(
+    zOpt_ViewRectSection *section,
+    float *pointXY
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetPosition(
+    int x,
+    int y
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetSize(
+    int width,
+    int height
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetTargetWindow(zClass_NodePartial *windowNode);
 RECOIL_NOINLINE zOpt_ViewRectSection *RECOIL_CDECL GetRenderSection();
-RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetPosition(int x, int y);
-RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetSize(int width,
-                                                            int height);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-DisplaySection_SetTargetDisplay(zClass_NodePartial *displayNode);
+RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetPosition(
+    int x,
+    int y
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetSize(
+    int width,
+    int height
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetTargetDisplay(
+    zClass_NodePartial *displayNode
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetBitsPerPixel(int bitsPerPixel);
-RECOIL_NOINLINE void RECOIL_FASTCALL WindowSection_SetPosition(int x, int y);
-RECOIL_NOINLINE void RECOIL_FASTCALL WindowSection_SetSize(int width, int height);
+RECOIL_NOINLINE void RECOIL_FASTCALL WindowSection_SetPosition(
+    int x,
+    int y
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL WindowSection_SetSize(
+    int width,
+    int height
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL CameraSection_SetActiveCamera(zClass_NodePartial *camera);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetGameControlOptions(int value);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetThrottleMode(int enable);

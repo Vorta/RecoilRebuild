@@ -124,8 +124,16 @@ void FreeOverlayNodes() {
         delete node;
         node = next;
     }
+    node = g_zInput_BindMapOverlayNodeBlockList;
+    while (node != nullptr) {
+        zInput_BindMapOverlayStackNode *const next = node->next;
+        delete node;
+        node = next;
+    }
+    g_zInput_BindMapOverlayNodeBlockList = nullptr;
     g_zInput_BindMapOverlayNodeFreeList = nullptr;
     g_zInput_BindMapOverlayNodeStackHead = nullptr;
+    g_zInput_BindMapOverlayReserved = 0;
     g_zInput_BindMapOverlayDepth = 0;
 }
 
@@ -377,6 +385,146 @@ extern "C" int zinput_bindgroup_accessors_smoke(void) {
     }
     FreeOptionList();
     return 0;
+}
+
+extern "C" int zinput_bindgroup_static_lifetime_smoke(void) {
+    g_zInput_BindGroupInfoList.allocatorByte = 0x78;
+    g_zInput_BindGroupInfoList.begin = reinterpret_cast<zInput_BindGroupInfo **>(0x1111);
+    g_zInput_BindGroupInfoList.end = reinterpret_cast<zInput_BindGroupInfo **>(0x2222);
+    g_zInput_BindGroupInfoList.capacity = reinterpret_cast<zInput_BindGroupInfo **>(0x3333);
+
+    zInput::BindGroupListStaticInit();
+    if (g_zInput_BindGroupInfoList.allocatorByte != 0 ||
+        g_zInput_BindGroupInfoList.begin != nullptr ||
+        g_zInput_BindGroupInfoList.end != nullptr ||
+        g_zInput_BindGroupInfoList.capacity != nullptr) {
+        return 1;
+    }
+
+    if (zInput::BindGroupListRegisterAtExit() != 0) {
+        return 2;
+    }
+
+    zInput_BindGroupInfo **const groups =
+        static_cast<zInput_BindGroupInfo **>(::operator new(sizeof(zInput_BindGroupInfo *)));
+    groups[0] = nullptr;
+    g_zInput_BindGroupInfoList.begin = groups;
+    g_zInput_BindGroupInfoList.end = groups + 1;
+    g_zInput_BindGroupInfoList.capacity = groups + 1;
+
+    zInput::BindGroupListAtExitDestructor();
+    if (g_zInput_BindGroupInfoList.begin != nullptr ||
+        g_zInput_BindGroupInfoList.end != nullptr ||
+        g_zInput_BindGroupInfoList.capacity != nullptr) {
+        return 3;
+    }
+
+    g_zInput_BindGroupInfoList.allocatorByte = 0x78;
+    g_zInput_BindGroupInfoList.begin = reinterpret_cast<zInput_BindGroupInfo **>(0x1111);
+    g_zInput_BindGroupInfoList.end = reinterpret_cast<zInput_BindGroupInfo **>(0x2222);
+    g_zInput_BindGroupInfoList.capacity = reinterpret_cast<zInput_BindGroupInfo **>(0x3333);
+
+    return zInput::BindGroupList_StaticInitAndRegisterAtExit() == 0 &&
+                   g_zInput_BindGroupInfoList.allocatorByte == 0 &&
+                   g_zInput_BindGroupInfoList.begin == nullptr &&
+                   g_zInput_BindGroupInfoList.end == nullptr &&
+                   g_zInput_BindGroupInfoList.capacity == nullptr
+               ? 0
+               : 4;
+}
+
+extern "C" int zinput_global_state_static_lifetime_smoke(void) {
+    void *const self = &g_zInput_GlobalState;
+
+    g_zInput_BindMapOverlayBlockSize = 0;
+    g_zInput_BindMapOverlayNodeBlockList =
+        reinterpret_cast<zInput_BindMapOverlayStackNode *>(0x1111);
+    g_zInput_BindMapOverlayNodeFreeList =
+        reinterpret_cast<zInput_BindMapOverlayStackNode *>(0x2222);
+    g_zInput_BindMapOverlayNodeStackHead =
+        reinterpret_cast<zInput_BindMapOverlayStackNode *>(0x3333);
+    g_zInput_BindMapOverlayReserved = 7;
+    g_zInput_BindMapOverlayDepth = 3;
+
+    if (zInput::GlobalStateConstructor(self) != self ||
+        g_zInput_BindMapOverlayBlockSize != 8 ||
+        g_zInput_BindMapOverlayNodeBlockList != nullptr ||
+        g_zInput_BindMapOverlayNodeFreeList != nullptr ||
+        g_zInput_BindMapOverlayNodeStackHead != nullptr ||
+        g_zInput_BindMapOverlayReserved != 0 ||
+        g_zInput_BindMapOverlayDepth != 0) {
+        return 1;
+    }
+
+    if (zInput::GlobalStateStaticInit() != self ||
+        g_zInput_BindMapOverlayBlockSize != 8 ||
+        g_zInput_BindMapOverlayNodeBlockList != nullptr ||
+        g_zInput_BindMapOverlayNodeFreeList != nullptr ||
+        g_zInput_BindMapOverlayNodeStackHead != nullptr ||
+        g_zInput_BindMapOverlayReserved != 0 ||
+        g_zInput_BindMapOverlayDepth != 0) {
+        return 2;
+    }
+
+    if (zInput::GlobalStateRegisterAtExit() != 0) {
+        return 3;
+    }
+
+    zInput_BindMapOverlayStackNode *const freeNode0 = new zInput_BindMapOverlayStackNode;
+    zInput_BindMapOverlayStackNode *const freeNode1 = new zInput_BindMapOverlayStackNode;
+    zInput_BindMapOverlayStackNode *const blockNode0 = new zInput_BindMapOverlayStackNode;
+    zInput_BindMapOverlayStackNode *const blockNode1 = new zInput_BindMapOverlayStackNode;
+
+    freeNode0->next = freeNode1;
+    freeNode0->prev = nullptr;
+    freeNode0->bindMap = nullptr;
+    freeNode1->next = nullptr;
+    freeNode1->prev = freeNode0;
+    freeNode1->bindMap = nullptr;
+    blockNode0->next = blockNode1;
+    blockNode0->prev = nullptr;
+    blockNode0->bindMap = nullptr;
+    blockNode1->next = nullptr;
+    blockNode1->prev = blockNode0;
+    blockNode1->bindMap = nullptr;
+
+    g_zInput_BindMapOverlayNodeFreeList = freeNode0;
+    g_zInput_BindMapOverlayNodeBlockList = blockNode0;
+    g_zInput_BindMapOverlayNodeStackHead =
+        reinterpret_cast<zInput_BindMapOverlayStackNode *>(0x3333);
+    g_zInput_BindMapOverlayReserved = 9;
+    g_zInput_BindMapOverlayDepth = 4;
+
+    zInput::GlobalStateDestructor(self);
+    if (g_zInput_BindMapOverlayNodeBlockList != nullptr ||
+        g_zInput_BindMapOverlayNodeFreeList != nullptr ||
+        g_zInput_BindMapOverlayNodeStackHead != nullptr ||
+        g_zInput_BindMapOverlayReserved != 0 ||
+        g_zInput_BindMapOverlayDepth != 0 ||
+        g_zInput_BindMapOverlayBlockSize != 8) {
+        return 4;
+    }
+
+    g_zInput_BindMapOverlayNodeFreeList = new zInput_BindMapOverlayStackNode;
+    g_zInput_BindMapOverlayNodeFreeList->next = nullptr;
+    g_zInput_BindMapOverlayNodeFreeList->prev = nullptr;
+    g_zInput_BindMapOverlayNodeFreeList->bindMap = nullptr;
+    g_zInput_BindMapOverlayDepth = 1;
+    zInput::GlobalStateAtExitDestructor();
+    if (g_zInput_BindMapOverlayNodeFreeList != nullptr ||
+        g_zInput_BindMapOverlayDepth != 0) {
+        return 5;
+    }
+
+    return zInput::GlobalStateStaticInitAndRegisterAtExit() == 0 &&
+                   g_zInput_BindMapOverlayBlockSize == 8 &&
+                   g_zInput_BindMapOverlayNodeBlockList == nullptr &&
+                   g_zInput_BindMapOverlayNodeFreeList == nullptr &&
+                   g_zInput_BindMapOverlayNodeStackHead == nullptr &&
+                   g_zInput_BindMapOverlayReserved == 0 &&
+                   g_zInput_BindMapOverlayDepth == 0
+               ? 0
+               : 6;
 }
 
 extern "C" int zinput_keyboard_dik_ascii_smoke(void) {

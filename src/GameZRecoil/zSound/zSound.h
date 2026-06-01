@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stddef.h>
 #include "recoil/recoil_types.h"
+#include <stddef.h>
 
 // clang-format off
 #include <windows.h>
@@ -49,22 +49,39 @@ struct zSndPlayHandle {
     RECOIL_NOINLINE int RECOIL_THISCALL StopIfActive();
     RECOIL_NOINLINE int RECOIL_THISCALL SetFreqScaled(float scale);
     RECOIL_NOINLINE void RECOIL_THISCALL SetEnableScale(float scale);
-    RECOIL_NOINLINE int RECOIL_FASTCALL Update3DDispatch(zVec3 *worldPos, zVec3 *velocity,
-                                                                  int velocityScaleMode);
-    RECOIL_NOINLINE int RECOIL_FASTCALL Update3D(zVec3 *worldPos, zVec3 *velocity,
-                                                          int velocityScaleMode);
-    RECOIL_NOINLINE int RECOIL_FASTCALL Update3D_A3D(zVec3 *worldPos, zVec3 *velocity,
-                                                              int velocityScaleMode);
-    RECOIL_NOINLINE static void RECOIL_FASTCALL
-    PlayWithDelta_A3D(zSndSampleReplayFields *replayFields, zSndPlayHandle *playHandle,
-                      int restartBeforePlay, float gainDelta);
-    RECOIL_NOINLINE static void RECOIL_FASTCALL
-    PlayWithDelta_DirectSound(zSndSampleReplayFields *replayFields,
-                              zSndPlayHandle *playHandle, int restartBeforePlay,
-                              int gainDelta);
-    RECOIL_NOINLINE static void RECOIL_FASTCALL
-    PlayWithDelta_BackendDispatch(zSndSample *sourceSample, zSndPlayHandle *playHandle,
-                                  int restartBeforePlay, float gainDelta);
+    RECOIL_NOINLINE int RECOIL_FASTCALL Update3DDispatch(
+        zVec3 *worldPos,
+        zVec3 *velocity,
+        int velocityScaleMode
+    );
+    RECOIL_NOINLINE int RECOIL_FASTCALL Update3D(
+        zVec3 *worldPos,
+        zVec3 *velocity,
+        int velocityScaleMode
+    );
+    RECOIL_NOINLINE int RECOIL_FASTCALL Update3D_A3D(
+        zVec3 *worldPos,
+        zVec3 *velocity,
+        int velocityScaleMode
+    );
+    RECOIL_NOINLINE static void RECOIL_FASTCALL PlayWithDelta_A3D(
+        zSndSampleReplayFields *replayFields,
+        zSndPlayHandle *playHandle,
+        int restartBeforePlay,
+        float gainDelta
+    );
+    RECOIL_NOINLINE static void RECOIL_FASTCALL PlayWithDelta_DirectSound(
+        zSndSampleReplayFields *replayFields,
+        zSndPlayHandle *playHandle,
+        int restartBeforePlay,
+        int gainDelta
+    );
+    RECOIL_NOINLINE static void RECOIL_FASTCALL PlayWithDelta_BackendDispatch(
+        zSndSample *sourceSample,
+        zSndPlayHandle *playHandle,
+        int restartBeforePlay,
+        float gainDelta
+    );
 };
 
 struct zSndPlayHandleSnapshotPayload {
@@ -94,8 +111,10 @@ struct zSndPlayHandleSnapshot {
 
     static RECOIL_NOINLINE zSndPlayHandleSnapshot *RECOIL_CDECL CreateFromActiveSamples();
     void AppendPayload(const zSndPlayHandleSnapshotPayload &payload);
-    RECOIL_NOINLINE zSndPlayHandleSnapshotItem *RECOIL_THISCALL
-    NewNode(zSndPlayHandleSnapshotItem *listHead, zSndPlayHandleSnapshotItem *prev);
+    RECOIL_NOINLINE zSndPlayHandleSnapshotItem *RECOIL_THISCALL NewNode(
+        zSndPlayHandleSnapshotItem *listHead,
+        zSndPlayHandleSnapshotItem *prev
+    );
 
     RECOIL_NOINLINE int RECOIL_THISCALL StopAllIfPlaying();
     RECOIL_NOINLINE int RECOIL_THISCALL RestoreAllWithGlobalVolumeDelta();
@@ -136,13 +155,16 @@ struct zSndWaveData {
     zSndCuePoint *cuePoints;
     void *pcmData;
 
-    RECOIL_NOINLINE zSndWaveData *RECOIL_THISCALL ConstructorFromPath(const char *path,
-                                                                      int loadNow);
+    RECOIL_NOINLINE zSndWaveData *RECOIL_THISCALL ConstructorFromPath(
+        const char *path,
+        int loadNow
+    );
     RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
     RECOIL_NOINLINE int RECOIL_THISCALL ParseLoadedWaveFile();
     RECOIL_NOINLINE int RECOIL_THISCALL LoadAndParseIfNeeded();
-    RECOIL_NOINLINE int RECOIL_THISCALL
-    LoadAndParseFromIndexArchiveIfNeeded(zIndexArchive *archive);
+    RECOIL_NOINLINE int RECOIL_THISCALL LoadAndParseFromIndexArchiveIfNeeded(
+        zIndexArchive *archive
+    );
     RECOIL_NOINLINE int RECOIL_THISCALL Reset();
 };
 
@@ -171,38 +193,57 @@ struct zSndSample {
     RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL AcquirePlayHandleDispatch();
     RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL AcquireA3dVoice();
     RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL AcquireVoice();
-    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL PlayOnActiveBackend(zVec3 *worldPos,
-                                                                        float gainScale,
-                                                                        zVec3 *velocity,
-                                                                        int backendArg);
-    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL PlayOnA3D(zVec3 *worldPos, float gainScale,
-                                                              zVec3 *velocity,
-                                                              int backendArg);
-    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL PlayOnDirectSound(int attenuation,
-                                                                      zVec3 *worldPos,
-                                                                      zVec3 *velocity,
-                                                                      int backendArg);
-    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL PlayA3D(zVec3 *worldPos, float gainScale,
-                                                            zVec3 *velocity);
-    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL PlayDirectSound(int variantIndex,
-                                                                    float gainScale,
-                                                                    int stopMarkerIndex);
+    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL PlayOnActiveBackend(
+        zVec3 *worldPos,
+        float gainScale,
+        zVec3 *velocity,
+        int backendArg
+    );
+    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL PlayOnA3D(
+        zVec3 *worldPos,
+        float gainScale,
+        zVec3 *velocity,
+        int backendArg
+    );
+    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL PlayOnDirectSound(
+        int attenuation,
+        zVec3 *worldPos,
+        zVec3 *velocity,
+        int backendArg
+    );
+    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL PlayA3D(
+        zVec3 *worldPos,
+        float gainScale,
+        zVec3 *velocity
+    );
+    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL PlayDirectSound(
+        int variantIndex,
+        float gainScale,
+        int stopMarkerIndex
+    );
     RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL PlayA3DSimple(float gainScale);
     RECOIL_NOINLINE int RECOIL_THISCALL StopActiveVoicesIfPlaying();
     RECOIL_NOINLINE int RECOIL_FASTCALL InitFromWaveData(zSndWaveData *waveData);
-    RECOIL_NOINLINE int RECOIL_FASTCALL
-    InitFromWaveData_DirectSound(zSndWaveData *waveData);
+    RECOIL_NOINLINE int RECOIL_FASTCALL InitFromWaveData_DirectSound(zSndWaveData *waveData);
     RECOIL_NOINLINE int RECOIL_FASTCALL InitFromWaveData_A3D(zSndWaveData *waveData);
-    RECOIL_NOINLINE int RECOIL_FASTCALL
-    LockBackendBuffers(unsigned int offset, unsigned int bytes, void **buffer1,
-                       int *buffer1Bytes, void **buffer2, int *buffer2Bytes);
-    RECOIL_NOINLINE int RECOIL_FASTCALL UnlockBackendBuffers(void *buffer1,
-                                                                      int buffer1Bytes,
-                                                                      void *buffer2,
-                                                                      int buffer2Bytes);
+    RECOIL_NOINLINE int RECOIL_FASTCALL LockBackendBuffers(
+        unsigned int offset,
+        unsigned int bytes,
+        void **buffer1,
+        int *buffer1Bytes,
+        void **buffer2,
+        int *buffer2Bytes
+    );
+    RECOIL_NOINLINE int RECOIL_FASTCALL UnlockBackendBuffers(
+        void *buffer1,
+        int buffer1Bytes,
+        void *buffer2,
+        int buffer2Bytes
+    );
     RECOIL_NOINLINE unsigned int RECOIL_THISCALL GetPlayCursorBytes();
-    RECOIL_NOINLINE void RECOIL_FASTCALL
-    SetPlaybackEventHandler(void(RECOIL_FASTCALL *callback)(int eventCode));
+    RECOIL_NOINLINE void RECOIL_FASTCALL SetPlaybackEventHandler(
+        void(RECOIL_FASTCALL *callback)(int eventCode)
+    );
     RECOIL_NOINLINE int RECOIL_THISCALL DestroyOwnedData();
     RECOIL_NOINLINE void RECOIL_THISCALL Destroy();
 };
@@ -213,13 +254,14 @@ struct zSndSampleSet {
     zSndSample *samples;
     int resourcesLoaded;
 
-    RECOIL_NOINLINE zSndSampleSet *RECOIL_THISCALL RegistryAddEntry(const char *name,
-                                                                    int count);
+    RECOIL_NOINLINE zSndSampleSet *RECOIL_THISCALL RegistryAddEntry(
+        const char *name,
+        int count
+    );
     RECOIL_NOINLINE zSndSample *RECOIL_THISCALL GetSampleAt(int index);
     RECOIL_NOINLINE zSndSample *RECOIL_THISCALL FindSampleByName(const char *sampleName);
     RECOIL_NOINLINE int RECOIL_THISCALL Init();
-    RECOIL_NOINLINE int RECOIL_THISCALL
-    LoadSamplesFromIndexArchive(zIndexArchive *archive);
+    RECOIL_NOINLINE int RECOIL_THISCALL LoadSamplesFromIndexArchive(zIndexArchive *archive);
     RECOIL_NOINLINE int RECOIL_THISCALL Destroy();
     RECOIL_NOINLINE void RECOIL_THISCALL DestroyOwnedData();
 };
@@ -269,13 +311,18 @@ struct zSndGroup {
     char unknown_28[0x90];
 
     RECOIL_NOINLINE zSndGroupConfigBlock *RECOIL_THISCALL SelectWeightedEntry();
-    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL QueueStreamRequest(int hasWorldPos,
-                                                                       float gain, zVec3 *worldPos,
-                                                                       zVec3 *velocity);
+    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL QueueStreamRequest(
+        int hasWorldPos,
+        float gain,
+        zVec3 *worldPos,
+        zVec3 *velocity
+    );
     RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL QueueStreamRequestSimple(float gain);
-    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL QueueStreamRequestWithWorldPos(zVec3 *worldPos,
-                                                                                   float gain,
-                                                                                   zVec3 *velocity);
+    RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL QueueStreamRequestWithWorldPos(
+        zVec3 *worldPos,
+        float gain,
+        zVec3 *velocity
+    );
 };
 
 struct zSndStreamRequest {
@@ -315,15 +362,19 @@ struct zSndFadeList {
     zSndFadeListNode *sentinel;
     int count;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL DeleteNodeAndAdvanceCursor(zSndFadeListNode *node,
-                                                                    zSndFadeListNode **outCursor);
+    RECOIL_NOINLINE void RECOIL_THISCALL DeleteNodeAndAdvanceCursor(
+        zSndFadeListNode *node,
+        zSndFadeListNode **outCursor
+    );
 };
 
 struct zSndFadeListCursor {
     zSndFadeListNode *node;
 
-    RECOIL_NOINLINE zSndFadeListNode **RECOIL_THISCALL PopFrontCursor(zSndFadeListNode **outNode,
-                                                                      int unused);
+    RECOIL_NOINLINE zSndFadeListNode **RECOIL_THISCALL PopFrontCursor(
+        zSndFadeListNode **outNode,
+        int unused
+    );
 };
 
 struct zSndCdTrackEntry {
@@ -362,37 +413,156 @@ RECOIL_STATIC_ASSERT(sizeof(zSndFadeListNode) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zSndFadeList) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zSndCdTrackNode) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zSndCdTrackEntry) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotPayload, volumeScaleRaw) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotPayload, worldPos) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotPayload, velocityOrDir) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotItem, payload) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshot, listHead) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshot, itemCount) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zSndCdTrackNode, entry) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zSndSampleSet, sampleCount) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zSndSampleSet, samples) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zSndSampleSetRegistry, begin) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zSndGroupConfigBlock, child) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(zSndGroup, groupName) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zSndGroup, configBlocks) == 0x24);
-RECOIL_STATIC_ASSERT(offsetof(zSndStreamRequest, hasWorldPos) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zSndStreamRequest, gain) == 0x24);
-RECOIL_STATIC_ASSERT(offsetof(zSndStreamRequest, streamState) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(zSndStreamRequest, group) == 0x38);
-RECOIL_STATIC_ASSERT(offsetof(zSndFadeEntry, currentValue) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zSndFadeEntry, handle) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zSndFadeEntry, stopOnComplete) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(zSndFadeListNode, fadeEntry) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zSndFadeList, sentinel) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zSndFadeList, count) == 0x08);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndPlayHandleSnapshotPayload,
+        volumeScaleRaw
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndPlayHandleSnapshotPayload,
+        worldPos
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndPlayHandleSnapshotPayload,
+        velocityOrDir
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndPlayHandleSnapshotItem,
+        payload
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndPlayHandleSnapshot,
+        listHead
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndPlayHandleSnapshot,
+        itemCount
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndCdTrackNode,
+        entry
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndSampleSet,
+        sampleCount
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndSampleSet,
+        samples
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndSampleSetRegistry,
+        begin
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndGroupConfigBlock,
+        child
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndGroup,
+        groupName
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndGroup,
+        configBlocks
+    ) == 0x24
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndStreamRequest,
+        hasWorldPos
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndStreamRequest,
+        gain
+    ) == 0x24
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndStreamRequest,
+        streamState
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndStreamRequest,
+        group
+    ) == 0x38
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndFadeEntry,
+        currentValue
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndFadeEntry,
+        handle
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndFadeEntry,
+        stopOnComplete
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndFadeListNode,
+        fadeEntry
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndFadeList,
+        sentinel
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndFadeList,
+        count
+    ) == 0x08
+);
 
 namespace zSnd {
-RECOIL_NOINLINE int RECOIL_FASTCALL ReportA3DError(int a3dError,
-                                                            const char *sourceFile,
-                                                            int sourceLine);
-RECOIL_NOINLINE int RECOIL_FASTCALL ReportDirectSoundError(int directSoundError,
-                                                                    const char *sourceFile,
-                                                                    int sourceLine);
+RECOIL_NOINLINE int RECOIL_FASTCALL ReportA3DError(
+    int a3dError,
+    const char *sourceFile,
+    int sourceLine
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL ReportDirectSoundError(
+    int directSoundError,
+    const char *sourceFile,
+    int sourceLine
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL SetAudioApiOption(int apiType);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetSpeedOfSoundMps(float speedOfSoundMps);
 RECOIL_NOINLINE int RECOIL_CDECL GetAudioApiOption();
@@ -419,16 +589,25 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Init(zReader::Node *cdTracksNode);
 RECOIL_NOINLINE int RECOIL_CDECL Stop();
 RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
 RECOIL_NOINLINE int RECOIL_CDECL GetTrackCount();
-RECOIL_NOINLINE int RECOIL_FASTCALL PlayTrackWithMode(int trackIndex,
-                                                               int playbackMode);
-RECOIL_NOINLINE int RECOIL_FASTCALL GetVolume(unsigned short *primaryVolumeOut,
-                                                       unsigned short *secondaryVolumeOut);
-RECOIL_NOINLINE int RECOIL_FASTCALL SetVolume(unsigned short primaryVolume,
-                                                       unsigned short secondaryVolume);
+RECOIL_NOINLINE int RECOIL_FASTCALL PlayTrackWithMode(
+    int trackIndex,
+    int playbackMode
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL GetVolume(
+    unsigned short *primaryVolumeOut,
+    unsigned short *secondaryVolumeOut
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL SetVolume(
+    unsigned short primaryVolume,
+    unsigned short secondaryVolume
+);
 } // namespace zSndCd
 
 extern "C" RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSndSample_CreateQueuedStreamingSample(
-    WAVEFORMATEX *audioFormat, void *audioBuffer, int bufferBytes);
+    WAVEFORMATEX *audioFormat,
+    void *audioBuffer,
+    int bufferBytes
+);
 
 extern "C" {
 extern int *ZOPT_AUDIO_API;
@@ -486,14 +665,17 @@ extern float g_zSndInvSpeedOfSoundMps;
 
 extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndBackend_InitA3D();
 extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndBackend_InitDirectSound();
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSnd_PreInitializeRuntimeState(unsigned int hwnd);
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSnd_UpdateListenerState(zSndListenerState *listenerState, zVec3 *listenerVelocity);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSnd_PreInitializeRuntimeState(unsigned int hwnd);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSnd_UpdateListenerState(
+    zSndListenerState *listenerState,
+    zVec3 *listenerVelocity
+);
 extern "C" RECOIL_NOINLINE float RECOIL_CDECL zSnd_GetSpeedOfSoundMps();
 
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSystem_Init(unsigned int hwnd,
-                                                                        const char *zrdPath);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSystem_Init(
+    unsigned int hwnd,
+    const char *zrdPath
+);
 namespace zSndSystem {
 RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
 }
@@ -507,17 +689,18 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndSampleSetRegistry_DestroyAll();
 extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndSampleSetRegistry_Shutdown();
 extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndSampleSetRegistry_RegisterAtExit();
 extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_SetUseArchiveBanks(int enabled);
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL
-zSnd_SetUseArchiveBanksAndRegisterAtExit(int enabled);
+extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_SetUseArchiveBanksAndRegisterAtExit(
+    int enabled
+);
 extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndSampleSetRegistry_GetCount();
-extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL
-zSndSampleSetRegistry_GetByIndex(int index);
-extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL
-zSndSampleSetRegistry_FindByName(const char *setName);
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndSampleSet_DestroyByName(const char *setName);
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndSampleSet_InitByName(const char *setName);
+extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL zSndSampleSetRegistry_GetByIndex(
+    int index
+);
+extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL zSndSampleSetRegistry_FindByName(
+    const char *setName
+);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSampleSet_DestroyByName(const char *setName);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSampleSet_InitByName(const char *setName);
 namespace zSndFadeLists {
 RECOIL_NOINLINE void RECOIL_CDECL InitGlobals();
 RECOIL_NOINLINE void RECOIL_CDECL StopAllAndShutdown();
@@ -528,29 +711,43 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PushBack(zSndFadeEntry *fadeEntry);
 extern "C" RECOIL_NOINLINE void RECOIL_STDCALL zSndFadeActiveList_TickAll(float deltaTime);
 extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_Tick(int skipA3dCommit);
 extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_TickWrapper(int skipA3dCommit);
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndSystem_InitNamedSetsSyntax(zReader::Node *configRootNode);
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndSystem_InitLegacySetsSyntax(zReader::Node *configRootNode);
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndGroup_LoadConfigBlock(zReader::Node *readerNode, zSndGroupRuntimeFields *groupFields,
-                          zSndGroupConfigBlock *outConfigBlock);
-extern "C" RECOIL_NOINLINE zSndGroup *RECOIL_FASTCALL
-zSndGroup_LoadFromConfigNode(zReader::Node *readerNode);
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndGroup_QueuePendingLoadsFromConfigNode(zReader::Node *readerNode);
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndStreamRequest_StopIfActive(zSndPlayHandle *request);
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndPlayHandle_TryEnableManaged(zSndPlayHandle *handle);
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndPlayHandle_TryDisableManaged(zSndPlayHandle *handle);
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndStreamRequest_MatchGroupPredicate(void *payload, void *group);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSystem_InitNamedSetsSyntax(
+    zReader::Node *configRootNode
+);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSystem_InitLegacySetsSyntax(
+    zReader::Node *configRootNode
+);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndGroup_LoadConfigBlock(
+    zReader::Node *readerNode,
+    zSndGroupRuntimeFields *groupFields,
+    zSndGroupConfigBlock *outConfigBlock
+);
+extern "C" RECOIL_NOINLINE zSndGroup *RECOIL_FASTCALL zSndGroup_LoadFromConfigNode(
+    zReader::Node *readerNode
+);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndGroup_QueuePendingLoadsFromConfigNode(
+    zReader::Node *readerNode
+);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndStreamRequest_StopIfActive(
+    zSndPlayHandle *request
+);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndPlayHandle_TryEnableManaged(
+    zSndPlayHandle *handle
+);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndPlayHandle_TryDisableManaged(
+    zSndPlayHandle *handle
+);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndStreamRequest_MatchGroupPredicate(
+    void *payload,
+    void *group
+);
 extern "C" RECOIL_NOINLINE float RECOIL_STDCALL zSndSample_PlaySimple(float value);
-extern "C" RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL
-zSndPendingList_FindByName(const char *sampleName);
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndPendingList_MatchNamePredicate(void *payload, void *sampleName);
+extern "C" RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSndPendingList_FindByName(
+    const char *sampleName
+);
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndPendingList_MatchNamePredicate(
+    void *payload,
+    void *sampleName
+);
 extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndStreamMgr_EnsureInit();
 extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndStreamMgr_RecycleFinishedRequest();

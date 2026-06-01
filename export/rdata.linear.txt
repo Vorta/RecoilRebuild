@@ -665,7 +665,7 @@
 0x4cca0c void* data_4cca0c = 0x0
 0x4cca10 struct HudUiCommon_FTable g_HudUiCommon_FTable =
 0x4cca10 {
-0x4cca10     HudUiElement_VT_Dtor dtor = HudUiCommon::ScalarDeletingDestructor
+0x4cca10     HudUiElement_VT_Dtor dtor = HudUiElement::ScalarDeletingDestructor
 0x4cca14     HudUiElement_VT_Noarg Draw = HudUiElement::Draw
 0x4cca18     HudUiElement_VT_Noarg DrawBase = HudUiElement::DrawBase
 0x4cca1c     HudUiElement_VT_SetPos SetPos = HudUiElement::SetPos

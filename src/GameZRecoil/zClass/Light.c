@@ -16,14 +16,28 @@ namespace {
     const int kZClassNodeLight = 9;
     const char *kLightSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Light.c";
 
-    zClass_LightDataPartial *GetLightData(zClass_NodePartial * node, int nullLine, int dataLine) {
+    zClass_LightDataPartial *GetLightData(
+        zClass_NodePartial * node,
+        int nullLine,
+        int dataLine
+    ){
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, nullLine, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kLightSourceFile,
+                nullLine,
+                "Null node pointer."
+            );
             return 0;
         }
 
         if (node->classData == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, dataLine, "Null class data pointer");
+            zError::ReportOld(
+                0x400,
+                kLightSourceFile,
+                dataLine,
+                "Null class data pointer"
+            );
             return 0;
         }
 
@@ -43,22 +57,34 @@ namespace {
         return out;
     }
 
-    int CullNodeForRender(zClass_NodePartial *node, int siblingCountHint,
-                                   int *clipMask) {
+    int CullNodeForRender(
+        zClass_NodePartial * node,
+        int siblingCountHint,
+        int *clipMask
+    ){
         int result = 0;
         if ((*clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
             if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0 ||
                 (node->flags & 0x00080000) == 0) {
                 zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
-                BBox::CornersToBoundingSphere(&corners, zClass_NodeViewSphereCenter(node),
-                                              zClass_NodeViewSphereRadius(node));
+                zClass_Class::gwNodeGetViewBBoxCorners(
+                    node,
+                    &corners
+                );
+                BBox::CornersToBoundingSphere(
+                    &corners,
+                    zClass_NodeViewSphereCenter(node),
+                    zClass_NodeViewSphereRadius(node)
+                );
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
             }
-            result = zVideo_FrustumTestSphereClipMask(zClass_NodeViewSphereCenter(node), clipMask,
-                                                      *zClass_NodeViewSphereRadius(node));
+            result = zVideo_FrustumTestSphereClipMask(
+                zClass_NodeViewSphereCenter(node),
+                clipMask,
+                *zClass_NodeViewSphereRadius(node)
+            );
             if ((node->flags & 0x80) != 0 && result == 0x20) {
                 result = 0;
                 *clipMask &= ~0x20;
@@ -67,7 +93,10 @@ namespace {
         return result;
     }
 
-    void RenderNodeAndChildren(zClass_NodePartial *node, int clipMask) {
+    void RenderNodeAndChildren(
+        zClass_NodePartial * node,
+        int clipMask
+    ){
         node->flags |= 0x80000000;
         zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
         if (di != 0 && g_zClass_RenderRangeFadeActive != 0) {
@@ -75,14 +104,20 @@ namespace {
             di->blendScale = g_zClass_RenderRangeFadeScale;
         }
         if (gModel_RenderFn != 0) {
-            gModel_RenderFn(node, clipMask);
+            gModel_RenderFn(
+                node,
+                clipMask
+            );
         }
 
         if (node->listCountB > 0) {
             ++gModel_ClipMaskStackTop;
             *gModel_ClipMaskStackTop = clipMask;
             for (int i = 0; i < node->listCountB; ++i) {
-                zClass_Class::gwNodeRenderDispatch(node->listB[i], node->listCountB);
+                zClass_Class::gwNodeRenderDispatch(
+                    node->listB[i],
+                    node->listCountB
+                );
             }
             --gModel_ClipMaskStackTop;
         }
@@ -94,9 +129,21 @@ namespace Light {
     RECOIL_NOINLINE int RECOIL_CDECL InitThermalGlowPool() {
         for (int i = 0; i < 8; ++i) {
             zClass_NodePartial *const light = zClass_Light::gwLightNew();
-            zClass_Class::gwNodeSetName(light, "Thermal glow");
-            zClass_Light::gwLightSetPosition(light, 0.0f, 0.0f, 0.0f);
-            zClass_Light::gwLightSetRange(light, 0.1f, 0.2f);
+            zClass_Class::gwNodeSetName(
+                light,
+                "Thermal glow"
+            );
+            zClass_Light::gwLightSetPosition(
+                light,
+                0.0f,
+                0.0f,
+                0.0f
+            );
+            zClass_Light::gwLightSetRange(
+                light,
+                0.1f,
+                0.2f
+            );
             light->callbackContext = g_OptCatalogThermalGlowFreeList;
             g_OptCatalogThermalGlowFreeList = light;
         }
@@ -119,25 +166,44 @@ namespace Light {
     }
 
     // Reimplements 0x4b2520: Light::AllocFromFreeListAndAttach (D:\Proj\GameZRecoil\zClass\Light.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL AllocFromFreeListAndAttach(zColorRgb *
-                                                                                   specularColor) {
+    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL AllocFromFreeListAndAttach(
+        zColorRgb * specularColor
+    ) {
         zClass_NodePartial *const light = g_OptCatalogThermalGlowFreeList;
         if (light == 0) {
             return 0;
         }
 
         g_OptCatalogThermalGlowFreeList = light->callbackContext;
-        zClass_Light::gwLightSetRange(light, 0.1f, 0.2f);
-        zClass_Light::gwLightSetSpecularColor(light, specularColor->red, specularColor->green,
-                                              specularColor->blue);
-        zClass_World::AddLight(g_OptCatalogRuntimeWorld, light);
+        zClass_Light::gwLightSetRange(
+            light,
+            0.1f,
+            0.2f
+        );
+        zClass_Light::gwLightSetSpecularColor(
+            light,
+            specularColor->red,
+            specularColor->green,
+            specularColor->blue
+        );
+        zClass_World::AddLight(
+            g_OptCatalogRuntimeWorld,
+            light
+        );
         return light;
     }
 
     // Reimplements 0x4b2570: Light::ReturnToFreeList (D:\Proj\GameZRecoil\zClass\Light.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL ReturnToFreeList(zClass_NodePartial *lightNode) {
-        zClass_Light::gwLightSetRange(lightNode, 0.1f, 0.2f);
-        zClass_World::RemoveLight(g_OptCatalogRuntimeWorld, lightNode);
+    RECOIL_NOINLINE void RECOIL_FASTCALL ReturnToFreeList(zClass_NodePartial * lightNode) {
+        zClass_Light::gwLightSetRange(
+            lightNode,
+            0.1f,
+            0.2f
+        );
+        zClass_World::RemoveLight(
+            g_OptCatalogRuntimeWorld,
+            lightNode
+        );
         lightNode->callbackContext = g_OptCatalogThermalGlowFreeList;
         g_OptCatalogThermalGlowFreeList = lightNode;
     }
@@ -148,7 +214,12 @@ namespace zClass_Light {
     RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwLightNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x96, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kLightSourceFile,
+                0x96,
+                "Null node pointer."
+            );
             return 0;
         }
 
@@ -162,11 +233,22 @@ namespace zClass_Light {
         node->classId = kZClassNodeLight;
 
         zClass_LightDataPartial *data =
-            (zClass_LightDataPartial *)(calloc(1, sizeof(zClass_LightDataPartial)));
+            (zClass_LightDataPartial *)(calloc(
+                1,
+                sizeof(zClass_LightDataPartial)
+            ));
         node->classData = data;
 
-        data->worldDir = zVec3_Make(0.0f, 1.0f, 0.0f);
-        data->worldPosScratch = zVec3_Make(0.0f, 0.0f, 0.0f);
+        data->worldDir = zVec3_Make(
+            0.0f,
+            1.0f,
+            0.0f
+        );
+        data->worldPosScratch = zVec3_Make(
+            0.0f,
+            0.0f,
+            0.0f
+        );
         data->specularColor.red = 1.0f;
         data->specularColor.green = 1.0f;
         data->specularColor.blue = 1.0f;
@@ -187,27 +269,44 @@ namespace zClass_Light {
         data->attachedWorldCount = 0;
         data->attachedWorlds = 0;
 
-        zClass_TypeList::Insert(9, node);
+        zClass_TypeList::Insert(
+            9,
+            node
+        );
         return node;
     }
 
     // Reimplements 0x453110: zClass_Light::DeleteNode
     RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0xf8, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kLightSourceFile,
+                0xf8,
+                "Null node pointer."
+            );
             return 5;
         }
 
         zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0xf9, "Null class data pointer");
+            zError::ReportOld(
+                0x400,
+                kLightSourceFile,
+                0xf9,
+                "Null class data pointer"
+            );
             return 5;
         }
 
         if (data->attachedWorldCount > 0) {
-            sprintf(g_zError_DebugMsgBuffer,
-                         "%s: Line %d: ERROR deleting light; Light attached to %d world nodes.\n",
-                         kLightSourceFile, 0x101, data->attachedWorldCount);
+            sprintf(
+                g_zError_DebugMsgBuffer,
+                "%s: Line %d: ERROR deleting light; Light attached to %d world nodes.\n",
+                kLightSourceFile,
+                0x101,
+                data->attachedWorldCount
+            );
             zError::EmitDebugBuffer(1);
             return 1;
         }
@@ -221,25 +320,48 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x4531c0: zClass_Light::RemoveChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChild(zClass_NodePartial * parent,
-                                                             zClass_NodePartial * child) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    RemoveChild(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child
+    ){
         if (parent == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x127, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kLightSourceFile,
+                0x127,
+                "Null node pointer."
+            );
             return 5;
         }
 
         if (child == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x128, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kLightSourceFile,
+                0x128,
+                "Null node pointer."
+            );
             return 5;
         }
 
-        return zClass_Class::RemoveChildGeneric(parent, child);
+        return zClass_Class::RemoveChildGeneric(
+            parent,
+            child
+        );
     }
 
     // Reimplements 0x453200: zClass_Light::gwLightSetIntensity
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetIntensity(zClass_NodePartial * node,
-                                                                     float intensity) {
-        zClass_LightDataPartial *data = GetLightData(node, 0x157, 0x158);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwLightSetIntensity(
+        zClass_NodePartial * node,
+        float intensity
+    ){
+        zClass_LightDataPartial *data = GetLightData(
+            node,
+            0x157,
+            0x158
+        );
         if (data == 0) {
             return 5;
         }
@@ -250,9 +372,16 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453250: zClass_Light::gwLightSetFalloff
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetFalloff(zClass_NodePartial * node,
-                                                                   float falloff) {
-        zClass_LightDataPartial *data = GetLightData(node, 0x176, 0x177);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwLightSetFalloff(
+        zClass_NodePartial * node,
+        float falloff
+    ){
+        zClass_LightDataPartial *data = GetLightData(
+            node,
+            0x176,
+            0x177
+        );
         if (data == 0) {
             return 5;
         }
@@ -263,21 +392,36 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x4532a0: zClass_Light::gwLightSetConeAngle
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetConeAngle(zClass_NodePartial * node,
-                                                                     unsigned int coneAngleBits) {
-        zClass_LightDataPartial *data = GetLightData(node, 0x196, 0x197);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwLightSetConeAngle(
+        zClass_NodePartial * node,
+        unsigned int coneAngleBits
+    ){
+        zClass_LightDataPartial *data = GetLightData(
+            node,
+            0x196,
+            0x197
+        );
         if (data == 0) {
             return 5;
         }
 
-        memcpy(&data->coneAngle, &coneAngleBits, sizeof(data->coneAngle));
+        memcpy(
+            &data->coneAngle,
+            &coneAngleBits,
+            sizeof(data->coneAngle)
+        );
         data->dirty = 1;
         return 0;
     }
 
     // Reimplements 0x4532f0: zClass_Light::gwLightSetPointMode
     RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetPointMode(zClass_NodePartial * node) {
-        zClass_LightDataPartial *data = GetLightData(node, 0x1b5, 0x1b6);
+        zClass_LightDataPartial *data = GetLightData(
+            node,
+            0x1b5,
+            0x1b6
+        );
         if (data == 0) {
             return 5;
         }
@@ -289,9 +433,12 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453350: zClass_Light::gwLightSetDirectionalMode
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetDirectionalMode(zClass_NodePartial *
-                                                                           node) {
-        zClass_LightDataPartial *data = GetLightData(node, 0x1d5, 0x1d6);
+    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetDirectionalMode(zClass_NodePartial * node) {
+        zClass_LightDataPartial *data = GetLightData(
+            node,
+            0x1d5,
+            0x1d6
+        );
         if (data == 0) {
             return 5;
         }
@@ -303,9 +450,15 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x4533b0: zClass_Light::gwLightSetParam
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetParam(zClass_NodePartial * node,
-                                                                 int param) {
-        zClass_LightDataPartial *data = GetLightData(node, 0x1f2, 0x1f3);
+    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetParam(
+        zClass_NodePartial * node,
+        int param
+    ){
+        zClass_LightDataPartial *data = GetLightData(
+            node,
+            0x1f2,
+            0x1f3
+        );
         if (data == 0) {
             return 5;
         }
@@ -316,9 +469,17 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453400: zClass_Light::gwLightSetRange
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetRange(zClass_NodePartial * node,
-                                                                 float rangeA, float rangeB) {
-        zClass_LightDataPartial *data = GetLightData(node, 0x211, 0x212);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwLightSetRange(
+        zClass_NodePartial * node,
+        float rangeA,
+        float rangeB
+    ){
+        zClass_LightDataPartial *data = GetLightData(
+            node,
+            0x211,
+            0x212
+        );
         if (data == 0) {
             return 5;
         }
@@ -329,7 +490,9 @@ namespace zClass_Light {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 "%s: Line %d: ERROR setting light ranges; Range2 can't be equal to Range1.\n",
-                kLightSourceFile, 0x21c);
+                kLightSourceFile,
+                0x21c
+            );
             data->range2 = data->range1 + 10.0f;
         }
 
@@ -341,9 +504,17 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453500: zClass_Light::gwLightGetRange
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightGetRange(
-        zClass_NodePartial * node, float *outRange1, float *outRange2) {
-        zClass_LightDataPartial *data = GetLightData(node, 0x242, 0x243);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwLightGetRange(
+        zClass_NodePartial * node,
+        float *outRange1,
+        float *outRange2
+    ){
+        zClass_LightDataPartial *data = GetLightData(
+            node,
+            0x242,
+            0x243
+        );
         if (data == 0) {
             return 5;
         }
@@ -354,48 +525,84 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453560: zClass_Light::gwLightSetPosition
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetPosition(zClass_NodePartial * node,
-                                                                    float x, float y, float z) {
-        zClass_LightDataPartial *data = GetLightData(node, 0x266, 0x267);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwLightSetPosition(
+        zClass_NodePartial * node,
+        float x,
+        float y,
+        float z
+    ){
+        zClass_LightDataPartial *data = GetLightData(
+            node,
+            0x266,
+            0x267
+        );
         if (data == 0) {
             return 5;
         }
 
-        data->localPosition = zVec3_Make(x, y, z);
+        data->localPosition = zVec3_Make(
+            x,
+            y,
+            z
+        );
         data->dirty = 1;
         return 0;
     }
 
     // Reimplements 0x4535c0: zClass_Light::gwLightSetRotation
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetRotation(zClass_NodePartial * node,
-                                                                    float x, float y, float z) {
-        zClass_LightDataPartial *data = GetLightData(node, 0x2da, 0x2db);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwLightSetRotation(
+        zClass_NodePartial * node,
+        float x,
+        float y,
+        float z
+    ){
+        zClass_LightDataPartial *data = GetLightData(
+            node,
+            0x2da,
+            0x2db
+        );
         if (data == 0) {
             return 5;
         }
 
-        data->localRotation = zVec3_Make(x, y, z);
+        data->localRotation = zVec3_Make(
+            x,
+            y,
+            z
+        );
         data->dirty = 1;
         return 0;
     }
 
     // Reimplements 0x453620: zClass_Light::ComputeWorldTransform
-    RECOIL_NOINLINE int RECOIL_FASTCALL ComputeWorldTransform(
-        zClass_NodePartial * node, zClass_LightDataPartial * data) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    ComputeWorldTransform(
+        zClass_NodePartial * node,
+        zClass_LightDataPartial * data
+    ){
         zVec3 localPointA = {0.0f, 0.0f, 0.0f};
         zVec3 localPointB = {0.0f, 0.0f, -1.0f};
         zMat4x3 slotBuffer = {0};
 
         zMath::MatStackPushPtr((float *)(&slotBuffer));
         zMath::MatLoadIdentity();
-        gwNode::BuildNodeToAncestorMatrix(node, 1);
+        gwNode::BuildNodeToAncestorMatrix(
+            node,
+            1
+        );
 
         zVec3 pointA = {0};
         if (data->isPointMode != 0 || data->coneAngle != 0.0f) {
             pointA = TransformPoint(localPointA);
             zVec3 pointB = TransformPoint(localPointB);
             zVec3 outAngles = {0};
-            zMath::Vec3DirectionAnglesBetweenPoints(&pointA, &pointB, &outAngles);
+            zMath::Vec3DirectionAnglesBetweenPoints(
+                &pointA,
+                &pointB,
+                &outAngles
+            );
             outAngles.z = 0.0f;
             data->worldRotation = outAngles;
         } else {
@@ -415,7 +622,12 @@ namespace zClass_Light {
     // (D:\Proj\GameZRecoil\zClass\Light.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL gwLightUpdate(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x395, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kLightSourceFile,
+                0x395,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -425,17 +637,29 @@ namespace zClass_Light {
 
         zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x39b, "Null class data pointer");
+            zError::ReportOld(
+                0x400,
+                kLightSourceFile,
+                0x39b,
+                "Null class data pointer"
+            );
             return 5;
         }
 
         zMat4x3 slotBuffer = {0};
-        ComputeWorldTransform(node, data);
+        ComputeWorldTransform(
+            node,
+            data
+        );
         zMath::MatStackPushAndCloneParent((float *)(&slotBuffer));
         zMath::MatLoadCameraScratchB();
 
         if (data->isPointMode != 0 || data->coneAngle != 0.0f) {
-            zMath_Mat_TransformNormalBatch(&data->worldDir, &data->viewDir, 1);
+            zMath_Mat_TransformNormalBatch(
+                &data->worldDir,
+                &data->viewDir,
+                1
+            );
             data->viewDir.x = -data->viewDir.x;
             data->viewDir.y = -data->viewDir.y;
             data->viewDir.z = -data->viewDir.z;
@@ -453,8 +677,16 @@ namespace zClass_Light {
 
     // Reimplements 0x453a40: zClass_Light::gwLightGetSpecularColor
     RECOIL_NOINLINE int RECOIL_FASTCALL gwLightGetSpecularColor(
-        zClass_NodePartial * node, float *outRed, float *outGreen, float *outBlue) {
-        zClass_LightDataPartial *data = GetLightData(node, 0x3ea, 0x3eb);
+        zClass_NodePartial * node,
+        float *outRed,
+        float *outGreen,
+        float *outBlue
+    ) {
+        zClass_LightDataPartial *data = GetLightData(
+            node,
+            0x3ea,
+            0x3eb
+        );
         if (data == 0) {
             return 5;
         }
@@ -466,9 +698,18 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453aa0: zClass_Light::gwLightSetSpecularColor
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetSpecularColor(
-        zClass_NodePartial * node, float red, float green, float blue) {
-        zClass_LightDataPartial *data = GetLightData(node, 0x40f, 0x410);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwLightSetSpecularColor(
+        zClass_NodePartial * node,
+        float red,
+        float green,
+        float blue
+    ){
+        zClass_LightDataPartial *data = GetLightData(
+            node,
+            0x40f,
+            0x410
+        );
         if (data == 0) {
             return 5;
         }
@@ -483,8 +724,11 @@ namespace zClass_Light {
 
     // Reimplements 0x44b140: zClass_Light::RenderTraverse
     // (D:\Proj\GameZRecoil\zClass\Light.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL RenderTraverse(
-        zClass_NodePartial *node, int siblingCountHint) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    RenderTraverse(
+        zClass_NodePartial * node,
+        int siblingCountHint
+    ){
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & 0x04) == 0) {
@@ -494,7 +738,11 @@ namespace zClass_Light {
         node->flags = flags & ~0x02000000;
         zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
         int clipMask = *gModel_ClipMaskStackTop;
-        const int result = CullNodeForRender(node, siblingCountHint, &clipMask);
+        const int result = CullNodeForRender(
+            node,
+            siblingCountHint,
+            &clipMask
+        );
         if (g_zClass_RenderBoundsContextActive == 0) {
             boundsContextPushed = 1;
             g_zClass_RenderBoundsContextActive = 1;
@@ -503,8 +751,15 @@ namespace zClass_Light {
         if (result == 0) {
             const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
             zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
-            zMath::MatApplyLocalTRS(&data->localRotation, &data->localPosition, &unitScale);
-            RenderNodeAndChildren(node, clipMask);
+            zMath::MatApplyLocalTRS(
+                &data->localRotation,
+                &data->localPosition,
+                &unitScale
+            );
+            RenderNodeAndChildren(
+                node,
+                clipMask
+            );
             zMath::MatStackPopPtr();
         }
 

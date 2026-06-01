@@ -11207,6 +11207,137 @@ extern "C" int zclass_world_add_child_at_grid_smoke() {
     return 0;
 }
 
+extern "C" int zclass_world_queue_area_update_smoke() {
+    zClass_WorldDataPartial worldData{};
+    zClass_NodePartial world{};
+    zWorldAreaPartial firstArea{};
+    zWorldAreaPartial secondArea{};
+
+    world.flags = 1;
+    world.classData = &worldData;
+
+    if (zClass_World::QueueAreaUpdate(&world, &worldData, &firstArea) != 0) {
+        return 1;
+    }
+    if (worldData.pendingAreaUpdateCapacity != 1 ||
+        worldData.pendingAreaUpdateCount != 1 ||
+        worldData.pendingAreaUpdates == nullptr ||
+        worldData.pendingAreaUpdates[0] != &firstArea ||
+        (firstArea.areaFlags & 1) == 0 ||
+        (world.flags & 3) != 3 ||
+        (worldData.flags & 0x10) == 0) {
+        std::free(worldData.pendingAreaUpdates);
+        return 2;
+    }
+
+    if (zClass_World::QueueAreaUpdate(&world, &worldData, &secondArea) != 0) {
+        std::free(worldData.pendingAreaUpdates);
+        return 3;
+    }
+    if (worldData.pendingAreaUpdateCapacity != 2 ||
+        worldData.pendingAreaUpdateCount != 2 ||
+        worldData.pendingAreaUpdates[0] != &firstArea ||
+        worldData.pendingAreaUpdates[1] != &secondArea ||
+        (secondArea.areaFlags & 1) == 0 ||
+        (world.flags & 3) != 3 ||
+        (worldData.flags & 0x10) == 0) {
+        std::free(worldData.pendingAreaUpdates);
+        return 4;
+    }
+
+    std::free(worldData.pendingAreaUpdates);
+    return 0;
+}
+
+extern "C" int zclass_world_rebuild_area_bounds_smoke() {
+    zClass_WorldDataPartial worldData{};
+
+    zWorldAreaPartial emptyArea{};
+    emptyArea.areaFlags = 0x101;
+    if (zClass_World::RebuildAreaBounds(&worldData, &emptyArea) != 0 ||
+        emptyArea.areaFlags != 1) {
+        return 1;
+    }
+
+    std::int32_t childClassData = 0;
+    zClass_NodePartial childA{};
+    zClass_NodePartial childB{};
+    childA.classData = &childClassData;
+    childB.classData = &childClassData;
+    childA.flags = 0x100;
+    childB.flags = 0x100;
+    childA.cachedBounds[1] = -2.0f;
+    childA.cachedBounds[4] = 3.0f;
+    childB.cachedBounds[1] = -5.0f;
+    childB.cachedBounds[4] = 10.0f;
+
+    zClass_NodePartial *children[] = {&childA, &childB};
+    zWorldAreaPartial rebuildArea{};
+    rebuildArea.areaFlags = 1;
+    rebuildArea.bbox[0] = 0.0f;
+    rebuildArea.bbox[2] = 0.0f;
+    rebuildArea.bbox[3] = 20.0f;
+    rebuildArea.bbox[5] = 20.0f;
+    rebuildArea.childCount = 2;
+    rebuildArea.childList = children;
+
+    if (zClass_World::RebuildAreaBounds(&worldData, &rebuildArea) != 0 ||
+        (rebuildArea.areaFlags & 1) == 0 ||
+        (rebuildArea.areaFlags & 0x100) == 0 ||
+        rebuildArea.bbox[1] != -5.0f ||
+        rebuildArea.bbox[4] != 10.0f ||
+        rebuildArea.bboxCenter.y != 2.5f ||
+        rebuildArea.bboxRadius <= 0.0f) {
+        return 2;
+    }
+
+    return 0;
+}
+
+extern "C" int zclass_world_ensure_grid_cell_display_position_smoke() {
+    zWorldAreaPartial row0[2]{};
+    zWorldAreaPartial row1[2]{};
+    zWorldAreaPartial *rows[] = {row0, row1};
+
+    zClass_WorldDataPartial worldData{};
+    worldData.areaGridRows = rows;
+
+    zClass_NodePartial world{};
+    world.flags = 1;
+    world.classData = &worldData;
+
+    if (zClass_World::EnsureGridCellDisplayPosition(nullptr, 0, 0) != 5) {
+        return 1;
+    }
+    world.classData = nullptr;
+    if (zClass_World::EnsureGridCellDisplayPosition(&world, 0, 0) != 5) {
+        return 2;
+    }
+
+    world.classData = &worldData;
+    row1[1].areaFlags = 1;
+    if (zClass_World::EnsureGridCellDisplayPosition(&world, 1, 1) != 0 ||
+        worldData.pendingAreaUpdateCount != 0) {
+        return 3;
+    }
+
+    row0[1].areaFlags = 0;
+    if (zClass_World::EnsureGridCellDisplayPosition(&world, 1, 0) != 0 ||
+        worldData.pendingAreaUpdateCount != 1 ||
+        worldData.pendingAreaUpdateCapacity != 1 ||
+        worldData.pendingAreaUpdates == nullptr ||
+        worldData.pendingAreaUpdates[0] != &row0[1] ||
+        (row0[1].areaFlags & 1) == 0 ||
+        (world.flags & 3) != 3 ||
+        (worldData.flags & 0x10) == 0) {
+        std::free(worldData.pendingAreaUpdates);
+        return 4;
+    }
+
+    std::free(worldData.pendingAreaUpdates);
+    return 0;
+}
+
 extern "C" int zclass_world_remove_light_sound_smoke() {
     zClass_WorldDataPartial addWorldData{};
     zClass_NodePartial addWorld{};
@@ -11783,6 +11914,141 @@ extern "C" int zclass_delete_node_from_lists_smoke() {
     }
 
     zClass_TypeList::FreeAll();
+    return 0;
+}
+
+extern "C" int zclass_gwlist_delete_a_node_smoke() {
+    reset_zclass_type_lists_for_test();
+    g_zClass_NodeList_PendingFreeHead = nullptr;
+
+    zClass_NodeFreeListSlot objectSlots[3]{};
+    zDiPartial displayPool[1]{};
+    g_zClass_NodeArray = objectSlots;
+    g_zClass_NodeArraySize = 3;
+    g_zClass_NodeFreeHeadIndex = 0x123456;
+    g_zClass_ActiveNodeCount = 2;
+    g_zClass_DeferredProcessingEnabled = 1;
+    g_zModel_DiPoolBase = displayPool;
+    g_zModel_DiPoolFreeHeadIndex = 7;
+    g_zModel_DiPoolInUseCount = 1;
+    displayPool[0].refCount = 1;
+
+    zClass_NodePartial *const objectNode = &objectSlots[1].node;
+    zClass_NodePartial *const objectChild = &objectSlots[2].node;
+    objectNode->classId = 5;
+    objectNode->classData = std::calloc(1, sizeof(zClass_Object3DDataPartial));
+    objectNode->userDataOrDiRef =
+        static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&displayPool[0]));
+    objectChild->classId = 5;
+    objectChild->classData = std::calloc(1, sizeof(zClass_Object3DDataPartial));
+    if (objectNode->classData == nullptr || objectChild->classData == nullptr ||
+        zClass_Object3D::gwObject3DAddChild(objectNode, objectChild) != 0) {
+        return 1;
+    }
+
+    const int objectDeleteResult = zClass_List::gwListDeleteANode(objectNode);
+    if (objectDeleteResult != 0) {
+        return 20;
+    }
+    if (objectNode->classData != nullptr || objectNode->userDataOrDiRef != 0) {
+        return 21;
+    }
+    if (objectChild->listCountA != 0) {
+        return 22;
+    }
+    if (g_zModel_DiPoolFreeHeadIndex != 0 || g_zModel_DiPoolInUseCount != 0) {
+        return 23;
+    }
+    if (g_zClass_NodeFreeHeadIndex != 1 || g_zClass_ActiveNodeCount != 1) {
+        return 24;
+    }
+    std::free(objectChild->listA);
+    std::free(objectChild->classData);
+    objectChild->listA = nullptr;
+    objectChild->classData = nullptr;
+    free_zclass_type_lists_for_test();
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolFreeHeadIndex = -1;
+    g_zModel_DiPoolInUseCount = 0;
+
+    reset_zclass_type_lists_for_test();
+    g_zClass_NodeList_PendingFreeHead = nullptr;
+
+    zClass_NodeFreeListSlot worldSlots[4]{};
+    g_zClass_NodeArray = worldSlots;
+    g_zClass_NodeArraySize = 4;
+    g_zClass_NodeFreeHeadIndex = 0x654321;
+    g_zClass_ActiveNodeCount = 4;
+    g_zClass_DeferredProcessingEnabled = 1;
+
+    zClass_NodePartial *const world = &worldSlots[0].node;
+    zClass_NodePartial *const light = &worldSlots[1].node;
+    zClass_NodePartial *const sound = &worldSlots[2].node;
+    zClass_NodePartial *const worldChild = &worldSlots[3].node;
+    world->classId = 2;
+    world->classData = std::calloc(1, sizeof(zClass_WorldDataPartial));
+    light->classId = 9;
+    light->classData = std::calloc(1, sizeof(zClass_LightDataPartial));
+    sound->classId = 10;
+    sound->classData = std::calloc(1, sizeof(zClass_SoundDataPartial));
+    worldChild->classId = 5;
+    worldChild->classData = std::calloc(1, sizeof(zClass_Object3DDataPartial));
+    if (world->classData == nullptr || light->classData == nullptr ||
+        sound->classData == nullptr || worldChild->classData == nullptr ||
+        zClass_World::AddLight(world, light) != 0 ||
+        zClass_World::AddSound(world, sound) != 0 ||
+        zClass_World::AddChildToGridCell(world, worldChild, -1, -1) != 0) {
+        return 3;
+    }
+
+    zClass_LightDataPartial *const lightData =
+        static_cast<zClass_LightDataPartial *>(light->classData);
+    zClass_SoundDataPartial *const soundData =
+        static_cast<zClass_SoundDataPartial *>(sound->classData);
+    if (zClass_List::gwListDeleteANode(world) != 0 || world->classData != nullptr ||
+        worldChild->listCountA != 0 || lightData->attachedWorldCount != 0 ||
+        soundData->attachedWorldCount != 0 || g_zClass_NodeFreeHeadIndex != 0 ||
+        g_zClass_ActiveNodeCount != 3) {
+        return 4;
+    }
+    std::free(lightData->attachedWorlds);
+    std::free(soundData->attachedWorlds);
+    std::free(light->classData);
+    std::free(sound->classData);
+    std::free(worldChild->listA);
+    std::free(worldChild->classData);
+    light->classData = nullptr;
+    sound->classData = nullptr;
+    worldChild->listA = nullptr;
+    worldChild->classData = nullptr;
+    free_zclass_type_lists_for_test();
+
+    zClass_NodePartial parented{};
+    parented.classId = 5;
+    parented.listCountA = 1;
+    if (zClass_List::gwListDeleteANode(&parented) != 1) {
+        return 5;
+    }
+
+    zClass_LightDataPartial attachedLightData{};
+    zClass_NodePartial attachedLight{};
+    attachedLight.classId = 9;
+    attachedLight.classData = &attachedLightData;
+    attachedLightData.attachedWorldCount = 1;
+    if (zClass_List::gwListDeleteANode(&attachedLight) != 1) {
+        return 6;
+    }
+
+    zClass_NodePartial unknown{};
+    unknown.classId = 99;
+    if (zClass_List::gwListDeleteANode(&unknown) != 3) {
+        return 7;
+    }
+
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_NodeFreeHeadIndex = -1;
     return 0;
 }
 
@@ -12381,7 +12647,7 @@ extern "C" int zclass_node_predicate_helpers_smoke() {
     rebuildArea.childCount = 2;
     rebuildArea.childList = areaChildren;
     if (zClass_World::RebuildAreaBounds(&worldData, &rebuildArea) != 0 ||
-        (rebuildArea.areaFlags & 1) != 0 || (rebuildArea.areaFlags & 0x100) == 0 ||
+        (rebuildArea.areaFlags & 1) == 0 || (rebuildArea.areaFlags & 0x100) == 0 ||
         rebuildArea.bbox[1] != -5.0f || rebuildArea.bbox[4] != 10.0f ||
         rebuildArea.bboxCenter.y != 2.5f || rebuildArea.bboxRadius <= 0.0f) {
         return 85;
@@ -13954,6 +14220,28 @@ extern "C" int zclass_object3d_delete_node_smoke() {
     return zClass_Object3D::DeleteNode(nullptr) == 5 ? 0 : 2;
 }
 
+extern "C" int zclass_cls_di_try_get_polygon_hit_at_query_xz_smoke() {
+    zVec3 polygon[3] = {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f},
+                        {1.0f, 0.0f, 0.0f}};
+    zClassDiPickCandidateEntry candidate{};
+
+    if (zClass_cls_di::TryGetPolygonHitAtQueryXZ(&candidate, polygon, 0.25f, 0.25f, 3) != 1 ||
+        candidate.surfaceNormal.x != 0.0f ||
+        candidate.surfaceNormal.y != 1.0f ||
+        candidate.surfaceNormal.z != 0.0f ||
+        candidate.hitPos.y != 0.0f) {
+        return 1;
+    }
+
+    candidate.hitPos.y = -99.0f;
+    if (zClass_cls_di::TryGetPolygonHitAtQueryXZ(&candidate, polygon, 1.25f, 0.25f, 3) != 0 ||
+        candidate.hitPos.y != -99.0f) {
+        return 2;
+    }
+
+    return 0;
+}
+
 extern "C" int zclass_world_new_smoke() {
     reset_zclass_type_lists_for_test();
     g_zClass_NodeList_PendingFreeHead = nullptr;
@@ -14464,6 +14752,291 @@ extern "C" int zclass_camera_build_frustum_grid_tiles_smoke() {
     return status;
 }
 
+extern "C" int zclass_camera_render_frustum_grid_tiles_smoke() {
+    auto setIdentity = [](float *matrix) {
+        const zMat4x3 identity{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                               0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+        std::memcpy(matrix, &identity, sizeof(identity));
+    };
+    auto resetRenderLog = []() {
+        g_zclassRenderTraverseCallCount = 0;
+        for (int i = 0; i < 16; ++i) {
+            g_zclassRenderTraverseNodes[i] = nullptr;
+            g_zclassRenderTraverseClipMasks[i] = -1;
+            g_zclassRenderTraverseAlphaScales[i] = -1.0f;
+            g_zclassRenderTraverseVertexAlphaEnabled[i] = -1;
+        }
+    };
+    auto initVisibleObject = [](zClass_NodePartial &node, zClass_Object3DDataPartial &data,
+                                const char *name) {
+        node = {};
+        std::strncpy(node.name, name, sizeof(node.name) - 1);
+        node.flags = 0x02080004;
+        node.nodeType = 0xff;
+        node.classId = 5;
+        node.classData = &data;
+        data = {};
+        data.flags = 0x08;
+    };
+
+    zVec3 polygonVertices[8] = {};
+    zVec3 polygonNormals[8] = {};
+    zVec3 *const savedPolygonVertices = g_zModel_PointInPolygonVertices;
+    zVec3 *const savedPolygonNormals = g_zModel_PointInPolygonEdgeNormals;
+    const int savedPolygonVertexCount = g_zModel_PointInPolygonVertexCount;
+    zClass_CameraDataPartial *const savedViewContext = g_zVideo_pActiveViewContext;
+    zClass_RenderFn const savedRenderFn = gModel_RenderFn;
+    int *const savedClipStackTop = gModel_ClipMaskStackTop;
+    const int savedClipStack0 = gModel_ClipMaskStack[0];
+    const int savedObjectHseTestEnabled = g_zClass_ObjectHseTestEnabled;
+    const int savedFrustumGridTileIndex = g_zClass_RenderFrustumGridTileIndex;
+    const int savedFogEnabled = gModel_FogEnabled;
+    const float savedFogDistanceStart = gModel_FogDistanceStart;
+    int *const savedMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
+    float **const savedMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
+
+    int matrixIdentityFlags[16] = {};
+    float *matrixSlots[16] = {};
+    zMat4x3 matrixStorage[16] = {};
+    setIdentity(reinterpret_cast<float *>(&matrixStorage[0]));
+    matrixIdentityFlags[0] = 1;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrixStorage[0]);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    g_zModel_PointInPolygonVertices = polygonVertices;
+    g_zModel_PointInPolygonEdgeNormals = polygonNormals;
+    g_zModel_PointInPolygonVertexCount = 0;
+    gModel_RenderFn = TestZClassRenderTraverseCallback;
+    gModel_ClipMaskStackTop = gModel_ClipMaskStack;
+    gModel_ClipMaskStack[0] = 0;
+    g_zClass_ObjectHseTestEnabled = 0;
+    g_zClass_RenderFrustumGridTileIndex = -1;
+    gModel_FogEnabled = 1;
+    gModel_FogDistanceStart = 2.0f;
+    resetRenderLog();
+
+    zWorldAreaPartial row0[2] = {};
+    zWorldAreaPartial row1[2] = {};
+    zWorldAreaPartial *rows[2] = {row0, row1};
+    zClass_Object3DDataPartial childData[4] = {};
+    zClass_NodePartial children[4] = {};
+    zClass_NodePartial *areaChildren[4][1] = {
+        {&children[0]},
+        {&children[1]},
+        {&children[2]},
+        {&children[3]},
+    };
+    initVisibleObject(children[0], childData[0], "area_00");
+    initVisibleObject(children[1], childData[1], "area_01");
+    initVisibleObject(children[2], childData[2], "area_10");
+    initVisibleObject(children[3], childData[3], "area_11");
+    for (int rowIndex = 0; rowIndex < 2; ++rowIndex) {
+        for (int colIndex = 0; colIndex < 2; ++colIndex) {
+            zWorldAreaPartial &area = rows[rowIndex][colIndex];
+            area.areaIndex = 1;
+            area.cellMinX = static_cast<float>(colIndex * 10);
+            area.cellMinZ = static_cast<float>(rowIndex * 10);
+            area.bboxCenter = {static_cast<float>(colIndex * 10 + 5), 0.0f,
+                               static_cast<float>(rowIndex * 10 + 5)};
+            area.bboxRadius = 1.0f;
+            area.childCount = 1;
+            area.childList = areaChildren[rowIndex * 2 + colIndex];
+        }
+    }
+
+    zClass_NodePartial lightNode{};
+    lightNode.flags = 0x04;
+    zClass_LightDataPartial lightData{};
+    lightData.enabled = 1;
+    lightData.isDirectionalMode = 1;
+    lightData.worldPosScratch = {100.0f, 0.0f, 100.0f};
+    lightData.range2 = 1.0f;
+    lightData.lightSubMode = 7;
+    zClass_NodePartial *lightNodes[1] = {&lightNode};
+    zClass_LightDataPartial *lightDataList[1] = {&lightData};
+
+    zClass_WorldDataPartial worldData{};
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.worldMaxX = 20.0f;
+    worldData.worldMaxZ = 20.0f;
+    worldData.areaCellSizeX = 10.0f;
+    worldData.areaCellSizeZ = 10.0f;
+    worldData.areaInvSizeX = 0.1f;
+    worldData.areaInvSizeZ = 0.1f;
+    worldData.areaHalfSizeX = 5.0f;
+    worldData.areaHalfSizeZ = 5.0f;
+    worldData.areaCellRadiusBias = -1000.0f;
+    worldData.areaGridColCount = 2;
+    worldData.areaGridRowCount = 2;
+    worldData.areaGridRows = rows;
+    worldData.lightCount = 1;
+    worldData.lightNodes = lightNodes;
+    worldData.lightDataList = lightDataList;
+
+    zClass_NodePartial world{};
+    world.classData = &worldData;
+    zClass_CameraDataPartial cameraData{};
+    cameraData.cameraPos = {5.0f, 0.0f, -1.0f};
+    cameraData.frustumOrigin = {0.0f, 0.0f, 0.0f};
+    cameraData.frustumCorners[0] = {10.0f, 0.0f, 0.0f};
+    cameraData.frustumCorners[1] = {0.0f, 0.0f, 2.0f};
+    zClass_NodePartial camera{};
+    camera.classData = &cameraData;
+    g_zVideo_pActiveViewContext = &cameraData;
+
+    const int result = zClass_Camera::RenderFrustumGridTiles(&world, &camera, &cameraData);
+    int status = 0;
+    if (result != 0) {
+        status = result;
+    } else if (g_zclassRenderTraverseCallCount != 4 ||
+               g_zclassRenderTraverseNodes[0] != &children[0] ||
+               g_zclassRenderTraverseNodes[1] != &children[2] ||
+               g_zclassRenderTraverseNodes[2] != &children[1] ||
+               g_zclassRenderTraverseNodes[3] != &children[3]) {
+        status = 10 + g_zclassRenderTraverseCallCount;
+    } else if (g_zclassRenderTraverseClipMasks[0] != 0x3f ||
+               g_zclassRenderTraverseClipMasks[1] != 0x3f ||
+               g_zclassRenderTraverseClipMasks[2] != 0x3f ||
+               g_zclassRenderTraverseClipMasks[3] != 0x3f) {
+        status = 20;
+    } else if (lightData.lightSubMode != 1 || gModel_FogEnabled != 1) {
+        status = 30;
+    } else if (g_zClass_RenderFrustumGridTileIndex != 50) {
+        status = 40 + g_zClass_RenderFrustumGridTileIndex;
+    }
+
+    g_zModel_PointInPolygonVertices = savedPolygonVertices;
+    g_zModel_PointInPolygonEdgeNormals = savedPolygonNormals;
+    g_zModel_PointInPolygonVertexCount = savedPolygonVertexCount;
+    g_zVideo_pActiveViewContext = savedViewContext;
+    gModel_RenderFn = savedRenderFn;
+    gModel_ClipMaskStackTop = savedClipStackTop;
+    gModel_ClipMaskStack[0] = savedClipStack0;
+    g_zClass_ObjectHseTestEnabled = savedObjectHseTestEnabled;
+    g_zClass_RenderFrustumGridTileIndex = savedFrustumGridTileIndex;
+    gModel_FogEnabled = savedFogEnabled;
+    gModel_FogDistanceStart = savedFogDistanceStart;
+    zMath::g_currentMatrixIdentityFlagSlot = savedMatrixIdentitySlot;
+    zMath::g_currentMatrixPtrSlot = savedMatrixPtrSlot;
+    return status;
+}
+
+extern "C" int zclass_camera_render_overlay_nodes_smoke() {
+    auto setIdentity = [](float *matrix) {
+        const zMat4x3 identity{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                               0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+        std::memcpy(matrix, &identity, sizeof(identity));
+    };
+    auto resetRenderLog = []() {
+        g_zclassRenderTraverseCallCount = 0;
+        for (int i = 0; i < 16; ++i) {
+            g_zclassRenderTraverseNodes[i] = nullptr;
+            g_zclassRenderTraverseClipMasks[i] = -1;
+            g_zclassRenderTraverseAlphaScales[i] = -1.0f;
+            g_zclassRenderTraverseVertexAlphaEnabled[i] = -1;
+        }
+    };
+
+    zClass_RenderFn const savedRenderFn = gModel_RenderFn;
+    int *const savedClipStackTop = gModel_ClipMaskStackTop;
+    const int savedClipStack0 = gModel_ClipMaskStack[0];
+    zClass_CameraDataPartial *const savedViewContext = g_zVideo_pActiveViewContext;
+    const int savedBoundsContext = g_zClass_RenderBoundsContextActive;
+    const int savedObjectHseTestEnabled = g_zClass_ObjectHseTestEnabled;
+    const int savedFrustumGridTileIndex = g_zClass_RenderFrustumGridTileIndex;
+    const int savedVertexAlphaOverride = g_zClass_RenderVertexAlphaOverrideActive;
+    const int savedAlphaScaleStackTop = g_zClass_RenderAlphaScaleStackTop;
+    const int savedSoftwarePathStateStackTop = g_zClass_SoftwarePathStateStackTop;
+    const int savedVariantFilterEnabled = g_Variant_FilterEnabled;
+    const int savedModelVertexAlpha = gModel_RenderVertexAlphaEnabled;
+    const float savedModelAlphaScale = gModel_RenderAlphaScaleCurrent;
+    int *const savedMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
+    float **const savedMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
+
+    int matrixIdentityFlags[16] = {};
+    float *matrixSlots[16] = {};
+    zMat4x3 matrixStorage[16] = {};
+    setIdentity(reinterpret_cast<float *>(&matrixStorage[0]));
+    matrixIdentityFlags[0] = 1;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrixStorage[0]);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.worldFrustumNormals[0] = {1.0f, 0.0f, 0.0f};
+    cameraData.worldFrustumNormals[1] = {1.0f, 0.0f, 0.0f};
+    cameraData.worldFrustumNormals[2] = {0.0f, 1.0f, 0.0f};
+    cameraData.worldFrustumNormals[3] = {0.0f, 1.0f, 0.0f};
+    cameraData.worldFrustumNormals[4] = {0.0f, 0.0f, 1.0f};
+    cameraData.worldFrustumNormals[5] = {0.0f, 0.0f, 1.0f};
+    g_zVideo_pActiveViewContext = &cameraData;
+    gModel_RenderFn = TestZClassRenderTraverseCallback;
+    gModel_ClipMaskStackTop = gModel_ClipMaskStack;
+    gModel_ClipMaskStack[0] = 0;
+    g_zClass_RenderBoundsContextActive = 0;
+    g_zClass_ObjectHseTestEnabled = 0;
+    g_zClass_RenderFrustumGridTileIndex = 0;
+    g_zClass_RenderVertexAlphaOverrideActive = 0;
+    g_zClass_RenderAlphaScaleStackTop = -1;
+    g_zClass_SoftwarePathStateStackTop = -1;
+    g_Variant_FilterEnabled = 0;
+    gModel_RenderVertexAlphaEnabled = 0;
+    gModel_RenderAlphaScaleCurrent = 1.0f;
+    resetRenderLog();
+
+    zClass_Object3DDataPartial objectData[2] = {};
+    objectData[0].flags = 0x08;
+    objectData[1].flags = 0x08;
+    zClass_NodeFreeListSlot overlaySlots[2] = {};
+    zClass_NodePartial &overlay0 = overlaySlots[0].node;
+    zClass_NodePartial &overlay1 = overlaySlots[1].node;
+    overlay0.flags = 0x02080004;
+    overlay0.nodeType = 0xff;
+    overlay0.classId = 5;
+    overlay0.classData = &objectData[0];
+    *zClass_NodeViewSphereCenter(&overlay0) = {1000000.0f, 1000000.0f, 1000000.0f};
+    *zClass_NodeViewSphereRadius(&overlay0) = 1.0f;
+    overlay1.flags = 0x02080004;
+    overlay1.nodeType = 0xff;
+    overlay1.classId = 5;
+    overlay1.classData = &objectData[1];
+    *zClass_NodeViewSphereCenter(&overlay1) = {1000000.0f, 1000000.0f, 1000000.0f};
+    *zClass_NodeViewSphereRadius(&overlay1) = 1.0f;
+    zClass_NodePartial *overlays[2] = {&overlay0, &overlay1};
+    zClass_NodePartial world{};
+    world.listCountB = 2;
+    world.listB = overlays;
+
+    zClass_Camera::RenderOverlayNodes(&world);
+    int status = 0;
+    if (gModel_ClipMaskStack[0] != 0x3f) {
+        status = 1;
+    } else if (g_zclassRenderTraverseCallCount != 2 ||
+               g_zclassRenderTraverseNodes[0] != &overlay0 ||
+               g_zclassRenderTraverseNodes[1] != &overlay1) {
+        status = 10 + g_zclassRenderTraverseCallCount;
+    }
+
+    gModel_RenderFn = savedRenderFn;
+    gModel_ClipMaskStackTop = savedClipStackTop;
+    gModel_ClipMaskStack[0] = savedClipStack0;
+    g_zVideo_pActiveViewContext = savedViewContext;
+    g_zClass_RenderBoundsContextActive = savedBoundsContext;
+    g_zClass_ObjectHseTestEnabled = savedObjectHseTestEnabled;
+    g_zClass_RenderFrustumGridTileIndex = savedFrustumGridTileIndex;
+    g_zClass_RenderVertexAlphaOverrideActive = savedVertexAlphaOverride;
+    g_zClass_RenderAlphaScaleStackTop = savedAlphaScaleStackTop;
+    g_zClass_SoftwarePathStateStackTop = savedSoftwarePathStateStackTop;
+    g_Variant_FilterEnabled = savedVariantFilterEnabled;
+    gModel_RenderVertexAlphaEnabled = savedModelVertexAlpha;
+    gModel_RenderAlphaScaleCurrent = savedModelAlphaScale;
+    zMath::g_currentMatrixIdentityFlagSlot = savedMatrixIdentitySlot;
+    zMath::g_currentMatrixPtrSlot = savedMatrixPtrSlot;
+    return status;
+}
+
 extern "C" int zclass_render_traverse_dispatch_smoke() {
     auto setIdentity = [](float *matrix) {
         const zMat4x3 identity{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
@@ -14918,6 +15491,31 @@ extern "C" int zclass_sound_leaf_smoke() {
 
     g_zClass_NodeFreeHeadIndex = -1;
     return zClass_Sound::gwSoundNew() == nullptr ? 0 : 8;
+}
+
+extern "C" int zclass_sound_get_position_smoke() {
+    zClass_NodePartial node{};
+    zClass_SoundDataPartial data{};
+    node.classData = &data;
+    data.localPosition = {7.0f, 8.0f, 9.0f};
+
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+    if (zClass_Sound::gwSoundGetPosition(&node, &x, &y, &z) != 0 ||
+        x != 7.0f ||
+        y != 8.0f ||
+        z != 9.0f) {
+        return 1;
+    }
+
+    node.classData = nullptr;
+    if (zClass_Sound::gwSoundGetPosition(nullptr, &x, &y, &z) != 5 ||
+        zClass_Sound::gwSoundGetPosition(&node, &x, &y, &z) != 5) {
+        return 2;
+    }
+
+    return 0;
 }
 
 extern "C" int zclass_find_node_recursive_by_name_smoke() {

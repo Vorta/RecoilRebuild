@@ -1,6 +1,8 @@
 // Reimplements 0x40c370: zSys::ProbePlatformAndVideoCaps
 RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
-    zSysVideoCapsLevel *outVideoCaps, zSysPlatformCapsLevel *outPlatformCaps) {
+    zSysVideoCapsLevel *outVideoCaps,
+    zSysPlatformCapsLevel *outPlatformCaps
+) {
     OSVERSIONINFOA osVer;
     LPDIRECTDRAW pDDraw = 0;
     LPDIRECTDRAW2 pDDraw2 = 0;
@@ -32,7 +34,10 @@ RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
                 return;
             }
 
-            FARPROC directInputCreate = GetProcAddress(dinputModule, kDirectInputCreateName);
+            FARPROC directInputCreate = GetProcAddress(
+                dinputModule,
+                kDirectInputCreateName
+            );
             FreeLibrary(dinputModule);
             if (directInputCreate == 0) {
                 OutputDebugStringA(kCouldNotGetDinputCreate);
@@ -56,7 +61,10 @@ RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
     }
 
     zDirectDrawCreateFn directDrawCreate =
-        (zDirectDrawCreateFn)GetProcAddress(ddrawModule, kDirectDrawCreateName);
+        (zDirectDrawCreateFn)GetProcAddress(
+            ddrawModule,
+            kDirectDrawCreateName
+        );
     if (directDrawCreate == 0) {
         *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
         *outPlatformCaps = ZSYS_PLATFORM_CAPS_UNSUPPORTED;
@@ -65,7 +73,11 @@ RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
         return;
     }
 
-    if (directDrawCreate(0, &pDDraw, 0) < 0) {
+    if (directDrawCreate(
+        0,
+        &pDDraw,
+        0
+    ) < 0) {
         *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
         *outPlatformCaps = ZSYS_PLATFORM_CAPS_UNSUPPORTED;
         FreeLibrary(ddrawModule);
@@ -74,7 +86,11 @@ RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
     }
 
     *outVideoCaps = ZSYS_VIDEO_CAPS_DDRAW;
-    if (IDirectDraw_QueryInterface(pDDraw, IID_IDirectDraw2, (void **)&pDDraw2) < 0) {
+    if (IDirectDraw_QueryInterface(
+        pDDraw,
+        IID_IDirectDraw2,
+        (void **)&pDDraw2
+    ) < 0) {
         IDirectDraw_Release(pDDraw);
         FreeLibrary(ddrawModule);
         OutputDebugStringA(kCouldNotQiDDraw2);
@@ -93,7 +109,10 @@ RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
         return;
     }
 
-    FARPROC directInputCreate = GetProcAddress(dinputHandle, kDirectInputCreateName);
+    FARPROC directInputCreate = GetProcAddress(
+        dinputHandle,
+        kDirectInputCreateName
+    );
     dinputModule = (HMODULE)directInputCreate;
     FreeLibrary(dinputHandle);
     if (dinputModule == 0) {
@@ -106,13 +125,21 @@ RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
     *outVideoCaps = ZSYS_VIDEO_CAPS_DDRAW2_DINPUT;
 
     DDSURFACEDESC desc;
-    memset(&desc, 0, sizeof(desc));
+    memset(
+        &desc,
+        0,
+        sizeof(desc)
+    );
     RECOIL_STATIC_ASSERT(sizeof(DDSURFACEDESC) == 0x6c);
     desc.dwSize = sizeof(DDSURFACEDESC);
     desc.dwFlags = DDSD_CAPS;
     desc.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 
-    if (IDirectDraw_SetCooperativeLevel(pDDraw, 0, DDSCL_NORMAL) < 0) {
+    if (IDirectDraw_SetCooperativeLevel(
+        pDDraw,
+        0,
+        DDSCL_NORMAL
+    ) < 0) {
         IDirectDraw_Release(pDDraw);
         FreeLibrary(ddrawModule);
         *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
@@ -120,7 +147,12 @@ RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
         return;
     }
 
-    if (IDirectDraw_CreateSurface(pDDraw, &desc, &pSurface, 0) < 0) {
+    if (IDirectDraw_CreateSurface(
+        pDDraw,
+        &desc,
+        &pSurface,
+        0
+    ) < 0) {
         IDirectDraw_Release(pDDraw);
         FreeLibrary(ddrawModule);
         *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
@@ -128,16 +160,16 @@ RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
         return;
     }
 
-    if (IDirectDrawSurface_QueryInterface(pSurface, IID_IDirectDrawSurface3,
-                                          (void **)&pSurface3) < 0) {
+    if (IDirectDrawSurface_QueryInterface(pSurface, IID_IDirectDrawSurface3, (void **)&pSurface3) <
+        0) {
         IDirectDraw_Release(pDDraw);
         FreeLibrary(ddrawModule);
         return;
     }
 
     *outVideoCaps = ZSYS_VIDEO_CAPS_SURFACE3;
-    if (IDirectDrawSurface_QueryInterface(pSurface, IID_IDirectDrawSurface4,
-                                          (void **)&pSurface4) < 0) {
+    if (IDirectDrawSurface_QueryInterface(pSurface, IID_IDirectDrawSurface4, (void **)&pSurface4) <
+        0) {
         IDirectDraw_Release(pDDraw);
         FreeLibrary(ddrawModule);
         return;

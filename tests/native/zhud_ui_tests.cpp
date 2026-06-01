@@ -8,6 +8,7 @@
 #include "Battlesport/hud.h"
 #include "Battlesport/pickup.h"
 #include "GameZRecoil/Time/Time.h"
+#include "GameZRecoil/mission.h"
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/include/zClass.h"
@@ -22378,6 +22379,40 @@ extern "C" int zhud_sensor_get_fx_rect_smoke(void) {
                : 1;
 }
 
+extern "C" int zhud_mgr_sensor_block_destructor_smoke(void) {
+    const HudUiWidget oldPanel = g_HudUiMgrSensorPanel;
+    const HudUiWidget oldOverlay = g_HudUiMgrSensorOverlay;
+    const HudUiMeter oldMeter = g_HudUiMgrSensorMeter;
+
+    g_HudUiMgrSensorPanel = {};
+    g_HudUiMgrSensorOverlay = {};
+    g_HudUiMgrSensorMeter = {};
+
+    g_HudUiMgrSensorPanel.ftable = &g_HudUiWidget_FTable;
+    g_HudUiMgrSensorOverlay.ftable = &g_HudUiWidget_FTable;
+    g_HudUiMgrSensorMeter.ftable = &g_HudUiMeter_FTable;
+    g_HudUiMgrSensorPanel.ownsImage = 0;
+    g_HudUiMgrSensorOverlay.ownsImage = 0;
+
+    g_HudUiMgrSensorBlock.Destructor();
+
+    const bool meterReset =
+        g_HudUiMgrSensorMeter.ftable ==
+        reinterpret_cast<const HudUiMeter_FTable *>(&g_HudUiCommon_FTable);
+    const bool overlayDestroyed =
+        g_HudUiMgrSensorOverlay.ftable ==
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+    const bool panelDestroyed =
+        g_HudUiMgrSensorPanel.ftable ==
+        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+
+    g_HudUiMgrSensorPanel = oldPanel;
+    g_HudUiMgrSensorOverlay = oldOverlay;
+    g_HudUiMgrSensorMeter = oldMeter;
+
+    return meterReset && overlayDestroyed && panelDestroyed ? 0 : 1;
+}
+
 extern "C" int zhud_objective_update_smoke(void) {
     g_HudUi_InvalidateMask = 0x80;
 
@@ -23043,6 +23078,471 @@ extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void) {
         return 2;
     }
     return networkPath ? 0 : 3;
+}
+
+extern "C" int hud_sensor_tracker_constructor_smoke(void) {
+    HudSensorTracker tracker{};
+    tracker.hudScale = 0.25f;
+    tracker.raceCheckpointMode = 7;
+    tracker.fxPass3Obj = reinterpret_cast<HudUiElement *>(0x13572468);
+    tracker.hasPendingPlayerSave = 1;
+    tracker.pendingPlayerSave.skipTimerResetOnStart = 1;
+
+    HudSensorTracker *const returned = tracker.Constructor();
+
+    const bool constructorOk =
+        tracker.fxPass3Obj == nullptr && HudFloatNear(tracker.hudScale, 1.0f) &&
+        tracker.raceCheckpointMode == 0 && tracker.hasPendingPlayerSave == 0 &&
+        tracker.pendingPlayerSave.skipTimerResetOnStart == 0;
+    const bool resetOk =
+        tracker.missionLoaded == 0 && tracker.missionId == 0 &&
+        tracker.missionFlags == 1 && tracker.objectiveCount == 0;
+
+    tracker.Shutdown();
+
+    if (returned != &tracker) {
+        return 1;
+    }
+    if (tracker.mapFileVersion != 5 || tracker.mapHeaderDword != 0 ||
+        tracker.mapNodeListHead != nullptr || tracker.mapLoadedFlag != 0) {
+        return 4;
+    }
+    if (tracker.trackedSaveStateSelection != nullptr ||
+        tracker.trackedWorldOriginPtr != nullptr ||
+        tracker.trackedForwardVecPtr != nullptr) {
+        return 5;
+    }
+    if (!HudFloatNear(tracker.mapZoom, 1.0f)) {
+        return 6;
+    }
+    if (!HudFloatNear(tracker.saveStateMarkerMaxDistSq, 202500.0f)) {
+        return 7;
+    }
+    if (!constructorOk) {
+        return 2;
+    }
+    return resetOk ? 0 : 3;
+}
+
+extern "C" int hud_sensor_tracker_construct_global_smoke(void) {
+    g_HudSensorTracker.hudScale = 0.125f;
+    g_HudSensorTracker.fxPass3Obj = reinterpret_cast<HudUiElement *>(0x24681357);
+    g_HudSensorTracker.hasPendingPlayerSave = 1;
+    g_HudSensorTracker.pendingPlayerSave.skipTimerResetOnStart = 1;
+
+    HudSensorTracker *const returned = HudSensorTracker::ConstructGlobal();
+
+    const bool globalOk =
+        returned == &g_HudSensorTracker && g_HudSensorTracker.mapFileVersion == 5 &&
+        g_HudSensorTracker.fxPass3Obj == nullptr &&
+        HudFloatNear(g_HudSensorTracker.hudScale, 1.0f) &&
+        g_HudSensorTracker.hasPendingPlayerSave == 0 &&
+        g_HudSensorTracker.pendingPlayerSave.skipTimerResetOnStart == 0 &&
+        g_HudSensorTracker.missionLoaded == 0 && g_HudSensorTracker.missionFlags == 1;
+
+    g_HudSensorTracker.Shutdown();
+
+    return globalOk ? 0 : 1;
+}
+
+extern "C" int hud_sensor_tracker_shutdown_smoke(void) {
+    HudSensorTracker tracker{};
+    tracker.Constructor();
+    tracker.SetZbdPath("shutdown_test.gs");
+    tracker.missionDataPath = "mission.dat";
+    tracker.missionGsPath = "mission.gs";
+    tracker.loadedMapPath = _strdup("shutdown_map.zmap");
+    if (tracker.loadedMapPath == nullptr) {
+        tracker.Shutdown();
+        return 1;
+    }
+    tracker.mapLoadedFlag = 1;
+
+    tracker.Shutdown();
+
+    const bool stringOk = std::strcmp((const char *)tracker.zbdPath, "") == 0 &&
+                          std::strcmp((const char *)tracker.missionDataPath, "") == 0 &&
+                          std::strcmp((const char *)tracker.missionGsPath, "") == 0;
+    const bool resetOk =
+        tracker.mapFileVersion == 5 && tracker.mapLoadedFlag == 0 &&
+        tracker.loadedMapPath == nullptr && tracker.mapNodeListHead == nullptr &&
+        tracker.trackedSaveStateSelection == nullptr &&
+        HudFloatNear(tracker.mapZoom, 1.0f);
+
+    return stringOk && resetOk ? 0 : 2;
+}
+
+extern "C" int hud_sensor_tracker_shutdown_global_smoke(void) {
+    HudSensorTracker::ConstructGlobal();
+    g_HudSensorTracker.SetZbdPath("global_shutdown.gs");
+    g_HudSensorTracker.loadedMapPath = _strdup("global_shutdown.zmap");
+    if (g_HudSensorTracker.loadedMapPath == nullptr) {
+        g_HudSensorTracker.Shutdown();
+        return 1;
+    }
+    g_HudSensorTracker.mapLoadedFlag = 1;
+
+    HudSensorTracker::ShutdownGlobal();
+
+    const bool globalOk =
+        std::strcmp((const char *)g_HudSensorTracker.zbdPath, "") == 0 &&
+        g_HudSensorTracker.mapFileVersion == 5 &&
+        g_HudSensorTracker.mapLoadedFlag == 0 &&
+        g_HudSensorTracker.loadedMapPath == nullptr &&
+        g_HudSensorTracker.mapNodeListHead == nullptr;
+
+    return globalOk ? 0 : 2;
+}
+
+extern "C" int hud_sensor_tracker_register_global_on_exit_smoke(void) {
+    HudSensorTracker::ConstructGlobal();
+    HudSensorTracker::RegisterGlobalOnExit();
+    return g_HudSensorTracker.mapFileVersion == 5 &&
+                   HudFloatNear(g_HudSensorTracker.hudScale, 1.0f)
+               ? 0
+               : 1;
+}
+
+extern "C" int mission_init_objectives_smoke(void) {
+    g_HudSensorTracker.hudScale = 0.25f;
+    g_HudSensorTracker.fxPass3Obj = reinterpret_cast<HudUiElement *>(0x12345678);
+    g_HudSensorTracker.hasPendingPlayerSave = 1;
+
+    Mission::InitObjectives();
+
+    const bool initialized =
+        g_HudSensorTracker.mapFileVersion == 5 &&
+        g_HudSensorTracker.fxPass3Obj == nullptr &&
+        HudFloatNear(g_HudSensorTracker.hudScale, 1.0f) &&
+        g_HudSensorTracker.hasPendingPlayerSave == 0 &&
+        g_HudSensorTracker.missionLoaded == 0 && g_HudSensorTracker.missionFlags == 1;
+
+    g_HudSensorTracker.Shutdown();
+
+    return initialized ? 0 : 1;
+}
+
+extern "C" int hud_sensor_tracker_write_mission_data_section_smoke(void) {
+    struct MissionDataForTest {
+        std::int32_t missionId;
+        std::int32_t missionFlags;
+        std::int32_t currentObjectiveIndex;
+        std::int32_t firstIncompleteObjectiveIndex;
+        std::int32_t completedObjectiveCount;
+        std::int32_t objectiveFlowState;
+        std::int32_t objectiveFlowDeadlineSecRaw;
+        std::int32_t missionStat0;
+        std::int32_t missionStat1;
+        std::int32_t missionStat2;
+        std::int32_t missionStat3;
+        std::int32_t weaponsFoundMask;
+        std::int32_t objectiveCompletedFlags[10];
+        std::int32_t difficultyMode;
+    };
+
+    char tempDir[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "hsm", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    HANDLE file = CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+                              CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempFile);
+        return 2;
+    }
+
+    int difficulty = 3;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    g_zOpt_GameDifficultyOption = &difficulty;
+
+    zZbdManager manager = {};
+    manager.indexArchive.hFile = file;
+    zZbdSectionHandler handler = {};
+    handler.sectionName = "Mission";
+    zZbdSectionCallbackCtx callbackCtx = {};
+    callbackCtx.manager = &manager;
+    callbackCtx.sectionHandler = &handler;
+
+    HudSensorTracker tracker{};
+    tracker.missionId = 11;
+    tracker.missionFlags = 12;
+    tracker.currentObjectiveIndex = 13;
+    tracker.firstIncompleteObjectiveIndex = 14;
+    tracker.completedObjectiveCount = 15;
+    tracker.objectiveFlowState = 16;
+    tracker.objectiveFlowDeadlineSecRaw = 17;
+    tracker.missionStat0 = 18;
+    tracker.missionStat1 = 19;
+    tracker.primaryGunDispatchCount = 20;
+    tracker.missionStat3 = 21;
+    tracker.weaponsFoundMask = 22;
+    for (int index = 0; index < 10; ++index) {
+        tracker.objectiveSlots[index].completedFlag = index + 30;
+    }
+
+    const int result = tracker.WriteMissionDataSection(&callbackCtx);
+    MissionDataForTest payload = {};
+    DWORD read = 0;
+    if (manager.indexArchive.recordCount == 1) {
+        SetFilePointer(file, manager.indexArchive.records[0].fileOffset, nullptr, FILE_BEGIN);
+        ReadFile(file, &payload, sizeof(payload), &read, nullptr);
+    }
+
+    bool payloadOk =
+        result == 1 && manager.indexArchive.recordCount == 1 &&
+        manager.indexArchive.records != nullptr &&
+        std::strcmp(manager.indexArchive.records[0].name, "Mission/MissionData") == 0 &&
+        manager.indexArchive.records[0].fileSize == sizeof(payload) && read == sizeof(payload) &&
+        payload.missionId == 11 && payload.missionFlags == 12 &&
+        payload.currentObjectiveIndex == 13 &&
+        payload.firstIncompleteObjectiveIndex == 14 &&
+        payload.completedObjectiveCount == 15 && payload.objectiveFlowState == 16 &&
+        payload.objectiveFlowDeadlineSecRaw == 17 && payload.missionStat0 == 18 &&
+        payload.missionStat1 == 19 && payload.missionStat2 == 20 &&
+        payload.missionStat3 == 21 && payload.weaponsFoundMask == 22 &&
+        payload.difficultyMode == 3;
+    for (int index = 0; index < 10 && payloadOk; ++index) {
+        payloadOk = payload.objectiveCompletedFlags[index] == index + 30;
+    }
+
+    std::free(manager.indexArchive.records);
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    CloseHandle(file);
+    DeleteFileA(tempFile);
+
+    return payloadOk ? 0 : 3;
+}
+
+extern "C" int hud_sensor_tracker_zar_mission_save_callback_smoke(void) {
+    struct MissionDataForTest {
+        std::int32_t missionId;
+        std::int32_t missionFlags;
+        std::int32_t currentObjectiveIndex;
+        std::int32_t firstIncompleteObjectiveIndex;
+        std::int32_t completedObjectiveCount;
+        std::int32_t objectiveFlowState;
+        std::int32_t objectiveFlowDeadlineSecRaw;
+        std::int32_t missionStat0;
+        std::int32_t missionStat1;
+        std::int32_t missionStat2;
+        std::int32_t missionStat3;
+        std::int32_t weaponsFoundMask;
+        std::int32_t objectiveCompletedFlags[10];
+        std::int32_t difficultyMode;
+    };
+
+    char tempDir[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "hsc", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    HANDLE file = CreateFileA(
+        tempFile,
+        GENERIC_READ | GENERIC_WRITE,
+        0,
+        nullptr,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_TEMPORARY,
+        nullptr
+    );
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempFile);
+        return 2;
+    }
+
+    int difficulty = 1;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    g_zOpt_GameDifficultyOption = &difficulty;
+
+    zZbdManager manager = {};
+    manager.indexArchive.hFile = file;
+    zZbdSectionHandler handler = {};
+    handler.sectionName = "Mission";
+    zZbdSectionCallbackCtx callbackCtx = {};
+    callbackCtx.manager = &manager;
+    callbackCtx.sectionHandler = &handler;
+
+    HudSensorTracker tracker{};
+    tracker.missionId = 23;
+    tracker.missionFlags = 24;
+    tracker.currentObjectiveIndex = 25;
+    tracker.firstIncompleteObjectiveIndex = 26;
+    tracker.completedObjectiveCount = 27;
+    tracker.objectiveSlots[3].completedFlag = 28;
+
+    const int result = HudSensorTracker::ZarMission_SaveCallback(&callbackCtx, &tracker);
+
+    MissionDataForTest payload = {};
+    DWORD read = 0;
+    if (manager.indexArchive.recordCount == 1) {
+        SetFilePointer(file, manager.indexArchive.records[0].fileOffset, nullptr, FILE_BEGIN);
+        ReadFile(file, &payload, sizeof(payload), &read, nullptr);
+    }
+
+    const bool payloadOk =
+        result == 1 && manager.indexArchive.recordCount == 1 &&
+        manager.indexArchive.records != nullptr &&
+        std::strcmp(manager.indexArchive.records[0].name, "Mission/MissionData") == 0 &&
+        manager.indexArchive.records[0].fileSize == sizeof(payload) && read == sizeof(payload) &&
+        payload.missionId == 23 && payload.missionFlags == 24 &&
+        payload.currentObjectiveIndex == 25 &&
+        payload.firstIncompleteObjectiveIndex == 26 &&
+        payload.completedObjectiveCount == 27 &&
+        payload.objectiveCompletedFlags[3] == 28 && payload.difficultyMode == 1;
+
+    std::free(manager.indexArchive.records);
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    CloseHandle(file);
+    DeleteFileA(tempFile);
+
+    return payloadOk ? 0 : 3;
+}
+
+extern "C" int hud_sensor_tracker_zar_mission_late_save_callback_smoke(void) {
+    char tempDir[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "hsl", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    HANDLE file = CreateFileA(
+        tempFile,
+        GENERIC_READ | GENERIC_WRITE,
+        0,
+        nullptr,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_TEMPORARY,
+        nullptr
+    );
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempFile);
+        return 2;
+    }
+
+    zZbdManager manager = {};
+    manager.indexArchive.hFile = file;
+    zZbdSectionHandler handler = {};
+    handler.sectionName = "MissionLate";
+    zZbdSectionCallbackCtx callbackCtx = {};
+    callbackCtx.manager = &manager;
+    callbackCtx.sectionHandler = &handler;
+
+    HudSensorTracker tracker{};
+    HudSensorTracker::ZarMissionLate_SaveCallback(&callbackCtx, &tracker);
+
+    std::uint32_t payload = 0;
+    DWORD read = 0;
+    if (manager.indexArchive.recordCount == 1) {
+        SetFilePointer(file, manager.indexArchive.records[0].fileOffset, nullptr, FILE_BEGIN);
+        ReadFile(file, &payload, sizeof(payload), &read, nullptr);
+    }
+
+    const bool payloadOk =
+        manager.indexArchive.recordCount == 1 && manager.indexArchive.records != nullptr &&
+        std::strcmp(manager.indexArchive.records[0].name, "MissionLate/LateMissionData") == 0 &&
+        manager.indexArchive.records[0].fileSize == sizeof(payload) && read == sizeof(payload) &&
+        payload == 1;
+
+    std::free(manager.indexArchive.records);
+    CloseHandle(file);
+    DeleteFileA(tempFile);
+
+    return payloadOk ? 0 : 3;
+}
+
+extern "C" int hud_sensor_tracker_apply_mission_data_smoke(void) {
+    struct MissionDataForTest {
+        std::int32_t missionId;
+        std::int32_t missionFlags;
+        std::int32_t currentObjectiveIndex;
+        std::int32_t firstIncompleteObjectiveIndex;
+        std::int32_t completedObjectiveCount;
+        std::int32_t objectiveFlowState;
+        std::int32_t objectiveFlowDeadlineSecRaw;
+        std::int32_t missionStat0;
+        std::int32_t missionStat1;
+        std::int32_t missionStat2;
+        std::int32_t missionStat3;
+        std::int32_t weaponsFoundMask;
+        std::int32_t objectiveCompletedFlags[10];
+        std::int32_t difficultyMode;
+    };
+
+    int difficulty = 0;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zZbdManager *const oldZbdManager = g_zUtil_ZbdManager;
+    g_zOpt_GameDifficultyOption = &difficulty;
+
+    zZbdManager manager = {};
+    g_zUtil_ZbdManager = &manager;
+
+    MissionDataForTest firstLoad = {};
+    firstLoad.missionId = 8;
+    firstLoad.missionFlags = 9;
+    firstLoad.completedObjectiveCount = 10;
+    firstLoad.difficultyMode = 2;
+
+    HudSensorTracker tracker{};
+    tracker.missionId = 0;
+    const int firstResult = tracker.ApplyMissionDataAndReload(
+        nullptr,
+        "MissionData",
+        &firstLoad,
+        sizeof(firstLoad)
+    );
+    const bool firstOk =
+        firstResult == 1 && tracker.pendingPlayerSave.skipTimerResetOnStart == 1 &&
+        tracker.completedObjectiveCount == 10 && difficulty == 2 && tracker.missionId == 8 &&
+        tracker.missionFlags == 9 && manager.stopRequested == 1;
+
+    MissionDataForTest restore = {};
+    restore.missionId = 8;
+    restore.missionFlags = 12;
+    restore.currentObjectiveIndex = 1;
+    restore.firstIncompleteObjectiveIndex = 2;
+    restore.completedObjectiveCount = 3;
+    restore.objectiveFlowState = 4;
+    restore.objectiveFlowDeadlineSecRaw = 5;
+    restore.missionStat0 = 6;
+    restore.missionStat1 = 7;
+    restore.missionStat2 = 8;
+    restore.missionStat3 = 9;
+    restore.weaponsFoundMask = 10;
+    restore.difficultyMode = 1;
+    for (int index = 0; index < 10; ++index) {
+        restore.objectiveCompletedFlags[index] = index & 1;
+    }
+
+    manager.stopRequested = 0;
+    const int restoreResult = HudSensorTracker::ZarMission_RestoreCallback(
+        nullptr,
+        "MissionData",
+        &restore,
+        sizeof(restore),
+        &tracker
+    );
+
+    bool restoreOk =
+        restoreResult == 1 && manager.stopRequested == 0 && difficulty == 1 &&
+        tracker.missionId == 8 && tracker.missionFlags == 9 &&
+        tracker.currentObjectiveIndex == 1 && tracker.firstIncompleteObjectiveIndex == 2 &&
+        tracker.completedObjectiveCount == 3 && tracker.objectiveFlowState == 4 &&
+        tracker.objectiveFlowDeadlineSecRaw == 5 && tracker.missionStat0 == 6 &&
+        tracker.missionStat1 == 7 && tracker.primaryGunDispatchCount == 8 &&
+        tracker.missionStat3 == 9 && tracker.weaponsFoundMask == 10;
+    for (int index = 0; index < 10 && restoreOk; ++index) {
+        restoreOk = tracker.objectiveSlots[index].completedFlag == (index & 1);
+    }
+
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zUtil_ZbdManager = oldZbdManager;
+    return firstOk && restoreOk ? 0 : 1;
 }
 
 extern "C" int hud_sensor_tracker_update_map_scale_lerp_smoke(void) {
@@ -25541,6 +26041,28 @@ extern "C" int zhud_mgr_shutdown_resources_smoke(void) {
     }
 
     return cleared ? 0 : 1;
+}
+
+extern "C" int zhud_sensor_track_list_reset_smoke(void) {
+    const HudUiMgrSensorTrackList oldTrackList = g_HudUiMgrSensor_TrackList;
+
+    HudUiMgrSensorTrackNode head{};
+    HudUiMgrSensorTrackNode tail{};
+    g_HudUiMgrSensor_TrackList.trackListAux = 5;
+    g_HudUiMgrSensor_TrackList.head = &head;
+    g_HudUiMgrSensor_TrackList.tail = &tail;
+    g_HudUiMgrSensor_TrackList.count = 2;
+
+    HudUiMgrSensor::TrackList_Reset();
+
+    const bool resetOk =
+        g_HudUiMgrSensor_TrackList.trackListAux == 0 &&
+        g_HudUiMgrSensor_TrackList.head == nullptr &&
+        g_HudUiMgrSensor_TrackList.tail == nullptr &&
+        g_HudUiMgrSensor_TrackList.count == 0;
+
+    g_HudUiMgrSensor_TrackList = oldTrackList;
+    return resetOk ? 0 : 1;
 }
 
 extern "C" int zhud_sensor_track_list_add_smoke(void) {

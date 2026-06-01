@@ -2,6 +2,8 @@
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zReader/zReader.h"
 
+#include <dplobby.h>
+
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -53,6 +55,8 @@ zNetworkDPlayEnumSessionsCallback g_enumSessionsCallback;
 void *g_enumSessionsContext;
 std::uint32_t g_enumSessionsFlags;
 std::int32_t g_enumSessionsResult;
+int g_enumSessionsConnectingRepeats;
+bool g_enumSessionsSuppressCallback;
 int g_createPlayerCalls;
 std::uint32_t *g_createPlayerIdPtr;
 zNetworkDPlayName *g_createPlayerNameInfo;
@@ -93,6 +97,33 @@ int g_createInterfaceCalls;
 zNetwork_DPlay4 **g_createInterfaceOut;
 zNetwork_DPlay4 *g_createInterfaceDirectPlay4;
 std::int32_t g_createInterfaceResult;
+int g_lobbyCreateCalls;
+LPGUID g_lobbyCreateGuid;
+LPDIRECTPLAYLOBBYA *g_lobbyCreateOut;
+IUnknown *g_lobbyCreateOuter;
+LPVOID g_lobbyCreateData;
+DWORD g_lobbyCreateFlags;
+HRESULT g_lobbyCreateResult;
+int g_lobbyQueryCalls;
+const GUID *g_lobbyQueryRiid;
+LPVOID *g_lobbyQueryOut;
+HRESULT g_lobbyQueryResult;
+int g_lobbyReleaseCalls;
+void *g_lobby3AResult;
+int g_createCompoundAddressCalls;
+DPCOMPOUNDADDRESSELEMENT g_createCompoundAddressElements[2];
+DWORD g_createCompoundAddressElementCount;
+LPVOID g_createCompoundAddressBuffer;
+DWORD g_createCompoundAddressSizeIn;
+DWORD g_createCompoundAddressRequired;
+HRESULT g_createCompoundAddressResult;
+unsigned char g_createCompoundAddressBytes[16];
+unsigned char g_initializeConnectionBytes[16];
+
+void *g_fakeLobbyVtable[3];
+void *g_fakeLobbyObject[1];
+void *g_fakeLobby3AVtable[15];
+void *g_fakeLobby3AObject[1];
 
 struct CodeFunctionPatch {
     void *target;
@@ -180,6 +211,104 @@ int RECOIL_FASTCALL FakeCreateInterfaceAndCoInitialize(zNetwork_DPlay4 **outDire
         *outDirectPlay4 = g_createInterfaceDirectPlay4;
     }
     return g_createInterfaceResult;
+}
+
+HRESULT WINAPI FakeDirectPlayLobbyCreateA(
+    LPGUID guid,
+    LPDIRECTPLAYLOBBYA *outLobby,
+    IUnknown *outer,
+    LPVOID data,
+    DWORD flags)
+{
+    ++g_lobbyCreateCalls;
+    g_lobbyCreateGuid = guid;
+    g_lobbyCreateOut = outLobby;
+    g_lobbyCreateOuter = outer;
+    g_lobbyCreateData = data;
+    g_lobbyCreateFlags = flags;
+    if (outLobby != nullptr && g_lobbyCreateResult >= 0) {
+        *outLobby = (LPDIRECTPLAYLOBBYA)g_fakeLobbyObject;
+    }
+    return g_lobbyCreateResult;
+}
+
+HRESULT RECOIL_STDCALL FakeLobbyQueryInterface(
+    IDirectPlayLobby *,
+    REFIID riid,
+    LPVOID *outInterface)
+{
+    ++g_lobbyQueryCalls;
+    g_lobbyQueryRiid = &riid;
+    g_lobbyQueryOut = outInterface;
+    if (outInterface != nullptr && g_lobbyQueryResult >= 0) {
+        *outInterface = g_lobby3AResult;
+    }
+    return g_lobbyQueryResult;
+}
+
+ULONG RECOIL_STDCALL FakeLobbyRelease(IDirectPlayLobby *) {
+    ++g_lobbyReleaseCalls;
+    return 0;
+}
+
+HRESULT RECOIL_STDCALL FakeLobbyCreateCompoundAddress(
+    IDirectPlayLobby3A *,
+    LPCDPCOMPOUNDADDRESSELEMENT elements,
+    DWORD elementCount,
+    LPVOID addressBuffer,
+    LPDWORD addressSize)
+{
+    ++g_createCompoundAddressCalls;
+    g_createCompoundAddressElementCount = elementCount;
+    for (DWORD index = 0; index < elementCount && index < 2; ++index) {
+        g_createCompoundAddressElements[index] = elements[index];
+    }
+
+    g_createCompoundAddressBuffer = addressBuffer;
+    g_createCompoundAddressSizeIn = addressSize != nullptr ? *addressSize : 0;
+    if (addressSize != nullptr) {
+        *addressSize = g_createCompoundAddressRequired;
+    }
+
+    if (addressBuffer != nullptr && g_createCompoundAddressResult >= 0) {
+        std::memcpy(addressBuffer, g_createCompoundAddressBytes,
+                    g_createCompoundAddressRequired);
+    }
+
+    return g_createCompoundAddressResult;
+}
+
+void ResetLobbyFakes(void) {
+    g_lobbyCreateCalls = 0;
+    g_lobbyCreateGuid = nullptr;
+    g_lobbyCreateOut = nullptr;
+    g_lobbyCreateOuter = nullptr;
+    g_lobbyCreateData = nullptr;
+    g_lobbyCreateFlags = 0;
+    g_lobbyCreateResult = 0;
+    g_lobbyQueryCalls = 0;
+    g_lobbyQueryRiid = nullptr;
+    g_lobbyQueryOut = nullptr;
+    g_lobbyQueryResult = 0;
+    g_lobbyReleaseCalls = 0;
+    g_lobby3AResult = g_fakeLobby3AObject;
+    g_createCompoundAddressCalls = 0;
+    std::memset(g_createCompoundAddressElements, 0, sizeof(g_createCompoundAddressElements));
+    g_createCompoundAddressElementCount = 0;
+    g_createCompoundAddressBuffer = nullptr;
+    g_createCompoundAddressSizeIn = 0;
+    g_createCompoundAddressRequired = sizeof(g_createCompoundAddressBytes);
+    g_createCompoundAddressResult = 0;
+    for (int index = 0; index < (int)sizeof(g_createCompoundAddressBytes); ++index) {
+        g_createCompoundAddressBytes[index] = (unsigned char)(0x90 + index);
+    }
+    g_fakeLobbyVtable[0] = (void *)&FakeLobbyQueryInterface;
+    g_fakeLobbyVtable[1] = nullptr;
+    g_fakeLobbyVtable[2] = (void *)&FakeLobbyRelease;
+    g_fakeLobbyObject[0] = g_fakeLobbyVtable;
+    std::memset(g_fakeLobby3AVtable, 0, sizeof(g_fakeLobby3AVtable));
+    g_fakeLobby3AVtable[14] = (void *)&FakeLobbyCreateCompoundAddress;
+    g_fakeLobby3AObject[0] = g_fakeLobby3AVtable;
 }
 
 void CleanupInitSessionRuntimeState() {
@@ -276,7 +405,12 @@ std::int32_t RECOIL_STDCALL EnumSessionsFake(zNetwork_DPlay4 *,
     g_enumSessionsContext = context;
     g_enumSessionsFlags = flags;
 
-    if (g_enumSessionsResult >= 0 && callback != nullptr) {
+    if (g_enumSessionsConnectingRepeats > 0) {
+        --g_enumSessionsConnectingRepeats;
+        return static_cast<std::int32_t>(0x8877015e);
+    }
+
+    if (g_enumSessionsResult >= 0 && callback != nullptr && !g_enumSessionsSuppressCallback) {
         char sessionName[] = "listed";
         zNetworkDPlaySessionDesc listed{};
         listed.size = sizeof(zNetworkDPlaySessionDesc);
@@ -382,6 +516,10 @@ std::int32_t RECOIL_STDCALL InitializeConnectionFake(zNetwork_DPlay4 *, void *co
     ++g_initializeConnectionCalls;
     g_initializeConnectionData = connectionData;
     g_initializeConnectionFlags = flags;
+    if (connectionData != nullptr) {
+        std::memcpy(g_initializeConnectionBytes, connectionData,
+                    sizeof(g_initializeConnectionBytes));
+    }
     return g_initializeConnectionResult;
 }
 
@@ -457,6 +595,7 @@ void ResetNetwork() {
     g_initializeConnectionData = nullptr;
     g_initializeConnectionFlags = 0;
     g_initializeConnectionResult = 0;
+    std::memset(g_initializeConnectionBytes, 0, sizeof(g_initializeConnectionBytes));
     g_sendExCalls = 0;
     g_sendExFlags = 0;
     g_sendExAsyncValue = 0xabcdef01;
@@ -480,6 +619,8 @@ void ResetNetwork() {
     g_enumSessionsContext = nullptr;
     g_enumSessionsFlags = 0;
     g_enumSessionsResult = 0;
+    g_enumSessionsConnectingRepeats = 0;
+    g_enumSessionsSuppressCallback = false;
     g_createPlayerCalls = 0;
     g_createPlayerIdPtr = nullptr;
     g_createPlayerNameInfo = nullptr;
@@ -1162,6 +1303,18 @@ extern "C" int znetwork_dplay_pump_incoming_messages_smoke() {
                    sendCompleteOk && fatalOk
                    ? 0
                    : 1;
+}
+
+extern "C" int znetwork_set_fatal_disconnect_callback_smoke() {
+    g_zNetwork_FatalDisconnectCallback = nullptr;
+
+    zNetwork::SetFatalDisconnectCallback(&FatalDisconnectFake);
+    if (g_zNetwork_FatalDisconnectCallback != &FatalDisconnectFake) {
+        return 1;
+    }
+
+    zNetwork::SetFatalDisconnectCallback(nullptr);
+    return g_zNetwork_FatalDisconnectCallback == nullptr ? 0 : 2;
 }
 
 extern "C" int znetwork_dplay_receive_pending_messages_smoke() {
@@ -1965,6 +2118,261 @@ extern "C" int znetwork_dplay_enum_sessions_smoke() {
     g_zNetwork_pDirectPlay4 = nullptr;
     g_zNetwork_EnumeratedSessionList = nullptr;
     g_zNetwork_AppGuid = nullptr;
+    return 0;
+}
+
+extern "C" int znetwork_dplay_create_lobby3a_interface_smoke() {
+    CodeFunctionPatch lobbyCreatePatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&DirectPlayLobbyCreateA),
+                           reinterpret_cast<void *>(&FakeDirectPlayLobbyCreateA),
+                           lobbyCreatePatch)) {
+        return 90;
+    }
+
+    int failure = 0;
+    IDirectPlayLobby3A *outLobby = (IDirectPlayLobby3A *)&g_lobby3AResult;
+    int lobby3AStorage = 0;
+
+    ResetLobbyFakes();
+    g_lobbyCreateResult = (HRESULT)0x80004005;
+    if (zNetworkDPlay::CreateLobby3AInterface(&outLobby) != (HRESULT)0x80004005 ||
+        outLobby != (IDirectPlayLobby3A *)&g_lobby3AResult ||
+        g_lobbyCreateCalls != 1 ||
+        g_lobbyCreateGuid != nullptr ||
+        g_lobbyCreateOut == nullptr ||
+        g_lobbyCreateOuter != nullptr ||
+        g_lobbyCreateData != nullptr ||
+        g_lobbyCreateFlags != 0 ||
+        g_lobbyQueryCalls != 0 ||
+        g_lobbyReleaseCalls != 0) {
+        failure = 1;
+    }
+
+    ResetLobbyFakes();
+    outLobby = (IDirectPlayLobby3A *)&g_lobby3AResult;
+    g_lobbyQueryResult = (HRESULT)0x80004002;
+    if (failure == 0 &&
+        (zNetworkDPlay::CreateLobby3AInterface(&outLobby) != (HRESULT)0x80004002 ||
+         outLobby != (IDirectPlayLobby3A *)&g_lobby3AResult ||
+         g_lobbyCreateCalls != 1 ||
+         g_lobbyQueryCalls != 1 ||
+         g_lobbyQueryRiid != &IID_IDirectPlayLobby3A ||
+         g_lobbyQueryOut == nullptr ||
+         g_lobbyReleaseCalls != 0)) {
+        failure = 2;
+    }
+
+    ResetLobbyFakes();
+    outLobby = nullptr;
+    g_lobby3AResult = &lobby3AStorage;
+    if (failure == 0 &&
+        (zNetworkDPlay::CreateLobby3AInterface(&outLobby) != 0 ||
+         outLobby != (IDirectPlayLobby3A *)&lobby3AStorage ||
+         g_lobbyCreateCalls != 1 ||
+         g_lobbyQueryCalls != 1 ||
+         g_lobbyQueryRiid != &IID_IDirectPlayLobby3A ||
+         g_lobbyQueryOut == nullptr ||
+         g_lobbyReleaseCalls != 1)) {
+        failure = 3;
+    }
+
+    RestoreFunctionPatch(lobbyCreatePatch);
+    return failure;
+}
+
+extern "C" int znetwork_dplay_enum_sessions_for_current_app_smoke() {
+    ResetNetwork();
+
+    g_zNetwork_EnumeratedSessionList = zArchiveList_CreateEmpty();
+    g_zNetwork_pDirectPlay4 = nullptr;
+    if (zNetworkDPlay::EnumSessionsForCurrentApp() != 0 ||
+        g_enumSessionsCalls != 0) {
+        zArchiveList_Destroy(g_zNetwork_EnumeratedSessionList);
+        g_zNetwork_EnumeratedSessionList = nullptr;
+        return 1;
+    }
+    zArchiveList_Destroy(g_zNetwork_EnumeratedSessionList);
+    g_zNetwork_EnumeratedSessionList = nullptr;
+
+    unsigned char appGuid[16] = {};
+    for (int index = 0; index < 16; ++index) {
+        appGuid[index] = (unsigned char)(0x70 + index);
+    }
+
+    zNetwork_DPlay4 directPlay{&kDPlayVtable};
+    g_zNetwork_EnumeratedSessionList = zArchiveList_CreateEmpty();
+    g_zNetwork_pDirectPlay4 = &directPlay;
+    g_zNetwork_AppGuid = appGuid;
+    g_enumSessionsResult = -33;
+
+    if (zNetworkDPlay::EnumSessionsForCurrentApp() != -33 ||
+        g_enumSessionsCalls != 1 ||
+        g_enumSessionsDesc.size != sizeof(zNetworkDPlaySessionDesc) ||
+        std::memcmp(g_enumSessionsDesc.appGuid, appGuid, sizeof(appGuid)) != 0 ||
+        g_enumSessionsTimeoutMs != 0 ||
+        g_enumSessionsCallback != zNetworkDPlay::EnumSessionCallback_AddSessionDescCache ||
+        g_enumSessionsContext != nullptr ||
+        g_enumSessionsFlags != 0x82) {
+        zArchiveList_Destroy(g_zNetwork_EnumeratedSessionList);
+        g_zNetwork_EnumeratedSessionList = nullptr;
+        g_zNetwork_pDirectPlay4 = nullptr;
+        g_zNetwork_AppGuid = nullptr;
+        return 2;
+    }
+
+    zArchiveList_Destroy(g_zNetwork_EnumeratedSessionList);
+    g_zNetwork_EnumeratedSessionList = nullptr;
+    g_zNetwork_pDirectPlay4 = nullptr;
+    g_zNetwork_AppGuid = nullptr;
+    return 0;
+}
+
+extern "C" int znetwork_dplay_select_tcp_ip_provider_and_enum_sessions_smoke() {
+    CodeFunctionPatch lobbyCreatePatch{};
+    CodeFunctionPatch createInterfacePatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&DirectPlayLobbyCreateA),
+                           reinterpret_cast<void *>(&FakeDirectPlayLobbyCreateA),
+                           lobbyCreatePatch)) {
+        return 90;
+    }
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zNetwork_DPlay::CreateInterfaceAndCoInitialize),
+                           reinterpret_cast<void *>(&FakeCreateInterfaceAndCoInitialize),
+                           createInterfacePatch)) {
+        RestoreFunctionPatch(lobbyCreatePatch);
+        return 91;
+    }
+
+    int failure = 0;
+    zNetwork_DPlay4 directPlay{&kDPlayVtable};
+    char addressString[] = "127.0.0.1";
+    unsigned char appGuid[16] = {};
+
+    ResetNetwork();
+    ResetLobbyFakes();
+    g_createInterfaceDirectPlay4 = &directPlay;
+    g_createInterfaceResult = 0;
+    g_initializeConnectionResult = 0;
+    g_zNetwork_AppGuid = appGuid;
+
+    if (zNetworkDPlay::SelectTcpIpProviderAndEnumSessions(addressString, 1) != 1 ||
+        g_lobbyCreateCalls != 1 ||
+        g_lobbyQueryCalls != 1 ||
+        g_lobbyReleaseCalls != 1 ||
+        g_createCompoundAddressCalls != 2 ||
+        g_createCompoundAddressElementCount != 2 ||
+        std::memcmp(&g_createCompoundAddressElements[0].guidDataType,
+                    &DPAID_ServiceProvider, sizeof(GUID)) != 0 ||
+        g_createCompoundAddressElements[0].dwDataSize != sizeof(DPSPGUID_TCPIP) ||
+        g_createCompoundAddressElements[0].lpData != &DPSPGUID_TCPIP ||
+        std::memcmp(&g_createCompoundAddressElements[1].guidDataType,
+                    &DPAID_INet, sizeof(GUID)) != 0 ||
+        g_createCompoundAddressElements[1].dwDataSize != std::strlen(addressString) + 1 ||
+        g_createCompoundAddressElements[1].lpData != addressString ||
+        g_initializeConnectionCalls != 1 ||
+        g_initializeConnectionFlags != 0 ||
+        std::memcmp(g_initializeConnectionBytes, g_createCompoundAddressBytes,
+                    sizeof(g_initializeConnectionBytes)) != 0 ||
+        g_zNetwork_ActiveProviderIsTcpIp == 0 ||
+        g_zNetwork_TcpIpAsyncSendEnabled == 0 ||
+        g_enumSessionsCalls != 0) {
+        failure = 1;
+    }
+
+    if (failure == 0) {
+        ResetNetwork();
+        ResetLobbyFakes();
+        g_createInterfaceDirectPlay4 = &directPlay;
+        g_createInterfaceResult = 0;
+        g_zNetwork_AppGuid = appGuid;
+        g_zNetwork_EnumeratedSessionList = zArchiveList_CreateEmpty();
+        g_enumSessionsSuppressCallback = true;
+        g_enumSessionsConnectingRepeats = 2;
+        g_enumSessionsResult = 0;
+
+        if (zNetworkDPlay::SelectTcpIpProviderAndEnumSessions(addressString, 0) != 1 ||
+            g_enumSessionsCalls != 3 ||
+            g_enumSessionsFlags != 0x82) {
+            failure = 2;
+        }
+    }
+
+    if (g_zNetwork_EnumeratedSessionList != nullptr) {
+        zArchiveList_Destroy(g_zNetwork_EnumeratedSessionList);
+        g_zNetwork_EnumeratedSessionList = nullptr;
+    }
+
+    g_zNetwork_pDirectPlay4 = nullptr;
+    g_zNetwork_AppGuid = nullptr;
+    RestoreFunctionPatch(createInterfacePatch);
+    RestoreFunctionPatch(lobbyCreatePatch);
+    return failure;
+}
+
+extern "C" int znetwork_dplay_open_selected_session_and_read_status_fields_smoke() {
+    ResetNetwork();
+
+    zNetwork_DPlay4 directPlay{&kDPlayVtable};
+    char sessionName[] = "selected";
+    zNetworkDPlaySessionDescCache session{};
+    session.desc.sessionName = sessionName;
+    session.desc.customEventCode = 12;
+    session.desc.customStatusFlags = 34;
+    session.desc.customValueOrTime = 56;
+    session.desc.customAuxParam = 78;
+    session.desc.maxPlayers = 10;
+
+    zArchiveListNode node{};
+    node.payload = &session;
+    node.next = &node;
+    node.prev = &node;
+    zArchiveList list{};
+    list.count = 1;
+    list.head = &node;
+
+    g_zNetwork_pDirectPlay4 = &directPlay;
+    g_zNetwork_EnumeratedSessionList = &list;
+    zNetworkSessionDescStatusFields fields{};
+    fields.selectedSessionIndex = 0;
+
+    if (zNetworkDPlay::OpenSelectedSessionAndReadStatusFields(&fields) != 1 ||
+        g_zNetwork_CurrentSessionDescCache != &session ||
+        session.openMode != 1 ||
+        session.desc.size != sizeof(zNetworkDPlaySessionDesc) ||
+        g_openCalls != 1 ||
+        g_openDescPtr != &session.desc ||
+        g_openFlags != 1 ||
+        g_getCapsCalls != 1 ||
+        fields.eventCode != 12 ||
+        fields.statusFlags != 34 ||
+        fields.valueOrTime != 56 ||
+        fields.auxParam != 78 ||
+        fields.maxPlayers != 10 ||
+        std::strcmp(fields.sessionNameBuf, "selected") != 0) {
+        return 1;
+    }
+
+    fields.selectedSessionIndex = 3;
+    g_zNetwork_CurrentSessionDescCache = &session;
+    if (zNetworkDPlay::OpenSelectedSessionAndReadStatusFields(&fields) != 0 ||
+        g_zNetwork_CurrentSessionDescCache != nullptr) {
+        return 2;
+    }
+
+    ResetNetwork();
+    g_zNetwork_pDirectPlay4 = &directPlay;
+    g_zNetwork_EnumeratedSessionList = &list;
+    g_getCapsResult = -1;
+    fields = {};
+    fields.selectedSessionIndex = 0;
+    if (zNetworkDPlay::OpenSelectedSessionAndReadStatusFields(&fields) != 0 ||
+        g_closeCalls != 1) {
+        return 3;
+    }
+
+    g_zNetwork_pDirectPlay4 = nullptr;
+    g_zNetwork_EnumeratedSessionList = nullptr;
+    g_zNetwork_CurrentSessionDescCache = nullptr;
     return 0;
 }
 

@@ -1,9 +1,9 @@
 #include "zClass.h"
 
 #include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/include/zClipAlt.h"
 #include "GameZRecoil/include/zDi.h"
+#include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zVideo/zVideo.h"
@@ -32,67 +32,114 @@ namespace {
         return value;
     }
 
-    zClass_Object3DDataPartial *GetObject3DData(zClass_NodePartial * node, int nullLine,
-                                                int dataLine, int classLine) {
+    zClass_Object3DDataPartial *
+    GetObject3DData(
+        zClass_NodePartial * node,
+        int nullLine,
+        int dataLine,
+        int classLine
+    ){
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, nullLine, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                nullLine,
+                "Null node pointer."
+            );
             return 0;
         }
 
         if (node->classData == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, dataLine, "Null class data pointer");
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                dataLine,
+                "Null class data pointer"
+            );
             return 0;
         }
 
         if (node->classId != kZClassNodeObject3D) {
-            zError::ReportOld(0x400, kObject3DSourceFile, classLine,
-                              "Bad Class Found.\n Wanted (%d)\n Found (%d)", kZClassNodeObject3D,
-                              node->classId);
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                classLine,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                kZClassNodeObject3D,
+                node->classId
+            );
             return 0;
         }
 
         return (zClass_Object3DDataPartial *)(node->classData);
     }
 
-    zClass_Object3DDataPartial *GetObject3DDataNoClassCheck(zClass_NodePartial * node, int nullLine,
-                                                            int dataLine) {
+    zClass_Object3DDataPartial *GetObject3DDataNoClassCheck(
+        zClass_NodePartial * node,
+        int nullLine,
+        int dataLine
+    ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, nullLine, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                nullLine,
+                "Null node pointer."
+            );
             return 0;
         }
 
         if (node->classData == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, dataLine, "Null class data pointer");
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                dataLine,
+                "Null class data pointer"
+            );
             return 0;
         }
 
         return (zClass_Object3DDataPartial *)(node->classData);
     }
 
-    void QueueTransformUpdate(zClass_NodePartial * node, zClass_Object3DDataPartial * data) {
+    void QueueTransformUpdate(
+        zClass_NodePartial * node,
+        zClass_Object3DDataPartial * data
+    ){
         data->flags |= 0x01;
         zClass_Node::PropagateTransformDirtyRecursive(node);
         if ((node->flags & 0x01) == 0) {
-            zClass_TypeList::Insert(7, node);
+            zClass_TypeList::Insert(
+                7,
+                node
+            );
             node->flags |= 0x01;
         }
         node->flags |= 0x02;
     }
 
-    void ClearIdentityFlagIfAnyNonZero(zClass_Object3DDataPartial * data, float x, float y,
-                                       float z) {
+    void
+    ClearIdentityFlagIfAnyNonZero(
+        zClass_Object3DDataPartial * data,
+        float x,
+        float y,
+        float z
+    ){
         if ((data->flags & 0x08) != 0 && (x != 0.0f || y != 0.0f || z != 0.0f)) {
             data->flags &= ~0x08;
         }
     }
 
-    int CullNodeForRender(zClass_NodePartial *node, int siblingCountHint,
-                                   int *clipMask) {
+    int CullNodeForRender(
+        zClass_NodePartial * node,
+        int siblingCountHint,
+        int *clipMask
+    ){
         int testNeeded = 0;
         if (g_zClass_ObjectHseTestEnabled == 0) {
             testNeeded =
                 ((*clipMask != 0 || g_zClass_RenderFrustumGridTileIndex > 0) &&
-                 siblingCountHint > 1);
+                    siblingCountHint > 1);
         } else {
             testNeeded = (*clipMask != 0 && siblingCountHint > 1);
         }
@@ -102,20 +149,27 @@ namespace {
         }
 
         if ((node->boundsFlags & kNodeBoundsDirtyFlag) != 0 ||
-            g_zClass_RenderBoundsContextActive != 0 ||
-            (node->flags & kSingleParentFlag) == 0) {
+            g_zClass_RenderBoundsContextActive != 0 || (node->flags & kSingleParentFlag) == 0) {
             zBBoxCorners corners = {0};
-            zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
-            BBox::CornersToBoundingSphere(&corners, zClass_NodeViewSphereCenter(node),
-                                          zClass_NodeViewSphereRadius(node));
+            zClass_Class::gwNodeGetViewBBoxCorners(
+                node,
+                &corners
+            );
+            BBox::CornersToBoundingSphere(
+                &corners,
+                zClass_NodeViewSphereCenter(node),
+                zClass_NodeViewSphereRadius(node)
+            );
             if ((node->flags & kSingleParentFlag) != 0) {
                 node->boundsFlags &= ~kNodeBoundsDirtyFlag;
             }
         }
 
-        int result = zVideo_FrustumTestSphereClipMask(zClass_NodeViewSphereCenter(node),
-                                                              clipMask,
-                                                              *zClass_NodeViewSphereRadius(node));
+        int result = zVideo_FrustumTestSphereClipMask(
+            zClass_NodeViewSphereCenter(node),
+            clipMask,
+            *zClass_NodeViewSphereRadius(node)
+        );
         if ((node->flags & 0x80) != 0 && result == 0x20) {
             result = 0;
             *clipMask &= ~0x20;
@@ -123,7 +177,10 @@ namespace {
         return result;
     }
 
-    void PushObjectMatrix(zClass_Object3DDataPartial *data, int *pushed) {
+    void PushObjectMatrix(
+        zClass_Object3DDataPartial * data,
+        int *pushed
+    ){
         const int flags = data->flags;
         if ((flags & 0x08) != 0) {
             *pushed = 0;
@@ -133,19 +190,29 @@ namespace {
         *pushed = 1;
         if ((flags & kObject3DTransformDirtyFlag) != 0) {
             zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
-            zMath::MatMultiply((const zMat4x3 *)data->localMatrix, 3);
+            zMath::MatMultiply(
+                (const zMat4x3 *)data->localMatrix,
+                3
+            );
             data->flags &= ~kObject3DTransformDirtyFlag;
         } else if ((flags & kSingleParentFlag) == 0) {
             zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
-            zMath::MatMultiply((const zMat4x3 *)data->localMatrix, 3);
+            zMath::MatMultiply(
+                (const zMat4x3 *)data->localMatrix,
+                3
+            );
         } else {
             zMath::MatStackPushPtr(data->cachedWorldMatrix);
         }
     }
 
-    void PushObjectRenderState(zClass_NodePartial *node, zClass_Object3DDataPartial *data,
-                               int *pushedVertexAlpha, int *pushedAlphaScale,
-                               int *pushedSoftwareState) {
+    void PushObjectRenderState(
+        zClass_NodePartial * node,
+        zClass_Object3DDataPartial * data,
+        int *pushedVertexAlpha,
+        int *pushedAlphaScale,
+        int *pushedSoftwareState
+    ) {
         *pushedVertexAlpha = 0;
         *pushedAlphaScale = 0;
         *pushedSoftwareState = 0;
@@ -172,12 +239,16 @@ namespace {
                 data->colorAlpha;
             zModel_FogTargetColorOverride_SetCurrent(
                 &g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop].color,
-                data->colorAlpha);
+                data->colorAlpha
+            );
         }
     }
 
-    void PopObjectRenderState(int pushedVertexAlpha, int pushedAlphaScale,
-                              int pushedSoftwareState) {
+    void PopObjectRenderState(
+        int pushedVertexAlpha,
+        int pushedAlphaScale,
+        int pushedSoftwareState
+    ) {
         if (pushedVertexAlpha != 0) {
             g_zClass_RenderVertexAlphaOverrideActive = 0;
             zModel_RenderVertexAlphaEnabled_SetCurrent(0);
@@ -197,16 +268,22 @@ namespace {
             if (g_zClass_SoftwarePathStateStackTop >= 0) {
                 zModel_FogTargetColorOverride_SetCurrent(
                     &g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop]
-                         .color,
-                    g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop]
-                        .alpha);
+                        .color,
+                    g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop].alpha
+                );
             } else {
-                zModel_FogTargetColorOverride_SetCurrent(0, 0.0f);
+                zModel_FogTargetColorOverride_SetCurrent(
+                    0,
+                    0.0f
+                );
             }
         }
     }
 
-    void RenderObjectChildren(zClass_NodePartial *node, int clipMask) {
+    void RenderObjectChildren(
+        zClass_NodePartial * node,
+        int clipMask
+    ){
         if (node->listCountB <= 0) {
             return;
         }
@@ -217,10 +294,16 @@ namespace {
             zClass_NodePartial *child = node->listB[i];
             if (child != 0 && child->classId == kZClassNodeObject3D) {
                 if (VariantTag::CurrentAllowsId(child->nodeType) != 0) {
-                    zClass_Object3D::RenderTraverse(child, node->listCountB);
+                    zClass_Object3D::RenderTraverse(
+                        child,
+                        node->listCountB
+                    );
                 }
             } else if (child != 0) {
-                zClass_Class::gwNodeRenderDispatch(child, node->listCountB);
+                zClass_Class::gwNodeRenderDispatch(
+                    child,
+                    node->listCountB
+                );
             }
         }
         --gModel_ClipMaskStackTop;
@@ -230,8 +313,11 @@ namespace {
 namespace zClass_Object3D {
     // Reimplements 0x44b300: zClass_Object3D::RenderTraverse
     // (D:\Proj\GameZRecoil\zClass\Object3d.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL RenderTraverse(
-        zClass_NodePartial *node, int siblingCountHint) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    RenderTraverse(
+        zClass_NodePartial * node,
+        int siblingCountHint
+    ){
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & kObject3DVisibleFlag) == 0) {
@@ -245,13 +331,19 @@ namespace zClass_Object3D {
             altClipReset = 1;
         }
 
-        zClass_Object3DDataPartial *data =
-            (zClass_Object3DDataPartial *)(node->classData);
+        zClass_Object3DDataPartial *data = (zClass_Object3DDataPartial *)(node->classData);
         int clipMask = *gModel_ClipMaskStackTop;
-        const int result = CullNodeForRender(node, siblingCountHint, &clipMask);
+        const int result = CullNodeForRender(
+            node,
+            siblingCountHint,
+            &clipMask
+        );
         if (result == 0) {
             int matrixPushed = 0;
-            PushObjectMatrix(data, &matrixPushed);
+            PushObjectMatrix(
+                data,
+                &matrixPushed
+            );
             if (g_zClass_RenderBoundsContextActive == 0) {
                 boundsContextPushed = 1;
                 g_zClass_RenderBoundsContextActive = 1;
@@ -260,15 +352,21 @@ namespace zClass_Object3D {
             int pushedVertexAlpha;
             int pushedAlphaScale;
             int pushedSoftwareState;
-            PushObjectRenderState(node, data, &pushedVertexAlpha, &pushedAlphaScale,
-                                  &pushedSoftwareState);
+            PushObjectRenderState(
+                node,
+                data,
+                &pushedVertexAlpha,
+                &pushedAlphaScale,
+                &pushedSoftwareState
+            );
 
             int visibleByProjectedSphere = 1;
             if (g_zClass_ObjectHseTestEnabled != 0 && g_zClass_RenderFrustumGridTileIndex > 0 &&
                 siblingCountHint != 1 && g_zClass_RenderVertexAlphaOverrideActive == 0) {
-                visibleByProjectedSphere =
-                    zScene::TestProjectedSphereVisible(zClass_NodeViewSphereCenter(node),
-                                                       *zClass_NodeViewSphereRadius(node));
+                visibleByProjectedSphere = zScene::TestProjectedSphereVisible(
+                    zClass_NodeViewSphereCenter(node),
+                    *zClass_NodeViewSphereRadius(node)
+                );
             }
             if (visibleByProjectedSphere != 0) {
                 node->flags |= 0x80000000;
@@ -278,12 +376,22 @@ namespace zClass_Object3D {
                     di->blendScale = g_zClass_RenderRangeFadeScale;
                 }
                 if (gModel_RenderFn != 0) {
-                    gModel_RenderFn(node, clipMask);
+                    gModel_RenderFn(
+                        node,
+                        clipMask
+                    );
                 }
-                RenderObjectChildren(node, clipMask);
+                RenderObjectChildren(
+                    node,
+                    clipMask
+                );
             }
 
-            PopObjectRenderState(pushedVertexAlpha, pushedAlphaScale, pushedSoftwareState);
+            PopObjectRenderState(
+                pushedVertexAlpha,
+                pushedAlphaScale,
+                pushedSoftwareState
+            );
             if (matrixPushed != 0) {
                 zMath::MatStackPopPtr();
             }
@@ -302,51 +410,101 @@ namespace zClass_Object3D {
     RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwObject3DInit() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x12f, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x12f,
+                "Null node pointer."
+            );
             return 0;
         }
 
         node->classId = kZClassNodeObject3D;
-        node->classData = calloc(1, sizeof(zClass_Object3DDataPartial));
+        node->classData = calloc(
+            1,
+            sizeof(zClass_Object3DDataPartial)
+        );
         return PropagateTransformDirty(node) == 0 ? node : 0;
     }
 
     // Reimplements 0x44db10: zClass_Object3D::gwObject3DAddChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DAddChild(zClass_NodePartial * parent,
-                                                                    zClass_NodePartial * child) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DAddChild(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child
+    ){
         if (parent == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x178, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x178,
+                "Null node pointer."
+            );
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x179, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x179,
+                "Null node pointer."
+            );
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x17a, "Null class data pointer");
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x17a,
+                "Null class data pointer"
+            );
             return 5;
         }
 
-        return zClass_Class::AddChildGeneric(parent, child);
+        return zClass_Class::AddChildGeneric(
+            parent,
+            child
+        );
     }
 
     // Reimplements 0x44db60: zClass_Object3D::RemoveChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChild(zClass_NodePartial * parent,
-                                                             zClass_NodePartial * child) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    RemoveChild(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child
+    ){
         if (parent == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x194, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x194,
+                "Null node pointer."
+            );
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x195, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x195,
+                "Null node pointer."
+            );
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x196, "Null class data pointer");
+            zError::ReportOld(
+                0x400,
+                kObject3DSourceFile,
+                0x196,
+                "Null class data pointer"
+            );
             return 5;
         }
 
-        return zClass_Class::RemoveChildGeneric(parent, child);
+        return zClass_Class::RemoveChildGeneric(
+            parent,
+            child
+        );
     }
 
     // Reimplements 0x44db00: zClass_Object3D::DeleteNode
@@ -355,29 +513,55 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44d9e0: zClass_Object3D::PropagateTransformDirty
-    RECOIL_NOINLINE int RECOIL_FASTCALL PropagateTransformDirty(zClass_NodePartial *
-                                                                         node) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(node, 0xe8, 0xe9);
+    RECOIL_NOINLINE int RECOIL_FASTCALL PropagateTransformDirty(zClass_NodePartial * node) {
+        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
+            node,
+            0xe8,
+            0xe9
+        );
         if (data == 0) {
             return 5;
         }
 
-        data->rotation = zVec3_Make(0.0f, 0.0f, 0.0f);
-        data->scale = zVec3_Make(1.0f, 1.0f, 1.0f);
-        memset(data->localMatrix, 0, sizeof(data->localMatrix));
+        data->rotation = zVec3_Make(
+            0.0f,
+            0.0f,
+            0.0f
+        );
+        data->scale = zVec3_Make(
+            1.0f,
+            1.0f,
+            1.0f
+        );
+        memset(
+            data->localMatrix,
+            0,
+            sizeof(data->localMatrix)
+        );
         data->localMatrix[0] = 1.0f;
         data->localMatrix[4] = 1.0f;
         data->localMatrix[8] = 1.0f;
         data->flags = (data->flags & ~0x10) | 0x09;
 
-        QueueTransformUpdate(node, data);
+        QueueTransformUpdate(
+            node,
+            data
+        );
         return 0;
     }
 
     // Reimplements 0x44dbb0: zClass_Object3D::gwObject3DSetVisibleFlag
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetVisibleFlag(zClass_NodePartial * node,
-                                                                          int visible) {
-        zClass_Object3DDataPartial *data = GetObject3DData(node, 0x1b1, 0x1b2, 0x1b3);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DSetVisibleFlag(
+        zClass_NodePartial * node,
+        int visible
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DData(
+            node,
+            0x1b1,
+            0x1b2,
+            0x1b3
+        );
         if (data == 0) {
             return node != 0 && node->classData != 0 ? 3 : 5;
         }
@@ -391,9 +575,18 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44dc30: zClass_Object3D::gwObject3DSetColorAlpha
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetColorAlpha(
-        zClass_NodePartial * node, zColorRgb * color, float alpha) {
-        zClass_Object3DDataPartial *data = GetObject3DData(node, 0x1d9, 0x1da, 0x1db);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DSetColorAlpha(
+        zClass_NodePartial * node,
+        zColorRgb * color,
+        float alpha
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DData(
+            node,
+            0x1d9,
+            0x1da,
+            0x1db
+        );
         if (data == 0) {
             return node != 0 && node->classData != 0 ? 3 : 5;
         }
@@ -409,9 +602,17 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44dd90: zClass_Object3D::gwObject3DSetAlphaScale
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetAlphaScale(zClass_NodePartial * node,
-                                                                         float alphaScale) {
-        zClass_Object3DDataPartial *data = GetObject3DData(node, 0x21f, 0x220, 0x221);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DSetAlphaScale(
+        zClass_NodePartial * node,
+        float alphaScale
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DData(
+            node,
+            0x21f,
+            0x220,
+            0x221
+        );
         if (data == 0) {
             return node != 0 && node->classData != 0 ? 3 : 5;
         }
@@ -421,9 +622,17 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44de10: zClass_Object3D::gwObject3DGetAlphaScale
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DGetAlphaScale(zClass_NodePartial * node,
-                                                                         float *outAlphaScale) {
-        zClass_Object3DDataPartial *data = GetObject3DData(node, 0x238, 0x239, 0x23a);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DGetAlphaScale(
+        zClass_NodePartial * node,
+        float *outAlphaScale
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DData(
+            node,
+            0x238,
+            0x239,
+            0x23a
+        );
         if (data == 0) {
             return node != 0 && node->classData != 0 ? 3 : 5;
         }
@@ -433,9 +642,16 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44de80: zClass_Object3D::gwObject3DSetLitFlag
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetLitFlag(zClass_NodePartial * node,
-                                                                      int lit) {
-        zClass_Object3DDataPartial *data = GetObject3DData(node, 0x254, 0x255, 0x256);
+    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetLitFlag(
+        zClass_NodePartial * node,
+        int lit
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DData(
+            node,
+            0x254,
+            0x255,
+            0x256
+        );
         if (data == 0) {
             return node != 0 && node->classData != 0 ? 3 : 5;
         }
@@ -449,9 +665,18 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44dfd0: zClass_Object3D::gwObject3DGetScale
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DGetScale(
-        zClass_NodePartial * node, float *outX, float *outY, float *outZ) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(node, 0x331, 0x332);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DGetScale(
+        zClass_NodePartial * node,
+        float *outX,
+        float *outY,
+        float *outZ
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
+            node,
+            0x331,
+            0x332
+        );
         if (data == 0) {
             return 5;
         }
@@ -463,9 +688,18 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44df00: zClass_Object3D::gwObject3DSetScale
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetScale(zClass_NodePartial * node,
-                                                                    float x, float y, float z) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(node, 0x294, 0x295);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DSetScale(
+        zClass_NodePartial * node,
+        float x,
+        float y,
+        float z
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
+            node,
+            0x294,
+            0x295
+        );
         if (data == 0) {
             return 5;
         }
@@ -478,14 +712,26 @@ namespace zClass_Object3D {
             data->flags &= ~0x08;
         }
 
-        QueueTransformUpdate(node, data);
+        QueueTransformUpdate(
+            node,
+            data
+        );
         return 0;
     }
 
     // Reimplements 0x44e110: zClass_Object3D::gwObject3DGetRotation
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DGetRotation(
-        zClass_NodePartial * node, float *outX, float *outY, float *outZ) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(node, 0x3a9, 0x3aa);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DGetRotation(
+        zClass_NodePartial * node,
+        float *outX,
+        float *outY,
+        float *outZ
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
+            node,
+            0x3a9,
+            0x3aa
+        );
         if (data == 0) {
             return 5;
         }
@@ -497,9 +743,18 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44e030: zClass_Object3D::gwObject3DSetRotation
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetRotation(zClass_NodePartial * node,
-                                                                       float x, float y, float z) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(node, 0x357, 0x358);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DSetRotation(
+        zClass_NodePartial * node,
+        float x,
+        float y,
+        float z
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
+            node,
+            0x357,
+            0x358
+        );
         if (data == 0) {
             return 5;
         }
@@ -508,16 +763,33 @@ namespace zClass_Object3D {
         data->rotation.x = x;
         data->rotation.y = y;
         data->rotation.z = z;
-        ClearIdentityFlagIfAnyNonZero(data, x, y, z);
+        ClearIdentityFlagIfAnyNonZero(
+            data,
+            x,
+            y,
+            z
+        );
 
-        QueueTransformUpdate(node, data);
+        QueueTransformUpdate(
+            node,
+            data
+        );
         return 0;
     }
 
     // Reimplements 0x44e170: zClass_Object3D::gwObject3DTranslateRotation
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DTranslateRotation(
-        zClass_NodePartial * node, float dx, float dy, float dz) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(node, 0x3cf, 0x3d0);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DTranslateRotation(
+        zClass_NodePartial * node,
+        float dx,
+        float dy,
+        float dz
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
+            node,
+            0x3cf,
+            0x3d0
+        );
         if (data == 0) {
             return 5;
         }
@@ -526,16 +798,34 @@ namespace zClass_Object3D {
         data->rotation.x += dx;
         data->rotation.y += dy;
         data->rotation.z += dz;
-        ClearIdentityFlagIfAnyNonZero(data, data->rotation.x, data->rotation.y, data->rotation.z);
+        ClearIdentityFlagIfAnyNonZero(
+            data,
+            data->rotation.x,
+            data->rotation.y,
+            data->rotation.z
+        );
 
-        QueueTransformUpdate(node, data);
+        QueueTransformUpdate(
+            node,
+            data
+        );
         return 0;
     }
 
     // Reimplements 0x44e270: zClass_Object3D::gwObject3DGetPosition
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DGetPosition(
-        zClass_NodePartial * node, float *outX, float *outY, float *outZ) {
-        zClass_Object3DDataPartial *data = GetObject3DData(node, 0x41a, 0x41b, 0x41c);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DGetPosition(
+        zClass_NodePartial * node,
+        float *outX,
+        float *outY,
+        float *outZ
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DData(
+            node,
+            0x41a,
+            0x41b,
+            0x41c
+        );
         if (data == 0) {
             return node != 0 && node->classData != 0 ? 3 : 5;
         }
@@ -547,9 +837,18 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44e300: zClass_Object3D::gwObject3DSetPosition
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetPosition(zClass_NodePartial * node,
-                                                                       float x, float y, float z) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(node, 0x441, 0x442);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DSetPosition(
+        zClass_NodePartial * node,
+        float x,
+        float y,
+        float z
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
+            node,
+            0x441,
+            0x442
+        );
         if (data == 0) {
             return 5;
         }
@@ -557,16 +856,34 @@ namespace zClass_Object3D {
         data->localMatrix[9] = x;
         data->localMatrix[10] = y;
         data->localMatrix[11] = z;
-        ClearIdentityFlagIfAnyNonZero(data, x, y, z);
+        ClearIdentityFlagIfAnyNonZero(
+            data,
+            x,
+            y,
+            z
+        );
 
-        QueueTransformUpdate(node, data);
+        QueueTransformUpdate(
+            node,
+            data
+        );
         return 0;
     }
 
     // Reimplements 0x44e3d0: zClass_Object3D::gwObject3DTranslatePosition
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DTranslatePosition(
-        zClass_NodePartial * node, float dx, float dy, float dz) {
-        zClass_Object3DDataPartial *data = GetObject3DData(node, 0x47e, 0x47f, 0x480);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DTranslatePosition(
+        zClass_NodePartial * node,
+        float dx,
+        float dy,
+        float dz
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DData(
+            node,
+            0x47e,
+            0x47f,
+            0x480
+        );
         if (data == 0) {
             return node != 0 && node->classData != 0 ? 3 : 5;
         }
@@ -574,16 +891,28 @@ namespace zClass_Object3D {
         data->localMatrix[9] += dx;
         data->localMatrix[10] += dy;
         data->localMatrix[11] += dz;
-        ClearIdentityFlagIfAnyNonZero(data, data->localMatrix[9], data->localMatrix[10],
-                                      data->localMatrix[11]);
+        ClearIdentityFlagIfAnyNonZero(
+            data,
+            data->localMatrix[9],
+            data->localMatrix[10],
+            data->localMatrix[11]
+        );
 
-        QueueTransformUpdate(node, data);
+        QueueTransformUpdate(
+            node,
+            data
+        );
         return 0;
     }
 
     // Reimplements 0x44e5b0: zClass_Object3D::gwObject3DGetMatrixPtr
     RECOIL_NOINLINE float *RECOIL_FASTCALL gwObject3DGetMatrixPtr(zClass_NodePartial * node) {
-        zClass_Object3DDataPartial *data = GetObject3DData(node, 0x4fe, 0x4ff, 0x500);
+        zClass_Object3DDataPartial *data = GetObject3DData(
+            node,
+            0x4fe,
+            0x4ff,
+            0x500
+        );
         if (data == 0) {
             return 0;
         }
@@ -592,21 +921,36 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44e4f0: zClass_Object3D::gwObject3DSetMatrix
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetMatrix(zClass_NodePartial * node,
-                                                                     float *matrix) {
-        zClass_Object3DDataPartial *data = GetObject3DData(node, 0x4bb, 0x4bc, 0x4bd);
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwObject3DSetMatrix(
+        zClass_NodePartial * node,
+        float *matrix
+    ){
+        zClass_Object3DDataPartial *data = GetObject3DData(
+            node,
+            0x4bb,
+            0x4bc,
+            0x4bd
+        );
         if (data == 0) {
             return node != 0 && node->classData != 0 ? 3 : 5;
         }
 
         if (matrix != data->localMatrix) {
-            memcpy(data->localMatrix, matrix, sizeof(data->localMatrix));
+            memcpy(
+                data->localMatrix,
+                matrix,
+                sizeof(data->localMatrix)
+            );
         }
 
         data->flags = (data->flags & ~0x08) | 0x11;
         zClass_Node::PropagateTransformDirtyRecursive(node);
         if ((node->flags & 0x01) == 0) {
-            zClass_TypeList::Insert(7, node);
+            zClass_TypeList::Insert(
+                7,
+                node
+            );
             node->flags |= 0x01;
         }
         node->flags |= 0x02;
@@ -620,11 +964,20 @@ zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState = {0};
 
 namespace zClass_Object3D_ModelRefLerpQueue {
     // Reimplements 0x438020: zClass_Object3D_ModelRefLerpQueue::Add
-    RECOIL_NOINLINE void RECOIL_FASTCALL Add(zClass_NodePartial *node, void *callbackCtx,
-                                                      void *onComplete, float startModelRef,
-                                                      float targetModelRef, float durationSec) {
+    RECOIL_NOINLINE void RECOIL_FASTCALL Add(
+        zClass_NodePartial * node,
+        void *callbackCtx,
+        void *onComplete,
+        float startModelRef,
+        float targetModelRef,
+        float durationSec
+    ) {
         zClass_Object3D_ModelRefLerpTask *task = new zClass_Object3D_ModelRefLerpTask;
-        memset(task, 0, sizeof(*task));
+        memset(
+            task,
+            0,
+            sizeof(*task)
+        );
 
         if (task != 0) {
             task->next = 0;
@@ -649,8 +1002,7 @@ namespace zClass_Object3D_ModelRefLerpQueue {
         task->currentModelRef = startModelRef;
 
         const float delta = targetModelRef - startModelRef;
-        task->modelRefDeltaPerSec =
-            durationSec == 0.0f ? 99999997952.0f : delta / durationSec;
+        task->modelRefDeltaPerSec = durationSec == 0.0f ? 99999997952.0f : delta / durationSec;
         if (delta < 0.0f) {
             task->targetModelRef = 1.0f - targetModelRef;
             task->invertModelRef = 1;
@@ -660,7 +1012,10 @@ namespace zClass_Object3D_ModelRefLerpQueue {
             task->invertModelRef = 0;
         }
 
-        zClass_Object3D::gwObject3DSetLitFlag(node, 1);
+        zClass_Object3D::gwObject3DSetLitFlag(
+            node,
+            1
+        );
     }
 
     // Reimplements 0x4381d0: zClass_Object3D_ModelRefLerpQueue::Update
@@ -688,7 +1043,10 @@ namespace zClass_Object3D_ModelRefLerpQueue {
                 alphaScale = 1.0f - alphaScale;
             }
 
-            zClass_Object3D::gwObject3DSetAlphaScale(task->node, alphaScale);
+            zClass_Object3D::gwObject3DSetAlphaScale(
+                task->node,
+                alphaScale
+            );
 
             if (task->currentModelRef >= task->targetModelRef) {
                 union {
@@ -701,13 +1059,15 @@ namespace zClass_Object3D_ModelRefLerpQueue {
                 }
 
                 if (alphaScale == 1.0f) {
-                    zClass_Object3D::gwObject3DSetLitFlag(task->node, 0);
+                    zClass_Object3D::gwObject3DSetLitFlag(
+                        task->node,
+                        0
+                    );
                 }
 
                 zClass_Object3D_ModelRefLerpTask *const nextTask = task->next;
                 if (g_ModelRefLerpQueueState.count != 0) {
-                    zClass_Object3D_ModelRefLerpTask *prevTask =
-                        g_ModelRefLerpQueueState.head;
+                    zClass_Object3D_ModelRefLerpTask *prevTask = g_ModelRefLerpQueueState.head;
                     if (task == prevTask) {
                         --g_ModelRefLerpQueueState.count;
                         g_ModelRefLerpQueueState.head = task->next;
@@ -718,8 +1078,7 @@ namespace zClass_Object3D_ModelRefLerpQueue {
                         ::operator delete(task);
                     } else if (prevTask != 0) {
                         while (prevTask != 0) {
-                            zClass_Object3D_ModelRefLerpTask *const prevNext =
-                                prevTask->next;
+                            zClass_Object3D_ModelRefLerpTask *const prevNext = prevTask->next;
                             if (prevNext == task) {
                                 --g_ModelRefLerpQueueState.count;
                                 prevTask->next = task->next;
@@ -749,7 +1108,11 @@ namespace zClass_Object3D_ModelRefLerpQueue {
             task = next;
         }
 
-        memset(&g_ModelRefLerpQueueState, 0, sizeof(g_ModelRefLerpQueueState));
+        memset(
+            &g_ModelRefLerpQueueState,
+            0,
+            sizeof(g_ModelRefLerpQueueState)
+        );
     }
 }
 
@@ -762,10 +1125,8 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x4527f0: zClass_Node::HasRenderableDiPredicate
-    RECOIL_NOINLINE int RECOIL_FASTCALL HasRenderableDiPredicate(zClass_NodePartial *
-                                                                          node) {
-        zDiPartial *di =
-            (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+    RECOIL_NOINLINE int RECOIL_FASTCALL HasRenderableDiPredicate(zClass_NodePartial * node) {
+        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0 && di->mode == 1 && (di->flags & 0x10) == 0) {
             return 1;
         }
@@ -774,8 +1135,9 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x44d990: zClass_Node::PropagateTransformDirtyRecursive
-    RECOIL_NOINLINE void RECOIL_FASTCALL PropagateTransformDirtyRecursive(zClass_NodePartial *
-                                                                          self) {
+    RECOIL_NOINLINE void RECOIL_FASTCALL PropagateTransformDirtyRecursive(
+        zClass_NodePartial * self
+    ) {
         if (self->classId == kZClassNodeObject3D) {
             *(int *)(self->classData) |= kObject3DTransformDirtyFlag;
         }

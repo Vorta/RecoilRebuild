@@ -110,6 +110,12 @@ int gFakeDirectDrawSurface3UnlockCalls;
 LPVOID gFakeDirectDrawSurface3LastUnlockArg;
 HRESULT gFakeDirectDrawSurface3RestoreResult;
 int gFakeDirectDrawSurface3RestoreCalls;
+int gFakeDirectDrawSurface3ReleaseCalls;
+
+ULONG __stdcall FakeDirectDrawSurface3_Release(IDirectDrawSurface3 *) {
+    ++gFakeDirectDrawSurface3ReleaseCalls;
+    return 1;
+}
 
 HRESULT __stdcall FakeD3DDevice2_BeginScene(IDirect3DDevice2 *) {
     ++gFakeD3DBeginSceneCalls;
@@ -209,6 +215,8 @@ void InstallFakeDirectDrawSurface3(FakeDirectDrawSurface3Object &surface,
                                    HRESULT secondUnlockResult,
                                    HRESULT restoreResult) {
     std::memset(gFakeDirectDrawSurface3VTable, 0, sizeof(gFakeDirectDrawSurface3VTable));
+    gFakeDirectDrawSurface3VTable[2] =
+        reinterpret_cast<void *>(FakeDirectDrawSurface3_Release);
     gFakeDirectDrawSurface3VTable[5] =
         reinterpret_cast<void *>(FakeDirectDrawSurface3_Blt);
     gFakeDirectDrawSurface3VTable[25] =
@@ -242,6 +250,7 @@ void InstallFakeDirectDrawSurface3(FakeDirectDrawSurface3Object &surface,
     gFakeDirectDrawSurface3LastUnlockArg = reinterpret_cast<LPVOID>(1);
     gFakeDirectDrawSurface3RestoreResult = restoreResult;
     gFakeDirectDrawSurface3RestoreCalls = 0;
+    gFakeDirectDrawSurface3ReleaseCalls = 0;
 }
 
 void ConfigureFakeDirectDrawSurface3LockResults(HRESULT firstLockResult,
@@ -1687,6 +1696,150 @@ extern "C" int zvideo_fx_surface_alpha_line_smoke(void) {
     zRndr::g_pixelPackGreenBits = oldGreenBits;
 
     return horizontalOk && lowAlphaOk && blendOk && clipOk ? 0 : 1;
+}
+
+extern "C" int zvideo_fx_surface_apply_blue_tint_rect_smoke(void) {
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const int oldQuadBatchCount = g_zVideo_QuadBatchCount;
+    zVideo_QuadBatchItemPartial oldQuadBatchItems[16];
+    std::memcpy(oldQuadBatchItems, g_zVideo_QuadBatchItemsBase, sizeof(oldQuadBatchItems));
+
+    unsigned short pixels[24] = {};
+    for (int i = 0; i < 24; ++i) {
+        pixels[i] = 0xffff;
+    }
+
+    g_zVideo_FxSurfacePixels16 = pixels;
+    g_zVideo_FxSurfaceWidth = 6;
+    g_zVideo_FxSurfaceHeight = 4;
+    g_zVideo_FxSurfacePitchBytes = 12;
+    g_zVideo_FxSurfacePitchPixels16 = 6;
+    g_zVideo_ActiveRendererPath = 0;
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+
+    zVidRect32 rect{1, 1, 5, 3};
+    zVideo_FxSurface::ApplyBlueTintRect(&rect);
+
+    const bool softwareRegionOk =
+        pixels[1 + 1 * 6] == 0x7bff && pixels[2 + 1 * 6] == 0x7bff &&
+        pixels[3 + 1 * 6] == 0x7bff && pixels[4 + 1 * 6] == 0x7bff &&
+        pixels[1 + 2 * 6] == 0x7bff && pixels[2 + 2 * 6] == 0x7bff &&
+        pixels[3 + 2 * 6] == 0x7bff && pixels[4 + 2 * 6] == 0x7bff;
+    const bool softwareEdgesOk =
+        pixels[0 + 1 * 6] == 0xffff && pixels[5 + 1 * 6] == 0xffff &&
+        pixels[0 + 2 * 6] == 0xffff && pixels[5 + 2 * 6] == 0xffff &&
+        pixels[1 + 3 * 6] == 0xffff;
+
+    std::memset(g_zVideo_QuadBatchItemsBase, 0, sizeof(g_zVideo_QuadBatchItemsBase));
+    g_zVideo_QuadBatchCount = 0;
+    g_zVideo_ActiveRendererPath = 1;
+    zVidRect32 hwRect{2, 3, 4, 5};
+    zVideo_FxSurface::ApplyBlueTintRect(&hwRect);
+    const zVideo_QuadBatchItemPartial &quad = g_zVideo_QuadBatchItemsBase[0];
+    const bool hardwareOk =
+        g_zVideo_QuadBatchCount == 1 &&
+        quad.vertices[0].sx == 2.0f && quad.vertices[0].sy == 3.0f &&
+        quad.vertices[1].sx == 4.0f && quad.vertices[1].sy == 3.0f &&
+        quad.vertices[2].sx == 4.0f && quad.vertices[2].sy == 5.0f &&
+        quad.vertices[3].sx == 2.0f && quad.vertices[3].sy == 5.0f &&
+        quad.vertices[0].color == 0x4c0000f8 && quad.vertices[3].color == 0x4c0000f8;
+
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_QuadBatchCount = oldQuadBatchCount;
+    std::memcpy(g_zVideo_QuadBatchItemsBase, oldQuadBatchItems, sizeof(oldQuadBatchItems));
+
+    if (!softwareRegionOk) {
+        return 1;
+    }
+    if (!softwareEdgesOk) {
+        return 2;
+    }
+    if (!hardwareOk) {
+        return 3;
+    }
+    return 0;
+}
+
+extern "C" int zvideo_fx_surface_apply_green_mask_rect_smoke(void) {
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const int oldQuadBatchCount = g_zVideo_QuadBatchCount;
+    zVideo_QuadBatchItemPartial oldQuadBatchItems[16];
+    std::memcpy(oldQuadBatchItems, g_zVideo_QuadBatchItemsBase, sizeof(oldQuadBatchItems));
+
+    unsigned short pixels[24] = {};
+    for (int i = 0; i < 24; ++i) {
+        pixels[i] = 0xffff;
+    }
+
+    g_zVideo_FxSurfacePixels16 = pixels;
+    g_zVideo_FxSurfaceWidth = 6;
+    g_zVideo_FxSurfaceHeight = 4;
+    g_zVideo_FxSurfacePitchBytes = 12;
+    g_zVideo_FxSurfacePitchPixels16 = 6;
+    g_zVideo_ActiveRendererPath = 0;
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+
+    zVidRect32 rect{1, 1, 5, 3};
+    zVideo_FxSurface::ApplyGreenMaskRect(&rect);
+
+    const bool softwareRegionOk =
+        pixels[1 + 1 * 6] == 0x07e0 && pixels[2 + 1 * 6] == 0x07e0 &&
+        pixels[3 + 1 * 6] == 0x07e0 && pixels[4 + 1 * 6] == 0x07e0 &&
+        pixels[1 + 2 * 6] == 0x07e0 && pixels[2 + 2 * 6] == 0x07e0 &&
+        pixels[3 + 2 * 6] == 0x07e0 && pixels[4 + 2 * 6] == 0x07e0;
+    const bool softwareEdgesOk =
+        pixels[0 + 1 * 6] == 0xffff && pixels[5 + 1 * 6] == 0xffff &&
+        pixels[0 + 2 * 6] == 0xffff && pixels[5 + 2 * 6] == 0xffff &&
+        pixels[1 + 3 * 6] == 0xffff;
+
+    std::memset(g_zVideo_QuadBatchItemsBase, 0, sizeof(g_zVideo_QuadBatchItemsBase));
+    g_zVideo_QuadBatchCount = 0;
+    g_zVideo_ActiveRendererPath = 1;
+    zVidRect32 hwRect{2, 3, 4, 5};
+    zVideo_FxSurface::ApplyGreenMaskRect(&hwRect);
+    const zVideo_QuadBatchItemPartial &quad = g_zVideo_QuadBatchItemsBase[0];
+    const bool hardwareOk =
+        g_zVideo_QuadBatchCount == 1 &&
+        quad.vertices[0].sx == 2.0f && quad.vertices[0].sy == 3.0f &&
+        quad.vertices[1].sx == 4.0f && quad.vertices[1].sy == 3.0f &&
+        quad.vertices[2].sx == 4.0f && quad.vertices[2].sy == 5.0f &&
+        quad.vertices[3].sx == 2.0f && quad.vertices[3].sy == 5.0f &&
+        quad.vertices[0].color == 0x4c00fc00 && quad.vertices[3].color == 0x4c00fc00;
+
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_QuadBatchCount = oldQuadBatchCount;
+    std::memcpy(g_zVideo_QuadBatchItemsBase, oldQuadBatchItems, sizeof(oldQuadBatchItems));
+
+    if (!softwareRegionOk) {
+        return 1;
+    }
+    if (!softwareEdgesOk) {
+        return 2;
+    }
+    if (!hardwareOk) {
+        return 3;
+    }
+    return 0;
 }
 
 extern "C" int zvideo_fx_surface_colored_lines_batch_smoke(void) {
@@ -3887,16 +4040,23 @@ extern "C" int zvid_image_create_format_size_pixels_smoke(void) {
     char alpha[128] = {};
     const bool configured =
         zVid_Image::SetFormatCode(image, 1) == 0 &&
+        zVid_Image::SetHeaderFlagsByte(image, 0x7a) == 0 &&
         zVid_Image_SetPixels(image, pixels, alpha) == 0 &&
         zVid_Image::SetSize(image, 16, 8) == 0 &&
-        image->formatFlagsPacked == 3 && image->pixels == pixels && image->alphaMap == alpha &&
-        image->width == 16 && image->height == 8 && image->pixelCount == 128 &&
-        image->pitchWords == 16 && image->widthScale == 16.0f &&
+        image->headerFlagsByte == 0x7a && image->formatFlagsPacked == 3 &&
+        image->pixels == pixels && image->alphaMap == alpha && image->width == 16 &&
+        image->height == 8 && image->pixelCount == 128 && image->pitchWords == 16 &&
+        image->widthScale == 16.0f &&
         image->uShiftFrom20 == 20 && image->uMask == 15 &&
         image->vMaskFixed20 == (7 << 20);
 
+    const bool unpackedPixelDataBytes = zVid_Image::QueryPixelDataBytes(image) == 256;
+    image->paletteMetaPacked = 32;
+    const bool palettedPixelDataBytes = zVid_Image::QueryPixelDataBytes(image) == 128;
+    image->paletteMetaPacked = 0;
+
     zVid_Image::Destroy(image);
-    return createdZeroed && configured ? 0 : 2;
+    return createdZeroed && configured && unpackedPixelDataBytes && palettedPixelDataBytes ? 0 : 2;
 }
 
 extern "C" int zvideo_image_file_read_helpers_smoke(void) {
@@ -3918,6 +4078,18 @@ extern "C" int zvideo_image_file_read_helpers_smoke(void) {
     std::fwrite(pixels, 1, sizeof(pixels), file);
     std::rewind(file);
 
+    zVidImagePartial directReadImage{};
+    const bool directHeaderRead =
+        zVid_Image::ReadHeader(nullptr, &directReadImage) == -1 &&
+        zVid_Image::ReadHeader(file, nullptr) == -1 &&
+        zVid_Image::ReadHeader(file, &directReadImage) == 0 &&
+        directReadImage.width == 2 && directReadImage.height == 1 &&
+        directReadImage.pixelCount == 2 && directReadImage.pitchWords == 2 &&
+        directReadImage.formatFlagsPacked == 1 && directReadImage.headerFlagsByte == 0x12 &&
+        directReadImage.textureAddressFlagsPacked == 0x3456 &&
+        directReadImage.paletteMetaPacked == 0;
+
+    std::rewind(file);
     g_zVideo_PixelPack_RBits = 5;
     zVidImagePartial *image = zVid_Image::ReadFromFile(file);
     std::fclose(file);
@@ -3927,14 +4099,89 @@ extern "C" int zvideo_image_file_read_helpers_smoke(void) {
     }
 
     std::uint16_t *readPixels = static_cast<std::uint16_t *>(image->pixels);
-    const bool ok = image->width == 2 && image->height == 1 && image->pixelCount == 2 &&
-                    image->pitchWords == 2 && image->headerFlagsByte == 0x12 &&
-                    image->textureAddressFlagsPacked == 0x3456 && image->paletteMetaPacked == 0 &&
-                    (image->formatFlagsPacked & 0x21) == 0x21 && readPixels[0] == 0x3fff &&
-                    readPixels[1] == 0x001f;
+    const bool ok = directHeaderRead && image->width == 2 && image->height == 1 &&
+                    image->pixelCount == 2 && image->pitchWords == 2 &&
+                    image->headerFlagsByte == 0x12 &&
+                    image->textureAddressFlagsPacked == 0x3456 &&
+                    image->paletteMetaPacked == 0 && (image->formatFlagsPacked & 0x21) == 0x21 &&
+                    readPixels[0] == 0x3fff && readPixels[1] == 0x001f;
 
     zVid_Image::Destroy(image);
     return ok ? 0 : 3;
+}
+
+extern "C" int zvideo_image_read_data_smoke(void) {
+    unsigned char sourcePixels[4] = {0x10, 0x20, 0x30, 0x40};
+    unsigned char sourceAlpha[4] = {1, 2, 3, 4};
+    unsigned char sourcePalette[2] = {0xa0, 0xb0};
+
+    std::FILE *file = std::tmpfile();
+    if (file == nullptr) {
+        return 1;
+    }
+
+    std::fwrite(sourcePixels, 1, sizeof(sourcePixels), file);
+    std::fwrite(sourceAlpha, 1, sizeof(sourceAlpha), file);
+    std::fwrite(sourcePalette, 1, sizeof(sourcePalette), file);
+    std::rewind(file);
+
+    unsigned char pixels[4] = {};
+    zVidImagePartial image{};
+    image.pixelCount = 4;
+    image.width = 2;
+    image.height = 2;
+    image.formatFlagsPacked = 0x08;
+    image.paletteMetaPacked = 2;
+    image.pixels = pixels;
+
+    const int readResult = zVid_Image::ReadData(file, &image, 0);
+    std::fclose(file);
+
+    const bool dataOk =
+        readResult == 0 && image.alphaMap != nullptr && image.palette != nullptr &&
+        std::memcmp(pixels, sourcePixels, sizeof(sourcePixels)) == 0 &&
+        std::memcmp(image.alphaMap, sourceAlpha, sizeof(sourceAlpha)) == 0 &&
+        std::memcmp(image.palette, sourcePalette, sizeof(sourcePalette)) == 0 &&
+        (image.formatFlagsPacked & 0xc8) == 0xc8;
+    std::free(image.alphaMap);
+    std::free(image.palette);
+    if (!dataOk) {
+        return 2;
+    }
+
+    unsigned char largerHintPixel = 0xaa;
+    zVidImagePartial largerHintImage{};
+    largerHintImage.pixelCount = 1;
+    largerHintImage.formatFlagsPacked = 0;
+    largerHintImage.pixels = &largerHintPixel;
+
+    file = std::tmpfile();
+    if (file == nullptr) {
+        return 3;
+    }
+    const bool largerHintOk =
+        zVid_Image::ReadData(file, &largerHintImage, 2) == 0 && largerHintPixel == 0xaa;
+    std::fclose(file);
+    if (!largerHintOk) {
+        return 4;
+    }
+
+    unsigned char shortPixels[4] = {};
+    zVidImagePartial shortReadImage{};
+    shortReadImage.pixelCount = 4;
+    shortReadImage.formatFlagsPacked = 0;
+    shortReadImage.pixels = shortPixels;
+
+    file = std::tmpfile();
+    if (file == nullptr) {
+        return 5;
+    }
+    std::fputc(0x7f, file);
+    std::rewind(file);
+    const bool shortReadOk = zVid_Image::ReadData(file, &shortReadImage, 0) == -1;
+    std::fclose(file);
+
+    return shortReadOk ? 0 : 6;
 }
 
 extern "C" int zvideo_palette_remap_no_recipes_smoke(void) {
@@ -4051,6 +4298,7 @@ extern "C" int zvideo_texture_pack_load_image_smoke(void) {
 }
 
 extern "C" int zvideo_image_surface_helpers_guard_smoke(void) {
+    const int oldVideoInitialized = g_zVideo_IsInitialized;
     zVidHwApiDeviceRecordPartial selectedDevice{};
     g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
     g_zVideo_UseHalfResBackbuffer = 0;
@@ -4065,16 +4313,32 @@ extern "C" int zvideo_image_surface_helpers_guard_smoke(void) {
     g_zVideo_IsInitialized = 0;
     zVideo_dd::Image_EnsureSurfaceForCurrentDevice(&image);
     if (image.surface != nullptr || image.pixels != nullptr) {
+        g_zVideo_IsInitialized = oldVideoInitialized;
         return 2;
+    }
+
+    FakeDirectDrawSurface3Object surface{};
+    InstallFakeDirectDrawSurface3(surface, DD_OK, DD_OK, DD_OK);
+    image.surface = reinterpret_cast<IDirectDrawSurface3 *>(&surface);
+    image.pixels = reinterpret_cast<void *>(0x5678);
+    g_zVideo_IsInitialized = 1;
+    zVideo_dd::Image_EnsureSurfaceForCurrentDevice(&image);
+    if (gFakeDirectDrawSurface3ReleaseCalls != 1 || image.surface != nullptr ||
+        image.pixels != nullptr) {
+        g_zVideo_IsInitialized = oldVideoInitialized;
+        return 3;
     }
 
     HDC hdc = nullptr;
     g_zVideo_RendererType = 2;
     if (zVideo_dd::Image_UploadPixelsToSurface(&image, &hdc) != 0) {
-        return 3;
+        g_zVideo_IsInitialized = oldVideoInitialized;
+        return 4;
     }
 
-    return zVideo_dd::Image_ReleaseSurface(&image, hdc) == 0 ? 0 : 4;
+    const int result = zVideo_dd::Image_ReleaseSurface(&image, hdc) == 0 ? 0 : 5;
+    g_zVideo_IsInitialized = oldVideoInitialized;
+    return result;
 }
 
 extern "C" int zvideo_restore_display_surfaces_null_smoke(void) {

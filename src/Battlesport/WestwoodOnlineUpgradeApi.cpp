@@ -9,41 +9,74 @@
 
 #include <string.h>
 
-struct WestwoodOnlineUpgradeApiComVtable
-{
+struct WestwoodOnlineUpgradeApiComVtable {
     void *QueryInterface;
     void *AddRef;
     void *Release;
     void(STDMETHODCALLTYPE *ProcessCallbacks)(IUnknown *self);
-    void(STDMETHODCALLTYPE *BeginConnect)(IUnknown *self, int languageId,
-                                          int productId, const char *playerName,
-                                          const char *connectString,
-                                          int timeoutSeconds);
+    void(STDMETHODCALLTYPE *BeginConnect)(
+        IUnknown *self,
+        int languageId,
+        int productId,
+        const char *playerName,
+        const char *connectString,
+        int timeoutSeconds
+    );
     void(STDMETHODCALLTYPE *RequestBootstrapServerList)(
         IUnknown *self,
         WestwoodOnlineUpgradeBootstrapServerRecord *selectedBootstrapServer,
         int timeoutSeconds,
-        int useAlternateConnectString);
-    void(STDMETHODCALLTYPE *RequestListMode)(IUnknown *self, int listMode, int enabled);
+        int useAlternateConnectString
+    );
+    void(STDMETHODCALLTYPE *RequestListMode)(
+        IUnknown *self,
+        int listMode,
+        int enabled
+    );
 };
 
-struct WestwoodOnlineUpgradeApiComObject
-{
+struct WestwoodOnlineUpgradeApiComObject {
     WestwoodOnlineUpgradeApiComVtable *vftable;
 };
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiComVtable, ProcessCallbacks) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiComVtable, BeginConnect) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiComVtable,
-                              RequestBootstrapServerList) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiComVtable, RequestListMode) == 0x18);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiComVtable,
+        ProcessCallbacks
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiComVtable,
+        BeginConnect
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiComVtable,
+        RequestBootstrapServerList
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiComVtable,
+        RequestListMode
+    ) == 0x18
+);
 
 // BN observes CWnd::DestroyWindow as a provider virtual dispatch at vtable offset 0x60.
-struct WestwoodOnlineUpgradeMfcWndVtable
-{
+struct WestwoodOnlineUpgradeMfcWndVtable {
     void *reserved000[24];
-    int(RECOIL_FASTCALL *DestroyWindow)(CWnd *self, void *edx);
+    int(RECOIL_FASTCALL *DestroyWindow)(
+        CWnd *self,
+        void *edx
+    );
 };
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeMfcWndVtable, DestroyWindow) == 0x60);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeMfcWndVtable,
+        DestroyWindow
+    ) == 0x60
+);
 
 extern "C" WestwoodOnlineUpgradeApiInitState g_WestwoodOnlineUpgradeApiInitState = {0};
 extern "C" IUnknown *g_pWestwoodOnlineUpgradeApi = 0;
@@ -68,22 +101,27 @@ extern "C" HANDLE g_WestwoodOnlineUpgradeFailureEvent = 0;
 extern "C" WestwoodOnlineUpgradeBootstrapServerRecord
     g_WestwoodOnlineUpgradeSelectedBootstrapServer = {0};
 extern "C" WestwoodOnlineUpgradeBrowseRecord g_WestwoodOnlineUpgradeCachedBrowseRecord = {0};
-extern "C" WestwoodOnlineUpgradeBrowseRecord
-    g_WestwoodOnlineUpgradeCachedBrowseRecordList[1024] = {{0}};
+extern "C" WestwoodOnlineUpgradeBrowseRecord g_WestwoodOnlineUpgradeCachedBrowseRecordList[1024] = {
+    {0}};
+extern "C" int g_WestwoodOnlineUpgradeCachedBrowseRecordListCount = 0;
 extern "C" HANDLE g_WestwoodOnlineUpgradeCloseHandle0 = 0;
 extern "C" HANDLE g_WestwoodOnlineUpgradeCloseHandle1 = 0;
 extern "C" HANDLE g_WestwoodOnlineUpgradeCloseHandle2 = 0;
 
 // BN observes these COM identity objects in the WOL ActiveX startup path.
-// Exact GUID contents remain future provider-interface recovery evidence.
+// g_WestwoodOnlineUpgradeApiEventSink_IID is the recovered IID referenced by
+// the event-sink interface map at 0x4d1ba0.
 const CLSID g_WestwoodOnlineUpgradeApi_CLSID = {0};
 const IID g_WestwoodOnlineUpgradeApi_IID = {0};
-const IID g_WestwoodOnlineUpgradeApiEventSink_IID = {0};
+const IID g_WestwoodOnlineUpgradeApiEventSink_IID = {
+    0x4dd3baf6,
+    0x7579,
+    0x11d1,
+    {0xb1, 0xc6, 0x00, 0x60, 0x97, 0x17, 0x65, 0x56},
+};
 
-namespace
-{
-const unsigned int kWestwoodOnlineUpgradeInitStateSize =
-    sizeof(WestwoodOnlineUpgradeApiInitState);
+namespace {
+const unsigned int kWestwoodOnlineUpgradeInitStateSize = sizeof(WestwoodOnlineUpgradeApiInitState);
 const unsigned int kFailureMessageBufferSize = 128;
 const unsigned int kWolApiFailureCaptionMessageId = 0x3030;
 const unsigned int kWolApiFailureTextMessageId = 0x302f;
@@ -108,81 +146,85 @@ const DWORD kCallbackSleepMs = 300;
 const DWORD kBootstrapWaitTimeoutMs = 5;
 const DWORD kFailureDisplaySleepMs = 1000;
 
-void RECOIL_CDECL CopyFailureMessage(char *destination, const char *source)
-{
-    strcpy(destination, source);
+void RECOIL_CDECL CopyFailureMessage(
+    char *destination,
+    const char *source
+) {
+    strcpy(
+        destination,
+        source
+    );
 }
 
-WestwoodOnlineUpgradeApiComObject *RECOIL_CDECL GetApiComObject()
-{
+WestwoodOnlineUpgradeApiComObject *RECOIL_CDECL GetApiComObject() {
     return (WestwoodOnlineUpgradeApiComObject *)g_pWestwoodOnlineUpgradeApi;
 }
 
-void RECOIL_CDECL DestroyProgressDialog()
-{
+void RECOIL_CDECL DestroyProgressDialog() {
     CWnd *const progressWnd = (CWnd *)g_pWestwoodOnlineUpgradeProgressDialog;
     WestwoodOnlineUpgradeMfcWndVtable *const vftable =
         (WestwoodOnlineUpgradeMfcWndVtable *)(*(void **)progressWnd);
-    vftable->DestroyWindow(progressWnd, 0);
+    vftable->DestroyWindow(
+        progressWnd,
+        0
+    );
 }
 
-int RECOIL_CDECL GetWolLanguageId()
-{
+int RECOIL_CDECL GetWolLanguageId() {
     const LANGID primaryLanguage = GetSystemDefaultLangID() & 0x3ff;
-    if (primaryLanguage == LANG_GERMAN)
-    {
+    if (primaryLanguage == LANG_GERMAN) {
         return kWolLanguageGerman;
     }
-    if (primaryLanguage == LANG_FRENCH)
-    {
+    if (primaryLanguage == LANG_FRENCH) {
         return kWolLanguageFrench;
     }
     return kWolLanguageDefault;
 }
 
-void RECOIL_CDECL PumpInitialCallbacksUntilEvent(DWORD *waitResult)
-{
-    while (*waitResult == WAIT_TIMEOUT)
-    {
+void RECOIL_CDECL PumpInitialCallbacksUntilEvent(
+    DWORD *waitResult
+) {
+    while (*waitResult == WAIT_TIMEOUT) {
         if (g_WestwoodOnlineUpgradeApiReadyFlag != 0 &&
-            g_WestwoodOnlineUpgradeApiAsyncErrorFlag == 0)
-        {
+            g_WestwoodOnlineUpgradeApiAsyncErrorFlag == 0) {
             WestwoodOnlineUpgradeApiComObject *const api = GetApiComObject();
             api->vftable->ProcessCallbacks((IUnknown *)api);
         }
 
         Sleep(kCallbackSleepMs);
-        if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0)
-        {
+        if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0) {
             return;
         }
 
-        *waitResult = WaitForMultipleObjects(3,
-                                             g_WestwoodOnlineUpgradeInitWaitEvents,
-                                             FALSE,
-                                             kInitialWaitTimeoutMs);
+        *waitResult = WaitForMultipleObjects(
+            3,
+            g_WestwoodOnlineUpgradeInitWaitEvents,
+            FALSE,
+            kInitialWaitTimeoutMs
+        );
     }
 }
 
-DWORD RECOIL_CDECL PumpBootstrapCallbacksUntilEvent()
-{
-    DWORD waitResult = WaitForMultipleObjects(3,
-                                              g_WestwoodOnlineUpgradeInitWaitEvents,
-                                              FALSE,
-                                              kBootstrapWaitTimeoutMs);
-    while (waitResult == WAIT_TIMEOUT)
-    {
+DWORD RECOIL_CDECL PumpBootstrapCallbacksUntilEvent() {
+    DWORD waitResult = WaitForMultipleObjects(
+        3,
+        g_WestwoodOnlineUpgradeInitWaitEvents,
+        FALSE,
+        kBootstrapWaitTimeoutMs
+    );
+    while (waitResult == WAIT_TIMEOUT) {
         WestwoodOnlineUpgradeApiComObject *const api = GetApiComObject();
         api->vftable->ProcessCallbacks((IUnknown *)api);
-        if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0)
-        {
+        if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0) {
             break;
         }
 
-        waitResult = WaitForMultipleObjects(3,
-                                            g_WestwoodOnlineUpgradeInitWaitEvents,
-                                            FALSE,
-                                            kBootstrapWaitTimeoutMs);
+        waitResult = WaitForMultipleObjects(
+            3,
+            g_WestwoodOnlineUpgradeInitWaitEvents,
+            FALSE,
+            kBootstrapWaitTimeoutMs
+        );
     }
     return waitResult;
 }
@@ -190,18 +232,16 @@ DWORD RECOIL_CDECL PumpBootstrapCallbacksUntilEvent()
 
 // Reimplements 0x42dda0: WestwoodOnlineUpgradeApiInitState::Init
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp)
-RECOIL_NOINLINE HRESULT RECOIL_STDCALL
-WestwoodOnlineUpgradeApiInitState::Init(WestwoodOnlineUpgradeApiInitState *self,
-                                        HANDLE bootstrapServerListEvent,
-                                        HINSTANCE moduleHandle)
-{
-    if (self == 0)
-    {
+RECOIL_NOINLINE HRESULT RECOIL_STDCALL WestwoodOnlineUpgradeApiInitState::Init(
+    WestwoodOnlineUpgradeApiInitState *self,
+    HANDLE bootstrapServerListEvent,
+    HINSTANCE moduleHandle
+) {
+    if (self == 0) {
         return E_INVALIDARG;
     }
 
-    if (self->structSize < sizeof(WestwoodOnlineUpgradeApiInitState))
-    {
+    if (self->structSize < sizeof(WestwoodOnlineUpgradeApiInitState)) {
         return E_INVALIDARG;
     }
 
@@ -219,35 +259,54 @@ WestwoodOnlineUpgradeApiInitState::Init(WestwoodOnlineUpgradeApiInitState *self,
 
 // Reimplements 0x43d2e0: WestwoodOnlineUpgradeApi::Init
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL WestwoodOnlineUpgradeApi::Init()
-{
+RECOIL_NOINLINE int RECOIL_CDECL WestwoodOnlineUpgradeApi::Init() {
     char failureCaption[kWolApiFailureMessageBufferSize];
     char failureText[kWolApiFailureMessageBufferSize];
 
-    memset(&g_WestwoodOnlineUpgradeCachedBrowseRecord,
-           0,
-           sizeof(g_WestwoodOnlineUpgradeCachedBrowseRecord));
+    memset(
+        &g_WestwoodOnlineUpgradeCachedBrowseRecord,
+        0,
+        sizeof(g_WestwoodOnlineUpgradeCachedBrowseRecord)
+    );
     zGame::ReturnOnlyStub();
 
     WestwoodOnlineUpgradeApi api;
-    if (api.CreateInstanceAndLoadConfig(g_hWestwoodOnlineUpgradeModuleInstance) == 0)
-    {
+    if (api.CreateInstanceAndLoadConfig(g_hWestwoodOnlineUpgradeModuleInstance) == 0) {
         return 0;
     }
 
-    g_WestwoodOnlineUpgradeBootstrapServerListEvent = CreateEventA(0, FALSE, FALSE, 0);
-    g_WestwoodOnlineUpgradeStatusTextEvent = CreateEventA(0, FALSE, FALSE, 0);
-    g_WestwoodOnlineUpgradeFailureEvent = CreateEventA(0, FALSE, FALSE, 0);
-    g_WestwoodOnlineUpgradeInitWaitEvents[0] =
-        g_WestwoodOnlineUpgradeBootstrapServerListEvent;
+    g_WestwoodOnlineUpgradeBootstrapServerListEvent = CreateEventA(
+        0,
+        FALSE,
+        FALSE,
+        0
+    );
+    g_WestwoodOnlineUpgradeStatusTextEvent = CreateEventA(
+        0,
+        FALSE,
+        FALSE,
+        0
+    );
+    g_WestwoodOnlineUpgradeFailureEvent = CreateEventA(
+        0,
+        FALSE,
+        FALSE,
+        0
+    );
+    g_WestwoodOnlineUpgradeInitWaitEvents[0] = g_WestwoodOnlineUpgradeBootstrapServerListEvent;
     g_WestwoodOnlineUpgradeInitWaitEvents[1] = g_WestwoodOnlineUpgradeStatusTextEvent;
     g_WestwoodOnlineUpgradeInitWaitEvents[2] = g_WestwoodOnlineUpgradeFailureEvent;
 
     ((CDialog *)g_pWestwoodOnlineUpgradeProgressDialog)
-        ->Create((LPCSTR)kWestwoodOnlineUpgradeProgressDialogResourceId, 0);
+        ->Create(
+            (LPCSTR)kWestwoodOnlineUpgradeProgressDialogResourceId,
+            0
+        );
     ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)
-        ->SetDlgItemTextA(kWestwoodOnlineUpgradeProgressStatusControlId,
-                          zLoc::GetMessageString(kWolApiInitConnectingMessageId));
+        ->SetDlgItemTextA(
+            kWestwoodOnlineUpgradeProgressStatusControlId,
+            zLoc::GetMessageString(kWolApiInitConnectingMessageId)
+        );
 
     CString connectString;
     CString playerName;
@@ -255,25 +314,29 @@ RECOIL_NOINLINE int RECOIL_CDECL WestwoodOnlineUpgradeApi::Init()
     g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName(&playerName);
 
     WestwoodOnlineUpgradeApiComObject *apiCom = GetApiComObject();
-    apiCom->vftable->BeginConnect((IUnknown *)apiCom,
-                                  GetWolLanguageId(),
-                                  kWolProductId,
-                                  (const char *)playerName,
-                                  (const char *)connectString,
-                                  kWolConnectTimeoutSeconds);
+    apiCom->vftable->BeginConnect(
+        (IUnknown *)apiCom,
+        GetWolLanguageId(),
+        kWolProductId,
+        (const char *)playerName,
+        (const char *)connectString,
+        kWolConnectTimeoutSeconds
+    );
 
     g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
-    DWORD waitResult = WaitForMultipleObjects(3,
-                                              g_WestwoodOnlineUpgradeInitWaitEvents,
-                                              FALSE,
-                                              kInitialWaitTimeoutMs);
+    DWORD waitResult = WaitForMultipleObjects(
+        3,
+        g_WestwoodOnlineUpgradeInitWaitEvents,
+        FALSE,
+        kInitialWaitTimeoutMs
+    );
     PumpInitialCallbacksUntilEvent(&waitResult);
-    if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0 ||
-        waitResult == WAIT_OBJECT_0 + 2)
-    {
+    if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0 || waitResult == WAIT_OBJECT_0 + 2) {
         ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)
-            ->SetDlgItemTextA(kWestwoodOnlineUpgradeProgressStatusControlId,
-                              zLoc::GetMessageString(kWolApiInitFailureTextMessageId));
+            ->SetDlgItemTextA(
+                kWestwoodOnlineUpgradeProgressStatusControlId,
+                zLoc::GetMessageString(kWolApiInitFailureTextMessageId)
+            );
         Sleep(kFailureDisplaySleepMs);
         DestroyProgressDialog();
         return 0;
@@ -288,83 +351,105 @@ RECOIL_NOINLINE int RECOIL_CDECL WestwoodOnlineUpgradeApi::Init()
         (IUnknown *)apiCom,
         &g_WestwoodOnlineUpgradeSelectedBootstrapServer,
         kWolBootstrapTimeoutSeconds,
-        g_pWestwoodOnlineUpgradeDialog->m_selectedProfileConnectStringMode == 0 ? 1 : 0);
+        g_pWestwoodOnlineUpgradeDialog->m_selectedProfileConnectStringMode == 0 ? 1 : 0
+    );
 
     waitResult = PumpBootstrapCallbacksUntilEvent();
     DestroyProgressDialog();
     ((CWnd *)g_pWestwoodOnlineUpgradeDialog)
-        ->SetDlgItemTextA(kWestwoodOnlineUpgradeDialogServerControlId,
-                          zLoc::GetMessageString(kWolApiInitReadyMessageId));
+        ->SetDlgItemTextA(
+            kWestwoodOnlineUpgradeDialogServerControlId,
+            zLoc::GetMessageString(kWolApiInitReadyMessageId)
+        );
 
-    if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0)
-    {
+    if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0) {
         return 0;
     }
 
-    if (waitResult != WAIT_OBJECT_0 + 2)
-    {
+    if (waitResult != WAIT_OBJECT_0 + 2) {
         apiCom = GetApiComObject();
-        apiCom->vftable->RequestListMode((IUnknown *)apiCom,
-                                         kWolRequestListMode,
-                                         1);
+        apiCom->vftable->RequestListMode(
+            (IUnknown *)apiCom,
+            kWolRequestListMode,
+            1
+        );
         return 1;
     }
 
-    CopyFailureMessage(failureCaption,
-                       zLoc::GetMessageString(kWolApiInitFailureCaptionMessageId));
-    CopyFailureMessage(failureText,
-                       zLoc::GetMessageString(kWolApiInitFailureTextMessageId));
+    CopyFailureMessage(
+        failureCaption,
+        zLoc::GetMessageString(kWolApiInitFailureCaptionMessageId)
+    );
+    CopyFailureMessage(
+        failureText,
+        zLoc::GetMessageString(kWolApiInitFailureTextMessageId)
+    );
     ((CWnd *)((unsigned int)g_RecoilApp.m_pMainWnd))
-        ->MessageBoxA(failureText, failureCaption, kWolApiFailureMessageBoxType);
+        ->MessageBoxA(
+            failureText,
+            failureCaption,
+            kWolApiFailureMessageBoxType
+        );
     return 0;
 }
 
 // Reimplements 0x43d130: WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL
-WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(HANDLE bootstrapServerListEvent)
-{
+RECOIL_NOINLINE int RECOIL_THISCALL WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(
+    HANDLE bootstrapServerListEvent
+) {
     char failureCaption[kFailureMessageBufferSize];
     char failureText[kFailureMessageBufferSize];
 
     CoInitialize(0);
-    g_WestwoodOnlineUpgradeApiInitState.structSize =
-        kWestwoodOnlineUpgradeInitStateSize;
+    g_WestwoodOnlineUpgradeApiInitState.structSize = kWestwoodOnlineUpgradeInitStateSize;
     g_WestwoodOnlineUpgradeApiShutdownState = 0;
-    WestwoodOnlineUpgradeApiInitState::Init(&g_WestwoodOnlineUpgradeApiInitState,
-                                            bootstrapServerListEvent,
-                                            0);
+    WestwoodOnlineUpgradeApiInitState::Init(
+        &g_WestwoodOnlineUpgradeApiInitState,
+        bootstrapServerListEvent,
+        0
+    );
     AfxEnableControlContainer(0);
-    CoCreateInstance(g_WestwoodOnlineUpgradeApi_CLSID,
-                     0,
-                     CLSCTX_INPROC_SERVER,
-                     g_WestwoodOnlineUpgradeApi_IID,
-                     (void **)&g_pWestwoodOnlineUpgradeApi);
+    CoCreateInstance(
+        g_WestwoodOnlineUpgradeApi_CLSID,
+        0,
+        CLSCTX_INPROC_SERVER,
+        g_WestwoodOnlineUpgradeApi_IID,
+        (void **)&g_pWestwoodOnlineUpgradeApi
+    );
 
-    if (g_pWestwoodOnlineUpgradeApi == 0)
-    {
-        CopyFailureMessage(failureCaption,
-                           zLoc::GetMessageString(kWolApiFailureCaptionMessageId));
-        CopyFailureMessage(failureText,
-                           zLoc::GetMessageString(kWolApiFailureTextMessageId));
+    if (g_pWestwoodOnlineUpgradeApi == 0) {
+        CopyFailureMessage(
+            failureCaption,
+            zLoc::GetMessageString(kWolApiFailureCaptionMessageId)
+        );
+        CopyFailureMessage(
+            failureText,
+            zLoc::GetMessageString(kWolApiFailureTextMessageId)
+        );
         MessageBeep(kWolApiFailureMessageBoxType);
         ((CWnd *)((unsigned int)g_RecoilApp.GetMainWnd()))
-            ->MessageBoxA(failureText, failureCaption, kWolApiFailureMessageBoxType);
+            ->MessageBoxA(
+                failureText,
+                failureCaption,
+                kWolApiFailureMessageBoxType
+            );
         return 0;
     }
 
     g_WestwoodOnlineUpgradeApiReadyFlag = 1;
     WestwoodOnlineUpgradeApiEventSink::CreateInstance(
-        (WestwoodOnlineUpgradeApiEventSink **)&g_pWestwoodOnlineUpgradeApiEventSink);
+        (WestwoodOnlineUpgradeApiEventSink **)&g_pWestwoodOnlineUpgradeApiEventSink
+    );
     zCom::ConnectionPointContainer_Advise(
         g_pWestwoodOnlineUpgradeApi,
         (IUnknown *)((unsigned char *)g_pWestwoodOnlineUpgradeApiEventSink +
                      g_WestwoodOnlineUpgradeApiEventSinkConnectionOffset),
         g_WestwoodOnlineUpgradeApiEventSink_IID,
-        &g_WestwoodOnlineUpgradeApiConnectionCookie);
+        &g_WestwoodOnlineUpgradeApiConnectionCookie
+    );
 
-    if (WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues())
-    {
+    if (WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues()) {
         return 1;
     }
 
@@ -374,17 +459,16 @@ WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(HANDLE bootstrapServerList
 
 // Reimplements 0x43d280: WestwoodOnlineUpgradeApi::Shutdown
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL WestwoodOnlineUpgradeApi::Shutdown()
-{
-    if (g_pWestwoodOnlineUpgradeApi == 0)
-    {
+RECOIL_NOINLINE void RECOIL_CDECL WestwoodOnlineUpgradeApi::Shutdown() {
+    if (g_pWestwoodOnlineUpgradeApi == 0) {
         return;
     }
 
     zCom::ConnectionPointContainer_Unadvise(
         g_pWestwoodOnlineUpgradeApi,
         g_WestwoodOnlineUpgradeApiEventSink_IID,
-        g_WestwoodOnlineUpgradeApiConnectionCookie);
+        g_WestwoodOnlineUpgradeApiConnectionCookie
+    );
     g_pWestwoodOnlineUpgradeApi->Release();
     g_pWestwoodOnlineUpgradeApi = 0;
     CloseHandle(g_WestwoodOnlineUpgradeCloseHandle0);

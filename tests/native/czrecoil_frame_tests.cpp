@@ -1,10 +1,12 @@
 #include "Battlesport/CZGameFrame.h"
 #include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/GameNet.h"
 #include "Battlesport/HudSensorTracker.h"
 #include "Battlesport/NetUi.h"
 #include "Battlesport/RecoilApp.h"
 #include "Battlesport/WestwoodOnlineUpgradeDialog.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
@@ -972,6 +974,49 @@ std::int32_t g_wolMenuLoadMissionId;
 const char *g_wolMenuLoadZbdPath;
 std::int32_t g_wolMenuLoadSkipIntro;
 std::int32_t g_wolMenuLoadMissionFlags;
+std::int32_t g_mpMenuCoInitializeCalls;
+HRESULT g_mpMenuCoInitializeResult;
+std::int32_t g_mpMenuInitRuntimeCalls;
+unsigned char *g_mpMenuInitRuntimeGuid;
+std::int32_t g_mpMenuShutdownRuntimeCalls;
+std::int32_t g_mpMenuDoModalCalls;
+std::int32_t g_mpMenuDoModalResult;
+std::int32_t g_mpMenuDialogShouldEnterHostSetup;
+std::int32_t g_mpMenuDialogSelectedSessionIndex;
+const char *g_mpMenuDialogPlayerName;
+std::int32_t g_mpMenuSetPlayerNameCalls;
+const char *g_mpMenuLastPlayerName;
+std::int32_t g_mpMenuSetNetworkEnabledCalls;
+std::int32_t g_mpMenuLastNetworkEnabled;
+std::int32_t g_mpMenuLoadStartCalls;
+RecoilApp *g_mpMenuLoadStartApp;
+std::int32_t g_mpMenuQueueEnterCalls;
+std::int32_t g_mpMenuQueueEnterFlag;
+std::int32_t g_mpMenuOpenSessionCalls;
+std::int32_t g_mpMenuOpenSessionResult;
+std::int32_t g_mpMenuOpenSelectedSessionIndex;
+std::int32_t g_mpMenuOpenEventCode;
+std::int32_t g_mpMenuOpenStatusFlags;
+std::int32_t g_mpMenuOpenValueOrTime;
+std::int32_t g_mpMenuOpenAuxParam;
+std::int32_t g_mpMenuCreateLocalPlayerCalls;
+const char *g_mpMenuCreateLocalPlayerName;
+std::int32_t g_mpMenuRegisterPacketCalls;
+std::int32_t g_mpMenuRegisterPacketType;
+std::int32_t g_mpMenuRegisterPacketMode;
+zNetworkPacketHandler g_mpMenuRegisterPacketHandler;
+std::int32_t g_mpMenuSetStatusCalls;
+unsigned int g_mpMenuStatusFlags;
+std::int32_t g_mpMenuSetRuntimeTimerCalls;
+HudSensorTracker *g_mpMenuSetRuntimeTimerThis;
+std::int32_t g_mpMenuTimerRaw;
+std::int32_t g_mpMenuGoalValue;
+std::int32_t g_mpMenuLoadSetupCalls;
+RecoilApp *g_mpMenuLoadSetupApp;
+std::int32_t g_mpMenuLoadSetupMissionId;
+const char *g_mpMenuLoadSetupZbdPath;
+std::int32_t g_mpMenuLoadSetupSkipIntro;
+std::int32_t g_mpMenuLoadSetupMissionFlags;
 std::int32_t g_cWndCreateExCalls;
 std::int32_t g_cWndSetWindowTextCalls;
 std::int32_t g_cWndCenterWindowCalls;
@@ -1046,6 +1091,10 @@ struct CWndSetWindowTextAccess : CWnd {
 
 struct CWndCenterWindowAccess : CWnd {
     using CWnd::CenterWindow;
+};
+
+struct HudSensorTrackerSetRuntimeTimerAccess : HudSensorTracker {
+    using HudSensorTracker::SetRuntimeTimerSecAndGoalValue;
 };
 
 void RecordOnDestroyCall(std::int32_t callId) {
@@ -1252,6 +1301,117 @@ int RECOIL_FASTCALL FakeWolMenuLoadZbdAndSetupSensorTracker(RecoilApp *self, voi
     return 1;
 }
 
+HRESULT RECOIL_STDCALL FakeMpMenuCoInitialize(LPVOID) {
+    ++g_mpMenuCoInitializeCalls;
+    return g_mpMenuCoInitializeResult;
+}
+
+int RECOIL_FASTCALL FakeMpMenuInitSessionRuntime(unsigned char *appGuid) {
+    ++g_mpMenuInitRuntimeCalls;
+    g_mpMenuInitRuntimeGuid = appGuid;
+    return 0;
+}
+
+int RECOIL_CDECL FakeMpMenuShutdownSessionRuntime() {
+    ++g_mpMenuShutdownRuntimeCalls;
+    return 0;
+}
+
+int RECOIL_FASTCALL FakeMpMenuDoModal(CDialog *self, void *) {
+    ++g_mpMenuDoModalCalls;
+    NetSessionBrowserDialog *const dialog = (NetSessionBrowserDialog *)self;
+    dialog->m_shouldEnterHostSetup = g_mpMenuDialogShouldEnterHostSetup;
+    dialog->m_selectedSessionIndex = g_mpMenuDialogSelectedSessionIndex;
+    dialog->m_playerName = g_mpMenuDialogPlayerName;
+    return g_mpMenuDoModalResult;
+}
+
+void RECOIL_FASTCALL FakeMpMenuSetPlayerName(const char *name) {
+    ++g_mpMenuSetPlayerNameCalls;
+    g_mpMenuLastPlayerName = name;
+}
+
+void RECOIL_FASTCALL FakeMpMenuSetNetworkEnabled(int enabled) {
+    ++g_mpMenuSetNetworkEnabledCalls;
+    g_mpMenuLastNetworkEnabled = enabled;
+}
+
+int RECOIL_FASTCALL FakeMpMenuLoadZbdAndStartEngine(RecoilApp *self, void *) {
+    ++g_mpMenuLoadStartCalls;
+    g_mpMenuLoadStartApp = self;
+    return 1;
+}
+
+void RECOIL_CDECL FakeMpMenuQueueEnterWithReconfigureFlag(int flag) {
+    ++g_mpMenuQueueEnterCalls;
+    g_mpMenuQueueEnterFlag = flag;
+}
+
+int RECOIL_FASTCALL
+FakeMpMenuOpenSelectedSessionAndReadStatusFields(
+    zNetworkSessionDescStatusFields *statusFields
+) {
+    ++g_mpMenuOpenSessionCalls;
+    g_mpMenuOpenSelectedSessionIndex = statusFields->selectedSessionIndex;
+    statusFields->eventCode = g_mpMenuOpenEventCode;
+    statusFields->statusFlags = g_mpMenuOpenStatusFlags;
+    statusFields->valueOrTime = g_mpMenuOpenValueOrTime;
+    statusFields->auxParam = g_mpMenuOpenAuxParam;
+    return g_mpMenuOpenSessionResult;
+}
+
+int RECOIL_FASTCALL FakeMpMenuCreateLocalPlayerRecordAndRegister(char *playerName) {
+    ++g_mpMenuCreateLocalPlayerCalls;
+    g_mpMenuCreateLocalPlayerName = playerName;
+    return 1;
+}
+
+zNetworkDispatchHandlerRecord *RECOIL_FASTCALL FakeMpMenuRegisterPacketHandler(
+    int packetType,
+    zNetworkPacketHandler handlerProc,
+    int mode
+) {
+    ++g_mpMenuRegisterPacketCalls;
+    g_mpMenuRegisterPacketType = packetType;
+    g_mpMenuRegisterPacketHandler = handlerProc;
+    g_mpMenuRegisterPacketMode = mode;
+    return 0;
+}
+
+void RECOIL_FASTCALL FakeMpMenuSetStatusBitsFromFlags(unsigned int statusFlags) {
+    ++g_mpMenuSetStatusCalls;
+    g_mpMenuStatusFlags = statusFlags;
+}
+
+void RECOIL_FASTCALL FakeMpMenuSetRuntimeTimer(
+    HudSensorTracker *self,
+    void *,
+    int timerSecRaw,
+    int goalValue
+) {
+    ++g_mpMenuSetRuntimeTimerCalls;
+    g_mpMenuSetRuntimeTimerThis = self;
+    g_mpMenuTimerRaw = timerSecRaw;
+    g_mpMenuGoalValue = goalValue;
+}
+
+int RECOIL_FASTCALL FakeMpMenuLoadZbdAndSetupSensorTracker(
+    RecoilApp *self,
+    void *,
+    int missionId,
+    const char *zbdPath,
+    int skipIntroFmvMode,
+    int missionFlags
+) {
+    ++g_mpMenuLoadSetupCalls;
+    g_mpMenuLoadSetupApp = self;
+    g_mpMenuLoadSetupMissionId = missionId;
+    g_mpMenuLoadSetupZbdPath = zbdPath;
+    g_mpMenuLoadSetupSkipIntro = skipIntroFmvMode;
+    g_mpMenuLoadSetupMissionFlags = missionFlags;
+    return 1;
+}
+
 void *CFrameWndOnCloseProc() {
     union MemberToFunction {
         void (RECOIL_THISCALL CFrameWndOnCloseAccess::*member)();
@@ -1352,6 +1512,17 @@ void *CWndCenterWindowProc() {
     return thunk.function;
 }
 
+void *RecoilAppLoadZbdAndStartEngineProc() {
+    union MemberToFunction {
+        int (RECOIL_THISCALL RecoilApp::*member)();
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &RecoilApp::LoadZbdAndStartEngine;
+    return thunk.function;
+}
+
 void *RecoilAppLoadZbdAndSetupSensorTrackerProc() {
     union MemberToFunction {
         int (RECOIL_THISCALL RecoilApp::*member)(int, const char *, int, int);
@@ -1360,6 +1531,17 @@ void *RecoilAppLoadZbdAndSetupSensorTrackerProc() {
 
     MemberToFunction thunk{};
     thunk.member = &RecoilApp::LoadZbdAndSetupSensorTracker;
+    return thunk.function;
+}
+
+void *HudSensorTrackerSetRuntimeTimerProc() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL HudSensorTrackerSetRuntimeTimerAccess::*member)(int, int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &HudSensorTrackerSetRuntimeTimerAccess::SetRuntimeTimerSecAndGoalValue;
     return thunk.function;
 }
 
@@ -1379,6 +1561,56 @@ void ResetWolMenuProbe() {
     g_wolMenuLoadZbdPath = reinterpret_cast<const char *>(static_cast<std::uintptr_t>(1));
     g_wolMenuLoadSkipIntro = -1;
     g_wolMenuLoadMissionFlags = -1;
+}
+
+void ResetMpMenuProbe() {
+    g_mpMenuCoInitializeCalls = 0;
+    g_mpMenuCoInitializeResult = S_OK;
+    g_mpMenuInitRuntimeCalls = 0;
+    g_mpMenuInitRuntimeGuid = nullptr;
+    g_mpMenuShutdownRuntimeCalls = 0;
+    g_mpMenuDoModalCalls = 0;
+    g_mpMenuDoModalResult = IDOK;
+    g_mpMenuDialogShouldEnterHostSetup = 0;
+    g_mpMenuDialogSelectedSessionIndex = 3;
+    g_mpMenuDialogPlayerName = "PlayerOne";
+    g_mpMenuSetPlayerNameCalls = 0;
+    g_mpMenuLastPlayerName = nullptr;
+    g_mpMenuSetNetworkEnabledCalls = 0;
+    g_mpMenuLastNetworkEnabled = -1;
+    g_mpMenuLoadStartCalls = 0;
+    g_mpMenuLoadStartApp = nullptr;
+    g_mpMenuQueueEnterCalls = 0;
+    g_mpMenuQueueEnterFlag = -1;
+    g_mpMenuOpenSessionCalls = 0;
+    g_mpMenuOpenSessionResult = 1;
+    g_mpMenuOpenSelectedSessionIndex = -1;
+    g_mpMenuOpenEventCode = 301;
+    g_mpMenuOpenStatusFlags = 0x35;
+    g_mpMenuOpenValueOrTime = 2;
+    g_mpMenuOpenAuxParam = 9;
+    g_mpMenuCreateLocalPlayerCalls = 0;
+    g_mpMenuCreateLocalPlayerName = nullptr;
+    g_mpMenuRegisterPacketCalls = 0;
+    g_mpMenuRegisterPacketType = -1;
+    g_mpMenuRegisterPacketMode = -1;
+    g_mpMenuRegisterPacketHandler = nullptr;
+    g_mpMenuSetStatusCalls = 0;
+    g_mpMenuStatusFlags = 0;
+    g_mpMenuSetRuntimeTimerCalls = 0;
+    g_mpMenuSetRuntimeTimerThis = nullptr;
+    g_mpMenuTimerRaw = 0;
+    g_mpMenuGoalValue = 0;
+    g_mpMenuLoadSetupCalls = 0;
+    g_mpMenuLoadSetupApp = nullptr;
+    g_mpMenuLoadSetupMissionId = -1;
+    g_mpMenuLoadSetupZbdPath = reinterpret_cast<const char *>(static_cast<std::uintptr_t>(1));
+    g_mpMenuLoadSetupSkipIntro = -1;
+    g_mpMenuLoadSetupMissionFlags = -1;
+    g_RecoilApp.m_pendingState_0c4 = 0;
+    g_RecoilApp.m_skipIntroFmv = 0;
+    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 0;
+    g_zNetwork_FatalDisconnectCallback = nullptr;
 }
 
 bool PatchImportByName(const char *dllName, const char *functionName, void *replacement,
@@ -1407,6 +1639,64 @@ bool PatchImportByName(const char *dllName, const char *functionName, void *repl
             auto *importName = reinterpret_cast<IMAGE_IMPORT_BY_NAME *>(
                 base + names->u1.AddressOfData);
             if (std::strcmp(reinterpret_cast<const char *>(importName->Name), functionName) != 0) {
+                continue;
+            }
+
+            patch.slot = reinterpret_cast<ULONG_PTR *>(&thunks->u1.Function);
+            patch.original = *patch.slot;
+            DWORD oldProtect = 0;
+            if (VirtualProtect(patch.slot, sizeof(*patch.slot), PAGE_EXECUTE_READWRITE,
+                               &oldProtect) == 0) {
+                patch.slot = nullptr;
+                return false;
+            }
+
+            *patch.slot = reinterpret_cast<ULONG_PTR>(replacement);
+            DWORD ignored = 0;
+            VirtualProtect(patch.slot, sizeof(*patch.slot), oldProtect, &ignored);
+            FlushInstructionCache(GetCurrentProcess(), patch.slot, sizeof(*patch.slot));
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool PatchImportByOrdinal(
+    const char *dllName,
+    WORD ordinal,
+    void *replacement,
+    ImportFunctionPatch &patch
+) {
+    unsigned char *const imageBase = reinterpret_cast<unsigned char *>(GetModuleHandleA(nullptr));
+    auto *dos = reinterpret_cast<IMAGE_DOS_HEADER *>(imageBase);
+    if (dos->e_magic != IMAGE_DOS_SIGNATURE) {
+        return false;
+    }
+
+    auto *nt = reinterpret_cast<IMAGE_NT_HEADERS *>(imageBase + dos->e_lfanew);
+    if (nt->Signature != IMAGE_NT_SIGNATURE) {
+        return false;
+    }
+
+    const IMAGE_DATA_DIRECTORY &directory =
+        nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
+    auto *descriptor = reinterpret_cast<IMAGE_IMPORT_DESCRIPTOR *>(
+        imageBase + directory.VirtualAddress);
+
+    for (; descriptor->Name != 0; ++descriptor) {
+        const char *importDll = reinterpret_cast<const char *>(imageBase + descriptor->Name);
+        if (_stricmp(importDll, dllName) != 0) {
+            continue;
+        }
+
+        auto *names = reinterpret_cast<IMAGE_THUNK_DATA *>(
+            imageBase + (descriptor->OriginalFirstThunk != 0 ? descriptor->OriginalFirstThunk
+                                                             : descriptor->FirstThunk));
+        auto *thunks = reinterpret_cast<IMAGE_THUNK_DATA *>(imageBase + descriptor->FirstThunk);
+        for (; names->u1.AddressOfData != 0; ++names, ++thunks) {
+            if (!IMAGE_SNAP_BY_ORDINAL(names->u1.Ordinal) ||
+                static_cast<WORD>(names->u1.Ordinal & 0xffff) != ordinal) {
                 continue;
             }
 
@@ -1486,6 +1776,188 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
     patch.address = nullptr;
 }
 } // namespace
+
+extern "C" int czrecoil_frame_open_multiplayer_session_browser_smoke(void) {
+    ImportFunctionPatch coInitializePatch{};
+    ImportFunctionPatch doModalPatch{};
+    CodeFunctionPatch initRuntimePatch{};
+    CodeFunctionPatch shutdownRuntimePatch{};
+    CodeFunctionPatch setPlayerNamePatch{};
+    CodeFunctionPatch setNetworkEnabledPatch{};
+    CodeFunctionPatch loadStartPatch{};
+    CodeFunctionPatch queueEnterPatch{};
+    CodeFunctionPatch openSessionPatch{};
+    CodeFunctionPatch createPlayerPatch{};
+    CodeFunctionPatch registerPacketPatch{};
+    CodeFunctionPatch setStatusPatch{};
+    CodeFunctionPatch setRuntimeTimerPatch{};
+    CodeFunctionPatch loadSetupPatch{};
+    const WORD kMfc42CDialogDoModalOrdinal = 2514;
+
+    if (!PatchImportByName("ole32.dll", "CoInitialize",
+                           reinterpret_cast<void *>(&FakeMpMenuCoInitialize),
+                           coInitializePatch) ||
+        !PatchFunctionJump(reinterpret_cast<void *>(&zNetwork::InitSessionRuntime),
+                           reinterpret_cast<void *>(&FakeMpMenuInitSessionRuntime),
+                           initRuntimePatch) ||
+        !PatchFunctionJump(reinterpret_cast<void *>(&zNetwork::ShutdownSessionRuntime),
+                           reinterpret_cast<void *>(&FakeMpMenuShutdownSessionRuntime),
+                           shutdownRuntimePatch) ||
+        !PatchImportByOrdinal("MFC42.DLL", kMfc42CDialogDoModalOrdinal,
+                              reinterpret_cast<void *>(&FakeMpMenuDoModal),
+                              doModalPatch) ||
+        !PatchFunctionJump(reinterpret_cast<void *>(&zOpt::SetPlayerName),
+                           reinterpret_cast<void *>(&FakeMpMenuSetPlayerName),
+                           setPlayerNamePatch) ||
+        !PatchFunctionJump(reinterpret_cast<void *>(&zOpt::SetNetworkEnabled),
+                           reinterpret_cast<void *>(&FakeMpMenuSetNetworkEnabled),
+                           setNetworkEnabledPatch) ||
+        !PatchFunctionJump(RecoilAppLoadZbdAndStartEngineProc(),
+                           reinterpret_cast<void *>(&FakeMpMenuLoadZbdAndStartEngine),
+                           loadStartPatch) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&HudUiNetGameSetupOverlayOwner::
+                                         QueueEnterWithReconfigureFlag),
+            reinterpret_cast<void *>(&FakeMpMenuQueueEnterWithReconfigureFlag),
+            queueEnterPatch) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&zNetworkDPlay::OpenSelectedSessionAndReadStatusFields),
+            reinterpret_cast<void *>(&FakeMpMenuOpenSelectedSessionAndReadStatusFields),
+            openSessionPatch) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&zNetwork_DPlay::CreateLocalPlayerRecordAndRegister),
+            reinterpret_cast<void *>(&FakeMpMenuCreateLocalPlayerRecordAndRegister),
+            createPlayerPatch) ||
+        !PatchFunctionJump(reinterpret_cast<void *>(&zNetwork::RegisterPacketHandler),
+                           reinterpret_cast<void *>(&FakeMpMenuRegisterPacketHandler),
+                           registerPacketPatch) ||
+        !PatchFunctionJump(reinterpret_cast<void *>(&GameNet::SetStatusBitsFromFlags),
+                           reinterpret_cast<void *>(&FakeMpMenuSetStatusBitsFromFlags),
+                           setStatusPatch) ||
+        !PatchFunctionJump(HudSensorTrackerSetRuntimeTimerProc(),
+                           reinterpret_cast<void *>(&FakeMpMenuSetRuntimeTimer),
+                           setRuntimeTimerPatch) ||
+        !PatchFunctionJump(RecoilAppLoadZbdAndSetupSensorTrackerProc(),
+                           reinterpret_cast<void *>(&FakeMpMenuLoadZbdAndSetupSensorTracker),
+                           loadSetupPatch)) {
+        RestoreFunctionPatch(loadSetupPatch);
+        RestoreFunctionPatch(setRuntimeTimerPatch);
+        RestoreFunctionPatch(setStatusPatch);
+        RestoreFunctionPatch(registerPacketPatch);
+        RestoreFunctionPatch(createPlayerPatch);
+        RestoreFunctionPatch(openSessionPatch);
+        RestoreFunctionPatch(queueEnterPatch);
+        RestoreFunctionPatch(loadStartPatch);
+        RestoreFunctionPatch(setNetworkEnabledPatch);
+        RestoreFunctionPatch(setPlayerNamePatch);
+        RestoreImportPatch(doModalPatch);
+        RestoreFunctionPatch(shutdownRuntimePatch);
+        RestoreFunctionPatch(initRuntimePatch);
+        RestoreImportPatch(coInitializePatch);
+        return 1;
+    }
+
+    int result = 0;
+    CZRecoilFrame frame{};
+    frame.m_useArchiveBanks = 0x55;
+
+    ResetMpMenuProbe();
+    g_mpMenuDoModalResult = IDCANCEL;
+    frame.OnMenuOpenMultiplayerSessionBrowser();
+    if (g_mpMenuCoInitializeCalls != 1) {
+        result = 20;
+    } else if (g_mpMenuInitRuntimeCalls != 1) {
+        result = 21;
+    } else if (g_mpMenuDoModalCalls != 1) {
+        result = 22;
+    } else if (g_mpMenuShutdownRuntimeCalls != 1) {
+        result = 23;
+    } else if (g_mpMenuSetNetworkEnabledCalls != 1) {
+        result = 24;
+    } else if (g_mpMenuLastNetworkEnabled != 0) {
+        result = 25;
+    } else if (g_mpMenuLoadStartCalls != 0 || g_mpMenuLoadSetupCalls != 0) {
+        result = 26;
+    } else if (g_zNetwork_FatalDisconnectCallback != &RecoilApp::FatalErrorAndExit) {
+        result = 27;
+    } else if (g_RecoilApp.m_skipIntroFmv != 1 ||
+               g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv != 1) {
+        result = 28;
+    }
+
+    ResetMpMenuProbe();
+    g_mpMenuDialogShouldEnterHostSetup = 1;
+    g_mpMenuDialogPlayerName = "HostPilot";
+    frame.OnMenuOpenMultiplayerSessionBrowser();
+    if (result == 0 &&
+        (g_mpMenuInitRuntimeGuid != g_zNetwork_RecoilAppGuid ||
+         g_mpMenuSetPlayerNameCalls != 1 ||
+         std::strcmp(g_mpMenuLastPlayerName, "HostPilot") != 0 ||
+         g_mpMenuSetNetworkEnabledCalls != 1 || g_mpMenuLastNetworkEnabled != 1 ||
+         g_mpMenuLoadStartCalls != 1 || g_mpMenuLoadStartApp != &g_RecoilApp ||
+         g_mpMenuQueueEnterCalls != 1 || g_mpMenuQueueEnterFlag != 0 ||
+         g_mpMenuOpenSessionCalls != 0 || g_mpMenuShutdownRuntimeCalls != 0)) {
+        result = 3;
+    }
+
+    ResetMpMenuProbe();
+    g_mpMenuDialogShouldEnterHostSetup = 0;
+    g_mpMenuDialogSelectedSessionIndex = 4;
+    g_mpMenuDialogPlayerName = "JoinPilot";
+    g_mpMenuOpenEventCode = 301;
+    g_mpMenuOpenStatusFlags = 0x35;
+    g_mpMenuOpenValueOrTime = 2;
+    g_mpMenuOpenAuxParam = 9;
+    frame.OnMenuOpenMultiplayerSessionBrowser();
+
+    union TimerSecondsBits {
+        float seconds;
+        std::int32_t raw;
+    } expectedTimer = {120.0f};
+    const RecoilPtr32 expectedPendingState =
+        static_cast<RecoilPtr32>(
+            reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_mpExitDialogState_220.base)
+        );
+    if (result == 0 &&
+        (g_mpMenuOpenSessionCalls != 1 || g_mpMenuOpenSelectedSessionIndex != 4 ||
+         g_mpMenuSetNetworkEnabledCalls != 1 || g_mpMenuLastNetworkEnabled != 1 ||
+         g_mpMenuCreateLocalPlayerCalls != 1 ||
+         std::strcmp(g_mpMenuCreateLocalPlayerName, "JoinPilot") != 0 ||
+         g_mpMenuSetPlayerNameCalls != 2 ||
+         std::strcmp(g_mpMenuLastPlayerName, "JoinPilot") != 0 ||
+         g_RecoilApp.m_pendingState_0c4 != expectedPendingState ||
+         g_mpMenuRegisterPacketCalls != 1 || g_mpMenuRegisterPacketType != 20 ||
+         g_mpMenuRegisterPacketMode != 2 ||
+         g_mpMenuRegisterPacketHandler !=
+             (zNetworkPacketHandler)&GameNet::HandlePkt14_HudTimerAndFlagsSync ||
+         g_mpMenuSetStatusCalls != 1 || g_mpMenuStatusFlags != 0x35 ||
+         g_mpMenuSetRuntimeTimerCalls != 1 ||
+         g_mpMenuSetRuntimeTimerThis != &g_HudSensorTracker ||
+         g_mpMenuTimerRaw != expectedTimer.raw || g_mpMenuGoalValue != 9 ||
+         g_mpMenuLoadSetupCalls != 1 || g_mpMenuLoadSetupApp != &g_RecoilApp ||
+         g_mpMenuLoadSetupMissionId != 7 || g_mpMenuLoadSetupZbdPath != nullptr ||
+         g_mpMenuLoadSetupSkipIntro != 1 || g_mpMenuLoadSetupMissionFlags != 0x55 ||
+         g_mpMenuShutdownRuntimeCalls != 0)) {
+        result = 4;
+    }
+
+    RestoreFunctionPatch(loadSetupPatch);
+    RestoreFunctionPatch(setRuntimeTimerPatch);
+    RestoreFunctionPatch(setStatusPatch);
+    RestoreFunctionPatch(registerPacketPatch);
+    RestoreFunctionPatch(createPlayerPatch);
+    RestoreFunctionPatch(openSessionPatch);
+    RestoreFunctionPatch(queueEnterPatch);
+    RestoreFunctionPatch(loadStartPatch);
+    RestoreFunctionPatch(setNetworkEnabledPatch);
+    RestoreFunctionPatch(setPlayerNamePatch);
+    RestoreImportPatch(doModalPatch);
+    RestoreFunctionPatch(shutdownRuntimePatch);
+    RestoreFunctionPatch(initRuntimePatch);
+    RestoreImportPatch(coInitializePatch);
+    ResetMpMenuProbe();
+    return result;
+}
 
 extern "C" int czrecoil_frame_on_menu_westwood_online_upgrade_smoke(void) {
     CodeFunctionPatch zlocPatch{};

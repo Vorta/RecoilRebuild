@@ -1,5 +1,7 @@
 #include "Battlesport/WestwoodOnlineUpgradeConfigDialog.h"
 #include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/GameNet.h"
+#include "Battlesport/HudSensorTracker.h"
 #include "Battlesport/RecoilApp.h"
 #include "Battlesport/WestwoodOnlineUpgradeApi.h"
 #include "Battlesport/WestwoodOnlineUpgradeApiEventSink.h"
@@ -9,10 +11,12 @@
 #include "GameZRecoil/wwonline/upgrade_download.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zLoc/zLoc.h"
+#include "GameZRecoil/zNetwork/zNetwork.h"
 
 #include <ocidl.h>
 #include <stdarg.h>
 #include <string.h>
+#include <time.h>
 
 extern int g_threeFloatDefaultCount;
 extern long g_threeFloatDefaultReturn;
@@ -160,7 +164,18 @@ struct InitFakeApiVtable
         IUnknown *self,
         const char *sessionName,
         int lookupMode);
-    void *reserved084[5];
+    void *reserved084[3];
+    int(STDMETHODCALLTYPE *LoadConnectProfileStrings)(
+        IUnknown *self,
+        int profileId,
+        char **playerNameOut,
+        char **connectStringOut);
+    int(STDMETHODCALLTYPE *SaveConnectProfileStrings)(
+        IUnknown *self,
+        int profileId,
+        const char *playerName,
+        const char *connectString,
+        int connectStringMode);
     void(STDMETHODCALLTYPE *GetQueryResultCount)(IUnknown *self, int *outCount);
 };
 
@@ -194,6 +209,35 @@ CDataExchange *g_modalDdxContext[24];
 int g_modalDdxKind[24];
 int g_modalDdxControlId[24];
 void *g_modalDdxValue[24];
+int g_configFocusSendMessageCalls;
+HWND g_configFocusSendMessageHwnd;
+UINT g_configFocusSendMessageMsg;
+WPARAM g_configFocusSendMessageWParam;
+LPARAM g_configFocusSendMessageLParam;
+int g_configInitLoadProfileCalls;
+int g_configInitLoadProfileIds[4];
+int g_configInitLoadProfileResults[4];
+const char *g_configInitLoadProfilePlayers[4];
+const char *g_configInitLoadProfileConnectStrings[4];
+int g_configInitSetWindowTextCalls;
+CWnd *g_configInitSetWindowTextThis;
+const char *g_configInitSetWindowTextValue;
+int g_configOnOkSaveProfileCalls;
+int g_configOnOkSaveProfileIds[4];
+const char *g_configOnOkSaveProfilePlayers[4];
+const char *g_configOnOkSaveProfileConnectStrings[4];
+int g_configOnOkSaveProfileModes[4];
+int g_configOnOkBaseOnOkCalls;
+CDialog *g_configOnOkBaseOnOkThis;
+int g_configComboKillFocusGetWindowTextCalls;
+CWnd *g_configComboKillFocusGetWindowTextThis;
+const char *g_configComboKillFocusText;
+int g_configSelChangeSendMessageCalls;
+HWND g_configSelChangeSendMessageHwnd;
+UINT g_configSelChangeSendMessageMsg;
+WPARAM g_configSelChangeSendMessageWParam;
+LPARAM g_configSelChangeSendMessageLParam;
+LRESULT g_configSelChangeSendMessageResult;
 int g_modalTimeTickCalls;
 int g_configDoModalCalls;
 int g_configDoModalResult;
@@ -343,6 +387,65 @@ WestwoodOnlineUpgradeDialog *g_submitVisibleAppendThis;
 char g_submitVisibleAppendFormat[64];
 char g_submitVisibleAppendArg0[64];
 char g_submitVisibleAppendArg1[64];
+int g_appendStatus301BFormatCalls;
+char *g_appendStatus301BFormatBuffer;
+int g_appendStatus301BFormatMaxChars;
+unsigned int g_appendStatus301BFormatMessageId;
+const char *g_appendStatus301BFormatSessionName;
+const char *g_appendStatus301BFormatStatusText;
+int g_appendStatus301BAppendCalls;
+WestwoodOnlineUpgradeDialog *g_appendStatus301BAppendThis;
+char g_appendStatus301BAppendText[64];
+int g_appendStatus301CFormatCalls;
+char *g_appendStatus301CFormatBuffer;
+int g_appendStatus301CFormatMaxChars;
+unsigned int g_appendStatus301CFormatMessageId;
+const char *g_appendStatus301CFormatSessionName;
+const char *g_appendStatus301CFormatStatusText;
+int g_appendStatus301CAppendCalls;
+WestwoodOnlineUpgradeDialog *g_appendStatus301CAppendThis;
+char g_appendStatus301CAppendText[64];
+int g_appendStatus301CAltAppendCalls;
+WestwoodOnlineUpgradeDialog *g_appendStatus301CAltAppendThis;
+const char *g_appendStatus301CAltAppendFormat;
+const char *g_appendStatus301CAltAppendSessionName;
+int g_appendStatus301CAltAppendValue;
+int g_appendStatus301DFormatCalls;
+char *g_appendStatus301DFormatBuffer;
+int g_appendStatus301DFormatMaxChars;
+unsigned int g_appendStatus301DFormatMessageId;
+const char *g_appendStatus301DFormatSessionName;
+const char *g_appendStatus301DFormatStatusText;
+int g_appendStatus301DAppendCalls;
+WestwoodOnlineUpgradeDialog *g_appendStatus301DAppendThis;
+char g_appendStatus301DAppendText[64];
+int g_appendConnectStatusCalls;
+WestwoodOnlineUpgradeDialog *g_appendConnectStatusThis[8];
+char g_appendConnectStatusText[8][64];
+int g_appendBrowseRecordStatusFormatCalls;
+char *g_appendBrowseRecordStatusFormatBuffer;
+int g_appendBrowseRecordStatusFormatMaxChars;
+unsigned int g_appendBrowseRecordStatusFormatMessageId;
+const char *g_appendBrowseRecordStatusFormatSessionName;
+int g_appendValueStatusFormatCalls;
+char *g_appendValueStatusFormatBuffer;
+int g_appendValueStatusFormatMaxChars;
+unsigned int g_appendValueStatusFormatMessageId;
+int g_appendValueStatusFormatValue;
+int g_appendTimeStatusFormatCalls;
+char *g_appendTimeStatusFormatBuffer;
+int g_appendTimeStatusFormatMaxChars;
+unsigned int g_appendTimeStatusFormatMessageId;
+char g_appendTimeStatusFormatTimeText[64];
+int g_browseRecordListFormatCalls;
+char *g_browseRecordListFormatBuffer[12];
+int g_browseRecordListFormatMaxChars[12];
+unsigned int g_browseRecordListFormatMessageId[12];
+const char *g_browseRecordListFormatSessionName[12];
+int g_browseRecordListFormatMetric0[12];
+int g_browseRecordListFormatMetric1[12];
+const char *g_browseRecordListFormatLatencyText[12];
+int g_networkStatusReturnOnlyCalls;
 int g_lookupBrowseRecordCalls;
 IUnknown *g_lookupBrowseRecordSelf[8];
 char g_lookupBrowseRecordSessionName[8][0x34];
@@ -409,6 +512,12 @@ int g_downloadDlgSetDlgItemTextCalls;
 HWND g_downloadDlgSetDlgItemTextHwnd[4];
 int g_downloadDlgSetDlgItemTextControlId[4];
 const char *g_downloadDlgSetDlgItemTextValue[4];
+int g_downloadDlgSendDlgItemMessageCalls;
+HWND g_downloadDlgSendDlgItemMessageHwnd[4];
+int g_downloadDlgSendDlgItemMessageControlId[4];
+UINT g_downloadDlgSendDlgItemMessageMessage[4];
+WPARAM g_downloadDlgSendDlgItemMessageWParam[4];
+LPARAM g_downloadDlgSendDlgItemMessageLParam[4];
 int g_downloadDlgGetCurrentDirectoryCalls;
 char g_downloadDlgCurrentDirectory[260];
 int g_downloadDlgSetCurrentDirectoryCalls;
@@ -510,6 +619,13 @@ int g_browseResolvedFormatMaxChars;
 unsigned int g_browseResolvedFormatMessageId;
 const char *g_browseResolvedFormatSessionName;
 const char *g_browseResolvedFormatBrowseName;
+int g_sessionLaunchFormatCalls;
+char *g_sessionLaunchFormatBuffer;
+int g_sessionLaunchFormatMaxChars;
+unsigned int g_sessionLaunchFormatMessageId;
+const char *g_sessionLaunchFormatArg0;
+const char *g_sessionLaunchFormatArg1;
+const char *g_sessionLaunchFormatArg2;
 int g_browseResolvedUpdateCalls;
 WestwoodOnlineUpgradeDialog *g_browseResolvedUpdateThis;
 int g_browseResolvedConnectCalls;
@@ -523,6 +639,45 @@ IUnknown *g_sessionFinishedCancelSelf;
 int g_sessionFinishedAppendConnectCalls;
 WestwoodOnlineUpgradeDialog *g_sessionFinishedAppendConnectThis;
 const char *g_sessionFinishedAppendConnectSessionName;
+int g_launchInitSessionCalls;
+unsigned char *g_launchInitSessionGuid;
+int g_launchFormatIpv4Calls;
+unsigned int g_launchFormatIpv4Packed;
+char g_launchFormattedHost[20];
+int g_launchSelectTcpCalls;
+char g_launchSelectTcpAddress[20];
+int g_launchSelectTcpSkip;
+int g_launchSelectTcpResult;
+int g_launchCreateSessionCalls;
+zNetworkSessionDescStatusFields g_launchCreateSessionFields;
+int g_launchCreateSessionResult;
+int g_launchSetNetworkEnabledCalls;
+int g_launchSetNetworkEnabledValue;
+int g_launchGetPlayerNameCalls;
+WestwoodOnlineUpgradeDialog *g_launchGetPlayerNameThis[4];
+char g_launchPlayerName[64];
+int g_launchCreateLocalPlayerCalls;
+char g_launchCreateLocalPlayerName[4][64];
+int g_launchOpenSelectedCalls;
+zNetworkSessionDescStatusFields g_launchOpenSelectedInputFields;
+zNetworkSessionDescStatusFields g_launchOpenSelectedOutputFields;
+int g_launchOpenSelectedResult;
+int g_launchSetPlayerNameCalls;
+char g_launchSetPlayerName[64];
+int g_launchSetStatusBitsCalls;
+unsigned int g_launchStatusBits;
+int g_launchTimerCalls;
+HudSensorTracker *g_launchTimerThis;
+int g_launchTimerSecondsRaw;
+int g_launchTimerGoalValue;
+int g_launchSendMessageCalls;
+HWND g_launchSendMessageHwnd;
+UINT g_launchSendMessageMsg;
+WPARAM g_launchSendMessageWParam;
+LPARAM g_launchSendMessageLParam;
+LRESULT g_launchSendMessageResult;
+int g_apiEventSinkAddRefCalls;
+IUnknown *g_apiEventSinkAddRefSelf;
 
 template <typename Method> void *MethodAddress(Method method)
 {
@@ -790,6 +945,26 @@ BOOL WINAPI FakeDownloadDlgSetDlgItemTextA(HWND hWnd, int controlId, LPCSTR text
     return TRUE;
 }
 
+LRESULT WINAPI FakeDownloadDlgSendDlgItemMessageA(
+    HWND hWnd,
+    int controlId,
+    UINT message,
+    WPARAM wParam,
+    LPARAM lParam)
+{
+    const int index = g_downloadDlgSendDlgItemMessageCalls;
+    if (index < 4)
+    {
+        g_downloadDlgSendDlgItemMessageHwnd[index] = hWnd;
+        g_downloadDlgSendDlgItemMessageControlId[index] = controlId;
+        g_downloadDlgSendDlgItemMessageMessage[index] = message;
+        g_downloadDlgSendDlgItemMessageWParam[index] = wParam;
+        g_downloadDlgSendDlgItemMessageLParam[index] = lParam;
+    }
+    ++g_downloadDlgSendDlgItemMessageCalls;
+    return 1;
+}
+
 DWORD WINAPI FakeDownloadDlgGetCurrentDirectoryA(DWORD bufferChars, LPSTR buffer)
 {
     ++g_downloadDlgGetCurrentDirectoryCalls;
@@ -1011,6 +1186,7 @@ LRESULT RECOIL_FASTCALL FakePendingSessionRemovedSendDlgItemMessageA(
         if (lParam != 0 &&
             (message == LB_ADDSTRING ||
              message == LB_INSERTSTRING ||
+             message == LB_FINDSTRING ||
              message == LB_FINDSTRINGEXACT))
         {
             strcpy(g_pendingRemovedSendMessageText[index], (const char *)lParam);
@@ -1119,6 +1295,13 @@ void ResetBrowseResolvedFakes(void)
     g_browseResolvedFormatMessageId = 0;
     g_browseResolvedFormatSessionName = 0;
     g_browseResolvedFormatBrowseName = 0;
+    g_sessionLaunchFormatCalls = 0;
+    g_sessionLaunchFormatBuffer = 0;
+    g_sessionLaunchFormatMaxChars = 0;
+    g_sessionLaunchFormatMessageId = 0;
+    g_sessionLaunchFormatArg0 = 0;
+    g_sessionLaunchFormatArg1 = 0;
+    g_sessionLaunchFormatArg2 = 0;
     g_browseResolvedUpdateCalls = 0;
     g_browseResolvedUpdateThis = 0;
     g_browseResolvedConnectCalls = 0;
@@ -1135,6 +1318,58 @@ void ResetBrowseResolvedFakes(void)
     g_sessionFinishedAppendConnectCalls = 0;
     g_sessionFinishedAppendConnectThis = 0;
     g_sessionFinishedAppendConnectSessionName = 0;
+}
+
+void ResetLaunchSelectedSessionFakes(void)
+{
+    g_threeFloatUpdateDataCount = 0;
+    for (int index = 0; index < 8; ++index)
+    {
+        g_threeFloatUpdateDataSaveValue[index] = 0;
+    }
+    g_launchInitSessionCalls = 0;
+    g_launchInitSessionGuid = 0;
+    g_launchFormatIpv4Calls = 0;
+    g_launchFormatIpv4Packed = 0;
+    strcpy(g_launchFormattedHost, "4.3.2.1");
+    g_launchSelectTcpCalls = 0;
+    g_launchSelectTcpAddress[0] = '\0';
+    g_launchSelectTcpSkip = 0;
+    g_launchSelectTcpResult = 1;
+    g_launchCreateSessionCalls = 0;
+    memset(&g_launchCreateSessionFields, 0, sizeof(g_launchCreateSessionFields));
+    g_launchCreateSessionResult = 1;
+    g_launchSetNetworkEnabledCalls = 0;
+    g_launchSetNetworkEnabledValue = 0;
+    g_launchGetPlayerNameCalls = 0;
+    for (int index2 = 0; index2 < 4; ++index2)
+    {
+        g_launchGetPlayerNameThis[index2] = 0;
+        g_launchCreateLocalPlayerName[index2][0] = '\0';
+    }
+    strcpy(g_launchPlayerName, "PlayerOne");
+    g_launchCreateLocalPlayerCalls = 0;
+    g_launchOpenSelectedCalls = 0;
+    memset(&g_launchOpenSelectedInputFields, 0,
+           sizeof(g_launchOpenSelectedInputFields));
+    memset(&g_launchOpenSelectedOutputFields, 0,
+           sizeof(g_launchOpenSelectedOutputFields));
+    g_launchOpenSelectedResult = 1;
+    g_launchSetPlayerNameCalls = 0;
+    g_launchSetPlayerName[0] = '\0';
+    g_launchSetStatusBitsCalls = 0;
+    g_launchStatusBits = 0;
+    g_launchTimerCalls = 0;
+    g_launchTimerThis = 0;
+    g_launchTimerSecondsRaw = 0;
+    g_launchTimerGoalValue = 0;
+    g_launchSendMessageCalls = 0;
+    g_launchSendMessageHwnd = 0;
+    g_launchSendMessageMsg = 0;
+    g_launchSendMessageWParam = 0;
+    g_launchSendMessageLParam = 0;
+    g_launchSendMessageResult = 2;
+    g_initDisconnectCalls = 0;
 }
 
 void RECOIL_CDECL FakeApiStatusTimeReset(void)
@@ -1242,6 +1477,44 @@ unsigned int RECOIL_CDECL FakeBrowseResolvedFormatMessage(
     return lstrlenA(outBuffer);
 }
 
+unsigned int RECOIL_CDECL FakeSessionLaunchFormatMessage(
+    char *outBuffer,
+    int maxChars,
+    unsigned int messageId,
+    ...)
+{
+    va_list args;
+
+    ++g_sessionLaunchFormatCalls;
+    g_sessionLaunchFormatBuffer = outBuffer;
+    g_sessionLaunchFormatMaxChars = maxChars;
+    g_sessionLaunchFormatMessageId = messageId;
+    va_start(args, messageId);
+    g_sessionLaunchFormatArg0 = va_arg(args, const char *);
+    g_sessionLaunchFormatArg1 = va_arg(args, const char *);
+    if (messageId == 0x302e)
+    {
+        g_sessionLaunchFormatArg2 = va_arg(args, const char *);
+        wsprintfA(outBuffer,
+                  "launch %04x %s %s %s",
+                  messageId,
+                  g_sessionLaunchFormatArg0,
+                  g_sessionLaunchFormatArg1,
+                  g_sessionLaunchFormatArg2);
+    }
+    else
+    {
+        g_sessionLaunchFormatArg2 = 0;
+        wsprintfA(outBuffer,
+                  "launch %04x %s %s",
+                  messageId,
+                  g_sessionLaunchFormatArg0,
+                  g_sessionLaunchFormatArg1);
+    }
+    va_end(args);
+    return lstrlenA(outBuffer);
+}
+
 void RECOIL_FASTCALL FakeBrowseResolvedUpdateSessionListQueryFromControls(
     WestwoodOnlineUpgradeDialog *self,
     void *)
@@ -1287,6 +1560,122 @@ void RECOIL_FASTCALL FakeSessionFinishedAppendConnectStatusAndRefreshList(
     ++g_sessionFinishedAppendConnectCalls;
     g_sessionFinishedAppendConnectThis = self;
     g_sessionFinishedAppendConnectSessionName = sessionName;
+}
+
+int RECOIL_FASTCALL FakeLaunchInitSessionRuntime(unsigned char *appGuid)
+{
+    ++g_launchInitSessionCalls;
+    g_launchInitSessionGuid = appGuid;
+    return 0;
+}
+
+void RECOIL_FASTCALL FakeLaunchFormatIpv4Address(char *outText,
+                                                 unsigned int ipAddress)
+{
+    ++g_launchFormatIpv4Calls;
+    g_launchFormatIpv4Packed = ipAddress;
+    strcpy(outText, g_launchFormattedHost);
+}
+
+int RECOIL_FASTCALL FakeLaunchSelectTcpIpProviderAndEnumSessions(
+    char *addressString,
+    int skipSessionEnumeration)
+{
+    ++g_launchSelectTcpCalls;
+    strcpy(g_launchSelectTcpAddress, addressString);
+    g_launchSelectTcpSkip = skipSessionEnumeration;
+    return g_launchSelectTcpResult;
+}
+
+int RECOIL_FASTCALL FakeLaunchCreateSessionFromStatusFields(
+    zNetworkSessionDescStatusFields *statusFields)
+{
+    ++g_launchCreateSessionCalls;
+    g_launchCreateSessionFields = *statusFields;
+    return g_launchCreateSessionResult;
+}
+
+void RECOIL_FASTCALL FakeLaunchSetNetworkEnabled(int value)
+{
+    ++g_launchSetNetworkEnabledCalls;
+    g_launchSetNetworkEnabledValue = value;
+}
+
+class LaunchDialogPatchOps
+{
+  public:
+    CString *RECOIL_THISCALL GetSelectedProfilePlayerName(CString *outName)
+    {
+        const int index = g_launchGetPlayerNameCalls;
+        if (index < 4)
+        {
+            g_launchGetPlayerNameThis[index] =
+                (WestwoodOnlineUpgradeDialog *)this;
+        }
+        ++g_launchGetPlayerNameCalls;
+        outName->CString::CString(g_launchPlayerName);
+        return outName;
+    }
+};
+
+int RECOIL_FASTCALL FakeLaunchCreateLocalPlayerRecordAndRegister(
+    char *playerName)
+{
+    const int index = g_launchCreateLocalPlayerCalls;
+    if (index < 4)
+    {
+        strcpy(g_launchCreateLocalPlayerName[index], playerName);
+    }
+    ++g_launchCreateLocalPlayerCalls;
+    return 1;
+}
+
+int RECOIL_FASTCALL FakeLaunchOpenSelectedSessionAndReadStatusFields(
+    zNetworkSessionDescStatusFields *statusFields)
+{
+    ++g_launchOpenSelectedCalls;
+    g_launchOpenSelectedInputFields = *statusFields;
+    if (g_launchOpenSelectedResult != 0)
+    {
+        *statusFields = g_launchOpenSelectedOutputFields;
+    }
+    return g_launchOpenSelectedResult;
+}
+
+void RECOIL_FASTCALL FakeLaunchSetPlayerName(const char *name)
+{
+    ++g_launchSetPlayerNameCalls;
+    strcpy(g_launchSetPlayerName, name);
+}
+
+void RECOIL_FASTCALL FakeLaunchSetStatusBitsFromFlags(unsigned int statusFlags)
+{
+    ++g_launchSetStatusBitsCalls;
+    g_launchStatusBits = statusFlags;
+}
+
+class LaunchHudSensorTrackerPatchOps
+{
+  public:
+    void RECOIL_THISCALL SetRuntimeTimerSecAndGoalValue(int timerSecRaw,
+                                                        int goalValue)
+    {
+        ++g_launchTimerCalls;
+        g_launchTimerThis = (HudSensorTracker *)this;
+        g_launchTimerSecondsRaw = timerSecRaw;
+        g_launchTimerGoalValue = goalValue;
+    }
+};
+
+LRESULT WINAPI FakeLaunchSendMessageA(HWND hWnd, UINT msg, WPARAM wParam,
+                                      LPARAM lParam)
+{
+    ++g_launchSendMessageCalls;
+    g_launchSendMessageHwnd = hWnd;
+    g_launchSendMessageMsg = msg;
+    g_launchSendMessageWParam = wParam;
+    g_launchSendMessageLParam = lParam;
+    return g_launchSendMessageResult;
 }
 
 void STDMETHODCALLTYPE FakeApiStatusSetQueryMode(IUnknown *self, int listMode)
@@ -1424,7 +1813,7 @@ LRESULT WINAPI FakeInitDialogSendMessageA(HWND hwnd,
     }
     ++g_initDialogSendMessageCalls;
 
-    if (msg == CB_ADDSTRING)
+    if (msg == CB_ADDSTRING || msg == CB_INSERTSTRING)
     {
         return g_initDialogComboAddCalls++;
     }
@@ -1466,6 +1855,13 @@ void STDMETHODCALLTYPE FakeInitRequestListMode(IUnknown *, int listMode, int ena
     ++g_initRequestListModeCalls;
     g_initRequestListMode = listMode;
     g_initRequestListModeEnabled = enabled;
+}
+
+ULONG STDMETHODCALLTYPE FakeApiEventSinkAddRef(IUnknown *self)
+{
+    ++g_apiEventSinkAddRefCalls;
+    g_apiEventSinkAddRefSelf = self;
+    return 2;
 }
 
 void STDMETHODCALLTYPE FakeResetQueryState(IUnknown *)
@@ -1709,6 +2105,335 @@ int RECOIL_CDECL FakeSubmitVisibleAppendStatusTextFmt(
     }
     va_end(args);
     return 1;
+}
+
+void ResetAppendSessionRequestStatus301BFakes(void)
+{
+    g_appendStatus301BFormatCalls = 0;
+    g_appendStatus301BFormatBuffer = 0;
+    g_appendStatus301BFormatMaxChars = 0;
+    g_appendStatus301BFormatMessageId = 0;
+    g_appendStatus301BFormatSessionName = 0;
+    g_appendStatus301BFormatStatusText = 0;
+    g_appendStatus301BAppendCalls = 0;
+    g_appendStatus301BAppendThis = 0;
+    g_appendStatus301BAppendText[0] = '\0';
+}
+
+unsigned int RECOIL_CDECL FakeAppendSessionRequestStatus301BFormatMessage(
+    char *outBuffer,
+    int maxChars,
+    unsigned int messageId,
+    const char *sessionName,
+    const char *statusText)
+{
+    ++g_appendStatus301BFormatCalls;
+    g_appendStatus301BFormatBuffer = outBuffer;
+    g_appendStatus301BFormatMaxChars = maxChars;
+    g_appendStatus301BFormatMessageId = messageId;
+    g_appendStatus301BFormatSessionName = sessionName;
+    g_appendStatus301BFormatStatusText = statusText;
+    strcpy(outBuffer, "formatted 301b status");
+    return lstrlenA(outBuffer);
+}
+
+int RECOIL_CDECL FakeAppendSessionRequestStatus301BAppendStatusTextFmt(
+    WestwoodOnlineUpgradeDialog *self,
+    const char *text)
+{
+    ++g_appendStatus301BAppendCalls;
+    g_appendStatus301BAppendThis = self;
+    strcpy(g_appendStatus301BAppendText, text);
+    return 1;
+}
+
+void ResetAppendSessionRequestStatus301CFakes(void)
+{
+    g_appendStatus301CFormatCalls = 0;
+    g_appendStatus301CFormatBuffer = 0;
+    g_appendStatus301CFormatMaxChars = 0;
+    g_appendStatus301CFormatMessageId = 0;
+    g_appendStatus301CFormatSessionName = 0;
+    g_appendStatus301CFormatStatusText = 0;
+    g_appendStatus301CAppendCalls = 0;
+    g_appendStatus301CAppendThis = 0;
+    g_appendStatus301CAppendText[0] = '\0';
+}
+
+unsigned int RECOIL_CDECL FakeAppendSessionRequestStatus301CFormatMessage(
+    char *outBuffer,
+    int maxChars,
+    unsigned int messageId,
+    const char *sessionName,
+    const char *statusText)
+{
+    ++g_appendStatus301CFormatCalls;
+    g_appendStatus301CFormatBuffer = outBuffer;
+    g_appendStatus301CFormatMaxChars = maxChars;
+    g_appendStatus301CFormatMessageId = messageId;
+    g_appendStatus301CFormatSessionName = sessionName;
+    g_appendStatus301CFormatStatusText = statusText;
+    strcpy(outBuffer, "formatted 301c status");
+    return lstrlenA(outBuffer);
+}
+
+int RECOIL_CDECL FakeAppendSessionRequestStatus301CAppendStatusTextFmt(
+    WestwoodOnlineUpgradeDialog *self,
+    const char *text)
+{
+    ++g_appendStatus301CAppendCalls;
+    g_appendStatus301CAppendThis = self;
+    strcpy(g_appendStatus301CAppendText, text);
+    return 1;
+}
+
+void ResetAppendSessionRequestStatus301CAltFakes(void)
+{
+    g_initMessageIdCalls = 0;
+    g_appendStatus301CAltAppendCalls = 0;
+    g_appendStatus301CAltAppendThis = 0;
+    g_appendStatus301CAltAppendFormat = 0;
+    g_appendStatus301CAltAppendSessionName = 0;
+    g_appendStatus301CAltAppendValue = 0;
+}
+
+int RECOIL_CDECL FakeAppendSessionRequestStatus301CAltAppendStatusTextFmt(
+    WestwoodOnlineUpgradeDialog *self,
+    const char *format,
+    ...)
+{
+    ++g_appendStatus301CAltAppendCalls;
+    g_appendStatus301CAltAppendThis = self;
+    g_appendStatus301CAltAppendFormat = format;
+
+    va_list args;
+    va_start(args, format);
+    g_appendStatus301CAltAppendSessionName = va_arg(args, const char *);
+    g_appendStatus301CAltAppendValue = va_arg(args, int);
+    va_end(args);
+    return 1;
+}
+
+void ResetAppendSessionRequestStatus301DFakes(void)
+{
+    g_appendStatus301DFormatCalls = 0;
+    g_appendStatus301DFormatBuffer = 0;
+    g_appendStatus301DFormatMaxChars = 0;
+    g_appendStatus301DFormatMessageId = 0;
+    g_appendStatus301DFormatSessionName = 0;
+    g_appendStatus301DFormatStatusText = 0;
+    g_appendStatus301DAppendCalls = 0;
+    g_appendStatus301DAppendThis = 0;
+    g_appendStatus301DAppendText[0] = '\0';
+}
+
+unsigned int RECOIL_CDECL FakeAppendSessionRequestStatus301DFormatMessage(
+    char *outBuffer,
+    int maxChars,
+    unsigned int messageId,
+    const char *sessionName,
+    const char *statusText)
+{
+    ++g_appendStatus301DFormatCalls;
+    g_appendStatus301DFormatBuffer = outBuffer;
+    g_appendStatus301DFormatMaxChars = maxChars;
+    g_appendStatus301DFormatMessageId = messageId;
+    g_appendStatus301DFormatSessionName = sessionName;
+    g_appendStatus301DFormatStatusText = statusText;
+    strcpy(outBuffer, "formatted 301d status");
+    return lstrlenA(outBuffer);
+}
+
+int RECOIL_CDECL FakeAppendSessionRequestStatus301DAppendStatusTextFmt(
+    WestwoodOnlineUpgradeDialog *self,
+    const char *text)
+{
+    ++g_appendStatus301DAppendCalls;
+    g_appendStatus301DAppendThis = self;
+    strcpy(g_appendStatus301DAppendText, text);
+    return 1;
+}
+
+void ResetAppendConnectStatusFakes(void)
+{
+    g_initMessageIdCalls = 0;
+    g_appendConnectStatusCalls = 0;
+    for (int index = 0; index < 8; ++index)
+    {
+        g_appendConnectStatusThis[index] = 0;
+        g_appendConnectStatusText[index][0] = '\0';
+    }
+}
+
+int RECOIL_CDECL FakeAppendConnectStatusTextFmt(
+    WestwoodOnlineUpgradeDialog *self,
+    const char *text)
+{
+    const int index = g_appendConnectStatusCalls;
+    if (index < 8)
+    {
+        g_appendConnectStatusThis[index] = self;
+        strcpy(g_appendConnectStatusText[index], text);
+    }
+    ++g_appendConnectStatusCalls;
+    return 1;
+}
+
+void ResetAppendBrowseRecordStatusFakes(void)
+{
+    ResetAppendConnectStatusFakes();
+    g_appendBrowseRecordStatusFormatCalls = 0;
+    g_appendBrowseRecordStatusFormatBuffer = 0;
+    g_appendBrowseRecordStatusFormatMaxChars = 0;
+    g_appendBrowseRecordStatusFormatMessageId = 0;
+    g_appendBrowseRecordStatusFormatSessionName = 0;
+}
+
+unsigned int RECOIL_CDECL FakeAppendBrowseRecordStatusFormatMessage(
+    char *outBuffer,
+    int maxChars,
+    unsigned int messageId,
+    const char *sessionName)
+{
+    ++g_appendBrowseRecordStatusFormatCalls;
+    g_appendBrowseRecordStatusFormatBuffer = outBuffer;
+    g_appendBrowseRecordStatusFormatMaxChars = maxChars;
+    g_appendBrowseRecordStatusFormatMessageId = messageId;
+    g_appendBrowseRecordStatusFormatSessionName = sessionName;
+    strcpy(outBuffer, "formatted browse record status");
+    return lstrlenA(outBuffer);
+}
+
+void ResetAppendValueStatusFakes(void)
+{
+    ResetAppendConnectStatusFakes();
+    g_appendValueStatusFormatCalls = 0;
+    g_appendValueStatusFormatBuffer = 0;
+    g_appendValueStatusFormatMaxChars = 0;
+    g_appendValueStatusFormatMessageId = 0;
+    g_appendValueStatusFormatValue = 0;
+}
+
+unsigned int RECOIL_CDECL FakeAppendValueStatusFormatMessage(
+    char *outBuffer,
+    int maxChars,
+    unsigned int messageId,
+    int value)
+{
+    ++g_appendValueStatusFormatCalls;
+    g_appendValueStatusFormatBuffer = outBuffer;
+    g_appendValueStatusFormatMaxChars = maxChars;
+    g_appendValueStatusFormatMessageId = messageId;
+    g_appendValueStatusFormatValue = value;
+    strcpy(outBuffer, "formatted value status");
+    return lstrlenA(outBuffer);
+}
+
+void ResetAppendTimeStatusFakes(void)
+{
+    ResetAppendConnectStatusFakes();
+    g_appendTimeStatusFormatCalls = 0;
+    g_appendTimeStatusFormatBuffer = 0;
+    g_appendTimeStatusFormatMaxChars = 0;
+    g_appendTimeStatusFormatMessageId = 0;
+    g_appendTimeStatusFormatTimeText[0] = '\0';
+}
+
+unsigned int RECOIL_CDECL FakeAppendTimeStatusFormatMessage(
+    char *outBuffer,
+    int maxChars,
+    unsigned int messageId,
+    const char *timeText)
+{
+    ++g_appendTimeStatusFormatCalls;
+    g_appendTimeStatusFormatBuffer = outBuffer;
+    g_appendTimeStatusFormatMaxChars = maxChars;
+    g_appendTimeStatusFormatMessageId = messageId;
+    strcpy(g_appendTimeStatusFormatTimeText, timeText);
+    strcpy(outBuffer, "formatted time status");
+    return lstrlenA(outBuffer);
+}
+
+void ResetBrowseRecordListFakes(void)
+{
+    ResetPendingSessionRemovedFakes();
+    g_browseRecordListFormatCalls = 0;
+    for (int index = 0; index < 12; ++index)
+    {
+        g_browseRecordListFormatBuffer[index] = 0;
+        g_browseRecordListFormatMaxChars[index] = 0;
+        g_browseRecordListFormatMessageId[index] = 0;
+        g_browseRecordListFormatSessionName[index] = 0;
+        g_browseRecordListFormatMetric0[index] = 0;
+        g_browseRecordListFormatMetric1[index] = 0;
+        g_browseRecordListFormatLatencyText[index] = 0;
+    }
+}
+
+unsigned int RECOIL_CDECL FakeBrowseRecordListFormatMessage(
+    char *outBuffer,
+    int maxChars,
+    unsigned int messageId,
+    const char *sessionName,
+    int displayMetric1,
+    ...)
+{
+    const int index = g_browseRecordListFormatCalls;
+    int displayMetric0 = 0;
+    const char *latencyText = "";
+
+    va_list args;
+    va_start(args, displayMetric1);
+    if (messageId == 0x3028)
+    {
+        displayMetric0 = va_arg(args, int);
+        latencyText = va_arg(args, const char *);
+    }
+    va_end(args);
+
+    if (index < 12)
+    {
+        g_browseRecordListFormatBuffer[index] = outBuffer;
+        g_browseRecordListFormatMaxChars[index] = maxChars;
+        g_browseRecordListFormatMessageId[index] = messageId;
+        g_browseRecordListFormatSessionName[index] = sessionName;
+        g_browseRecordListFormatMetric0[index] = displayMetric0;
+        g_browseRecordListFormatMetric1[index] = displayMetric1;
+        g_browseRecordListFormatLatencyText[index] = latencyText;
+    }
+    ++g_browseRecordListFormatCalls;
+
+    if (messageId == 0x3028)
+    {
+        wsprintfA(outBuffer,
+                  "%s:%04x:%d:%d:%s",
+                  sessionName,
+                  messageId,
+                  displayMetric1,
+                  displayMetric0,
+                  latencyText);
+    }
+    else
+    {
+        wsprintfA(outBuffer,
+                  "%s:%04x:%d",
+                  sessionName,
+                  messageId,
+                  displayMetric1);
+    }
+    return lstrlenA(outBuffer);
+}
+
+void RECOIL_CDECL FakeNetworkStatusReturnOnlyStub(void)
+{
+    ++g_networkStatusReturnOnlyCalls;
+}
+
+void ResetNetworkStatusFakes(void)
+{
+    g_networkStatusReturnOnlyCalls = 0;
+    g_initDialogSetAbortCalls = 0;
+    g_initDialogSetAbortThis = 0;
 }
 
 void STDMETHODCALLTYPE FakeQueueSessionRequest(
@@ -2250,10 +2975,131 @@ void RECOIL_STDCALL FakeModalDDXTextUInt(CDataExchange *dataExchange,
     RecordModalDdx(dataExchange, 2, controlId, value);
 }
 
+void RECOIL_STDCALL FakeModalDDXTextCString(CDataExchange *dataExchange,
+                                            int controlId, CString *value)
+{
+    RecordModalDdx(dataExchange, 2, controlId, value);
+}
+
 void RECOIL_STDCALL FakeModalDDXCheck(CDataExchange *dataExchange,
                                       int controlId, int *value)
 {
     RecordModalDdx(dataExchange, 3, controlId, value);
+}
+
+LRESULT WINAPI FakeConfigFocusSendMessageA(HWND hwnd,
+                                           UINT msg,
+                                           WPARAM wParam,
+                                           LPARAM lParam)
+{
+    ++g_configFocusSendMessageCalls;
+    g_configFocusSendMessageHwnd = hwnd;
+    g_configFocusSendMessageMsg = msg;
+    g_configFocusSendMessageWParam = wParam;
+    g_configFocusSendMessageLParam = lParam;
+    return 0;
+}
+
+int STDMETHODCALLTYPE FakeConfigInitLoadConnectProfileStrings(
+    IUnknown *,
+    int profileId,
+    char **playerNameOut,
+    char **connectStringOut)
+{
+    const int index = g_configInitLoadProfileCalls;
+    if (index < 4)
+    {
+        g_configInitLoadProfileIds[index] = profileId;
+        *playerNameOut = (char *)g_configInitLoadProfilePlayers[index];
+        *connectStringOut = (char *)g_configInitLoadProfileConnectStrings[index];
+    }
+    ++g_configInitLoadProfileCalls;
+    return index < 4 ? g_configInitLoadProfileResults[index] : 1;
+}
+
+void ConstructConfigDialogStrings(WestwoodOnlineUpgradeConfigDialog &dialog)
+{
+    new (&dialog.m_reservedString) CString();
+    new (&dialog.m_connectStringEditText) CString();
+    for (int index = 0; index < 2; ++index)
+    {
+        new (&dialog.m_savedPlayerNames[index]) CString();
+        new (&dialog.m_savedConnectStrings[index]) CString();
+        new (&dialog.m_profilePlayerNames[index]) CString();
+        new (&dialog.m_profileConnectStrings[index]) CString();
+    }
+}
+
+void DestructConfigDialogStrings(WestwoodOnlineUpgradeConfigDialog &dialog)
+{
+    for (int index = 1; index >= 0; --index)
+    {
+        dialog.m_profileConnectStrings[index].CString::~CString();
+        dialog.m_profilePlayerNames[index].CString::~CString();
+        dialog.m_savedConnectStrings[index].CString::~CString();
+        dialog.m_savedPlayerNames[index].CString::~CString();
+    }
+    dialog.m_connectStringEditText.CString::~CString();
+    dialog.m_reservedString.CString::~CString();
+}
+
+void RECOIL_FASTCALL FakeConfigInitSetWindowTextA(
+    CWnd *self,
+    void *,
+    const char *text)
+{
+    ++g_configInitSetWindowTextCalls;
+    g_configInitSetWindowTextThis = self;
+    g_configInitSetWindowTextValue = text;
+}
+
+int STDMETHODCALLTYPE FakeConfigOnOkSaveConnectProfileStrings(
+    IUnknown *,
+    int profileId,
+    const char *playerName,
+    const char *connectString,
+    int connectStringMode)
+{
+    const int index = g_configOnOkSaveProfileCalls;
+    if (index < 4)
+    {
+        g_configOnOkSaveProfileIds[index] = profileId;
+        g_configOnOkSaveProfilePlayers[index] = playerName;
+        g_configOnOkSaveProfileConnectStrings[index] = connectString;
+        g_configOnOkSaveProfileModes[index] = connectStringMode;
+    }
+    ++g_configOnOkSaveProfileCalls;
+    return 0;
+}
+
+void RECOIL_FASTCALL FakeConfigOnOkBaseOnOK(CDialog *self, void *)
+{
+    ++g_configOnOkBaseOnOkCalls;
+    g_configOnOkBaseOnOkThis = self;
+}
+
+void RECOIL_FASTCALL FakeConfigComboKillFocusGetWindowTextA(
+    CWnd *self,
+    void *,
+    CString *text)
+{
+    ++g_configComboKillFocusGetWindowTextCalls;
+    g_configComboKillFocusGetWindowTextThis = self;
+    *text = g_configComboKillFocusText;
+}
+
+LRESULT WINAPI FakeConfigSelChangeSendMessageA(
+    HWND hwnd,
+    UINT msg,
+    WPARAM wParam,
+    LPARAM lParam)
+{
+    ++g_configSelChangeSendMessageCalls;
+    g_configSelChangeSendMessageHwnd = hwnd;
+    g_configSelChangeSendMessageMsg = msg;
+    g_configSelChangeSendMessageWParam = wParam;
+    g_configSelChangeSendMessageLParam = lParam;
+    return g_configSelChangeSendMessageResult;
 }
 
 void RECOIL_CDECL FakeModalTimeTick()
@@ -2294,18 +3140,21 @@ bool InstallModalDdxPatches(ImportFunctionPatch *imports)
     const WORD kMfc42DDXCheckOrdinal = 2301;
     const WORD kMfc42DDXControlOrdinal = 2302;
     const WORD kMfc42DDXTextUIntOrdinal = 2363;
+    const WORD kMfc42DDXTextCStringOrdinal = 2370;
 
     return PatchImportByOrdinal("MFC42.DLL", kMfc42DDXControlOrdinal,
                                 (void *)&FakeModalDDXControl, imports[0]) &&
            PatchImportByOrdinal("MFC42.DLL", kMfc42DDXTextUIntOrdinal,
                                 (void *)&FakeModalDDXTextUInt, imports[1]) &&
            PatchImportByOrdinal("MFC42.DLL", kMfc42DDXCheckOrdinal,
-                                (void *)&FakeModalDDXCheck, imports[2]);
+                                (void *)&FakeModalDDXCheck, imports[2]) &&
+           PatchImportByOrdinal("MFC42.DLL", kMfc42DDXTextCStringOrdinal,
+                                (void *)&FakeModalDDXTextCString, imports[3]);
 }
 
 void RestoreModalDdxPatches(ImportFunctionPatch *imports)
 {
-    for (int index = 2; index >= 0; --index)
+    for (int index = 3; index >= 0; --index)
     {
         RestoreImportPatch(imports[index]);
     }
@@ -2650,12 +3499,12 @@ extern "C" int westwood_online_upgrade_config_dialog_constructor_smoke(void)
     {
         failure = 1;
     }
-    else if (!TestMfcWindowConstructed(dialog.m_serverNameEdit) ||
-             !TestMfcWindowConstructed(dialog.m_profileCombo))
+    else if (!TestMfcWindowConstructed(dialog.m_profileCombo) ||
+             !TestMfcWindowConstructed(dialog.m_connectStringEdit))
     {
         failure = 2;
     }
-    else if (strcmp((const char *)dialog.m_noPasswordText, "No Password") != 0)
+    else if (strcmp((const char *)dialog.m_connectStringEditText, "") != 0)
     {
         failure = 3;
     }
@@ -2665,6 +3514,701 @@ extern "C" int westwood_online_upgrade_config_dialog_constructor_smoke(void)
     }
 
     g_zOpt_WolPasswordFlagOption = oldWolPasswordFlagOption;
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_config_dialog_destructor_smoke(void)
+{
+    const WORD kMfc42CStringDtorOrdinal = 800;
+    const WORD kMfc42CComboBoxDtorOrdinal = 616;
+    const WORD kMfc42CEditDtorOrdinal = 656;
+    const WORD kMfc42CDialogDtorOrdinal = 641;
+    ImportFunctionPatch imports[4] = {};
+
+    if (!PatchImportByOrdinal("MFC42.DLL", kMfc42CStringDtorOrdinal,
+                              (void *)&FakeModalCStringDtor, imports[0]) ||
+        !PatchImportByOrdinal("MFC42.DLL", kMfc42CComboBoxDtorOrdinal,
+                              (void *)&FakeModalComboDtor, imports[1]) ||
+        !PatchImportByOrdinal("MFC42.DLL", kMfc42CEditDtorOrdinal,
+                              (void *)&FakeModalEditDtor, imports[2]) ||
+        !PatchImportByOrdinal("MFC42.DLL", kMfc42CDialogDtorOrdinal,
+                              (void *)&FakeModalDialogDtor, imports[3]))
+    {
+        for (int index = 3; index >= 0; --index)
+        {
+            RestoreImportPatch(imports[index]);
+        }
+        return 90;
+    }
+
+    int wolPasswordFlag = 0;
+    int *const oldWolPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
+    g_zOpt_WolPasswordFlagOption = &wolPasswordFlag;
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
+    WestwoodOnlineUpgradeConfigDialog &dialog =
+        *(WestwoodOnlineUpgradeConfigDialog *)dialogStorage;
+    dialog.Constructor(0);
+
+    ResetModalProbe();
+    dialog.Destructor();
+    int failure = 0;
+    if (g_modalCStringDtorCalls != 10 ||
+        g_modalEditDtorCalls != 1 ||
+        g_modalComboDtorCalls != 1 ||
+        g_modalDialogDtorCalls != 1)
+    {
+        failure = 1;
+    }
+    else if (strcmp(g_modalDtorSequence, "SSSSSSSSSSECD") != 0)
+    {
+        failure = 2;
+    }
+
+    g_zOpt_WolPasswordFlagOption = oldWolPasswordFlagOption;
+    for (int index = 3; index >= 0; --index)
+    {
+        RestoreImportPatch(imports[index]);
+    }
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_config_dialog_do_data_exchange_smoke(void)
+{
+    ImportFunctionPatch imports[4] = {};
+
+    if (!InstallModalDdxPatches(imports))
+    {
+        RestoreModalDdxPatches(imports);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
+    WestwoodOnlineUpgradeConfigDialog &dialog =
+        *(WestwoodOnlineUpgradeConfigDialog *)dialogStorage;
+    unsigned char dataExchangeStorage[sizeof(void *)] = {0};
+    CDataExchange *dataExchange = (CDataExchange *)dataExchangeStorage;
+
+    ResetModalDdxProbe();
+    dialog.WestwoodOnlineUpgradeConfigDialog::DoDataExchange(dataExchange);
+
+    int failure = 0;
+    if (g_modalDdxStep != 4)
+    {
+        failure = 1;
+    }
+    else if (g_modalDdxContext[0] != dataExchange ||
+             g_modalDdxKind[0] != 1 ||
+             g_modalDdxControlId[0] != 1192 ||
+             g_modalDdxValue[0] != &dialog.m_profileCombo ||
+             g_modalDdxContext[1] != dataExchange ||
+             g_modalDdxKind[1] != 1 ||
+             g_modalDdxControlId[1] != 1173 ||
+             g_modalDdxValue[1] != &dialog.m_connectStringEdit ||
+             g_modalDdxContext[2] != dataExchange ||
+             g_modalDdxKind[2] != 2 ||
+             g_modalDdxControlId[2] != 1173 ||
+             g_modalDdxValue[2] != &dialog.m_connectStringEditText ||
+             g_modalDdxContext[3] != dataExchange ||
+             g_modalDdxKind[3] != 3 ||
+             g_modalDdxControlId[3] != 1182 ||
+             g_modalDdxValue[3] != &dialog.m_wolPasswordFlag)
+    {
+        failure = 2;
+    }
+
+    RestoreModalDdxPatches(imports);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_config_dialog_focus_clear_smoke(void)
+{
+    ImportFunctionPatch sendMessagePatch = {};
+    if (!PatchImportByName("USER32.dll",
+                           "SendMessageA",
+                           (void *)&FakeConfigFocusSendMessageA,
+                           sendMessagePatch))
+    {
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
+    WestwoodOnlineUpgradeConfigDialog &dialog =
+        *(WestwoodOnlineUpgradeConfigDialog *)dialogStorage;
+    HWND const editHwnd = (HWND)0x1234;
+    dialog.m_connectStringEdit.m_hWnd = editHwnd;
+
+    g_configFocusSendMessageCalls = 0;
+    g_configFocusSendMessageHwnd = 0;
+    g_configFocusSendMessageMsg = 0;
+    g_configFocusSendMessageWParam = 0;
+    g_configFocusSendMessageLParam = 0;
+
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditSetFocusClear();
+
+    int failure = 0;
+    if (g_configFocusSendMessageCalls != 1 ||
+        g_configFocusSendMessageHwnd != editHwnd ||
+        g_configFocusSendMessageMsg != EM_SETSEL ||
+        g_configFocusSendMessageWParam != 0 ||
+        g_configFocusSendMessageLParam != 0)
+    {
+        failure = 1;
+    }
+
+    RestoreImportPatch(sendMessagePatch);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_config_dialog_on_init_smoke(void)
+{
+    const WORD kMfc42CDialogOnInitDialogOrdinal = 4710;
+    ImportFunctionPatch imports[2] = {};
+    CodeFunctionPatch patches[2] = {};
+    if (!PatchImportByOrdinal("MFC42.DLL",
+                              kMfc42CDialogOnInitDialogOrdinal,
+                              (void *)&FakeInitDialogBaseOnInitDialog,
+                              imports[0]) ||
+        !PatchImportByName("USER32.dll",
+                           "SendMessageA",
+                           (void *)&FakeInitDialogSendMessageA,
+                           imports[1]) ||
+        !PatchFunctionJump((void *)&zLoc::GetMessageString,
+                           (void *)&FakeInitGetMessageString,
+                           patches[0]) ||
+        !PatchFunctionJump(CWndSetWindowTextAAddress(),
+                           (void *)&FakeConfigInitSetWindowTextA,
+                           patches[1]))
+    {
+        RestoreFunctionPatch(patches[1]);
+        RestoreFunctionPatch(patches[0]);
+        RestoreImportPatch(imports[1]);
+        RestoreImportPatch(imports[0]);
+        return 90;
+    }
+
+    IUnknown *const oldApi = g_pWestwoodOnlineUpgradeApi;
+
+    memset(&g_initFakeApiVtable, 0, sizeof(g_initFakeApiVtable));
+    g_initFakeApi.vftable = &g_initFakeApiVtable;
+    g_initFakeApiVtable.LoadConnectProfileStrings =
+        FakeConfigInitLoadConnectProfileStrings;
+    g_pWestwoodOnlineUpgradeApi = (IUnknown *)&g_initFakeApi;
+
+    g_configInitLoadProfileCalls = 0;
+    memset(g_configInitLoadProfileIds, 0, sizeof(g_configInitLoadProfileIds));
+    g_configInitLoadProfileResults[0] = 0;
+    g_configInitLoadProfileResults[1] = 0;
+    g_configInitLoadProfilePlayers[0] = "PilotOne";
+    g_configInitLoadProfilePlayers[1] = "";
+    g_configInitLoadProfileConnectStrings[0] = "ConnectOne";
+    g_configInitLoadProfileConnectStrings[1] = "";
+    g_initDialogBaseOnInitCalls = 0;
+    g_initDialogBaseOnInitThis = 0;
+    g_initDialogSendMessageCalls = 0;
+    g_initDialogComboAddCalls = 0;
+    memset(g_initDialogSendMessageHwnd, 0, sizeof(g_initDialogSendMessageHwnd));
+    memset(g_initDialogSendMessageMsg, 0, sizeof(g_initDialogSendMessageMsg));
+    memset(g_initDialogSendMessageWParam, 0,
+           sizeof(g_initDialogSendMessageWParam));
+    memset(g_initDialogSendMessageLParam, 0,
+           sizeof(g_initDialogSendMessageLParam));
+    g_initMessageIdCalls = 0;
+    g_configInitSetWindowTextCalls = 0;
+    g_configInitSetWindowTextThis = 0;
+    g_configInitSetWindowTextValue = 0;
+
+    int failure = 0;
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
+    WestwoodOnlineUpgradeConfigDialog &dialog =
+        *(WestwoodOnlineUpgradeConfigDialog *)dialogStorage;
+    ConstructConfigDialogStrings(dialog);
+    dialog.m_profileCombo.m_hWnd = (HWND)0x12340500;
+    dialog.m_connectStringEdit.m_hWnd = (HWND)0x12340501;
+
+    BOOL result = FALSE;
+    result = dialog.WestwoodOnlineUpgradeConfigDialog::OnInitDialog();
+
+    if (result != TRUE ||
+        g_initDialogBaseOnInitCalls != 1 ||
+        g_initDialogBaseOnInitThis != (CDialog *)&dialog ||
+        g_configInitLoadProfileCalls != 2 ||
+        g_configInitLoadProfileIds[0] != 1 ||
+        g_configInitLoadProfileIds[1] != 2)
+    {
+        failure = 1;
+    }
+    else if (strcmp((const char *)dialog.m_savedPlayerNames[0], "PilotOne") != 0 ||
+             strcmp((const char *)dialog.m_savedConnectStrings[0],
+                    "ConnectOne") != 0 ||
+             strcmp((const char *)dialog.m_profilePlayerNames[0],
+                    "PilotOne") != 0 ||
+             strcmp((const char *)dialog.m_profileConnectStrings[0],
+                    "ConnectOne") != 0 ||
+             strcmp((const char *)dialog.m_savedPlayerNames[1], "") != 0 ||
+             strcmp((const char *)dialog.m_savedConnectStrings[1], "") != 0 ||
+             strcmp((const char *)dialog.m_profilePlayerNames[1], "") != 0 ||
+             strcmp((const char *)dialog.m_profileConnectStrings[1], "") != 0)
+    {
+        failure = 2;
+    }
+    else if (g_initMessageIdCalls != 1 ||
+             g_initMessageIds[0] != 0x3044 ||
+             g_initDialogSendMessageCalls != 5 ||
+             g_initDialogComboAddCalls != 2 ||
+             g_initDialogSendMessageHwnd[0] != dialog.m_profileCombo.m_hWnd ||
+             g_initDialogSendMessageMsg[0] != CB_INSERTSTRING ||
+             g_initDialogSendMessageWParam[0] != 0 ||
+             strcmp((const char *)g_initDialogSendMessageLParam[0],
+                    "PilotOne") != 0 ||
+             g_initDialogSendMessageMsg[1] != CB_SETITEMDATA ||
+             g_initDialogSendMessageWParam[1] != 0 ||
+             g_initDialogSendMessageLParam[1] != 0 ||
+             g_initDialogSendMessageMsg[2] != CB_INSERTSTRING ||
+             g_initDialogSendMessageWParam[2] != 1 ||
+             strcmp((const char *)g_initDialogSendMessageLParam[2],
+                    "msg-3044") != 0 ||
+             g_initDialogSendMessageMsg[3] != CB_SETITEMDATA ||
+             g_initDialogSendMessageWParam[3] != 1 ||
+             g_initDialogSendMessageLParam[3] != 1 ||
+             g_initDialogSendMessageMsg[4] != CB_SETCURSEL ||
+             g_initDialogSendMessageWParam[4] != 0 ||
+             g_initDialogSendMessageLParam[4] != 0)
+    {
+        failure = 3;
+    }
+    else if (dialog.m_profileConnectStringModes[0] != 1 ||
+             dialog.m_profileConnectStringModes[1] != 0 ||
+             dialog.m_selectedProfileIndex != 0 ||
+             dialog.m_profileComboEditDirty != 0 ||
+             g_configInitSetWindowTextCalls != 1 ||
+             g_configInitSetWindowTextThis !=
+                 (CWnd *)&dialog.m_connectStringEdit ||
+             strcmp(g_configInitSetWindowTextValue, "ConnectOne") != 0)
+    {
+        failure = 4;
+    }
+
+    DestructConfigDialogStrings(dialog);
+
+    g_pWestwoodOnlineUpgradeApi = oldApi;
+    RestoreFunctionPatch(patches[1]);
+    RestoreFunctionPatch(patches[0]);
+    RestoreImportPatch(imports[1]);
+    RestoreImportPatch(imports[0]);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_config_dialog_on_ok_smoke(void)
+{
+    const WORD kMfc42CDialogOnOKOrdinal = 4853;
+    ImportFunctionPatch onOkImport = {};
+    if (!PatchImportByOrdinal("MFC42.DLL",
+                              kMfc42CDialogOnOKOrdinal,
+                              (void *)&FakeConfigOnOkBaseOnOK,
+                              onOkImport))
+    {
+        return 90;
+    }
+
+    IUnknown *const oldApi = g_pWestwoodOnlineUpgradeApi;
+    int wolPasswordFlag = 77;
+    int *const oldWolPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
+
+    memset(&g_initFakeApiVtable, 0, sizeof(g_initFakeApiVtable));
+    g_initFakeApi.vftable = &g_initFakeApiVtable;
+    g_initFakeApiVtable.SaveConnectProfileStrings =
+        FakeConfigOnOkSaveConnectProfileStrings;
+    g_pWestwoodOnlineUpgradeApi = (IUnknown *)&g_initFakeApi;
+    g_zOpt_WolPasswordFlagOption = &wolPasswordFlag;
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
+    WestwoodOnlineUpgradeConfigDialog &dialog =
+        *(WestwoodOnlineUpgradeConfigDialog *)dialogStorage;
+    ConstructConfigDialogStrings(dialog);
+
+    g_configOnOkSaveProfileCalls = 0;
+    memset(g_configOnOkSaveProfileIds, 0, sizeof(g_configOnOkSaveProfileIds));
+    memset(g_configOnOkSaveProfilePlayers,
+           0,
+           sizeof(g_configOnOkSaveProfilePlayers));
+    memset(g_configOnOkSaveProfileConnectStrings,
+           0,
+           sizeof(g_configOnOkSaveProfileConnectStrings));
+    memset(g_configOnOkSaveProfileModes, 0, sizeof(g_configOnOkSaveProfileModes));
+    g_configOnOkBaseOnOkCalls = 0;
+    g_configOnOkBaseOnOkThis = 0;
+
+    dialog.m_wolPasswordFlag = 0;
+    dialog.m_profilePlayerNames[0] = "NoSaveOne";
+    dialog.m_profilePlayerNames[1] = "NoSaveTwo";
+    dialog.m_profileConnectStrings[0] = "HiddenOne";
+    dialog.m_profileConnectStrings[1] = "HiddenTwo";
+    dialog.m_profileConnectStringModes[0] = 8;
+    dialog.m_profileConnectStringModes[1] = 9;
+
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnOK();
+
+    int failure = 0;
+    if (g_configOnOkSaveProfileCalls != 2 ||
+        g_configOnOkSaveProfileIds[0] != 1 ||
+        strcmp(g_configOnOkSaveProfilePlayers[0], "NoSaveOne") != 0 ||
+        strcmp(g_configOnOkSaveProfileConnectStrings[0], "") != 0 ||
+        g_configOnOkSaveProfileModes[0] != 0 ||
+        g_configOnOkSaveProfileIds[1] != 2 ||
+        strcmp(g_configOnOkSaveProfilePlayers[1], "NoSaveTwo") != 0 ||
+        strcmp(g_configOnOkSaveProfileConnectStrings[1], "") != 0 ||
+        g_configOnOkSaveProfileModes[1] != 0 ||
+        wolPasswordFlag != 0 ||
+        g_configOnOkBaseOnOkCalls != 1 ||
+        g_configOnOkBaseOnOkThis != (CDialog *)&dialog)
+    {
+        failure = 1;
+    }
+
+    g_configOnOkSaveProfileCalls = 0;
+    memset(g_configOnOkSaveProfileIds, 0, sizeof(g_configOnOkSaveProfileIds));
+    memset(g_configOnOkSaveProfilePlayers,
+           0,
+           sizeof(g_configOnOkSaveProfilePlayers));
+    memset(g_configOnOkSaveProfileConnectStrings,
+           0,
+           sizeof(g_configOnOkSaveProfileConnectStrings));
+    memset(g_configOnOkSaveProfileModes, 0, sizeof(g_configOnOkSaveProfileModes));
+    g_configOnOkBaseOnOkCalls = 0;
+    g_configOnOkBaseOnOkThis = 0;
+    wolPasswordFlag = 77;
+
+    dialog.m_wolPasswordFlag = 1;
+    dialog.m_profilePlayerNames[0] = "SaveOne";
+    dialog.m_profilePlayerNames[1] = "SaveTwo";
+    dialog.m_profileConnectStrings[0] = "ConnectOne";
+    dialog.m_profileConnectStrings[1] = "ConnectTwo";
+    dialog.m_profileConnectStringModes[0] = 0;
+    dialog.m_profileConnectStringModes[1] = 6;
+
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnOK();
+
+    if (failure == 0 &&
+        (g_configOnOkSaveProfileCalls != 2 ||
+         g_configOnOkSaveProfileIds[0] != 1 ||
+         strcmp(g_configOnOkSaveProfilePlayers[0], "SaveOne") != 0 ||
+         strcmp(g_configOnOkSaveProfileConnectStrings[0], "ConnectOne") != 0 ||
+         g_configOnOkSaveProfileModes[0] != 1 ||
+         g_configOnOkSaveProfileIds[1] != 2 ||
+         strcmp(g_configOnOkSaveProfilePlayers[1], "SaveTwo") != 0 ||
+         strcmp(g_configOnOkSaveProfileConnectStrings[1], "ConnectTwo") != 0 ||
+         g_configOnOkSaveProfileModes[1] != 0 ||
+         wolPasswordFlag != 1 ||
+         g_configOnOkBaseOnOkCalls != 1 ||
+         g_configOnOkBaseOnOkThis != (CDialog *)&dialog))
+    {
+        failure = 2;
+    }
+
+    DestructConfigDialogStrings(dialog);
+    g_zOpt_WolPasswordFlagOption = oldWolPasswordFlagOption;
+    g_pWestwoodOnlineUpgradeApi = oldApi;
+    RestoreImportPatch(onOkImport);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_config_dialog_profile_combo_kill_focus_smoke(void)
+{
+    const WORD kMfc42CWndGetWindowTextACStringOrdinal = 3874;
+    ImportFunctionPatch imports[2] = {};
+    if (!PatchImportByName("USER32.dll",
+                           "SendMessageA",
+                           (void *)&FakeInitDialogSendMessageA,
+                           imports[0]) ||
+        !PatchImportByOrdinal("MFC42.DLL",
+                              kMfc42CWndGetWindowTextACStringOrdinal,
+                              (void *)&FakeConfigComboKillFocusGetWindowTextA,
+                              imports[1]))
+    {
+        RestoreImportPatch(imports[1]);
+        RestoreImportPatch(imports[0]);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
+    WestwoodOnlineUpgradeConfigDialog &dialog =
+        *(WestwoodOnlineUpgradeConfigDialog *)dialogStorage;
+    ConstructConfigDialogStrings(dialog);
+    dialog.m_profileCombo.m_hWnd = (HWND)0x12340502;
+    dialog.m_selectedProfileIndex = 1;
+    dialog.m_profilePlayerNames[1] = "OriginalPilot";
+
+    g_initDialogSendMessageCalls = 0;
+    g_initDialogComboAddCalls = 0;
+    memset(g_initDialogSendMessageHwnd, 0, sizeof(g_initDialogSendMessageHwnd));
+    memset(g_initDialogSendMessageMsg, 0, sizeof(g_initDialogSendMessageMsg));
+    memset(g_initDialogSendMessageWParam,
+           0,
+           sizeof(g_initDialogSendMessageWParam));
+    memset(g_initDialogSendMessageLParam,
+           0,
+           sizeof(g_initDialogSendMessageLParam));
+    g_configComboKillFocusGetWindowTextCalls = 0;
+    g_configComboKillFocusGetWindowTextThis = 0;
+    g_configComboKillFocusText = "EditedPilot";
+
+    dialog.m_profileComboEditDirty = 0;
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnProfileComboKillFocus();
+
+    int failure = 0;
+    if (g_initDialogSendMessageCalls != 0 ||
+        g_configComboKillFocusGetWindowTextCalls != 0 ||
+        strcmp((const char *)dialog.m_profilePlayerNames[1], "OriginalPilot") != 0)
+    {
+        failure = 1;
+    }
+
+    dialog.m_profileComboEditDirty = 1;
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnProfileComboKillFocus();
+
+    if (failure == 0 &&
+        (g_initDialogSendMessageCalls != 2 ||
+         g_initDialogComboAddCalls != 1 ||
+         g_initDialogSendMessageHwnd[0] != dialog.m_profileCombo.m_hWnd ||
+         g_initDialogSendMessageMsg[0] != CB_DELETESTRING ||
+         g_initDialogSendMessageWParam[0] != 1 ||
+         g_initDialogSendMessageLParam[0] != 0 ||
+         g_configComboKillFocusGetWindowTextCalls != 1 ||
+         g_configComboKillFocusGetWindowTextThis != (CWnd *)&dialog.m_profileCombo ||
+         strcmp((const char *)dialog.m_profilePlayerNames[1], "EditedPilot") != 0 ||
+         g_initDialogSendMessageHwnd[1] != dialog.m_profileCombo.m_hWnd ||
+         g_initDialogSendMessageMsg[1] != CB_INSERTSTRING ||
+         g_initDialogSendMessageWParam[1] != 1 ||
+         strcmp((const char *)g_initDialogSendMessageLParam[1],
+                "EditedPilot") != 0 ||
+         dialog.m_profileComboEditDirty != 0))
+    {
+        failure = 2;
+    }
+
+    DestructConfigDialogStrings(dialog);
+    RestoreImportPatch(imports[1]);
+    RestoreImportPatch(imports[0]);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_config_dialog_profile_combo_sel_change_smoke(void)
+{
+    ImportFunctionPatch sendMessageImport = {};
+    CodeFunctionPatch setWindowTextPatch = {};
+    if (!PatchImportByName("USER32.dll",
+                           "SendMessageA",
+                           (void *)&FakeConfigSelChangeSendMessageA,
+                           sendMessageImport) ||
+        !PatchFunctionJump(CWndSetWindowTextAAddress(),
+                           (void *)&FakeConfigInitSetWindowTextA,
+                           setWindowTextPatch))
+    {
+        RestoreFunctionPatch(setWindowTextPatch);
+        RestoreImportPatch(sendMessageImport);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
+    WestwoodOnlineUpgradeConfigDialog &dialog =
+        *(WestwoodOnlineUpgradeConfigDialog *)dialogStorage;
+    ConstructConfigDialogStrings(dialog);
+    dialog.m_profileCombo.m_hWnd = (HWND)0x12340503;
+    dialog.m_selectedProfileIndex = 0;
+    dialog.m_profileConnectStrings[0] = "ConnectZero";
+    dialog.m_profileConnectStrings[1] = "ConnectOne";
+
+    g_configSelChangeSendMessageCalls = 0;
+    g_configSelChangeSendMessageHwnd = 0;
+    g_configSelChangeSendMessageMsg = 0;
+    g_configSelChangeSendMessageWParam = 0;
+    g_configSelChangeSendMessageLParam = 0;
+    g_configSelChangeSendMessageResult = 1;
+    g_configInitSetWindowTextCalls = 0;
+    g_configInitSetWindowTextThis = 0;
+    g_configInitSetWindowTextValue = 0;
+
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnProfileComboSelChange();
+
+    int failure = 0;
+    if (g_configSelChangeSendMessageCalls != 1 ||
+        g_configSelChangeSendMessageHwnd != dialog.m_profileCombo.m_hWnd ||
+        g_configSelChangeSendMessageMsg != CB_GETCURSEL ||
+        g_configSelChangeSendMessageWParam != 0 ||
+        g_configSelChangeSendMessageLParam != 0 ||
+        dialog.m_selectedProfileIndex != 1 ||
+        g_configInitSetWindowTextCalls != 1 ||
+        g_configInitSetWindowTextThis != (CWnd *)&dialog.m_connectStringEdit ||
+        strcmp(g_configInitSetWindowTextValue, "ConnectOne") != 0)
+    {
+        failure = 1;
+    }
+
+    DestructConfigDialogStrings(dialog);
+    RestoreFunctionPatch(setWindowTextPatch);
+    RestoreImportPatch(sendMessageImport);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_config_dialog_profile_combo_edit_change_smoke(void)
+{
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
+    WestwoodOnlineUpgradeConfigDialog &dialog =
+        *(WestwoodOnlineUpgradeConfigDialog *)dialogStorage;
+    dialog.m_profileComboEditDirty = 0;
+
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnProfileComboEditChange();
+
+    return dialog.m_profileComboEditDirty == 1 ? 0 : 1;
+}
+
+extern "C" int westwood_online_upgrade_config_dialog_profile_combo_dropdown_smoke(void)
+{
+    const WORD kMfc42CWndGetWindowTextACStringOrdinal = 3874;
+    ImportFunctionPatch imports[2] = {};
+    if (!PatchImportByName("USER32.dll",
+                           "SendMessageA",
+                           (void *)&FakeInitDialogSendMessageA,
+                           imports[0]) ||
+        !PatchImportByOrdinal("MFC42.DLL",
+                              kMfc42CWndGetWindowTextACStringOrdinal,
+                              (void *)&FakeConfigComboKillFocusGetWindowTextA,
+                              imports[1]))
+    {
+        RestoreImportPatch(imports[1]);
+        RestoreImportPatch(imports[0]);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
+    WestwoodOnlineUpgradeConfigDialog &dialog =
+        *(WestwoodOnlineUpgradeConfigDialog *)dialogStorage;
+    ConstructConfigDialogStrings(dialog);
+    dialog.m_profileCombo.m_hWnd = (HWND)0x12340504;
+    dialog.m_selectedProfileIndex = 0;
+    dialog.m_profilePlayerNames[0] = "BeforeDrop";
+
+    g_initDialogSendMessageCalls = 0;
+    g_initDialogComboAddCalls = 0;
+    memset(g_initDialogSendMessageHwnd, 0, sizeof(g_initDialogSendMessageHwnd));
+    memset(g_initDialogSendMessageMsg, 0, sizeof(g_initDialogSendMessageMsg));
+    memset(g_initDialogSendMessageWParam,
+           0,
+           sizeof(g_initDialogSendMessageWParam));
+    memset(g_initDialogSendMessageLParam,
+           0,
+           sizeof(g_initDialogSendMessageLParam));
+    g_configComboKillFocusGetWindowTextCalls = 0;
+    g_configComboKillFocusGetWindowTextThis = 0;
+    g_configComboKillFocusText = "DropEdited";
+
+    dialog.m_profileComboEditDirty = 1;
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnProfileComboDropdown();
+
+    int failure = 0;
+    if (g_initDialogSendMessageCalls != 2 ||
+        g_initDialogComboAddCalls != 1 ||
+        g_initDialogSendMessageMsg[0] != CB_DELETESTRING ||
+        g_initDialogSendMessageWParam[0] != 0 ||
+        g_configComboKillFocusGetWindowTextCalls != 1 ||
+        g_configComboKillFocusGetWindowTextThis != (CWnd *)&dialog.m_profileCombo ||
+        strcmp((const char *)dialog.m_profilePlayerNames[0], "DropEdited") != 0 ||
+        g_initDialogSendMessageMsg[1] != CB_INSERTSTRING ||
+        g_initDialogSendMessageWParam[1] != 0 ||
+        strcmp((const char *)g_initDialogSendMessageLParam[1],
+               "DropEdited") != 0 ||
+        dialog.m_profileComboEditDirty != 0)
+    {
+        failure = 1;
+    }
+
+    DestructConfigDialogStrings(dialog);
+    RestoreImportPatch(imports[1]);
+    RestoreImportPatch(imports[0]);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_config_dialog_connect_mode_clicked_smoke(void)
+{
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
+    WestwoodOnlineUpgradeConfigDialog &dialog =
+        *(WestwoodOnlineUpgradeConfigDialog *)dialogStorage;
+
+    dialog.m_wolPasswordFlag = 0;
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnConnectStringModeClicked();
+    if (dialog.m_wolPasswordFlag != 1)
+    {
+        return 1;
+    }
+
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnConnectStringModeClicked();
+    if (dialog.m_wolPasswordFlag != 0)
+    {
+        return 2;
+    }
+
+    dialog.m_wolPasswordFlag = 7;
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnConnectStringModeClicked();
+    return dialog.m_wolPasswordFlag == 0 ? 0 : 3;
+}
+
+extern "C" int westwood_online_upgrade_config_dialog_connect_edit_kill_focus_smoke(void)
+{
+    const WORD kMfc42CWndGetWindowTextACStringOrdinal = 3874;
+    ImportFunctionPatch getWindowTextImport = {};
+    if (!PatchImportByOrdinal("MFC42.DLL",
+                              kMfc42CWndGetWindowTextACStringOrdinal,
+                              (void *)&FakeConfigComboKillFocusGetWindowTextA,
+                              getWindowTextImport))
+    {
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeConfigDialog)] = {0};
+    WestwoodOnlineUpgradeConfigDialog &dialog =
+        *(WestwoodOnlineUpgradeConfigDialog *)dialogStorage;
+    ConstructConfigDialogStrings(dialog);
+    dialog.m_selectedProfileIndex = 1;
+    dialog.m_savedConnectStrings[1] = "SavedConnect";
+    dialog.m_profileConnectStrings[1] = "BeforeConnect";
+
+    g_configComboKillFocusGetWindowTextCalls = 0;
+    g_configComboKillFocusGetWindowTextThis = 0;
+    g_configComboKillFocusText = "SavedConnect";
+    dialog.m_profileConnectStringModes[1] = 12;
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditKillFocus();
+
+    int failure = 0;
+    if (g_configComboKillFocusGetWindowTextCalls != 1 ||
+        g_configComboKillFocusGetWindowTextThis !=
+            (CWnd *)&dialog.m_connectStringEdit ||
+        strcmp((const char *)dialog.m_profileConnectStrings[1],
+               "SavedConnect") != 0 ||
+        dialog.m_profileConnectStringModes[1] != 12)
+    {
+        failure = 1;
+    }
+
+    g_configComboKillFocusGetWindowTextCalls = 0;
+    g_configComboKillFocusGetWindowTextThis = 0;
+    g_configComboKillFocusText = "EditedConnect";
+    dialog.m_profileConnectStringModes[1] = 12;
+    dialog.WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditKillFocus();
+
+    if (failure == 0 &&
+        (g_configComboKillFocusGetWindowTextCalls != 1 ||
+         g_configComboKillFocusGetWindowTextThis !=
+             (CWnd *)&dialog.m_connectStringEdit ||
+         strcmp((const char *)dialog.m_profileConnectStrings[1],
+                "EditedConnect") != 0 ||
+         dialog.m_profileConnectStringModes[1] != 0))
+    {
+        failure = 2;
+    }
+
+    DestructConfigDialogStrings(dialog);
+    RestoreImportPatch(getWindowTextImport);
     return failure;
 }
 
@@ -2832,6 +4376,69 @@ extern "C" int westwood_online_upgrade_download_event_sink_create_instance_smoke
     return failure;
 }
 
+extern "C" int westwood_online_upgrade_download_event_sink_query_interface_smoke(void)
+{
+    WestwoodOnlineUpgradeDownloadEventSinkVtable vtable = {};
+    WestwoodOnlineUpgradeDownloadEventSink sink = {};
+    GUID otherIid = g_WestwoodOnlineUpgradeDownloadEventSink_IID;
+    void *outInterface;
+    HRESULT result;
+
+    vtable.slots[1] = (void *)&FakeApiEventSinkAddRef;
+    sink.m_vftable = &vtable;
+
+    g_apiEventSinkAddRefCalls = 0;
+    g_apiEventSinkAddRefSelf = 0;
+    outInterface = (void *)0xcccccccc;
+    result = WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
+        &sink,
+        g_WestwoodOnlineUpgradeDownloadEventSink_IID,
+        &outInterface
+    );
+    if (result != S_OK ||
+        outInterface != &sink ||
+        g_apiEventSinkAddRefCalls != 1 ||
+        g_apiEventSinkAddRefSelf != (IUnknown *)&sink)
+    {
+        return 1;
+    }
+
+    outInterface = (void *)0xcccccccc;
+    result = WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
+        &sink,
+        IID_IUnknown,
+        &outInterface
+    );
+    if (result != S_OK ||
+        outInterface != &sink ||
+        g_apiEventSinkAddRefCalls != 2 ||
+        g_apiEventSinkAddRefSelf != (IUnknown *)&sink)
+    {
+        return 2;
+    }
+
+    otherIid.Data1 ^= 1;
+    outInterface = (void *)0xcccccccc;
+    result = WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
+        &sink,
+        otherIid,
+        &outInterface
+    );
+    if (result != E_NOINTERFACE ||
+        outInterface != 0 ||
+        g_apiEventSinkAddRefCalls != 2)
+    {
+        return 3;
+    }
+
+    result = WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
+        &sink,
+        g_WestwoodOnlineUpgradeDownloadEventSink_IID,
+        0
+    );
+    return result == E_POINTER ? 0 : 4;
+}
+
 extern "C" int westwood_online_upgrade_api_event_sink_create_instance_smoke(void)
 {
     const LONG oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
@@ -2866,6 +4473,125 @@ extern "C" int westwood_online_upgrade_api_event_sink_create_instance_smoke(void
         DeleteCriticalSection(&eventSink->m_refCountAndLock.lock);
         ::operator delete(eventSink);
     }
+    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_api_event_sink_query_interface_smoke(void)
+{
+    WestwoodOnlineUpgradeApiEventSinkVtable vtable = {};
+    WestwoodOnlineUpgradeApiEventSink sink = {};
+    GUID otherIid = g_WestwoodOnlineUpgradeApiEventSink_IID;
+    void *outInterface;
+    HRESULT result;
+
+    vtable.slots[1] = (void *)&FakeApiEventSinkAddRef;
+    sink.m_vftable = &vtable;
+
+    g_apiEventSinkAddRefCalls = 0;
+    g_apiEventSinkAddRefSelf = 0;
+    outInterface = (void *)0xcccccccc;
+    result = WestwoodOnlineUpgradeApiEventSink::QueryInterface(
+        &sink,
+        g_WestwoodOnlineUpgradeApiEventSink_IID,
+        &outInterface
+    );
+    if (result != S_OK ||
+        outInterface != &sink ||
+        g_apiEventSinkAddRefCalls != 1 ||
+        g_apiEventSinkAddRefSelf != (IUnknown *)&sink)
+    {
+        return 1;
+    }
+
+    outInterface = (void *)0xcccccccc;
+    result = WestwoodOnlineUpgradeApiEventSink::QueryInterface(
+        &sink,
+        IID_IUnknown,
+        &outInterface
+    );
+    if (result != S_OK ||
+        outInterface != &sink ||
+        g_apiEventSinkAddRefCalls != 2 ||
+        g_apiEventSinkAddRefSelf != (IUnknown *)&sink)
+    {
+        return 2;
+    }
+
+    otherIid.Data1 ^= 1;
+    outInterface = (void *)0xcccccccc;
+    result = WestwoodOnlineUpgradeApiEventSink::QueryInterface(
+        &sink,
+        otherIid,
+        &outInterface
+    );
+    if (result != E_NOINTERFACE ||
+        outInterface != 0 ||
+        g_apiEventSinkAddRefCalls != 2)
+    {
+        return 3;
+    }
+
+    result = WestwoodOnlineUpgradeApiEventSink::QueryInterface(
+        &sink,
+        g_WestwoodOnlineUpgradeApiEventSink_IID,
+        0
+    );
+    return result == E_POINTER ? 0 : 4;
+}
+
+extern "C" int westwood_online_upgrade_api_event_sink_lifetime_smoke(void)
+{
+    const LONG oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+    WestwoodOnlineUpgradeApiEventSinkVtable otherVtable = {};
+    int failure = 0;
+
+    WestwoodOnlineUpgradeApiEventSink stackSink = {};
+    stackSink.m_refCountAndLock.Init();
+    stackSink.m_vftable = &otherVtable;
+    stackSink.m_refCountAndLock.refCount = 5;
+    g_WestwoodOnlineUpgradeEventSinkLiveCount = 10;
+    stackSink.Destructor();
+    if (stackSink.m_vftable != &g_WestwoodOnlineUpgradeApiEventSink_Vtbl ||
+        stackSink.m_refCountAndLock.refCount != 1 ||
+        g_WestwoodOnlineUpgradeEventSinkLiveCount != 9)
+    {
+        failure = 1;
+    }
+
+    WestwoodOnlineUpgradeApiEventSink *eventSink =
+        (WestwoodOnlineUpgradeApiEventSink *)::operator new(
+            sizeof(WestwoodOnlineUpgradeApiEventSink));
+    eventSink->m_refCountAndLock.Init();
+    eventSink->m_vftable = &otherVtable;
+    eventSink->m_refCountAndLock.refCount = 2;
+    g_WestwoodOnlineUpgradeEventSinkLiveCount = 20;
+    ULONG refCount = WestwoodOnlineUpgradeApiEventSink::Release(eventSink);
+    if (failure == 0 &&
+        (refCount != 1 ||
+         eventSink->m_refCountAndLock.refCount != 1 ||
+         eventSink->m_vftable != &otherVtable ||
+         g_WestwoodOnlineUpgradeEventSinkLiveCount != 20))
+    {
+        failure = 2;
+    }
+    DeleteCriticalSection(&eventSink->m_refCountAndLock.lock);
+    ::operator delete(eventSink);
+
+    eventSink = (WestwoodOnlineUpgradeApiEventSink *)::operator new(
+        sizeof(WestwoodOnlineUpgradeApiEventSink));
+    eventSink->m_refCountAndLock.Init();
+    eventSink->m_vftable = &otherVtable;
+    eventSink->m_refCountAndLock.refCount = 1;
+    g_WestwoodOnlineUpgradeEventSinkLiveCount = 20;
+    refCount = WestwoodOnlineUpgradeApiEventSink::Release(eventSink);
+    if (failure == 0 &&
+        (refCount != 0 ||
+         g_WestwoodOnlineUpgradeEventSinkLiveCount != 19))
+    {
+        failure = 3;
+    }
+
     g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
     return failure;
 }
@@ -2951,6 +4677,413 @@ extern "C" int westwood_online_upgrade_download_create_instance_advise_smoke(voi
     g_WestwoodOnlineUpgradeDownloadEventSinkConnectionOffset = oldSinkOffset;
     g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
     RestoreImportPatch(import);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_download_event_sink_finished_smoke(void)
+{
+    ImportFunctionPatch setDlgItemTextImport = {};
+    if (!PatchImportByName("USER32.dll",
+                           "SetDlgItemTextA",
+                           (void *)&FakeDownloadDlgSetDlgItemTextA,
+                           setDlgItemTextImport))
+    {
+        return 1;
+    }
+
+    HWND const oldProgressHwnd = g_hWestwoodOnlineUpgradeProgressDialog;
+    const int oldDialogResult = g_WestwoodOnlineUpgradeDownloadDialogResult;
+    char oldStatusBuffer[sizeof(g_WestwoodOnlineUpgradeProgressStatusTextBuffer)];
+    memcpy(oldStatusBuffer,
+           g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
+           sizeof(oldStatusBuffer));
+
+    g_hWestwoodOnlineUpgradeProgressDialog = (HWND)0x24681357;
+    g_WestwoodOnlineUpgradeDownloadDialogResult = 0;
+    g_WestwoodOnlineUpgradeProgressStatusTextBuffer[0] = '\0';
+    g_downloadDlgSetDlgItemTextCalls = 0;
+    memset(g_downloadDlgSetDlgItemTextHwnd,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextHwnd));
+    memset(g_downloadDlgSetDlgItemTextControlId,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextControlId));
+    memset(g_downloadDlgSetDlgItemTextValue,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextValue));
+
+    HRESULT const result =
+        WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFinished(
+            (IUnknown *)0x12345678);
+
+    int failure = 0;
+    if (result != S_OK ||
+        g_WestwoodOnlineUpgradeDownloadDialogResult != 1 ||
+        g_downloadDlgSetDlgItemTextCalls != 1 ||
+        g_downloadDlgSetDlgItemTextHwnd[0] !=
+            g_hWestwoodOnlineUpgradeProgressDialog ||
+        g_downloadDlgSetDlgItemTextControlId[0] != 1023 ||
+        strcmp(g_downloadDlgSetDlgItemTextValue[0], "Finished!") != 0 ||
+        strcmp(g_WestwoodOnlineUpgradeProgressStatusTextBuffer, "Finished!") !=
+            0 ||
+        g_downloadDlgSetDlgItemTextValue[0] !=
+            g_WestwoodOnlineUpgradeProgressStatusTextBuffer)
+    {
+        failure = 2;
+    }
+
+    memcpy(g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
+           oldStatusBuffer,
+           sizeof(oldStatusBuffer));
+    g_WestwoodOnlineUpgradeDownloadDialogResult = oldDialogResult;
+    g_hWestwoodOnlineUpgradeProgressDialog = oldProgressHwnd;
+    RestoreImportPatch(setDlgItemTextImport);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_download_event_sink_error_smoke(void)
+{
+    ImportFunctionPatch imports[2] = {};
+    if (!PatchImportByName("USER32.dll",
+                           "SetDlgItemTextA",
+                           (void *)&FakeDownloadDlgSetDlgItemTextA,
+                           imports[0]) ||
+        !PatchImportByName("KERNEL32.dll",
+                           "Sleep",
+                           (void *)&FakeInitSleep,
+                           imports[1]))
+    {
+        RestoreImportPatch(imports[1]);
+        RestoreImportPatch(imports[0]);
+        return 1;
+    }
+
+    HWND const oldProgressHwnd = g_hWestwoodOnlineUpgradeProgressDialog;
+    const int oldDialogResult = g_WestwoodOnlineUpgradeDownloadDialogResult;
+    char oldStatusBuffer[sizeof(g_WestwoodOnlineUpgradeProgressStatusTextBuffer)];
+    memcpy(oldStatusBuffer,
+           g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
+           sizeof(oldStatusBuffer));
+
+    g_hWestwoodOnlineUpgradeProgressDialog = (HWND)0x24681358;
+    g_WestwoodOnlineUpgradeDownloadDialogResult = 0;
+    g_WestwoodOnlineUpgradeProgressStatusTextBuffer[0] = '\0';
+    g_downloadDlgSetDlgItemTextCalls = 0;
+    memset(g_downloadDlgSetDlgItemTextHwnd,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextHwnd));
+    memset(g_downloadDlgSetDlgItemTextControlId,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextControlId));
+    memset(g_downloadDlgSetDlgItemTextValue,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextValue));
+    g_initSleepCalls = 0;
+    memset(g_initSleepDurations, 0, sizeof(g_initSleepDurations));
+
+    HRESULT const result =
+        WestwoodOnlineUpgradeDownloadEventSink::OnDownloadError(
+            (IUnknown *)0x12345678,
+            E_FAIL);
+
+    int failure = 0;
+    if (result != S_OK ||
+        g_WestwoodOnlineUpgradeDownloadDialogResult != -1 ||
+        g_downloadDlgSetDlgItemTextCalls != 1 ||
+        g_downloadDlgSetDlgItemTextHwnd[0] !=
+            g_hWestwoodOnlineUpgradeProgressDialog ||
+        g_downloadDlgSetDlgItemTextControlId[0] != 1023 ||
+        strcmp(g_downloadDlgSetDlgItemTextValue[0], "ERROR") != 0 ||
+        strcmp(g_WestwoodOnlineUpgradeProgressStatusTextBuffer, "ERROR") != 0 ||
+        g_downloadDlgSetDlgItemTextValue[0] !=
+            g_WestwoodOnlineUpgradeProgressStatusTextBuffer ||
+        g_initSleepCalls != 1 ||
+        g_initSleepDurations[0] != 1000)
+    {
+        failure = 2;
+    }
+
+    memcpy(g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
+           oldStatusBuffer,
+           sizeof(oldStatusBuffer));
+    g_WestwoodOnlineUpgradeDownloadDialogResult = oldDialogResult;
+    g_hWestwoodOnlineUpgradeProgressDialog = oldProgressHwnd;
+    RestoreImportPatch(imports[1]);
+    RestoreImportPatch(imports[0]);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_download_event_sink_progress_smoke(void)
+{
+    ImportFunctionPatch imports[2] = {};
+    if (!PatchImportByName(
+            "USER32.dll",
+            "SetDlgItemTextA",
+            (void *)&FakeDownloadDlgSetDlgItemTextA,
+            imports[0]) ||
+        !PatchImportByName(
+            "USER32.dll",
+            "SendDlgItemMessageA",
+            (void *)&FakeDownloadDlgSendDlgItemMessageA,
+            imports[1]))
+    {
+        RestoreImportPatch(imports[1]);
+        RestoreImportPatch(imports[0]);
+        return 1;
+    }
+
+    HWND const oldProgressHwnd = g_hWestwoodOnlineUpgradeProgressDialog;
+    char oldStatusBuffer[sizeof(g_WestwoodOnlineUpgradeProgressStatusTextBuffer)];
+    memcpy(oldStatusBuffer,
+           g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
+           sizeof(oldStatusBuffer));
+
+    g_hWestwoodOnlineUpgradeProgressDialog = (HWND)0x24681359;
+    g_WestwoodOnlineUpgradeProgressStatusTextBuffer[0] = '\0';
+    g_downloadDlgSetDlgItemTextCalls = 0;
+    memset(g_downloadDlgSetDlgItemTextHwnd,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextHwnd));
+    memset(g_downloadDlgSetDlgItemTextControlId,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextControlId));
+    memset(g_downloadDlgSetDlgItemTextValue,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextValue));
+    g_downloadDlgSendDlgItemMessageCalls = 0;
+    memset(g_downloadDlgSendDlgItemMessageHwnd,
+           0,
+           sizeof(g_downloadDlgSendDlgItemMessageHwnd));
+    memset(g_downloadDlgSendDlgItemMessageControlId,
+           0,
+           sizeof(g_downloadDlgSendDlgItemMessageControlId));
+    memset(g_downloadDlgSendDlgItemMessageMessage,
+           0,
+           sizeof(g_downloadDlgSendDlgItemMessageMessage));
+    memset(g_downloadDlgSendDlgItemMessageWParam,
+           0,
+           sizeof(g_downloadDlgSendDlgItemMessageWParam));
+    memset(g_downloadDlgSendDlgItemMessageLParam,
+           0,
+           sizeof(g_downloadDlgSendDlgItemMessageLParam));
+
+    HRESULT const withTimeResult =
+        WestwoodOnlineUpgradeDownloadEventSink::OnDownloadProgress(
+            (IUnknown *)0x12345678,
+            125,
+            500,
+            77,
+            9);
+    char withTimeStatus[128];
+    strcpy(withTimeStatus, g_WestwoodOnlineUpgradeProgressStatusTextBuffer);
+    HRESULT const withoutTimeResult =
+        WestwoodOnlineUpgradeDownloadEventSink::OnDownloadProgress(
+            (IUnknown *)0x12345678,
+            500,
+            800,
+            88,
+            0);
+
+    int failure = 0;
+    if (withTimeResult != S_OK || withoutTimeResult != S_OK ||
+        g_downloadDlgSendDlgItemMessageCalls != 2 ||
+        g_downloadDlgSendDlgItemMessageHwnd[0] !=
+            g_hWestwoodOnlineUpgradeProgressDialog ||
+        g_downloadDlgSendDlgItemMessageControlId[0] != 1021 ||
+        g_downloadDlgSendDlgItemMessageMessage[0] != 1026 ||
+        g_downloadDlgSendDlgItemMessageWParam[0] != 25 ||
+        g_downloadDlgSendDlgItemMessageLParam[0] != 0 ||
+        g_downloadDlgSendDlgItemMessageHwnd[1] !=
+            g_hWestwoodOnlineUpgradeProgressDialog ||
+        g_downloadDlgSendDlgItemMessageControlId[1] != 1021 ||
+        g_downloadDlgSendDlgItemMessageMessage[1] != 1026 ||
+        g_downloadDlgSendDlgItemMessageWParam[1] != 62 ||
+        g_downloadDlgSendDlgItemMessageLParam[1] != 0 ||
+        g_downloadDlgSetDlgItemTextCalls != 2 ||
+        g_downloadDlgSetDlgItemTextHwnd[0] !=
+            g_hWestwoodOnlineUpgradeProgressDialog ||
+        g_downloadDlgSetDlgItemTextControlId[0] != 1023 ||
+        g_downloadDlgSetDlgItemTextValue[0] !=
+            g_WestwoodOnlineUpgradeProgressStatusTextBuffer ||
+        strcmp(withTimeStatus,
+               "Bytes read: 125 / 500.    Time left: 9 seconds") != 0 ||
+        g_downloadDlgSetDlgItemTextHwnd[1] !=
+            g_hWestwoodOnlineUpgradeProgressDialog ||
+        g_downloadDlgSetDlgItemTextControlId[1] != 1023 ||
+        strcmp(g_downloadDlgSetDlgItemTextValue[1],
+               "Bytes read: 500 / 800") != 0 ||
+        strcmp(g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
+               "Bytes read: 500 / 800") != 0 ||
+        g_downloadDlgSetDlgItemTextValue[1] !=
+            g_WestwoodOnlineUpgradeProgressStatusTextBuffer)
+    {
+        failure = 2;
+    }
+
+    memcpy(g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
+           oldStatusBuffer,
+           sizeof(oldStatusBuffer));
+    g_hWestwoodOnlineUpgradeProgressDialog = oldProgressHwnd;
+    RestoreImportPatch(imports[1]);
+    RestoreImportPatch(imports[0]);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_download_event_sink_state_changed_smoke(void)
+{
+    ImportFunctionPatch setDlgItemTextImport = {};
+    if (!PatchImportByName(
+            "USER32.dll",
+            "SetDlgItemTextA",
+            (void *)&FakeDownloadDlgSetDlgItemTextA,
+            setDlgItemTextImport))
+    {
+        return 1;
+    }
+
+    HWND const oldProgressHwnd = g_hWestwoodOnlineUpgradeProgressDialog;
+    char oldStatusBuffer[sizeof(g_WestwoodOnlineUpgradeProgressStatusTextBuffer)];
+    memcpy(oldStatusBuffer,
+           g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
+           sizeof(oldStatusBuffer));
+
+    g_hWestwoodOnlineUpgradeProgressDialog = (HWND)0x2468135a;
+    g_WestwoodOnlineUpgradeProgressStatusTextBuffer[0] = '\0';
+    g_downloadDlgSetDlgItemTextCalls = 0;
+    memset(g_downloadDlgSetDlgItemTextHwnd,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextHwnd));
+    memset(g_downloadDlgSetDlgItemTextControlId,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextControlId));
+    memset(g_downloadDlgSetDlgItemTextValue,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextValue));
+
+    HRESULT const connectingResult =
+        WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged(
+            (IUnknown *)0x12345678,
+            WOL_DOWNLOAD_STATE_CONNECTING);
+    char connectingStatus[64];
+    strcpy(connectingStatus, g_WestwoodOnlineUpgradeProgressStatusTextBuffer);
+    HRESULT const findingResult =
+        WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged(
+            (IUnknown *)0x12345678,
+            WOL_DOWNLOAD_STATE_FINDING_PATCH);
+    char findingStatus[64];
+    strcpy(findingStatus, g_WestwoodOnlineUpgradeProgressStatusTextBuffer);
+    HRESULT const downloadingResult =
+        WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged(
+            (IUnknown *)0x12345678,
+            WOL_DOWNLOAD_STATE_DOWNLOADING_PATCH);
+    char downloadingStatus[64];
+    strcpy(downloadingStatus, g_WestwoodOnlineUpgradeProgressStatusTextBuffer);
+    HRESULT const ignoredResult =
+        WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged(
+            (IUnknown *)0x12345678,
+            (WestwoodOnlineUpgradeDownloadState)5);
+
+    int failure = 0;
+    if (connectingResult != S_OK || findingResult != S_OK ||
+        downloadingResult != S_OK || ignoredResult != S_OK ||
+        g_downloadDlgSetDlgItemTextCalls != 3 ||
+        g_downloadDlgSetDlgItemTextHwnd[0] !=
+            g_hWestwoodOnlineUpgradeProgressDialog ||
+        g_downloadDlgSetDlgItemTextControlId[0] != 1023 ||
+        g_downloadDlgSetDlgItemTextValue[0] !=
+            g_WestwoodOnlineUpgradeProgressStatusTextBuffer ||
+        strcmp(connectingStatus, "Connecting...") != 0 ||
+        g_downloadDlgSetDlgItemTextHwnd[1] !=
+            g_hWestwoodOnlineUpgradeProgressDialog ||
+        g_downloadDlgSetDlgItemTextControlId[1] != 1023 ||
+        strcmp(findingStatus, "Finding patch...") != 0 ||
+        g_downloadDlgSetDlgItemTextHwnd[2] !=
+            g_hWestwoodOnlineUpgradeProgressDialog ||
+        g_downloadDlgSetDlgItemTextControlId[2] != 1023 ||
+        strcmp(downloadingStatus, "Downloading patch...") != 0 ||
+        strcmp(g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
+               "Downloading patch...") != 0 ||
+        g_downloadDlgSetDlgItemTextValue[2] !=
+            g_WestwoodOnlineUpgradeProgressStatusTextBuffer)
+    {
+        failure = 2;
+    }
+
+    memcpy(g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
+           oldStatusBuffer,
+           sizeof(oldStatusBuffer));
+    g_hWestwoodOnlineUpgradeProgressDialog = oldProgressHwnd;
+    RestoreImportPatch(setDlgItemTextImport);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_download_event_sink_add_ref_smoke(void)
+{
+    WestwoodOnlineUpgradeDownloadEventSink sink = {};
+    sink.m_refCountAndLock.refCount = 3;
+
+    ULONG const result = WestwoodOnlineUpgradeDownloadEventSink::AddRef(&sink);
+    return result == 4 && sink.m_refCountAndLock.refCount == 4 ? 0 : 1;
+}
+
+extern "C" int westwood_online_upgrade_download_event_sink_destructor_smoke(void)
+{
+    WestwoodOnlineUpgradeDownloadEventSink sink = {};
+    WestwoodOnlineUpgradeDownloadEventSinkVtable markerVtable = {};
+    LONG const oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+
+    sink.m_refCountAndLock.Init();
+    sink.m_vftable = &markerVtable;
+    sink.m_refCountAndLock.refCount = 9;
+    g_WestwoodOnlineUpgradeEventSinkLiveCount = 5;
+
+    sink.Destructor();
+
+    const int failure =
+        sink.m_vftable == &g_WestwoodOnlineUpgradeDownloadEventSink_Vtbl &&
+                sink.m_refCountAndLock.refCount == 1 &&
+                g_WestwoodOnlineUpgradeEventSinkLiveCount == 4
+            ? 0
+            : 1;
+
+    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_download_event_sink_release_smoke(void)
+{
+    LONG const oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+    WestwoodOnlineUpgradeDownloadEventSink stackSink = {};
+    stackSink.m_refCountAndLock.Init();
+    stackSink.m_refCountAndLock.refCount = 2;
+    g_WestwoodOnlineUpgradeEventSinkLiveCount = 7;
+
+    ULONG refCount = WestwoodOnlineUpgradeDownloadEventSink::Release(&stackSink);
+    int failure = refCount == 1 &&
+                          stackSink.m_refCountAndLock.refCount == 1 &&
+                          g_WestwoodOnlineUpgradeEventSinkLiveCount == 7
+                      ? 0
+                      : 1;
+    DeleteCriticalSection(&stackSink.m_refCountAndLock.lock);
+
+    if (failure == 0)
+    {
+        WestwoodOnlineUpgradeDownloadEventSink *const heapSink =
+            (WestwoodOnlineUpgradeDownloadEventSink *)(::operator new(
+                sizeof(WestwoodOnlineUpgradeDownloadEventSink)));
+        heapSink->m_refCountAndLock.Init();
+        heapSink->m_vftable = 0;
+        heapSink->m_refCountAndLock.refCount = 1;
+        g_WestwoodOnlineUpgradeEventSinkLiveCount = 3;
+
+        refCount = WestwoodOnlineUpgradeDownloadEventSink::Release(heapSink);
+        if (refCount != 0 || g_WestwoodOnlineUpgradeEventSinkLiveCount != 2)
+        {
+            failure = 2;
+        }
+    }
+
+    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
     return failure;
 }
 
@@ -3709,7 +5842,7 @@ extern "C" int westwood_online_upgrade_api_event_sink_on_api_status_smoke(void)
     WestwoodOnlineUpgradeProgressDialog *const oldProgressDialog =
         g_pWestwoodOnlineUpgradeProgressDialog;
     RecoilPtr32 const oldMainWnd = g_RecoilApp.m_pMainWnd;
-    CodeFunctionPatch patches[3] = {};
+    CodeFunctionPatch patches[4] = {};
     ImportFunctionPatch imports[2] = {};
 
     if (!PatchFunctionJump((void *)&Time::Reset,
@@ -4568,6 +6701,184 @@ westwood_online_upgrade_api_event_sink_on_session_query_finished_smoke(void)
 }
 
 extern "C" int
+westwood_online_upgrade_api_event_sink_on_session_launch_result_smoke(void)
+{
+    const WORD kMfc42CWndSendDlgItemMessageAOrdinal = 5802;
+    const int oldActiveListMode = g_WestwoodOnlineUpgradeActiveListMode;
+    const int oldCreateFromQuery =
+        g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag;
+    const int oldPendingSessionCount =
+        g_WestwoodOnlineUpgradePendingSessionResultCount;
+    IUnknown *const oldApi = g_pWestwoodOnlineUpgradeApi;
+    WestwoodOnlineUpgradeBrowseRecord oldCachedBrowseRecord =
+        g_WestwoodOnlineUpgradeCachedBrowseRecord;
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch patches[4] = {};
+    ImportFunctionPatch import = {};
+
+    if (!PatchFunctionJump((void *)&zLoc::FormatMessage,
+                           (void *)&FakeSessionLaunchFormatMessage,
+                           patches[0]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::AppendStatusTextFmt),
+            (void *)&FakeBrowseResolvedAppendStatusTextFmt,
+            patches[1]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::EnableQueryControls),
+            (void *)&FakeBrowseRecordAddedEnableQueryControls,
+            patches[2]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::EnableConnectButton),
+            (void *)&FakeBrowseResolvedEnableConnectButton,
+            patches[3]) ||
+        !PatchImportByOrdinal("MFC42.DLL",
+                              kMfc42CWndSendDlgItemMessageAOrdinal,
+                              (void *)&FakePendingSessionRemovedSendDlgItemMessageA,
+                              import))
+    {
+        RestoreImportPatch(import);
+        for (int index = 3; index >= 0; --index)
+        {
+            RestoreFunctionPatch(patches[index]);
+        }
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+    memset(&g_initFakeApiVtable, 0, sizeof(g_initFakeApiVtable));
+    g_initFakeApi.vftable = &g_initFakeApiVtable;
+    g_initFakeApiVtable.RequestListMode = FakeInitRequestListMode;
+    g_initFakeApiVtable.CancelPendingSessionFlow =
+        FakeSessionFinishedCancelPendingSessionFlow;
+    g_pWestwoodOnlineUpgradeApi = (IUnknown *)&g_initFakeApi;
+
+    WestwoodOnlineUpgradeBrowseRecord browseRecord = {};
+    strcpy(browseRecord.m_sessionName, "Browse");
+    WestwoodOnlineUpgradeSessionRequest sessionNode = {};
+    strcpy(sessionNode.m_sessionName, "Node");
+    WestwoodOnlineUpgradeSessionRequest sessionRequest = {};
+    strcpy(sessionRequest.m_sessionName, "Request");
+
+    int failure = 0;
+    g_WestwoodOnlineUpgradeActiveListMode = 44;
+    ResetBrowseResolvedFakes();
+    int result = WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
+        0,
+        -1,
+        &browseRecord,
+        &sessionNode,
+        &sessionRequest
+    );
+    if (result != 0 ||
+        g_sessionFinishedCancelCalls != 1 ||
+        g_sessionFinishedCancelSelf != (IUnknown *)&g_initFakeApi ||
+        g_sessionLaunchFormatCalls != 0 ||
+        g_browseResolvedAppendCalls != 0 ||
+        g_pendingRemovedSendMessageCalls != 0 ||
+        g_initRequestListModeCalls != 0)
+    {
+        failure = 1;
+    }
+
+    sessionNode.m_rowFlags = 0x8000;
+    g_WestwoodOnlineUpgradeActiveListMode = 55;
+    g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 1;
+    g_WestwoodOnlineUpgradePendingSessionResultCount = 7;
+    strcpy(g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName, "Cached");
+    ResetBrowseResolvedFakes();
+    result = WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
+        0,
+        0,
+        &browseRecord,
+        &sessionNode,
+        &sessionRequest
+    );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_sessionLaunchFormatCalls != 1 ||
+         g_sessionLaunchFormatMaxChars != 128 ||
+         g_sessionLaunchFormatMessageId != 0x302d ||
+         g_sessionLaunchFormatArg0 != browseRecord.m_sessionName ||
+         g_sessionLaunchFormatArg1 != sessionRequest.m_sessionName ||
+         g_sessionLaunchFormatArg2 != 0 ||
+         g_browseResolvedAppendCalls != 1 ||
+         strcmp(g_browseResolvedAppendFormat[0],
+                "launch 302d Browse Request") != 0 ||
+         g_initRequestListModeCalls != 1 ||
+         g_initRequestListMode != 55 ||
+         g_initRequestListModeEnabled != 1 ||
+         g_pendingRemovedSendMessageCalls != 1 ||
+         g_pendingRemovedSendMessageControlId[0] != 1137 ||
+         g_pendingRemovedSendMessageMessage[0] != LB_RESETCONTENT ||
+         g_pendingRemovedSendMessageWParam[0] != 0 ||
+         g_pendingRemovedSendMessageLParam[0] != 0 ||
+         g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag != 0 ||
+         g_WestwoodOnlineUpgradePendingSessionResultCount != 0 ||
+         g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] != '\0' ||
+         g_browseRecordAddedEnableCalls != 1 ||
+         g_browseRecordAddedEnableThis[0] != &dialog ||
+         g_browseRecordAddedEnableValue[0] != 0 ||
+         g_browseResolvedConnectCalls != 1 ||
+         g_browseResolvedConnectThis[0] != &dialog ||
+         g_browseResolvedConnectValue[0] != 0))
+    {
+        failure = 2;
+    }
+
+    sessionNode.m_rowFlags = 0;
+    g_WestwoodOnlineUpgradePendingSessionResultCount = 6;
+    ResetBrowseResolvedFakes();
+    g_pendingRemovedSendMessageResult[0] = 4;
+    result = WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
+        0,
+        0,
+        &browseRecord,
+        &sessionNode,
+        &sessionRequest
+    );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_sessionLaunchFormatCalls != 1 ||
+         g_sessionLaunchFormatMaxChars != 128 ||
+         g_sessionLaunchFormatMessageId != 0x302e ||
+         g_sessionLaunchFormatArg0 != sessionNode.m_sessionName ||
+         g_sessionLaunchFormatArg1 != browseRecord.m_sessionName ||
+         g_sessionLaunchFormatArg2 != sessionRequest.m_sessionName ||
+         strcmp(g_browseResolvedAppendFormat[0],
+                "launch 302e Node Browse Request") != 0 ||
+         g_pendingRemovedSendMessageCalls != 2 ||
+         g_pendingRemovedSendMessageMessage[0] != LB_FINDSTRINGEXACT ||
+         g_pendingRemovedSendMessageWParam[0] != (WPARAM)-1 ||
+         strcmp(g_pendingRemovedSendMessageText[0], "Node") != 0 ||
+         g_pendingRemovedSendMessageMessage[1] != LB_DELETESTRING ||
+         g_pendingRemovedSendMessageWParam[1] != 4 ||
+         g_pendingRemovedSendMessageLParam[1] != 0 ||
+         g_WestwoodOnlineUpgradePendingSessionResultCount != 5 ||
+         g_initRequestListModeCalls != 0 ||
+         g_browseRecordAddedEnableCalls != 0 ||
+         g_browseResolvedConnectCalls != 0))
+    {
+        failure = 3;
+    }
+
+    g_WestwoodOnlineUpgradeActiveListMode = oldActiveListMode;
+    g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = oldCreateFromQuery;
+    g_WestwoodOnlineUpgradePendingSessionResultCount = oldPendingSessionCount;
+    g_WestwoodOnlineUpgradeCachedBrowseRecord = oldCachedBrowseRecord;
+    g_pWestwoodOnlineUpgradeApi = oldApi;
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    RestoreImportPatch(import);
+    for (int index = 3; index >= 0; --index)
+    {
+        RestoreFunctionPatch(patches[index]);
+    }
+    return failure;
+}
+
+extern "C" int
 westwood_online_upgrade_api_event_sink_on_session_list_enumerated_smoke(void)
 {
     const WORD kMfc42CWndSendDlgItemMessageAOrdinal = 5802;
@@ -4753,6 +7064,1536 @@ westwood_online_upgrade_api_event_sink_on_session_list_enumerated_smoke(void)
     return failure;
 }
 
+int LaunchFloatBits(float value)
+{
+    union
+    {
+        float value;
+        int raw;
+    } bits = {value};
+    return bits.raw;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_launch_selected_session_smoke(void)
+{
+    int failure = 0;
+    int result;
+
+    g_initDisconnectCalls = 0;
+    result = WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
+        0,
+        -1,
+        0,
+        0,
+        0
+    );
+    if (result != 0 || g_initDisconnectCalls != 0)
+    {
+        return 1;
+    }
+
+    CodeFunctionPatch patches[12] = {};
+    ImportFunctionPatch sendMessagePatch = {};
+    int patchCount = 0;
+    bool installed = true;
+    installed = installed &&
+                PatchFunctionJump(CWndUpdateDataAddress(),
+                                  (void *)&FakeWestwoodUpdateData,
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump((void *)&zNetwork::InitSessionRuntime,
+                                  (void *)&FakeLaunchInitSessionRuntime,
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump((void *)&Net::FormatIpv4Address,
+                                  (void *)&FakeLaunchFormatIpv4Address,
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(
+                    (void *)&zNetworkDPlay::SelectTcpIpProviderAndEnumSessions,
+                    (void *)&FakeLaunchSelectTcpIpProviderAndEnumSessions,
+                    patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(
+                    (void *)&zNetwork_DPlay::CreateSessionFromStatusFields,
+                    (void *)&FakeLaunchCreateSessionFromStatusFields,
+                    patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump((void *)&zOpt::SetNetworkEnabled,
+                                  (void *)&FakeLaunchSetNetworkEnabled,
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(
+                    MethodAddress(
+                        &WestwoodOnlineUpgradeDialog::GetSelectedProfilePlayerName),
+                    MethodAddress(
+                        &LaunchDialogPatchOps::GetSelectedProfilePlayerName),
+                    patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(
+                    (void *)&zNetwork_DPlay::CreateLocalPlayerRecordAndRegister,
+                    (void *)&FakeLaunchCreateLocalPlayerRecordAndRegister,
+                    patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(
+                    (void *)&zNetworkDPlay::OpenSelectedSessionAndReadStatusFields,
+                    (void *)&FakeLaunchOpenSelectedSessionAndReadStatusFields,
+                    patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump((void *)&zOpt::SetPlayerName,
+                                  (void *)&FakeLaunchSetPlayerName,
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump((void *)&GameNet::SetStatusBitsFromFlags,
+                                  (void *)&FakeLaunchSetStatusBitsFromFlags,
+                                  patches[patchCount++]);
+    installed = installed &&
+                PatchFunctionJump(
+                    MethodAddress(
+                        &HudSensorTracker::SetRuntimeTimerSecAndGoalValue),
+                    MethodAddress(
+                        &LaunchHudSensorTrackerPatchOps::
+                            SetRuntimeTimerSecAndGoalValue),
+                    patches[patchCount++]);
+    installed = installed &&
+                PatchImportByName("USER32.dll",
+                                  "SendMessageA",
+                                  (void *)&FakeLaunchSendMessageA,
+                                  sendMessagePatch);
+    if (!installed)
+    {
+        RestoreImportPatch(sendMessagePatch);
+        for (int index = patchCount - 1; index >= 0; --index)
+        {
+            RestoreFunctionPatch(patches[index]);
+        }
+        return 90;
+    }
+
+    IUnknown *const oldApi = g_pWestwoodOnlineUpgradeApi;
+    WestwoodOnlineUpgradeDialog *const oldDialog =
+        g_pWestwoodOnlineUpgradeDialog;
+    const int oldCreateFromQuery =
+        g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag;
+    const int oldMissionIndex = g_WestwoodOnlineUpgradeSelectedMissionIndex;
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    new (&dialog.m_sessionName) CString("Arena");
+    dialog.m_sessionModeCombo.m_hWnd = (HWND)0x12345678;
+    dialog.m_queryStatusFlagBit0 = 1;
+    dialog.m_queryStatusFlagBit1 = 1;
+    dialog.m_queryValueOrTime = 5;
+    dialog.m_queryAuxParam = 6;
+    dialog.m_queryMaxPlayers = 7;
+
+    g_initFakeApiVtable.Disconnect = FakeInitDisconnect;
+    g_initFakeApi.vftable = &g_initFakeApiVtable;
+    g_pWestwoodOnlineUpgradeApi = (IUnknown *)&g_initFakeApi;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    WestwoodOnlineUpgradeSessionRequest skipped = {};
+    WestwoodOnlineUpgradeSessionRequest selected = {};
+    skipped.m_rowFlags = 0;
+    skipped.m_next = &selected;
+    selected.m_rowFlags = 1;
+    selected.m_hostIpv4Packed = 0x01020304;
+    selected.m_next = 0;
+
+    ResetLaunchSelectedSessionFakes();
+    g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 1;
+    g_WestwoodOnlineUpgradeSelectedMissionIndex = -1;
+    result = WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
+        0,
+        0,
+        0,
+        &skipped,
+        0
+    );
+    if (result != 0 ||
+        g_threeFloatUpdateDataCount != 1 ||
+        g_threeFloatUpdateDataSaveValue[0] != 1 ||
+        g_launchInitSessionCalls != 1 ||
+        g_launchInitSessionGuid != g_zNetwork_RecoilAppGuid ||
+        g_launchFormatIpv4Calls != 1 ||
+        g_launchFormatIpv4Packed != 0x01020304 ||
+        g_launchSelectTcpCalls != 1 ||
+        strcmp(g_launchSelectTcpAddress, "4.3.2.1") != 0 ||
+        g_launchSelectTcpSkip != 1 ||
+        g_launchSendMessageCalls != 1 ||
+        g_launchSendMessageHwnd != (HWND)0x12345678 ||
+        g_launchSendMessageMsg != CB_GETCURSEL ||
+        g_launchCreateSessionCalls != 1 ||
+        g_launchCreateSessionFields.statusFlags != 3 ||
+        g_launchCreateSessionFields.eventCode != 3 ||
+        g_launchCreateSessionFields.valueOrTime != 5 ||
+        g_launchCreateSessionFields.auxParam != 6 ||
+        g_launchCreateSessionFields.maxPlayers != 7 ||
+        strcmp(g_launchCreateSessionFields.sessionNameBuf, "Arena") != 0 ||
+        g_launchSetNetworkEnabledCalls != 1 ||
+        g_launchSetNetworkEnabledValue != 1 ||
+        g_launchGetPlayerNameCalls != 1 ||
+        g_launchGetPlayerNameThis[0] != &dialog ||
+        g_launchCreateLocalPlayerCalls != 1 ||
+        strcmp(g_launchCreateLocalPlayerName[0], "PlayerOne") != 0 ||
+        g_launchSetPlayerNameCalls != 0 ||
+        g_launchSetStatusBitsCalls != 1 ||
+        g_launchStatusBits != 3 ||
+        g_launchTimerCalls != 1 ||
+        g_launchTimerThis != &g_HudSensorTracker ||
+        g_launchTimerSecondsRaw != LaunchFloatBits(300.0f) ||
+        g_launchTimerGoalValue != 6 ||
+        g_WestwoodOnlineUpgradeSelectedMissionIndex != 3 ||
+        g_initDisconnectCalls != 1)
+    {
+        failure = 2;
+    }
+
+    ResetLaunchSelectedSessionFakes();
+    g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0;
+    g_WestwoodOnlineUpgradeSelectedMissionIndex = -1;
+    g_launchOpenSelectedOutputFields.statusFlags = 2;
+    g_launchOpenSelectedOutputFields.eventCode = 9;
+    g_launchOpenSelectedOutputFields.valueOrTime = 2;
+    g_launchOpenSelectedOutputFields.auxParam = 11;
+    g_launchOpenSelectedOutputFields.maxPlayers = 8;
+    strcpy(g_launchOpenSelectedOutputFields.sessionNameBuf, "Joined");
+    result = WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
+        0,
+        0,
+        0,
+        &selected,
+        0
+    );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_launchSelectTcpCalls != 1 ||
+         g_launchSelectTcpSkip != 0 ||
+         g_launchCreateSessionCalls != 0 ||
+         g_launchSendMessageCalls != 0 ||
+         g_launchOpenSelectedCalls != 1 ||
+         g_launchOpenSelectedInputFields.selectedSessionIndex != 0 ||
+         g_launchSetNetworkEnabledCalls != 1 ||
+         g_launchCreateLocalPlayerCalls != 1 ||
+         strcmp(g_launchCreateLocalPlayerName[0], "PlayerOne") != 0 ||
+         g_launchSetPlayerNameCalls != 1 ||
+         strcmp(g_launchSetPlayerName, "PlayerOne") != 0 ||
+         g_launchGetPlayerNameCalls != 2 ||
+         g_launchSetStatusBitsCalls != 1 ||
+         g_launchStatusBits != 2 ||
+         g_launchTimerCalls != 1 ||
+         g_launchTimerSecondsRaw != LaunchFloatBits(120.0f) ||
+         g_launchTimerGoalValue != 11 ||
+         g_WestwoodOnlineUpgradeSelectedMissionIndex != 9 ||
+         g_initDisconnectCalls != 1))
+    {
+        failure = 3;
+    }
+
+    dialog.m_sessionName.CString::~CString();
+    g_pWestwoodOnlineUpgradeApi = oldApi;
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = oldCreateFromQuery;
+    g_WestwoodOnlineUpgradeSelectedMissionIndex = oldMissionIndex;
+    RestoreImportPatch(sendMessagePatch);
+    for (int index = patchCount - 1; index >= 0; --index)
+    {
+        RestoreFunctionPatch(patches[index]);
+    }
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_apply_encoded_query_string0_smoke(void)
+{
+    CodeFunctionPatch updateDataPatch = {};
+    if (!PatchFunctionJump(CWndUpdateDataAddress(),
+                           (void *)&FakeWestwoodUpdateData,
+                           updateDataPatch))
+    {
+        return 1;
+    }
+
+    g_threeFloatUpdateDataCount = 0;
+    int result = WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0(
+        0,
+        -1,
+        0,
+        (char *)"ignored"
+    );
+    if (result != 0 || g_threeFloatUpdateDataCount != 0)
+    {
+        RestoreFunctionPatch(updateDataPatch);
+        return 2;
+    }
+
+    HWND comboBox = CreateWindowExA(0,
+                                    "COMBOBOX",
+                                    "",
+                                    WS_POPUP | CBS_DROPDOWNLIST,
+                                    0,
+                                    0,
+                                    200,
+                                    200,
+                                    0,
+                                    0,
+                                    GetModuleHandleA(0),
+                                    0);
+    if (comboBox == 0)
+    {
+        RestoreFunctionPatch(updateDataPatch);
+        return 3;
+    }
+
+    SendMessageA(comboBox, CB_ADDSTRING, 0, (LPARAM)"zero");
+    SendMessageA(comboBox, CB_ADDSTRING, 0, (LPARAM)"one");
+    SendMessageA(comboBox, CB_ADDSTRING, 0, (LPARAM)"two");
+    SendMessageA(comboBox, CB_ADDSTRING, 0, (LPARAM)"three");
+    SendMessageA(comboBox, CB_SETCURSEL, 0, 0);
+
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    dialog.m_sessionModeCombo.m_hWnd = comboBox;
+    dialog.m_queryValueOrTime = 0;
+    dialog.m_queryAuxParam = 0;
+    dialog.m_queryMaxPlayers = 0;
+    dialog.m_queryStatusFlagBit0 = 0;
+    dialog.m_queryStatusFlagBit1 = 0;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+    g_threeFloatUpdateDataCount = 0;
+    g_threeFloatUpdateDataSaveValue[0] = -1;
+
+    char encodedQuery[64];
+    wsprintfA(encodedQuery, "%1d%4d%4d%1d%1d%1d", 3, 42, 321, 5, 0, 1);
+    result = WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0(
+        0,
+        0,
+        0,
+        encodedQuery
+    );
+
+    int failure = 0;
+    if (result != 0 ||
+        SendMessageA(comboBox, CB_GETCURSEL, 0, 0) != 3 ||
+        dialog.m_queryValueOrTime != 42 ||
+        dialog.m_queryAuxParam != 321 ||
+        dialog.m_queryMaxPlayers != 5 ||
+        dialog.m_queryStatusFlagBit0 != 0 ||
+        dialog.m_queryStatusFlagBit1 != 1 ||
+        g_threeFloatUpdateDataCount != 1 ||
+        g_threeFloatUpdateDataSaveValue[0] != 0)
+    {
+        failure = 4;
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    DestroyWindow(comboBox);
+    RestoreFunctionPatch(updateDataPatch);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_apply_encoded_query_string1_smoke(void)
+{
+    CodeFunctionPatch updateDataPatch = {};
+    if (!PatchFunctionJump(CWndUpdateDataAddress(),
+                           (void *)&FakeWestwoodUpdateData,
+                           updateDataPatch))
+    {
+        return 1;
+    }
+
+    g_threeFloatUpdateDataCount = 0;
+    int result = WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1(
+        0,
+        -1,
+        0,
+        0,
+        (char *)"ignored"
+    );
+    if (result != 0 || g_threeFloatUpdateDataCount != 0)
+    {
+        RestoreFunctionPatch(updateDataPatch);
+        return 2;
+    }
+
+    HWND comboBox = CreateWindowExA(0,
+                                    "COMBOBOX",
+                                    "",
+                                    WS_POPUP | CBS_DROPDOWNLIST,
+                                    0,
+                                    0,
+                                    200,
+                                    200,
+                                    0,
+                                    0,
+                                    GetModuleHandleA(0),
+                                    0);
+    if (comboBox == 0)
+    {
+        RestoreFunctionPatch(updateDataPatch);
+        return 3;
+    }
+
+    SendMessageA(comboBox, CB_ADDSTRING, 0, (LPARAM)"zero");
+    SendMessageA(comboBox, CB_ADDSTRING, 0, (LPARAM)"one");
+    SendMessageA(comboBox, CB_ADDSTRING, 0, (LPARAM)"two");
+    SendMessageA(comboBox, CB_ADDSTRING, 0, (LPARAM)"three");
+    SendMessageA(comboBox, CB_SETCURSEL, 0, 0);
+
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    dialog.m_sessionModeCombo.m_hWnd = comboBox;
+    dialog.m_queryValueOrTime = 0;
+    dialog.m_queryAuxParam = 0;
+    dialog.m_queryMaxPlayers = 0;
+    dialog.m_queryStatusFlagBit0 = 0;
+    dialog.m_queryStatusFlagBit1 = 0;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+    g_threeFloatUpdateDataCount = 0;
+    g_threeFloatUpdateDataSaveValue[0] = -1;
+
+    char encodedQuery[64];
+    wsprintfA(encodedQuery, "%1d%4d%4d%1d%1d%1d", 2, 25, 123, 4, 1, 0);
+    result = WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1(
+        0,
+        0,
+        0,
+        0,
+        encodedQuery
+    );
+
+    int failure = 0;
+    if (result != 0 ||
+        SendMessageA(comboBox, CB_GETCURSEL, 0, 0) != 2 ||
+        dialog.m_queryValueOrTime != 25 ||
+        dialog.m_queryAuxParam != 123 ||
+        dialog.m_queryMaxPlayers != 4 ||
+        dialog.m_queryStatusFlagBit0 != 1 ||
+        dialog.m_queryStatusFlagBit1 != 0 ||
+        g_threeFloatUpdateDataCount != 1 ||
+        g_threeFloatUpdateDataSaveValue[0] != 0)
+    {
+        failure = 4;
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    DestroyWindow(comboBox);
+    RestoreFunctionPatch(updateDataPatch);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_append_session_request_status301b_smoke(
+    void)
+{
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch patches[2] = {};
+
+    if (!PatchFunctionJump(
+            (void *)&zLoc::FormatMessage,
+            (void *)&FakeAppendSessionRequestStatus301BFormatMessage,
+            patches[0]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::AppendStatusTextFmt),
+            (void *)&FakeAppendSessionRequestStatus301BAppendStatusTextFmt,
+            patches[1]))
+    {
+        RestoreFunctionPatch(patches[1]);
+        RestoreFunctionPatch(patches[0]);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    WestwoodOnlineUpgradeSessionRequest request = {};
+    strcpy(request.m_sessionName, "Bravo Session");
+
+    ResetAppendSessionRequestStatus301BFakes();
+    int result =
+        WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301B(
+            0,
+            -1,
+            0,
+            &request,
+            "ignored"
+        );
+    int failure = 0;
+    if (result != 0 ||
+        g_appendStatus301BFormatCalls != 0 ||
+        g_appendStatus301BAppendCalls != 0)
+    {
+        failure = 1;
+    }
+
+    ResetAppendSessionRequestStatus301BFakes();
+    result = WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301B(
+        0,
+        0,
+        0,
+        &request,
+        "joined"
+    );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_appendStatus301BFormatCalls != 1 ||
+         g_appendStatus301BFormatBuffer == 0 ||
+         g_appendStatus301BFormatMaxChars != 128 ||
+         g_appendStatus301BFormatMessageId != 0x301b ||
+         g_appendStatus301BFormatSessionName != request.m_sessionName ||
+         strcmp(g_appendStatus301BFormatStatusText, "joined") != 0 ||
+         g_appendStatus301BAppendCalls != 1 ||
+         g_appendStatus301BAppendThis != &dialog ||
+         strcmp(g_appendStatus301BAppendText, "formatted 301b status") != 0))
+    {
+        failure = 2;
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    RestoreFunctionPatch(patches[1]);
+    RestoreFunctionPatch(patches[0]);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_append_session_request_status301c_smoke(
+    void)
+{
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch patches[2] = {};
+
+    if (!PatchFunctionJump(
+            (void *)&zLoc::FormatMessage,
+            (void *)&FakeAppendSessionRequestStatus301CFormatMessage,
+            patches[0]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::AppendStatusTextFmt),
+            (void *)&FakeAppendSessionRequestStatus301CAppendStatusTextFmt,
+            patches[1]))
+    {
+        RestoreFunctionPatch(patches[1]);
+        RestoreFunctionPatch(patches[0]);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    WestwoodOnlineUpgradeSessionRequest request = {};
+    strcpy(request.m_sessionName, "Charlie Session");
+
+    ResetAppendSessionRequestStatus301CFakes();
+    int result =
+        WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C(
+            0,
+            -1,
+            &request,
+            "ignored"
+        );
+    int failure = 0;
+    if (result != 0 ||
+        g_appendStatus301CFormatCalls != 0 ||
+        g_appendStatus301CAppendCalls != 0)
+    {
+        failure = 1;
+    }
+
+    ResetAppendSessionRequestStatus301CFakes();
+    result = WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C(
+        0,
+        0,
+        &request,
+        "ready"
+    );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_appendStatus301CFormatCalls != 1 ||
+         g_appendStatus301CFormatBuffer == 0 ||
+         g_appendStatus301CFormatMaxChars != 128 ||
+         g_appendStatus301CFormatMessageId != 0x301c ||
+         g_appendStatus301CFormatSessionName != request.m_sessionName ||
+         strcmp(g_appendStatus301CFormatStatusText, "ready") != 0 ||
+         g_appendStatus301CAppendCalls != 1 ||
+         g_appendStatus301CAppendThis != &dialog ||
+         strcmp(g_appendStatus301CAppendText, "formatted 301c status") != 0))
+    {
+        failure = 2;
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    RestoreFunctionPatch(patches[1]);
+    RestoreFunctionPatch(patches[0]);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_append_session_request_status301c_alt0_smoke(
+    void)
+{
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch patches[2] = {};
+
+    if (!PatchFunctionJump((void *)&zLoc::GetMessageString,
+                           (void *)&FakeInitGetMessageString,
+                           patches[0]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::AppendStatusTextFmt),
+            (void *)&FakeAppendSessionRequestStatus301CAltAppendStatusTextFmt,
+            patches[1]))
+    {
+        RestoreFunctionPatch(patches[1]);
+        RestoreFunctionPatch(patches[0]);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    WestwoodOnlineUpgradeSessionRequest sessionRequest = {};
+    strcpy(sessionRequest.m_sessionName, "Alt301C");
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    ResetAppendSessionRequestStatus301CAltFakes();
+    int result =
+        WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt0(
+            0,
+            -1,
+            &sessionRequest,
+            42
+        );
+    int failure = 0;
+    if (result != 0 ||
+        g_initMessageIdCalls != 0 ||
+        g_appendStatus301CAltAppendCalls != 0)
+    {
+        failure = 1;
+    }
+
+    ResetAppendSessionRequestStatus301CAltFakes();
+    result =
+        WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt0(
+            0,
+            0,
+            &sessionRequest,
+            42
+        );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_initMessageIdCalls != 1 ||
+         g_initMessageIds[0] != 0x301c ||
+         g_appendStatus301CAltAppendCalls != 1 ||
+         g_appendStatus301CAltAppendThis != &dialog ||
+         strcmp(g_appendStatus301CAltAppendFormat, "msg-301c") != 0 ||
+         g_appendStatus301CAltAppendSessionName != sessionRequest.m_sessionName ||
+         g_appendStatus301CAltAppendValue != 42))
+    {
+        failure = 2;
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    RestoreFunctionPatch(patches[1]);
+    RestoreFunctionPatch(patches[0]);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_append_session_request_status301c_alt1_smoke(
+    void)
+{
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch patches[2] = {};
+
+    if (!PatchFunctionJump((void *)&zLoc::GetMessageString,
+                           (void *)&FakeInitGetMessageString,
+                           patches[0]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::AppendStatusTextFmt),
+            (void *)&FakeAppendSessionRequestStatus301CAltAppendStatusTextFmt,
+            patches[1]))
+    {
+        RestoreFunctionPatch(patches[1]);
+        RestoreFunctionPatch(patches[0]);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    WestwoodOnlineUpgradeSessionRequest sessionRequest = {};
+    strcpy(sessionRequest.m_sessionName, "Alt301C1");
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    ResetAppendSessionRequestStatus301CAltFakes();
+    int result =
+        WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt1(
+            0,
+            -1,
+            77,
+            &sessionRequest,
+            84
+        );
+    int failure = 0;
+    if (result != 0 ||
+        g_initMessageIdCalls != 0 ||
+        g_appendStatus301CAltAppendCalls != 0)
+    {
+        failure = 1;
+    }
+
+    ResetAppendSessionRequestStatus301CAltFakes();
+    result =
+        WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt1(
+            0,
+            0,
+            77,
+            &sessionRequest,
+            84
+        );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_initMessageIdCalls != 1 ||
+         g_initMessageIds[0] != 0x301c ||
+         g_appendStatus301CAltAppendCalls != 1 ||
+         g_appendStatus301CAltAppendThis != &dialog ||
+         strcmp(g_appendStatus301CAltAppendFormat, "msg-301c") != 0 ||
+         g_appendStatus301CAltAppendSessionName != sessionRequest.m_sessionName ||
+         g_appendStatus301CAltAppendValue != 84))
+    {
+        failure = 2;
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    RestoreFunctionPatch(patches[1]);
+    RestoreFunctionPatch(patches[0]);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_callback_no_op0_smoke(void)
+{
+    return WestwoodOnlineUpgradeApiEventSink::CallbackNoOp0(
+        (void *)0x1234,
+        -1,
+        23,
+        45
+    );
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_callback_no_op1_smoke(void)
+{
+    return WestwoodOnlineUpgradeApiEventSink::CallbackNoOp1(
+        (void *)0x5678,
+        -1,
+        23
+    );
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_append_time_status302a_smoke(void)
+{
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch patches[2] = {};
+
+    if (!PatchFunctionJump((void *)&zLoc::FormatMessage,
+                           (void *)&FakeAppendTimeStatusFormatMessage,
+                           patches[0]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::AppendStatusTextFmt),
+            (void *)&FakeAppendConnectStatusTextFmt,
+            patches[1]))
+    {
+        RestoreFunctionPatch(patches[1]);
+        RestoreFunctionPatch(patches[0]);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    const long unixTime = 60 * 60 * 24;
+    const time_t expectedUnixTime = (time_t)unixTime;
+    const char *const expectedTimeText = ctime(&expectedUnixTime);
+
+    ResetAppendTimeStatusFakes();
+    int result = WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A(
+        0,
+        -1,
+        unixTime
+    );
+    int failure = 0;
+    if (result != 0 ||
+        g_appendTimeStatusFormatCalls != 0 ||
+        g_appendConnectStatusCalls != 0)
+    {
+        failure = 1;
+    }
+
+    ResetAppendTimeStatusFakes();
+    result = WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A(
+        0,
+        0,
+        unixTime
+    );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_appendTimeStatusFormatCalls != 1 ||
+         g_appendTimeStatusFormatBuffer == 0 ||
+         g_appendTimeStatusFormatMaxChars != 128 ||
+         g_appendTimeStatusFormatMessageId != 0x302a ||
+         strcmp(g_appendTimeStatusFormatTimeText, expectedTimeText) != 0 ||
+         g_appendConnectStatusCalls != 1 ||
+         g_appendConnectStatusThis[0] != &dialog ||
+         strcmp(g_appendConnectStatusText[0], "formatted time status") != 0))
+    {
+        failure = 2;
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    RestoreFunctionPatch(patches[1]);
+    RestoreFunctionPatch(patches[0]);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_append_value_status302b_302c_smoke(void)
+{
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch patches[2] = {};
+
+    if (!PatchFunctionJump((void *)&zLoc::FormatMessage,
+                           (void *)&FakeAppendValueStatusFormatMessage,
+                           patches[0]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::AppendStatusTextFmt),
+            (void *)&FakeAppendConnectStatusTextFmt,
+            patches[1]))
+    {
+        RestoreFunctionPatch(patches[1]);
+        RestoreFunctionPatch(patches[0]);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    const int usePrimaryValues[2] = {1, 0};
+    const unsigned int expectedMessageIds[2] = {0x302b, 0x302c};
+    int failure = 0;
+
+    for (int index = 0; index < 2; ++index)
+    {
+        ResetAppendValueStatusFakes();
+        int result =
+            WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302B_302C(
+                0,
+                -1,
+                77 + index,
+                usePrimaryValues[index]
+            );
+        if (result != 0 ||
+            g_appendValueStatusFormatCalls != 1 ||
+            g_appendValueStatusFormatBuffer == 0 ||
+            g_appendValueStatusFormatMaxChars != 128 ||
+            g_appendValueStatusFormatMessageId != expectedMessageIds[index] ||
+            g_appendValueStatusFormatValue != 77 + index ||
+            g_appendConnectStatusCalls != 1 ||
+            g_appendConnectStatusThis[0] != &dialog ||
+            strcmp(g_appendConnectStatusText[0], "formatted value status") != 0)
+        {
+            failure = index + 1;
+            break;
+        }
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    RestoreFunctionPatch(patches[1]);
+    RestoreFunctionPatch(patches[0]);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_update_session_result_item_flags_smoke(
+    void)
+{
+    const WORD kMfc42CWndSendDlgItemMessageAOrdinal = 5802;
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    ImportFunctionPatch import = {};
+
+    if (!PatchImportByOrdinal("MFC42.DLL",
+                              kMfc42CWndSendDlgItemMessageAOrdinal,
+                              (void *)&FakePendingSessionRemovedSendDlgItemMessageA,
+                              import))
+    {
+        RestoreImportPatch(import);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    int failure = 0;
+
+    ResetPendingSessionRemovedFakes();
+    int result =
+        WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags(
+            0,
+            -1,
+            "Missing",
+            7,
+            99
+        );
+    if (result != 0 || g_pendingRemovedSendMessageCalls != 1 ||
+        g_pendingRemovedSendMessageThis[0] != (CWnd *)&dialog ||
+        g_pendingRemovedSendMessageControlId[0] != 1137 ||
+        g_pendingRemovedSendMessageMessage[0] != LB_FINDSTRING ||
+        g_pendingRemovedSendMessageWParam[0] != (WPARAM)-1 ||
+        strcmp(g_pendingRemovedSendMessageText[0], "Missing") != 0)
+    {
+        failure = 1;
+    }
+
+    ResetPendingSessionRemovedFakes();
+    g_pendingRemovedSendMessageResult[0] = 3;
+    result = WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags(
+        0,
+        0,
+        "Alpha",
+        1,
+        123
+    );
+    if (failure == 0 &&
+        (result != 0 || g_pendingRemovedSendMessageCalls != 5 ||
+         g_pendingRemovedSendMessageMessage[0] != LB_FINDSTRING ||
+         g_pendingRemovedSendMessageWParam[0] != (WPARAM)-1 ||
+         strcmp(g_pendingRemovedSendMessageText[0], "Alpha") != 0 ||
+         g_pendingRemovedSendMessageMessage[1] != LB_GETITEMDATA ||
+         g_pendingRemovedSendMessageWParam[1] != 3 ||
+         g_pendingRemovedSendMessageLParam[1] != 0 ||
+         g_pendingRemovedSendMessageMessage[2] != LB_SETITEMDATA ||
+         g_pendingRemovedSendMessageWParam[2] != 3 ||
+         g_pendingRemovedSendMessageLParam[2] != 1 ||
+         g_pendingRemovedSendMessageMessage[3] != LB_DELETESTRING ||
+         g_pendingRemovedSendMessageWParam[3] != 3 ||
+         g_pendingRemovedSendMessageLParam[3] != 0 ||
+         g_pendingRemovedSendMessageMessage[4] != LB_ADDSTRING ||
+         g_pendingRemovedSendMessageWParam[4] != 0 ||
+         strcmp(g_pendingRemovedSendMessageText[4], "Alpha + *") != 0))
+    {
+        failure = 2;
+    }
+
+    ResetPendingSessionRemovedFakes();
+    g_pendingRemovedSendMessageResult[0] = 2;
+    result = WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags(
+        0,
+        0,
+        "Beta",
+        2,
+        456
+    );
+    if (failure == 0 &&
+        (result != 0 || g_pendingRemovedSendMessageCalls != 5 ||
+         g_pendingRemovedSendMessageMessage[2] != LB_SETITEMDATA ||
+         g_pendingRemovedSendMessageWParam[2] != 2 ||
+         g_pendingRemovedSendMessageLParam[2] != 2 ||
+         strcmp(g_pendingRemovedSendMessageText[4], "Beta *") != 0))
+    {
+        failure = 3;
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    RestoreImportPatch(import);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_append_session_request_status301d_smoke(
+    void)
+{
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch patches[2] = {};
+
+    if (!PatchFunctionJump(
+            (void *)&zLoc::FormatMessage,
+            (void *)&FakeAppendSessionRequestStatus301DFormatMessage,
+            patches[0]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::AppendStatusTextFmt),
+            (void *)&FakeAppendSessionRequestStatus301DAppendStatusTextFmt,
+            patches[1]))
+    {
+        RestoreFunctionPatch(patches[1]);
+        RestoreFunctionPatch(patches[0]);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    WestwoodOnlineUpgradeSessionRequest request = {};
+    strcpy(request.m_sessionName, "Delta Session");
+
+    ResetAppendSessionRequestStatus301DFakes();
+    int result =
+        WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301D(
+            0,
+            -1,
+            &request,
+            "launched"
+        );
+    int failure = 0;
+    if (result != 0 ||
+        g_appendStatus301DFormatCalls != 1 ||
+        g_appendStatus301DFormatBuffer == 0 ||
+        g_appendStatus301DFormatMaxChars != 128 ||
+        g_appendStatus301DFormatMessageId != 0x301d ||
+        g_appendStatus301DFormatSessionName != request.m_sessionName ||
+        strcmp(g_appendStatus301DFormatStatusText, "launched") != 0 ||
+        g_appendStatus301DAppendCalls != 1 ||
+        g_appendStatus301DAppendThis != &dialog ||
+        strcmp(g_appendStatus301DAppendText, "formatted 301d status") != 0)
+    {
+        failure = 1;
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    RestoreFunctionPatch(patches[1]);
+    RestoreFunctionPatch(patches[0]);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_append_connect_status301e_3021_smoke(
+    void)
+{
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch patches[2] = {};
+
+    if (!PatchFunctionJump((void *)&zLoc::GetMessageString,
+                           (void *)&FakeInitGetMessageString,
+                           patches[0]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::AppendStatusTextFmt),
+            (void *)&FakeAppendConnectStatusTextFmt,
+            patches[1]))
+    {
+        RestoreFunctionPatch(patches[1]);
+        RestoreFunctionPatch(patches[0]);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    const int statusCodes[4] = {0, 0x40134, 0x40133, -1};
+    const unsigned int expectedMessageIds[4] = {0x301e, 0x301f, 0x3020, 0x3021};
+    int failure = 0;
+
+    for (int index = 0; index < 4; ++index)
+    {
+        ResetAppendConnectStatusFakes();
+        int result =
+            WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E_3021(
+                0,
+                statusCodes[index]
+            );
+        char expectedText[64];
+        wsprintfA(expectedText, "msg-%04x", expectedMessageIds[index]);
+        if (result != 0 ||
+            g_initMessageIdCalls != 1 ||
+            g_initMessageIds[0] != expectedMessageIds[index] ||
+            g_appendConnectStatusCalls != 1 ||
+            g_appendConnectStatusThis[0] != &dialog ||
+            strcmp(g_appendConnectStatusText[0], expectedText) != 0)
+        {
+            failure = index + 1;
+            break;
+        }
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    RestoreFunctionPatch(patches[1]);
+    RestoreFunctionPatch(patches[0]);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_append_browse_record_status3022_3025_smoke(
+    void)
+{
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch patches[3] = {};
+
+    if (!PatchFunctionJump((void *)&zLoc::FormatMessage,
+                           (void *)&FakeAppendBrowseRecordStatusFormatMessage,
+                           patches[0]) ||
+        !PatchFunctionJump((void *)&zLoc::GetMessageString,
+                           (void *)&FakeInitGetMessageString,
+                           patches[1]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::AppendStatusTextFmt),
+            (void *)&FakeAppendConnectStatusTextFmt,
+            patches[2]))
+    {
+        for (int index = 2; index >= 0; --index)
+        {
+            RestoreFunctionPatch(patches[index]);
+        }
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    WestwoodOnlineUpgradeBrowseRecord browseRecord = {};
+    strcpy(browseRecord.m_sessionName, "Echo Session");
+
+    ResetAppendBrowseRecordStatusFakes();
+    int result =
+        WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_3025(
+            0,
+            -1,
+            &browseRecord
+        );
+    int failure = 0;
+    if (result != 0 ||
+        g_appendBrowseRecordStatusFormatCalls != 1 ||
+        g_appendBrowseRecordStatusFormatBuffer == 0 ||
+        g_appendBrowseRecordStatusFormatMaxChars != 128 ||
+        g_appendBrowseRecordStatusFormatMessageId != 0x3022 ||
+        g_appendBrowseRecordStatusFormatSessionName !=
+            browseRecord.m_sessionName ||
+        g_initMessageIdCalls != 0 ||
+        g_appendConnectStatusCalls != 1 ||
+        g_appendConnectStatusThis[0] != &dialog ||
+        strcmp(g_appendConnectStatusText[0],
+               "formatted browse record status") != 0)
+    {
+        failure = 1;
+    }
+
+    const int statusCodes[4] = {0x40131, 0x40130, 0x40132, -1};
+    const unsigned int expectedMessageIds[4] = {0x3023, 0x3020, 0x3024, 0x3025};
+    for (int index = 0; failure == 0 && index < 4; ++index)
+    {
+        ResetAppendBrowseRecordStatusFakes();
+        result =
+            WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_3025(
+                0,
+                statusCodes[index],
+                0
+            );
+        char expectedText[64];
+        wsprintfA(expectedText, "msg-%04x", expectedMessageIds[index]);
+        if (result != 0 ||
+            g_appendBrowseRecordStatusFormatCalls != 0 ||
+            g_initMessageIdCalls != 1 ||
+            g_initMessageIds[0] != expectedMessageIds[index] ||
+            g_appendConnectStatusCalls != 1 ||
+            g_appendConnectStatusThis[0] != &dialog ||
+            strcmp(g_appendConnectStatusText[0], expectedText) != 0)
+        {
+            failure = index + 2;
+        }
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    for (int index = 2; index >= 0; --index)
+    {
+        RestoreFunctionPatch(patches[index]);
+    }
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_append_value_status3026_smoke(void)
+{
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch patches[2] = {};
+
+    if (!PatchFunctionJump((void *)&zLoc::FormatMessage,
+                           (void *)&FakeAppendValueStatusFormatMessage,
+                           patches[0]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::AppendStatusTextFmt),
+            (void *)&FakeAppendConnectStatusTextFmt,
+            patches[1]))
+    {
+        RestoreFunctionPatch(patches[1]);
+        RestoreFunctionPatch(patches[0]);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    ResetAppendValueStatusFakes();
+    int result = WestwoodOnlineUpgradeApiEventSink::AppendValueStatus3026(
+        0,
+        -1,
+        77
+    );
+    int failure = 0;
+    if (result != 0 ||
+        g_appendValueStatusFormatCalls != 0 ||
+        g_appendConnectStatusCalls != 0)
+    {
+        failure = 1;
+    }
+
+    ResetAppendValueStatusFakes();
+    result = WestwoodOnlineUpgradeApiEventSink::AppendValueStatus3026(
+        0,
+        0,
+        77
+    );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_appendValueStatusFormatCalls != 1 ||
+         g_appendValueStatusFormatBuffer == 0 ||
+         g_appendValueStatusFormatMaxChars != 128 ||
+         g_appendValueStatusFormatMessageId != 0x3026 ||
+         g_appendValueStatusFormatValue != 77 ||
+         g_appendConnectStatusCalls != 1 ||
+         g_appendConnectStatusThis[0] != &dialog ||
+         strcmp(g_appendConnectStatusText[0], "formatted value status") != 0))
+    {
+        failure = 2;
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    RestoreFunctionPatch(patches[1]);
+    RestoreFunctionPatch(patches[0]);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_on_network_status_changed_smoke(void)
+{
+    const int oldAsyncError = g_WestwoodOnlineUpgradeApiAsyncErrorFlag;
+    const int oldAbortFlag = g_WestwoodOnlineUpgradeAbortFlag;
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch patches[2] = {};
+
+    if (!PatchFunctionJump((void *)&zGame::ReturnOnlyStub,
+                           (void *)&FakeNetworkStatusReturnOnlyStub,
+                           patches[0]) ||
+        !PatchFunctionJump(
+            MethodAddress(&WestwoodOnlineUpgradeDialog::SetAbortAndClose),
+            (void *)&FakeInitDialogSetAbortAndClose,
+            patches[1]))
+    {
+        RestoreFunctionPatch(patches[1]);
+        RestoreFunctionPatch(patches[0]);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    int failure = 0;
+
+    g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
+    g_WestwoodOnlineUpgradeAbortFlag = 0;
+    ResetNetworkStatusFakes();
+    int result = WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
+        0,
+        (int)0x80040069
+    );
+    if (result != 0 ||
+        g_networkStatusReturnOnlyCalls != 1 ||
+        g_initDialogSetAbortCalls != 0 ||
+        g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 1)
+    {
+        failure = 1;
+    }
+
+    g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
+    g_WestwoodOnlineUpgradeAbortFlag = 0;
+    ResetNetworkStatusFakes();
+    result = WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
+        0,
+        (int)0x80040068
+    );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_networkStatusReturnOnlyCalls != 1 ||
+         g_initDialogSetAbortCalls != 0 ||
+         g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0))
+    {
+        failure = 2;
+    }
+
+    g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
+    g_WestwoodOnlineUpgradeAbortFlag = 0;
+    ResetNetworkStatusFakes();
+    result = WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
+        0,
+        0x4012f
+    );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_networkStatusReturnOnlyCalls != 1 ||
+         g_initDialogSetAbortCalls != 1 ||
+         g_initDialogSetAbortThis != &dialog ||
+         g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0))
+    {
+        failure = 3;
+    }
+
+    g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
+    g_WestwoodOnlineUpgradeAbortFlag = 1;
+    ResetNetworkStatusFakes();
+    result = WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
+        0,
+        0x4012f
+    );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_networkStatusReturnOnlyCalls != 1 ||
+         g_initDialogSetAbortCalls != 0 ||
+         g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0))
+    {
+        failure = 4;
+    }
+
+    g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
+    g_WestwoodOnlineUpgradeAbortFlag = 0;
+    ResetNetworkStatusFakes();
+    result = WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
+        0,
+        0x4012d
+    );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_networkStatusReturnOnlyCalls != 1 ||
+         g_initDialogSetAbortCalls != 0 ||
+         g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0))
+    {
+        failure = 5;
+    }
+
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    g_WestwoodOnlineUpgradeApiAsyncErrorFlag = oldAsyncError;
+    g_WestwoodOnlineUpgradeAbortFlag = oldAbortFlag;
+    RestoreFunctionPatch(patches[1]);
+    RestoreFunctionPatch(patches[0]);
+    return failure;
+}
+
+extern "C" int
+westwood_online_upgrade_api_event_sink_on_browse_record_list_received_smoke(
+    void)
+{
+    const int oldCachedBrowseRecordListCount =
+        g_WestwoodOnlineUpgradeCachedBrowseRecordListCount;
+    WestwoodOnlineUpgradeBrowseRecord oldListRecords[10];
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    CodeFunctionPatch formatPatch = {};
+    ImportFunctionPatch sendMessagePatch = {};
+
+    for (int index = 0; index < 10; ++index)
+    {
+        oldListRecords[index] = g_WestwoodOnlineUpgradeCachedBrowseRecordList[index];
+    }
+
+    if (!PatchFunctionJump((void *)&zLoc::FormatMessage,
+                           (void *)&FakeBrowseRecordListFormatMessage,
+                           formatPatch) ||
+        !PatchImportByOrdinal("MFC42.DLL",
+                              5802,
+                              (void *)&FakePendingSessionRemovedSendDlgItemMessageA,
+                              sendMessagePatch))
+    {
+        RestoreImportPatch(sendMessagePatch);
+        RestoreFunctionPatch(formatPatch);
+        return 90;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog =
+        *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+
+    WestwoodOnlineUpgradeBrowseRecord records[10] = {};
+    const char *recordNames[10] = {"Open",
+                                   "Unknown",
+                                   "L250",
+                                   "L500",
+                                   "L750",
+                                   "L1000",
+                                   "L1250",
+                                   "L1500",
+                                   "L1750",
+                                   "L1751"};
+    const int latencies[9] = {-1, 250, 251, 501, 751, 1001, 1251, 1501, 1751};
+    const char *expectedLatencyText[9] = {"??",
+                                          " | ",
+                                          " ||| ",
+                                          " ||||| ",
+                                          " ||||||| ",
+                                          " ||||||||| ",
+                                          " ||||||||||| ",
+                                          " ||||||||||||| ",
+                                          " ||||||||||||||| "};
+
+    records[0].m_recordFlags = 0;
+    records[0].m_displayMetric0 = 20;
+    records[0].m_displayMetric1 = 10;
+    strcpy(records[0].m_sessionName, recordNames[0]);
+    records[0].m_next = &records[1];
+    for (int index = 1; index < 10; ++index)
+    {
+        records[index].m_recordFlags = 1;
+        records[index].m_displayMetric0 = 200 + index;
+        records[index].m_displayMetric1 = 100 + index;
+        records[index].m_latencyMs = latencies[index - 1];
+        strcpy(records[index].m_sessionName, recordNames[index]);
+        records[index].m_next = index == 9 ? 0 : &records[index + 1];
+    }
+
+    g_WestwoodOnlineUpgradeCachedBrowseRecordListCount = 7;
+    ResetBrowseRecordListFakes();
+    int result =
+        WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordListReceived(
+            0,
+            -1,
+            &records[0]
+        );
+    int failure = 0;
+    if (result != 0 ||
+        g_WestwoodOnlineUpgradeCachedBrowseRecordListCount != 0 ||
+        g_browseRecordListFormatCalls != 0 ||
+        g_pendingRemovedSendMessageCalls != 0)
+    {
+        failure = 1;
+    }
+
+    g_WestwoodOnlineUpgradeCachedBrowseRecordListCount = 55;
+    ResetBrowseRecordListFakes();
+    result = WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordListReceived(
+        0,
+        0,
+        &records[0]
+    );
+    if (failure == 0 &&
+        (result != 0 ||
+         g_browseRecordListFormatCalls != 10 ||
+         g_pendingRemovedSendMessageCalls != 11 ||
+         g_WestwoodOnlineUpgradeCachedBrowseRecordListCount != 10))
+    {
+        failure = 2;
+    }
+
+    if (failure == 0 &&
+        (g_pendingRemovedSendMessageThis[0] != (CWnd *)&dialog ||
+         g_pendingRemovedSendMessageControlId[0] != 1136 ||
+         g_pendingRemovedSendMessageMessage[0] != LB_RESETCONTENT ||
+         g_pendingRemovedSendMessageWParam[0] != 0 ||
+         g_pendingRemovedSendMessageLParam[0] != 0))
+    {
+        failure = 3;
+    }
+
+    if (failure == 0 &&
+        (g_browseRecordListFormatMaxChars[0] != 256 ||
+         g_browseRecordListFormatMessageId[0] != 0x3027 ||
+         g_browseRecordListFormatSessionName[0] != records[0].m_sessionName ||
+         g_browseRecordListFormatMetric1[0] != 10 ||
+         strcmp(g_pendingRemovedSendMessageText[1], "Open:3027:10") != 0))
+    {
+        failure = 4;
+    }
+
+    for (int index = 1; failure == 0 && index < 10; ++index)
+    {
+        char expectedRow[128];
+        wsprintfA(expectedRow,
+                  "%s:%04x:%d:%d:%s",
+                  recordNames[index],
+                  0x3028,
+                  100 + index,
+                  200 + index,
+                  expectedLatencyText[index - 1]);
+        if (g_browseRecordListFormatBuffer[index] == 0 ||
+            g_browseRecordListFormatMaxChars[index] != 256 ||
+            g_browseRecordListFormatMessageId[index] != 0x3028 ||
+            g_browseRecordListFormatSessionName[index] !=
+                records[index].m_sessionName ||
+            g_browseRecordListFormatMetric0[index] != 200 + index ||
+            g_browseRecordListFormatMetric1[index] != 100 + index ||
+            strcmp(g_browseRecordListFormatLatencyText[index],
+                   expectedLatencyText[index - 1]) != 0 ||
+            g_pendingRemovedSendMessageControlId[index + 1] != 1136 ||
+            g_pendingRemovedSendMessageMessage[index + 1] != LB_INSERTSTRING ||
+            g_pendingRemovedSendMessageWParam[index + 1] != (WPARAM)-1 ||
+            strcmp(g_pendingRemovedSendMessageText[index + 1],
+                   expectedRow) != 0)
+        {
+            failure = index + 10;
+        }
+    }
+
+    for (int index = 0; failure == 0 && index < 10; ++index)
+    {
+        if (strcmp(g_WestwoodOnlineUpgradeCachedBrowseRecordList[index]
+                       .m_sessionName,
+                   recordNames[index]) != 0 ||
+            g_WestwoodOnlineUpgradeCachedBrowseRecordList[index]
+                    .m_recordFlags != records[index].m_recordFlags ||
+            g_WestwoodOnlineUpgradeCachedBrowseRecordList[index]
+                    .m_displayMetric0 != records[index].m_displayMetric0 ||
+            g_WestwoodOnlineUpgradeCachedBrowseRecordList[index]
+                    .m_displayMetric1 != records[index].m_displayMetric1 ||
+            g_WestwoodOnlineUpgradeCachedBrowseRecordList[index]
+                    .m_latencyMs != records[index].m_latencyMs ||
+            g_WestwoodOnlineUpgradeCachedBrowseRecordList[index].m_next != 0)
+        {
+            failure = index + 30;
+        }
+    }
+
+    for (int index = 0; index < 10; ++index)
+    {
+        g_WestwoodOnlineUpgradeCachedBrowseRecordList[index] =
+            oldListRecords[index];
+    }
+    g_WestwoodOnlineUpgradeCachedBrowseRecordListCount =
+        oldCachedBrowseRecordListCount;
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    RestoreImportPatch(sendMessagePatch);
+    RestoreFunctionPatch(formatPatch);
+    return failure;
+}
+
 extern "C" int westwood_online_upgrade_dialog_constructor_smoke(void)
 {
     unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
@@ -4816,6 +8657,89 @@ extern "C" int westwood_online_upgrade_progress_dialog_constructor_smoke(void)
                : 1;
 }
 
+extern "C" int westwood_online_upgrade_progress_dialog_get_message_map_smoke(void)
+{
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeProgressDialog)] = {0};
+    WestwoodOnlineUpgradeProgressDialog &dialog =
+        *(WestwoodOnlineUpgradeProgressDialog *)dialogStorage;
+    const AFX_MSGMAP *const messageMap =
+        dialog.WestwoodOnlineUpgradeProgressDialog::GetMessageMap();
+    if (messageMap != &WestwoodOnlineUpgradeProgressDialog::messageMap)
+    {
+        return 1;
+    }
+
+    if (messageMap->pfnGetBaseMap == 0 ||
+        messageMap->lpEntries !=
+            &WestwoodOnlineUpgradeProgressDialog::messageEntries[0])
+    {
+        return 2;
+    }
+
+    const AFX_MSGMAP_ENTRY &sentinel =
+        WestwoodOnlineUpgradeProgressDialog::messageEntries[0];
+    return sentinel.nMessage == 0 &&
+                   sentinel.nCode == 0 &&
+                   sentinel.nID == 0 &&
+                   sentinel.nLastID == 0 &&
+                   sentinel.nSig == 0 &&
+                   sentinel.pfn == 0
+               ? 0
+               : 3;
+}
+
+extern "C" int westwood_online_upgrade_progress_dialog_set_status_text_fmt_smoke(void)
+{
+    ImportFunctionPatch setDlgItemTextImport = {};
+    if (!PatchImportByName("USER32.dll",
+                           "SetDlgItemTextA",
+                           (void *)&FakeDownloadDlgSetDlgItemTextA,
+                           setDlgItemTextImport))
+    {
+        return 1;
+    }
+
+    HWND const oldProgressHwnd = g_hWestwoodOnlineUpgradeProgressDialog;
+    g_hWestwoodOnlineUpgradeProgressDialog = (HWND)0x13579bdf;
+    g_downloadDlgSetDlgItemTextCalls = 0;
+    memset(g_downloadDlgSetDlgItemTextHwnd,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextHwnd));
+    memset(g_downloadDlgSetDlgItemTextControlId,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextControlId));
+    memset(g_downloadDlgSetDlgItemTextValue,
+           0,
+           sizeof(g_downloadDlgSetDlgItemTextValue));
+    g_WestwoodOnlineUpgradeProgressStatusTextBuffer[0] = '\0';
+
+    BOOL const result =
+        WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(
+            "Downloaded %d of %s",
+            7,
+            "nine");
+
+    int failure = 0;
+    if (result != TRUE ||
+        g_downloadDlgSetDlgItemTextCalls != 1 ||
+        g_downloadDlgSetDlgItemTextHwnd[0] !=
+            g_hWestwoodOnlineUpgradeProgressDialog ||
+        g_downloadDlgSetDlgItemTextControlId[0] != 1023 ||
+        strcmp(g_downloadDlgSetDlgItemTextValue[0],
+               "Downloaded 7 of nine") != 0 ||
+        strcmp(g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
+               "Downloaded 7 of nine") != 0 ||
+        g_downloadDlgSetDlgItemTextValue[0] !=
+            g_WestwoodOnlineUpgradeProgressStatusTextBuffer)
+    {
+        failure = 2;
+    }
+
+    g_hWestwoodOnlineUpgradeProgressDialog = oldProgressHwnd;
+    RestoreImportPatch(setDlgItemTextImport);
+    return failure;
+}
+
 extern "C" int westwood_online_upgrade_progress_dialog_destructor_smoke(void)
 {
     const WORD kMfc42CDialogDtorOrdinal = 641;
@@ -4842,6 +8766,53 @@ extern "C" int westwood_online_upgrade_progress_dialog_destructor_smoke(void)
 
     RestoreImportPatch(import);
     return result;
+}
+
+extern "C" int westwood_online_upgrade_progress_dialog_scalar_dtor_smoke(void)
+{
+    const WORD kMfc42CDialogDtorOrdinal = 641;
+    ImportFunctionPatch import = {};
+    if (!PatchImportByOrdinal("MFC42.DLL",
+                              kMfc42CDialogDtorOrdinal,
+                              (void *)&FakeModalDialogDtor,
+                              import))
+    {
+        return 1;
+    }
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeProgressDialog)] = {0};
+    WestwoodOnlineUpgradeProgressDialog &dialog =
+        *(WestwoodOnlineUpgradeProgressDialog *)dialogStorage;
+
+    ResetModalProbe();
+    WestwoodOnlineUpgradeProgressDialog *const stackResult =
+        dialog.ScalarDeletingDestructor(0);
+    int failure = 0;
+    if (stackResult != &dialog ||
+        g_modalDialogDtorCalls != 1 ||
+        g_modalDtorSequenceCount != 1 ||
+        strcmp(g_modalDtorSequence, "D") != 0)
+    {
+        failure = 2;
+    }
+
+    ResetModalProbe();
+    WestwoodOnlineUpgradeProgressDialog *const heapDialog =
+        (WestwoodOnlineUpgradeProgressDialog *)::operator new(
+            sizeof(WestwoodOnlineUpgradeProgressDialog));
+    WestwoodOnlineUpgradeProgressDialog *const heapResult =
+        heapDialog->ScalarDeletingDestructor(1);
+    if (failure == 0 &&
+        (heapResult != heapDialog ||
+         g_modalDialogDtorCalls != 1 ||
+         g_modalDtorSequenceCount != 1 ||
+         strcmp(g_modalDtorSequence, "D") != 0))
+    {
+        failure = 3;
+    }
+
+    RestoreImportPatch(import);
+    return failure;
 }
 
 extern "C" int westwood_online_upgrade_dialog_show_modal_smoke(void)
@@ -4984,7 +8955,7 @@ extern "C" int westwood_online_upgrade_dialog_destructor_smoke(void)
 
 extern "C" int westwood_online_upgrade_dialog_do_data_exchange_smoke(void)
 {
-    ImportFunctionPatch imports[3] = {};
+    ImportFunctionPatch imports[4] = {};
     if (!InstallModalDdxPatches(imports))
     {
         RestoreModalDdxPatches(imports);

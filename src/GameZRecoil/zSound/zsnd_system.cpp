@@ -1,8 +1,8 @@
 #include "zSound.h"
 
 #include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zSound/zA3dProvider.h"
 #include "GameZRecoil/zReader/zReader.h"
+#include "GameZRecoil/zSound/zA3dProvider.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -22,40 +22,63 @@ zSndFadeList *ActiveFadeList() {
     return (zSndFadeList *)(&g_zSndFadeActiveListFlags);
 }
 
-void UnlinkAndDeleteFadeNode(zSndFadeListNode *node) {
+void UnlinkAndDeleteFadeNode(
+    zSndFadeListNode *node
+) {
     node->prev->next = node->next;
     node->next->prev = node->prev;
     ::operator delete(node);
 }
 
-void InitializeSentinel(zSndFadeListNode *&sentinel) {
+void InitializeSentinel(
+    zSndFadeListNode *&sentinel
+) {
     sentinel = (zSndFadeListNode *)(::operator new(sizeof(*sentinel)));
     sentinel->next = sentinel;
     sentinel->prev = sentinel;
     sentinel->fadeEntry = 0;
 }
 
-zReader::Node *ArrayBase(zReader::Node *node) {
+zReader::Node *ArrayBase(
+    zReader::Node *node
+) {
     return node->value.nodes;
 }
 
-int ArrayCount(zReader::Node *node) {
+int ArrayCount(
+    zReader::Node *node
+) {
     return ArrayBase(node)[0].value.i32;
 }
 
-void ApplyPresenceFlag(zSndSample *sample, zReader::Node *sampleNode, const char *name,
-                       int bit) {
-    if (zReader_GetNamedNode(sampleNode, name) != 0) {
+void ApplyPresenceFlag(
+    zSndSample *sample,
+    zReader::Node *sampleNode,
+    const char *name,
+    int bit
+) {
+    if (zReader_GetNamedNode(
+        sampleNode,
+        name
+    ) != 0) {
         sample->replayFields.flags |= bit;
     } else {
         sample->replayFields.flags &= ~bit;
     }
 }
 
-void LoadQualityVariant(zSndQualityVariant *variant, zReader::Node *sampleNode, const char *name,
-                        int defaultRate, int defaultBits,
-                        int defaultChannels) {
-    zReader::Node *variantNode = zReader_GetNamedNode(sampleNode, name);
+void LoadQualityVariant(
+    zSndQualityVariant *variant,
+    zReader::Node *sampleNode,
+    const char *name,
+    int defaultRate,
+    int defaultBits,
+    int defaultChannels
+) {
+    zReader::Node *variantNode = zReader_GetNamedNode(
+        sampleNode,
+        name
+    );
     if (variantNode == 0) {
         variant->sampleName = 0;
         variant->samplesPerSec = defaultRate;
@@ -79,8 +102,14 @@ void LoadQualityVariant(zSndQualityVariant *variant, zReader::Node *sampleNode, 
     variant->channelCount = format[3].value.i32;
 }
 
-void LoadRange(zSndSample *sample, zReader::Node *sampleNode) {
-    zReader::Node *rangeNode = zReader_GetNamedNode(sampleNode, "RANGE");
+void LoadRange(
+    zSndSample *sample,
+    zReader::Node *sampleNode
+) {
+    zReader::Node *rangeNode = zReader_GetNamedNode(
+        sampleNode,
+        "RANGE"
+    );
     if (rangeNode == 0) {
         sample->rangeMin = 50.0f;
         sample->rangeMax = 400.0f;
@@ -93,22 +122,59 @@ void LoadRange(zSndSample *sample, zReader::Node *sampleNode) {
     sample->rangeMax = range[2].value.f32;
 }
 
-void LoadSample(zSndSample *sample, zReader::Node *sampleNode) {
+void LoadSample(
+    zSndSample *sample,
+    zReader::Node *sampleNode
+) {
     sample->createGuard = 0;
 
     zReader::Node *fields = ArrayBase(sampleNode);
     sample->replayFields.sampleId = fields[1].value.str;
     sample->replayFields.resourceName = fields[2].value.str;
 
-    ApplyPresenceFlag(sample, sampleNode, "3D", 0x04);
-    ApplyPresenceFlag(sample, sampleNode, "LOOPED", 0x01);
-    ApplyPresenceFlag(sample, sampleNode, "FREQUENCY", 0x20);
-    ApplyPresenceFlag(sample, sampleNode, "HARDWARE", 0x40);
-    ApplyPresenceFlag(sample, sampleNode, "PURGEABLE", 0x02);
-    ApplyPresenceFlag(sample, sampleNode, "VOICE", 0x10);
+    ApplyPresenceFlag(
+        sample,
+        sampleNode,
+        "3D",
+        0x04
+    );
+    ApplyPresenceFlag(
+        sample,
+        sampleNode,
+        "LOOPED",
+        0x01
+    );
+    ApplyPresenceFlag(
+        sample,
+        sampleNode,
+        "FREQUENCY",
+        0x20
+    );
+    ApplyPresenceFlag(
+        sample,
+        sampleNode,
+        "HARDWARE",
+        0x40
+    );
+    ApplyPresenceFlag(
+        sample,
+        sampleNode,
+        "PURGEABLE",
+        0x02
+    );
+    ApplyPresenceFlag(
+        sample,
+        sampleNode,
+        "VOICE",
+        0x10
+    );
 
     sample->replayFields.gain = 1.0f;
-    zReader::ReadNamedFloat(sampleNode, "VOLUME", &sample->replayFields.gain);
+    zReader::ReadNamedFloat(
+        sampleNode,
+        "VOLUME",
+        &sample->replayFields.gain
+    );
     if (sample->replayFields.gain > 1.0f) {
         sample->replayFields.gain = 1.0f;
     } else if (!(sample->replayFields.gain >= 0.0f)) {
@@ -116,36 +182,81 @@ void LoadSample(zSndSample *sample, zReader::Node *sampleNode) {
     }
 
     sample->a3dDistanceScale = 1.0f;
-    zReader::ReadNamedFloat(sampleNode, "A3DDIST", &sample->a3dDistanceScale);
-    LoadRange(sample, sampleNode);
+    zReader::ReadNamedFloat(
+        sampleNode,
+        "A3DDIST",
+        &sample->a3dDistanceScale
+    );
+    LoadRange(
+        sample,
+        sampleNode
+    );
 
-    LoadQualityVariant(&sample->highVariant, sampleNode, "HIGH", 44100, 16, 2);
-    LoadQualityVariant(&sample->medVariant, sampleNode, "MED", 22050, 16, 1);
-    LoadQualityVariant(&sample->lowVariant, sampleNode, "LOW", 11025, 8, 1);
+    LoadQualityVariant(
+        &sample->highVariant,
+        sampleNode,
+        "HIGH",
+        44100,
+        16,
+        2
+    );
+    LoadQualityVariant(
+        &sample->medVariant,
+        sampleNode,
+        "MED",
+        22050,
+        16,
+        1
+    );
+    LoadQualityVariant(
+        &sample->lowVariant,
+        sampleNode,
+        "LOW",
+        11025,
+        8,
+        1
+    );
 
     sample->playbackParam3 = 20000.0f;
     sample->playbackParam2 = 90000.0f;
 }
 
-void LoadSampleSet(const char *setName, zReader::Node *sampleListNode) {
+void LoadSampleSet(
+    const char *setName,
+    zReader::Node *sampleListNode
+) {
     const int sampleCount = ArrayCount(sampleListNode) - 1;
     zSndSampleSet *sampleSet = (zSndSampleSet *)(::operator new(sizeof(zSndSampleSet)));
     if (sampleSet != 0) {
-        sampleSet = sampleSet->RegistryAddEntry(setName, sampleCount);
+        sampleSet = sampleSet->RegistryAddEntry(
+            setName,
+            sampleCount
+        );
     }
 
     zReader::Node *samples = ArrayBase(sampleListNode);
     for (int i = 0; i < sampleCount; ++i) {
         zSndSample *sample = sampleSet->GetSampleAt(i);
-        LoadSample(sample, &samples[i + 1]);
+        LoadSample(
+            sample,
+            &samples[i + 1]
+        );
     }
 }
 
-bool LegacyFlagIsTrue(zReader::Node *node) {
-    return strcmp(node->value.str, "TRUE") == 0;
+bool LegacyFlagIsTrue(
+    zReader::Node *node
+) {
+    return strcmp(
+        node->value.str,
+        "TRUE"
+    ) == 0;
 }
 
-void LoadLegacySample(zSndSample *sample, zReader::Node *legacyEntryNode) {
+void LoadLegacySample(
+    zSndSample *sample,
+    zReader::Node *legacyEntryNode
+) {
     sample->createGuard = 0;
 
     zReader::Node *entry = ArrayBase(legacyEntryNode);
@@ -205,17 +316,26 @@ void LoadLegacySample(zSndSample *sample, zReader::Node *legacyEntryNode) {
     sample->lowVariant.channelCount = 1;
 }
 
-void LoadLegacySampleSet(const char *setName, zReader::Node *sampleListNode) {
+void LoadLegacySampleSet(
+    const char *setName,
+    zReader::Node *sampleListNode
+) {
     const int sampleCount = ArrayCount(sampleListNode) - 1;
     zSndSampleSet *sampleSet = (zSndSampleSet *)(::operator new(sizeof(zSndSampleSet)));
     if (sampleSet != 0) {
-        sampleSet = sampleSet->RegistryAddEntry(setName, sampleCount);
+        sampleSet = sampleSet->RegistryAddEntry(
+            setName,
+            sampleCount
+        );
     }
 
     zReader::Node *entries = ArrayBase(sampleListNode);
     for (int i = 0; i < sampleCount; ++i) {
         zSndSample *sample = sampleSet->GetSampleAt(i);
-        LoadLegacySample(sample, &entries[i + 1]);
+        LoadLegacySample(
+            sample,
+            &entries[i + 1]
+        );
     }
 }
 } // namespace
@@ -231,7 +351,9 @@ RECOIL_NOINLINE void RECOIL_CDECL InitGlobals() {
 
 namespace zSndFadeDispatchList {
 // Reimplements 0x4a3a80: zSndFadeDispatchList::PushBack
-RECOIL_NOINLINE void RECOIL_FASTCALL PushBack(zSndFadeEntry *fadeEntry) {
+RECOIL_NOINLINE void RECOIL_FASTCALL PushBack(
+    zSndFadeEntry *fadeEntry
+) {
     zSndFadeListNode *const sentinel = g_zSndFadeDispatchListSentinel;
     zSndFadeListNode *const previous = sentinel->prev;
     zSndFadeListNode *const node = (zSndFadeListNode *)(::operator new(sizeof(*node)));
@@ -246,7 +368,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PushBack(zSndFadeEntry *fadeEntry) {
 } // namespace zSndFadeDispatchList
 
 // Reimplements 0x4a3ad0: zSndFadeEntry::TickAndMaybeDispatch
-RECOIL_NOINLINE int RECOIL_THISCALL zSndFadeEntry::TickAndMaybeDispatch(float deltaTime) {
+RECOIL_NOINLINE int RECOIL_THISCALL zSndFadeEntry::TickAndMaybeDispatch(
+    float deltaTime
+) {
     const float direction = (targetValue - currentValue) < 0.0f ? -1.0f : 1.0f;
     currentValue += direction * deltaTime * 2500.0f;
 
@@ -257,8 +381,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndFadeEntry::TickAndMaybeDispatch(float de
             currentValue = -10000.0f;
         }
 
-        LPDIRECTSOUNDBUFFER const buffer =
-            (LPDIRECTSOUNDBUFFER)(handle->backendBuffer);
+        LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(handle->backendBuffer);
         buffer->SetVolume((int)(currentValue));
     } else if (g_zSnd_ActiveBackend == 1) {
         if (currentValue > 1.0f) {
@@ -267,9 +390,11 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndFadeEntry::TickAndMaybeDispatch(float de
             currentValue = 0.0f;
         }
 
-        zA3dProviderSource *const source =
-            (zA3dProviderSource *)(handle->backendBuffer);
-        source->vtable->SetGain(source, zSndSample_PlaySimple(currentValue));
+        zA3dProviderSource *const source = (zA3dProviderSource *)(handle->backendBuffer);
+        source->vtable->SetGain(
+            source,
+            zSndSample_PlaySimple(currentValue)
+        );
     }
 
     if (currentValue != targetValue) {
@@ -285,7 +410,9 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndFadeEntry::TickAndMaybeDispatch(float de
 }
 
 // Reimplements 0x4a3c20: zSndFadeActiveList_TickAll
-extern "C" RECOIL_NOINLINE void RECOIL_STDCALL zSndFadeActiveList_TickAll(float deltaTime) {
+extern "C" RECOIL_NOINLINE void RECOIL_STDCALL zSndFadeActiveList_TickAll(
+    float deltaTime
+) {
     if (g_zSndFadeActiveListCount == 0) {
         return;
     }
@@ -318,8 +445,10 @@ extern "C" RECOIL_NOINLINE void RECOIL_STDCALL zSndFadeActiveList_TickAll(float 
 }
 
 // Reimplements 0x4a3e50: zSndFadeList::DeleteNodeAndAdvanceCursor
-RECOIL_NOINLINE void RECOIL_THISCALL
-zSndFadeList::DeleteNodeAndAdvanceCursor(zSndFadeListNode *node, zSndFadeListNode **outCursor) {
+RECOIL_NOINLINE void RECOIL_THISCALL zSndFadeList::DeleteNodeAndAdvanceCursor(
+    zSndFadeListNode *node,
+    zSndFadeListNode **outCursor
+) {
     zSndFadeListNode *const next = node->next;
     UnlinkAndDeleteFadeNode(node);
     --count;
@@ -327,8 +456,10 @@ zSndFadeList::DeleteNodeAndAdvanceCursor(zSndFadeListNode *node, zSndFadeListNod
 }
 
 // Reimplements 0x4a3e90: zSndFadeListCursor::PopFrontCursor
-RECOIL_NOINLINE zSndFadeListNode **RECOIL_THISCALL
-zSndFadeListCursor::PopFrontCursor(zSndFadeListNode **outNode, int unused) {
+RECOIL_NOINLINE zSndFadeListNode **RECOIL_THISCALL zSndFadeListCursor::PopFrontCursor(
+    zSndFadeListNode **outNode,
+    int unused
+) {
     (void)unused;
 
     zSndFadeListNode *const current = node;
@@ -338,10 +469,11 @@ zSndFadeListCursor::PopFrontCursor(zSndFadeListNode **outNode, int unused) {
 }
 
 // Reimplements 0x49f620: zSnd_Tick
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_Tick(int skipA3dCommit) {
+extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_Tick(
+    int skipA3dCommit
+) {
     if (g_zSnd_ActiveBackend == 1 && skipA3dCommit == 0) {
-        zA3dProviderDevice *const device =
-            (zA3dProviderDevice *)(g_zSnd_BackendDevice);
+        zA3dProviderDevice *const device = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
         device->vtable->CommitDeferredSettings(device);
         device->vtable->Tick(device);
     }
@@ -368,16 +500,14 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_Tick(int skipA3dCommit) {
     sample->playbackEventHandler(g_zSndLastVoiceMarkerIndex);
 
     const int markerIndex = g_zSndLastVoiceMarkerIndex;
-    if ((unsigned int)(markerIndex) >=
-        (unsigned int)(g_zSndLastVoice->markerCount)) {
+    if ((unsigned int)(markerIndex) >= (unsigned int)(g_zSndLastVoice->markerCount)) {
         g_zSndLastVoiceMarkerIndex = 0;
         g_zSndLastVoice = 0;
         g_zSndLastVoiceStopMarkerIndex = 999;
         return;
     }
 
-    if ((unsigned int)(markerIndex) >=
-        (unsigned int)(g_zSndLastVoiceStopMarkerIndex)) {
+    if ((unsigned int)(markerIndex) >= (unsigned int)(g_zSndLastVoiceStopMarkerIndex)) {
         g_zSndLastVoiceHandle->StopIfActive();
         g_zSndLastVoiceStopMarkerIndex = 999;
         return;
@@ -387,41 +517,66 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_Tick(int skipA3dCommit) {
 }
 
 // Reimplements 0x49f614: zSnd_TickWrapper
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_TickWrapper(int skipA3dCommit) {
+extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_TickWrapper(
+    int skipA3dCommit
+) {
     zSnd_Tick(skipA3dCommit);
 }
 
 // Reimplements 0x4a1870: zSndSystem_InitNamedSetsSyntax
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndSystem_InitNamedSetsSyntax(zReader::Node *configRootNode) {
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSystem_InitNamedSetsSyntax(
+    zReader::Node *configRootNode
+) {
     (void)configRootNode;
 
-    zSndCd::Init(zReader_GetNamedNode(g_zSnd_ConfigRootNode, "CD_TRACKS"));
+    zSndCd::Init(zReader_GetNamedNode(
+        g_zSnd_ConfigRootNode,
+        "CD_TRACKS"
+    ));
 
-    const char *pathText = zReader::ReadNamedString(g_zSnd_ConfigRootNode, "SOUND_PATH");
+    const char *pathText = zReader::ReadNamedString(
+        g_zSnd_ConfigRootNode,
+        "SOUND_PATH"
+    );
     if (pathText != 0) {
         if (g_zSnd_SearchPathList == 0) {
             g_zSnd_SearchPathList = zUtil_ZRDR_CreateSearchPathList(pathText);
         } else {
-            zUtil::ZRDR_AddSearchPaths(g_zSnd_SearchPathList, pathText);
+            zUtil::ZRDR_AddSearchPaths(
+                g_zSnd_SearchPathList,
+                pathText
+            );
         }
     }
 
     float speedOfSound = 0.0f;
-    if (zReader::ReadNamedFloat(g_zSnd_ConfigRootNode, "SPEED_OF_SOUND", &speedOfSound) != 0) {
+    if (zReader::ReadNamedFloat(
+        g_zSnd_ConfigRootNode,
+        "SPEED_OF_SOUND",
+        &speedOfSound
+    ) != 0) {
         zSnd::SetSpeedOfSoundMps(speedOfSound);
     }
 
-    zReader::Node *setsNode = zReader_GetNamedNode(g_zSnd_ConfigRootNode, "SETS");
+    zReader::Node *setsNode = zReader_GetNamedNode(
+        g_zSnd_ConfigRootNode,
+        "SETS"
+    );
     zReader::Node *sets = ArrayBase(setsNode);
     const int setCount = (ArrayCount(setsNode) - 1) / 2;
     for (int i = 0; i < setCount; ++i) {
         zReader::Node *setNameNode = &sets[(i * 2) + 1];
         zReader::Node *sampleListNode = &sets[(i * 2) + 2];
-        LoadSampleSet(setNameNode->value.str, sampleListNode);
+        LoadSampleSet(
+            setNameNode->value.str,
+            sampleListNode
+        );
     }
 
-    zReader::Node *groupsNode = zReader_GetNamedNode(g_zSnd_ConfigRootNode, "SOUND_GROUPS");
+    zReader::Node *groupsNode = zReader_GetNamedNode(
+        g_zSnd_ConfigRootNode,
+        "SOUND_GROUPS"
+    );
     if (groupsNode != 0) {
         zSndGroup_QueuePendingLoadsFromConfigNode(groupsNode);
     }
@@ -446,8 +601,13 @@ RECOIL_NOINLINE void RECOIL_CDECL StopAllAndShutdown() {
     while (cursor.node != activeSentinel) {
         zSndFadeListNode *outNode = 0;
         zSndFadeListNode *outCursor = 0;
-        ActiveFadeList()->DeleteNodeAndAdvanceCursor(*cursor.PopFrontCursor(&outNode, 0),
-                                                     &outCursor);
+        ActiveFadeList()->DeleteNodeAndAdvanceCursor(
+            *cursor.PopFrontCursor(
+                &outNode,
+                0
+            ),
+            &outCursor
+        );
         cursor.node = outCursor;
     }
 
@@ -493,36 +653,59 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
 } // namespace zSndSystem
 
 // Reimplements 0x4a1510: zSndSystem_InitLegacySetsSyntax
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndSystem_InitLegacySetsSyntax(zReader::Node *configRootNode) {
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSystem_InitLegacySetsSyntax(
+    zReader::Node *configRootNode
+) {
     (void)configRootNode;
 
-    zSndCd::Init(zReader_GetNamedNode(g_zSnd_ConfigRootNode, "CD_TRACKS"));
+    zSndCd::Init(zReader_GetNamedNode(
+        g_zSnd_ConfigRootNode,
+        "CD_TRACKS"
+    ));
 
-    const char *pathText = zReader::ReadNamedString(g_zSnd_ConfigRootNode, "SOUND_PATH");
+    const char *pathText = zReader::ReadNamedString(
+        g_zSnd_ConfigRootNode,
+        "SOUND_PATH"
+    );
     if (pathText != 0) {
         if (g_zSnd_SearchPathList == 0) {
             g_zSnd_SearchPathList = zUtil_ZRDR_CreateSearchPathList(pathText);
         } else {
-            zUtil::ZRDR_AddSearchPaths(g_zSnd_SearchPathList, pathText);
+            zUtil::ZRDR_AddSearchPaths(
+                g_zSnd_SearchPathList,
+                pathText
+            );
         }
     }
 
     float speedOfSound = 0.0f;
-    if (zReader::ReadNamedFloat(g_zSnd_ConfigRootNode, "SPEED_OF_SOUND", &speedOfSound) != 0) {
+    if (zReader::ReadNamedFloat(
+        g_zSnd_ConfigRootNode,
+        "SPEED_OF_SOUND",
+        &speedOfSound
+    ) != 0) {
         zSnd::SetSpeedOfSoundMps(speedOfSound);
     }
 
-    zReader::Node *setsNode = zReader_GetNamedNode(g_zSnd_ConfigRootNode, "SETS");
+    zReader::Node *setsNode = zReader_GetNamedNode(
+        g_zSnd_ConfigRootNode,
+        "SETS"
+    );
     zReader::Node *sets = ArrayBase(setsNode);
     const int setCount = (ArrayCount(setsNode) - 1) / 2;
     for (int i = 0; i < setCount; ++i) {
         zReader::Node *setNameNode = &sets[(i * 2) + 1];
         zReader::Node *sampleListNode = &sets[(i * 2) + 2];
-        LoadLegacySampleSet(setNameNode->value.str, sampleListNode);
+        LoadLegacySampleSet(
+            setNameNode->value.str,
+            sampleListNode
+        );
     }
 
-    zReader::Node *groupsNode = zReader_GetNamedNode(g_zSnd_ConfigRootNode, "SOUND_GROUPS");
+    zReader::Node *groupsNode = zReader_GetNamedNode(
+        g_zSnd_ConfigRootNode,
+        "SOUND_GROUPS"
+    );
     if (groupsNode != 0) {
         zSndGroup_QueuePendingLoadsFromConfigNode(groupsNode);
     }

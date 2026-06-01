@@ -5,6 +5,7 @@
 #include "Battlesport/RecoilApp.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
+#include "GameZRecoil/mission.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/zEffect/zEffect.h"
@@ -1795,6 +1796,54 @@ extern "C" int net_session_config_dialog_register_map_name_cleanup_smoke(void) {
         return 3;
     }
     return 0;
+}
+
+extern "C" int mission_register_multiplayer_maps_smoke(void) {
+    const char *const expectedNames[7] = {
+        "RiverWorks",
+        "Crater Chaos",
+        "Beach Rally",
+        "Clone City",
+        "Frozen Tundra",
+        "Poison Valley",
+        "New Clone City",
+    };
+    CodeFunctionPatch patch = {};
+    g_netSessionConfigAtexitCalls = 0;
+    g_netSessionConfigAtexitCallback = nullptr;
+    g_netSessionConfigAtexitResult = 17;
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&atexit),
+                           reinterpret_cast<void *>(&FakeNetSessionConfigAtexit),
+                           patch)) {
+        return 1;
+    }
+
+    Mission::RegisterMultiplayerMaps();
+    RestoreFunctionPatch(patch);
+
+    int result = 0;
+    for (int index = 0; index < 7; ++index) {
+        if ((const char *)g_NetSessionConfigDialog_MapNameStrings[index] == nullptr ||
+            std::strcmp((const char *)g_NetSessionConfigDialog_MapNameStrings[index],
+                        expectedNames[index]) != 0) {
+            result = index + 2;
+            break;
+        }
+    }
+    if (result == 0 && g_netSessionConfigAtexitCalls != 1) {
+        result = 9;
+    }
+    if (result == 0 &&
+        g_netSessionConfigAtexitCallback !=
+            &NetSessionConfigDialog::CleanupMapNameStringsOnExit) {
+        result = 10;
+    }
+
+    for (int index = 6; index >= 0; --index) {
+        g_NetSessionConfigDialog_MapNameStrings[index].~CString();
+    }
+    return result;
 }
 
 extern "C" int net_session_config_dialog_cleanup_map_name_strings_on_exit_smoke(void) {

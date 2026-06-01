@@ -1,8 +1,10 @@
 #include "GameZRecoil/zFMV/fmv.h"
+#include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zSys/zSys.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstdio>
@@ -14,6 +16,10 @@
 extern "C" HWND g_RecoilApp_hWndMain;
 extern "C" std::int32_t g_zFMV_ActionImage_BlitRectW;
 extern "C" std::int32_t g_zFMV_ActionImage_BlitRectH;
+extern "C" int g_zFMV_ActionImage_BlitRectX;
+extern "C" int g_zFMV_ActionImage_BlitRectY;
+extern "C" unsigned int g_zVideo_pfnBltSwToPrimaryRect;
+extern unsigned int g_zVideo_pfnFlushQuadBatch;
 
 namespace {
 struct CodeFunctionPatch {
@@ -30,13 +36,23 @@ double g_lastBeginTimeSec;
 double g_lastUpdateTimeSec;
 int g_nextUpdateResult;
 int g_fakeFmvMciSendCommandCount;
-MCIDEVICEID g_fakeFmvMciDevices[4];
-UINT g_fakeFmvMciMessages[4];
-DWORD_PTR g_fakeFmvMciFlags[4];
-DWORD_PTR g_fakeFmvMciParams[4];
-MCIERROR g_fakeFmvMciReturns[4];
+MCIDEVICEID g_fakeFmvMciDevices[8];
+UINT g_fakeFmvMciMessages[8];
+DWORD_PTR g_fakeFmvMciFlags[8];
+DWORD_PTR g_fakeFmvMciParams[8];
+MCIERROR g_fakeFmvMciReturns[8];
 zFMV_Playback *g_fakeFmvExpectedClosePlayback;
 int g_fakeFmvCloseParamOk;
+const char *g_fakeFmvOpenDeviceType;
+const char *g_fakeFmvOpenElementName;
+HWND g_fakeFmvWindowHwnd;
+int g_fakeFmvDestRect[4];
+int g_fakeFmvSourceRect[4];
+DWORD g_fakeFmvSetTimeFormat;
+DWORD g_fakeFmvSetAudio;
+DWORD g_fakeFmvPlayCallback;
+DWORD g_fakeFmvPlayFrom;
+DWORD g_fakeFmvPlayTo;
 int g_fakeAviStreamReadCount;
 PAVISTREAM g_fakeAviStreams[4];
 LONG g_fakeAviStarts[4];
@@ -52,6 +68,93 @@ void *g_fakeIcLastCompressedFrame;
 BITMAPINFOHEADER *g_fakeIcLastDstFormat;
 void *g_fakeIcLastPixels;
 LRESULT g_fakeIcReturn;
+int g_fakeFmvOperatorDeleteCount;
+void *g_fakeFmvOperatorDeletePtr;
+int g_fakeFmvDisplayLockCount;
+int g_fakeFmvDisplayUnlockCount;
+int g_fakeFmvPlaybackOpenAndPlayCount;
+zFMV_Playback *g_fakeFmvPlaybackOpenAndPlaySelf;
+unsigned int g_fakeFmvPlaybackOpenAndPlayStartMs;
+int g_fakeFmvPlaybackOpenAndPlayEndMs;
+int g_fakeFmvPlaybackOpenAndPlayNotifyFlag;
+int g_fakeFmvPlaybackStopAndCloseCount;
+zFMV_Playback *g_fakeFmvPlaybackStopAndCloseSelf;
+int g_fakeFmvAdjustSurfacesCount;
+zVidRect32 *g_fakeFmvAdjustSurfacesSrcRect;
+zVidRect32 *g_fakeFmvAdjustSurfacesDstRect;
+int g_fakeFmvAdjustSurfacesWaitForPresent;
+int g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst;
+int g_fakeFmvTexDirFindCount;
+const char *g_fakeFmvTexDirFindPath;
+zVidImagePartial *g_fakeFmvTexDirFindResult;
+int g_fakeFmvPostprocessCount;
+int g_fakeFmvSwPostprocessCount;
+int g_fakeFmvBlitToActiveTargetCount;
+zVidImagePartial *g_fakeFmvBlitToActiveTargetImage;
+int g_fakeFmvBlitToActiveTargetDstX;
+int g_fakeFmvBlitToActiveTargetDstY;
+int g_fakeFmvBlitToActiveTargetClipFlags;
+zVidRect32 *g_fakeFmvBlitToActiveTargetSrcRect;
+int g_fakeFmvUnlockPrimaryCount;
+int g_fakeFmvUnlockSwCount;
+int g_fakeFmvOverlaySubmitCount;
+unsigned int g_fakeFmvOverlaySubmitColor;
+zVidRect32 *g_fakeFmvOverlaySubmitRect;
+double g_fakeFmvOverlaySubmitAlpha;
+int g_fakeFmvOverlayFlushSwCount;
+int g_fakeFmvSceneEnterCount;
+int g_fakeFmvSceneLeaveCount;
+int g_fakeFmvFlushQuadBatchCount;
+int g_fakeFmvSwBltCount;
+zVidImagePartial *g_fakeFmvSwBltImage;
+int g_fakeFmvSwBltColorKeyEnable;
+zVidRect32 *g_fakeFmvSwBltSrcRect;
+zVidRect32 *g_fakeFmvSwBltDstRect;
+int g_fakeFmvSwToPrimaryDirectCount;
+zVidRect32 *g_fakeFmvSwToPrimaryDirectSrcRect;
+zVidRect32 *g_fakeFmvSwToPrimaryDirectDstRect;
+int g_fakeFmvPrimaryToSwDirectCount;
+zVidRect32 *g_fakeFmvPrimaryToSwDirectSrcRect;
+zVidRect32 *g_fakeFmvPrimaryToSwDirectDstRect;
+int g_fakeFmvBlurByModeCount;
+zVidRect32 *g_fakeFmvBlurByModeRect;
+int g_fakeFmvBlurByModeModes[8];
+int g_fakeFmvCaptureSurfaceCount;
+int g_fakeFmvCaptureSurfaceSelector;
+zVidImagePartial *g_fakeFmvCaptureSurfaceResult;
+int g_fakeFmvReleaseImageCount;
+zVidImagePartial *g_fakeFmvReleaseImage;
+int g_fakeFmvFindFileCount;
+int g_fakeFmvFindFileDriveType;
+char g_fakeFmvFindFileRelativePath[128];
+int g_fakeFmvFindFileUnused;
+char *g_fakeFmvFindFileResult;
+int g_fakeFmvStreamOpenCount;
+PAVISTREAM g_fakeFmvOpenedStream;
+const char *g_fakeFmvOpenedPath;
+DWORD g_fakeFmvOpenedType;
+LONG g_fakeFmvOpenedParam;
+UINT g_fakeFmvOpenedMode;
+int g_fakeFmvReadFormatCount;
+PAVISTREAM g_fakeFmvReadFormatStream;
+LONG g_fakeFmvReadFormatPosition;
+int g_fakeFmvStreamLengthCount;
+PAVISTREAM g_fakeFmvStreamLengthStream;
+int g_fakeFmvStreamInfoCount;
+PAVISTREAM g_fakeFmvStreamInfoStream;
+LONG g_fakeFmvStreamInfoSize;
+int g_fakeFmvIcLocateCount;
+DWORD g_fakeFmvIcLocateType;
+DWORD g_fakeFmvIcLocateHandler;
+void *g_fakeFmvIcLocateSrcFormat;
+void *g_fakeFmvIcLocateDstFormat;
+WORD g_fakeFmvIcLocateMode;
+HIC g_fakeFmvLocatedCodec;
+int g_fakeFmvIcSendMessageCount;
+HIC g_fakeFmvIcSendCodec;
+UINT g_fakeFmvIcSendMessage;
+DWORD_PTR g_fakeFmvIcSendSrcParam;
+DWORD_PTR g_fakeFmvIcSendDstParam;
 int g_fakeFmvLockCount;
 int g_fakeFmvUnlockCount;
 int g_fakeFmvGetCurrentPositionCount;
@@ -70,16 +173,84 @@ void *g_fakeFmvUnlockPtr2;
 int g_fakeFmvUnlockBytes1;
 int g_fakeFmvUnlockBytes2;
 
+struct TestFmvMciOpenParams {
+    DWORD_PTR callback;
+    unsigned int deviceId;
+    const char *deviceType;
+    const char *elementName;
+    const char *alias;
+};
+
+struct TestFmvMciWindowParams {
+    DWORD_PTR callback;
+    HWND hwnd;
+};
+
+struct TestFmvMciRectParams {
+    DWORD_PTR callback;
+    int left;
+    int top;
+    int width;
+    int height;
+};
+
+struct TestFmvMciSetParams {
+    DWORD_PTR callback;
+    DWORD timeFormat;
+    DWORD audio;
+};
+
+struct TestFmvMciPlayParams {
+    DWORD_PTR callback;
+    DWORD from;
+    DWORD to;
+};
+
 MCIERROR WINAPI FakeFmvMciSendCommandA(MCIDEVICEID deviceId, UINT message, DWORD_PTR flags,
                                        DWORD_PTR params) {
     const int index = g_fakeFmvMciSendCommandCount;
-    if (index < 4) {
+    if (index < 8) {
         g_fakeFmvMciDevices[index] = deviceId;
         g_fakeFmvMciMessages[index] = message;
         g_fakeFmvMciFlags[index] = flags;
         g_fakeFmvMciParams[index] = params;
     }
     ++g_fakeFmvMciSendCommandCount;
+
+    if (message == 0x803 && params != 0) {
+        TestFmvMciOpenParams *const openParams = reinterpret_cast<TestFmvMciOpenParams *>(params);
+        g_fakeFmvOpenDeviceType = openParams->deviceType;
+        g_fakeFmvOpenElementName = openParams->elementName;
+        openParams->deviceId = 0x3456;
+    }
+
+    if (message == 0x841 && params != 0) {
+        TestFmvMciWindowParams *const windowParams =
+            reinterpret_cast<TestFmvMciWindowParams *>(params);
+        g_fakeFmvWindowHwnd = windowParams->hwnd;
+    }
+
+    if (message == 0x842 && params != 0) {
+        TestFmvMciRectParams *const rectParams = reinterpret_cast<TestFmvMciRectParams *>(params);
+        int *const capturedRect = flags == 0x50002 ? g_fakeFmvDestRect : g_fakeFmvSourceRect;
+        capturedRect[0] = rectParams->left;
+        capturedRect[1] = rectParams->top;
+        capturedRect[2] = rectParams->width;
+        capturedRect[3] = rectParams->height;
+    }
+
+    if (message == 0x811 && params != 0) {
+        TestFmvMciSetParams *const setParams = reinterpret_cast<TestFmvMciSetParams *>(params);
+        g_fakeFmvSetTimeFormat = setParams->timeFormat;
+        g_fakeFmvSetAudio = setParams->audio;
+    }
+
+    if (message == 0x806 && params != 0) {
+        TestFmvMciPlayParams *const playParams = reinterpret_cast<TestFmvMciPlayParams *>(params);
+        g_fakeFmvPlayCallback = playParams->callback;
+        g_fakeFmvPlayFrom = playParams->from;
+        g_fakeFmvPlayTo = playParams->to;
+    }
 
     if (message == 0x804 && params != 0) {
         zFMV_Playback *const closePlayback =
@@ -88,7 +259,7 @@ MCIERROR WINAPI FakeFmvMciSendCommandA(MCIDEVICEID deviceId, UINT message, DWORD
             closePlayback == g_fakeFmvExpectedClosePlayback ? 1 : 0;
     }
 
-    return index < 4 ? g_fakeFmvMciReturns[index] : 0;
+    return index < 8 ? g_fakeFmvMciReturns[index] : 0;
 }
 
 HRESULT WINAPI FakeFmvAVIStreamRead(PAVISTREAM stream, LONG start, LONG samples, void *buffer,
@@ -106,8 +277,8 @@ HRESULT WINAPI FakeFmvAVIStreamRead(PAVISTREAM stream, LONG start, LONG samples,
 }
 
 LRESULT __cdecl FakeFmvICDecompress(HIC codec, DWORD flags, BITMAPINFOHEADER *srcFormat,
-                                    void *compressedFrame, BITMAPINFOHEADER *dstFormat,
-                                    void *pixels) {
+                                     void *compressedFrame, BITMAPINFOHEADER *dstFormat,
+                                     void *pixels) {
     ++g_fakeIcDecompressCount;
     g_fakeIcLastCodec = codec;
     g_fakeIcLastFlags = flags;
@@ -116,6 +287,256 @@ LRESULT __cdecl FakeFmvICDecompress(HIC codec, DWORD flags, BITMAPINFOHEADER *sr
     g_fakeIcLastDstFormat = dstFormat;
     g_fakeIcLastPixels = pixels;
     return g_fakeIcReturn;
+}
+
+void __cdecl FakeFmvOperatorDelete(void *ptr) {
+    ++g_fakeFmvOperatorDeleteCount;
+    g_fakeFmvOperatorDeletePtr = ptr;
+}
+
+int RECOIL_CDECL FakeFmvDispatchLockDisplayModeSurfaceState() {
+    ++g_fakeFmvDisplayLockCount;
+    return 1;
+}
+
+int RECOIL_CDECL FakeFmvDispatchUnlockDisplayModeSurfaceState() {
+    ++g_fakeFmvDisplayUnlockCount;
+    return 1;
+}
+
+int RECOIL_FASTCALL FakeFmvAdjustSurfacesIfEnabled(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect,
+    int waitForPresent,
+    int blitPrimaryToSwFirst
+) {
+    ++g_fakeFmvAdjustSurfacesCount;
+    g_fakeFmvAdjustSurfacesSrcRect = srcRect;
+    g_fakeFmvAdjustSurfacesDstRect = dstRect;
+    g_fakeFmvAdjustSurfacesWaitForPresent = waitForPresent;
+    g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst = blitPrimaryToSwFirst;
+    return 0x1234;
+}
+
+zVidImagePartial *RECOIL_FASTCALL FakeFmvTexDirFindOrCreateByPath(const char *path) {
+    ++g_fakeFmvTexDirFindCount;
+    g_fakeFmvTexDirFindPath = path;
+    return g_fakeFmvTexDirFindResult;
+}
+
+int RECOIL_CDECL FakeFmvRunPostprocessOnPrimaryBuffer() {
+    ++g_fakeFmvPostprocessCount;
+    return 1;
+}
+
+void RECOIL_CDECL FakeFmvRunPostprocessOnSwBuffer() {
+    ++g_fakeFmvSwPostprocessCount;
+}
+
+void RECOIL_FASTCALL FakeFmvBlitToActiveTarget(
+    zVidImagePartial *image,
+    int dstX,
+    int dstY,
+    int clipFlags,
+    zVidRect32 *srcRect
+) {
+    ++g_fakeFmvBlitToActiveTargetCount;
+    g_fakeFmvBlitToActiveTargetImage = image;
+    g_fakeFmvBlitToActiveTargetDstX = dstX;
+    g_fakeFmvBlitToActiveTargetDstY = dstY;
+    g_fakeFmvBlitToActiveTargetClipFlags = clipFlags;
+    g_fakeFmvBlitToActiveTargetSrcRect = srcRect;
+}
+
+int RECOIL_CDECL FakeFmvDispatchUnlockPrimarySurfaceState() {
+    ++g_fakeFmvUnlockPrimaryCount;
+    return 1;
+}
+
+int RECOIL_CDECL FakeFmvDispatchUnlockSwSurfaceState() {
+    ++g_fakeFmvUnlockSwCount;
+    return 1;
+}
+
+void RECOIL_FASTCALL FakeFmvOverlayRectSubmit(
+    unsigned int packedColor16,
+    zVidRect32 *rectOrNull,
+    double alpha
+) {
+    ++g_fakeFmvOverlaySubmitCount;
+    g_fakeFmvOverlaySubmitColor = packedColor16;
+    g_fakeFmvOverlaySubmitRect = rectOrNull;
+    g_fakeFmvOverlaySubmitAlpha = alpha;
+}
+
+void RECOIL_CDECL FakeFmvOverlayRectFlushSw() {
+    ++g_fakeFmvOverlayFlushSwCount;
+}
+
+int RECOIL_CDECL FakeFmvSceneEnter() {
+    ++g_fakeFmvSceneEnterCount;
+    return 1;
+}
+
+int RECOIL_CDECL FakeFmvSceneLeave() {
+    ++g_fakeFmvSceneLeaveCount;
+    return 1;
+}
+
+void RECOIL_CDECL FakeFmvFlushQuadBatch() {
+    ++g_fakeFmvFlushQuadBatchCount;
+}
+
+void RECOIL_FASTCALL FakeFmvBltSwToPrimaryRect(
+    zVidImagePartial *srcImage,
+    int srcColorKeyEnable,
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect
+) {
+    ++g_fakeFmvSwBltCount;
+    g_fakeFmvSwBltImage = srcImage;
+    g_fakeFmvSwBltColorKeyEnable = srcColorKeyEnable;
+    g_fakeFmvSwBltSrcRect = srcRect;
+    g_fakeFmvSwBltDstRect = dstRect;
+}
+
+void RECOIL_FASTCALL FakeFmvBltSwToPrimaryRectDirect(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect
+) {
+    ++g_fakeFmvSwToPrimaryDirectCount;
+    g_fakeFmvSwToPrimaryDirectSrcRect = srcRect;
+    g_fakeFmvSwToPrimaryDirectDstRect = dstRect;
+}
+
+void RECOIL_FASTCALL FakeFmvBltPrimaryToSwRectDirect(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect
+) {
+    ++g_fakeFmvPrimaryToSwDirectCount;
+    g_fakeFmvPrimaryToSwDirectSrcRect = srcRect;
+    g_fakeFmvPrimaryToSwDirectDstRect = dstRect;
+}
+
+void RECOIL_FASTCALL FakeFmvBlurRegionByMode(
+    zVidRect32 *rect,
+    int mode
+) {
+    const int index = g_fakeFmvBlurByModeCount;
+    if (index < 8) {
+        g_fakeFmvBlurByModeModes[index] = mode;
+    }
+    ++g_fakeFmvBlurByModeCount;
+    g_fakeFmvBlurByModeRect = rect;
+}
+
+zVidImagePartial *RECOIL_FASTCALL FakeFmvCaptureSurfaceToImage(int selector) {
+    ++g_fakeFmvCaptureSurfaceCount;
+    g_fakeFmvCaptureSurfaceSelector = selector;
+    return g_fakeFmvCaptureSurfaceResult;
+}
+
+unsigned int FmvFloatBits(float value) {
+    unsigned int bits;
+    std::memcpy(
+        &bits,
+        &value,
+        sizeof(bits)
+    );
+    return bits;
+}
+
+int RECOIL_FASTCALL FakeFmvReleaseImageIfNotDefault(zVidImagePartial *image) {
+    ++g_fakeFmvReleaseImageCount;
+    g_fakeFmvReleaseImage = image;
+    return 1;
+}
+
+char *RECOIL_FASTCALL FakeFmvFindFileOnDriveType(
+    int driveType,
+    const char *relativePath,
+    int unused
+) {
+    ++g_fakeFmvFindFileCount;
+    g_fakeFmvFindFileDriveType = driveType;
+    g_fakeFmvFindFileUnused = unused;
+    std::strncpy(
+        g_fakeFmvFindFileRelativePath,
+        relativePath,
+        sizeof(g_fakeFmvFindFileRelativePath) - 1
+    );
+    g_fakeFmvFindFileRelativePath[sizeof(g_fakeFmvFindFileRelativePath) - 1] = '\0';
+    return g_fakeFmvFindFileResult;
+}
+
+HRESULT WINAPI FakeFmvAVIStreamOpenFromFileA(PAVISTREAM *stream, LPCSTR path, DWORD type,
+                                             LONG param, UINT mode, CLSID *) {
+    ++g_fakeFmvStreamOpenCount;
+    g_fakeFmvOpenedPath = path;
+    g_fakeFmvOpenedType = type;
+    g_fakeFmvOpenedParam = param;
+    g_fakeFmvOpenedMode = mode;
+    *stream = g_fakeFmvOpenedStream;
+    return 0;
+}
+
+HRESULT WINAPI FakeFmvAVIStreamReadFormat(PAVISTREAM stream, LONG position, void *format,
+                                          LONG *formatBytes) {
+    ++g_fakeFmvReadFormatCount;
+    g_fakeFmvReadFormatStream = stream;
+    g_fakeFmvReadFormatPosition = position;
+    if (formatBytes != nullptr) {
+        *formatBytes = sizeof(BITMAPINFOHEADER);
+    }
+    if (format != nullptr) {
+        BITMAPINFOHEADER *const header = reinterpret_cast<BITMAPINFOHEADER *>(format);
+        std::memset(header, 0, sizeof(*header));
+        header->biSize = sizeof(BITMAPINFOHEADER);
+        header->biWidth = 5;
+        header->biHeight = 4;
+        header->biPlanes = 1;
+        header->biBitCount = 16;
+    }
+    return 0;
+}
+
+LONG WINAPI FakeFmvAVIStreamLength(PAVISTREAM stream) {
+    ++g_fakeFmvStreamLengthCount;
+    g_fakeFmvStreamLengthStream = stream;
+    return 9;
+}
+
+HRESULT WINAPI FakeFmvAVIStreamInfoA(PAVISTREAM stream, AVISTREAMINFOA *info, LONG size) {
+    ++g_fakeFmvStreamInfoCount;
+    g_fakeFmvStreamInfoStream = stream;
+    g_fakeFmvStreamInfoSize = size;
+    std::memset(info, 0, sizeof(*info));
+    info->fccHandler = mmioFOURCC('T', 'E', 'S', 'T');
+    info->dwScale = 1;
+    info->dwRate = 30;
+    info->dwSuggestedBufferSize = 48;
+    return 0;
+}
+
+HIC WINAPI FakeFmvICLocate(DWORD type, DWORD handler, LPBITMAPINFOHEADER srcFormat,
+                           LPBITMAPINFOHEADER dstFormat, WORD mode) {
+    ++g_fakeFmvIcLocateCount;
+    g_fakeFmvIcLocateType = type;
+    g_fakeFmvIcLocateHandler = handler;
+    g_fakeFmvIcLocateSrcFormat = srcFormat;
+    g_fakeFmvIcLocateDstFormat = dstFormat;
+    g_fakeFmvIcLocateMode = mode;
+    return g_fakeFmvLocatedCodec;
+}
+
+LRESULT WINAPI FakeFmvICSendMessage(HIC codec, UINT message, DWORD_PTR srcParam,
+                                    DWORD_PTR dstParam) {
+    ++g_fakeFmvIcSendMessageCount;
+    g_fakeFmvIcSendCodec = codec;
+    g_fakeFmvIcSendMessage = message;
+    g_fakeFmvIcSendSrcParam = srcParam;
+    g_fakeFmvIcSendDstParam = dstParam;
+    return 0;
 }
 
 bool PatchFunctionJump(void *target, void *replacement, CodeFunctionPatch &patch) {
@@ -181,6 +602,76 @@ struct TestAction : zFMV_Action {
         ++g_endCallCount;
     }
 };
+
+struct FakeFmvPlaybackThunk {
+    void RECOIL_THISCALL OpenAndPlay(
+        unsigned int startMs,
+        int endMs,
+        int notifyFlag
+    );
+    void RECOIL_THISCALL StopAndClose();
+};
+
+void RECOIL_THISCALL FakeFmvPlaybackThunk::OpenAndPlay(
+    unsigned int startMs,
+    int endMs,
+    int notifyFlag
+) {
+    ++g_fakeFmvPlaybackOpenAndPlayCount;
+    g_fakeFmvPlaybackOpenAndPlaySelf = (zFMV_Playback *)(this);
+    g_fakeFmvPlaybackOpenAndPlayStartMs = startMs;
+    g_fakeFmvPlaybackOpenAndPlayEndMs = endMs;
+    g_fakeFmvPlaybackOpenAndPlayNotifyFlag = notifyFlag;
+}
+
+void RECOIL_THISCALL FakeFmvPlaybackThunk::StopAndClose() {
+    ++g_fakeFmvPlaybackStopAndCloseCount;
+    g_fakeFmvPlaybackStopAndCloseSelf = (zFMV_Playback *)(this);
+}
+
+void *zFMV_Playback_OpenAndPlayProc() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL zFMV_Playback::*member)(unsigned int, int, int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &zFMV_Playback::OpenAndPlay;
+    return thunk.function;
+}
+
+void *FakeFmvPlaybackOpenAndPlayProc() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL FakeFmvPlaybackThunk::*member)(unsigned int, int, int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &FakeFmvPlaybackThunk::OpenAndPlay;
+    return thunk.function;
+}
+
+void *zFMV_Playback_StopAndCloseProc() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL zFMV_Playback::*member)();
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &zFMV_Playback::StopAndClose;
+    return thunk.function;
+}
+
+void *FakeFmvPlaybackStopAndCloseProc() {
+    union MemberToFunction {
+        void (RECOIL_THISCALL FakeFmvPlaybackThunk::*member)();
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &FakeFmvPlaybackThunk::StopAndClose;
+    return thunk.function;
+}
 
 zFMV_Action_Vtbl MakeTestActionVtable() {
     union DeleteMemberToFunction {
@@ -522,6 +1013,40 @@ extern "C" int zfmv_script_run_blocking_empty_smoke(void) {
     return actionOk ? 0 : 2;
 }
 
+extern "C" int zfmv_action_run_blocking_timed_smoke(void) {
+    g_beginCallCount = 0;
+    g_updateCallCount = 0;
+    g_endCallCount = 0;
+    g_lastBeginTimeSec = -1.0;
+    g_lastUpdateTimeSec = -1.0;
+    g_nextUpdateResult = 0;
+
+    TestAction action{{&g_testActionVtable, nullptr}};
+    action.RunBlockingTimed();
+
+    return g_beginCallCount == 1 && g_lastBeginTimeSec == 0.0 && g_updateCallCount == 1 &&
+                   g_lastUpdateTimeSec >= 0.0 && g_endCallCount == 1
+               ? 0
+               : 1;
+}
+
+extern "C" int zfmv_action_run_blocking_immediate_smoke(void) {
+    g_beginCallCount = 0;
+    g_updateCallCount = 0;
+    g_endCallCount = 0;
+    g_lastBeginTimeSec = -1.0;
+    g_lastUpdateTimeSec = -1.0;
+    g_nextUpdateResult = 0;
+
+    TestAction action{{&g_testActionVtable, nullptr}};
+    action.RunBlockingImmediate();
+
+    return g_beginCallCount == 1 && g_lastBeginTimeSec == 0.0 && g_updateCallCount == 1 &&
+                   g_lastUpdateTimeSec == 0.0 && g_endCallCount == 1
+               ? 0
+               : 1;
+}
+
 extern "C" int zfmv_script_begin_current_action_smoke(void) {
     zFMV_Script emptyScript{};
     if (emptyScript.BeginCurrentAction(12.5) != 0) {
@@ -649,6 +1174,8 @@ extern "C" int zfmv_script_begin_now_smoke(void) {
 }
 
 extern "C" int zfmv_action_image_constructor_with_screen_rect_smoke(void) {
+    g_zFMV_ActionImage_BlitRectX = -1;
+    g_zFMV_ActionImage_BlitRectY = -1;
     g_zFMV_ActionImage_BlitRectW = 640;
     g_zFMV_ActionImage_BlitRectH = 480;
 
@@ -662,7 +1189,8 @@ extern "C" int zfmv_action_image_constructor_with_screen_rect_smoke(void) {
         returned == &action && reinterpret_cast<std::uintptr_t>(action.vftable) == 0x4d2598 &&
         action.next == nullptr && action.image == nullptr && action.imagePath != nullptr &&
         std::strcmp(action.imagePath, "screen.raw") == 0 && action.doAdjustSurfaces == 7 &&
-        action.forcePrimaryPostprocess == 1 && action.blitRect[0] == 32 &&
+        action.forcePrimaryPostprocess == 1 && g_zFMV_ActionImage_BlitRectX == 32 &&
+        g_zFMV_ActionImage_BlitRectY == 48 && action.blitRect[0] == 32 &&
         action.blitRect[1] == 48 && action.blitRect[2] == 640 && action.blitRect[3] == 480;
 
     std::free(action.imagePath);
@@ -691,6 +1219,237 @@ extern "C" int zfmv_action_image_constructor_scaled_smoke(void) {
     return ok ? 0 : 1;
 }
 
+extern "C" int zfmv_action_image_begin_smoke(void) {
+    CodeFunctionPatch findPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zImage::TexDir_FindOrCreateByPath),
+                           reinterpret_cast<void *>(&FakeFmvTexDirFindOrCreateByPath),
+                           findPatch)) {
+        return 1;
+    }
+
+    zVidImagePartial image{};
+    zFMV_ActionImage action{};
+    action.imagePath = const_cast<char *>("begin.raw");
+    action.image = reinterpret_cast<void *>(0x33333333);
+    g_fakeFmvTexDirFindCount = 0;
+    g_fakeFmvTexDirFindPath = nullptr;
+    g_fakeFmvTexDirFindResult = &image;
+
+    action.Begin(45.0);
+
+    const bool ok =
+        action.image == &image && g_fakeFmvTexDirFindCount == 1 &&
+        g_fakeFmvTexDirFindPath == action.imagePath;
+
+    RestoreFunctionPatch(findPatch);
+    return ok ? 0 : 2;
+}
+
+extern "C" int zfmv_action_image_update_smoke(void) {
+    CodeFunctionPatch postPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                           reinterpret_cast<void *>(&FakeFmvRunPostprocessOnPrimaryBuffer),
+                           postPatch)) {
+        return 1;
+    }
+
+    CodeFunctionPatch blitPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVid_Image::BlitToActiveTarget),
+                           reinterpret_cast<void *>(&FakeFmvBlitToActiveTarget),
+                           blitPatch)) {
+        RestoreFunctionPatch(postPatch);
+        return 2;
+    }
+
+    CodeFunctionPatch unlockPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                           reinterpret_cast<void *>(&FakeFmvDispatchUnlockPrimarySurfaceState),
+                           unlockPatch)) {
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postPatch);
+        return 3;
+    }
+
+    CodeFunctionPatch adjustPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+                           reinterpret_cast<void *>(&FakeFmvAdjustSurfacesIfEnabled),
+                           adjustPatch)) {
+        RestoreFunctionPatch(unlockPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postPatch);
+        return 4;
+    }
+
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const unsigned int oldSwBlt = g_zVideo_pfnBltSwToPrimaryRect;
+    g_zVideo_pfnBltSwToPrimaryRect =
+        reinterpret_cast<unsigned int>(&FakeFmvBltSwToPrimaryRect);
+
+    zVidImagePartial image{};
+    zFMV_ActionImage action{};
+    action.image = nullptr;
+    g_zVideo_ActiveRendererPath = 2;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvSwBltCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    const bool nullImageOk =
+        action.Update(1.25) == 0 && g_fakeFmvPostprocessCount == 0 &&
+        g_fakeFmvBlitToActiveTargetCount == 0 && g_fakeFmvUnlockPrimaryCount == 0 &&
+        g_fakeFmvSwBltCount == 0 && g_fakeFmvAdjustSurfacesCount == 0;
+
+    action.image = &image;
+    action.forcePrimaryPostprocess = 0;
+    action.doAdjustSurfaces = 1;
+    action.blitRect[0] = 10;
+    action.blitRect[1] = 20;
+    action.blitRect[2] = 300;
+    action.blitRect[3] = 400;
+    g_zVideo_ActiveRendererPath = 0;
+    g_fakeFmvSwBltCount = 0;
+    g_fakeFmvSwBltImage = nullptr;
+    g_fakeFmvSwBltColorKeyEnable = -1;
+    g_fakeFmvSwBltSrcRect = reinterpret_cast<zVidRect32 *>(0x11111111);
+    g_fakeFmvSwBltDstRect = nullptr;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvAdjustSurfacesSrcRect = reinterpret_cast<zVidRect32 *>(0x22222222);
+    g_fakeFmvAdjustSurfacesDstRect = reinterpret_cast<zVidRect32 *>(0x33333333);
+    g_fakeFmvAdjustSurfacesWaitForPresent = 0;
+    g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst = 0;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    const bool softwareOk =
+        action.Update(2.5) == 0 && g_fakeFmvSwBltCount == 1 &&
+        g_fakeFmvSwBltImage == &image && g_fakeFmvSwBltColorKeyEnable == 0 &&
+        g_fakeFmvSwBltSrcRect == nullptr &&
+        g_fakeFmvSwBltDstRect == reinterpret_cast<zVidRect32 *>(&action.blitRect[0]) &&
+        g_fakeFmvAdjustSurfacesCount == 1 &&
+        g_fakeFmvAdjustSurfacesSrcRect == nullptr &&
+        g_fakeFmvAdjustSurfacesDstRect == nullptr &&
+        g_fakeFmvAdjustSurfacesWaitForPresent == 1 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 1 &&
+        g_fakeFmvPostprocessCount == 0 && g_fakeFmvBlitToActiveTargetCount == 0 &&
+        g_fakeFmvUnlockPrimaryCount == 0;
+
+    action.doAdjustSurfaces = 0;
+    action.forcePrimaryPostprocess = 0;
+    action.blitRect[0] = 33;
+    action.blitRect[1] = 44;
+    g_zVideo_ActiveRendererPath = 2;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvBlitToActiveTargetImage = nullptr;
+    g_fakeFmvBlitToActiveTargetDstX = 0;
+    g_fakeFmvBlitToActiveTargetDstY = 0;
+    g_fakeFmvBlitToActiveTargetClipFlags = -1;
+    g_fakeFmvBlitToActiveTargetSrcRect = reinterpret_cast<zVidRect32 *>(0x44444444);
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvSwBltCount = 0;
+    const bool postprocessOk =
+        action.Update(3.75) == 0 && g_fakeFmvPostprocessCount == 2 &&
+        g_fakeFmvBlitToActiveTargetCount == 2 &&
+        g_fakeFmvBlitToActiveTargetImage == &image &&
+        g_fakeFmvBlitToActiveTargetDstX == 33 &&
+        g_fakeFmvBlitToActiveTargetDstY == 44 &&
+        g_fakeFmvBlitToActiveTargetClipFlags == 0 &&
+        g_fakeFmvBlitToActiveTargetSrcRect == nullptr &&
+        g_fakeFmvUnlockPrimaryCount == 2 && g_fakeFmvAdjustSurfacesCount == 0 &&
+        g_fakeFmvSwBltCount == 0;
+
+    g_zVideo_pfnBltSwToPrimaryRect = oldSwBlt;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    RestoreFunctionPatch(adjustPatch);
+    RestoreFunctionPatch(unlockPatch);
+    RestoreFunctionPatch(blitPatch);
+    RestoreFunctionPatch(postPatch);
+    return nullImageOk && softwareOk && postprocessOk ? 0 : 5;
+}
+
+extern "C" int zfmv_action_image_lifecycle_smoke(void) {
+    CodeFunctionPatch releasePatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVid_Image::ReleaseIfNotDefault),
+                           reinterpret_cast<void *>(&FakeFmvReleaseImageIfNotDefault),
+                           releasePatch)) {
+        return 1;
+    }
+
+    zVidImagePartial image{};
+    zFMV_ActionImage action{};
+    action.image = nullptr;
+    g_fakeFmvReleaseImageCount = 0;
+    g_fakeFmvReleaseImage = nullptr;
+    action.End();
+    const bool nullEndOk = action.image == nullptr && g_fakeFmvReleaseImageCount == 0;
+
+    action.image = &image;
+    action.End();
+    const bool releaseEndOk =
+        action.image == nullptr && g_fakeFmvReleaseImageCount == 1 &&
+        g_fakeFmvReleaseImage == &image;
+
+    action.vftable = reinterpret_cast<zFMV_Action_Vtbl *>(0x11111111);
+    action.image = &image;
+    action.imagePath = static_cast<char *>(std::malloc(6));
+    if (action.imagePath == nullptr) {
+        RestoreFunctionPatch(releasePatch);
+        return 2;
+    }
+    std::strcpy(action.imagePath, "path");
+    g_fakeFmvReleaseImageCount = 0;
+    g_fakeFmvReleaseImage = nullptr;
+    action.Destructor();
+    const bool destructorOk =
+        action.vftable == &g_zFMV_ActionBase_Vtable && action.image == nullptr &&
+        action.imagePath == nullptr && g_fakeFmvReleaseImageCount == 1 &&
+        g_fakeFmvReleaseImage == &image;
+
+    CodeFunctionPatch deletePatch{};
+    void(__cdecl *operatorDeleteFn)(void *) = &operator delete;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(operatorDeleteFn),
+                           reinterpret_cast<void *>(&FakeFmvOperatorDelete), deletePatch)) {
+        RestoreFunctionPatch(releasePatch);
+        return 3;
+    }
+
+    void *const storage = std::malloc(sizeof(zFMV_ActionImage));
+    if (storage == nullptr) {
+        RestoreFunctionPatch(deletePatch);
+        RestoreFunctionPatch(releasePatch);
+        return 4;
+    }
+
+    zFMV_ActionImage *const heapAction = reinterpret_cast<zFMV_ActionImage *>(storage);
+    std::memset(heapAction, 0, sizeof(*heapAction));
+    heapAction->vftable = reinterpret_cast<zFMV_Action_Vtbl *>(0x22222222);
+    heapAction->image = &image;
+    heapAction->imagePath = static_cast<char *>(std::malloc(5));
+    if (heapAction->imagePath == nullptr) {
+        std::free(storage);
+        RestoreFunctionPatch(deletePatch);
+        RestoreFunctionPatch(releasePatch);
+        return 5;
+    }
+    std::strcpy(heapAction->imagePath, "heap");
+    g_fakeFmvReleaseImageCount = 0;
+    g_fakeFmvReleaseImage = nullptr;
+    g_fakeFmvOperatorDeleteCount = 0;
+    g_fakeFmvOperatorDeletePtr = nullptr;
+    zFMV_ActionImage *const returned = heapAction->ScalarDeletingDestructor(1);
+    const bool scalarOk =
+        returned == heapAction && heapAction->vftable == &g_zFMV_ActionBase_Vtable &&
+        heapAction->image == nullptr && heapAction->imagePath == nullptr &&
+        g_fakeFmvReleaseImageCount == 1 && g_fakeFmvReleaseImage == &image &&
+        g_fakeFmvOperatorDeleteCount == 1 && g_fakeFmvOperatorDeletePtr == heapAction;
+
+    RestoreFunctionPatch(deletePatch);
+    RestoreFunctionPatch(releasePatch);
+    std::free(storage);
+    return nullEndOk && releaseEndOk && destructorOk && scalarOk ? 0 : 6;
+}
+
 extern "C" int zfmv_action_fade_constructor_smoke(void) {
     g_zVideo_PixelPack_RMaskShifted = 0xf8;
     g_zVideo_PixelPack_GMaskShifted = 0xfc;
@@ -714,6 +1473,278 @@ extern "C" int zfmv_action_fade_constructor_smoke(void) {
                    action.maxAlpha == 128
                ? 0
                : 1;
+}
+
+extern "C" int zfmv_action_fade_begin_smoke(void) {
+    CodeFunctionPatch capturePatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo_buff_CaptureSurfaceToImage),
+                           reinterpret_cast<void *>(&FakeFmvCaptureSurfaceToImage),
+                           capturePatch)) {
+        return 1;
+    }
+
+    zVidImagePartial image{};
+    zFMV_ActionFade action{};
+    action.startSec = -1.0;
+    action.capturedFrame = reinterpret_cast<void *>(0x11111111);
+    g_fakeFmvCaptureSurfaceCount = 0;
+    g_fakeFmvCaptureSurfaceSelector = 0;
+    g_fakeFmvCaptureSurfaceResult = &image;
+
+    action.Begin(12.75);
+
+    const bool ok =
+        action.capturedFrame == &image && action.startSec == 12.75 &&
+        g_fakeFmvCaptureSurfaceCount == 1 && g_fakeFmvCaptureSurfaceSelector == 1;
+
+    RestoreFunctionPatch(capturePatch);
+    return ok ? 0 : 2;
+}
+
+extern "C" int zfmv_action_fade_update_smoke(void) {
+    CodeFunctionPatch primaryPostPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                           reinterpret_cast<void *>(&FakeFmvRunPostprocessOnPrimaryBuffer),
+                           primaryPostPatch)) {
+        return 1;
+    }
+
+    CodeFunctionPatch swPostPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnSwBuffer),
+                           reinterpret_cast<void *>(&FakeFmvRunPostprocessOnSwBuffer),
+                           swPostPatch)) {
+        RestoreFunctionPatch(primaryPostPatch);
+        return 2;
+    }
+
+    CodeFunctionPatch blitPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVid_Image::BlitToActiveTarget),
+                           reinterpret_cast<void *>(&FakeFmvBlitToActiveTarget),
+                           blitPatch)) {
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 3;
+    }
+
+    CodeFunctionPatch unlockPrimaryPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                           reinterpret_cast<void *>(&FakeFmvDispatchUnlockPrimarySurfaceState),
+                           unlockPrimaryPatch)) {
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 4;
+    }
+
+    CodeFunctionPatch unlockSwPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockSwSurfaceState),
+                           reinterpret_cast<void *>(&FakeFmvDispatchUnlockSwSurfaceState),
+                           unlockSwPatch)) {
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 5;
+    }
+
+    CodeFunctionPatch overlayPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zRndr_OverlayRect_Submit),
+                           reinterpret_cast<void *>(&FakeFmvOverlayRectSubmit),
+                           overlayPatch)) {
+        RestoreFunctionPatch(unlockSwPatch);
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 6;
+    }
+
+    CodeFunctionPatch overlayFlushPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zRndr_OverlayRect_FlushSw),
+                           reinterpret_cast<void *>(&FakeFmvOverlayRectFlushSw),
+                           overlayFlushPatch)) {
+        RestoreFunctionPatch(overlayPatch);
+        RestoreFunctionPatch(unlockSwPatch);
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 7;
+    }
+
+    CodeFunctionPatch sceneEnterPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideoD3D::SceneEnter),
+                           reinterpret_cast<void *>(&FakeFmvSceneEnter),
+                           sceneEnterPatch)) {
+        RestoreFunctionPatch(overlayFlushPatch);
+        RestoreFunctionPatch(overlayPatch);
+        RestoreFunctionPatch(unlockSwPatch);
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 8;
+    }
+
+    CodeFunctionPatch sceneLeavePatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideoD3D::SceneLeave),
+                           reinterpret_cast<void *>(&FakeFmvSceneLeave),
+                           sceneLeavePatch)) {
+        RestoreFunctionPatch(sceneEnterPatch);
+        RestoreFunctionPatch(overlayFlushPatch);
+        RestoreFunctionPatch(overlayPatch);
+        RestoreFunctionPatch(unlockSwPatch);
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 9;
+    }
+
+    CodeFunctionPatch adjustPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+                           reinterpret_cast<void *>(&FakeFmvAdjustSurfacesIfEnabled),
+                           adjustPatch)) {
+        RestoreFunctionPatch(sceneLeavePatch);
+        RestoreFunctionPatch(sceneEnterPatch);
+        RestoreFunctionPatch(overlayFlushPatch);
+        RestoreFunctionPatch(overlayPatch);
+        RestoreFunctionPatch(unlockSwPatch);
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 10;
+    }
+
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const unsigned int oldFlushQuadBatch = g_zVideo_pfnFlushQuadBatch;
+    g_zVideo_pfnFlushQuadBatch = reinterpret_cast<unsigned int>(&FakeFmvFlushQuadBatch);
+
+    zVidImagePartial image{};
+    zFMV_ActionFade action{};
+    action.capturedFrame = nullptr;
+    g_zVideo_ActiveRendererPath = 0;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvSwPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvOverlaySubmitCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    const bool nullOk =
+        action.Update(11.0) == 0 && g_fakeFmvPostprocessCount == 0 &&
+        g_fakeFmvSwPostprocessCount == 0 && g_fakeFmvBlitToActiveTargetCount == 0 &&
+        g_fakeFmvOverlaySubmitCount == 0 && g_fakeFmvAdjustSurfacesCount == 0;
+
+    action.capturedFrame = &image;
+    action.startSec = 10.0;
+    action.durationSecRaw = FmvFloatBits(4.0f);
+    action.fadeDirectionSign = 1;
+    action.fadeColorPacked16 = 0x7bef;
+    action.maxAlpha = 100;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvSwPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvBlitToActiveTargetImage = nullptr;
+    g_fakeFmvBlitToActiveTargetDstX = -1;
+    g_fakeFmvBlitToActiveTargetDstY = -1;
+    g_fakeFmvBlitToActiveTargetClipFlags = -1;
+    g_fakeFmvBlitToActiveTargetSrcRect = reinterpret_cast<zVidRect32 *>(0x11111111);
+    g_fakeFmvOverlaySubmitCount = 0;
+    g_fakeFmvOverlaySubmitColor = 0;
+    g_fakeFmvOverlaySubmitRect = reinterpret_cast<zVidRect32 *>(0x22222222);
+    g_fakeFmvOverlaySubmitAlpha = -1.0;
+    g_fakeFmvOverlayFlushSwCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvUnlockSwCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvAdjustSurfacesWaitForPresent = 0;
+    g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst = 0;
+    g_fakeFmvSceneEnterCount = 0;
+    g_fakeFmvSceneLeaveCount = 0;
+    g_fakeFmvFlushQuadBatchCount = 0;
+    const bool softwareOk =
+        action.Update(12.0) == 1 && g_fakeFmvPostprocessCount == 1 &&
+        g_fakeFmvSwPostprocessCount == 0 && g_fakeFmvBlitToActiveTargetCount == 1 &&
+        g_fakeFmvBlitToActiveTargetImage == &image &&
+        g_fakeFmvBlitToActiveTargetDstX == 0 &&
+        g_fakeFmvBlitToActiveTargetDstY == 0 &&
+        g_fakeFmvBlitToActiveTargetClipFlags == 0 &&
+        g_fakeFmvBlitToActiveTargetSrcRect == nullptr &&
+        g_fakeFmvOverlaySubmitCount == 1 && g_fakeFmvOverlaySubmitColor == 0x7bef &&
+        g_fakeFmvOverlaySubmitRect == nullptr && g_fakeFmvOverlaySubmitAlpha == 50.0 &&
+        g_fakeFmvOverlayFlushSwCount == 1 && g_fakeFmvUnlockPrimaryCount == 1 &&
+        g_fakeFmvUnlockSwCount == 0 && g_fakeFmvAdjustSurfacesCount == 1 &&
+        g_fakeFmvAdjustSurfacesWaitForPresent == 1 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 1 &&
+        g_fakeFmvSceneEnterCount == 0 && g_fakeFmvSceneLeaveCount == 0 &&
+        g_fakeFmvFlushQuadBatchCount == 0;
+
+    action.fadeDirectionSign = -1;
+    g_zVideo_ActiveRendererPath = 1;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvSwPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvOverlaySubmitCount = 0;
+    g_fakeFmvOverlaySubmitAlpha = -1.0;
+    g_fakeFmvOverlayFlushSwCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvUnlockSwCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvAdjustSurfacesWaitForPresent = -1;
+    g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst = -1;
+    g_fakeFmvSceneEnterCount = 0;
+    g_fakeFmvSceneLeaveCount = 0;
+    g_fakeFmvFlushQuadBatchCount = 0;
+    const bool hardwareOk =
+        action.Update(15.0) == 0 && g_fakeFmvPostprocessCount == 0 &&
+        g_fakeFmvSwPostprocessCount == 1 && g_fakeFmvBlitToActiveTargetCount == 1 &&
+        g_fakeFmvOverlaySubmitCount == 1 && g_fakeFmvOverlaySubmitAlpha == 0.0 &&
+        g_fakeFmvOverlayFlushSwCount == 0 && g_fakeFmvUnlockPrimaryCount == 0 &&
+        g_fakeFmvUnlockSwCount == 1 && g_fakeFmvAdjustSurfacesCount == 1 &&
+        g_fakeFmvAdjustSurfacesWaitForPresent == 0 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 0 &&
+        g_fakeFmvSceneEnterCount == 1 && g_fakeFmvSceneLeaveCount == 1 &&
+        g_fakeFmvFlushQuadBatchCount == 1;
+
+    g_zVideo_pfnFlushQuadBatch = oldFlushQuadBatch;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    RestoreFunctionPatch(adjustPatch);
+    RestoreFunctionPatch(sceneLeavePatch);
+    RestoreFunctionPatch(sceneEnterPatch);
+    RestoreFunctionPatch(overlayFlushPatch);
+    RestoreFunctionPatch(overlayPatch);
+    RestoreFunctionPatch(unlockSwPatch);
+    RestoreFunctionPatch(unlockPrimaryPatch);
+    RestoreFunctionPatch(blitPatch);
+    RestoreFunctionPatch(swPostPatch);
+    RestoreFunctionPatch(primaryPostPatch);
+    return nullOk && softwareOk && hardwareOk ? 0 : 11;
+}
+
+extern "C" int zfmv_action_fade_end_smoke(void) {
+    CodeFunctionPatch releasePatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVid_Image::ReleaseIfNotDefault),
+                           reinterpret_cast<void *>(&FakeFmvReleaseImageIfNotDefault),
+                           releasePatch)) {
+        return 1;
+    }
+
+    zVidImagePartial image{};
+    zFMV_ActionFade action{};
+    action.capturedFrame = nullptr;
+    g_fakeFmvReleaseImageCount = 0;
+    g_fakeFmvReleaseImage = nullptr;
+    action.End();
+    const bool nullOk = action.capturedFrame == nullptr && g_fakeFmvReleaseImageCount == 0;
+
+    action.capturedFrame = &image;
+    action.End();
+    const bool releaseOk =
+        action.capturedFrame == nullptr && g_fakeFmvReleaseImageCount == 1 &&
+        g_fakeFmvReleaseImage == &image;
+
+    RestoreFunctionPatch(releasePatch);
+    return nullOk && releaseOk ? 0 : 2;
 }
 
 extern "C" int zfmv_playback_init_smoke(void) {
@@ -766,6 +1797,88 @@ extern "C" int zfmv_playback_report_mci_error_smoke(void) {
     return playback.ReportMciError(0xffffffffu) == 0 ? 0 : 1;
 }
 
+extern "C" int zfmv_playback_open_and_play_smoke(void) {
+    CodeFunctionPatch mciPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&mciSendCommandA),
+                           reinterpret_cast<void *>(&FakeFmvMciSendCommandA), mciPatch)) {
+        return 1;
+    }
+
+    zFMV_Playback playback{};
+    playback.mediaPathDup = const_cast<char *>("intro.mpg");
+    playback.notifyHwnd = reinterpret_cast<HWND>(0x12345678);
+    playback.mciPutFlags = 0x60000;
+    playback.sourceRect.left = 2;
+    playback.sourceRect.top = 3;
+    playback.sourceRect.right = 12;
+    playback.sourceRect.bottom = 23;
+    playback.destinationRect.left = 5;
+    playback.destinationRect.top = 7;
+    playback.destinationRect.right = 25;
+    playback.destinationRect.bottom = 37;
+
+    g_fakeFmvMciSendCommandCount = 0;
+    g_fakeFmvOpenDeviceType = nullptr;
+    g_fakeFmvOpenElementName = nullptr;
+    g_fakeFmvWindowHwnd = nullptr;
+    g_fakeFmvSetTimeFormat = 0;
+    g_fakeFmvSetAudio = 0;
+    g_fakeFmvPlayCallback = 0;
+    g_fakeFmvPlayFrom = 0;
+    g_fakeFmvPlayTo = 0;
+    for (int index = 0; index < 8; ++index) {
+        g_fakeFmvMciDevices[index] = 0;
+        g_fakeFmvMciMessages[index] = 0;
+        g_fakeFmvMciFlags[index] = 0;
+        g_fakeFmvMciParams[index] = 0;
+        g_fakeFmvMciReturns[index] = 0;
+    }
+    for (int index = 0; index < 4; ++index) {
+        g_fakeFmvDestRect[index] = 0;
+        g_fakeFmvSourceRect[index] = 0;
+    }
+
+    playback.OpenAndPlay(100, 250, 1);
+
+    const bool successSequence =
+        g_fakeFmvMciSendCommandCount == 6 && g_fakeFmvMciDevices[0] == 0 &&
+        g_fakeFmvMciMessages[0] == 0x803 && g_fakeFmvMciFlags[0] == 0x2202 &&
+        std::strcmp(g_fakeFmvOpenDeviceType, "MPEGVideo") == 0 &&
+        g_fakeFmvOpenElementName == playback.mediaPathDup && playback.mciDeviceId == 0x3456 &&
+        g_fakeFmvMciDevices[1] == 0x3456 && g_fakeFmvMciMessages[1] == 0x841 &&
+        g_fakeFmvMciFlags[1] == 0x10002 && g_fakeFmvWindowHwnd == playback.notifyHwnd &&
+        g_fakeFmvMciDevices[2] == 0x3456 && g_fakeFmvMciMessages[2] == 0x842 &&
+        g_fakeFmvMciFlags[2] == 0x50002 && g_fakeFmvDestRect[0] == 5 &&
+        g_fakeFmvDestRect[1] == 7 && g_fakeFmvDestRect[2] == 20 &&
+        g_fakeFmvDestRect[3] == 30 && g_fakeFmvMciDevices[3] == 0x3456 &&
+        g_fakeFmvMciMessages[3] == 0x842 && g_fakeFmvMciFlags[3] == 0x30002 &&
+        g_fakeFmvSourceRect[0] == 2 && g_fakeFmvSourceRect[1] == 3 &&
+        g_fakeFmvSourceRect[2] == 10 && g_fakeFmvSourceRect[3] == 20 &&
+        g_fakeFmvMciDevices[4] == 0x3456 && g_fakeFmvMciMessages[4] == 0x811 &&
+        g_fakeFmvMciFlags[4] == 0x302 && g_fakeFmvSetTimeFormat == 0x1b &&
+        g_fakeFmvSetAudio == static_cast<DWORD>(reinterpret_cast<std::uintptr_t>(
+                                 playback.notifyHwnd)) &&
+        g_fakeFmvMciDevices[5] == 0x3456 && g_fakeFmvMciMessages[5] == 0x806 &&
+        g_fakeFmvMciFlags[5] == 0x1000e && g_fakeFmvPlayCallback ==
+            static_cast<DWORD>(reinterpret_cast<std::uintptr_t>(playback.notifyHwnd)) &&
+        g_fakeFmvPlayFrom == 100 && g_fakeFmvPlayTo == 250;
+
+    g_fakeFmvMciSendCommandCount = 0;
+    for (int index = 0; index < 8; ++index) {
+        g_fakeFmvMciMessages[index] = 0;
+        g_fakeFmvMciReturns[index] = 0;
+    }
+    playback.mciPutFlags = 0;
+    g_fakeFmvMciReturns[1] = 0x4321;
+    playback.OpenAndPlay(75, -1, 0);
+    const bool windowFailureStops =
+        g_fakeFmvMciSendCommandCount == 2 && g_fakeFmvMciMessages[0] == 0x803 &&
+        g_fakeFmvMciMessages[1] == 0x841;
+
+    RestoreFunctionPatch(mciPatch);
+    return successSequence && windowFailureStops ? 0 : 2;
+}
+
 extern "C" int zfmv_playback_stop_and_close_smoke(void) {
     CodeFunctionPatch mciPatch{};
     if (!PatchFunctionJump(reinterpret_cast<void *>(&mciSendCommandA),
@@ -778,7 +1891,7 @@ extern "C" int zfmv_playback_stop_and_close_smoke(void) {
     g_fakeFmvExpectedClosePlayback = &playback;
     g_fakeFmvCloseParamOk = 0;
     g_fakeFmvMciSendCommandCount = 0;
-    for (int index = 0; index < 4; ++index) {
+    for (int index = 0; index < 8; ++index) {
         g_fakeFmvMciDevices[index] = 0;
         g_fakeFmvMciMessages[index] = 0;
         g_fakeFmvMciFlags[index] = 0;
@@ -834,6 +1947,183 @@ extern "C" int zfmv_stream_constructor_missing_file_smoke(void) {
                    TestFieldAt<std::int32_t>(stream, 0x3c) == 0
                ? 0
                : 1;
+}
+
+extern "C" int zfmv_stream_constructor_success_smoke(void) {
+    CodeFunctionPatch openPatch{};
+    CodeFunctionPatch readFormatPatch{};
+    CodeFunctionPatch lengthPatch{};
+    CodeFunctionPatch infoPatch{};
+    CodeFunctionPatch locatePatch{};
+    CodeFunctionPatch sendPatch{};
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&AVIStreamOpenFromFileA),
+                           reinterpret_cast<void *>(&FakeFmvAVIStreamOpenFromFileA),
+                           openPatch)) {
+        return 1;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&AVIStreamReadFormat),
+                           reinterpret_cast<void *>(&FakeFmvAVIStreamReadFormat),
+                           readFormatPatch)) {
+        RestoreFunctionPatch(openPatch);
+        return 2;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&AVIStreamLength),
+                           reinterpret_cast<void *>(&FakeFmvAVIStreamLength), lengthPatch)) {
+        RestoreFunctionPatch(readFormatPatch);
+        RestoreFunctionPatch(openPatch);
+        return 3;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&AVIStreamInfoA),
+                           reinterpret_cast<void *>(&FakeFmvAVIStreamInfoA), infoPatch)) {
+        RestoreFunctionPatch(lengthPatch);
+        RestoreFunctionPatch(readFormatPatch);
+        RestoreFunctionPatch(openPatch);
+        return 4;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&ICLocate),
+                           reinterpret_cast<void *>(&FakeFmvICLocate), locatePatch)) {
+        RestoreFunctionPatch(infoPatch);
+        RestoreFunctionPatch(lengthPatch);
+        RestoreFunctionPatch(readFormatPatch);
+        RestoreFunctionPatch(openPatch);
+        return 5;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&ICSendMessage),
+                           reinterpret_cast<void *>(&FakeFmvICSendMessage), sendPatch)) {
+        RestoreFunctionPatch(locatePatch);
+        RestoreFunctionPatch(infoPatch);
+        RestoreFunctionPatch(lengthPatch);
+        RestoreFunctionPatch(readFormatPatch);
+        RestoreFunctionPatch(openPatch);
+        return 6;
+    }
+
+    const int oldBpp = g_zVideo_DisplayModeBpp;
+    const unsigned int oldRMask = g_zVideo_PixelPack_RMask;
+    const unsigned int oldGMask = g_zVideo_PixelPack_GMask;
+    const unsigned int oldBMask = g_zVideo_PixelPack_BMask;
+    g_zVideo_DisplayModeBpp = 16;
+    g_zVideo_PixelPack_RMask = 0xf800;
+    g_zVideo_PixelPack_GMask = 0x07e0;
+    g_zVideo_PixelPack_BMask = 0x001f;
+
+    g_fakeFmvStreamOpenCount = 0;
+    g_fakeFmvOpenedStream = reinterpret_cast<PAVISTREAM>(0x24681357);
+    g_fakeFmvOpenedPath = nullptr;
+    g_fakeFmvOpenedType = 0;
+    g_fakeFmvOpenedParam = 0;
+    g_fakeFmvOpenedMode = 0;
+    g_fakeFmvReadFormatCount = 0;
+    g_fakeFmvReadFormatStream = nullptr;
+    g_fakeFmvReadFormatPosition = -1;
+    g_fakeFmvStreamLengthCount = 0;
+    g_fakeFmvStreamLengthStream = nullptr;
+    g_fakeFmvStreamInfoCount = 0;
+    g_fakeFmvStreamInfoStream = nullptr;
+    g_fakeFmvStreamInfoSize = 0;
+    g_fakeFmvIcLocateCount = 0;
+    g_fakeFmvIcLocateType = 0;
+    g_fakeFmvIcLocateHandler = 0;
+    g_fakeFmvIcLocateSrcFormat = nullptr;
+    g_fakeFmvIcLocateDstFormat = nullptr;
+    g_fakeFmvIcLocateMode = 0;
+    g_fakeFmvLocatedCodec = reinterpret_cast<HIC>(0x11223344);
+    g_fakeFmvIcSendMessageCount = 0;
+    g_fakeFmvIcSendCodec = nullptr;
+    g_fakeFmvIcSendMessage = 0;
+    g_fakeFmvIcSendSrcParam = 0;
+    g_fakeFmvIcSendDstParam = 0;
+
+    alignas(8) std::uint8_t storage[0x1e4] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(storage);
+    TestFieldAt<char *>(stream, 0x38) = const_cast<char *>("success.avi");
+    TestFieldAt<std::int32_t>(stream, 0x104) = 0x12345678;
+
+    stream->Constructor();
+
+    BITMAPINFOHEADER *const src = TestFieldAt<BITMAPINFOHEADER *>(stream, 0x44);
+    BITMAPV4HEADER *const dst = TestFieldAt<BITMAPV4HEADER *>(stream, 0x48);
+    const DWORD testHandler = mmioFOURCC('T', 'E', 'S', 'T');
+    const bool providerOk =
+        g_fakeFmvStreamOpenCount == 1 &&
+        g_fakeFmvOpenedPath == TestFieldAt<char *>(stream, 0x38) &&
+        g_fakeFmvOpenedType == streamtypeVIDEO && g_fakeFmvOpenedParam == 0 &&
+        g_fakeFmvOpenedMode == 0x10 && g_fakeFmvReadFormatCount == 2 &&
+        g_fakeFmvReadFormatStream == g_fakeFmvOpenedStream &&
+        g_fakeFmvReadFormatPosition == 0 && g_fakeFmvStreamLengthCount == 1 &&
+        g_fakeFmvStreamLengthStream == g_fakeFmvOpenedStream &&
+        g_fakeFmvStreamInfoCount == 1 &&
+        g_fakeFmvStreamInfoStream == g_fakeFmvOpenedStream &&
+        g_fakeFmvStreamInfoSize == 0x8c && g_fakeFmvIcLocateCount == 1 &&
+        g_fakeFmvIcLocateType == ICTYPE_VIDEO &&
+        g_fakeFmvIcLocateHandler == testHandler && g_fakeFmvIcLocateSrcFormat == src &&
+        g_fakeFmvIcLocateDstFormat == dst && g_fakeFmvIcLocateMode == ICMODE_DECOMPRESS &&
+        g_fakeFmvIcSendMessageCount == 1 &&
+        g_fakeFmvIcSendCodec == g_fakeFmvLocatedCodec &&
+        g_fakeFmvIcSendMessage == ICM_DECOMPRESS_BEGIN &&
+        g_fakeFmvIcSendSrcParam == reinterpret_cast<DWORD_PTR>(src) &&
+        g_fakeFmvIcSendDstParam == reinterpret_cast<DWORD_PTR>(dst);
+
+    const bool headerZeros =
+        TestFieldAt<std::uint32_t>(stream, 0x08) == 0 &&
+        TestFieldAt<void *>(stream, 0x14) == nullptr &&
+        TestFieldAt<void *>(stream, 0x18) == nullptr &&
+        TestFieldAt<void *>(stream, 0x1c) == nullptr &&
+        TestFieldAt<void *>(stream, 0x20) == nullptr &&
+        TestFieldAt<void *>(stream, 0x24) == nullptr &&
+        TestFieldAt<void *>(stream, 0x28) == nullptr &&
+        TestFieldAt<void *>(stream, 0x2c) == nullptr &&
+        TestFieldAt<void *>(stream, 0x30) == nullptr;
+
+    const bool layoutOk =
+        TestFieldAt<PAVISTREAM>(stream, 0x40) == g_fakeFmvOpenedStream && src != nullptr &&
+        dst != nullptr && src->biSize == sizeof(BITMAPINFOHEADER) && src->biWidth == 5 &&
+        src->biHeight == 4 && src->biBitCount == 16 &&
+        TestFieldAt<std::int32_t>(stream, 0x4c) == 9 &&
+        TestFieldAt<std::uint32_t>(stream, 0x54) == testHandler &&
+        TestFieldAt<std::uint32_t>(stream, 0x64) == 1 &&
+        TestFieldAt<std::uint32_t>(stream, 0x68) == 30 &&
+        TestFieldAt<std::uint32_t>(stream, 0x78) == 48 &&
+        dst->bV4Size == sizeof(BITMAPV4HEADER) && dst->bV4Width == 5 &&
+        dst->bV4Height == -4 && dst->bV4Planes == 1 && dst->bV4BitCount == 16 &&
+        dst->bV4V4Compression == BI_BITFIELDS && dst->bV4SizeImage == 64 &&
+        dst->bV4RedMask == 0xf800 && dst->bV4GreenMask == 0x07e0 &&
+        dst->bV4BlueMask == 0x001f && dst->bV4AlphaMask == 0 &&
+        TestFieldAt<std::int32_t>(stream, 0xdc) == 48 &&
+        TestFieldAt<HIC>(stream, 0xe0) == g_fakeFmvLocatedCodec &&
+        TestFieldAt<void *>(stream, 0xe4) != nullptr &&
+        TestFieldAt<std::int32_t>(stream, 0xe8) == 10 &&
+        TestFieldAt<std::uint32_t>(stream, 0xec) == 30 &&
+        TestFieldAt<std::uint32_t>(stream, 0xf0) == 33 &&
+        TestFieldAt<std::int32_t>(stream, 0xf4) == 0 &&
+        TestFieldAt<std::int32_t>(stream, 0xf8) == 0 &&
+        TestFieldAt<std::int32_t>(stream, 0xfc) == 5 &&
+        TestFieldAt<std::int32_t>(stream, 0x100) == 4 &&
+        TestFieldAt<std::int32_t>(stream, 0x104) == 0 &&
+        TestFieldAt<void *>(stream, 0x10) != nullptr &&
+        TestFieldAt<std::int32_t>(stream, 0) == 64 &&
+        TestFieldAt<std::int16_t>(stream, 4) == 5 &&
+        TestFieldAt<std::int16_t>(stream, 6) == 4 &&
+        TestFieldAt<std::int32_t>(stream, 0x34) == 5 &&
+        TestFieldAt<std::int32_t>(stream, 0x3c) == 1 && headerZeros;
+
+    std::free(TestFieldAt<void *>(stream, 0x44));
+    std::free(TestFieldAt<void *>(stream, 0x48));
+    std::free(TestFieldAt<void *>(stream, 0xe4));
+    std::free(TestFieldAt<void *>(stream, 0x10));
+
+    g_zVideo_DisplayModeBpp = oldBpp;
+    g_zVideo_PixelPack_RMask = oldRMask;
+    g_zVideo_PixelPack_GMask = oldGMask;
+    g_zVideo_PixelPack_BMask = oldBMask;
+    RestoreFunctionPatch(sendPatch);
+    RestoreFunctionPatch(locatePatch);
+    RestoreFunctionPatch(infoPatch);
+    RestoreFunctionPatch(lengthPatch);
+    RestoreFunctionPatch(readFormatPatch);
+    RestoreFunctionPatch(openPatch);
+    return providerOk && layoutOk ? 0 : 7;
 }
 
 extern "C" int zfmv_stream_open_audio_missing_file_smoke(void) {
@@ -1090,6 +2380,279 @@ extern "C" int zfmv_action_play_avi_constructor_existing_file_smoke(void) {
     return ok ? 0 : 2;
 }
 
+extern "C" int zfmv_action_play_avi_constructor_drive_fallback_smoke(void) {
+    CodeFunctionPatch findPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zSys::FindFileOnDriveType),
+                           reinterpret_cast<void *>(&FakeFmvFindFileOnDriveType),
+                           findPatch)) {
+        return 1;
+    }
+
+    char resolvedPath[] = "D:\\CD\\intro.avi";
+    zFMV_ActionPlayAvi action{};
+    action.next = reinterpret_cast<zFMV_Action *>(0x11111111);
+    g_fakeFmvFindFileCount = 0;
+    g_fakeFmvFindFileDriveType = 0;
+    g_fakeFmvFindFileRelativePath[0] = '\0';
+    g_fakeFmvFindFileUnused = -1;
+    g_fakeFmvFindFileResult = resolvedPath;
+
+    zFMV_ActionPlayAvi *returned =
+        action.Constructor("missingroot", "__recoil_missing_playavi_ctor__.avi", 7);
+
+    const bool ok =
+        returned == &action && reinterpret_cast<std::uintptr_t>(action.vftable) == 0x4d25c8 &&
+        action.next == nullptr && action.mediaPath != nullptr &&
+        std::strcmp(action.mediaPath, resolvedPath) == 0 && action.modeFlags == 7 &&
+        g_fakeFmvFindFileCount == 1 && g_fakeFmvFindFileDriveType == DRIVE_CDROM &&
+        std::strcmp(g_fakeFmvFindFileRelativePath,
+                    "missingroot\\__recoil_missing_playavi_ctor__.avi") == 0 &&
+        g_fakeFmvFindFileUnused == 0;
+
+    std::free(action.mediaPath);
+    RestoreFunctionPatch(findPatch);
+    return ok ? 0 : 2;
+}
+
+extern "C" int zfmv_action_play_avi_lifecycle_smoke(void) {
+    zFMV_ActionPlayAvi action{};
+    action.vftable = reinterpret_cast<zFMV_Action_Vtbl *>(0x11111111);
+    action.mediaPath = static_cast<char *>(std::malloc(6));
+    action.modeFlags = 9;
+    if (action.mediaPath == nullptr) {
+        return 1;
+    }
+    std::strcpy(action.mediaPath, "intro");
+
+    action.Destructor();
+    if (action.vftable != &g_zFMV_ActionBase_Vtable || action.mediaPath != nullptr ||
+        action.modeFlags != 9) {
+        std::free(action.mediaPath);
+        return 2;
+    }
+
+    action.vftable = reinterpret_cast<zFMV_Action_Vtbl *>(0x22222222);
+    if (action.ScalarDeletingDestructor(0) != &action ||
+        action.vftable != &g_zFMV_ActionBase_Vtable || action.mediaPath != nullptr) {
+        return 3;
+    }
+
+    CodeFunctionPatch deletePatch{};
+    void(__cdecl *operatorDeleteFn)(void *) = &operator delete;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(operatorDeleteFn),
+                           reinterpret_cast<void *>(&FakeFmvOperatorDelete), deletePatch)) {
+        return 4;
+    }
+
+    void *const storage = std::malloc(sizeof(zFMV_ActionPlayAvi));
+    if (storage == nullptr) {
+        RestoreFunctionPatch(deletePatch);
+        return 5;
+    }
+
+    zFMV_ActionPlayAvi *const heapAction = reinterpret_cast<zFMV_ActionPlayAvi *>(storage);
+    std::memset(heapAction, 0, sizeof(*heapAction));
+    heapAction->vftable = reinterpret_cast<zFMV_Action_Vtbl *>(0x33333333);
+    heapAction->mediaPath = static_cast<char *>(std::malloc(6));
+    if (heapAction->mediaPath == nullptr) {
+        RestoreFunctionPatch(deletePatch);
+        std::free(storage);
+        return 6;
+    }
+    std::strcpy(heapAction->mediaPath, "intro");
+    g_fakeFmvOperatorDeleteCount = 0;
+    g_fakeFmvOperatorDeletePtr = nullptr;
+
+    zFMV_ActionPlayAvi *const deletingResult = heapAction->ScalarDeletingDestructor(1);
+    const bool deletingOk =
+        deletingResult == heapAction && heapAction->vftable == &g_zFMV_ActionBase_Vtable &&
+        heapAction->mediaPath == nullptr && g_fakeFmvOperatorDeleteCount == 1 &&
+        g_fakeFmvOperatorDeletePtr == heapAction;
+
+    RestoreFunctionPatch(deletePatch);
+    std::free(storage);
+    return deletingOk ? 0 : 7;
+}
+
+extern "C" int zfmv_action_play_avi_update_smoke(void) {
+    CodeFunctionPatch readPatch{};
+    CodeFunctionPatch decompressPatch{};
+    CodeFunctionPatch postPatch{};
+    CodeFunctionPatch unlockPatch{};
+    CodeFunctionPatch adjustPatch{};
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&AVIStreamRead),
+                           reinterpret_cast<void *>(&FakeFmvAVIStreamRead), readPatch)) {
+        return 1;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&ICDecompress),
+                           reinterpret_cast<void *>(&FakeFmvICDecompress), decompressPatch)) {
+        RestoreFunctionPatch(readPatch);
+        return 2;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                           reinterpret_cast<void *>(&FakeFmvRunPostprocessOnPrimaryBuffer),
+                           postPatch)) {
+        RestoreFunctionPatch(decompressPatch);
+        RestoreFunctionPatch(readPatch);
+        return 3;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                           reinterpret_cast<void *>(&FakeFmvDispatchUnlockPrimarySurfaceState),
+                           unlockPatch)) {
+        RestoreFunctionPatch(postPatch);
+        RestoreFunctionPatch(decompressPatch);
+        RestoreFunctionPatch(readPatch);
+        return 4;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+                           reinterpret_cast<void *>(&FakeFmvAdjustSurfacesIfEnabled),
+                           adjustPatch)) {
+        RestoreFunctionPatch(unlockPatch);
+        RestoreFunctionPatch(postPatch);
+        RestoreFunctionPatch(decompressPatch);
+        RestoreFunctionPatch(readPatch);
+        return 5;
+    }
+
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const unsigned int oldSwBlt = g_zVideo_pfnBltSwToPrimaryRect;
+    g_zVideo_pfnBltSwToPrimaryRect =
+        reinterpret_cast<unsigned int>(&FakeFmvBltSwToPrimaryRect);
+
+    alignas(8) std::uint8_t streamStorage[0x1e4] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(streamStorage);
+    unsigned char compressedFrame[8] = {};
+    unsigned char pixels[16] = {};
+    BITMAPINFOHEADER srcFormat = {};
+    BITMAPINFOHEADER dstFormat = {};
+    TestFieldAt<PAVISTREAM>(stream, 0x40) = reinterpret_cast<PAVISTREAM>(0x12345678);
+    TestFieldAt<BITMAPINFOHEADER *>(stream, 0x44) = &srcFormat;
+    TestFieldAt<BITMAPINFOHEADER *>(stream, 0x48) = &dstFormat;
+    TestFieldAt<int>(stream, 0x4c) = 8;
+    TestFieldAt<HIC>(stream, 0xe0) = reinterpret_cast<HIC>(0x87654321);
+    TestFieldAt<void *>(stream, 0xe4) = compressedFrame;
+    TestFieldAt<int>(stream, 0xdc) = sizeof(compressedFrame);
+    TestFieldAt<void *>(stream, 0x10) = pixels;
+    TestFieldAt<int>(stream, 0xec) = 4;
+    TestFieldAt<int>(stream, 0x130) = 0;
+    InitializeCriticalSection(&TestFieldAt<CRITICAL_SECTION>(stream, 0x108));
+
+    zFMV_ActionPlayAvi action{};
+    action.stream = stream;
+    action.lastDecodedFrameIndex = -1;
+    action.destRect.left = 11;
+    action.destRect.top = 22;
+    action.destRect.right = 333;
+    action.destRect.bottom = 444;
+
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvSwBltCount = 0;
+    g_fakeAviStreamReadCount = 0;
+    g_fakeAviReturn = 0;
+    g_fakeIcDecompressCount = 0;
+    g_fakeIcReturn = 0;
+    g_zVideo_ActiveRendererPath = 0;
+
+    const bool softwareOk =
+        action.Update(1.0) == 1 && action.startTimeSec == 1.0 &&
+        action.lastDecodedFrameIndex == 0 && g_fakeFmvPostprocessCount == 1 &&
+        g_fakeFmvUnlockPrimaryCount == 1 && g_fakeAviStreamReadCount == 1 &&
+        g_fakeAviStarts[0] == 0 && g_fakeIcDecompressCount == 1 &&
+        g_fakeFmvSwBltCount == 1 &&
+        g_fakeFmvSwBltImage == reinterpret_cast<zVidImagePartial *>(stream) &&
+        g_fakeFmvSwBltColorKeyEnable == 0 && g_fakeFmvSwBltSrcRect == nullptr &&
+        g_fakeFmvSwBltDstRect == reinterpret_cast<zVidRect32 *>(&action.destRect) &&
+        g_fakeFmvAdjustSurfacesCount == 1 &&
+        g_fakeFmvAdjustSurfacesWaitForPresent == 1 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 1;
+
+    const bool sameFrameOk =
+        action.Update(1.0) == 1 && action.lastDecodedFrameIndex == 0 &&
+        g_fakeAviStreamReadCount == 1 && g_fakeFmvSwBltCount == 1 &&
+        g_fakeFmvAdjustSurfacesCount == 1;
+
+    g_zVideo_ActiveRendererPath = 2;
+    const bool hardwareOk =
+        action.Update(1.5) == 3 && action.lastDecodedFrameIndex == 2 &&
+        g_fakeFmvPostprocessCount == 1 && g_fakeFmvUnlockPrimaryCount == 1 &&
+        g_fakeAviStreamReadCount == 2 && g_fakeAviStarts[1] == 2 &&
+        g_fakeFmvSwBltCount == 2 && g_fakeFmvAdjustSurfacesCount == 2 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 0;
+
+    g_fakeAviReturn = 0x80004005;
+    const bool failureOk =
+        action.Update(2.0) == 0 && action.lastDecodedFrameIndex == 4 &&
+        g_fakeAviStreamReadCount == 3 && g_fakeAviStarts[2] == 4 &&
+        g_fakeFmvSwBltCount == 3 && g_fakeFmvAdjustSurfacesCount == 3;
+
+    DeleteCriticalSection(&TestFieldAt<CRITICAL_SECTION>(stream, 0x108));
+    g_zVideo_pfnBltSwToPrimaryRect = oldSwBlt;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    RestoreFunctionPatch(adjustPatch);
+    RestoreFunctionPatch(unlockPatch);
+    RestoreFunctionPatch(postPatch);
+    RestoreFunctionPatch(decompressPatch);
+    RestoreFunctionPatch(readPatch);
+    return softwareOk && sameFrameOk && hardwareOk && failureOk ? 0 : 6;
+}
+
+extern "C" int zfmv_action_play_avi_begin_end_smoke(void) {
+    const int oldWidth = zRndr::g_activeRegionWidth;
+    const int oldHeight = zRndr::g_activeRegionHeight;
+    const int oldPitch = zRndr::g_pitchBytes;
+    const int oldBytesPerPixel = zRndr::g_bytesPerPixel;
+    zRndr::g_activeRegionWidth = 640;
+    zRndr::g_activeRegionHeight = 360;
+    zRndr::g_pitchBytes = 1280;
+    zRndr::g_bytesPerPixel = 2;
+
+    zFMV_ActionPlayAvi action{};
+    action.mediaPath = const_cast<char *>("__missing_playavi_begin__.avi");
+    action.modeFlags = 7;
+    action.stream = reinterpret_cast<zFMV_Stream *>(0x11111111);
+    action.lastDecodedFrameIndex = 123;
+
+    action.Begin(25.0);
+    zFMV_Stream *const initializedStream = action.stream;
+    const bool beginOk =
+        initializedStream != nullptr && action.destRect.left == 0 && action.destRect.top == 0 &&
+        action.destRect.right == 640 && action.destRect.bottom == 360 &&
+        action.lastDecodedFrameIndex == -1;
+
+    CodeFunctionPatch deletePatch{};
+    void(__cdecl *operatorDeleteFn)(void *) = &operator delete;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(operatorDeleteFn),
+                           reinterpret_cast<void *>(&FakeFmvOperatorDelete), deletePatch)) {
+        action.End();
+        zRndr::g_activeRegionWidth = oldWidth;
+        zRndr::g_activeRegionHeight = oldHeight;
+        zRndr::g_pitchBytes = oldPitch;
+        zRndr::g_bytesPerPixel = oldBytesPerPixel;
+        return 1;
+    }
+
+    g_fakeFmvOperatorDeleteCount = 0;
+    g_fakeFmvOperatorDeletePtr = nullptr;
+    action.End();
+    const bool endOk = action.stream == nullptr && g_fakeFmvOperatorDeleteCount == 1 &&
+                       g_fakeFmvOperatorDeletePtr == initializedStream;
+
+    RestoreFunctionPatch(deletePatch);
+    if (initializedStream != nullptr) {
+        ::operator delete(initializedStream);
+    }
+    action.End();
+
+    zRndr::g_activeRegionWidth = oldWidth;
+    zRndr::g_activeRegionHeight = oldHeight;
+    zRndr::g_pitchBytes = oldPitch;
+    zRndr::g_bytesPerPixel = oldBytesPerPixel;
+    return beginOk && endOk && action.stream == nullptr ? 0 : 2;
+}
+
 extern "C" int zfmv_action_play_mci_constructor_smoke(void) {
     zRndr::g_activeRegionWidth = 1024;
     zRndr::g_activeRegionHeight = 768;
@@ -1122,6 +2685,306 @@ extern "C" int zfmv_action_play_mci_constructor_smoke(void) {
     return ok ? 0 : 1;
 }
 
+extern "C" int zfmv_action_no_op_update_smoke(void) {
+    zFMV_Action action{};
+    action.vftable = reinterpret_cast<zFMV_Action_Vtbl *>(0x11111111);
+    action.next = reinterpret_cast<zFMV_Action *>(0x22222222);
+
+    const int result = action.NoOpUpdate(456.25);
+    return result == 0 && action.vftable == reinterpret_cast<zFMV_Action_Vtbl *>(0x11111111) &&
+                   action.next == reinterpret_cast<zFMV_Action *>(0x22222222)
+               ? 0
+               : 1;
+}
+
+extern "C" int zfmv_action_play_mci_update_smoke(void) {
+    zFMV_ActionPlayMci action{};
+    action.next = reinterpret_cast<zFMV_Action *>(0x11111111);
+    action.vftable = reinterpret_cast<zFMV_Action_Vtbl *>(0x4d25f8);
+    action.mediaPath = reinterpret_cast<char *>(0x22222222);
+    action.playback = reinterpret_cast<zFMV_Playback *>(0x33333333);
+
+    const int result = action.Update(123.5);
+    return result == 0 && action.next == reinterpret_cast<zFMV_Action *>(0x11111111) &&
+                   reinterpret_cast<std::uintptr_t>(action.vftable) == 0x4d25f8 &&
+                   action.mediaPath == reinterpret_cast<char *>(0x22222222) &&
+                   action.playback == reinterpret_cast<zFMV_Playback *>(0x33333333)
+               ? 0
+               : 1;
+}
+
+extern "C" int zfmv_action_play_mci_begin_smoke(void) {
+    g_fakeFmvPlaybackOpenAndPlayCount = 0;
+    g_fakeFmvPlaybackOpenAndPlaySelf = nullptr;
+    g_fakeFmvPlaybackOpenAndPlayStartMs = 0;
+    g_fakeFmvPlaybackOpenAndPlayEndMs = 0;
+    g_fakeFmvPlaybackOpenAndPlayNotifyFlag = 0;
+
+    CodeFunctionPatch openPatch{};
+    if (!PatchFunctionJump(
+            zFMV_Playback_OpenAndPlayProc(),
+            FakeFmvPlaybackOpenAndPlayProc(),
+            openPatch
+        )) {
+        return 1;
+    }
+
+    zFMV_ActionPlayMci emptyAction{};
+    emptyAction.Begin(12.0);
+    const bool nullOk = g_fakeFmvPlaybackOpenAndPlayCount == 0;
+
+    zFMV_Playback playback{};
+    zFMV_ActionPlayMci action{};
+    action.playback = &playback;
+    action.Begin(34.0);
+
+    const bool playbackOk =
+        g_fakeFmvPlaybackOpenAndPlayCount == 1 &&
+        g_fakeFmvPlaybackOpenAndPlaySelf == &playback &&
+        g_fakeFmvPlaybackOpenAndPlayStartMs == 0 &&
+        g_fakeFmvPlaybackOpenAndPlayEndMs == -1 &&
+        g_fakeFmvPlaybackOpenAndPlayNotifyFlag == 0;
+
+    RestoreFunctionPatch(openPatch);
+    return nullOk && playbackOk ? 0 : 2;
+}
+
+extern "C" int zfmv_action_play_mci_end_smoke(void) {
+    CodeFunctionPatch lockPatch{};
+    CodeFunctionPatch capturePatch{};
+    CodeFunctionPatch unlockDisplayPatch{};
+    CodeFunctionPatch postPatch{};
+    CodeFunctionPatch blitPatch{};
+    CodeFunctionPatch unlockPrimaryPatch{};
+    CodeFunctionPatch adjustPatch{};
+    CodeFunctionPatch releasePatch{};
+    CodeFunctionPatch stopPatch{};
+
+    const bool patched =
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::Dispatch_LockDisplayModeSurfaceState),
+            reinterpret_cast<void *>(&FakeFmvDispatchLockDisplayModeSurfaceState),
+            lockPatch
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo_buff_CaptureSurfaceToImage),
+            reinterpret_cast<void *>(&FakeFmvCaptureSurfaceToImage),
+            capturePatch
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::Dispatch_UnlockDisplayModeSurfaceState),
+            reinterpret_cast<void *>(&FakeFmvDispatchUnlockDisplayModeSurfaceState),
+            unlockDisplayPatch
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+            reinterpret_cast<void *>(&FakeFmvRunPostprocessOnPrimaryBuffer),
+            postPatch
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVid_Image::BlitToActiveTarget),
+            reinterpret_cast<void *>(&FakeFmvBlitToActiveTarget),
+            blitPatch
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+            reinterpret_cast<void *>(&FakeFmvDispatchUnlockPrimarySurfaceState),
+            unlockPrimaryPatch
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+            reinterpret_cast<void *>(&FakeFmvAdjustSurfacesIfEnabled),
+            adjustPatch
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVid_Image::ReleaseIfNotDefault),
+            reinterpret_cast<void *>(&FakeFmvReleaseImageIfNotDefault),
+            releasePatch
+        ) &&
+        PatchFunctionJump(
+            zFMV_Playback_StopAndCloseProc(),
+            FakeFmvPlaybackStopAndCloseProc(),
+            stopPatch
+        );
+
+    if (!patched) {
+        RestoreFunctionPatch(stopPatch);
+        RestoreFunctionPatch(releasePatch);
+        RestoreFunctionPatch(adjustPatch);
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postPatch);
+        RestoreFunctionPatch(unlockDisplayPatch);
+        RestoreFunctionPatch(capturePatch);
+        RestoreFunctionPatch(lockPatch);
+        return 1;
+    }
+
+    zVidImagePartial capturedImage{};
+    zFMV_Playback playback{};
+    zFMV_ActionPlayMci action{};
+    action.playback = &playback;
+
+    g_fakeFmvDisplayLockCount = 0;
+    g_fakeFmvDisplayUnlockCount = 0;
+    g_fakeFmvCaptureSurfaceCount = 0;
+    g_fakeFmvCaptureSurfaceSelector = 0;
+    g_fakeFmvCaptureSurfaceResult = &capturedImage;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvBlitToActiveTargetImage = nullptr;
+    g_fakeFmvBlitToActiveTargetDstX = -1;
+    g_fakeFmvBlitToActiveTargetDstY = -1;
+    g_fakeFmvBlitToActiveTargetClipFlags = -1;
+    g_fakeFmvBlitToActiveTargetSrcRect = reinterpret_cast<zVidRect32 *>(0x11111111);
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvAdjustSurfacesSrcRect = reinterpret_cast<zVidRect32 *>(0x22222222);
+    g_fakeFmvAdjustSurfacesDstRect = reinterpret_cast<zVidRect32 *>(0x33333333);
+    g_fakeFmvAdjustSurfacesWaitForPresent = -1;
+    g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst = -1;
+    g_fakeFmvReleaseImageCount = 0;
+    g_fakeFmvReleaseImage = nullptr;
+    g_fakeFmvPlaybackStopAndCloseCount = 0;
+    g_fakeFmvPlaybackStopAndCloseSelf = nullptr;
+
+    action.End();
+    const bool capturedOk =
+        g_fakeFmvDisplayLockCount == 1 && g_fakeFmvDisplayUnlockCount == 1 &&
+        g_fakeFmvCaptureSurfaceCount == 1 && g_fakeFmvCaptureSurfaceSelector == 2 &&
+        g_fakeFmvPostprocessCount == 2 && g_fakeFmvBlitToActiveTargetCount == 2 &&
+        g_fakeFmvBlitToActiveTargetImage == &capturedImage &&
+        g_fakeFmvBlitToActiveTargetDstX == 0 && g_fakeFmvBlitToActiveTargetDstY == 0 &&
+        g_fakeFmvBlitToActiveTargetClipFlags == 0 &&
+        g_fakeFmvBlitToActiveTargetSrcRect == nullptr && g_fakeFmvUnlockPrimaryCount == 2 &&
+        g_fakeFmvAdjustSurfacesCount == 2 && g_fakeFmvAdjustSurfacesSrcRect == nullptr &&
+        g_fakeFmvAdjustSurfacesDstRect == nullptr &&
+        g_fakeFmvAdjustSurfacesWaitForPresent == 0 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 1 &&
+        g_fakeFmvPlaybackStopAndCloseCount == 1 &&
+        g_fakeFmvPlaybackStopAndCloseSelf == &playback && g_fakeFmvReleaseImageCount == 1 &&
+        g_fakeFmvReleaseImage == &capturedImage;
+
+    action.playback = nullptr;
+    g_fakeFmvDisplayLockCount = 0;
+    g_fakeFmvDisplayUnlockCount = 0;
+    g_fakeFmvCaptureSurfaceCount = 0;
+    g_fakeFmvCaptureSurfaceResult = nullptr;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvReleaseImageCount = 0;
+    g_fakeFmvPlaybackStopAndCloseCount = 0;
+
+    action.End();
+    const bool nullOk =
+        g_fakeFmvDisplayLockCount == 1 && g_fakeFmvDisplayUnlockCount == 1 &&
+        g_fakeFmvCaptureSurfaceCount == 1 && g_fakeFmvPostprocessCount == 0 &&
+        g_fakeFmvBlitToActiveTargetCount == 0 && g_fakeFmvUnlockPrimaryCount == 0 &&
+        g_fakeFmvAdjustSurfacesCount == 0 && g_fakeFmvReleaseImageCount == 0 &&
+        g_fakeFmvPlaybackStopAndCloseCount == 0;
+
+    RestoreFunctionPatch(stopPatch);
+    RestoreFunctionPatch(releasePatch);
+    RestoreFunctionPatch(adjustPatch);
+    RestoreFunctionPatch(unlockPrimaryPatch);
+    RestoreFunctionPatch(blitPatch);
+    RestoreFunctionPatch(postPatch);
+    RestoreFunctionPatch(unlockDisplayPatch);
+    RestoreFunctionPatch(capturePatch);
+    RestoreFunctionPatch(lockPatch);
+    return capturedOk && nullOk ? 0 : 2;
+}
+
+extern "C" int zfmv_action_play_mci_lifecycle_smoke(void) {
+    CodeFunctionPatch deletePatch{};
+    void(__cdecl *operatorDeleteFn)(void *) = &operator delete;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(operatorDeleteFn),
+                           reinterpret_cast<void *>(&FakeFmvOperatorDelete), deletePatch)) {
+        return 1;
+    }
+
+    zFMV_ActionPlayMci action{};
+    action.vftable = reinterpret_cast<zFMV_Action_Vtbl *>(0x11111111);
+    action.mediaPath = static_cast<char *>(std::malloc(6));
+    action.playback = static_cast<zFMV_Playback *>(std::malloc(sizeof(zFMV_Playback)));
+    if (action.mediaPath == nullptr || action.playback == nullptr) {
+        RestoreFunctionPatch(deletePatch);
+        std::free(action.mediaPath);
+        std::free(action.playback);
+        return 2;
+    }
+    std::strcpy(action.mediaPath, "movie");
+    std::memset(action.playback, 0, sizeof(*action.playback));
+    action.playback->mediaPathDup = static_cast<char *>(std::malloc(6));
+    if (action.playback->mediaPathDup == nullptr) {
+        RestoreFunctionPatch(deletePatch);
+        std::free(action.mediaPath);
+        std::free(action.playback);
+        return 3;
+    }
+    std::strcpy(action.playback->mediaPathDup, "movie");
+
+    zFMV_Playback *const directPlayback = action.playback;
+    g_fakeFmvOperatorDeleteCount = 0;
+    g_fakeFmvOperatorDeletePtr = nullptr;
+    action.Destructor();
+    const bool directOk =
+        action.vftable == &g_zFMV_ActionBase_Vtable && action.mediaPath == nullptr &&
+        action.playback == nullptr && g_fakeFmvOperatorDeleteCount == 1 &&
+        g_fakeFmvOperatorDeletePtr == directPlayback;
+
+    action.vftable = reinterpret_cast<zFMV_Action_Vtbl *>(0x22222222);
+    const bool stackScalarOk = action.ScalarDeletingDestructor(0) == &action &&
+                               action.vftable == &g_zFMV_ActionBase_Vtable &&
+                               g_fakeFmvOperatorDeleteCount == 1;
+
+    void *const actionStorage = std::malloc(sizeof(zFMV_ActionPlayMci));
+    void *const playbackStorage = std::malloc(sizeof(zFMV_Playback));
+    if (actionStorage == nullptr || playbackStorage == nullptr) {
+        RestoreFunctionPatch(deletePatch);
+        std::free(directPlayback);
+        std::free(actionStorage);
+        std::free(playbackStorage);
+        return 4;
+    }
+
+    zFMV_ActionPlayMci *const heapAction =
+        reinterpret_cast<zFMV_ActionPlayMci *>(actionStorage);
+    std::memset(heapAction, 0, sizeof(*heapAction));
+    heapAction->vftable = reinterpret_cast<zFMV_Action_Vtbl *>(0x33333333);
+    heapAction->mediaPath = static_cast<char *>(std::malloc(6));
+    heapAction->playback = reinterpret_cast<zFMV_Playback *>(playbackStorage);
+    std::memset(heapAction->playback, 0, sizeof(*heapAction->playback));
+    heapAction->playback->mediaPathDup = static_cast<char *>(std::malloc(6));
+    if (heapAction->mediaPath == nullptr || heapAction->playback->mediaPathDup == nullptr) {
+        RestoreFunctionPatch(deletePatch);
+        std::free(directPlayback);
+        std::free(heapAction->mediaPath);
+        std::free(heapAction->playback->mediaPathDup);
+        std::free(actionStorage);
+        std::free(playbackStorage);
+        return 5;
+    }
+    std::strcpy(heapAction->mediaPath, "movie");
+    std::strcpy(heapAction->playback->mediaPathDup, "movie");
+
+    g_fakeFmvOperatorDeleteCount = 0;
+    g_fakeFmvOperatorDeletePtr = nullptr;
+    zFMV_ActionPlayMci *const deletingResult = heapAction->ScalarDeletingDestructor(1);
+    const bool heapScalarOk =
+        deletingResult == heapAction && heapAction->vftable == &g_zFMV_ActionBase_Vtable &&
+        heapAction->mediaPath == nullptr && heapAction->playback == nullptr &&
+        g_fakeFmvOperatorDeleteCount == 2 && g_fakeFmvOperatorDeletePtr == heapAction;
+
+    RestoreFunctionPatch(deletePatch);
+    std::free(directPlayback);
+    std::free(playbackStorage);
+    std::free(actionStorage);
+    return directOk && stackScalarOk && heapScalarOk ? 0 : 6;
+}
+
 extern "C" int zfmv_action_blur_constructor_smoke(void) {
     zFMV_ActionBlur action{};
     action.next = reinterpret_cast<zFMV_Action *>(0x11111111);
@@ -1141,6 +3004,206 @@ extern "C" int zfmv_action_blur_constructor_smoke(void) {
                    action.primarySurfaceRect.bottom == 8
                ? 0
                : 1;
+}
+
+extern "C" int zfmv_action_blur_begin_end_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const zVideo_SurfaceStatePartial oldSw = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial oldPrimary = g_zVideo_PrimarySurfaceState;
+    zVideo_BltRectDirectProc oldSwToPrimary = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    zVideo_BltRectDirectProc oldPrimaryToSw = g_zVideo_pfnBltPrimaryToSwRectDirect;
+    unsigned short swPixels[4] = {};
+    unsigned short primaryPixels[4] = {};
+
+    g_zVideo_SwSurfaceState.width = 320;
+    g_zVideo_SwSurfaceState.height = 200;
+    g_zVideo_SwSurfaceState.pitch = 640;
+    g_zVideo_SwSurfaceState.pixels = swPixels;
+    g_zVideo_PrimarySurfaceState.width = 640;
+    g_zVideo_PrimarySurfaceState.height = 480;
+    g_zVideo_PrimarySurfaceState.pitch = 1280;
+    g_zVideo_PrimarySurfaceState.pixels = primaryPixels;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = &FakeFmvBltSwToPrimaryRectDirect;
+    g_zVideo_pfnBltPrimaryToSwRectDirect = &FakeFmvBltPrimaryToSwRectDirect;
+
+    zFMV_ActionBlur action{};
+    g_zVideo_ActiveRendererPath = 0;
+    g_fakeFmvSwToPrimaryDirectCount = 0;
+    g_fakeFmvPrimaryToSwDirectCount = 0;
+    action.Begin(1.0);
+    const bool softwareOk =
+        action.swSurfaceRect.left == 0 && action.swSurfaceRect.top == 0 &&
+        action.swSurfaceRect.right == 320 && action.swSurfaceRect.bottom == 200 &&
+        action.primarySurfaceRect.left == 0 && action.primarySurfaceRect.top == 0 &&
+        action.primarySurfaceRect.right == 640 && action.primarySurfaceRect.bottom == 480 &&
+        g_zVideo_FxSurfacePixels16 == swPixels && g_zVideo_FxSurfaceWidth == 320 &&
+        g_zVideo_FxSurfaceHeight == 200 && g_zVideo_FxSurfacePitchBytes == 640 &&
+        g_fakeFmvPrimaryToSwDirectCount == 1 &&
+        g_fakeFmvPrimaryToSwDirectSrcRect ==
+            reinterpret_cast<zVidRect32 *>(&action.primarySurfaceRect) &&
+        g_fakeFmvPrimaryToSwDirectDstRect ==
+            reinterpret_cast<zVidRect32 *>(&action.swSurfaceRect) &&
+        g_fakeFmvSwToPrimaryDirectCount == 0;
+
+    g_zVideo_ActiveRendererPath = 1;
+    g_fakeFmvSwToPrimaryDirectCount = 0;
+    g_fakeFmvPrimaryToSwDirectCount = 0;
+    action.Begin(2.0);
+    const bool hardwareOk =
+        g_zVideo_FxSurfacePixels16 == primaryPixels && g_zVideo_FxSurfaceWidth == 320 &&
+        g_zVideo_FxSurfaceHeight == 200 && g_zVideo_FxSurfacePitchBytes == 1280 &&
+        g_fakeFmvSwToPrimaryDirectCount == 1 &&
+        g_fakeFmvSwToPrimaryDirectSrcRect ==
+            reinterpret_cast<zVidRect32 *>(&action.primarySurfaceRect) &&
+        g_fakeFmvSwToPrimaryDirectDstRect ==
+            reinterpret_cast<zVidRect32 *>(&action.swSurfaceRect) &&
+        g_fakeFmvPrimaryToSwDirectCount == 0;
+
+    action.End();
+    const bool endOk =
+        g_zVideo_FxSurfacePixels16 == primaryPixels && g_zVideo_FxSurfaceWidth == 640 &&
+        g_zVideo_FxSurfaceHeight == 480 && g_zVideo_FxSurfacePitchBytes == 1280;
+
+    g_zVideo_pfnBltPrimaryToSwRectDirect = oldPrimaryToSw;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldSwToPrimary;
+    g_zVideo_SwSurfaceState = oldSw;
+    g_zVideo_PrimarySurfaceState = oldPrimary;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    return softwareOk && hardwareOk && endOk ? 0 : 2;
+}
+
+extern "C" int zfmv_action_blur_update_smoke(void) {
+    CodeFunctionPatch postPrimaryPatch{};
+    CodeFunctionPatch postSwPatch{};
+    CodeFunctionPatch blurPatch{};
+    CodeFunctionPatch unlockPrimaryPatch{};
+    CodeFunctionPatch unlockSwPatch{};
+    CodeFunctionPatch adjustPatch{};
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+                           reinterpret_cast<void *>(&FakeFmvRunPostprocessOnPrimaryBuffer),
+                           postPrimaryPatch)) {
+        return 1;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::RunPostprocessOnSwBuffer),
+                           reinterpret_cast<void *>(&FakeFmvRunPostprocessOnSwBuffer),
+                           postSwPatch)) {
+        RestoreFunctionPatch(postPrimaryPatch);
+        return 2;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::buff_BlurRegionByMode),
+                           reinterpret_cast<void *>(&FakeFmvBlurRegionByMode), blurPatch)) {
+        RestoreFunctionPatch(postSwPatch);
+        RestoreFunctionPatch(postPrimaryPatch);
+        return 3;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+                           reinterpret_cast<void *>(&FakeFmvDispatchUnlockPrimarySurfaceState),
+                           unlockPrimaryPatch)) {
+        RestoreFunctionPatch(blurPatch);
+        RestoreFunctionPatch(postSwPatch);
+        RestoreFunctionPatch(postPrimaryPatch);
+        return 4;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::Dispatch_UnlockSwSurfaceState),
+                           reinterpret_cast<void *>(&FakeFmvDispatchUnlockSwSurfaceState),
+                           unlockSwPatch)) {
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blurPatch);
+        RestoreFunctionPatch(postSwPatch);
+        RestoreFunctionPatch(postPrimaryPatch);
+        return 5;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+                           reinterpret_cast<void *>(&FakeFmvAdjustSurfacesIfEnabled),
+                           adjustPatch)) {
+        RestoreFunctionPatch(unlockSwPatch);
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blurPatch);
+        RestoreFunctionPatch(postSwPatch);
+        RestoreFunctionPatch(postPrimaryPatch);
+        return 6;
+    }
+
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    zVideo_BltRectDirectProc oldSwToPrimary = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = &FakeFmvBltSwToPrimaryRectDirect;
+
+    zFMV_ActionBlur action{};
+    action.framesRemaining = 2;
+    action.blurPassCount = 2;
+    action.swSurfaceRect = {1, 2, 3, 4};
+    action.primarySurfaceRect = {5, 6, 7, 8};
+    g_zVideo_ActiveRendererPath = 0;
+    g_fakeFmvSwPostprocessCount = 0;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvBlurByModeCount = 0;
+    g_fakeFmvBlurByModeRect = reinterpret_cast<zVidRect32 *>(0x11111111);
+    std::memset(g_fakeFmvBlurByModeModes, 0, sizeof(g_fakeFmvBlurByModeModes));
+    g_fakeFmvUnlockSwCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvSwToPrimaryDirectCount = 0;
+    const bool softwareCombinedOk =
+        action.Update(1.0) == 1 && action.framesRemaining == 1 &&
+        g_fakeFmvSwPostprocessCount == 1 && g_fakeFmvPostprocessCount == 0 &&
+        g_fakeFmvBlurByModeCount == 2 && g_fakeFmvBlurByModeRect == nullptr &&
+        g_fakeFmvBlurByModeModes[0] == 3 && g_fakeFmvBlurByModeModes[1] == 3 &&
+        g_fakeFmvUnlockSwCount == 1 && g_fakeFmvUnlockPrimaryCount == 0 &&
+        g_fakeFmvSwToPrimaryDirectCount == 1 &&
+        g_fakeFmvSwToPrimaryDirectSrcRect == reinterpret_cast<zVidRect32 *>(&action.swSurfaceRect) &&
+        g_fakeFmvSwToPrimaryDirectDstRect ==
+            reinterpret_cast<zVidRect32 *>(&action.primarySurfaceRect) &&
+        g_fakeFmvAdjustSurfacesCount == 1 &&
+        g_fakeFmvAdjustSurfacesWaitForPresent == 1 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 1;
+
+    action.framesRemaining = 1;
+    action.blurPassCount = 0;
+    g_zVideo_ActiveRendererPath = 1;
+    g_fakeFmvSwPostprocessCount = 0;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvBlurByModeCount = 0;
+    g_fakeFmvUnlockSwCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvSwToPrimaryDirectCount = 0;
+    const bool hardwareCombinedOk =
+        action.Update(2.0) == 0 && action.framesRemaining == 0 &&
+        g_fakeFmvPostprocessCount == 1 && g_fakeFmvSwPostprocessCount == 0 &&
+        g_fakeFmvBlurByModeCount == 0 && g_fakeFmvUnlockPrimaryCount == 1 &&
+        g_fakeFmvUnlockSwCount == 0 && g_fakeFmvSwToPrimaryDirectCount == 0 &&
+        g_fakeFmvAdjustSurfacesCount == 1;
+
+    zFMV_ActionBlurH hAction{};
+    hAction.framesRemaining = 2;
+    hAction.blurPassCount = 1;
+    g_zVideo_ActiveRendererPath = 0;
+    g_fakeFmvBlurByModeCount = 0;
+    hAction.Update(3.0);
+    const bool horizontalOk =
+        hAction.framesRemaining == 1 && g_fakeFmvBlurByModeCount == 1 &&
+        g_fakeFmvBlurByModeModes[0] == 1;
+
+    zFMV_ActionBlurV vAction{};
+    vAction.framesRemaining = 2;
+    vAction.blurPassCount = 1;
+    g_zVideo_ActiveRendererPath = 1;
+    g_fakeFmvBlurByModeCount = 0;
+    vAction.Update(4.0);
+    const bool verticalOk =
+        vAction.framesRemaining == 1 && g_fakeFmvBlurByModeCount == 1 &&
+        g_fakeFmvBlurByModeModes[0] == 2;
+
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldSwToPrimary;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    RestoreFunctionPatch(adjustPatch);
+    RestoreFunctionPatch(unlockSwPatch);
+    RestoreFunctionPatch(unlockPrimaryPatch);
+    RestoreFunctionPatch(blurPatch);
+    RestoreFunctionPatch(postSwPatch);
+    RestoreFunctionPatch(postPrimaryPatch);
+    return softwareCombinedOk && hardwareCombinedOk && horizontalOk && verticalOk ? 0 : 7;
 }
 
 extern "C" int zfmv_script_load_actions_from_zrd_smoke(void) {
@@ -1231,6 +3294,33 @@ extern "C" int zfmv_action_wait_begin_update_smoke(void) {
                                                                                               : 1;
 }
 
+extern "C" int zfmv_action_flip_surfaces_smoke(void) {
+    CodeFunctionPatch adjustPatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+                           reinterpret_cast<void *>(&FakeFmvAdjustSurfacesIfEnabled),
+                           adjustPatch)) {
+        return 1;
+    }
+
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvAdjustSurfacesSrcRect = reinterpret_cast<zVidRect32 *>(0x11111111);
+    g_fakeFmvAdjustSurfacesDstRect = reinterpret_cast<zVidRect32 *>(0x22222222);
+    g_fakeFmvAdjustSurfacesWaitForPresent = 0;
+    g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst = 0;
+
+    zFMV_Action action{};
+    action.FlipSurfaces();
+
+    const bool ok =
+        g_fakeFmvAdjustSurfacesCount == 1 && g_fakeFmvAdjustSurfacesSrcRect == nullptr &&
+        g_fakeFmvAdjustSurfacesDstRect == nullptr &&
+        g_fakeFmvAdjustSurfacesWaitForPresent == 1 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 1;
+
+    RestoreFunctionPatch(adjustPatch);
+    return ok ? 0 : 2;
+}
+
 extern "C" int zfmv_action_base_destructor_smoke(void) {
     zFMV_Action action{};
     action.vftable = &g_zFMV_ActionWait_Vtable;
@@ -1243,10 +3333,39 @@ extern "C" int zfmv_action_base_destructor_smoke(void) {
     }
 
     action.vftable = &g_zFMV_ActionWait_Vtable;
-    return action.ScalarDeletingDestructor(0) == &action &&
-                   action.vftable == &g_zFMV_ActionBase_Vtable
-               ? 0
-               : 2;
+    if (action.ScalarDeletingDestructor(0) != &action ||
+        action.vftable != &g_zFMV_ActionBase_Vtable) {
+        return 2;
+    }
+
+    CodeFunctionPatch deletePatch{};
+    void(__cdecl *operatorDeleteFn)(void *) = &operator delete;
+    if (!PatchFunctionJump(reinterpret_cast<void *>(operatorDeleteFn),
+                           reinterpret_cast<void *>(&FakeFmvOperatorDelete), deletePatch)) {
+        return 3;
+    }
+
+    g_fakeFmvOperatorDeleteCount = 0;
+    g_fakeFmvOperatorDeletePtr = nullptr;
+    void *const storage = std::malloc(sizeof(zFMV_Action));
+    if (storage == nullptr) {
+        RestoreFunctionPatch(deletePatch);
+        return 4;
+    }
+
+    zFMV_Action *const heapAction = reinterpret_cast<zFMV_Action *>(storage);
+    heapAction->vftable = &g_zFMV_ActionWait_Vtable;
+    heapAction->next = reinterpret_cast<zFMV_Action *>(0x5678);
+
+    zFMV_Action *const deletingResult = heapAction->ScalarDeletingDestructor(1);
+    const bool deletingOk =
+        deletingResult == heapAction && heapAction->vftable == &g_zFMV_ActionBase_Vtable &&
+        heapAction->next == reinterpret_cast<zFMV_Action *>(0x5678) &&
+        g_fakeFmvOperatorDeleteCount == 1 && g_fakeFmvOperatorDeletePtr == heapAction;
+
+    RestoreFunctionPatch(deletePatch);
+    std::free(storage);
+    return deletingOk ? 0 : 5;
 }
 
 extern "C" int zfmv_action_derived_scalar_deleting_destructor_smoke(void) {

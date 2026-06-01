@@ -22,9 +22,9 @@ extern "C" int time_reset_smoke(void) {
     g_Time_UnscaledAccumulatedTimeSec = 5.0f;
     g_Time_CurrentTimeSec = 6.0f;
 
-    const float before = static_cast<float>(GetTickCount() * 0.001);
+    const float before = time_test_now_sec();
     Time::Reset();
-    const float after = static_cast<float>(GetTickCount() * 0.001);
+    const float after = time_test_now_sec();
 
     if (g_Time_NewTimeSec != 0.0f || g_FrameDeltaTimeSec != 0.0f ||
         g_Time_AccumulatedTimeSec != 0.0f || g_Time_UnscaledDeltaTimeSec != 0.0f ||

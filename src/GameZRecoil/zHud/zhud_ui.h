@@ -1,8 +1,8 @@
 #pragma once
 
+#include "recoil/recoil_types.h"
 #include <cstdarg>
 #include <stddef.h>
-#include "recoil/recoil_types.h"
 
 #include <windows.h>
 
@@ -313,25 +313,53 @@ struct HudUiRect {
 extern HudUiRect g_HudUiMgrSensor_FxRectScratch;
 
 namespace HudUiLayoutNode {
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadRect(zReader::Node *node, HudUiRect *outRect);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-ReadInt3(zReader::Node *node, int *out0, int *out1, int *out2);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-ReadRectOffsetAndSize(zReader::Node *node, HudUiRect *outRect, const int *offsetXY,
-                      int *outWidth, int *outHeight);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-ApplyTextLabel(zReader::Node *layoutNode, HudUiPanel *target, int baseX,
-               int baseY, const int *offsetXY);
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL
-ApplyImageWidget(zReader::Node *layoutNode, HudUiWidget *widget, int baseX,
-                 int baseY, const int *anchorOrNull,
-                 zVidImagePartial *preloadedImageOrNull, HudUiRect *outRectOrNull);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-ApplyCornerTextQuad(zReader::Node *node, HudUiBar *target, const int *offsetXY,
-                    HudUiRect *outRect);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-ApplyMeterQuad(zReader::Node *node, HudUiMeter *target, int xBase, int yBase,
-               const int *offsetXY, HudUiRect *outRect);
+RECOIL_NOINLINE int RECOIL_FASTCALL ReadRect(
+    zReader::Node *node,
+    HudUiRect *outRect
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL ReadInt3(
+    zReader::Node *node,
+    int *out0,
+    int *out1,
+    int *out2
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL ReadRectOffsetAndSize(
+    zReader::Node *node,
+    HudUiRect *outRect,
+    const int *offsetXY,
+    int *outWidth,
+    int *outHeight
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL ApplyTextLabel(
+    zReader::Node *layoutNode,
+    HudUiPanel *target,
+    int baseX,
+    int baseY,
+    const int *offsetXY
+);
+RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL ApplyImageWidget(
+    zReader::Node *layoutNode,
+    HudUiWidget *widget,
+    int baseX,
+    int baseY,
+    const int *anchorOrNull,
+    zVidImagePartial *preloadedImageOrNull,
+    HudUiRect *outRectOrNull
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL ApplyCornerTextQuad(
+    zReader::Node *node,
+    HudUiBar *target,
+    const int *offsetXY,
+    HudUiRect *outRect
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL ApplyMeterQuad(
+    zReader::Node *node,
+    HudUiMeter *target,
+    int xBase,
+    int yBase,
+    const int *offsetXY,
+    HudUiRect *outRect
+);
 } // namespace HudUiLayoutNode
 
 struct HudUiMgrSensorBlock {
@@ -344,6 +372,8 @@ struct HudUiMgrSensorBlock {
     float sensorClampHalfH;
     float sensorParam;
     float sensorRangeSq;
+
+    void RECOIL_THISCALL Destructor();
 };
 
 extern HudUiMgrSensorBlock g_HudUiMgrSensorBlock;
@@ -368,7 +398,7 @@ extern int g_HudUiMgrReticleMode;
 extern HudUiWidget g_HudUiMgrReticleWidget;
 
 struct HudLayoutBase;
-typedef void (RECOIL_FASTCALL *HudLayoutOnActivatedFn)(HudLayoutBase *self);
+typedef void(RECOIL_FASTCALL *HudLayoutOnActivatedFn)(HudLayoutBase *self);
 
 struct HudLayoutBase_FTable {
     unsigned int slots[6];
@@ -453,19 +483,31 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyViewportRect(HudUiRect *activeRect);
 }
 
 namespace HudUiMgrSensor {
-RECOIL_NOINLINE HudUiMgrSensorTrackNode *RECOIL_FASTCALL TrackList_Add(int trackKind,
-                                                                        void *payload);
+RECOIL_NOINLINE void RECOIL_CDECL TrackList_Reset();
+RECOIL_NOINLINE HudUiMgrSensorTrackNode *RECOIL_FASTCALL TrackList_Add(
+    int trackKind,
+    void *payload
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL PlaceTrackCounterWidget(
-    HudUiMgrSensorTrackNode *trackNode, const zVec3 *worldPoint);
-RECOIL_NOINLINE int RECOIL_FASTCALL
-PlaceTrackMarker(int markerMode, PlayerProgressTargetSlotRuntime *outputSlots);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-UpdateMarkersAndProgressFromVariantTag(const zTag4Partial *requiredVariantTag);
+    HudUiMgrSensorTrackNode *trackNode,
+    const zVec3 *worldPoint
+);
+RECOIL_NOINLINE int RECOIL_FASTCALL PlaceTrackMarker(
+    int markerMode,
+    PlayerProgressTargetSlotRuntime *outputSlots
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMarkersAndProgressFromVariantTag(
+    const zTag4Partial *requiredVariantTag
+);
 void RECOIL_FASTCALL SetShieldMessageRatio(float ratio);
-void RECOIL_FASTCALL SetViewportRect(int x, int y, int width,
-                                     int height);
+void RECOIL_FASTCALL SetViewportRect(
+    int x,
+    int y,
+    int width,
+    int height
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL GetFxRect(HudUiRect *outRect);
-}
+} // namespace HudUiMgrSensor
 
 namespace HudUiMgr {
 HudUiContainer *RECOIL_FASTCALL Constructor(HudUiContainer *self);
@@ -475,24 +517,36 @@ void RECOIL_CDECL RegisterAtExit();
 void RECOIL_CDECL AtExitDestructor();
 void RECOIL_FASTCALL StaticDestructor(HudUiContainer *self);
 RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointToNormalizedClamped(
-    const zVec3 *srcPoint, zVec3 *projectedPoint);
+    const zVec3 *srcPoint,
+    zVec3 *projectedPoint
+);
 void RECOIL_FASTCALL ScreenToWorld(float *pointXY);
 void RECOIL_CDECL TriggerCurrentLayoutOnActivated();
 int RECOIL_CDECL TickLayoutDelay();
 RECOIL_NOINLINE int RECOIL_CDECL IsLocalPlayerFirstInStatsList();
 void RECOIL_FASTCALL SetNanitePanelCount(int count);
-void RECOIL_FASTCALL SetModeCounterState(int counterIndex, int state);
+void RECOIL_FASTCALL SetModeCounterState(
+    int counterIndex,
+    int state
+);
 void RECOIL_CDECL ReticleStaticAtexitStub();
 void RECOIL_FASTCALL CopyReticleProjection(float *outProjection);
 void RECOIL_FASTCALL SetReticleMode(int mode);
 RECOIL_NOINLINE int RECOIL_FASTCALL EnsureHudLoaded(const char *entryPath);
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateTargetReticleFromCursor(int reticleMode,
-                                                                           zVec3 *worldHitPoint,
-                                                                           float normalizedX,
-                                                                           float normalizedY);
-void RECOIL_FASTCALL OnViewportChanged(const HudUiRect *hudRectOrNull,
-                                       const HudUiRect *viewRectOrNull);
-void RECOIL_FASTCALL ActivateHud(const HudUiRect *hudRectOrNull, const HudUiRect *viewRectOrNull);
+RECOIL_NOINLINE int RECOIL_FASTCALL UpdateTargetReticleFromCursor(
+    int reticleMode,
+    zVec3 *worldHitPoint,
+    float normalizedX,
+    float normalizedY
+);
+void RECOIL_FASTCALL OnViewportChanged(
+    const HudUiRect *hudRectOrNull,
+    const HudUiRect *viewRectOrNull
+);
+void RECOIL_FASTCALL ActivateHud(
+    const HudUiRect *hudRectOrNull,
+    const HudUiRect *viewRectOrNull
+);
 RECOIL_NOINLINE void RECOIL_CDECL DestroySensorWindow();
 RECOIL_NOINLINE int RECOIL_CDECL EnableHud();
 RECOIL_NOINLINE int RECOIL_CDECL DisableHud();
@@ -505,14 +559,19 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HideTrackedProgressMeterIfOwnerMatches(void
 RECOIL_NOINLINE void RECOIL_FASTCALL SetAuxOverlayVisible(int visible);
 void RECOIL_CDECL EnableTopAndChatStacks();
 void RECOIL_CDECL DisableTopAndChatStacks();
-int RECOIL_FASTCALL InitHudLayouts(const HudUiRect *displaySection,
-                                            const HudUiRect *windowSection);
+int RECOIL_FASTCALL InitHudLayouts(
+    const HudUiRect *displaySection,
+    const HudUiRect *windowSection
+);
 void RECOIL_CDECL ShutdownResources();
 } // namespace HudUiMgr
 
 namespace HudUiAuxOverlay {
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTextLine(int op, int index,
-                                                    const char *format);
+RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTextLine(
+    int op,
+    int index,
+    const char *format
+);
 RECOIL_NOINLINE void RECOIL_CDECL ClearTextLines();
 } // namespace HudUiAuxOverlay
 
@@ -523,13 +582,24 @@ void RECOIL_CDECL InitTable();
 
 namespace HudUi {
 RECOIL_NOINLINE void RECOIL_FASTCALL SetInvalidateMode(int mode);
-RECOIL_NOINLINE int RECOIL_FASTCALL ShowMessageBox(const char *messageText,
-                                                   const char *titleText,
-                                                   void *modalContext);
+RECOIL_NOINLINE int RECOIL_FASTCALL ShowMessageBox(
+    const char *messageText,
+    const char *titleText,
+    void *modalContext
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL HandleHotkeyCommand(int commandId);
-void RECOIL_FASTCALL ShowTopMessageLine(const char *message, float duration);
-void RECOIL_FASTCALL ShowChatLine(const char *message, float duration);
-void RECOIL_FASTCALL PushTopMessageLine(const char *message, float duration);
+void RECOIL_FASTCALL ShowTopMessageLine(
+    const char *message,
+    float duration
+);
+void RECOIL_FASTCALL ShowChatLine(
+    const char *message,
+    float duration
+);
+void RECOIL_FASTCALL PushTopMessageLine(
+    const char *message,
+    float duration
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL PlayPowerupSfx(int shouldPlay);
 RECOIL_NOINLINE void RECOIL_FASTCALL RefreshScoreboardEntryRow(GameNetPlayerRow *entryData);
 RECOIL_NOINLINE void RECOIL_FASTCALL RemoveScoreboardEntryRow(GameNetPlayerRow *entryKey);
@@ -569,8 +639,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RefreshCounterText(int counterValue);
 void RECOIL_FASTCALL SetVisibleAndResetMeterFill(int visible);
 RECOIL_NOINLINE void RECOIL_CDECL TickMeterFillAnimation();
 RECOIL_NOINLINE void RECOIL_CDECL UpdateMeterXPoints();
-int RECOIL_FASTCALL Show(zVidImagePartial *objectiveImage, const char *summaryFormat,
-                                  const char *descText, float autoHideDelay);
+int RECOIL_FASTCALL Show(
+    zVidImagePartial *objectiveImage,
+    const char *summaryFormat,
+    const char *descText,
+    float autoHideDelay
+);
 void RECOIL_CDECL Begin();
 RECOIL_NOINLINE void RECOIL_CDECL StartHide();
 void RECOIL_CDECL Update();
@@ -593,31 +667,45 @@ struct HudUiElement {
     unsigned short state;
     unsigned short padding32;
 
-    HudUiElement *RECOIL_THISCALL Constructor(int x, int y);
+    HudUiElement *RECOIL_THISCALL Constructor(
+        int x,
+        int y
+    );
     RECOIL_NOINLINE HudUiElement *RECOIL_THISCALL CopyConstructor(const HudUiElement *source);
     RECOIL_NOINLINE HudUiElement *RECOIL_THISCALL CopyFrom(const HudUiElement *source);
     HudUiElement *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     void RECOIL_THISCALL Draw();
     void RECOIL_THISCALL DrawBase();
     RECOIL_NOINLINE void RECOIL_THISCALL Invalidate();
-    void RECOIL_THISCALL SetPos(int x, int y);
+    void RECOIL_THISCALL SetPos(
+        int x,
+        int y
+    );
     void RECOIL_THISCALL SetX(int x);
     void RECOIL_THISCALL SetY(int y);
     void RECOIL_THISCALL SetVisible(int visible);
     void RECOIL_THISCALL ResetCommonFTable();
     void RECOIL_THISCALL Update(float deltaSeconds);
     void RECOIL_THISCALL SetTimer(float duration);
-    RECOIL_NOINLINE void RECOIL_THISCALL SetBltSourceAndClipRect(void *bltSourceOrNull,
-                                                                 const HudUiRect *rectOrNull);
+    RECOIL_NOINLINE void RECOIL_THISCALL SetBltSourceAndClipRect(
+        void *bltSourceOrNull,
+        const HudUiRect *rectOrNull
+    );
     void RECOIL_THISCALL SetClipRect(const HudUiRect *clipRect);
     void RECOIL_THISCALL GetRect(HudUiRect *outRect);
-    unsigned char RECOIL_THISCALL HitTestTrue(int px, int py);
+    unsigned char RECOIL_THISCALL HitTestTrue(
+        int px,
+        int py
+    );
     int RECOIL_THISCALL GetX();
     int RECOIL_THISCALL GetY();
 };
 
 struct StdPtrVector {
-    void RECOIL_THISCALL ClearNoOpDestroy(int *begin, int *end);
+    void RECOIL_THISCALL ClearNoOpDestroy(
+        int *begin,
+        int *end
+    );
 };
 
 struct HudUiPrimitiveBindTarget {
@@ -626,8 +714,12 @@ struct HudUiPrimitiveBindTarget {
     int endY;
     unsigned int color565;
 
-    void RECOIL_THISCALL SetSegmentEndpoints(int startX, int startY,
-                                             int endX, int endY);
+    void RECOIL_THISCALL SetSegmentEndpoints(
+        int startX,
+        int startY,
+        int endX,
+        int endY
+    );
 };
 
 struct HudUiTextLabel {
@@ -639,17 +731,25 @@ struct HudUiTextLabel {
     int centerBoundsRight;
     int alignMode;
 
-    RECOIL_NOINLINE HudUiTextLabel *RECOIL_THISCALL ConstructorWithPosAndFlags(const char *text,
-                                                                               int x,
-                                                                               int y,
-                                                                               int flags);
+    RECOIL_NOINLINE HudUiTextLabel *RECOIL_THISCALL ConstructorWithPosAndFlags(
+        const char *text,
+        int x,
+        int y,
+        int flags
+    );
     HudUiTextLabel *RECOIL_THISCALL CopyConstructor(const HudUiTextLabel *source);
     HudUiTextLabel *RECOIL_THISCALL Constructor(const HudUiTextLabel *source);
-    void SetTextFmt(const char *format, ...);
+    void SetTextFmt(
+        const char *format,
+        ...
+    );
     RECOIL_NOINLINE void RECOIL_THISCALL RebuildTextBounds();
     RECOIL_NOINLINE int RECOIL_THISCALL MeasureTextWidth();
     void RECOIL_THISCALL OnDraw();
-    int RECOIL_THISCALL HitTest(int px, int py);
+    int RECOIL_THISCALL HitTest(
+        int px,
+        int py
+    );
     void RECOIL_THISCALL UpdateTextExtents();
 };
 
@@ -659,13 +759,22 @@ struct HudUiCircle {
     int radiusSquared;
     unsigned int color565;
 
-    HudUiCircle *RECOIL_THISCALL Constructor(int x, int y,
-                                             int circleRadius,
-                                             unsigned int circleColor565);
+    HudUiCircle *RECOIL_THISCALL Constructor(
+        int x,
+        int y,
+        int circleRadius,
+        unsigned int circleColor565
+    );
     void RECOIL_THISCALL DrawDirty();
     void RECOIL_THISCALL DrawDirtyForwarder();
-    int RECOIL_THISCALL HitTest(int px, int py);
-    unsigned char RECOIL_THISCALL HitTestCore(int px, int py);
+    int RECOIL_THISCALL HitTest(
+        int px,
+        int py
+    );
+    unsigned char RECOIL_THISCALL HitTestCore(
+        int px,
+        int py
+    );
 };
 
 struct HudUiContainer {
@@ -678,8 +787,10 @@ struct HudUiContainer {
     RECOIL_NOINLINE void RECOIL_THISCALL DestructorCore();
     void RECOIL_THISCALL SetEnabled(int enabled);
     RECOIL_NOINLINE int RECOIL_THISCALL AddChild(HudUiElement *child);
-    RECOIL_NOINLINE int RECOIL_THISCALL FindChildWithPrev(HudUiElement *child,
-                                                                   HudUiElement **previousOut);
+    RECOIL_NOINLINE int RECOIL_THISCALL FindChildWithPrev(
+        HudUiElement *child,
+        HudUiElement **previousOut
+    );
     int RECOIL_THISCALL RemoveChild(HudUiElement *child);
     void RECOIL_THISCALL SetChildFlags(unsigned int childFlags);
     void RECOIL_THISCALL UpdateAll(float deltaSeconds);
@@ -775,14 +886,21 @@ struct HudUiWidget {
     RECOIL_NOINLINE void RECOIL_THISCALL DestructorCore();
     RECOIL_NOINLINE void RECOIL_THISCALL ReleaseImageIfOwned();
     RECOIL_NOINLINE zVidImagePartial *RECOIL_THISCALL SetImageByPathOwned(const char *imagePath);
-    RECOIL_NOINLINE zVidImagePartial *RECOIL_THISCALL
-    SetImageBorrowedAndInvalidate(zVidImagePartial *image);
-    void RECOIL_THISCALL SetPos(int newX, int newY);
+    RECOIL_NOINLINE zVidImagePartial *RECOIL_THISCALL SetImageBorrowedAndInvalidate(
+        zVidImagePartial *image
+    );
+    void RECOIL_THISCALL SetPos(
+        int newX,
+        int newY
+    );
     void RECOIL_THISCALL InvalidateRect(const HudUiRect *dirtyRect);
     HudUiWidget *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     int RECOIL_THISCALL GetCenterX();
     int RECOIL_THISCALL GetCenterY();
-    int RECOIL_THISCALL HitTest(int px, int py);
+    int RECOIL_THISCALL HitTest(
+        int px,
+        int py
+    );
     RECOIL_NO_GS void RECOIL_THISCALL RebuildBltRectFromImage();
     void RECOIL_THISCALL Draw();
 };
@@ -795,15 +913,23 @@ struct HudUiBackgroundCursorWidget {
     int reservedC8;
     int reservedCC;
 
-    HudUiBackgroundCursorWidget *RECOIL_THISCALL
-    MemberConstructorLocal(const char *imagePath, int captureEnabled);
+    HudUiBackgroundCursorWidget *RECOIL_THISCALL MemberConstructorLocal(
+        const char *imagePath,
+        int captureEnabled
+    );
     void RECOIL_THISCALL DestructorCore();
     void RECOIL_THISCALL SetImageByPathOwnedAndRefresh(const char *imagePath);
     void RECOIL_THISCALL SetImageBorrowedAndRefreshIfChanged(zVidImagePartial *image);
     void RECOIL_THISCALL SetImageOwnedAndRefresh(int captureEnabled);
     void RECOIL_THISCALL SetImageBorrowedAndRefresh();
-    void RECOIL_THISCALL SetPos(int x, int y);
-    void RECOIL_THISCALL RebuildCapturedImage(int x, int y);
+    void RECOIL_THISCALL SetPos(
+        int x,
+        int y
+    );
+    void RECOIL_THISCALL RebuildCapturedImage(
+        int x,
+        int y
+    );
     void RECOIL_THISCALL Draw();
     void RECOIL_THISCALL DrawBase();
 };
@@ -832,9 +958,15 @@ struct HudUiPanelPtrVector {
     HudUiPanel **end;
     HudUiPanel **capacityEnd;
 
-    HudUiPanel **RECOIL_THISCALL EraseRange(HudUiPanel **first, HudUiPanel **last);
-    void RECOIL_THISCALL InsertN(HudUiPanel **position, unsigned int count,
-                                 HudUiPanel **valueSource);
+    HudUiPanel **RECOIL_THISCALL EraseRange(
+        HudUiPanel **first,
+        HudUiPanel **last
+    );
+    void RECOIL_THISCALL InsertN(
+        HudUiPanel **position,
+        unsigned int count,
+        HudUiPanel **valueSource
+    );
 };
 
 struct HudUiZrdWidget {
@@ -870,7 +1002,10 @@ struct HudUiZrdWidget {
     void RECOIL_THISCALL ShowPreview();
     void RECOIL_THISCALL OnActivate();
     void RECOIL_THISCALL OnActivateQueueExitCurrentState();
-    int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
+    int RECOIL_THISCALL LoadFromZrd(
+        zReader::Node *zrdSection,
+        void *ownerDialog
+    );
     void RECOIL_THISCALL RefreshState();
     void RECOIL_THISCALL HidePreview();
     static void *RECOIL_STDCALL DeleteChildIfPresent(void *childWidgetOrNull);
@@ -896,7 +1031,10 @@ struct HudUiCheckToggleWidget {
     void RECOIL_THISCALL HidePreview();
     void RECOIL_THISCALL OnActivate();
     void RECOIL_THISCALL OnActivateThunk();
-    int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
+    int RECOIL_THISCALL LoadFromZrd(
+        zReader::Node *zrdSection,
+        void *ownerDialog
+    );
     RECOIL_NOINLINE int RECOIL_THISCALL SetChecked(int newChecked);
 };
 
@@ -919,14 +1057,31 @@ struct HudUiCycleSelectorWidget {
     void RECOIL_THISCALL DestructorCoreThunk();
     void RECOIL_THISCALL AdvanceSelectionAndActivate();
     void RECOIL_THISCALL SetIndexClamped(int index);
-    void RECOIL_THISCALL SetVisibleRange(int first, int last);
+    void RECOIL_THISCALL SetVisibleRange(
+        int first,
+        int last
+    );
     void RECOIL_THISCALL Update(float deltaSeconds);
-    void RECOIL_THISCALL AddTextEntry(int index, const char *text, int posX,
-                                      int posY);
-    void RECOIL_THISCALL ApplyFontStyleForEntry(int index, int styleIndex);
-    void RECOIL_THISCALL AddBitmapEntry(int index, const char *imagePath,
-                                        int posX, int posY);
-    int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
+    void RECOIL_THISCALL AddTextEntry(
+        int index,
+        const char *text,
+        int posX,
+        int posY
+    );
+    void RECOIL_THISCALL ApplyFontStyleForEntry(
+        int index,
+        int styleIndex
+    );
+    void RECOIL_THISCALL AddBitmapEntry(
+        int index,
+        const char *imagePath,
+        int posX,
+        int posY
+    );
+    int RECOIL_THISCALL LoadFromZrd(
+        zReader::Node *zrdSection,
+        void *ownerDialog
+    );
 };
 
 struct HudUiFillBitmap {
@@ -946,7 +1101,10 @@ struct HudUiFillBitmap {
     void RECOIL_THISCALL DestructorCore();
     void RECOIL_THISCALL DestructorCoreThunk();
     void RECOIL_THISCALL Draw();
-    int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
+    int RECOIL_THISCALL LoadFromZrd(
+        zReader::Node *zrdSection,
+        void *ownerDialog
+    );
     void RECOIL_THISCALL UpdateNormalizedFromCursor();
     void RECOIL_THISCALL SetNormalizedValue(float value);
     void RECOIL_THISCALL SetNormalizedValueAndRebuild(float value);
@@ -970,7 +1128,10 @@ struct HudUiZrdWidgetEx17C_Item {
     void RECOIL_THISCALL ShowPreviewIfNotSelected();
     void RECOIL_THISCALL HidePreviewIfNotSelected();
     void RECOIL_THISCALL OnActivateSelectSelf();
-    int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
+    int RECOIL_THISCALL LoadFromZrd(
+        zReader::Node *zrdSection,
+        void *ownerDialog
+    );
     void RECOIL_THISCALL SetSelected(int selectedValue);
     HudUiRect *RECOIL_THISCALL GetMouseRectOrBounds();
 };
@@ -985,7 +1146,10 @@ struct HudUiZrdWidgetEx17C {
     HudUiZrdWidgetEx17C *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     HudUiZrdWidgetEx17C *RECOIL_THISCALL ScalarDeletingDestructorThunk(unsigned int flags);
     void RECOIL_THISCALL DestructorCore();
-    int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
+    int RECOIL_THISCALL LoadFromZrd(
+        zReader::Node *zrdSection,
+        void *ownerDialog
+    );
     void RECOIL_THISCALL EnableChildAtIndex(int childIndex);
     int RECOIL_THISCALL SetSelectedIndex(int index);
 };
@@ -1014,17 +1178,22 @@ struct HudCmdBindingEntry {
 
     HudCmdBindingEntry *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     static HudCmdBindingEntry *RECOIL_STDCALL DeleteAndReturnNull(HudCmdBindingEntry *entry);
-    static HudCmdBindingEntry **RECOIL_FASTCALL
-    CopyRange(HudCmdBindingEntry **sourceBegin, HudCmdBindingEntry **sourceEnd,
-              HudCmdBindingEntry **dest);
+    static HudCmdBindingEntry **RECOIL_FASTCALL CopyRange(
+        HudCmdBindingEntry **sourceBegin,
+        HudCmdBindingEntry **sourceEnd,
+        HudCmdBindingEntry **dest
+    );
 };
 
 struct HudCmdBinding {
     char *displayText;
 
-    static HudCmdBinding **RECOIL_FASTCALL
-    DestroyRange(HudCmdBinding **first, HudCmdBinding **last,
-                 HudCmdBinding **dest, void *unusedAlloc);
+    static HudCmdBinding **RECOIL_FASTCALL DestroyRange(
+        HudCmdBinding **first,
+        HudCmdBinding **last,
+        HudCmdBinding **dest,
+        void *unusedAlloc
+    );
 };
 
 struct HudCmdBindButtonBase {
@@ -1044,15 +1213,23 @@ struct HudCmdBindButtonBase {
     int listFontStyleRef;
 
     HudCmdBindButtonBase *RECOIL_THISCALL Constructor();
-    int RECOIL_THISCALL AddBindingEntry(const char *displayText, int commandId);
+    int RECOIL_THISCALL AddBindingEntry(
+        const char *displayText,
+        int commandId
+    );
     void RECOIL_THISCALL OnSelectedIndexChanged(int selectedIndex);
     void RECOIL_THISCALL SetSelectedEntry(int selectedIndex);
     void RECOIL_THISCALL OnSelectionChangedRefresh(int selectedIndex);
     void RECOIL_THISCALL ClearBindingEntries();
     void RECOIL_THISCALL DestructorCore();
-    int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
-    void RECOIL_THISCALL RebuildBindingSlotWidgets(int totalCount,
-                                                   int visibleCount);
+    int RECOIL_THISCALL LoadFromZrd(
+        zReader::Node *zrdSection,
+        void *ownerDialog
+    );
+    void RECOIL_THISCALL RebuildBindingSlotWidgets(
+        int totalCount,
+        int visibleCount
+    );
 };
 
 struct HudCmdCommandList {
@@ -1099,8 +1276,9 @@ struct HudCmdMouseButton {
 };
 
 RECOIL_NOINLINE void **RECOIL_FASTCALL zUtil_StdPtrVector_Clear(HudCmdBindingVector *self);
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zUtil_StdPtrVector_FreeBufferAndReset(HudCmdBindingVector *self);
+RECOIL_NOINLINE void RECOIL_FASTCALL zUtil_StdPtrVector_FreeBufferAndReset(
+    HudCmdBindingVector *self
+);
 
 struct HudUiMessageBoxDialog;
 
@@ -1163,18 +1341,29 @@ struct HudUiMessage {
     void RECOIL_THISCALL Draw();
     void RECOIL_THISCALL ReleaseImages();
     RECOIL_NOINLINE void RECOIL_THISCALL RebuildWeaponLayout();
-    RECOIL_NOINLINE int RECOIL_THISCALL
-    LoadWeaponLayoutFromNode(zReader::Node *layoutNode, const HudUiPanelFontParams *fontParams);
-    static void RECOIL_FASTCALL SelectVariantDisplay(int messageIndex,
-                                                     int variantIndex);
-    static void RECOIL_FASTCALL ApplySideImageSwap(int messageIndex,
-                                                   int sideIndex);
+    RECOIL_NOINLINE int RECOIL_THISCALL LoadWeaponLayoutFromNode(
+        zReader::Node *layoutNode,
+        const HudUiPanelFontParams *fontParams
+    );
+    static void RECOIL_FASTCALL SelectVariantDisplay(
+        int messageIndex,
+        int variantIndex
+    );
+    static void RECOIL_FASTCALL ApplySideImageSwap(
+        int messageIndex,
+        int sideIndex
+    );
     static void RECOIL_FASTCALL ClearDisplay(int messageIndex);
-    RECOIL_NOINLINE static void RECOIL_FASTCALL
-    SetValueIfOwnerMatches(int messageIndex, int ownerSideIndex, float valueOrClearToken);
-    RECOIL_NOINLINE static void RECOIL_FASTCALL
-    UpdateSelectedWeaponDisplay(int weaponBankIndex, int weaponSideIndex,
-                                float valueOrClearToken);
+    RECOIL_NOINLINE static void RECOIL_FASTCALL SetValueIfOwnerMatches(
+        int messageIndex,
+        int ownerSideIndex,
+        float valueOrClearToken
+    );
+    RECOIL_NOINLINE static void RECOIL_FASTCALL UpdateSelectedWeaponDisplay(
+        int weaponBankIndex,
+        int weaponSideIndex,
+        float valueOrClearToken
+    );
 };
 
 struct HudUiBarPoint {
@@ -1197,8 +1386,11 @@ struct HudUiPolyline {
 
     RECOIL_NOINLINE HudUiPolyline *RECOIL_THISCALL Constructor();
     RECOIL_NOINLINE void RECOIL_THISCALL Draw();
-    RECOIL_NOINLINE void RECOIL_THISCALL SetPoint(int index, int x,
-                                                  int y);
+    RECOIL_NOINLINE void RECOIL_THISCALL SetPoint(
+        int index,
+        int x,
+        int y
+    );
 };
 
 struct HudUiSliderBorder {
@@ -1219,8 +1411,12 @@ struct HudUiSliderBorder {
 
     HudUiSliderBorder *RECOIL_THISCALL Constructor();
     void RECOIL_THISCALL Update(float deltaSeconds);
-    void RECOIL_THISCALL SetBounds(int originX, int originY,
-                                   int halfWidth, int height);
+    void RECOIL_THISCALL SetBounds(
+        int originX,
+        int originY,
+        int halfWidth,
+        int height
+    );
 };
 
 struct HudUiCounter {
@@ -1256,7 +1452,11 @@ struct HudUiBar {
 
     HudUiBar *RECOIL_THISCALL Constructor();
     void RECOIL_THISCALL Draw();
-    RECOIL_NOINLINE void RECOIL_THISCALL SetPointXY(int pointIndex, float x, float y);
+    RECOIL_NOINLINE void RECOIL_THISCALL SetPointXY(
+        int pointIndex,
+        float x,
+        float y
+    );
 };
 
 struct HudUiMeter {
@@ -1320,8 +1520,14 @@ struct HudUiTextInput {
     void RECOIL_THISCALL DeleteCharForward();
     void RECOIL_THISCALL MoveCursorLeft();
     void RECOIL_THISCALL MoveCursorRight();
-    int RECOIL_THISCALL ShiftTextRight(int count, int startPos);
-    int RECOIL_THISCALL ShiftTextLeft(int count, int startPos);
+    int RECOIL_THISCALL ShiftTextRight(
+        int count,
+        int startPos
+    );
+    int RECOIL_THISCALL ShiftTextLeft(
+        int count,
+        int startPos
+    );
 };
 
 struct HudUiOwnedTextInput {
@@ -1352,16 +1558,17 @@ struct HudUiNumericTextInput {
     int RECOIL_THISCALL OnRawKeyboardChar(int key);
     int RECOIL_THISCALL OnAcceptForwardToCommit();
     void RECOIL_THISCALL OnActivate();
-    static int RECOIL_FASTCALL RawKeyboardCallback(int key,
-                                                            HudUiNumericTextInput *callbackCtx);
+    static int RECOIL_FASTCALL RawKeyboardCallback(
+        int key,
+        HudUiNumericTextInput *callbackCtx
+    );
 };
 
 struct HudUiNetGameSetupTextInput : HudUiNumericTextInput {
     void RECOIL_THISCALL OnActivateFocusAndCursor();
 };
 
-struct HudUiNetGameSetupOverlayOwner
-{
+struct HudUiNetGameSetupOverlayOwner {
     unsigned int vftable; // RecoilApp_IState_Vtbl*
     unsigned int m_panel; // HudUiNetGameSetupDialog*
     int m_reconfigureExistingSession;
@@ -1372,15 +1579,26 @@ struct HudUiNetGameSetupOverlayOwner
     static void RECOIL_CDECL AtExitDestructor();
     HudUiNetGameSetupOverlayOwner *RECOIL_THISCALL Constructor();
     RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE HudUiNetGameSetupOverlayOwner *RECOIL_THISCALL
-    ScalarDeletingDestructor(unsigned int flags);
+    RECOIL_NOINLINE HudUiNetGameSetupOverlayOwner *RECOIL_THISCALL ScalarDeletingDestructor(
+        unsigned int flags
+    );
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
     static void RECOIL_CDECL QueueEnterWithReconfigureFlag(int reconfigureExistingSession);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupOverlayOwner) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupOverlayOwner, m_panel) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupOverlayOwner, m_reconfigureExistingSession) == 0x08);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupOverlayOwner,
+        m_panel
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupOverlayOwner,
+        m_reconfigureExistingSession
+    ) == 0x08
+);
 
 extern RecoilApp_IState_Vtbl g_HudUiNetGameSetupOverlayOwner_Vtbl;
 
@@ -1458,13 +1676,18 @@ struct HudUiPanel {
     HudUiRect wrapRect;
     unsigned char reserved28c[0x18];
 
-    HudUiPanel *RECOIL_THISCALL ConstructorDefault(const char *text, int x,
-                                                   int y);
+    HudUiPanel *RECOIL_THISCALL ConstructorDefault(
+        const char *text,
+        int x,
+        int y
+    );
     HudUiPanel *RECOIL_THISCALL ConstructorDefaultThunk();
     HudUiPanel *RECOIL_THISCALL CopyConstructCore(const HudUiPanel *source);
     HudUiPanel *RECOIL_THISCALL ConstructorCopy(const HudUiPanel *source);
-    RECOIL_NOINLINE void RECOIL_THISCALL SetClip(void *bltSourceOrNull,
-                                                 const HudUiRect *rectOrNull);
+    RECOIL_NOINLINE void RECOIL_THISCALL SetClip(
+        void *bltSourceOrNull,
+        const HudUiRect *rectOrNull
+    );
     void RECOIL_THISCALL Invalidate();
     HGDIOBJ RECOIL_THISCALL GetFont();
     void RECOIL_THISCALL SetFontHandle(HGDIOBJ fontHandle);
@@ -1474,22 +1697,45 @@ struct HudUiPanel {
     RECOIL_NOINLINE void RECOIL_THISCALL DestructorThunk();
     static void RECOIL_STDCALL DestructorCallback(HudUiPanel *panel);
     unsigned int RECOIL_THISCALL SetTextColor(unsigned int color);
-    void RECOIL_THISCALL SetTextColorsAndMarkDirty(unsigned int color0, unsigned int color1);
-    unsigned int RECOIL_THISCALL SetShadow(unsigned int shadowEnabled, int shadowOffsetX,
-                                            int shadowOffsetY);
-    void RECOIL_THISCALL SetFont(const char *faceName, int height, int weight,
-                                 int width, int italic, int charSet,
-                                 int pitchAndFamily);
-    void SetTextFmt(const char *format, ...);
-    void RECOIL_THISCALL SetTextFmtV(const char *format, va_list args);
+    void RECOIL_THISCALL SetTextColorsAndMarkDirty(
+        unsigned int color0,
+        unsigned int color1
+    );
+    unsigned int RECOIL_THISCALL SetShadow(
+        unsigned int shadowEnabled,
+        int shadowOffsetX,
+        int shadowOffsetY
+    );
+    void RECOIL_THISCALL SetFont(
+        const char *faceName,
+        int height,
+        int weight,
+        int width,
+        int italic,
+        int charSet,
+        int pitchAndFamily
+    );
+    void SetTextFmt(
+        const char *format,
+        ...
+    );
+    void RECOIL_THISCALL SetTextFmtV(
+        const char *format,
+        va_list args
+    );
     void RECOIL_THISCALL SetText(const char *text);
     void RECOIL_THISCALL RebuildTextRect();
     void RECOIL_THISCALL UpdateTextBoundsFromContent();
-    RECOIL_NOINLINE int RECOIL_THISCALL MeasureTextPrefixRect(int maxChars,
-                                                                       RECT *outRect);
+    RECOIL_NOINLINE int RECOIL_THISCALL MeasureTextPrefixRect(
+        int maxChars,
+        RECT *outRect
+    );
     int RECOIL_THISCALL QueryTextHeight();
     HudUiRect *RECOIL_THISCALL GetWrapRect();
-    int RECOIL_THISCALL HitTest(int px, int py);
+    int RECOIL_THISCALL HitTest(
+        int px,
+        int py
+    );
     char *RECOIL_THISCALL GetLastTextPtr();
     void RECOIL_THISCALL GetTextRect(HudUiRect *outRect);
     HudUiPanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
@@ -1515,23 +1761,32 @@ struct HudUiTransitionTextPanel {
     void RECOIL_THISCALL TickFlash(float deltaSeconds);
     void RECOIL_THISCALL ResetFlashState(float flashRate);
     void RECOIL_THISCALL SetFlashRate(float flashRate);
-    void RECOIL_THISCALL SetFlashColorAndRate(unsigned int flashColor, float flashRate);
+    void RECOIL_THISCALL SetFlashColorAndRate(
+        unsigned int flashColor,
+        float flashRate
+    );
 };
 
 struct HudUiFlashPanel {
-    static unsigned int RECOIL_FASTCALL ComputeFlashBlendColor(unsigned int color0,
-                                                                unsigned int color1, float blend);
+    static unsigned int RECOIL_FASTCALL ComputeFlashBlendColor(
+        unsigned int color0,
+        unsigned int color1,
+        float blend
+    );
 };
 
 struct HudUiCompositePanelEntry {
     HudUiTransitionTextPanel panel;
 
     HudUiCompositePanelEntry *RECOIL_THISCALL AssignCopy(const HudUiCompositePanelEntry *source);
-    HudUiCompositePanelEntry *RECOIL_THISCALL
-    ConstructorCopy(const HudUiCompositePanelEntry *source);
+    HudUiCompositePanelEntry *RECOIL_THISCALL ConstructorCopy(
+        const HudUiCompositePanelEntry *source
+    );
     static HudUiCompositePanelEntry *RECOIL_FASTCALL ConstructorCopyRange(
-        const HudUiCompositePanelEntry *sourceBegin, const HudUiCompositePanelEntry *sourceEnd,
-        HudUiCompositePanelEntry *destBegin);
+        const HudUiCompositePanelEntry *sourceBegin,
+        const HudUiCompositePanelEntry *sourceEnd,
+        HudUiCompositePanelEntry *destBegin
+    );
 };
 
 struct HudUiCompositePanelVector {
@@ -1541,9 +1796,11 @@ struct HudUiCompositePanelVector {
     HudUiCompositePanelEntry *capacityEnd;
 
     void RECOIL_THISCALL Clear();
-    RECOIL_NOINLINE void RECOIL_THISCALL InsertCopies(HudUiCompositePanelEntry *insertPos,
-                                                      unsigned int insertCount,
-                                                      const HudUiCompositePanelEntry *templateEntry);
+    RECOIL_NOINLINE void RECOIL_THISCALL InsertCopies(
+        HudUiCompositePanelEntry *insertPos,
+        unsigned int insertCount,
+        const HudUiCompositePanelEntry *templateEntry
+    );
 };
 
 struct HudUiCompositePanel {
@@ -1551,20 +1808,35 @@ struct HudUiCompositePanel {
     int activeEntryCount;
     HudUiCompositePanelVector entryVector;
 
-    RECOIL_NOINLINE HudUiCompositePanel *RECOIL_THISCALL
-    ConstructorWithEntryCount(int entryCount);
-    RECOIL_NOINLINE void RECOIL_THISCALL LayoutEntries(int x, int y);
+    RECOIL_NOINLINE HudUiCompositePanel *RECOIL_THISCALL ConstructorWithEntryCount(int entryCount);
+    RECOIL_NOINLINE void RECOIL_THISCALL LayoutEntries(
+        int x,
+        int y
+    );
     RECOIL_NOINLINE void RECOIL_THISCALL ResizeEntryVectorAndRelayout(int entryCount);
     RECOIL_NOINLINE void RECOIL_THISCALL ReapplyEntryCount();
-    RECOIL_NOINLINE void RECOIL_THISCALL ResizeEntryCount(int oldCount,
-                                                          int entryCount);
-    void SetTextFmt(const char *format, ...);
-    RECOIL_NOINLINE void RECOIL_THISCALL SetTextFmtV(const char *format, va_list args);
+    RECOIL_NOINLINE void RECOIL_THISCALL ResizeEntryCount(
+        int oldCount,
+        int entryCount
+    );
+    void SetTextFmt(
+        const char *format,
+        ...
+    );
+    RECOIL_NOINLINE void RECOIL_THISCALL SetTextFmtV(
+        const char *format,
+        va_list args
+    );
     RECOIL_NOINLINE void RECOIL_THISCALL ScrollHistory();
-    RECOIL_NOINLINE void RECOIL_THISCALL SetFont(const char *faceName, int height,
-                                                 int weight, int width,
-                                                 int italic, int charSet,
-                                                 int pitchAndFamily);
+    RECOIL_NOINLINE void RECOIL_THISCALL SetFont(
+        const char *faceName,
+        int height,
+        int weight,
+        int width,
+        int italic,
+        int charSet,
+        int pitchAndFamily
+    );
     void RECOIL_THISCALL Update(float deltaSeconds);
     void RECOIL_THISCALL Destructor();
     HudUiCompositePanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
@@ -1602,20 +1874,32 @@ struct HudUiBackground {
 
     HudUiBackground *RECOIL_THISCALL Constructor();
     void RECOIL_THISCALL Destructor();
-    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *zrdPath, const char *sectionName,
-                                               int capturePrimary);
-    zReader::Node *RECOIL_THISCALL LoadZrdAndSection(zReader::Node *loadedRootNode,
-                                                     const char *sectionName,
-                                                     int capturePrimary);
+    zReader::Node *RECOIL_THISCALL LoadFromZrd(
+        const char *zrdPath,
+        const char *sectionName,
+        int capturePrimary
+    );
+    zReader::Node *RECOIL_THISCALL LoadZrdAndSection(
+        zReader::Node *loadedRootNode,
+        const char *sectionName,
+        int capturePrimary
+    );
     void RECOIL_THISCALL SetEnabled(int enabled);
-    RECOIL_NOINLINE unsigned char RECOIL_FASTCALL
-    BindButtonsNodeToWidgetByName(zReader::Node *parentNode, HudUiWidget *widget,
-                                  const char *name);
-    RECOIL_NOINLINE int RECOIL_THISCALL
-    BindWidgetByName(zReader::Node *loadedSectionNode, HudUiWidget *widget, const char *name);
-    RECOIL_NOINLINE int RECOIL_THISCALL
-    BindPrimitiveNodeToElement(zReader::Node *loadedSectionNode, HudUiElement *element,
-                               const char *name);
+    RECOIL_NOINLINE unsigned char RECOIL_FASTCALL BindButtonsNodeToWidgetByName(
+        zReader::Node *parentNode,
+        HudUiWidget *widget,
+        const char *name
+    );
+    RECOIL_NOINLINE int RECOIL_THISCALL BindWidgetByName(
+        zReader::Node *loadedSectionNode,
+        HudUiWidget *widget,
+        const char *name
+    );
+    RECOIL_NOINLINE int RECOIL_THISCALL BindPrimitiveNodeToElement(
+        zReader::Node *loadedSectionNode,
+        HudUiElement *element,
+        const char *name
+    );
     RECOIL_NOINLINE void RECOIL_THISCALL FreeLoadedTreeRoots(int unused);
     RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSeconds);
 };
@@ -1679,10 +1963,22 @@ struct HudCmdDialog {
     int RECOIL_THISCALL SelectCommandRelative(int delta);
     void RECOIL_THISCALL RebuildCommandBindingListsForGroup(int groupIndex);
     void RECOIL_THISCALL OnCommandSelectionChanged(int commandIndex);
-    int RECOIL_THISCALL ApplyPrimaryKeyRebind(int keyCode, int commandIndex);
-    int RECOIL_THISCALL ApplySecondaryKeyRebind(int keyCode, int commandIndex);
-    int RECOIL_THISCALL ApplyJoystickButtonRebind(int buttonCode, int commandIndex);
-    int RECOIL_THISCALL ApplyMouseButtonRebind(int buttonCode, int commandIndex);
+    int RECOIL_THISCALL ApplyPrimaryKeyRebind(
+        int keyCode,
+        int commandIndex
+    );
+    int RECOIL_THISCALL ApplySecondaryKeyRebind(
+        int keyCode,
+        int commandIndex
+    );
+    int RECOIL_THISCALL ApplyJoystickButtonRebind(
+        int buttonCode,
+        int commandIndex
+    );
+    int RECOIL_THISCALL ApplyMouseButtonRebind(
+        int buttonCode,
+        int commandIndex
+    );
 };
 
 struct HudOptionsDialog;
@@ -1815,7 +2111,12 @@ struct HudCmdDialogState {
     HudCmdDialogState *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudCmdDialogState) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialogState, m_dialog) == 0x04);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialogState,
+        m_dialog
+    ) == 0x04
+);
 
 extern RecoilApp_IState_Vtbl g_HudCmdDialogState_Vtbl;
 extern HudCmdDialogState g_HudCmdDialogState;
@@ -1835,12 +2136,18 @@ struct HudUiMessageBoxDialog : HudUiBackground {
     HudUiMessageBoxOkButton okButton;
     HudUiMessageBoxCancelButton cancelButton;
 
-    HudUiMessageBoxDialog *RECOIL_THISCALL Constructor(const char *zrdPath,
-                                                       const char *sectionName);
+    HudUiMessageBoxDialog *RECOIL_THISCALL Constructor(
+        const char *zrdPath,
+        const char *sectionName
+    );
     HudUiMessageBoxDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     void RECOIL_THISCALL Destructor();
-    int RECOIL_THISCALL RunModal(const char *messageText, const char *titleText,
-                                 void *modalContext = 0, float timeoutSeconds = -1.0f);
+    int RECOIL_THISCALL RunModal(
+        const char *messageText,
+        const char *titleText,
+        void *modalContext = 0,
+        float timeoutSeconds = -1.0f
+    );
     void RECOIL_THISCALL OnOk();
     void RECOIL_THISCALL OnCancel();
 };
@@ -1852,12 +2159,15 @@ struct HudUiPanelLayoutEntry {
 
     HudUiPanelLayoutEntry *RECOIL_THISCALL CopyConstruct(const HudUiPanelLayoutEntry *source);
     HudUiPanelLayoutEntry *RECOIL_THISCALL CopyAssign(const HudUiPanelLayoutEntry *source);
-    static HudUiPanelLayoutEntry *RECOIL_FASTCALL
-    CopyAssignRange(const HudUiPanelLayoutEntry *sourceStart,
-                    const HudUiPanelLayoutEntry *sourceEnd,
-                    HudUiPanelLayoutEntry *dest);
-    static void RECOIL_STDCALL DestroyRange(HudUiPanelLayoutEntry *start,
-                                            HudUiPanelLayoutEntry *end);
+    static HudUiPanelLayoutEntry *RECOIL_FASTCALL CopyAssignRange(
+        const HudUiPanelLayoutEntry *sourceStart,
+        const HudUiPanelLayoutEntry *sourceEnd,
+        HudUiPanelLayoutEntry *dest
+    );
+    static void RECOIL_STDCALL DestroyRange(
+        HudUiPanelLayoutEntry *start,
+        HudUiPanelLayoutEntry *end
+    );
 };
 
 struct HudUiPanelSpan {
@@ -1869,8 +2179,11 @@ struct HudUiPanelSpan {
     void RECOIL_THISCALL Clear();
     HudUiPanelSpan *RECOIL_THISCALL CopyInit(const HudUiPanelSpan *source);
     HudUiPanelSpan *RECOIL_THISCALL CopyFrom(const HudUiPanelSpan *source);
-    void RECOIL_THISCALL InsertN(HudUiPanelLayoutEntry *insertPos, unsigned int count,
-                                 const HudUiPanelLayoutEntry *templatePanel);
+    void RECOIL_THISCALL InsertN(
+        HudUiPanelLayoutEntry *insertPos,
+        unsigned int count,
+        const HudUiPanelLayoutEntry *templatePanel
+    );
     void RECOIL_THISCALL DestroyAndFree();
 };
 
@@ -1880,8 +2193,11 @@ struct HudUiPanelSpanVec {
     HudUiPanelSpan *end;
     HudUiPanelSpan *cap;
 
-    void RECOIL_THISCALL InsertN(HudUiPanelSpan *insertPos, unsigned int count,
-                                 const HudUiPanelSpan *templateSpan);
+    void RECOIL_THISCALL InsertN(
+        HudUiPanelSpan *insertPos,
+        unsigned int count,
+        const HudUiPanelSpan *templateSpan
+    );
 };
 
 struct HudUiZrdScrollingText {
@@ -1893,7 +2209,10 @@ struct HudUiZrdScrollingText {
     void RECOIL_THISCALL OnActivateResetOwnerFade();
     void RECOIL_THISCALL Update(float deltaSeconds);
     void RECOIL_THISCALL UpdateScrollPositions(float scrollProgress);
-    int RECOIL_THISCALL LoadFromZrd(zReader::Node *zrdSection, void *ownerDialog);
+    int RECOIL_THISCALL LoadFromZrd(
+        zReader::Node *zrdSection,
+        void *ownerDialog
+    );
     void RECOIL_THISCALL Destructor();
     HudUiZrdScrollingText *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
 };
@@ -1915,7 +2234,11 @@ struct HudUiCreditsPanel {
 struct HudUiPanelSimple {
     unsigned char storage[0x2a4];
 
-    HudUiPanelSimple *RECOIL_THISCALL Constructor(const char *text, int x, int y);
+    HudUiPanelSimple *RECOIL_THISCALL Constructor(
+        const char *text,
+        int x,
+        int y
+    );
     HudUiPanelSimple *RECOIL_THISCALL ConstructorDefaultThunk();
 };
 
@@ -1964,17 +2287,28 @@ struct HudUiTimerPanel {
 
     static void RECOIL_FASTCALL SetRunning(int running);
     static void RECOIL_STDCALL SetElapsedSeconds(float seconds);
-    static void RECOIL_STDCALL SetSeconds(float elapsedSeconds, float secondsStep);
+    static void RECOIL_STDCALL SetSeconds(
+        float elapsedSeconds,
+        float secondsStep
+    );
     static float RECOIL_CDECL GetSeconds();
-    static void RECOIL_FASTCALL ZarWriteTimerDataCallback(zZbdSectionCallbackCtx *sectionCtx,
-                                                          HudUiTimerPanel *userData);
-    static void RECOIL_STDCALL ZarReadTimerData(const float *buffer, int byteCount,
-                                                HudUiTimerPanel *userData);
+    static void RECOIL_FASTCALL ZarWriteTimerDataCallback(
+        zZbdSectionCallbackCtx *sectionCtx,
+        HudUiTimerPanel *userData
+    );
+    static void RECOIL_STDCALL ZarReadTimerData(
+        const float *buffer,
+        int byteCount,
+        HudUiTimerPanel *userData
+    );
     HudUiTimerPanel *RECOIL_THISCALL ConstructorDefault();
     void RECOIL_THISCALL Update(float deltaSeconds);
     void RECOIL_THISCALL UpdateHMSFromSeconds(float seconds);
-    void RECOIL_THISCALL SetTimeSeconds(int hours, int minutes,
-                                        int seconds);
+    void RECOIL_THISCALL SetTimeSeconds(
+        int hours,
+        int minutes,
+        int seconds
+    );
 };
 
 struct HudUiCounterTextPanel {
@@ -1999,12 +2333,16 @@ struct HudUiTripletEntries {
     HudUiScoreboardEntry *cap;
 
     RECOIL_NOINLINE int RECOIL_THISCALL GetCount();
-    RECOIL_NOINLINE static HudUiScoreboardEntry *RECOIL_STDCALL
-    CopyRange(HudUiScoreboardEntry *sourceBegin, HudUiScoreboardEntry *sourceEnd,
-              HudUiScoreboardEntry *dest);
-    RECOIL_NOINLINE static void RECOIL_STDCALL FillN(HudUiScoreboardEntry *dest,
-                                                     unsigned int count,
-                                                     const HudUiScoreboardEntry *sourceValue);
+    RECOIL_NOINLINE static HudUiScoreboardEntry *RECOIL_STDCALL CopyRange(
+        HudUiScoreboardEntry *sourceBegin,
+        HudUiScoreboardEntry *sourceEnd,
+        HudUiScoreboardEntry *dest
+    );
+    RECOIL_NOINLINE static void RECOIL_STDCALL FillN(
+        HudUiScoreboardEntry *dest,
+        unsigned int count,
+        const HudUiScoreboardEntry *sourceValue
+    );
 };
 
 struct HudUiTriplet {
@@ -2048,11 +2386,21 @@ struct HudUiTextStack4 {
     HudUiContainer base;
     unsigned char lines[4][0x2a4];
 
-    HudUiPanel *RECOIL_THISCALL PushLine(const char *message, float duration);
+    HudUiPanel *RECOIL_THISCALL PushLine(
+        const char *message,
+        float duration
+    );
     void RECOIL_THISCALL Clear();
-    RECOIL_NOINLINE void RECOIL_THISCALL SetFontAll(const char *faceName, int height,
-                                                    int weight, int width);
-    void RECOIL_THISCALL SetTextColors(unsigned int color0, unsigned int color1);
+    RECOIL_NOINLINE void RECOIL_THISCALL SetFontAll(
+        const char *faceName,
+        int height,
+        int weight,
+        int width
+    );
+    void RECOIL_THISCALL SetTextColors(
+        unsigned int color0,
+        unsigned int color1
+    );
     void RECOIL_THISCALL SetXAll(int x);
     void RECOIL_THISCALL SetYDescending(int yStart);
 };
@@ -2070,176 +2418,886 @@ struct HudUiChatMessageStack : HudUiTextStack4 {
 #if defined(_M_IX86) || defined(__i386__)
 RECOIL_STATIC_ASSERT(sizeof(HudUiRect) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(HudUiElement) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiElement, next) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudUiElement, parent) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudUiElement, flags) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiElement, timer) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudUiElement, x) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(HudUiElement, y) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(HudUiElement, bltSource) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiElement, clipRect) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(HudUiElement, state) == 0x30);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiElement,
+        next
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiElement,
+        parent
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiElement,
+        flags
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiElement,
+        timer
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiElement,
+        x
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiElement,
+        y
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiElement,
+        bltSource
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiElement,
+        clipRect
+    ) == 0x20
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiElement,
+        state
+    ) == 0x30
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiCircle) == 0x40);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCircle, radius) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCircle, radiusSquared) == 0x38);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCircle, color565) == 0x3c);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutBase, layoutRect) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutBase, activeRect) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutBase, widget0) == 0x30);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCircle,
+        radius
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCircle,
+        radiusSquared
+    ) == 0x38
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCircle,
+        color565
+    ) == 0x3c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutBase,
+        layoutRect
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutBase,
+        activeRect
+    ) == 0x20
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutBase,
+        widget0
+    ) == 0x30
+);
 RECOIL_STATIC_ASSERT(sizeof(HudLayoutBase) == 0xec);
 RECOIL_STATIC_ASSERT(sizeof(HudLayoutSW) == 0xec);
 RECOIL_STATIC_ASSERT(sizeof(HudLayoutHW_FTable) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutHW, base) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutHW, widget1) == 0xec);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutHW, widget1ImageDefault) == 0x1a8);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutHW, widget1Image320) == 0x1ac);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutHW, widget1Image400) == 0x1b0);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutHW, widget2) == 0x1b4);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutHW, widget2ImageDefault) == 0x270);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutHW, widget2Image320) == 0x274);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutHW, widget2Image400) == 0x278);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutHW, widget3) == 0x27c);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutHW, reticleClipRect) == 0x338);
-RECOIL_STATIC_ASSERT(offsetof(HudLayoutHW, reticleClipInitFlags) == 0x348);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutHW,
+        base
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutHW,
+        widget1
+    ) == 0xec
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutHW,
+        widget1ImageDefault
+    ) == 0x1a8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutHW,
+        widget1Image320
+    ) == 0x1ac
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutHW,
+        widget1Image400
+    ) == 0x1b0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutHW,
+        widget2
+    ) == 0x1b4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutHW,
+        widget2ImageDefault
+    ) == 0x270
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutHW,
+        widget2Image320
+    ) == 0x274
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutHW,
+        widget2Image400
+    ) == 0x278
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutHW,
+        widget3
+    ) == 0x27c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutHW,
+        reticleClipRect
+    ) == 0x338
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLayoutHW,
+        reticleClipInitFlags
+    ) == 0x348
+);
 RECOIL_STATIC_ASSERT(sizeof(HudLayoutHW) == 0x34c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorBlock, sensorRectScaled) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorBlock, sensorRectRaw) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorBlock, sensorPiVSrcRect) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorBlock, sensorClampHalfW) == 0x44);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorBlock, sensorClampHalfH) == 0x48);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrSensorBlock, sensorParam) == 0x4c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        sensorRectScaled
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        sensorRectRaw
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        sensorPiVSrcRect
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        sensorClampHalfW
+    ) == 0x44
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        sensorClampHalfH
+    ) == 0x48
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        sensorParam
+    ) == 0x4c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiShieldMessageWidget) == 0x4c4);
-RECOIL_STATIC_ASSERT(offsetof(HudUiShieldMessageWidget, widget) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiShieldMessageWidget, percentTextPanel) == 0xd8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiShieldMessageWidget, meter) == 0x37c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiShieldMessageWidget,
+        widget
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiShieldMessageWidget,
+        percentTextPanel
+    ) == 0xd8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiShieldMessageWidget,
+        meter
+    ) == 0x37c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiContainer) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(HudUiContainer_FTable) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundContainer_FTable) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTriplet_FTable) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTextStack4_FTable) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(HudUiStringMenu_FTable) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudUiContainer, enabled) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudUiContainer, childHead) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudUiContainer, childTail) == 0x0c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiContainer,
+        enabled
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiContainer,
+        childHead
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiContainer,
+        childTail
+    ) == 0x0c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiRectDirty) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiWidget, ownsImage) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiWidget, dirtyRectCount) == 0x38);
-RECOIL_STATIC_ASSERT(offsetof(HudUiWidget, image) == 0x3c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiWidget, imageStateWord) == 0x40);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPrimitiveBindTarget, endX) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPrimitiveBindTarget, endY) == 0x38);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPrimitiveBindTarget, color565) == 0x3c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiWidget, bltClipRectOrNull) == 0x44);
-RECOIL_STATIC_ASSERT(offsetof(HudUiWidget, alignFlags) == 0x48);
-RECOIL_STATIC_ASSERT(offsetof(HudUiWidget, dirtyRects) == 0x4c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiWidget,
+        ownsImage
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiWidget,
+        dirtyRectCount
+    ) == 0x38
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiWidget,
+        image
+    ) == 0x3c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiWidget,
+        imageStateWord
+    ) == 0x40
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPrimitiveBindTarget,
+        endX
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPrimitiveBindTarget,
+        endY
+    ) == 0x38
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPrimitiveBindTarget,
+        color565
+    ) == 0x3c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiWidget,
+        bltClipRectOrNull
+    ) == 0x44
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiWidget,
+        alignFlags
+    ) == 0x48
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiWidget,
+        dirtyRects
+    ) == 0x4c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiWidget) == 0xbc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundCursorWidget, capturedImage) == 0xbc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundCursorWidget, captureEnabled) == 0xc0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundCursorWidget, captureSourceSelector) == 0xc4);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackgroundCursorWidget,
+        capturedImage
+    ) == 0xbc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackgroundCursorWidget,
+        captureEnabled
+    ) == 0xc0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackgroundCursorWidget,
+        captureSourceSelector
+    ) == 0xc4
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundCursorWidget) == 0xd0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundVideoWidget, stream) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundVideoWidget, elapsedTimeSec) == 0x38);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundVideoWidget, colorKey565) == 0x3c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundVideoWidget, mediaPath) == 0x3e);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackgroundVideoWidget,
+        stream
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackgroundVideoWidget,
+        elapsedTimeSec
+    ) == 0x38
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackgroundVideoWidget,
+        colorKey565
+    ) == 0x3c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackgroundVideoWidget,
+        mediaPath
+    ) == 0x3e
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundVideoWidget) == 0x144);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTextLabel) == 0x148);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTextLabel, textBuffer) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTextLabel, fontHandle) == 0x134);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTextLabel, centerText) == 0x138);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTextLabel, centerBoundsLeft) == 0x13c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTextLabel, centerBoundsRight) == 0x140);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTextLabel, alignMode) == 0x144);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTextLabel,
+        textBuffer
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTextLabel,
+        fontHandle
+    ) == 0x134
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTextLabel,
+        centerText
+    ) == 0x138
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTextLabel,
+        centerBoundsLeft
+    ) == 0x13c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTextLabel,
+        centerBoundsRight
+    ) == 0x140
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTextLabel,
+        alignMode
+    ) == 0x144
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanelPtrVector) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelPtrVector, begin) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelPtrVector, end) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelPtrVector, capacityEnd) == 0x0c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelPtrVector,
+        begin
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelPtrVector,
+        end
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelPtrVector,
+        capacityEnd
+    ) == 0x0c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiZrdWidget) == 0x14c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, originX) == 0xbc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, originY) == 0xc0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, modeOrEnabled) == 0xc4);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, owner) == 0xc8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, boundsRect) == 0xcc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, defaultImage) == 0xdc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, disabledImage) == 0xe0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, rolloverImage) == 0xe4);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, rolloverSound) == 0xe8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, rolloverPlayHandle) == 0xec);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, rolloverSoundScale) == 0xf0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, activateImage) == 0xf4);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, activateSound) == 0xf8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, activatePlayHandle) == 0xfc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, activateSoundScale) == 0x100);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, disabledSound) == 0x104);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, disabledSoundScale) == 0x108);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, labelPanels) == 0x10c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, rolloverLabelPanels) == 0x11c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, activateLabelPanels) == 0x12c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidget, disabledLabelPanels) == 0x13c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        originX
+    ) == 0xbc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        originY
+    ) == 0xc0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        modeOrEnabled
+    ) == 0xc4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        owner
+    ) == 0xc8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        boundsRect
+    ) == 0xcc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        defaultImage
+    ) == 0xdc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        disabledImage
+    ) == 0xe0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        rolloverImage
+    ) == 0xe4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        rolloverSound
+    ) == 0xe8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        rolloverPlayHandle
+    ) == 0xec
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        rolloverSoundScale
+    ) == 0xf0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        activateImage
+    ) == 0xf4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        activateSound
+    ) == 0xf8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        activatePlayHandle
+    ) == 0xfc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        activateSoundScale
+    ) == 0x100
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        disabledSound
+    ) == 0x104
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        disabledSoundScale
+    ) == 0x108
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        labelPanels
+    ) == 0x10c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        rolloverLabelPanels
+    ) == 0x11c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        activateLabelPanels
+    ) == 0x12c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidget,
+        disabledLabelPanels
+    ) == 0x13c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiCheckToggleWidget) == 0x164);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCheckToggleWidget, checked) == 0x14c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCheckToggleWidget, disabledCheckedImage) == 0x150);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCheckToggleWidget, disabledCheckedFallbackImage) == 0x154);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCheckToggleWidget, uncheckedImage) == 0x158);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCheckToggleWidget, checkedImage) == 0x15c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCheckToggleWidget, checkedLabelPanel) == 0x160);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCheckToggleWidget,
+        checked
+    ) == 0x14c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCheckToggleWidget,
+        disabledCheckedImage
+    ) == 0x150
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCheckToggleWidget,
+        disabledCheckedFallbackImage
+    ) == 0x154
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCheckToggleWidget,
+        uncheckedImage
+    ) == 0x158
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCheckToggleWidget,
+        checkedImage
+    ) == 0x15c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCheckToggleWidget,
+        checkedLabelPanel
+    ) == 0x160
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiCycleSelectorWidget) == 0x208);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCycleSelectorWidget, selectedIndex) == 0x14c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCycleSelectorWidget, itemCount) == 0x150);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCycleSelectorWidget, firstIndex) == 0x154);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCycleSelectorWidget, visibleCount) == 0x158);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCycleSelectorWidget, fontStyleRef) == 0x15c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCycleSelectorWidget, textOffsetX) == 0x160);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCycleSelectorWidget, textOffsetY) == 0x164);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCycleSelectorWidget, entriesA) == 0x168);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCycleSelectorWidget, entriesB) == 0x1b8);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCycleSelectorWidget,
+        selectedIndex
+    ) == 0x14c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCycleSelectorWidget,
+        itemCount
+    ) == 0x150
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCycleSelectorWidget,
+        firstIndex
+    ) == 0x154
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCycleSelectorWidget,
+        visibleCount
+    ) == 0x158
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCycleSelectorWidget,
+        fontStyleRef
+    ) == 0x15c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCycleSelectorWidget,
+        textOffsetX
+    ) == 0x160
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCycleSelectorWidget,
+        textOffsetY
+    ) == 0x164
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCycleSelectorWidget,
+        entriesA
+    ) == 0x168
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCycleSelectorWidget,
+        entriesB
+    ) == 0x1b8
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiFillBitmap) == 0x188);
-RECOIL_STATIC_ASSERT(offsetof(HudUiFillBitmap, normalizedValue) == 0x14c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiFillBitmap, fillImage) == 0x150);
-RECOIL_STATIC_ASSERT(offsetof(HudUiFillBitmap, fillRect) == 0x154);
-RECOIL_STATIC_ASSERT(offsetof(HudUiFillBitmap, fillOffsetX) == 0x164);
-RECOIL_STATIC_ASSERT(offsetof(HudUiFillBitmap, fillOffsetY) == 0x168);
-RECOIL_STATIC_ASSERT(offsetof(HudUiFillBitmap, previewImage) == 0x16c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiFillBitmap, previewRect) == 0x170);
-RECOIL_STATIC_ASSERT(offsetof(HudUiFillBitmap, previewOffsetX) == 0x180);
-RECOIL_STATIC_ASSERT(offsetof(HudUiFillBitmap, previewOffsetY) == 0x184);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiFillBitmap,
+        normalizedValue
+    ) == 0x14c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiFillBitmap,
+        fillImage
+    ) == 0x150
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiFillBitmap,
+        fillRect
+    ) == 0x154
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiFillBitmap,
+        fillOffsetX
+    ) == 0x164
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiFillBitmap,
+        fillOffsetY
+    ) == 0x168
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiFillBitmap,
+        previewImage
+    ) == 0x16c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiFillBitmap,
+        previewRect
+    ) == 0x170
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiFillBitmap,
+        previewOffsetX
+    ) == 0x180
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiFillBitmap,
+        previewOffsetY
+    ) == 0x184
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiZrdWidgetEx17C_Item) == 0x17c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C_Item, selected) == 0x14c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C_Item, ownerSelector) == 0x150);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C_Item, itemIndex) == 0x154);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C_Item, mouseRectValid) == 0x158);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C_Item, mouseRect) == 0x15c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C_Item, selectedImage) == 0x16c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C_Item, unselectedImage) == 0x170);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C_Item, selectedRolloverImage) == 0x174);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C_Item, unselectedRolloverImage) == 0x178);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidgetEx17C_Item,
+        selected
+    ) == 0x14c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidgetEx17C_Item,
+        ownerSelector
+    ) == 0x150
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidgetEx17C_Item,
+        itemIndex
+    ) == 0x154
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidgetEx17C_Item,
+        mouseRectValid
+    ) == 0x158
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidgetEx17C_Item,
+        mouseRect
+    ) == 0x15c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidgetEx17C_Item,
+        selectedImage
+    ) == 0x16c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidgetEx17C_Item,
+        unselectedImage
+    ) == 0x170
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidgetEx17C_Item,
+        selectedRolloverImage
+    ) == 0x174
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidgetEx17C_Item,
+        unselectedRolloverImage
+    ) == 0x178
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiZrdWidgetEx17C) == 0x17c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C, optionCount) == 0x14c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C, options) == 0x150);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdWidgetEx17C, selectedIndex) == 0x178);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidgetEx17C,
+        optionCount
+    ) == 0x14c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidgetEx17C,
+        options
+    ) == 0x150
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdWidgetEx17C,
+        selectedIndex
+    ) == 0x178
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiListSelectorItem) == 0x2ac);
-RECOIL_STATIC_ASSERT(offsetof(HudUiListSelectorItem, entryIndex) == 0x2a4);
-RECOIL_STATIC_ASSERT(offsetof(HudUiListSelectorItem, owner) == 0x2a8);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiListSelectorItem,
+        entryIndex
+    ) == 0x2a4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiListSelectorItem,
+        owner
+    ) == 0x2a8
+);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdBindingVector) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingVector, begin) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingVector, end) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingVector, capacity) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingEntry, displayText) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindingEntry, commandId) == 0x04);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindingVector,
+        begin
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindingVector,
+        end
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindingVector,
+        capacity
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindingEntry,
+        displayText
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindingEntry,
+        commandId
+    ) == 0x04
+);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdBindingEntry) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdBindButtonBase) == 0x44c);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, bindingSlotTotalCount) == 0x164);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, visibleBindingSlotCount) == 0x168);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, bindPanel) == 0x16c);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, bindingSlotPanels) == 0x418);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, bindingVec) == 0x41c);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, bindingSlotSpacing) == 0x42c);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, selectedBindingIndex) == 0x430);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, visibleListOffsetX) == 0x434);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, visibleListOffsetY) == 0x438);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, overflowListOffsetX) == 0x43c);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, overflowListOffsetY) == 0x440);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, selectedFontStyleRef) == 0x444);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdBindButtonBase, listFontStyleRef) == 0x448);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        bindingSlotTotalCount
+    ) == 0x164
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        visibleBindingSlotCount
+    ) == 0x168
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        bindPanel
+    ) == 0x16c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        bindingSlotPanels
+    ) == 0x418
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        bindingVec
+    ) == 0x41c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        bindingSlotSpacing
+    ) == 0x42c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        selectedBindingIndex
+    ) == 0x430
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        visibleListOffsetX
+    ) == 0x434
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        visibleListOffsetY
+    ) == 0x438
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        overflowListOffsetX
+    ) == 0x43c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        overflowListOffsetY
+    ) == 0x440
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        selectedFontStyleRef
+    ) == 0x444
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdBindButtonBase,
+        listFontStyleRef
+    ) == 0x448
+);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdCommandList) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdKeyAButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdKeyBButton) == 0x44c);
@@ -2251,233 +3309,1143 @@ RECOIL_STATIC_ASSERT(sizeof(HudCmdSetListWidget) == 0x208);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdPromptPanel) == 0x2c0);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdDescriptionPanel) == 0x2a8);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdDialog) == 0xce00);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, resumeButton) == 0xa94c);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, resetButton) == 0xaa98);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, commandList) == 0xabe4);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, keyAButton) == 0xb030);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, keyBButton) == 0xb47c);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, joyButton) == 0xb8c8);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, mouseButton) == 0xbd14);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, setList) == 0xc160);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, nextSetButton) == 0xc368);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, prevSetButton) == 0xc4b4);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, nextCommandButton) == 0xc600);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, prevCommandButton) == 0xc74c);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, promptPanel) == 0xc898);
-RECOIL_STATIC_ASSERT(offsetof(HudCmdDialog, descriptionPanel) == 0xcb58);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        resumeButton
+    ) == 0xa94c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        resetButton
+    ) == 0xaa98
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        commandList
+    ) == 0xabe4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        keyAButton
+    ) == 0xb030
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        keyBButton
+    ) == 0xb47c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        joyButton
+    ) == 0xb8c8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        mouseButton
+    ) == 0xbd14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        setList
+    ) == 0xc160
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        nextSetButton
+    ) == 0xc368
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        prevSetButton
+    ) == 0xc4b4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        nextCommandButton
+    ) == 0xc600
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        prevCommandButton
+    ) == 0xc74c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        promptPanel
+    ) == 0xc898
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudCmdDialog,
+        descriptionPanel
+    ) == 0xcb58
+);
 RECOIL_STATIC_ASSERT(sizeof(HudOptionsDialog) == 0xbec4);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, backButton) == 0xa94c);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, lightingToggle) == 0xaa98);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, perspectiveToggle) == 0xabfc);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, fullHudToggle) == 0xad60);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, objectDetailSelector) == 0xaec4);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, textureMemorySelector) == 0xb0cc);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, effectsSelector) == 0xb2d4);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, soundActiveToggle) == 0xb4dc);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, soundQualitySelector) == 0xb640);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, soundVolumeWidget) == 0xb848);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, musicEnableToggle) == 0xb9d0);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, musicVolumeWidget) == 0xbb34);
-RECOIL_STATIC_ASSERT(offsetof(HudOptionsDialog, resolutionSelector) == 0xbcbc);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        backButton
+    ) == 0xa94c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        lightingToggle
+    ) == 0xaa98
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        perspectiveToggle
+    ) == 0xabfc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        fullHudToggle
+    ) == 0xad60
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        objectDetailSelector
+    ) == 0xaec4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        textureMemorySelector
+    ) == 0xb0cc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        effectsSelector
+    ) == 0xb2d4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        soundActiveToggle
+    ) == 0xb4dc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        soundQualitySelector
+    ) == 0xb640
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        soundVolumeWidget
+    ) == 0xb848
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        musicEnableToggle
+    ) == 0xb9d0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        musicVolumeWidget
+    ) == 0xbb34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudOptionsDialog,
+        resolutionSelector
+    ) == 0xbcbc
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundContainer) == 0x44);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundContainer, inputFocusElement) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundContainer, captureTransitionMask) == 0x40);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackgroundContainer,
+        inputFocusElement
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackgroundContainer,
+        captureTransitionMask
+    ) == 0x40
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundSoundEntry) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundSoundEntry, volume) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundSoundEntry, playHandle) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudUiDialogController, capturedImage) == 0x114);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackgroundSoundEntry,
+        volume
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackgroundSoundEntry,
+        playHandle
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiDialogController,
+        capturedImage
+    ) == 0x114
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiDialogController) == 0x118);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, cursorWidget) == 0x44);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, primaryClipImage) == 0x114);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, capturedCompositeImage) == 0x118);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, backgroundImageWidgets) == 0x11c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, backgroundVideoWidgets) == 0xfcc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, backgroundSounds) == 0x1c74);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, fontStyles) == 0x1cec);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, backgroundTextPanels) == 0x1fbc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, loadedRoot) == 0xa93c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, cfgRoot) == 0xa940);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, uiOriginX) == 0xa944);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBackground, uiOriginY) == 0xa948);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackground,
+        cursorWidget
+    ) == 0x44
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackground,
+        primaryClipImage
+    ) == 0x114
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackground,
+        capturedCompositeImage
+    ) == 0x118
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackground,
+        backgroundImageWidgets
+    ) == 0x11c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackground,
+        backgroundVideoWidgets
+    ) == 0xfcc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackground,
+        backgroundSounds
+    ) == 0x1c74
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackground,
+        fontStyles
+    ) == 0x1cec
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackground,
+        backgroundTextPanels
+    ) == 0x1fbc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackground,
+        loadedRoot
+    ) == 0xa93c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackground,
+        cfgRoot
+    ) == 0xa940
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackground,
+        uiOriginX
+    ) == 0xa944
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBackground,
+        uiOriginY
+    ) == 0xa948
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackground) == 0xa94c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, blitRect) == 0xa94c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, modalResult) == 0xa95c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, modalFrameCountdown) == 0xa960);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, fallbackWidth) == 0xa964);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, fallbackHeight) == 0xa968);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, backgroundImage) == 0xa96c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, okButtonNormalImage) == 0xa970);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, okButtonPressedImage) == 0xa974);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, backdropWidget) == 0xa978);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, messagePanel) == 0xaa34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, titlePanel) == 0xacd8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, okButton) == 0xaf7c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessageBoxDialog, cancelButton) == 0xb0c8);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        blitRect
+    ) == 0xa94c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        modalResult
+    ) == 0xa95c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        modalFrameCountdown
+    ) == 0xa960
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        fallbackWidth
+    ) == 0xa964
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        fallbackHeight
+    ) == 0xa968
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        backgroundImage
+    ) == 0xa96c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        okButtonNormalImage
+    ) == 0xa970
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        okButtonPressedImage
+    ) == 0xa974
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        backdropWidget
+    ) == 0xa978
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        messagePanel
+    ) == 0xaa34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        titlePanel
+    ) == 0xacd8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        okButton
+    ) == 0xaf7c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessageBoxDialog,
+        cancelButton
+    ) == 0xb0c8
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxDialog) == 0xb214);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanelLayoutEntry) == 0x2ac);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelLayoutEntry, layoutX) == 0x2a4);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelLayoutEntry, layoutY) == 0x2a8);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelLayoutEntry,
+        layoutX
+    ) == 0x2a4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelLayoutEntry,
+        layoutY
+    ) == 0x2a8
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanelSpan) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpan, begin) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpan, end) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpan, cap) == 0x0c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelSpan,
+        begin
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelSpan,
+        end
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelSpan,
+        cap
+    ) == 0x0c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanelSpanVec) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpanVec, begin) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpanVec, end) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelSpanVec, cap) == 0x0c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelSpanVec,
+        begin
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelSpanVec,
+        end
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelSpanVec,
+        cap
+    ) == 0x0c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiZrdScrollingText) == 0x170);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, rows) == 0x14c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, rect) == 0x15c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiZrdScrollingText, totalHeight) == 0x16c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel_FTable, SecondaryAction) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, fadeStep) == 0xa94c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, backButton) == 0xa950);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, quitButton) == 0xaa9c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, creditsScreen) == 0xabe8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCreditsPanel, fadeProgress) == 0xad58);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdScrollingText,
+        rows
+    ) == 0x14c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdScrollingText,
+        rect
+    ) == 0x15c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiZrdScrollingText,
+        totalHeight
+    ) == 0x16c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCreditsPanel_FTable,
+        SecondaryAction
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCreditsPanel,
+        fadeStep
+    ) == 0xa94c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCreditsPanel,
+        backButton
+    ) == 0xa950
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCreditsPanel,
+        quitButton
+    ) == 0xaa9c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCreditsPanel,
+        creditsScreen
+    ) == 0xabe8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCreditsPanel,
+        fadeProgress
+    ) == 0xad58
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiCreditsPanel) == 0xad5c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxOkButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessageBoxCancelButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTransitionTextPanel) == 0x2c0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTransitionTextPanel, flashCountdown) == 0x2a4);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTransitionTextPanel, flashResetValue) == 0x2a8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTransitionTextPanel, flashAltColor0) == 0x2ac);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTransitionTextPanel, flashAltColor1) == 0x2b0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTransitionTextPanel, flashEnabled) == 0x2b4);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTransitionTextPanel, flashMode) == 0x2b8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTransitionTextPanel, flashDirectionSign) == 0x2bc);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTransitionTextPanel,
+        flashCountdown
+    ) == 0x2a4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTransitionTextPanel,
+        flashResetValue
+    ) == 0x2a8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTransitionTextPanel,
+        flashAltColor0
+    ) == 0x2ac
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTransitionTextPanel,
+        flashAltColor1
+    ) == 0x2b0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTransitionTextPanel,
+        flashEnabled
+    ) == 0x2b4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTransitionTextPanel,
+        flashMode
+    ) == 0x2b8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTransitionTextPanel,
+        flashDirectionSign
+    ) == 0x2bc
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiCompositePanelEntry) == 0x2c0);
 RECOIL_STATIC_ASSERT(sizeof(HudUiCompositePanelVector) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCompositePanelVector, begin) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCompositePanelVector, end) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCompositePanelVector, capacityEnd) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCompositePanel, activeEntryCount) == 0x2a4);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCompositePanel, entryVector) == 0x2a8);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCompositePanelVector,
+        begin
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCompositePanelVector,
+        end
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCompositePanelVector,
+        capacityEnd
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCompositePanel,
+        activeEntryCount
+    ) == 0x2a4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCompositePanel,
+        entryVector
+    ) == 0x2a8
+);
 RECOIL_STATIC_ASSERT(sizeof(HudFontStyle) == 0x24);
-RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, validMarker) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, fontName) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, fontSize) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, textColor) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, bkColor) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, bkMode) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, shadowEnabled) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, fontWeight) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, alignMode) == 0x20);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudFontStyle,
+        validMarker
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudFontStyle,
+        fontName
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudFontStyle,
+        fontSize
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudFontStyle,
+        textColor
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudFontStyle,
+        bkColor
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudFontStyle,
+        bkMode
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudFontStyle,
+        shadowEnabled
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudFontStyle,
+        fontWeight
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudFontStyle,
+        alignMode
+    ) == 0x20
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTripletPanel) == 0x270);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTripletPanel, visibleCount) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTripletPanel, items) == 0x3c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTripletPanel,
+        visibleCount
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTripletPanel,
+        items
+    ) == 0x3c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiNanitePanel) == sizeof(HudUiTripletPanel));
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessage, variantImages) == 0xbc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessage, sideImageSwaps) == 0xd8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessage, panel) == 0xe0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelFull, layoutX) == 0x2a8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanelFull, layoutY) == 0x2ac);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessage,
+        variantImages
+    ) == 0xbc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessage,
+        sideImageSwaps
+    ) == 0xd8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessage,
+        panel
+    ) == 0xe0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelFull,
+        layoutX
+    ) == 0x2a8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanelFull,
+        layoutY
+    ) == 0x2ac
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanelFontParams) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMessage, widget) == 0x390);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessage,
+        widget
+    ) == 0x390
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessage) == 0x44c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCounter, base) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCounter, stateImages) == 0xbc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCounter, clipViewportRect) == 0xc8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCounter, layoutX) == 0xd8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCounter, layoutY) == 0xdc);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCounter,
+        base
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCounter,
+        stateImages
+    ) == 0xbc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCounter,
+        clipViewportRect
+    ) == 0xc8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCounter,
+        layoutX
+    ) == 0xd8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiCounter,
+        layoutY
+    ) == 0xdc
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiCounter) == 0xe0);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBarPoint) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPolylinePoint) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPolyline) == 0xe8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPolyline, points) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPolyline, pointCount) == 0xdc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPolyline, color565) == 0xe0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPolyline, clipRect) == 0xe4);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPolyline,
+        points
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPolyline,
+        pointCount
+    ) == 0xdc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPolyline,
+        color565
+    ) == 0xe0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPolyline,
+        clipRect
+    ) == 0xe4
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiSliderBorder) == 0x114);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, originX) == 0xe8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, originY) == 0xec);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, halfWidth) == 0xf0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, height) == 0xf4);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, blinkEnabled) == 0xf8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, blinkPeriodSec) == 0xfc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, blinkTimeRemainingSec) == 0x100);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, blinkDirSign) == 0x104);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, caretHalfWidth) == 0x108);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, inputActive) == 0x10c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, sliderVisibleWhenInputActive) == 0x110);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, rawKeyFilterEnabled) == 0x111);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSliderBorder,
+        originX
+    ) == 0xe8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSliderBorder,
+        originY
+    ) == 0xec
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSliderBorder,
+        halfWidth
+    ) == 0xf0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSliderBorder,
+        height
+    ) == 0xf4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSliderBorder,
+        blinkEnabled
+    ) == 0xf8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSliderBorder,
+        blinkPeriodSec
+    ) == 0xfc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSliderBorder,
+        blinkTimeRemainingSec
+    ) == 0x100
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSliderBorder,
+        blinkDirSign
+    ) == 0x104
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSliderBorder,
+        caretHalfWidth
+    ) == 0x108
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSliderBorder,
+        inputActive
+    ) == 0x10c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSliderBorder,
+        sliderVisibleWhenInputActive
+    ) == 0x110
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSliderBorder,
+        rawKeyFilterEnabled
+    ) == 0x111
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiBar) == 0x140);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBar, points) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBar, drawVertexCount) == 0x130);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBar, drawParam) == 0x134);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBar, quadHeight) == 0x138);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBar, quadLeftX) == 0x13c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBar,
+        points
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBar,
+        drawVertexCount
+    ) == 0x130
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBar,
+        drawParam
+    ) == 0x134
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBar,
+        quadHeight
+    ) == 0x138
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiBar,
+        quadLeftX
+    ) == 0x13c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMeter) == 0x140);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMeter, points) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMeter, drawVertexCount) == 0x130);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMeter, color565) == 0x134);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMeter, fillPixelsMax) == 0x138);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMeter, meterFlags) == 0x13c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMeter,
+        points
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMeter,
+        drawVertexCount
+    ) == 0x130
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMeter,
+        color565
+    ) == 0x134
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMeter,
+        fillPixelsMax
+    ) == 0x138
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMeter,
+        meterFlags
+    ) == 0x13c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiObjectiveBar) == 0x140);
-RECOIL_STATIC_ASSERT(offsetof(HudUiObjectiveBar, points) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiObjectiveBar, drawVertexCount) == 0x130);
-RECOIL_STATIC_ASSERT(offsetof(HudUiObjectiveBar, drawParam) == 0x134);
-RECOIL_STATIC_ASSERT(offsetof(HudUiObjectiveBar, slideRangeX) == 0x138);
-RECOIL_STATIC_ASSERT(offsetof(HudUiObjectiveBar, chatComposeActive) == 0x13c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiObjectiveBar,
+        points
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiObjectiveBar,
+        drawVertexCount
+    ) == 0x130
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiObjectiveBar,
+        drawParam
+    ) == 0x134
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiObjectiveBar,
+        slideRangeX
+    ) == 0x138
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiObjectiveBar,
+        chatComposeActive
+    ) == 0x13c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTextInput) == 0x110);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTextInput, buffer) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTextInput, capacity) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTextInput, cursor) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTextInput, keyActionMap) == 0x10);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTextInput,
+        buffer
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTextInput,
+        capacity
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTextInput,
+        cursor
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTextInput,
+        keyActionMap
+    ) == 0x10
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiOwnedTextInput) == 0x114);
-RECOIL_STATIC_ASSERT(offsetof(HudUiOwnedTextInput, owner) == 0x110);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiOwnedTextInput,
+        owner
+    ) == 0x110
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiNumericTextInput) == 0x374);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNumericTextInput, textInput) == 0x14c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNumericTextInput, owner) == 0x25c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNumericTextInput, sliderBorder) == 0x260);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNumericTextInput,
+        textInput
+    ) == 0x14c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNumericTextInput,
+        owner
+    ) == 0x25c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNumericTextInput,
+        sliderBorder
+    ) == 0x260
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiClampedIntTextInput) == 0x37c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiClampedIntTextInput, minValue) == 0x374);
-RECOIL_STATIC_ASSERT(offsetof(HudUiClampedIntTextInput, maxValue) == 0x378);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiClampedIntTextInput,
+        minValue
+    ) == 0x374
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiClampedIntTextInput,
+        maxValue
+    ) == 0x378
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiClampedIntStepButton) == 0x154);
-RECOIL_STATIC_ASSERT(offsetof(HudUiClampedIntStepButton, targetInput) == 0x14c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiClampedIntStepButton, stepDelta) == 0x150);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiClampedIntStepButton,
+        targetInput
+    ) == 0x14c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiClampedIntStepButton,
+        stepDelta
+    ) == 0x150
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiSlot) == 0x1c0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSlot, screenEdgeCode) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSlot, trackNode) == 0x38);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSlot, screenX) == 0x3c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSlot, screenY) == 0x40);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSlot, slotWidget) == 0x48);
-RECOIL_STATIC_ASSERT(offsetof(HudUiSlot, trackMarkerWidget) == 0x104);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSlot,
+        screenEdgeCode
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSlot,
+        trackNode
+    ) == 0x38
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSlot,
+        screenX
+    ) == 0x3c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSlot,
+        screenY
+    ) == 0x40
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSlot,
+        slotWidget
+    ) == 0x48
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiSlot,
+        trackMarkerWidget
+    ) == 0x104
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMgrObjectiveBlock) == 0x53c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, objectiveWidget) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, objectiveSensorRect) == 0xd8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, objectiveMeter) == 0x19c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, objectiveBar) == 0x2e8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, chatComposeTextInput) == 0x428);
-RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, counterTextPanel) == 0x538);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, textPick) == 0x148);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, hFont) == 0x154);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrObjectiveBlock,
+        objectiveWidget
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrObjectiveBlock,
+        objectiveSensorRect
+    ) == 0xd8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrObjectiveBlock,
+        objectiveMeter
+    ) == 0x19c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrObjectiveBlock,
+        objectiveBar
+    ) == 0x2e8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrObjectiveBlock,
+        chatComposeTextInput
+    ) == 0x428
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrObjectiveBlock,
+        counterTextPanel
+    ) == 0x538
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        textPick
+    ) == 0x148
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        hFont
+    ) == 0x154
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanel) == 0x2a4);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, textDirty) == 0x270);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, wordWrapEnabled) == 0x278);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanel, wrapRect) == 0x27c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        textDirty
+    ) == 0x270
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        wordWrapEnabled
+    ) == 0x278
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        wrapRect
+    ) == 0x27c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanelSimple) == 0x2a4);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTimerPanelFloat) == 0x2b0);
 RECOIL_STATIC_ASSERT(sizeof(HudUiStringMenu) == 0x3cdc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiStringMenu, items) == 0x20);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiStringMenu,
+        items
+    ) == 0x20
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiStatsListElement) == 0x38);
-RECOIL_STATIC_ASSERT(offsetof(HudUiStatsListElement, triplet) == 0x34);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiStatsListElement,
+        triplet
+    ) == 0x34
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTimerPanel) == 0x2b0);
 RECOIL_STATIC_ASSERT(sizeof(HudUiCounterTextPanel) == 0x2a4);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTripletEntries) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(HudUiScoreboardEntry) == 0x50);
-RECOIL_STATIC_ASSERT(offsetof(HudUiScoreboardEntry, displayName) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(HudUiScoreboardEntry, score) == 0x44);
-RECOIL_STATIC_ASSERT(offsetof(HudUiScoreboardEntry, lapCount) == 0x48);
-RECOIL_STATIC_ASSERT(offsetof(HudUiScoreboardEntry, playerColorPackedRgb) == 0x4c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiScoreboardEntry,
+        displayName
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiScoreboardEntry,
+        score
+    ) == 0x44
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiScoreboardEntry,
+        lapCount
+    ) == 0x48
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiScoreboardEntry,
+        playerColorPackedRgb
+    ) == 0x4c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTriplet) == 0xe0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTriplet, headerPanels) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTriplet, rowCells) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTriplet, entries) == 0x7c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTriplet, lapsColumnOffsetX) == 0x98);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTriplet, killsColumnOffsetX) == 0x9c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTriplet, fontSize) == 0xa0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTriplet, fontWeight) == 0xa4);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTriplet,
+        headerPanels
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTriplet,
+        rowCells
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTriplet,
+        entries
+    ) == 0x7c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTriplet,
+        lapsColumnOffsetX
+    ) == 0x98
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTriplet,
+        killsColumnOffsetX
+    ) == 0x9c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTriplet,
+        fontSize
+    ) == 0xa0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTriplet,
+        fontWeight
+    ) == 0xa4
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTextStack4) == 0xaa0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTextStack4, lines) == 0x10);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTextStack4,
+        lines
+    ) == 0x10
+);
 #endif

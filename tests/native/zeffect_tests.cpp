@@ -134,6 +134,48 @@ struct EffectAnimLoadZbdHeaderBlock {
 static_assert(sizeof(EffectAnimLoadZbdHeaderBlock) == 0x3c,
               "LoadZbd smoke header mirror must match the saved ZBD header block");
 
+struct EffectAnimTrackedNodeSaveRecord {
+    int nodeIndex;
+    int activeFlag;
+    int usesCachedMatrix;
+    float transform[12];
+    int diFlagBits;
+    int diUserValue;
+};
+
+struct EffectAnimActivationSaveHeader {
+    zEffectAnimActivationRecord base;
+    unsigned char unknown_50[4];
+    unsigned char savedActivationState;
+    unsigned char trackedNodeCount;
+    unsigned char unknown_56[2];
+};
+
+struct EffectAnimSaveHeader {
+    zEffectAnimActivationRecord base;
+    int entryTableIndex;
+    unsigned char savedActivationState;
+    unsigned char trackedNodeCount;
+    unsigned char unknown_56[2];
+};
+
+static_assert(sizeof(EffectAnimTrackedNodeSaveRecord) == 0x44,
+              "activation tracked-node save mirror must match retail size");
+static_assert(sizeof(EffectAnimActivationSaveHeader) == 0x58,
+              "activation save header mirror must match retail size");
+static_assert(sizeof(EffectAnimSaveHeader) == 0x58,
+              "anim save header mirror must match retail size");
+static_assert(offsetof(EffectAnimActivationSaveHeader, savedActivationState) == 0x54,
+              "activation state offset must match retail save payload");
+static_assert(offsetof(EffectAnimActivationSaveHeader, trackedNodeCount) == 0x55,
+              "tracked-node count offset must match retail save payload");
+static_assert(offsetof(EffectAnimSaveHeader, entryTableIndex) == 0x50,
+              "entry index offset must match retail save payload");
+static_assert(offsetof(EffectAnimSaveHeader, savedActivationState) == 0x54,
+              "anim state offset must match retail save payload");
+static_assert(offsetof(EffectAnimSaveHeader, trackedNodeCount) == 0x55,
+              "anim tracked-node count offset must match retail save payload");
+
 bool WriteEffectAnimLoadZbdMinimalFile(const char *path,
                                        const EffectAnimLoadZbdHeaderBlock &header) {
     std::FILE *stream = std::fopen(path, "wb");
@@ -930,12 +972,27 @@ extern "C" int hud_sensor_map_bounds_and_save_state_smoke(void) {
 
     tracker.SetSaveStateMarkerMaxDistance(12.0f);
     tracker.Init(&outer);
-    return tracker.mapFileVersion == 5 && tracker.mapNodeListHead == nullptr &&
-                   tracker.loadedMapPath == nullptr && tracker.mapScaleCurrent.x == 0.0f &&
-                   tracker.mapScaleCurrent.z == 0.0f && tracker.mapZoom == 1.0f &&
-                   tracker.saveStateMarkerMaxDistSq == 202500.0f
-               ? 0
-               : 4;
+    const bool initOk =
+        tracker.mapFileVersion == 5 && tracker.mapNodeListHead == nullptr &&
+        tracker.loadedMapPath == nullptr && tracker.mapScaleCurrent.x == 0.0f &&
+        tracker.mapScaleCurrent.z == 0.0f && tracker.mapZoom == 1.0f &&
+        tracker.saveStateMarkerMaxDistSq == 202500.0f;
+
+    HudSensorTracker noBounds = {};
+    noBounds.outerRect.left = 111;
+    noBounds.mapOverlayCenterX = 222;
+    noBounds.mapScaleCurrent.x = 9.0f;
+    noBounds.mapScaleCurrent.z = 10.0f;
+    noBounds.SetSaveStateMarkerMaxDistance(8.0f);
+    HudSensorTracker *const noBoundsResult = noBounds.InitNoBounds();
+    const bool noBoundsOk =
+        noBoundsResult == &noBounds && noBounds.outerRect.left == 111 &&
+        noBounds.mapOverlayCenterX == 222 && noBounds.mapFileVersion == 5 &&
+        noBounds.mapNodeListHead == nullptr && noBounds.loadedMapPath == nullptr &&
+        noBounds.mapScaleCurrent.x == 0.0f && noBounds.mapScaleCurrent.z == 0.0f &&
+        noBounds.mapZoom == 1.0f && noBounds.saveStateMarkerMaxDistSq == 202500.0f;
+
+    return initOk && noBoundsOk ? 0 : 4;
 }
 
 extern "C" int hud_sensor_map_remove_and_shutdown_smoke(void) {
@@ -967,12 +1024,23 @@ extern "C" int hud_sensor_map_remove_and_shutdown_smoke(void) {
     tracker.mapScaleCurrent = {2.0f, 3.0f, 4.0f};
     tracker.mapLoadedFlag = 0;
 
-    return tracker.MapShutdownAndReset() == 1 && tracker.mapNodeListHead == nullptr &&
-                   tracker.loadedMapPath == nullptr && tracker.mapFileVersion == 5 &&
-                   tracker.mapScaleLerpActive == 0 && tracker.mapScaleStart.x == 2.0f &&
-                   tracker.mapScaleStart.y == 3.0f && tracker.mapScaleStart.z == 4.0f
-               ? 0
-               : 2;
+    const bool shutdownOk =
+        tracker.MapShutdownAndReset() == 1 && tracker.mapNodeListHead == nullptr &&
+        tracker.loadedMapPath == nullptr && tracker.mapFileVersion == 5 &&
+        tracker.mapScaleLerpActive == 0 && tracker.mapScaleStart.x == 2.0f &&
+        tracker.mapScaleStart.y == 3.0f && tracker.mapScaleStart.z == 4.0f;
+
+    HudSensorTracker thunkTracker = {};
+    thunkTracker.mapScaleLerpActive = 1;
+    thunkTracker.mapScaleCurrent = {5.0f, 6.0f, 7.0f};
+    const bool thunkOk =
+        thunkTracker.MapShutdownAndResetThunk() == 1 &&
+        thunkTracker.mapNodeListHead == nullptr && thunkTracker.loadedMapPath == nullptr &&
+        thunkTracker.mapFileVersion == 5 && thunkTracker.mapScaleLerpActive == 0 &&
+        thunkTracker.mapScaleStart.x == 5.0f && thunkTracker.mapScaleStart.y == 6.0f &&
+        thunkTracker.mapScaleStart.z == 7.0f;
+
+    return shutdownOk && thunkOk ? 0 : 2;
 }
 
 extern "C" int hud_sensor_map_overlay_toggle_smoke(void) {
@@ -1236,6 +1304,107 @@ extern "C" int zutil_zar_write_section_blob_smoke(void) {
     manager.indexArchive.records = nullptr;
     CloseHandle(file);
     return ok ? 0 : 1;
+}
+
+extern "C" int zutil_zbd_temp_write_stream_smoke(void) {
+    zZbdManager *const oldManager = g_zUtil_ZbdManager;
+    g_zUtil_ZbdManager = nullptr;
+    FILE *const nullStream = zUtil_ZBD::OpenTempWriteStream();
+    if (nullStream != nullptr) {
+        fclose(nullStream);
+        return 1;
+    }
+
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    GetTempPathA(sizeof(tempPath), tempPath);
+    GetTempFileNameA(tempPath, "zbd", 0, tempFile);
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                    FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        g_zUtil_ZbdManager = oldManager;
+        return 2;
+    }
+
+    zZbdManager manager = {};
+    manager.indexArchive.hFile = file;
+    g_zUtil_ZbdManager = &manager;
+
+    FILE *const stream = zUtil_ZBD::OpenTempWriteStream();
+    if (stream == nullptr) {
+        CloseHandle(file);
+        g_zUtil_ZbdManager = oldManager;
+        return 3;
+    }
+
+    const unsigned char payload[5] = {0x10, 0x21, 0x32, 0x43, 0x54};
+    fwrite(payload, sizeof(payload), 1, stream);
+
+    zZbdSectionHandler handler = {};
+    handler.sectionName = "Running";
+    zZbdSectionCallbackCtx callbackCtx = {};
+    callbackCtx.manager = &manager;
+    callbackCtx.sectionHandler = &handler;
+    zUtil_ZBD::FlushTempWriteStreamToSectionRecord(stream, &callbackCtx, "Running007");
+
+    unsigned char readBack[sizeof(payload)] = {};
+    DWORD read = 0;
+    SetFilePointer(file, 0, nullptr, FILE_BEGIN);
+    ReadFile(file, readBack, sizeof(readBack), &read, nullptr);
+
+    const bool ok = manager.indexArchive.recordCount == 1 &&
+                    manager.indexArchive.recordCapacity == 2 &&
+                    manager.indexArchive.dirty == 1 &&
+                    manager.indexArchive.records != nullptr &&
+                    manager.indexArchive.records[0].fileOffset == 0 &&
+                    manager.indexArchive.records[0].fileSize == sizeof(payload) &&
+                    std::strcmp(manager.indexArchive.records[0].name,
+                                "Running/Running007") == 0 &&
+                    read == sizeof(readBack) &&
+                    std::memcmp(readBack, payload, sizeof(payload)) == 0;
+
+    std::free(manager.indexArchive.records);
+    manager.indexArchive.records = nullptr;
+    CloseHandle(file);
+    g_zUtil_ZbdManager = oldManager;
+    return ok ? 0 : 4;
+}
+
+extern "C" int zutil_zbd_temp_read_stream_smoke(void) {
+    zZbdManager *const oldManager = g_zUtil_ZbdManager;
+    const unsigned char payload[6] = {0x91, 0xa2, 0xb3, 0xc4, 0xd5, 0xe6};
+
+    g_zUtil_ZbdManager = nullptr;
+    FILE *const nullStream =
+        zUtil_ZBD::OpenTempReadStream((void *)(payload), sizeof(payload));
+    if (nullStream != nullptr) {
+        fclose(nullStream);
+        g_zUtil_ZbdManager = oldManager;
+        return 1;
+    }
+    zUtil_ZBD::CloseTempReadStream(nullptr);
+
+    zZbdManager manager = {};
+    g_zUtil_ZbdManager = &manager;
+
+    FILE *const stream = zUtil_ZBD::OpenTempReadStream((void *)(payload), sizeof(payload));
+    if (stream == nullptr) {
+        g_zUtil_ZbdManager = oldManager;
+        return 2;
+    }
+
+    unsigned char readBack[sizeof(payload)] = {};
+    const std::size_t read = fread(readBack, sizeof(readBack), 1, stream);
+    const int eofAfterPayload = fgetc(stream);
+    zUtil_ZBD::CloseTempReadStream(stream);
+
+    g_zUtil_ZbdManager = oldManager;
+    return read == 1 && eofAfterPayload == EOF &&
+                   std::memcmp(readBack, payload, sizeof(payload)) == 0
+               ? 0
+               : 3;
 }
 
 extern "C" int zutil_zbd_section_handler_invoke_data_ready_smoke(void) {
@@ -1625,6 +1794,28 @@ extern "C" int zutil_zar_load_file_global_smoke(void) {
     }
     DeleteFileA(tempFile);
     return nullManagerOk && delegateOk ? 0 : 3;
+}
+
+extern "C" int zutil_zar_request_stop_global_smoke(void) {
+    zZbdManager *const oldManager = g_zUtil_ZbdManager;
+
+    zZbdManager directManager = {};
+    directManager.stopRequested = 0;
+    directManager.RequestStop();
+    const bool directOk = directManager.stopRequested == 1;
+
+    g_zUtil_ZbdManager = nullptr;
+    zUtil::ZAR_RequestStopGlobal();
+    const bool nullOk = g_zUtil_ZbdManager == nullptr;
+
+    zZbdManager globalManager = {};
+    globalManager.stopRequested = 0;
+    g_zUtil_ZbdManager = &globalManager;
+    zUtil::ZAR_RequestStopGlobal();
+    const bool globalOk = globalManager.stopRequested == 1;
+
+    g_zUtil_ZbdManager = oldManager;
+    return directOk && nullOk && globalOk ? 0 : 1;
 }
 
 extern "C" int zeffect_anim_shutdown_entry_smoke(void) {
@@ -3949,6 +4140,122 @@ extern "C" int hud_sensor_run_start_anims_from_zrd_smoke(void) {
     return loadResult;
 }
 
+extern "C" int hud_sensor_zar_mission_late_restore_callback_smoke(void) {
+    zArchiveList *const oldMountedList = g_zArchive_MountedList;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+    const int oldQueueEnabled = g_zEffectAnim_RecordQueueEnabled;
+    const int oldDispatchEnabled = g_zEffectAnim_DispatchEnabled;
+    const unsigned int oldDispatchTag = g_zEffectAnim_ActivationDispatchTagHigh;
+    const auto oldDispatchCallback = g_zEffectAnim_ActivationDispatchCallback;
+
+    char tempDir[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "hlr", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    HANDLE const file = CreateFileA(
+        tempFile,
+        GENERIC_READ | GENERIC_WRITE,
+        FILE_SHARE_READ,
+        nullptr,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,
+        nullptr
+    );
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempFile);
+        return 2;
+    }
+
+    WriteEffectTestZrdArray(file, 3);
+    WriteEffectTestZrdString(file, "LOAD_GAME_START");
+    WriteEffectTestZrdArray(file, 2);
+    WriteEffectTestZrdArray(file, 2);
+    WriteEffectTestZrdString(file, "restoreflash");
+    FlushFileBuffers(file);
+
+    zZarFileRecord record = {};
+    record.fileOffset = 0;
+    record.fileSize = SetFilePointer(file, 0, nullptr, FILE_CURRENT);
+    std::strcpy(record.name, "StartAnims.zrd");
+    zIndexArchive archive = {};
+    archive.hFile = file;
+    archive.recordCount = 1;
+    archive.records = &record;
+    zArchiveListNode archiveNode = {};
+    archiveNode.payload = &archive;
+    archiveNode.next = &archiveNode;
+    archiveNode.prev = &archiveNode;
+    zArchiveList mountedList = {};
+    mountedList.count = 1;
+    mountedList.head = &archiveNode;
+
+    zClass_NodePartial boundNode = {};
+    boundNode.classId = 2;
+    zClass_NodePartial runtimeNode = {};
+    runtimeNode.callbackPriority = 3;
+    zEffectAnimEntry entry = {};
+    std::strcpy(entry.name, "restoreflash");
+    entry.boundNode = &boundNode;
+    entry.callbackNode = &boundNode;
+    entry.runtimeNode = &runtimeNode;
+    entry.activationPrereqCount = 7;
+    entry.velocityX = 31.0f;
+    entry.velocityY = 32.0f;
+    entry.velocityZ = 33.0f;
+
+    int networkEnabled = 0;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zArchive_MountedList = &mountedList;
+    g_zEffectAnim_EntryList = &entry;
+    g_zEffectAnim_EntryCount = 1;
+    zEffect_Anim::ClearActivationRecords();
+    g_zEffectAnim_RecordQueueEnabled = 1;
+    g_zEffectAnim_DispatchEnabled = 0;
+    g_zEffectAnim_ActivationDispatchCallback = nullptr;
+    g_zEffectAnim_ActivationDispatchTagHigh = 0;
+
+    HudSensorTracker tracker = {};
+    const std::uint32_t lateMissionData = 1;
+    HudSensorTracker::ZarMissionLate_RestoreCallback(
+        nullptr,
+        "LateMissionData",
+        &lateMissionData,
+        sizeof(lateMissionData),
+        &tracker
+    );
+
+    int result = 0;
+    if (entry.activationPrereqCount != 0 || entry.activationState != 2) {
+        result = 3;
+    } else if (entry.velocityX != 0.0f || entry.velocityY != 0.0f ||
+               entry.velocityZ != 0.0f) {
+        result = 4;
+    } else if (runtimeNode.callbackContext != reinterpret_cast<zClass_NodePartial *>(&entry)) {
+        result = 5;
+    } else if (g_zEffectAnim_ActivationRecordCount != 1 ||
+               g_zEffectAnim_ActivationRecordTable[0].commandType != 2) {
+        result = 6;
+    }
+
+    zEffect_Anim::ClearActivationRecords();
+    g_zEffectAnim_RecordQueueEnabled = oldQueueEnabled;
+    g_zEffectAnim_DispatchEnabled = oldDispatchEnabled;
+    g_zEffectAnim_ActivationDispatchCallback = oldDispatchCallback;
+    g_zEffectAnim_ActivationDispatchTagHigh = oldDispatchTag;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    g_zArchive_MountedList = oldMountedList;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    CloseHandle(file);
+    DeleteFileA(tempFile);
+    return result;
+}
+
 extern "C" int zeffect_anim_activation_record_queue_smoke(void) {
     zEffect_Anim::ClearActivationRecords();
     g_zEffectAnim_ActivationRecordCapacity = 0;
@@ -4123,6 +4430,1092 @@ extern "C" int zeffect_anim_process_activation_record_smoke(void) {
     std::strcpy(record.animName, "missing_activation_record_entry");
 
     return zEffect_Anim::ProcessActivationRecord(&record) == nullptr ? 0 : 1;
+}
+
+extern "C" int zeffect_anim_reset_from_activation_record_smoke(void) {
+    zClass_NodeFreeListSlot nodeSlots[1] = {};
+    zEffectAnimEntry entries[1] = {};
+    zEffectAnimActivationRecord record = {};
+
+    zClass_NodeFreeListSlot *const oldNodeArray = g_zClass_NodeArray;
+    const int oldNodeArraySize = g_zClass_NodeArraySize;
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+
+    std::strcpy(nodeSlots[0].node.name, "reset_root");
+    nodeSlots[0].freeTag = 0x01000000;
+
+    std::strcpy(entries[0].name, "reset_anim");
+    entries[0].boundNode = &nodeSlots[0].node;
+    entries[0].callbackNode = &nodeSlots[0].node;
+    entries[0].activationState = 3;
+    entries[0].triggerContext = 0x3f000000;
+
+    record.nodeToken = 0;
+    std::strcpy(record.animName, "reset_anim");
+
+    g_zClass_NodeArray = nodeSlots;
+    g_zClass_NodeArraySize = 1;
+    g_zEffectAnim_EntryList = entries;
+    g_zEffectAnim_EntryCount = 1;
+
+    zEffect_Anim::ResetFromActivationRecord(&record);
+
+    const bool ok = entries[0].activationState == 1 && (entries[0].flags & 0x40u) != 0 &&
+                    entries[0].boundNode == &nodeSlots[0].node &&
+                    entries[0].callbackNode == &nodeSlots[0].node &&
+                    entries[0].activationCountdown == 0.5f;
+
+    g_zClass_NodeArray = oldNodeArray;
+    g_zClass_NodeArraySize = oldNodeArraySize;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    return ok ? 0 : 1;
+}
+
+extern "C" int zeffect_anim_load_activation_records_smoke(void) {
+    const std::size_t payloadSize =
+        sizeof(EffectAnimActivationSaveHeader) + sizeof(EffectAnimTrackedNodeSaveRecord);
+    unsigned char payload[payloadSize] = {};
+    EffectAnimActivationSaveHeader *const header =
+        (EffectAnimActivationSaveHeader *)(payload);
+    EffectAnimTrackedNodeSaveRecord *const tracked =
+        (EffectAnimTrackedNodeSaveRecord *)(payload + sizeof(EffectAnimActivationSaveHeader));
+
+    zClass_NodeFreeListSlot nodeSlots[1] = {};
+    zClass_Object3DDataPartial objectData = {};
+    zDiPartial di = {};
+    zEffectAnimEntry entries[2] = {};
+    zEffectAnimEntry runtimeSibling = {};
+
+    zClass_NodeFreeListSlot *const oldNodeArray = g_zClass_NodeArray;
+    const int oldNodeArraySize = g_zClass_NodeArraySize;
+    zEffectAnimActivationRecord *const oldRecordTable = g_zEffectAnim_ActivationRecordTable;
+    const int oldRecordCapacity = g_zEffectAnim_ActivationRecordCapacity;
+    const int oldRecordCount = g_zEffectAnim_ActivationRecordCount;
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+
+    std::strcpy(nodeSlots[0].node.name, "tracked_node");
+    nodeSlots[0].node.classId = 5;
+    nodeSlots[0].node.classData = &objectData;
+    nodeSlots[0].node.userDataOrDiRef = (unsigned int)(&di);
+    nodeSlots[0].freeTag = 0x01000000;
+
+    std::strcpy(entries[0].name, "load_anim");
+    entries[0].boundNode = &nodeSlots[0].node;
+    entries[0].callbackNode = &nodeSlots[0].node;
+    entries[0].activationState = 3;
+
+    std::strcpy(entries[1].name, "reset_old");
+    entries[1].boundNode = &nodeSlots[0].node;
+    entries[1].callbackNode = &nodeSlots[0].node;
+    entries[1].activationState = 3;
+    entries[1].flags = 0x4000u;
+    entries[1].runtimeSibling = &runtimeSibling;
+    runtimeSibling.flags = 0x4000u;
+
+    zEffectAnimActivationRecord *const queuedRecord = (zEffectAnimActivationRecord *)(
+        std::calloc(1, sizeof(zEffectAnimActivationRecord)));
+    if (queuedRecord == nullptr) {
+        return 1;
+    }
+    g_zEffectAnim_ActivationRecordTable = queuedRecord;
+    g_zEffectAnim_ActivationRecordCapacity = 1;
+    g_zEffectAnim_ActivationRecordCount = 1;
+    std::strcpy(g_zEffectAnim_ActivationRecordTable[0].animName, "reset_old");
+    g_zEffectAnim_ActivationRecordTable[0].nodeToken = 0;
+
+    std::strcpy(header->base.animName, "load_anim");
+    header->base.commandType = 2;
+    header->base.recordId = 44;
+    header->base.nodeToken = -1;
+    header->base.params[0].f32 = 1.0f;
+    header->base.params[1].f32 = 2.0f;
+    header->base.params[2].f32 = 3.0f;
+    header->savedActivationState = 3;
+    header->trackedNodeCount = 1;
+
+    tracked->nodeIndex = 0;
+    tracked->activeFlag = 1;
+    tracked->usesCachedMatrix = 0;
+    tracked->transform[0] = 10.0f;
+    tracked->transform[1] = 11.0f;
+    tracked->transform[2] = 12.0f;
+    tracked->transform[3] = 1.0f;
+    tracked->transform[4] = 2.0f;
+    tracked->transform[5] = 3.0f;
+    tracked->transform[6] = 4.0f;
+    tracked->transform[7] = 5.0f;
+    tracked->transform[8] = 6.0f;
+    tracked->diFlagBits = 1;
+    std::uint32_t trackedBlendBits = 0;
+    StoreFloatBits(trackedBlendBits, 6.5f);
+    tracked->diUserValue = (int)trackedBlendBits;
+
+    g_zClass_NodeArray = nodeSlots;
+    g_zClass_NodeArraySize = 1;
+    g_zEffectAnim_EntryList = entries;
+    g_zEffectAnim_EntryCount = 2;
+
+    zEffect_Anim::LoadActivationRecords(nullptr, "Activation0000", payload, sizeof(payload),
+                                        nullptr);
+
+    std::uint32_t restoredBlendBits = 0;
+    StoreFloatBits(restoredBlendBits, di.blendScale);
+    const bool ok =
+        entries[0].activationState == 3 && (entries[0].flags & 0x4000u) != 0 &&
+        entries[1].activationState == 1 && (entries[1].flags & 0x4000u) == 0 &&
+        (runtimeSibling.flags & 0x4000u) == 0 && g_zEffectAnim_ActivationRecordCount == 1 &&
+        g_zEffectAnim_ActivationRecordTable != nullptr &&
+        g_zEffectAnim_ActivationRecordTable[0].commandType == 2 &&
+        g_zEffectAnim_ActivationRecordTable[0].recordId == 44 &&
+        std::strcmp(g_zEffectAnim_ActivationRecordTable[0].animName, "load_anim") == 0 &&
+        g_zEffectAnim_ActivationRecordTable[0].nodeToken == -1 &&
+        (nodeSlots[0].node.flags & 0x04) != 0 && objectData.localMatrix[9] == 10.0f &&
+        objectData.localMatrix[10] == 11.0f && objectData.localMatrix[11] == 12.0f &&
+        objectData.rotation.x == 1.0f && objectData.rotation.y == 2.0f &&
+        objectData.rotation.z == 3.0f && objectData.scale.x == 4.0f &&
+        objectData.scale.y == 5.0f && objectData.scale.z == 6.0f &&
+        (di.flags & 0x08) != 0 && restoredBlendBits == (std::uint32_t)(tracked->diUserValue);
+
+    zEffect_Anim::ClearActivationRecords();
+    g_zClass_NodeArray = oldNodeArray;
+    g_zClass_NodeArraySize = oldNodeArraySize;
+    g_zEffectAnim_ActivationRecordTable = oldRecordTable;
+    g_zEffectAnim_ActivationRecordCapacity = oldRecordCapacity;
+    g_zEffectAnim_ActivationRecordCount = oldRecordCount;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    return ok ? 0 : 2;
+}
+
+extern "C" int zeffect_anim_save_activation_records_smoke(void) {
+    zEffectAnimActivationRecord oldRecord0 = {};
+    zEffectAnimActivationRecord oldRecord1 = {};
+    zEffectAnimActivationRecord records[2] = {};
+    zEffectAnimEntry entries[1] = {};
+    zEffectAnimTrackedNode trackedNodes[1] = {};
+    zClass_NodeFreeListSlot nodeSlots[1] = {};
+    zClass_Object3DDataPartial objectData = {};
+    zDiPartial di = {};
+
+    zClass_NodeFreeListSlot *const oldNodeArray = g_zClass_NodeArray;
+    const int oldNodeArraySize = g_zClass_NodeArraySize;
+    zEffectAnimActivationRecord *const oldRecordTable = g_zEffectAnim_ActivationRecordTable;
+    const int oldRecordCount = g_zEffectAnim_ActivationRecordCount;
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+
+    std::strcpy(records[0].animName, "missing");
+    records[0].commandType = 2;
+    records[0].recordId = 17;
+    records[0].nodeToken = -1;
+    records[0].params[0].f32 = 1.25f;
+    oldRecord0 = records[0];
+
+    std::strcpy(records[1].animName, "save_me");
+    records[1].commandType = 1;
+    records[1].recordId = 18;
+    records[1].nodeToken = 0;
+    records[1].params[8].f32 = 9.5f;
+    oldRecord1 = records[1];
+
+    std::strcpy(entries[0].name, "save_me");
+    entries[0].boundNode = &nodeSlots[0].node;
+    entries[0].callbackNode = &nodeSlots[0].node;
+    entries[0].activationState = 6;
+    entries[0].trackedNodeCount = 1;
+    entries[0].trackedNodeList = trackedNodes;
+
+    std::strcpy(nodeSlots[0].node.name, "root");
+    nodeSlots[0].node.flags = 4;
+    nodeSlots[0].node.classId = 5;
+    nodeSlots[0].node.classData = &objectData;
+    nodeSlots[0].node.userDataOrDiRef = (unsigned int)(&di);
+    nodeSlots[0].freeTag = 0x01000000;
+
+    std::strcpy(trackedNodes[0].trackedNodeName, "root");
+    trackedNodes[0].trackedNode = &nodeSlots[0].node;
+
+    objectData.flags = 0;
+    objectData.rotation.x = 4.0f;
+    objectData.rotation.y = 5.0f;
+    objectData.rotation.z = 6.0f;
+    objectData.scale.x = 7.0f;
+    objectData.scale.y = 8.0f;
+    objectData.scale.z = 9.0f;
+    objectData.localMatrix[9] = 1.0f;
+    objectData.localMatrix[10] = 2.0f;
+    objectData.localMatrix[11] = 3.0f;
+    di.flags = 8;
+    di.blendScale = 42.0f;
+    std::uint32_t blendScaleBits = 0;
+    StoreFloatBits(blendScaleBits, di.blendScale);
+
+    g_zClass_NodeArray = nodeSlots;
+    g_zClass_NodeArraySize = 1;
+    g_zEffectAnim_ActivationRecordTable = records;
+    g_zEffectAnim_ActivationRecordCount = 2;
+    g_zEffectAnim_EntryList = entries;
+    g_zEffectAnim_EntryCount = 1;
+
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    GetTempPathA(sizeof(tempPath), tempPath);
+    GetTempFileNameA(tempPath, "act", 0, tempFile);
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                    FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        g_zClass_NodeArray = oldNodeArray;
+        g_zClass_NodeArraySize = oldNodeArraySize;
+        g_zEffectAnim_ActivationRecordTable = oldRecordTable;
+        g_zEffectAnim_ActivationRecordCount = oldRecordCount;
+        g_zEffectAnim_EntryList = oldEntryList;
+        g_zEffectAnim_EntryCount = oldEntryCount;
+        return 1;
+    }
+
+    zZbdManager manager = {};
+    manager.indexArchive.hFile = file;
+    zZbdSectionHandler handler = {};
+    handler.sectionName = "AnimActivation";
+    zZbdSectionCallbackCtx callbackCtx = {};
+    callbackCtx.manager = &manager;
+    callbackCtx.sectionHandler = &handler;
+
+    const int result = zEffect_Anim::SaveActivationRecords(&callbackCtx);
+
+    unsigned char fileBytes[0xf4] = {};
+    DWORD read = 0;
+    SetFilePointer(file, 0, nullptr, FILE_BEGIN);
+    ReadFile(file, fileBytes, sizeof(fileBytes), &read, nullptr);
+
+    EffectAnimActivationSaveHeader *const saved0 = (EffectAnimActivationSaveHeader *)(fileBytes);
+    EffectAnimActivationSaveHeader *const saved1 =
+        (EffectAnimActivationSaveHeader *)(fileBytes + sizeof(EffectAnimActivationSaveHeader));
+    EffectAnimTrackedNodeSaveRecord *const savedTracked =
+        (EffectAnimTrackedNodeSaveRecord *)(fileBytes + sizeof(EffectAnimActivationSaveHeader) +
+                                            sizeof(EffectAnimActivationSaveHeader));
+
+    const bool ok =
+        result == 1 && manager.indexArchive.recordCount == 2 &&
+        manager.indexArchive.records != nullptr &&
+        std::strcmp(manager.indexArchive.records[0].name, "AnimActivation/Activation0000") == 0 &&
+        manager.indexArchive.records[0].fileOffset == 0 &&
+        manager.indexArchive.records[0].fileSize == sizeof(EffectAnimActivationSaveHeader) &&
+        std::strcmp(manager.indexArchive.records[1].name, "AnimActivation/Activation0001") == 0 &&
+        manager.indexArchive.records[1].fileOffset == sizeof(EffectAnimActivationSaveHeader) &&
+        manager.indexArchive.records[1].fileSize ==
+            sizeof(EffectAnimActivationSaveHeader) + sizeof(EffectAnimTrackedNodeSaveRecord) &&
+        read == sizeof(fileBytes) &&
+        std::memcmp(&saved0->base, &oldRecord0, sizeof(oldRecord0)) == 0 &&
+        saved0->savedActivationState == 0 && saved0->trackedNodeCount == 0 &&
+        std::memcmp(&saved1->base, &oldRecord1, sizeof(oldRecord1)) == 0 &&
+        saved1->savedActivationState == 6 && saved1->trackedNodeCount == 1 &&
+        savedTracked->nodeIndex == 0 && savedTracked->activeFlag == 1 &&
+        savedTracked->usesCachedMatrix == 0 && savedTracked->transform[0] == 1.0f &&
+        savedTracked->transform[1] == 2.0f && savedTracked->transform[2] == 3.0f &&
+        savedTracked->transform[3] == 4.0f && savedTracked->transform[4] == 5.0f &&
+        savedTracked->transform[5] == 6.0f && savedTracked->transform[6] == 7.0f &&
+        savedTracked->transform[7] == 8.0f && savedTracked->transform[8] == 9.0f &&
+        (savedTracked->diFlagBits & 1) == 1 && savedTracked->diUserValue == (int)blendScaleBits &&
+        entries[0].boundNode == &nodeSlots[0].node && entries[0].callbackNode == &nodeSlots[0].node;
+
+    std::free(manager.indexArchive.records);
+    CloseHandle(file);
+    g_zClass_NodeArray = oldNodeArray;
+    g_zClass_NodeArraySize = oldNodeArraySize;
+    g_zEffectAnim_ActivationRecordTable = oldRecordTable;
+    g_zEffectAnim_ActivationRecordCount = oldRecordCount;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    return ok ? 0 : 2;
+}
+
+extern "C" int zeffect_anim_save_anim_records_smoke(void) {
+    zClass_NodeFreeListSlot *const oldNodeArray = g_zClass_NodeArray;
+    const int oldNodeArraySize = g_zClass_NodeArraySize;
+    const int oldActivationRecordCount = g_zEffectAnim_ActivationRecordCount;
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+    const int oldRecordQueueEnabled = g_zEffectAnim_RecordQueueEnabled;
+
+    zClass_NodeFreeListSlot nodeSlots[3] = {};
+    for (int i = 0; i < 3; ++i) {
+        nodeSlots[i].freeTag = 0x01000000;
+    }
+    zClass_Object3DDataPartial objectData = {};
+    zEffectAnimEntry entries[5] = {};
+    zEffectAnimTrackedNode trackedNodes[2] = {};
+
+    std::strcpy(nodeSlots[1].node.name, "object_one");
+    nodeSlots[1].node.flags = 4;
+    nodeSlots[1].node.classId = 5;
+    nodeSlots[1].node.classData = &objectData;
+    objectData.flags = 0;
+    objectData.localMatrix[9] = 10.0f;
+    objectData.localMatrix[10] = 11.0f;
+    objectData.localMatrix[11] = 12.0f;
+    objectData.rotation.x = 1.0f;
+    objectData.rotation.y = 2.0f;
+    objectData.rotation.z = 3.0f;
+    objectData.scale.x = 4.0f;
+    objectData.scale.y = 5.0f;
+    objectData.scale.z = 6.0f;
+
+    nodeSlots[2].node.classId = 1;
+
+    std::strcpy(trackedNodes[0].trackedNodeName, "object_one");
+    trackedNodes[0].trackedNode = &nodeSlots[1].node;
+    std::strcpy(trackedNodes[1].trackedNodeName, "not_object");
+    trackedNodes[1].trackedNode = &nodeSlots[2].node;
+
+    std::strcpy(entries[1].name, "save_one");
+    entries[1].activationState = 2;
+    entries[1].trackedNodeCount = 2;
+    entries[1].trackedNodeList = trackedNodes;
+
+    std::strcpy(entries[2].name, "state_skip");
+    entries[2].activationState = 5;
+
+    std::strcpy(entries[3].name, "flag_skip");
+    entries[3].activationState = 2;
+    entries[3].flags = 0x1000;
+
+    std::strcpy(entries[4].name, "save_four");
+    entries[4].activationState = 6;
+    entries[4].flags = 0x3000;
+
+    g_zClass_NodeArray = nodeSlots;
+    g_zClass_NodeArraySize = 3;
+    g_zEffectAnim_ActivationRecordCount = 2;
+    g_zEffectAnim_EntryList = entries;
+    g_zEffectAnim_EntryCount = 5;
+    g_zEffectAnim_RecordQueueEnabled = 1;
+
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    GetTempPathA(sizeof(tempPath), tempPath);
+    GetTempFileNameA(tempPath, "anim", 0, tempFile);
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                    FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        g_zClass_NodeArray = oldNodeArray;
+        g_zClass_NodeArraySize = oldNodeArraySize;
+        g_zEffectAnim_ActivationRecordCount = oldActivationRecordCount;
+        g_zEffectAnim_EntryList = oldEntryList;
+        g_zEffectAnim_EntryCount = oldEntryCount;
+        g_zEffectAnim_RecordQueueEnabled = oldRecordQueueEnabled;
+        return 1;
+    }
+
+    zZbdManager manager = {};
+    manager.indexArchive.hFile = file;
+    zZbdSectionHandler handler = {};
+    handler.sectionName = "Anim";
+    zZbdSectionCallbackCtx callbackCtx = {};
+    callbackCtx.manager = &manager;
+    callbackCtx.sectionHandler = &handler;
+
+    const int result = zEffect_Anim::SaveAnimRecords(&callbackCtx);
+
+    const unsigned int firstSize =
+        sizeof(EffectAnimSaveHeader) + sizeof(EffectAnimTrackedNodeSaveRecord) * 2;
+    const unsigned int secondSize = sizeof(EffectAnimSaveHeader);
+    unsigned char fileBytes[sizeof(EffectAnimSaveHeader) * 2 +
+                            sizeof(EffectAnimTrackedNodeSaveRecord) * 2] = {};
+    DWORD read = 0;
+    SetFilePointer(file, 0, nullptr, FILE_BEGIN);
+    ReadFile(file, fileBytes, sizeof(fileBytes), &read, nullptr);
+
+    EffectAnimSaveHeader *const saved0 = (EffectAnimSaveHeader *)(fileBytes);
+    EffectAnimTrackedNodeSaveRecord *const savedTracked0 =
+        (EffectAnimTrackedNodeSaveRecord *)(fileBytes + sizeof(EffectAnimSaveHeader));
+    EffectAnimTrackedNodeSaveRecord *const savedTracked1 = &savedTracked0[1];
+    EffectAnimSaveHeader *const saved1 = (EffectAnimSaveHeader *)(fileBytes + firstSize);
+
+    const bool archiveOk =
+        result == 1 && manager.indexArchive.recordCount == 2 &&
+        manager.indexArchive.records != nullptr &&
+        std::strcmp(manager.indexArchive.records[0].name, "Anim/Anim0003") == 0 &&
+        manager.indexArchive.records[0].fileOffset == 0 &&
+        manager.indexArchive.records[0].fileSize == firstSize &&
+        std::strcmp(manager.indexArchive.records[1].name, "Anim/Anim0006") == 0 &&
+        manager.indexArchive.records[1].fileOffset == firstSize &&
+        manager.indexArchive.records[1].fileSize == secondSize &&
+        read == sizeof(fileBytes);
+
+    const bool headerOk =
+        std::strcmp(saved0->base.animName, "save_one") == 0 &&
+        saved0->entryTableIndex == 1 && saved0->savedActivationState == 2 &&
+        saved0->trackedNodeCount == 2 &&
+        std::strcmp(saved1->base.animName, "save_four") == 0 &&
+        saved1->entryTableIndex == 4 && saved1->savedActivationState == 6 &&
+        saved1->trackedNodeCount == 0;
+
+    const bool trackedOk =
+        savedTracked0->nodeIndex == 1 && savedTracked0->activeFlag == 1 &&
+        savedTracked0->usesCachedMatrix == 0 && savedTracked0->transform[0] == 10.0f &&
+        savedTracked0->transform[1] == 11.0f && savedTracked0->transform[2] == 12.0f &&
+        savedTracked0->transform[3] == 1.0f && savedTracked0->transform[4] == 2.0f &&
+        savedTracked0->transform[5] == 3.0f && savedTracked0->transform[6] == 4.0f &&
+        savedTracked0->transform[7] == 5.0f && savedTracked0->transform[8] == 6.0f &&
+        savedTracked1->nodeIndex == -1;
+
+    std::free(manager.indexArchive.records);
+    CloseHandle(file);
+    g_zClass_NodeArray = oldNodeArray;
+    g_zClass_NodeArraySize = oldNodeArraySize;
+    g_zEffectAnim_ActivationRecordCount = oldActivationRecordCount;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    g_zEffectAnim_RecordQueueEnabled = oldRecordQueueEnabled;
+    return archiveOk && headerOk && trackedOk ? 0 : 2;
+}
+
+extern "C" int zeffect_anim_load_anim_records_smoke(void) {
+    const std::size_t payloadSize =
+        sizeof(EffectAnimSaveHeader) + sizeof(EffectAnimTrackedNodeSaveRecord) * 3;
+    unsigned char payload[payloadSize] = {};
+    EffectAnimSaveHeader *const header = (EffectAnimSaveHeader *)(payload);
+    EffectAnimTrackedNodeSaveRecord *const tracked =
+        (EffectAnimTrackedNodeSaveRecord *)(payload + sizeof(EffectAnimSaveHeader));
+
+    zClass_NodeFreeListSlot nodeSlots[3] = {};
+    zClass_Object3DDataPartial inactiveObjectData = {};
+    zClass_Object3DDataPartial matrixObjectData = {};
+    zEffectAnimEntry entries[2] = {};
+    zEffectAnimEntry runtimeSibling = {};
+
+    zClass_NodeFreeListSlot *const oldNodeArray = g_zClass_NodeArray;
+    const int oldNodeArraySize = g_zClass_NodeArraySize;
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+
+    for (int i = 0; i < 3; ++i) {
+        nodeSlots[i].freeTag = 0x01000000;
+    }
+
+    std::strcpy(nodeSlots[0].node.name, "root_node");
+    nodeSlots[0].node.flags = 4;
+
+    std::strcpy(nodeSlots[1].node.name, "inactive_object");
+    nodeSlots[1].node.flags = 4;
+    nodeSlots[1].node.classId = 5;
+    nodeSlots[1].node.classData = &inactiveObjectData;
+    inactiveObjectData.localMatrix[9] = 100.0f;
+
+    std::strcpy(nodeSlots[2].node.name, "matrix_object");
+    nodeSlots[2].node.flags = 0;
+    nodeSlots[2].node.classId = 5;
+    nodeSlots[2].node.classData = &matrixObjectData;
+
+    std::strcpy(entries[1].name, "load_one");
+    entries[1].boundNode = &nodeSlots[0].node;
+    entries[1].callbackNode = &nodeSlots[0].node;
+    entries[1].activationState = 4;
+    entries[1].triggerContext = 0x3f000000;
+    entries[1].runtimeSibling = &runtimeSibling;
+
+    std::strcpy(runtimeSibling.name, "load_sibling");
+    runtimeSibling.boundNode = &nodeSlots[0].node;
+    runtimeSibling.callbackNode = &nodeSlots[0].node;
+    runtimeSibling.activationState = 2;
+    runtimeSibling.triggerContext = 0x40000000;
+
+    header->entryTableIndex = 1;
+    header->savedActivationState = 1;
+    header->trackedNodeCount = 3;
+
+    tracked[0].nodeIndex = 1;
+    tracked[0].activeFlag = 0;
+    tracked[0].usesCachedMatrix = 0;
+    tracked[0].transform[0] = 10.0f;
+    tracked[0].transform[1] = 11.0f;
+    tracked[0].transform[2] = 12.0f;
+
+    tracked[1].nodeIndex = 2;
+    tracked[1].activeFlag = 1;
+    tracked[1].usesCachedMatrix = 1;
+    for (int i = 0; i < 12; ++i) {
+        tracked[1].transform[i] = 20.0f + (float)(i);
+    }
+
+    tracked[2].nodeIndex = 0;
+    tracked[2].activeFlag = 1;
+    tracked[2].usesCachedMatrix = 0;
+
+    g_zClass_NodeArray = nodeSlots;
+    g_zClass_NodeArraySize = 3;
+    g_zEffectAnim_EntryList = entries;
+    g_zEffectAnim_EntryCount = 2;
+
+    zEffect_Anim::LoadAnimRecords(nullptr, "Anim0003", payload, sizeof(payload), nullptr);
+
+    bool matrixOk = true;
+    for (int i = 0; i < 12; ++i) {
+        if (matrixObjectData.localMatrix[i] != tracked[1].transform[i]) {
+            matrixOk = false;
+        }
+    }
+
+    const bool resetOk =
+        entries[1].activationState == 1 && (entries[1].flags & 0x40u) != 0 &&
+        entries[1].activationCountdown == 0.5f && runtimeSibling.activationState == 1 &&
+        (runtimeSibling.flags & 0x40u) != 0 && runtimeSibling.activationCountdown == 2.0f;
+
+    const bool trackedOk =
+        (nodeSlots[1].node.flags & 0x04) == 0 && inactiveObjectData.localMatrix[9] == 100.0f &&
+        (nodeSlots[2].node.flags & 0x04) != 0 && matrixOk &&
+        (matrixObjectData.flags & 0x11) == 0x11;
+
+    g_zClass_NodeArray = oldNodeArray;
+    g_zClass_NodeArraySize = oldNodeArraySize;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    return resetOk && trackedOk ? 0 : 2;
+}
+
+extern "C" int zeffect_anim_save_running_anim_record_smoke(void) {
+    struct TestRunningHeader {
+        int entryTableIndex;
+        int matchSavedRootNode;
+        char entryName[0x20];
+        int rootNodeIndex;
+        int nodeRefAIndex;
+        zVec3 refVecA;
+        int nodeRefBIndex;
+        zVec3 refVecB;
+        unsigned char activationState;
+        unsigned char unknown_4d[3];
+        float triggerCurrentValue;
+        float activationCountdown;
+        float velocityX;
+        float velocityY;
+        float velocityZ;
+        unsigned char runtimeSurfaceCount;
+        unsigned char lightRefCount;
+        unsigned char soundRefCount;
+        unsigned char reserved;
+    };
+
+    struct TestRuntimeNodeRecord {
+        char name[0x24];
+        int isAttached;
+        float posX;
+        float posY;
+        float posZ;
+        int parentNodeIndex;
+    };
+
+    struct TestSoundNodeRecord {
+        char name[0x24];
+        int isAttached;
+        int hasPosition;
+        float posX;
+        float posY;
+        float posZ;
+        int parentNodeIndex;
+    };
+
+    zClass_NodeFreeListSlot *const oldNodeArray = g_zClass_NodeArray;
+    const int oldNodeArraySize = g_zClass_NodeArraySize;
+    zZbdManager *const oldManager = g_zUtil_ZbdManager;
+
+    zClass_NodeFreeListSlot nodeSlots[4] = {};
+    for (int i = 0; i < 4; ++i) {
+        nodeSlots[i].freeTag = 0x01000000;
+    }
+    g_zClass_NodeArray = nodeSlots;
+    g_zClass_NodeArraySize = 4;
+
+    zClass_NodePartial *lightParents[1] = {&nodeSlots[2].node};
+    zClass_NodePartial *soundParents[1] = {&nodeSlots[3].node};
+    zClass_LightDataPartial lightData = {};
+    zClass_SoundDataPartial soundData = {};
+
+    nodeSlots[1].node.classData = &lightData;
+    nodeSlots[1].node.listCountA = 1;
+    nodeSlots[1].node.listA = lightParents;
+    lightData.worldPosition.y = 1.5f;
+    lightData.worldPosition.z = 2.5f;
+    lightData.savedParentMatrix[0] = 3.5f;
+
+    nodeSlots[2].node.classData = &soundData;
+    nodeSlots[2].node.listCountA = 1;
+    nodeSlots[2].node.listA = soundParents;
+    soundData.runtimeFlags = 2;
+    soundData.localPosition.x = 4.5f;
+    soundData.localPosition.y = 5.5f;
+    soundData.localPosition.z = 6.5f;
+
+    unsigned char eventStream[4] = {0xaa, 0xbb, 0xcc, 0xdd};
+    zEffectAnimSurfaceRuntime runtime = {};
+    std::strcpy(runtime.sequenceName, "surface");
+    runtime.runState = 2;
+    runtime.resetMode = 6;
+    runtime.sequenceElapsedSec = 7.0f;
+    runtime.currentEvent = eventStream + 2;
+    runtime.eventStream = eventStream;
+    runtime.eventStreamSize = sizeof(eventStream);
+
+    zEffectAnimRuntimeNodeRef lightRef = {};
+    std::strcpy(lightRef.name.text, "light_one");
+    lightRef.runtimeNode = &nodeSlots[1].node;
+    lightRef.isAttached = 1;
+
+    zEffectAnimRuntimeNodeRef soundRef = {};
+    std::strcpy(soundRef.name.text, "sound_one");
+    soundRef.runtimeNode = &nodeSlots[2].node;
+    soundRef.isAttached = 0;
+
+    zEffectAnimEntry entry = {};
+    std::strcpy(entry.name, "runner");
+    entry.boundNode = &nodeSlots[0].node;
+    entry.activationState = 6;
+    entry.triggerCurrentValue = 8.0f;
+    entry.activationCountdown = 9.0f;
+    entry.velocityX = 10.0f;
+    entry.velocityY = 11.0f;
+    entry.velocityZ = 12.0f;
+    entry.runtimeSequenceCount = 1;
+    entry.runtimeList = &runtime;
+    entry.lightRefCount = 1;
+    entry.lightRefList = &lightRef;
+    entry.soundRefCount = 1;
+    entry.soundRefList = &soundRef;
+    entry.resetScratch[0] =
+        static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(&nodeSlots[1].node));
+    StoreFloatBits(entry.resetScratch[1], 13.0f);
+    StoreFloatBits(entry.resetScratch[2], 14.0f);
+    StoreFloatBits(entry.resetScratch[3], 15.0f);
+    entry.resetScratch[4] =
+        static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(&nodeSlots[2].node));
+    StoreFloatBits(entry.resetScratch[5], 16.0f);
+    StoreFloatBits(entry.resetScratch[6], 17.0f);
+    StoreFloatBits(entry.resetScratch[7], 18.0f);
+
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    GetTempPathA(sizeof(tempPath), tempPath);
+    GetTempFileNameA(tempPath, "run", 0, tempFile);
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                    FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        g_zClass_NodeArray = oldNodeArray;
+        g_zClass_NodeArraySize = oldNodeArraySize;
+        g_zUtil_ZbdManager = oldManager;
+        return 1;
+    }
+
+    zZbdManager manager = {};
+    manager.indexArchive.hFile = file;
+    g_zUtil_ZbdManager = &manager;
+    zZbdSectionHandler handler = {};
+    handler.sectionName = "RunningAnim";
+    zZbdSectionCallbackCtx callbackCtx = {};
+    callbackCtx.manager = &manager;
+    callbackCtx.sectionHandler = &handler;
+
+    const int result = zEffect_Anim::SaveRunningAnimRecord(&callbackCtx, &entry, 7, 1);
+
+    const unsigned int expectedSize =
+        sizeof(TestRunningHeader) + sizeof(zEffectAnimSurfaceRuntime) + sizeof(eventStream) +
+        sizeof(TestRuntimeNodeRecord) + sizeof(TestSoundNodeRecord);
+    unsigned char fileBytes[0x120] = {};
+    DWORD read = 0;
+    SetFilePointer(file, 0, nullptr, FILE_BEGIN);
+    ReadFile(file, fileBytes, sizeof(fileBytes), &read, nullptr);
+
+    TestRunningHeader *const header = (TestRunningHeader *)(fileBytes);
+    zEffectAnimSurfaceRuntime *const savedRuntime =
+        (zEffectAnimSurfaceRuntime *)(fileBytes + sizeof(TestRunningHeader));
+    unsigned char *const savedEvents =
+        fileBytes + sizeof(TestRunningHeader) + sizeof(zEffectAnimSurfaceRuntime);
+    TestRuntimeNodeRecord *const savedLight =
+        (TestRuntimeNodeRecord *)(savedEvents + sizeof(eventStream));
+    TestSoundNodeRecord *const savedSound =
+        (TestSoundNodeRecord *)((unsigned char *)(savedLight) + sizeof(TestRuntimeNodeRecord));
+
+    const bool headerOk =
+        header->entryTableIndex == 7 && header->matchSavedRootNode == 1 &&
+        std::strcmp(header->entryName, "runner") == 0 && header->rootNodeIndex == 0 &&
+        header->nodeRefAIndex == 1 && header->refVecA.x == 13.0f &&
+        header->refVecA.y == 14.0f && header->refVecA.z == 15.0f &&
+        header->nodeRefBIndex == 2 && header->refVecB.x == 16.0f &&
+        header->refVecB.y == 17.0f && header->refVecB.z == 18.0f &&
+        header->activationState == 6 && header->triggerCurrentValue == 8.0f &&
+        header->activationCountdown == 9.0f && header->velocityX == 10.0f &&
+        header->velocityY == 11.0f && header->velocityZ == 12.0f &&
+        header->runtimeSurfaceCount == 1 && header->lightRefCount == 1 &&
+        header->soundRefCount == 1;
+
+    const bool runtimeOk =
+        std::strcmp(savedRuntime->sequenceName, "surface") == 0 &&
+        savedRuntime->runState == 2 && savedRuntime->resetMode == 6 &&
+        savedRuntime->currentEvent == (void *)(2) &&
+        savedRuntime->eventStream == eventStream &&
+        savedRuntime->eventStreamSize == sizeof(eventStream) &&
+        std::memcmp(savedEvents, eventStream, sizeof(eventStream)) == 0;
+
+    const bool lightOk =
+        std::strcmp(savedLight->name, "light_one") == 0 && savedLight->isAttached == 1 &&
+        savedLight->posX == 1.5f && savedLight->posY == 2.5f &&
+        savedLight->posZ == 3.5f && savedLight->parentNodeIndex == 2;
+
+    const bool soundOk =
+        std::strcmp(savedSound->name, "sound_one") == 0 && savedSound->isAttached == 0 &&
+        savedSound->hasPosition == 1 && savedSound->posX == 4.5f &&
+        savedSound->posY == 5.5f && savedSound->posZ == 6.5f &&
+        savedSound->parentNodeIndex == 3;
+
+    const bool archiveOk =
+        result == 1 && manager.indexArchive.recordCount == 1 &&
+        manager.indexArchive.records != nullptr &&
+        std::strcmp(manager.indexArchive.records[0].name, "RunningAnim/Running007") == 0 &&
+        manager.indexArchive.records[0].fileOffset == 0 &&
+        manager.indexArchive.records[0].fileSize == expectedSize && read == expectedSize;
+
+    std::free(manager.indexArchive.records);
+    CloseHandle(file);
+    g_zClass_NodeArray = oldNodeArray;
+    g_zClass_NodeArraySize = oldNodeArraySize;
+    g_zUtil_ZbdManager = oldManager;
+    return archiveOk && headerOk && runtimeOk && lightOk && soundOk ? 0 : 2;
+}
+
+extern "C" int zeffect_anim_save_running_anim_records_smoke(void) {
+    struct TestRunningHeader {
+        int entryTableIndex;
+        int matchSavedRootNode;
+        char entryName[0x20];
+        int rootNodeIndex;
+        int nodeRefAIndex;
+        zVec3 refVecA;
+        int nodeRefBIndex;
+        zVec3 refVecB;
+        unsigned char activationState;
+        unsigned char unknown_4d[3];
+        float triggerCurrentValue;
+        float activationCountdown;
+        float velocityX;
+        float velocityY;
+        float velocityZ;
+        unsigned char runtimeSurfaceCount;
+        unsigned char lightRefCount;
+        unsigned char soundRefCount;
+        unsigned char reserved;
+    };
+
+    zClass_NodeFreeListSlot *const oldNodeArray = g_zClass_NodeArray;
+    const int oldNodeArraySize = g_zClass_NodeArraySize;
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+    const int oldRecordQueueEnabled = g_zEffectAnim_RecordQueueEnabled;
+    zZbdManager *const oldManager = g_zUtil_ZbdManager;
+
+    zClass_NodeFreeListSlot nodeSlots[8] = {};
+    for (int i = 0; i < 8; ++i) {
+        nodeSlots[i].freeTag = 0x01000000;
+    }
+    g_zClass_NodeArray = nodeSlots;
+    g_zClass_NodeArraySize = 8;
+
+    zEffectAnimEntry entries[5] = {};
+    zEffectAnimEntry activeSibling = {};
+    zEffectAnimEntry inactiveSibling = {};
+    zEffectAnimEntry skippedFlagSibling = {};
+    zEffectAnimEntry skippedStateSibling = {};
+
+    std::strcpy(entries[1].name, "primary_one");
+    entries[1].activationState = 2;
+    entries[1].boundNode = &nodeSlots[1].node;
+    entries[1].runtimeSibling = &activeSibling;
+
+    std::strcpy(activeSibling.name, "sibling_saved");
+    activeSibling.activationState = 2;
+    activeSibling.boundNode = &nodeSlots[2].node;
+    activeSibling.runtimeSibling = &inactiveSibling;
+
+    std::strcpy(inactiveSibling.name, "sibling_skip");
+    inactiveSibling.activationState = 6;
+    inactiveSibling.boundNode = &nodeSlots[3].node;
+
+    std::strcpy(entries[2].name, "flag_skip");
+    entries[2].activationState = 2;
+    entries[2].flags = 0x1000;
+    entries[2].boundNode = &nodeSlots[4].node;
+    entries[2].runtimeSibling = &skippedFlagSibling;
+
+    std::strcpy(skippedFlagSibling.name, "flag_sibling_skip");
+    skippedFlagSibling.activationState = 2;
+    skippedFlagSibling.boundNode = &nodeSlots[5].node;
+
+    std::strcpy(entries[3].name, "primary_three");
+    entries[3].activationState = 6;
+    entries[3].flags = 0x3000;
+    entries[3].boundNode = &nodeSlots[6].node;
+
+    std::strcpy(entries[4].name, "state_skip");
+    entries[4].activationState = 0;
+    entries[4].boundNode = &nodeSlots[7].node;
+    entries[4].runtimeSibling = &skippedStateSibling;
+
+    std::strcpy(skippedStateSibling.name, "state_sibling_skip");
+    skippedStateSibling.activationState = 2;
+    skippedStateSibling.boundNode = &nodeSlots[0].node;
+
+    g_zEffectAnim_EntryList = entries;
+    g_zEffectAnim_EntryCount = 5;
+    g_zEffectAnim_RecordQueueEnabled = 1;
+
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    GetTempPathA(sizeof(tempPath), tempPath);
+    GetTempFileNameA(tempPath, "run", 0, tempFile);
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                    FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        g_zClass_NodeArray = oldNodeArray;
+        g_zClass_NodeArraySize = oldNodeArraySize;
+        g_zEffectAnim_EntryList = oldEntryList;
+        g_zEffectAnim_EntryCount = oldEntryCount;
+        g_zEffectAnim_RecordQueueEnabled = oldRecordQueueEnabled;
+        g_zUtil_ZbdManager = oldManager;
+        return 1;
+    }
+
+    zZbdManager manager = {};
+    manager.indexArchive.hFile = file;
+    g_zUtil_ZbdManager = &manager;
+    zZbdSectionHandler handler = {};
+    handler.sectionName = "RunningAnim";
+    zZbdSectionCallbackCtx callbackCtx = {};
+    callbackCtx.manager = &manager;
+    callbackCtx.sectionHandler = &handler;
+
+    const int result = zEffect_Anim::SaveRunningAnimRecords(&callbackCtx);
+
+    unsigned char fileBytes[sizeof(TestRunningHeader) * 3] = {};
+    DWORD read = 0;
+    SetFilePointer(file, 0, nullptr, FILE_BEGIN);
+    ReadFile(file, fileBytes, sizeof(fileBytes), &read, nullptr);
+
+    TestRunningHeader *const saved0 = (TestRunningHeader *)(fileBytes);
+    TestRunningHeader *const saved1 =
+        (TestRunningHeader *)(fileBytes + sizeof(TestRunningHeader));
+    TestRunningHeader *const saved2 =
+        (TestRunningHeader *)(fileBytes + sizeof(TestRunningHeader) * 2);
+
+    const bool archiveOk =
+        result == 1 && manager.indexArchive.recordCount == 3 &&
+        manager.indexArchive.records != nullptr &&
+        std::strcmp(manager.indexArchive.records[0].name, "RunningAnim/Running001") == 0 &&
+        manager.indexArchive.records[0].fileOffset == 0 &&
+        manager.indexArchive.records[0].fileSize == sizeof(TestRunningHeader) &&
+        std::strcmp(manager.indexArchive.records[1].name, "RunningAnim/Running001") == 0 &&
+        manager.indexArchive.records[1].fileOffset == sizeof(TestRunningHeader) &&
+        manager.indexArchive.records[1].fileSize == sizeof(TestRunningHeader) &&
+        std::strcmp(manager.indexArchive.records[2].name, "RunningAnim/Running003") == 0 &&
+        manager.indexArchive.records[2].fileOffset == sizeof(TestRunningHeader) * 2 &&
+        manager.indexArchive.records[2].fileSize == sizeof(TestRunningHeader) &&
+        read == sizeof(fileBytes);
+
+    const bool savedOk =
+        saved0->entryTableIndex == 1 && saved0->matchSavedRootNode == 1 &&
+        std::strcmp(saved0->entryName, "primary_one") == 0 && saved0->rootNodeIndex == 1 &&
+        saved1->entryTableIndex == 1 && saved1->matchSavedRootNode == 0 &&
+        std::strcmp(saved1->entryName, "sibling_saved") == 0 && saved1->rootNodeIndex == 2 &&
+        saved2->entryTableIndex == 3 && saved2->matchSavedRootNode == 1 &&
+        std::strcmp(saved2->entryName, "primary_three") == 0 && saved2->rootNodeIndex == 6;
+
+    std::free(manager.indexArchive.records);
+    CloseHandle(file);
+    g_zClass_NodeArray = oldNodeArray;
+    g_zClass_NodeArraySize = oldNodeArraySize;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    g_zEffectAnim_RecordQueueEnabled = oldRecordQueueEnabled;
+    g_zUtil_ZbdManager = oldManager;
+    return archiveOk && savedOk ? 0 : 2;
+}
+
+extern "C" int zeffect_anim_load_running_anim_records_smoke(void) {
+    struct TestRunningHeader {
+        int entryTableIndex;
+        int matchSavedRootNode;
+        char entryName[0x20];
+        int rootNodeIndex;
+        int nodeRefAIndex;
+        zVec3 refVecA;
+        int nodeRefBIndex;
+        zVec3 refVecB;
+        unsigned char activationState;
+        unsigned char unknown_4d[3];
+        float triggerCurrentValue;
+        float activationCountdown;
+        float velocityX;
+        float velocityY;
+        float velocityZ;
+        unsigned char runtimeSurfaceCount;
+        unsigned char lightRefCount;
+        unsigned char soundRefCount;
+        unsigned char reserved;
+    };
+
+    struct TestRuntimeNodeSaveRecord {
+        char name[0x24];
+        int isAttached;
+        float posX;
+        float posY;
+        float posZ;
+        int parentNodeIndex;
+    };
+
+    struct TestSoundNodeSaveRecord {
+        char name[0x24];
+        int isAttached;
+        int hasPosition;
+        float posX;
+        float posY;
+        float posZ;
+        int parentNodeIndex;
+    };
+
+    zClass_NodeFreeListSlot *const oldNodeArray = g_zClass_NodeArray;
+    const int oldNodeArraySize = g_zClass_NodeArraySize;
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    zZbdManager *const oldManager = g_zUtil_ZbdManager;
+
+    ResetZClassRuntimeForZEffectTest();
+
+    zClass_NodeFreeListSlot nodeSlots[8] = {};
+    for (int i = 0; i < 8; ++i) {
+        nodeSlots[i].freeTag = 0x01000000;
+    }
+    g_zClass_NodeArray = nodeSlots;
+    g_zClass_NodeArraySize = 8;
+
+    zEffectAnimEntry entries[2] = {};
+    zEffectAnimSurfaceRuntime runtimeList[1] = {};
+    void *const oldEventStream = std::malloc(3);
+    entries[1].boundNode = &nodeSlots[1].node;
+    entries[1].runtimeNode = &nodeSlots[2].node;
+    entries[1].runtimeList = runtimeList;
+    entries[1].runtimeSequenceCount = 1;
+    entries[1].activationState = 2;
+    runtimeList[0].eventStream = oldEventStream;
+    g_zEffectAnim_EntryList = entries;
+
+    zZbdManager manager = {};
+    g_zUtil_ZbdManager = &manager;
+
+    TestRunningHeader header = {};
+    header.entryTableIndex = 1;
+    header.matchSavedRootNode = 1;
+    std::strcpy(header.entryName, "primary_one");
+    header.rootNodeIndex = 1;
+    header.nodeRefAIndex = 3;
+    header.refVecA.x = 1.25f;
+    header.refVecA.y = 2.5f;
+    header.refVecA.z = 3.75f;
+    header.nodeRefBIndex = 4;
+    header.refVecB.x = 4.25f;
+    header.refVecB.y = 5.5f;
+    header.refVecB.z = 6.75f;
+    header.activationState = 6;
+    header.triggerCurrentValue = 7.25f;
+    header.activationCountdown = 8.5f;
+    header.velocityX = 9.75f;
+    header.velocityY = 10.125f;
+    header.velocityZ = 11.25f;
+    header.runtimeSurfaceCount = 1;
+    header.lightRefCount = 1;
+    header.soundRefCount = 1;
+
+    zEffectAnimSurfaceRuntime savedRuntime = {};
+    std::strcpy(savedRuntime.sequenceName, "SEQ_RUN");
+    savedRuntime.runState = 3;
+    savedRuntime.resetMode = 4;
+    savedRuntime.sequenceElapsedSec = 12.5f;
+    savedRuntime.eventElapsedSec = 13.5f;
+    savedRuntime.loopElapsedSec = 14.5f;
+    savedRuntime.loopIterationCount = 15;
+    savedRuntime.currentEvent = (void *)(2);
+    savedRuntime.eventStreamSize = 4;
+    const unsigned char eventBytes[4] = {0xaa, 0xbb, 0xcc, 0xdd};
+
+    TestRuntimeNodeSaveRecord lightRecord = {};
+    std::strcpy(lightRecord.name, "skip_light");
+    TestSoundNodeSaveRecord soundRecord = {};
+    std::strcpy(soundRecord.name, "skip_sound");
+
+    unsigned char buffer[sizeof(header) + sizeof(savedRuntime) + sizeof(eventBytes) +
+                         sizeof(lightRecord) + sizeof(soundRecord)] = {};
+    unsigned char *cursor = buffer;
+    std::memcpy(cursor, &header, sizeof(header));
+    cursor += sizeof(header);
+    std::memcpy(cursor, &savedRuntime, sizeof(savedRuntime));
+    cursor += sizeof(savedRuntime);
+    std::memcpy(cursor, eventBytes, sizeof(eventBytes));
+    cursor += sizeof(eventBytes);
+    std::memcpy(cursor, &lightRecord, sizeof(lightRecord));
+    cursor += sizeof(lightRecord);
+    std::memcpy(cursor, &soundRecord, sizeof(soundRecord));
+
+    zEffect_Anim::LoadRunningAnimRecords(nullptr, "Running001", buffer, sizeof(buffer), nullptr);
+
+    zEffectAnimSurfaceRuntime *const loadedRuntime = &runtimeList[0];
+    const bool headerOk =
+        (entries[1].flags & 0x4000u) != 0 && entries[1].resetScratch[0] ==
+            (unsigned int)(&nodeSlots[3].node) &&
+        entries[1].resetScratch[4] == (unsigned int)(&nodeSlots[4].node) &&
+        entries[1].activationState == 6 &&
+        FloatNear(entries[1].triggerCurrentValue, 7.25f) &&
+        FloatNear(entries[1].activationCountdown, 8.5f) &&
+        FloatNear(entries[1].velocityX, 9.75f) &&
+        FloatNear(entries[1].velocityY, 10.125f) &&
+        FloatNear(entries[1].velocityZ, 11.25f) && entries[1].runtimeSequenceCount == 1;
+
+    const bool scratchOk =
+        FloatNear(((zVec3 *)(&entries[1].resetScratch[1]))->x, 1.25f) &&
+        FloatNear(((zVec3 *)(&entries[1].resetScratch[1]))->y, 2.5f) &&
+        FloatNear(((zVec3 *)(&entries[1].resetScratch[1]))->z, 3.75f) &&
+        FloatNear(((zVec3 *)(&entries[1].resetScratch[5]))->x, 4.25f) &&
+        FloatNear(((zVec3 *)(&entries[1].resetScratch[5]))->y, 5.5f) &&
+        FloatNear(((zVec3 *)(&entries[1].resetScratch[5]))->z, 6.75f);
+
+    const bool runtimeOk =
+        std::strcmp(loadedRuntime->sequenceName, "SEQ_RUN") == 0 &&
+        loadedRuntime->runState == 3 && loadedRuntime->resetMode == 4 &&
+        FloatNear(loadedRuntime->sequenceElapsedSec, 12.5f) &&
+        FloatNear(loadedRuntime->eventElapsedSec, 13.5f) &&
+        FloatNear(loadedRuntime->loopElapsedSec, 14.5f) &&
+        loadedRuntime->loopIterationCount == 15 && loadedRuntime->eventStream != nullptr &&
+        loadedRuntime->currentEvent == (unsigned char *)(loadedRuntime->eventStream) + 2 &&
+        std::memcmp(loadedRuntime->eventStream, eventBytes, sizeof(eventBytes)) == 0;
+
+    const bool callbackOk =
+        entries[1].runtimeNode->callbackContext == (zClass_NodePartial *)(&entries[1]) &&
+        entries[1].runtimeNode->actionCallback != nullptr;
+
+    std::free(loadedRuntime->eventStream);
+    loadedRuntime->eventStream = nullptr;
+    FreeZClassRuntimeForZEffectTest();
+    g_zClass_NodeArray = oldNodeArray;
+    g_zClass_NodeArraySize = oldNodeArraySize;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zUtil_ZbdManager = oldManager;
+    return headerOk && scratchOk && runtimeOk && callbackOk ? 0 : 2;
 }
 
 extern "C" int zeffect_handle_emitter_reset_event_smoke(void) {
@@ -4314,6 +5707,23 @@ extern "C" int zeffect_conditional_ref_pos_smoke(void) {
     data.cachedWorldMatrix[11] = 8.0f;
 
     return zEffect::GetConditionalRefPosDistanceSq(&node) == 50.0f ? 0 : 3;
+}
+
+extern "C" int zeffect_set_conditional_effect_level_smoke(void) {
+    const int oldLevel = g_zEffect_ConditionalEffectLevel;
+
+    g_zEffect_ConditionalEffectLevel = -1;
+    zEffect::SetConditionalEffectLevel(3);
+    const bool positiveOk = g_zEffect_ConditionalEffectLevel == 3;
+
+    zEffect::SetConditionalEffectLevel(0);
+    const bool zeroOk = g_zEffect_ConditionalEffectLevel == 0;
+
+    zEffect::SetConditionalEffectLevel(-2);
+    const bool negativeOk = g_zEffect_ConditionalEffectLevel == -2;
+
+    g_zEffect_ConditionalEffectLevel = oldLevel;
+    return positiveOk && zeroOk && negativeOk ? 0 : 1;
 }
 
 extern "C" int zeffect_set_variant_override_packed_ids_if_complete_smoke(void) {
@@ -5420,6 +6830,62 @@ extern "C" int zeffect_anim_init_shutdown_smoke(void) {
     ClearRegisteredHandlers(sentinel);
     g_zUtil_ZbdManager = nullptr;
     return initOk ? 0 : 3;
+}
+
+extern "C" int zeffect_anim_shutdown_if_loaded_smoke(void) {
+    g_zEffectAnim_EntriesInstantiated = 0;
+    g_zEffectAnim_HeapPtr = std::malloc(4);
+    g_zEffectAnim_EntryCount = 1;
+    g_zEffectAnim_CountsPackedLoWord = 9;
+    g_zEffectAnim_EntryList =
+        static_cast<zEffectAnimEntry *>(std::calloc(1, sizeof(zEffectAnimEntry)));
+    g_zEffectAnim_TextIdEntryCount = 2;
+    g_zEffectAnim_TextIdEntryList = static_cast<zEffectAnimTextIdEntry *>(std::malloc(4));
+    g_zEffectAnim_ActivationRecordTable =
+        static_cast<zEffectAnimActivationRecord *>(std::malloc(4));
+    g_zEffectAnim_ActivationRecordCount = 1;
+
+    void *const heapPtr = g_zEffectAnim_HeapPtr;
+    zEffectAnimEntry *const entryList = g_zEffectAnim_EntryList;
+    zEffectAnimTextIdEntry *const textIdEntryList = g_zEffectAnim_TextIdEntryList;
+    zEffectAnimActivationRecord *const activationRecordTable =
+        g_zEffectAnim_ActivationRecordTable;
+
+    if (heapPtr == nullptr || entryList == nullptr || textIdEntryList == nullptr ||
+        activationRecordTable == nullptr) {
+        zEffect_Anim::Shutdown();
+        return 1;
+    }
+
+    if (zEffect_Anim::ShutdownIfLoaded() != 0) {
+        zEffect_Anim::Shutdown();
+        return 2;
+    }
+
+    if (g_zEffectAnim_HeapPtr != heapPtr || g_zEffectAnim_EntryList != entryList ||
+        g_zEffectAnim_EntryCount != 1 || g_zEffectAnim_CountsPackedLoWord != 9 ||
+        g_zEffectAnim_TextIdEntryList != textIdEntryList ||
+        g_zEffectAnim_TextIdEntryCount != 2 ||
+        g_zEffectAnim_ActivationRecordTable != activationRecordTable ||
+        g_zEffectAnim_ActivationRecordCount != 1) {
+        zEffect_Anim::Shutdown();
+        return 3;
+    }
+
+    g_zEffectAnim_EntriesInstantiated = 1;
+    if (zEffect_Anim::ShutdownIfLoaded() != 0) {
+        return 4;
+    }
+
+    return g_zEffectAnim_HeapPtr == nullptr && g_zEffectAnim_EntryList == nullptr &&
+                   g_zEffectAnim_EntryCount == 0 && g_zEffectAnim_CountsPackedLoWord == 0 &&
+                   g_zEffectAnim_TextIdEntryList == nullptr &&
+                   g_zEffectAnim_TextIdEntryCount == 0 &&
+                   g_zEffectAnim_ActivationRecordTable == nullptr &&
+                   g_zEffectAnim_ActivationRecordCount == 0 &&
+                   g_zEffectAnim_EntriesInstantiated == 0
+               ? 0
+               : 5;
 }
 
 extern "C" int zeffect_shutdown_all_smoke(void) {

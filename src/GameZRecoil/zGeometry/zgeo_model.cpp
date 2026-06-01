@@ -24,18 +24,41 @@ struct zGeometry_ClipPatchModelNodeBoundsView {
     float boundsNegMinY;
 };
 
-RECOIL_STATIC_ASSERT(offsetof(zGeometry_ClipPatchModelNodeBoundsView, boundsMinX) == 0x8c);
-RECOIL_STATIC_ASSERT(offsetof(zGeometry_ClipPatchModelNodeBoundsView, boundsNegMaxY) == 0x94);
-RECOIL_STATIC_ASSERT(offsetof(zGeometry_ClipPatchModelNodeBoundsView, boundsMaxX) == 0x98);
-RECOIL_STATIC_ASSERT(offsetof(zGeometry_ClipPatchModelNodeBoundsView, boundsNegMinY) == 0xa0);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zGeometry_ClipPatchModelNodeBoundsView,
+        boundsMinX
+    ) == 0x8c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zGeometry_ClipPatchModelNodeBoundsView,
+        boundsNegMaxY
+    ) == 0x94
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zGeometry_ClipPatchModelNodeBoundsView,
+        boundsMaxX
+    ) == 0x98
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zGeometry_ClipPatchModelNodeBoundsView,
+        boundsNegMinY
+    ) == 0xa0
+);
 
-zModel_DrawBatchBasePartial *ModelDrawBatchFromNode(zGeometry_ClipPatchNodeView *node) {
-    return (zModel_DrawBatchBasePartial *)(
-        (unsigned int)(node->userDataOrDiRef));
+zModel_DrawBatchBasePartial *ModelDrawBatchFromNode(
+    zGeometry_ClipPatchNodeView *node
+) {
+    return (zModel_DrawBatchBasePartial *)((unsigned int)(node->userDataOrDiRef));
 }
 
-bool IsClipPatchNodeOutsideClipBoundsXY(zGeometry_ClipPolygonPartial *clipPolygon,
-                                        zGeometry_ClipPatchNodeView *node) {
+bool IsClipPatchNodeOutsideClipBoundsXY(
+    zGeometry_ClipPolygonPartial *clipPolygon,
+    zGeometry_ClipPatchNodeView *node
+) {
     zGeometry_ClipPatchModelNodeBoundsView *const modelBounds =
         (zGeometry_ClipPatchModelNodeBoundsView *)(node);
 
@@ -58,7 +81,10 @@ bool IsClipPatchNodeOutsideClipBoundsXY(zGeometry_ClipPolygonPartial *clipPolygo
     return false;
 }
 
-zVec3 *PointAtDwordOffset(zVec3 *points, int pointDwordOffset) {
+zVec3 *PointAtDwordOffset(
+    zVec3 *points,
+    int pointDwordOffset
+) {
     return (zVec3 *)((float *)(points) + pointDwordOffset);
 }
 
@@ -68,8 +94,10 @@ zModel_MaterialPartial *g_zGeometry_Model_LastRandomDebugMaterial = 0;
 namespace zGeometry_Bounds2D {
 // Reimplements 0x46a620: zGeometry_Bounds2D::OverlapsWithUnitMargin
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL OverlapsWithUnitMargin(zGeometry_BoundsXY *boundsA,
-                                                                    zGeometry_BoundsXY *boundsB) {
+RECOIL_NOINLINE int RECOIL_FASTCALL OverlapsWithUnitMargin(
+    zGeometry_BoundsXY *boundsA,
+    zGeometry_BoundsXY *boundsB
+) {
     if (boundsB->maxX + 1.0f < boundsA->minX) {
         return 0;
     }
@@ -94,9 +122,11 @@ namespace zGeometry_Model {
 
 // Reimplements 0x46b6d0: zGeometry_Model::ProcessClipPatchNode
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-ProcessClipPatchNode(zGeometry_ClipPolygonPartial *clipPolygon, zModel_DrawBatchBasePartial *model,
-                     zDiPartial **outDi) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ProcessClipPatchNode(
+    zGeometry_ClipPolygonPartial *clipPolygon,
+    zModel_DrawBatchBasePartial *model,
+    zDiPartial **outDi
+) {
     if (model == 0 || clipPolygon == 0) {
         return 1;
     }
@@ -107,47 +137,83 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial *clipPolygon, zModel_DrawBatch
     }
 
     zGeometry_WeilerClipOutputPartial clipOutput;
-    memset(&clipOutput, 0, sizeof(clipOutput));
-    zUtil::StoreInt32(&di->mode, 0);
+    memset(
+        &clipOutput,
+        0,
+        sizeof(clipOutput)
+    );
+    zUtil::StoreInt32(
+        &di->mode,
+        0
+    );
 
     zModel_PolygonPartial *polygon = model->faceList;
     zVec3 *polygonPointsBuffer = 0;
     int clipPolygonDirty = 0;
     int clipTouched = 0;
 
-    for (int polygonIndex = 0; polygonIndex < model->faceCount;
-         ++polygonIndex, ++polygon) {
-        const int pointCount =
-            (int)(polygon->vertexCountAndFlags & 0xff);
+    for (int polygonIndex = 0; polygonIndex < model->faceCount; ++polygonIndex, ++polygon) {
+        const int pointCount = (int)(polygon->vertexCountAndFlags & 0xff);
         if (pointCount < 3) {
-            zError::ReportOld(0x400, kZGeoModelSourceFile, 0x4d7,
-                              "Skipping clip of polygon with (%d) verts", pointCount);
+            zError::ReportOld(
+                0x400,
+                kZGeoModelSourceFile,
+                0x4d7,
+                "Skipping clip of polygon with (%d) verts",
+                pointCount
+            );
             continue;
         }
 
         polygonPointsBuffer =
-            zGeometry_Model::GetLinearBufferOfPolygonVertices(model, polygon, polygonPointsBuffer);
+            zGeometry_Model::GetLinearBufferOfPolygonVertices(
+                model,
+                polygon,
+                polygonPointsBuffer
+            );
         if (polygonPointsBuffer == 0) {
-            zError::ReportOld(0x400, kZGeoModelSourceFile, 0x4df,
-                              "Error getting linear buffer of polygon vertices");
+            zError::ReportOld(
+                0x400,
+                kZGeoModelSourceFile,
+                0x4df,
+                "Error getting linear buffer of polygon vertices"
+            );
             continue;
         }
 
-        zGeometry_Vec3Array::RotatePos90AroundX(pointCount, polygonPointsBuffer);
+        zGeometry_Vec3Array::RotatePos90AroundX(
+            pointCount,
+            polygonPointsBuffer
+        );
 
         zGeometry_BoundsXY bounds;
-        zGeometry_Vec3Array::ComputeBoundsXY(&bounds, polygonPointsBuffer, pointCount);
+        zGeometry_Vec3Array::ComputeBoundsXY(
+            &bounds,
+            polygonPointsBuffer,
+            pointCount
+        );
 
         int clipResult = 1;
-        if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&bounds, &clipPolygon->bounds) != 0) {
+        if (zGeometry_Bounds2D::OverlapsWithUnitMargin(
+            &bounds,
+            &clipPolygon->bounds
+        ) != 0) {
             if (clipPolygonDirty != 0) {
                 zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints(
-                    clipPolygon, clipPolygon->points, clipPolygon->pointCount);
+                    clipPolygon,
+                    clipPolygon->points,
+                    clipPolygon->pointCount
+                );
                 clipPolygonDirty = 0;
             }
 
             clipResult = zGeometry_Weiler::ClipPointList(
-                clipPolygon->weilerState, 3, polygonPointsBuffer, pointCount, &clipOutput);
+                clipPolygon->weilerState,
+                3,
+                polygonPointsBuffer,
+                pointCount,
+                &clipOutput
+            );
         }
 
         switch (clipResult) {
@@ -159,7 +225,11 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial *clipPolygon, zModel_DrawBatch
             return 0;
 
         case 1:
-            zGeometry_Model::AddIndexedPolygonToDi(di, model, polygon);
+            zGeometry_Model::AddIndexedPolygonToDi(
+                di,
+                model,
+                polygon
+            );
             break;
 
         case 2: {
@@ -167,27 +237,38 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial *clipPolygon, zModel_DrawBatch
                 clipOutput.polygonSetA.polygons;
             clipTouched = 1;
             if (zGeometry_ClipPolygon::UpsertPointListXY(
-                    clipPolygon, upsertPolygon->pointCount,
-                    PointAtDwordOffset(clipOutput.pointList.points,
-                                       upsertPolygon->pointDwordOffset)) != 0) {
+                    clipPolygon,
+                    upsertPolygon->pointCount,
+                    PointAtDwordOffset(clipOutput.pointList.points, upsertPolygon->pointDwordOffset)
+                ) != 0) {
                 clipPolygonDirty = 1;
             }
 
             zGeometry_ConvexPolygonSetPartial *const convexSet = zGeometry_Polygon::Convexify(
-                &clipOutput.polygonSetB, clipOutput.pointList.pointCount,
-                clipOutput.pointList.points);
+                &clipOutput.polygonSetB,
+                clipOutput.pointList.pointCount,
+                clipOutput.pointList.points
+            );
             if (convexSet != 0) {
-                zGeometry_Vec3Array::RotateNeg90AroundX(convexSet->totalPointCount,
-                                                        convexSet->points);
+                zGeometry_Vec3Array::RotateNeg90AroundX(
+                    convexSet->totalPointCount,
+                    convexSet->points
+                );
 
                 zGeometry_PolygonPointSpanPartial *convexPolygon = convexSet->polygons;
                 for (int convexIndex = 0; convexIndex < convexSet->polygonCount;
-                     ++convexIndex, ++convexPolygon) {
+                    ++convexIndex, ++convexPolygon) {
                     if (convexPolygon->pointCount >= 3) {
                         zGeometry_Model::AddPointListPolygonToDi(
-                            di, convexPolygon->pointCount,
-                            PointAtDwordOffset(convexSet->points, convexPolygon->pointDwordOffset),
-                            model, polygon);
+                            di,
+                            convexPolygon->pointCount,
+                            PointAtDwordOffset(
+                                convexSet->points,
+                                convexPolygon->pointDwordOffset
+                            ),
+                            model,
+                            polygon
+                        );
                     }
                 }
 
@@ -201,8 +282,12 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial *clipPolygon, zModel_DrawBatch
 
         case 4: {
             if (clipOutput.polygonSetB.polygonCount == 0) {
-                zError::ReportOld(0x100, kZGeoModelSourceFile, 0x548,
-                                  "\nWEILER_CLIP_IN_SUBJ\n\tclip.outside.num_polys = 0\n");
+                zError::ReportOld(
+                    0x100,
+                    kZGeoModelSourceFile,
+                    0x548,
+                    "\nWEILER_CLIP_IN_SUBJ\n\tclip.outside.num_polys = 0\n"
+                );
                 if (polygonPointsBuffer != 0) {
                     free(polygonPointsBuffer);
                 }
@@ -212,14 +297,23 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial *clipPolygon, zModel_DrawBatch
 
             zVec3 *inputContourPoints = 0;
             const int inputContourPointCount = zGeometry_Weiler::GetInputContourAPointList(
-                clipPolygon->weilerState, &inputContourPoints);
+                clipPolygon->weilerState,
+                &inputContourPoints
+            );
             clipTouched = 1;
 
             zGeometry_TriangleSoup *triangleSoup = zGeometry::TriangulatePolygonWithHole(
-                pointCount, polygonPointsBuffer, inputContourPointCount, inputContourPoints);
+                pointCount,
+                polygonPointsBuffer,
+                inputContourPointCount,
+                inputContourPoints
+            );
 
-            if (zGeometry_ClipPolygon::UpsertPointListXY(clipPolygon, inputContourPointCount,
-                                                         inputContourPoints) != 0) {
+            if (zGeometry_ClipPolygon::UpsertPointListXY(
+                    clipPolygon,
+                    inputContourPointCount,
+                    inputContourPoints
+                ) != 0) {
                 clipPolygonDirty = 1;
             }
 
@@ -234,10 +328,23 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial *clipPolygon, zModel_DrawBatch
 
             zVec3 *trianglePoints = triangleSoup->triangleVerts;
             for (int triangleIndex = 0; triangleIndex < triangleSoup->triangleCount;
-                 ++triangleIndex) {
-                zGeometry_Vec3Array::EnsurePositiveCrossZ(3, trianglePoints, 1);
-                zGeometry_Vec3Array::RotateNeg90AroundX(3, trianglePoints);
-                zGeometry_Model::AddPointListPolygonToDi(di, 3, trianglePoints, model, polygon);
+                ++triangleIndex) {
+                zGeometry_Vec3Array::EnsurePositiveCrossZ(
+                    3,
+                    trianglePoints,
+                    1
+                );
+                zGeometry_Vec3Array::RotateNeg90AroundX(
+                    3,
+                    trianglePoints
+                );
+                zGeometry_Model::AddPointListPolygonToDi(
+                    di,
+                    3,
+                    trianglePoints,
+                    model,
+                    polygon
+                );
                 trianglePoints += 3;
             }
 
@@ -267,27 +374,38 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial *clipPolygon, zModel_DrawBatch
 
 // Reimplements 0x46b1f0: zGeometry_Model::ClipPatch
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-ClipPatch(int pointCount, zVec3 *points, zDEClient_FeatureGridCell *featureGridCell,
-          zGeometry_ClipPatchOutputPartial *outClipPatchOutput) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ClipPatch(
+    int pointCount,
+    zVec3 *points,
+    zDEClient_FeatureGridCell *featureGridCell,
+    zGeometry_ClipPatchOutputPartial *outClipPatchOutput
+) {
     if (featureGridCell == 0 || points == 0) {
         zError::ReportOld(
-            0x100, kZGeoModelSourceFile, 0x3af,
+            0x100,
+            kZGeoModelSourceFile,
+            0x3af,
             "Null Area Partition (0x%08x) or null Outline (0x%08x) passed to ClipPatch",
-            featureGridCell, points);
+            featureGridCell,
+            points
+        );
         return -1;
     }
 
     zGeometry_ClipPolygonPartial *const clipPolygon =
-        zGeometry_ClipPolygon::CreateFromPointList(pointCount, points);
+        zGeometry_ClipPolygon::CreateFromPointList(
+            pointCount,
+            points
+        );
     if (clipPolygon == 0) {
         return -1;
     }
 
     const int oldPartitionCount = outClipPatchOutput->partitionCount;
     outClipPatchOutput->partitions = (zGeometry_ClipPatchPartitionOutput *)(realloc(
-        outClipPatchOutput->partitions, (size_t)(oldPartitionCount + 1) *
-                                            sizeof(zGeometry_ClipPatchPartitionOutput)));
+        outClipPatchOutput->partitions,
+        (size_t)(oldPartitionCount + 1) * sizeof(zGeometry_ClipPatchPartitionOutput)
+    ));
     ++outClipPatchOutput->partitionCount;
 
     zGeometry_ClipPatchPartitionOutput *const partitionOutput =
@@ -297,95 +415,112 @@ ClipPatch(int pointCount, zVec3 *points, zDEClient_FeatureGridCell *featureGridC
     const int featureGridNodeCount = featureGridCell->nodeCount;
     partitionOutput->nodeDiPairCount = featureGridNodeCount;
     partitionOutput->nodeDiPairs = (zGeometry_ClipPatchNodeDiPair *)(calloc(
-        (size_t)(featureGridNodeCount), sizeof(zGeometry_ClipPatchNodeDiPair)));
+        (size_t)(featureGridNodeCount),
+        sizeof(zGeometry_ClipPatchNodeDiPair)
+    ));
 
     zClass_NodePartial *const cameraNode = zDEClient::GetCameraNode();
     const int candidateCapacity = cameraNode->listCountB + featureGridNodeCount;
-    zGeometry_ClipPatchNodeView **insideNodes =
-        (zGeometry_ClipPatchNodeView **)(malloc(
-            (size_t)(candidateCapacity) * sizeof(zGeometry_ClipPatchNodeView *)));
-    zGeometry_ClipPatchNodeView **clipNodes =
-        (zGeometry_ClipPatchNodeView **)(malloc(
-            (size_t)(candidateCapacity) * sizeof(zGeometry_ClipPatchNodeView *)));
+    zGeometry_ClipPatchNodeView **insideNodes = (zGeometry_ClipPatchNodeView **)(malloc(
+        (size_t)(candidateCapacity) * sizeof(zGeometry_ClipPatchNodeView *)
+    ));
+    zGeometry_ClipPatchNodeView **clipNodes = (zGeometry_ClipPatchNodeView **)(malloc(
+        (size_t)(candidateCapacity) * sizeof(zGeometry_ClipPatchNodeView *)
+    ));
 
     int insideNodeCount = 0;
     int clipNodeCount = 0;
 
     {
-    for (int nodeIndex = 0; nodeIndex < cameraNode->listCountB; ++nodeIndex) {
-        zGeometry_ClipPatchNodeView *const node = cameraNode->listB[nodeIndex];
-        if ((node->flags & 0x04) == 0) {
-            continue;
-        }
+        for (int nodeIndex = 0; nodeIndex < cameraNode->listCountB; ++nodeIndex) {
+            zGeometry_ClipPatchNodeView *const node = cameraNode->listB[nodeIndex];
+            if ((node->flags & 0x04) == 0) {
+                continue;
+            }
 
-        if ((node->flags & 0x20000) != 0) {
-            insideNodes[insideNodeCount] = node;
-            ++insideNodeCount;
-        }
+            if ((node->flags & 0x20000) != 0) {
+                insideNodes[insideNodeCount] = node;
+                ++insideNodeCount;
+            }
 
-        if ((node->flags & 0x10000) != 0) {
-            clipNodes[clipNodeCount] = node;
-            ++clipNodeCount;
+            if ((node->flags & 0x10000) != 0) {
+                clipNodes[clipNodeCount] = node;
+                ++clipNodeCount;
+            }
         }
-    }
-    }
-
-    {
-    for (int nodeIndex = 0; nodeIndex < featureGridNodeCount; ++nodeIndex) {
-        zGeometry_ClipPatchNodeView *const node = featureGridCell->nodes[nodeIndex];
-        if ((node->flags & 0x04) == 0) {
-            continue;
-        }
-
-        if ((node->flags & 0x20000) != 0) {
-            insideNodes[insideNodeCount] = node;
-            ++insideNodeCount;
-        }
-
-        if ((node->flags & 0x10000) != 0) {
-            clipNodes[clipNodeCount] = node;
-            ++clipNodeCount;
-        }
-    }
     }
 
     {
-    for (int nodeIndex = 0; nodeIndex < clipNodeCount; ++nodeIndex) {
-        if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(clipPolygon, clipNodes[nodeIndex]) !=
-            0) {
-            zGeometry_Vec3Array::ComputeBoundsXY(&clipPolygon->bounds, clipPolygon->points,
-                                                 clipPolygon->pointCount);
+        for (int nodeIndex = 0; nodeIndex < featureGridNodeCount; ++nodeIndex) {
+            zGeometry_ClipPatchNodeView *const node = featureGridCell->nodes[nodeIndex];
+            if ((node->flags & 0x04) == 0) {
+                continue;
+            }
+
+            if ((node->flags & 0x20000) != 0) {
+                insideNodes[insideNodeCount] = node;
+                ++insideNodeCount;
+            }
+
+            if ((node->flags & 0x10000) != 0) {
+                clipNodes[clipNodeCount] = node;
+                ++clipNodeCount;
+            }
         }
     }
+
+    {
+        for (int nodeIndex = 0; nodeIndex < clipNodeCount; ++nodeIndex) {
+            if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(
+                    clipPolygon,
+                    clipNodes[nodeIndex]
+                ) != 0) {
+                zGeometry_Vec3Array::ComputeBoundsXY(
+                    &clipPolygon->bounds,
+                    clipPolygon->points,
+                    clipPolygon->pointCount
+                );
+            }
+        }
     }
 
     clipPolygon->weilerState =
-        zGeometry_Weiler::Init(clipPolygon->points, clipPolygon->pointCount, 0);
+        zGeometry_Weiler::Init(
+            clipPolygon->points,
+            clipPolygon->pointCount,
+            0
+        );
 
     int result = 1;
     zGeometry_ClipPatchNodeDiPair *nodeDiPairWriteCursor = partitionOutput->nodeDiPairs;
 
     {
-    for (int nodeIndex = 0; nodeIndex < insideNodeCount && result != 0; ++nodeIndex) {
-        result = zGeometry_ClipPolygon::ProcessNodePolygonSetXY(clipPolygon, insideNodes[nodeIndex],
-                                                                &nodeDiPairWriteCursor->di);
-    }
+        for (int nodeIndex = 0; nodeIndex < insideNodeCount && result != 0; ++nodeIndex) {
+            result = zGeometry_ClipPolygon::ProcessNodePolygonSetXY(
+                clipPolygon,
+                insideNodes[nodeIndex],
+                &nodeDiPairWriteCursor->di
+            );
+        }
     }
 
     int nodeDiPairCount = 0;
     if (result != 0) {
         nodeDiPairWriteCursor = partitionOutput->nodeDiPairs;
         {
-        for (int nodeIndex = 0; nodeIndex < clipNodeCount && result != 0; ++nodeIndex) {
-            nodeDiPairWriteCursor->node = clipNodes[nodeIndex];
-            result = zGeometry_ClipPolygon::ProcessNodePolygonSetXY(
-                clipPolygon, clipNodes[nodeIndex], &nodeDiPairWriteCursor->di);
+            for (int nodeIndex = 0; nodeIndex < clipNodeCount && result != 0; ++nodeIndex) {
+                nodeDiPairWriteCursor->node = clipNodes[nodeIndex];
+                result = zGeometry_ClipPolygon::ProcessNodePolygonSetXY(
+                    clipPolygon,
+                    clipNodes[nodeIndex],
+                    &nodeDiPairWriteCursor->di
+                );
 
-            if (nodeDiPairWriteCursor->di != 0) {
-                ++nodeDiPairCount;
-                ++nodeDiPairWriteCursor;
+                if (nodeDiPairWriteCursor->di != 0) {
+                    ++nodeDiPairCount;
+                    ++nodeDiPairWriteCursor;
+                }
             }
-        }
         }
     }
 
@@ -393,14 +528,17 @@ ClipPatch(int pointCount, zVec3 *points, zDEClient_FeatureGridCell *featureGridC
     if (nodeDiPairCount != 0 && result != 0) {
         if (nodeDiPairCount != featureGridNodeCount) {
             partitionOutput->nodeDiPairCount = nodeDiPairCount;
-            partitionOutput->nodeDiPairs =
-                (zGeometry_ClipPatchNodeDiPair *)(realloc(
-                    partitionOutput->nodeDiPairs, (size_t)(nodeDiPairCount) *
-                                                      sizeof(zGeometry_ClipPatchNodeDiPair)));
+            partitionOutput->nodeDiPairs = (zGeometry_ClipPatchNodeDiPair *)(realloc(
+                partitionOutput->nodeDiPairs,
+                (size_t)(nodeDiPairCount) * sizeof(zGeometry_ClipPatchNodeDiPair)
+            ));
         }
 
         zGeometry_ClipPolygon::CopyPointsOutRotatedBack(
-            clipPolygon, &outClipPatchOutput->pointCount, &outClipPatchOutput->points);
+            clipPolygon,
+            &outClipPatchOutput->pointCount,
+            &outClipPatchOutput->points
+        );
     } else {
         --outClipPatchOutput->partitionCount;
         if (partitionOutput->nodeDiPairs != 0) {
@@ -411,10 +549,11 @@ ClipPatch(int pointCount, zVec3 *points, zDEClient_FeatureGridCell *featureGridC
             free(outClipPatchOutput->partitions);
             outClipPatchOutput->partitions = 0;
         } else {
-            outClipPatchOutput->partitions = (zGeometry_ClipPatchPartitionOutput *)(
-                realloc(outClipPatchOutput->partitions,
-                             (size_t)(outClipPatchOutput->partitionCount) *
-                                 sizeof(zGeometry_ClipPatchPartitionOutput)));
+            outClipPatchOutput->partitions = (zGeometry_ClipPatchPartitionOutput *)(realloc(
+                outClipPatchOutput->partitions,
+                (size_t)(outClipPatchOutput->partitionCount) *
+                    sizeof(zGeometry_ClipPatchPartitionOutput)
+            ));
         }
 
         returnValue = 0;
@@ -438,9 +577,11 @@ namespace zGeometry_ClipPolygon {
 // Reimplements 0x46b550:
 // zGeometry_ClipPolygon::ProcessNodePolygonSetXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-ProcessNodePolygonSetXY(zGeometry_ClipPolygonPartial *clipPolygon,
-                        zGeometry_ClipPatchNodeView *node, zDiPartial **outDi) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ProcessNodePolygonSetXY(
+    zGeometry_ClipPolygonPartial *clipPolygon,
+    zGeometry_ClipPatchNodeView *node,
+    zDiPartial **outDi
+) {
     if (clipPolygon == 0 || node == 0) {
         return 1;
     }
@@ -451,17 +592,27 @@ ProcessNodePolygonSetXY(zGeometry_ClipPolygonPartial *clipPolygon,
     }
 
     const int flags = node->flags;
-    if ((flags & 0x200) != 0 && IsClipPatchNodeOutsideClipBoundsXY(clipPolygon, node)) {
+    if ((flags & 0x200) != 0 && IsClipPatchNodeOutsideClipBoundsXY(
+        clipPolygon,
+        node
+    )) {
         return 1;
     }
 
     if ((flags & 0x20000) != 0) {
         *outDi = 0;
-        return zGeometry_Model::IsFullyInsideClipPolygonXY(clipPolygon, model);
+        return zGeometry_Model::IsFullyInsideClipPolygonXY(
+            clipPolygon,
+            model
+        );
     }
 
     if ((flags & 0x10000) != 0) {
-        return zGeometry_Model::ProcessClipPatchNode(clipPolygon, model, outDi);
+        return zGeometry_Model::ProcessClipPatchNode(
+            clipPolygon,
+            model,
+            outDi
+        );
     }
 
     return 1;
@@ -471,8 +622,11 @@ ProcessNodePolygonSetXY(zGeometry_ClipPolygonPartial *clipPolygon,
 namespace zGeometry_Vec3 {
 // Reimplements 0x469e50: zGeometry_Vec3::IsNearEqualXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL IsNearEqualXY(zVec3 *vecA, zVec3 *vecB,
-                                                           float tolerance) {
+RECOIL_NOINLINE int RECOIL_FASTCALL IsNearEqualXY(
+    zVec3 *vecA,
+    zVec3 *vecB,
+    float tolerance
+) {
     if (fabs(vecA->x - vecB->x) <= tolerance && fabs(vecA->y - vecB->y) <= tolerance) {
         return 1;
     }
@@ -482,10 +636,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL IsNearEqualXY(zVec3 *vecA, zVec3 *vecB,
 
 // Reimplements 0x469e90: zGeometry_Vec3::SnapPointToSegmentXYIfNear
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointToSegmentXYIfNear(zVec3 *lineStart,
-                                                                        zVec3 *lineEnd,
-                                                                        zVec3 *testPoint,
-                                                                        float tolerance) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointToSegmentXYIfNear(
+    zVec3 *lineStart,
+    zVec3 *lineEnd,
+    zVec3 *testPoint,
+    float tolerance
+) {
     const float dx = lineEnd->x - lineStart->x;
     const float dy = lineEnd->y - lineStart->y;
     const float testDx = testPoint->x - lineStart->x;
@@ -531,10 +687,15 @@ namespace zGeometry_Polygon {
 // Reimplements 0x46a8e0:
 // zGeometry_Polygon::SolveUvAxisCoefficientsXZ
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SolveUvAxisCoefficientsXZ(zVec3 *point0, zVec3 *point1,
-                                                               zVec3 *point2, float value0,
-                                                               float value1, float value2,
-                                                               zVec2 *outCoefficients) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SolveUvAxisCoefficientsXZ(
+    zVec3 *point0,
+    zVec3 *point1,
+    zVec3 *point2,
+    float value0,
+    float value1,
+    float value2,
+    zVec2 *outCoefficients
+) {
     const float x01 = point0->x - point1->x;
     const float z01 = point0->z - point1->z;
     const float x21 = point2->x - point1->x;
@@ -556,9 +717,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SolveUvAxisCoefficientsXZ(zVec3 *point0, zV
 
 // Reimplements 0x46a130: zGeometry_Polygon::SnapPointsXYIfNear
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-SnapPointsXYIfNear(zVec3 *polygon, int polyCount, zVec3 *targetVerts,
-                   int targetCount, float vertexTolerance, float edgeTolerance) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointsXYIfNear(
+    zVec3 *polygon,
+    int polyCount,
+    zVec3 *targetVerts,
+    int targetCount,
+    float vertexTolerance,
+    float edgeTolerance
+) {
     int result = 0;
 
     for (int i = 0; i < polyCount; ++i) {
@@ -569,15 +735,23 @@ SnapPointsXYIfNear(zVec3 *polygon, int polyCount, zVec3 *targetVerts,
         zVec3 *target = targetVerts;
         zVec3 *const polygonVertex = &polygon[i];
         for (int j = 0; j < targetCount; ++j) {
-            if (zGeometry_Vec3::IsNearEqualXY(polygonVertex, target, vertexTolerance)) {
+            if (zGeometry_Vec3::IsNearEqualXY(
+                polygonVertex,
+                target,
+                vertexTolerance
+            )) {
                 result = 1;
                 target->x = polygonVertex->x;
                 target->y = polygonVertex->y;
                 target->z = polygonVertex->z;
             } else {
                 const int nextIndex = (i + 1) % polyCount;
-                if (zGeometry_Vec3::SnapPointToSegmentXYIfNear(polygonVertex, &polygon[nextIndex],
-                                                               target, edgeTolerance)) {
+                if (zGeometry_Vec3::SnapPointToSegmentXYIfNear(
+                        polygonVertex,
+                        &polygon[nextIndex],
+                        target,
+                        edgeTolerance
+                    )) {
                     result = 1;
                 }
             }
@@ -593,7 +767,10 @@ SnapPointsXYIfNear(zVec3 *polygon, int polyCount, zVec3 *targetVerts,
 namespace zGeometry_Vec3Array {
 // Reimplements 0x46a5e0: zGeometry_Vec3Array::RotateNeg90AroundX
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RotateNeg90AroundX(int pointCount, zVec3 *points) {
+RECOIL_NOINLINE void RECOIL_FASTCALL RotateNeg90AroundX(
+    int pointCount,
+    zVec3 *points
+) {
     if (pointCount == 0) {
         return;
     }
@@ -611,7 +788,9 @@ namespace zGeometry_ClipPolygon {
 // zGeometry_ClipPolygon::SnapPointsNearNodeModelXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointsNearNodeModelXY(
-    zGeometry_ClipPolygonPartial *clipPolygon, zGeometry_ClipPatchNodeView *node) {
+    zGeometry_ClipPolygonPartial *clipPolygon,
+    zGeometry_ClipPatchNodeView *node
+) {
     zVec3 *linearPoints = 0;
     int result = 0;
 
@@ -649,24 +828,52 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointsNearNodeModelXY(
     for (int i = 0; i < polygonSet->faceCount; ++i) {
         const unsigned int vertexCount = face->vertexCountAndFlags & 0xff;
         if (vertexCount < 3) {
-            zError::ReportOld(0x400, kZGeoModelSourceFile, 0x36b,
-                              "Skipping clip of polygon with (%d) verts", vertexCount);
+            zError::ReportOld(
+                0x400,
+                kZGeoModelSourceFile,
+                0x36b,
+                "Skipping clip of polygon with (%d) verts",
+                vertexCount
+            );
         } else {
             linearPoints =
-                zGeometry_Model::GetLinearBufferOfPolygonVertices(polygonSet, face, linearPoints);
+                zGeometry_Model::GetLinearBufferOfPolygonVertices(
+                    polygonSet,
+                    face,
+                    linearPoints
+                );
             if (linearPoints == 0) {
-                zError::ReportOld(0x400, kZGeoModelSourceFile, 0x375,
-                                  "Error getting linear buffer of polygon vertices");
+                zError::ReportOld(
+                    0x400,
+                    kZGeoModelSourceFile,
+                    0x375,
+                    "Error getting linear buffer of polygon vertices"
+                );
             } else {
-                zGeometry_Vec3Array::RotatePos90AroundX(vertexCount, linearPoints);
+                zGeometry_Vec3Array::RotatePos90AroundX(
+                    vertexCount,
+                    linearPoints
+                );
 
                 zGeometry_BoundsXY bounds;
-                zGeometry_Vec3Array::ComputeBoundsXY(&bounds, linearPoints, vertexCount);
+                zGeometry_Vec3Array::ComputeBoundsXY(
+                    &bounds,
+                    linearPoints,
+                    vertexCount
+                );
 
-                if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&bounds, &clipPolygon->bounds)) {
+                if (zGeometry_Bounds2D::OverlapsWithUnitMargin(
+                    &bounds,
+                    &clipPolygon->bounds
+                )) {
                     if (zGeometry_Polygon::SnapPointsXYIfNear(
-                            linearPoints, vertexCount, clipPolygon->points, clipPolygon->pointCount,
-                            0.100000001f, 0.100000001f)) {
+                            linearPoints,
+                            vertexCount,
+                            clipPolygon->points,
+                            clipPolygon->pointCount,
+                            0.100000001f,
+                            0.100000001f
+                        )) {
                         result = 1;
                     }
                 }
@@ -685,19 +892,36 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointsNearNodeModelXY(
 
 // Reimplements 0x46aa40: zGeometry_ClipPolygon::CreateFromPointList
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE zGeometry_ClipPolygonPartial *RECOIL_FASTCALL
-CreateFromPointList(int pointCount, zVec3 *points) {
-    zGeometry_ClipPolygonPartial *result = (zGeometry_ClipPolygonPartial *)(
-        malloc(sizeof(zGeometry_ClipPolygonPartial)));
-    memset(result, 0, sizeof(zGeometry_ClipPolygonPartial));
+RECOIL_NOINLINE zGeometry_ClipPolygonPartial *RECOIL_FASTCALL CreateFromPointList(
+    int pointCount,
+    zVec3 *points
+) {
+    zGeometry_ClipPolygonPartial *result =
+        (zGeometry_ClipPolygonPartial *)(malloc(sizeof(zGeometry_ClipPolygonPartial)));
+    memset(
+        result,
+        0,
+        sizeof(zGeometry_ClipPolygonPartial)
+    );
 
     const size_t pointBytes = (size_t)(pointCount) * sizeof(zVec3);
     result->points = (zVec3 *)(malloc(pointBytes));
-    memcpy(result->points, points, pointBytes);
+    memcpy(
+        result->points,
+        points,
+        pointBytes
+    );
 
-    zGeometry_Vec3Array::RotatePos90AroundX(pointCount, result->points);
+    zGeometry_Vec3Array::RotatePos90AroundX(
+        pointCount,
+        result->points
+    );
     result->pointCount = pointCount;
-    zGeometry_Vec3Array::ComputeBoundsXY(&result->bounds, result->points, pointCount);
+    zGeometry_Vec3Array::ComputeBoundsXY(
+        &result->bounds,
+        result->points,
+        pointCount
+    );
 
     return result;
 }
@@ -706,15 +930,27 @@ CreateFromPointList(int pointCount, zVec3 *points) {
 // zGeometry_ClipPolygon::CopyPointsOutRotatedBack
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL CopyPointsOutRotatedBack(
-    zGeometry_ClipPolygonPartial *clipPolygon, int *outPointCount, zVec3 **outPoints) {
+    zGeometry_ClipPolygonPartial *clipPolygon,
+    int *outPointCount,
+    zVec3 **outPoints
+) {
     *outPointCount = clipPolygon->pointCount;
 
-    const size_t pointBytes =
-        (size_t)(clipPolygon->pointCount) * sizeof(zVec3);
-    *outPoints = (zVec3 *)(realloc(*outPoints, pointBytes));
-    memcpy(*outPoints, clipPolygon->points, pointBytes);
+    const size_t pointBytes = (size_t)(clipPolygon->pointCount) * sizeof(zVec3);
+    *outPoints = (zVec3 *)(realloc(
+        *outPoints,
+        pointBytes
+    ));
+    memcpy(
+        *outPoints,
+        clipPolygon->points,
+        pointBytes
+    );
 
-    zGeometry_Vec3Array::RotateNeg90AroundX(*outPointCount, *outPoints);
+    zGeometry_Vec3Array::RotateNeg90AroundX(
+        *outPointCount,
+        *outPoints
+    );
     return 0;
 }
 } // namespace zGeometry_ClipPolygon
@@ -734,10 +970,8 @@ RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_CDECL FindOrCreateRandomDebugMate
     material.colorRgb.red = red;
     material.colorRgb.green = green;
     material.colorRgb.blue = blue;
-    material.packedColor =
-        (unsigned short)((((int)(red) & 0x1f) << 11) |
-                                   (((int)(green) & 0x3f) << 5) |
-                                   ((int)(blue) & 0x1f));
+    material.packedColor = (unsigned short)((((int)(red) & 0x1f) << 11) |
+                                            (((int)(green) & 0x3f) << 5) | ((int)(blue) & 0x1f));
 
     g_zGeometry_Model_LastRandomDebugMaterial = zModel_Material::FindOrClone(&material);
     return g_zGeometry_Model_LastRandomDebugMaterial;
@@ -745,16 +979,24 @@ RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_CDECL FindOrCreateRandomDebugMate
 
 // Reimplements 0x46a770: zGeometry_Model::AddPolygonToDi
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygonToDi(zDiPartial *di, int pointCount,
-                                                            zVec3 *points,
-                                                            zModel_MaterialPartial *material,
-                                                            zClipUV *uvPairs) {
+RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygonToDi(
+    zDiPartial *di,
+    int pointCount,
+    zVec3 *points,
+    zModel_MaterialPartial *material,
+    zClipUV *uvPairs
+) {
     zTag4Partial localUserTag;
     zTag4::Clear(&localUserTag);
 
     if (pointCount < 3) {
-        zError::ReportOld(0x800, kZGeoModelSourceFile, 0x9f,
-                          "Attempting to generate polygon with (%d) vertices", pointCount);
+        zError::ReportOld(
+            0x800,
+            kZGeoModelSourceFile,
+            0x9f,
+            "Attempting to generate polygon with (%d) vertices",
+            pointCount
+        );
         return -1;
     }
 
@@ -762,15 +1004,29 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygonToDi(zDiPartial *di, int pointCoun
         material = FindOrCreateRandomDebugMaterial();
     }
 
-    return zDi::AddPolygon(di, pointCount, points, uvPairs, 0, 0, 0, material, 0,
-                           0, (const int *)(&localUserTag));
+    return zDi::AddPolygon(
+        di,
+        pointCount,
+        points,
+        uvPairs,
+        0,
+        0,
+        0,
+        material,
+        0,
+        0,
+        (const int *)(&localUserTag)
+    );
 }
 
 // Reimplements 0x46a7f0: zGeometry_Model::BuildPolygonUvList
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE zClipUV *RECOIL_FASTCALL BuildPolygonUvList(int pointCount, zVec3 *points,
-                                                            zModel_DrawBatchBasePartial *model,
-                                                            zModel_PolygonPartial *polygon) {
+RECOIL_NOINLINE zClipUV *RECOIL_FASTCALL BuildPolygonUvList(
+    int pointCount,
+    zVec3 *points,
+    zModel_DrawBatchBasePartial *model,
+    zModel_PolygonPartial *polygon
+) {
     const int *vertexIndices = polygon->vertexIndices;
     zVec3 *const verts = model->verts;
     zVec3 *const point0 = &verts[vertexIndices[0]];
@@ -779,15 +1035,28 @@ RECOIL_NOINLINE zClipUV *RECOIL_FASTCALL BuildPolygonUvList(int pointCount, zVec
     zModel_PolygonUvBasis *const uvBasis = polygon->uvBasis;
 
     zVec2 uCoefficients;
-    zGeometry_Polygon::SolveUvAxisCoefficientsXZ(point0, point1, point2, uvBasis->uv0.u,
-                                                 uvBasis->uv1.u, uvBasis->uv2.u, &uCoefficients);
+    zGeometry_Polygon::SolveUvAxisCoefficientsXZ(
+        point0,
+        point1,
+        point2,
+        uvBasis->uv0.u,
+        uvBasis->uv1.u,
+        uvBasis->uv2.u,
+        &uCoefficients
+    );
 
     zVec2 vCoefficients;
-    zGeometry_Polygon::SolveUvAxisCoefficientsXZ(point0, point1, point2, uvBasis->uv0.v,
-                                                 uvBasis->uv1.v, uvBasis->uv2.v, &vCoefficients);
+    zGeometry_Polygon::SolveUvAxisCoefficientsXZ(
+        point0,
+        point1,
+        point2,
+        uvBasis->uv0.v,
+        uvBasis->uv1.v,
+        uvBasis->uv2.v,
+        &vCoefficients
+    );
 
-    zClipUV *const result =
-        (zClipUV *)(malloc((size_t)(pointCount) * sizeof(zClipUV)));
+    zClipUV *const result = (zClipUV *)(malloc((size_t)(pointCount) * sizeof(zClipUV)));
     for (int i = 0; i < pointCount; ++i) {
         const float deltaX = points[i].x - point1->x;
         const float deltaZ = points[i].z - point1->z;
@@ -800,27 +1069,51 @@ RECOIL_NOINLINE zClipUV *RECOIL_FASTCALL BuildPolygonUvList(int pointCount, zVec
 
 // Reimplements 0x46ba90: zGeometry_Model::AddPointListPolygonToDi
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-AddPointListPolygonToDi(zDiPartial *di, int pointCount, zVec3 *points,
-                        zModel_DrawBatchBasePartial *model, zModel_PolygonPartial *polygon) {
+RECOIL_NOINLINE int RECOIL_FASTCALL AddPointListPolygonToDi(
+    zDiPartial *di,
+    int pointCount,
+    zVec3 *points,
+    zModel_DrawBatchBasePartial *model,
+    zModel_PolygonPartial *polygon
+) {
     if (pointCount < 3) {
-        zError::ReportOld(0x800, kZGeoModelSourceFile, 0x111,
-                          "Attempting to add child polygon with (%d) vertices", pointCount);
+        zError::ReportOld(
+            0x800,
+            kZGeoModelSourceFile,
+            0x111,
+            "Attempting to add child polygon with (%d) vertices",
+            pointCount
+        );
         return -1;
     }
 
     zClipUV *uvPairs = 0;
     zModel_MaterialPartial *material = 0;
     if (polygon->uvBasis != 0) {
-        uvPairs = BuildPolygonUvList(pointCount, points, model, polygon);
+        uvPairs = BuildPolygonUvList(
+            pointCount,
+            points,
+            model,
+            polygon
+        );
         material = polygon->material;
     } else {
         material = FindOrCreateRandomDebugMaterial();
     }
 
     const int result = zDi::AddPolygon(
-        di, pointCount, points, uvPairs, 0, 0, 0, material, polygon->drawFlags,
-        (int)((polygon->vertexCountAndFlags >> 8) & 1), &polygon->userTag);
+        di,
+        pointCount,
+        points,
+        uvPairs,
+        0,
+        0,
+        0,
+        material,
+        polygon->drawFlags,
+        (int)((polygon->vertexCountAndFlags >> 8) & 1),
+        &polygon->userTag
+    );
 
     if (uvPairs != 0) {
         free(uvPairs);
@@ -832,14 +1125,29 @@ AddPointListPolygonToDi(zDiPartial *di, int pointCount, zVec3 *points,
 // Reimplements 0x46bb30: zGeometry_Model::AddIndexedPolygonToDi
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL AddIndexedPolygonToDi(
-    zDiPartial *di, zModel_DrawBatchBasePartial *model, zModel_PolygonPartial *polygon) {
-    zVec3 *polygonPointsBuffer = GetLinearBufferOfPolygonVertices(model, polygon, 0);
+    zDiPartial *di,
+    zModel_DrawBatchBasePartial *model,
+    zModel_PolygonPartial *polygon
+) {
+    zVec3 *polygonPointsBuffer = GetLinearBufferOfPolygonVertices(
+        model,
+        polygon,
+        0
+    );
     const unsigned int vertexCountAndFlags = polygon->vertexCountAndFlags;
     const int result = zDi::AddPolygon(
-        di, (int)(vertexCountAndFlags & 0xff), polygonPointsBuffer,
-        (zClipUV *)(polygon->uvBasis), 0, 0, 0, polygon->material,
-        polygon->drawFlags, (int)((vertexCountAndFlags >> 8) & 1),
-        &polygon->userTag);
+        di,
+        (int)(vertexCountAndFlags & 0xff),
+        polygonPointsBuffer,
+        (zClipUV *)(polygon->uvBasis),
+        0,
+        0,
+        0,
+        polygon->material,
+        polygon->drawFlags,
+        (int)((vertexCountAndFlags >> 8) & 1),
+        &polygon->userTag
+    );
 
     if (polygonPointsBuffer != 0) {
         free(polygonPointsBuffer);
@@ -852,7 +1160,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddIndexedPolygonToDi(
 // zGeometry_Model::IsFullyInsideClipPolygonXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL IsFullyInsideClipPolygonXY(
-    zGeometry_ClipPolygonPartial *clipPolygon, zModel_DrawBatchBasePartial *model) {
+    zGeometry_ClipPolygonPartial *clipPolygon,
+    zModel_DrawBatchBasePartial *model
+) {
     zVec3 *polygonPointsBuffer = 0;
 
     if (model == 0 || clipPolygon == 0) {
@@ -860,72 +1170,112 @@ RECOIL_NOINLINE int RECOIL_FASTCALL IsFullyInsideClipPolygonXY(
     }
 
     zGeometry_WeilerClipOutputPartial clipOutput;
-    memset(&clipOutput, 0, sizeof(clipOutput));
+    memset(
+        &clipOutput,
+        0,
+        sizeof(clipOutput)
+    );
 
     zModel_PolygonPartial *face = model->faceList;
     {
-    for (int polygonIndex = 0; polygonIndex < model->faceCount; ++polygonIndex, ++face) {
-        const int pointCount = (int)(face->vertexCountAndFlags & 0xff);
-        if (pointCount < 3) {
-            zError::ReportOld(0x400, kZGeoModelSourceFile, 0x5ce,
-                              "Skipping clip of polygon with (%d) verts", pointCount);
-            continue;
-        }
-
-        polygonPointsBuffer =
-            zGeometry_Model::GetLinearBufferOfPolygonVertices(model, face, polygonPointsBuffer);
-        if (polygonPointsBuffer == 0) {
-            zError::ReportOld(0x400, kZGeoModelSourceFile, 0x5d5,
-                              "Error getting linear buffer of polygon vertices");
-            continue;
-        }
-
-        zGeometry_Vec3Array::RotatePos90AroundX(pointCount, polygonPointsBuffer);
-
-        zGeometry_BoundsXY bounds;
-        zGeometry_Vec3Array::ComputeBoundsXY(&bounds, polygonPointsBuffer, pointCount);
-
-        int clipResult = 1;
-        if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&bounds, &clipPolygon->bounds) != 0) {
-            clipResult = zGeometry_Weiler::ClipPointList(
-                clipPolygon->weilerState, 4, polygonPointsBuffer, pointCount, &clipOutput);
-        }
-
-        switch (clipResult) {
-        case 0:
-            zError::ReportOld(0x200, kZGeoModelSourceFile, 0x5ed,
-                              "Weiler algorithm clip error occurred.");
-            if (polygonPointsBuffer != 0) {
-                free(polygonPointsBuffer);
+        for (int polygonIndex = 0; polygonIndex < model->faceCount; ++polygonIndex, ++face) {
+            const int pointCount = (int)(face->vertexCountAndFlags & 0xff);
+            if (pointCount < 3) {
+                zError::ReportOld(
+                    0x400,
+                    kZGeoModelSourceFile,
+                    0x5ce,
+                    "Skipping clip of polygon with (%d) verts",
+                    pointCount
+                );
+                continue;
             }
-            return 0;
 
-        case 1:
-            zGeometry_WeilerClipOutput::Destroy(&clipOutput);
-            break;
-
-        case 2:
-            if (clipOutput.polygonSetC.polygonCount == 0) {
-                zError::ReportOld(0x200, kZGeoModelSourceFile, 0x5f7,
-                                  "Intersection found, no polygons...");
+            polygonPointsBuffer =
+                zGeometry_Model::GetLinearBufferOfPolygonVertices(
+                    model,
+                    face,
+                    polygonPointsBuffer
+                );
+            if (polygonPointsBuffer == 0) {
+                zError::ReportOld(
+                    0x400,
+                    kZGeoModelSourceFile,
+                    0x5d5,
+                    "Error getting linear buffer of polygon vertices"
+                );
+                continue;
             }
-            if (polygonPointsBuffer != 0) {
-                free(polygonPointsBuffer);
-            }
-            return 0;
 
-        case 3:
-        case 4:
-            if (polygonPointsBuffer != 0) {
-                free(polygonPointsBuffer);
-            }
-            return 0;
+            zGeometry_Vec3Array::RotatePos90AroundX(
+                pointCount,
+                polygonPointsBuffer
+            );
 
-        default:
-            zGeometry_WeilerClipOutput::Destroy(&clipOutput);
-            break;
+            zGeometry_BoundsXY bounds;
+            zGeometry_Vec3Array::ComputeBoundsXY(
+                &bounds,
+                polygonPointsBuffer,
+                pointCount
+            );
+
+            int clipResult = 1;
+            if (zGeometry_Bounds2D::OverlapsWithUnitMargin(
+                &bounds,
+                &clipPolygon->bounds
+            ) != 0) {
+                clipResult = zGeometry_Weiler::ClipPointList(
+                    clipPolygon->weilerState,
+                    4,
+                    polygonPointsBuffer,
+                    pointCount,
+                    &clipOutput
+                );
+            }
+
+            switch (clipResult) {
+            case 0:
+                zError::ReportOld(
+                    0x200,
+                    kZGeoModelSourceFile,
+                    0x5ed,
+                    "Weiler algorithm clip error occurred."
+                );
+                if (polygonPointsBuffer != 0) {
+                    free(polygonPointsBuffer);
+                }
+                return 0;
+
+            case 1:
+                zGeometry_WeilerClipOutput::Destroy(&clipOutput);
+                break;
+
+            case 2:
+                if (clipOutput.polygonSetC.polygonCount == 0) {
+                    zError::ReportOld(
+                        0x200,
+                        kZGeoModelSourceFile,
+                        0x5f7,
+                        "Intersection found, no polygons..."
+                    );
+                }
+                if (polygonPointsBuffer != 0) {
+                    free(polygonPointsBuffer);
+                }
+                return 0;
+
+            case 3:
+            case 4:
+                if (polygonPointsBuffer != 0) {
+                    free(polygonPointsBuffer);
+                }
+                return 0;
+
+            default:
+                zGeometry_WeilerClipOutput::Destroy(&clipOutput);
+                break;
+            }
         }
-    }
     }
 
     if (polygonPointsBuffer != 0) {
